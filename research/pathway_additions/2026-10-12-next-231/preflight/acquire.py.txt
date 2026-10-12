@@ -1,0 +1,17 @@
+from pathlib import Path
+import concurrent.futures,datetime,hashlib,json,urllib.request,sys
+B=Path(__file__).parent
+def fetch(r):
+ out=B/'raw'/r['name'];assert not out.exists(),out
+ z=dict(r,path=str(out),started_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+ try:
+  req=urllib.request.Request(r['url'],headers={'User-Agent':'PathwayMech evidence curation'})
+  with urllib.request.urlopen(req,timeout=50) as f:
+   data=f.read();z.update(status=f.status,final_url=f.url,content_type=f.headers.get('Content-Type'))
+  out.write_bytes(data);z.update(bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
+ except Exception as e:z['error']=str(type(e).__name__)+': '+str(e)
+ z['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();return z
+if __name__=='__main__':
+ inp=Path(sys.argv[1]);dest=B/(inp.stem+'-receipts.json');assert not dest.exists()
+ with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:rows=list(pool.map(fetch,json.loads(inp.read_text())))
+ dest.write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(dict(total=len(rows),acquired=sum('sha256'in r for r in rows),errors=[r for r in rows if 'error'in r])))

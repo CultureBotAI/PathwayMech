@@ -1,0 +1,31 @@
+import json
+import os
+from pathlib import Path
+import subprocess
+import time
+
+root = Path(__file__).resolve().parent
+candidate = root / 'candidate'
+receipts = root / 'receipts'
+receipts.mkdir(exist_ok=True)
+python = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+commands = {
+    'focused-pytest': [python, '-B', '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '--basetemp', str(root / 'test-tmp'), 'tests/test_handle_references.py', 'tests/test_graph_context.py', 'tests/test_linkml_schema.py::test_schema_and_python_validator_allow_the_same_biological_prefixes'],
+    'focused-lint': [python, '-B', '-m', 'ruff', 'check', '--no-cache', 'src/pathwaymech/schema.py', 'tests/test_handle_references.py', 'tests/test_linkml_schema.py'],
+}
+env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', UV_NO_SYNC='1', PYTHONPATH=str(candidate / 'src'))
+results = []
+for name, command in commands.items():
+    attempt = 1
+    while (receipts / f'{name}-{attempt}.json').exists():
+        attempt += 1
+    stem = f'{name}-{attempt}'
+    start = time.time()
+    completed = subprocess.run(command, cwd=candidate, env=env, capture_output=True)
+    (receipts / f'{stem}.stdout').write_bytes(completed.stdout)
+    (receipts / f'{stem}.stderr').write_bytes(completed.stderr)
+    row = {'command': command, 'cwd': str(candidate), 'environment': {key: env[key] for key in ['PYTHONDONTWRITEBYTECODE', 'UV_NO_SYNC', 'PYTHONPATH']}, 'exit_code': completed.returncode, 'seconds': time.time() - start, 'stdout': f'{stem}.stdout', 'stderr': f'{stem}.stderr'}
+    (receipts / f'{stem}.json').write_text(json.dumps(row, indent=2) + '\n')
+    results.append(row)
+    print(stem, completed.returncode, completed.stdout.decode(), completed.stderr.decode(), flush=True)
+raise SystemExit(any(row['exit_code'] for row in results))

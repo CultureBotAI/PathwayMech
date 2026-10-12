@@ -1,0 +1,57 @@
+"""Read-only integration preparation probe; does not certify a future merge or gates."""
+import json
+from pathlib import Path
+import yaml
+from common import (PACKAGE, BASE_CONFIG, BASE, TREE, TARGET_SOURCE, TARGET_SHA,
+    AUTHORITY_FILES, binding, load, verify, verify_accepted, verify_captured231,
+    verify_cache_inputs, verify_authority_conservation, safe_relative, write_new)
+
+
+def main():
+    assert BASE_CONFIG is None and BASE is None and TREE is None
+    verify_accepted(); verify_cache_inputs()
+    # Current root ATP worktree is a read-only prospective comparison, not a merged-base substitute.
+    prospective = Path('/private/tmp/pathwaymech-next-230-20261012')
+    capture = verify_captured231(prospective, require_bridge=False)
+    verify_authority_conservation(prospective)
+    expected = load(PACKAGE / 'expected-changes.json')
+    assert expected['base'] is None and expected['tree'] is None
+    assert len(expected['code']) == 4 and sum(row['before'] is None for row in expected['code']) == 1
+    assert len(expected['new_originals']) == len(expected['manifest_additions']) == 24 and not expected['rhea_additions']
+    assert [expected['authority_counts'][kind][section]['new'] for kind, section in
+        [('sources','terms'), ('sources','sources'), ('ontology','terms'), ('ontology','sources')]] == [2507,617,1969,5]
+    cache = load(PACKAGE / 'source-cache-copy-plan.json')
+    assert [cache[key] for key in ['selected_build_originals','prospective_shared_cache_before','prospective_shared_cache_after']] == [780,765,789]
+    record = yaml.safe_load(TARGET_SOURCE.read_bytes())
+    assert record['id'] == 'MetaCyc:PWY-8178'
+    dirty_titles = [n for n, reference in enumerate(record['references'],1)
+        if reference.get('title') and reference['title'] != reference['title'].strip()]
+    assert not dirty_titles, dirty_titles
+    plan = load(PACKAGE / 'dossier-plan.json'); destinations = set(); wrappers = 0
+    for row in plan['mappings']:
+        relative = str(safe_relative(row['destination'])); assert relative not in destinations
+        destinations.add(relative); verify(row['source']['path'], row['source'])
+        assert not relative.endswith('.py'), 'Archived Python must not be imported/collected as code'
+        if row.get('original'): verify(row['original']['path'], row['original'])
+        if row['serialization'] == 'lossless_utf8_json_wrapper':
+            wrapped = load(row['source']['path']); assert wrapped['text'].encode('utf-8') == Path(row['original']['path']).read_bytes(); wrappers += 1
+    for row in capture['candidate_code']: verify(row['captured']['path'], row['captured'])
+    assert sum(r['relative_path'].endswith('.yaml') for r in capture['records']) == 231
+    inputs = load(PACKAGE / 'accepted-inputs.json')
+    receipt = {'status': 'preparation_checks_passed_future_merge_and_execution_pending',
+        'accepted_inputs': binding(PACKAGE / 'accepted-inputs.json'), 'target': binding(TARGET_SOURCE),
+        'actual_native_outputs': expected['canonical_outputs'], 'target_sha256': TARGET_SHA,
+        'prospective_ATP_worktree_read_only': str(prospective),
+        'prospective231_record_files_checked': len(capture['records']),
+        'prospective_ATP_authorities': {k: binding(prospective / v) for k,v in AUTHORITY_FILES.items()},
+        'actual_ATP_merge_asserted': False, 'actual_merged_base_bound': False,
+        'new_code_files': 1, 'replaced_code_files': 3, 'whole_cache_before': 765, 'whole_cache_after_planned': 789,
+        'selected_native_originals': 780, 'new_originals_to_copy': 24,
+        'supplementary_observed_cache_files': {k: len(v.get('supplemental_observed_files',[])) for k,v in inputs['packages'].items() if v.get('supplemental_observed_files')},
+        'dossier_mappings': len(destinations), 'dossier_lossless_wrappers_verified': wrappers,
+        'maintained_gates_run_here': False, 'maintained_or_cache_writes': False,
+        'scope': 'Exact accepted inputs, future-adoption plan and prospective byte equality only. Root must supply actual corrected ATP merge/tree binding, capture clean whole maintained baseline, adopt, create history before render and execute all gates/preservation. Existing actual native and science acceptances remain separately attributed.'}
+    write_new(PACKAGE / 'preparation-checks.json', receipt)
+    print(json.dumps({'status': receipt['status'], 'record_files':len(capture['records']), 'runtime_files': len(capture['candidate_code']), 'dossier_mappings': len(destinations)}))
+
+if __name__ == '__main__': main()

@@ -1,0 +1,131 @@
+from pathlib import Path
+from collections import Counter
+import datetime
+import hashlib
+import json
+import re
+import yaml
+from lxml import etree
+
+A = Path('/private/tmp/pathwaymech-next-231-author-20261012')
+O = Path('/private/tmp/pathwaymech-next-231-science-review-20261012')
+target = A / 'draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+d = yaml.safe_load(target.read_text())
+bindings = json.loads((A / 'reference-original-bindings.json').read_text())
+
+def bind(p):
+    p = Path(p)
+    with p.open('rb') as f:
+        sha = hashlib.file_digest(f, 'sha256').hexdigest()
+    return {'path': str(p), 'bytes': p.stat().st_size, 'sha256': sha}
+
+def save(name, value):
+    with (O / name).open('x') as f:
+        json.dump(value, f, indent=2, ensure_ascii=False)
+        f.write('\n')
+
+native = {}
+chemistry = json.loads((A / 'chemical-identity-and-balance.json').read_text())
+for curie, value in chemistry['chemicals'].items():
+    if curie == 'MetaCyc:PROTON':
+        native[curie] = {'formula': {'H': 1}, 'charge': 1, 'scope': 'Exact H+ identity; no invented coefficient.'}
+        continue
+    root = etree.parse(value['original']['path'])
+    compound = root.xpath('/ptools-xml/Compound')[0]
+    molecule = compound.find('.//molecule')
+    assert molecule is not None
+    formula_tokens = molecule.find('formula').get('concise').split()
+    formula = {k: int(v) for k, v in zip(formula_tokens[::2], formula_tokens[1::2])}
+    charge = int(molecule.get('formalCharge'))
+    assert formula == value['formula'] and charge == value['charge']
+    native[curie] = {'original': bind(value['original']['path']), 'formula': formula, 'charge': charge,
+                     'class': compound.get('class') == 'true', 'inchi': compound.findtext('inchi')}
+
+pathway = etree.parse(bindings[d['id']]['path'])
+reactions = []
+for reaction in d['reactions']:
+    curie = reaction['id']; frame = curie.split(':', 1)[1]
+    root = etree.parse(bindings[curie]['path'])
+    r = root.xpath('/ptools-xml/Reaction')[0]
+    direction = r.findtext('reaction-direction')
+    layout = pathway.xpath(f"/ptools-xml/Pathway/reaction-layout[Reaction[@frameid='{frame}']]")[0]
+    layout_text = etree.tostring(layout, encoding='unicode')
+    route_direction = 'right-to-left' if 'R2L' in layout_text else 'left-to-right'
+    sides = {side: ['MetaCyc:' + n.get('frameid') for n in r.xpath(f'./{side}/Compound')] for side in ['left', 'right']}
+    totals = {}
+    for side, ids in sides.items():
+        elements = Counter(); charge = 0
+        for identity in ids:
+            elements.update(native[identity]['formula']); charge += native[identity]['charge']
+        totals[side] = {'elements': dict(elements), 'charge': charge}
+    assert totals['left'] == totals['right']
+    expected = []
+    input_side = 'right' if route_direction == 'right-to-left' else 'left'
+    for side, ids in sides.items():
+        expected.extend([(i, 'consumes', curie) if side == input_side else (curie, 'produces', i) for i in ids])
+    actual = [(e['subject'], e['predicate'], e['object']) for e in d['mechanistic_edges']
+              if e['predicate'] in ['consumes', 'produces'] and curie in [e['subject'], e['object']]]
+    assert sorted(actual) == sorted(expected)
+    assert direction == 'REVERSIBLE'
+    reactions.append({'id': curie, 'original': bind(bindings[curie]['path']), 'source_direction': direction,
+                      'record_direction': reaction.get('direction'), 'route_direction': route_direction,
+                      'sides': sides, 'totals': totals, 'exact_oriented_sides_match': True,
+                      'coefficient_limit': 'Unit occurrences used only for representative balance; no native coefficient fields inferred.'})
+
+proteins = []
+for p in d['participants']:
+    if not p['id'].startswith('NCBIProtein:'):
+        continue
+    accession = p['id'].split(':', 1)[1]
+    r = etree.parse(bindings[p['id']]['path'])
+    n = r.xpath(f"/GBSet/GBSeq[GBSeq_accession-version='{accession}']")[0]
+    definition = n.findtext('GBSeq_definition')
+    assert definition == p['label']
+    qualifiers = [(q.findtext('GBQualifier_name'), q.findtext('GBQualifier_value')) for q in n.xpath('./GBSeq_feature-table/GBFeature/GBFeature_quals/GBQualifier')]
+    proteins.append({'id': p['id'], 'definition': definition, 'organism': n.findtext('GBSeq_organism'),
+                     'source': bind(bindings[p['id']]['path']), 'qualifiers': qualifiers,
+                     'sequence_length': len(n.findtext('GBSeq_sequence')), 'annotation_scope': 'Identity and issued annotation only; primary assays assessed separately.'})
+
+uniprot = json.loads((A / 'raw/UniProt-A3DIL8.json').read_text())
+ncbi = etree.parse(str(A / 'raw/NCBI-protein-branch-full.xml')).xpath("/GBSet/GBSeq[GBSeq_accession-version='ABN53797.1']")[0]
+old = etree.parse(str(A / 'raw/NCBI-protein-ZP00503831.xml')).xpath('/GBSet/GBSeq')[0]
+seq = uniprot['sequence']['value']
+assert seq == ncbi.findtext('GBSeq_sequence').upper() == old.findtext('GBSeq_sequence').upper()
+assert len(seq) == 149
+
+associations = []
+for x in json.loads((A / 'native-association-dispositions.json').read_text())['associations']:
+    r = etree.parse(x['source']['path']); p = r.xpath('/ptools-xml/Protein')[0]
+    species = [{'frame': n.get('frameid'), 'label': n.findtext('common-name')} for n in p.xpath('./species/*')]
+    associations.append({'id': x['id'], 'source': bind(x['source']['path']), 'species': species,
+                         'xref': [(z.findtext('dblink-db'), z.findtext('dblink-oid')) for z in p.xpath('./dblink') if z.findtext('dblink-db') in ['UNIPROT', 'PID']],
+                         'disposition': x['author_disposition']})
+
+ec_text = Path(bindings['EC:5.3.1.6']['path']).read_text()
+enzyme_entries = {}
+for p in d['participants']:
+    if p['id'].startswith('EC:'):
+        identifier = p['id'][3:]
+        match = re.search(r'^ID\s+' + re.escape(identifier) + r'\s*\n.*?^//', ec_text, re.M | re.S)
+        assert match
+        enzyme_entries[p['id']] = match.group(0)
+
+nodes = {d['id']} | {n['id'] for k in ['taxa', 'participants', 'reactions'] for n in d[k]}
+refs = {r['id'] for r in d['references']}
+for e in d['mechanistic_edges']:
+    assert e['subject'] in nodes and e['object'] in nodes
+    for evidence in e['evidence'] + [x for q in e.get('endpoint_qualifiers', []) for x in q['evidence']]:
+        assert evidence['reference_id'] in refs
+
+controls = [
+    {'case': 'Replace charged native PPi with neutral diphosphoric acid', 'rejected': native['MetaCyc:PPI']['charge'] != 0, 'reason': 'Native charge is -3, representative formula HO7P2; neutral acid changes 3H and 3charge.'},
+    {'case': 'Reverse one oriented RXN-21730 substrate edge', 'rejected': ('MetaCyc:RXN-21730', 'consumes', 'MetaCyc:PPI') not in [(e['subject'],e['predicate'],e['object'])for e in d['mechanistic_edges']], 'reason': 'Native pathway uses S7P/PPi inputs in the selected forward layout.'},
+    {'case': 'Promote the Rex claim to signed gene regulation', 'rejected': all(e['predicate'] == 'enables' and e['object'] == 'GO:0043565' for e in d['mechanistic_edges'] if e['subject'] == 'NCBIProtein:ADU75484.1'), 'reason': 'Only binding is directly supported; promoter assignment remains unresolved.'},
+]
+assert all(c['rejected'] for c in controls)
+save('independent-native-probes.json', {'target': bind(target), 'finished_at': datetime.datetime.now(datetime.UTC).isoformat().replace('+00:00','Z'),
+     'chemicals': native, 'reactions': reactions, 'protein_identities': proteins, 'native_associations': associations,
+     'rpib': {'same_sequence': True, 'length': len(seq), 'sequence_sha256': hashlib.sha256(seq.encode()).hexdigest(), 'scope': 'Historical sequence equality does not equate versioned product/EC annotation.'},
+     'enzyme_entries': enzyme_entries, 'local_node_count': len(nodes), 'local_references': len(refs), 'edge_count': len(d['mechanistic_edges']), 'controls': controls,
+     'limitations': 'Scientific review probes; not native corpus gates, full canonical rebuild, live taxonomy/SQL refresh, or biochemical measurement.'})
+print(json.dumps({'reactions': len(reactions), 'native_sides': sum(sum(len(v) for v in x['sides'].values()) for x in reactions), 'chemicals': len(native), 'protein_identities': len(proteins), 'associations': len(associations), 'nodes': len(nodes), 'references': len(refs), 'controls': len(controls)}))

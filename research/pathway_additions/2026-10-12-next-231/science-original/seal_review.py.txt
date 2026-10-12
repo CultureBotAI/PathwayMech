@@ -1,0 +1,72 @@
+import hashlib,json,subprocess,datetime
+from pathlib import Path
+B=Path('/private/tmp/pathwaymech-next-231-science-review-20261012')
+A=Path('/private/tmp/pathwaymech-next-231-author-20261012')
+def now(): return datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')
+def write(n,v): (B/n).write_text(json.dumps(v,indent=2)+'\n')
+def bind(p):
+ p=Path(p);d=p.read_bytes();return {'path':str(p),'bytes':len(d),'sha256':hashlib.sha256(d).hexdigest()}
+def ls(p):
+ c=['rg','--files','--no-ignore','--hidden','--follow',str(p)]
+ r=subprocess.run(c,capture_output=True,text=True);assert r.returncode==0,(c,r.stderr)
+ return c,sorted(Path(x) for x in r.stdout.splitlines()),r.stderr
+old=bind(B/'review.json')
+fixes={'six events,20sides,51edges,53references,14qualifiers':'six events, 20 sides, 51 edges, 53 references, 14 qualifiers','The2023':'The 2023','binding,2022':'binding, 2022','All345':'All 345','and57':'and 57','for107':'for 107','All102':'All 102','remaining14':'remaining 14','events,twenty':'events, twenty','sides,twelve':'sides, twelve','chemicals,thirteen':'chemicals, thirteen','proteins,sixteen':'proteins, sixteen','the149-residue':'the 149-residue',';107':' ; 107','Original1982':'Original 1982','entire475-page':'entire 475-page','The2022':'The 2022','The2011':'The 2011','HTTP429':'HTTP 429','original1982':'original 1982','retained2022':'retained 2022'}
+for name in ['REVIEW.md','review.json','assemble_review.py']:
+ p=B/name;s=p.read_text()
+ for a,b in fixes.items():s=s.replace(a,b)
+ p.write_text(s)
+write('finalization-note.json',{'at':now(),'report_before_readability_edits':old,'scope':'Whitespace/readability only in report prose and matching assembler prose; no finding, evidence, scope or assessment changed. Review report finished_at is initial report assembly, not final seal time.','post_assembly_checks':['review-integrity-checks.json','Fresh bounded EC and tracer XML context read (tool cdd0f2/0); no new finding.','Final author seal rechecked below.']})
+write('reviewer-read-receipts.json',{'reviewer':'/root/ppi_science_review','scope':'Independent original-bound readings and checks, with partial-source limits explicit; not fresh source exhaustion or canonical acceptance.','readings':[
+ {'source':'Complete target, AUTHOR-HANDOFF.md, RESEARCH.md and conflicts','scope':'Complete target and research handoff read; 51 edges, 14 qualifiers, 13 context paragraphs and 28 inherited preflight dispositions assessed.'},
+ {'source':'102 XML evidence observations','scope':'Exact original selector replay; full selected passages and relevant adjacent context read. Original bindings and assessments are in review.json and selected evidence files.'},
+ {'source':'1982 PMID:6180735','scope':'All six original scanned pages 191–196 visually inspected; partial native preparations, omissions and kinetics retained.'},
+ {'source':'2020 PMID:31871051 and 2019 PMID:31178853','scope':'Selected evidence, adjacent results and assay/preparation Methods read. No rabbit coupling-to-native SBP aldolase inference.'},
+ {'source':'2023 PMID:37438781','scope':'Selected evidence and adjacent cloning, construct, activity and MS Methods read; inaccessible supplementary Table S3 not inferred.'},
+ {'source':'Handle:1993/32279','scope':'Twenty pages (1 and 109–127) freshly extracted from original 475-page PDF using PDFKit and matched to author extraction. PFK/preparation passages and selected kinetics figures assessed. Full author text searched for Pfp construct terms; entire thesis was not read.'},
+ {'source':'DOI:10.18174/510683','scope':'All five retained supplement images, printed pages 137–141, visually inspected.'},
+ {'source':'PMID:32884054 and PMID:34566906','scope':'All selected evidence and relevant genetic/construct/assay controls read. TktAB pair and unsigned Rex boundaries preserved.'},
+ {'source':'RpiB/RPE identities and PDB:3HEE/3PH3','scope':'Native IDs, protein sequences, bounded native CIF blocks and available paper abstracts checked. Unavailable full 2011 body not inferred.'},
+ {'source':'PMID:36286488','scope':'Relevant lines of archived publisher rendering inspected; no newly acquired original body or supplementary reinterpretation.'},
+ {'source':'PMID:32184362','scope':'Relevant thermocellum nonoxidative-PPP and model-construction XML passages read; no new enzyme/strain assignment.'},
+ {'source':'Native chemistry, associations, NCBI sequences and EC','scope':'Fresh bounded independent probes cover 6 reactions, 20 selected sides, 12 chemical identities, 13 NCBI proteins, 16 source associations, exact 149-aa RpiB sequence join and relevant EC entries.'},
+ {'source':'Broad novelty/iModulon inventories','scope':'Exact author packet dispositions and original-bound results inspected; no fresh whole-source crawl, new query or complete all-paper body review.'}],
+ 'checks_with_actual_tool_receipts':{'initial_intake':'7efa5b/0','selector_replay':'77fe95/0','independent_native_probes':'d83ff0/0','pdfkit_launch':'e17ebd, session 28197','pdfkit_completion':'8402fa/0 (session closed)','pdfkit_author_text_match':'e62fb7/0','bounded_PDB_blocks':'e442af/0','report_assembly':'1875fa/0','report_integrity':'5df7e2/0','bounded_EC_tracer_read':'cdd0f2/0'},
+ 'failures_retained':['pdf-reader-failure.json','probe-construction-failures.json','remote-access-observations.json','independent_probes.initial_failed.py.txt'],
+ 'no_claims':['No automated proof of scientific entailment.','No implemented scientific mutation test suite: independent-native-probes controls are bounded semantic/identity checks.','No root canonical/corpus test rerun.','No maintained, sealed author, Git, GitHub, history or shared-cache mutation.']})
+# Recheck the exact author seal and external originals without changing them.
+i=json.loads((B/'intake.json').read_text())
+for key in ['handoff','manifest','target']: assert bind(i[key]['path'])==i[key],key
+m=json.loads((A/'artifact-manifest.json').read_text())
+for item in m['artifacts']:
+ assert bind(item['path'])=={k:item[k] for k in ['path','bytes','sha256']},item['path']
+ext=json.loads((A/'external-input-bindings.json').read_text())
+for item in ext['originals']:
+ assert bind(item['path'])=={k:item[k] for k in ['path','bytes','sha256']},item['path']
+inv=json.loads((A/'inventory.json').read_text());runtime=inv['excluded_execution_cache_files']
+for item in runtime: assert (A/item['path']).stat().st_size==item['bytes']
+_,actual,_=ls(A)
+expected={Path(x['path']) for x in m['artifacts']}|{A/x['path'] for x in runtime}|{A/'artifact-manifest.json',A/'handoff.json'}
+assert set(actual)==expected,sorted(str(p) for p in set(actual)^expected)
+write('final-author-seal-check.json',{'status':'passed','finished_at':now(),'handoff':bind(A/'handoff.json'),'manifest':bind(A/'artifact-manifest.json'),'target':i['target'],'scientific_artifacts_hash_verified':len(m['artifacts']),'external_originals_hash_verified':len(ext['originals']),'runtime_files_inventory_size_verified':len(runtime),'closed_hidden_ignored_followed_inventory':True,'large_SQL_rehash':False,'runtime_hash_claim':False})
+# All report counts and binding identities remain valid after prose formatting.
+r=json.loads((B/'review.json').read_text());assert r['counts']['edges']==51 and len(r['edge_assessments'])==51
+assert len(r['qualifier_assessments'])==14 and len(r['context_assessments'])==13 and len(r['preflight_claim_assessments'])==28
+assert len(r['findings'])==5 and all(x['severity']=='minor' for x in r['findings'])
+# Inventory all files, with runtime exclusions separate from scientific evidence.
+command,files,stderr=ls(B)
+excluded=[{'path':str(p.relative_to(B)),'bytes':p.stat().st_size,'reason':'Local PDFKit/Swift execution cache; no scientific evidence, original, receipt or source code.'} for p in files if p.is_relative_to(B/'swift-cache')]
+reserved={B/'inventory.json',B/'artifact-manifest.json',B/'handoff.json'}
+scientific=[p for p in files if not p.is_relative_to(B/'swift-cache') and p not in reserved]
+write('inventory.json',{'command':command,'exit_code':0,'stderr':stderr,'scope':'Closed hidden/ignored/followed inventory; all scientific files hashed, including failures and scripts. Inventory hashes in manifest; only manifest and handoff self-hashes omitted.','scientific_artifact_paths':sorted([str(p.relative_to(B)) for p in scientific]+['inventory.json']),'excluded_execution_cache_files':excluded})
+scientific.append(B/'inventory.json')
+arts=[dict(bind(p),relative_path=str(p.relative_to(B))) for p in sorted(scientific)]
+write('artifact-manifest.json',{'version':1,'scope':'All independent scientific review files and failures. Runtime Swift caches separately inventoried, size checked only. Excludes manifest/handoff self-hashes.','artifacts':arts})
+write('handoff.json',{'status':'sealed_independent_full_record_scientific_review_minor_changes_requested','sealed_at':now(),'reviewer':'/root/ppi_science_review','pathway_id':'MetaCyc:PWY-8178','target':i['target'],'author_handoff':i['handoff'],'author_manifest':i['manifest'],'review':bind(B/'review.json'),'readable_review':bind(B/'REVIEW.md'),'findings':bind(B/'findings.json'),'manifest':bind(B/'artifact-manifest.json'),'artifact_count':len(arts),'runtime_cache_exclusion_count':len(excluded),'counts':r['counts'],'findings_by_stable_key':[{k:f[k] for k in ['issue_key','severity','title']} for f in r['findings']],'checks':['345 author artifacts and 57 external originals freshly rehashed; 107 author runtime files independently inventoried and size checked.','All 102 XML selectors replayed exactly; 14 non-XPath observations manually assessed.','Fresh bounded native chemistry/identity probes and 20-page thesis extraction.','Complete record integrity coverage; all preserved failures explicitly retained.'],'limits':r['limitations'],'scope_boundaries':{'native_persistence':'Root owned; no native saved review claimed.','history_written':False,'maintained_writes':False,'author_packet_writes':False,'git_writes':False,'github_writes':False,'shared_cache_writes':False,'source_exhaustion':False,'full_canonical_acceptance':False},'next_steps':['Root create/track the five stable minor findings and curate bounded fixes.','Recheck corrected assertions and preserve all graph/control scope.','Root complete canonical bridge, maintained integration, native review persistence and publication workflow.']})
+# Close the newly written seal before exposing it.
+_,actual,_=ls(B)
+expect={Path(x['path']) for x in arts}|{B/x['path'] for x in excluded}|{B/'artifact-manifest.json',B/'handoff.json'}
+assert set(actual)==expect,sorted(str(p) for p in set(actual)^expect)
+for x in arts:assert bind(x['path'])=={k:x[k] for k in ['path','bytes','sha256']}
+for x in excluded:assert (B/x['path']).stat().st_size==x['bytes']
+print(json.dumps({'status':'closed_seal_verified','handoff':bind(B/'handoff.json'),'manifest':bind(B/'artifact-manifest.json'),'review':bind(B/'review.json'),'artifacts':len(arts),'runtime_caches':len(excluded),'minor_findings':5},indent=2))

@@ -1,0 +1,229 @@
+"""Independent external boundary and regression probes for the Handle delta."""
+from __future__ import annotations
+
+import copy
+import csv
+import hashlib
+import importlib.util
+import io
+import json
+import re
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import jsonschema
+import yaml
+from linkml.generators.jsonschemagen import JsonSchemaGenerator
+from lxml import html
+
+AUDIT = Path(__file__).resolve().parent
+PACKAGE = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012')
+CANDIDATE = PACKAGE / 'candidate'
+BASELINE = Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/runtime')
+MAINTAINED = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+sys.path.insert(0, str(CANDIDATE / 'src'))
+from pathwaymech import schema as candidate_schema
+from pathwaymech.cli import _record_page
+from pathwaymech.kgx import render_kgx
+from pathwaymech.strict import TARGET_CLASS, validator
+
+HANDLE = 'hdl:1993/32279'
+URL = 'https://mspace.lib.umanitoba.ca/handle/1993/32279'
+SHA = 'e0276c90358e3f177441ec3f71e99454727a31099a50920a325c7cc31cff8fc8'
+ROWS = []
+
+
+def stamp():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def binding(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def base_record(identifier=HANDLE):
+    return {
+        'id': 'MetaCyc:INDEPENDENT-HANDLE-AUDIT', 'label': 'Independent synthetic fixture',
+        'description': 'No biological inference: validate reference boundaries only.',
+        'pathway_type': 'test',
+        'taxa': [{'id': 'NCBITaxon:562', 'label': 'Escherichia coli'}],
+        'participants': [{'id': 'UniProtKB:P0A796', 'label': 'fixture enzyme', 'category': 'protein'}],
+        'reactions': [{'id': 'RHEA:31444', 'label': 'fixture activity', 'category': 'molecular_activity'}],
+        'mechanistic_edges': [{
+            'id': 'e1', 'subject': 'UniProtKB:P0A796', 'predicate': 'catalyzes', 'object': 'RHEA:31444',
+            'evidence': [{'reference_id': identifier, 'quote': 'Synthetic bounded evidence.'}],
+        }],
+        'references': [{'id': identifier, 'title': 'Independent test reference', 'url': URL,
+                        'source_version': 'external validation fixture', 'source_sha256': SHA}],
+    }
+
+
+def native(module, record):
+    try:
+        module.validate_record(record)
+    except module.ValidationError as error:
+        return list(error.errors)
+    return []
+
+
+def supported_handle(value):
+    # Independent decomposition of the documented bounded subset, not a copy of its regex.
+    if not isinstance(value, str) or not value.startswith('hdl:'):
+        return False
+    pieces = value[4:].split('/')
+    if len(pieces) != 2:
+        return False
+    prefix, suffix = pieces
+    if any(not part or any(c not in '0123456789' for c in part) for part in prefix.split('.')):
+        return False
+    alnum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    return bool(suffix) and suffix[0] in alnum and all(c in alnum + '._-' for c in suffix)
+
+
+def main():
+    started = stamp()
+    old_path = BASELINE / 'src/pathwaymech/schema.py'
+    spec = importlib.util.spec_from_file_location('independent_handle_baseline_schema', old_path)
+    old = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = old
+    spec.loader.exec_module(old)
+    schemas = {}
+    validators = {}
+    for name, runtime in [('baseline', BASELINE), ('candidate', CANDIDATE)]:
+        schema = json.loads(JsonSchemaGenerator(
+            str(runtime / 'src/pathwaymech/schema/pathwaymech.yaml'),
+            top_class=TARGET_CLASS, include_null=False, not_closed=False,
+        ).serialize())
+        schemas[name] = schema
+        validators[name] = jsonschema.validators.validator_for(schema)(schema, format_checker=jsonschema.FormatChecker())
+        (AUDIT / f'{name}-generated-schema.json').write_text(json.dumps(schema, indent=2) + '\n')
+    revised = copy.deepcopy(schemas['candidate'])
+    old_ref = schemas['baseline']['$defs']['Reference']['properties']['id']
+    revised['$defs']['Reference']['properties']['id'] = old_ref
+    assert revised == schemas['baseline'], 'Generated schema changed outside Reference.id'
+    ROWS.append({'name': 'generated_schema_only_reference_id_changes', 'passed': True})
+    strict = validator()
+    def both(record, expected, name):
+        native_errors = native(candidate_schema, record)
+        generated_errors = list(validators['candidate'].iter_errors(record))
+        assert (not native_errors) is expected, (name, native_errors)
+        assert (not generated_errors) is expected, (name, [e.message for e in generated_errors])
+        ROWS.append({'name': name, 'native_accepted': not native_errors,
+                     'generated_linkml_accepted': not generated_errors, 'expected': expected})
+
+    prefixes = ['', '0', '1993', '20.500.12345', '01.002', '.', '1.', '.1', '1..2', 'a', '١٩٩٣', '１９９３', '1 2', '1\n']
+    suffixes = ['', '1', '32279', 'A', 'Ab_1-2.3', '0_', '1.', '.1', '_1', '-1', 'é', 'a/b', 'a:b', 'a%20b', 'a?x', 'a#x', 'a\\b', 'a\n', 'a\r', 'a\t', 'a\u00a0', 'a\u2028', 'a\u200b', 'a\x00']
+    patterned = ['hdl:' + prefix + '/' + suffix for prefix in prefixes for suffix in suffixes]
+    patterned += ['HDL:1993/32279', ' hdl:1993/32279', '\nhdl:1993/32279', 'hdl:1993/32279\n',
+                  'hdl:1993//32279', 'hdl:1993/32279/extra', 'https://hdl.handle.net/1993/32279',
+                  'hdl:1993', 'hdl:', 'hdl', '', None, 1993]
+    for index, identifier in enumerate(patterned):
+        both(base_record(identifier), supported_handle(identifier), f'handle_grammar_{index}')
+    # Invoke the actual LinkML Validator wrapper, not just its generated JSON schema, on representative boundaries.
+    wrapper_cases = [HANDLE, 'hdl:20.500.12345/Ab_1-2.3', 'hdl:1993/32279\n', 'hdl:١٩٩٣/a', 'hdl:1993/a\x00', None]
+    for identifier in wrapper_cases:
+        accepted = not strict.validate(base_record(identifier), TARGET_CLASS).results
+        assert accepted is supported_handle(identifier), identifier
+    ROWS.append({'name': 'actual_linkml_wrapper', 'cases': len(wrapper_cases), 'passed': True})
+    for prefix in sorted(old.ALLOWED_CURIE_PREFIXES):
+        for suffix in ['reference', 'abc/DEF.1', 'a:b', 'é', '', 'a\n', 'a b']:
+            value = prefix + ':' + suffix
+            record = base_record(value)
+            assert native(old, record) == native(candidate_schema, record), value
+            before = [error.message for error in validators['baseline'].iter_errors(record)]
+            after = [error.message for error in validators['candidate'].iter_errors(record)]
+            assert bool(before) == bool(after), value
+    ROWS.append({'name': 'all_preexisting_reference_prefixes_backward_compatible',
+                 'prefixes': len(old.ALLOWED_CURIE_PREFIXES), 'suffix_cases_each': 7, 'passed': True})
+    for collection in [None, 'taxa', 'participants', 'reactions', 'gene_clusters']:
+        record = base_record()
+        if collection is None:
+            record['id'] = HANDLE
+        elif collection == 'gene_clusters':
+            record[collection] = [{'id': HANDLE, 'label': 'invalid cluster'}]
+        else:
+            record[collection].append({'id': HANDLE, 'label': 'invalid node'})
+        both(record, False, 'biological_id_' + str(collection))
+    for endpoint in ['subject', 'object']:
+        record = base_record()
+        record['mechanistic_edges'][0][endpoint] = HANDLE
+        errors = native(candidate_schema, record)
+        assert errors and any(endpoint + ' does not resolve locally' in error for error in errors)
+        assert not strict.validate(record, TARGET_CLASS).results  # Existing native-only resolution boundary.
+        ROWS.append({'name': 'reference_cannot_be_' + endpoint, 'native_rejected': True,
+                     'linkml_local_resolution_not_implemented': True})
+    qualifier = base_record('PMID:19756045')
+    qualifier['references'].append(base_record()['references'][0])
+    qualifier['mechanistic_edges'][0]['endpoint_qualifiers'] = [{
+        'endpoint': 'subject', 'kind': 'experimental_construct', 'description': 'Synthetic tagged preparation.',
+        'evidence': [{'reference_id': HANDLE, 'source_assertion': 'Synthetic preparation provenance.', 'source_locator': 'fixture'}],
+    }]
+    both(qualifier, True, 'handle_only_in_endpoint_qualifier_evidence')
+    bad = copy.deepcopy(qualifier)
+    bad['mechanistic_edges'][0]['endpoint_qualifiers'][0]['evidence'][0]['reference_id'] = 'hdl:1993/99999'
+    assert any('is not declared' in error for error in native(candidate_schema, bad))
+    ROWS.append({'name': 'undeclared_qualifier_handle_fails_native_resolution', 'passed': True})
+    validated = candidate_schema.validate_record(qualifier)
+    markup = html.fromstring(_record_page(validated))
+    reference_link = markup.xpath('//li[@id="reference-2"]/code/a')
+    assert len(reference_link) == 1 and reference_link[0].get('href') == URL and reference_link[0].text == HANDLE
+    assert markup.xpath('//*[@id="mechanism-edge-1-qualifier-subject"]//a[@href="#reference-2"]')
+    output = render_kgx([validated])
+    nodes = list(csv.DictReader(io.StringIO(output['nodes.tsv']), delimiter='\t'))
+    edges = list(csv.DictReader(io.StringIO(output['edges.tsv']), delimiter='\t'))
+    assert HANDLE not in {row['id'] for row in nodes}
+    assert len(edges) == 1
+    assert set(edges[0]['source_records'].split('|')) == {'PMID:19756045', HANDLE}
+    assert {ref['id']: ref for ref in json.loads(edges[0]['reference_metadata'])} == {ref['id']: ref for ref in qualifier['references']}
+    assert json.loads(edges[0]['endpoint_qualifiers']) == qualifier['mechanistic_edges'][0]['endpoint_qualifiers']
+    ROWS.append({'name': 'qualifier_only_handle_exact_page_and_kgx_preservation', 'passed': True})
+    (AUDIT / 'qualifier-fixture.yaml').write_text(yaml.safe_dump(qualifier, sort_keys=False))
+    (AUDIT / 'qualifier-page.html').write_text(_record_page(validated))
+    for name, text in output.items():
+        (AUDIT / ('qualifier-' + name)).write_text(text)
+    observed = PACKAGE / 'observed-draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+    observed_binding = binding(observed)
+    assert observed_binding['sha256'] == 'a0f144cf3191ff3f02daf7cd7c4c0e5ef1d96fa7cc72fa16e132e5819e35f2b0'
+    record = yaml.safe_load(observed.read_text())
+    both(record, True, 'frozen_observed_unsealed_draft_validates')
+    assert native(old, record) == ['references[45].id has unsupported prefix: hdl']
+    errors = list(validators['baseline'].iter_errors(record))
+    assert len(errors) == 1 and list(errors[0].path) == ['references', 45, 'id']
+    ROWS.append({'name': 'baseline_rejects_frozen_draft_only_for_handle_reference', 'passed': True})
+    old_corpus = []
+    for path in sorted((MAINTAINED / 'data/pathways').rglob('*.yaml')):
+        original_binding = binding(path)
+        record = yaml.safe_load(path.read_text())
+        assert not native(old, record), path
+        assert not native(candidate_schema, record), path
+        assert not list(validators['baseline'].iter_errors(record)), path
+        assert not list(validators['candidate'].iter_errors(record)), path
+        assert binding(path) == original_binding, path
+        old_corpus.append(original_binding)
+    assert len(old_corpus) >= 229
+    for row in old_corpus:
+        assert binding(Path(row['path'])) == row
+    ROWS.append({'name': 'all_observed_maintained_records_pass_before_and_after', 'count': len(old_corpus), 'passed': True})
+    result = {
+        'status': 'passed', 'reviewer': 'Codex /root/handle_adversarial',
+        'started_at': started, 'finished_at': stamp(), 'checks': ROWS,
+        'grammar_cases': len(patterned), 'old_corpus': old_corpus,
+        'observed_draft': observed_binding,
+        'actual_linkml_wrapper_used_for_representative_cases': True,
+        'generated_json_schema_used_for_matrix_and_backwards_checks': True,
+        'full_suite_run': False, 'scientific_record_acceptance': False,
+        'notes': [
+            'LinkML local cross-reference resolution remains native-owned as documented; no new bypass was introduced.',
+            'Existing provider-local cluster genes and external mappings keep their unchanged permissive string/namespace contracts; the change does not authorize Handle biological graph IDs.',
+            'The frozen draft is an implementation fixture only; no current author draft was read or modified.',
+        ],
+    }
+    (AUDIT / 'independent-probes.json').write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({key: value for key, value in result.items() if key not in {'checks', 'old_corpus'}}, indent=2))
+    print(f'Checks: {len(ROWS)}; preserved old records: {len(old_corpus)}')
+
+
+if __name__ == '__main__':
+    main()

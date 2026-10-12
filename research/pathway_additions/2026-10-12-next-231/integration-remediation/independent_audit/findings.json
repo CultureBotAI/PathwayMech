@@ -1,0 +1,22 @@
+[
+  {
+    "key": "PPI-INTEGRATION-001",
+    "severity": "medium",
+    "blocking_preparation_execution": true,
+    "title": "Old cache symlink destinations can drift while exact preservation guards pass",
+    "owners": [
+      "common.py:inventory",
+      "common.py:verify_cache_union",
+      "prepare_inputs.py",
+      "adopt.py",
+      "preserve-maintained.py"
+    ],
+    "reproduction": {
+      "path": "/private/tmp/pathwaymech-next-231-integration-preparation-audit-20261012/cache_retarget_probe.json",
+      "bytes": 1160,
+      "sha256": "1aa8154b2379dadbf35c3e1bad1d713458591bbf7b7684a896a41b0fd7ca2704"
+    },
+    "repair": "In a successor package, bind and verify resolved destination and appropriate link identity for all old cache originals across binding/capture/adoption/preservation; add same-byte retarget controls. Preserve original seals and distinguish fresh link observation from historical metadata.",
+    "scope": "Reproduced solely in an external fixture; actual accepted source bodies and six recovery links passed current verification."
+  }
+]

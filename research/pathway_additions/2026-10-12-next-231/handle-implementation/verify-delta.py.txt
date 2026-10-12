@@ -1,0 +1,60 @@
+"""Verify accepted runtime preservation and produce the bounded copy plan."""
+import ast
+import difflib
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+import yaml
+
+root = Path(__file__).resolve().parent
+baseline = json.loads((root / 'baseline.json').read_text())
+runtime = Path(baseline['accepted_runtime'])
+candidate = root / 'candidate'
+expected_changed = {'src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml', 'tests/test_linkml_schema.py'}
+expected_added = {'tests/test_handle_references.py'}
+def digest(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+def inventory(path):
+    return {str(Path(item.decode()).relative_to(path)) for item in subprocess.check_output(['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(path)]).split(b'\0') if item}
+originals = {row['relative_path']: row for row in baseline['files']}
+assert inventory(runtime) == set(originals)
+assert inventory(candidate) == set(originals) | expected_added
+changed = []
+unchanged = []
+copy_plan = []
+diff_parts = []
+for relative, row in originals.items():
+    old = runtime / relative
+    new = candidate / relative
+    assert digest(old) == row['original'], relative
+    if old.read_bytes() == new.read_bytes():
+        unchanged.append(relative)
+    else:
+        changed.append(relative)
+        copy_plan.append({'relative_path': relative, 'before': digest(old), 'after': digest(new), 'action': 'replace_only_after_independent_acceptance'})
+        diff_parts.extend(difflib.unified_diff(old.read_text().splitlines(keepends=True), new.read_text().splitlines(keepends=True), fromfile='a/' + relative, tofile='b/' + relative))
+assert set(changed) == expected_changed, changed
+for relative in sorted(expected_added):
+    new = candidate / relative
+    copy_plan.append({'relative_path': relative, 'before': None, 'after': digest(new), 'action': 'add_only_after_independent_acceptance'})
+    diff_parts.extend(difflib.unified_diff([], new.read_text().splitlines(keepends=True), fromfile='/dev/null', tofile='b/' + relative))
+
+def assigned(source, name):
+    module = ast.parse(source)
+    return next(ast.dump(node, include_attributes=False) for node in module.body if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name) and target.id == name for target in node.targets))
+assert assigned((runtime / 'src/pathwaymech/schema.py').read_text(), 'ALLOWED_CURIE_PREFIXES') == assigned((candidate / 'src/pathwaymech/schema.py').read_text(), 'ALLOWED_CURIE_PREFIXES')
+old_schema = yaml.safe_load((runtime / 'src/pathwaymech/schema/pathwaymech.yaml').read_text())
+new_schema = yaml.safe_load((candidate / 'src/pathwaymech/schema/pathwaymech.yaml').read_text())
+new_slot = new_schema['classes']['Reference']['attributes']['id']
+assert set(new_slot) == {'required', 'pattern', 'description'}
+new_schema['classes']['Reference']['attributes']['id'] = old_schema['classes']['Reference']['attributes']['id']
+assert new_schema == old_schema
+(root / 'delta.patch').write_text(''.join(diff_parts))
+(root / 'copy-plan.json').write_text(json.dumps(copy_plan, indent=2) + '\n')
+proof = {'status': 'passed', 'baseline_files': len(originals), 'unchanged_files': len(unchanged), 'changed': sorted(changed), 'added': sorted(expected_added), 'accepted_runtime_originals_rehashed_unchanged': True, 'hidden_ignored_followed_inventory': True, 'global_biological_prefixes_identical_ast': True, 'linkml_only_reference_id_pattern_and_description_changed': True, 'unchanged_paths': unchanged, 'source_requirement_current': digest(Path(baseline['requirement']['path']))}
+assert proof['source_requirement_current'] == baseline['requirement']
+(root / 'receipts' / 'delta-preservation.json').write_text(json.dumps(proof, indent=2) + '\n')
+print(json.dumps({key: value for key, value in proof.items() if key != 'unchanged_paths'}, indent=2))

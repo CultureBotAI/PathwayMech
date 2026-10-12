@@ -1,0 +1,73 @@
+"""Independently render the sealed implementation fixture, without accepting its science."""
+import csv
+import hashlib
+import io
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+from lxml import html
+from pathwaymech.cli import _record_page
+from pathwaymech.kgx import render_kgx
+from pathwaymech.schema import validate_record
+
+audit = Path(__file__).resolve().parent
+package = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012')
+snapshot = package / 'observed-draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+started = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+raw = snapshot.read_bytes()
+assert hashlib.sha256(raw).hexdigest() == 'a0f144cf3191ff3f02daf7cd7c4c0e5ef1d96fa7cc72fa16e132e5819e35f2b0'
+record = yaml.safe_load(raw)
+validated = validate_record(record)
+handle = 'hdl:1993/32279'
+references = {ref['id']: ref for ref in record['references']}
+ref = references[handle]
+assert ref['url'] == 'https://mspace.lib.umanitoba.ca/handle/1993/32279'
+assert ref['source_sha256'] == 'e0276c90358e3f177441ec3f71e99454727a31099a50920a325c7cc31cff8fc8'
+page_text = _record_page(validated)
+page = html.fromstring(page_text)
+link = page.xpath('//li[@id="reference-46"]/code/a')
+assert len(link) == 1 and link[0].get('href') == ref['url'] and link[0].text == handle
+assert ref['title'] in page.xpath('//li[@id="reference-46"]')[0].text_content()
+assert ref['source_version'] in page.xpath('//li[@id="reference-46"]')[0].text_content()
+assert not page.xpath('//*[@data-node-id=$identifier]', identifier=handle)
+exports = render_kgx([validated])
+nodes = list(csv.DictReader(io.StringIO(exports['nodes.tsv']), delimiter='\t'))
+edges = list(csv.DictReader(io.StringIO(exports['edges.tsv']), delimiter='\t'))
+assert len(edges) == len(record['mechanistic_edges']) == 51
+assert handle not in {node['id'] for node in nodes}
+selected = []
+for edge, source in zip(edges, record['mechanistic_edges'], strict=True):
+    assert json.loads(edge['evidence']) == source['evidence']
+    assert json.loads(edge['endpoint_qualifiers'] or '[]') == source.get('endpoint_qualifiers', [])
+    ids = {evidence['reference_id'] for evidence in source['evidence']}
+    ids.update(evidence['reference_id'] for qualifier in source.get('endpoint_qualifiers', [])
+               for evidence in qualifier['evidence'])
+    assert set(edge['source_records'].split('|')) == ids
+    assert json.loads(edge['reference_metadata']) == [references[value] for value in sorted(ids)]
+    if handle in ids:
+        selected.append({'source_edge_id': source['id'], 'exported_edge_id': edge['id']})
+assert [row['source_edge_id'] for row in selected] == ['ppi-037', 'ppi-038']
+assert len(page.xpath('//a[@href="#reference-46"]')) >= 2
+output = {'page.html': page_text, **exports}
+bindings = []
+for name, text in output.items():
+    path = audit / ('frozen-' + name)
+    assert not path.exists()
+    raw_output = text.encode()
+    path.write_bytes(raw_output)
+    assert raw_output == (package / 'observed-draft' / name).read_bytes()
+    bindings.append({'path': str(path), 'bytes': len(raw_output), 'sha256': hashlib.sha256(raw_output).hexdigest()})
+result = {
+    'status': 'passed', 'started_at': started,
+    'finished_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+    'input': {'path': str(snapshot), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()},
+    'outputs': bindings, 'exact_reference': ref, 'handle_edges': selected,
+    'all_51_edges_full_evidence_qualifiers_source_ids_and_reference_metadata_preserved': True,
+    'exact_issuing_reference_link': True, 'no_handle_graph_or_kgx_node': True,
+    'all_four_outputs_equal_sealed_fixture_render': True,
+    'scientific_acceptance': False, 'current_author_packet_read_or_modified': False,
+}
+(audit / 'frozen-render-check.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(result, indent=2))

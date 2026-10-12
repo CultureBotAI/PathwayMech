@@ -1,0 +1,103 @@
+import hashlib,json,datetime,subprocess
+from pathlib import Path
+import yaml
+from lxml import etree
+B=Path('/private/tmp/pathwaymech-next-231-science-successor-review-20261012')
+S=Path('/private/tmp/pathwaymech-next-231-author-successor-20261012')
+A=Path('/private/tmp/pathwaymech-next-231-author-20261012')
+R=Path('/private/tmp/pathwaymech-next-231-science-review-20261012')
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')
+def js(p):return json.loads(Path(p).read_text())
+def write(n,x):(B/n).write_text(json.dumps(x,indent=2)+'\n')
+def bind(p):
+ p=Path(p);d=p.read_bytes();return {'path':str(p),'bytes':len(d),'sha256':hashlib.sha256(d).hexdigest()}
+def verify(x):assert bind(x['path'])=={k:x[k] for k in ['path','bytes','sha256']},x['path']
+started=now()
+checks=[]
+for p,sha in [(S/'handoff.json','cf513721d2cef03c9875afc91d9ef4dcf6c6db145f7da1e9229dced138f908a1'),(S/'artifact-manifest.json','e325532fafe1cb1cc0a86c5b5a72cd9d9fb2d38483fb648fb7dcc49982640682')]:assert bind(p)['sha256']==sha
+for base in [S,A,R]:
+ m=js(base/'artifact-manifest.json')
+ for x in m['artifacts']:verify(x)
+ inv=js(base/'inventory.json');runtime=inv.get('excluded_execution_cache_files',[])
+ for x in runtime:assert (base/x['path']).stat().st_size==x['bytes']
+ c=['rg','--files','--no-ignore','--hidden','--follow',str(base)]
+ r=subprocess.run(c,text=True,capture_output=True);assert r.returncode==0,r.stderr
+ actual={Path(p) for p in r.stdout.splitlines()}
+ expect={Path(x['path']) for x in m['artifacts']}|{base/x['path'] for x in runtime}|{base/'handoff.json',base/'artifact-manifest.json'}
+ assert actual==expect,[str(p) for p in actual^expect]
+ checks.append({'packet':str(base),'artifacts_hash_verified':len(m['artifacts']),'closed_hidden_ignored_followed_inventory':True,'runtime_sizes_only':len(runtime),'manifest':bind(base/'artifact-manifest.json'),'handoff':bind(base/'handoff.json')})
+for x in js(S/'external-input-bindings.json')['inputs']:verify(x)
+for x in js(A/'external-input-bindings.json')['originals']:verify(x)
+sh=js(S/'handoff.json');verify(sh['target']);verify(sh['original_target'])
+old=yaml.safe_load(Path(sh['original_target']['path']).read_text());new=yaml.safe_load(Path(sh['target']['path']).read_text())
+d=[]
+def diff(a,b,p=''):
+ if isinstance(a,dict) and isinstance(b,dict):
+  for k in sorted(set(a)|set(b)):
+   q=p+'/'+k
+   if k not in a:d.append({'path':q,'operation':'add','new':b[k]})
+   elif k not in b:d.append({'path':q,'operation':'remove','old':a[k]})
+   else:diff(a[k],b[k],q)
+ elif isinstance(a,list) and isinstance(b,list):
+  for i in range(max(len(a),len(b))):
+   q=p+'/'+str(i)
+   if i>=len(a):d.append({'path':q,'operation':'add','new':b[i]})
+   elif i>=len(b):d.append({'path':q,'operation':'remove','old':a[i]})
+   else:diff(a[i],b[i],q)
+ elif a!=b:d.append({'path':p,'old':a,'new':b})
+diff(old,new)
+assert d==js(S/'semantic-delta.json')['changes'];assert len(d)==31
+write('independent-semantic-delta.json',{'original':sh['original_target'],'successor':sh['target'],'changes':d})
+assert new['mechanistic_edges'][:20]==old['mechanistic_edges'][:20]
+def ident(x):return [(e['id'],e['subject'],e['predicate'],e['object']) for e in x['mechanistic_edges']]
+assert ident(old)==ident(new) and len(ident(new))==51
+assert [x['id'] for x in new['references']]==[x['id'] for x in old['references']]
+for a,b in zip(old['references'],new['references']):assert {k:v for k,v in a.items() if k!='title'}=={k:v for k,v in b.items() if k!='title'}
+assert len(new['references'])==53
+assert all(x['direction']=='reversible' for x in new['reactions']) and len(new['reactions'])==6
+assert all({k:v for k,v in x.items() if k!='direction'}==o for x,o in zip(new['reactions'],old['reactions']))
+q=lambda x:[(e['id'],i,z['endpoint'],z['kind']) for e in x['mechanistic_edges'] for i,z in enumerate(e.get('endpoint_qualifiers',[]))]
+assert q(old)==q(new) and len(q(new))==14
+for k in set(old)|set(new):
+ if k not in {'description','references','reactions','mechanistic_edges'}:assert old[k]==new[k],k
+paragraphs_old=old['description'].split('\n\n');paragraphs_new=new['description'].split('\n\n')
+assert len(paragraphs_old)==len(paragraphs_new)==13
+changedparas=[i+1 for i,(a,b) in enumerate(zip(paragraphs_old,paragraphs_new)) if a!=b];assert changedparas==[4,6]
+def obs(x):
+ z={}
+ for e in x['mechanistic_edges']:
+  for i,v in enumerate(e['evidence']):z[(e['id'],'edge',i)]=v
+  for j,q in enumerate(e.get('endpoint_qualifiers',[])):
+   for i,v in enumerate(q['evidence']):z[(e['id'],f'qualifier[{j}]',i)]=v
+ return z
+a=obs(old);b=obs(new);assert len(a)==116 and len(b)==120 and set(a)<=set(b)
+unchanged=[k for k in a if a[k]==b[k]];changed=[k for k in a if a[k]!=b[k]];added=[k for k in b if k not in a]
+assert (len(unchanged),len(changed),len(added))==(108,8,4)
+for k in changed:
+ assert a[k]['reference_id']==b[k]['reference_id']
+ oldsel=set(a[k]['source_locator'].removeprefix('XPath ').split(' | '));newsel=set(b[k]['source_locator'].removeprefix('XPath ').split(' | '));assert oldsel<=newsel,k
+ledger=js(S/'evidence-selector-ledger.json')['observations']
+assert {(x['edge'],x['role'],x['index']):x['evidence'] for x in ledger}==b
+cache={};replays=[]
+for x in ledger:
+ verify(x['original_binding']) if 'path' in x['original_binding'] else None
+ loc=x['evidence']['source_locator']
+ if loc.startswith('XPath '):
+  p=x['original_binding']['path']
+  if p not in cache:cache[p]=etree.parse(p)
+  nodes=cache[p].xpath(loc[6:]);assert nodes
+  selected=[etree.tostring(z,encoding='unicode') if isinstance(z,etree._Element) else str(z) for z in nodes]
+  assert selected==x['selected_originals'],(x['edge'],x['role'],x['index'])
+  replays.append({'edge':x['edge'],'role':x['role'],'index':x['index'],'node_count':len(nodes)})
+assert len(replays)==104
+write('selector-replay.json',{'status':'passed','exact_XML_observations':len(replays),'observations':replays,'non_XPath_observations':16,'non_XPath_scope':'14 inherited exact observations plus 2 new thesis construct observations reassessed from original-bound prior independent extraction.'})
+passages=[]
+for x in js(S/'source-selected-passages.json'):
+ verify(x['original']);p=x['original']['path'];t=etree.parse(p);nodes=t.xpath(x['selector']);texts=[' '.join(''.join(n.itertext()).split()) for n in nodes]
+ # Keep actual text independently extracted; compare whitespace-normalized selections.
+ assert texts==[' '.join(v.split()) for v in x['texts']]
+ passages.append({'reference_id':x['reference_id'],'original':x['original'],'selector':x['selector'],'texts':texts})
+write('primary-passages-fresh.json',passages)
+write('intake-and-continuity.json',{'status':'passed','first_recorded_at':started,'finished_at':now(),'timing_note':'Preliminary task, skill and packet reads preceded the first explicit clock capture. No exact earlier start time asserted.','packet_checks':checks,'external_input_bindings_verified':len(js(S/'external-input-bindings.json')['inputs']),'original_author_originals_verified':len(js(A/'external-input-bindings.json')['originals']),'semantic_changes':31,'edge_triples':51,'full_side_objects_exact':20,'reference_ids_and_non_title_fields_exact':53,'qualifier_endpoint_kind_exact':14,'core_events':6,'reversible_fields':6,'description_paragraphs':13,'changed_paragraphs':changedparas,'evidence_counts':{'old':116,'new':120,'unchanged':108,'same_source_changes':8,'additions':4},'changed_evidence_keys':changed,'added_evidence_keys':added,'original_selector_removal':False,'XML_replays':104,'scope':'Bounded reassessment with exact unchanged science inherited from prior independent report; no canonical build, maintained/native save or history writes.'})
+write('failures.json',[{'tool_receipt':'3fec5e/1','scope':'Read-only ad hoc semantic-delta projection','error':"KeyError: old when reading addition entry; no target check or mutation executed.",'successor':'Corrected projection b3dfd3/0 and complete independent delta check in this script.'}])
+print(json.dumps({'status':'passed','packets':checks,'semantic_changes':31,'XML_replays':104,'evidence':[108,8,4],'primary_passages':len(passages)},indent=2))

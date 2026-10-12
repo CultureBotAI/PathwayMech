@@ -1,0 +1,12 @@
+"""Actual read-only replay of strict current-input guards; never full maintained gates."""
+from support import *
+
+def main():
+ binding=load(HERE/'actual-current-execution-bindings.json')
+ for key in ['gates','original_failure','preservation','page_qa','root_visual','display_approval','histories']:verify(binding[key])
+ gates,_=verify_gates(binding['gates']['path'])
+ preserved=verify_preservation(binding['preservation']['path'],binding['gates']['path'])
+ verify_qa(gates,preserved);verify_histories(gates)
+ write(HERE/'current-input-guard-probe.json',{'status':'passed','at':now(),'bindings':bind(HERE/'actual-current-execution-bindings.json'),'gates':binding['gates'],'preservation':binding['preservation'],'whole_current_input_and_history_cache_guards':True,'scope':'Actual read-only revalidation of accepted package, exact maintained target/Handle/native authorities, all cache originals and link identities, whole nongenerated/history/generated inputs, actual QA and preservation receipts. No render/tests/full suite/native save/history writes or fresh literature review.'})
+ print({'status':'passed','scope':'current input guards only'})
+if __name__=='__main__':main()

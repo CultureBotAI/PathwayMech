@@ -1,0 +1,25 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,subprocess
+A=Path(__file__).resolve().parent;P=Path('/private/tmp/pathwaymech-next-231-finalization-support-20261012')
+def load(p):return json.loads(p.read_bytes())
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def inventory(p):
+ r=subprocess.run(['rg','--files','-uu','-L','.'],cwd=p,text=True,capture_output=True);assert r.returncode==0 and not r.stderr
+ return sorted(str(Path(x)) for x in r.stdout.splitlines())
+def write(p,obj):
+ with p.open('x') as f:json.dump(obj,f,indent=2);f.write('\n')
+h=load(P/'handoff.json');assert bind(P/'handoff.json')['sha256']=='ccaeaa8912cfe5717aa97be34428fe94ddf1039b11cb9fb9322bdedb8221ae5a'
+assert bind(P/'artifact-manifest.json')==h['manifest'];rows=load(P/'artifact-manifest.json')['artifacts']
+assert set(inventory(P))=={r['relative_path'] for r in rows}|{'handoff.json','artifact-manifest.json'}
+for r in rows:
+ b=bind(P/r['relative_path']);assert b['sha256']==r['sha256'] and b['bytes']==r['bytes']
+s=load(A/'support-assessment.json');r=load(A/'recovery-assessment.json')
+assert s['exact_maintained_contract_files']==27 and len(s['additional_independent_controls'])==7
+assert s['closed_artifact_count']==176 and r['fresh_strict_scope']['nongenerated_inputs_checked']==8919
+write(A/'final-closure.json',{'status':'passed','at':datetime.now(timezone.utc).isoformat(),'support_handoff':bind(P/'handoff.json'),'support_manifest':h['manifest'],'support_closed_artifacts':176,'hidden_and_ignored_files_included':True,'maintained_execution_performed':False,'findings':[]})
+artifacts=[{'relative_path':name,**bind(A/name)} for name in inventory(A)]
+write(A/'artifact-manifest.json',{'status':'sealed','artifact_count':len(artifacts),'artifacts':artifacts})
+write(A/'handoff.json',{'status':'pass_bounded_guard_recovery_and_sealed_finalization_preparation','at':datetime.now(timezone.utc).isoformat(),'reviewer':'Codex /root/atp_build_preparation_audit','scope':'Independent exact bounded root recovery and finalization support audit; no maintained native workflow execution or fresh scientific rereview.','inputs':{'support_handoff':bind(P/'handoff.json'),'support_manifest':h['manifest'],'original_failed_execution':r['original_failed_execution'],'root_recovery':r['recovery'],'actual_preservation':r['preservation']},'artifact_count':len(artifacts),'manifest':bind(A/'artifact-manifest.json'),'readable_report':bind(A/'README.md'),'findings':bind(A/'findings.json'),'recovery_assessment':bind(A/'recovery-assessment.json'),'support_assessment':bind(A/'support-assessment.json'),'actual_terminals':['215ff8/0','b9657c/0'],'counts':{'closed_support_artifacts':176,'exact_scientific_assessments':146,'future_root_assessments':2,'recorded_preparation_commands':11,'recorded_passes':9,'retained_preparation_failures':2,'recorded_negative_controls':22,'additional_independent_negative_controls':7,'fresh_recovery_nongenerated_inputs':8919,'recovery_approved_additions':0},'blocking_findings':[],'maintained_cache_git_writes':False,'future_requirements':['Root exact packet intake and inert inputcheck','Actual root assembly, complete content read and exact read receipt','Actual native no-alias serialization, validation, append-only save and check','Archive all actual native execution evidence and explicit failed attempts','Fresh full preservation of old bytes and exact added-file scope','Final staged/native/whitespace/site/PR/CI/merge/cleanup checks'],'limitations':['Nine full maintained commands inherited verbatim and not rerun.','Original failed final guard and bounded recovery remain distinct; bytecode writer unknown.','Scientific transport is complete but literature judgments remain inherited.','Static representation evidence is not interactive browser QA.']})
+print(json.dumps({'handoff':bind(A/'handoff.json'),'manifest':bind(A/'artifact-manifest.json'),'artifact_count':len(artifacts)},indent=2))

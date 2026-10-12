@@ -1,0 +1,50 @@
+"""Capture a real independent audit command without editing its input package."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+
+root = Path(__file__).resolve().parent
+candidate = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012/candidate')
+python = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+commands = {
+    'probes': [python, '-B', str(root / 'independent_probes.py')],
+    'focused-tests': [python, '-B', '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+                      '--basetemp', str(root / 'pytest-tmp'),
+                      'tests/test_handle_references.py', 'tests/test_graph_context.py',
+                      'tests/test_endpoint_qualifiers.py',
+                      'tests/test_linkml_schema.py::test_schema_and_python_validator_allow_the_same_biological_prefixes'],
+    'lint': [python, '-B', '-m', 'ruff', 'check', '--no-cache', 'src/pathwaymech/schema.py',
+             'tests/test_handle_references.py', 'tests/test_linkml_schema.py'],
+}
+name = sys.argv[1]
+command = commands[name]
+attempt = 1
+while (root / f'{name}-{attempt}.json').exists():
+    attempt += 1
+stem = f'{name}-{attempt}'
+environment = {
+    'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+    'PYTHONPATH': str(candidate / 'src'), 'RUFF_CACHE_DIR': str(root / 'ruff-cache'),
+    'TMPDIR': str(root / 'temporary'),
+}
+(root / 'temporary').mkdir(exist_ok=True)
+started = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+start = time.monotonic()
+result = subprocess.run(command, cwd=candidate, env=dict(os.environ, **environment), capture_output=True)
+for suffix, output in [('stdout', result.stdout), ('stderr', result.stderr)]:
+    (root / f'{stem}.{suffix}').write_bytes(output)
+receipt = {
+    'command': command, 'cwd': str(candidate), 'environment': environment,
+    'started_at': started, 'finished_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+    'seconds': time.monotonic() - start, 'exit_code': result.returncode,
+    'stdout': str(root / f'{stem}.stdout'), 'stderr': str(root / f'{stem}.stderr'),
+}
+(root / f'{stem}.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps(receipt, indent=2))
+print(result.stdout.decode(errors='replace'))
+print(result.stderr.decode(errors='replace'))
+raise SystemExit(result.returncode)

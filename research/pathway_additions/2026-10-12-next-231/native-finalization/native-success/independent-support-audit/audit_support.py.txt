@@ -1,0 +1,99 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import copy, hashlib, json, os, runpy, subprocess, sys
+import yaml
+P=Path('/private/tmp/pathwaymech-next-231-finalization-support-20261012')
+A=Path('/private/tmp/pathwaymech-next-231-finalization-support-audit-20261012')
+R=Path('/private/tmp/pathwaymech-next-231-20261012')
+def load(p):return json.loads(Path(p).read_bytes())
+def bind(p):
+ p=Path(p);b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def verify(row,p=None):
+ b=bind(p or row['path']);assert b['sha256']==row['sha256'] and b['bytes']==row['bytes'];return b
+def save(p,obj):
+ with Path(p).open('x') as f:json.dump(obj,f,indent=2);f.write('\n')
+def listed(p):
+ r=subprocess.run(['rg','--files','-uu','-L','.'],cwd=p,text=True,capture_output=True);assert r.returncode==0 and not r.stderr
+ return {str(Path(x)) for x in r.stdout.splitlines()}
+started=datetime.now(timezone.utc).isoformat()
+assert bind(P/'handoff.json')['sha256']=='ccaeaa8912cfe5717aa97be34428fe94ddf1039b11cb9fb9322bdedb8221ae5a'
+h=load(P/'handoff.json');verify(h['manifest']);assert h['manifest']['sha256']=='57d761d6360942383a123e66a80358f720b12babc104b837d64afa3c1367eb20'
+rows=load(h['manifest']['path'])['artifacts'];assert len(rows)==176==len({x['relative_path'] for x in rows})
+assert listed(P)=={x['relative_path'] for x in rows}|{'handoff.json','artifact-manifest.json'}
+for row in rows:verify(row,P/row['relative_path'])
+read_paths=sorted(P.glob('*.py'))+[P/'README.md'];assert len(read_paths)==12
+snap=A/'reviewed-sources';snap.mkdir()
+for p in read_paths:(snap/(p.name+'.txt')).write_bytes(p.read_bytes())
+sys.path.insert(0,str(P));import support as s
+s.verify_support()
+inputs=load(P/'preparation-input-bindings.json')
+for row in inputs['maintained_contract']:verify(row,R/row['relative_path'])
+verify(inputs['target']);assert inputs['target']['sha256']==h['target']['sha256']
+for row in load(P/'actual-current-execution-bindings.json').values():
+ if isinstance(row,dict) and 'sha256' in row:verify(row)
+for row in load(P/'root-recovery-bindings.json')['files']:verify(row)
+fields=load(P/'review-content-fragments.json')['review_fields'];ass=fields['assessments'];index={a['assessment_id']:a for a in ass};assert len(ass)==len(index)==146
+assert fields['findings']==[] and fields['actions']==[] and 'review_id' not in fields and 'source' not in fields and 'completion' not in fields
+original=load('/private/tmp/pathwaymech-next-231-science-review-20261012/review.json');successor=load('/private/tmp/pathwaymech-next-231-science-successor-review-20261012/review.json')
+record=yaml.safe_load((R/s.TARGET_REL).read_bytes());edges={e['id']:e for e in record['mechanistic_edges']}
+for row in original['edge_assessments']:
+ d=json.loads(index['edge-'+row['edge_id']]['details']);assert d['historical_independent_judgment']==row and d['current_exact_edge']==edges[row['edge_id']]
+for row in original['qualifier_assessments']:
+ d=json.loads(index['qualifier-'+row['edge_id']+'-'+str(row['qualifier_index'])]['details']);assert d['historical_independent_judgment']==row and d['current_exact_qualifier']==edges[row['edge_id']]['endpoint_qualifiers'][row['qualifier_index']]
+for row in original['context_assessments']:
+ d=json.loads(index['context-'+str(row['paragraph'])]['details']);assert d['historical_independent_judgment']==row and d['current_text']==record['description'].split('\n\n')[row['paragraph']-1]
+for row in original['preflight_claim_assessments']:assert json.loads(index[row['claim_id']]['details'])['historical_independent_judgment']==row
+for i,row in enumerate(successor['delta_assessments']):assert json.loads(index['successor-delta-'+str(i+1)]['details'])==row
+for row in successor['dispositions']:assert json.loads(index['external-issue-'+row['issue_url'].rsplit('/',1)[1]]['details'])==row
+assert json.loads(index['integration-guard-463']['details'])==load('/private/tmp/pathwaymech-next-231-root-integration-successor-acceptance-20261012.json')
+assert [len(original[k]) for k in ['edge_assessments','qualifier_assessments','context_assessments','preflight_claim_assessments']]==[51,14,13,28]
+assert len(successor['delta_assessments'])==31 and len(successor['dispositions'])==5
+bindings=load(P/'review-evidence-bindings.json');evidence={e['evidence_id']:e for e in fields['evidence']};assert len(bindings)==len(evidence)==13
+for row in bindings:
+ verify(row['original']);e=evidence[row['evidence_id']];assert e['snapshot_sha256']==row['original']['sha256'] and e['reference']==row['maintained_reference']
+ if not row['requires_archive']:verify(row['original'],R/row['maintained_reference'])
+ else:
+  assert row['evidence_id']=='integration-guard-acceptance'
+  dest,body,mode=s.encoded_archive(row['original']['path'],R/row['maintained_reference']);assert mode=='exact_bytes' and str(dest.relative_to(R))==row['maintained_reference']
+for a in ass:assert set(a['evidence_ids'])<=set(evidence)
+assert set(fields['links'])=={f'https://github.com/CultureBotAI/PathwayMech/issues/{n}' for n in [455,456,457,458,459,463]}
+summary=load(P/'preparation-execution-summary.json');assert len(summary['actual_commands'])==11
+commands=[];latest={}
+for row in summary['actual_commands']:
+ verify(row['receipt']);r=load(row['receipt']['path']);assert all(row[k]==r[k] for k in ['name','exit_code','started_at','finished_at'])
+ for key in ['stdout','stderr']:verify(r[key])
+ latest[r['name']]=r;commands.append(r)
+assert sum(r['exit_code']==0 for r in commands)==9
+assert [(r['name'],r['exit_code']) for r in commands if r['exit_code']] == [('lint',1),('schema',1)]
+assert set(latest)=={'schema','guards','current','compile','lint'} and all(r['exit_code']==0 for r in latest.values())
+for kind,paths in {'current':['support.py','probe_current.py'],'guards':['support.py','test_support.py','probe_fragment_schema.py'],'schema':['support.py','probe_fragment_schema.py'],'compile':[p.name for p in P.glob('*.py')],'lint':[p.name for p in P.glob('*.py')]}.items():
+ packet=Path(latest[kind]['stdout']['path']).parent
+ for name in paths:
+  # guards fixture() was not changed by the later main-only schema fixture repair.
+  if kind=='guards' and name=='probe_fragment_schema.py':
+   import ast
+   old_ast=ast.parse((packet/(name+'.txt')).read_bytes());new_ast=ast.parse((P/name).read_bytes())
+   fixture=lambda t:ast.dump(next(n for n in t.body if isinstance(n,ast.FunctionDef) and n.name=='fixture'),include_attributes=False)
+   assert fixture(old_ast)==fixture(new_ast)
+  else:assert (packet/(name+'.txt')).read_bytes()==(P/name).read_bytes(),(kind,name)
+bounded=load(P/'bounded-tests.json');assert bounded['negative_count']==len(bounded['negative_controls'])==22 and all(x['rejected'] for x in bounded['negative_controls'])
+probe=load(P/'native-fragment-schema-probe.json');assert probe['assessments']==148 and probe['native_dump_noaliases_roundtrip_validated'];verify(probe['fragments']);verify(probe['native_helper'])
+# Additional independent archive/input guards; strictly external and no root workflow execution.
+fixtures=A/'fixtures';fixtures.mkdir();source=fixtures/'source.py';source.write_bytes(b'value = 3\n')
+controls=[]
+def rejects(key,call):
+ try:call()
+ except (AssertionError,ValueError,OSError) as exc:controls.append({'key':key,'rejected':True,'exception':type(exc).__name__,'message':str(exc)})
+ else:raise AssertionError('Unexpected acceptance '+key)
+collision=fixtures/'encoded-collision';rejects('encoded-destination-collision',lambda:s.archive_files([(source,'a.py'),(source,'a.py.txt')],collision));assert not collision.exists()
+rejects('absolute-archive-destination',lambda:s.archive_files([(source,str(fixtures/'escape.py'))],fixtures/'absolute'));assert not (fixtures/'absolute').exists()
+rejects('archive-parent-traversal',lambda:s.archive_files([(source,'../escape.py')],fixtures/'traversal'));assert not (fixtures/'traversal').exists()
+occupied=fixtures/'occupied';occupied.mkdir();(occupied/'existing.txt').write_bytes(b'unchanged')
+rejects('existing-destination-blocks-all-planned-writes',lambda:s.archive_files([(source,'first.py'),(source,'existing.txt')],occupied));assert not (occupied/'first.py.txt').exists() and (occupied/'existing.txt').read_bytes()==b'unchanged'
+broken=fixtures/'pathwaymech-next-231-broken-output';broken.symlink_to(fixtures/'absent');rejects('broken-symlink-external-output',lambda:s.external_new(broken))
+redirect=fixtures/'tmp-alias';redirect.symlink_to('/private/tmp');rejects('nested-output-remains-disallowed',lambda:s.external_new(fixtures/'pathwaymech-next-231-new'))
+fake=fixtures/'root';(fake/'history').mkdir(parents=True);hist=fake/'history/a.yaml';hist.write_bytes(b'event: CREATE\n');history_rows=s.inventory(fake,'history');hist.unlink();rejects('missing-history-rejected',lambda:s.assert_history(fake,history_rows))
+# All packet bytes are still closed after independent read-only probes.
+s.verify_support()
+assessment={'status':'support_preparation_independently_verified','started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'handoff':bind(P/'handoff.json'),'manifest':h['manifest'],'closed_artifact_count':176,'read_helpers':[bind(p) for p in read_paths],'exact_maintained_contract_files':len(inputs['maintained_contract']),'science_inheritance_exact':{'edges':51,'qualifiers':14,'contexts':13,'preflight':28,'successor_deltas':31,'scientific_dispositions':5,'guard_disposition':1,'supplementary_scope_assessments':3,'prepared_total':146,'eventual_root_total':148,'fresh_literature_review':False},'evidence_bindings':{'total':13,'existing_exact':12,'new_archive_required':1},'recorded_commands':{'total':11,'passed':9,'failed_retained':2,'latest_all_five_passed':True,'original_commands_rerun_by_auditor':False},'existing_negative_controls':22,'additional_independent_controls':controls,'future_maintained_native_execution_or_archive_performed':False,'no_maintained_cache_git_writes':True,'limitations':['Preparation acceptance only; actual root intake, assembly, read, native save/check, archive and preservation remain future.','Root scientific inheritance is assessed for complete exact transport, not fresh literature adjudication.','Static page evidence does not establish interactive browser behavior.']}
+save(A/'support-assessment.json',assessment);print(json.dumps(assessment,indent=2))

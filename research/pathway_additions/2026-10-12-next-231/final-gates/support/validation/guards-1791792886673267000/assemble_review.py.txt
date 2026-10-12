@@ -1,0 +1,67 @@
+"""Root-only archive and native inspect/assemble, after actual gates/preservation."""
+from support import *
+import argparse,copy,shlex,yaml
+
+def main():
+ p=argparse.ArgumentParser(description=__doc__)
+ for name in ['gates','preservation','root-intake','output']:p.add_argument('--'+name,required=True,type=Path)
+ p.add_argument('--failed-execution',action='append',default=[],type=Path)
+ mode=p.add_mutually_exclusive_group(required=True);mode.add_argument('--execute',action='store_true');mode.add_argument('--check-inputs',action='store_true')
+ args=p.parse_args();verify_support();gates,inputs=verify_gates(args.gates);preserved=verify_preservation(args.preservation,args.gates)
+ qa,visual=verify_qa(gates,preserved);history=verify_histories(gates)
+ intake=load(args.root_intake);assert intake['status']=='accepted' and intake['reviewer']=='Codex /root' and intake['handoff']==bind(HERE/'handoff.json')
+ for row in load(HERE/'preparation-input-bindings.json')['evidence']:verify(row['original'])
+ out=external_new(args.output);archive=ROOT/DOSSIER_REL/'final-gates';assert not archive.exists() and not archive.is_symlink()
+ sources=[];local={}
+ def add(eid,path,relative=None):
+  path=Path(path);relative=relative or 'receipts/'+eid+'.json';sources.append((path,relative));local[eid]=relative
+ for key,path in [('gates',args.gates),('gate-inputs',gates['inputs']['path']),('preservation',args.preservation),('root-support-intake',args.root_intake),('adoption',ADOPTION),('merged-binding',MERGED),('history-execution',HISTORY),('page-qa',QA),('visual-observation',VISUAL),('display-approval',DISPLAY),('history-file-approval',preserved['approved_extra_files']['path'])]:add(key,path)
+ # All actual command streams, including explicitly supplied failed attempts, are losslessly archived.
+ for row in gates['receipts']:
+  for key in ['stdout','stderr']:sources.append((Path(row[key]['path']),'gate-streams/'+row['name']+'.'+key))
+ for key,packet in [('page-qa',QA.parent),('native-history',HISTORY.parent)]:
+  for relative in files(packet,exclude_runtime=False):sources.append((packet/relative,key+'/'+relative))
+ for i,packet in enumerate(args.failed_execution):
+  assert packet.is_dir() and packet.resolve().parent==Path('/private/tmp') and not packet.resolve().is_relative_to(ROOT)
+  for relative in files(packet,exclude_runtime=False):sources.append((packet/relative,'failed-attempts/'+str(i)+'/'+relative))
+ for row in load(HERE/'review-evidence-bindings.json'):
+  if row['requires_archive']:sources.append((Path(row['original']['path']),'evidence/'+row['evidence_id']+'.json'))
+  else:verify(row['original'],ROOT/row['maintained_reference'])
+ # Archive the complete sealed preparation, including its genuine failed probes if any.
+ for relative in files(HERE,exclude_runtime=False):sources.append((HERE/relative,'support/'+relative))
+ # Compute every destination before mutation; normalized paths cannot collide or overwrite.
+ destinations=[]
+ for source,relative in sources:
+  dest,body,serialization=encoded_archive(source,archive/relative);assert dest.is_relative_to(archive) and not dest.exists();destinations.append(str(dest))
+ assert len(destinations)==len(set(destinations))
+ if args.check_inputs:
+  print(json.dumps({'status':'inputs_verified_no_writes','files_planned':len(sources),'target':bind(ROOT/TARGET_REL),'gates':bind(args.gates)}));return
+ out.mkdir();archive.mkdir()
+ mapping=archive_files(sources,archive)
+ by_source={r['source']['path']:r for r in mapping}
+ # Current execution README supersedes no historical prose; both remain explicit.
+ (archive/'README.md').write_text('''# Actual PPi finalization evidence\n\nThese receipts were archived after the nine maintained gates and exact preservation passed. The support/README and earlier dossier preparation files describe their historical preparation states and are retained unchanged; their pending statements are not claims about this later execution. Native review validation/save/check and publication remain separate subsequent stages. No curation history is appended by this archive or review workflow.\n''')
+ write(archive/'archive-map.json',mapping)
+ extras=inventory(ROOT,DOSSIER_REL+'/final-gates');verify_gates(args.gates,extras)
+ known={r['relative_path'] for r in load(HERE/'preparation-input-bindings.json')['maintained_contract']}
+ known|=set(files(ROOT,DOSSIER_REL));known|={TARGET_REL,PAGE_REL,'pages/downloads/nodes.tsv','pages/downloads/edges.tsv'}
+ known|={r['relative_path'] for r in gates['render_history_inputs']}
+ write(out/'native-inspection-inputs.json',sorted(known))
+ command=[PYTHON,'-B',str(HERE/'inspect_with_inputs.py'),'--input-list',str(out/'native-inspection-inputs.json'),'--targets',str(HERE/'targets.yaml')]
+ result,inspection_receipt=execute(command,out,'inspect');result.check_returncode();inspection=json.loads(result.stdout)
+ assert inspection['source']['git_revision']==BASE
+ document=copy.deepcopy(load(HERE/'review-content-fragments.json')['review_fields']);finished=now();started=inspection_receipt['started_at']
+ document.update({'review_id':datetime.fromisoformat(finished).strftime('%Y%m%dT%H%M%SZ')+'-ppi-pentose-phosphate-branch','started_at':started,'finished_at':finished,'skill':'.claude/skills/review-yaml-record/SKILL.md','completion':'completed','verdict':'pass_with_limitations','source':inspection['source'],'targets':inspection['targets'],'reviewer':{'identity':'Codex /root; support preparation by /root/atp_canonical_preparation','kind':'agent','independence':'self_review','independence_basis':'Root integrated this record. Scientific judgments explicitly inherit separately independent complete original and bounded successor reviews; current execution/preservation/representation are assessed separately. No fresh full literature rereview.'},'summary':'Exact51-edge53-reference PPi successor retains five accepted scientific corrections455–459 and separately accepted guard fix463. Actual full native authorities, two pre-render histories, nine maintained gates, complete bibliography-owner/static graph/KGX QA and exact prior-corpus/cache preservation are bound. Root must read this assembled content before native validation/save; no future publication success is claimed.'})
+ for eid,relative in local.items():
+  original=next(source for source,rel in sources if rel==relative);archived=by_source[str(original)]['archived'];reference=str(Path(archived['path']).relative_to(ROOT))
+  document['evidence'].append({'evidence_id':eid,'kind':'validation','reference':reference,'accessed_at':finished,'snapshot_sha256':archived['sha256'],'support':'supports','summary':'Actual current execution receipt; exact archived bytes and original scope retained.'})
+ for row in load(HERE/'review-evidence-bindings.json'):verify(row['original'],ROOT/row['maintained_reference'])
+ document['checks']=[{'check_id':'maintained-'+r['name'],'name':'Actual maintained '+r['name'],'status':'passed','required':True,'target_ids':[TARGET_ID],'command':shlex.join(r['command']),'exit_code':r['exit_code'],'summary':'Actual full maintained command passed for exacttarget20541f; later archives/review still need final checks.','evidence_ids':['gates']} for r in gates['receipts']]
+ for aid,area,summary,eids in [('preservation','consistency','All231old records/pages and prior reviews/history remain exact; all11536old edges and7668old contexts preserved. Exact51new edges50contexts39nodes; nine independently inspected category union cells only. Old765cache identities unchanged and24newregular original copies exact.',['preservation','display-approval']),('representation','representation',visual['visual_observation']+' Complete51edge14qualifier120evidence53owner-reference and six-direction page/KGX checks passed.',['page-qa','visual-observation'])]:
+  document['checks'].append({'check_id':aid,'name':aid,'status':'passed','required':True,'target_ids':[TARGET_ID],'summary':summary,'evidence_ids':eids})
+  document['assessments'].append({'assessment_id':'root-'+aid,'area':area,'topic':aid,'outcome':'supported','target_ids':[TARGET_ID],'summary':summary,'evidence_ids':eids})
+ assert_history(ROOT,gates['render_history_inputs']);write(out/'completed-review.json',document)
+ write(out/'archive-extra-files.json',extras)
+ write(out/'assembly.json',{'status':'assembled_pending_root_read_native_serialization_save','at':now(),'target':bind(ROOT/TARGET_REL),'review':bind(out/'completed-review.json'),'inspection':inspection_receipt,'archive_map':bind(archive/'archive-map.json'),'archive_extras':bind(out/'archive-extra-files.json'),'gate_receipt':bind(args.gates),'preservation':bind(args.preservation),'support_intake':bind(args.root_intake),'maintained_review_saved':False,'late_history_written':False})
+ print(json.dumps(load(out/'assembly.json'),indent=2))
+if __name__=='__main__':main()

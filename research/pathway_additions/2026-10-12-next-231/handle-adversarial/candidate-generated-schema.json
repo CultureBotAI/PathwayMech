@@ -1,0 +1,661 @@
+{
+  "$defs": {
+    "ClusterGene": {
+      "additionalProperties": false,
+      "description": "A provider-local gene or protein accession in a biosynthetic gene cluster.",
+      "properties": {
+        "id": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "label": {
+          "pattern": "\\S",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "ClusterGene",
+      "type": "object"
+    },
+    "CurationEvent": {
+      "additionalProperties": false,
+      "description": "A timestamped curator action on a PathwayRecord.",
+      "properties": {
+        "action": {
+          "type": "string"
+        },
+        "changes": {
+          "type": "string"
+        },
+        "curator": {
+          "type": "string"
+        },
+        "llm_assisted": {
+          "type": "boolean"
+        },
+        "timestamp": {
+          "description": "When the action happened: an RFC 3339 date-time with a timezone, such as '2026-09-28T12:00:00Z' (a date alone, a time without an offset, or a leap second is rejected). Quote it in YAML: an unquoted timestamp loads as a datetime object, not a string.",
+          "format": "date-time",
+          "pattern": "^20[0-9]{2}-",
+          "type": "string"
+        }
+      },
+      "required": [
+        "timestamp"
+      ],
+      "title": "CurationEvent",
+      "type": "object"
+    },
+    "EdgePredicateEnum": {
+      "description": "",
+      "enum": [
+        "activates",
+        "catalyzes",
+        "consumes",
+        "enables",
+        "inhibits",
+        "precedes",
+        "produces",
+        "regulates",
+        "causally_upstream_of",
+        "has_input",
+        "has_output",
+        "occurs_in",
+        "located_in",
+        "part_of",
+        "has_part",
+        "provides_input_for",
+        "has_cofactor"
+      ],
+      "title": "EdgePredicateEnum",
+      "type": "string"
+    },
+    "EndpointQualifier": {
+      "additionalProperties": false,
+      "description": "An endpoint qualification is part of the complete edge claim, not a new biological identifier or an assertion of otherwise identical sequence.",
+      "properties": {
+        "description": {
+          "pattern": "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])",
+          "type": "string"
+        },
+        "endpoint": {
+          "$ref": "#/$defs/EndpointRoleEnum"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "kind": {
+          "$ref": "#/$defs/EndpointQualifierKindEnum"
+        }
+      },
+      "required": [
+        "endpoint",
+        "kind",
+        "description",
+        "evidence"
+      ],
+      "title": "EndpointQualifier",
+      "type": "object"
+    },
+    "EndpointQualifierKindEnum": {
+      "description": "",
+      "enum": [
+        "experimental_construct",
+        "molecular_state"
+      ],
+      "title": "EndpointQualifierKindEnum",
+      "type": "string"
+    },
+    "EndpointRoleEnum": {
+      "description": "",
+      "enum": [
+        "subject",
+        "object"
+      ],
+      "title": "EndpointRoleEnum",
+      "type": "string"
+    },
+    "EvidenceItem": {
+      "additionalProperties": false,
+      "description": "",
+      "oneOf": [
+        {
+          "not": {
+            "anyOf": [
+              {
+                "properties": {
+                  "source_assertion": {}
+                },
+                "required": [
+                  "source_assertion"
+                ]
+              }
+            ]
+          },
+          "properties": {
+            "quote": {}
+          },
+          "required": [
+            "quote"
+          ]
+        },
+        {
+          "not": {
+            "anyOf": [
+              {
+                "properties": {
+                  "quote": {}
+                },
+                "required": [
+                  "quote"
+                ]
+              }
+            ]
+          },
+          "properties": {
+            "source_assertion": {},
+            "source_locator": {}
+          },
+          "required": [
+            "source_assertion",
+            "source_locator"
+          ]
+        }
+      ],
+      "properties": {
+        "quote": {
+          "description": "A verbatim excerpt of at most 400 characters. The pattern ends in (?![\\s\\S]) rather than $, which in Python's re also matches before a final newline and so admitted 401.",
+          "pattern": "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])",
+          "type": "string"
+        },
+        "reference_id": {
+          "description": "The id of a reference declared in this record.",
+          "type": "string"
+        },
+        "source_assertion": {
+          "description": "Faithful human-readable rendering of an inspected structured source statement, not a quotation or a claim to have read its cited paper.",
+          "pattern": "^(?=[\\s\\S]*\\S)[\\s\\S]{1,400}(?![\\s\\S])",
+          "type": "string"
+        },
+        "source_locator": {
+          "description": "Exact source object, triple, XML path, or JSON path supporting the assertion.",
+          "pattern": "\\S",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference_id"
+      ],
+      "title": "EvidenceItem",
+      "type": "object"
+    },
+    "GeneCluster": {
+      "additionalProperties": false,
+      "description": "A biosynthetic gene cluster accession, with provider-local genes, loci, product names and biosynthetic classes that do not have to be reaction graph nodes.",
+      "properties": {
+        "biosynthetic_classes": {
+          "items": {
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "genes": {
+          "items": {
+            "$ref": "#/$defs/ClusterGene"
+          },
+          "type": "array"
+        },
+        "id": {
+          "pattern": "^MIBiG:\\S+(?![\\s\\S])",
+          "type": "string"
+        },
+        "label": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "loci": {
+          "items": {
+            "$ref": "#/$defs/GenomicLocus"
+          },
+          "type": "array"
+        },
+        "products": {
+          "items": {
+            "pattern": "\\S",
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "GeneCluster",
+      "type": "object"
+    },
+    "GenomicLocus": {
+      "additionalProperties": false,
+      "description": "A GenBank-style sequence accession and optional region coordinates.",
+      "properties": {
+        "accession": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "end": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "start": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "accession"
+      ],
+      "title": "GenomicLocus",
+      "type": "object"
+    },
+    "MechanisticEdge": {
+      "additionalProperties": false,
+      "description": "A directed causal or mechanistic claim between two nodes of the same record, with at least one quotation or located structured-source assertion.",
+      "properties": {
+        "description": {
+          "description": "Optional prose about the edge.",
+          "type": "string"
+        },
+        "endpoint_qualifiers": {
+          "description": "Source-limited construct or state assertions that are part of this edge claim. At most one per subject/object, on explicitly declared protein or complex participants only (checked by schema.py). Prefer an exact issuing state identifier when available.",
+          "items": {
+            "$ref": "#/$defs/EndpointQualifier"
+          },
+          "maxItems": 2,
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceItem"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "id": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "object": {
+          "description": "A node id in this record (checked in src/pathwaymech/schema.py).",
+          "type": "string"
+        },
+        "predicate": {
+          "$ref": "#/$defs/EdgePredicateEnum"
+        },
+        "subject": {
+          "description": "A node id in this record (checked in src/pathwaymech/schema.py).",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "subject",
+        "predicate",
+        "object",
+        "evidence"
+      ],
+      "title": "MechanisticEdge",
+      "type": "object"
+    },
+    "NamedNode": {
+      "additionalProperties": false,
+      "description": "A taxon, participant or reaction, named by CURIE.",
+      "properties": {
+        "category": {
+          "$ref": "#/$defs/NodeCategoryEnum",
+          "description": "Source-supported biological kind or explicitly demonstrated cofactor role."
+        },
+        "direction": {
+          "$ref": "#/$defs/ReactionDirectionEnum",
+          "description": "Direction asserted by the reaction source; permitted on reactions only."
+        },
+        "id": {
+          "pattern": "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|EcoCyc|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])",
+          "type": "string"
+        },
+        "label": {
+          "pattern": "\\S",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "NamedNode",
+      "type": "object"
+    },
+    "NodeCategoryEnum": {
+      "description": "",
+      "enum": [
+        "chemical_entity",
+        "small_molecule",
+        "lipid",
+        "polymer",
+        "protein",
+        "gene",
+        "dna",
+        "rna",
+        "cofactor",
+        "complex",
+        "cellular_component",
+        "molecular_activity",
+        "biological_process",
+        "pathway"
+      ],
+      "title": "NodeCategoryEnum",
+      "type": "string"
+    },
+    "PathwayRecord": {
+      "additionalProperties": false,
+      "description": "One curated pathway mechanism, one file under data/pathways/.",
+      "properties": {
+        "curation_history": {
+          "description": "Append-only audit trail of curator actions on this record. Optional. CurationEvent has the same shape as TaxonMech's; what every Mech shares is the timestamp's year guard.",
+          "items": {
+            "$ref": "#/$defs/CurationEvent"
+          },
+          "type": "array"
+        },
+        "description": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "gene_clusters": {
+          "items": {
+            "$ref": "#/$defs/GeneCluster"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "The pathway's CURIE, e.g. MetaCyc:PWY-5097.",
+          "pattern": "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|EcoCyc|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])",
+          "type": "string"
+        },
+        "label": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "mechanistic_edges": {
+          "items": {
+            "$ref": "#/$defs/MechanisticEdge"
+          },
+          "type": "array"
+        },
+        "participants": {
+          "items": {
+            "$ref": "#/$defs/NamedNode"
+          },
+          "type": "array"
+        },
+        "pathway_type": {
+          "description": "Free-text pathway category, e.g. amino-acid-biosynthesis.",
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "reactions": {
+          "items": {
+            "$ref": "#/$defs/NamedNode"
+          },
+          "type": "array"
+        },
+        "references": {
+          "items": {
+            "$ref": "#/$defs/Reference"
+          },
+          "type": "array"
+        },
+        "source_mappings": {
+          "description": "Source xrefs retained at import time when a provider-local accession is normalized into the final CURIE stored on a pathway node.",
+          "items": {
+            "$ref": "#/$defs/SourceMapping"
+          },
+          "type": "array"
+        },
+        "taxa": {
+          "items": {
+            "$ref": "#/$defs/NamedNode"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "description",
+        "pathway_type",
+        "taxa",
+        "participants",
+        "reactions",
+        "mechanistic_edges",
+        "references"
+      ],
+      "title": "PathwayRecord",
+      "type": "object"
+    },
+    "ReactionDirectionEnum": {
+      "description": "",
+      "enum": [
+        "left_to_right",
+        "right_to_left",
+        "reversible"
+      ],
+      "title": "ReactionDirectionEnum",
+      "type": "string"
+    },
+    "Reference": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "properties": {
+            "title": {}
+          },
+          "required": [
+            "title"
+          ]
+        },
+        {
+          "properties": {
+            "citation": {}
+          },
+          "required": [
+            "citation"
+          ]
+        }
+      ],
+      "description": "A source cited by evidence; needs a title or a citation.",
+      "properties": {
+        "citation": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "id": {
+          "description": "A standard source CURIE, or a reference-only Handle subset: hdl: followed by numeric dot-separated prefix segments, a slash, and an ASCII alphanumeric suffix with optional dots, underscores or hyphens. This subset does not cover all Handle syntax.",
+          "pattern": "^((BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|EcoCyc|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+|hdl:[0-9]+(\\.[0-9]+)*/[A-Za-z0-9][A-Za-z0-9._-]*)(?![\\s\\S])",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])",
+          "type": "string"
+        },
+        "source_version": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "title": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "url": {
+          "pattern": "^https?://[^\\s]+(?![\\s\\S])",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "Reference",
+      "type": "object"
+    },
+    "SourceMapping": {
+      "additionalProperties": false,
+      "description": "An SSSOM-ready exact mapping from an original source accession to the normalized CURIE retained in the PathwayRecord.",
+      "properties": {
+        "confidence": {
+          "pattern": "^(0(\\.[0-9]+)?|1(\\.0+)?)(?![\\s\\S])",
+          "type": "string"
+        },
+        "mapping_justification": {
+          "pattern": "^semapv:\\S+(?![\\s\\S])",
+          "type": "string"
+        },
+        "object_id": {
+          "pattern": "^[^:\\s]+:\\S+(?![\\s\\S])",
+          "type": "string"
+        },
+        "object_label": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "predicate_id": {
+          "pattern": "^skos:exactMatch$",
+          "type": "string"
+        },
+        "source_element_id": {
+          "pattern": "\\S",
+          "type": "string"
+        },
+        "source_pathway_id": {
+          "pattern": "^[^:\\s]+:\\S+(?![\\s\\S])",
+          "type": "string"
+        },
+        "subject_id": {
+          "pattern": "^[^:\\s]+:\\S+(?![\\s\\S])",
+          "type": "string"
+        },
+        "subject_label": {
+          "pattern": "\\S",
+          "type": "string"
+        }
+      },
+      "required": [
+        "subject_id",
+        "subject_label",
+        "predicate_id",
+        "object_id",
+        "object_label",
+        "mapping_justification",
+        "confidence",
+        "source_pathway_id",
+        "source_element_id"
+      ],
+      "title": "SourceMapping",
+      "type": "object"
+    }
+  },
+  "$id": "https://w3id.org/culturebotai/pathwaymech",
+  "$schema": "https://json-schema.org/draft/2019-09/schema",
+  "additionalProperties": false,
+  "description": "One curated pathway mechanism, one file under data/pathways/.",
+  "metamodel_version": "1.11.0",
+  "properties": {
+    "curation_history": {
+      "description": "Append-only audit trail of curator actions on this record. Optional. CurationEvent has the same shape as TaxonMech's; what every Mech shares is the timestamp's year guard.",
+      "items": {
+        "$ref": "#/$defs/CurationEvent"
+      },
+      "type": "array"
+    },
+    "description": {
+      "pattern": "\\S",
+      "type": "string"
+    },
+    "gene_clusters": {
+      "items": {
+        "$ref": "#/$defs/GeneCluster"
+      },
+      "type": "array"
+    },
+    "id": {
+      "description": "The pathway's CURIE, e.g. MetaCyc:PWY-5097.",
+      "pattern": "^(BiGG|BV-BRC|CAS|CHEBI|ChemSpider|DOI|EC|ECO|EcoCyc|Ensembl|Entrez|GO|GO_REF|gomodel|GTDB|HMDB|KEGG|LIPIDMAPS|MetaCyc|MIBiG|ModelSEED|NCBIProtein|NCBITaxon|PANTHER|PathBank|PMID|PMN|PubChem|Reactome|RHEA|RHEA-COMP|SGD|TubercuList|UniProtKB|WikiPathways|metanetx\\.chemical):\\S+(?![\\s\\S])",
+      "type": "string"
+    },
+    "label": {
+      "pattern": "\\S",
+      "type": "string"
+    },
+    "mechanistic_edges": {
+      "items": {
+        "$ref": "#/$defs/MechanisticEdge"
+      },
+      "type": "array"
+    },
+    "participants": {
+      "items": {
+        "$ref": "#/$defs/NamedNode"
+      },
+      "type": "array"
+    },
+    "pathway_type": {
+      "description": "Free-text pathway category, e.g. amino-acid-biosynthesis.",
+      "pattern": "\\S",
+      "type": "string"
+    },
+    "reactions": {
+      "items": {
+        "$ref": "#/$defs/NamedNode"
+      },
+      "type": "array"
+    },
+    "references": {
+      "items": {
+        "$ref": "#/$defs/Reference"
+      },
+      "type": "array"
+    },
+    "source_mappings": {
+      "description": "Source xrefs retained at import time when a provider-local accession is normalized into the final CURIE stored on a pathway node.",
+      "items": {
+        "$ref": "#/$defs/SourceMapping"
+      },
+      "type": "array"
+    },
+    "taxa": {
+      "items": {
+        "$ref": "#/$defs/NamedNode"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "label",
+    "description",
+    "pathway_type",
+    "taxa",
+    "participants",
+    "reactions",
+    "mechanistic_edges",
+    "references"
+  ],
+  "title": "pathwaymech",
+  "type": "object",
+  "version": "0.1.0"
+}

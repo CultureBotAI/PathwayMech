@@ -1,0 +1,64 @@
+from pathlib import Path
+import copy,hashlib,json,os,shutil,sys,yaml
+from lxml import html
+O=Path('/private/tmp/pathwaymech-next-231-author-20261012');I=Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012');B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+C=O/'validation-candidate';C.mkdir()
+def bind(p):p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+assert bind(I/'handoff.json')['sha256']=='4afb6912df124836718ec0f548e7053139814ea892b1ff43473beb1a98ffd64a'
+m=json.loads((I/'artifact-manifest.json').read_bytes());verified=[]
+for a in m['artifacts']:
+ b=bind(a['path']);assert b['sha256']==a['sha256'] and b['bytes']==a['bytes'];verified.append(b)
+save('receipts/reference-implementation-intake.json',{'handoff':bind(I/'handoff.json'),'manifest':bind(I/'artifact-manifest.json'),'verified':len(verified),'scope':'Integrity intake for external candidate validation, not independent implementation acceptance.'})
+shutil.copytree(I/'candidate/src',C/'src');shutil.copytree(I/'candidate/conf',C/'conf')
+(C/'data/pathways').mkdir(parents=True);(C/'data/identifier_authorities').mkdir()
+t=O/'draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml';cp=C/'data/pathways'/t.name;shutil.copy2(t,cp)
+for n in ['sources','ontology']:shutil.copy2(O/f'authority/proposed-{n}.json',C/f'data/identifier_authorities/{n}.json')
+sys.path[:0]=[str(C/'src'),str(B/'runtime/scripts')]
+from pathwaymech.schema import validate_record,ValidationError
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.cli import _record_page
+from pathwaymech.kgx import kgx_nodes,kgx_edges,render_kgx
+from build_source_identifier_snapshot import corpus_ids
+from build_ontology_identifier_snapshot import walk_identifiers
+r=yaml.safe_load(t.read_bytes());vr=validate_record(r);errors=strict_errors([cp],C);assert not errors,errors
+errors=identifier_errors(C);assert not errors,errors
+checks=[{'check':'native','passed':True},{'check':'closed_LinkML','passed':True},{'check':'identifiers_and_labels','passed':True}]
+source_ids=set(corpus_ids(C/'data/pathways'));status=json.loads((O/'authority/authority-preparation-status.json').read_bytes());wanted=set(status['selected_source_ids']);assert wanted <= source_ids,(wanted-source_ids)
+assert 'hdl:1993/32279' not in source_ids
+all_ids=set(walk_identifiers(r));assert 'hdl:1993/32279' in all_ids
+ontology_ids={i for i in all_ids if i.split(':',1)[0] in {'CHEBI','NCBITaxon','GO','RHEA'}};assert ontology_ids==set(status['selected_ontology_ids']),(ontology_ids,set(status['selected_ontology_ids']))
+checks.append({'check':'production_collector_selection','passed':True,'source_ids':sorted(source_ids),'ontology_ids':sorted(ontology_ids),'hdl_policy':'source collector excludes references; ontology walker sees Handle then prefix filter excludes it'})
+negative=[];original=cp.read_bytes()
+try:
+ for key,mut in [('wrong_native_label',lambda x:x['participants'][0].update(label='wrong label')),
+                 ('missing_protein_id',lambda x:x['participants'][0].update(id='NCBIProtein:NOTREAL.1'))]:
+  x=copy.deepcopy(r);mut(x);cp.write_text(yaml.safe_dump(x,sort_keys=False));ee=identifier_errors(C);assert ee,key;negative.append({'case':key,'rejected':True,'errors':ee})
+finally:cp.write_bytes(original)
+assert cp.read_bytes()==t.read_bytes()
+out=O/'standalone';(out/'records').mkdir(parents=True);(out/'assets').mkdir()
+body=_record_page(vr,source_path='draft/'+t.name,sessions=[]);(out/'records/MetaCyc_PWY-8178.html').write_text(body)
+for p in (C/'src/pathwaymech/assets').iterdir():
+ if p.is_file():shutil.copy2(p,out/'assets'/p.name)
+style=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/pages/style.css');shutil.copy2(style,out/'style.css')
+root=html.fromstring(body);arrows=root.xpath("//*[contains(concat(' ',normalize-space(@class),' '),' graph-edge ')]");assert len(arrows)==len(r['mechanistic_edges'])
+for arrow,e in zip(arrows,r['mechanistic_edges']):
+ assert arrow.get('data-predicate')==e['predicate']
+ assert arrow.get('data-subject-id',arrow.get('data-subject'))==e['subject']
+ assert arrow.get('data-object-id',arrow.get('data-object'))==e['object']
+ assert root.xpath("//*[@id='"+arrow.get('href')[1:]+"']"),arrow.get('href')
+ refs=[v for v in r['references'] if v['id']=='hdl:1993/32279'];assert len(refs)==1
+ assert len(e.get('endpoint_qualifiers',[]))==0 or arrow.get('data-subject-id') is not None
+assert root.xpath("//a[@href='https://mspace.lib.umanitoba.ca/handle/1993/32279']")
+nodes=kgx_nodes([vr]);exported=kgx_edges([vr]);assert len(exported)==len(r['mechanistic_edges'])
+assert all(n.id!='hdl:1993/32279' for n in nodes)
+for e,k in zip(r['mechanistic_edges'],exported):
+ assert k.subject==e['subject'] and k.object==e['object']
+ assert json.loads(k.evidence)==e['evidence']
+ assert json.loads(k.endpoint_qualifiers or '[]')==e.get('endpoint_qualifiers',[])
+ if 'hdl:1993/32279' in k.source_records:assert refs[0] in json.loads(k.reference_metadata)
+for name,text in render_kgx([vr]).items():(out/name).write_text(text)
+checks.append({'check':'standalone_native_page_and_graph_KGX','passed':True,'arrows':len(arrows),'kgx_edges':len(exported),'kgx_nodes':len(nodes),'qualified_edges':sum(bool(e.get('endpoint_qualifiers')) for e in r['mechanistic_edges']),'visual_scope':'Programmatic original renderer checks; no browser screenshot or all-site-current claim.'})
+save('bounded-gates.json',{'target':bind(t),'runtime_handoff':bind(I/'handoff.json'),'runtime_status':'external proposal pending independent acceptance','checks':checks,'negative_controls':negative,'style_original':bind(style),'full_corpus_build':False,'full_tests':False,'maintained_writes':False})
+print(json.dumps({'passed':len(checks),'negative_controls':len(negative),'edges':len(exported),'target':bind(t)['sha256']}))

@@ -1,0 +1,162 @@
+{
+  "status": "bounded_authority_proposal_audit_passed_with_limitations",
+  "reviewer": "/root/ppi_science_review",
+  "independent_of_proposal_authoring": true,
+  "finished_at": "2026-10-12T06:45:03.255652+00:00",
+  "timing_note": "Initial reads and first audit execution preceded a persisted timestamp. Actual tool receipts are preserved; no earlier exact start time is fabricated. Structural finalization timestamp is recorded in structural-audit.json.",
+  "proposal_handoff": {
+    "path": "/private/tmp/pathwaymech-next-231-authority-preparation-20261012/handoff.json",
+    "bytes": 6802,
+    "sha256": "a8ac9131b4072394a607b05982ae51205de5207262eff42a2de1c73676d76509"
+  },
+  "proposal_manifest": {
+    "path": "/private/tmp/pathwaymech-next-231-authority-preparation-20261012/artifact-manifest.json",
+    "bytes": 764457,
+    "sha256": "2a34844b8a2e438a7e97b152fafa32de648a79e538197476c8852e80b7b95258"
+  },
+  "target": {
+    "path": "/private/tmp/pathwaymech-next-231-author-successor-20261012/draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml",
+    "bytes": 107431,
+    "sha256": "20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5"
+  },
+  "accepted_ATP_baseline": {
+    "path": "/private/tmp/pathwaymech-next-230-canonical-build-20261012/handoff.json",
+    "bytes": 2122,
+    "sha256": "38f95c5b38672f8c23de6deea3e182dd3df7b44ceba5087469bb504e67ffcd93"
+  },
+  "accepted_ATP_root_receipt": {
+    "path": "/private/tmp/pathwaymech-next-230-root-canonical-acceptance-20261012.json",
+    "bytes": 1707,
+    "sha256": "3912a6fa7d04574129577a1ca6d0f31b23d9a9417efc7196c153e45f81975592"
+  },
+  "summary": "No actionable defect found in the bounded PPi authority proposal. Exact accepted ATP objects/order, selected native provenance and all 780 source-original roles are preserved. Recommend the proposal as a comparison input for separately reviewed executable preparation; full native build and independent canonical acceptance remain pending.",
+  "expected_counts": {
+    "source_terms": 2507,
+    "source_metadata": 617,
+    "ontology_terms": 1969,
+    "ontology_metadata": 5,
+    "new_source_terms": 33,
+    "new_source_metadata": 22,
+    "new_ontology_terms": 6,
+    "new_ontology_metadata": 0,
+    "manifest_entries": 782,
+    "new_manifest_entries": 24,
+    "rhea_selectors": 24,
+    "new_Rhea_selectors": 0,
+    "original_paths": 780,
+    "new_original_paths": 24,
+    "manifest_and_Rhea_paths": 779,
+    "inherited_ancillary_paths": 1
+  },
+  "observations": [
+    {
+      "topic": "Closed proposal and baseline inputs",
+      "result": "passed",
+      "detail": "All 1,643 proposal scientific artifacts and 479 accepted ATP build artifacts match exact manifests. Hidden/ignored/followed inventories close at 1,645 proposal files and 1,237 ATP files: ATP includes 756 separately bound originals plus manifest/handoff. No runtime cache exclusions in this proposal.",
+      "evidence": [
+        "structural-audit.json"
+      ]
+    },
+    {
+      "topic": "Target and immutable old objects/order",
+      "result": "passed",
+      "detail": "The selected target is exactly 20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5. All ATP term and metadata objects and their relative order remain exact. The 758-entry baseline manifest is an exact prefix of 782 entries. All old EG-based PPi proposal objects also remain.",
+      "evidence": [
+        "structural-audit.json",
+        "audit.py"
+      ]
+    },
+    {
+      "topic": "Complete original-file roles",
+      "result": "passed",
+      "detail": "All 780 distinct original paths are hash-bound symlinks to exact originals: 756 ATP paths plus 24 PPi additions. Manifest and shared Rhea roles occupy 779 paths; the inherited BiGG native version sidecar is the remaining path. Rhea source-component and ontology-selector roles use one identical original. Three native BiGG version helper calls validate the sidecar.",
+      "evidence": [
+        "structural-audit.json",
+        "native-replay.json"
+      ]
+    },
+    {
+      "topic": "Native selected source provenance",
+      "result": "passed",
+      "detail": "Fresh source_terms replay of all 782 entries in manifest order reproduces all 38 selected PPi source terms, 25 first-source metadata objects and 27 hit-bearing observations. Five existing terms are unchanged; 33 source terms and 22 used metadata objects are added. Six MetaCyc reactions retain native reaction entity type and contextual labels.",
+      "evidence": [
+        "native-replay.json"
+      ]
+    },
+    {
+      "topic": "First-source conflict accounting",
+      "result": "passed",
+      "detail": "Only PPI and PROTON differ from incremental-source provenance: native first-source order preserves existing bacillibactin keys with identical labels/synonyms. Their fresh PPi source entries and originals remain in the manifest; two unused metadata keys are correctly omitted from authority sources. No canonical object is overwritten.",
+      "evidence": [
+        "native-replay.json"
+      ]
+    },
+    {
+      "topic": "Ontology originals",
+      "result": "passed_with_inherited_full_hashes",
+      "detail": "Twelve selected IDs replay through the native extractor on immutable read-only SQL connections with query_only enabled. Six existing ChEBI terms and all five metadata objects remain exact; five taxa and GO:0043565 add six terms. Native release/license statements match accepted ATP metadata. Four original SQL size/mtime/hash pins agree; full SQL hashing is inherited from accepted actual ATP native execution and is not repeated.",
+      "evidence": [
+        "native-replay.json",
+        "structural-audit.json"
+      ]
+    },
+    {
+      "topic": "Rhea and PathBank preservation",
+      "result": "passed",
+      "detail": "All 24 ordered Rhea selectors remain byte-identical. Four inherited PathBank typed ZIP/member/root selectors replay from unchanged whole archive originals, with member size/hash verified. No new PPi PathBank scientific support is inferred.",
+      "evidence": [
+        "native-replay.json",
+        "structural-audit.json"
+      ]
+    },
+    {
+      "topic": "Handle scope and future execution",
+      "result": "passed_with_pending_full_build",
+      "detail": "Handle remains a reference only, absent from collected biological IDs and both authority term maps. Accepted reference-capable source/config fixture bytes are unchanged. The proposal selects only the PPi target; the ATP baseline has 231 prospective pathways, a separate build-only retention selector, and .gitkeep. The complete PPi execution corpus/runtime and full native builder remain pending.",
+      "evidence": [
+        "consumer-and-plan-check.json",
+        "structural-audit.json",
+        "execution-plan.json (external proposal)"
+      ]
+    }
+  ],
+  "findings": [],
+  "actual_checks": {
+    "bounded_native_audit": {
+      "launch": "0be923, session 27308",
+      "intermediate": "41f92d (running; no terminal exit code; seals/objects/originals stage passed)",
+      "terminal": "f74330/1",
+      "scope": "782-entry selected native replay and read-only SQL extraction succeeded and native-replay.json was persisted; subsequent corpus basename assertion failed."
+    },
+    "corrected_structural_finalizer": {
+      "launch": "37567f, session 15545",
+      "terminal": "bd08d1/0",
+      "scope": "Complete captured path-role check, exact retention ID set, repeated immutable seal/object/input checks; no native replay rerun."
+    },
+    "read_receipts": [
+      "662111/0 README and plan",
+      "7ffc82/0 summaries and author failure/execution receipts",
+      "c7177e/0 actual ATP output acceptance and handoff",
+      "e9e3c3/0 author bounded replay implementation",
+      "5ef285/0 SQL pins and author bounded checks",
+      "32f864/0 native source_terms and ontology extractor implementation",
+      "807e11/0 accepted ATP actual execution ledger",
+      "afc054/0 author ancillary/consumer/control implementation",
+      "726683/0 independently replayed selected labels, provenance and ontology metadata"
+    ]
+  },
+  "limitations": [
+    "This is an independent bounded authority proposal audit against accepted actual ATP outputs; it is not PPi canonical-output acceptance, maintained adoption, a new scientific literature review or an actual merged-base bridge.",
+    "Neither full native builder function/CLI was called. Selected native source adapters were replayed across all 782 entries, while only 38 PPi IDs were retained. Full cross-corpus builder constraints and eventual output comparison remain pending.",
+    "Four multi-gigabyte SQL full hashes are inherited from accepted ATP native execution and root acceptance. Current stat pins, native metadata and selected SQL assertions were checked; no duplicate full SQL hash is claimed.",
+    "The proposal author nine bounded checks and ten negative controls are inspected, hash-bound receipts, not relabeled as fresh audit executions. This audit separately verifies the listed source/ontology/provenance/closure properties; no corpus test or maintained site gate ran.",
+    "The initial audit reached and saved its successful native replay, then failed on a basename-only retention-selector assertion. The failed script and exact failure receipt remain; a separate successful finalizer checks the complete captured corpus paths and exact retention IDs. No expensive native replay was repeated merely to write the report.",
+    "The author initial Rhea staging failure and partial staging remain immutable in the proposal seal. Earlier 779-path proposal-summary scope is explicitly superseded for complete inputs by the 780-path preparation-summary and complete-original-bindings; no failed/partial stage is relabeled successful.",
+    "No maintained, sealed proposal/author/baseline, shared cache, Git/GitHub, history or native-review-save writes occurred. Only this external audit directory was written. No children were spawned for this audit.",
+    "Original source-access, licensing deferral, scientific uncertainty and source-exhaustion-false limits remain. No pathway identity or biological mechanism is newly inferred from authority labels."
+  ],
+  "native_persistence": false,
+  "full_native_builder_executed": false,
+  "full_canonical_acceptance": false,
+  "source_exhaustion": false
+}

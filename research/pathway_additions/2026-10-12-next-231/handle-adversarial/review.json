@@ -1,0 +1,102 @@
+{
+  "status": "accepted_for_bounded_reference_only_implementation",
+  "reviewer": "Codex /root/handle_adversarial",
+  "started_at": "2026-10-12T05:50:04.824257Z",
+  "finished_at": "2026-10-12T05:54:06.010687Z",
+  "reviewed_handoff": {
+    "path": "/private/tmp/pathwaymech-next-231-reference-implementation-20261012/handoff.json",
+    "bytes": 2748,
+    "sha256": "4afb6912df124836718ec0f548e7053139814ea892b1ff43473beb1a98ffd64a"
+  },
+  "reviewed_manifest": {
+    "path": "/private/tmp/pathwaymech-next-231-reference-implementation-20261012/artifact-manifest.json",
+    "bytes": 83557,
+    "sha256": "2bbb91877eb3a8c8936742e13af44c979a51367b36eb54281cd85834a3249a9f"
+  },
+  "scope": "Independent adversarial code, schema, boundary, regression and citation-preservation review of the exact four-file Handle implementation; no scientific record acceptance.",
+  "findings": [],
+  "assessments": [
+    {
+      "id": "handle-01",
+      "status": "supported",
+      "summary": "Reference.id is the only newly admitted Handle location. Native fullmatch and generated LinkML syntax agree on the documented bounded subset.",
+      "evidence": [
+        "seal-verification.json",
+        "independent-probes.json"
+      ]
+    },
+    {
+      "id": "handle-02",
+      "status": "supported",
+      "summary": "Global biological prefixes and all other LinkML slots are unchanged. Record, taxon, participant, reaction, cluster and both graph-endpoint attempts remain rejected; authority/policy and collector boundary tests pass.",
+      "evidence": [
+        "seal-verification.json",
+        "independent-probes.json",
+        "focused-tests-1.stdout"
+      ]
+    },
+    {
+      "id": "handle-03",
+      "status": "supported",
+      "summary": "Declared edge and endpoint-qualifier citations pass; undeclared citations still fail native local resolution. LinkML does not implement local cross-reference resolution, as before.",
+      "evidence": [
+        "independent-probes.json",
+        "focused-tests-1.stdout"
+      ]
+    },
+    {
+      "id": "handle-04",
+      "status": "supported",
+      "summary": "The exact issuing URL, full citation metadata, source version conflict and PDF hash survive page/KGX generation. No Handle graph or KGX node is created. Frozen draft ppi-037 and ppi-038 retain the Handle and all 51 edges retain evidence and qualifiers.",
+      "evidence": [
+        "frozen-render-check.json",
+        "independent-probes.json"
+      ]
+    },
+    {
+      "id": "handle-05",
+      "status": "supported",
+      "summary": "All pre-existing reference prefixes retain acceptance/rejection behavior, and all 229 observed maintained records pass both old/new native validators and generated LinkML JSON schemas. Only Reference.id changes in the generated schema.",
+      "evidence": [
+        "independent-probes.json"
+      ]
+    },
+    {
+      "id": "handle-06",
+      "status": "supported",
+      "summary": "The added tests cover positive citations, malformed syntax, local resolution, biological rejection, authority policy and snapshot boundaries, collectors, and exact page/KGX metadata. Independent focused run passed 147 tests; changed Python lint passes.",
+      "evidence": [
+        "focused-tests-1.json",
+        "focused-tests-1.stdout",
+        "lint-1.json",
+        "lint-1.stdout"
+      ]
+    }
+  ],
+  "validation": {
+    "focused_pytest": "147 passed",
+    "changed_python_lint": "passed",
+    "grammar_cases": 349,
+    "recorded_independent_checks": 365,
+    "old_corpus_native_and_generated_schema_before_after": 229,
+    "input_closed_manifest": "271 artifacts passed before and after"
+  },
+  "observed_failure_history": [
+    "Author package retains its initial two wrong error-message assertions (95 passed, 2 failed); native endpoint rejection was correct and the final focused run passed. No unresolved defect remains from those assertions.",
+    "This audit had no failed execution or product test. One reviewer receipt boolean key said four outputs while listing three; the initial receipt/helper are retained and an explicit successor corrects that label after rehashing the three outputs."
+  ],
+  "limitations": [
+    "Full maintained gate suite, canonical build, and scientific review were not run or claimed.",
+    "The 51-edge draft is the sealed implementation fixture at a0f144cf3191ff3f02daf7cd7c4c0e5ef1d96fa7cc72fa16e132e5819e35f2b0, not a later or final author draft.",
+    "The broad syntax/old-corpus matrix used generated LinkML JSON Schema directly; six representative syntax cases additionally invoked the actual LinkML Validator wrapper, and focused pytest invokes that wrapper extensively.",
+    "Native validation remains responsible for declared-reference and graph-endpoint resolution. Existing external mappings and provider-local cluster gene strings keep their prior contracts.",
+    "The supported Handle grammar is deliberately a subset; no claim about complete Handle-system syntax or resolver behavior is made. An explicit URL is required by this record to produce its issuing citation link.",
+    "Current maintained before-file hashes matched during intake; exact before-file checks and full maintained gates must be repeated on eventual adoption."
+  ],
+  "remaining_for_root": [
+    "Review this report and exact patch.",
+    "Bind any later author draft.",
+    "Adopt into the intended maintained baseline only after exact before-file checks.",
+    "Run normal maintained gates and authorized PR workflow."
+  ]
+}

@@ -1,0 +1,12 @@
+from pathlib import Path
+import hashlib,json,shutil,subprocess
+O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/runtime');C=O/'candidate';R=Path('/private/tmp/pathwaymech-next-231-author-20261012/authority/REFERENCE-NAMESPACE-REQUIREMENT.md')
+def bind(p):
+ with p.open('rb') as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h}
+assert not C.exists();shutil.copytree(B,C);shutil.copyfile(R,O/'REFERENCE-NAMESPACE-REQUIREMENT.md')
+cmd=['rg','--files','--no-ignore','--hidden','--follow','-0',str(B)];r=subprocess.run(cmd,capture_output=True,check=True);assert not r.stderr;rows=[]
+for raw in sorted(x for x in r.stdout.split(b'\0') if x):
+ p=Path(raw.decode());q=C/p.relative_to(B);assert p.read_bytes()==q.read_bytes();rows.append({'relative_path':str(p.relative_to(B)),'original':bind(p),'candidate_initial':bind(q)})
+(O/'baseline.json').write_text(json.dumps({'accepted_runtime':str(B),'runtime_intake':bind(Path('/private/tmp/pathwaymech-next-229-root-canonical-review-intake-20261012.json')),'requirement':bind(R),'inventory_command':cmd,'files':rows,'boundary':'External candidate only; no maintained/cache/Git/install or full-test writes.'},indent=2)+'\n')
+print(json.dumps({'copied_baseline_files':len(rows),'requirement':bind(R)}))

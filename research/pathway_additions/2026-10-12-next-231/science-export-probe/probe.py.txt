@@ -1,0 +1,91 @@
+from pathlib import Path
+import copy,csv,hashlib,io,json,sys,subprocess
+from datetime import datetime,timezone
+import yaml
+from lxml import etree,html
+O=Path('/private/tmp/pathwaymech-next-231-science-successor-export-probe-20261012')
+A=Path('/private/tmp/pathwaymech-next-231-author-20261012');S=Path('/private/tmp/pathwaymech-next-231-author-successor-20261012')
+R=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/runtime/scripts')
+def bind(p):
+ p=Path(p); b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def load(p):return json.loads(Path(p).read_text())
+start=datetime.now(timezone.utc).isoformat(); checks=[]
+def check(name,ok,**detail):
+ checks.append({'name':name,'passed':bool(ok),**detail})
+ if not ok: raise AssertionError(name)
+for packet in [S,A]:
+ h=load(packet/'handoff.json');m=load(h['manifest']['path']); b=bind(h['manifest']['path']);check(packet.name+' manifest binding',b==h['manifest'])
+ failures=[]
+ for row in m['artifacts']:
+  actual=bind(row['path'])
+  if any(actual[k]!=row[k] for k in ['path','bytes','sha256']):failures.append(row['path'])
+ check(packet.name+' artifact hashes',not failures,count=len(m['artifacts']),failures=failures)
+ if packet==S:
+  actual=set(subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow',str(S)],text=True).splitlines())
+  expected={x['path'] for x in m['artifacts']}|{str(S/'handoff.json'),str(S/'artifact-manifest.json')}
+  check('successor closed inventory including hidden ignored',actual==expected,files=len(actual),extra=sorted(actual-expected),missing=sorted(expected-actual))
+name='pentose-phosphate-pathway-non-oxidative-branch-ii.yaml';old=yaml.safe_load((A/'draft'/name).read_bytes());new=yaml.safe_load((S/'draft'/name).read_bytes())
+check('same record identity',old['id']==new['id'])
+check('same taxa and participants',all(old[k]==new[k] for k in ['taxa','participants']),taxa=len(new['taxa']),participants=len(new['participants']))
+reaction_stripped=[{k:v for k,v in n.items() if k!='direction'} for n in new['reactions']]
+check('only direction changed in reaction declarations',reaction_stripped==old['reactions'] and len(new['reactions'])==6 and all(n.get('direction')=='reversible' for n in new['reactions']))
+triples=lambda r:[(e['id'],e['subject'],e['predicate'],e['object']) for e in r['mechanistic_edges']]
+check('all 51 ordered edge identities and triples unchanged',triples(old)==triples(new) and len(triples(new))==51)
+side=lambda r:[e for e in r['mechanistic_edges'] if e['predicate'] in {'consumes','produces'}]
+check('all 20 complete side edges unchanged',side(old)==side(new) and len(side(new))==20)
+refs=lambda r:[x['id'] for x in r['references']]
+check('all 53 ordered reference identities retained',refs(old)==refs(new) and len(refs(new))==53)
+check('reference original bindings byte exact',(A/'reference-original-bindings.json').read_bytes()==(S/'reference-original-bindings.json').read_bytes())
+bindings=load(S/'reference-original-bindings.json'); reaction_results=[]
+for n in new['reactions']:
+ b=bindings[n['id']];check('source hash '+n['id'],bind(b['path'])==b)
+ x=etree.parse(b['path']);native=x.xpath('/ptools-xml/Reaction/reaction-direction/text()')
+ reaction_results.append({'id':n['id'],'native':native,'record':n['direction'],'binding':b})
+check('six exact native directions agree',all(x['native']==['REVERSIBLE'] for x in reaction_results))
+# Inspect saved outputs independently before any replay.
+pages={p.name:html.fromstring((p/'standalone/records/MetaCyc_PWY-8178.html').read_bytes()) for p in [A,S]}
+def graph_triples(doc):
+ return [(a.get('data-subject-id',a.get('data-subject')),a.get('data-predicate'),a.get('data-object-id',a.get('data-object'))) for a in doc.xpath('//a[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]')]
+expected=[(e['subject'],e['predicate'],e['object']) for e in new['mechanistic_edges']]
+check('saved page arrows exact old and new',all(graph_triples(d)==expected for d in pages.values()),arrows=51)
+doc=pages[S.name]; page_directions=[]
+for n in new['reactions']:
+ hits=doc.xpath('//a[@data-node-id=$rid]',rid=n['id']);check('unique reaction graph node '+n['id'],len(hits)==1)
+ a=hits[0];title=''.join(a.xpath('./title')[0].itertext());row=doc.xpath('//tr[@id=$id]',id=a.get('href')[1:])
+ check('page direction '+n['id'],'Source reaction direction: reversible' in a.get('aria-label','') and 'Source reaction direction: reversible' in title and len(row)==1 and row[0].xpath('./td')[2].text_content()=='reversible')
+ page_directions.append({'id':n['id'],'aria_label':a.get('aria-label'),'title':title,'reaction_row_direction':row[0].xpath('./td')[2].text_content()})
+nodes={p.name:list(csv.DictReader((p/'standalone/nodes.tsv').open(),delimiter='\t')) for p in [A,S]};eds={p.name:list(csv.DictReader((p/'standalone/edges.tsv').open(),delimiter='\t')) for p in [A,S]}
+check('saved KGX node identity order retained',[x['id'] for x in nodes[A.name]]==[x['id'] for x in nodes[S.name]],count=len(nodes[S.name]))
+check('saved KGX 51 ordered biological edge triples retained',[(e['subject'],e['predicate'],e['object']) for e in eds[A.name]]==[(e['subject'],e['predicate'],e['object']) for e in eds[S.name]] and len(eds[S.name])==51,edges=len(eds[S.name]))
+changed_export_ids=[{'edge':new['mechanistic_edges'][i]['id'],'original':a['id'],'successor':b['id']} for i,(a,b) in enumerate(zip(eds[A.name],eds[S.name])) if a['id']!=b['id']]
+check('export edge ID changes exactly track changed qualifier objects',all((a['id']!=b['id'])==(a['endpoint_qualifiers']!=b['endpoint_qualifiers']) for a,b in zip(eds[A.name],eds[S.name])),changed_ids=changed_export_ids)
+node_index={x['id']:x for x in nodes[S.name]};kgx_directions=[]
+for n in new['reactions']:
+ row=node_index[n['id']];ctx=json.loads(row['source_contexts']);matches=[c for c in ctx if c.get('record_id')==new['id'] and c.get('collection')=='reactions' and c.get('id')==n['id']]
+ check('saved KGX direction '+n['id'],row['direction']=='reversible' and len(matches)==1 and matches[0].get('direction')=='reversible')
+ kgx_directions.append(row)
+check('saved KGX evidence and endpoint qualifiers match exact successor',all(json.loads(k['evidence'])==e['evidence'] and json.loads(k['endpoint_qualifiers'] or '[]')==e.get('endpoint_qualifiers',[]) for e,k in zip(new['mechanistic_edges'],eds[S.name])))
+check('Handle reference only, absent graph/export biological nodes','hdl:1993/32279' not in node_index and not doc.xpath('//a[@data-node-id="hdl:1993/32279"]') and bool(doc.xpath('//a[@href="https://mspace.lib.umanitoba.ca/handle/1993/32279"]')))
+# Bounded production function replay; imports below have no builder or corpus execution.
+sys.path[:0]=[str(S/'validation-candidate/src'),str(R)]
+from pathwaymech.schema import validate_record
+from pathwaymech.cli import _record_page
+from pathwaymech.kgx import render_kgx,_edge_id
+from build_source_identifier_snapshot import corpus_ids
+from build_ontology_identifier_snapshot import walk_identifiers
+check('all old and successor KGX IDs reproduce native qualifier identity rule',all(k['id']==_edge_id(r['id'],e['id'],e.get('endpoint_qualifiers',[])) for packet,r in [(A,old),(S,new)] for e,k in zip(r['mechanistic_edges'],eds[packet.name])))
+v=validate_record(new); rendered=_record_page(v,source_path='draft/'+name,sessions=[]); exported=render_kgx([v])
+check('fresh page byte matches sealed saved page',rendered.encode()==(S/'standalone/records/MetaCyc_PWY-8178.html').read_bytes())
+check('fresh KGX bytes match sealed saved exports',all(value.encode()==(S/'standalone'/key).read_bytes() for key,value in exported.items()))
+without=copy.deepcopy(new)
+for n in without['reactions']:del n['direction']
+check('direction-only removal leaves edge export byte exact',render_kgx([validate_record(without)])['edges.tsv']==exported['edges.tsv'])
+sids=corpus_ids(S/'draft');old_sids=corpus_ids(A/'draft');prefixes={'CHEBI','GO','NCBITaxon','RHEA'};oids=walk_identifiers(new,prefixes)
+check('source and ontology collector selections unchanged',sids==old_sids and oids==walk_identifiers(old,prefixes),source_count=len(sids),ontology_count=len(oids))
+bridge=load(S/'authority-input-bridge.json');check('claimed selectors exactly match fresh native collectors',sorted(sids)==bridge['source_collector_ids'] and sorted(oids)==bridge['ontology_collector_ids'])
+check('Handle excluded from bounded authority selectors','hdl:1993/32279' not in sids|oids and 'hdl:1993/32279' in walk_identifiers(new,{'hdl'}))
+for kind in ['sources','ontology']:
+ check(kind+' authority proposal byte unchanged',(A/f'authority/proposed-{kind}.json').read_bytes()==(S/f'validation-candidate/data/identifier_authorities/{kind}.json').read_bytes())
+report={'scope':'Bounded independent successor graph, saved render/export, exact original reaction directions and authority-selection continuity probe. No scientific primary-literature reassessment, browser visual assessment, corpus tests, canonical builds or authority-source refresh.','started_at':start,'completed_at':datetime.now(timezone.utc).isoformat(),'target':bind(S/'draft'/name),'original_target':bind(A/'draft'/name),'successor_handoff':bind(S/'handoff.json'),'checks':checks,'native_directions':reaction_results,'page_directions':page_directions,'kgx_reaction_rows':kgx_directions,'source_ids':sorted(sids),'ontology_ids':sorted(oids),'issues':[],'canonical_limit':'Original EG-based proposals retained; ATP canonical baseline bridge and full canonical build remain root-owned and pending.','writes':'Only this probe directory; no packet, maintained tree, cache, history, Git or GitHub mutation.'}
+(O/'probe-results.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'passed':len(checks),'issues':[],'result':bind(O/'probe-results.json'),'target':report['target'],'source_ids':len(sids),'ontology_ids':len(oids)},indent=2))

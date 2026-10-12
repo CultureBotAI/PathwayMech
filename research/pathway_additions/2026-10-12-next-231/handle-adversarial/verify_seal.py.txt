@@ -1,0 +1,142 @@
+"""Independent read-only verification; writes only the external audit receipt."""
+from __future__ import annotations
+
+import ast
+import difflib
+import hashlib
+import json
+import os
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parent
+PACKAGE = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012')
+EXPECTED_HANDOFF = '4afb6912df124836718ec0f548e7053139814ea892b1ff43473beb1a98ffd64a'
+EXPECTED_MANIFEST = '2bbb91877eb3a8c8936742e13af44c979a51367b36eb54281cd85834a3249a9f'
+
+
+def binding(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def inventory(path):
+    command = ['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(path)]
+    run = subprocess.run(command, capture_output=True, check=True)
+    names = {Path(item.decode()).relative_to(path).as_posix()
+             for item in run.stdout.split(b'\0') if item}
+    walked = set()
+    links = []
+    for current, directories, files in os.walk(path, followlinks=True):
+        for name in files:
+            item = Path(current) / name
+            assert item.is_file(), item
+            walked.add(item.relative_to(path).as_posix())
+            if item.is_symlink():
+                links.append(item.relative_to(path).as_posix())
+        for name in directories:
+            item = Path(current) / name
+            if item.is_symlink():
+                links.append(item.relative_to(path).as_posix())
+    assert names == walked, {'rg_only': sorted(names - walked), 'walk_only': sorted(walked - names)}
+    return names, links
+
+
+def main():
+    started = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+    handoff_path = PACKAGE / 'handoff.json'
+    handoff = json.loads(handoff_path.read_text())
+    assert binding(handoff_path)['sha256'] == EXPECTED_HANDOFF
+    manifest_path = PACKAGE / 'artifact-manifest.json'
+    assert binding(manifest_path) == handoff['manifest']
+    assert binding(manifest_path)['sha256'] == EXPECTED_MANIFEST
+    manifest = json.loads(manifest_path.read_text())
+    files = manifest['artifacts']
+    assert len(files) == handoff['artifact_count'] == 271
+    mapped = {row['relative_path']: row for row in files}
+    assert len(mapped) == len(files)
+    assert all(not Path(name).is_absolute() and '..' not in Path(name).parts for name in mapped)
+    names, links = inventory(PACKAGE)
+    assert names == set(mapped) | {'artifact-manifest.json', 'handoff.json'}
+    for relative, row in mapped.items():
+        assert binding(PACKAGE / relative) == {key: row[key] for key in ('path', 'bytes', 'sha256')}, relative
+    baseline = json.loads((PACKAGE / 'baseline.json').read_text())
+    runtime = Path(baseline['accepted_runtime'])
+    candidate = PACKAGE / 'candidate'
+    old_rows = {row['relative_path']: row for row in baseline['files']}
+    assert len(old_rows) == len(baseline['files']) == 222
+    runtime_names, runtime_links = inventory(runtime)
+    assert runtime_names == set(old_rows)
+    candidate_names, candidate_links = inventory(candidate)
+    added = {'tests/test_handle_references.py'}
+    changed = {'src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml',
+               'tests/test_linkml_schema.py'}
+    assert candidate_names == runtime_names | added
+    actual_changed = set()
+    parts = []
+    for relative, row in old_rows.items():
+        old = runtime / relative
+        new = candidate / relative
+        assert binding(old) == row['original'], relative
+        if old.read_bytes() != new.read_bytes():
+            actual_changed.add(relative)
+            parts.extend(difflib.unified_diff(old.read_text().splitlines(keepends=True),
+                                             new.read_text().splitlines(keepends=True),
+                                             fromfile='a/' + relative, tofile='b/' + relative))
+    assert actual_changed == changed
+    for relative in sorted(added):
+        parts.extend(difflib.unified_diff([], (candidate / relative).read_text().splitlines(keepends=True),
+                                         fromfile='/dev/null', tofile='b/' + relative))
+    assert ''.join(parts).encode() == (PACKAGE / 'delta.patch').read_bytes()
+    copy_plan = json.loads((PACKAGE / 'copy-plan.json').read_text())
+    assert {row['relative_path'] for row in copy_plan} == changed | added
+    assert len(copy_plan) == 4
+    for row in copy_plan:
+        relative = row['relative_path']
+        assert binding(candidate / relative) == row['after']
+        assert row['before'] == (binding(runtime / relative) if relative in changed else None)
+    old_schema = yaml.safe_load((runtime / 'src/pathwaymech/schema/pathwaymech.yaml').read_text())
+    new_schema = yaml.safe_load((candidate / 'src/pathwaymech/schema/pathwaymech.yaml').read_text())
+    reference_slot = new_schema['classes']['Reference']['attributes']['id']
+    assert set(reference_slot) == {'required', 'pattern', 'description'}
+    new_schema['classes']['Reference']['attributes']['id'] = old_schema['classes']['Reference']['attributes']['id']
+    assert new_schema == old_schema
+    def assignment(path, name):
+        return next(ast.dump(node, include_attributes=False) for node in ast.parse(path.read_text()).body
+                    if isinstance(node, ast.Assign)
+                    and any(isinstance(target, ast.Name) and target.id == name for target in node.targets))
+    assert assignment(runtime / 'src/pathwaymech/schema.py', 'ALLOWED_CURIE_PREFIXES') == assignment(candidate / 'src/pathwaymech/schema.py', 'ALLOWED_CURIE_PREFIXES')
+    actual_root = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+    maintained_bindings = []
+    for row in copy_plan:
+        if row['before']:
+            now = binding(actual_root / row['relative_path'])
+            maintained_bindings.append(now)
+            assert now['bytes'] == row['before']['bytes'] and now['sha256'] == row['before']['sha256']
+    result = {
+        'status': 'passed', 'reviewer': 'Codex /root/handle_adversarial',
+        'started_at': started, 'finished_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+        'handoff': binding(handoff_path), 'manifest': binding(manifest_path),
+        'closed_artifact_count': len(files), 'package_file_count': len(names),
+        'hidden_ignored_and_followed_paths_included': True,
+        'independent_os_walk_matches_rg': True,
+        'symlinks': {'package': links, 'runtime': runtime_links, 'candidate': candidate_links},
+        'baseline_file_count': len(runtime_names), 'candidate_file_count': len(candidate_names),
+        'baseline_current_bytes_preserved': True, 'unchanged_candidate_files': len(runtime_names) - len(changed),
+        'changed_existing_files': sorted(changed), 'added_files': sorted(added),
+        'complete_diff_recomputed_exact': True, 'copy_plan_recomputed_exact': True,
+        'global_prefixes_unchanged': True, 'linkml_only_reference_id_changed': True,
+        'maintained_owner_before_hashes_match_at_audit_time': maintained_bindings,
+        'limitations': ['A later maintained adoption must repeat exact before-file binding checks.'],
+    }
+    output = ROOT / 'seal-verification.json'
+    assert not output.exists()
+    output.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == '__main__':
+    main()

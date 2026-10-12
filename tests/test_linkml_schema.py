@@ -114,11 +114,11 @@ def test_the_schema_documents_consumes_and_produces_direction() -> None:
     )
 
 
-def test_the_schema_and_the_python_validator_allow_the_same_prefixes() -> None:
+def test_schema_and_python_validator_allow_the_same_biological_prefixes() -> None:
     view = SchemaView(str(SCHEMA_PATH))
     patterns = {
         view.induced_slot("id", name).pattern
-        for name in ("PathwayRecord", "NamedNode", "Reference")
+        for name in ("PathwayRecord", "NamedNode")
     }
     assert len(patterns) == 1
     allowed = re.match(r"\^\(([^)]*)\):", patterns.pop()).group(1).split("|")
