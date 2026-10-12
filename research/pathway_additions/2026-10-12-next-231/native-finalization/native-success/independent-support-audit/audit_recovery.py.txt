@@ -1,0 +1,83 @@
+"""Independent read-only verification of original gate receipts and exact recovery."""
+import datetime
+import hashlib
+import importlib.util
+import json
+import marshal
+import os
+from pathlib import Path
+import struct
+import sys
+
+HERE=Path(__file__).resolve().parent
+GATES=Path('/private/tmp/pathwaymech-next-231-maintained-gates-20261012')
+RECOVERY=Path('/private/tmp/pathwaymech-next-231-final-guard-recovery-20261012')
+ROOT=Path('/private/tmp/pathwaymech-next-231-20261012')
+PREP=Path('/private/tmp/pathwaymech-next-231-integration-preparation-successor-20261012')
+ADOPTION=Path('/private/tmp/pathwaymech-next-231-maintained-adoption-20261012/adoption.json')
+
+
+def read(p):return json.loads(Path(p).read_bytes())
+def bind(p):
+    p=Path(p)
+    with p.open('rb') as f:d=hashlib.file_digest(f,'sha256').hexdigest()
+    return {'path':str(p),'bytes':p.stat().st_size,'sha256':d}
+def verify(p,r):
+    b=bind(p);assert b['sha256']==r['sha256'] and b['bytes']==r['bytes'],str(p)
+
+
+started=datetime.datetime.now(datetime.UTC).isoformat()
+assert bind(GATES/'execution.json')['sha256']=='60e3ac711b6a083160a612f4f9dc78d3d44e48c9e714114f5fab3d123c7154ac'
+assert bind(RECOVERY/'execution.json')['sha256']=='c4fdf084e1c908205de4b70cfb4f1829933ac769d00bf48db0de46bb25e3abd5'
+old=read(GATES/'execution.json');new=read(RECOVERY/'execution.json');removal=read(RECOVERY/'removal.json')
+assert old['status']=='failed_guard' and old['failure']['stage']=='final-input-and-output-guards'
+assert old['failure']['message']=='Unbound nongenerated input inventory change'
+names=['render','skills','validate','tests','lint','kgx','vendored','diff-check','site-current']
+assert [r['name'] for r in old['receipts']]==names
+assert new['receipts']==old['receipts'] and all(row['exit_code']==0 for row in old['receipts'])
+for row in old['receipts']:
+    for key in ['stdout','stderr']:verify(row[key]['path'],row[key])
+    assert row['cwd']==str(ROOT)
+    assert row['environment']['PYTHONDONTWRITEBYTECODE']=='1' and row['environment']['UV_NO_SYNC']=='1'
+assert '2462 passed, 3 skipped, 3 warnings' in (GATES/'tests.stdout').read_text()
+for key in ['original_failed_execution','inputs']:verify(new[key]['path'],new[key])
+verify(new['recovery']['removal']['path'],new['recovery']['removal'])
+for key in ['source','retained_copy','delta','original_failed_execution']:verify(removal[key]['path'],removal[key])
+delta=read(removal['delta']['path']);assert not delta['lost_non_generated_files'] and not delta['changed_non_generated_files']
+assert len(delta['new_non_generated_files'])==1
+artifact=delta['new_non_generated_files'][0];assert artifact['relative_path']=='scripts/__pycache__/new_history_record.cpython-313.pyc'
+assert artifact['sha256']==removal['artifact']['sha256']==removal['retained_copy']['sha256']
+assert not Path(removal['artifact']['path']).exists() and not Path(removal['artifact']['path']).is_symlink()
+body=Path(removal['retained_copy']['path']).read_bytes();source=Path(removal['source']['path'])
+assert body[:4]==importlib.util.MAGIC_NUMBER
+flags,timestamp,size=struct.unpack('<III',body[4:16]);assert flags==0
+assert timestamp==int(source.stat().st_mtime)&0xffffffff and size==source.stat().st_size
+compiled=marshal.loads(body[16:]);fresh=compile(source.read_bytes(),removal['compiled_filename'],'exec')
+assert compiled==fresh and compiled.co_filename==str(source)
+assert new['status']=='passed' and new['recovery']['commands_rerun'] is False
+adoption=read(ADOPTION);os.environ['PATHWAYMECH_PPI_MERGED_BASE']=adoption['merged_binding']['path']
+sys.path.insert(0,str(PREP));import common as guard
+assert Path(guard.__file__).resolve()==PREP/'common.py'
+root=guard.validate_base(ROOT,new['base'],clean=False)
+guard.verify_package();guard.verify_accepted();guard.verify_adopted(root)
+guard.verify_render_history(root,new['render_history_inputs'])
+scope=guard.verify_gate_input_scope(root,new,ADOPTION)
+assert scope==new['recovery']['input_scope'] and scope['nongenerated_inputs_checked']==8919 and scope['exact_new_additions_checked']==0
+for row in new['generated_files']:verify(root/row['relative_path'],row)
+assert {r['relative_path'] for r in new['generated_files']}==set(guard.load(PREP/'expected-changes.json')['allowed_generated_paths'])
+preservation_path=Path('/private/tmp/pathwaymech-next-231-maintained-preservation-20261012.json');pres=read(preservation_path)
+assert pres['status']=='passed' and not pres['problems'];assert pres['gate_receipt']==bind(RECOVERY/'execution.json')
+assert not pres['unexpected_new_files'] and not pres['unapproved_old_file_changes'] and not pres['changed_old_cache_files']
+assert pres['old_edges']==11536 and pres['old_source_contexts']==7668 and pres['old_cache_identities_verified']==765
+assert pres['old_cache_symlinks_verified']==90 and pres['new_cache_copies_regular_verified']==24
+result={'status':'bounded_guard_recovery_independently_verified','started_at':started,'finished_at':datetime.datetime.now(datetime.UTC).isoformat(),
+    'original_failed_execution':bind(GATES/'execution.json'),'recovery':bind(RECOVERY/'execution.json'),'removal':bind(RECOVERY/'removal.json'),
+    'delta':removal['delta'],'retained_bytecode':removal['retained_copy'],'source':removal['source'],
+    'proof':{'magic_matches_pinned_python':True,'timestamp_and_size_header_exact':True,'code_equals_compiled_unchanged_source':True,'bytecode_not_executed':True,
+             'only_one_original_extra_path':True,'extra_path_now_absent':True,'originating_writer':'unknown; no attribution'},
+    'nine_original_command_receipts_and_streams_exact':True,'tests':{'passed':2462,'skipped':3,'warnings':3,'rerun':False},
+    'fresh_strict_scope':scope,'generated_file_count':len(new['generated_files']),'preservation':bind(preservation_path),
+    'unchanged_history_cache_and_adopted_target_verified':True,'waivers_or_approved_new_files_used':False,
+    'maintained_cache_git_writes':False,'review_save_executed':False,'scope':'Actual original commands are inherited verbatim. Independent verification reran only strict read-only final guards and bytecode proof, not commands, rendering or science.'}
+with (HERE/'recovery-assessment.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':result['status'],'original_commands':9,'nongenerated_inputs':8919,'new_input_waivers':0,'unchanged_cache_old':765,'actual_new_cache':24}))

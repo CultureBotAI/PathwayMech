@@ -1,0 +1,21 @@
+"""Root-only wrapper around accepted unchanged PPi preservation helper."""
+from support import *
+import argparse
+
+def main():
+ p=argparse.ArgumentParser(description=__doc__)
+ for name in ['gates','approved-extra-files','output']:p.add_argument('--'+name,type=Path,required=True)
+ mode=p.add_mutually_exclusive_group(required=True);mode.add_argument('--execute',action='store_true');mode.add_argument('--check-inputs',action='store_true')
+ a=p.parse_args();verify_support();adoption=load(ADOPTION);extras=load(a.approved_extra_files)
+ raw=load(a.gates);validate_gate_shape(raw);verify(raw['inputs']);input_paths={r['relative_path'] for r in load(raw['inputs']['path'])['all_maintained_inputs']}
+ gates,_=verify_gates(a.gates,[r for r in extras if r['relative_path'] not in input_paths]);verify_histories(gates)
+ baseline=load(adoption['baseline']['path']);old={r['relative_path'] for r in baseline['all_maintained_files']}
+ assert len(extras)==len({r['relative_path'] for r in extras})
+ for row in extras:assert row['relative_path'] not in old;verify(row,ROOT/row['relative_path'])
+ out=external_new(a.output)
+ command=[PYTHON,'-B',str(PREP/'preserve-maintained.py'),'--root',str(ROOT),'--base',BASE,'--adoption-receipt',str(ADOPTION),'--baseline',adoption['baseline']['path'],'--baseline-kgx',adoption['baseline_kgx']['path'],'--gate-receipt',str(a.gates),'--approved-node-display-delta',str(DISPLAY),'--approved-extra-files',str(a.approved_extra_files),'--output',str(out/'preservation.json')]
+ if a.check_inputs:print(json.dumps({'status':'verified_no_writes','command':command}));return
+ out.mkdir();result,receipt=execute(command,out,'preservation');result.check_returncode()
+ verify_preservation(out/'preservation.json',a.gates);write(out/'execution.json',{'status':'passed','receipt':receipt,'preservation':bind(out/'preservation.json'),'unchanged_accepted_helper':bind(PREP/'preserve-maintained.py'),'maintained_writes':False})
+ print(json.dumps(load(out/'execution.json'),indent=2))
+if __name__=='__main__':main()

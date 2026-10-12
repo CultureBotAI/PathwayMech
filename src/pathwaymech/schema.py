@@ -17,6 +17,9 @@ CURATION_TIMESTAMP = re.compile(r"^20[0-9]{2}-")
 _DATE_TIME = FormatChecker(formats=["date-time"])
 _SOURCE_XML_QUOTE = re.compile(r"^\s*<\s*/?\s*([A-Za-z_:][\w:.-]*)")
 _CONFIDENCE = re.compile(r"^(0(\.[0-9]+)?|1(\.0+)?)(?![\s\S])")
+# Reference-only Handle subset: numeric dot-separated prefix and a simple ASCII
+# suffix. This deliberately does not cover every syntax the Handle system allows.
+_HANDLE_REFERENCE = re.compile(r"hdl:[0-9]+(?:\.[0-9]+)*/[A-Za-z0-9][A-Za-z0-9._-]*")
 _SOURCE_XML_EVIDENCE_TAGS = {
     "Anchor",
     "DataNode",
@@ -359,7 +362,11 @@ def _validate_references(value: Any, errors: list[str]) -> set[str]:
         if not isinstance(reference_id, str) or not reference_id.strip():
             errors.append(f"{path}.id must be a non-empty string")
         else:
-            _validate_curie(reference_id, f"{path}.id", errors)
+            if reference_id.startswith("hdl:"):
+                if not _HANDLE_REFERENCE.fullmatch(reference_id):
+                    errors.append(f"{path}.id must use the supported Handle reference syntax")
+            else:
+                _validate_curie(reference_id, f"{path}.id", errors)
             ids.add(reference_id)
         if not item.get("title") and not item.get("citation"):
             errors.append(f"{path} must include title or citation")

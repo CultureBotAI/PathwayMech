@@ -1,0 +1,153 @@
+"""Seal the independent implementation audit after fresh input preservation checks."""
+import hashlib
+import json
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+PACKAGE = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012')
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def binding(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def inventory(root):
+    raw = subprocess.check_output(['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(root)])
+    return {Path(value.decode()).relative_to(root).as_posix() for value in raw.split(b'\0') if value}
+
+
+def write(path, value):
+    assert not path.exists(), path
+    path.write_text(json.dumps(value, indent=2) + '\n')
+
+
+assert not (ROOT / 'handoff.json').exists()
+# Preserve and transparently correct a reviewer-only count label. The actual
+# render receipt already listed exactly three outputs and all their hashes.
+render_path = ROOT / 'frozen-render-check.json'
+initial_render = render_path.read_bytes()
+render = json.loads(initial_render)
+assert render.pop('all_four_outputs_equal_sealed_fixture_render') is True
+assert len(render['outputs']) == 3
+old_script = (ROOT / 'frozen_render_check.py').read_bytes()
+assert old_script.count(b'all_four_outputs_equal_sealed_fixture_render') == 1
+(ROOT / 'frozen-render-check.initial.json').write_bytes(initial_render)
+(ROOT / 'frozen_render_check.initial.py.txt').write_bytes(old_script)
+render['all_three_outputs_equal_sealed_fixture_render'] = True
+render['output_count'] = 3
+for row in render['outputs']:
+    assert binding(Path(row['path'])) == row
+render_path.write_text(json.dumps(render, indent=2) + '\n')
+script = old_script.replace(b'all_four_outputs_equal_sealed_fixture_render', b'all_three_outputs_equal_sealed_fixture_render')
+(ROOT / 'frozen_render_check.py').write_bytes(script)
+correction = {
+    'status': 'corrected_audit_receipt_label_without_rerunning_or_changing_outputs',
+    'assessed_at': now(),
+    'description': 'The independent reviewer typed four in one boolean key although the receipt lists exactly three outputs: page.html, nodes.tsv, edges.tsv. Original receipt/helper are retained. Successor names three and explicitly records output_count=3; all output hashes were freshly reverified. No implementation defect or failed product test occurred.',
+    'initial_receipt': binding(ROOT / 'frozen-render-check.initial.json'),
+    'initial_helper': binding(ROOT / 'frozen_render_check.initial.py.txt'),
+    'successor_receipt': binding(render_path),
+    'successor_helper': binding(ROOT / 'frozen_render_check.py'),
+}
+write(ROOT / 'audit-receipt-correction.json', correction)
+
+intake = json.loads((ROOT / 'seal-verification.json').read_text())
+assert binding(PACKAGE / 'handoff.json') == intake['handoff']
+assert binding(PACKAGE / 'artifact-manifest.json') == intake['manifest']
+manifest = json.loads((PACKAGE / 'artifact-manifest.json').read_text())
+assert inventory(PACKAGE) == {row['relative_path'] for row in manifest['artifacts']} | {'handoff.json', 'artifact-manifest.json'}
+for row in manifest['artifacts']:
+    assert binding(Path(row['path'])) == {key: row[key] for key in ('path', 'bytes', 'sha256')}
+baseline = json.loads((PACKAGE / 'baseline.json').read_text())
+assert inventory(Path(baseline['accepted_runtime'])) == {row['relative_path'] for row in baseline['files']}
+for row in baseline['files']:
+    assert binding(Path(row['original']['path'])) == row['original']
+preservation = {
+    'status': 'passed', 'finished_at': now(),
+    'closed_sealed_input_271_artifacts_unchanged_after_checks': True,
+    'accepted_runtime_222_files_unchanged_after_checks': True,
+    'hidden_ignored_followed_files_included': True,
+    'writes_confined_to_external_audit_directory': True,
+    'no_maintained_author_shared_cache_git_or_github_mutations_by_reviewer': True,
+}
+write(ROOT / 'post-audit-preservation.json', preservation)
+probes = json.loads((ROOT / 'independent-probes.json').read_text())
+assert probes['status'] == 'passed' and probes['grammar_cases'] == 349 and len(probes['checks']) == 365
+assert len(probes['old_corpus']) == 229
+for name in ['probes-1', 'focused-tests-1', 'lint-1']:
+    assert json.loads((ROOT / f'{name}.json').read_text())['exit_code'] == 0
+assert '147 passed' in (ROOT / 'focused-tests-1.stdout').read_text()
+report = {
+    'status': 'accepted_for_bounded_reference_only_implementation',
+    'reviewer': 'Codex /root/handle_adversarial',
+    'started_at': intake['started_at'], 'finished_at': now(),
+    'reviewed_handoff': intake['handoff'], 'reviewed_manifest': intake['manifest'],
+    'scope': 'Independent adversarial code, schema, boundary, regression and citation-preservation review of the exact four-file Handle implementation; no scientific record acceptance.',
+    'findings': [],
+    'assessments': [
+        {'id': 'handle-01', 'status': 'supported', 'summary': 'Reference.id is the only newly admitted Handle location. Native fullmatch and generated LinkML syntax agree on the documented bounded subset.', 'evidence': ['seal-verification.json', 'independent-probes.json']},
+        {'id': 'handle-02', 'status': 'supported', 'summary': 'Global biological prefixes and all other LinkML slots are unchanged. Record, taxon, participant, reaction, cluster and both graph-endpoint attempts remain rejected; authority/policy and collector boundary tests pass.', 'evidence': ['seal-verification.json', 'independent-probes.json', 'focused-tests-1.stdout']},
+        {'id': 'handle-03', 'status': 'supported', 'summary': 'Declared edge and endpoint-qualifier citations pass; undeclared citations still fail native local resolution. LinkML does not implement local cross-reference resolution, as before.', 'evidence': ['independent-probes.json', 'focused-tests-1.stdout']},
+        {'id': 'handle-04', 'status': 'supported', 'summary': 'The exact issuing URL, full citation metadata, source version conflict and PDF hash survive page/KGX generation. No Handle graph or KGX node is created. Frozen draft ppi-037 and ppi-038 retain the Handle and all 51 edges retain evidence and qualifiers.', 'evidence': ['frozen-render-check.json', 'independent-probes.json']},
+        {'id': 'handle-05', 'status': 'supported', 'summary': 'All pre-existing reference prefixes retain acceptance/rejection behavior, and all 229 observed maintained records pass both old/new native validators and generated LinkML JSON schemas. Only Reference.id changes in the generated schema.', 'evidence': ['independent-probes.json']},
+        {'id': 'handle-06', 'status': 'supported', 'summary': 'The added tests cover positive citations, malformed syntax, local resolution, biological rejection, authority policy and snapshot boundaries, collectors, and exact page/KGX metadata. Independent focused run passed 147 tests; changed Python lint passes.', 'evidence': ['focused-tests-1.json', 'focused-tests-1.stdout', 'lint-1.json', 'lint-1.stdout']},
+    ],
+    'validation': {'focused_pytest': '147 passed', 'changed_python_lint': 'passed',
+                   'grammar_cases': 349, 'recorded_independent_checks': 365,
+                   'old_corpus_native_and_generated_schema_before_after': 229,
+                   'input_closed_manifest': '271 artifacts passed before and after'},
+    'observed_failure_history': [
+        'Author package retains its initial two wrong error-message assertions (95 passed, 2 failed); native endpoint rejection was correct and the final focused run passed. No unresolved defect remains from those assertions.',
+        'This audit had no failed execution or product test. One reviewer receipt boolean key said four outputs while listing three; the initial receipt/helper are retained and an explicit successor corrects that label after rehashing the three outputs.',
+    ],
+    'limitations': [
+        'Full maintained gate suite, canonical build, and scientific review were not run or claimed.',
+        'The 51-edge draft is the sealed implementation fixture at a0f144cf3191ff3f02daf7cd7c4c0e5ef1d96fa7cc72fa16e132e5819e35f2b0, not a later or final author draft.',
+        'The broad syntax/old-corpus matrix used generated LinkML JSON Schema directly; six representative syntax cases additionally invoked the actual LinkML Validator wrapper, and focused pytest invokes that wrapper extensively.',
+        'Native validation remains responsible for declared-reference and graph-endpoint resolution. Existing external mappings and provider-local cluster gene strings keep their prior contracts.',
+        'The supported Handle grammar is deliberately a subset; no claim about complete Handle-system syntax or resolver behavior is made. An explicit URL is required by this record to produce its issuing citation link.',
+        'Current maintained before-file hashes matched during intake; exact before-file checks and full maintained gates must be repeated on eventual adoption.',
+    ],
+    'remaining_for_root': ['Review this report and exact patch.', 'Bind any later author draft.', 'Adopt into the intended maintained baseline only after exact before-file checks.', 'Run normal maintained gates and authorized PR workflow.'],
+}
+write(ROOT / 'review.json', report)
+(ROOT / 'REPORT.md').write_text('''# Independent adversarial review: reference-only Handle support
+
+**Accepted for the bounded implementation. No concrete defects remain in the reviewed four-file delta.** This is not acceptance of the PPi pathway science or a later author draft.
+
+The review binds the implementation handoff `4afb6912df124836718ec0f548e7053139814ea892b1ff43473beb1a98ffd64a` and its 271-artifact manifest `2bbb91877eb3a8c8936742e13af44c979a51367b36eb54281cd85834a3249a9f`. Independent hidden/ignored/followed inventories and hashes passed before and after the checks. The recomputed patch and copy plan match; all 222 original runtime files remain unchanged and 219 candidate files remain identical. The three maintained before-file hashes also matched at intake.
+
+Native references and LinkML Reference.id accept the same documented Handle subset. The global biological whitelist and every other LinkML slot are unchanged. Record, taxon, participant, reaction, cluster and graph-endpoint attempts remain rejected. Authority snapshots, configured namespaces and native collectors stay closed to Handle citation IDs. Evidence links, including qualifier-only citations, still require declared references through the existing native resolution checks.
+
+The exact issuing URL, citation title, date-conflict text and PDF hash survive rendering/export. Independent frozen-draft replay retains the Handle on ppi-037 and ppi-038, preserves the full evidence/qualifier/reference payload of all 51 edges, and creates no Handle biological node. Its page and two KGX files exactly match the sealed implementation fixture. A separate qualifier-only fixture verifies that a citation is retained even when it occurs only in endpoint qualification evidence.
+
+Independent validation passed **147 focused tests**, changed-Python lint, **349 syntax cases**, and **365 recorded audit checks**. All pre-existing reference prefixes preserve behavior. All **229 observed maintained records** pass both old/new native validators and generated LinkML schemas. The broad matrix uses generated JSON Schema directly; representative cases and the pytest tests additionally invoke the actual LinkML Validator wrapper.
+
+The author package honestly retains its first two incorrect error-message expectations; native rejection was already correct. This audit had no failed product test or execution. One audit-only boolean label said four render outputs while listing three; the original helper/receipt and an explicit count correction are retained in `audit-receipt-correction.json`. The three output bytes did not change.
+
+Full maintained gates and the canonical build were not run. Local cross-reference resolution remains native-owned; unchanged external mappings/provider-local strings retain their existing contracts. No live author packet, maintained files, shared cache, Git or GitHub state was changed by this audit. Root must bind any later draft, recheck exact before-file hashes at adoption, and run the normal maintained gates and PR workflow.
+''')
+manifest_rows = []
+for relative in sorted(inventory(ROOT)):
+    assert relative not in {'artifact-manifest.json', 'handoff.json'}
+    manifest_rows.append({**binding(ROOT / relative), 'relative_path': relative})
+write(ROOT / 'artifact-manifest.json', {
+    'version': 1, 'scope': 'All audit files before manifest and handoff; hidden, ignored and followed paths included.',
+    'artifacts': manifest_rows,
+})
+handoff = {
+    'status': report['status'], 'reviewer': report['reviewer'], 'scope': report['scope'],
+    'report': binding(ROOT / 'review.json'), 'report_markdown': binding(ROOT / 'REPORT.md'),
+    'manifest': binding(ROOT / 'artifact-manifest.json'), 'artifact_count': len(manifest_rows),
+    'reviewed_handoff': report['reviewed_handoff'], 'reviewed_manifest': report['reviewed_manifest'],
+    'findings': [], 'validation': report['validation'], 'remaining_for_root': report['remaining_for_root'],
+}
+write(ROOT / 'handoff.json', handoff)
+print(json.dumps({'handoff': binding(ROOT / 'handoff.json'), **handoff}, indent=2))

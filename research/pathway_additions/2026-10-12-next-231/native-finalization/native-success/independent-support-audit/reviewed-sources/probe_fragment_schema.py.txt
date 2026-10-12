@@ -1,0 +1,22 @@
+"""Semantic full-content schema fixture; not current-source inspection or saved review."""
+from support import *
+import runpy,yaml,copy
+
+def fixture():
+ native=runpy.run_path(str(ROOT/'scripts/record_review.py'),run_name='ppi_schema_fixture')
+ doc=copy.deepcopy(load(HERE/'review-content-fragments.json')['review_fields']);at=now()
+ doc.update({'review_id':datetime.fromisoformat(at).strftime('%Y%m%dT%H%M%SZ')+'-external-schema-fixture','started_at':at,'finished_at':at,'reviewer':{'identity':'External schema fixture only','kind':'agent','independence':'self_review','independence_basis':'Not a current maintained review; schema probe only.'},'skill':'.claude/skills/review-yaml-record/SKILL.md','completion':'completed','verdict':'pass_with_limitations','summary':'Schema-only fixture of full inherited scientific content; not an actual saved or current reviewed state.','source':{'git_revision':BASE,'state':'working_tree','inputs':[{'path':TARGET_REL,'sha256':TARGET_SHA,'role':'schema fixture target binding only'}]},'targets':yaml.safe_load((HERE/'targets.yaml').read_bytes())['targets'],'checks':[{'check_id':'fixture-only','name':'Schema fixture, no maintained gate claimed','status':'not_applicable','required':False,'target_ids':[TARGET_ID],'summary':'This sentinel exercises schema shape without fabricating any actual gate receipt.'}]})
+ return native,doc
+
+def main():
+ native,doc=fixture();native['validate_review'](doc,ROOT/'schema/record_review.yaml')
+ for area in ['consistency','representation']:
+  doc['assessments'].append({'assessment_id':'fixture-'+area,'area':area,'topic':'Additional current-stage assessment shape','outcome':'supported','target_ids':[TARGET_ID],'summary':'Schema fixture only for an eventual root assessment; not an actual current-stage review assertion.','evidence_ids':[doc['evidence'][0]['evidence_id']]})
+ doc['checks'].append({'check_id':'fixture-retained-failure','name':'Optional retained failure shape','status':'failed','required':False,'target_ids':[TARGET_ID],'summary':'Schema fixture of the optional historical failed-check shape, not an execution receipt.'})
+ native['validate_review'](doc,ROOT/'schema/record_review.yaml')
+ encoded=native['_dump_document'](doc);restored=native['load_document'](encoded.encode());assert restored==doc
+ native['validate_review'](restored,ROOT/'schema/record_review.yaml')
+ assert all(r['accessed_at'].endswith('Z') for r in doc['evidence'])
+ write(HERE/'native-fragment-schema-probe.json',{'status':'passed','at':now(),'fragments':bind(HERE/'review-content-fragments.json'),'assessments':len(doc['assessments']),'native_helper':bind(ROOT/'scripts/record_review.py'),'native_dump_noaliases_roundtrip_validated':True,'scope':'Full-content shape and semantic schema validation only, with an explicit not_applicable fixture check. No native inspect/save/check, literature rereview, maintained gates, history or source-state acceptance.'})
+ print({'status':'passed','assessments':len(doc['assessments'])})
+if __name__=='__main__':main()

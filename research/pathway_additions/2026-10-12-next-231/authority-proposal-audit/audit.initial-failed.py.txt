@@ -1,0 +1,135 @@
+import json,hashlib,subprocess,datetime,sys,sqlite3,copy,zipfile
+from pathlib import Path
+import yaml
+O=Path('/private/tmp/pathwaymech-next-231-authority-proposal-audit-20261012');P=Path('/private/tmp/pathwaymech-next-231-authority-preparation-20261012');B=Path('/private/tmp/pathwaymech-next-230-canonical-build-20261012');A=Path('/private/tmp/pathwaymech-next-231-author-20261012')
+started=datetime.datetime.now(datetime.timezone.utc).isoformat()
+def js(p):return json.loads(Path(p).read_text())
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+hashes={}
+def bind(p):
+ p=Path(p);r=p.resolve();st=p.stat();key=(str(r),st.st_size,st.st_mtime_ns)
+ if key not in hashes:
+  with p.open('rb') as f:hashes[key]=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':st.st_size,'sha256':hashes[key]}
+def checkbinding(x):assert bind(x['path'])=={k:x[k] for k in ['path','bytes','sha256']},x['path']
+def inventory(p):
+ c=['rg','--files','--no-ignore','--hidden','--follow',str(p)];r=subprocess.run(c,text=True,capture_output=True);assert r.returncode==0,r.stderr;return c,{Path(x) for x in r.stdout.splitlines()}
+assert bind(P/'handoff.json')['sha256']=='a8ac9131b4072394a607b05982ae51205de5207262eff42a2de1c73676d76509'
+h=js(P/'handoff.json');checkbinding(h['manifest']);assert h['manifest']['sha256']=='2a34844b8a2e438a7e97b152fafa32de648a79e538197476c8852e80b7b95258'
+pm=js(P/'artifact-manifest.json');assert len(pm['artifacts'])==1643
+for x in pm['artifacts']:checkbinding(x)
+command,actual=inventory(P);expect={Path(x['path']) for x in pm['artifacts']}|{P/'artifact-manifest.json',P/'handoff.json'};assert actual==expect,sorted(str(p) for p in actual^expect)
+for x in js(P/'external-input-bindings.json')['bindings']:checkbinding(x)
+checkbinding(h['target']);assert h['target']['sha256']=='20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5'
+assert bind(P/'selection'/Path(h['target']['path']).name)['sha256']==h['target']['sha256']
+accept=js(h['baseline_root_acceptance']['path']);checkbinding(h['baseline_root_acceptance']);checkbinding(h['baseline']);bh=js(B/'handoff.json');checkbinding(bh['manifest']);bm=js(B/'artifact-manifest.json')
+for x in bm['artifacts']:checkbinding(x)
+for k,x in accept['actual_native_outputs'].items():checkbinding(x);assert x==bh['outputs'][k]
+cap=js(B/'preparation-capture.json');baseoriginals=cap['source_originals'];assert len(baseoriginals)==756
+for x in baseoriginals:
+ checkbinding(x);link=B/'originals'/x['cache_relative_path'];assert bind(link)['sha256']==x['sha256']
+_,bactual=inventory(B);bexpect={Path(x['path']) for x in bm['artifacts']}|{B/'artifact-manifest.json',B/'handoff.json'}|{B/'originals'/x['cache_relative_path'] for x in baseoriginals};assert bactual==bexpect
+base={n:js(B/n) for n in ['sources.json','ontology.json','manifest.json','rhea-updates.json']};new={n:js(P/'proposed'/n) for n in base}
+oldcounts={};oldretained=[]
+for name in ['sources.json','ontology.json']:
+ for group in ['terms','sources']:
+  a,b=base[name][group],new[name][group];assert all(k in b and b[k]==v for k,v in a.items());assert [k for k in b if k in a]==list(a)
+  oldretained.append({'surface':name,'group':group,'old':len(a),'new':len(b),'new_count':len(b)-len(a),'old_objects_exact':True,'old_relative_order_exact':True})
+ for k in base[name]:
+  if k not in ['terms','sources']:assert base[name][k]==new[name][k]
+manifest=new['manifest.json'];assert len(manifest)==782 and manifest[:758]==base['manifest.json'];assert len({e['key'] for e in manifest})==782
+assert (P/'proposed/rhea-updates.json').read_bytes()==(B/'rhea-updates.json').read_bytes();assert len(new['rhea-updates.json']['ids'])==24
+assert (len(new['sources.json']['terms']),len(new['sources.json']['sources']),len(new['ontology.json']['terms']),len(new['ontology.json']['sources']))==(2507,617,1969,5)
+for name in ['sources','ontology']:
+ old=js(A/'authority'/('proposed-'+name+'.json'))
+ for group in ['terms','sources']:assert all(new[name+'.json'][group].get(k)==v for k,v in old[group].items())
+originals=js(P/'complete-original-bindings.json');rows=originals['originals'];assert len(rows)==780;byrel={r['relative_path']:r for r in rows};assert len(byrel)==780 and sum(r['new_path'] for r in rows)==24
+for r in rows:
+ checkbinding(r['binding']);p=P/'originals'/r['relative_path'];assert p.is_symlink() and p.resolve()==Path(r['resolved_path']);assert bind(p)['sha256']==r['sha256']==r['binding']['sha256']
+for r in baseoriginals:
+ n=byrel[r['cache_relative_path']];assert n['sha256']==r['sha256'] and n['binding']['bytes']==r['bytes'];assert not n['new_path']
+manifest_paths={x['path'] for x in manifest};rhea=new['rhea-updates.json'];assert rhea['path'] in manifest_paths
+assert len(manifest_paths|{rhea['path']})==779
+extra=set(byrel)-manifest_paths;assert extra=={'bigg-database-version-2026-10-11.json'}
+for e in manifest:
+ r=byrel[e['path']];assert r['sha256']==e['sha256'] and e['key'] in r['source_keys']
+shared=byrel[rhea['path']];assert shared['sha256']==rhea['sha256'] and rhea['key'] in shared['source_keys'];assert len(shared['source_keys'])==2
+_,origfiles=inventory(P/'originals');assert origfiles=={P/'originals'/r for r in byrel}
+# Bound native extractor functions only; full builders are explicitly disabled.
+sys.path[:0]=[str(B/'runtime/scripts'),str(B/'runtime/src')]
+import build_source_identifier_snapshot as sb
+import build_ontology_identifier_snapshot as ob
+def forbidden(*a,**k):raise AssertionError('Full native builder prohibited in bounded proposal audit')
+sb.build_snapshot=forbidden
+ob.build_snapshot=forbidden
+raw=yaml.safe_load(Path(h['target']['path']).read_text());collected=sb.corpus_ids(P/'selection');wanted={i for i in collected if i.split(':',1)[0] in sb.SOURCE_NAMESPACES};oids=ob.walk_identifiers(raw,{'CHEBI','GO','NCBITaxon','RHEA'})
+bridge=js(P/'collector-and-baseline-bridge.json');assert sorted(collected)==bridge['collected_ids'] and sorted(wanted)==bridge['selected_source_ids'] and sorted(oids)==bridge['selected_ontology_ids'];assert (len(collected),len(wanted),len(oids))==(50,38,12)
+assert 'hdl:1993/32279' not in collected|wanted|oids and 'hdl:1993/32279' in ob.walk_identifiers(raw,{'hdl'})
+assert not any(k.startswith('hdl:') for n in ['sources.json','ontology.json'] for k in new[n]['terms'])
+selected={};metadata={};observations=[];pathbank=[]
+print(json.dumps({'stage':'input_seals_objects_and_originals_passed','proposal_artifacts':1643,'baseline_artifacts':len(bm['artifacts']),'complete_originals':780}),flush=True)
+for index,e in enumerate(manifest):
+ native=list(sb.source_terms(e['kind'],P/'originals'/e['path'],url=e['url'],version=e['version'],archive=e.get('archive'),sha256=e['sha256']))
+ hits=[]
+ for ident,label,synonyms in native:
+  if ident not in wanted:continue
+  term={'label':label,'synonyms':sorted(set(synonyms)-{label}),'source':e['key']}
+  if e['kind']=='metacyc-reaction-xml':term.update(label_kind='source_context',entity_type='reaction')
+  hits.append({'id':ident,'term':copy.deepcopy(term)})
+  if ident in selected:
+   if selected[ident]['source']==e['key']:selected[ident]['synonyms']=sorted(set(selected[ident]['synonyms']+[label]+synonyms)-{selected[ident]['label']})
+  else:
+   selected[ident]=term;meta={k:e[k] for k in ['url','version','license','sha256']}
+   if 'sha256_scope' in e:meta['sha256_scope']=e['sha256_scope']
+   if e['kind']=='metacyc-reaction-xml':meta['kind']=e['kind']
+   metadata[e['key']]=meta
+ if hits:observations.append({'manifest_index':index,'entry':e,'original':byrel[e['path']]['binding'],'selected_native_terms':hits})
+ if e['kind']==sb.PATHBANK_ARCHIVE_KIND:
+  with zipfile.ZipFile(P/'originals'/e['path']) as z:data=z.read(e['archive']['member'])
+  assert len(data)==e['archive']['member_bytes'] and hashlib.sha256(data).hexdigest()==e['archive']['member_sha256']
+  pathbank.append({'manifest_index':index,'entry':e,'whole_original':byrel[e['path']]['binding'],'native_terms':native,'scope':'Typed whole ZIP/member/root native replay; unchanged inherited source, not PPi scientific evidence.'})
+assert set(selected)==wanted
+prior=js(P/'source-native-replay.json');assert selected==prior['first_source_terms'] and metadata==prior['first_source_metadata'] and observations==prior['observations']
+assert all(new['sources.json']['terms'][k]==v for k,v in selected.items())
+assert all(new['sources.json']['sources'][k]==v for k,v in metadata.items())
+# JSON normalizes tuples in native archive rows.
+assert json.loads(json.dumps(pathbank))==js(P/'pathbank-archive-reuse.json')['entries'];assert len(pathbank)==4
+sourcechanges=[];inc=js(A/'authority/incremental-sources.json')
+for ident in sorted(wanted):
+ p=inc['terms'][ident];n=selected[ident];assert p['label']==n['label'] and set(p['synonyms'])==set(n['synonyms'])
+ if p['source']!=n['source']:sourcechanges.append({'id':ident,'original_incremental_source':p['source'],'retained_first_source':n['source']})
+assert {x['id'] for x in sourcechanges}=={'MetaCyc:PPI','MetaCyc:PROTON'}
+unused=[k for k in inc['sources'] if k not in new['sources.json']['sources']];assert unused==js(P/'source-provenance-decisions.json')['unused_incremental_metadata'] and len(unused)==2
+for k in unused:assert k in {e['key'] for e in manifest}
+reaction_ids={r['id'] for r in raw['reactions']};assert len(reaction_ids)==6
+for ident in reaction_ids:
+ t=selected[ident];assert t['entity_type']=='reaction' and t['label_kind']=='source_context';assert metadata[t['source']]['kind']=='metacyc-reaction-xml'
+# BiGG ancillary version is consumed by its native bounded helper.
+bigg=[]
+for e in manifest:
+ if e['kind'] in sb.BIGG_SOURCE_TYPES:bigg.append({'key':e['key'],'native_version':sb._bigg_version(e,P/'originals')})
+assert bigg
+# Read-only, immutable SQL extraction; accepted native ATP hash is inherited.
+pins=js(P/'SQL-original-pins.json');assert pins['pins']==cap['sql_originals'];sqlresults=[]
+for pin in pins['pins']:
+ p=Path(pin['path']);st=p.stat();assert (st.st_size,st.st_mtime_ns)==(pin['bytes'],pin['mtime_ns']);assert base['ontology.json']['sources'][pin['source_key']]['sha256']==pin['sha256']
+ ids=sorted(i for i in oids if i.split(':',1)[0]==pin['prefix'])
+ if ids:
+  with sqlite3.connect(p.resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as conn:
+   conn.execute('PRAGMA query_only=ON');terms,missing=ob.extract_terms(conn,ids,pin['source_key']);assert not missing
+   prefixes=dict(conn.execute('SELECT prefix,base FROM prefix'));decl=list(conn.execute("SELECT subject,object FROM statements WHERE predicate='owl:versionIRI'"));assert len(decl)==1
+   native={pred:obj or val for pred,obj,val in conn.execute("SELECT predicate,object,value FROM statements WHERE subject=? AND predicate IN ('owl:versionInfo','dcterms:license')",(decl[0][0],))}
+   meta={'url':ob.expand_iri(decl[0][1],prefixes),'version':native['owl:versionInfo'],'sha256':pin['sha256'],'sha256_scope':'uncompressed_semantic_sql_database','license':ob.expand_iri(native['dcterms:license'],prefixes)}
+   assert meta==new['ontology.json']['sources'][pin['source_key']]
+   for ident,t in terms.items():assert new['ontology.json']['terms'][ident]==t
+   priorrow=next(r for r in js(P/'ontology-native-replay.json')['rows'] if r['sql_original']['prefix']==pin['prefix']);assert terms==priorrow['selected_terms'] and meta==priorrow['metadata']
+   sqlresults.append({'pin':pin,'ids':ids,'metadata':meta,'terms':terms,'mode':'ro&immutable=1; query_only=ON'})
+ assert (p.stat().st_size,p.stat().st_mtime_ns)==(pin['bytes'],pin['mtime_ns'])
+assert sum(len(r['ids']) for r in sqlresults)==12
+save('native-replay.json',{'status':'passed','manifest_entries_replayed':782,'selected_source_ids':38,'selected_terms':selected,'first_source_metadata':metadata,'matching_observations':len(observations),'source_changes':sourcechanges,'unused_incremental_metadata':unused,'native_reaction_scopes':6,'PathBank_entries':pathbank,'BiGG_version_reads':bigg,'ontology_selected_ids':12,'SQL_readonly_rows':sqlresults,'SQL_stat_pins_checked':4,'SQL_full_hashes_recomputed':False,'full_native_builders_invoked':False})
+# Inspect actual corpus roles without asserting a future merged state.
+_,selectionfiles=inventory(P/'selection');assert selectionfiles=={P/'selection'/Path(h['target']['path']).name}
+_,corpusfiles=inventory(B/'corpus');yamlcorpus=[p for p in corpusfiles if p.suffix in {'.yaml','.yml'}]
+retention=[p for p in yamlcorpus if 'retention' in p.name];assert len(retention)==1 and len(yamlcorpus)==232
+save('structural-audit.json',{'status':'passed','first_recorded_at':started,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'timing_note':'Initial read-only packet inspection preceded first explicit timestamp capture.','proposal_handoff':bind(P/'handoff.json'),'proposal_manifest':bind(P/'artifact-manifest.json'),'proposal_artifacts_hashed':1643,'proposal_closed_inventory_files':len(actual),'proposal_runtime_exclusions':0,'baseline_handoff':bind(B/'handoff.json'),'baseline_manifest':bind(B/'artifact-manifest.json'),'baseline_artifacts_hashed':len(bm['artifacts']),'baseline_closed_inventory_files':len(bactual),'baseline_separately_bound_originals':756,'complete_PPi_originals':780,'manifest_Rhea_paths':779,'sidecar_paths':sorted(extra),'shared_Rhea_path':shared,'new_original_paths':24,'old_object_preservation':oldretained,'ordered_manifest_entries':782,'old_manifest_prefix_exact':758,'Rhea_bytes_and_order_exact':24,'source_selection':50,'source_authority_selection':38,'ontology_selection':12,'Handle_reference_only':True,'proposal_selection_record_count':1,'accepted_ATP_corpus_yaml_count':232,'accepted_ATP_actual_prospective_pathways':231,'accepted_ATP_retention_selector':[str(p) for p in retention],'full_PPi_frozen_corpus':'pending separate execution preparation','full_native_build':'not executed','maintained_adoption':'not claimed','unique_resolved_files_freshly_hashed':len(hashes)})
+print(json.dumps({'status':'passed','native_entries':782,'selected_sources':38,'ontology_ids':12,'complete_originals':780,'new_sources':33,'source_metadata':617,'ontology_terms':1969,'source_provenance_changes':sourcechanges,'PathBank':4,'BiGG_version_reads':len(bigg),'baseline_yaml':len(yamlcorpus)},indent=2),flush=True)

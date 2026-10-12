@@ -1,0 +1,96 @@
+"""Root-only native serialization, validation, append-only save and check. No history."""
+import argparse
+import copy
+import runpy
+import subprocess
+from support import *
+
+
+def serialize_native(document, native, output):
+    for field in ('started_at', 'finished_at'):
+        assert document[field].endswith('Z'), 'Native review timestamps require UTC Z'
+    assert all(not item.get('accessed_at') or item['accessed_at'].endswith('Z') for item in document['evidence'])
+    native['validate_review'](document, ROOT / 'schema/record_review.yaml')
+    native['assert_current_source'](ROOT, document)
+    text = native['_dump_document'](document)
+    parsed = native['load_document'](text.encode())
+    assert parsed == document
+    # Validate AFTER native serialization too; do not trust a successful dump.
+    native['validate_review'](parsed, ROOT / 'schema/record_review.yaml')
+    with output.open('x') as stream:
+        stream.write(text)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--assembly', required=True, type=Path)
+    parser.add_argument('--root-read-receipt', required=True, type=Path)
+    parser.add_argument('--gates', required=True, type=Path)
+    parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--execute', action='store_true', required=True)
+    args = parser.parse_args()
+    verify_support()
+    assert_head(); out = external_new(args.output)
+    assembly = load(args.assembly / 'assembly.json')
+    assert assembly['gate_receipt'] == bind(args.gates)
+    verify(assembly['archive_extras']); extras=load(assembly['archive_extras']['path'])
+    gates, _ = verify_gates(args.gates, extras)
+    assert_history(ROOT, gates['render_history_inputs'])
+    verify(assembly['review']); original = load(assembly['review']['path'])
+    read = load(args.root_read_receipt)
+    assert read['status'] == 'accepted' and read['review'] == assembly['review']
+    assert read['reviewer'] == 'Codex /root' and read['observed'].strip()
+    assert read['finished_at'].endswith('Z')
+    finished = now(); document = copy.deepcopy(original)
+    assert datetime.fromisoformat(document['started_at']) <= datetime.fromisoformat(read['finished_at']) <= datetime.fromisoformat(finished)
+    document['finished_at'] = finished
+    document['review_id'] = datetime.fromisoformat(finished).strftime('%Y%m%dT%H%M%SZ') + '-ppi-pentose-phosphate-branch'
+    assert document['completion'] == 'completed' and not document['findings']
+    assert document['source']['git_revision'] == BASE
+    out.mkdir(); write(out / 'root-assessed-review.json', document)
+    write(out / 'root-read-receipt.json', read)
+    receipts = []
+    native_path = ROOT / 'scripts/record_review.py'
+    native = runpy.run_path(str(native_path), run_name='ppi_native_serialization')
+    started = now()
+    try:
+        serialize_native(document, native, out / 'completed-review.yaml')
+    except Exception as exc:
+        write(out / 'execution.json', {'status': 'failed', 'stage': 'serialize',
+            'started_at': started, 'finished_at': now(), 'exception_type': type(exc).__name__,
+            'exception': str(exc), 'content': bind(out / 'root-assessed-review.json'),
+            'late_history_written': False})
+        raise
+    write(out / 'serialization.json', {'status': 'passed', 'started_at': started,
+          'finished_at': now(), 'input': bind(out / 'root-assessed-review.json'),
+          'output': bind(out / 'completed-review.yaml'), 'native_helper': bind(native_path),
+          'validated_after_native_dump': True, 'timestamps_UTC_Z': True})
+    for name, command in [
+        ('validate', [PYTHON, '-B', str(native_path), 'validate', str(out / 'completed-review.yaml')]),
+        ('save', [PYTHON, '-B', str(native_path), 'save', '--content', str(out / 'completed-review.yaml')]),
+        ('check', [PYTHON, '-B', str(native_path), 'check', '--require-reviews', '--base', BASE])]:
+        assert_history(ROOT, gates['render_history_inputs'])
+        started = now(); result = subprocess.run(command, cwd=ROOT, env=ENV, capture_output=True)
+        stdout, stderr = out / (name + '.stdout'), out / (name + '.stderr')
+        stdout.write_bytes(result.stdout); stderr.write_bytes(result.stderr)
+        receipts.append({'name': name, 'command': command, 'cwd': str(ROOT), 'started_at': started,
+           'finished_at': now(), 'exit_code': result.returncode, 'stdout': bind(stdout), 'stderr': bind(stderr)})
+        write_path = out / 'execution.json'
+        write_path.write_text(json.dumps({'status': 'running' if result.returncode == 0 else 'failed',
+             'receipts': receipts, 'serialization': bind(out / 'serialization.json')}, indent=2) + '\n')
+        print(name, result.returncode, flush=True)
+        if result.returncode:
+            return result.returncode
+    assert_history(ROOT, gates['render_history_inputs'])
+    bundle = ROOT / 'reviews/structured' / document['review_id']
+    new_review_extras=inventory(ROOT, str(bundle.relative_to(ROOT)))
+    verify_gates(args.gates, extras+new_review_extras)
+    (out / 'execution.json').write_text(json.dumps({'status': 'passed', 'base': BASE,
+       'receipts': receipts, 'serialization': bind(out / 'serialization.json'),
+       'saved_yaml': bind(bundle / 'review.yaml'), 'saved_markdown': bind(bundle / 'review.md'),
+       'assembly': bind(args.assembly / 'assembly.json'), 'gate_receipt': bind(args.gates),
+       'late_history_written': False}, indent=2) + '\n')
+    return 0
+
+if __name__ == '__main__':
+    raise SystemExit(main())

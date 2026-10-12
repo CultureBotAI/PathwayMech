@@ -1,0 +1,67 @@
+"""Read-only probe of a copied, explicitly observed, evolving author draft."""
+import csv
+import hashlib
+import io
+import json
+from pathlib import Path
+import sys
+
+import yaml
+from lxml import html
+
+root = Path(__file__).resolve().parent
+sys.path.insert(0, str(root / 'candidate' / 'src'))
+from pathwaymech.cli import _record_page
+from pathwaymech.kgx import render_kgx
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import TARGET_CLASS, validator
+
+original = Path('/private/tmp/pathwaymech-next-231-author-20261012/draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml')
+raw = original.read_bytes()
+observed = root / 'observed-draft'
+observed.mkdir(exist_ok=True)
+snapshot = observed / original.name
+if snapshot.exists():
+    assert snapshot.read_bytes() == raw, 'Existing observed snapshot differs; never overwrite it'
+else:
+    snapshot.write_bytes(raw)
+record = yaml.safe_load(raw)
+checked = validate_record(record)
+strict = validator().validate(record, TARGET_CLASS).results
+assert not strict, strict
+page_text = _record_page(checked)
+page = html.fromstring(page_text)
+exports = render_kgx([checked])
+nodes = list(csv.DictReader(io.StringIO(exports['nodes.tsv']), delimiter='\t'))
+edges = list(csv.DictReader(io.StringIO(exports['edges.tsv']), delimiter='\t'))
+handle = 'hdl:1993/32279'
+refs = {ref['id']: ref for ref in record['references']}
+assert refs[handle]['url'] == 'https://mspace.lib.umanitoba.ca/handle/1993/32279'
+assert refs[handle]['source_sha256'] == 'e0276c90358e3f177441ec3f71e99454727a31099a50920a325c7cc31cff8fc8'
+assert page.xpath('//a[@href=$url]', url=refs[handle]['url'])
+assert handle not in {node['id'] for node in nodes}
+assert not page.xpath('//*[@data-node-id=$identifier]', identifier=handle)
+handle_edges = []
+for edge in edges:
+    metadata = json.loads(edge['reference_metadata'])
+    matching = [ref for ref in metadata if ref['id'] == handle]
+    if matching:
+        assert matching == [refs[handle]]
+        handle_edges.append(edge['id'])
+assert handle_edges
+assert original.read_bytes() == raw, 'Author draft changed during probe'
+(observed / 'page.html').write_text(page_text)
+for name, content in exports.items():
+    (observed / name).write_text(content)
+result = {
+    'status': 'passed_observed_unsealed_draft_not_final_science_acceptance',
+    'original': str(original), 'observed_copy': str(snapshot),
+    'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw),
+    'native_validation': 'passed', 'linkml_validation': 'passed',
+    'references': len(refs), 'edges': len(record['mechanistic_edges']),
+    'handle_metadata_preserved_on_kgx_edges': handle_edges,
+    'exact_issuing_url_rendered': True, 'no_handle_graph_or_kgx_node': True,
+    'reference': refs[handle],
+}
+(root / 'receipts' / 'observed-draft.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(result, indent=2))

@@ -1,0 +1,370 @@
+"""Audit only a terminal, sealed PPi native build; never runs either builder."""
+import argparse
+from collections import Counter
+import importlib
+import importlib.util
+import sys
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import sqlite3
+import subprocess
+import traceback
+
+import yaml
+
+HERE = Path(__file__).resolve().parent
+BUILD = Path('/private/tmp/pathwaymech-next-231-canonical-build-20261012')
+PREP = Path('/private/tmp/pathwaymech-next-231-canonical-preparation-20261012')
+PREP_AUDIT = Path('/private/tmp/pathwaymech-next-231-canonical-preparation-audit-20261012')
+ACCEPTANCE = Path('/private/tmp/pathwaymech-next-231-root-canonical-preparation-acceptance-20261012.json')
+PRIOR = Path('/private/tmp/pathwaymech-next-230-canonical-build-20261012')
+ATP_SHA = '6ed1607a4c17ffe56a6f5f8f123c44a0ff410c9a9965e11c3cde9ef23a4affe2'
+CHECKS = []
+
+def now():
+    return datetime.datetime.now(datetime.UTC).isoformat().replace('+00:00', 'Z')
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+def sha(path):
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)}
+
+def verify(row):
+    actual = bind(row['path'])
+    assert actual['sha256'] == row['sha256'], row['path']
+    assert actual['bytes'] == row.get('bytes', actual['bytes']), row['path']
+    return actual
+
+def write(name, value):
+    with (HERE / name).open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+def files(path):
+    return {Path(value) for value in subprocess.check_output(['rg', '--files', '-uu', '-L', str(path)], text=True).splitlines()}
+
+def passed(name, detail):
+    CHECKS.append({'name': name, 'status': 'passed', 'detail': detail})
+    print(name + ': passed', flush=True)
+
+def packet(directory, digest, originals=None):
+    handoff = verify({'path': str(directory / 'handoff.json'), 'sha256': digest})
+    data = load(handoff['path'])
+    manifest = verify(data['manifest'])
+    rows = load(manifest['path'])['artifacts']
+    assert len({row['path'] for row in rows}) == len(rows)
+    for row in rows:
+        assert Path(row['path']).is_relative_to(directory), row['path']
+        verify(row)
+    declared = {Path(row['path']) for row in rows}
+    assert files(directory) == declared | {directory / 'handoff.json', directory / 'artifact-manifest.json'} | set(originals or []), 'closed inventory ' + str(directory)
+    return data, rows
+
+def key_order_differences(left, right, path='$'):
+    result = []
+    if isinstance(left, dict):
+        if list(left) != list(right):
+            result.append(path)
+        for key in left:
+            result.extend(key_order_differences(left[key], right[key], path + '.' + key))
+    elif isinstance(left, list):
+        for index, (a, b) in enumerate(zip(left, right)):
+            result.extend(key_order_differences(a, b, path + f'[{index}]'))
+    return result
+
+def actual_native_selection_and_diagnostics(actual, capture):
+    sys.path.insert(0, str(BUILD / 'runtime/src'))
+    importlib.invalidate_caches()
+    import pathwaymech
+    assert Path(pathwaymech.__file__).resolve() == BUILD / 'runtime/src/pathwaymech/__init__.py'
+    modules = {}
+    for kind in ('source', 'ontology'):
+        path = BUILD / 'runtime/scripts' / ('build_' + kind + '_identifier_snapshot.py')
+        assert path.read_bytes() == (PRIOR / 'runtime/scripts' / path.name).read_bytes()
+        spec = importlib.util.spec_from_file_location('audit_native_' + kind, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        modules[kind] = module
+    named = modules['source'].corpus_ids(BUILD / 'corpus')
+    source_required = {item for item in named if item.partition(':')[0] in modules['source'].SOURCE_NAMESPACES}
+    ontology_selected = set()
+    diagnostics = []
+    yaml_paths = sorted(path for path in files(BUILD / 'corpus') if path.suffix == '.yaml')
+    assert len(yaml_paths) == 233
+    for path in yaml_paths:
+        raw = yaml.safe_load(path.read_bytes())
+        ontology_selected |= modules['ontology'].walk_identifiers(raw, {'CHEBI', 'GO', 'NCBITaxon', 'RHEA'})
+        for identifier, label in modules['ontology'].walk_labels(raw):
+            term = actual['ontology']['terms'].get(identifier)
+            if term and label != term['label'] and label not in term['synonyms']:
+                diagnostics.append({'record': str(path.relative_to(BUILD / 'corpus')), 'id': identifier, 'record_label': label, 'authority_label': term['label']})
+    assert source_required == set(actual['sources']['terms']) and len(source_required) == 2507
+    assert ontology_selected == set(actual['ontology']['terms']) and len(ontology_selected) == 1969
+    replay = load(PREP_AUDIT / 'native-selector-replay.json')
+    assert source_required == set(replay['source_required'])
+    assert ontology_selected == set(replay['ontology_selected'])
+    assert capture['retention_ids'] == replay['retention_ids'] and len(capture['retention_ids']) == 4437
+    assert not any(item.startswith('hdl:') for item in source_required | ontology_selected)
+    for name, module in list(sys.modules.items()):
+        if name == 'pathwaymech' or name.startswith('pathwaymech.'):
+            assert Path(module.__file__).resolve().is_relative_to(BUILD / 'runtime/src/pathwaymech'), (name, module.__file__)
+    write('actual-native-selection.json', {'source_required': sorted(source_required), 'ontology_selected': sorted(ontology_selected), 'retention_ids': capture['retention_ids'], 'pathway_YAMLs': 232, 'build_only_retention_YAMLs': 1, 'full_builder_called': False, 'native_collectors_only': True})
+    passed('complete_actual_native_selection', {'pathways': 232, 'retention_ids': 4437, 'source_required': 2507, 'ontology_selected': 1969, 'reference_only_Handle_not_selected': True, 'exact_runtime_imports': True})
+    def logs(directory):
+        diagnostic_rows, others = [], []
+        for line in (directory / 'ontology_builder.stdout').read_text().splitlines():
+            if line.startswith('LABEL_DIFFERENCE\t'):
+                _, path, identifier, display, authority = line.split('\t')
+                diagnostic_rows.append({'record': str(Path(path).relative_to(directory / 'corpus')), 'id': identifier, 'record_label': display, 'authority_label': authority})
+            else:
+                others.append(line)
+        return diagnostic_rows, others
+    rows, other = logs(BUILD)
+    previous, _ = logs(PRIOR)
+    counter = lambda values: Counter(tuple(sorted(row.items())) for row in values)
+    assert counter(diagnostics) == counter(rows) == counter(previous)
+    assert len(rows) == 916
+    assert not any(row['record'] == 'pentose-phosphate-pathway-non-oxidative-branch-ii.yaml' for row in rows)
+    assert other == [
+        'CHEBI: resolved 978/978 from http://purl.obolibrary.org/obo/chebi/255/chebi.owl',
+        'GO: resolved 133/133 from http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn',
+        'NCBITaxon: resolved 43/43 from http://purl.obolibrary.org/obo/ncbitaxon/2026-07-12/ncbitaxon.owl',
+        'RHEA: resolved 791/815 from https://w3id.org/biopragmatics/resources/rhea/139/rhea.ofn',
+        'Wrote 1969 authority terms to ' + str(BUILD / 'ontology.json'),
+    ]
+    write('log-assessment.json', {'status': 'passed', 'prior_stdout': bind(PRIOR / 'ontology_builder.stdout'), 'current_stdout': bind(BUILD / 'ontology_builder.stdout'), 'label_differences': rows, 'count': 916, 'new_PPi_label_differences': 0, 'multiset_equal_to_prior_and_independent_native_walk': True, 'other_lines': other, 'Rhea_scope': '791 SQL-derived terms plus 24 unchanged original RDF update terms account for all 815 selected Rhea IDs; no unresolved identifiers.'})
+    passed('native_diagnostics_interpreted', {'inherited_label_differences': 916, 'new_PPi_label_differences': 0, 'unresolved_identifiers': 0, 'Rhea_SQL_terms': 791, 'Rhea_RDF_terms': 24})
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--terminal-intake', type=Path, required=True)
+    parser.add_argument('--handoff-sha256', required=True)
+    args = parser.parse_args()
+    started = now()
+    terminal = load(args.terminal_intake)
+    assert terminal['actual_terminal_exit_code'] == 0
+    assert terminal['build_handoff']['sha256'] == args.handoff_sha256
+    assert terminal['build_handoff']['path'] == str(BUILD / 'handoff.json')
+    verify(terminal['build_handoff'])
+    verify(terminal['root_execution_receipt'])
+    outer = load(terminal['root_execution_receipt']['path'])
+    assert outer['status'] == 'passed' and outer['exit_code'] == 0
+    for key in ('root_acceptance', 'input_check', 'stdout', 'stderr'):
+        verify(outer[key])
+    input_check = load(outer['input_check']['path'])
+    assert input_check['exit_code'] == 0
+    for key in ('stdout', 'stderr'):
+        verify(input_check[key])
+    for record, mode in ((input_check, '--check-inputs'), (outer, '--execute')):
+        assert record['command'] == ['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', '-B', str(PREP / 'prepare_and_build.py'), mode]
+    outer_lines = Path(outer['stdout']['path']).read_text().splitlines()
+    assert len(outer_lines) == 3
+    assert all(line.startswith('BUILDER_TERMINAL ') for line in outer_lines[:2])
+    outer_builders = [json.loads(line.removeprefix('BUILDER_TERMINAL ')) for line in outer_lines[:2]]
+    assert json.loads(outer_lines[2].removeprefix('SEALED ')) == bind(BUILD / 'handoff.json')
+    assert Path(outer['stderr']['path']).read_bytes() == b''
+    verify({'path': str(ACCEPTANCE), 'sha256': 'bfecf0c5c0069155d69d34109e96a7c8aa52b280079903443d9ff473a27f1748'})
+    assert load(ACCEPTANCE)['status'] == 'accepted_for_root_full_native_execution'
+    prep_handoff, _ = packet(PREP, '8e5882d0c5240a9bca13516fc996d061df3b3ea1ee2d8ef5621aa45afc82633b')
+    packet(PREP_AUDIT, '095ac87a1ab54f6ecd057e6741f6e2970d44434a40b3873c2ca0785ff509de1d')
+    capture = load(PREP / 'capture.json')
+    for receipt in capture['root_receipts'].values():
+        verify(receipt)
+    science = load(capture['root_receipts']['ppi_science']['path'])
+    assert science['target']['sha256'] == '20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5'
+    intake = load(BUILD / 'execution-intake.json')
+    original_paths = set()
+    original_proof = []
+    assert len(intake['source_originals_freshly_hashed']) == len(capture['source_originals']) == 780
+    for original, executed in zip(capture['source_originals'], intake['source_originals_freshly_hashed']):
+        assert {key: value for key, value in executed.items() if key != 'fresh_execution_binding'} == original
+        assert executed['fresh_execution_binding'] == {key: original[key] for key in ('path', 'bytes', 'sha256')}
+        original_path = BUILD / 'originals' / original['cache_relative_path']
+        assert original_path.is_symlink()
+        assert original_path.resolve() == Path(original['path']).resolve() == Path(original['resolved_path'])
+        actual = verify({**original, 'path': str(original_path)})
+        original_paths.add(original_path)
+        original_proof.append({'cache_relative_path': original['cache_relative_path'], 'actual_symlink': actual, 'resolved_path': str(original_path.resolve())})
+    handoff, build_rows = packet(BUILD, args.handoff_sha256, originals=original_paths)
+    assert len(build_rows) == 481 and len(original_paths) == 780
+    passed('terminal_and_closed_build', {'build_artifacts': len(build_rows), 'original_symlinks': len(original_paths), 'hidden_ignored_followed': True, 'root_terminal': terminal['actual_terminal_result']})
+    assert handoff['status'] == 'full_original_backed_build_completed_pending_independent_audit'
+    assert handoff['preparation'] == bind(PREP / 'handoff.json')
+    assert handoff['target_sha256'] == prep_handoff['target']['sha256'] == '20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5'
+    assert handoff['maintained_adoption'] is False and handoff['independent_canonical_acceptance'] is False
+    assert (BUILD / 'preparation-capture.json').read_bytes() == (PREP / 'capture.json').read_bytes()
+    assert intake['preparation'] == bind(PREP / 'handoff.json')
+    assert intake['preparation_manifest'] == bind(PREP / 'artifact-manifest.json')
+    assert intake['sql_originals_pinned'] == capture['sql_originals']
+    assert intake['accepted_corrected_ATP_sha256'] == ATP_SHA
+    assert intake['ATP_historical_build_remains_separate'] is True
+    assert sha(BUILD / 'corpus/sedoheptulose-bisphosphate-bypass.yaml') == ATP_SHA
+    for name in ('common.py', 'prepare_and_build.py'):
+        assert (BUILD / name).read_bytes() == (PREP / name).read_bytes()
+    passed('accepted_input_lineage', 'Execution binds the exact accepted target, immutable preparation, helpers and source/SQL inventory.')
+    commands = load(BUILD / 'commands.json')
+    assert commands == load(PREP / 'root-build-commands.json')
+    executions = load(BUILD / 'execution-ledger.json')['executions']
+    assert executions == outer_builders
+    assert len(executions) == 2 and {row['name'] for row in executions} == {'source_builder', 'ontology_builder'}
+    for execution in executions:
+        assert execution['exit_code'] == 0
+        assert execution['command'] == commands[execution['name']]
+        assert execution['cwd'] == commands['cwd'] and execution['environment'] == commands['environment']
+        assert datetime.datetime.fromisoformat(execution['started_at']) <= datetime.datetime.fromisoformat(execution['finished_at'])
+        assert execution['seconds'] >= 0
+        assert execution == load(BUILD / (execution['name'] + '-execution.json'))
+        verify(execution['stdout'])
+        verify(execution['stderr'])
+        assert Path(execution['stderr']['path']).read_bytes() == b''
+    assert 'Retained 2507 independently sourced identifiers from 617 sources' in (BUILD / 'source_builder.stdout').read_text()
+    assert 'Wrote 1969 authority terms to ' + str(BUILD / 'ontology.json') in (BUILD / 'ontology_builder.stdout').read_text()
+    passed('two_actual_native_executions', {'executions': executions, 'no_builder_rerun_by_audit': True})
+    expected_staged = set()
+    for section, rows, destination in [('candidate_code', capture['candidate_code'], 'runtime'), ('records', capture['records'], 'corpus'), ('baseline', capture['baseline'], 'baseline')]:
+        for row in rows:
+            path = BUILD / destination / row['relative_path']
+            assert path.read_bytes() == Path(row['captured']['path']).read_bytes(), (section, path)
+            expected_staged.add(path)
+    overlay = {'src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml', 'tests/test_linkml_schema.py', 'tests/test_handle_references.py'}
+    assert {row['relative_path'] for row in capture['code_delta']} == overlay
+    for row in capture['candidate_code']:
+        rel = row['relative_path']
+        reference = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012/candidate') / rel if rel in overlay else PRIOR / 'runtime' / rel
+        assert (BUILD / 'runtime' / rel).read_bytes() == reference.read_bytes()
+    for row in capture['baseline']:
+        assert (BUILD / 'baseline' / row['relative_path']).read_bytes() == (PRIOR / row['relative_path']).read_bytes()
+    target = BUILD / 'corpus/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+    assert target.read_bytes() == Path(capture['target']['captured']['path']).read_bytes()
+    expected_staged.add(target)
+    retention_path = BUILD / 'corpus/_authority_retention/selector.yaml'
+    retention = capture['retention_ids']
+    assert yaml.safe_load(retention_path.read_bytes()) == {'id': retention[0], 'participants': [{'id': value} for value in retention[1:]]}
+    expected_staged.add(retention_path)
+    actual_staged = set().union(*(files(BUILD / name) for name in ('runtime', 'corpus', 'baseline')))
+    assert actual_staged == expected_staged
+    staged_rows = load(BUILD / 'staged-bindings.json')['files']
+    assert {Path(row['path']) for row in staged_rows} == expected_staged
+    assert len(staged_rows) == len(expected_staged)
+    assert len(expected_staged) == 461
+    for row in staged_rows:
+        verify(row)
+    passed('all_staged_inputs_exact', {'runtime': 223, 'prior_pathways': 231, 'new_pathways': 1, 'retention_ids': 4437, 'staged_files': len(expected_staged), 'retention_contains_no_labels': True})
+    old = {kind: load(BUILD / 'baseline' / (kind + '.json')) for kind in ('sources', 'ontology')}
+    actual = {kind: load(BUILD / (kind + '.json')) for kind in old}
+    expected = load(PREP / 'expected-native-comparison.json')['snapshots']
+    assert (BUILD / 'expected-native-comparison.json').read_bytes() == (PREP / 'expected-native-comparison.json').read_bytes()
+    selector_replay = load(PREP_AUDIT / 'native-selector-replay.json')
+    assert set(actual['sources']['terms']) == set(selector_replay['source_required'])
+    assert set(actual['ontology']['terms']) == set(selector_replay['ontology_selected'])
+    for kind in old:
+        assert actual[kind] == expected[kind]
+        assert actual[kind]['version'] == old[kind]['version']
+        for section in ('terms', 'sources'):
+            assert all(actual[kind][section].get(key) == value for key, value in old[kind][section].items())
+            assert [key for key in actual[kind][section] if key in old[kind][section]] == list(old[kind][section])
+        assert all(term['source'] in actual[kind]['sources'] for term in actual[kind]['terms'].values())
+    assert (len(actual['sources']['terms']), len(actual['sources']['sources']), len(actual['ontology']['terms']), len(actual['ontology']['sources'])) == (2507, 617, 1969, 5)
+    assert (BUILD / 'sources.json').read_text() == json.dumps(actual['sources'], indent=2, ensure_ascii=False) + '\n'
+    assert (BUILD / 'ontology.json').read_text() == json.dumps(actual['ontology'], indent=2, sort_keys=True) + '\n'
+    order_proof = {}
+    for kind in actual:
+        assert list(actual[kind]['terms']) == sorted(actual[kind]['terms'])
+        assert list(actual[kind]['sources']) == sorted(actual[kind]['sources'])
+        difference = key_order_differences(actual[kind], expected[kind])
+        order_proof[kind] = {'decoded_objects_equal': True, 'actual_binding': bind(BUILD / (kind + '.json')), 'proposal_binding': bind(PREP / 'captured/proposals' / (kind + '.json')), 'bytes_equal': (BUILD / (kind + '.json')).read_bytes() == (PREP / 'captured/proposals' / (kind + '.json')).read_bytes(), 'native_top_section_keys_sorted': True, 'proposal_key_order_difference_paths': difference, 'old_relative_order_preserved': True}
+    assert order_proof['sources']['proposal_key_order_difference_paths'] == ['$.sources', '$.terms']
+    assert len(order_proof['ontology']['proposal_key_order_difference_paths']) == 7
+    assert not any(row['bytes_equal'] for row in order_proof.values())
+    write('native-serialization-assessment.json', {'snapshots': order_proof, 'scope': 'All decoded values and array order equal proposals. Native serializers retain sorted actual authority keys and differ from appended proposal new-key order; keep actual native bytes. Old authority object values and old relative key order are exact.'})
+    delta = {kind: {section: {key: value for key, value in actual[kind][section].items() if key not in old[kind][section]} for section in ('terms', 'sources')} for kind in old}
+    assert (len(delta['sources']['terms']), len(delta['sources']['sources']), len(delta['ontology']['terms']), len(delta['ontology']['sources'])) == (33, 22, 6, 0)
+    write('actual-authority-additions.json', delta)
+    passed('complete_actual_snapshots', {'source_terms': 2507, 'source_metadata': 617, 'ontology_terms': 1969, 'ontology_metadata': 5, 'all_prior_objects_exact': True, 'all_selected_identifiers_present': True, 'all_actual_objects_equal_accepted_comparison': True})
+    actual_native_selection_and_diagnostics(actual, capture)
+    manifest = load(BUILD / 'manifest.json')
+    previous_manifest = load(BUILD / 'baseline/manifest.json')
+    updates = load(BUILD / 'rhea-updates.json')
+    previous_updates = load(BUILD / 'baseline/rhea-updates.json')
+    assert manifest[:len(previous_manifest)] == previous_manifest and len(previous_manifest) == 758 and len(manifest) == 782
+    assert len({entry['key'] for entry in manifest}) == len(manifest)
+    assert updates['ids'][:len(previous_updates['ids'])] == previous_updates['ids'] and len(previous_updates['ids']) == 24 and len(updates['ids']) == 24
+    assert {key: value for key, value in updates.items() if key != 'ids'} == {key: value for key, value in previous_updates.items() if key != 'ids'}
+    assert updates == previous_updates
+    manifest_hashes = {}
+    for entry in manifest:
+        for item in [entry] + ([entry['version_source']] if 'version_source' in entry else []):
+            rel = Path(item['path'])
+            assert not rel.is_absolute() and '..' not in rel.parts
+            assert str(rel) not in manifest_hashes or manifest_hashes[str(rel)] == item['sha256']
+            manifest_hashes[str(rel)] = item['sha256']
+    assert updates['path'] not in manifest_hashes or manifest_hashes[updates['path']] == updates['sha256']
+    manifest_hashes[updates['path']] = updates['sha256']
+    assert manifest_hashes == {row['cache_relative_path']: row['sha256'] for row in capture['source_originals']}
+    for name in ('manifest.json', 'rhea-updates.json'):
+        assert (BUILD / name).read_bytes() == (PREP / 'captured/proposals' / name).read_bytes()
+    passed('native_input_order', {'manifest_old_prefix': 758, 'manifest_total': 782, 'Rhea_old_prefix': 24, 'Rhea_total': 24, 'prior_selection_order_and_metadata_exact': True})
+    sql_proof = []
+    for row in capture['sql_originals']:
+        path = Path(row['path'])
+        stat = path.stat()
+        assert stat.st_size == row['bytes'] and stat.st_mtime_ns == row['mtime_ns']
+        metadata = actual['ontology']['sources'][row['source_key']]
+        assert metadata['sha256'] == row['sha256']
+        assert metadata['sha256_scope'] == 'uncompressed_semantic_sql_database'
+        with sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True) as connection:
+            prefixes = dict(connection.execute('SELECT prefix, base FROM prefix'))
+            declarations = list(connection.execute("SELECT subject, object FROM statements WHERE predicate='owl:versionIRI'"))
+            assert len(declarations) == 1
+            subject, release = declarations[0]
+            values = {predicate: obj or literal for predicate, obj, literal in connection.execute("SELECT predicate, object, value FROM statements WHERE subject=? AND predicate IN ('owl:versionInfo', 'dcterms:license')", (subject,))}
+        def expanded(value):
+            value = value.strip('<>')
+            prefix, separator, local = value.partition(':')
+            return prefixes[prefix] + local if separator and prefix in prefixes else value
+        assert metadata['url'] == expanded(release)
+        assert metadata['license'] == expanded(values['dcterms:license'])
+        assert metadata['version'] == values['owl:versionInfo']
+        sql_proof.append({'input_pin': row, 'actual_native_full_hash_and_metadata': metadata, 'independent_readonly_metadata_query': 'passed', 'audit_full_SQL_rehash': False})
+    write('actual-SQL-provenance.json', {'sources': sql_proof, 'scope': 'Full hashes were computed by unchanged actual native builder; audit verifies exact execution/code/output pins, current stats and independent read-only SQL metadata. Audit does not repeat large full-file hashes.'})
+    passed('all_four_native_full_SQL_hashes', {'databases': 4, 'actual_native_hashes_match_pins': True, 'metadata_independently_queried': True, 'no_audit_SQL_full_rehash_claim': True})
+    comparison = load(BUILD / 'proposal-comparison.json')
+    assert comparison['against_accepted_authority_proposals'] == {kind: {'terms': [], 'sources': []} for kind in old}
+    assert comparison['expectation_never_used_as_builder_input'] is True
+    verification = load(BUILD / 'verification.json')
+    assert verification['status'] == 'native_full_build_passed_external_only'
+    assert verification['baseline_scope'] == capture['scope']
+    assert verification['target_sha256'] == handoff['target_sha256']
+    assert verification['native_full_SQL_hashes_match'] == 4 and verification['old_objects_exact'] is True
+    for field in ('scientific_acceptance', 'maintained_writes', 'shared_cache_writes', 'git_github_mutations', 'environment_installs_or_sync', 'source_exhausted'):
+        assert verification[field] is False
+    assert capture['observed_head'] == '95ed7deec1ea749f3ebe60e170bb4463921b80dc'
+    assert capture['prospective_records_with_PPi'] == 232
+    assert 'ATP is not claimed merged' in capture['scope']
+    for name, row in handoff['outputs'].items():
+        assert row == bind(BUILD / name)
+    passed('truthful_completion_scope', 'Actual canonical build passed; prospective baseline, root scientific acceptance and later maintained/merged integration retain separate scopes.')
+    write('original-symlink-audit.json', {'freshly_verified_originals': original_proof, 'count': 780})
+    # Recheck the complete closed output packet after all independent reads.
+    packet(BUILD, args.handoff_sha256, originals=original_paths)
+    passed('sealed_build_unchanged', 'All build artifact hashes and the complete hidden/ignored/followed inventory remain unchanged.')
+    write('checks.json', {'started_at': started, 'finished_at': now(), 'status': 'passed', 'checks': CHECKS, 'full_build_reexecuted': False, 'maintained_writes': False})
+    print(json.dumps({'status': 'passed', 'checks': len(CHECKS), 'full_build_reexecuted': False}))
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception:
+        write('failure-' + datetime.datetime.now(datetime.UTC).strftime('%H%M%S') + '.json', {'at': now(), 'completed_checks': CHECKS, 'traceback': traceback.format_exc()})
+        raise

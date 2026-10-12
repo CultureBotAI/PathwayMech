@@ -1,0 +1,53 @@
+"""Seal independent audit evidence once, preserving original reviewed package."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+HERE = Path(__file__).resolve().parent
+PACKAGE = Path('/private/tmp/pathwaymech-next-231-integration-preparation-20261012')
+
+
+def bind(path):
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def write(name, value):
+    with (HERE / name).open('x') as f:
+        json.dump(value, f, indent=2); f.write('\n')
+
+
+assert bind(PACKAGE / 'handoff.json')['sha256'] == '73eaef67de4f266d1e988093247e431d4b0cadf66b0c8eefe6ec1afdeb58f5ae'
+assert bind(PACKAGE / 'artifact-manifest.json')['sha256'] == 'ee389c164a44ec3eecc88f1888c749f940a4bf6733f95b553f62205a2ef61430'
+checks = json.loads((HERE / 'checks.json').read_text())
+assert len(checks) == 8 and all(row['status'] == 'completed' for row in checks)
+assert checks[-1]['detail']['retargeted_link_accepted'] is True
+finding = {'key': 'PPI-INTEGRATION-001', 'severity': 'medium', 'blocking_preparation_execution': True,
+    'title': 'Old cache symlink destinations can drift while exact preservation guards pass',
+    'owners': ['common.py:inventory', 'common.py:verify_cache_union', 'prepare_inputs.py', 'adopt.py', 'preserve-maintained.py'],
+    'reproduction': bind(HERE / 'cache_retarget_probe.json'),
+    'repair': 'In a successor package, bind and verify resolved destination and appropriate link identity for all old cache originals across binding/capture/adoption/preservation; add same-byte retarget controls. Preserve original seals and distinguish fresh link observation from historical metadata.',
+    'scope': 'Reproduced solely in an external fixture; actual accepted source bodies and six recovery links passed current verification.'}
+write('findings.json', [finding])
+write('execution.json', {'status': 'audit_checks_completed_finding_reproduced', 'exit_code': 0,
+    'actual_terminal': '661bdd/0', 'initial_session': 83838, 'helper': bind(HERE / 'audit.py'),
+    'stdout': bind(HERE / 'audit.stdout'), 'stderr': bind(HERE / 'audit.stderr'),
+    'environment': {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONNOUSERSITE': '1'},
+    'python': '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', 'bytecode_disabled': True,
+    'full_build_or_maintained_execution': False})
+files = sorted(map(Path, subprocess.check_output(['rg', '--files', '-uu', '-L', str(HERE)], text=True).splitlines()))
+artifacts = [bind(p) for p in files]
+write('artifact-manifest.json', {'artifacts': artifacts, 'count': len(artifacts),
+    'inventory': 'rg --files -uu -L; includes ignored/hidden/followed files', 'excluded': ['artifact-manifest.json', 'handoff.json']})
+write('handoff.json', {'status': 'needs_preparation_correction_before_maintained_execution',
+    'created_at': datetime.datetime.now(datetime.UTC).isoformat(),
+    'reviewed_preparation': bind(PACKAGE / 'handoff.json'), 'reviewed_manifest': bind(PACKAGE / 'artifact-manifest.json'),
+    'manifest': bind(HERE / 'artifact-manifest.json'), 'artifact_count': len(artifacts),
+    'report': bind(HERE / 'REPORT.md'), 'findings': bind(HERE / 'findings.json'),
+    'execution': bind(HERE / 'execution.json'), 'checks': bind(HERE / 'checks.json'),
+    'blocking_finding_keys': ['PPI-INTEGRATION-001'], 'nonblocking_finding_keys': [],
+    'maintained_or_shared_cache_mutations': False, 'actual_future_merge_bound': False,
+    'scope': 'Independent integration helper and input audit only; no new scientific/native-build/integration acceptance.'})
+print(json.dumps({'handoff': bind(HERE / 'handoff.json'), 'manifest': bind(HERE / 'artifact-manifest.json'), 'artifacts': len(artifacts)}, indent=2))

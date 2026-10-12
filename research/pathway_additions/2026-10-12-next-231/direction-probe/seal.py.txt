@@ -1,0 +1,22 @@
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+root = Path(__file__).resolve().parent
+runtime = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012/candidate')
+def binding(path):
+    b = path.read_bytes()
+    return {'path': str(path), 'bytes': len(b), 'sha256': hashlib.sha256(b).hexdigest()}
+assert not (root / 'handoff.json').exists()
+files = ['src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml', 'src/pathwaymech/cli.py', 'src/pathwaymech/graph_view.py', 'src/pathwaymech/kgx.py', 'tests/test_graph_view.py', 'tests/test_graph_pages.py', 'tests/test_graph_context.py']
+bindings = {'code': [binding(runtime / name) for name in files], 'accepted_reference_implementation_handoff': binding(runtime.parent / 'handoff.json')}
+(root / 'bindings.json').write_text(json.dumps(bindings, indent=2) + '\n')
+paths = [Path(p.decode()) for p in subprocess.check_output(['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(root)]).split(b'\0') if p]
+artifacts = [{**binding(path), 'relative_path': str(path.relative_to(root))} for path in sorted(paths)]
+(root / 'artifact-manifest.json').write_text(json.dumps({'artifacts': artifacts}, indent=2) + '\n')
+result = json.loads((root / 'result.json').read_text())
+handoff = {'status': 'sealed_bounded_independent_direction_contract_audit', 'manifest': binding(root / 'artifact-manifest.json'), 'artifact_count': len(artifacts), 'guidance': binding(root / 'GUIDANCE.md'), 'result': binding(root / 'result.json'), 'target': result['author_target'], 'conclusion': 'All six source reactions reversible; six lowercase fields propagate through native page, standalone graph, and standalone/record-local KGX metadata without changing 51 graph or 20 side assertions', 'limits': 'in-memory metadata-only overlay; not full scientific successor acceptance or maintained gates'}
+(root / 'handoff.json').write_text(json.dumps(handoff, indent=2) + '\n')
+for row in artifacts:
+    assert binding(Path(row['path']))['sha256'] == row['sha256']
+print(json.dumps({'handoff': binding(root / 'handoff.json'), 'manifest': binding(root / 'artifact-manifest.json'), 'artifacts': len(artifacts)}, indent=2))

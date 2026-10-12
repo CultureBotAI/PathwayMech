@@ -1,0 +1,32 @@
+F401 [*] `yaml` imported but unused
+ --> assemble_review.py:3:28
+  |
+1 | """Root-only archive and native inspect/assemble, after actual gates/preservation."""
+2 | from support import *
+3 | import argparse,copy,shlex,yaml
+  |                            ^^^^
+4 |
+5 | def main():
+  |
+help: Remove unused import: `yaml`
+  |
+2 | from support import *
+  - import argparse,copy,shlex,yaml
+3 + import argparse,copy,shlex
+4 |
+  |
+
+F841 Local variable `history` is assigned to but never used
+  --> assemble_review.py:11:39
+   |
+ 9 |  mode=p.add_mutually_exclusive_group(required=True);mode.add_argument('--execute',action='store_true');mode.add_argument('--check-inpu…
+10 |  args=p.parse_args();verify_support();gates,inputs=verify_gates(args.gates);preserved=verify_preservation(args.preservation,args.gates)
+11 |  qa,visual=verify_qa(gates,preserved);history=verify_histories(gates)
+   |                                       ^^^^^^^
+12 |  intake=load(args.root_intake);assert intake['status']=='accepted' and intake['reviewer']=='Codex /root' and intake['handoff']==bind(H…
+13 |  for row in load(HERE/'preparation-input-bindings.json')['evidence']:verify(row['original'])
+   |
+help: Remove assignment to unused variable `history`
+
+Found 2 errors.
+[*] 1 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).

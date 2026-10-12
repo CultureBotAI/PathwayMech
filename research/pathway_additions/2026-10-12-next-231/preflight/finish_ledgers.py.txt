@@ -1,0 +1,61 @@
+from pathlib import Path
+import hashlib,json,xml.etree.ElementTree as E
+P=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-227-20261012');A=Path('/private/tmp/pathwaymech-next-230-preflight-20261012')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def out(n,v):(P/n).write_text(json.dumps(v,indent=2)+'\n')
+acq=[]
+for f in sorted(P.glob('acquisition-*-receipts.json')):
+ for r in json.loads(f.read_text()):
+  r=dict(r,receipt=bind(f));r['evidence_status']='not acquired' if 'error'in r else 'acquired original; scientific relevance selected separately'
+  if r.get('name')=='PMC9680637.html':r['evidence_status']='CAPTCHA HTML, NOT scientific article evidence'
+  if 'sha256'in r:
+   assert bind(Path(r['path']))['sha256']==r['sha256']
+  acq.append(r)
+out('source-acquisition-ledger.json',acq)
+chem=json.loads((P/'derived/native-six-reaction-projection.json').read_text());ids=sorted({s['compound_id'] for r in chem for side in r['sides'].values() for s in side});assert len(chem)==6 and sum(len(s) for r in chem for s in r['sides'].values())==20 and len(ids)==12
+scope=[]
+for r in chem:
+ scope.append({'item':r['id'],'role':'native core event','disposition':'retain','source':bind(Path(r['source'])),'side_occurrences':sum(len(v) for v in r['sides'].values()),'restriction':'Native reaction and pathway layout, not direct measurement of every enzyme in each taxon. Generic classes and absent coefficient fields preserved.'})
+rows=[
+('Entamoeba 200:NIH','PMID:6180735','retain activity-level context','All original pp191–196 read as scans; partial native preparations; no exact current sequence equality.'),
+('Thermocellum DSM1313 Clo1313_1876','PMID:31871051;NCBIProtein:ADU74928.1;Entrez:12421608','retain construct-scoped catalytic support','Recombinant multi-His enzyme expressed in E. coli. Native MetaCyc UniProt bridge is rejected.'),
+('Thermosuccinogenes CDQ83_11320','PMID:31871051;PMID:31178853;NCBIProtein:PNT94038.1','retain construct-scoped catalytic support','Exact issuing DSM5809 protein; pET-derived N-terminal His6-TEV. Do not silently assign unspecified metabolomics culture to issuing genome strain.'),
+('ATP/GTP CDQ83_07225','PMID:31871051;NCBIProtein:PNT93300.1','retain comparison/context, not core catalyst','No S7P activity through4mM. NH4 dependence and strong F6P cooperativity belong here, not PPi enzyme.'),
+('CDQ83_10650','PMID:31178853','exclude active catalyst assignment','No detectable activity in tested preparations; no negative universal biological claim.'),
+('Rabbit aldolase and coupling enzymes','PMID:31871051','assay context only','Do not infer tested native clostridial aldolase, pathway membership of rabbit proteins, or NADH core stoichiometry.'),
+('Amoebal TKT Mg and TPP','PMID:6180735 p193 Fig1','retain preparation-specific cofactor requirement','Apoenzyme add-back supports both; order-of-addition lag retained. No transfer to clostridial proteins without original evidence.'),
+('Mg in 2020 kinase assays','PMID:31871051 Methods','retain assay context','Presence in assay is not independently measured universal metal requirement.'),
+('PPi','MetaCyc:RXN-21730;PMID:31871051','retain consumed donor','Not merely an activating cofactor; native acid/anion xref conflict unresolved by label equality.'),
+('Rex2471 promoter binding','PMID:34566906 Table4 and Methods','retain proximal candidate context, fine mapping gated','Two shared upstream sites for divergent1875/1876; no established expression sign or site-to-gene specificity; engineered proteins; supplementary workbook not acquired.'),
+('Rex redox effector inference','PMID:34566906 Discussion','exclude causal extrapolation','Family NADH/NAD model is not a direct exact-preparation effector assay.'),
+('Clo1313_1875 aldolase','Entrez:12421607;NCBIProtein:ADU74927.1;PMID:34566906','annotation/regulatory context only','No transfer of 2020 rabbit-coupled S7P cleavage to this native protein.'),
+('16 native global enzyme associations','native reaction and protein originals','15 excluded from pathway-specific catalyst transfer','Noncandidate species links are contextual reaction associations; retain all native reaction events despite this exclusion.'),
+('SBP/S7P pool comparison','PMID:31871051','retain measured context','Biological triplicates; normalizedOD600; pool accumulation is not a six-event flux proof.'),
+('2022 engineered loss of PPi-PFK and TAL','PMID:36286488','retain counterevidence to necessity','Main publisher rendering read; no original local body or supplementary reanalysis. Strain-specific result; alternate route unknown.'),
+('E. coli ΔtalAB and PfkA','PMID:31871051','comparison/reference standard; ATP route separate','Do not make E. coli an experimentally established PPi-branch taxon.'),
+('Methylotroph substrate reports','PMID:31871051 cited context','scope-limited historical lead','Substrate activity in referenced reports does not establish the full six-event branch; originals not independently acquired here.'),
+('Ruminiclostridium papyrosolvens exceptions','PMID:31871051 survey','retain annotation limitation','Forty-five-genome survey is not universal proof; two transaldolase-annotated exceptions and misannotation possibility retained.'),
+('Nonbiosynthetic PPi supply','PMID:31871051 discussion','hypothesis/context outside core','Do not recursively author glycogen cycling, proton-pumping PPase or a specific causal PPi supply without direct bounded evidence.'),
+('Global pathway interfaces','native reaction/layout and primary context','retain boundary description','Pentose assimilation, anabolic pentose supply and glycolytic F6P/GAP interfaces; no expansion into oxidative PPP/NADPH core or carbon fixation.'),
+('Native B8I4R1','MetaCyc:MONOMER-21313;UniProtKB:B8I4R1','reject exact bridge','Different issuing species/locus; no sequence, assembly, regulation, taxon or cofactor transfer.'),
+('Source exhaustion','full task scope','false','Further sources and scoped follow-up remain; no exhaustive biological/literature claim.')]
+for item,refs,disposition,restriction in rows:scope.append(dict(item=item,sources=refs.split(';'),disposition=disposition,restriction=restriction))
+out('scope-and-claim-dispositions.json',scope)
+reports=[B/'research/pathway_additions/2026-10-10-next/riboneogenesis-curation.md',B/'research/pathway_additions/2026-10-11-next-220/curation.md',B/'research/pathway_additions/2026-10-11-next-220/README.md',B/'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-i.yaml']
+text=json.loads((P/'derived/novelty-text-search.json').read_text());adjud=[]
+for r in text['files']:
+ path=r['path'];reason='Shared native chemistry/authority labels; no PPi event or complete branch.'
+ if 'next-220' in path or 'calvin-cycle' in path:reason='Calvin record/report/projection: 13-event carbon reduction/regeneration; five shared events but no PPi phosphorylation. Full curation report read.'
+ elif 'riboneogenesis' in path:reason='Six-event yeast riboneogenesis: condensation plus Shb17 hydrolysis, not PPi phosphorylation. Full curation report read.'
+ elif 'screening' in path or 'assessment-index' in path or 'taxonomy-audit' in path or 'novelty-ignored' in path:reason='Prior source lead/index: PW002098 E. coli ATP bypass; source inventory only, not an authored six-event PPi record.'
+ elif 'bad-' in path:reason='Negative canonical fixture containing inherited authority labels; not pathway authoring.'
+ adjud.append({'source':{k:r[k] for k in ['path','bytes','sha256']},'decision':reason})
+out('derived/novelty-match-adjudication.json',{'full_reports_read':[bind(f) for f in reports],'all_text_matches':adjud,'record_semantic_screen':bind(P/'derived/novelty-semantic-all-records.json')})
+external=json.loads((P/'reused-source-bindings.json').read_text())
+for r in external:assert bind(Path(r['path']))['sha256']==r['sha256']
+for f in [A/'derived/rhea-core-chemistry.json',Path('/private/tmp/pathwaymech-next-229-author-20261012/draft/ethylene-glycol-degradation.yaml'),Path('/private/tmp/pathwaymech-next-229-science-correction-20261012/draft/ethylene-glycol-degradation.yaml'),Path('/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml'),Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz'),B/'.claude/skills/add-pathway/SKILL.md',B/'conf/sources.yaml',B/'conf/identifier_policy.yaml']+reports:
+ external.append(bind(f))
+out('external-input-bindings.json',external)
+out('receipts/observed-execution-index.json',{'native_six_projection':'projection file retained; original source bodies hash-bound','acquisition_attempts':['8467a8/0 first attempt all sandbox-DNS failures','2163e3/0 network retry seven originals incl thesis','38b638/0 fifteen of17 acquired','06daff/0 six of9 acquired','1ee139/0 six scans acquired','b05fed/0 two issuing bodies acquired','aad0b4/0 nineteen originals acquired','9349fc/0 one of2 acquired','266376/0 one acquired'],'pdf_extraction':'dbe6e5/0 read191pages','pdf_rendering':'099ef8/0 read191pages and rendered137–141; all five viewed','rhea':['989c62/1 preserved initial guessed-master error','ccf031/0 corrected original-linked masters, all10 directions balance'],'novelty':['3a0835/0 hidden/ignored/followed text inventory','e61903/0 230 full YAMLs,3 shared-event records'],'authority_projection':'c2a82d/0 native11chemical+16protein,5issuingproteins,3conflicts','other_failed_inspection':'f86894/1 None title in PMC8457756 section inspection, later corrected selector, original unchanged','scope':'Terminal identifiers identify actual observed tool receipts; no full maintained gates, canonical builds or independent acceptance claimed.'})
+print(json.dumps({'scope_dispositions':len(scope),'acquisition_attempt_rows':len(acq),'text_match_adjudications':len(adjud),'external_bound_files':len(external),'native_unique_chemicals':ids}))

@@ -1,0 +1,47 @@
+import json,hashlib,datetime,subprocess
+from pathlib import Path
+import yaml
+O=Path('/private/tmp/pathwaymech-next-231-authority-proposal-audit-20261012');P=Path('/private/tmp/pathwaymech-next-231-authority-preparation-20261012');B=Path('/private/tmp/pathwaymech-next-230-canonical-build-20261012')
+def js(p):return json.loads(Path(p).read_text())
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+cache={}
+def bind(p):
+ p=Path(p);st=p.stat();k=(str(p.resolve()),st.st_size,st.st_mtime_ns)
+ if k not in cache:
+  with p.open('rb') as f:cache[k]=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':st.st_size,'sha256':cache[k]}
+def verify(x):assert bind(x['path'])=={k:x[k] for k in ['path','bytes','sha256']}
+def files(p):
+ c=['rg','--files','--no-ignore','--hidden','--follow',str(p)];r=subprocess.run(c,text=True,capture_output=True);assert r.returncode==0,r.stderr;return {Path(x) for x in r.stdout.splitlines()}
+cap=js(B/'preparation-capture.json');h=js(P/'handoff.json');native=js(O/'native-replay.json');assert native['status']=='passed' and native['manifest_entries_replayed']==782
+# Complete path comparison makes no filename-based claim of corpus roles.
+actual=files(B/'corpus');expected={B/'corpus'/x['relative_path'] for x in cap['records']}|{B/'corpus'/Path(cap['target']['original']['path']).name}
+retention=actual-expected;assert retention=={B/'corpus/_authority_retention/selector.yaml'} and not expected-actual
+selector=yaml.safe_load(next(iter(retention)).read_text());ids={selector['id']}|{x['id'] for x in selector['participants']};assert ids==set(cap['retention_ids'])
+assert sum(p.suffix in {'.yaml','.yml'} for p in expected)==231
+assert len(actual)==233 and len(expected)==232
+selection=files(P/'selection');assert selection=={P/'selection'/Path(h['target']['path']).name}
+verify(h['target']);assert bind(next(iter(selection)))['sha256']==h['target']['sha256']
+oldpres=[]
+for name in ['sources.json','ontology.json']:
+ a=js(B/name);b=js(P/'proposed'/name)
+ for group in ['sources','terms']:
+  assert all(b[group].get(k)==v for k,v in a[group].items());assert [k for k in b[group] if k in a[group]]==list(a[group]);oldpres.append({'surface':name,'group':group,'old':len(a[group]),'new':len(b[group]),'new_count':len(b[group])-len(a[group]),'old_objects_exact':True,'old_relative_order_exact':True})
+pm=js(P/'artifact-manifest.json');bm=js(B/'artifact-manifest.json');comp=js(P/'complete-original-bindings.json')['originals'];baseoriginals=cap['source_originals']
+for m in [pm,bm]:
+ for x in m['artifacts']:verify(x)
+for x in comp:verify(x['binding']);assert (P/'originals'/x['relative_path']).resolve()==Path(x['resolved_path'])
+assert files(P)=={Path(x['path']) for x in pm['artifacts']}|{P/'handoff.json',P/'artifact-manifest.json'}
+assert files(B)=={Path(x['path']) for x in bm['artifacts']}|{B/'handoff.json',B/'artifact-manifest.json'}|{B/'originals'/x['cache_relative_path'] for x in baseoriginals}
+for x in js(P/'external-input-bindings.json')['bindings']:verify(x)
+manifest=js(P/'proposed/manifest.json');oldm=js(B/'manifest.json');rhea=js(P/'proposed/rhea-updates.json');assert manifest[:758]==oldm and len(manifest)==782 and len(rhea['ids'])==24
+assert (P/'proposed/rhea-updates.json').read_bytes()==(B/'rhea-updates.json').read_bytes()
+byrel={x['relative_path']:x for x in comp};assert len(comp)==len(byrel)==780 and len({e['path'] for e in manifest}|{rhea['path']})==779
+assert set(byrel)-{e['path'] for e in manifest}=={'bigg-database-version-2026-10-11.json'}
+assert sum(x['new_path'] for x in comp)==24
+for x in baseoriginals:assert x['cache_relative_path'] in byrel and byrel[x['cache_relative_path']]['sha256']==x['sha256']
+for pin in js(P/'SQL-original-pins.json')['pins']:
+ st=Path(pin['path']).stat();assert (st.st_size,st.st_mtime_ns)==(pin['bytes'],pin['mtime_ns'])
+# Store native replay binding before report assembly; no fresh native run here.
+save('structural-audit.json',{'status':'passed','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'proposal_handoff':bind(P/'handoff.json'),'proposal_manifest':bind(P/'artifact-manifest.json'),'proposal_artifacts_hashed':1643,'proposal_closed_inventory_files':1645,'proposal_runtime_exclusions':0,'baseline_handoff':bind(B/'handoff.json'),'baseline_manifest':bind(B/'artifact-manifest.json'),'baseline_artifacts_hashed':479,'baseline_closed_inventory_files':1237,'baseline_separately_bound_originals':756,'complete_PPi_originals':780,'manifest_Rhea_paths':779,'sidecar_paths':['bigg-database-version-2026-10-11.json'],'shared_Rhea_path':byrel[rhea['path']],'new_original_paths':24,'old_object_preservation':oldpres,'ordered_manifest_entries':782,'old_manifest_prefix_exact':758,'Rhea_bytes_and_order_exact':24,'source_selection':50,'source_authority_selection':38,'ontology_selection':12,'Handle_reference_only':True,'proposal_selection_record_count':1,'accepted_ATP_corpus_total_files':233,'accepted_ATP_prospective_pathway_yaml':231,'accepted_ATP_retention_selector':bind(next(iter(retention))),'accepted_ATP_retention_ids_exact':len(ids),'accepted_ATP_gitkeep_files':1,'full_PPi_frozen_corpus':'Pending separate execution preparation; this proposal selection contains only exact PPi target.','full_native_build':'not executed','maintained_adoption':'not claimed','completed_native_replay':bind(O/'native-replay.json'),'native_replay_actual_receipt':'0be923 session27308 -> f74330/1; native replay successfully persisted before final corpus basename assertion failed','corrected_scope':'This finalizer validates captured corpus roles using exact path-set difference and matching retention IDs; does not rerun native adapter work.'})
+print(json.dumps({'status':'passed','proposal_artifacts':1643,'baseline_artifacts':479,'complete_originals':780,'source_terms':2507,'source_metadata':617,'ontology_terms':1969,'ontology_metadata':5,'native_selected_replay_previously_completed':True,'corrected_corpus_scope':'231 prospective pathways + one retention selector + .gitkeep','full_PPi_corpus_and_native_build':'pending'},indent=2))

@@ -1,0 +1,184 @@
+"""Independent bounded PPi integration preparation review; no maintained mutations."""
+import datetime
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+OUT = Path(__file__).resolve().parent
+PACKAGE = Path('/private/tmp/pathwaymech-next-231-integration-preparation-20261012')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+sys.path.insert(0, str(PACKAGE))
+import common as guard
+
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def write(name, value):
+    with (OUT / name).open('x') as f:
+        json.dump(value, f, indent=2); f.write('\n')
+
+
+def rows(root):
+    result = subprocess.run(['rg', '--files', '-uu', '-L', str(root)], text=True, capture_output=True)
+    assert result.returncode in (0, 1) and not result.stderr
+    return set(map(Path, result.stdout.splitlines()))
+
+
+def seal_inputs():
+    assert bind(PACKAGE / 'handoff.json')['sha256'] == '73eaef67de4f266d1e988093247e431d4b0cadf66b0c8eefe6ec1afdeb58f5ae'
+    assert bind(PACKAGE / 'artifact-manifest.json')['sha256'] == 'ee389c164a44ec3eecc88f1888c749f940a4bf6733f95b553f62205a2ef61430'
+    guard.verify_package()
+    assert len(guard.load(PACKAGE / 'artifact-manifest.json')['artifacts']) == 199
+    return {'artifacts': 199, 'ignored_hidden_followed': True}
+
+
+def actual_inputs():
+    guard.verify_accepted(); guard.verify_cache_inputs()
+    inputs = guard.load(PACKAGE / 'accepted-inputs.json')
+    assert [len(inputs['packages'][k]['supplemental_observed_files']) for k in ['author', 'science-original']] == [107, 101]
+    recovery = guard.load(inputs['exact_six_original_body_recovery']['path'])
+    for row in recovery['files']:
+        assert Path(row['target']).stat().st_mtime_ns == row['new_mtime_ns']
+        assert Path(row['cache_link']).resolve() == Path(row['target'])
+    return {'packages': len(inputs['packages']), 'selected_originals': 780,
+            'cache_baseline': 765, 'cache_additions': 24, 'recovered_originals': 6,
+            'recovery_mtimes_match_new_receipt': True, 'supplemental_cache_counts': [107, 101]}
+
+
+def actual_receipts():
+    summary = guard.load(PACKAGE / 'validation-summary.json'); results = []
+    for item in summary['receipts']:
+        guard.verify(item['receipt']['path'], item['receipt'])
+        receipt = guard.load(item['receipt']['path'])
+        assert receipt['exit_code'] == item['exit_code']
+        for key in ['stdout', 'stderr']: guard.verify(receipt[key]['path'], receipt[key])
+        snapshot = Path(item['receipt']['path']).parent
+        changes = []
+        for helper in PACKAGE.glob('*.py'):
+            old = snapshot / (helper.name + '.txt')
+            if old.exists() and old.read_bytes() != helper.read_bytes(): changes.append(helper.name)
+        results.append({'name': receipt['name'], 'exit_code': receipt['exit_code'],
+                        'receipt': item['receipt'], 'helper_delta_from_final': changes})
+    final_guard = guard.load(summary['latest']['guards']['path'])
+    assert '42 passed' in Path(final_guard['stdout']['path']).read_text()
+    assert sum(item['exit_code'] != 0 for item in results) == 4
+    write('actual-receipts.json', results)
+    return {'commands': len(results), 'preserved_failures': 4, 'guard_tests': 42,
+            'latest_guard_helper_deltas': next(r['helper_delta_from_final'] for r in results if r['name'] == 'guards')}
+
+
+def dossier():
+    data = guard.load(PACKAGE / 'dossier-plan.json'); destinations = set(); kinds = {}
+    for row in data['mappings']:
+        dest = str(guard.safe_relative(row['destination']))
+        assert dest not in destinations and not dest.endswith('.py')
+        assert dest not in {'archive-map.json', 'adoption.json'}
+        destinations.add(dest); guard.verify(row['source']['path'], row['source'])
+        kind = row['serialization']; kinds[kind] = kinds.get(kind, 0) + 1
+        if row.get('original'): guard.verify(row['original']['path'], row['original'])
+        if kind == 'lossless_utf8_json_wrapper':
+            wrapped = guard.load(row['source']['path'])
+            assert wrapped['text'].encode() == Path(row['original']['path']).read_bytes()
+        elif kind == 'exact_bytes' and Path(row['source']['path']).suffix == '.py':
+            assert dest.endswith('.py.txt')
+    assert len(destinations) == 385
+    return {'mappings': 385, 'serializations': kinds, 'reserved_paths_absent': True}
+
+
+def implementation():
+    expected = guard.load(PACKAGE / 'expected-changes.json')
+    assert {r['relative_path'] for r in expected['code']} == {
+        'src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml',
+        'tests/test_linkml_schema.py', 'tests/test_handle_references.py'}
+    assert sum(r['before'] is None for r in expected['code']) == 1
+    for item in expected['code']:
+        guard.verify(item['after']['path'], item['after'])
+        guard.verify(guard.BUILD / 'runtime' / item['relative_path'], item['after'])
+        if item['before']: guard.verify(item['before']['path'], item['before'])
+    capture = guard.load(guard.BUILD / 'preparation-capture.json')
+    assert capture['prior_records'] == 231 and capture['ATP_final_sha256'] == '6ed1607a4c17ffe56a6f5f8f123c44a0ff410c9a9965e11c3cde9ef23a4affe2'
+    assert len(capture['candidate_code']) == 223
+    return {'code': expected['code'], 'candidate_runtime_files': 223,
+            'prior_captured_records': 231, 'actual_merge_claimed': False}
+
+
+def old_base_guard():
+    output = OUT / 'must-not-exist-binding.json'
+    command = [PYTHON, '-B', str(PACKAGE / 'bind_merged_base.py'), '--root', str(guard.ROOT),
+               '--base', '95ed7deec1ea749f3ebe60e170bb4463921b80dc', '--tree', 'fixture',
+               '--branch', 'feat/pathway-next-231-20261012', '--output', str(output)]
+    env = dict(os.environ); env.pop('PATHWAYMECH_PPI_MERGED_BASE', None)
+    env.update(PYTHONDONTWRITEBYTECODE='1', UV_NO_SYNC='1', PYTHONNOUSERSITE='1')
+    result = subprocess.run(command, cwd=OUT, env=env, capture_output=True)
+    (OUT / 'eg-only-base.stdout').write_bytes(result.stdout); (OUT / 'eg-only-base.stderr').write_bytes(result.stderr)
+    assert result.returncode != 0 and b'EG-only main' in result.stderr and not output.exists()
+    return {'command': command, 'exit_code': result.returncode, 'expected_rejection': True, 'output_absent': True}
+
+
+def external_path_guard():
+    samples = [PACKAGE / 'audit-must-not-write.json', guard.BUILD / 'audit-must-not-write.json',
+               guard.CACHE / 'audit-must-not-write.json', guard.CORRECTION / 'audit-must-not-write.json']
+    for path in samples:
+        try: guard.external_new(path, OUT / 'fictional-root')
+        except AssertionError: continue
+        raise AssertionError('Protected output accepted: ' + str(path))
+    existing = OUT / 'existing.txt'; existing.write_text('fixture\n')
+    try: guard.external_new(existing, OUT / 'fictional-root')
+    except AssertionError: pass
+    else: raise AssertionError('Existing output accepted')
+    return {'protected_locations_rejected': len(samples), 'existing_output_rejected': True}
+
+
+def cache_retarget_probe():
+    directory = OUT / 'cache-retarget-fixture'; directory.mkdir()
+    cache = directory / 'cache'; cache.mkdir()
+    first, second = directory / 'first', directory / 'second'
+    first.write_bytes(b'identical bounded fixture\n'); second.write_bytes(first.read_bytes())
+    link = cache / 'old'; link.symlink_to(first)
+    original = guard.inventory(cache)[0]
+    previous = {'old': original}
+    guard.verify_cache_union(cache, previous, {}, adopted=False)
+    link.unlink(); link.symlink_to(second)
+    accepted = False
+    try:
+        guard.verify_cache_union(cache, previous, {}, adopted=False)
+        accepted = True
+    except AssertionError: pass
+    return {'retargeted_link_accepted': accepted, 'old_target': str(first), 'new_target': str(second),
+            'same_bytes': first.read_bytes() == second.read_bytes(),
+            'complete_inventory_equality_also_passes': guard.inventory(cache) == [original],
+            'baseline_row': original, 'current_row': guard.inventory(cache)[0]}
+
+
+def main():
+    assert not os.environ.get('PATHWAYMECH_PPI_MERGED_BASE')
+    for p in PACKAGE.glob('*.py'):
+        dest = OUT / 'helpers-read' / (p.name + '.txt'); dest.parent.mkdir(exist_ok=True)
+        dest.write_bytes(p.read_bytes())
+    checks = []
+    for name, function in [('closed_seal', seal_inputs), ('accepted_actual_inputs', actual_inputs),
+                           ('actual_receipts', actual_receipts), ('dossier', dossier),
+                           ('exact_handle_and_runtime', implementation), ('eg_only_base_guard', old_base_guard),
+                           ('external_output_guards', external_path_guard), ('cache_retarget_probe', cache_retarget_probe)]:
+        start = datetime.datetime.now(datetime.UTC).isoformat()
+        try:
+            detail = function(); row = {'name': name, 'status': 'completed', 'detail': detail}
+        except Exception as error:
+            row = {'name': name, 'status': 'unexpected_failure', 'type': type(error).__name__, 'message': str(error)}
+        row['started_at'] = start; row['finished_at'] = datetime.datetime.now(datetime.UTC).isoformat()
+        checks.append(row); print(json.dumps(row), flush=True)
+        write(name + '.json', row)
+    write('checks.json', checks)
+    return 1 if any(r['status'] == 'unexpected_failure' for r in checks) else 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

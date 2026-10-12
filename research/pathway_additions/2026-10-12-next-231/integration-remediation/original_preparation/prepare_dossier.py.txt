@@ -1,0 +1,92 @@
+"""Prepare selective PPi provenance mappings; originals/runtime remain manifest-bound."""
+import json
+from pathlib import Path
+
+from prepare_inputs import O, bind, read, verify, save, manifest_rows
+
+OUT = O / 'prepared-dossier'
+
+
+def credential_paths(value, path=''):
+    if isinstance(value, dict):
+        found = [path + '/' + key for key in value if key.lower() in {'set-cookie', 'authorization', 'proxy-authorization'}]
+        return found + [p for key, child in value.items() for p in credential_paths(child, path + '/' + key)]
+    if isinstance(value, list): return [p for i, child in enumerate(value) for p in credential_paths(child, path + '/' + str(i))]
+    return []
+
+
+def omit_credentials(value):
+    if isinstance(value, dict): return {k: omit_credentials(v) for k, v in value.items() if k.lower() not in {'set-cookie', 'authorization', 'proxy-authorization'}}
+    if isinstance(value, list): return [omit_credentials(v) for v in value]
+    return value
+
+
+def main():
+    assert not OUT.exists() and not (O / 'handoff.json').exists()
+    inputs = read(O / 'accepted-inputs.json'); selected, excluded = [], {}
+    for label, packet in inputs['packages'].items():
+        selected += [(packet['handoff'], label + '/handoff.json'), (packet['manifest'], label + '/artifact-manifest.json')]
+        skipped = []
+        for row in manifest_rows(packet):
+            relative = Path(row['relative_path']); source = Path(row['path'])
+            readable = len(relative.parts) == 1 or (relative.parts[0] in {'ledgers', 'research', 'logs', 'receipts'}
+                and not any(part in {'captured', 'runtime', 'corpus', 'identifier-root', 'originals', 'raw', 'draft', 'candidate', 'code'} for part in relative.parts))
+            allowed = source.suffix in {'.json', '.md', '.py', '.patch', '.diff', '.log', '.stdout', '.stderr', '.txt'} or source.name in {'stdout', 'stderr'}
+            # Native authorities are adopted at their maintained owners, never duplicated into dossier.
+            native_or_bulk = source.name in {'sources.json', 'ontology.json', 'manifest.json', 'expected-native-comparison.json'}
+            if not readable or not allowed or native_or_bulk or row['bytes'] > 1_000_000:
+                skipped.append(row['relative_path']); continue
+            selected.append(({k: row[k] for k in ('path', 'bytes', 'sha256')}, label + '/' + str(relative)))
+        excluded[label] = {'manifest': packet['manifest'], 'artifact_count': packet['artifact_count'],
+            'excluded_relative_paths': skipped, 'original_symlink_count': packet.get('original_symlink_count', 0),
+            'reason': 'Original bodies, candidate/runtime/corpus and bulky duplicates remain fully bound in immutable closed manifests and actual original-intake receipts.'}
+    for row in inputs['root_intakes']: selected.append((row, 'root-intake/' + Path(row['path']).name))
+    for number, row in inputs['issue_bodies'].items(): selected.append((row, 'issues/' + number + '-' + Path(row['path']).name))
+    selected.append((inputs['issue_creation'], 'issues/creation.json'))
+    for name in ('accepted-inputs.json', 'expected-changes.json', 'source-cache-copy-plan.json', 'expected-cache-baseline.json'):
+        selected.append((bind(O / name), 'integration-preparation/' + name))
+    assert len({destination for _, destination in selected}) == len(selected)
+    for row, _ in selected: verify(row['path'], row)
+    OUT.mkdir(); mappings = []
+    for original, destination in selected:
+        source = Path(original['path']); raw = source.read_bytes(); text = raw.decode('utf-8'); assert text.encode() == raw
+        data = read(source) if source.suffix == '.json' else None
+        omitted = credential_paths(data) if data is not None else []
+        if omitted:
+            destination += '.projection.json'; saved = OUT / destination; saved.parent.mkdir(parents=True, exist_ok=True)
+            saved.write_text(json.dumps({'serialization': 'explicit_credential_header_projection', 'original': original,
+                'is_lossless_copy': False, 'omitted_paths': omitted, 'scope': 'Only explicit credential headers omitted; original remains externally bound.',
+                'projected': omit_credentials(data)}, indent=2, ensure_ascii=False) + '\n')
+            assert not credential_paths(read(saved))
+            mappings.append({'source': bind(saved), 'destination': destination, 'original': original, 'serialization': 'explicit_credential_header_projection'})
+        elif source.suffix in {'.patch', '.diff', '.log', '.stdout', '.stderr'} or text.endswith('\n\n') or any(line.rstrip(' \t\r') != line for line in text.split('\n')):
+            destination += '.json'; saved = OUT / destination; saved.parent.mkdir(parents=True, exist_ok=True)
+            saved.write_text(json.dumps({'serialization': 'lossless_utf8_json_wrapper', 'original': original, 'encoding': 'utf-8', 'text': text}, indent=2, ensure_ascii=False) + '\n')
+            assert read(saved)['text'].encode() == raw
+            mappings.append({'source': bind(saved), 'destination': destination, 'original': original, 'serialization': 'lossless_utf8_json_wrapper'})
+        else:
+            if source.suffix == '.py': destination += '.txt'
+            mappings.append({'source': original, 'destination': destination, 'serialization': 'exact_bytes'})
+    readme = OUT / 'README.md'
+    readme.write_text('''This dossier preserves the PPi-dependent pentose phosphate pathway(non-oxidative branch)II preflight, author, original independent science, issues455–459, exact31-scalar successor correction, independent successor and export probe, reference-only Handle implementation/adversarial review, actual original-backed native build, independent output audit and root acceptances. The accepted target is20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5: six core events,20 chemical sides,51 edges,53 references,14 qualifiers and120 evidence uses. Native actual source/ontology serialization is adopted unchanged; proposals remain only comparison expectations.
+
+Source bodies and runtime/corpus copies are not duplicated into the dossier. Complete sealed manifests and explicit omitted paths bind every such artifact. Lossless UTF-8 JSON wrappers preserve meaningful whitespace; scripts end in.py.txt or reside in lossless JSON. Credential-header projections are explicitly labeled and bind their originals. Both original findings and subsequent dispositions are retained, with no fabricated native review occurrences.
+
+The full native build used230 actual EG-main records plus the accepted corrected ATP6ed1607a prospect and this PPi target; that historical prospective scope is not relabeled as a merge. Root must separately bind the future actually merged corrected ATP base, capture all231 old records/pages/reviews/history and shared-cache765-body union, adopt only the exact four-file Handle delta and24 new whole originals, create truthful history before render, then run full maintained gates and exact preservation. Saved native review does not append late history. Scientific access limitations, source identity distinctions and source-exhaustion-false status remain explicit.
+''')
+    mappings.append({'source': bind(readme), 'destination': 'README.md', 'serialization': 'prepared_provenance_readme'})
+    save('external-originals-and-omissions.json', {'packages': excluded, 'scope': 'Exact omitted paths are resolved only through each immutable complete manifest; no duplicate bulk original/runtime archive or silent omission.'})
+    mappings.append({'source': bind(O / 'external-originals-and-omissions.json'), 'destination': 'integration-preparation/external-originals-and-omissions.json', 'serialization': 'exact_bytes'})
+    assert len({row['destination'] for row in mappings}) == len(mappings)
+    save('dossier-plan.json', {'status': 'prepared_external_only_actual_corrected_ATP_merge_pending', 'root': 'research/pathway_additions/2026-10-12-next-231',
+        'base': None, 'tree': None, 'mappings': mappings, 'count': len(mappings), 'copy_bytes': sum(row['source']['bytes'] for row in mappings),
+        'future_base_scope': 'Separate actual merged binding is embedded verbatim in root adoption receipt; no sealed preparation relabeling.',
+        'maintained_gates': False, 'saved_review': False, 'source_exhaustion': False})
+    save('dossier-plan-verification.json', {'selected_originals': len(selected), 'mappings': len(mappings),
+        'external_artifacts': sum(len(item['excluded_relative_paths']) for item in excluded.values()),
+        'lossless_wrappers': sum(row['serialization'] == 'lossless_utf8_json_wrapper' for row in mappings),
+        'credential_header_projections': sum(row['serialization'] == 'explicit_credential_header_projection' for row in mappings),
+        'maintained_or_cache_writes': False})
+    print(json.dumps({'mappings': len(mappings), 'bytes': sum(row['source']['bytes'] for row in mappings), 'actual_merge': 'pending'}))
+
+if __name__ == '__main__': main()

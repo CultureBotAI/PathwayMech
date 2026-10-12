@@ -1,0 +1,28 @@
+"""Show the same frozen draft's precise failure against unchanged accepted code."""
+import hashlib
+import json
+from pathlib import Path
+import sys
+import yaml
+
+root = Path(__file__).resolve().parent
+runtime = Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/runtime')
+sys.path.insert(0, str(runtime / 'src'))
+from pathwaymech.schema import ValidationError, validate_record
+from pathwaymech.strict import TARGET_CLASS, validator
+
+path = root / 'observed-draft' / 'pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+raw = path.read_bytes()
+record = yaml.safe_load(raw)
+try:
+    validate_record(record)
+except ValidationError as error:
+    errors = error.errors
+else:
+    raise AssertionError('Baseline unexpectedly accepted Handle')
+assert len(errors) == 1 and 'hdl' in errors[0], errors
+strict = validator().validate(record, TARGET_CLASS).results
+assert len(strict) == 1 and 'hdl:1993/32279' in strict[0].message and '/references/45/id' in strict[0].message, strict
+result = {'status': 'expected_baseline_rejection', 'runtime': str(runtime), 'draft_sha256': hashlib.sha256(raw).hexdigest(), 'native_errors': errors, 'linkml_errors': [item.message for item in strict]}
+(root / 'receipts' / 'baseline-rejection.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(result, indent=2))

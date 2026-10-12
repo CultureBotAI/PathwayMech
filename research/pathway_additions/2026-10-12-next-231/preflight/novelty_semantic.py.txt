@@ -1,0 +1,46 @@
+"""Read-only, coefficient-safe whole-record novelty screen against an explicit base."""
+from pathlib import Path
+import hashlib,json,re,subprocess,yaml
+P=Path(__file__).parent
+B=Path('/private/tmp/pathwaymech-next-227-20261012')
+loader=getattr(yaml,'CSafeLoader',yaml.SafeLoader)
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+base={'head':subprocess.check_output(['git','-C',str(B),'rev-parse','HEAD'],text=True).strip(),'tree':subprocess.check_output(['git','-C',str(B),'rev-parse','HEAD^{tree}'],text=True).strip()}
+assert base=={'head':'790a9699d7c1ca9c00536be877fa884af1c57918','tree':'6fc1d09d2b5f8c4863c9b97827592f14e0e82940'},base
+cmd=['rg','--files','--no-ignore','--hidden','--follow',str(B/'data/pathways'),'-g','*.yaml']
+a=subprocess.run(cmd,capture_output=True,text=True);assert a.returncode==0 and not a.stderr
+files=[(Path(x),'actual merged lyxose') for x in a.stdout.splitlines()];assert len(files)==228,len(files)
+files += [(Path('/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml'),'accepted MG prospect, not merged'),(Path('/private/tmp/pathwaymech-next-229-science-correction-20261012/draft/ethylene-glycol-degradation.yaml'),'EG correction successor, independent review acceptance not assumed')]
+# An intentionally generous chemical identity screen: source-native classes, their
+# structurally selected charged representatives and the rejected acid PPi xref are
+# all included. This broadens novelty detection; it is not an exactMatch assertion.
+groups={
+ 's7p':{'MetaCyc:D-SEDOHEPTULOSE-7-P','CHEBI:57483','CHEBI:15721'},
+ 'ppi':{'MetaCyc:PPI','CHEBI:33019','CHEBI:29888','CHEBI:18361'},
+ 'sbp':{'MetaCyc:D-SEDOHEPTULOSE-1-7-P2','CHEBI:58335'},
+ 'pi':{'MetaCyc:Pi','CHEBI:43474','CHEBI:18367'},'h':{'MetaCyc:PROTON','CHEBI:15378'},
+ 'dhap':{'MetaCyc:DIHYDROXY-ACETONE-PHOSPHATE','CHEBI:57642'},'e4p':{'MetaCyc:ERYTHROSE-4P','CHEBI:16897'},
+ 'r5p':{'MetaCyc:RIBOSE-5P','CHEBI:58273'},'ru5p':{'MetaCyc:RIBULOSE-5P','CHEBI:58121'},
+ 'xu5p':{'MetaCyc:XYLULOSE-5-PHOSPHATE','CHEBI:57737'},'gap':{'MetaCyc:GAP','CHEBI:59776'},'f6p':{'MetaCyc:FRUCTOSE-6P','CHEBI:57634'}}
+back={x:k for k,v in groups.items() for x in v}
+native=json.loads((P/'derived/native-six-reaction-projection.json').read_text())
+def mapped(ids):return sorted(back.get(x,x) for x in ids)
+def signature(l,r):return sorted([mapped(l),mapped(r)])
+expected={r['id']:signature(['MetaCyc:'+s['compound_id'] for s in r['sides']['left']],['MetaCyc:'+s['compound_id'] for s in r['sides']['right']]) for r in native}
+rows=[]
+for path,status in files:
+ j=yaml.load(path.read_text(),Loader=loader);rxns=[]
+ for rx in j.get('reactions',[]):
+  rid=rx['id'];sides={'consumes':[],'produces':[]};ev=[]
+  for e in j.get('mechanistic_edges',[]):
+   if e['predicate']=='consumes' and e['object']==rid:sides['consumes'].append(e['subject']);ev.append(e)
+   if e['predicate']=='produces' and e['subject']==rid:sides['produces'].append(e['object']);ev.append(e)
+  sig=signature(sides['consumes'],sides['produces']);match=[r for r,s in expected.items() if s==sig]
+  broad_ppi_s7p={'ppi','s7p'} <=set(mapped(sides['consumes']+sides['produces']))
+  rxns.append({'id':rid,'direction':rx.get('direction'),'sides':sides,'six_member_side_identity_matches_either_direction':match,'has_s7p_and_ppi_any_side':broad_ppi_s7p,'explicit_assertion_coefficients':[{'edge':e['id'],'assertions':[v['source_assertion'] for v in e.get('evidence',[]) if re.search(r'coefficient|stoichiometr|contains\d',v.get('source_assertion',''),re.I)]} for e in ev]})
+ rows.append({'source':bind(path),'status':status,'id':j['id'],'label':j.get('label'),'reaction_count':len(rxns),'exact_candidate_id':j['id']=='MetaCyc:PWY-8178','exact_unique_event':any(r['id']=='MetaCyc:RXN-21730' for r in rxns),'has_ppi_s7p_event':any(r['has_s7p_and_ppi_any_side'] for r in rxns),'matched_native_members':sorted({m for r in rxns for m in r['six_member_side_identity_matches_either_direction']}),'relevant_reactions':[r for r in rxns if r['six_member_side_identity_matches_either_direction'] or r['has_s7p_and_ppi_any_side'] or 's7p' in mapped(r['sides']['consumes']+r['sides']['produces'])]})
+assert not any(r['exact_candidate_id'] or r['exact_unique_event'] or r['has_ppi_s7p_event'] or len(r['matched_native_members'])==6 for r in rows)
+result={'base':base,'inventory_command':cmd,'inventory_stderr':a.stderr,'actual_merged_records':228,'prospective_records':2,'total_records_screened':len(rows),'coefficient_policy':'No coefficient defaults are assigned. Stored evidence assertions are retained where coefficients are stated; complete side identity and unique-event absence are primary. Native XML has no explicit coefficient values. Generic class/charged species grouping is a generous novelty screen only, not scientific equivalence.','screen_groups':{k:sorted(v) for k,v in groups.items()},'expected_native_side_signatures':expected,'records':rows,'atp_candidate_comparison':{'status':'Next230 preflight only; no authored target received','reactions':['RHEA:31444','RHEA:30169'],'decision':'ATP donor replaces PPi; shared aldol cleavage does not create the six-event reversible PPi branch.','source':bind(Path('/private/tmp/pathwaymech-next-230-preflight-20261012/derived/rhea-core-chemistry.json'))},'outcome':'No complete six-event candidate, exact candidate ID, exact PPi event ID or even generous S7P+PPi event found in all 230 screened actual/prospective records.'}
+(P/'derived/novelty-semantic-all-records.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'records':len(rows),'matched_records':[(r['id'],len(r['matched_native_members'])) for r in rows if r['matched_native_members']],'outcome':result['outcome']}))

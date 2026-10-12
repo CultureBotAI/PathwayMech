@@ -1,0 +1,206 @@
+"""Bind exact PPi science, Handle implementation and actual native output lineage."""
+import argparse
+import json
+from pathlib import Path
+
+import yaml
+
+from common import PACKAGE as O, BUILD as B, TARGET_SOURCE, TARGET_SHA, CACHE, binding as bind, load as read, verify, inventory, write_new, now
+
+TMP = Path('/private/tmp')
+PACKAGE_SUFFIXES = {
+    'preflight': 'preflight', 'author': 'author', 'science-original': 'science-review',
+    'science-correction': 'author-successor', 'science-successor': 'science-successor-review',
+    'science-export-probe': 'science-successor-export-probe', 'direction-probe': 'direction-check',
+    'handle-implementation': 'reference-implementation', 'handle-adversarial': 'handle-adversarial',
+    'authority-preparation': 'authority-preparation', 'authority-proposal-audit': 'authority-proposal-audit',
+    'canonical-preparation': 'canonical-preparation', 'canonical-preparation-audit': 'canonical-preparation-audit',
+    'canonical-build': 'canonical-build', 'canonical-audit': 'canonical-build-audit',
+}
+PINNED = {
+    'preflight': '2a36ac3c08ef24ec5aa4e5556782de5cd266db7e164100bb40ce2af529d40b0a',
+    'author': '2bdec4de417ebf2391f62ca826b9afeda9e1af17a617caa9dc6d2a00676996e6',
+    'science-original': 'd7749e954e7cd7a823fa5f7bb0ed2ded90394e48b9a51f8313eab37c3ae9fa8c',
+    'science-correction': 'cf513721d2cef03c9875afc91d9ef4dcf6c6db145f7da1e9229dced138f908a1',
+    'science-successor': '6eca4522ef9c9e89424d7e0a7d313931483a91eda589c1b31233436d9a37ce4b',
+    'science-export-probe': '6d433949950fde9e9299edf3c16a693a0059fd2936f1a409f8f2179340e5fd1a',
+    'direction-probe': '0f4ee285311aefb8ecc2ac71b71bf167c8976382cd739a9a291a8bc4001de133',
+    'handle-implementation': '4afb6912df124836718ec0f548e7053139814ea892b1ff43473beb1a98ffd64a',
+    'handle-adversarial': '821e161fdc06dff100464e8b6cb83db35c7deb464e0bf96c6963f1eb59654a10',
+    'authority-preparation': 'a8ac9131b4072394a607b05982ae51205de5207262eff42a2de1c73676d76509',
+    'authority-proposal-audit': '66145aa66b029a0e5b51f1a08b67801f35c4d948109937fede510568825682dc',
+    'canonical-preparation': '8e5882d0c5240a9bca13516fc996d061df3b3ea1ee2d8ef5621aa45afc82633b',
+    'canonical-preparation-audit': '095ac87a1ab54f6ecd057e6741f6e2970d44434a40b3873c2ca0785ff509de1d',
+    'canonical-build': '7b51651f34562e1fc15535800623dfff85a9cba1ab60ab3a998437252130401b',
+    'canonical-audit': 'be2297ab2ad949a3075e45d6afc234cd44400cb1b457a8141cfe2fb1d322dad3',
+}
+
+
+def save(name, value):
+    write_new(O / name, value)
+
+
+def manifest_rows(item):
+    directory = Path(item['handoff']['path']).parent
+    data = read(item['manifest']['path'])
+    rows = data if isinstance(data, list) else data.get('artifacts', data.get('files'))
+    result = []
+    for row in rows:
+        candidate = Path(row.get('relative_path') or row['path'])
+        path = candidate if candidate.is_absolute() else directory / candidate
+        assert path.is_relative_to(directory) and '..' not in path.parts
+        result.append({'relative_path': str(path.relative_to(directory)), **bind(path)})
+    return result
+
+
+def packet(label, suffix):
+    directory = TMP / ('pathwaymech-next-231-' + suffix + '-20261012')
+    handoff = bind(directory / 'handoff.json')
+    if label in PINNED: assert handoff['sha256'] == PINNED[label]
+    data = read(handoff['path']); manifest = data.get('manifest') or data['artifact_manifest']
+    path = Path(manifest['path']); path = path if path.is_absolute() else directory / path
+    verify(path, manifest); manifest = bind(path)
+    item = {'handoff': handoff, 'manifest': manifest, 'artifact_count': 0, 'original_links_receipt': None}
+    raw = read(path); raw_rows = raw if isinstance(raw, list) else raw.get('artifacts', raw.get('files'))
+    rows = manifest_rows(item); assert len(rows) == len(raw_rows)
+    for row, original in zip(rows, raw_rows, strict=True): verify(row['path'], original, allow_symlink=True)
+    item['artifact_count'] = len(rows)
+    links = []
+    if label == 'canonical-build':
+        receipt = directory / 'execution-intake.json'
+        item['original_links_receipt'] = bind(receipt)
+        for original in read(receipt)['source_originals_freshly_hashed']:
+            path = directory / 'originals' / original['cache_relative_path']
+            assert path.is_symlink() and path.resolve() == Path(original['path']).resolve()
+            verify(path, original, allow_symlink=True); links.append(str(path.relative_to(directory)))
+    observed_rows = inventory(directory)
+    observed = {r['relative_path'] for r in observed_rows}
+    declared = {r['relative_path'] for r in rows} | {'handoff.json', 'artifact-manifest.json'} | set(links)
+    assert declared <= observed
+    extra = observed - declared
+    # Known author/science build caches are separately frozen observations, not science-seal artifacts.
+    assert not extra or ((label == 'author' and len(extra) == 107 and all(r.startswith(('swift-cache/', 'uv-cache/')) for r in extra)) or
+        (label == 'science-original' and len(extra) == 101 and all(r.startswith('swift-cache/') for r in extra))), (label, sorted(extra))
+    item['supplemental_observed_files'] = [r for r in observed_rows if r['relative_path'] in extra]
+    item['supplemental_scope'] = 'Exact newly observed build-cache bytes outside original author/science manifest; no scientific acceptance is attributed to these files.' if extra else None
+    item['allowed_external_bindings'] = []
+    item.update({'closed_inventory_verified': True, 'original_symlink_count': len(links),
+                 'scope': 'Full closed manifest freshly verified; original artifact rows are retained once in their immutable manifest, not duplicated into this compact packet index.'})
+    return item
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--canonical-root', required=True, type=Path)
+    args = parser.parse_args()
+    assert not (O / 'handoff.json').exists() and not (O / 'accepted-inputs.json').exists()
+    packages = {}
+    for label, suffix in PACKAGE_SUFFIXES.items():
+        packages[label] = packet(label, suffix); print(label, packages[label]['artifact_count'], flush=True)
+    assert bind(args.canonical_root)['sha256'] == '8571c9b1f5590c357762fa3e874909e1eb15aa9f7a91a3f85ef3c46541b5adfd'
+    canonical_root = read(args.canonical_root)
+    assert canonical_root['status'] == 'accepted_actual_native_outputs_with_scope_limits'
+    outputs = read(B / 'handoff.json')['outputs']
+    assert canonical_root['actual_native_outputs'] == outputs
+    audit = read(packages['canonical-audit']['handoff']['path'])
+    assert audit['canonical_output_acceptance'] and not audit['blocking_findings'] and not audit['nonblocking_findings']
+    assert audit['actual_native_outputs'] == outputs and audit['target_sha256'] == TARGET_SHA
+    target = bind(TARGET_SOURCE); native_target = bind(B / 'corpus' / TARGET_SOURCE.name)
+    assert target['sha256'] == native_target['sha256'] == TARGET_SHA
+    for row in outputs.values(): verify(row['path'], row)
+    root_names = ['preflight-intake', 'science-intake', 'successor-acceptance', 'handle-acceptance',
+                  'authority-proposal-acceptance', 'canonical-preparation-acceptance']
+    roots = [bind(args.canonical_root)] + [bind(TMP / ('pathwaymech-next-231-root-' + name + '-20261012.json')) for name in root_names]
+    recovery = bind(TMP / 'pathwaymech-next-230-cache-source-recovery-20261012/receipt.json')
+    assert recovery['sha256'] == '554cc7cf1c5a1b0e78e25ff4a72a7a8e4065ceb0dc05acfd03fbac4242b0f821'
+    recovered = read(recovery['path'])
+    assert recovered['status'] == 'restored_exact_six_original_bodies' and len(recovered['files']) == 6
+    for row in recovered['files']:
+        verify(row['source'], row); verify(row['target'], row)
+        verify(row['cache_link'], row, allow_symlink=True)
+        assert Path(row['cache_link']).is_symlink() and Path(row['cache_link']).resolve() == Path(row['target'])
+        assert Path(row['target']).stat().st_mtime_ns == row['new_mtime_ns']
+    roots.append(recovery)
+    assert read(roots[3]['path'])['five_findings_corrected'] == [455, 456, 457, 458, 459]
+    creation_path = TMP / 'pathwaymech-next-231-issue-creation-20261012.json'; creation = read(creation_path)
+    assert len(creation) == 5 and all(r['exit_code'] == 0 for r in creation)
+    bodies = {}
+    for number, row in zip(range(455, 460), creation, strict=True):
+        assert row['stdout'].strip() == f'https://github.com/CultureBotAI/PathwayMech/issues/{number}'
+        bodies[str(number)] = bind(row['body'])
+    record = yaml.safe_load(TARGET_SOURCE.read_bytes())
+    assert len(record['mechanistic_edges']) == 51 and len(record['references']) == 53
+    assert sum(len(e.get('endpoint_qualifiers', [])) for e in record['mechanistic_edges']) == 14
+    assert sum(len(e['evidence']) + sum(len(q['evidence']) for q in e.get('endpoint_qualifiers', [])) for e in record['mechanistic_edges']) == 120
+    capture = read(B / 'preparation-capture.json'); assert capture['prior_records'] == 231
+    originals = capture['source_originals']; assert len(originals) == 780
+    for row in originals: verify(row['path'], row, allow_symlink=True)
+    identity = {'target': target, 'actual_build_target': native_target, 'same_complete_bytes': True,
+        'root_science_acceptance': roots[3], 'root_actual_canonical_acceptance': bind(args.canonical_root),
+        'scope': 'Full actual PPi native build used exact final20541f scientific successor and accepted Handle code overlay. Prospective corrected ATP baseline is not relabeled as merged.'}
+    save('accepted-inputs.json', {'at': now(), 'scope': 'Accepted science, Handle implementation and actual native outputs. Actual future merged corrected ATP base remains separately root-bound.',
+        'actual_merged_base': None, 'actual_merged_tree': None, 'packages': packages, 'root_intakes': roots,
+        'target': target, 'historical_build_target': native_target, 'canonical_target_identity': identity,
+        'canonical_outputs': outputs, 'canonical_build_verification': read(B / 'handoff.json')['verification'],
+        'canonical_root_acceptance': bind(args.canonical_root), 'source_originals_capture': bind(B / 'preparation-capture.json'),
+        'original_count': 780, 'exact_six_original_body_recovery': recovery, 'canonical_audit_accepted': True, 'science_successor_accepted': True,
+        'Handle_reference_only_accepted': True, 'issue_creation': bind(creation_path), 'issue_bodies': bodies,
+        'captured_baseline': bind(B / 'preparation-capture.json'), 'maintained_or_cache_writes': False})
+    delta, counts = {}, {}
+    for kind in ('sources', 'ontology'):
+        old, new = read(B / 'baseline' / (kind + '.json')), read(B / (kind + '.json'))
+        assert old['version'] == new['version']; delta[kind], counts[kind] = {}, {}
+        for section in ('terms', 'sources'):
+            assert all(new[section].get(k) == v for k, v in old[section].items())
+            assert [k for k in new[section] if k in old[section]] == list(old[section])
+            delta[kind][section] = {k: v for k, v in new[section].items() if k not in old[section]}
+            counts[kind][section] = {'old': len(old[section]), 'new': len(new[section]), 'added': len(delta[kind][section])}
+    assert [len(delta[k][s]) for k, s in [('sources', 'terms'), ('sources', 'sources'), ('ontology', 'terms'), ('ontology', 'sources')]] == [33, 22, 6, 0]
+    before, after = read(B / 'baseline/manifest.json'), read(B / 'manifest.json')
+    assert after[:len(before)] == before and len(before) == 758 and len(after) == 782
+    additions = after[len(before):]; assert len(additions) == 24
+    assert read(B / 'baseline/rhea-updates.json') == read(B / 'rhea-updates.json')
+    by_path = {r['cache_relative_path']: r for r in originals}; previous = {r['path'] for r in before}
+    assert len({r['path'] for r in additions}) == 24
+    fresh = []
+    for entry in additions:
+        assert entry['path'] not in previous
+        row = by_path[entry['path']]; dest = CACHE / entry['path']
+        assert not dest.exists() and not dest.is_symlink(), 'No PPi shared-cache copy authorized during preparation'
+        fresh.append({'cache_relative_path': entry['path'], 'source_key': entry['key'],
+            'original': {key: row[key] for key in ('path', 'bytes', 'sha256')}, 'destination': str(dest), 'observed_destination': None})
+    code = read(TMP / 'pathwaymech-next-231-reference-implementation-20261012/copy-plan.json')
+    assert len(code) == 4 and sum(r['before'] is None for r in code) == 1
+    for row in code:
+        verify(row['after']['path'], row['after'])
+        verify(B / 'runtime' / row['relative_path'], row['after'])
+        if row['before']: verify(row['before']['path'], row['before'])
+    prior_cache = read('/private/tmp/pathwaymech-next-230-maintained-baseline-20261012/baseline.json')['source_cache_files']
+    atp_new = read('/private/tmp/pathwaymech-next-230-integration-preparation-20261012/source-cache-copy-plan.json')['originals']
+    expected_cache = {r['relative_path']: r for r in prior_cache}
+    for row in atp_new:
+        assert row['cache_relative_path'] not in expected_cache
+        expected_cache[row['cache_relative_path']] = row['original']
+    assert len(expected_cache) == 765
+    actual_cache = {r['relative_path']: r for r in inventory(CACHE)}
+    assert set(actual_cache) == set(expected_cache)
+    for relative, row in expected_cache.items(): verify(CACHE / relative, row, allow_symlink=True)
+    save('expected-cache-baseline.json', {'scope': 'Prospective corrected ATP shared-cache union freshly observed; future actual merged baseline must match exactly. No PPi original copied.',
+        'rows': [{'relative_path': relative, **bind(CACHE / relative), 'symlink': (CACHE / relative).is_symlink()} for relative in sorted(expected_cache)],
+        'old_ATP_before_count': len(prior_cache), 'ATP_originals_added': len(atp_new), 'expected_PPibefore_count': len(expected_cache), 'PPi_originals_to_add': len(fresh), 'expected_after_PPiadoption': len(expected_cache) + len(fresh)})
+    save('expected-changes.json', {'status': 'prepared_pending_actual_merged_corrected_ATP_binding', 'base': None, 'tree': None,
+        'target': target, 'target_relative_path': 'data/pathways/' + TARGET_SOURCE.name, 'authorities': delta, 'authority_counts': counts,
+        'code': code, 'canonical_outputs': outputs, 'canonical_target_identity': identity, 'manifest_additions': additions,
+        'rhea_additions': [], 'new_originals': fresh, 'reused_originals': [], 'actual_native_comparison': bind(B / 'proposal-comparison.json'),
+        'allowed_generated_paths': ['pages/records/MetaCyc_PWY-8178.html', 'pages/browse.html', 'pages/index.html', 'pages/pathway_index.json',
+            'pages/downloads/nodes.tsv', 'pages/downloads/edges.tsv', 'pages/downloads/manifest.json', 'output/kgx/nodes.tsv', 'output/kgx/edges.tsv'],
+        'captured_baseline_scope': capture['scope'], 'captured_record_yaml': 231, 'issues_pending_merge': [455, 456, 457, 458, 459],
+        'required_merge_bridge': 'Root supplies future actual merged correctedATP base/tree/branch; all231 records,4ATP canonical baseline files and pre-Handle runtime checked. No current95ed ATP merge assertion.',
+        'maintained_or_cache_writes': False})
+    save('source-cache-copy-plan.json', {'status': 'preparation_only', 'new_original_count': 24, 'originals': fresh, 'reuse': [],
+        'all_selected_originals_capture': bind(B / 'preparation-capture.json'), 'expected_whole_cache_baseline': bind(O / 'expected-cache-baseline.json'),
+        'selected_build_originals': 780, 'prospective_shared_cache_before': 765, 'prospective_shared_cache_after': 789,
+        'copy_commands_executed': False, 'scope': '24 new whole paths; nine old shared-cache files are outside the780 selected build input paths and must still remain exact.'})
+    print(json.dumps({'status': 'accepted_inputs_prepared', 'target': TARGET_SHA, 'code_files': 4, 'new_originals': 24, 'actual_ATP_merge': 'not_asserted'}))
+
+if __name__ == '__main__': main()

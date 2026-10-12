@@ -1,0 +1,176 @@
+"""Bounded native authority preparation; no full-corpus builder or shared-cache write."""
+from pathlib import Path
+from datetime import datetime, timezone
+import copy
+import hashlib
+import json
+import sqlite3
+import sys
+import yaml
+
+OUT = Path('/private/tmp/pathwaymech-next-231-author-20261012')
+PRE = Path('/private/tmp/pathwaymech-next-231-preflight-20261012')
+BASE = Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+SQL = Path('/private/tmp/pathwaymech-curation-authorities')
+sys.path[:0] = [str(BASE/'runtime/scripts'), str(BASE/'runtime/src')]
+import build_source_identifier_snapshot as sb
+import build_ontology_identifier_snapshot as ob
+
+def bind(p):
+    p = Path(p)
+    with p.open('rb') as f:
+        sha = hashlib.file_digest(f, 'sha256').hexdigest()
+    return {'path': str(p), 'bytes': p.stat().st_size, 'sha256': sha}
+
+def save(n, v):
+    p = OUT/'authority'/n
+    with p.open('x') as f:
+        json.dump(v, f, indent=2, ensure_ascii=False)
+        f.write('\n')
+
+base_s = json.loads((BASE/'sources.json').read_bytes())
+base_o = json.loads((BASE/'ontology.json').read_bytes())
+base_m = json.loads((BASE/'manifest.json').read_bytes())
+assert bind(BASE/'handoff.json')['sha256'] == '1462797155f37ae65a88118d7d85f78916caa04bc29ac860d28ed68c66f8180f'
+cache = OUT/'authority/original-cache'
+cache.mkdir()
+entries, originals, replays, wanted = [], [], [], set()
+
+def add(kind, p, url, key, ids, version='27.0', existing=None):
+    p = Path(p)
+    entry = copy.deepcopy(existing) if existing else {
+        'key': key, 'kind': kind, 'path': 'ppi231-'+p.name, 'url': url,
+        'version': version, 'license': 'Upstream terms; public-release licensing deferred',
+        'sha256': bind(p)['sha256']}
+    assert entry['sha256'] == bind(p)['sha256']
+    q = cache/entry['path']
+    q.parent.mkdir(parents=True, exist_ok=True)
+    q.symlink_to(p.resolve())
+    ts = list(sb.source_terms(kind, p, url=url, version=version))
+    selected = [t for t in ts if t[0] in ids]
+    assert {t[0] for t in selected} == set(ids), (key, ids, selected)
+    entries.append(entry)
+    originals.append({'entry': entry, 'original': bind(p), 'external_cache': str(q)})
+    replays.append({'entry_key': key, 'selected_terms': selected, 'original': bind(p)})
+    wanted.update(ids)
+
+for p in sorted((OUT/'raw').glob('META-*-compound.html')):
+    frame = p.name.removeprefix('META-').removesuffix('-compound.html')
+    add('metacyc-html', p, 'https://bf2i-artsymbiocyc.insa-lyon.fr/compound?orgid=META&id='+frame,
+        'ppi231-metacyc-compound-'+frame, ['MetaCyc:'+frame], 'MetaCyc 27.0; retrieved 2026-10-12')
+add('metacyc-html', OUT/'raw/META-PWY-8178.html',
+    'https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object=PWY-8178',
+    'ppi231-metacyc-PWY-8178', ['MetaCyc:PWY-8178'], 'MetaCyc 27.0; retrieved 2026-10-12')
+for r in json.loads((PRE/'derived/native-six-reaction-projection.json').read_bytes()):
+    frame = r['id'].split(':', 1)[1]
+    add('metacyc-reaction-xml', r['source'],
+        'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame,
+        'ppi231-metacyc-reaction-'+frame, [r['id']])
+protein_groups = [
+    (PRE/'raw/Entrez-protein-ADU74928.1.xml', ['ADU74928.1']),
+    (PRE/'raw/Entrez-protein-ADU75484-ADU74927.xml', ['ADU75484.1', 'ADU74927.1']),
+    (PRE/'raw/Entrez-protein-CDQ83-11320-07225.xml', ['PNT94038.1', 'PNT93300.1']),
+    (OUT/'raw/NCBI-protein-branch-full.xml', ['ABN51585.1', 'ABN51587.1', 'ABN51812.1',
+        'ADU74718.1', 'ADU73172.1', 'ADU73173.1', 'ADU73386.1', 'ADU73387.1'])]
+requests = []
+for p in (OUT/'receipts').glob('acquisition-*-requests.json'):
+    requests.extend(json.loads(p.read_bytes()))
+for i, (p, ids) in enumerate(protein_groups):
+    # The retained body is a native batch. The exact originating request is retained
+    # in acquisition provenance; an illustrative single-record URL is not substituted.
+    if p.parent == OUT/'raw':
+        url = next(url for name, url in requests if name == p.name)
+    else:
+        acquisitions = json.loads((PRE/'source-acquisition-ledger.json').read_bytes())
+        matches = [r for r in acquisitions if r.get('path') == str(p) and 'sha256' in r]
+        assert len(matches) == 1, (p, matches)
+        assert matches[0]['sha256'] == bind(p)['sha256']
+        url = matches[0]['url']
+    add('ncbi-protein-xml', p, url, 'ppi231-ncbi-proteins-'+str(i+1),
+        ['NCBIProtein:'+x for x in ids], 'Native GenBank originals retrieved 2026-10-12')
+add('uniprot', OUT/'raw/UniProt-A3DIL8.json', 'https://rest.uniprot.org/uniprotkb/A3DIL8.json',
+    'ppi231-uniprot-A3DIL8', ['UniProtKB:A3DIL8'], 'UniProt entry 103; annotation 2026-09-02; sequence version 1')
+enz = next(e for e in base_m if e['key'] == 'enzyme-2026-09-02')
+ecs = ['EC:2.7.1.90','EC:4.1.2.13','EC:2.2.1.1','EC:5.3.1.6','EC:5.1.3.1']
+add('enzyme', BASE/'originals'/enz['path'], enz['url'], enz['key'], ecs, enz['version'], existing=enz)
+save('incremental-source-manifest.json', entries)
+selection = OUT/'authority/selection'
+selection.mkdir()
+(selection/'ids.yaml').write_text(yaml.safe_dump({'id':'MetaCyc:PWY-8178',
+    'participants':[{'id':i} for i in sorted(wanted)]}))
+snap = sb.build_snapshot(OUT/'authority/incremental-source-manifest.json', selection, cache)
+assert set(snap['terms']) == wanted
+save('incremental-sources.json', snap)
+save('source-original-bindings.json', originals)
+save('source-native-replay.json', replays)
+
+selected_o = {'CHEBI:'+x for x in ['18420','29105','28938','29103','58937','30616']}
+selected_o.update({'NCBITaxon:'+x for x in ['5759','1515','84032','203119','637887']})
+selected_o.add('GO:0043565')
+ontology = {'version': 1, 'sources': {}, 'terms': {}}
+oreplay = []
+for prefix, db in [('CHEBI','chebi'),('NCBITaxon','ncbitaxon'),('GO','go')]:
+    ids = sorted(i for i in selected_o if i.startswith(prefix+':'))
+    p = SQL/(db+'.db')
+    before = {'size':p.stat().st_size, 'mtime_ns':p.stat().st_mtime_ns}
+    with sqlite3.connect(p.resolve().as_uri()+'?mode=ro&immutable=1', uri=True) as conn:
+        meta = ob.read_source(conn,p)
+        key = db+'-'+meta['version']
+        ts, missing = ob.extract_terms(conn,ids,key)
+        assert not missing, missing
+        raw = {i:[{'predicate':a,'object':b,'value':c} for a,b,c in conn.execute(
+            'SELECT predicate,object,value FROM statements WHERE subject=?',(i,))] for i in ids}
+    assert before == {'size':p.stat().st_size, 'mtime_ns':p.stat().st_mtime_ns}
+    ontology['sources'][key] = meta
+    ontology['terms'].update(ts)
+    oreplay.append({'original_path':str(p),'stat_before_after':before,'metadata':meta,
+                    'selected_terms':ts,'native_statements':raw,
+                    'full_sql_rehash':False,'binding_owner':str(BASE/'handoff.json')})
+save('incremental-ontology.json', ontology)
+save('ontology-native-replay.json', oreplay)
+
+composed_s, composed_o = copy.deepcopy(base_s), copy.deepcopy(base_o)
+decisions = []
+for name, current, addition in [('sources',composed_s,snap),('ontology',composed_o,ontology)]:
+    for ident, term in addition['terms'].items():
+        if ident in current['terms']:
+            old = current['terms'][ident]
+            assert old['label'] == term['label'] and set(old.get('synonyms',[])) == set(term.get('synonyms',[])), (ident,old,term)
+            decisions.append({'id':ident,'disposition':'preserve existing exact object','proposal_source':term['source'],'retained_source':old['source']})
+        else:
+            current['terms'][ident] = term
+            decisions.append({'id':ident,'disposition':'new native term','source':term['source']})
+    used = {t['source'] for t in current['terms'].values()}
+    for key, meta in addition['sources'].items():
+        if key not in used:
+            continue
+        if key in current['sources']:
+            assert current['sources'][key] == meta, key
+        else:
+            current['sources'][key] = meta
+    assert all(current['terms'][i] == t for i,t in (base_s if name=='sources' else base_o)['terms'].items())
+save('proposed-sources.json', composed_s)
+save('proposed-ontology.json', composed_o)
+save('proposal-decisions.json', decisions)
+manifest = copy.deepcopy(base_m)
+for e in entries:
+    if e['key'] not in {x['key'] for x in manifest}:
+        manifest.append(e)
+save('proposed-source-manifest.json',manifest)
+save('authority-preparation-status.json', {
+    'timestamp':datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+    'status':'bounded_native_proposals_only', 'full_canonical_build':False,
+    'baseline':{'handoff':bind(BASE/'handoff.json'),'sources':bind(BASE/'sources.json'),
+                'ontology':bind(BASE/'ontology.json'),'manifest':bind(BASE/'manifest.json')},
+    'next230': 'separate ATP authoring active; no accepted target or proposals incorporated',
+    'selected_source_ids':sorted(wanted), 'selected_ontology_ids':sorted(selected_o),
+    'new_source_ids':sorted(set(composed_s['terms'])-set(base_s['terms'])),
+    'new_ontology_ids':sorted(set(composed_o['terms'])-set(base_o['terms'])),
+    'runtime_originals':[bind(BASE/'runtime/scripts/build_source_identifier_snapshot.py'),
+                         bind(BASE/'runtime/scripts/build_ontology_identifier_snapshot.py')],
+    'pending_reference_support':'hdl:1993/32279 must not be falsely represented as a DOI or another paper',
+    'historical_gene_adapter_limit':'Discontinued locus-only Gene records remain contextual references, not live-gene authority terms'})
+print(json.dumps({'selected_source_ids':len(wanted),'selected_ontology_ids':len(selected_o),
+    'new_source_terms':len(composed_s['terms'])-len(base_s['terms']),
+    'new_ontology_terms':len(composed_o['terms'])-len(base_o['terms']),
+    'labels':{**{i:t['label'] for i,t in snap['terms'].items()},**{i:t['label'] for i,t in ontology['terms'].items()}}},indent=2))

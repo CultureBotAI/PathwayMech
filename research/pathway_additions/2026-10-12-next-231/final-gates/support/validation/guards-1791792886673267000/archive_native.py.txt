@@ -1,0 +1,38 @@
+"""Root-only lossless archive of actual native execution and exact new-file approval."""
+from support import *
+import argparse
+
+def main():
+ p=argparse.ArgumentParser(description=__doc__)
+ for key in ['execution','assembly','initial-extras','output']:p.add_argument('--'+key,type=Path,required=True)
+ p.add_argument('--failed-execution',type=Path,action='append',default=[]);p.add_argument('--execute',action='store_true',required=True)
+ a=p.parse_args();verify_support();assert_head();external_new(a.output)
+ execution=load(a.execution/'execution.json');assert execution['status']=='passed' and execution['base']==BASE
+ assert [r['name'] for r in execution['receipts']]==['validate','save','check']
+ for key in ['saved_yaml','saved_markdown','serialization','assembly','gate_receipt']:verify(execution[key])
+ assert execution['assembly']==bind(a.assembly/'assembly.json')
+ assert load(execution['serialization']['path'])['validated_after_native_dump'] is True
+ for r in execution['receipts']:
+  assert r['exit_code']==0
+  for key in ['stdout','stderr']:verify(r[key])
+ assembly=load(a.assembly/'assembly.json');verify(assembly['archive_extras']);extras=load(assembly['archive_extras']['path'])
+ bundle=Path(execution['saved_yaml']['path']).parent;assert bundle.parent==ROOT/'reviews/structured'
+ extras+=inventory(ROOT,str(bundle.relative_to(ROOT)));gates,_=verify_gates(execution['gate_receipt']['path'],extras)
+ sources=[]
+ for label,packet in [('assembly',a.assembly),('native-success',a.execution)]+[('native-failure-'+str(i),d) for i,d in enumerate(a.failed_execution)]:
+  assert packet.is_dir() and packet.resolve().parent==Path('/private/tmp') and not packet.resolve().is_relative_to(ROOT)
+  for relative in files(packet,exclude_runtime=False):sources.append((packet/relative,label+'/'+relative))
+ destination=ROOT/DOSSIER_REL/'native-finalization';assert not destination.exists() and not destination.is_symlink()
+ mapping=archive_files(sources,destination);write(destination/'archive-map.json',mapping)
+ (destination/'README.md').write_text('''# Actual native review execution\n\nThe bound native validate, save and append-only check commands passed. Exact completed content, no-alias native serialization, root read receipt, inspection, command streams and any explicitly supplied failed attempts are retained losslessly. This archive does not append history or claim subsequent PR, CI, merge or issue closure. Earlier pending statements remain historical evidence. Final added-file preservation and staged whitespace/site checks follow separately.\n''')
+ baseline=load(load(ADOPTION)['baseline']['path']);old={r['relative_path'] for r in baseline['all_maintained_files']}
+ initial=load(a.initial_extras);all_extras=initial+extras+inventory(ROOT,DOSSIER_REL+'/native-finalization')
+ assert len(all_extras)==len({r['relative_path'] for r in all_extras})
+ for row in all_extras:
+  assert row['relative_path'] not in old,'An extra-file approval cannot waive an old file'
+  assert row['relative_path'].startswith(('history/','reviews/structured/',DOSSIER_REL+'/'))
+  verify(row,ROOT/row['relative_path'])
+ gate_inputs={r['relative_path'] for r in load(gates['inputs']['path'])['all_maintained_inputs']}
+ verify_gates(execution['gate_receipt']['path'],[r for r in all_extras if r['relative_path'] not in gate_inputs])
+ write(a.output,all_extras);print(json.dumps({'status':'archived_pending_final_preservation','mapping_count':len(mapping),'exact_new_file_approval':bind(a.output),'late_history_written':False}))
+if __name__=='__main__':main()

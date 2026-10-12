@@ -1,0 +1,47 @@
+"""Seal this external implementation contribution; no adoption action."""
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+root = Path(__file__).resolve().parent
+
+def binding(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+assert not (root / 'handoff.json').exists(), 'Already sealed'
+source = Path('/private/tmp/pathwaymech-next-231-author-20261012/raw/Taillefer-2016-thesis.pdf')
+source_binding = binding(source)
+assert source_binding['sha256'] == 'e0276c90358e3f177441ec3f71e99454727a31099a50920a325c7cc31cff8fc8'
+(root / 'original-binding.json').write_text(json.dumps({'role': 'Issuing original identity binding only; implementation does not reassess scientific contents', 'thesis': source_binding, 'requirement': binding(root / 'REFERENCE-NAMESPACE-REQUIREMENT.md')}, indent=2) + '\n')
+files = [Path(item.decode()) for item in subprocess.check_output(['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(root)]).split(b'\0') if item]
+# Runtime fixture directories may contain symlinks; manifests bind resolved file bytes
+# with every observed path retained. No ignored or hidden path is omitted.
+artifacts = []
+for path in sorted(files):
+    row = binding(path)
+    row['relative_path'] = str(path.relative_to(root))
+    artifacts.append(row)
+manifest = {'version': 1, 'scope': 'every external package file before manifest and handoff, including hidden/ignored/followed files', 'artifacts': artifacts}
+(root / 'artifact-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+plan = json.loads((root / 'copy-plan.json').read_text())
+receipt = json.loads((root / 'receipts/observed-draft.json').read_text())
+handoff = {
+    'status': 'sealed_external_reference_only_implementation_pending_independent_review',
+    'package': str(root), 'manifest': binding(root / 'artifact-manifest.json'),
+    'artifact_count': len(artifacts), 'baseline': binding(root / 'baseline.json'),
+    'requirement': binding(root / 'REFERENCE-NAMESPACE-REQUIREMENT.md'),
+    'delta': binding(root / 'delta.patch'), 'copy_plan': binding(root / 'copy-plan.json'),
+    'changed_files': [row['relative_path'] for row in plan],
+    'production_change': 'Native references and LinkML Reference.id only; global biological whitelist unchanged',
+    'grammar': r'hdl:[0-9]+(?:\.[0-9]+)*/[A-Za-z0-9][A-Za-z0-9._-]*',
+    'final_checks': {'focused_tests': '97 passed', 'lint': 'passed', 'delta_preservation': 'passed; 222 accepted baseline files unchanged externally, 219 byte-identical candidate files', 'observed_draft_sha256': receipt['sha256'], 'observed_draft_native_and_linkml': 'passed', 'page_kgx_reference_preservation': 'passed', 'baseline_rejection': 'precise expected Handle reference rejection'},
+    'failed_attempts_preserved': ['first focused test run: 95 passed, 2 wrong error-message assertions', 'inspection/edit command mistakes in receipts/tool-executions.json'],
+    'not_claimed': ['independent implementation acceptance', 'final draft or scientific acceptance', 'maintained adoption', 'full maintained gate suite', 'canonical authority build'],
+    'root_remaining': ['Independent patch and test review', 'Bridge any later author draft', 'Adopt exact accepted code delta into actual maintained baseline', 'Run maintained gates'],
+}
+(root / 'handoff.json').write_text(json.dumps(handoff, indent=2) + '\n')
+for row in artifacts:
+    assert binding(Path(row['path']))['sha256'] == row['sha256'], row['path']
+print(json.dumps({'handoff': binding(root / 'handoff.json'), 'manifest': binding(root / 'artifact-manifest.json'), 'artifacts': len(artifacts)}, indent=2))

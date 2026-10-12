@@ -1,0 +1,15 @@
+# Independent adversarial review: reference-only Handle support
+
+**Accepted for the bounded implementation. No concrete defects remain in the reviewed four-file delta.** This is not acceptance of the PPi pathway science or a later author draft.
+
+The review binds the implementation handoff `4afb6912df124836718ec0f548e7053139814ea892b1ff43473beb1a98ffd64a` and its 271-artifact manifest `2bbb91877eb3a8c8936742e13af44c979a51367b36eb54281cd85834a3249a9f`. Independent hidden/ignored/followed inventories and hashes passed before and after the checks. The recomputed patch and copy plan match; all 222 original runtime files remain unchanged and 219 candidate files remain identical. The three maintained before-file hashes also matched at intake.
+
+Native references and LinkML Reference.id accept the same documented Handle subset. The global biological whitelist and every other LinkML slot are unchanged. Record, taxon, participant, reaction, cluster and graph-endpoint attempts remain rejected. Authority snapshots, configured namespaces and native collectors stay closed to Handle citation IDs. Evidence links, including qualifier-only citations, still require declared references through the existing native resolution checks.
+
+The exact issuing URL, citation title, date-conflict text and PDF hash survive rendering/export. Independent frozen-draft replay retains the Handle on ppi-037 and ppi-038, preserves the full evidence/qualifier/reference payload of all 51 edges, and creates no Handle biological node. Its page and two KGX files exactly match the sealed implementation fixture. A separate qualifier-only fixture verifies that a citation is retained even when it occurs only in endpoint qualification evidence.
+
+Independent validation passed **147 focused tests**, changed-Python lint, **349 syntax cases**, and **365 recorded audit checks**. All pre-existing reference prefixes preserve behavior. All **229 observed maintained records** pass both old/new native validators and generated LinkML schemas. The broad matrix uses generated JSON Schema directly; representative cases and the pytest tests additionally invoke the actual LinkML Validator wrapper.
+
+The author package honestly retains its first two incorrect error-message expectations; native rejection was already correct. This audit had no failed product test or execution. One audit-only boolean label said four render outputs while listing three; the original helper/receipt and an explicit count correction are retained in `audit-receipt-correction.json`. The three output bytes did not change.
+
+Full maintained gates and the canonical build were not run. Local cross-reference resolution remains native-owned; unchanged external mappings/provider-local strings retain their existing contracts. No live author packet, maintained files, shared cache, Git or GitHub state was changed by this audit. Root must bind any later draft, recheck exact before-file hashes at adoption, and run the normal maintained gates and PR workflow.

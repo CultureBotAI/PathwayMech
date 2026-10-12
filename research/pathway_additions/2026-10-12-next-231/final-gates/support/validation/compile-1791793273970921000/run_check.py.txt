@@ -1,0 +1,13 @@
+"""Capture actual bounded preparation commands; never execute root-only finalization."""
+from support import *
+import sys,time
+name=sys.argv[1]
+commands={'current':[PYTHON,'-B',str(HERE/'probe_current.py')],'schema':[PYTHON,'-B',str(HERE/'probe_fragment_schema.py')],'guards':[PYTHON,'-B',str(HERE/'test_support.py')],'lint':[PYTHON,'-B','-m','ruff','check','--select','F','--ignore','F403,F405',*[str(p) for p in HERE.glob('*.py')]],'compile':[PYTHON,'-B','-c','from pathlib import Path; ps=list(Path.cwd().glob("*.py")); [compile(p.read_bytes(),str(p),"exec") for p in ps]; print(len(ps))']}
+assert name in commands
+out=HERE/'validation'/f'{name}-{time.time_ns()}';out.mkdir(parents=True)
+for path in HERE.glob('*.py'):(out/(path.name+'.txt')).write_bytes(path.read_bytes())
+env={**ENV,'PYTHONPATH':str(HERE),'RUFF_CACHE_DIR':'/private/tmp/pathwaymech-next-231-finalization-support-ruff-cache-20261012'}
+start=now();r=subprocess.run(commands[name],cwd=HERE,env=env,capture_output=True)
+(out/'stdout').write_bytes(r.stdout);(out/'stderr').write_bytes(r.stderr)
+receipt={'name':name,'command':commands[name],'cwd':str(HERE),'started_at':start,'finished_at':now(),'exit_code':r.returncode,'stdout':bind(out/'stdout'),'stderr':bind(out/'stderr'),'scope':'External preparation only; no maintained save, full gates or history.'};write(out/'receipt.json',receipt)
+print(json.dumps(receipt,indent=2));print(r.stdout.decode());print(r.stderr.decode());raise SystemExit(r.returncode)

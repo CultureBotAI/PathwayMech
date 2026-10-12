@@ -1,0 +1,51 @@
+"""Bounded evidence/coverage checks, including source-derived discrimination controls."""
+from pathlib import Path
+import ast,copy,hashlib,json,xml.etree.ElementTree as E
+P=Path(__file__).parent
+checks=[]
+def check(name,condition):
+ assert condition,name
+ checks.append({'check':name,'outcome':'passed'})
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+for r in json.loads((P/'external-input-bindings.json').read_text()):check('external binding '+r['path'],sha(Path(r['path']))==r['sha256'])
+raw=json.loads((P/'source-acquisition-ledger.json').read_text())
+for r in raw:
+ if 'sha256'in r:check('acquired bytes '+r['name'],sha(Path(r['path']))==r['sha256'])
+for f in P.glob('*.py'):ast.parse(f.read_text());check('parse '+f.name,True)
+rx=json.loads((P/'derived/native-six-reaction-projection.json').read_text())
+check('exact six-member core',set(x['id'] for x in rx)=={'MetaCyc:RXN-21730','MetaCyc:SEDOBISALDOL-RXN','MetaCyc:RIB5PISOM-RXN','MetaCyc:RIBULP3EPIM-RXN','MetaCyc:1TRANSKETO-RXN','MetaCyc:2TRANSKETO-RXN'})
+check('all twenty native sides',sum(len(v) for r in rx for v in r['sides'].values())==20)
+check('no fabricated native coefficient values',all(s['coefficient_explicit'] is None for r in rx for side in r['sides'].values() for s in side))
+check('native PPi reaction has no invented Rhea xref',not any(x.get('dblink-db')=='RHEA' for x in rx[0]['xrefs']))
+rhea=json.loads((P/'derived/rhea-five-shared-chemistry.json').read_text())
+check('all five original Rhea families,ten balanced directions',len(rhea['masters'])==5 and sum(len(x['directions']) for x in rhea['masters'])==10 and all(not d['formula_charge_imbalance'] for x in rhea['masters'] for d in x['directions']))
+j=json.loads((P/'derived/novelty-semantic-all-records.json').read_text())
+check('all228 actual+2prospective records',j['actual_merged_records']==228 and len(j['records'])==230)
+check('no full six-member set or PPi-S7P event',all(len(x['matched_native_members'])<6 and not x['has_ppi_s7p_event'] and not x['exact_candidate_id'] and not x['exact_unique_event'] for x in j['records']))
+shared={r['id']:len(r['matched_native_members']) for r in j['records'] if r['matched_native_members']}
+check('actual positive shared-event controls',shared=={'MetaCyc:CALVIN-PWY':5,'MetaCyc:NONOXIPENT-PWY':4,'PathBank:SMP0002406':5})
+groups=j['screen_groups'];back={x:k for k,v in groups.items() for x in v}
+def fingerprint(l,r):return sorted([sorted(back.get(x,x) for x in l),sorted(back.get(x,x) for x in r)])
+expected=j['expected_native_side_signatures']['MetaCyc:RXN-21730']
+atp=json.loads(Path(j['atp_candidate_comparison']['source']['path']).read_text());d=next(d for m in atp['masters'] for d in m['directions'] if d['id']=='RHEA:31444');sides={k:[s['properties']['accession'][0] for s in v] for k,v in d['sides'].items()}
+check('actual ATP kinase rejected as PPi event',fingerprint(sides['substrates'],sides['products'])!=expected)
+# A controlled donor/product swap must be detected; this is not an authored record.
+mut=copy.deepcopy(sides);mut['substrates']=[('CHEBI:33019' if x=='CHEBI:30616' else x) for x in mut['substrates']]
+# Obtain ADP's actual ID from the original issued name, not a remembered CURIE.
+adp=next(s['properties']['accession'][0] for s in d['sides']['products'] if s['properties']['name']==['ADP'])
+mut['products']=[('CHEBI:43474' if x==adp else x) for x in sides['products']]
+check('source-derived donor-swap positive detected',fingerprint(mut['substrates'],mut['products'])==expected)
+check('reverse donor-swap also detected',fingerprint(mut['products'],mut['substrates'])==expected)
+check('omitted PPi donor cannot satisfy complete event',fingerprint([x for x in mut['substrates'] if x!='CHEBI:33019'],mut['products'])!=expected)
+p=json.loads((P/'derived/identifier-and-native-association-projection.json').read_text());u=json.loads((P/'raw/UniProt-B8I4R1.json').read_text())
+check('wrong UniProt species bridge rejected',u['organism']['taxonId']==394503 and u['organism']['taxonId']!=637887)
+issued={x['id']:x for x in p['issuing_proteins']};check('exact three tested issuing accessions',all(x in issued for x in ['NCBIProtein:ADU74928.1','NCBIProtein:PNT94038.1','NCBIProtein:PNT93300.1']))
+pp=next(x for x in p['chemicals'] if x['id']=='MetaCyc:PPI');charge=next(x['value'] for x in pp['chebi_xrefs'][0]['issuing_sql'] if x['predicate']=='chemrof:charge');check('acid/anion mismatch detected',pp['native_charge']=='-3' and charge=='0')
+for n in range(191,197):check('original1982 scanned page '+str(n),(P/f'raw/PMC1158332-page-{n}.png').read_bytes().startswith(b'\x89PNG\r\n\x1a\n'))
+check('thesis genuine PDF',(P/'raw/WUR-510683.pdf').read_bytes().startswith(b'%PDF-'))
+for n in range(137,142):check('thesis supplementary page rendered '+str(n),(P/f'derived/WUR-510683-rendered-pages.json.page-{n}.png').read_bytes().startswith(b'\x89PNG\r\n\x1a\n'))
+check('CAPTCHA cannot qualify as primary full text','recaptcha' in (P/'raw/PMC9680637.html').read_text().lower() and any(r.get('name')=='PMC9680637.html' and r['evidence_status'].startswith('CAPTCHA') for r in raw))
+check('no pathway YAML authored',not list(P.rglob('*.yaml')))
+out={'status':'passed','checks':checks,'count':len(checks),'scope':'Bounded input/coverage/discrimination verification, not scientific approval or canonical/maintained gates. Source-derived positive and negative controls are explicit.'}
+(P/'receipts/preflight-checks.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({'status':'passed','checks':len(checks)}))

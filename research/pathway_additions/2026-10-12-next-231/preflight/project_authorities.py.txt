@@ -1,0 +1,36 @@
+"""Source-derived selected identity projection; read-only original bodies and SQL."""
+from pathlib import Path
+import hashlib,json,sqlite3,xml.etree.ElementTree as E
+P=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-230-preflight-20261012')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+chebi=sqlite3.connect(Path('/private/tmp/pathwaymech-curation-authorities/chebi.db').as_uri()+'?mode=ro',uri=True)
+def sql(cid):
+ return [dict(zip(['predicate','object','value'],r)) for r in chebi.execute('select predicate,object,value from statements where subject=? and predicate in (?,?,?,?) order by predicate,object,value',(cid,'rdfs:label','chemrof:charge','chemrof:generalized_empirical_formula','owl:deprecated'))]
+chem=[]
+for f in sorted((P/'raw').glob('META-*.xml'))+[A/'raw/META-D-SEDOHEPTULOSE-7-P.xml',A/'raw/META-D-SEDOHEPTULOSE-1-7-P2.xml']:
+ e=E.parse(f).getroot().find('./Compound')
+ if e is None:continue
+ ids=['CHEBI:'+d.findtext('dblink-oid') for d in e.findall('dblink') if d.findtext('dblink-db')=='CHEBI']
+ mol=e.find('./cml/molecule');chem.append({'source':bind(f),'id':'MetaCyc:'+e.get('frameid'),'label_native':e.findtext('common-name'),'class':e.get('class')=='true','native_charge':mol.get('formalCharge') if mol is not None else None,'native_formula':mol.find('formula').attrib if mol is not None and mol.find('formula') is not None else None,'native_inchi':e.findtext('inchi'),'chebi_xrefs':[{'id':x,'issuing_sql':sql(x)} for x in ids]})
+proteins=[]
+for f in sorted((P/'raw').glob('META-*.xml')):
+ e=E.parse(f).getroot().find('./Protein')
+ if e is None:continue
+ proteins.append({'source':bind(f),'id':'MetaCyc:'+e.get('frameid'),'label_native':e.findtext('common-name'),'species':[{'frame':x.get('frameid'),'label':x.findtext('common-name'),'xref_taxon':[d.findtext('dblink-oid') for d in x.findall('dblink') if d.findtext('dblink-db')=='NCBI-TAXONOMY-DB']} for x in e.findall('./species/Organism')],'genes':[x.attrib for x in e.findall('./gene/Gene')],'dbxrefs':[{'database':d.findtext('dblink-db'),'identifier':d.findtext('dblink-oid'),'relationship':d.findtext('dblink-relationship')} for d in e.findall('dblink')],'scope':'Only MONOMER-21313 is native-pathway-taxon relevant. All other global reaction enzyme links belong to E. coli, Synechocystis, Mycoplasmoides or Vigna and are excluded as catalysts of this specific branch.'})
+issued=[]
+for f in sorted((P/'raw').glob('Entrez-protein-*.xml')):
+ for e in E.parse(f).getroot().findall('GBSeq'):
+  features=[]
+  for x in e.findall('.//GBFeature'):
+   if x.findtext('GBFeature_key') in ['source','CDS']:
+    features.append({'key':x.findtext('GBFeature_key'),'qualifiers':[{q.findtext('GBQualifier_name'):q.findtext('GBQualifier_value')} for q in x.findall('.//GBQualifier')]})
+  seq=e.findtext('GBSeq_sequence');issued.append({'source':bind(f),'id':'NCBIProtein:'+e.findtext('GBSeq_accession-version'),'label':e.findtext('GBSeq_definition'),'organism':e.findtext('GBSeq_organism'),'length':int(e.findtext('GBSeq_length')),'features':features,'sequence_sha256':hashlib.sha256(seq.upper().encode()).hexdigest()})
+taxa=[]
+con=sqlite3.connect(Path('/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db').as_uri()+'?mode=ro',uri=True)
+for n in ['5758','5759','1515','84032','637887','394503','2']:
+ r=list(con.execute('select predicate,object,value from statements where subject=? and predicate in (?,?,?) order by predicate,object,value',('NCBITaxon:'+n,'rdfs:label','rdfs:subClassOf','owl:deprecated')));taxa.append({'id':'NCBITaxon:'+n,'statements':[dict(zip(['predicate','object','value'],x)) for x in r]})
+conflicts=[{'id':'native-protein-uniprot-wrong-species','native':'MetaCyc:MONOMER-21313','bad_xref':'UniProtKB:B8I4R1','issuing_taxon':'NCBITaxon:394503','actual_tested':'NCBIProtein:ADU74928.1','gene':'Entrez:12421608','decision':'Reject native UniProt bridge. Native PID ADU74928.1 and NCBI gene match Clo1313_1876 DSM1313; B8I4R1 instead Ccel_2223 H10. Do not transfer B8I4R1 homodimer, non-allostery or cofactor annotations.'},{'id':'native-ppi-acid-charge-conflict','native':'MetaCyc:PPI','native_charge':-3,'native_xref':'CHEBI:29888','xref_issued_charge':0,'structure_matching_candidate':'CHEBI:33019','decision':'Do not equate native acid xref to charged displayed molecule. Use native participant or independently establish exact selected charged representation; preserve conflict.'},{'id':'native-generic-sugar-classes','native':['MetaCyc:RIBOSE-5P','MetaCyc:D-SEDOHEPTULOSE-7-P'],'decision':'Generic classes include forms broader than selected Rhea charged structures. No class-wide exactMatch; native reaction membership and structure-specific Rhea comparison remain separate.'}]
+result={'chemicals':chem,'global_native_enzyme_associations':proteins,'issuing_proteins':issued,'taxa':taxa,'selected_chebi':[{'id':'CHEBI:'+x,'statements':sql('CHEBI:'+x)} for x in ['29888','33019','18361','18367','15721','57483','58335','58273','18420','58937','28938']],'conflicts':conflicts,'sql_scope':'Read-only mode=ro against retained ChEBI255/NCBITaxon authorities. No full database scan or canonical build. Prior original database digests remain externally bound through accepted authority packets.'}
+(P/'derived/identifier-and-native-association-projection.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'native_chemicals':len(chem),'native_protein_associations':len(proteins),'issuing_proteins':[(x['id'],x['length']) for x in issued],'conflicts':len(conflicts)}))

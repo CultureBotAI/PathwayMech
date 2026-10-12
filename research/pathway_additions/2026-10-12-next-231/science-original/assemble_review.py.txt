@@ -1,0 +1,201 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import yaml
+
+A = Path('/private/tmp/pathwaymech-next-231-author-20261012')
+O = Path('/private/tmp/pathwaymech-next-231-science-review-20261012')
+T = A / 'draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+d = yaml.safe_load(T.read_text())
+refs = json.loads((A / 'reference-original-bindings.json').read_text())
+observations = json.loads((O / 'selector-replay.json').read_text())['observations']
+
+def bind(p):
+    p = Path(p)
+    with p.open('rb') as f:
+        digest = hashlib.file_digest(f, 'sha256').hexdigest()
+    return {'path': str(p), 'bytes': p.stat().st_size, 'sha256': digest}
+
+def save(name, value):
+    with (O / name).open('x') as f:
+        json.dump(value, f, indent=2, ensure_ascii=False)
+        f.write('\n')
+
+findings = [
+    {
+        'issue_key': 'pwy8178-ammonium-assay-preparation', 'severity': 'minor',
+        'title': 'Correct the CDQ83_07225 coupling-enzyme preparation and its evidence',
+        'fields': ['mechanistic_edges[ppi-048].description', 'mechanistic_edges[ppi-048].endpoint_qualifiers[0]', 'description paragraph 4'],
+        'observation': 'The qualifier says auxiliary-enzyme ammonium sulfate was removed by ultrafiltration. The 2020 Methods instead specify lyophilized rabbit aldolase/GPDH and explain that the earlier ammonium-sulfate suspensions could not be used with S7P barium salt. Ultrafiltration in the neighboring paragraph applies to the purified PFK buffer exchange. The qualifier cites 2019 preparation paragraphs, which do not establish the 2020 added-ammonium condition.',
+        'source_ids': ['PMID:31871051', 'PMID:31178853'],
+        'locators': ['/article/body/sec[5]/sec[7]/p[1]', '/article/body/sec[5]/sec[7]/p[2]'],
+        'correction': 'State that the 2020 assay used lyophilized auxiliary enzymes in place of the earlier ammonium-sulfate suspensions, retaining BaSO4 precipitation and the source NH4Cl2 inconsistency. Cite the actual 2020 Methods in the qualifier; preserve the separate 2019 His6/TEV construct evidence.',
+        'acceptance': 'No claim that auxiliary enzymes were ultrafiltered remains. The qualifier includes the 2020 assay paragraph and keeps CDQ83_07225/F6P/ATP scope; no PPi-S7P catalytic edge is added.',
+        'rationale': 'The ammonium activation result is supported; the incorrect preparation mechanism is peripheral provenance, not a wrong catalyst or sign.'
+    },
+    {
+        'issue_key': 'pwy8178-competition-assay-modality', 'severity': 'minor',
+        'title': 'Separate the Pfp mixed-substrate activity assay from the MS identity experiment',
+        'fields': ['mechanistic_edges[ppi-039].description', 'mechanistic_edges[ppi-039].evidence[0].source_assertion'],
+        'observation': 'The draft calls the mixed F6P/S7P competition measurement an MS assay. The primary Results say that the competition assay monitored FBP production, and the Pfp Methods describe the coupled activity assays. The separate MS Methods contain S7P alone for product identification. The inaccessible supplementary Table S3 is not a basis for asserting an MS competition readout.',
+        'source_ids': ['PMID:37438781'],
+        'locators': ['/article/body/sec[2]/sec[3]/p', '/article/body/sec[5]/sec[5]/p[3]', '/article/body/sec[5]/sec[10]/p'],
+        'correction': 'Replace mixed-substrate MS assay with mixed-substrate FBP activity assay; add the Pfp assay Methods locator if specifying the coupled readout. Keep the observed decrease and the explicitly interpretive competition explanation.',
+        'acceptance': 'The S7P inhibition edge still refers only to reduced F6P-to-FBP activity with mixed substrates; it does not assert binding affinity or suppression of S7P catalysis.',
+        'rationale': 'The sign and substrate scope survive; only the measurement modality was overstated.'
+    },
+    {
+        'issue_key': 'pwy8178-reference-titles', 'severity': 'minor',
+        'title': 'Use the actual titles of the 1982 and 2022 primary articles',
+        'fields': ['references[PMID:6180735].title', 'references[PMID:36286488].title'],
+        'observation': 'Both title fields contain descriptive substitutes. The 1982 original first-page scan is titled A pathway for the interconversion of hexose and pentose in the parasitic amoeba Entamoeba histolytica. The retained 2022 publisher rendering is titled Increasing the Thermodynamic Driving Force of the Phosphofructokinase Reaction in Clostridium thermocellum.',
+        'source_ids': ['PMID:6180735', 'PMID:36286488'],
+        'locators': ['Original printed page 191, title', 'Retained publisher rendering, initial title line'],
+        'correction': 'Replace the two title strings with the inspected original titles; retain the existing identifiers, URLs, artifact bindings and access limitations.',
+        'acceptance': 'Both titles match the originals after whitespace normalization; no reference identity or source hash is silently replaced.',
+        'rationale': 'The sources themselves are the correct papers, so this is bibliographic provenance rather than wrong biological evidence.'
+    },
+    {
+        'issue_key': 'pwy8178-reaction-direction-metadata', 'severity': 'minor',
+        'title': 'Carry the six known reversible directions into reaction metadata',
+        'fields': ['reactions[*].direction'],
+        'observation': 'Every original Reaction has reaction-direction REVERSIBLE, and the prose and side evidence correctly retain it. All six record reaction nodes omit direction, so the native node/graph/export direction field is unavailable despite known source support.',
+        'source_ids': [r['id'] for r in d['reactions']],
+        'locators': ['/ptools-xml/Reaction/reaction-direction', '/ptools-xml/Pathway/reaction-layout'],
+        'correction': 'Set direction: reversible on each of the six existing reaction nodes. Keep the selected pathway-layout side orientations and all twenty side occurrences exactly as authored.',
+        'acceptance': 'All six node directions are reversible; the 51 edge triples and 20 side triples remain unchanged. Standalone/native page and KGX node metadata expose the direction after regeneration.',
+        'rationale': 'No current edge falsely states irreversibility; this is loss of supported structured metadata, not a wrong chemical route.'
+    },
+    {
+        'issue_key': 'pwy8178-construct-evidence-scope', 'severity': 'minor',
+        'title': 'Bind construct features to the exact tested enzyme and nearest primary passage',
+        'fields': ['mechanistic_edges[ppi-034].endpoint_qualifiers[0].evidence', 'mechanistic_edges[ppi-036,ppi-037,ppi-038,ppi-039].endpoint_qualifiers[0]', 'mechanistic_edges[ppi-040,ppi-041,ppi-042,ppi-043].endpoint_qualifiers[0].evidence', 'description paragraphs 6 and 7'],
+        'observation': 'ppi-034 asserts the His6/TEV construct but cites only the 2020 Methods and issuing native sequence; the retained 2019 Methods directly establish that feature. Aldoa linker wording is supported by the 2023 Results, but those Results are omitted from the qualifier locators. For Pfp, the inspected 2023 Methods explicitly call PfkA, PfkB and Aldoa codon optimized, then refer Pfp to an earlier study; the Pfp-specific text and thesis establish His6 but do not explicitly establish its linker or codon optimization. Those features should not be transferred from neighboring proteins.',
+        'source_ids': ['PMID:31178853', 'PMID:31871051', 'PMID:37438781', 'hdl:1993/32279'],
+        'locators': ['/article/body/sec[2]/sec[1]/p (2019 His6/TEV)', '/article/body/sec[5]/sec[2]/p (2023 cloning)', '/article/body/sec[2]/sec[1]/p (2023 PFK masses)', '/article/body/sec[2]/sec[7]/p (2023 Aldoa linker)', 'Thesis PDF pp.111–113 and 117'],
+        'correction': 'Add the retained 2019 direct construct citation to ppi-034. Add the actual Aldoa linker Results locator to the four Aldoa qualifiers. For Pfp, keep the supported pAHCT0347/pRSET-A, His6, host, strain and assay distinctions, while making the linker/codon-optimization uncertainty explicit or supplying an inspected Pfp-specific construct source before retaining those extra features.',
+        'acceptance': 'Every retained construct feature is entailed by its cited exact passage for that enzyme. No unsupported Pfp linker/codon-optimization assertion remains; all biological endpoints, catalytic activities, signs, strains and negative controls are preserved.',
+        'rationale': 'Correct His-tagged engineered preparations are already recognized. The gaps concern exact auxiliary construct features and direct evidence placement.'
+    },
+]
+for f in findings:
+    f['maintained_owner'] = 'data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+    f['status'] = 'open'
+    f['previous_occurrences'] = []
+    f['originals'] = {k: refs[k] for k in f['source_ids']}
+
+edge_notes = {
+    26: 'Original 1982 pp.193–194 directly demonstrate partial amoebal PPi-PFK S7P phosphorylation; the EC node is an activity and does not identify a modern sequence.',
+    27: 'Original p.194 reports SBP cleavage, 13 versus 3 micromolar Km, half relative Vmax, PFK contamination and no increase upon added TPI. The activity-level endpoint and substrate distinction are justified.',
+    28: 'Original 1982 transketolase Results/Table 2 establish both substrate-pair activities in the partial amoebal preparation. This is not a clostridial subunit or an inferred modern complex.',
+    29: 'Original 1982 Table 2 includes E4P/Xu5P and GAP/F6P substrate-pair measurements. The second transketolase event is independently retained within the native six-event scope.',
+    30: 'Native reaction EC assignment and enzyme.dat CA support R5P/Ru5P interconversion. No claim that every scoped organism has a newly assayed purified isomerase.',
+    31: 'Native reaction EC assignment and enzyme.dat CA support ribulose-phosphate epimerization. The generic activity does not supply an organism-specific metal or enzyme measurement.',
+    32: 'Original Fig.1 shows the apoenzyme add-back requirement for both Mg and thiamine diphosphate, including the lag when Mg precedes TPP. Preparation-limited activation is appropriate.',
+    33: 'Same original Fig.1 independently demonstrates thiamine diphosphate add-back. The cofactor is not inserted into core stoichiometry.',
+    34: 'The 2020 direct MS experiment and minus-PPi/minus-enzyme controls support recombinant CDQ83_11320 catalysis; native DSM5809 accession is exact. His6/TEV provenance needs the 2019 direct source (construct finding).',
+    35: 'The 2020 PCR/pSH157 preparation is specifically DSM1313 Clo1313_1876, with direct S7P/SBP MS support. It is not equated with ATCC27405 or wrong-species B8I4R1.',
+    36: 'The 2023 forward S7P MS result and Table 2 support ATCC27405 Cthe_0347. The fitted Km beyond the measured maximum remains explicit. Extra Pfp construct features need the construct finding correction.',
+    37: 'Thesis original PDF p.120 and Fig.4.4 show PPi substrate inhibition in the F6P preparation, with Ki uncertainty. The donor and high-substrate inhibitory roles are compatible; no S7P inhibition is inferred.',
+    38: 'Thesis p.120 directly reports the ATP-associated decrease and the five negative nucleotide/PEP controls. Binding-site or S7P-specific claims are correctly excluded.',
+    39: 'Primary Results support reduced FBP production with mixed F6P/S7P and interpret competition. The draft overstates the measurement as MS; the observed conditional sign remains supported.',
+    40: 'Purified ATCC27405 Aldoa FBP kinetics and the explicitly unverified SBP reaction support only the EC activity link. No direct link to the SBP reaction is authored.',
+    41: 'Original Aldoa Fig.11/caption and Results support added Zn enhancement over no added metal at the tested concentration/temperature. The record does not promote this to physiological SBP cofactor proof.',
+    42: 'Original Fig.11 and adjacent text distinguish Mg+NH4 stimulation from attenuation of the stronger Zn response. Restricting the positive sign to the Mg-containing comparison is essential and present.',
+    43: 'Original Fig.11 and adjacent text report K-related decreases in both Mg and Zn comparisons. No K-binding or SBP-specific inference is made.',
+    44: 'Issuing DSM1313 Clo1313_1875 annotation supports an EC activity assignment; rabbit coupling and ATCC27405 FBP assays are not transferred as exact DSM1313 SBP catalysis.',
+    45: 'The issued DSM1313 Clo1313_1661 feature table supplies EC5.1.3.1 and exact accession. No new purified RPE assay, metal requirement or assembly is claimed.',
+    46: 'The issued ATCC27405 Cthe_0576 feature table supports the distinct RPE annotation. The taxon and evidence level are preserved.',
+    47: 'Unreviewed A3DIL8 has submitted EC5.3.1.6, an exact 149-residue GenBank join, and a deposited R5P-containing 3HEE structure. This annotation/ligand context is not presented as unseen full-text R5P kinetics.',
+    48: 'The 2020 Methods directly support added-ammonium dependence in the separate CDQ83_07225 F6P/ATP assay, but the claimed ultrafiltration procedure is incorrect and its qualifier lacks that exact 2020 source.',
+    49: 'KJC335 paired TktAB overexpression and historical locus joins justify paired pathway participation for the first subunit. Individual catalysis and assembly stoichiometry remain unasserted.',
+    50: 'Same paired genetic evidence and the separate issuing second-subunit accession justify participation without inventing independent subunit catalysis.',
+    51: 'Rex DAP-seq and motif EMSA support sequence-specific binding only. Distinct HaloTag/His6 preparations, weak replicate agreement, unresolved shared promoter-site assignments and unsigned expression remain explicit.',
+}
+
+edge_assessments = []
+qualifier_assessments = []
+for edge in d['mechanistic_edges']:
+    num = int(edge['id'].split('-')[1])
+    related = []
+    if num == 48: related.append(findings[0]['issue_key'])
+    if num == 39: related.append(findings[1]['issue_key'])
+    if num in [34,36,37,38,39,40,41,42,43]: related.append(findings[4]['issue_key'])
+    if num <= 20:
+        note = 'Exact native compound side and REVERSIBLE Reaction are matched to the separately selected pathway layout; all twenty original side occurrences remain. Representative unit-occurrence elemental/charge balance passes without inventing native coefficients. Direction metadata omission is reported separately.'
+    elif num <= 25:
+        note = 'Native predecessor ordering and the explicitly shared product/input connect these two retained events. The provides_input_for predicate does not claim a measured independent flux or universal physiological direction.'
+    else:
+        note = edge_notes[num]
+    source_rows = [o for o in observations if o['edge'] == edge['id']]
+    edge_assessments.append({'edge_id': edge['id'], 'field_path': 'mechanistic_edges[' + edge['id'] + ']',
+        'triple': [edge['subject'], edge['predicate'], edge['object']], 'verdict': 'supported_with_minor_correction' if related else 'supported_with_stated_scope',
+        'assessment': note, 'findings': related, 'evidence_observations': source_rows})
+    for index, q in enumerate(edge.get('endpoint_qualifiers', [])):
+        qualifier_assessments.append({'edge_id': edge['id'], 'qualifier_index': index, 'endpoint': q['endpoint'], 'kind': q['kind'],
+            'description': q['description'], 'findings': related, 'assessment': note,
+            'evidence_observations': [o for o in source_rows if o['role'] == f'qualifier[{index}]']})
+
+context_notes = [
+    'Six source-native reactions and twenty sides pass fresh side/formula probes. Generic classes and charged PPI conflict are preserved. Add structured reversible node directions without changing selected route orientation.',
+    'All six original 1982 scans were read. Partial native activity, ordered Mg/TPP add-back, condition-dependent Km, contamination, TPI negative control, reconstitution omissions and inferred reverse flux are retained accurately.',
+    '2019 native Methods, Tables2–4 and PFK Results support donor contrasts, CFE normalization, inactive tested isoform and the Discussion identifier typo. The DSM5809 accession belongs to the issued protein and is not silently generalized to every metabolomics culture.',
+    '2020 Methods/Results and native identities distinguish two PPi proteins, hosts, assay compositions, rabbit coupling and ATP comparator. Ammonium-sulfate handling needs the stated minor correction.',
+    'Five WUR supplement figures were visually read. Minus-enzyme control, distinct Hill/MM fits and strong ATP/GTP comparator cooperativity are retained, with no journal-supplement byte-identity claim. Pool changes remain non-flux evidence.',
+    '2023 original Pfp Results/Methods support the distinct strain, S7P kinetic range limitation, MS identity assay and separate F6P activity. Pfp linker/codon-optimization features need exact-source correction.',
+    'Fresh PDFKit extraction of 20 original thesis pages matched the author projection. Methods111–113, kinetic table115, PFK Results117/120 and Figure121 support the F6P-specific donor, inhibition and negative-control claims. Date conflict is explicit. Pfp linker detail is not established by the inspected thesis.',
+    'Original Aldoa FBP kinetics and Fig.11 support conditional metal/ion signs; the Discussion explicitly leaves SBP catalysis unverified. No transfer to DSM1313 Aldoa is made.',
+    'Issuing UniProt/GenBank and 3HEE/3PH3 fields support exact RpiB identity, distinct ligands and deposited constructs. Indexed abstracts stay abstract-level; historical sequence equality does not equate older annotations. RPE remains annotation-level.',
+    'KJC335 original Results/Methods and historical gene-change records support paired TktAB expression, growth improvement and matched-OD/unequal-growth-rate limitation. The other pair’s unverified modern-locus join is not asserted.',
+    'Rex original Methods, Tables1/2/4 and motif EMSA confirm binding scope and two preparations; shared promoter sites, correlation0.18, nonhomogeneous purification and missing Kd prevent signed regulatory inference.',
+    'The retained 2022 publisher Results/Discussion support the LL1660 loss/counterexample, broad duplication and unresolved compensating route. This is not a fresh original-HTML or supplement reanalysis. Tracer-paper claims remain bounded model context.',
+    'All16 native reaction-global associations were checked by original species fields; only MONOMER-21313 is pathway-taxon relevant, with correct PID but wrong UniProt bridge. Cofactor/assembly transfer is rejected. Wider occurrence, PPi supply and interfaces remain proposals or boundaries.',
+]
+context_assessments = []
+for row, note in zip(json.loads((A / 'context-claim-ledger.json').read_text())['paragraphs'], context_notes):
+    context_assessments.append({'paragraph': row['paragraph'], 'text_sha256': hashlib.sha256(row['text'].encode()).hexdigest(), 'assessment': note,
+                                'author_source_ids': row['source_ids'], 'originals': row['originals']})
+claims = []
+for row in json.loads((A / 'preflight-claim-dispositions.json').read_text())['claims']:
+    n = row['description_paragraph']
+    claims.append({'claim_id': row['claim_id'], 'original_disposition': row['original_disposition'], 'description_paragraph': n,
+                   'assessment': context_notes[n-1] if n else 'Source exhaustion remains false; this is a process limitation, not a biological pathway assertion.',
+                   'coverage_verdict': 'retained with minor corrections identified separately' if n in [4,6,7] else 'retained with appropriate boundary'})
+
+limitations = [
+    'This is an independent external full-record scientific review of the sealed author draft. Root owns issue creation, curation, maintained native review persistence and publication; no maintained or sealed files were edited.',
+    'No full canonical builder, corpus test/validate/lint suite, maintained page consistency gate or Git/GitHub action was run by this reviewer. Author bounded checks are retained evidence, not relabeled as reviewer or maintained checks.',
+    'Authority proposals use EG outputs. ATP baseline bridge and independent full canonical acceptance are pending and are not inferred here. Multi-GB SQL originals were not rehashed during this scientific review.',
+    'All 345 scientific artifacts and 57 external original bindings were freshly hash-verified ; 107 compiler/uv runtime files are excluded by the author and were checked only for closed inventory and sizes.',
+    'Original 1982 six-page scans and WUR five supplement page images were visually inspected. Twenty selected Taillefer PDF pages were independently extracted; only the stated PFK/preparation passages and selected tables/figures were scientifically assessed, not the entire 475-page thesis.',
+    'The 2022 source is an archived publisher web rendering, not a newly acquired original HTML body. The 2011 RpiB full body and relevant supplementary bodies remain unavailable; no unseen kinetic data are claimed.',
+    'Fresh PubMed browser attempts encountered reCAPTCHA and HTTP 429; title findings rely on the inspected original 1982 scan and retained 2022 publisher rendering. Other issuing source identities are evaluated against hash-bound originals, not a claim of live re-fetching.',
+    'The initial pypdf import failed because the module is absent; independent PDFKit extraction succeeded. Probe construction errors and over-broad debug projections are retained and do not count as scientific failures or absence findings.',
+    'iModulonDB applicability and broad novelty inventories are inherited from the exact author packet. Their original-bound results and relevant biological comparisons were inspected; no fresh full-source exhaustion claim or new adapter query was made.',
+]
+
+result = {'status': 'changes_requested_minor', 'reviewer': 'Codex /root/ppi_science_review', 'independent_of_authoring': True,
+          'first_recorded_utc': json.loads((O / 'intake.json').read_text())['finished_at'],
+          'timing_note': 'Initial rubric and record reading preceded the first explicit UTC capture; no invented exact start time is claimed.',
+          'finished_at': datetime.datetime.now(datetime.UTC).isoformat().replace('+00:00','Z'), 'target': bind(T),
+          'author_handoff': bind(A / 'handoff.json'), 'author_manifest': bind(A / 'artifact-manifest.json'),
+          'base_claim': json.loads((A / 'handoff.json').read_text())['main'],
+          'summary': 'The complete six-event PPi-dependent branch is scientifically supported at the stated evidence levels. Five minor preparation, assay-provenance, bibliography and direction-metadata findings require bounded correction. No blocker or major defect found; no reduction of the six events, 20 sides, 51 edges, 53 references, 14 qualifiers or negative/conflicting controls is recommended.',
+          'counts': {'edges':51,'endpoint_qualifiers':14,'evidence_observations':116,'context_paragraphs':13,'preflight_dispositions':28,'blocker':0,'major':0,'minor':5},
+          'findings': findings, 'edge_assessments': edge_assessments, 'qualifier_assessments': qualifier_assessments,
+          'context_assessments': context_assessments, 'preflight_claim_assessments': claims,
+          'checks': [bind(O / n) for n in ['intake.json','selector-replay.json','independent-native-probes.json','thesis-pages-fresh.json','pdb-selected-native-blocks.json']],
+          'limitations': limitations, 'native_persistence': 'Root-owned after maintained integration; this external packet does not claim a native saved review or scientific-status promotion.',
+          'no_history_written': True, 'source_exhaustion': False}
+assert len(edge_assessments)==51 and len(qualifier_assessments)==14 and len(context_assessments)==13 and len(claims)==28
+save('review.json', result)
+lines = ['# Independent scientific review: MetaCyc:PWY-8178', '', result['summary'], '',
+         f"Target SHA256: `{result['target']['sha256']}`. The review covers every edge, qualifier, description paragraph and inherited preflight disposition. It is an external review packet; native save/integration remains root-owned.", '', '## Findings', '']
+for finding in findings:
+    lines += [f"### Minor: {finding['title']}", '', f"Stable key: `{finding['issue_key']}`.", '', finding['observation'], '', '**Correction:** '+finding['correction'], '', '**Acceptance:** '+finding['acceptance'], '']
+lines += ['## Biological boundaries retained', '', 'The native pathway identity, all six reversible events, twenty sides, exact strain-specific enzyme identities and fourteen construct qualifiers remain. The historical amoebal activity evidence has no fabricated modern sequence. Rabbit coupling does not prove native clostridial SBP aldolase. The 2023 FBP Aldoa work, DSM1313 versus ATCC27405 kinetics, thesis F6P inhibition and negative controls, paired TktAB genetics, unsigned Rex binding, 2022 loss counterexample, native class/charge conflicts and wrong B8I4R1 bridge are preserved.', '', '## Evidence and checks', '', 'All 345 scientific artifacts and 57 external originals match their hashes. The closed hidden/ignored/followed inventory also accounts for 107 excluded runtime files. All 102 XML evidence selectors replay exactly; the remaining 14 PDF/EC/JSON/PDB observations were independently assessed. Fresh native probes cover six events, twenty sides, twelve chemicals, thirteen NCBI proteins, sixteen native associations and the 149-residue RpiB join. Twenty original thesis pages were independently re-extracted through PDFKit; first-page and kinetic source scans/figures were visually read.', '', '## Limits', '']
+lines += ['- '+x for x in limitations]
+(O / 'REVIEW.md').write_text('\n'.join(lines)+'\n')
+save('findings.json', {'target': bind(T), 'findings': findings})
+print(json.dumps({'review': bind(O / 'review.json'), 'findings': len(findings), 'edge_assessments': len(edge_assessments), 'qualifier_assessments': len(qualifier_assessments), 'context_assessments': len(context_assessments), 'claim_assessments': len(claims)}, indent=2))

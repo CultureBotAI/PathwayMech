@@ -1,0 +1,15 @@
+from pathlib import Path
+import datetime,hashlib,json,re,subprocess
+B=Path(__file__).parent
+R=Path('/private/tmp/pathwaymech-next-227-20261012')
+pattern=r'PWY-8178|RXN-21730|31871051|6180735|10\.1074/jbc\.RA119\.011239|10\.1042/bj2040191|CDQ83_11320|Clo1313_1876|pentose phosphate pathway \(non-oxidative branch\) II|sedoheptulose.{0,40}bisphosphate|SEDOBISALDOL-RXN|1TRANSKETO-RXN|2TRANSKETO-RXN|RIB5PISOM-RXN|RIBULP3EPIM-RXN'
+cmd=['rg','--hidden','--no-ignore','--follow','-l','-i',pattern,str(R),'-g','!.git','-g','!.git/**','-g','!.venv','-g','!.venv/**']
+p=subprocess.run(cmd,capture_output=True,text=True);assert p.returncode in (0,1) and not p.stderr,p.stderr
+hits=[]
+for f in p.stdout.splitlines():
+ q=Path(f);body=q.read_bytes();lines=body.decode(errors='replace').splitlines()
+ matched=[{'line':i+1,'text':v[:1800],'full_line_length':len(v)} for i,v in enumerate(lines) if re.search(pattern,v,re.I)]
+ hits.append({'path':f,'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest(),'matches':matched})
+result={'at':datetime.datetime.now(datetime.UTC).isoformat(),'command':cmd,'exit_code':p.returncode,'stderr':p.stderr,'scope':'Actual detached merged lyxose worktree; hidden/ignored/followed files included, .git and .venv runtime excluded. Full matching originals remain hash-bound; excerpts are bounded and are not final absence adjudication.','files':hits}
+(B/'derived/novelty-text-search.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'matched_files':len(hits),'research_files':[r['path'] for r in hits if '/research/' in r['path']],'record_files':[r['path'] for r in hits if '/data/pathways/' in r['path']]}))

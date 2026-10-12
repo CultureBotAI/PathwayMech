@@ -1,0 +1,122 @@
+"""Original replay and metadata-only overlay; never edits any input."""
+from collections import Counter
+from copy import deepcopy
+import csv
+import hashlib
+import io
+import json
+from pathlib import Path
+import sys
+import xml.etree.ElementTree as ET
+import yaml
+from lxml import html
+OUT = Path(__file__).resolve().parent
+RUNTIME = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012/candidate')
+sys.path.insert(0, str(RUNTIME / 'src'))
+from pathwaymech.cli import _record_page
+from pathwaymech.graph_view import graph_html
+from pathwaymech.kgx import render_kgx
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import TARGET_CLASS, validator
+
+def binding(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+review_path = Path('/private/tmp/pathwaymech-next-231-science-review-20261012/findings.json')
+review = json.loads(review_path.read_text())
+finding = next(r for r in review['findings'] if r['issue_key'] == 'pwy8178-reaction-direction-metadata')
+original_path = Path(review['target']['path'])
+assert binding(original_path) == review['target']
+original = yaml.safe_load(original_path.read_bytes())
+pathway_path = Path('/private/tmp/pathwaymech-next-230-preflight-20261012/raw/META-PWY-8178.xml')
+assert binding(pathway_path)['sha256'] == 'e65ab6abc98fe21515a083d220b0b1b41373516128b75c42c3ef2c09111cda24'
+pathway = ET.parse(pathway_path).getroot().find('Pathway')
+layouts = {'MetaCyc:' + r.find('Reaction').attrib['frameid']: r.findtext('direction') for r in pathway.findall('reaction-layout')}
+native = []
+for identifier, expected in finding['originals'].items():
+    path = Path(expected['path'])
+    assert binding(path) == expected
+    reaction = ET.parse(path).getroot().find('Reaction')
+    assert reaction.attrib['orgid'] == 'META'
+    assert identifier == 'MetaCyc:' + reaction.attrib['frameid']
+    assert len(reaction.findall('reaction-direction')) == 1
+    assert reaction.findtext('reaction-direction') == 'REVERSIBLE'
+    sides = [{'side': side, 'compound': item.find('Compound').attrib['frameid']} for side in ['left', 'right'] for item in reaction.findall(side)]
+    native.append({'id': identifier, 'source': expected, 'source_direction': 'REVERSIBLE', 'layout_direction': layouts[identifier], 'native_sides': sides})
+expected_ids = {r['id'] for r in native}
+assert expected_ids == {r['id'] for r in original['reactions']} and len(expected_ids) == 6
+assert sum(len(r['native_sides']) for r in native) == 20
+assert not any('direction' in r for r in original['reactions'])
+
+def triples(record, sides_only=False):
+    return Counter((e['subject'], e['predicate'], e['object']) for e in record['mechanistic_edges'] if not sides_only or e['predicate'] in {'consumes', 'produces'})
+def assert_contract(record):
+    assert len(record['reactions']) == 6
+    assert {n['id']: n.get('direction') for n in record['reactions']} == {i: 'reversible' for i in expected_ids}, 'six exact reversible node fields required'
+    assert triples(record) == triples(original), '51 original graph triples must remain exact'
+    assert triples(record, True) == triples(original, True), '20 original side triples must remain exact'
+
+overlaid = deepcopy(original)
+for node in overlaid['reactions']:
+    node['direction'] = 'reversible'
+assert_contract(overlaid)
+assert sum(triples(overlaid).values()) == 51 and sum(triples(overlaid, True).values()) == 20
+checked = validate_record(overlaid)
+assert not validator().validate(overlaid, TARGET_CLASS).results
+page_text = _record_page(checked)
+standalone_text = graph_html(checked, {}, {})
+field_checks = []
+for name, text in [('native_page', page_text), ('standalone_graph', standalone_text)]:
+    document = html.fromstring(text)
+    for identifier in sorted(expected_ids):
+        nodes = document.xpath('//a[@data-node-id=$identifier]', identifier=identifier)
+        assert len(nodes) == 1
+        node = nodes[0]
+        exact = 'Source reaction direction: reversible'
+        assert exact in node.get('aria-label')
+        assert exact in ''.join(node.xpath('./title')[0].itertext())
+        if name == 'native_page':
+            rows = document.xpath('//tr[@id=$anchor]', anchor=node.get('href')[1:])
+            assert len(rows) == 1 and rows[0].xpath('./td')[2].text_content() == 'reversible'
+        field_checks.append({'surface': name, 'id': identifier, 'title_and_aria': 'reversible'})
+    graph_edges = document.xpath('//a[contains(concat(" ", normalize-space(@class), " "), " graph-edge ")]')
+    emitted = Counter((e.get('data-subject-id') or e.get('data-subject'), e.get('data-predicate'), e.get('data-object-id') or e.get('data-object')) for e in graph_edges)
+    assert emitted == triples(original) and len(graph_edges) == 51
+exports = render_kgx([checked])
+assert exports['edges.tsv'] == render_kgx([validate_record(original)])['edges.tsv']
+def read_nodes(export):
+    return {n['id']: n for n in csv.DictReader(io.StringIO(export['nodes.tsv']), delimiter='\t')}
+nodes = read_nodes(exports)
+for identifier in expected_ids:
+    assert nodes[identifier]['direction'] == 'reversible'
+    contexts = [r for r in json.loads(nodes[identifier]['source_contexts']) if r['record_id'] == original['id'] and r['collection'] == 'reactions' and r['id'] == identifier]
+    assert len(contexts) == 1 and contexts[0]['direction'] == 'reversible'
+other = deepcopy(overlaid)
+other['id'] = 'MetaCyc:DIRECTION-COLLISION-FIXTURE'
+other['mechanistic_edges'] = []  # Collision-only node fixture; no transplanted pathway edges.
+other['reactions'][0]['direction'] = 'right_to_left'
+shared_id = other['reactions'][0]['id']
+merged_nodes = read_nodes(render_kgx([checked, validate_record(other)]))
+assert merged_nodes[shared_id]['direction'] == ''
+assert next(r for r in json.loads(merged_nodes[shared_id]['source_contexts']) if r['record_id'] == original['id'])['direction'] == 'reversible'
+controls = []
+for name, broken in [('missing_metadata', deepcopy(original)), ('wrong_source_direction', deepcopy(overlaid)), ('changed_side_orientation', deepcopy(overlaid))]:
+    if name == 'wrong_source_direction':
+        broken['reactions'][0]['direction'] = 'right_to_left'
+    if name == 'changed_side_orientation':
+        edge = next(r for r in broken['mechanistic_edges'] if r['predicate'] in {'consumes', 'produces'})
+        edge['subject'], edge['object'] = edge['object'], edge['subject']
+    try:
+        assert_contract(broken)
+    except AssertionError as error:
+        controls.append({'case': name, 'rejected': str(error)})
+    else:
+        raise AssertionError('Negative control accepted: ' + name)
+assert binding(original_path) == review['target']
+result = {'status': 'passed_bounded_direction_contract_probe_not_successor_acceptance', 'review': binding(review_path), 'author_target': binding(original_path), 'runtime': str(RUNTIME), 'originals': native, 'pathway_original': binding(pathway_path), 'overlay': 'in-memory addition of six reversible fields only; not an authored successor', 'checks': {'native_and_linkml': 'passed', 'page_and_standalone_fields': field_checks, 'preserved_graph_triples': 51, 'preserved_chemical_side_triples': 20, 'standalone_kgx_six_directions_and_record_contexts': True, 'direction_only_kgx_edges_byte_identical': True, 'merged_conflict_preserves_target_context': True, 'negative_controls': controls}}
+(OUT / 'result.json').write_text(json.dumps(result, indent=2) + '\n')
+(OUT / 'native-page.html').write_text(page_text)
+(OUT / 'standalone-graph.html').write_text(standalone_text)
+for name, content in exports.items():
+    (OUT / name).write_text(content)
+print(json.dumps({'status': result['status'], 'native_directions': {r['id']: r['source_direction'] for r in native}, 'layout_directions': layouts, 'graph_triples': 51, 'side_triples': 20, 'negative_controls': controls}, indent=2))

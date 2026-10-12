@@ -1,0 +1,191 @@
+"""Capture exact accepted PPi/ATP inputs; never execute a native full builder."""
+import copy
+import importlib
+import importlib.util
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+from common import (
+    AUTHOR, AUTHORITY, HERE, PRIOR, TARGET_SHA, WORKTREE, bind, check,
+    check_sql_stat, inventory, load, now, preserve, validate_manifest,
+    validate_updates, write,
+)
+
+HANDLE = Path('/private/tmp/pathwaymech-next-231-reference-implementation-20261012')
+ATP = Path('/private/tmp/pathwaymech-next-230-whitespace-correction-20261012')
+ATP_SHA = '6ed1607a4c17ffe56a6f5f8f123c44a0ff410c9a9965e11c3cde9ef23a4affe2'
+EG_HEAD = '95ed7deec1ea749f3ebe60e170bb4463921b80dc'
+PACKETS = {
+    'atp_build': (PRIOR, '38f95c5b38672f8c23de6deea3e182dd3df7b44ceba5087469bb504e67ffcd93'),
+    'ppi_proposal': (AUTHORITY, 'a8ac9131b4072394a607b05982ae51205de5207262eff42a2de1c73676d76509'),
+    'ppi_successor': (AUTHOR, 'cf513721d2cef03c9875afc91d9ef4dcf6c6db145f7da1e9229dced138f908a1'),
+    'ppi_proposal_audit': (Path('/private/tmp/pathwaymech-next-231-authority-proposal-audit-20261012'), '66145aa66b029a0e5b51f1a08b67801f35c4d948109937fede510568825682dc'),
+    'handle': (HANDLE, '4afb6912df124836718ec0f548e7053139814ea892b1ff43473beb1a98ffd64a'),
+    'atp_title_assessment': (Path('/private/tmp/pathwaymech-next-230-title-trim-independent-20261012'), 'f9d5b4cc79767bc123ba3b25de94d8441bc107462346d9f8f23f6e30a2817252'),
+}
+RECEIPTS = {
+    'authority_proposal': ('/private/tmp/pathwaymech-next-231-root-authority-proposal-acceptance-20261012.json', 'f82ab2fa8d9538e0278a4a59b5b8848d6c39a974f516a28cd1cfecbf79bfb87b'),
+    'ppi_science': ('/private/tmp/pathwaymech-next-231-root-successor-acceptance-20261012.json', '5d442af552d139c8c1ce24ba70171e3ba20a008a83597567d573231aba0458a2'),
+    'atp_canonical': ('/private/tmp/pathwaymech-next-230-root-canonical-acceptance-20261012.json', '3912a6fa7d04574129577a1ca6d0f31b23d9a9417efc7196c153e45f81975592'),
+    'atp_title_successor': (str(ATP/'proposal.json'), '2c7743e16c4bd817f4b779b871ca4e3d707508fefa2726006ed174abb2b0e268'),
+}
+
+
+def copy_binding(source, destination):
+    before = bind(source)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    assert not destination.exists()
+    shutil.copyfile(source, destination)
+    after = bind(destination)
+    assert (before['bytes'], before['sha256']) == (after['bytes'], after['sha256'])
+    return {'original': before, 'captured': after}
+
+
+def verify_packet(name, directory, digest):
+    handoff = check({'path': str(directory/'handoff.json'), 'sha256': digest})
+    data = load(handoff['path'])
+    manifest = check(data.get('manifest') or data['artifact_manifest'])
+    rows = load(manifest['path'])['artifacts']
+    paths = set()
+    for row in rows:
+        path = Path(row.get('path') or row['relative_path'])
+        if not path.is_absolute():
+            assert '..' not in path.parts
+            path = directory/path
+        assert path.is_relative_to(directory) and path not in paths
+        check({**row, 'path': str(path)})
+        paths.add(path)
+    links = set()
+    if name == 'atp_build':
+        for row in load(directory/'execution-intake.json')['source_originals_freshly_hashed']:
+            p = directory/'originals'/row['cache_relative_path']
+            assert p.is_symlink() and p.resolve() == Path(row['path']).resolve()
+            check({**row, 'path': str(p)})
+            links.add(p)
+    observed = set(inventory(directory))
+    expected = paths | {directory/'handoff.json', Path(manifest['path'])} | links
+    assert observed == expected, {'packet': name, 'extra': sorted(str(p) for p in observed-expected), 'missing': sorted(str(p) for p in expected-observed)}
+    return {'name': name, 'handoff': handoff, 'manifest': manifest, 'artifacts_verified': len(rows), 'exact_original_symlinks_verified': len(links), 'closed_hidden_ignored_followed_inventory': True}
+
+
+def native_collectors():
+    sys.path.insert(0, str(HERE/'captured/code/src'))
+    importlib.invalidate_caches()
+    package = importlib.import_module('pathwaymech')
+    assert Path(package.__file__).resolve() == (HERE/'captured/code/src/pathwaymech/__init__.py').resolve()
+    modules = {}
+    for kind in ['source', 'ontology']:
+        p = HERE/'captured/code/scripts'/('build_'+kind+'_identifier_snapshot.py')
+        spec = importlib.util.spec_from_file_location('ppi_capture_'+kind, p)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        modules[kind] = module
+    return modules
+
+
+def selections(path, modules):
+    assert list(path.parent.glob('*.yaml')) == [path]
+    data = yaml.safe_load(path.read_bytes())
+    return {'source_collector': sorted(modules['source'].corpus_ids(path.parent)), 'ontology_collector': sorted(modules['ontology'].walk_identifiers(data, {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'}))}
+
+
+def main():
+    assert not (HERE/'capture.json').exists()
+    packages = [verify_packet(name, directory, digest) for name, (directory, digest) in PACKETS.items()]
+    receipts = {name: check({'path': path, 'sha256': digest}) for name, (path, digest) in RECEIPTS.items()}
+    title = load(ATP/'proposal.json')
+    check(title['target'])
+    assert title['target']['sha256'] == ATP_SHA
+    prior_capture = load(PRIOR/'preparation-capture.json')
+    baseline, proposals = [], {}
+    for name in ['sources.json', 'ontology.json', 'manifest.json', 'rhea-updates.json']:
+        baseline.append({'relative_path': name, **copy_binding(PRIOR/name, HERE/'captured/baseline'/name)})
+        proposals[name] = copy_binding(AUTHORITY/'proposed'/name, HERE/'captured/proposals'/name)
+    old = {n: load(PRIOR/(n+'.json')) for n in ['sources', 'ontology']}
+    expected = {n: load(AUTHORITY/'proposed'/(n+'.json')) for n in old}
+    for n in old:
+        preserve(old[n], expected[n])
+    manifest = load(AUTHORITY/'proposed/manifest.json')
+    hashes = validate_manifest(load(PRIOR/'manifest.json'), manifest)
+    updates = load(AUTHORITY/'proposed/rhea-updates.json')
+    validate_updates(load(PRIOR/'rhea-updates.json'), updates)
+    assert updates == load(PRIOR/'rhea-updates.json')
+    assert updates['path'] not in hashes or hashes[updates['path']] == updates['sha256']
+    hashes[updates['path']] = updates['sha256']
+    originals = []
+    proposed_originals = load(AUTHORITY/'complete-original-bindings.json')['originals']
+    assert len(proposed_originals) == len(hashes) == 780
+    assert {r['relative_path'] for r in proposed_originals} == set(hashes)
+    for row in proposed_originals:
+        actual = check(row['binding'])
+        assert hashes[row['relative_path']] == actual['sha256']
+        originals.append({'cache_relative_path': row['relative_path'], **actual, 'resolved_path': str(Path(actual['path']).resolve()), 'mtime_ns': Path(actual['path']).stat().st_mtime_ns, 'hash_scope': 'Fresh preparation hash; root execution freshly rechecks before staging.'})
+    overlay = {'src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml', 'tests/test_linkml_schema.py', 'tests/test_handle_references.py'}
+    runtime_paths = {str(p.relative_to(PRIOR/'runtime')): p for p in inventory(PRIOR/'runtime')}
+    assert set(runtime_paths) == {r['relative_path'] for r in prior_capture['candidate_code']} and len(runtime_paths) == 222
+    runtime_paths.update({rel: HANDLE/'candidate'/rel for rel in overlay})
+    code, code_delta = [], []
+    for rel, source in sorted(runtime_paths.items()):
+        role = 'accepted_ATP_native_build_runtime'
+        if rel in overlay:
+            role = 'accepted_reference_only_Handle_overlay'
+            code_delta.append({'relative_path': rel, 'ATP_original': bind(PRIOR/'runtime'/rel) if (PRIOR/'runtime'/rel).exists() else None, 'accepted_Handle': bind(source)})
+        code.append({'relative_path': rel, 'role': role, **copy_binding(source, HERE/'captured/code'/rel)})
+    assert len(code) == 223
+    modules = native_collectors()
+    # Freeze real merged EG records at exact observed commit, then add only the
+    # accepted corrected prospective ATP bytes. Historical ATP is never adopted.
+    head, tree = subprocess.check_output(['git', '-C', str(WORKTREE), 'rev-parse', 'HEAD', 'HEAD^{tree}'], text=True).splitlines()
+    assert head == EG_HEAD
+    old_atp_name = 'sedoheptulose-bisphosphate-bypass.yaml'
+    atp_original_paths = {str(p.relative_to(PRIOR/'corpus')): p for p in inventory(PRIOR/'corpus') if '_authority_retention' not in p.relative_to(PRIOR/'corpus').parts}
+    paths = inventory(WORKTREE/'data/pathways')
+    assert {str(p.relative_to(WORKTREE/'data/pathways')) for p in paths} == set(atp_original_paths)-{old_atp_name}
+    records = []
+    for source in paths:
+        rel = str(source.relative_to(WORKTREE/'data/pathways'))
+        committed = subprocess.check_output(['git', '-C', str(WORKTREE), 'show', head+':data/pathways/'+rel])
+        assert source.read_bytes() == committed == atp_original_paths[rel].read_bytes(), rel
+        records.append({'relative_path': rel, 'role': 'actual_merged_EG_main_record', **copy_binding(source, HERE/'captured/corpus'/rel)})
+    assert sum(r['relative_path'].endswith('.yaml') for r in records) == 230
+    records.append({'relative_path': old_atp_name, 'role': 'accepted_corrected_ATP_prospective_unmerged_record', **copy_binding(ATP/old_atp_name, HERE/'captured/corpus'/old_atp_name)})
+    assert records[-1]['captured']['sha256'] == ATP_SHA
+    historical_atp = HERE/'captured/bridge-atp-historical'/old_atp_name
+    current_atp = HERE/'captured/bridge-atp-corrected'/old_atp_name
+    copy_binding(PRIOR/'corpus'/old_atp_name, historical_atp)
+    copy_binding(ATP/old_atp_name, current_atp)
+    old_raw = yaml.safe_load(historical_atp.read_bytes())
+    new_raw = yaml.safe_load(current_atp.read_bytes())
+    patched = copy.deepcopy(old_raw)
+    assert patched['references'][22]['id'] == 'PMID:31464375'
+    patched['references'][22]['title'] = patched['references'][22]['title'].rstrip()
+    assert new_raw == patched
+    atp_selections = [selections(p, modules) for p in [historical_atp, current_atp]]
+    assert atp_selections[0] == atp_selections[1]
+    assert len(atp_selections[0]['source_collector']) == 62 and len(atp_selections[0]['ontology_collector']) == 36
+    target = copy_binding(AUTHOR/'draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml', HERE/'captured/target/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml')
+    assert target['captured']['sha256'] == TARGET_SHA
+    selected = selections(Path(target['captured']['path']), modules)
+    assert len(selected['source_collector']) == 50 and len(selected['ontology_collector']) == 12
+    source_selected = sorted(i for i in selected['source_collector'] if i.split(':', 1)[0] in modules['source'].SOURCE_NAMESPACES)
+    assert source_selected == load(AUTHORITY/'collector-and-baseline-bridge.json')['selected_source_ids']
+    sql = load(AUTHORITY/'SQL-original-pins.json')['pins']
+    for row in sql:
+        check_sql_stat(row)
+        assert old['ontology']['sources'][row['source_key']]['sha256'] == row['sha256']
+    retention = sorted(set(old['sources']['terms']) | set(old['ontology']['terms']))
+    assert len(retention) == 4437
+    write(HERE/'collector-bridge.json', {'at': now(), 'ATP': {'historical': bind(historical_atp), 'corrected': bind(current_atp), 'root_proposal': receipts['atp_title_successor'], 'only_semantic_change': 'PMID31464375 reference title.rstrip', 'same_selectors': atp_selections[0]}, 'PPi': {'target': target['captured'], 'selections': selected, 'source_authority_selection': source_selected}, 'native_code': {k: bind(HERE/'captured/code/scripts'/('build_'+k+'_identifier_snapshot.py')) for k in modules}, 'scope': 'Fresh native collectors and exact scalar bridge; no relabeling of historical ATP canonical execution.'})
+    assert subprocess.check_output(['git', '-C', str(WORKTREE), 'rev-parse', 'HEAD'], text=True).strip() == head
+    capture = {'at': now(), 'scope': '231-record prospective baseline:230 actual merged EG main records at95ed7deec1ea749f3ebe60e170bb4463921b80dc/treeed3de2cd5112fbbf2319a16dac307b08b62c29b3 plus exact accepted title-corrected ATP6ed1607 target. ATP is not claimed merged or maintained. The original ATP full build used historicalcd59859d; exact bibliography-only selector bridge is separate. PPi20541f yields232 prospective pathways; legacy retention is build-only.', 'observed_head': head, 'observed_tree': tree, 'records': records, 'target': target, 'baseline': baseline, 'proposals': proposals, 'candidate_code': code, 'code_scope': '222 accepted actual ATP runtime files with exact four-file accepted Handle overlay, yielding223 files. Native builders unchanged. Historical runtime authority configs do not select inputs: explicit staged manifest/Rhea arguments do.', 'code_delta': code_delta, 'packages': packages, 'root_receipts': receipts, 'collector_bridge': bind(HERE/'collector-bridge.json'), 'ATP_final_sha256': ATP_SHA, 'source_originals': originals, 'sql_originals': sql, 'sql_hash_scope': 'Accepted actual ATP native full hashes plus current stat; next native ontology execution must fresh-hash all four.', 'retention_ids': retention, 'new_manifest_entries': 24, 'new_original_paths': 24, 'prior_records': 231, 'prospective_records_with_PPi': 232, 'full_build_executed': False, 'maintained_or_shared_cache_writes': False}
+    write(HERE/'expected-native-comparison.json', {'snapshots': expected, 'scope': 'Comparison only; unchanged full native builders derive outputs from all originals.', 'expected_counts': {'source_terms': 2507, 'source_metadata': 617, 'ontology_terms': 1969, 'ontology_metadata': 5}})
+    write(HERE/'capture.json', capture)
+    print({'baseline_records': 231, 'prospective_records': 232, 'code_files': len(code), 'originals': len(originals), 'retention_ids': len(retention), 'packages': len(packages), 'full_build': False})
+
+
+if __name__ == '__main__':
+    main()
