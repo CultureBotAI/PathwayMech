@@ -1,0 +1,213 @@
+"""Independent bounded audit of actual MG canonical outputs and issuing originals."""
+from pathlib import Path
+import copy,datetime,gzip,hashlib,html,importlib.util,json,re,shutil,sqlite3,sys,zipfile
+from xml.etree import ElementTree as ET
+import yaml
+B=Path('/private/tmp/pathwaymech-next-228-canonical-build-20261012')
+C=Path('/private/tmp/pathwaymech-next-228-canonical-completion-20261012')
+D=Path(__file__).parent
+P=Path('/private/tmp/pathwaymech-next-228-canonical-preparation-20261012')
+PRIOR=Path('/private/tmp/pathwaymech-next-228-canonical-diagnosis-20261012')
+sys.path.insert(0,str(B/'runtime/src'))
+def load(p):return json.loads(Path(p).read_bytes())
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def bind(p):
+ p=Path(p);return {'path':str(p),'resolved_path':str(p.resolve()),'bytes':p.stat().st_size,'sha256':sha(p)}
+def check(row):
+ p=Path(row['path']);assert sha(p)==row['sha256'],p
+ if 'bytes'in row:assert p.stat().st_size==row['bytes'],p
+ return bind(p)
+def save(n,o):(D/n).write_text(json.dumps(o,indent=2,ensure_ascii=False)+'\n')
+def module(name,path):
+ spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
+builder=module('actual_source_builder',B/'runtime/scripts/build_source_identifier_snapshot.py')
+ontology=module('actual_ontology_builder',B/'runtime/scripts/build_ontology_identifier_snapshot.py')
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.schema import validate_record
+assert sha(C/'handoff.json')=='ba16915d5b135faa432033e2a0fc16afe97ecfe5f6da5fa5e9d63aa8a4f882d8'
+h=load(C/'handoff.json');check(h['manifest']);check(h['verification'])
+for x in load(h['manifest']['path'])['artifacts']:check(x)
+v=load(h['verification']['path'])
+for x in v['build_artifact_bindings']:check(x)
+assert len(v['build_artifact_bindings'])==477
+for x in h['outputs'].values():check(x)
+assert sha(PRIOR/'handoff.json')=='1560731288bb4a8bf151ce23ba6d6a627233850c90a7f821e7d80c4cfdc69ae8'
+ph=load(PRIOR/'handoff.json');assert sha(PRIOR/'artifact-manifest.json')==ph['manifest_sha256']
+for x in load(PRIOR/'artifact-manifest.json')['files']:
+ path=Path(x['path']);check({**x,'path':str(PRIOR/path) if not path.is_absolute() else str(path)})
+actual={s:load(B/(s+'.json'))for s in ['sources','ontology']};old={s:load(B/'baseline'/(s+'.json'))for s in actual}
+new={s:{k:o for k,o in actual[s]['terms'].items() if k not in old[s]['terms']}for s in actual}
+assert [len(new[s])for s in ['sources','ontology']]==[21,6]
+for s in actual:
+ for field in ['terms','sources']:
+  assert all(actual[s][field].get(k)==o for k,o in old[s][field].items())
+manifest=load(B/'manifest.json');updates=load(B/'rhea-updates.json');oldman=load(B/'baseline/manifest.json');oldup=load(B/'baseline/rhea-updates.json')
+assert manifest[:717]==oldman and len(manifest)==738 and len({e['key']for e in manifest})==738
+assert updates['ids'][:19]==oldup['ids'] and updates['ids'][19:]==['RHEA:33308']
+assert {k:v for k,v in updates.items()if k!='ids'}=={k:v for k,v in oldup.items()if k!='ids'}
+commands=load(B/'commands.json');executions=load(B/'execution-ledger.json')['executions']
+for e in executions:
+ assert e['exit_code']==0 and e['command']==commands[e['name']] and e['cwd']==commands['cwd'] and e['environment']==commands['environment']
+ check(e['stdout']);check(e['stderr']);assert e==load(B/(e['name']+'-execution.json'))
+selectedkeys={o['source']for o in new['sources'].values()};selected=[e for e in manifest if e['key']in selectedkeys]
+assert len(selected)==13
+selected+= [e for e in manifest[717:] if e['key']not in selectedkeys]
+assert len(selected)==22
+original_bindings=[]
+for e in selected:
+ p=B/'originals'/e['path'];assert sha(p)==e['sha256'];original_bindings.append(bind(p))
+# No authored labels participate in native name extraction below.
+source_rows=[]
+bulk=next(e for e in selected if e['key']=='uniprot-ecoli-reviewed-cofactors');bulkbody=load(B/'originals'/bulk['path'])
+def uniname(o):
+ d=o['proteinDescription'];names=[]
+ for group in [d.get('recommendedName',{}),*d.get('submissionNames',[]),*d.get('alternativeNames',[])]:
+  if group.get('fullName',{}).get('value'):names.append(group['fullName']['value'])
+  names.extend(s['value']for s in group.get('shortNames',[]))
+ return names[0],sorted(set(names[1:])-{names[0]})
+for id,term in new['sources'].items():
+ e=next(e for e in selected if e['key']==term['source']);p=B/'originals'/e['path'];facts={};native=None
+ if id.startswith('UniProtKB:'):
+  accession=id.split(':')[1];hits=[(i,o)for i,o in enumerate(bulkbody['results'])if o.get('primaryAccession')==accession];assert len(hits)==1
+  i,o=hits[0];label,syn=uniname(o);assert o['organism']['taxonId']==83333
+  freshentry=next(x for x in selected if x['key']=='uniprot-mg-'+accession);fresh=load(B/'originals'/freshentry['path'])
+  assert fresh['primaryAccession']==accession and fresh['organism']['taxonId']==83333 and uniname(fresh)==(label,syn)
+  facts={'bulk_index':i,'native_primary_accession':o['primaryAccession'],'taxon':o['organism']['taxonId'],'proteinDescription':o['proteinDescription'],'genes':o.get('genes'),'fresh_original':bind(B/'originals'/freshentry['path']),'fresh_entry_audit':fresh['entryAudit'],'fresh_names_equal':True,'selected_manifest_index':manifest.index(e),'fresh_manifest_index':manifest.index(freshentry),'fresh_metadata_unused':freshentry['key']not in actual['sources']['sources']}
+ elif id.startswith('Entrez:'):
+  root=ET.parse(p).getroot();assert len(root)==1;g=root[0];track=g.find('Entrezgene_track-info/Gene-track');ref=g.find('Entrezgene_gene/Gene-ref');org=g.find('Entrezgene_source/BioSource/BioSource_org/Org-ref')
+  gid=track.findtext('Gene-track_geneid');assert id=='Entrez:'+gid
+  label=ref.findtext('Gene-ref_locus');syn=sorted(set([n.text for n in ref.findall('Gene-ref_syn/Gene-ref_syn_E')]+[ref.findtext('Gene-ref_locus-tag')])-{label})
+  taxon=[n.findtext('Dbtag_tag/Object-id/Object-id_id')for n in org.findall('Org-ref_db/Dbtag')if n.findtext('Dbtag_db')=='taxon'];assert taxon==['511145']
+  facts={'gene_id':gid,'locus':label,'locus_tag':ref.findtext('Gene-ref_locus-tag'),'native_synonyms':[n.text for n in ref.findall('Gene-ref_syn/Gene-ref_syn_E')],'formal_symbol':ref.findtext('Gene-ref_formal-name/Gene-nomenclature/Gene-nomenclature_symbol'),'taxon':taxon,'taxname':org.findtext('Org-ref_taxname'),'status_omitted':track.find('Gene-track_status')is None,'native_gene_ref':ET.tostring(ref,encoding='unicode')}
+ elif id.startswith('EcoCyc:'):
+  root=ET.parse(p).getroot();obj=root.find('Protein');md=root.find('metadata');frame=id.split(':')[1];assert obj.attrib=={'ID':'ECOLI:'+frame,'orgid':'ECOLI','frameid':frame,'detail':'full'}
+  assert md.findtext('query')=='ECOLI:'+frame and md.find('PGDB').attrib=={'orgid':'ECOLI','version':'27.0'}
+  label=html.unescape(re.sub('<[^>]+>','',obj.findtext('common-name')));syn=sorted(n.text for n in obj.findall('synonym'))
+  facts={'entity':obj.attrib,'metadata':ET.tostring(md,encoding='unicode'),'common_name_literal':obj.findtext('common-name'),'native_synonyms':syn,'parent':ET.tostring(obj.find('parent'),encoding='unicode'),'components':[ET.tostring(n,encoding='unicode')for n in obj.findall('component')]}
+ elif e['kind']=='metacyc-html':
+  text=p.read_bytes().decode('utf8',errors='surrogateescape');identity=re.findall(r"typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'META'",text);titles=re.findall(r'<TITLE>MetaCyc (.*?)</TITLE>',text,re.S|re.I);assert len(identity)==len(titles)==1 and id=='MetaCyc:'+identity[0]
+  label=' '.join(html.unescape(re.sub('<[^>]+>','',titles[0])).split());syn=[];facts={'native_frame':identity[0],'title_raw':titles[0],'metadata_literal':re.search(r'typeObjectPage\s*=\s*\{[^\n]+',text).group(0)}
+ elif e['kind']=='metacyc-reaction-xml':
+  root=ET.parse(p).getroot();obj=root.find('Reaction');frame=id.split(':')[1];assert obj.get('ID')=='META:'+frame and obj.find('common-name')is None
+  label=frame;syn=[];facts={'entity':obj.attrib,'native_metadata':ET.tostring(root.find('metadata'),encoding='unicode'),'direction':obj.findtext('reaction-direction'),'left':[n[0].attrib for n in obj.findall('left')],'right':[n[0].attrib for n in obj.findall('right')],'direct_common_name_absent':True,'nested_enzyme_name_not_reaction_label':obj.findtext('enzymatic-reaction/Enzymatic-Reaction/common-name')}
+ elif e['kind']=='pathbank-biopax-zip':
+  a=e['archive'];assert p.stat().st_size==a['bytes']
+  with zipfile.ZipFile(p)as z:
+   assert z.namelist().count(a['member'])==1;body=z.read(a['member'])
+  assert len(body)==a['member_bytes'] and hashlib.sha256(body).hexdigest()==a['member_sha256']
+  (D/'native-PW002096.owl').write_bytes(body);root=ET.fromstring(body);bp='{http://www.biopax.org/release/biopax-level3.owl#}';rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+  child=[x for x in root.findall(bp+'Pathway')if x.get(rdf+'about')=='http://identifiers.org/smpdb/SMP0000839'];assert len(child)==1;child=child[0]
+  label=child.findtext(bp+'displayName');syn=[]
+  facts={'root_and_child_xml':[ET.tostring(x,encoding='unicode')for x in root.findall(bp+'Pathway')],'bridge_xml':[ET.tostring(x,encoding='unicode')for x in root if x.tag==bp+'Interaction' and any(n.text=='InhibitorySubPathwayControl'for n in x.findall(bp+'name'))],'archive':a,'interpretation':'Native adjacent empty pathway stub identity only; marker does not prove biological inhibition or expanded child chemistry.'}
+ else:raise AssertionError(id)
+ expected={'label':label,'synonyms':syn,'source':e['key']}
+ if id=='MetaCyc:RXN0-5216':expected.update(label_kind='source_context',entity_type='reaction')
+ assert expected==term,(id,expected,term)
+ parsed=list(builder.source_terms(e['kind'],p,url=e['url'],version=e['version'],archive=e.get('archive'),sha256=e['sha256']))
+ hit=[(i,l,sorted(set(s)-{l}))for i,l,s in parsed if i==id];assert hit==[(id,label,syn)],(id,hit)
+ source_rows.append({'id':id,'actual':term,'native_independent_result':expected,'original':bind(p),'manifest_entry':e,'native_facts':facts,'production_parser_matches':True})
+save('all-21-source-assessments.json',source_rows)
+# Exact selected subset production replay; labels never supplied by curated record.
+fixture=D/'bounded-source-replay';fixture.mkdir(exist_ok=True);records=fixture/'records';records.mkdir(exist_ok=True);ids=sorted(new['sources'])
+(records/'selected.yaml').write_text(yaml.safe_dump({'id':ids[0],'participants':[{'id':i}for i in ids[1:]]}))
+subset=[e for e in manifest if e in selected];(fixture/'manifest.json').write_text(json.dumps(subset,indent=2)+'\n')
+replayed=builder.build_snapshot(fixture/'manifest.json',records,B/'originals')
+assert replayed['terms']==new['sources']
+assert replayed['sources']=={k:actual['sources']['sources'][k]for k in selectedkeys}
+save('bounded-source-replay/result.json',replayed)
+# Read-only indexed SQL query for the five new ChEBI labels and exact synonyms.
+onto_rows=[];chebi=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+with sqlite3.connect(chebi.as_uri()+'?mode=ro',uri=True)as con:
+ for id,term in new['ontology'].items():
+  if not id.startswith('CHEBI:'):continue
+  rows=list(con.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('rdfs:label','oio:hasExactSynonym')",(id,)))
+  labels={v for p,v in rows if p=='rdfs:label'and v};assert len(labels)==1;label=next(iter(labels));syn=sorted({v for p,v in rows if p=='oio:hasExactSynonym'and v and v!=label})
+  expected={'label':label,'synonyms':syn,'source':'chebi-255'};assert expected==term
+  native,missing=ontology.extract_terms(con,[id],'chebi-255');assert missing==[]and native=={id:term}
+  onto_rows.append({'id':id,'actual':term,'independently_queried_rows':rows,'database':str(chebi),'readonly':True,'query':'SELECT predicate,value FROM statements WHERE subject=? AND predicate IN (rdfs:label,oio:hasExactSynonym)','production_extract_matches':True})
+# Native ontology metadata against the exact pinned/stat-preserved original DBs;
+# full file hashes were performed by actual builder and are not repeated here.
+sqlmeta=[]
+for record in v['sql_native_hash_checks']:
+ pin=record['pinned_original'];p=Path(pin['path']);st=p.stat();assert (st.st_size,st.st_mtime_ns)==(pin['bytes'],pin['mtime_ns'])
+ with sqlite3.connect(p.as_uri()+'?mode=ro',uri=True)as con:
+  prefixes=dict(con.execute('SELECT prefix,base FROM prefix'));declarations=list(con.execute("SELECT subject,object FROM statements WHERE predicate='owl:versionIRI'"));assert len(declarations)==1
+  subj,release=declarations[0];native={p:o or val for p,o,val in con.execute("SELECT predicate,object,value FROM statements WHERE subject=? AND predicate IN ('owl:versionInfo','dcterms:license')",(subj,))}
+ def expand(s):
+  prefix,sep,local=s.strip('<>').partition(':');return prefixes[prefix]+local if sep and prefix in prefixes else s.strip('<>')
+ expected={'url':expand(release),'version':native['owl:versionInfo'],'license':expand(native['dcterms:license']),'sha256':pin['sha256'],'sha256_scope':'uncompressed_semantic_sql_database'}
+ assert expected==actual['ontology']['sources'][pin['source_key']]==record['native_metadata']
+ sqlmeta.append({'original_pin':pin,'fresh_stat_matches':True,'native_declaration':declarations,'native_metadata_rows':native,'actual_metadata':expected,'read_only':True,'full_hash_scope':'Inherit exact successful native full-build hash; no redundant multi-gigabyte hash or rebuild.'})
+save('sql-metadata-assessments.json',sqlmeta)
+# Full exact Rhea original hash and native selected-update parser replay, then
+# independent streaming extraction of the new issuing RDF identity/equation.
+rheapath=B/'originals'/updates['path'];assert sha(rheapath)==updates['sha256'];original_bindings.append(bind(rheapath))
+key,meta,terms=ontology.read_rhea_updates(B/'rhea-updates.json',B/'originals',set(updates['ids']))
+assert meta==actual['ontology']['sources'][key]
+assert terms=={id:actual['ontology']['terms'][id]for id in updates['ids']}
+rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';rh='{http://rdf.rhea-db.org/}';rdfs='{http://www.w3.org/2000/01/rdf-schema#}'
+found=[]
+with gzip.open(rheapath,'rb')as stream:
+ depth=0
+ for event,node in ET.iterparse(stream,events=('start','end')):
+  if event=='start':
+   depth+=1
+   if depth==1:root=node
+   continue
+  if depth==2:
+   if node.get(rdf+'about')=='http://rdf.rhea-db.org/33308':found.append(ET.tostring(node,encoding='unicode'))
+   root.clear()
+  depth-=1
+assert len(found)==1
+node=ET.fromstring(found[0]);assert node.findtext(rh+'id')=='33308'and node.findtext(rh+'accession')=='RHEA:33308'
+assert node.find(rh+'status').get(rdf+'resource')=='http://rdf.rhea-db.org/Approved'
+assert node.findtext(rh+'equation')==node.findtext(rdfs+'label')==new['ontology']['RHEA:33308']['label']
+onto_rows.append({'id':'RHEA:33308','actual':new['ontology']['RHEA:33308'],'full_original':bind(rheapath),'native_xml':found[0],'native_label_equals_equation':True,'production_replay_all_updates':len(terms),'metadata':meta,'scope':'Directional transport phosphorylation reaction; protein phosphohistidine donor, not overall PEP shortcut.'})
+save('all-6-ontology-assessments.json',onto_rows);(D/'native-RHEA-33308.xml').write_text(found[0]);save('rhea-all20-replay.json',{'metadata':meta,'terms':terms})
+# Source-selected controls stay external, never modify original bodies or outputs.
+controls=[]
+def rejects(name,fn):
+ try:fn()
+ except (ValueError,AssertionError)as error:controls.append({'name':name,'rejected':True,'error_type':type(error).__name__,'error':str(error)})
+ else:raise AssertionError('negative did not reject: '+name)
+bykey={e['key']:e for e in selected}
+e=bykey['ncbi-gene-mg-945355'];p=B/'originals'/e['path']
+rejects('NCBI-requested-identity-mismatch',lambda:list(builder.source_terms(e['kind'],p,url=e['url'].replace('945355','945359'),version=e['version'])))
+e=bykey['ecocyc-mg-PC00103'];p=B/'originals'/e['path']
+rejects('EcoCyc-release-mismatch',lambda:list(builder.source_terms(e['kind'],p,url=e['url'],version='26.0')))
+e=bykey['metacyc-mg-RXN0-5216'];p=B/'originals'/e['path'];mut=ET.parse(p).getroot();mut.find('Reaction/right/Compound').set('class','false');bad=D/'control-reaction-class-false.xml';bad.write_bytes(ET.tostring(mut))
+rejects('MetaCyc-unsupported-compound-class-false',lambda:list(builder.source_terms(e['kind'],bad,url=e['url'],version=e['version'])))
+e=bykey['pathbank-primary-2019-PW002096-SMP0002108'];p=B/'originals'/e['path'];badarchive={**e['archive'],'member_sha256':'0'*64}
+rejects('PathBank-member-hash-mismatch',lambda:builder._pathbank_archive_terms(p,url=e['url'],sha256=e['sha256'],archive=badarchive))
+rejects('Rhea-unselected-update-ID',lambda:ontology.read_rhea_updates(B/'rhea-updates.json',B/'originals',set(updates['ids'])-{'RHEA:33308'}))
+# The MetaCyc/CHEBI participant policy intentionally accepts contextual labels.
+# Source-object equality, independently checked above, detects anomer label drift;
+# the enforcing consumer rejects missing identity or malformed provenance.
+consumer=D/'consumer';(consumer/'conf').mkdir(parents=True,exist_ok=True);(consumer/'data/pathways').mkdir(parents=True,exist_ok=True);auth=consumer/'data/identifier_authorities';auth.mkdir(exist_ok=True)
+shutil.copyfile(B/'runtime/conf/identifier_policy.yaml',consumer/'conf/identifier_policy.yaml');target_path=B/'corpus/mannosylglycerate-degradation.yaml';shutil.copyfile(target_path,consumer/'data/pathways'/target_path.name)
+for s in actual:shutil.copyfile(B/(s+'.json'),auth/(s+'.json'))
+target=yaml.safe_load(target_path.read_bytes());validate_record(target);assert identifier_errors(consumer)==[]
+def consumer_reject(name,section,change,needle):
+ obj=copy.deepcopy(actual[section]);change(obj);(auth/(section+'.json')).write_text(json.dumps(obj));errors=identifier_errors(consumer)
+ assert errors and any(needle in e for e in errors),(name,errors)
+ controls.append({'name':name,'rejected':True,'errors':errors});shutil.copyfile(B/(section+'.json'),auth/(section+'.json'))
+bad_chem=copy.deepcopy(new['ontology']['CHEBI:60332']);bad_chem.update(label='D-mannopyranose 6-phosphate(2-)',synonyms=[])
+assert bad_chem != next(r['actual']for r in onto_rows if r['id']=='CHEBI:60332')
+controls.append({'name':'Independent-native-alpha-generic-object-swap','rejected':True,'checker':'Exact native SQL object comparison; contextual MetaCyc display labels are not enforced by identifier consumer.'})
+consumer_reject('Missing-specific-alpha-mannose-phosphate-identity','ontology',lambda o:o['terms'].pop('CHEBI:60332'),'ID_NOT_FOUND')
+consumer_reject('Missing-new-gene-metadata','sources',lambda o:o['sources'].pop('ncbi-gene-mg-945355'),'missing source provenance')
+consumer_reject('Identity-only-reaction-provenance-deleted','sources',lambda o:o['sources']['metacyc-mg-RXN0-5216'].pop('kind'),'invalid typed native reaction authority')
+consumer_reject('Missing-new-Rhea-term','ontology',lambda o:o['terms'].pop('RHEA:33308'),'ID_NOT_FOUND')
+assert identifier_errors(consumer)==[]
+for s in actual:assert sha(auth/(s+'.json'))==sha(B/(s+'.json'))
+save('negative-controls.json',controls)
+# Bind all additions' originals, exact outputs and inherited evidence; originals
+# and failed build remain untouched, retained completion is independently checked.
+for x in original_bindings:check(x)
+save('observed-original-bindings.json',original_bindings)
+save('audit.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'verdict':'accepted','findings':[],'scope':'Independent actual canonical output and source identity/provenance audit, not a fresh full biological literature review.','target':bind(target_path),'root_completion':bind(C/'handoff.json'),'prior_diagnosis':bind(PRIOR/'handoff.json'),'actual_outputs':{n:bind(B/n)for n in ['sources.json','ontology.json','manifest.json','rhea-updates.json']},'all_new_source_objects':21,'all_new_ontology_objects':6,'new_source_metadata':12,'selected_source_metadata_in_bounded_replay':13,'bounded_source_originals':22,'Rhea_full_originals':1,'Rhea_selector_replay':20,'new_ChEBI_terms_read_only_queried':5,'native_SQL_metadata_queries':4,'all_old_objects_exact':{s:{f:len(old[s][f])for f in ['terms','sources']}for s in old},'verified_root_build_artifact_bindings':477,'root_original_rehash_receipt_scope':738,'negative_controls':len(controls),'root_completion_postchecks_accepted':True,'first_source_and_reference_only_decisions':'Accepted exact previous independent diagnosis; source selection freshly replayed for all21 additions.','maintained_writes':False,'source_cache_writes':False,'full_SQL_rebuild_or_rehash':False,'source_exhaustion':False,'remaining':'Root maintained adoption/integration gates and independent scientific successor acceptance retain their separate scope.'})
+print(json.dumps({'verdict':'accepted','source_terms':21,'ontology_terms':6,'negative_controls':len(controls),'actual_outputs':{n:sha(B/n)for n in ['sources.json','ontology.json']}},indent=2))

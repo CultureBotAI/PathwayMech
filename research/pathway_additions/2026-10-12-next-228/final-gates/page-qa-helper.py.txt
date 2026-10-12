@@ -1,0 +1,97 @@
+"""Check exact rendered graph edges and anchors; produce a static SVG preview."""
+from pathlib import Path
+from html.parser import HTMLParser
+from datetime import datetime, timezone
+from collections import Counter
+import hashlib
+import json
+import re
+import subprocess
+import xml.etree.ElementTree as ET
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-228-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-228-page-qa-20261012')
+TARGET = ROOT / 'data/pathways/mannosylglycerate-degradation.yaml'
+PAGE = ROOT / 'pages/records/MetaCyc_PWY0-1300.html'
+TARGET_SHA = 'b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+class Anchors(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.ids = []
+        self.links = []
+
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if 'id' in values:
+            self.ids.append(values['id'])
+        if values.get('href', '').startswith('#'):
+            self.links.append(values['href'][1:])
+
+
+def main():
+    if not __debug__:
+        raise RuntimeError('Assertions must remain enabled')
+    assert sha(TARGET) == TARGET_SHA
+    gates = json.loads(Path('/private/tmp/pathwaymech-next-228-maintained-gates-20261012/execution.json').read_bytes())
+    assert gates['receipts'][0]['name'] == 'render' and gates['receipts'][0]['exit_code'] == 0
+    assert not OUT.exists()
+    record = yaml.safe_load(TARGET.read_bytes())
+    text = PAGE.read_text()
+    anchors = Anchors()
+    anchors.feed(text)
+    assert len(anchors.ids) == len(set(anchors.ids)), 'Duplicate HTML IDs'
+    assert set(anchors.links) <= set(anchors.ids), 'Unresolved local anchor'
+    matches = re.findall(r'<svg\b[^>]*class="pathway-network-svg".*?</svg>', text, re.S)
+    assert len(matches) == 1
+    svg = ET.fromstring(matches[0])
+    svg_links = list(svg.iter('{http://www.w3.org/2000/svg}a'))
+    edges = [e for e in svg_links if 'graph-edge' in e.get('class', '').split()]
+    nodes = [e for e in svg_links if 'graph-node' in e.get('class', '').split()]
+    native = [(e['subject'], e['predicate'], e['object']) for e in record['mechanistic_edges']]
+    actual = [(e.get('data-subject-id', e.get('data-subject')), e.get('data-predicate'), e.get('data-object-id', e.get('data-object'))) for e in edges]
+    assert actual == native and len(actual) == 75
+    assert [e.get('href') for e in edges] == ['#mechanism-edge-' + str(i + 1) for i in range(len(native))]
+    rendered_ids = {e.get('data-base-node-id', e.get('data-node-id')) for e in nodes}
+    declared = {e['id'] for field in ['participants', 'reactions'] for e in record[field]}
+    assert declared <= rendered_ids
+    assert set(e[0] for e in native) | set(e[2] for e in native) <= rendered_ids
+    assert len({e.get('data-node-id') for e in nodes}) == len(nodes)
+    css_path = ROOT / 'src/pathwaymech/assets/pathway-network.css'
+    css = css_path.read_text().split('@media')[0]
+    variables = dict(re.findall(r'(--graph-[a-z]+):\s*(#[0-9a-fA-F]+)', css))
+    for name, value in variables.items():
+        css = css.replace('var(' + name + ')', value)
+    # Static light-theme preview only; no claim to exercise browser interactions.
+    styled = matches[0].replace('>', '><style>' + css + '</style>', 1)
+    ET.fromstring(styled)
+    OUT.mkdir()
+    (OUT / 'original.svg').write_text(matches[0])
+    (OUT / 'styled.svg').write_text(styled)
+    command = ['/usr/local/bin/rsvg-convert', '-b', 'white', '-w', '1600', '-o', str(OUT / 'overview.png'), str(OUT / 'styled.svg')]
+    result = subprocess.run(command, capture_output=True, text=True)
+    receipt = {
+        'at': datetime.now(timezone.utc).isoformat(),
+        'target_sha256': sha(TARGET), 'page_sha256': sha(PAGE),
+        'css_sha256': sha(css_path), 'helper_sha256': sha(Path(__file__)),
+        'html_ids': len(anchors.ids), 'fragment_links': len(anchors.links),
+        'display_nodes': len(nodes), 'unique_biological_graph_nodes': len(rendered_ids),
+        'edges': len(edges), 'native_edge_triples_match': True,
+        'declared_component_coverage_complete': True,
+        'preview_command': command, 'preview_exit_code': result.returncode,
+        'preview_stderr': result.stderr,
+        'scope': 'Exact ordered native graph triples, component coverage, unique IDs and local anchors checked. Static SVG preview only; visual inspection follows separately. No browser interaction claim.',
+    }
+    (OUT / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    result.check_returncode()
+    print(json.dumps(receipt, indent=2))
+
+
+if __name__ == '__main__':
+    main()

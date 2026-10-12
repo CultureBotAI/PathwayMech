@@ -1,0 +1,10 @@
+from pathlib import Path
+import subprocess,json,os,datetime,hashlib
+O=Path(__file__).parent;py='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1');rows=[]
+for name in ['select_for_author.py','finalize.py']:
+ command=[py,'-B',str(O/name)];started=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(command,env=env,text=True,capture_output=True);out=O/(name+'.final.stdout');err=O/(name+'.final.stderr');out.write_text(r.stdout);err.write_text(r.stderr)
+ def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+ rows.append({'command':command,'started':started,'finished':datetime.datetime.now(datetime.timezone.utc).isoformat(),'returncode':r.returncode,'stdout':bind(out),'stderr':bind(err)})
+ (O/'final-check-executions.json').write_text(json.dumps(rows,indent=2)+'\n')
+ print(name,r.returncode,r.stdout,flush=True)
+ if r.returncode:raise SystemExit(r.returncode)

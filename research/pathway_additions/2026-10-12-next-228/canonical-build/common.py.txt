@@ -1,0 +1,128 @@
+"""Closed external capture/build guards; never writes to an input owner."""
+
+import datetime
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+WORKTREE = Path("/private/tmp/pathwaymech-next-227-20261012")
+PRIOR = Path("/private/tmp/pathwaymech-next-227-canonical-build-20261012")
+AUTHOR = Path("/private/tmp/pathwaymech-next-228-author-20261012")
+ADAPTER = Path("/private/tmp/pathwaymech-next-228-authority-implementation-20261012")
+CORRECTION = Path("/private/tmp/pathwaymech-next-228-science-correction-20261012")
+OUTPUT = Path("/private/tmp/pathwaymech-next-228-canonical-build-20261012")
+PYTHON = "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python"
+TARGET_SHA = "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"
+BASE_HEAD = "6435622d08d0a3a8998968eaa96736c702550e9c"
+BASE_TREE = "428c9ff0ab1294c2e4b5d6059d45a40ddf096974"
+
+
+def now():
+    return datetime.datetime.now(datetime.UTC).isoformat()
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def sha(path):
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def bind(path):
+    path = Path(path)
+    return {"path": str(path), "bytes": path.stat().st_size, "sha256": sha(path)}
+
+
+def check(row):
+    actual = bind(row["path"])
+    assert actual["sha256"] == row["sha256"], row["path"]
+    if "bytes" in row:
+        assert actual["bytes"] == row["bytes"], row["path"]
+    return actual
+
+
+def write(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x") as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write("\n")
+
+
+def inventory(path):
+    return sorted(
+        Path(line)
+        for line in subprocess.check_output(
+            ["rg", "--files", "--no-ignore", "--hidden", "--follow", str(path)], text=True
+        ).splitlines()
+    )
+
+
+def relative(path):
+    value = Path(path)
+    assert not value.is_absolute() and value.parts and ".." not in value.parts, path
+    return value
+
+
+def validate_manifest(old, new):
+    assert new[: len(old)] == old, "prior ordered manifest changed"
+    keys = [entry["key"] for entry in new]
+    assert len(set(keys)) == len(keys), "duplicate source key"
+    hashes = {}
+    for entry in new:
+        for item in [entry] + ([entry["version_source"]] if "version_source" in entry else []):
+            path = str(relative(item["path"]))
+            assert path not in hashes or hashes[path] == item["sha256"], (
+                "conflicting shared cache path"
+            )
+            hashes[path] = item["sha256"]
+    return hashes
+
+
+def validate_updates(old, new):
+    assert {k: v for k, v in old.items() if k != "ids"} == {
+        k: v for k, v in new.items() if k != "ids"
+    }
+    assert new["ids"][: len(old["ids"])] == old["ids"], "prior ordered Rhea selector changed"
+    assert len(new["ids"]) == len(set(new["ids"])), "duplicate Rhea selector"
+
+
+def differences(expected, actual):
+    return {
+        section: [
+            {"id": key, "expected": expected[section].get(key), "actual": actual[section].get(key)}
+            for key in sorted(set(expected[section]) | set(actual[section]))
+            if expected[section].get(key) != actual[section].get(key)
+        ]
+        for section in ("terms", "sources")
+    }
+
+
+def preserve(old, new):
+    assert old["version"] == new["version"], "snapshot version changed"
+    for section in ("terms", "sources"):
+        assert all(new[section].get(key) == value for key, value in old[section].items()), (
+            section,
+            "old object changed",
+        )
+
+
+def check_sql_stat(row):
+    path = Path(row["path"])
+    assert path.stat().st_size == row["bytes"], path
+    assert path.stat().st_mtime_ns == row["mtime_ns"], path
+
+
+def validate_output(path):
+    path = Path(path)
+    assert path == OUTPUT and not path.exists() and not path.is_symlink(), (
+        "output must be the new fixed external build directory"
+    )
+    assert path.parent.resolve() == Path("/private/tmp").resolve()

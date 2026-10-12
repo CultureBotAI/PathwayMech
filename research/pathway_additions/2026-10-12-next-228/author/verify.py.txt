@@ -1,0 +1,89 @@
+from pathlib import Path
+import json,yaml,shutil,hashlib,re,copy,sys,csv,io
+from lxml import etree as E
+O=Path('/private/tmp/pathwaymech-next-228-author-20261012'); C=O/'candidate';A=O/'authority-preparation';P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012')
+sys.path.insert(0,str(C/'src'))
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.kgx import render_kgx
+from pathwaymech.cli import render_pages_main
+def write(n,v): (O/'derived'/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+target=O/'draft/mannosylglycerate-degradation.yaml';raw=yaml.safe_load(target.read_text());bindings=json.loads((O/'derived/reference-bindings.json').read_text())
+checks=[];ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+for edge in raw['mechanistic_edges']:
+ for scope,evs in [('edge',edge['evidence'])]+[(q['endpoint']+'-'+q['kind'],q['evidence']) for q in edge.get('endpoint_qualifiers',[])]:
+  for ev in evs:
+   locator=ev['source_locator']; p=Path(bindings[ev['reference_id']]['path']);counts=[]
+   if locator.startswith('XPath '):
+    t=E.parse(str(p),E.HTMLParser() if p.suffix=='.html' else E.XMLParser())
+    xp=locator[6:].split('; paragraph')[0]
+    for part in xp.split(' | '): counts.append(len(t.xpath(part,namespaces=ns)))
+   elif p.suffix=='.json':
+    j=json.loads(p.read_text())
+    for part in locator.split('; '):
+     match=re.fullmatch(r'(\w+)\[(\w+)=(.+)\]',part)
+     if match:
+      field,k,val=match.groups(); counts.append(sum(x.get(k)==val for x in j.get(field,[])))
+     else:
+      obj=j
+      try:
+       for k in part.split('.'):obj=obj[k]
+       counts.append(len(obj) if isinstance(obj,(dict,list)) else 1)
+      except (KeyError,TypeError): counts.append(0)
+   elif locator.startswith('Author-uploaded'):
+    a,b=map(int,re.search(r'L(\d+)–L(\d+)',locator).groups());txt=p.read_text(); counts=[int('L'+str(a)+':' in txt),int('L'+str(b)+':' in txt)]
+   elif locator.startswith('http://rdf.rhea-db.org/'):
+    rr=json.loads((P/'derived/rhea-preflight-chemistry.json').read_text());ds=[d for m in rr['masters'] for d in m['directions']];counts=[sum(d['id']==ev['reference_id'] for d in ds)]
+   else: raise ValueError(locator)
+   checks.append(dict(edge=edge['id'],scope=scope,reference=ev['reference_id'],locator=locator,counts=counts,pass_=all(counts)))
+write('evidence-locator-replay.json',checks)
+fail=[x for x in checks if not x['pass_']]; print('locator_errors',json.dumps(fail))
+hashes=[]
+for i,b in bindings.items():
+ # Rhea full original is independently rehashed by the authority helper; no projection is mislabelled as an original.
+ good=sha(b['path'])==b['sha256']; hashes.append(dict(id=i,**b,valid=good))
+write('reference-original-replay.json',hashes)
+assert all(x['valid'] for x in hashes)
+v=validate_record(raw);shape=[];strict=strict_errors([target],C)
+(C/'data/pathways').mkdir(parents=True,exist_ok=True);shutil.copy2(target,C/'data/pathways'/target.name)
+(C/'data/identifier_authorities').mkdir(parents=True,exist_ok=True)
+for f,n in [('ontology-authority-proposal.json','ontology.json'),('source-authority-proposal.json','sources.json')]:shutil.copy2(A/f,C/'data/identifier_authorities'/n)
+shutil.copy2(A/'rhea-identifier-updates-proposal.json',C/'conf/rhea_identifier_updates.json')
+ids=identifier_errors(C)
+expected_gap="ID_NOT_FOUND 'PathBank:SMP0000839'"
+assert len(ids)==1 and expected_gap in ids[0],ids
+kgx=render_kgx([v]);(O/'rendered').mkdir(exist_ok=True)
+for f,txt in kgx.items():(O/'rendered'/f).write_text(txt)
+ke=list(csv.DictReader(io.StringIO(kgx['edges.tsv']),delimiter='\t'));assert len(ke)==len(raw['mechanistic_edges'])
+assert sum(bool(e['endpoint_qualifiers']) for e in ke)==sum(bool(e.get('endpoint_qualifiers')) for e in raw['mechanistic_edges'])
+page_rc=render_pages_main([],root=C)
+expected={
+ 'MetaCyc:RXN0-5216':{'consumes':['CHEBI:60331','CHEBI:15377'],'produces':['CHEBI:58735','CHEBI:16659']},
+ 'RHEA:27378':{'consumes':['CHEBI:16659','CHEBI:30616'],'produces':['CHEBI:58289','CHEBI:456216','CHEBI:15378']},
+ 'RHEA:33308':{'consumes':['CHEBI:57541','UniProtKB:P0AA04'],'produces':['CHEBI:60331','UniProtKB:P0AA04']},
+ 'RHEA:23881':{'consumes':['CHEBI:58702','UniProtKB:P0AA04'],'produces':['CHEBI:15361','UniProtKB:P0AA04']}}
+def science_errors(r):
+ out=[];es=r['mechanistic_edges']
+ core=sorted(e['subject'] for e in es if e['predicate']=='part_of' and e['object']==r['id'])
+ if core!=sorted(['MetaCyc:RXN0-5216','RHEA:27378']):out.append('core_membership')
+ for rid,sides in expected.items():
+  for pred,objects in sides.items():
+   got=sorted(e['object'] if pred=='produces' else e['subject'] for e in es if e['predicate']==pred and (e['subject'] if pred=='produces' else e['object'])==rid)
+   if got!=sorted(objects):out.append(rid+':'+pred)
+ for e in es:
+  if e['predicate'] in ['consumes','produces'] and ({e['subject'],e['object']} & {'RHEA:33308','RHEA:23881'}) and 'UniProtKB:P0AA04' in [e['subject'],e['object']] and not e.get('endpoint_qualifiers'):out.append('hpr_state_missing')
+  if e.get('id')=='mg-mnga-catalysis' and e['subject']!='UniProtKB:P54745':out.append('permease_identity')
+  if e.get('id')=='mg-gark-reg-fur' and e['predicate']!='regulates':out.append('fur_sign_conflict_erased')
+  if e.get('id')=='mg-opaque-pathbank-child' and e['predicate'] in ['activates','inhibits']:out.append('label_as_biological_sign')
+ return out
+assert not science_errors(raw)
+negs=[]
+mutations=[('drop-core',lambda r:r['mechanistic_edges'].remove(next(e for e in r['mechanistic_edges'] if e.get('id')=='mg-core-GKI-RXN'))),('alpha-collapse',lambda r:next(e for e in r['mechanistic_edges'] if e.get('id')=='mg-RXN0-5216-produces-58735').update(object='CHEBI:60332')),('double-pep',lambda r:r['mechanistic_edges'].append(dict(subject='CHEBI:58702',predicate='consumes',object='RHEA:33308'))),('free-histidine',lambda r:next(e for e in r['mechanistic_edges'] if e.get('id')=='mg-RXN0-2522-produces-P0AA04').update(object='CHEBI:29979')),('lost-state',lambda r:next(e for e in r['mechanistic_edges'] if e.get('id')=='mg-RXN0-2522-produces-P0AA04').pop('endpoint_qualifiers')),('wrong-permease',lambda r:next(e for e in r['mechanistic_edges'] if e.get('id')=='mg-mnga-catalysis').update(subject='UniProtKB:P13669')),('fur-sign',lambda r:next(e for e in r['mechanistic_edges'] if e.get('id')=='mg-gark-reg-fur').update(predicate='inhibits')),('pathbank-label-sign',lambda r:next(e for e in r['mechanistic_edges'] if e.get('id')=='mg-opaque-pathbank-child').update(predicate='inhibits'))]
+for name,mutate in mutations:
+ r=copy.deepcopy(raw);mutate(r);err=science_errors(r);assert err;negs.append(dict(name=name,rejected=True,errors=err))
+write('meaningful-negative-controls.json',negs)
+write('validation.json',dict(target_sha256=sha(target),shape_errors=shape,strict_errors=strict,identifier_errors=ids,identifier_status='52 supported named IDs pass; exact required PathBank child is blocked by bounded original adapter shape',locator_count=len(checks),locator_errors=fail,reference_count=len(hashes),reference_hash_errors=[],core_events=2,core_sides=9,entry_energy_sides=8,edges=len(ke),qualifier_edges=sum(bool(e.get('endpoint_qualifiers')) for e in raw['mechanistic_edges']),qualifiers=sum(len(e.get('endpoint_qualifiers',[])) for e in raw['mechanistic_edges']),render_pages_exit=page_rc,kgx_preservation=True,negative_controls=negs))
+print(json.dumps(dict(shape_errors=shape,strict_errors=strict,identifier_errors=ids,locators=len(checks),locator_failures=len(fail),render_pages_exit=page_rc,edges=len(ke))))
+assert not strict and not fail and page_rc==0

@@ -1,0 +1,82 @@
+"""Archive completed native review receipts and bind only exact new files."""
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-228-20261012')
+OUT = ROOT / 'research/pathway_additions/2026-10-12-next-228/native-finalization'
+EXECUTION = Path('/private/tmp/pathwaymech-next-228-native-review-execution-recovery-20261012')
+
+
+def bind(path):
+    data = Path(path).read_bytes()
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def main():
+    receipt = json.loads((EXECUTION / 'execution.json').read_text())
+    assert receipt['status'] == 'passed'
+    assert [r['name'] for r in receipt['receipts']] == ['serialize', 'validate', 'save', 'check']
+    assert all(r['exit_code'] == 0 for r in receipt['receipts'])
+    for field in ('saved_yaml', 'saved_markdown'):
+        assert bind(receipt[field]['path']) == receipt[field]
+    for r in receipt['receipts']:
+        for field in ('stdout', 'stderr'):
+            assert bind(r[field]['path']) == r[field]
+    assert not OUT.exists()
+    OUT.mkdir()
+    mappings = []
+
+    def copy(path, relative):
+        path = Path(path)
+        destination = OUT / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        body = path.read_bytes()
+        if destination.suffix == '.py':
+            destination = destination.with_name(destination.name + '.txt')
+        text = body.decode('utf-8')
+        if any(line.rstrip() != line for line in text.splitlines()) or text.endswith('\n\n'):
+            destination = destination.with_name(destination.name + '.json')
+            body = (json.dumps({'serialization': 'lossless-utf8-json', 'original': bind(path), 'text': text}, indent=2, ensure_ascii=False) + '\n').encode()
+        with destination.open('xb') as stream:
+            stream.write(body)
+        mappings.append({'source': bind(path), 'archived': bind(destination)})
+
+    for label, directory in [
+        ('original-format-failure', Path('/private/tmp/pathwaymech-next-228-native-review-execution-20261012')),
+        ('successful-native-review', EXECUTION),
+        ('finalizer-audit', Path('/private/tmp/pathwaymech-next-228-finalizer-review-20261012')),
+    ]:
+        paths = subprocess.check_output(['rg', '--files', '-uu', '-L', '.'], cwd=directory, text=True).splitlines()
+        for relative in sorted(paths):
+            copy(directory / relative, str(Path(label) / relative))
+    assembly = Path('/private/tmp/pathwaymech-next-228-review-assembly-20261012')
+    for relative in ('assembly.json', 'inspect-execution.json', 'inspect.stdout', 'inspect.stderr', 'native-inspection-inputs.json'):
+        copy(assembly / relative, 'assembly/' + relative)
+    for filename in ('pathwaymech-next-228-save-review-20261012.py', 'pathwaymech-next-228-save-review-recovery-20261012.py'):
+        copy(Path('/private/tmp') / filename, 'helpers/' + filename)
+    copy(__file__, 'helpers/archive-native.py')
+    (OUT / 'archive-map.json').write_text(json.dumps(mappings, indent=2) + '\n')
+    baseline = json.loads(Path('/private/tmp/pathwaymech-next-228-maintained-baseline-20261012/baseline.json').read_text())
+    old = {r['relative_path'] for r in baseline['all_maintained_files']}
+    extras = json.loads(Path('/private/tmp/pathwaymech-next-228-approved-extra-files-initial-20261012.json').read_text())
+    for prefix in (
+        'research/pathway_additions/2026-10-12-next-228/final-gates',
+        str(OUT.relative_to(ROOT)),
+        str(Path(receipt['saved_yaml']['path']).parent.relative_to(ROOT)),
+    ):
+        paths = subprocess.check_output(['rg', '--files', '-uu', '-L', prefix], cwd=ROOT, text=True).splitlines()
+        for relative in sorted(paths):
+            assert relative not in old
+            extras.append({'relative_path': relative, **bind(ROOT / relative)})
+    assert len({r['relative_path'] for r in extras}) == len(extras)
+    approval = Path('/private/tmp/pathwaymech-next-228-approved-extra-files-final-20261012.json')
+    with approval.open('x') as stream:
+        json.dump(extras, stream, indent=2)
+        stream.write('\n')
+    print(json.dumps({'archived_files': len(mappings), 'exact_extra_files': len(extras), 'approval': bind(approval)}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

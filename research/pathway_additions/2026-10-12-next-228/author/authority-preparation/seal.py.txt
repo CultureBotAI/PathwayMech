@@ -1,0 +1,31 @@
+from pathlib import Path
+import json,hashlib,datetime
+O=Path(__file__).parent
+
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:sha=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha}
+def save(n,d):(O/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+checks=json.loads((O/'final-check-executions.json').read_text());assert all(r['returncode']==0 for r in checks)
+for row in checks:
+ for key in ['stdout','stderr']:assert bind(row[key]['path'])==row[key]
+ver=json.loads((O/'final-verification.json').read_text());assert ver['supported_identity_count']==52 and ver['negative_controls_rejected']==4
+s=json.loads((O/'source-authority-proposal.json').read_text());o=json.loads((O/'ontology-authority-proposal.json').read_text());m=json.loads((O/'source-manifest-proposal.json').read_text());assert (len(s['terms']),len(s['sources']),len(o['terms']),len(m))==(2432,584,1951,737)
+for row in json.loads((O/'source-original-bindings.json').read_text()):assert bind(row['original']['path'])==row['original']
+for row in json.loads((O/'new-originals-copy-plan.json').read_text()):assert bind(row['original']['path'])==row['original']
+inputs=json.loads((O/'input-bindings.json').read_text())
+for row in inputs['runtime']:assert bind(row['original']['path'])==row['original'];assert bind(row['copy']['path'])==row['copy']
+final={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'checked_original_source_inputs':36,'selected_copy_plan_inputs':20,'copied_runtime_files_exact':len(inputs['runtime']),'supported_identifiers':52,'required_gap_ids':['PathBank:SMP0002108','PathBank:SMP0000839'],'root_owned_scope':'No canonical builds or author edits; no source shape or adapter changes','final_check_executions':bind(O/'final-check-executions.json')}
+save('seal-verification.json',final)
+files=[]
+for p in sorted(O.rglob('*')):
+ if not p.is_file() or p.name in ['artifact-manifest.json','handoff.json']:continue
+ if '__pycache__' in p.parts:raise AssertionError('Unexpected bytecode output')
+ b=bind(p);files.append(dict(path=str(p.relative_to(O)),bytes=b['bytes'],sha256=b['sha256']))
+save('artifact-manifest.json',{'scope':'All external helper artifacts including immutable original symlink bytes, except this manifest and final handoff. No final pathway target is authored here.','files':files})
+h={'status':'sealed_external_authority_proposals_supported_ids_validated_required_pathbank_adapter_gap','created':datetime.datetime.now(datetime.timezone.utc).isoformat(),'assessment':bind(O/'ASSESSMENT.md'),'artifact_manifest':bind(O/'artifact-manifest.json'),'artifact_count':len(files),'author_selection_bridge':bind(O/'author-selection-bridge.json'),'current_base_bridge':bind(O/'current-base-bridge.json'),'proposals':{key:bind(O/name) for key,name in [('source','source-authority-proposal.json'),('ontology','ontology-authority-proposal.json'),('manifest','source-manifest-proposal.json'),('rhea_updates','rhea-identifier-updates-proposal.json'),('copy_plan','new-originals-copy-plan.json')]},'validated_identity_catalog':bind(O/'validated-identity-catalog.json'),'pathbank_requirements':bind(O/'PathBank-adapter-requirements.md'),'authority_gaps':bind(O/'authority-gaps.json'),'rhea_original_replay':bind(O/'rhea-linked-native-chemistry.json'),'rhea_reference_bindings':bind(O/'rhea-reference-bindings.json'),'final_verification':bind(O/'final-verification.json'),'check_executions':bind(O/'final-check-executions.json'),'tests':{'supported_ids_pass':52,'negative_controls_rejected':4,'new_source_terms':20,'new_ontology_terms':6,'new_manifest_entries':20,'native_gene_identity_bridges':17,'required_unresolved_ids':['PathBank:SMP0002108','PathBank:SMP0000839']},'maintained_writes':False,'shared_cache_writes':False,'adapter_edits':False,'git_github_mutations':False,'environment_installs':False,'full_canonical_build':False,'full_corpus_gates':False,'final_author_target_seal':False,'source_exhausted':False}
+save('handoff.json',h)
+for row in files:
+ b=bind(O/row['path']);assert b['bytes']==row['bytes'] and b['sha256']==row['sha256']
+print(json.dumps({'handoff':bind(O/'handoff.json'),'manifest':bind(O/'artifact-manifest.json'),'artifact_count':len(files),'supported_ids':52,'required_gaps':h['tests']['required_unresolved_ids']},indent=2))

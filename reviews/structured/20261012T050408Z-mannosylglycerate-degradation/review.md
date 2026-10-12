@@ -1,0 +1,5608 @@
+# Mannosylglycerate degradation: maintained packaging with independent scientific inheritance
+
+- Review: 20261012T050408Z-mannosylglycerate-degradation
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T05:03:06.923321Z
+- Finished UTC: 2026-10-12T05:04:08.085423Z
+- Reviewer: Codex /root (maintained integrator; packaging fragments by /root/mannosylglycerate_preflight/mg_authorities) (self_review)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+Exact 75-edge, 62-reference maintained MG successor retains accepted independent scientific corrections for issues 441–443, original-derived canonical authorities, actual full maintained gates and exact old-corpus preservation. Static graph and complete qualifier/evidence text were checked. No issue closure or merge is claimed.
+
+## Scope And Provenance
+
+One complete accepted 75-edge, 62-reference record with 15 endpoint qualifiers; explicit independent source-assessment inheritance and separately assessed maintained execution.
+
+Selection: Exact MetaCyc:PWY0-1300 SHA256 b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 790a9699d7c1ca9c00536be877fa884af1c57918.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY0-1300 | data/pathways/mannosylglycerate-degradation.yaml | maintained | mannosylglycerate degradation |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Actual maintained render | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained skills | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained validate | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained tests | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained lint | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained kgx | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained vendored | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained diff-check | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Actual maintained site-current | passed | True | MetaCyc:PWY0-1300 | Root-executed command passed; exact stdout/stderr, times and environment are archived. |
+| Original vendored check before network retry | failed | False | MetaCyc:PWY0-1300 | The initial command exited 1 because the canonical GitHub hostname could not resolve. The unchanged-input retry passed; the required maintained-vendored check records that final result. |
+| Exact prior-corpus conservation | passed | True | MetaCyc:PWY0-1300 | All 228 prior records/pages, 102 native review bundles, prior history, authority objects, old KGX edges and source-context multiplicities preserved. Only four individually assessed shared display cells changed. |
+| Actual static graph and rendered evidence | passed | True | MetaCyc:PWY0-1300 | Root viewed complete static graph: substrate/product and activity nodes, regulatory context and both separate CdaR construct nodes are present, with distinct styles and no outer clipping observed. Crossings are dense in the left regulatory columns; zoom is needed for small labels. Full qualifier and evidence text remains in the page. Programmatic checks retain 75 ordered graph triples, 282 unique HTML IDs, 318 local fragments, all 15 qualifier descriptions and all 176 evidence statements. |
+
+## Scientific And Domain Assessments
+
+### mechanistic_edges[id=mg-assembly-P08839]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact native coefficient-2 complex component and direct native-chain→issuing-UniProt join checked; no universal solution-state stoichiometry.", "edge_id": "mg-assembly-P08839", "evidence_items": 3, "finding_keys": [], "object": "UniProtKB:P08839", "predicate": "has_part", "references": ["MetaCyc:CPLX0-7938", "MetaCyc:PTSI-MONOMER", "UniProtKB:P08839"], "subject": "MetaCyc:CPLX0-7938"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The component list specifies coefficient 2 for PTSI-MONOMER.", "edge_id": "mg-assembly-P08839", "index": 0, "reference_id": "MetaCyc:CPLX0-7938", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PTSI-MONOMER\"]", "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references this issuing UniProt accession.", "edge_id": "mg-assembly-P08839", "index": 1, "reference_id": "MetaCyc:PTSI-MONOMER", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]", "status": "inherited_exact"}, {"claim": "The reviewed issuing accession and ordered locus identify the corresponding polypeptide.", "edge_id": "mg-assembly-P08839", "index": 2, "reference_id": "UniProtKB:P08839", "role": "edge", "source_locator": "primaryAccession; genes", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-assembly-P13669]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact native coefficient-2 complex component and direct native-chain→issuing-UniProt join checked; no universal solution-state stoichiometry.", "edge_id": "mg-assembly-P13669", "evidence_items": 3, "finding_keys": [], "object": "UniProtKB:P13669", "predicate": "has_part", "references": ["EcoCyc:PC00103", "EcoCyc:PD01103", "UniProtKB:P13669"], "subject": "EcoCyc:PC00103"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The component list specifies coefficient 2 for PD01103.", "edge_id": "mg-assembly-P13669", "index": 0, "reference_id": "EcoCyc:PC00103", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PD01103\"]", "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references this issuing UniProt accession.", "edge_id": "mg-assembly-P13669", "index": 1, "reference_id": "EcoCyc:PD01103", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]", "status": "inherited_exact"}, {"claim": "The reviewed issuing accession and ordered locus identify the corresponding polypeptide.", "edge_id": "mg-assembly-P13669", "index": 2, "reference_id": "UniProtKB:P13669", "role": "edge", "source_locator": "primaryAccession; genes", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-assembly-P0A9E5]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact native coefficient-2 complex component and direct native-chain→issuing-UniProt join checked; no universal solution-state stoichiometry.", "edge_id": "mg-assembly-P0A9E5", "evidence_items": 3, "finding_keys": [], "object": "UniProtKB:P0A9E5", "predicate": "has_part", "references": ["EcoCyc:CPLX0-7797", "EcoCyc:PD00197", "UniProtKB:P0A9E5"], "subject": "EcoCyc:CPLX0-7797"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The component list specifies coefficient 2 for PD00197.", "edge_id": "mg-assembly-P0A9E5", "index": 0, "reference_id": "EcoCyc:CPLX0-7797", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PD00197\"]", "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references this issuing UniProt accession.", "edge_id": "mg-assembly-P0A9E5", "index": 1, "reference_id": "EcoCyc:PD00197", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]", "status": "inherited_exact"}, {"claim": "The reviewed issuing accession and ordered locus identify the corresponding polypeptide.", "edge_id": "mg-assembly-P0A9E5", "index": 2, "reference_id": "UniProtKB:P0A9E5", "role": "edge", "source_locator": "primaryAccession; genes", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-assembly-P0A9A9]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact native coefficient-2 complex component and direct native-chain→issuing-UniProt join checked; no universal solution-state stoichiometry.", "edge_id": "mg-assembly-P0A9A9", "evidence_items": 3, "finding_keys": [], "object": "UniProtKB:P0A9A9", "predicate": "has_part", "references": ["EcoCyc:CPLX0-7639", "EcoCyc:PD00260", "UniProtKB:P0A9A9"], "subject": "EcoCyc:CPLX0-7639"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The component list specifies coefficient 2 for PD00260.", "edge_id": "mg-assembly-P0A9A9", "index": 0, "reference_id": "EcoCyc:CPLX0-7639", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PD00260\"]", "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references this issuing UniProt accession.", "edge_id": "mg-assembly-P0A9A9", "index": 1, "reference_id": "EcoCyc:PD00260", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]", "status": "inherited_exact"}, {"claim": "The reviewed issuing accession and ordered locus identify the corresponding polypeptide.", "edge_id": "mg-assembly-P0A9A9", "index": 2, "reference_id": "UniProtKB:P0A9A9", "role": "edge", "source_locator": "primaryAccession; genes", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-core-RXN0-5216]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native two-member reaction-list and predecessor placement checked against META and ECOLI originals; selected kinase Rhea orientation independently joined.", "edge_id": "mg-core-RXN0-5216", "evidence_items": 1, "finding_keys": [], "object": "MetaCyc:PWY0-1300", "predicate": "part_of", "references": ["MetaCyc:PWY0-1300"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The native reaction-list explicitly includes RXN0-5216.", "edge_id": "mg-core-RXN0-5216", "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/reaction-list/Reaction[@frameid=\"RXN0-5216\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-core-GKI-RXN]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native two-member reaction-list and predecessor placement checked against META and ECOLI originals; selected kinase Rhea orientation independently joined.", "edge_id": "mg-core-GKI-RXN", "evidence_items": 1, "finding_keys": [], "object": "MetaCyc:PWY0-1300", "predicate": "part_of", "references": ["MetaCyc:PWY0-1300"], "subject": "RHEA:27378"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The native reaction-list explicitly includes GKI-RXN.", "edge_id": "mg-core-GKI-RXN", "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/reaction-list/Reaction[@frameid=\"GKI-RXN\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-core-order]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native two-member reaction-list and predecessor placement checked against META and ECOLI originals; selected kinase Rhea orientation independently joined.", "edge_id": "mg-core-order", "evidence_items": 1, "finding_keys": [], "object": "RHEA:27378", "predicate": "precedes", "references": ["MetaCyc:PWY0-1300"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "GKI-RXN has RXN0-5216 as predecessor.", "edge_id": "mg-core-order", "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/reaction-ordering", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-entry-interface]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native incoming CPD0-1063 link and transport product establish this material interface; transport remains outside core membership.", "edge_id": "mg-entry-interface", "evidence_items": 2, "finding_keys": [], "object": "MetaCyc:RXN0-5216", "predicate": "provides_input_for", "references": ["EcoCyc:RXN0-2522", "MetaCyc:PWY0-1300"], "subject": "RHEA:33308"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The CPD0-1063 incoming pathway-link names RXN0-2522.", "edge_id": "mg-entry-interface", "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/pathway-link", "status": "inherited_exact"}, {"claim": "The transport reaction produces intracellular CPD0-1063.", "edge_id": "mg-entry-interface", "index": 1, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-energy-interface]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native PtsI composite and HPr donor/acceptor sides support the contextual relay, with PEP consumed once; no new core step.", "edge_id": "mg-energy-interface", "evidence_items": 2, "finding_keys": [], "object": "RHEA:33308", "predicate": "provides_input_for", "references": ["EcoCyc:2.7.3.9-RXN", "EcoCyc:RXN0-2522"], "subject": "RHEA:23881"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The PtsI composite reaction consumes PEP and histidyl HPr and produces pyruvate and phosphohistidyl HPr.", "edge_id": "mg-energy-interface", "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left &#124; /ptools-xml/Reaction/right", "status": "inherited_exact"}, {"claim": "MngA takes phosphohistidyl HPr as donor.", "edge_id": "mg-energy-interface", "index": 1, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-RXN0-5216-consumes-60331]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-5216-consumes-60331", "evidence_items": 2, "finding_keys": [], "object": "MetaCyc:RXN0-5216", "predicate": "consumes", "references": ["MetaCyc:CPD0-1063", "MetaCyc:RXN0-5216"], "subject": "CHEBI:60331"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Coefficient 1. Native MG-P hydrolysis uses anomer-unspecified D-mannopyranose 6-phosphate; the alpha-specific Rhea27867 reaction is not asserted as an exact alias.", "edge_id": "mg-RXN0-5216-consumes-60331", "index": 0, "reference_id": "MetaCyc:RXN0-5216", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"CPD0-1063\"]", "status": "inherited_exact"}, {"claim": "The issuing native compound cross-reference identifies CHEBI:60331; product anomer specificity is not increased beyond this compound definition.", "edge_id": "mg-RXN0-5216-consumes-60331", "index": 1, "reference_id": "MetaCyc:CPD0-1063", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-RXN0-5216-consumes-15377]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-5216-consumes-15377", "evidence_items": 1, "finding_keys": [], "object": "MetaCyc:RXN0-5216", "predicate": "consumes", "references": ["MetaCyc:RXN0-5216"], "subject": "CHEBI:15377"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Coefficient 1. Native MG-P hydrolysis uses anomer-unspecified D-mannopyranose 6-phosphate; the alpha-specific Rhea27867 reaction is not asserted as an exact alias.", "edge_id": "mg-RXN0-5216-consumes-15377", "index": 0, "reference_id": "MetaCyc:RXN0-5216", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"WATER\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-RXN0-5216-produces-58735]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-5216-produces-58735", "evidence_items": 2, "finding_keys": [], "object": "CHEBI:58735", "predicate": "produces", "references": ["EcoCyc:CPD-15979", "MetaCyc:RXN0-5216"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Coefficient 1. Native MG-P hydrolysis uses anomer-unspecified D-mannopyranose 6-phosphate; the alpha-specific Rhea27867 reaction is not asserted as an exact alias.", "edge_id": "mg-RXN0-5216-produces-58735", "index": 0, "reference_id": "MetaCyc:RXN0-5216", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"CPD-15979\"]", "status": "inherited_exact"}, {"claim": "The issuing native compound cross-reference identifies CHEBI:58735; product anomer specificity is not increased beyond this compound definition.", "edge_id": "mg-RXN0-5216-produces-58735", "index": 1, "reference_id": "EcoCyc:CPD-15979", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-RXN0-5216-produces-16659]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-5216-produces-16659", "evidence_items": 2, "finding_keys": [], "object": "CHEBI:16659", "predicate": "produces", "references": ["MetaCyc:GLYCERATE", "MetaCyc:RXN0-5216"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Coefficient 1. Native MG-P hydrolysis uses anomer-unspecified D-mannopyranose 6-phosphate; the alpha-specific Rhea27867 reaction is not asserted as an exact alias.", "edge_id": "mg-RXN0-5216-produces-16659", "index": 0, "reference_id": "MetaCyc:RXN0-5216", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"GLYCERATE\"]", "status": "inherited_exact"}, {"claim": "The issuing native compound cross-reference identifies CHEBI:16659; product anomer specificity is not increased beyond this compound definition.", "edge_id": "mg-RXN0-5216-produces-16659", "index": 1, "reference_id": "MetaCyc:GLYCERATE", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-GKI-RXN-consumes-16659]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-GKI-RXN-consumes-16659", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:27378", "predicate": "consumes", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject": "CHEBI:16659"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.", "edge_id": "mg-GKI-RXN-consumes-16659", "index": 0, "reference_id": "EcoCyc:GKI-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"GLYCERATE\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (R)-glycerate.", "edge_id": "mg-GKI-RXN-consumes-16659", "index": 1, "reference_id": "RHEA:27378", "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:substrates http://rdf.rhea-db.org/27377_L; http://rdf.rhea-db.org/27377_L rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_3204; http://rdf.rhea-db.org/Participant_27377_compound_3204 rh:compound http://rdf.rhea-db.org/Compound_3204", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-GKI-RXN-consumes-30616]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-GKI-RXN-consumes-30616", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:27378", "predicate": "consumes", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject": "CHEBI:30616"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.", "edge_id": "mg-GKI-RXN-consumes-30616", "index": 0, "reference_id": "EcoCyc:GKI-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"ATP\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one ATP.", "edge_id": "mg-GKI-RXN-consumes-30616", "index": 1, "reference_id": "RHEA:27378", "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:substrates http://rdf.rhea-db.org/27377_L; http://rdf.rhea-db.org/27377_L rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_6372; http://rdf.rhea-db.org/Participant_27377_compound_6372 rh:compound http://rdf.rhea-db.org/Compound_6372", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-GKI-RXN-produces-58289]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-GKI-RXN-produces-58289", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:58289", "predicate": "produces", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject": "RHEA:27378"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.", "edge_id": "mg-GKI-RXN-produces-58289", "index": 0, "reference_id": "EcoCyc:GKI-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"2-PG\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (2R)-2-phosphoglycerate.", "edge_id": "mg-GKI-RXN-produces-58289", "index": 1, "reference_id": "RHEA:27378", "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:products http://rdf.rhea-db.org/27377_R; http://rdf.rhea-db.org/27377_R rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_4690; http://rdf.rhea-db.org/Participant_27377_compound_4690 rh:compound http://rdf.rhea-db.org/Compound_4690", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-GKI-RXN-produces-456216]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-GKI-RXN-produces-456216", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:456216", "predicate": "produces", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject": "RHEA:27378"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.", "edge_id": "mg-GKI-RXN-produces-456216", "index": 0, "reference_id": "EcoCyc:GKI-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"ADP\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one ADP.", "edge_id": "mg-GKI-RXN-produces-456216", "index": 1, "reference_id": "RHEA:27378", "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:products http://rdf.rhea-db.org/27377_R; http://rdf.rhea-db.org/27377_R rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_2710; http://rdf.rhea-db.org/Participant_27377_compound_2710 rh:compound http://rdf.rhea-db.org/Compound_2710", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-GKI-RXN-produces-15378]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-GKI-RXN-produces-15378", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:15378", "predicate": "produces", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject": "RHEA:27378"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.", "edge_id": "mg-GKI-RXN-produces-15378", "index": 0, "reference_id": "EcoCyc:GKI-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"PROTON\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one H(+).", "edge_id": "mg-GKI-RXN-produces-15378", "index": 1, "reference_id": "RHEA:27378", "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:products http://rdf.rhea-db.org/27377_R; http://rdf.rhea-db.org/27377_R rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_3249; http://rdf.rhea-db.org/Participant_27377_compound_3249 rh:compound http://rdf.rhea-db.org/Compound_3249", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-RXN0-2522-consumes-57541]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-2522-consumes-57541", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:33308", "predicate": "consumes", "references": ["EcoCyc:RXN0-2522", "RHEA:33308"], "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 MG outside; native compartment CCO-OUT. MngA couples uptake to phosphorylation.", "edge_id": "mg-RXN0-2522-consumes-57541", "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"2-O-ALPHA-MANNOSYL-D-GLYCERATE\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (2R)-2-O-(alpha-D-mannosyl)-glycerate.", "edge_id": "mg-RXN0-2522-consumes-57541", "index": 1, "reference_id": "RHEA:33308", "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308 rh:substrates http://rdf.rhea-db.org/33307_L; http://rdf.rhea-db.org/33307_L rh:contains1 http://rdf.rhea-db.org/Participant_33307_compound_4158_out; http://rdf.rhea-db.org/Participant_33307_compound_4158_out rh:compound http://rdf.rhea-db.org/Compound_4158", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-RXN0-2522-consumes-P0AA04]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-2522-consumes-P0AA04", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:33308", "predicate": "consumes", "references": ["EcoCyc:RXN0-2522", "RHEA:33308"], "subject": "UniProtKB:P0AA04"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 phosphohistidyl HPr inside; native CCO-IN. One HPr phosphate supplies the incoming MG.", "edge_id": "mg-RXN0-2522-consumes-P0AA04", "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"Hpr-pi-phospho-L-histidines\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one N(pros)-phospho-L-histidyl-[protein]. This generic protein state is instantiated as E. coli HPr using the native reaction and protein evidence; it is not free histidine.", "edge_id": "mg-RXN0-2522-consumes-P0AA04", "index": 1, "reference_id": "RHEA:33308", "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308 rh:substrates http://rdf.rhea-db.org/33307_L; http://rdf.rhea-db.org/33307_L rh:contains1 http://rdf.rhea-db.org/Participant_33307_compound_9746; http://rdf.rhea-db.org/Participant_33307_compound_9746 rh:compound http://rdf.rhea-db.org/Compound_9746", "status": "fresh_corrected_locator"}, {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish its two formal reaction pools.", "edge_id": "mg-RXN0-2522-consumes-P0AA04", "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator": "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"}, {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl phosphorylation.", "edge_id": "mg-RXN0-2522-consumes-P0AA04", "index": 1, "reference_id": "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-RXN0-2522-produces-60331]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-2522-produces-60331", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:60331", "predicate": "produces", "references": ["EcoCyc:RXN0-2522", "RHEA:33308"], "subject": "RHEA:33308"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 MG-P inside; native CCO-IN. ATP and proton-motive force are not asserted as additional energy inputs.", "edge_id": "mg-RXN0-2522-produces-60331", "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"CPD0-1063\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (2R)-2-O-(6-phospho-alpha-D-mannosyl)-glycerate.", "edge_id": "mg-RXN0-2522-produces-60331", "index": 1, "reference_id": "RHEA:33308", "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308 rh:products http://rdf.rhea-db.org/33307_R; http://rdf.rhea-db.org/33307_R rh:contains1 http://rdf.rhea-db.org/Participant_33307_compound_6277_in; http://rdf.rhea-db.org/Participant_33307_compound_6277_in rh:compound http://rdf.rhea-db.org/Compound_6277", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-RXN0-2522-produces-P0AA04]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-RXN0-2522-produces-P0AA04", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "UniProtKB:P0AA04", "predicate": "produces", "references": ["EcoCyc:RXN0-2522", "RHEA:33308"], "subject": "RHEA:33308"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 histidyl HPr inside; native CCO-IN. The carrier remains a protein after phosphate transfer.", "edge_id": "mg-RXN0-2522-produces-P0AA04", "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"Hpr-Histidine\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one L-histidyl-[protein]. This generic protein state is instantiated as E. coli HPr using the native reaction and protein evidence; it is not free histidine.", "edge_id": "mg-RXN0-2522-produces-P0AA04", "index": 1, "reference_id": "RHEA:33308", "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308 rh:products http://rdf.rhea-db.org/33307_R; http://rdf.rhea-db.org/33307_R rh:contains1 http://rdf.rhea-db.org/Participant_33307_compound_9745; http://rdf.rhea-db.org/Participant_33307_compound_9745 rh:compound http://rdf.rhea-db.org/Compound_9745", "status": "fresh_corrected_locator"}, {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish its two formal reaction pools.", "edge_id": "mg-RXN0-2522-produces-P0AA04", "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator": "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"}, {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl phosphorylation.", "edge_id": "mg-RXN0-2522-produces-P0AA04", "index": 1, "reference_id": "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-2.7.3.9-RXN-consumes-58702]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-consumes-58702", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:23881", "predicate": "consumes", "references": ["EcoCyc:2.7.3.9-RXN", "RHEA:23881"], "subject": "CHEBI:58702"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 PEP in the contextual PtsI-to-HPr reaction; native composite direction is physiological left-to-right.", "edge_id": "mg-2.7.3.9-RXN-consumes-58702", "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"PHOSPHO-ENOL-PYRUVATE\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one phosphoenolpyruvate.", "edge_id": "mg-2.7.3.9-RXN-consumes-58702", "index": 1, "reference_id": "RHEA:23881", "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881 rh:substrates http://rdf.rhea-db.org/23880_L; http://rdf.rhea-db.org/23880_L rh:contains1 http://rdf.rhea-db.org/Participant_23880_compound_3582; http://rdf.rhea-db.org/Participant_23880_compound_3582 rh:compound http://rdf.rhea-db.org/Compound_3582", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-2.7.3.9-RXN-consumes-P0AA04]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:23881", "predicate": "consumes", "references": ["EcoCyc:2.7.3.9-RXN", "RHEA:23881"], "subject": "UniProtKB:P0AA04"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 histidyl HPr accepts phosphate through PtsI.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04", "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"Hpr-Histidine\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one L-histidyl-[protein]. This generic protein state is instantiated as E. coli HPr using the native reaction and protein evidence; it is not free histidine.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04", "index": 1, "reference_id": "RHEA:23881", "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881 rh:substrates http://rdf.rhea-db.org/23880_L; http://rdf.rhea-db.org/23880_L rh:contains1 http://rdf.rhea-db.org/Participant_23880_compound_9745; http://rdf.rhea-db.org/Participant_23880_compound_9745 rh:compound http://rdf.rhea-db.org/Compound_9745", "status": "fresh_corrected_locator"}, {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish its two formal reaction pools.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04", "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator": "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"}, {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl phosphorylation.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04", "index": 1, "reference_id": "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-2.7.3.9-RXN-produces-15361]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-produces-15361", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:15361", "predicate": "produces", "references": ["EcoCyc:2.7.3.9-RXN", "RHEA:23881"], "subject": "RHEA:23881"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 pyruvate is formed from PEP during general PTS energy coupling.", "edge_id": "mg-2.7.3.9-RXN-produces-15361", "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"PYRUVATE\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one pyruvate.", "edge_id": "mg-2.7.3.9-RXN-produces-15361", "index": 1, "reference_id": "RHEA:23881", "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881 rh:products http://rdf.rhea-db.org/23880_R; http://rdf.rhea-db.org/23880_R rh:contains1 http://rdf.rhea-db.org/Participant_23880_compound_3719; http://rdf.rhea-db.org/Participant_23880_compound_3719 rh:compound http://rdf.rhea-db.org/Compound_3719", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-2.7.3.9-RXN-produces-P0AA04]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Actual native side frame, forward Rhea participant/compound join where applicable, chemistry and coefficient checked. Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04", "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "UniProtKB:P0AA04", "predicate": "produces", "references": ["EcoCyc:2.7.3.9-RXN", "RHEA:23881"], "subject": "RHEA:23881"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Coefficient 1 phosphohistidyl HPr supplies downstream MngA.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04", "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"Hpr-pi-phospho-L-histidines\"]", "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one N(pros)-phospho-L-histidyl-[protein]. This generic protein state is instantiated as E. coli HPr using the native reaction and protein evidence; it is not free histidine.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04", "index": 1, "reference_id": "RHEA:23881", "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881 rh:products http://rdf.rhea-db.org/23880_R; http://rdf.rhea-db.org/23880_R rh:contains1 http://rdf.rhea-db.org/Participant_23880_compound_9746; http://rdf.rhea-db.org/Participant_23880_compound_9746 rh:compound http://rdf.rhea-db.org/Compound_9746", "status": "fresh_corrected_locator"}, {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish its two formal reaction pools.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04", "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator": "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"}, {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl phosphorylation.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04", "index": 1, "reference_id": "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mnga-catalysis]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native MngA identity and one 658-aa EIIABC chain agree with deletion/rescue and inverted-membrane phosphorylation evidence. Native catalytic attribution and pACS31 assay claim are separated; source-selected entry-modulation omission is finding 1.", "edge_id": "mg-mnga-catalysis", "evidence_items": 3, "finding_keys": ["mg-entry-assay-context-omission"], "object": "RHEA:33308", "predicate": "catalyzes", "references": ["EcoCyc:ENZRXN0-3541", "PMID:14645248", "UniProtKB:P54745"], "subject": "UniProtKB:P54745"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 441, "issue_key": "mg-entry-assay-context-omission", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/441", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "major", "reason": "Four added source-located uptake/induction assertions and entry description preserve weak-positive and negative sugar comparisons, Results/Discussion mannose tension, 300 mM growth-salt reduction of induction, and separation from inverted-membrane and KM522 experiments. No new compound or inhibition/binding edge is invented.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Native enzymatic reaction assigns HRSA-MONOMER to RXN0-2522.", "edge_id": "mg-mnga-catalysis", "index": 0, "reference_id": "EcoCyc:ENZRXN0-3541", "role": "edge", "source_locator": "XPath /ptools-xml/Enzymatic-Reaction/enzyme &#124; /ptools-xml/Enzymatic-Reaction/reaction", "status": "inherited_exact"}, {"claim": "MngA deletion/complementation and inverted-membrane assays support MG uptake/phosphorylation; phosphatase experiments infer the phosphate position.", "edge_id": "mg-mnga-catalysis", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1443–L1662; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "One658-residue protein contains IIA, IIB and IIC functional regions; these are not three distinct subunits.", "edge_id": "mg-mnga-catalysis", "index": 2, "reference_id": "UniProtKB:P54745", "role": "edge", "source_locator": "sequence.length; proteinDescription.includes", "status": "inherited_exact"}, {"claim": "In MG-induced MC4100, Results reports weak uptake inhibition by glucose, mannose and mannitol, a smaller effect from trehalose, and none from fructose.", "edge_id": "mg-mnga-catalysis", "index": 3, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1323–L1354; JBC279:5537–5548", "status": "fresh_added_evidence"}, {"claim": "No uptake inhibition was observed for maltose, arabinose, gluconate, glycerate, 1-alpha-glucosylglycerol, 2-alpha-glucosylglycerate or 2-alpha-mannosylglycerol in the reported MC4100 comparisons.", "edge_id": "mg-mnga-catalysis", "index": 4, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1350–L1372; JBC279:5537–5548", "status": "fresh_added_evidence"}, {"claim": "Discussion reports no significant inhibition by mannose or the three named glycosyl analogues at 1 mM against 0.1 micromolar labeled MG. This contrasts with the weak mannose effect in Results; a direct competitive mechanism is not established.", "edge_id": "mg-mnga-catalysis", "index": 5, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L2429–L2457; JBC279:5537–5548", "status": "fresh_added_evidence"}, {"claim": "In MC4100 growth experiments, 300 mM sodium chloride did not induce MG transport and reduced MG-dependent induction by about 50%. This is an induction observation, separate from KM522 salt protection.", "edge_id": "mg-mnga-catalysis", "index": 6, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1251–L1310; JBC279:5537–5548", "status": "fresh_added_evidence"}]}
+
+### mechanistic_edges[id=mg-mnga-vesicle-assay]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native MngA identity and one 658-aa EIIABC chain agree with deletion/rescue and inverted-membrane phosphorylation evidence. Native catalytic attribution and pACS31 assay claim are separated; source-selected entry-modulation omission is finding 1.", "edge_id": "mg-mnga-vesicle-assay", "evidence_items": 2, "finding_keys": ["mg-entry-assay-context-omission"], "object": "RHEA:33308", "predicate": "enables", "references": ["PMID:14645248"], "subject": "UniProtKB:P54745"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 441, "issue_key": "mg-entry-assay-context-omission", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/441", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "major", "reason": "Four added source-located uptake/induction assertions and entry description preserve weak-positive and negative sugar comparisons, Results/Discussion mannose tension, 300 mM growth-salt reduction of induction, and separation from inverted-membrane and KM522 experiments. No new compound or inhibition/binding edge is invented.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "pACS31 places mngA under IPTG-inducible lac-promoter control.", "edge_id": "mg-mnga-vesicle-assay", "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L894–L944; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "Membranes and general PTS extract support PEP-dependent MG phosphorylation.", "edge_id": "mg-mnga-vesicle-assay", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1100–L1230; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "The experiment expresses MngA from pACS31 under an IPTG-inducible promoter.", "edge_id": "mg-mnga-vesicle-assay", "index": 0, "reference_id": "PMID:14645248", "role": "qualifier[0]", "source_locator": "Author-uploaded full text retained web observation, lines L894–L944; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mngb-enables]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Primary intact-cell p-nitrophenyl surrogate assay and native uncertainty support enables only. No purified MG-P turnover, measured product anomer or direct ligand assignment is claimed.", "edge_id": "mg-mngb-enables", "evidence_items": 3, "finding_keys": [], "object": "MetaCyc:RXN0-5216", "predicate": "enables", "references": ["EcoCyc:EG13236-MONOMER", "EcoCyc:ENZRXN0-6336", "PMID:14645248"], "subject": "UniProtKB:P54746"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MngB is assigned MG-P hydrolysis from physiological evidence; the native comment states that it has not yet been purified.", "edge_id": "mg-mngb-enables", "index": 0, "reference_id": "EcoCyc:EG13236-MONOMER", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}, {"claim": "The mannosidase assay uses p-nitrophenyl substrates and does not distinguish phosphorylated from unphosphorylated surrogate hydrolysis.", "edge_id": "mg-mngb-enables", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1880–L1958; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "The native enzymatic reaction links MngB to RXN0-5216.", "edge_id": "mg-mngb-enables", "index": 2, "reference_id": "EcoCyc:ENZRXN0-6336", "role": "edge", "source_locator": "XPath /ptools-xml/Enzymatic-Reaction/enzyme &#124; /ptools-xml/Enzymatic-Reaction/reaction", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gark-catalysis]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native assignment/Rhea2PG chemistry and engineered four-deletion growth selection checked. His6-bearing primer construct is explicit; historical kinase naming is not used to transfer old assay conditions.", "edge_id": "mg-gark-catalysis", "evidence_items": 2, "finding_keys": [], "object": "RHEA:27378", "predicate": "catalyzes", "references": ["EcoCyc:GKI-ENZRXN", "UniProtKB:P23524"], "subject": "UniProtKB:P23524"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The native enzyme assignment links GKI-MONOMER to physiologically forward GKI-RXN.", "edge_id": "mg-gark-catalysis", "index": 0, "reference_id": "EcoCyc:GKI-ENZRXN", "role": "edge", "source_locator": "XPath /ptools-xml/Enzymatic-Reaction/reaction &#124; /ptools-xml/Enzymatic-Reaction/enzyme &#124; /ptools-xml/Enzymatic-Reaction/reaction-direction", "status": "inherited_exact"}, {"claim": "Reviewed GarK has glycerate 2-kinase chemistry; the caution preserves historical ambiguity between GK1/GK2 gene assignments.", "edge_id": "mg-gark-catalysis", "index": 1, "reference_id": "UniProtKB:P23524", "role": "edge", "source_locator": "comments[commentType=CATALYTIC ACTIVITY]; comments[commentType=CAUTION]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gark-product-selection]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native assignment/Rhea2PG chemistry and engineered four-deletion growth selection checked. His6-bearing primer construct is explicit; historical kinase naming is not used to transfer old assay conditions.", "edge_id": "mg-gark-product-selection", "evidence_items": 2, "finding_keys": [], "object": "RHEA:27378", "predicate": "enables", "references": ["PMID:25823014"], "subject": "UniProtKB:P23524"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "In the engineered four-deletion background, GarK expression allows glycerate to replace pyruvate, supporting formation of 2PG instead of 3PG.", "edge_id": "mg-gark-product-selection", "index": 0, "reference_id": "PMID:25823014", "role": "edge", "source_locator": "XPath /article/body/sec[2]/p[2]; paragraph containing 'We tested three glycerate kinases'", "status": "inherited_exact"}, {"claim": "The cloning section describes plasmid expression and N-terminal His6-bearing primers; tag cleavage is not established.", "edge_id": "mg-gark-product-selection", "index": 1, "reference_id": "PMID:25823014", "role": "edge", "source_locator": "XPath /article/body/sec[3]/sec[1]", "status": "inherited_exact"}, {"claim": "Cloning uses K-12 garK, RBS E, Pniv and Ptac vectors with His6-bearing primer sequence.", "edge_id": "mg-gark-product-selection", "index": 0, "reference_id": "PMID:25823014", "role": "qualifier[0]", "source_locator": "XPath /article/body/sec[3]/sec[1]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-ptsi-catalysis]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native homodimer and composite reaction support catalysis/His189-to-His15 relay; exact UniProt His189 locator needs the minor correction.", "edge_id": "mg-ptsi-catalysis", "evidence_items": 3, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:23881", "predicate": "catalyzes", "references": ["EcoCyc:ENZRXN0-8621", "MetaCyc:CPLX0-7938", "UniProtKB:P08839"], "subject": "MetaCyc:CPLX0-7938"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "EcoCyc assigns CPLX0-7938 to the composite2.7.3.9-RXN.", "edge_id": "mg-ptsi-catalysis", "index": 0, "reference_id": "EcoCyc:ENZRXN0-8621", "role": "edge", "source_locator": "XPath /ptools-xml/Enzymatic-Reaction/enzyme &#124; /ptools-xml/Enzymatic-Reaction/reaction", "status": "inherited_exact"}, {"claim": "The independently issued MetaCyc assembly has2PTSI-MONOMER components.", "edge_id": "mg-ptsi-catalysis", "index": 1, "reference_id": "MetaCyc:CPLX0-7938", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component", "status": "inherited_exact"}, {"claim": "PtsI autophosphorylation at His189 precedes transfer to HPr.", "edge_id": "mg-ptsi-catalysis", "index": 2, "reference_id": "UniProtKB:P08839", "role": "edge", "source_locator": "comments[commentType=FUNCTION]; features[type=Active site,location.start.value=189]", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-mngb-cofactor]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact source cofactor identity, evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain are distinguished.", "edge_id": "mg-mngb-cofactor", "evidence_items": 1, "finding_keys": [], "object": "CHEBI:60240", "predicate": "has_cofactor", "references": ["UniProtKB:P54746"], "subject": "UniProtKB:P54746"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "One generic divalent metal cation per subunit is annotated by similarity; this is not a measured MG-P assay metal.", "edge_id": "mg-mngb-cofactor", "index": 0, "reference_id": "UniProtKB:P54746", "role": "edge", "source_locator": "comments[commentType=COFACTOR]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-ptsi-cofactor]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact source cofactor identity, evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain are distinguished.", "edge_id": "mg-ptsi-cofactor", "evidence_items": 2, "finding_keys": [], "object": "CHEBI:18420", "predicate": "has_cofactor", "references": ["PMID:17053069", "UniProtKB:P08839"], "subject": "MetaCyc:CPLX0-7938"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The reviewed PtsI entry identifies Mg2+ with experimental evidence from the trapped phosphoenzyme structure.", "edge_id": "mg-ptsi-cofactor", "index": 0, "reference_id": "UniProtKB:P08839", "role": "edge", "source_locator": "comments[commentType=COFACTOR]", "status": "inherited_exact"}, {"claim": "The structure captures phosphorylated enzyme I with Mg2+ and oxalate, a specific trapped state.", "edge_id": "mg-ptsi-cofactor", "index": 1, "reference_id": "PMID:17053069", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/p[5]; paragraph containing 'Both EI and PPDK must shuttle'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-fur-iron]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact source cofactor identity, evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain are distinguished.", "edge_id": "mg-fur-iron", "evidence_items": 2, "finding_keys": [], "object": "CHEBI:29033", "predicate": "has_part", "references": ["EcoCyc:CPLX0-7639", "EcoCyc:FE+2"], "subject": "EcoCyc:CPLX0-7639"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The component list assigns coefficient 2 to ferrous iron.", "edge_id": "mg-fur-iron", "index": 0, "reference_id": "EcoCyc:CPLX0-7639", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Compound/@frameid=\"FE+2\"]", "status": "inherited_exact"}, {"claim": "The native FE+2 compound directly cross-references CHEBI:29033.", "edge_id": "mg-fur-iron", "index": 1, "reference_id": "EcoCyc:FE+2", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-location-P54745]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-location-P54745", "evidence_items": 1, "finding_keys": [], "object": "GO:0005886", "predicate": "located_in", "references": ["UniProtKB:P54745"], "subject": "UniProtKB:P54745"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MngA is an inner-membrane multipass protein. Predicted N-terminal topology is not adopted as experimentally measured phosphorelay sidedness.", "edge_id": "mg-location-P54745", "index": 0, "reference_id": "UniProtKB:P54745", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-location-P08839]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-location-P08839", "evidence_items": 1, "finding_keys": [], "object": "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P08839"], "subject": "UniProtKB:P08839"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "PtsI is cytoplasmic; its polar sequestration is a regulated state examined in general sugar studies.", "edge_id": "mg-location-P08839", "index": 0, "reference_id": "UniProtKB:P08839", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-location-P0AA04]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-location-P0AA04", "evidence_items": 1, "finding_keys": [], "object": "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0AA04"], "subject": "UniProtKB:P0AA04"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "HPr is a soluble cytoplasmic phosphocarrier, not the inner-membrane protein implied by frozen PathBank placement.", "edge_id": "mg-location-P0AA04", "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-location-P0ACF8]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-location-P0ACF8", "evidence_items": 1, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "GO:0009295", "predicate": "located_in", "references": ["UniProtKB:P0ACF8"], "subject": "UniProtKB:P0ACF8"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "H-NS is a nucleoid-associated protein; it forms variable oligomers, so no fixed H-NS stoichiometry is assigned.", "edge_id": "mg-location-P0ACF8", "index": 0, "reference_id": "UniProtKB:P0ACF8", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]; comments[commentType=SUBUNIT]", "status": "fresh_corrected_locator"}]}
+
+### mechanistic_edges[id=mg-entry-membrane]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-entry-membrane", "evidence_items": 2, "finding_keys": [], "object": "GO:0005886", "predicate": "occurs_in", "references": ["EcoCyc:RXN0-2522", "UniProtKB:P54745"], "subject": "RHEA:33308"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Native MG is outside and MG-P plus both HPr states are inside.", "edge_id": "mg-entry-membrane", "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left &#124; /ptools-xml/Reaction/right", "status": "inherited_exact"}, {"claim": "MngA is an inner-membrane multipass protein.", "edge_id": "mg-entry-membrane", "index": 1, "reference_id": "UniProtKB:P54745", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gene-945355]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655 taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked. Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id": "mg-gene-945355", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P54745", "predicate": "enables", "references": ["Entrez:945355", "UniProtKB:P54745"], "subject": "Entrez:945355"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.", "edge_id": "mg-gene-945355", "index": 0, "reference_id": "Entrez:945355", "role": "edge", "source_locator": "XPath //Gene-ref_locus &#124; //Gene-ref_locus-tag &#124; //Dbtag[Dbtag_db=\"ECOCYC\" and Dbtag_tag/Object-id/Object-id_str=\"EG13235\"]", "status": "inherited_exact"}, {"claim": "The issuing protein record cross-references this NCBI Gene identifier.", "edge_id": "mg-gene-945355", "index": 1, "reference_id": "UniProtKB:P54745", "role": "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gene-945359]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655 taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked. Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id": "mg-gene-945359", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P54746", "predicate": "enables", "references": ["Entrez:945359", "UniProtKB:P54746"], "subject": "Entrez:945359"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.", "edge_id": "mg-gene-945359", "index": 0, "reference_id": "Entrez:945359", "role": "edge", "source_locator": "XPath //Gene-ref_locus &#124; //Gene-ref_locus-tag &#124; //Dbtag[Dbtag_db=\"ECOCYC\" and Dbtag_tag/Object-id/Object-id_str=\"EG13236\"]", "status": "inherited_exact"}, {"claim": "The issuing protein record cross-references this NCBI Gene identifier.", "edge_id": "mg-gene-945359", "index": 1, "reference_id": "UniProtKB:P54746", "role": "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gene-945371]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655 taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked. Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id": "mg-gene-945371", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P13669", "predicate": "enables", "references": ["Entrez:945371", "UniProtKB:P13669"], "subject": "Entrez:945371"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.", "edge_id": "mg-gene-945371", "index": 0, "reference_id": "Entrez:945371", "role": "edge", "source_locator": "XPath //Gene-ref_locus &#124; //Gene-ref_locus-tag &#124; //Dbtag[Dbtag_db=\"ECOCYC\" and Dbtag_tag/Object-id/Object-id_str=\"EG11109\"]", "status": "inherited_exact"}, {"claim": "The issuing protein record cross-references this NCBI Gene identifier.", "edge_id": "mg-gene-945371", "index": 1, "reference_id": "UniProtKB:P13669", "role": "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gene-947632]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655 taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked. Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id": "mg-gene-947632", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P23524", "predicate": "enables", "references": ["Entrez:947632", "UniProtKB:P23524"], "subject": "Entrez:947632"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.", "edge_id": "mg-gene-947632", "index": 0, "reference_id": "Entrez:947632", "role": "edge", "source_locator": "XPath //Gene-ref_locus &#124; //Gene-ref_locus-tag &#124; //Dbtag[Dbtag_db=\"ECOCYC\" and Dbtag_tag/Object-id/Object-id_str=\"EG11175\"]", "status": "inherited_exact"}, {"claim": "The issuing protein record cross-references this NCBI Gene identifier.", "edge_id": "mg-gene-947632", "index": 1, "reference_id": "UniProtKB:P23524", "role": "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gene-944860]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655 taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked. Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id": "mg-gene-944860", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P37047", "predicate": "enables", "references": ["Entrez:944860", "UniProtKB:P37047"], "subject": "Entrez:944860"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.", "edge_id": "mg-gene-944860", "index": 0, "reference_id": "Entrez:944860", "role": "edge", "source_locator": "XPath //Gene-ref_locus &#124; //Gene-ref_locus-tag &#124; //Dbtag[Dbtag_db=\"ECOCYC\" and Dbtag_tag/Object-id/Object-id_str=\"EG12335\"]", "status": "inherited_exact"}, {"claim": "The issuing protein record cross-references this NCBI Gene identifier.", "edge_id": "mg-gene-944860", "index": 1, "reference_id": "UniProtKB:P37047", "role": "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mngr-repress-945355]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native regulator mode/promoter/TU joins and primary loss/rescue interpretation checked; autoregulation is native annotation with historical fatty-acyl interpretation caution. Proposed MG-P ligand is not direct binding.", "edge_id": "mg-mngr-repress-945355", "evidence_items": 3, "finding_keys": [], "object": "Entrez:945355", "predicate": "inhibits", "references": ["EcoCyc:REG0-10703", "EcoCyc:TU0-4482", "PMID:14645248"], "subject": "EcoCyc:PC00103"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MngR negatively regulates the mngAB promoter.", "edge_id": "mg-mngr-repress-945355", "index": 0, "reference_id": "EcoCyc:REG0-10703", "role": "edge", "source_locator": "XPath /ptools-xml/Regulation/regulator &#124; /ptools-xml/Regulation/regulated-entity &#124; /ptools-xml/Regulation/mode", "status": "inherited_exact"}, {"claim": "The native transcription unit includes mngA and mngB.", "edge_id": "mg-mngr-repress-945355", "index": 1, "reference_id": "EcoCyc:TU0-4482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component", "status": "inherited_exact"}, {"claim": "Deleting mngR derepresses MG transport and mngAB; plasmid mngR restores MG-inducible regulation.", "edge_id": "mg-mngr-repress-945355", "index": 2, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1758–L1875; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mngr-repress-945359]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native regulator mode/promoter/TU joins and primary loss/rescue interpretation checked; autoregulation is native annotation with historical fatty-acyl interpretation caution. Proposed MG-P ligand is not direct binding.", "edge_id": "mg-mngr-repress-945359", "evidence_items": 3, "finding_keys": [], "object": "Entrez:945359", "predicate": "inhibits", "references": ["EcoCyc:REG0-10703", "EcoCyc:TU0-4482", "PMID:14645248"], "subject": "EcoCyc:PC00103"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MngR negatively regulates the mngAB promoter.", "edge_id": "mg-mngr-repress-945359", "index": 0, "reference_id": "EcoCyc:REG0-10703", "role": "edge", "source_locator": "XPath /ptools-xml/Regulation/regulator &#124; /ptools-xml/Regulation/regulated-entity &#124; /ptools-xml/Regulation/mode", "status": "inherited_exact"}, {"claim": "The native transcription unit includes mngA and mngB.", "edge_id": "mg-mngr-repress-945359", "index": 1, "reference_id": "EcoCyc:TU0-4482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component", "status": "inherited_exact"}, {"claim": "Deleting mngR derepresses MG transport and mngAB; plasmid mngR restores MG-inducible regulation.", "edge_id": "mg-mngr-repress-945359", "index": 2, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1758–L1875; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mngr-autorepress]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native regulator mode/promoter/TU joins and primary loss/rescue interpretation checked; autoregulation is native annotation with historical fatty-acyl interpretation caution. Proposed MG-P ligand is not direct binding.", "edge_id": "mg-mngr-autorepress", "evidence_items": 2, "finding_keys": [], "object": "Entrez:945371", "predicate": "inhibits", "references": ["EcoCyc:PC00103", "EcoCyc:REG0-5259"], "subject": "EcoCyc:PC00103"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The native regulatory object assigns negative autoregulation to MngR.", "edge_id": "mg-mngr-autorepress", "index": 0, "reference_id": "EcoCyc:REG0-5259", "role": "edge", "source_locator": "XPath /ptools-xml/Regulation/regulator &#124; /ptools-xml/Regulation/mode &#124; /ptools-xml/Regulation/regulated-entity", "status": "inherited_exact"}, {"claim": "The native comment supports autoregulation and explicitly revisits the disputed fatty-acid interpretation.", "edge_id": "mg-mngr-autorepress", "index": 1, "reference_id": "EcoCyc:PC00103", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gark-reg-cdar]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Positive regulatory expression interpretation is supported by original MC4100 reporter/loss/rescue; target CdaR subject qualification/reference-numbering gap is finding 2.", "edge_id": "mg-gark-reg-cdar", "evidence_items": 4, "finding_keys": ["mg-cdar-assay-endpoint-scope"], "object": "Entrez:947632", "predicate": "activates", "references": ["EcoCyc:REG0-5033", "EcoCyc:TU482", "PMID:10762278"], "subject": "UniProtKB:P37047"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 442, "issue_key": "mg-cdar-assay-endpoint-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/442", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "major", "reason": "Both CdaR subject endpoints now carry exact experimental_construct scope, paper391/current385 distinction, unremapped historical numbering, MC4100 reporter/loss-rescue context and pRM1. Mutants are explicitly inactive controls rather than active subjects. Both signs and gene targets remain exact; full qualifier evidence survives KGX and graph nodes/edges.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "The native regulatory object names the regulator, garP promoter and source-specific signed mode; the edge description preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-cdar", "index": 0, "reference_id": "EcoCyc:REG0-5033", "role": "edge", "source_locator": "XPath /ptools-xml/Regulation/regulator &#124; /ptools-xml/Regulation/mode &#124; /ptools-xml/Regulation/regulated-entity", "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-gark-reg-cdar", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status": "inherited_exact"}, {"claim": "CdaR/sdaR mutants implicate the regulator; the reported P297S and near-terminalTn5 constructs differ from wild type.", "edge_id": "mg-gark-reg-cdar", "index": 2, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[1]; paragraph containing 'To identify the gene responsible'", "status": "inherited_exact"}, {"claim": "MC4100 sdaR cloned in pBluescript restores growth of JA176/JA177 on the three carbon sources.", "edge_id": "mg-gark-reg-cdar", "index": 3, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[2]; paragraph containing 'yielding pRM1'", "status": "inherited_exact"}, {"claim": "The paper reports a 391-residue yaeG/sdaR reference, JA176 Pro297-to-Ser substitution and JA177 Tn5 insertion 20 nucleotides before the stop codon. These loss mutants inform regulator assignment.", "edge_id": "mg-gark-reg-cdar", "index": 0, "reference_id": "PMID:10762278", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[1]", "status": "fresh_added_evidence"}, {"claim": "pRM1 contains MC4100 sdaR amplified and cloned in pBluescript; it restores JA176/JA177 growth on glucarate, galactarate and glycerate. Loss and rescue support an activator role, not activation by mutant proteins.", "edge_id": "mg-gark-reg-cdar", "index": 1, "reference_id": "PMID:10762278", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[2]", "status": "fresh_added_evidence"}, {"claim": "MC4100 sdaR-promoter-lacZ reporters respond to the three inducing carbon sources only with functional SdaR. The source interprets loss of sdaR-lacZ and garP-lacZ activation in knockouts as positive control.", "edge_id": "mg-gark-reg-cdar", "index": 2, "reference_id": "PMID:10762278", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1] &#124; /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[2]", "status": "fresh_added_evidence"}, {"claim": "The current issuing P37047 reference is 385 residues; its gene name is cdaR with sdaR and yaeG synonyms. This anchors identity, not equivalence to the paper’s 391-residue sequence numbering.", "edge_id": "mg-gark-reg-cdar", "index": 3, "reference_id": "UniProtKB:P37047", "role": "qualifier[0]", "source_locator": "primaryAccession; sequence.length; genes", "status": "fresh_added_evidence"}]}
+
+### mechanistic_edges[id=mg-gark-reg-hns]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Primary Fig5 and results support negative HNS effect on garP transcript in DL1504/DL1947; exact TU482 joins garK. No direct GarK activity or MG-flux effect inferred.", "edge_id": "mg-gark-reg-hns", "evidence_items": 3, "finding_keys": [], "object": "Entrez:947632", "predicate": "inhibits", "references": ["EcoCyc:REG0-9114", "EcoCyc:TU482", "PMID:17526711"], "subject": "UniProtKB:P0ACF8"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The native regulatory object names the regulator, garP promoter and source-specific signed mode; the edge description preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-hns", "index": 0, "reference_id": "EcoCyc:REG0-9114", "role": "edge", "source_locator": "XPath /ptools-xml/Regulation/regulator &#124; /ptools-xml/Regulation/mode &#124; /ptools-xml/Regulation/regulated-entity", "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-gark-reg-hns", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status": "inherited_exact"}, {"claim": "Figure5 compares garP transcript in wild type DL1504 and hns651 DL1947, in M9 glycerol at 23/37°C.", "edge_id": "mg-gark-reg-hns", "index": 2, "reference_id": "PMID:17526711", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[11]/figure/figcaption/p; paragraph containing 'Effects of the hns651mutation'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gark-reg-fnr]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native positive transcriptomic mode with putative unshown site is accurately limited to annotation, plus active low-oxygen FNR state. Primary body remains unavailable; no binding proof promoted.", "edge_id": "mg-gark-reg-fnr", "evidence_items": 2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references": ["EcoCyc:REG0-5032", "EcoCyc:TU482"], "subject": "EcoCyc:CPLX0-7797"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The native regulatory object names the regulator, garP promoter and source-specific signed mode; the edge description preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-fnr", "index": 0, "reference_id": "EcoCyc:REG0-5032", "role": "edge", "source_locator": "XPath /ptools-xml/Regulation/regulator &#124; /ptools-xml/Regulation/mode &#124; /ptools-xml/Regulation/regulated-entity", "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-gark-reg-fnr", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status": "inherited_exact"}, {"claim": "Anaerobic cluster acquisition activates dimeric FNR; oxygen converts the cluster and inactivates the regulator.", "edge_id": "mg-gark-reg-fnr", "index": 0, "reference_id": "EcoCyc:CPLX0-7797", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-gark-reg-fur]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Unsigned relation retains native negative mode versus primary internal garP binding, unknown internal-element function and previously reported activation; no sign chosen for convenience.", "edge_id": "mg-gark-reg-fur", "evidence_items": 5, "finding_keys": [], "object": "Entrez:947632", "predicate": "regulates", "references": ["EcoCyc:REG0-10783", "EcoCyc:TU482", "PMID:17921503"], "subject": "EcoCyc:CPLX0-7639"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The native regulatory object names the regulator, garP promoter and source-specific signed mode; the edge description preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-fur", "index": 0, "reference_id": "EcoCyc:REG0-10783", "role": "edge", "source_locator": "XPath /ptools-xml/Regulation/regulator &#124; /ptools-xml/Regulation/mode &#124; /ptools-xml/Regulation/regulated-entity", "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-gark-reg-fur", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status": "inherited_exact"}, {"claim": "The garP oligonucleotide tested for Fur binding is intragenic, not a demonstrated native garPLRK promoter.", "edge_id": "mg-gark-reg-fur", "index": 2, "reference_id": "PMID:17921503", "role": "edge", "source_locator": "XPath /article/body/sec[2]/sec[4]/p[2]; paragraph containing 'We were also interested in whether Fur binds intragenically'", "status": "inherited_exact"}, {"claim": "The paper leaves the function of the intragenic garP control element unresolved.", "edge_id": "mg-gark-reg-fur", "index": 3, "reference_id": "PMID:17921503", "role": "edge", "source_locator": "XPath /article/body/sec[4]/sec[2]/p[1]; paragraph containing 'The function of these control elements is unknown'", "status": "inherited_exact"}, {"claim": "Prior expression analysis described garPLRK as Fur-activated, conflicting with the native negative-mode assignment.", "edge_id": "mg-gark-reg-fur", "index": 4, "reference_id": "PMID:17921503", "role": "edge", "source_locator": "XPath /article/body/sec[3]/sec[6]/p[4]; paragraph containing '48 Fur-activated genes belong'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-cdar-auto]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Positive regulatory expression interpretation is supported by original MC4100 reporter/loss/rescue; target CdaR subject qualification/reference-numbering gap is finding 2.", "edge_id": "mg-cdar-auto", "evidence_items": 2, "finding_keys": ["mg-cdar-assay-endpoint-scope"], "object": "Entrez:944860", "predicate": "activates", "references": ["PMID:10762278"], "subject": "UniProtKB:P37047"}, "successor_dispositions_for_original_finding_keys": [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 442, "issue_key": "mg-cdar-assay-endpoint-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/442", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "major", "reason": "Both CdaR subject endpoints now carry exact experimental_construct scope, paper391/current385 distinction, unremapped historical numbering, MC4100 reporter/loss-rescue context and pRM1. Mutants are explicitly inactive controls rather than active subjects. Both signs and gene targets remain exact; full qualifier evidence survives KGX and graph nodes/edges.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}], "successor_evidence_uses": [{"claim": "Loss of functional SdaR abolishes inducer-dependent sdaR-lacZ activation.", "edge_id": "mg-cdar-auto", "index": 0, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1]; paragraph containing 'Control of sdaR expression was studied'", "status": "inherited_exact"}, {"claim": "The paper interprets regulator-dependent reporter activation as positive autoregulation.", "edge_id": "mg-cdar-auto", "index": 1, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[2]; paragraph containing 'Of the possible models of coupled expression'", "status": "inherited_exact"}, {"claim": "The paper reports a 391-residue yaeG/sdaR reference, JA176 Pro297-to-Ser substitution and JA177 Tn5 insertion 20 nucleotides before the stop codon. These loss mutants inform regulator assignment.", "edge_id": "mg-cdar-auto", "index": 0, "reference_id": "PMID:10762278", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[1]", "status": "fresh_added_evidence"}, {"claim": "pRM1 contains MC4100 sdaR amplified and cloned in pBluescript; it restores JA176/JA177 growth on glucarate, galactarate and glycerate. Loss and rescue support an activator role, not activation by mutant proteins.", "edge_id": "mg-cdar-auto", "index": 1, "reference_id": "PMID:10762278", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[2]", "status": "fresh_added_evidence"}, {"claim": "MC4100 sdaR-promoter-lacZ reporters respond to the three inducing carbon sources only with functional SdaR. The source interprets loss of sdaR-lacZ and garP-lacZ activation in knockouts as positive control.", "edge_id": "mg-cdar-auto", "index": 2, "reference_id": "PMID:10762278", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1] &#124; /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[2]", "status": "fresh_added_evidence"}, {"claim": "The current issuing P37047 reference is 385 residues; its gene name is cdaR with sdaR and yaeG synonyms. This anchors identity, not equivalence to the paper’s 391-residue sequence numbering.", "edge_id": "mg-cdar-auto", "index": 3, "reference_id": "UniProtKB:P37047", "role": "qualifier[0]", "source_locator": "primaryAccession; sequence.length; genes", "status": "fresh_added_evidence"}]}
+
+### mechanistic_edges[id=mg-mg-expression-945355]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Original TableIV independently contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold) after MG exposure; MC4100 culture/microarray limits retained. No direct ligand binding claim.", "edge_id": "mg-mg-expression-945355", "evidence_items": 2, "finding_keys": [], "object": "Entrez:945355", "predicate": "activates", "references": ["PMID:14645248"], "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-945355", "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter results document MG-dependent expression, with strain and construct dependence.", "edge_id": "mg-mg-expression-945355", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mg-expression-945359]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Original TableIV independently contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold) after MG exposure; MC4100 culture/microarray limits retained. No direct ligand binding claim.", "edge_id": "mg-mg-expression-945359", "evidence_items": 2, "finding_keys": [], "object": "Entrez:945359", "predicate": "activates", "references": ["PMID:14645248"], "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-945359", "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter results document MG-dependent expression, with strain and construct dependence.", "edge_id": "mg-mg-expression-945359", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mg-expression-945371]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Original TableIV independently contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold) after MG exposure; MC4100 culture/microarray limits retained. No direct ligand binding claim.", "edge_id": "mg-mg-expression-945371", "evidence_items": 2, "finding_keys": [], "object": "Entrez:945371", "predicate": "activates", "references": ["PMID:14645248"], "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-945371", "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter results document MG-dependent expression, with strain and construct dependence.", "edge_id": "mg-mg-expression-945371", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mg-expression-944860]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Original TableIV independently contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold) after MG exposure; MC4100 culture/microarray limits retained. No direct ligand binding claim.", "edge_id": "mg-mg-expression-944860", "evidence_items": 2, "finding_keys": [], "object": "Entrez:944860", "predicate": "activates", "references": ["PMID:14645248"], "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-944860", "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter results document MG-dependent expression, with strain and construct dependence.", "edge_id": "mg-mg-expression-944860", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-mg-expression-947632]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Original TableIV independently contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold) after MG exposure; MC4100 culture/microarray limits retained. No direct ligand binding claim.", "edge_id": "mg-mg-expression-947632", "evidence_items": 2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references": ["PMID:14645248"], "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-947632", "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548", "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter results document MG-dependent expression, with strain and construct dependence.", "edge_id": "mg-mg-expression-947632", "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text retained web observation, lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-interface-MANNCAT-PWY]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native outgoing MANNOSE-6P link and exact source identity support opaque alpha-M6P input; no invented generic-to-alpha reaction.", "edge_id": "mg-interface-MANNCAT-PWY", "evidence_items": 2, "finding_keys": [], "object": "CHEBI:60332", "predicate": "has_input", "references": ["MetaCyc:MANNOSE-6P", "MetaCyc:PWY0-1300"], "subject": "MetaCyc:MANNCAT-PWY"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Native pathway-link associates MANNOSE-6P with mannose degradation and colanic-acid precursor synthesis.", "edge_id": "mg-interface-MANNCAT-PWY", "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/pathway-link[Compound/@frameid=\"MANNOSE-6P\"]", "status": "inherited_exact"}, {"claim": "The native MANNOSE-6P compound is cross-referenced to alpha-D-mannose 6-phosphate.", "edge_id": "mg-interface-MANNCAT-PWY", "index": 1, "reference_id": "MetaCyc:MANNOSE-6P", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-interface-COLANSYN-PWY]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native outgoing MANNOSE-6P link and exact source identity support opaque alpha-M6P input; no invented generic-to-alpha reaction.", "edge_id": "mg-interface-COLANSYN-PWY", "evidence_items": 2, "finding_keys": [], "object": "CHEBI:60332", "predicate": "has_input", "references": ["MetaCyc:MANNOSE-6P", "MetaCyc:PWY0-1300"], "subject": "MetaCyc:COLANSYN-PWY"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Native pathway-link associates MANNOSE-6P with mannose degradation and colanic-acid precursor synthesis.", "edge_id": "mg-interface-COLANSYN-PWY", "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/pathway-link[Compound/@frameid=\"MANNOSE-6P\"]", "status": "inherited_exact"}, {"claim": "The native MANNOSE-6P compound is cross-referenced to alpha-D-mannose 6-phosphate.", "edge_id": "mg-interface-COLANSYN-PWY", "index": 1, "reference_id": "MetaCyc:MANNOSE-6P", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-opaque-pathbank-child]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact frozen Interaction/child attachment checked; marker is not inhibitory control and empty child chemistry stays opaque. Adapter readiness is separate.", "edge_id": "mg-opaque-pathbank-child", "evidence_items": 1, "finding_keys": [], "object": "PathBank:SMP0000839", "predicate": "has_part", "references": ["PathBank:SMP0002108"], "subject": "MetaCyc:PWY0-1300"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The frozen InhibitorySubPathwayControl is typed Interaction and names2PG and the opaque pathway as participants; its label does not prove inhibition.", "edge_id": "mg-opaque-pathbank-child", "index": 0, "reference_id": "PathBank:SMP0002108", "role": "edge", "source_locator": "XPath //bp:Interaction[@rdf:ID=\"SubPathwayControls/109883\"]/bp:participant &#124; //bp:Pathway[@rdf:about=\"http://identifiers.org/smpdb/SMP0000839\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-2og-full-ei]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "2011 full-length His-tagged EI isotope exchange and2013 isolatedEIC261–575 hydrolysis/competitive model checked separately; reagent contamination is an alternative and mixed full-EI effects remain possible.", "edge_id": "mg-2og-full-ei", "evidence_items": 1, "finding_keys": [], "object": "UniProtKB:P08839", "predicate": "inhibits", "references": ["PMID:22002719"], "subject": "CHEBI:16810"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The full-EI study interprets alpha-ketoglutarate inhibition as noncompetitive; this is general PTS regulation, not a specific MngA assay.", "edge_id": "mg-2og-full-ei", "index": 0, "reference_id": "PMID:22002719", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[3]/p[4]; paragraph containing 'Addition of 2 mM α-ketoglutarate inhibited'", "status": "inherited_exact"}, {"claim": "Methods identify N-terminal His-tagged PtsI from ASKA strain b2416 and an isotope-exchange assay with MgCl2 at37°C.", "edge_id": "mg-2og-full-ei", "index": 0, "reference_id": "PMID:22002719", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/section[3]/p[1]; paragraph containing 'containing an N-terminal His tag'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-2og-eic]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "2011 full-length His-tagged EI isotope exchange and2013 isolatedEIC261–575 hydrolysis/competitive model checked separately; reagent contamination is an alternative and mixed full-EI effects remain possible.", "edge_id": "mg-2og-eic", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P08839", "predicate": "inhibits", "references": ["PMID:23506042"], "subject": "CHEBI:16810"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Alpha-ketoglutarate inhibits isolated EIC PEP hydrolysis; competitive fitting is better than noncompetitive fitting under the reported assay conditions.", "edge_id": "mg-2og-eic", "index": 0, "reference_id": "PMID:23506042", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[1]; paragraph containing 'The ability of EIC to hydrolyze PEP'", "status": "inherited_exact"}, {"claim": "The discussion reports a degrading alpha-ketoglutarate batch and preserves possible competitive plus noncompetitive effects in intact EI.", "edge_id": "mg-2og-eic", "index": 1, "reference_id": "PMID:23506042", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[5]/p[4]; paragraph containing 'Enzymatic assays performed in the absence and presence'", "status": "inherited_exact"}, {"claim": "Methods identify EIC261–575, EIN1–249, full-lengthEI1–575 and the R465A construct.", "edge_id": "mg-2og-eic", "index": 0, "reference_id": "PMID:23506042", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[4]/section[1]/p[1]; paragraph containing 'The R465A mutant of EIC was created'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-tmar-ptsi]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Primary imaging, interaction and Y72/Y122 mutation passages support general EI spatial regulation. Both tagged endpoints remain qualified; no MG-specific control or fixed complex inferred.", "edge_id": "mg-tmar-ptsi", "evidence_items": 1, "finding_keys": [], "object": "UniProtKB:P08839", "predicate": "regulates", "references": ["PMID:33376208"], "subject": "UniProtKB:P0A8M6"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "TmaR and EI interact and colocalize; TmaR controls EI sequestration/release in general sugar-utilization experiments.", "edge_id": "mg-tmar-ptsi", "index": 0, "reference_id": "PMID:33376208", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/p[5]; paragraph containing 'In this study, we show that a previously uncharacterized'", "status": "inherited_exact"}, {"claim": "Figure1 describes terminal fluorescent tags and Y72F/Y79F/Y51F variants; native-promoter/locus constructs are distinguished from plasmid expression.", "edge_id": "mg-tmar-ptsi", "index": 0, "reference_id": "PMID:33376208", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[1]/figure/figcaption/p; paragraph containing 'TmaR forms clusters that localize'", "status": "inherited_exact"}, {"claim": "Figure2 specifies TmaR-YFP, EI-mCherry and plasmid His-TmaR in Far-Western assays, with His-only and mCherry controls.", "edge_id": "mg-tmar-ptsi", "index": 1, "reference_id": "PMID:33376208", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/figure/figcaption/p; paragraph containing 'TmaR and EI exhibit colocalization'", "status": "inherited_exact"}, {"claim": "EI polar recruitment depends on Tyr122 and TmaR, based on the cited spatial-regulation study.", "edge_id": "mg-tmar-ptsi", "index": 0, "reference_id": "UniProtKB:P08839", "role": "qualifier[1]", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}, {"claim": "The localization experiment compares EI-mCherry with EIY122F-mCherry; this is distinct from His189 catalytic phosphorylation.", "edge_id": "mg-tmar-ptsi", "index": 1, "reference_id": "PMID:33376208", "role": "qualifier[1]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[6]/p[1]; paragraph containing 'To examine whether Tyr122 is important'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-induction-16659-947632]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports the named inducing carbon source and gene-expression response; native TU membership joins garK. Ionic identifiers normalize chemistry, not measured assay protonation or direct CdaR ligand binding.", "edge_id": "mg-induction-16659-947632", "evidence_items": 2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references": ["EcoCyc:TU482", "PMID:10762278"], "subject": "CHEBI:16659"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The garP operon reporter is induced by glycerate, glucarate and galactarate; glycerate gives stronger activation.", "edge_id": "mg-induction-16659-947632", "index": 0, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/p[2]; paragraph containing 'β-Galactosidase activities of Φ(garD-lacZ)'", "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-induction-16659-947632", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-induction-16659-944860]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports the named inducing carbon source and gene-expression response; native TU membership joins garK. Ionic identifiers normalize chemistry, not measured assay protonation or direct CdaR ligand binding.", "edge_id": "mg-induction-16659-944860", "evidence_items": 1, "finding_keys": [], "object": "Entrez:944860", "predicate": "activates", "references": ["PMID:10762278"], "subject": "CHEBI:16659"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The sdaR/cdaR reporter responds to glycerate, glucarate and galactarate only with a functional regulator.", "edge_id": "mg-induction-16659-944860", "index": 0, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1]; paragraph containing 'Control of sdaR expression was studied'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-induction-30612-947632]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports the named inducing carbon source and gene-expression response; native TU membership joins garK. Ionic identifiers normalize chemistry, not measured assay protonation or direct CdaR ligand binding.", "edge_id": "mg-induction-30612-947632", "evidence_items": 2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references": ["EcoCyc:TU482", "PMID:10762278"], "subject": "CHEBI:30612"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The garP operon reporter is induced by glycerate, glucarate and galactarate; glycerate gives stronger activation.", "edge_id": "mg-induction-30612-947632", "index": 0, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/p[2]; paragraph containing 'β-Galactosidase activities of Φ(garD-lacZ)'", "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-induction-30612-947632", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-induction-30612-944860]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports the named inducing carbon source and gene-expression response; native TU membership joins garK. Ionic identifiers normalize chemistry, not measured assay protonation or direct CdaR ligand binding.", "edge_id": "mg-induction-30612-944860", "evidence_items": 1, "finding_keys": [], "object": "Entrez:944860", "predicate": "activates", "references": ["PMID:10762278"], "subject": "CHEBI:30612"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The sdaR/cdaR reporter responds to glycerate, glucarate and galactarate only with a functional regulator.", "edge_id": "mg-induction-30612-944860", "index": 0, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1]; paragraph containing 'Control of sdaR expression was studied'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-induction-16537-947632]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports the named inducing carbon source and gene-expression response; native TU membership joins garK. Ionic identifiers normalize chemistry, not measured assay protonation or direct CdaR ligand binding.", "edge_id": "mg-induction-16537-947632", "evidence_items": 2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references": ["EcoCyc:TU482", "PMID:10762278"], "subject": "CHEBI:16537"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The garP operon reporter is induced by glycerate, glucarate and galactarate; glycerate gives stronger activation.", "edge_id": "mg-induction-16537-947632", "index": 0, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/p[2]; paragraph containing 'β-Galactosidase activities of Φ(garD-lacZ)'", "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-induction-16537-947632", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-induction-16537-944860]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports the named inducing carbon source and gene-expression response; native TU membership joins garK. Ionic identifiers normalize chemistry, not measured assay protonation or direct CdaR ligand binding.", "edge_id": "mg-induction-16537-944860", "evidence_items": 1, "finding_keys": [], "object": "Entrez:944860", "predicate": "activates", "references": ["PMID:10762278"], "subject": "CHEBI:16537"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The sdaR/cdaR reporter responds to glycerate, glucarate and galactarate only with a functional regulator.", "edge_id": "mg-induction-16537-944860", "index": 0, "reference_id": "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1]; paragraph containing 'Control of sdaR expression was studied'", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-fnr-cluster]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Exact source cofactor identity, evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain are distinguished.", "edge_id": "mg-fnr-cluster", "evidence_items": 1, "finding_keys": [], "object": "CHEBI:49883", "predicate": "has_cofactor", "references": ["UniProtKB:P0A9E5"], "subject": "UniProtKB:P0A9E5"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "UniProt identifies CHEBI:49883 and one cluster per subunit.", "edge_id": "mg-fnr-cluster", "index": 0, "reference_id": "UniProtKB:P0A9E5", "role": "edge", "source_locator": "comments[commentType=COFACTOR]", "status": "inherited_exact"}, {"claim": "Native FNR activation accompanies [4Fe-4S] acquisition under anaerobiosis.", "edge_id": "mg-fnr-cluster", "index": 0, "reference_id": "EcoCyc:CPLX0-7797", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-oxygen-fnr]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Native FNR comment supports oxygen-associated cluster conversion and dimer dissociation; active-state qualifier and non-MG-specific limits retained.", "edge_id": "mg-oxygen-fnr", "evidence_items": 1, "finding_keys": [], "object": "EcoCyc:CPLX0-7797", "predicate": "inhibits", "references": ["EcoCyc:CPLX0-7797"], "subject": "CHEBI:15379"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "Oxygen converts the [4Fe-4S] cluster to [2Fe-2S] and promotes FNR inactivation/dimer dissociation.", "edge_id": "mg-oxygen-fnr", "index": 0, "reference_id": "EcoCyc:CPLX0-7797", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}, {"claim": "Anaerobic cluster acquisition activates dimeric FNR; oxygen converts the cluster and inactivates the regulator.", "edge_id": "mg-oxygen-fnr", "index": 0, "reference_id": "EcoCyc:CPLX0-7797", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-location-P0A9E5]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-location-P0A9E5", "evidence_items": 1, "finding_keys": [], "object": "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0A9E5"], "subject": "UniProtKB:P0A9E5"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The reviewed entry supplies the cytoplasmic location; more specific localization/state assertions require their separate evidence.", "edge_id": "mg-location-P0A9E5", "index": 0, "reference_id": "UniProtKB:P0A9E5", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-location-P0A9A9]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-location-P0A9A9", "evidence_items": 1, "finding_keys": [], "object": "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0A9A9"], "subject": "UniProtKB:P0A9A9"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The reviewed entry supplies the cytoplasmic location; more specific localization/state assertions require their separate evidence.", "edge_id": "mg-location-P0A9A9", "index": 0, "reference_id": "UniProtKB:P0A9A9", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}
+
+### mechanistic_edges[id=mg-location-P0A8M6]
+
+evidence: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent original edge assessment inherited through the exact accepted successor; per-use original and correction scope is retained.
+
+{"original_assessment": {"assessment": "Issuing location and native transport side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its separate SUBUNIT locator. General regulator location is not MG-specific action.", "edge_id": "mg-location-P0A8M6", "evidence_items": 1, "finding_keys": [], "object": "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0A8M6"], "subject": "UniProtKB:P0A8M6"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses": [{"claim": "The reviewed entry supplies the cytoplasmic location; more specific localization/state assertions require their separate evidence.", "edge_id": "mg-location-P0A8M6", "index": 0, "reference_id": "UniProtKB:P0A8M6", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}
+
+### mg-entry-assay-context-omission
+
+completeness: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent successor accepted this correction in the exact target. GitHub closure remains a separate root lifecycle action.
+
+{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 441, "issue_key": "mg-entry-assay-context-omission", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/441", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "major", "reason": "Four added source-located uptake/induction assertions and entry description preserve weak-positive and negative sugar comparisons, Results/Discussion mannose tension, 300 mM growth-salt reduction of induction, and separation from inverted-membrane and KM522 experiments. No new compound or inhibition/binding edge is invented.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}
+
+### mg-cdar-assay-endpoint-scope
+
+completeness: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent successor accepted this correction in the exact target. GitHub closure remains a separate root lifecycle action.
+
+{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 442, "issue_key": "mg-cdar-assay-endpoint-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/442", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "major", "reason": "Both CdaR subject endpoints now carry exact experimental_construct scope, paper391/current385 distinction, unremapped historical numbering, MC4100 reporter/loss-rescue context and pRM1. Mutants are explicitly inactive controls rather than active subjects. Both signs and gene targets remain exact; full qualifier evidence survives KGX and graph nodes/edges.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}
+
+### mg-uniprot-rhea-evidence-locator-scope
+
+completeness: supported. Targets: MetaCyc:PWY0-1300.
+
+Independent successor accepted this correction in the exact target. GitHub closure remains a separate root lifecycle action.
+
+{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443", "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json", "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"}, "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json", "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"}, "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189 Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify existing directional-side/contains1/compound triples. The15 changed locators preserve exact prior source assertions and graph chemistry.", "remaining": "Full canonical build, maintained integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml", "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}
+
+### identity
+
+identity: supported. Targets: MetaCyc:PWY0-1300.
+
+Two core events and all 17 native chemical sides remain exact; native anomer-unspecified hydrolysis is retained, and three Rhea directional events retain original side orientation.
+
+### assay-scope
+
+scope: supported. Targets: MetaCyc:PWY0-1300.
+
+MC4100 assay comparisons, separate growth-salt effect, construct-scoped CdaR endpoints and historical residue numbering remain bounded; no direct competitive inhibition or mutant-as-active inference.
+
+### adapter
+
+representation: supported. Targets: MetaCyc:PWY0-1300.
+
+Bounded primary-owned PathBank identity attachment retains the complete original ZIP/member and supports opaque child identity without deriving biological sign from its class or label.
+
+### canonical
+
+grounding: supported. Targets: MetaCyc:PWY0-1300.
+
+Actual full native outputs preserve all previous authority objects and native first-source ordering; 2433 source terms/575 metadata and 1951 ontology terms/5 metadata are accepted actual outputs.
+
+### Exact prior-corpus conservation
+
+consistency: supported. Targets: MetaCyc:PWY0-1300.
+
+All 228 prior records/pages, 102 native review bundles, prior history, authority objects, old KGX edges and source-context multiplicities preserved. Only four individually assessed shared display cells changed.
+
+### Actual static graph and rendered evidence
+
+representation: supported. Targets: MetaCyc:PWY0-1300.
+
+Root viewed complete static graph: substrate/product and activity nodes, regulatory context and both separate CdaR construct nodes are present, with distinct styles and no outer clipping observed. Crossings are dense in the left regulatory columns; zoom is needed for small labels. Full qualifier and evidence text remains in the page. Programmatic checks retain 75 ordered graph triples, 282 unique HTML IDs, 318 local fragments, all 15 qualifier descriptions and all 176 evidence statements.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| original-science | research/pathway_additions/2026-10-12-next-228/science-original/review.json | supports | Independent original MG scientific review; all findings retained as original evidence, not rewritten. |
+| original-edge-assessments | research/pathway_additions/2026-10-12-next-228/science-original/edge-assessments.json | supports | All 75 original independent edge assessments, with original finding keys preserved. |
+| successor-science | research/pathway_additions/2026-10-12-next-228/science-successor/review.json | supports | Independent accepted exact scientific successor and all three issue dispositions; limitations and fresh versus inherited scope retained. |
+| evidence-accounting | research/pathway_additions/2026-10-12-next-228/science-successor/evidence-accounting.json | supports | Exact 176-use accounting: 149 inherited unchanged,15 corrected locators and12 added evidence uses; no fresh review of every unchanged source is claimed. |
+| adapter-review | research/pathway_additions/2026-10-12-next-228/adapter-review/review.json | supports | Root independent review accepted the bounded MG PathBank adapter: 11 original regressions, 5 positives, 16 negative controls; no scientific inhibition inference. |
+| canonical-audit | research/pathway_additions/2026-10-12-next-228/canonical-audit/audit.json | supports | Independent audit of actual native canonical outputs, 21 source and 6 ontology additions, 12 metadata additions, prior-object conservation and source ordering; distinct from fresh biological review. |
+| canonical-completion | research/pathway_additions/2026-10-12-next-228/canonical-completion/verification.json | supports | Actual MG native completion after retained original wrapper failure; 2433/575 source and 1951/5 ontology counts, all prior objects conserved. |
+| gates | research/pathway_additions/2026-10-12-next-228/final-gates/gates.json | supports | Actual inspected gates receipt; scope and original bindings retained. |
+| preservation | research/pathway_additions/2026-10-12-next-228/final-gates/preservation.json | supports | Actual inspected preservation receipt; scope and original bindings retained. |
+| gate-inputs | research/pathway_additions/2026-10-12-next-228/final-gates/gate-inputs.json | supports | Actual inspected gate-inputs receipt; scope and original bindings retained. |
+| page-qa | research/pathway_additions/2026-10-12-next-228/final-gates/page-qa.json | supports | Actual inspected page-qa receipt; scope and original bindings retained. |
+| visual-observation | research/pathway_additions/2026-10-12-next-228/final-gates/visual-observation.json | supports | Actual inspected visual-observation receipt; scope and original bindings retained. |
+| display-approval | research/pathway_additions/2026-10-12-next-228/final-gates/display-approval.json | supports | Actual inspected display-approval receipt; scope and original bindings retained. |
+| display-assessment | research/pathway_additions/2026-10-12-next-228/final-gates/display-assessment.json | supports | Actual inspected display-assessment receipt; scope and original bindings retained. |
+| history-execution | research/pathway_additions/2026-10-12-next-228/final-gates/history-execution.json | supports | Actual inspected history-execution receipt; scope and original bindings retained. |
+| original-gate-failure | research/pathway_additions/2026-10-12-next-228/final-gates/original-gate-failure.json | supports | Actual inspected original-gate-failure receipt; scope and original bindings retained. |
+| gate-recovery-inputs | research/pathway_additions/2026-10-12-next-228/final-gates/gate-recovery-inputs.json | supports | Actual inspected gate-recovery-inputs receipt; scope and original bindings retained. |
+| test-bytecode-cleanup | research/pathway_additions/2026-10-12-next-228/final-gates/test-bytecode-cleanup.json | supports | Actual inspected test-bytecode-cleanup receipt; scope and original bindings retained. |
+
+## Limits And Additional Notes
+
+- Self-review packaging with explicit independent inheritance; no fresh all-literature search or full independent rereview.
+- The 2004 body is an author-uploaded text projection, not publisher PDF; unavailable historical/FNR primary bodies and TmaR supplements remain unavailable.
+- Native review validation/save/check receipts follow final content assembly; no future command success belongs in the immutable review.
+- Source exhaustion is false. Public-release licensing remains separate.
+- Commit, PR review, issue closure, CI, merge and branch cleanup remain separate root-owned lifecycle actions.
+- Current native inspection directly binds this target, maintained owners, current graph/exports and archived evidence. Old-corpus input hashes and conservation are bound through the full gate-input and preservation receipts; those other records were not freshly scientifically reviewed.
+- Static visual/HTML coverage only; browser interaction, focus and keyboard controls were not exercised.
+- Native review validation/save/check and later final receipt checks follow this assembled document; no late history is authorized by this review.
+- PR review, hosted CI, merge, issue closure and branch cleanup remain pending. Source exhaustion is false.
+- External findings have no fabricated native previous_occurrences. Exact original finding and accepted disposition objects are preserved in assessments.
+- Native curation history must already exist in render inputs. Review save appends no late history.
+- Later archive and review additions need their own exact bindings; earlier full tests are not relabeled as covering later files.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Mannosylglycerate degradation: maintained packaging with independent scientific
+  inheritance'
+reviewer:
+  identity: Codex /root (maintained integrator; packaging fragments by /root/mannosylglycerate_preflight/mg_authorities)
+  kind: agent
+  independence: self_review
+  independence_basis: Root integrated the record and assessed actual maintained gates,
+    preservation and rendered outputs. Scientific content explicitly inherits independent
+    original/successor reviews. Fragment preparer authored the scientific correction/adapter;
+    neither this packaging nor root integration is presented as a new independent
+    literature review.
+scientific_review: true
+scope:
+  description: One complete accepted 75-edge, 62-reference record with 15 endpoint
+    qualifiers; explicit independent source-assessment inheritance and separately
+    assessed maintained execution.
+  selection: Exact MetaCyc:PWY0-1300 SHA256 b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY0-1300
+  exclusions:
+  - target: Other 228 pathways
+    reason: Preservation and maintained gates only; no fresh scientific reassessment.
+evidence:
+- evidence_id: original-science
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-228/science-original/review.json
+  accessed_at: '2026-10-12T04:39:20.164228Z'
+  support: supports
+  summary: Independent original MG scientific review; all findings retained as original
+    evidence, not rewritten.
+  snapshot_sha256: 254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122
+- evidence_id: original-edge-assessments
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-228/science-original/edge-assessments.json
+  accessed_at: '2026-10-12T04:39:20.164228Z'
+  support: supports
+  summary: All 75 original independent edge assessments, with original finding keys
+    preserved.
+  snapshot_sha256: 71708981d86e4cc704f040dbc102c729fe9e5c7899bb72c3502ea2796a0f541f
+- evidence_id: successor-science
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-228/science-successor/review.json
+  accessed_at: '2026-10-12T04:39:20.164228Z'
+  support: supports
+  summary: Independent accepted exact scientific successor and all three issue dispositions;
+    limitations and fresh versus inherited scope retained.
+  snapshot_sha256: cafb6fb71ad47969d286d0162df7dc979b804569e6037e93d3c77b17479fc983
+- evidence_id: evidence-accounting
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-228/science-successor/evidence-accounting.json
+  accessed_at: '2026-10-12T04:39:20.164228Z'
+  support: supports
+  summary: 'Exact 176-use accounting: 149 inherited unchanged,15 corrected locators
+    and12 added evidence uses; no fresh review of every unchanged source is claimed.'
+  snapshot_sha256: 7874a65f144e50b322b7bf1a62abfaaa71e8cd8efcdae0c2dfc7320a2ff28ee6
+- evidence_id: adapter-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-228/adapter-review/review.json
+  accessed_at: '2026-10-12T04:39:20.164228Z'
+  support: supports
+  summary: 'Root independent review accepted the bounded MG PathBank adapter: 11 original
+    regressions, 5 positives, 16 negative controls; no scientific inhibition inference.'
+  snapshot_sha256: 3f36ca26da0ad3a8ed2c52ac7e1c99a074fc0324c8932cc3978316e354f16cf9
+- evidence_id: canonical-audit
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-228/canonical-audit/audit.json
+  accessed_at: '2026-10-12T04:39:20.164228Z'
+  support: supports
+  summary: Independent audit of actual native canonical outputs, 21 source and 6 ontology
+    additions, 12 metadata additions, prior-object conservation and source ordering;
+    distinct from fresh biological review.
+  snapshot_sha256: 876241c5465cbf3f8d0c9fc61ea5f128453a7f83e66d2759097b6acbb7dfc0d3
+- evidence_id: canonical-completion
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-228/canonical-completion/verification.json
+  accessed_at: '2026-10-12T04:39:20.164228Z'
+  support: supports
+  summary: Actual MG native completion after retained original wrapper failure; 2433/575
+    source and 1951/5 ontology counts, all prior objects conserved.
+  snapshot_sha256: 0cdc6cf183000982e44b5aaf4f04124755608c2a195c6de5bf65592ec0d0e7b6
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/gates.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: c8fdf452457384a6d4d4fd8f652eed55d596fd0827bb9119d31e5ceca43fa08c
+  summary: Actual inspected gates receipt; scope and original bindings retained.
+- evidence_id: preservation
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/preservation.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: 5b853333970d750b79e88f7cb9a45b459ea790aacf69a8db6bded24c04aa7d18
+  summary: Actual inspected preservation receipt; scope and original bindings retained.
+- evidence_id: gate-inputs
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/gate-inputs.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: d50cc2216feac9c461032385f79d4e9acd3ed2dcd025245c9feb12627ceb82e8
+  summary: Actual inspected gate-inputs receipt; scope and original bindings retained.
+- evidence_id: page-qa
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/page-qa.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: 109c67a9de12857b7820538ae07c5bd30fde8e053240199303a18a7d7f583342
+  summary: Actual inspected page-qa receipt; scope and original bindings retained.
+- evidence_id: visual-observation
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/visual-observation.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: cafa2bcbdff6f05ad6720e679f07f0653a1c037af37bfa047b932403346b4fdf
+  summary: Actual inspected visual-observation receipt; scope and original bindings
+    retained.
+- evidence_id: display-approval
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/display-approval.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: ed1b5c5d8d81487d5a4bc7c27d364219250a8efa1dd147533cebcefe2211f665
+  summary: Actual inspected display-approval receipt; scope and original bindings
+    retained.
+- evidence_id: display-assessment
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/display-assessment.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: 90f305072bc7034e3a94441cf2b39e868268327ddf76007ad9c678415f796a82
+  summary: Actual inspected display-assessment receipt; scope and original bindings
+    retained.
+- evidence_id: history-execution
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/history-execution.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: e0db55fbad1a1a14bc1aa11dc67749b5b1efc433b158fcf66300ad2aa8268447
+  summary: Actual inspected history-execution receipt; scope and original bindings
+    retained.
+- evidence_id: original-gate-failure
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/original-gate-failure.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: e883f98e4ec92b6f7304f027d9326e0551bdfe846ef89c033c3e685c6db2a179
+  summary: Actual inspected original-gate-failure receipt; scope and original bindings
+    retained.
+- evidence_id: gate-recovery-inputs
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/gate-recovery-inputs.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: ab517c41afe235766123ba17ae8df801bd26d59350a5f6ff9c52c870038a7ad9
+  summary: Actual inspected gate-recovery-inputs receipt; scope and original bindings
+    retained.
+- evidence_id: test-bytecode-cleanup
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-228/final-gates/test-bytecode-cleanup.json
+  accessed_at: '2026-10-12T05:03:11.296991Z'
+  support: supports
+  snapshot_sha256: 199a91cd033ff7149f903f910008b5a0d42050cb087bbaaeb1f6ef68d08b69c4
+  summary: Actual inspected test-bytecode-cleanup receipt; scope and original bindings
+    retained.
+assessments:
+- assessment_id: edge-mg-assembly-P08839
+  area: evidence
+  topic: mechanistic_edges[id=mg-assembly-P08839]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact native coefficient-2 complex
+    component and direct native-chain→issuing-UniProt join checked; no universal solution-state
+    stoichiometry.", "edge_id": "mg-assembly-P08839", "evidence_items": 3, "finding_keys":
+    [], "object": "UniProtKB:P08839", "predicate": "has_part", "references": ["MetaCyc:CPLX0-7938",
+    "MetaCyc:PTSI-MONOMER", "UniProtKB:P08839"], "subject": "MetaCyc:CPLX0-7938"},
+    "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The component list specifies coefficient 2 for PTSI-MONOMER.", "edge_id":
+    "mg-assembly-P08839", "index": 0, "reference_id": "MetaCyc:CPLX0-7938", "role":
+    "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PTSI-MONOMER\"]",
+    "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references
+    this issuing UniProt accession.", "edge_id": "mg-assembly-P08839", "index": 1,
+    "reference_id": "MetaCyc:PTSI-MONOMER", "role": "edge", "source_locator": "XPath
+    /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]", "status": "inherited_exact"},
+    {"claim": "The reviewed issuing accession and ordered locus identify the corresponding
+    polypeptide.", "edge_id": "mg-assembly-P08839", "index": 2, "reference_id": "UniProtKB:P08839",
+    "role": "edge", "source_locator": "primaryAccession; genes", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-assembly-P13669
+  area: evidence
+  topic: mechanistic_edges[id=mg-assembly-P13669]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact native coefficient-2 complex
+    component and direct native-chain→issuing-UniProt join checked; no universal solution-state
+    stoichiometry.", "edge_id": "mg-assembly-P13669", "evidence_items": 3, "finding_keys":
+    [], "object": "UniProtKB:P13669", "predicate": "has_part", "references": ["EcoCyc:PC00103",
+    "EcoCyc:PD01103", "UniProtKB:P13669"], "subject": "EcoCyc:PC00103"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The component list specifies coefficient
+    2 for PD01103.", "edge_id": "mg-assembly-P13669", "index": 0, "reference_id":
+    "EcoCyc:PC00103", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PD01103\"]",
+    "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references
+    this issuing UniProt accession.", "edge_id": "mg-assembly-P13669", "index": 1,
+    "reference_id": "EcoCyc:PD01103", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]",
+    "status": "inherited_exact"}, {"claim": "The reviewed issuing accession and ordered
+    locus identify the corresponding polypeptide.", "edge_id": "mg-assembly-P13669",
+    "index": 2, "reference_id": "UniProtKB:P13669", "role": "edge", "source_locator":
+    "primaryAccession; genes", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-assembly-P0A9E5
+  area: evidence
+  topic: mechanistic_edges[id=mg-assembly-P0A9E5]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact native coefficient-2 complex
+    component and direct native-chain→issuing-UniProt join checked; no universal solution-state
+    stoichiometry.", "edge_id": "mg-assembly-P0A9E5", "evidence_items": 3, "finding_keys":
+    [], "object": "UniProtKB:P0A9E5", "predicate": "has_part", "references": ["EcoCyc:CPLX0-7797",
+    "EcoCyc:PD00197", "UniProtKB:P0A9E5"], "subject": "EcoCyc:CPLX0-7797"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The component list specifies coefficient
+    2 for PD00197.", "edge_id": "mg-assembly-P0A9E5", "index": 0, "reference_id":
+    "EcoCyc:CPLX0-7797", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PD00197\"]",
+    "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references
+    this issuing UniProt accession.", "edge_id": "mg-assembly-P0A9E5", "index": 1,
+    "reference_id": "EcoCyc:PD00197", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]",
+    "status": "inherited_exact"}, {"claim": "The reviewed issuing accession and ordered
+    locus identify the corresponding polypeptide.", "edge_id": "mg-assembly-P0A9E5",
+    "index": 2, "reference_id": "UniProtKB:P0A9E5", "role": "edge", "source_locator":
+    "primaryAccession; genes", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-assembly-P0A9A9
+  area: evidence
+  topic: mechanistic_edges[id=mg-assembly-P0A9A9]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact native coefficient-2 complex
+    component and direct native-chain→issuing-UniProt join checked; no universal solution-state
+    stoichiometry.", "edge_id": "mg-assembly-P0A9A9", "evidence_items": 3, "finding_keys":
+    [], "object": "UniProtKB:P0A9A9", "predicate": "has_part", "references": ["EcoCyc:CPLX0-7639",
+    "EcoCyc:PD00260", "UniProtKB:P0A9A9"], "subject": "EcoCyc:CPLX0-7639"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The component list specifies coefficient
+    2 for PD00260.", "edge_id": "mg-assembly-P0A9A9", "index": 0, "reference_id":
+    "EcoCyc:CPLX0-7639", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Protein/@frameid=\"PD00260\"]",
+    "status": "inherited_exact"}, {"claim": "The native polypeptide directly cross-references
+    this issuing UniProt accession.", "edge_id": "mg-assembly-P0A9A9", "index": 1,
+    "reference_id": "EcoCyc:PD00260", "role": "edge", "source_locator": "XPath /ptools-xml/Protein/dblink[dblink-db=\"UNIPROT\"]",
+    "status": "inherited_exact"}, {"claim": "The reviewed issuing accession and ordered
+    locus identify the corresponding polypeptide.", "edge_id": "mg-assembly-P0A9A9",
+    "index": 2, "reference_id": "UniProtKB:P0A9A9", "role": "edge", "source_locator":
+    "primaryAccession; genes", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-core-RXN0-5216
+  area: evidence
+  topic: mechanistic_edges[id=mg-core-RXN0-5216]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native two-member reaction-list
+    and predecessor placement checked against META and ECOLI originals; selected kinase
+    Rhea orientation independently joined.", "edge_id": "mg-core-RXN0-5216", "evidence_items":
+    1, "finding_keys": [], "object": "MetaCyc:PWY0-1300", "predicate": "part_of",
+    "references": ["MetaCyc:PWY0-1300"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The native reaction-list explicitly
+    includes RXN0-5216.", "edge_id": "mg-core-RXN0-5216", "index": 0, "reference_id":
+    "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/reaction-list/Reaction[@frameid=\"RXN0-5216\"]",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-core-GKI-RXN
+  area: evidence
+  topic: mechanistic_edges[id=mg-core-GKI-RXN]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native two-member reaction-list
+    and predecessor placement checked against META and ECOLI originals; selected kinase
+    Rhea orientation independently joined.", "edge_id": "mg-core-GKI-RXN", "evidence_items":
+    1, "finding_keys": [], "object": "MetaCyc:PWY0-1300", "predicate": "part_of",
+    "references": ["MetaCyc:PWY0-1300"], "subject": "RHEA:27378"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The native reaction-list explicitly
+    includes GKI-RXN.", "edge_id": "mg-core-GKI-RXN", "index": 0, "reference_id":
+    "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/reaction-list/Reaction[@frameid=\"GKI-RXN\"]",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-core-order
+  area: evidence
+  topic: mechanistic_edges[id=mg-core-order]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native two-member reaction-list
+    and predecessor placement checked against META and ECOLI originals; selected kinase
+    Rhea orientation independently joined.", "edge_id": "mg-core-order", "evidence_items":
+    1, "finding_keys": [], "object": "RHEA:27378", "predicate": "precedes", "references":
+    ["MetaCyc:PWY0-1300"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "GKI-RXN has RXN0-5216 as predecessor.",
+    "edge_id": "mg-core-order", "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role":
+    "edge", "source_locator": "XPath /ptools-xml/Pathway/reaction-ordering", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-entry-interface
+  area: evidence
+  topic: mechanistic_edges[id=mg-entry-interface]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native incoming CPD0-1063 link
+    and transport product establish this material interface; transport remains outside
+    core membership.", "edge_id": "mg-entry-interface", "evidence_items": 2, "finding_keys":
+    [], "object": "MetaCyc:RXN0-5216", "predicate": "provides_input_for", "references":
+    ["EcoCyc:RXN0-2522", "MetaCyc:PWY0-1300"], "subject": "RHEA:33308"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The CPD0-1063 incoming pathway-link
+    names RXN0-2522.", "edge_id": "mg-entry-interface", "index": 0, "reference_id":
+    "MetaCyc:PWY0-1300", "role": "edge", "source_locator": "XPath /ptools-xml/Pathway/pathway-link",
+    "status": "inherited_exact"}, {"claim": "The transport reaction produces intracellular
+    CPD0-1063.", "edge_id": "mg-entry-interface", "index": 1, "reference_id": "EcoCyc:RXN0-2522",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-energy-interface
+  area: evidence
+  topic: mechanistic_edges[id=mg-energy-interface]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native PtsI composite and HPr
+    donor/acceptor sides support the contextual relay, with PEP consumed once; no
+    new core step.", "edge_id": "mg-energy-interface", "evidence_items": 2, "finding_keys":
+    [], "object": "RHEA:33308", "predicate": "provides_input_for", "references": ["EcoCyc:2.7.3.9-RXN",
+    "EcoCyc:RXN0-2522"], "subject": "RHEA:23881"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The PtsI composite reaction consumes
+    PEP and histidyl HPr and produces pyruvate and phosphohistidyl HPr.", "edge_id":
+    "mg-energy-interface", "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN", "role":
+    "edge", "source_locator": "XPath /ptools-xml/Reaction/left | /ptools-xml/Reaction/right",
+    "status": "inherited_exact"}, {"claim": "MngA takes phosphohistidyl HPr as donor.",
+    "edge_id": "mg-energy-interface", "index": 1, "reference_id": "EcoCyc:RXN0-2522",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-5216-consumes-60331
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-5216-consumes-60331]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-5216-consumes-60331", "evidence_items":
+    2, "finding_keys": [], "object": "MetaCyc:RXN0-5216", "predicate": "consumes",
+    "references": ["MetaCyc:CPD0-1063", "MetaCyc:RXN0-5216"], "subject": "CHEBI:60331"},
+    "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "Coefficient 1. Native MG-P hydrolysis uses anomer-unspecified D-mannopyranose
+    6-phosphate; the alpha-specific Rhea27867 reaction is not asserted as an exact
+    alias.", "edge_id": "mg-RXN0-5216-consumes-60331", "index": 0, "reference_id":
+    "MetaCyc:RXN0-5216", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"CPD0-1063\"]",
+    "status": "inherited_exact"}, {"claim": "The issuing native compound cross-reference
+    identifies CHEBI:60331; product anomer specificity is not increased beyond this
+    compound definition.", "edge_id": "mg-RXN0-5216-consumes-60331", "index": 1, "reference_id":
+    "MetaCyc:CPD0-1063", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-5216-consumes-15377
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-5216-consumes-15377]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-5216-consumes-15377", "evidence_items":
+    1, "finding_keys": [], "object": "MetaCyc:RXN0-5216", "predicate": "consumes",
+    "references": ["MetaCyc:RXN0-5216"], "subject": "CHEBI:15377"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Coefficient 1. Native MG-P hydrolysis
+    uses anomer-unspecified D-mannopyranose 6-phosphate; the alpha-specific Rhea27867
+    reaction is not asserted as an exact alias.", "edge_id": "mg-RXN0-5216-consumes-15377",
+    "index": 0, "reference_id": "MetaCyc:RXN0-5216", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"WATER\"]", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-5216-produces-58735
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-5216-produces-58735]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-5216-produces-58735", "evidence_items":
+    2, "finding_keys": [], "object": "CHEBI:58735", "predicate": "produces", "references":
+    ["EcoCyc:CPD-15979", "MetaCyc:RXN0-5216"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Coefficient 1. Native MG-P hydrolysis
+    uses anomer-unspecified D-mannopyranose 6-phosphate; the alpha-specific Rhea27867
+    reaction is not asserted as an exact alias.", "edge_id": "mg-RXN0-5216-produces-58735",
+    "index": 0, "reference_id": "MetaCyc:RXN0-5216", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"CPD-15979\"]", "status":
+    "inherited_exact"}, {"claim": "The issuing native compound cross-reference identifies
+    CHEBI:58735; product anomer specificity is not increased beyond this compound
+    definition.", "edge_id": "mg-RXN0-5216-produces-58735", "index": 1, "reference_id":
+    "EcoCyc:CPD-15979", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-5216-produces-16659
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-5216-produces-16659]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-5216-produces-16659", "evidence_items":
+    2, "finding_keys": [], "object": "CHEBI:16659", "predicate": "produces", "references":
+    ["MetaCyc:GLYCERATE", "MetaCyc:RXN0-5216"], "subject": "MetaCyc:RXN0-5216"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Coefficient 1. Native MG-P hydrolysis
+    uses anomer-unspecified D-mannopyranose 6-phosphate; the alpha-specific Rhea27867
+    reaction is not asserted as an exact alias.", "edge_id": "mg-RXN0-5216-produces-16659",
+    "index": 0, "reference_id": "MetaCyc:RXN0-5216", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"GLYCERATE\"]", "status":
+    "inherited_exact"}, {"claim": "The issuing native compound cross-reference identifies
+    CHEBI:16659; product anomer specificity is not increased beyond this compound
+    definition.", "edge_id": "mg-RXN0-5216-produces-16659", "index": 1, "reference_id":
+    "MetaCyc:GLYCERATE", "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-GKI-RXN-consumes-16659
+  area: evidence
+  topic: mechanistic_edges[id=mg-GKI-RXN-consumes-16659]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-GKI-RXN-consumes-16659", "evidence_items":
+    2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:27378",
+    "predicate": "consumes", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject":
+    "CHEBI:16659"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key":
+    "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase
+    reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.",
+    "edge_id": "mg-GKI-RXN-consumes-16659", "index": 0, "reference_id": "EcoCyc:GKI-RXN",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"GLYCERATE\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (R)-glycerate.",
+    "edge_id": "mg-GKI-RXN-consumes-16659", "index": 1, "reference_id": "RHEA:27378",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:substrates
+    http://rdf.rhea-db.org/27377_L; http://rdf.rhea-db.org/27377_L rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_3204;
+    http://rdf.rhea-db.org/Participant_27377_compound_3204 rh:compound http://rdf.rhea-db.org/Compound_3204",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-GKI-RXN-consumes-30616
+  area: evidence
+  topic: mechanistic_edges[id=mg-GKI-RXN-consumes-30616]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-GKI-RXN-consumes-30616", "evidence_items":
+    2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:27378",
+    "predicate": "consumes", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject":
+    "CHEBI:30616"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key":
+    "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase
+    reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.",
+    "edge_id": "mg-GKI-RXN-consumes-30616", "index": 0, "reference_id": "EcoCyc:GKI-RXN",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"ATP\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one ATP.",
+    "edge_id": "mg-GKI-RXN-consumes-30616", "index": 1, "reference_id": "RHEA:27378",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:substrates
+    http://rdf.rhea-db.org/27377_L; http://rdf.rhea-db.org/27377_L rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_6372;
+    http://rdf.rhea-db.org/Participant_27377_compound_6372 rh:compound http://rdf.rhea-db.org/Compound_6372",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-GKI-RXN-produces-58289
+  area: evidence
+  topic: mechanistic_edges[id=mg-GKI-RXN-produces-58289]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-GKI-RXN-produces-58289", "evidence_items":
+    2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:58289",
+    "predicate": "produces", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject":
+    "RHEA:27378"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key":
+    "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase
+    reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.",
+    "edge_id": "mg-GKI-RXN-produces-58289", "index": 0, "reference_id": "EcoCyc:GKI-RXN",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"2-PG\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (2R)-2-phosphoglycerate.",
+    "edge_id": "mg-GKI-RXN-produces-58289", "index": 1, "reference_id": "RHEA:27378",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:products http://rdf.rhea-db.org/27377_R;
+    http://rdf.rhea-db.org/27377_R rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_4690;
+    http://rdf.rhea-db.org/Participant_27377_compound_4690 rh:compound http://rdf.rhea-db.org/Compound_4690",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-GKI-RXN-produces-456216
+  area: evidence
+  topic: mechanistic_edges[id=mg-GKI-RXN-produces-456216]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-GKI-RXN-produces-456216", "evidence_items":
+    2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:456216",
+    "predicate": "produces", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject":
+    "RHEA:27378"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key":
+    "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase
+    reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.",
+    "edge_id": "mg-GKI-RXN-produces-456216", "index": 0, "reference_id": "EcoCyc:GKI-RXN",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"ADP\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one ADP.",
+    "edge_id": "mg-GKI-RXN-produces-456216", "index": 1, "reference_id": "RHEA:27378",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:products http://rdf.rhea-db.org/27377_R;
+    http://rdf.rhea-db.org/27377_R rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_2710;
+    http://rdf.rhea-db.org/Participant_27377_compound_2710 rh:compound http://rdf.rhea-db.org/Compound_2710",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-GKI-RXN-produces-15378
+  area: evidence
+  topic: mechanistic_edges[id=mg-GKI-RXN-produces-15378]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-GKI-RXN-produces-15378", "evidence_items":
+    2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:15378",
+    "predicate": "produces", "references": ["EcoCyc:GKI-RXN", "RHEA:27378"], "subject":
+    "RHEA:27378"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key":
+    "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1; forward glycerate 2-kinase
+    reaction. ATP is a consumed substrate; Mg occupancy is not specified by this equation.",
+    "edge_id": "mg-GKI-RXN-produces-15378", "index": 0, "reference_id": "EcoCyc:GKI-RXN",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"PROTON\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one H(+).",
+    "edge_id": "mg-GKI-RXN-produces-15378", "index": 1, "reference_id": "RHEA:27378",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/27378 rh:products http://rdf.rhea-db.org/27377_R;
+    http://rdf.rhea-db.org/27377_R rh:contains1 http://rdf.rhea-db.org/Participant_27377_compound_3249;
+    http://rdf.rhea-db.org/Participant_27377_compound_3249 rh:compound http://rdf.rhea-db.org/Compound_3249",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-2522-consumes-57541
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-2522-consumes-57541]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-2522-consumes-57541", "evidence_items":
+    2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:33308",
+    "predicate": "consumes", "references": ["EcoCyc:RXN0-2522", "RHEA:33308"], "subject":
+    "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key":
+    "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 MG outside; native compartment
+    CCO-OUT. MngA couples uptake to phosphorylation.", "edge_id": "mg-RXN0-2522-consumes-57541",
+    "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"2-O-ALPHA-MANNOSYL-D-GLYCERATE\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (2R)-2-O-(alpha-D-mannosyl)-glycerate.",
+    "edge_id": "mg-RXN0-2522-consumes-57541", "index": 1, "reference_id": "RHEA:33308",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308 rh:substrates
+    http://rdf.rhea-db.org/33307_L; http://rdf.rhea-db.org/33307_L rh:contains1 http://rdf.rhea-db.org/Participant_33307_compound_4158_out;
+    http://rdf.rhea-db.org/Participant_33307_compound_4158_out rh:compound http://rdf.rhea-db.org/Compound_4158",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-2522-consumes-P0AA04
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-2522-consumes-P0AA04]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-2522-consumes-P0AA04",
+    "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"],
+    "object": "RHEA:33308", "predicate": "consumes", "references": ["EcoCyc:RXN0-2522",
+    "RHEA:33308"], "subject": "UniProtKB:P0AA04"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 phosphohistidyl HPr inside;
+    native CCO-IN. One HPr phosphate supplies the incoming MG.", "edge_id": "mg-RXN0-2522-consumes-P0AA04",
+    "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"Hpr-pi-phospho-L-histidines\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one N(pros)-phospho-L-histidyl-[protein].
+    This generic protein state is instantiated as E. coli HPr using the native reaction
+    and protein evidence; it is not free histidine.", "edge_id": "mg-RXN0-2522-consumes-P0AA04",
+    "index": 1, "reference_id": "RHEA:33308", "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308
+    rh:substrates http://rdf.rhea-db.org/33307_L; http://rdf.rhea-db.org/33307_L rh:contains1
+    http://rdf.rhea-db.org/Participant_33307_compound_9746; http://rdf.rhea-db.org/Participant_33307_compound_9746
+    rh:compound http://rdf.rhea-db.org/Compound_9746", "status": "fresh_corrected_locator"},
+    {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish
+    its two formal reaction pools.", "edge_id": "mg-RXN0-2522-consumes-P0AA04", "index":
+    0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator":
+    "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"},
+    {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl
+    phosphorylation.", "edge_id": "mg-RXN0-2522-consumes-P0AA04", "index": 1, "reference_id":
+    "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-2522-produces-60331
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-2522-produces-60331]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-2522-produces-60331", "evidence_items":
+    2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "CHEBI:60331",
+    "predicate": "produces", "references": ["EcoCyc:RXN0-2522", "RHEA:33308"], "subject":
+    "RHEA:33308"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 443, "issue_key":
+    "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 MG-P inside; native CCO-IN.
+    ATP and proton-motive force are not asserted as additional energy inputs.", "edge_id":
+    "mg-RXN0-2522-produces-60331", "index": 0, "reference_id": "EcoCyc:RXN0-2522",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"CPD0-1063\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one (2R)-2-O-(6-phospho-alpha-D-mannosyl)-glycerate.",
+    "edge_id": "mg-RXN0-2522-produces-60331", "index": 1, "reference_id": "RHEA:33308",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308 rh:products http://rdf.rhea-db.org/33307_R;
+    http://rdf.rhea-db.org/33307_R rh:contains1 http://rdf.rhea-db.org/Participant_33307_compound_6277_in;
+    http://rdf.rhea-db.org/Participant_33307_compound_6277_in rh:compound http://rdf.rhea-db.org/Compound_6277",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-RXN0-2522-produces-P0AA04
+  area: evidence
+  topic: mechanistic_edges[id=mg-RXN0-2522-produces-P0AA04]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-RXN0-2522-produces-P0AA04",
+    "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"],
+    "object": "UniProtKB:P0AA04", "predicate": "produces", "references": ["EcoCyc:RXN0-2522",
+    "RHEA:33308"], "subject": "RHEA:33308"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 histidyl HPr inside; native
+    CCO-IN. The carrier remains a protein after phosphate transfer.", "edge_id": "mg-RXN0-2522-produces-P0AA04",
+    "index": 0, "reference_id": "EcoCyc:RXN0-2522", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"Hpr-Histidine\"]", "status":
+    "inherited_exact"}, {"claim": "The forward Rhea side contains one L-histidyl-[protein].
+    This generic protein state is instantiated as E. coli HPr using the native reaction
+    and protein evidence; it is not free histidine.", "edge_id": "mg-RXN0-2522-produces-P0AA04",
+    "index": 1, "reference_id": "RHEA:33308", "role": "edge", "source_locator": "http://rdf.rhea-db.org/33308
+    rh:products http://rdf.rhea-db.org/33307_R; http://rdf.rhea-db.org/33307_R rh:contains1
+    http://rdf.rhea-db.org/Participant_33307_compound_9745; http://rdf.rhea-db.org/Participant_33307_compound_9745
+    rh:compound http://rdf.rhea-db.org/Compound_9745", "status": "fresh_corrected_locator"},
+    {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish
+    its two formal reaction pools.", "edge_id": "mg-RXN0-2522-produces-P0AA04", "index":
+    0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator":
+    "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"},
+    {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl
+    phosphorylation.", "edge_id": "mg-RXN0-2522-produces-P0AA04", "index": 1, "reference_id":
+    "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-2.7.3.9-RXN-consumes-58702
+  area: evidence
+  topic: mechanistic_edges[id=mg-2.7.3.9-RXN-consumes-58702]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-consumes-58702",
+    "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"],
+    "object": "RHEA:23881", "predicate": "consumes", "references": ["EcoCyc:2.7.3.9-RXN",
+    "RHEA:23881"], "subject": "CHEBI:58702"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 PEP in the contextual PtsI-to-HPr
+    reaction; native composite direction is physiological left-to-right.", "edge_id":
+    "mg-2.7.3.9-RXN-consumes-58702", "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"PHOSPHO-ENOL-PYRUVATE\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one phosphoenolpyruvate.",
+    "edge_id": "mg-2.7.3.9-RXN-consumes-58702", "index": 1, "reference_id": "RHEA:23881",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881 rh:substrates
+    http://rdf.rhea-db.org/23880_L; http://rdf.rhea-db.org/23880_L rh:contains1 http://rdf.rhea-db.org/Participant_23880_compound_3582;
+    http://rdf.rhea-db.org/Participant_23880_compound_3582 rh:compound http://rdf.rhea-db.org/Compound_3582",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-2.7.3.9-RXN-consumes-P0AA04
+  area: evidence
+  topic: mechanistic_edges[id=mg-2.7.3.9-RXN-consumes-P0AA04]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04",
+    "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"],
+    "object": "RHEA:23881", "predicate": "consumes", "references": ["EcoCyc:2.7.3.9-RXN",
+    "RHEA:23881"], "subject": "UniProtKB:P0AA04"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 histidyl HPr accepts phosphate
+    through PtsI.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04", "index": 0, "reference_id":
+    "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left/Compound[@frameid=\"Hpr-Histidine\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one L-histidyl-[protein].
+    This generic protein state is instantiated as E. coli HPr using the native reaction
+    and protein evidence; it is not free histidine.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04",
+    "index": 1, "reference_id": "RHEA:23881", "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881
+    rh:substrates http://rdf.rhea-db.org/23880_L; http://rdf.rhea-db.org/23880_L rh:contains1
+    http://rdf.rhea-db.org/Participant_23880_compound_9745; http://rdf.rhea-db.org/Participant_23880_compound_9745
+    rh:compound http://rdf.rhea-db.org/Compound_9745", "status": "fresh_corrected_locator"},
+    {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish
+    its two formal reaction pools.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04",
+    "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator":
+    "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"},
+    {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl
+    phosphorylation.", "edge_id": "mg-2.7.3.9-RXN-consumes-P0AA04", "index": 1, "reference_id":
+    "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-2.7.3.9-RXN-produces-15361
+  area: evidence
+  topic: mechanistic_edges[id=mg-2.7.3.9-RXN-produces-15361]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-produces-15361",
+    "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"],
+    "object": "CHEBI:15361", "predicate": "produces", "references": ["EcoCyc:2.7.3.9-RXN",
+    "RHEA:23881"], "subject": "RHEA:23881"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 pyruvate is formed from PEP
+    during general PTS energy coupling.", "edge_id": "mg-2.7.3.9-RXN-produces-15361",
+    "index": 0, "reference_id": "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"PYRUVATE\"]", "status":
+    "inherited_exact"}, {"claim": "The forward Rhea side contains one pyruvate.",
+    "edge_id": "mg-2.7.3.9-RXN-produces-15361", "index": 1, "reference_id": "RHEA:23881",
+    "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881 rh:products http://rdf.rhea-db.org/23880_R;
+    http://rdf.rhea-db.org/23880_R rh:contains1 http://rdf.rhea-db.org/Participant_23880_compound_3719;
+    http://rdf.rhea-db.org/Participant_23880_compound_3719 rh:compound http://rdf.rhea-db.org/Compound_3719",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-2.7.3.9-RXN-produces-P0AA04
+  area: evidence
+  topic: mechanistic_edges[id=mg-2.7.3.9-RXN-produces-P0AA04]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Actual native side frame, forward
+    Rhea participant/compound join where applicable, chemistry and coefficient checked.
+    Generic mannose-phosphate remains distinct from alpha. HPr endpoints retain the
+    correct state and endpoint role.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04",
+    "evidence_items": 2, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"],
+    "object": "UniProtKB:P0AA04", "predicate": "produces", "references": ["EcoCyc:2.7.3.9-RXN",
+    "RHEA:23881"], "subject": "RHEA:23881"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Coefficient 1 phosphohistidyl HPr supplies
+    downstream MngA.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04", "index": 0, "reference_id":
+    "EcoCyc:2.7.3.9-RXN", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/right/Compound[@frameid=\"Hpr-pi-phospho-L-histidines\"]",
+    "status": "inherited_exact"}, {"claim": "The forward Rhea side contains one N(pros)-phospho-L-histidyl-[protein].
+    This generic protein state is instantiated as E. coli HPr using the native reaction
+    and protein evidence; it is not free histidine.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04",
+    "index": 1, "reference_id": "RHEA:23881", "role": "edge", "source_locator": "http://rdf.rhea-db.org/23881
+    rh:products http://rdf.rhea-db.org/23880_R; http://rdf.rhea-db.org/23880_R rh:contains1
+    http://rdf.rhea-db.org/Participant_23880_compound_9746; http://rdf.rhea-db.org/Participant_23880_compound_9746
+    rh:compound http://rdf.rhea-db.org/Compound_9746", "status": "fresh_corrected_locator"},
+    {"claim": "HPr transfers phosphate through His15; state-qualified endpoints distinguish
+    its two formal reaction pools.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04",
+    "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "qualifier[0]", "source_locator":
+    "features[type=Active site]; comments[commentType=FUNCTION]", "status": "inherited_exact"},
+    {"claim": "Native HPr is a cytoplasmic phosphocarrier with transient histidyl
+    phosphorylation.", "edge_id": "mg-2.7.3.9-RXN-produces-P0AA04", "index": 1, "reference_id":
+    "EcoCyc:PTSH-MONOMER", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mnga-catalysis
+  area: evidence
+  topic: mechanistic_edges[id=mg-mnga-catalysis]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native MngA identity and one 658-aa
+    EIIABC chain agree with deletion/rescue and inverted-membrane phosphorylation
+    evidence. Native catalytic attribution and pACS31 assay claim are separated; source-selected
+    entry-modulation omission is finding 1.", "edge_id": "mg-mnga-catalysis", "evidence_items":
+    3, "finding_keys": ["mg-entry-assay-context-omission"], "object": "RHEA:33308",
+    "predicate": "catalyzes", "references": ["EcoCyc:ENZRXN0-3541", "PMID:14645248",
+    "UniProtKB:P54745"], "subject": "UniProtKB:P54745"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 441,
+    "issue_key": "mg-entry-assay-context-omission", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/441",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "major", "reason": "Four added source-located uptake/induction
+    assertions and entry description preserve weak-positive and negative sugar comparisons,
+    Results/Discussion mannose tension, 300 mM growth-salt reduction of induction,
+    and separation from inverted-membrane and KM522 experiments. No new compound or
+    inhibition/binding edge is invented.", "remaining": "Full canonical build, maintained
+    integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes":
+    103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Native enzymatic reaction assigns HRSA-MONOMER
+    to RXN0-2522.", "edge_id": "mg-mnga-catalysis", "index": 0, "reference_id": "EcoCyc:ENZRXN0-3541",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Enzymatic-Reaction/enzyme
+    | /ptools-xml/Enzymatic-Reaction/reaction", "status": "inherited_exact"}, {"claim":
+    "MngA deletion/complementation and inverted-membrane assays support MG uptake/phosphorylation;
+    phosphatase experiments infer the phosphate position.", "edge_id": "mg-mnga-catalysis",
+    "index": 1, "reference_id": "PMID:14645248", "role": "edge", "source_locator":
+    "Author-uploaded full text retained web observation, lines L1443–L1662; JBC279:5537–5548",
+    "status": "inherited_exact"}, {"claim": "One658-residue protein contains IIA,
+    IIB and IIC functional regions; these are not three distinct subunits.", "edge_id":
+    "mg-mnga-catalysis", "index": 2, "reference_id": "UniProtKB:P54745", "role": "edge",
+    "source_locator": "sequence.length; proteinDescription.includes", "status": "inherited_exact"},
+    {"claim": "In MG-induced MC4100, Results reports weak uptake inhibition by glucose,
+    mannose and mannitol, a smaller effect from trehalose, and none from fructose.",
+    "edge_id": "mg-mnga-catalysis", "index": 3, "reference_id": "PMID:14645248", "role":
+    "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1323–L1354; JBC279:5537–5548", "status": "fresh_added_evidence"}, {"claim":
+    "No uptake inhibition was observed for maltose, arabinose, gluconate, glycerate,
+    1-alpha-glucosylglycerol, 2-alpha-glucosylglycerate or 2-alpha-mannosylglycerol
+    in the reported MC4100 comparisons.", "edge_id": "mg-mnga-catalysis", "index":
+    4, "reference_id": "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded
+    full text retained web observation, lines L1350–L1372; JBC279:5537–5548", "status":
+    "fresh_added_evidence"}, {"claim": "Discussion reports no significant inhibition
+    by mannose or the three named glycosyl analogues at 1 mM against 0.1 micromolar
+    labeled MG. This contrasts with the weak mannose effect in Results; a direct competitive
+    mechanism is not established.", "edge_id": "mg-mnga-catalysis", "index": 5, "reference_id":
+    "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text
+    retained web observation, lines L2429–L2457; JBC279:5537–5548", "status": "fresh_added_evidence"},
+    {"claim": "In MC4100 growth experiments, 300 mM sodium chloride did not induce
+    MG transport and reduced MG-dependent induction by about 50%. This is an induction
+    observation, separate from KM522 salt protection.", "edge_id": "mg-mnga-catalysis",
+    "index": 6, "reference_id": "PMID:14645248", "role": "edge", "source_locator":
+    "Author-uploaded full text retained web observation, lines L1251–L1310; JBC279:5537–5548",
+    "status": "fresh_added_evidence"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_added_evidence": 4, "inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mnga-vesicle-assay
+  area: evidence
+  topic: mechanistic_edges[id=mg-mnga-vesicle-assay]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native MngA identity and one 658-aa
+    EIIABC chain agree with deletion/rescue and inverted-membrane phosphorylation
+    evidence. Native catalytic attribution and pACS31 assay claim are separated; source-selected
+    entry-modulation omission is finding 1.", "edge_id": "mg-mnga-vesicle-assay",
+    "evidence_items": 2, "finding_keys": ["mg-entry-assay-context-omission"], "object":
+    "RHEA:33308", "predicate": "enables", "references": ["PMID:14645248"], "subject":
+    "UniProtKB:P54745"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 441, "issue_key":
+    "mg-entry-assay-context-omission", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/441",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "major", "reason": "Four added source-located uptake/induction
+    assertions and entry description preserve weak-positive and negative sugar comparisons,
+    Results/Discussion mannose tension, 300 mM growth-salt reduction of induction,
+    and separation from inverted-membrane and KM522 experiments. No new compound or
+    inhibition/binding edge is invented.", "remaining": "Full canonical build, maintained
+    integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes":
+    103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "pACS31 places mngA under IPTG-inducible
+    lac-promoter control.", "edge_id": "mg-mnga-vesicle-assay", "index": 0, "reference_id":
+    "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text
+    retained web observation, lines L894–L944; JBC279:5537–5548", "status": "inherited_exact"},
+    {"claim": "Membranes and general PTS extract support PEP-dependent MG phosphorylation.",
+    "edge_id": "mg-mnga-vesicle-assay", "index": 1, "reference_id": "PMID:14645248",
+    "role": "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1100–L1230; JBC279:5537–5548", "status": "inherited_exact"}, {"claim":
+    "The experiment expresses MngA from pACS31 under an IPTG-inducible promoter.",
+    "edge_id": "mg-mnga-vesicle-assay", "index": 0, "reference_id": "PMID:14645248",
+    "role": "qualifier[0]", "source_locator": "Author-uploaded full text retained
+    web observation, lines L894–L944; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mngb-enables
+  area: evidence
+  topic: mechanistic_edges[id=mg-mngb-enables]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Primary intact-cell p-nitrophenyl
+    surrogate assay and native uncertainty support enables only. No purified MG-P
+    turnover, measured product anomer or direct ligand assignment is claimed.", "edge_id":
+    "mg-mngb-enables", "evidence_items": 3, "finding_keys": [], "object": "MetaCyc:RXN0-5216",
+    "predicate": "enables", "references": ["EcoCyc:EG13236-MONOMER", "EcoCyc:ENZRXN0-6336",
+    "PMID:14645248"], "subject": "UniProtKB:P54746"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "MngB is assigned MG-P hydrolysis from
+    physiological evidence; the native comment states that it has not yet been purified.",
+    "edge_id": "mg-mngb-enables", "index": 0, "reference_id": "EcoCyc:EG13236-MONOMER",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Protein/comment", "status":
+    "inherited_exact"}, {"claim": "The mannosidase assay uses p-nitrophenyl substrates
+    and does not distinguish phosphorylated from unphosphorylated surrogate hydrolysis.",
+    "edge_id": "mg-mngb-enables", "index": 1, "reference_id": "PMID:14645248", "role":
+    "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1880–L1958; JBC279:5537–5548", "status": "inherited_exact"}, {"claim":
+    "The native enzymatic reaction links MngB to RXN0-5216.", "edge_id": "mg-mngb-enables",
+    "index": 2, "reference_id": "EcoCyc:ENZRXN0-6336", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gark-catalysis
+  area: evidence
+  topic: mechanistic_edges[id=mg-gark-catalysis]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native assignment/Rhea2PG chemistry
+    and engineered four-deletion growth selection checked. His6-bearing primer construct
+    is explicit; historical kinase naming is not used to transfer old assay conditions.",
+    "edge_id": "mg-gark-catalysis", "evidence_items": 2, "finding_keys": [], "object":
+    "RHEA:27378", "predicate": "catalyzes", "references": ["EcoCyc:GKI-ENZRXN", "UniProtKB:P23524"],
+    "subject": "UniProtKB:P23524"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The native enzyme assignment links
+    GKI-MONOMER to physiologically forward GKI-RXN.", "edge_id": "mg-gark-catalysis",
+    "index": 0, "reference_id": "EcoCyc:GKI-ENZRXN", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Enzymatic-Reaction/reaction | /ptools-xml/Enzymatic-Reaction/enzyme
+    | /ptools-xml/Enzymatic-Reaction/reaction-direction", "status": "inherited_exact"},
+    {"claim": "Reviewed GarK has glycerate 2-kinase chemistry; the caution preserves
+    historical ambiguity between GK1/GK2 gene assignments.", "edge_id": "mg-gark-catalysis",
+    "index": 1, "reference_id": "UniProtKB:P23524", "role": "edge", "source_locator":
+    "comments[commentType=CATALYTIC ACTIVITY]; comments[commentType=CAUTION]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gark-product-selection
+  area: evidence
+  topic: mechanistic_edges[id=mg-gark-product-selection]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native assignment/Rhea2PG chemistry
+    and engineered four-deletion growth selection checked. His6-bearing primer construct
+    is explicit; historical kinase naming is not used to transfer old assay conditions.",
+    "edge_id": "mg-gark-product-selection", "evidence_items": 2, "finding_keys": [],
+    "object": "RHEA:27378", "predicate": "enables", "references": ["PMID:25823014"],
+    "subject": "UniProtKB:P23524"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "In the engineered four-deletion background,
+    GarK expression allows glycerate to replace pyruvate, supporting formation of
+    2PG instead of 3PG.", "edge_id": "mg-gark-product-selection", "index": 0, "reference_id":
+    "PMID:25823014", "role": "edge", "source_locator": "XPath /article/body/sec[2]/p[2];
+    paragraph containing ''We tested three glycerate kinases''", "status": "inherited_exact"},
+    {"claim": "The cloning section describes plasmid expression and N-terminal His6-bearing
+    primers; tag cleavage is not established.", "edge_id": "mg-gark-product-selection",
+    "index": 1, "reference_id": "PMID:25823014", "role": "edge", "source_locator":
+    "XPath /article/body/sec[3]/sec[1]", "status": "inherited_exact"}, {"claim": "Cloning
+    uses K-12 garK, RBS E, Pniv and Ptac vectors with His6-bearing primer sequence.",
+    "edge_id": "mg-gark-product-selection", "index": 0, "reference_id": "PMID:25823014",
+    "role": "qualifier[0]", "source_locator": "XPath /article/body/sec[3]/sec[1]",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-ptsi-catalysis
+  area: evidence
+  topic: mechanistic_edges[id=mg-ptsi-catalysis]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native homodimer and composite
+    reaction support catalysis/His189-to-His15 relay; exact UniProt His189 locator
+    needs the minor correction.", "edge_id": "mg-ptsi-catalysis", "evidence_items":
+    3, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"], "object": "RHEA:23881",
+    "predicate": "catalyzes", "references": ["EcoCyc:ENZRXN0-8621", "MetaCyc:CPLX0-7938",
+    "UniProtKB:P08839"], "subject": "MetaCyc:CPLX0-7938"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "EcoCyc assigns CPLX0-7938 to the composite2.7.3.9-RXN.",
+    "edge_id": "mg-ptsi-catalysis", "index": 0, "reference_id": "EcoCyc:ENZRXN0-8621",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Enzymatic-Reaction/enzyme
+    | /ptools-xml/Enzymatic-Reaction/reaction", "status": "inherited_exact"}, {"claim":
+    "The independently issued MetaCyc assembly has2PTSI-MONOMER components.", "edge_id":
+    "mg-ptsi-catalysis", "index": 1, "reference_id": "MetaCyc:CPLX0-7938", "role":
+    "edge", "source_locator": "XPath /ptools-xml/Protein/component", "status": "inherited_exact"},
+    {"claim": "PtsI autophosphorylation at His189 precedes transfer to HPr.", "edge_id":
+    "mg-ptsi-catalysis", "index": 2, "reference_id": "UniProtKB:P08839", "role": "edge",
+    "source_locator": "comments[commentType=FUNCTION]; features[type=Active site,location.start.value=189]",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1, "inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mngb-cofactor
+  area: evidence
+  topic: mechanistic_edges[id=mg-mngb-cofactor]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact source cofactor identity,
+    evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI
+    Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain
+    are distinguished.", "edge_id": "mg-mngb-cofactor", "evidence_items": 1, "finding_keys":
+    [], "object": "CHEBI:60240", "predicate": "has_cofactor", "references": ["UniProtKB:P54746"],
+    "subject": "UniProtKB:P54746"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "One generic divalent metal cation per
+    subunit is annotated by similarity; this is not a measured MG-P assay metal.",
+    "edge_id": "mg-mngb-cofactor", "index": 0, "reference_id": "UniProtKB:P54746",
+    "role": "edge", "source_locator": "comments[commentType=COFACTOR]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-ptsi-cofactor
+  area: evidence
+  topic: mechanistic_edges[id=mg-ptsi-cofactor]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact source cofactor identity,
+    evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI
+    Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain
+    are distinguished.", "edge_id": "mg-ptsi-cofactor", "evidence_items": 2, "finding_keys":
+    [], "object": "CHEBI:18420", "predicate": "has_cofactor", "references": ["PMID:17053069",
+    "UniProtKB:P08839"], "subject": "MetaCyc:CPLX0-7938"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The reviewed PtsI entry identifies
+    Mg2+ with experimental evidence from the trapped phosphoenzyme structure.", "edge_id":
+    "mg-ptsi-cofactor", "index": 0, "reference_id": "UniProtKB:P08839", "role": "edge",
+    "source_locator": "comments[commentType=COFACTOR]", "status": "inherited_exact"},
+    {"claim": "The structure captures phosphorylated enzyme I with Mg2+ and oxalate,
+    a specific trapped state.", "edge_id": "mg-ptsi-cofactor", "index": 1, "reference_id":
+    "PMID:17053069", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/p[5];
+    paragraph containing ''Both EI and PPDK must shuttle''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-fur-iron
+  area: evidence
+  topic: mechanistic_edges[id=mg-fur-iron]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact source cofactor identity,
+    evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI
+    Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain
+    are distinguished.", "edge_id": "mg-fur-iron", "evidence_items": 2, "finding_keys":
+    [], "object": "CHEBI:29033", "predicate": "has_part", "references": ["EcoCyc:CPLX0-7639",
+    "EcoCyc:FE+2"], "subject": "EcoCyc:CPLX0-7639"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The component list assigns coefficient
+    2 to ferrous iron.", "edge_id": "mg-fur-iron", "index": 0, "reference_id": "EcoCyc:CPLX0-7639",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Protein/component[Compound/@frameid=\"FE+2\"]",
+    "status": "inherited_exact"}, {"claim": "The native FE+2 compound directly cross-references
+    CHEBI:29033.", "edge_id": "mg-fur-iron", "index": 1, "reference_id": "EcoCyc:FE+2",
+    "role": "edge", "source_locator": "XPath /ptools-xml/Compound/dblink[dblink-db=\"CHEBI\"]",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-location-P54745
+  area: evidence
+  topic: mechanistic_edges[id=mg-location-P54745]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-location-P54745", "evidence_items": 1, "finding_keys": [], "object":
+    "GO:0005886", "predicate": "located_in", "references": ["UniProtKB:P54745"], "subject":
+    "UniProtKB:P54745"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "MngA is an inner-membrane multipass protein. Predicted N-terminal
+    topology is not adopted as experimentally measured phosphorelay sidedness.", "edge_id":
+    "mg-location-P54745", "index": 0, "reference_id": "UniProtKB:P54745", "role":
+    "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-location-P08839
+  area: evidence
+  topic: mechanistic_edges[id=mg-location-P08839]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-location-P08839", "evidence_items": 1, "finding_keys": [], "object":
+    "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P08839"], "subject":
+    "UniProtKB:P08839"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "PtsI is cytoplasmic; its polar sequestration is a regulated state
+    examined in general sugar studies.", "edge_id": "mg-location-P08839", "index":
+    0, "reference_id": "UniProtKB:P08839", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR
+    LOCATION]", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-location-P0AA04
+  area: evidence
+  topic: mechanistic_edges[id=mg-location-P0AA04]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-location-P0AA04", "evidence_items": 1, "finding_keys": [], "object":
+    "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0AA04"], "subject":
+    "UniProtKB:P0AA04"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "HPr is a soluble cytoplasmic phosphocarrier, not the inner-membrane
+    protein implied by frozen PathBank placement.", "edge_id": "mg-location-P0AA04",
+    "index": 0, "reference_id": "UniProtKB:P0AA04", "role": "edge", "source_locator":
+    "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-location-P0ACF8
+  area: evidence
+  topic: mechanistic_edges[id=mg-location-P0ACF8]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-location-P0ACF8", "evidence_items": 1, "finding_keys": ["mg-uniprot-rhea-evidence-locator-scope"],
+    "object": "GO:0009295", "predicate": "located_in", "references": ["UniProtKB:P0ACF8"],
+    "subject": "UniProtKB:P0ACF8"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 443,
+    "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "H-NS is a nucleoid-associated protein;
+    it forms variable oligomers, so no fixed H-NS stoichiometry is assigned.", "edge_id":
+    "mg-location-P0ACF8", "index": 0, "reference_id": "UniProtKB:P0ACF8", "role":
+    "edge", "source_locator": "comments[commentType=SUBCELLULAR LOCATION]; comments[commentType=SUBUNIT]",
+    "status": "fresh_corrected_locator"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_corrected_locator": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-entry-membrane
+  area: evidence
+  topic: mechanistic_edges[id=mg-entry-membrane]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-entry-membrane", "evidence_items": 2, "finding_keys": [], "object":
+    "GO:0005886", "predicate": "occurs_in", "references": ["EcoCyc:RXN0-2522", "UniProtKB:P54745"],
+    "subject": "RHEA:33308"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Native MG is outside and MG-P plus
+    both HPr states are inside.", "edge_id": "mg-entry-membrane", "index": 0, "reference_id":
+    "EcoCyc:RXN0-2522", "role": "edge", "source_locator": "XPath /ptools-xml/Reaction/left
+    | /ptools-xml/Reaction/right", "status": "inherited_exact"}, {"claim": "MngA is
+    an inner-membrane multipass protein.", "edge_id": "mg-entry-membrane", "index":
+    1, "reference_id": "UniProtKB:P54745", "role": "edge", "source_locator": "comments[commentType=SUBCELLULAR
+    LOCATION]", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gene-945355
+  area: evidence
+  topic: mechanistic_edges[id=mg-gene-945355]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655
+    taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked.
+    Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id":
+    "mg-gene-945355", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P54745",
+    "predicate": "enables", "references": ["Entrez:945355", "UniProtKB:P54745"], "subject":
+    "Entrez:945355"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.",
+    "edge_id": "mg-gene-945355", "index": 0, "reference_id": "Entrez:945355", "role":
+    "edge", "source_locator": "XPath //Gene-ref_locus | //Gene-ref_locus-tag | //Dbtag[Dbtag_db=\"ECOCYC\"
+    and Dbtag_tag/Object-id/Object-id_str=\"EG13235\"]", "status": "inherited_exact"},
+    {"claim": "The issuing protein record cross-references this NCBI Gene identifier.",
+    "edge_id": "mg-gene-945355", "index": 1, "reference_id": "UniProtKB:P54745", "role":
+    "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gene-945359
+  area: evidence
+  topic: mechanistic_edges[id=mg-gene-945359]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655
+    taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked.
+    Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id":
+    "mg-gene-945359", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P54746",
+    "predicate": "enables", "references": ["Entrez:945359", "UniProtKB:P54746"], "subject":
+    "Entrez:945359"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.",
+    "edge_id": "mg-gene-945359", "index": 0, "reference_id": "Entrez:945359", "role":
+    "edge", "source_locator": "XPath //Gene-ref_locus | //Gene-ref_locus-tag | //Dbtag[Dbtag_db=\"ECOCYC\"
+    and Dbtag_tag/Object-id/Object-id_str=\"EG13236\"]", "status": "inherited_exact"},
+    {"claim": "The issuing protein record cross-references this NCBI Gene identifier.",
+    "edge_id": "mg-gene-945359", "index": 1, "reference_id": "UniProtKB:P54746", "role":
+    "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gene-945371
+  area: evidence
+  topic: mechanistic_edges[id=mg-gene-945371]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655
+    taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked.
+    Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id":
+    "mg-gene-945371", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P13669",
+    "predicate": "enables", "references": ["Entrez:945371", "UniProtKB:P13669"], "subject":
+    "Entrez:945371"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.",
+    "edge_id": "mg-gene-945371", "index": 0, "reference_id": "Entrez:945371", "role":
+    "edge", "source_locator": "XPath //Gene-ref_locus | //Gene-ref_locus-tag | //Dbtag[Dbtag_db=\"ECOCYC\"
+    and Dbtag_tag/Object-id/Object-id_str=\"EG11109\"]", "status": "inherited_exact"},
+    {"claim": "The issuing protein record cross-references this NCBI Gene identifier.",
+    "edge_id": "mg-gene-945371", "index": 1, "reference_id": "UniProtKB:P13669", "role":
+    "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gene-947632
+  area: evidence
+  topic: mechanistic_edges[id=mg-gene-947632]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655
+    taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked.
+    Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id":
+    "mg-gene-947632", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P23524",
+    "predicate": "enables", "references": ["Entrez:947632", "UniProtKB:P23524"], "subject":
+    "Entrez:947632"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.",
+    "edge_id": "mg-gene-947632", "index": 0, "reference_id": "Entrez:947632", "role":
+    "edge", "source_locator": "XPath //Gene-ref_locus | //Gene-ref_locus-tag | //Dbtag[Dbtag_db=\"ECOCYC\"
+    and Dbtag_tag/Object-id/Object-id_str=\"EG11175\"]", "status": "inherited_exact"},
+    {"claim": "The issuing protein record cross-references this NCBI Gene identifier.",
+    "edge_id": "mg-gene-947632", "index": 1, "reference_id": "UniProtKB:P23524", "role":
+    "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gene-944860
+  area: evidence
+  topic: mechanistic_edges[id=mg-gene-944860]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact NCBI Gene object, MG1655
+    taxon/locus, EcoCyc frame and issuing UniProt GeneID cross-reference checked.
+    Reference coordinates do not relabel MC4100 experiments as MG1655.", "edge_id":
+    "mg-gene-944860", "evidence_items": 2, "finding_keys": [], "object": "UniProtKB:P37047",
+    "predicate": "enables", "references": ["Entrez:944860", "UniProtKB:P37047"], "subject":
+    "Entrez:944860"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The exact NCBI Gene object identifies this locus and its EcoCyc frame.",
+    "edge_id": "mg-gene-944860", "index": 0, "reference_id": "Entrez:944860", "role":
+    "edge", "source_locator": "XPath //Gene-ref_locus | //Gene-ref_locus-tag | //Dbtag[Dbtag_db=\"ECOCYC\"
+    and Dbtag_tag/Object-id/Object-id_str=\"EG12335\"]", "status": "inherited_exact"},
+    {"claim": "The issuing protein record cross-references this NCBI Gene identifier.",
+    "edge_id": "mg-gene-944860", "index": 1, "reference_id": "UniProtKB:P37047", "role":
+    "edge", "source_locator": "uniProtKBCrossReferences[database=GeneID]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mngr-repress-945355
+  area: evidence
+  topic: mechanistic_edges[id=mg-mngr-repress-945355]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native regulator mode/promoter/TU
+    joins and primary loss/rescue interpretation checked; autoregulation is native
+    annotation with historical fatty-acyl interpretation caution. Proposed MG-P ligand
+    is not direct binding.", "edge_id": "mg-mngr-repress-945355", "evidence_items":
+    3, "finding_keys": [], "object": "Entrez:945355", "predicate": "inhibits", "references":
+    ["EcoCyc:REG0-10703", "EcoCyc:TU0-4482", "PMID:14645248"], "subject": "EcoCyc:PC00103"},
+    "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "MngR negatively regulates the mngAB promoter.", "edge_id": "mg-mngr-repress-945355",
+    "index": 0, "reference_id": "EcoCyc:REG0-10703", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+    | /ptools-xml/Regulation/mode", "status": "inherited_exact"}, {"claim": "The native
+    transcription unit includes mngA and mngB.", "edge_id": "mg-mngr-repress-945355",
+    "index": 1, "reference_id": "EcoCyc:TU0-4482", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Transcription-Unit/component", "status": "inherited_exact"},
+    {"claim": "Deleting mngR derepresses MG transport and mngAB; plasmid mngR restores
+    MG-inducible regulation.", "edge_id": "mg-mngr-repress-945355", "index": 2, "reference_id":
+    "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text
+    retained web observation, lines L1758–L1875; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mngr-repress-945359
+  area: evidence
+  topic: mechanistic_edges[id=mg-mngr-repress-945359]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native regulator mode/promoter/TU
+    joins and primary loss/rescue interpretation checked; autoregulation is native
+    annotation with historical fatty-acyl interpretation caution. Proposed MG-P ligand
+    is not direct binding.", "edge_id": "mg-mngr-repress-945359", "evidence_items":
+    3, "finding_keys": [], "object": "Entrez:945359", "predicate": "inhibits", "references":
+    ["EcoCyc:REG0-10703", "EcoCyc:TU0-4482", "PMID:14645248"], "subject": "EcoCyc:PC00103"},
+    "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "MngR negatively regulates the mngAB promoter.", "edge_id": "mg-mngr-repress-945359",
+    "index": 0, "reference_id": "EcoCyc:REG0-10703", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+    | /ptools-xml/Regulation/mode", "status": "inherited_exact"}, {"claim": "The native
+    transcription unit includes mngA and mngB.", "edge_id": "mg-mngr-repress-945359",
+    "index": 1, "reference_id": "EcoCyc:TU0-4482", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Transcription-Unit/component", "status": "inherited_exact"},
+    {"claim": "Deleting mngR derepresses MG transport and mngAB; plasmid mngR restores
+    MG-inducible regulation.", "edge_id": "mg-mngr-repress-945359", "index": 2, "reference_id":
+    "PMID:14645248", "role": "edge", "source_locator": "Author-uploaded full text
+    retained web observation, lines L1758–L1875; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mngr-autorepress
+  area: evidence
+  topic: mechanistic_edges[id=mg-mngr-autorepress]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native regulator mode/promoter/TU
+    joins and primary loss/rescue interpretation checked; autoregulation is native
+    annotation with historical fatty-acyl interpretation caution. Proposed MG-P ligand
+    is not direct binding.", "edge_id": "mg-mngr-autorepress", "evidence_items": 2,
+    "finding_keys": [], "object": "Entrez:945371", "predicate": "inhibits", "references":
+    ["EcoCyc:PC00103", "EcoCyc:REG0-5259"], "subject": "EcoCyc:PC00103"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The native regulatory object assigns
+    negative autoregulation to MngR.", "edge_id": "mg-mngr-autorepress", "index":
+    0, "reference_id": "EcoCyc:REG0-5259", "role": "edge", "source_locator": "XPath
+    /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity",
+    "status": "inherited_exact"}, {"claim": "The native comment supports autoregulation
+    and explicitly revisits the disputed fatty-acid interpretation.", "edge_id": "mg-mngr-autorepress",
+    "index": 1, "reference_id": "EcoCyc:PC00103", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gark-reg-cdar
+  area: evidence
+  topic: mechanistic_edges[id=mg-gark-reg-cdar]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Positive regulatory expression
+    interpretation is supported by original MC4100 reporter/loss/rescue; target CdaR
+    subject qualification/reference-numbering gap is finding 2.", "edge_id": "mg-gark-reg-cdar",
+    "evidence_items": 4, "finding_keys": ["mg-cdar-assay-endpoint-scope"], "object":
+    "Entrez:947632", "predicate": "activates", "references": ["EcoCyc:REG0-5033",
+    "EcoCyc:TU482", "PMID:10762278"], "subject": "UniProtKB:P37047"}, "successor_dispositions_for_original_finding_keys":
+    [{"disposition": "resolved_in_exact_external_scientific_successor", "issue": 442,
+    "issue_key": "mg-cdar-assay-endpoint-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/442",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "major", "reason": "Both CdaR subject endpoints now carry exact
+    experimental_construct scope, paper391/current385 distinction, unremapped historical
+    numbering, MC4100 reporter/loss-rescue context and pRM1. Mutants are explicitly
+    inactive controls rather than active subjects. Both signs and gene targets remain
+    exact; full qualifier evidence survives KGX and graph nodes/edges.", "remaining":
+    "Full canonical build, maintained integration/save/gates/QA and GitHub closure
+    remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "The native regulatory object names the
+    regulator, garP promoter and source-specific signed mode; the edge description
+    preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-cdar",
+    "index": 0, "reference_id": "EcoCyc:REG0-5033", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity",
+    "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon
+    observations are projected to this exact gene, not direct enzyme activity.", "edge_id":
+    "mg-gark-reg-cdar", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge",
+    "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]",
+    "status": "inherited_exact"}, {"claim": "CdaR/sdaR mutants implicate the regulator;
+    the reported P297S and near-terminalTn5 constructs differ from wild type.", "edge_id":
+    "mg-gark-reg-cdar", "index": 2, "reference_id": "PMID:10762278", "role": "edge",
+    "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[1];
+    paragraph containing ''To identify the gene responsible''", "status": "inherited_exact"},
+    {"claim": "MC4100 sdaR cloned in pBluescript restores growth of JA176/JA177 on
+    the three carbon sources.", "edge_id": "mg-gark-reg-cdar", "index": 3, "reference_id":
+    "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[2];
+    paragraph containing ''yielding pRM1''", "status": "inherited_exact"}, {"claim":
+    "The paper reports a 391-residue yaeG/sdaR reference, JA176 Pro297-to-Ser substitution
+    and JA177 Tn5 insertion 20 nucleotides before the stop codon. These loss mutants
+    inform regulator assignment.", "edge_id": "mg-gark-reg-cdar", "index": 0, "reference_id":
+    "PMID:10762278", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[1]",
+    "status": "fresh_added_evidence"}, {"claim": "pRM1 contains MC4100 sdaR amplified
+    and cloned in pBluescript; it restores JA176/JA177 growth on glucarate, galactarate
+    and glycerate. Loss and rescue support an activator role, not activation by mutant
+    proteins.", "edge_id": "mg-gark-reg-cdar", "index": 1, "reference_id": "PMID:10762278",
+    "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[2]",
+    "status": "fresh_added_evidence"}, {"claim": "MC4100 sdaR-promoter-lacZ reporters
+    respond to the three inducing carbon sources only with functional SdaR. The source
+    interprets loss of sdaR-lacZ and garP-lacZ activation in knockouts as positive
+    control.", "edge_id": "mg-gark-reg-cdar", "index": 2, "reference_id": "PMID:10762278",
+    "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1]
+    | /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[2]",
+    "status": "fresh_added_evidence"}, {"claim": "The current issuing P37047 reference
+    is 385 residues; its gene name is cdaR with sdaR and yaeG synonyms. This anchors
+    identity, not equivalence to the paper’s 391-residue sequence numbering.", "edge_id":
+    "mg-gark-reg-cdar", "index": 3, "reference_id": "UniProtKB:P37047", "role": "qualifier[0]",
+    "source_locator": "primaryAccession; sequence.length; genes", "status": "fresh_added_evidence"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_added_evidence": 4, "inherited_exact": 4}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gark-reg-hns
+  area: evidence
+  topic: mechanistic_edges[id=mg-gark-reg-hns]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Primary Fig5 and results support
+    negative HNS effect on garP transcript in DL1504/DL1947; exact TU482 joins garK.
+    No direct GarK activity or MG-flux effect inferred.", "edge_id": "mg-gark-reg-hns",
+    "evidence_items": 3, "finding_keys": [], "object": "Entrez:947632", "predicate":
+    "inhibits", "references": ["EcoCyc:REG0-9114", "EcoCyc:TU482", "PMID:17526711"],
+    "subject": "UniProtKB:P0ACF8"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The native regulatory object names
+    the regulator, garP promoter and source-specific signed mode; the edge description
+    preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-hns",
+    "index": 0, "reference_id": "EcoCyc:REG0-9114", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity",
+    "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon
+    observations are projected to this exact gene, not direct enzyme activity.", "edge_id":
+    "mg-gark-reg-hns", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge",
+    "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]",
+    "status": "inherited_exact"}, {"claim": "Figure5 compares garP transcript in wild
+    type DL1504 and hns651 DL1947, in M9 glycerol at 23/37°C.", "edge_id": "mg-gark-reg-hns",
+    "index": 2, "reference_id": "PMID:17526711", "role": "edge", "source_locator":
+    "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[11]/figure/figcaption/p;
+    paragraph containing ''Effects of the hns651mutation''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gark-reg-fnr
+  area: evidence
+  topic: mechanistic_edges[id=mg-gark-reg-fnr]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native positive transcriptomic
+    mode with putative unshown site is accurately limited to annotation, plus active
+    low-oxygen FNR state. Primary body remains unavailable; no binding proof promoted.",
+    "edge_id": "mg-gark-reg-fnr", "evidence_items": 2, "finding_keys": [], "object":
+    "Entrez:947632", "predicate": "activates", "references": ["EcoCyc:REG0-5032",
+    "EcoCyc:TU482"], "subject": "EcoCyc:CPLX0-7797"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The native regulatory object names
+    the regulator, garP promoter and source-specific signed mode; the edge description
+    preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-fnr",
+    "index": 0, "reference_id": "EcoCyc:REG0-5032", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity",
+    "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon
+    observations are projected to this exact gene, not direct enzyme activity.", "edge_id":
+    "mg-gark-reg-fnr", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge",
+    "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]",
+    "status": "inherited_exact"}, {"claim": "Anaerobic cluster acquisition activates
+    dimeric FNR; oxygen converts the cluster and inactivates the regulator.", "edge_id":
+    "mg-gark-reg-fnr", "index": 0, "reference_id": "EcoCyc:CPLX0-7797", "role": "qualifier[0]",
+    "source_locator": "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-gark-reg-fur
+  area: evidence
+  topic: mechanistic_edges[id=mg-gark-reg-fur]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Unsigned relation retains native
+    negative mode versus primary internal garP binding, unknown internal-element function
+    and previously reported activation; no sign chosen for convenience.", "edge_id":
+    "mg-gark-reg-fur", "evidence_items": 5, "finding_keys": [], "object": "Entrez:947632",
+    "predicate": "regulates", "references": ["EcoCyc:REG0-10783", "EcoCyc:TU482",
+    "PMID:17921503"], "subject": "EcoCyc:CPLX0-7639"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The native regulatory object names
+    the regulator, garP promoter and source-specific signed mode; the edge description
+    preserves primary-access and sign-conflict limits.", "edge_id": "mg-gark-reg-fur",
+    "index": 0, "reference_id": "EcoCyc:REG0-10783", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity",
+    "status": "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon
+    observations are projected to this exact gene, not direct enzyme activity.", "edge_id":
+    "mg-gark-reg-fur", "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge",
+    "source_locator": "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]",
+    "status": "inherited_exact"}, {"claim": "The garP oligonucleotide tested for Fur
+    binding is intragenic, not a demonstrated native garPLRK promoter.", "edge_id":
+    "mg-gark-reg-fur", "index": 2, "reference_id": "PMID:17921503", "role": "edge",
+    "source_locator": "XPath /article/body/sec[2]/sec[4]/p[2]; paragraph containing
+    ''We were also interested in whether Fur binds intragenically''", "status": "inherited_exact"},
+    {"claim": "The paper leaves the function of the intragenic garP control element
+    unresolved.", "edge_id": "mg-gark-reg-fur", "index": 3, "reference_id": "PMID:17921503",
+    "role": "edge", "source_locator": "XPath /article/body/sec[4]/sec[2]/p[1]; paragraph
+    containing ''The function of these control elements is unknown''", "status": "inherited_exact"},
+    {"claim": "Prior expression analysis described garPLRK as Fur-activated, conflicting
+    with the native negative-mode assignment.", "edge_id": "mg-gark-reg-fur", "index":
+    4, "reference_id": "PMID:17921503", "role": "edge", "source_locator": "XPath /article/body/sec[3]/sec[6]/p[4];
+    paragraph containing ''48 Fur-activated genes belong''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 5}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-cdar-auto
+  area: evidence
+  topic: mechanistic_edges[id=mg-cdar-auto]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Positive regulatory expression
+    interpretation is supported by original MC4100 reporter/loss/rescue; target CdaR
+    subject qualification/reference-numbering gap is finding 2.", "edge_id": "mg-cdar-auto",
+    "evidence_items": 2, "finding_keys": ["mg-cdar-assay-endpoint-scope"], "object":
+    "Entrez:944860", "predicate": "activates", "references": ["PMID:10762278"], "subject":
+    "UniProtKB:P37047"}, "successor_dispositions_for_original_finding_keys": [{"disposition":
+    "resolved_in_exact_external_scientific_successor", "issue": 442, "issue_key":
+    "mg-cdar-assay-endpoint-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/442",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "major", "reason": "Both CdaR subject endpoints now carry exact
+    experimental_construct scope, paper391/current385 distinction, unremapped historical
+    numbering, MC4100 reporter/loss-rescue context and pRM1. Mutants are explicitly
+    inactive controls rather than active subjects. Both signs and gene targets remain
+    exact; full qualifier evidence survives KGX and graph nodes/edges.", "remaining":
+    "Full canonical build, maintained integration/save/gates/QA and GitHub closure
+    remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}],
+    "successor_evidence_uses": [{"claim": "Loss of functional SdaR abolishes inducer-dependent
+    sdaR-lacZ activation.", "edge_id": "mg-cdar-auto", "index": 0, "reference_id":
+    "PMID:10762278", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1];
+    paragraph containing ''Control of sdaR expression was studied''", "status": "inherited_exact"},
+    {"claim": "The paper interprets regulator-dependent reporter activation as positive
+    autoregulation.", "edge_id": "mg-cdar-auto", "index": 1, "reference_id": "PMID:10762278",
+    "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[2];
+    paragraph containing ''Of the possible models of coupled expression''", "status":
+    "inherited_exact"}, {"claim": "The paper reports a 391-residue yaeG/sdaR reference,
+    JA176 Pro297-to-Ser substitution and JA177 Tn5 insertion 20 nucleotides before
+    the stop codon. These loss mutants inform regulator assignment.", "edge_id": "mg-cdar-auto",
+    "index": 0, "reference_id": "PMID:10762278", "role": "qualifier[0]", "source_locator":
+    "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[1]",
+    "status": "fresh_added_evidence"}, {"claim": "pRM1 contains MC4100 sdaR amplified
+    and cloned in pBluescript; it restores JA176/JA177 growth on glucarate, galactarate
+    and glycerate. Loss and rescue support an activator role, not activation by mutant
+    proteins.", "edge_id": "mg-cdar-auto", "index": 1, "reference_id": "PMID:10762278",
+    "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/p[2]",
+    "status": "fresh_added_evidence"}, {"claim": "MC4100 sdaR-promoter-lacZ reporters
+    respond to the three inducing carbon sources only with functional SdaR. The source
+    interprets loss of sdaR-lacZ and garP-lacZ activation in knockouts as positive
+    control.", "edge_id": "mg-cdar-auto", "index": 2, "reference_id": "PMID:10762278",
+    "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1]
+    | /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[2]",
+    "status": "fresh_added_evidence"}, {"claim": "The current issuing P37047 reference
+    is 385 residues; its gene name is cdaR with sdaR and yaeG synonyms. This anchors
+    identity, not equivalence to the paper’s 391-residue sequence numbering.", "edge_id":
+    "mg-cdar-auto", "index": 3, "reference_id": "UniProtKB:P37047", "role": "qualifier[0]",
+    "source_locator": "primaryAccession; sequence.length; genes", "status": "fresh_added_evidence"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"fresh_added_evidence": 4, "inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mg-expression-945355
+  area: evidence
+  topic: mechanistic_edges[id=mg-mg-expression-945355]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Original TableIV independently
+    contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold)
+    after MG exposure; MC4100 culture/microarray limits retained. No direct ligand
+    binding claim.", "edge_id": "mg-mg-expression-945355", "evidence_items": 2, "finding_keys":
+    [], "object": "Entrez:945355", "predicate": "activates", "references": ["PMID:14645248"],
+    "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid
+    regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-945355",
+    "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator":
+    "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548",
+    "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter
+    results document MG-dependent expression, with strain and construct dependence.",
+    "edge_id": "mg-mg-expression-945355", "index": 1, "reference_id": "PMID:14645248",
+    "role": "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mg-expression-945359
+  area: evidence
+  topic: mechanistic_edges[id=mg-mg-expression-945359]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Original TableIV independently
+    contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold)
+    after MG exposure; MC4100 culture/microarray limits retained. No direct ligand
+    binding claim.", "edge_id": "mg-mg-expression-945359", "evidence_items": 2, "finding_keys":
+    [], "object": "Entrez:945359", "predicate": "activates", "references": ["PMID:14645248"],
+    "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid
+    regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-945359",
+    "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator":
+    "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548",
+    "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter
+    results document MG-dependent expression, with strain and construct dependence.",
+    "edge_id": "mg-mg-expression-945359", "index": 1, "reference_id": "PMID:14645248",
+    "role": "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mg-expression-945371
+  area: evidence
+  topic: mechanistic_edges[id=mg-mg-expression-945371]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Original TableIV independently
+    contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold)
+    after MG exposure; MC4100 culture/microarray limits retained. No direct ligand
+    binding claim.", "edge_id": "mg-mg-expression-945371", "evidence_items": 2, "finding_keys":
+    [], "object": "Entrez:945371", "predicate": "activates", "references": ["PMID:14645248"],
+    "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid
+    regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-945371",
+    "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator":
+    "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548",
+    "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter
+    results document MG-dependent expression, with strain and construct dependence.",
+    "edge_id": "mg-mg-expression-945371", "index": 1, "reference_id": "PMID:14645248",
+    "role": "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mg-expression-944860
+  area: evidence
+  topic: mechanistic_edges[id=mg-mg-expression-944860]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Original TableIV independently
+    contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold)
+    after MG exposure; MC4100 culture/microarray limits retained. No direct ligand
+    binding claim.", "edge_id": "mg-mg-expression-944860", "evidence_items": 2, "finding_keys":
+    [], "object": "Entrez:944860", "predicate": "activates", "references": ["PMID:14645248"],
+    "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid
+    regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-944860",
+    "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator":
+    "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548",
+    "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter
+    results document MG-dependent expression, with strain and construct dependence.",
+    "edge_id": "mg-mg-expression-944860", "index": 1, "reference_id": "PMID:14645248",
+    "role": "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-mg-expression-947632
+  area: evidence
+  topic: mechanistic_edges[id=mg-mg-expression-947632]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Original TableIV independently
+    contains this exact locus (mngR2.2, mngA16.4, mngB5.7, cdaR3.6, garK2.8 fold)
+    after MG exposure; MC4100 culture/microarray limits retained. No direct ligand
+    binding claim.", "edge_id": "mg-mg-expression-947632", "evidence_items": 2, "finding_keys":
+    [], "object": "Entrez:947632", "predicate": "activates", "references": ["PMID:14645248"],
+    "subject": "CHEBI:57541"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "MG induces the CdaR-associated sugar-diacid
+    regulon; cdaR disruption does not abolish MG transport.", "edge_id": "mg-mg-expression-947632",
+    "index": 0, "reference_id": "PMID:14645248", "role": "edge", "source_locator":
+    "Author-uploaded full text retained web observation, lines L1368–L1441; JBC279:5537–5548",
+    "status": "inherited_exact"}, {"claim": "TablesIV/V and associated microarray/reporter
+    results document MG-dependent expression, with strain and construct dependence.",
+    "edge_id": "mg-mg-expression-947632", "index": 1, "reference_id": "PMID:14645248",
+    "role": "edge", "source_locator": "Author-uploaded full text retained web observation,
+    lines L1984–L2245; JBC279:5537–5548", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-interface-MANNCAT-PWY
+  area: evidence
+  topic: mechanistic_edges[id=mg-interface-MANNCAT-PWY]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native outgoing MANNOSE-6P link
+    and exact source identity support opaque alpha-M6P input; no invented generic-to-alpha
+    reaction.", "edge_id": "mg-interface-MANNCAT-PWY", "evidence_items": 2, "finding_keys":
+    [], "object": "CHEBI:60332", "predicate": "has_input", "references": ["MetaCyc:MANNOSE-6P",
+    "MetaCyc:PWY0-1300"], "subject": "MetaCyc:MANNCAT-PWY"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Native pathway-link associates MANNOSE-6P
+    with mannose degradation and colanic-acid precursor synthesis.", "edge_id": "mg-interface-MANNCAT-PWY",
+    "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Pathway/pathway-link[Compound/@frameid=\"MANNOSE-6P\"]", "status":
+    "inherited_exact"}, {"claim": "The native MANNOSE-6P compound is cross-referenced
+    to alpha-D-mannose 6-phosphate.", "edge_id": "mg-interface-MANNCAT-PWY", "index":
+    1, "reference_id": "MetaCyc:MANNOSE-6P", "role": "edge", "source_locator": "XPath
+    /ptools-xml/Compound/dblink", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-interface-COLANSYN-PWY
+  area: evidence
+  topic: mechanistic_edges[id=mg-interface-COLANSYN-PWY]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native outgoing MANNOSE-6P link
+    and exact source identity support opaque alpha-M6P input; no invented generic-to-alpha
+    reaction.", "edge_id": "mg-interface-COLANSYN-PWY", "evidence_items": 2, "finding_keys":
+    [], "object": "CHEBI:60332", "predicate": "has_input", "references": ["MetaCyc:MANNOSE-6P",
+    "MetaCyc:PWY0-1300"], "subject": "MetaCyc:COLANSYN-PWY"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Native pathway-link associates MANNOSE-6P
+    with mannose degradation and colanic-acid precursor synthesis.", "edge_id": "mg-interface-COLANSYN-PWY",
+    "index": 0, "reference_id": "MetaCyc:PWY0-1300", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Pathway/pathway-link[Compound/@frameid=\"MANNOSE-6P\"]", "status":
+    "inherited_exact"}, {"claim": "The native MANNOSE-6P compound is cross-referenced
+    to alpha-D-mannose 6-phosphate.", "edge_id": "mg-interface-COLANSYN-PWY", "index":
+    1, "reference_id": "MetaCyc:MANNOSE-6P", "role": "edge", "source_locator": "XPath
+    /ptools-xml/Compound/dblink", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-opaque-pathbank-child
+  area: evidence
+  topic: mechanistic_edges[id=mg-opaque-pathbank-child]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact frozen Interaction/child
+    attachment checked; marker is not inhibitory control and empty child chemistry
+    stays opaque. Adapter readiness is separate.", "edge_id": "mg-opaque-pathbank-child",
+    "evidence_items": 1, "finding_keys": [], "object": "PathBank:SMP0000839", "predicate":
+    "has_part", "references": ["PathBank:SMP0002108"], "subject": "MetaCyc:PWY0-1300"},
+    "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The frozen InhibitorySubPathwayControl is typed Interaction and names2PG
+    and the opaque pathway as participants; its label does not prove inhibition.",
+    "edge_id": "mg-opaque-pathbank-child", "index": 0, "reference_id": "PathBank:SMP0002108",
+    "role": "edge", "source_locator": "XPath //bp:Interaction[@rdf:ID=\"SubPathwayControls/109883\"]/bp:participant
+    | //bp:Pathway[@rdf:about=\"http://identifiers.org/smpdb/SMP0000839\"]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-2og-full-ei
+  area: evidence
+  topic: mechanistic_edges[id=mg-2og-full-ei]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "2011 full-length His-tagged EI
+    isotope exchange and2013 isolatedEIC261–575 hydrolysis/competitive model checked
+    separately; reagent contamination is an alternative and mixed full-EI effects
+    remain possible.", "edge_id": "mg-2og-full-ei", "evidence_items": 1, "finding_keys":
+    [], "object": "UniProtKB:P08839", "predicate": "inhibits", "references": ["PMID:22002719"],
+    "subject": "CHEBI:16810"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The full-EI study interprets alpha-ketoglutarate
+    inhibition as noncompetitive; this is general PTS regulation, not a specific MngA
+    assay.", "edge_id": "mg-2og-full-ei", "index": 0, "reference_id": "PMID:22002719",
+    "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[3]/p[4];
+    paragraph containing ''Addition of 2 mM α-ketoglutarate inhibited''", "status":
+    "inherited_exact"}, {"claim": "Methods identify N-terminal His-tagged PtsI from
+    ASKA strain b2416 and an isotope-exchange assay with MgCl2 at37°C.", "edge_id":
+    "mg-2og-full-ei", "index": 0, "reference_id": "PMID:22002719", "role": "qualifier[0]",
+    "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/section[3]/p[1];
+    paragraph containing ''containing an N-terminal His tag''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-2og-eic
+  area: evidence
+  topic: mechanistic_edges[id=mg-2og-eic]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "2011 full-length His-tagged EI
+    isotope exchange and2013 isolatedEIC261–575 hydrolysis/competitive model checked
+    separately; reagent contamination is an alternative and mixed full-EI effects
+    remain possible.", "edge_id": "mg-2og-eic", "evidence_items": 2, "finding_keys":
+    [], "object": "UniProtKB:P08839", "predicate": "inhibits", "references": ["PMID:23506042"],
+    "subject": "CHEBI:16810"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Alpha-ketoglutarate inhibits isolated
+    EIC PEP hydrolysis; competitive fitting is better than noncompetitive fitting
+    under the reported assay conditions.", "edge_id": "mg-2og-eic", "index": 0, "reference_id":
+    "PMID:23506042", "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[1];
+    paragraph containing ''The ability of EIC to hydrolyze PEP''", "status": "inherited_exact"},
+    {"claim": "The discussion reports a degrading alpha-ketoglutarate batch and preserves
+    possible competitive plus noncompetitive effects in intact EI.", "edge_id": "mg-2og-eic",
+    "index": 1, "reference_id": "PMID:23506042", "role": "edge", "source_locator":
+    "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[5]/p[4];
+    paragraph containing ''Enzymatic assays performed in the absence and presence''",
+    "status": "inherited_exact"}, {"claim": "Methods identify EIC261–575, EIN1–249,
+    full-lengthEI1–575 and the R465A construct.", "edge_id": "mg-2og-eic", "index":
+    0, "reference_id": "PMID:23506042", "role": "qualifier[0]", "source_locator":
+    "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[4]/section[1]/p[1];
+    paragraph containing ''The R465A mutant of EIC was created''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 3}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-tmar-ptsi
+  area: evidence
+  topic: mechanistic_edges[id=mg-tmar-ptsi]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Primary imaging, interaction and
+    Y72/Y122 mutation passages support general EI spatial regulation. Both tagged
+    endpoints remain qualified; no MG-specific control or fixed complex inferred.",
+    "edge_id": "mg-tmar-ptsi", "evidence_items": 1, "finding_keys": [], "object":
+    "UniProtKB:P08839", "predicate": "regulates", "references": ["PMID:33376208"],
+    "subject": "UniProtKB:P0A8M6"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "TmaR and EI interact and colocalize;
+    TmaR controls EI sequestration/release in general sugar-utilization experiments.",
+    "edge_id": "mg-tmar-ptsi", "index": 0, "reference_id": "PMID:33376208", "role":
+    "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/p[5];
+    paragraph containing ''In this study, we show that a previously uncharacterized''",
+    "status": "inherited_exact"}, {"claim": "Figure1 describes terminal fluorescent
+    tags and Y72F/Y79F/Y51F variants; native-promoter/locus constructs are distinguished
+    from plasmid expression.", "edge_id": "mg-tmar-ptsi", "index": 0, "reference_id":
+    "PMID:33376208", "role": "qualifier[0]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[1]/figure/figcaption/p;
+    paragraph containing ''TmaR forms clusters that localize''", "status": "inherited_exact"},
+    {"claim": "Figure2 specifies TmaR-YFP, EI-mCherry and plasmid His-TmaR in Far-Western
+    assays, with His-only and mCherry controls.", "edge_id": "mg-tmar-ptsi", "index":
+    1, "reference_id": "PMID:33376208", "role": "qualifier[0]", "source_locator":
+    "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/figure/figcaption/p;
+    paragraph containing ''TmaR and EI exhibit colocalization''", "status": "inherited_exact"},
+    {"claim": "EI polar recruitment depends on Tyr122 and TmaR, based on the cited
+    spatial-regulation study.", "edge_id": "mg-tmar-ptsi", "index": 0, "reference_id":
+    "UniProtKB:P08839", "role": "qualifier[1]", "source_locator": "comments[commentType=SUBCELLULAR
+    LOCATION]", "status": "inherited_exact"}, {"claim": "The localization experiment
+    compares EI-mCherry with EIY122F-mCherry; this is distinct from His189 catalytic
+    phosphorylation.", "edge_id": "mg-tmar-ptsi", "index": 1, "reference_id": "PMID:33376208",
+    "role": "qualifier[1]", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[6]/p[1];
+    paragraph containing ''To examine whether Tyr122 is important''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 5}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-induction-16659-947632
+  area: evidence
+  topic: mechanistic_edges[id=mg-induction-16659-947632]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports
+    the named inducing carbon source and gene-expression response; native TU membership
+    joins garK. Ionic identifiers normalize chemistry, not measured assay protonation
+    or direct CdaR ligand binding.", "edge_id": "mg-induction-16659-947632", "evidence_items":
+    2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references":
+    ["EcoCyc:TU482", "PMID:10762278"], "subject": "CHEBI:16659"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The garP operon reporter is induced
+    by glycerate, glucarate and galactarate; glycerate gives stronger activation.",
+    "edge_id": "mg-induction-16659-947632", "index": 0, "reference_id": "PMID:10762278",
+    "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/p[2];
+    paragraph containing ''β-Galactosidase activities of Φ(garD-lacZ)''", "status":
+    "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations
+    are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-induction-16659-947632",
+    "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-induction-16659-944860
+  area: evidence
+  topic: mechanistic_edges[id=mg-induction-16659-944860]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports
+    the named inducing carbon source and gene-expression response; native TU membership
+    joins garK. Ionic identifiers normalize chemistry, not measured assay protonation
+    or direct CdaR ligand binding.", "edge_id": "mg-induction-16659-944860", "evidence_items":
+    1, "finding_keys": [], "object": "Entrez:944860", "predicate": "activates", "references":
+    ["PMID:10762278"], "subject": "CHEBI:16659"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The sdaR/cdaR reporter responds to
+    glycerate, glucarate and galactarate only with a functional regulator.", "edge_id":
+    "mg-induction-16659-944860", "index": 0, "reference_id": "PMID:10762278", "role":
+    "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1];
+    paragraph containing ''Control of sdaR expression was studied''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-induction-30612-947632
+  area: evidence
+  topic: mechanistic_edges[id=mg-induction-30612-947632]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports
+    the named inducing carbon source and gene-expression response; native TU membership
+    joins garK. Ionic identifiers normalize chemistry, not measured assay protonation
+    or direct CdaR ligand binding.", "edge_id": "mg-induction-30612-947632", "evidence_items":
+    2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references":
+    ["EcoCyc:TU482", "PMID:10762278"], "subject": "CHEBI:30612"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The garP operon reporter is induced
+    by glycerate, glucarate and galactarate; glycerate gives stronger activation.",
+    "edge_id": "mg-induction-30612-947632", "index": 0, "reference_id": "PMID:10762278",
+    "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/p[2];
+    paragraph containing ''β-Galactosidase activities of Φ(garD-lacZ)''", "status":
+    "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations
+    are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-induction-30612-947632",
+    "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-induction-30612-944860
+  area: evidence
+  topic: mechanistic_edges[id=mg-induction-30612-944860]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports
+    the named inducing carbon source and gene-expression response; native TU membership
+    joins garK. Ionic identifiers normalize chemistry, not measured assay protonation
+    or direct CdaR ligand binding.", "edge_id": "mg-induction-30612-944860", "evidence_items":
+    1, "finding_keys": [], "object": "Entrez:944860", "predicate": "activates", "references":
+    ["PMID:10762278"], "subject": "CHEBI:30612"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The sdaR/cdaR reporter responds to
+    glycerate, glucarate and galactarate only with a functional regulator.", "edge_id":
+    "mg-induction-30612-944860", "index": 0, "reference_id": "PMID:10762278", "role":
+    "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1];
+    paragraph containing ''Control of sdaR expression was studied''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-induction-16537-947632
+  area: evidence
+  topic: mechanistic_edges[id=mg-induction-16537-947632]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports
+    the named inducing carbon source and gene-expression response; native TU membership
+    joins garK. Ionic identifiers normalize chemistry, not measured assay protonation
+    or direct CdaR ligand binding.", "edge_id": "mg-induction-16537-947632", "evidence_items":
+    2, "finding_keys": [], "object": "Entrez:947632", "predicate": "activates", "references":
+    ["EcoCyc:TU482", "PMID:10762278"], "subject": "CHEBI:16537"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The garP operon reporter is induced
+    by glycerate, glucarate and galactarate; glycerate gives stronger activation.",
+    "edge_id": "mg-induction-16537-947632", "index": 0, "reference_id": "PMID:10762278",
+    "role": "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/p[2];
+    paragraph containing ''β-Galactosidase activities of Φ(garD-lacZ)''", "status":
+    "inherited_exact"}, {"claim": "Native TU482 includes garK; promoter/regulon observations
+    are projected to this exact gene, not direct enzyme activity.", "edge_id": "mg-induction-16537-947632",
+    "index": 1, "reference_id": "EcoCyc:TU482", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Transcription-Unit/component/Gene[@frameid=\"EG11175\"]", "status":
+    "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-induction-16537-944860
+  area: evidence
+  topic: mechanistic_edges[id=mg-induction-16537-944860]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact2000 reporter paragraph supports
+    the named inducing carbon source and gene-expression response; native TU membership
+    joins garK. Ionic identifiers normalize chemistry, not measured assay protonation
+    or direct CdaR ligand binding.", "edge_id": "mg-induction-16537-944860", "evidence_items":
+    1, "finding_keys": [], "object": "Entrez:944860", "predicate": "activates", "references":
+    ["PMID:10762278"], "subject": "CHEBI:16537"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "The sdaR/cdaR reporter responds to
+    glycerate, glucarate and galactarate only with a functional regulator.", "edge_id":
+    "mg-induction-16537-944860", "index": 0, "reference_id": "PMID:10762278", "role":
+    "edge", "source_locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[6]/p[1];
+    paragraph containing ''Control of sdaR expression was studied''", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-fnr-cluster
+  area: evidence
+  topic: mechanistic_edges[id=mg-fnr-cluster]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Exact source cofactor identity,
+    evidence strength and occupancy limits checked. MngB similarity-only metal, PtsI
+    Mg/oxalate trapped state, native2Fe2+ Fur assembly and active FNR cluster-per-chain
+    are distinguished.", "edge_id": "mg-fnr-cluster", "evidence_items": 1, "finding_keys":
+    [], "object": "CHEBI:49883", "predicate": "has_cofactor", "references": ["UniProtKB:P0A9E5"],
+    "subject": "UniProtKB:P0A9E5"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "UniProt identifies CHEBI:49883 and
+    one cluster per subunit.", "edge_id": "mg-fnr-cluster", "index": 0, "reference_id":
+    "UniProtKB:P0A9E5", "role": "edge", "source_locator": "comments[commentType=COFACTOR]",
+    "status": "inherited_exact"}, {"claim": "Native FNR activation accompanies [4Fe-4S]
+    acquisition under anaerobiosis.", "edge_id": "mg-fnr-cluster", "index": 0, "reference_id":
+    "EcoCyc:CPLX0-7797", "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-oxygen-fnr
+  area: evidence
+  topic: mechanistic_edges[id=mg-oxygen-fnr]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Native FNR comment supports oxygen-associated
+    cluster conversion and dimer dissociation; active-state qualifier and non-MG-specific
+    limits retained.", "edge_id": "mg-oxygen-fnr", "evidence_items": 1, "finding_keys":
+    [], "object": "EcoCyc:CPLX0-7797", "predicate": "inhibits", "references": ["EcoCyc:CPLX0-7797"],
+    "subject": "CHEBI:15379"}, "successor_dispositions_for_original_finding_keys":
+    [], "successor_evidence_uses": [{"claim": "Oxygen converts the [4Fe-4S] cluster
+    to [2Fe-2S] and promotes FNR inactivation/dimer dissociation.", "edge_id": "mg-oxygen-fnr",
+    "index": 0, "reference_id": "EcoCyc:CPLX0-7797", "role": "edge", "source_locator":
+    "XPath /ptools-xml/Protein/comment", "status": "inherited_exact"}, {"claim": "Anaerobic
+    cluster acquisition activates dimeric FNR; oxygen converts the cluster and inactivates
+    the regulator.", "edge_id": "mg-oxygen-fnr", "index": 0, "reference_id": "EcoCyc:CPLX0-7797",
+    "role": "qualifier[0]", "source_locator": "XPath /ptools-xml/Protein/comment",
+    "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 2}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-location-P0A9E5
+  area: evidence
+  topic: mechanistic_edges[id=mg-location-P0A9E5]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-location-P0A9E5", "evidence_items": 1, "finding_keys": [], "object":
+    "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0A9E5"], "subject":
+    "UniProtKB:P0A9E5"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The reviewed entry supplies the cytoplasmic location; more specific
+    localization/state assertions require their separate evidence.", "edge_id": "mg-location-P0A9E5",
+    "index": 0, "reference_id": "UniProtKB:P0A9E5", "role": "edge", "source_locator":
+    "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-location-P0A9A9
+  area: evidence
+  topic: mechanistic_edges[id=mg-location-P0A9A9]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-location-P0A9A9", "evidence_items": 1, "finding_keys": [], "object":
+    "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0A9A9"], "subject":
+    "UniProtKB:P0A9A9"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The reviewed entry supplies the cytoplasmic location; more specific
+    localization/state assertions require their separate evidence.", "edge_id": "mg-location-P0A9A9",
+    "index": 0, "reference_id": "UniProtKB:P0A9A9", "role": "edge", "source_locator":
+    "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: edge-mg-location-P0A8M6
+  area: evidence
+  topic: mechanistic_edges[id=mg-location-P0A8M6]
+  outcome: supported
+  summary: Independent original edge assessment inherited through the exact accepted
+    successor; per-use original and correction scope is retained.
+  details: '{"original_assessment": {"assessment": "Issuing location and native transport
+    side compartments checked. HPr is cytoplasmic; HNS oligomer wording needs its
+    separate SUBUNIT locator. General regulator location is not MG-specific action.",
+    "edge_id": "mg-location-P0A8M6", "evidence_items": 1, "finding_keys": [], "object":
+    "GO:0005737", "predicate": "located_in", "references": ["UniProtKB:P0A8M6"], "subject":
+    "UniProtKB:P0A8M6"}, "successor_dispositions_for_original_finding_keys": [], "successor_evidence_uses":
+    [{"claim": "The reviewed entry supplies the cytoplasmic location; more specific
+    localization/state assertions require their separate evidence.", "edge_id": "mg-location-P0A8M6",
+    "index": 0, "reference_id": "UniProtKB:P0A8M6", "role": "edge", "source_locator":
+    "comments[commentType=SUBCELLULAR LOCATION]", "status": "inherited_exact"}]}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-edge-assessments
+  - successor-science
+  - evidence-accounting
+  dimensions:
+  - name: review_inheritance
+    value: '{"inherited_exact": 1}'
+    definition: Exact evidence-use counts by independent successor disposition; this
+      packaging is not a new independent source review.
+    evidence_ids:
+    - successor-science
+    - evidence-accounting
+- assessment_id: external-issue-441
+  area: completeness
+  topic: mg-entry-assay-context-omission
+  outcome: supported
+  summary: Independent successor accepted this correction in the exact target. GitHub
+    closure remains a separate root lifecycle action.
+  details: '{"disposition": "resolved_in_exact_external_scientific_successor", "issue":
+    441, "issue_key": "mg-entry-assay-context-omission", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/441",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "major", "reason": "Four added source-located uptake/induction
+    assertions and entry description preserve weak-positive and negative sugar comparisons,
+    Results/Discussion mannose tension, 300 mM growth-salt reduction of induction,
+    and separation from inverted-membrane and KM522 experiments. No new compound or
+    inhibition/binding edge is invented.", "remaining": "Full canonical build, maintained
+    integration/save/gates/QA and GitHub closure remain root-owned.", "target": {"bytes":
+    103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-science
+  - successor-science
+- assessment_id: external-issue-442
+  area: completeness
+  topic: mg-cdar-assay-endpoint-scope
+  outcome: supported
+  summary: Independent successor accepted this correction in the exact target. GitHub
+    closure remains a separate root lifecycle action.
+  details: '{"disposition": "resolved_in_exact_external_scientific_successor", "issue":
+    442, "issue_key": "mg-cdar-assay-endpoint-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/442",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "major", "reason": "Both CdaR subject endpoints now carry exact
+    experimental_construct scope, paper391/current385 distinction, unremapped historical
+    numbering, MC4100 reporter/loss-rescue context and pRM1. Mutants are explicitly
+    inactive controls rather than active subjects. Both signs and gene targets remain
+    exact; full qualifier evidence survives KGX and graph nodes/edges.", "remaining":
+    "Full canonical build, maintained integration/save/gates/QA and GitHub closure
+    remain root-owned.", "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-science
+  - successor-science
+- assessment_id: external-issue-443
+  area: completeness
+  topic: mg-uniprot-rhea-evidence-locator-scope
+  outcome: supported
+  summary: Independent successor accepted this correction in the exact target. GitHub
+    closure remains a separate root lifecycle action.
+  details: '{"disposition": "resolved_in_exact_external_scientific_successor", "issue":
+    443, "issue_key": "mg-uniprot-rhea-evidence-locator-scope", "issue_url": "https://github.com/CultureBotAI/PathwayMech/issues/443",
+    "prior_findings": {"bytes": 9156, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/findings.json",
+    "sha256": "51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88"},
+    "prior_review": {"bytes": 12856, "path": "/private/tmp/pathwaymech-next-228-science-review-20261012/review.json",
+    "sha256": "254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122"},
+    "prior_severity": "minor", "reason": "PtsI selector now locates the actual His189
+    Active site, H-NS locates both LOCATION and SUBUNIT, and all13 Rhea items specify
+    existing directional-side/contains1/compound triples. The15 changed locators preserve
+    exact prior source assertions and graph chemistry.", "remaining": "Full canonical
+    build, maintained integration/save/gates/QA and GitHub closure remain root-owned.",
+    "target": {"bytes": 103311, "path": "/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml",
+    "sha256": "b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6"}}'
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - original-science
+  - successor-science
+- assessment_id: identity
+  area: identity
+  topic: identity
+  outcome: supported
+  summary: Two core events and all 17 native chemical sides remain exact; native anomer-unspecified
+    hydrolysis is retained, and three Rhea directional events retain original side
+    orientation.
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - successor-science
+  - canonical-audit
+- assessment_id: assay-scope
+  area: scope
+  topic: assay-scope
+  outcome: supported
+  summary: MC4100 assay comparisons, separate growth-salt effect, construct-scoped
+    CdaR endpoints and historical residue numbering remain bounded; no direct competitive
+    inhibition or mutant-as-active inference.
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - successor-science
+- assessment_id: adapter
+  area: representation
+  topic: adapter
+  outcome: supported
+  summary: Bounded primary-owned PathBank identity attachment retains the complete
+    original ZIP/member and supports opaque child identity without deriving biological
+    sign from its class or label.
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - adapter-review
+- assessment_id: canonical
+  area: grounding
+  topic: canonical
+  outcome: supported
+  summary: Actual full native outputs preserve all previous authority objects and
+    native first-source ordering; 2433 source terms/575 metadata and 1951 ontology
+    terms/5 metadata are accepted actual outputs.
+  target_ids:
+  - MetaCyc:PWY0-1300
+  evidence_ids:
+  - canonical-audit
+  - canonical-completion
+- assessment_id: root-preservation
+  area: consistency
+  topic: Exact prior-corpus conservation
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: All 228 prior records/pages, 102 native review bundles, prior history,
+    authority objects, old KGX edges and source-context multiplicities preserved.
+    Only four individually assessed shared display cells changed.
+  evidence_ids:
+  - preservation
+  - display-approval
+  - display-assessment
+- assessment_id: root-representation
+  area: representation
+  topic: Actual static graph and rendered evidence
+  outcome: supported
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: 'Root viewed complete static graph: substrate/product and activity nodes,
+    regulatory context and both separate CdaR construct nodes are present, with distinct
+    styles and no outer clipping observed. Crossings are dense in the left regulatory
+    columns; zoom is needed for small labels. Full qualifier and evidence text remains
+    in the page. Programmatic checks retain 75 ordered graph triples, 282 unique HTML
+    IDs, 318 local fragments, all 15 qualifier descriptions and all 176 evidence statements.'
+  evidence_ids:
+  - page-qa
+  - visual-observation
+findings: []
+actions: []
+limitations:
+- Self-review packaging with explicit independent inheritance; no fresh all-literature
+  search or full independent rereview.
+- The 2004 body is an author-uploaded text projection, not publisher PDF; unavailable
+  historical/FNR primary bodies and TmaR supplements remain unavailable.
+- Native review validation/save/check receipts follow final content assembly; no future
+  command success belongs in the immutable review.
+- Source exhaustion is false. Public-release licensing remains separate.
+- Commit, PR review, issue closure, CI, merge and branch cleanup remain separate root-owned
+  lifecycle actions.
+- Current native inspection directly binds this target, maintained owners, current
+  graph/exports and archived evidence. Old-corpus input hashes and conservation are
+  bound through the full gate-input and preservation receipts; those other records
+  were not freshly scientifically reviewed.
+- Static visual/HTML coverage only; browser interaction, focus and keyboard controls
+  were not exercised.
+- Native review validation/save/check and later final receipt checks follow this assembled
+  document; no late history is authorized by this review.
+- PR review, hosted CI, merge, issue closure and branch cleanup remain pending. Source
+  exhaustion is false.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/441
+- https://github.com/CultureBotAI/PathwayMech/issues/442
+- https://github.com/CultureBotAI/PathwayMech/issues/443
+notes:
+- External findings have no fabricated native previous_occurrences. Exact original
+  finding and accepted disposition objects are preserved in assessments.
+- Native curation history must already exist in render inputs. Review save appends
+  no late history.
+- Later archive and review additions need their own exact bindings; earlier full tests
+  are not relabeled as covering later files.
+tags:
+- pathway
+- mannosylglycerate
+- self-review
+- independent-inheritance
+review_id: 20261012T050408Z-mannosylglycerate-degradation
+started_at: '2026-10-12T05:03:06.923321Z'
+finished_at: '2026-10-12T05:04:08.085423Z'
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+source:
+  git_revision: 790a9699d7c1ca9c00536be877fa884af1c57918
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: f2991a22f16f0d14d83226c6ac261bc779b253b2547fae9724474d8596b411c7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 4c33029c81a3c0143129ae0ee3bc77429d25b9cfa1696840ed878d62acd8731e
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: conf/rhea_identifier_updates.json
+    sha256: b8554eb961a257c9e38bbadf96e2840d4b9f480a0fdce3f048619f7248e9bf31
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 5c67851f07d6c35ba75fa0e7455367dc634ed7bc751a6f2d71797066b43267ab
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 811ebc7681c60a8a82ce9a50f10bef32a7d4f34b9b25eeb8803f1d6f38c5631c
+    role: context
+  - path: data/pathways/mannosylglycerate-degradation.yaml
+    sha256: b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 5c4e9c52076a3cae6bf33992c8c5b7be88f59a6d7abc0758c4b9bebfce137550
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/README.md
+    sha256: 478bf99c5e5cf47f9487e16c1fa78baa4bf1a43598f43f66f9e428e156f3c696
+    role: context
+  - path: history/records/mannosylglycerate-degradation/2026-10-12T043918Z-codex-43d874.yaml
+    sha256: b85c00e85c5e1f4ade4705e601fe8f74e85f87fe8e599d7443b3915189262324
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 2e0181e3c79b574dc1bd1dcbbeddf6d2c15870005462378c1cd1ee06fda103b4
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 41258b25596fc41a96a3a4cba47798a159feef7c404f3f377f7d21fae36911d2
+    role: context
+  - path: pages/records/MetaCyc_PWY0-1300.html
+    sha256: a42d2a86ec573d8596528eb1387ec536a3549602209bd393aa7777a4738f6d82
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/README.md
+    sha256: c7172a7add80dc8351005df7d317f442798c6a511bbaaddc75c0e72f6f2145c3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/accepted-code/docs/IDENTIFIERS.md
+    sha256: 5c4e9c52076a3cae6bf33992c8c5b7be88f59a6d7abc0758c4b9bebfce137550
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/accepted-code/scripts/build_source_identifier_snapshot.py.txt
+    sha256: 858b430214929628c38d64ae6cd5d71368f5a07a1eb1d93523f5332f9ab2aeba
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/accepted-code/tests/test_pathbank_identifier_authority.py.txt
+    sha256: 92abc8aab53b070c3837db127911114493b0c8e75d9f09c7897175d2ef77b014
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter-review/REVIEW.md
+    sha256: 7c4e255808a9f8889453f8b2d3af87cdcf5aef76abd68dbc6f4d51e769d951dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter-review/artifact-manifest.json
+    sha256: bd7978e8b1e6a6d09774fb94fd01f50418846ca9b3d90a9be4416c856e8b484e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter-review/execution.json
+    sha256: 32cb5c7f1bd97723d713d494860749bc3059bc3c92566a8d7cf857b5e3b0da28
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter-review/handoff.json
+    sha256: 34797b6c04357fdcd0d8051d21f005b2dda4dc73e4e46ac3ae3804b86f382eed
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter-review/review.json
+    sha256: 3f36ca26da0ad3a8ed2c52ac7e1c99a074fc0324c8932cc3978316e354f16cf9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter-review/review.py.txt
+    sha256: 0d09eb4fed1a3376d1de82c796ba7845644c6838ac8ca83be9e665ca34bbb4a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/IMPLEMENTATION-HANDOFF.md
+    sha256: 37e4cbdc003d5c45d2e01d9919fb8769c8863746ab92498bfcffbb2a26140ed0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/artifact-manifest.json
+    sha256: 454db628a9990da0a6c574606541d4c42aabce449932ec4f595e16ae60a8522a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/baseline-code-bindings.json
+    sha256: a4a94e6a3ad38c447057893d5294b5b046806e4bfc3cf8de9028661e189d23fb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/check-executions.json
+    sha256: 37e82724397361903f8380c24e8e6d40a6789d50b9da8d971aac395d233bf829
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/code-copy-plan.json
+    sha256: 1cb513ce2975050341d2e9c1314847da09667bd57ef75ade134ab320004fbaad
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/code-delta.json
+    sha256: 1ddde5b4eb704232fc0c507d3ff93408c2e21e04464c8e41a1e621d00d0aca1e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/edit_candidate.py.txt
+    sha256: 7d58a360c5633066671b293f6b92879d8487e3986ce7aa593429958cf26b4552
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/final-verification.json
+    sha256: 07d7125af78777bbb77f872b1608899590257d1ecd839273c8e69858a6c169f9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/focused-tests.stderr.json
+    sha256: 2baeb2d72c202a6299c2c45ac4238d435b9abfde7ac54cc61e371ffe7c4da005
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/focused-tests.stdout.json
+    sha256: dac5b5ea08d2d6fe68cae2b99b860bf766a0895ec0025038ed21d7b40afdab06
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/handoff.json
+    sha256: 68b1dd25ad72c8655c6c8d7876b3f7e2409c3c6b1a0cf3a29e7b2f806eb962e3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/implementation.patch.json
+    sha256: 297c60cd5100b93810d2b42aadf0a9b4f375e84fb82481a9126d0cec74727b8e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/initial-original-probe.json
+    sha256: d1fcb52ef18a2f12cce1733908f1d9d6561b7a42f6bf4063ca9b085b6d4a8bdc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/lint.stderr.json
+    sha256: add59848b0ce2d7c670b7bb86585bc5ea9b145edd02fa9592752990869aff93b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/lint.stdout.json
+    sha256: ef56ee0588edb6060e7310854130bacdd6305c20f544051c802bfbe304d1f8d4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/new-originals-copy-plan.json
+    sha256: efe692460c638b4f0e13b24880aee27a05cee9a2af67b21b2d97404e3b7b75aa
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/prepare_candidate.py.txt
+    sha256: ad88608a53bc74320cd22a11842f40f652b0a65b5913c341f1034e12f46675e4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/previous-pathbank-manifest.json
+    sha256: 0cc3260ffffb87945a6ce9ab337c801adae4608174940c00998b5e486aa1e868
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/previous-pathbank-native-build.json
+    sha256: 2da9960b63cc8f9ef9a32e9a82d22eb099ac9b2f02ecf2886d8d00d87db7af5f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/real-source-replay.json
+    sha256: 9cecd2be208206ce3a04a0116a6362880119896c5b0a09acf659d60d920b97ec
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/replay.stderr.json
+    sha256: be9328e7c65ed4b73e5de5f3a58c61058a4afafe4c235d717f3742c35689a275
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/replay.stdout.json
+    sha256: 718d306d4f7f4f26ca65409823ad2d42288450f56394b483242ee48bbc956ae1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/replay_originals.py.txt
+    sha256: cb7e8750dbc1f38520692dc9b26f1785506bafc679cc33a7f1acf520cb230a9b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/retained-attempts/focused-attempt1/check-executions.json
+    sha256: 676d01711276b61c3c14bc011b2aced2a2aafb6e69042061e35be851abae7284
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/retained-attempts/focused-attempt1/focused-tests.stderr.json
+    sha256: 611aed42efe82f4e6cdeedcb1e7313e31e4e74309f7fa8aee7af57c6eb3f8117
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/retained-attempts/focused-attempt1/focused-tests.stdout.json
+    sha256: 658eb06728d687bd42015d2f7dd717b41806e75f7613d820497363adacbf335e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/retained-attempts/focused-attempt1/lint.stderr.json
+    sha256: 8a82805e2e2e01cf3ba225195f87e17f1ea4462b882b39d1913a32dd05db9394
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/retained-attempts/focused-attempt1/lint.stdout.json
+    sha256: ec6c8878645ab4e9ec35bbda966bed8e69f0499c1f774f71d2eb816d759d90ec
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/run_checks.py.txt
+    sha256: c100b563cc327ab299f506217094d3a442268d52c8769196b376b0b8026c55a4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/seal_implementation.py.txt
+    sha256: 6b00f319d7b5390a67047a39323be621ec934be9651ffba005aa583f6e57517f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/tool-terminal-receipts.json
+    sha256: 226a0420e656e91986fc5e6c36cf25fdfb8eff0d871a43fc2370ec4fed53a4ee
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/two-term-build.json
+    sha256: ffe2019ee0a8e675b249ac8c2cd6f28461e7bd8c0dce1f730d03d30bcd9debbf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adapter/two-term-manifest.json
+    sha256: f8dcb2747a821cf7d63c146dbe13ef89a0748a7c822c5fabe2664a0e1498d143
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/adoption.json
+    sha256: 72a7f97cb265b27de3f61ab028618ec14f2f62efaf4e38d13cb7ca4896f04c96
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/archive-map.json
+    sha256: 420807e65c7a669ff167d868e10c16fbf6e35c34b5e55f56ee636ddb232adc7c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/AUTHOR-HANDOFF.md
+    sha256: bcf186bf7084e83595fbb61d9c55006d9d48173ab4fa03174b95117e9253f4d1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/artifact-manifest.json
+    sha256: eda97e4144c1fa8baa785d08474abeb12e68f10d53ffdfe5a2e67a9f306853a4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/author.py.txt
+    sha256: d4b5b5d7f3175e27df74977660becef5a692a5c3f5b89701ca7c23668e69d118
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/ASSESSMENT.md
+    sha256: e3f92aec30dd6fcedd2a9d5f91f2e33db07f6b133fe2e63dcf8fbe835b695db0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/PathBank-adapter-requirements.md
+    sha256: 00fb885c8875da72d777e5d30d59e53736e56a3ec5f817a774e1d0a4e2077bf0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/artifact-manifest.json
+    sha256: 6236e9d6f6d47268db8bba9054e890a6c49267269c4e1de6bc1acd5293da914a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/author-selection-bridge.json
+    sha256: e4e33aad89ef94a8768c76cbb9da5b92f145d43df9e48dcac512c2ee9dc2a5ee
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/authority-gaps.json
+    sha256: e7012098250de8f52df6491fbb228e1cd08df67f2daa5b700ed177ed6e0b7fd5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/authority-preservation.json
+    sha256: f120015ebbcefb1eb9a3cfb563f5c4139fef196e7daba87cef43df9043e4c7a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/current-base-bridge.json
+    sha256: 6d9fa648a6a477bc26137cd669c27abf8109bb2ce687b95d898f9df02184a632
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/extract_rhea_original.py.txt
+    sha256: 0b02bedc70bbf25e6afc5a0293f152a538638372eec0696523b3169d7888d3fa
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/fetch-sequential.py.txt
+    sha256: 8ad1edb3e1258732e5d05d0648730589cd1939bcd94937fd47c76a77ac604893
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/fetch.py.txt
+    sha256: 27944865cdeac507f24809068859dfbb23eaf24f636c543df3dd032dbe60f5b7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/final-base-git-status.txt
+    sha256: 59e2f510ae7006df51872d1f5ef6e9e76776a9df6fa9b5aa773716ca54261adc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/final-check-executions.json
+    sha256: a3e52be02fff7085fb2ff5f6c45b9d71f3c4154ecf38e511e8e14907a459a643
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/final-verification.json
+    sha256: e6593bdeed6f44d35236534549429324832611270f7b080e51882d2bba39e8d8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/finalize.py.final.stderr.json
+    sha256: 3919b6eb9440d50ad12da95ea22358d978c713664582c351f1484b1cdefe1611
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/finalize.py.final.stdout.json
+    sha256: 99ac2e71c26c41b3281c0bbca0c0a53795c1fb5155222a4c2ebb2c7ec402f007
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/finalize.py.txt
+    sha256: 6af5ef3e0c7deb1696076a84f46eaee89630e93eb2d7bb32b0649b62f4e5e277
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/finalize.stderr.json
+    sha256: cd6d196064b481579980edd0f4e881a4c5bd30f6cf8933daf49b6c2ee0b1b658
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/finalize.stdout.json
+    sha256: 323724a33e452c8971c61b02ded74f54d462836c6742f96783bae803b111d125
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/fur-iron-native-identity-bridge.json
+    sha256: 6a336cd0cd328f2da5610ad6a6e8818b5620d2ff74b182c94af1aabdf455fe22
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/gene-native-identity-bridges.json
+    sha256: b988eb3de6f60b64cd7af1995b63d9be8590bdae1b90e659b302a5d8019d1bc3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/handoff.json
+    sha256: 01e918d38b31b0acccfb29f12f602830982178a206e5e1884f1c50c1f632807d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/hpr-state-original-projection.json
+    sha256: 3b4c78975775ba4a090a54dacc93640602232d7825ecb3fe5f7cb3ef20e998c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/identifier-exercise.json
+    sha256: 8c96c03020e8109738b2fd62e3f5a47ac994903d6a857c5b1517976b479b7066
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/incremental-source-build.json
+    sha256: aa5ddaf1bd0f403bd756ca21fe7bc0af298c9a641709e9dddec37b5951c761a9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/incremental-source-manifest.json
+    sha256: 57093d25b9cec5034076d32adacd27589a7a5f10764bff82ff53cc8a364aa0b9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/initial-native-adapter-probes.json
+    sha256: 5105f5d3166d0e8575f12d9315900939e49f19b5478cc0c3aa59acc3084779fd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/input-bindings.json
+    sha256: a0dac3efdafd47ac99d75348b3cd4501fb651484c94d72c101ecc7bce3ce4c90
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/native-assembly-projection.json
+    sha256: 95b0aa65568453b932b6a70053715c9ca5c9b098bcd181cfa3a85f2b1c2b542c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/new-originals-copy-plan.json
+    sha256: 886687c03e3297bee360bb284fe36e66b781f41da3d3ad04dec1b02f432445fd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/ontology-authority-proposal.json
+    sha256: 2ba0b8891d03299667e9be2679a8f9c3c44373420ae5bb54c66cc65df179522b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/ontology-original-replay.json
+    sha256: 11a6c777a4880bfef204c92498909072fbceda036b18ede2bf56975756674241
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/original-native-term-replay.json
+    sha256: 75f67c5a2d317d5241a6ffb2493849409605250b556d71ed16df20a8b16f3b0d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/pathbank-original-probe.json
+    sha256: 94dc7c9508fe30b6d66a573bf0c42b0fd681b5ec19bee887ddc6174a31205f9b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/preliminary-native-labels.json
+    sha256: 904b88502add421e929fc6d89e68c1dc4f2e0f516cc22a97e3dadfefc53a0b9f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/preliminary-ontology-labels.json
+    sha256: 56cff9454da775b6de2f1930a57abc9e3493b8fc7af1220cf4fa1f72669e6d92
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/prepare.py.txt
+    sha256: 5fc01bd90e2f95d528d8887aee0fbe96dc08b5688fba171f1116b90f6ff6240c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/prepare.stderr.json
+    sha256: 51d7c460a0691bc2744a98fac96fd1456e5d5acb3c2a7390748d34df3fe784f0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/prepare.stdout.json
+    sha256: dedca605098471bfb11b67189b675216e8ee2820448a99b0bb283e86d195aa84
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/project.stderr.json
+    sha256: 63480d31c8dc70c81c81234aede0cfefc2ab121f656895fd9340dff4ad3fbfa1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/project.stdout.json
+    sha256: fb4bdbdb56faec5376c82fef838aeea11234ecec1759153c2f84f9ccade2881e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/project_originals.py.txt
+    sha256: 3adb0b058009ec365e16101eb906537ccd4c3c8bdc739b45580bca11c9e53518
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/ptsi-cross-pgdb-bridge.json
+    sha256: 276eb51e7db257740224c2851a323efee53e1962017458c0774d059b380658eb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-01.json
+    sha256: 0ae86201f4762cb7383a66e446bac22c20db2c67db49ba890d1dfd4bcb2cb367
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-01.receipts.json
+    sha256: 0f90e8ef806b5e44e1b16161c5a5b1af4cc8a157b8c46f9585b742f108370940
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-02.json
+    sha256: 0ae86201f4762cb7383a66e446bac22c20db2c67db49ba890d1dfd4bcb2cb367
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-02.receipts.json.projection.json
+    sha256: e3c74311f8902e2648f02cc9e4ef122a1ddc5be0fd22b1c8d5d6ef7a7a499ddd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-03.json
+    sha256: 6d61a6c2c496130a33a811c5e98b4fee0b698322a759b7d50c56b520d6f13f0e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-03.receipts.json.projection.json
+    sha256: 6025b659d87f9b29cb55cbfb941ad7902562608fcb491714ed71057fc6ce4cd9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-04.json
+    sha256: a0d31b140bbf0f5a93f738827b41e86c9665d62f7882f984fcdec1926fdeab24
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-04.receipts.json.projection.json
+    sha256: 4f19d58eac03a06dd81f2cb5ba769228db895aa558ed10e6a67e42d67ec38dbe
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-05.json
+    sha256: 512ba156ea2d2267e93649f52539ec2dec7e637081162f951e0c571445c775c9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-05.receipts.json.projection.json
+    sha256: 39edd00f0900b502fb7522a01b365924678e8ee8b29be5b9766c8ded15897481
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-06.json
+    sha256: 8ba41efc9b394d6975c3cd3512590dfb4346e0f0539565462851782d2fd1a692
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/requests-06.receipts.json.projection.json
+    sha256: 8d2879f628edb925bf5a1153ab05b5ea233e510c164d673020e8af43d76d1712
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/required-gap-identifier-exercise.json
+    sha256: 4b01c919e71dbf73fad257ec718537df2f42f358e53f196e26a8bfa31d2b8170
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/rhea-comparison-manifest.json
+    sha256: 772af9903f567656d3001c0fecd49739fa2e1a5c64d38a698df4d04bd2c961ff
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/rhea-identifier-updates-proposal.json
+    sha256: b8554eb961a257c9e38bbadf96e2840d4b9f480a0fdce3f048619f7248e9bf31
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/rhea-linked-native-chemistry.json
+    sha256: 7ab95a8e805ce23372343916435c40d3cdd57dcf97b2923d1b2277e63bb905a1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/rhea-linked-native-chemistry.stderr.json
+    sha256: b90bafd9d13d41b09e5e04bf60167d0270b73b776356b67e708cee0cd6076278
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/rhea-linked-native-chemistry.stdout.json
+    sha256: 6fa3d6f78f153cb84d13a8088201233101b970d8d0eaaf9bf37c7e85d0fa3b8e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/rhea-original-term-comparison.json
+    sha256: 459dcab39fd8ae549843f3e7bd92c6a6095d7d26a25a1054cff325ab877e6dc7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/rhea-reference-bindings.json
+    sha256: 946d030887d238a689bfc22f6eebe15950b43fba49178debda4a884d397afcd9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/run_final_checks.py.txt
+    sha256: 390ea9505fc559bae1692cb17892a8767703b3bb7a4c39b0ac036f621f303bd9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/seal-verification.json
+    sha256: c25ff700c89477ab52a1ddcc9b79c3b02620f33d8caa4dd4b9ad2a87455fc5f4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/seal.py.txt
+    sha256: 1e5b7e46b2d3629b8f1d93d625c6a39347ea86ce782611f14d5cf7a590d44229
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/select_for_author.py.final.stderr.json
+    sha256: 86ce99c4ce875dc0dd46062fde5a0526571cf5a9f45450f5fad5821c0cde1b01
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/select_for_author.py.final.stdout.json
+    sha256: d790334176ebd2d7fbabef2cd114c37c15bd2f0a42f66e7a3f0398ad6022738a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/select_for_author.py.txt
+    sha256: 210e1d4f49274ebc24a4491442ba68e6cf1418f80137b06be91f9ddb042d88fb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/selection.stderr.json
+    sha256: 9fba80b101c4fa36bd09deecfefaad7dd5e083bd5d760c0c23e3364f568e6f21
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/selection.stdout.json
+    sha256: 76d062239c2b3cc5ee419b4c4233bdc86c92a193f554940ab8f4bc3969989cfc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/source-acquisition-bindings.json.projection.json
+    sha256: 14f3cc3ade335c75cae99b4c8e8b7ba0d6c51c5337e5c2743ec19ed6a85c9c88
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/source-authority-proposal.json
+    sha256: 4c211e7cf75480784b5d4650e28bc84fee737c34edd6080e7514cd68b95237c7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/source-manifest-additions.json
+    sha256: d5bf5b3480a556b5cbe5711726d58d92a41817b8933debd89c1524f1f5c7030a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/source-manifest-proposal.json
+    sha256: 29afe0501ce40647c99eac15fa4cf549ca3eb837f824b1e0784b755f410a5bcf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/source-negative-controls.json
+    sha256: 91c573e0d51ad6de1bc1281c90f67809b1f8193d73d84ebbd5d4b369ec62710a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/source-original-bindings.json
+    sha256: 5c506303772f410a8b17dbae550d1863527fd700876ca0dce9d5b38a4159d31c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/source-overlap-preservation.json
+    sha256: 7448b3dff993ce9b050f65b083073ee907bba6fea01955128fe5fff2e79c5275
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/uniprot-original-projection.json
+    sha256: 9a35bf9db6efcecc9cbce501b0c7257fac2c61d37c497c9cc7b89a537b4361e9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/unresolved-pathbank-copy-plan.json
+    sha256: 70be6b0429243c47bddc0b1359d6d2a89ff5980489b0504fa6c880935617c4c1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/unresolved-pathbank-source-manifest.json
+    sha256: f8dcb2747a821cf7d63c146dbe13ef89a0748a7c822c5fabe2664a0e1498d143
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/authority-preparation/validated-identity-catalog.json
+    sha256: 7431f5eb4483610f1e2a8cbe82956a7aabe7b5ebfde2d587287ed787157b0b69
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/all-preflight-claim-dispositions.json
+    sha256: 5d09d420cccab3883991e452a6b22c31a64818cdc9cb0db2481ef965c330005b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/authority-helper-intake.json
+    sha256: 92d2b9071aa0cb7cb9c3d735afedd450ae08b25a1f2131e5180e3c8abfcaab35
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/base-commit-bridge.json
+    sha256: dc165889b1d65bfceeb570f75f66c37cadaa26f14afa9115f47ce427cc22bb20
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/dedup-actual-base-files.json
+    sha256: bc10240c9d2b0704424fb0d18c1546c5384571d86158b26f02828ba31ad5b47c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/dedup-searches.json
+    sha256: 1b3225220dce44ca11d3d3594f7fff510a61b4b8b09960b255b8215c6be724dc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/dedup-workspace-files.json
+    sha256: 17a381fd30359383f4cb3cd6cae05ed4636d596096f13c6c839426d95d0b62cf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/edge-to-source-coverage.json
+    sha256: f7766e844334f03bc2047f6232327075b9f4cedc412fbb3552d5822a70673e3a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/evidence-locator-replay.json
+    sha256: 1b3a041ad34a86f7442f4bda58f42c665f6b9f175fcf4bb8f6162c9a8d48c6ca
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/final-authority-selection-bridge.json
+    sha256: 9d4d2545ee542209d25e2c0ad43a964787f1727a17d5c0060c068bda5eeed3ea
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/final-command-executions.json
+    sha256: 592ac3965232b19fb1b1bcf4974150d9ff8bdec228880afe6fb25c906648a78e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/final-named-identifiers.json
+    sha256: d9d55c9a286be5252a3c0de16df6b76209e43d30a2bef3897ab3e46cb0125469
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/graph-export-roundtrip.json
+    sha256: 33542c82244be52401c5673bfe2dcda06a2dd11ece47c38f3eb40105e3569685
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/intake.json
+    sha256: 065eb8f526facd0efb89563c58898d062b8f873bf14bd7c6a87e3b0dab40fbdf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/meaningful-negative-controls.json
+    sha256: 811d7527ef388dbcd8a95a5be598a5227d4e68cff938aa4e1b97f1a2d524285b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/preflight-original-copy-bindings.json
+    sha256: d2cfc48727560fc85fd0b61cd517bc60e2c16996432e8a809d9c36c878355aa0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/prior-mention-dispositions.json
+    sha256: 84a28d4c4d7756bf57dfcb04ffb3c6c7650df2212c8f60ad001881ec2aa9deed
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/record-native-reaction-projection.json
+    sha256: 773f993e3f78a9a0507a958ddce6d642b2e4bf1ae71d0c9cde006685bc53d369
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/reference-bindings.json
+    sha256: 3a02c512cc160261353de0f929fbc871342ee3dd81bf290ab51ac9ba6722203c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/reference-original-replay.json
+    sha256: 8e7723995b2dbcf3c72cdb6a6abb85edeb1ad971f531ecc5bf38f7525e6656dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/scope-and-conflicts.json
+    sha256: 6486f798a6d7f7df9ea3a5b2d05ecb7f00ea51896cc61f36a8c5077876080de7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/semantic-record-overlap.json
+    sha256: b6770f2fd3127a790691f62b5f7d479d989bf91cef376cec932f7fb7afa48c0f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/source-to-edge-coverage.json
+    sha256: c40681bf0f84518e923077270bef14fc466b6f4499076dcd821e69a223f151f8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/taxon-scope-evidence.json
+    sha256: 5f10bded3d1a0eac47df75fb1791bd7f8a28713940f87da06e5d578728311ca8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/validation.json
+    sha256: ec6e716be404f87e26c8ec2b8d968a83f683daec63171c8772a4fe5bc2e3818c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/derived/xpath-preliminary.json
+    sha256: 393923eb624582c13881b1f1d098349ce96823c8a92b2155d13f2360302b8e71
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/finish.py.txt
+    sha256: 8680529f217b54ab274db51ce2c37acd2b21c5f829b9224ddbfffbeb18bb09b0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/handoff.json
+    sha256: f86be00b99dd8182c71fc1c7e493ab130c924f907edb64c7335c68dd610594fd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/inventory.json
+    sha256: 2f07f59bfe756bbab5e2598d51fdac3d5947bce966e797ce91c11e12fc9a379b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/ledgers.py.txt
+    sha256: bd45f280ca451e161c9c8c7c6e931a2ef12564fa4face39eda2ce744a995a068
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/prepare.py.txt
+    sha256: 7cef11d2cf1ee072a4eb364e69be949acd36a22335644ca9e6240771e59cd585
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/research/mannosylglycerate-degradation.md
+    sha256: b9f24650b4cc43a8a3dd164754fcd6735a436babc74dd5382922cc28431b59c3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/seal.py.txt
+    sha256: 26f7498c483bff6088463a6b135d1347ca5799a4200c5c205ddc8e3e189ebdcd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/author/verify.py.txt
+    sha256: 6d6da2f074716c27469d9df22a039474fb8a2d4e179efe2438e82700c149f871
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/REVIEW.md
+    sha256: 05ef717c901214bb2711be0a590d1ac938368386261e722562c03ee2129046da
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/all-21-source-assessments.json
+    sha256: 196e2ee80ee9a97510e5b037454f1a0596f129fcf102bd42e6d308832209aa88
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/all-6-ontology-assessments.json
+    sha256: 8b6cb03c18e745fc8a9298a78cb74d99179f51c87cc8540a0aae4f7687d9eb13
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/artifact-manifest.json
+    sha256: deefed96b0bfccb1b4e6fc1f3cc0ef0c6d19584ce84f1421bfd1453f6a70e0f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/audit-execution.json
+    sha256: 2c505dce2e3c65c107c94e3d2d832320a13e9105fbf1ca16f92c3d23a8a426de
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/audit-initial.py.txt
+    sha256: 67c1e214aacbc755a40cf2efc015a66da9a6791c85e4554a2309a619c617d6b2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/audit.json
+    sha256: 876241c5465cbf3f8d0c9fc61ea5f128453a7f83e66d2759097b6acbb7dfc0d3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/audit.py.txt
+    sha256: 1a9ba59a1fd42d50ec96ca91734f3a2b09c599e05ec22579edf1ff6b21649eca
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/audit.stderr.json
+    sha256: aa0ee060ed14674aa095d8a61290eab276f6dd4037f7bb3bbb297feb98778f5d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/audit.stdout.json
+    sha256: 9d5e4318b21de8fab697eae80bd16021a59857462877a27e2d0b90911c0db5bc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/control-rhea-obsolete-manifest.json
+    sha256: f7eb2e633f7203e803e2ba4d6056f73c0ff8ecf1ed75ee4ac11b8d2eb222c828
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/handoff.json
+    sha256: 5e8197bb2ef3f391a2174e47ba3535218c4d14b2969165c3c8ca27d6faade546
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/initial-attempt.json
+    sha256: fb28926cfa05a97dcb0e41afe1a049d88e2a3d821cd1fbb4156864272fa5e8e2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/metacyc-release-joins.json
+    sha256: 551185dc2bfb6836cce00b03796e50d6c195d38a49e1120317a99375e2d9bc7a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/negative-controls.json
+    sha256: cb942227d5968914c78906b331072f413102cd3df6156c500201c3c1bf868760
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/observed-original-bindings.json
+    sha256: 9d581a4d7aa1b76e04cb44d726c0ed3173b5dc88bfa5341d94e443e19294c28c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/rhea-all20-replay.json
+    sha256: 20f2ad610e791f5d262b68b57dc4d518e5e9229f55f2a31e53e506eef9d6920a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/source-read-receipts.json
+    sha256: 78afeac39941c3da2f715c7d1019e19d88a51607241901ba998be138879d1a59
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/sql-metadata-assessments.json
+    sha256: eae0c6b62c6a5338ab6d09ab2878cc8ca02bc63ad0ba8693b3a8e299b79c8ed2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/supplement-execution-receipt.json
+    sha256: 8baee728798973f469e3e485c84669622644c4cd51ede2f98dea85d32d77a37a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/supplement.py.txt
+    sha256: c21387a925f129e8bb844650cc1ed5118a926865e0f956e86e8402b06e1cbf12
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-audit/supplemental-negative-controls.json
+    sha256: 42509ae30e87ed8f7581a23b477e0095e5c7aef349da3fef2bbe60c9e635aad8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/commands.json
+    sha256: 7b548321c6b73842b99d2716303c80bfc1e09b81c2454dc7d0ca4b623de380ce
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/common.py.txt
+    sha256: 69deaed3c94918da179c73bb63ed458120a7b7fee2fd5847cb9775e0d95d2b73
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/execution-intake.json
+    sha256: 12c6d750ef53845c3b0b8db67615a636e934c73c13cd4314085b80f57a93ea9a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/execution-ledger.json
+    sha256: 99c1adeeedc2c7e14c7d559824038f78cad07635dcc91c26b90bfcb8367a12e6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/expected-native-comparison.json
+    sha256: 335fcae115e7b4ec9d3a1035f9cd97b04e955bb6ca38b836b90060aca5bf523c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/failure-1791776605048275000.txt
+    sha256: fdb11363be32d2e05d9ca0c15650f39ceaf63326620f191730a0f617f36c52a0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/ontology_builder-execution.json
+    sha256: 8366395d31111d4af4c90059d322dbc910000b32e109c5d5f9eeaf998b857597
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/ontology_builder.stderr.json
+    sha256: b10a0ed6b812120b7de6713cc3deb484d6466abc841d52b5846e586303e64c6b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/ontology_builder.stdout.json
+    sha256: 40f299d456bc045b9c5691a7431de1f985e8dccf80e5ccf7fb398d2959d2f143
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/preparation-capture.json
+    sha256: 2bdec152c2dac706729f78aecf3675879c0194e70cbb487c188db2e34501558e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/prepare_and_build.py.txt
+    sha256: 22e3600768bd92970ef6989ec207676dc1a9660e7355317f23427efe1c91142c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/proposal-comparison.json
+    sha256: fa08f83b225f11fef0bb30db0537cf89271b8a2c42c01369b13dc2e2a798837c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/source_builder-execution.json
+    sha256: 9cb01cb66568dfbca745da4ff45f57b229a1c3c970567dd0eecc17b36f90d7da
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/source_builder.stderr.json
+    sha256: 966e762f2ff0572a723b1f206863d90b0d5b4ff05936ca1030c46f4976b92f87
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/source_builder.stdout.json
+    sha256: 42c18576ea13222c73d83db8c45746bdfe7edac9f3f97fec2bc05919090f9915
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-build/staged-bindings.json
+    sha256: a96b67de23c3fc839113a6c91317c9c123291032886a2570b423d097c0234746
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-completion/artifact-manifest.json
+    sha256: 13c049b1f152eef4dc881db5b9561e254558ecc3f9b420c54cca08be006950f2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-completion/external/pathwaymech-next-228-complete-canonical-20261012.py.txt
+    sha256: 49a97d60a29346e5a964d1a1d441c9d4b378862def4560d4674cb01d47cd8bbb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-completion/handoff.json
+    sha256: ba16915d5b135faa432033e2a0fc16afe97ecfe5f6da5fa5e9d63aa8a4f882d8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-completion/verification.json
+    sha256: 0cdc6cf183000982e44b5aaf4f04124755608c2a195c6de5bf65592ec0d0e7b6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/DIAGNOSIS.md
+    sha256: 068a5cfd922369b28178db977d04fde425b06f869a92cec7309332f801fdf90c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/all-62-reference-role-diagnosis.json
+    sha256: 4bea01bb3c2cf5f778392b4d827be18c8f56477d868ff201b5a54c3f48353296
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/artifact-manifest.json
+    sha256: e53b21fee2b2df9d0c993dd80c5cf4dd01b2560f286ea466904e0f25ab34de26
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/consumer-checks.json
+    sha256: 5e1ebf86187b3699fcc9a5f15c5c3beab5c2438a3062949752499bbf59ba8887
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/diagnose.py.txt
+    sha256: 9c2d3ff9790db19a8652cc7ce060c7f12fb41e39c9e71c60eb31cbd052397b02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/diagnosis.json
+    sha256: 3cc39afa1a9a289ed466c9599d04ffce6aa9297d28dc2812a94db0700a1212dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/execution-proof.json
+    sha256: 153b9c0dc83f3f8c2e824e7cea068f92a1e4176c5adebebb3c9fa2518316eae9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/handoff.json
+    sha256: 1560731288bb4a8bf151ce23ba6d6a627233850c90a7f821e7d80c4cfdc69ae8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/independent-exact-differences.json
+    sha256: 6f86e9ea1761bf506bf7f9897462c7d7d3e4585ca479256f3c488c93e5fdbd47
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/nine-uniprot-source-diagnoses.json
+    sha256: ff5b25084662938ad8d3306e5e23975bc500a2b6f263ed551df98064d6f4fc7b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/observed-bindings.json
+    sha256: b8b835359ebf585874eefdfb0ebd065289d85cecf4e721f461f5251a5d524f5d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/pathbank-reference-role.json
+    sha256: acd20f746a362cbbe6c19417aa99e77e8d16f544c84ce33df8bb8396d879a096
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-diagnosis/preservation.json
+    sha256: 6a5845d2b85c71f88d994631c14e7a134764b472b5256f78f5298725431d8649
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/README.md
+    sha256: 3a4f5363df9d34bc5bb37aa75776e5cfb8775caa8d82799b3d761b7cda667ca6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/artifact-manifest.json
+    sha256: 48abc652a9f9f92d14221e11fbcf98a2f7c575d1a12aa81694e572ec02f1ccf3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/attempt-accounting.json
+    sha256: 259115b6a2b84970983faa22cbdb0368920f2cfb1cff62a1ca9176a9591b611b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/capture.json
+    sha256: 2bdec152c2dac706729f78aecf3675879c0194e70cbb487c188db2e34501558e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/capture_inputs.py.json
+    sha256: 2ee8c83f91a7ee6e76b91de38692d02092f5633594139edf3de762c9cd5971ec
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/common.py.txt
+    sha256: 69deaed3c94918da179c73bb63ed458120a7b7fee2fd5847cb9775e0d95d2b73
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/expected-native-comparison.json
+    sha256: 335fcae115e7b4ec9d3a1035f9cd97b04e955bb6ca38b836b90060aca5bf523c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/handoff.json
+    sha256: 6e8b03018c4aa0c2829c02eff905e9b1f4a480e3efa9f55414621e643eb7b577
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/prepare_and_build.py.txt
+    sha256: 22e3600768bd92970ef6989ec207676dc1a9660e7355317f23427efe1c91142c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/prior-canonical-intake.json
+    sha256: 7c2ded327836f4d91886a7d8b1ce02c9411bdfa69d801c95e31a921a8ad6a3cb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/retained-attempts/capture_inputs-first.py.txt
+    sha256: 1b602dc209011e4d9b556a1712564649b20447ae41c7e1463329f3c5605d66f6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/retained-attempts/validation-receipts-first.json
+    sha256: b0e53f1e3ac4033409704a31a153062e084734e4c0c0c36805e7c57454e301b3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/test_guards.py.txt
+    sha256: 0c2951ea799e7f921c7185a44f45135a024d6f5e89f2b73d3e2af06d30280ec2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/canonical-preparation/validation-receipts.json
+    sha256: 421d00fcf3c7a8252d8f2dcb69c667318bcf005922d43a8913f43d4b270cf2fd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/archive-map.json
+    sha256: 6568a8dd52663558778493df6c2a478a52a4bf982b6ce2e5cfdb4edeea9100a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/diff-check.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/diff-check.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/display-approval.json
+    sha256: ed1b5c5d8d81487d5a4bc7c27d364219250a8efa1dd147533cebcefe2211f665
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/display-assessment.json
+    sha256: 90f305072bc7034e3a94441cf2b39e868268327ddf76007ad9c678415f796a82
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/finalization-helper.py.txt
+    sha256: 9341223885d93c8f74eb843396e01c3d2600448cb89dcd432af815c1510cdf79
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/finalization-support-handoff.json
+    sha256: 940ccf583cb748ab624ae6da1b74b7569c597832189035baa52ff2a718c19c4a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/gate-inputs.json
+    sha256: d50cc2216feac9c461032385f79d4e9acd3ed2dcd025245c9feb12627ceb82e8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/gate-recovery-helper.py.txt
+    sha256: 83179a467f5c065e87de889b7462429480e5b487b0f2fa5604763dd09c6d6c7b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/gate-recovery-inputs.json
+    sha256: ab517c41afe235766123ba17ae8df801bd26d59350a5f6ff9c52c870038a7ad9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/gates.json
+    sha256: c8fdf452457384a6d4d4fd8f652eed55d596fd0827bb9119d31e5ceca43fa08c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/graph-original.svg
+    sha256: 7a1e56af53f3253370ab2b2beff7d542124082577496aeacb95131548580d053
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/graph-overview.png
+    sha256: f862bc38ff26e64826e2b3cc37b8554367a06441a8aa2a496dc37c4e36625fda
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/graph-styled.svg
+    sha256: 3ccb755d3153ef09cff33cbd6f54a447098b7d43d2469d8725940f98c3e040db
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/history-execution.json
+    sha256: e0db55fbad1a1a14bc1aa11dc67749b5b1efc433b158fcf66300ad2aa8268447
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/kgx.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/kgx.stdout
+    sha256: 29b7e1ad44ab533e033e85a8a81fa7a03e3e6126664a32ec9d123b4efac08bf4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/lint.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/lint.stdout
+    sha256: 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/original-gate-failure.json
+    sha256: e883f98e4ec92b6f7304f027d9326e0551bdfe846ef89c033c3e685c6db2a179
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/original-vendored-failure.stderr
+    sha256: ede217865e5d787bac31473163e00ab87cb7b8b1cda244481cffa493a1a844d3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/original-vendored-failure.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/page-qa-helper.py.txt
+    sha256: baefcf48f1aadb2fab954beff8893a2cca94496a9ae392e00a3677d3e821c609
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/page-qa.json
+    sha256: 109c67a9de12857b7820538ae07c5bd30fde8e053240199303a18a7d7f583342
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/preservation.json
+    sha256: 5b853333970d750b79e88f7cb9a45b459ea790aacf69a8db6bded24c04aa7d18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/render.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/render.stdout
+    sha256: 2bdcbb4e9e0dfc564a5bfaa29a4e35a685c45ad5db2f00945c3ba042969a4727
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/review-content-fragments.json
+    sha256: 963500cd811edaeb2b44bbe2fb782948ba4ba2286e5297fae3da16f9c4a3ddc5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/root-support-intake.json
+    sha256: dbf569af01d59a43bec502b50d6f37fc04428a990652cd5bc514ce66f4d49ef5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/site-current.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/site-current.stdout
+    sha256: f467ca2343d15342648f7dabf7b6478f277935cf7d1608acdc043ca067dd205f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/skills.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/skills.stdout
+    sha256: aa2d3652343b880d16a176d45deb7b4907fb11f43e31f1840d7724658478a527
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/test-bytecode-cleanup.json
+    sha256: 199a91cd033ff7149f903f910008b5a0d42050cb087bbaaeb1f6ef68d08b69c4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/tests.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/tests.stdout.json
+    sha256: 1da57fb4bdc0d22b204b02893e044061a25fbf9a80211ea7aa12d8c930f9859d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/validate.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/validate.stdout
+    sha256: 7bfc89d12c6819e9fba14a214d80a640e6c86b507a53899b4ac91371af91c374
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/vendored.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/vendored.stdout
+    sha256: 3b073aa29da7dc3996edbe18c83d0d6593ba6d03238b663efc40286be4cf428e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/final-gates/visual-observation.json
+    sha256: cafa2bcbdff6f05ad6720e679f07f0653a1c037af37bfa047b932403346b4fdf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/integration-preparation/accepted-inputs.json
+    sha256: 99e3446b700eee4be4e308f9f322712724a46f84c4b708e15eedddf626edce58
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/integration-preparation/expected-changes.json
+    sha256: 1e2afbef67b4c855fc992e804d2c2c5681bd084e7fd57ab18ffd7c802fee211b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/integration-preparation/external-originals-and-omissions.json
+    sha256: 9d78a46fd98ce77b68d86a695408dc09cd80e3c7aad8f0de717285c5441f1717
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/integration-preparation/merge-bridge.json
+    sha256: 3a99f7444e4828503543d340db1e928220c491001c4db1bf5eeca36dc57c5505
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/integration-preparation/merged-base.json
+    sha256: a420459f504ba47550a848b5087b69a8ab146310d83e6d56653826dd00c0ac11
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/integration-preparation/source-cache-copy-plan-prebase.json
+    sha256: fd7a8cf5983f9bd0e34f14c8824fbd14c7823ce7868f929839381be4eb1058cb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/issues/441-mg-entry-assay-context-omission.md
+    sha256: c0b2d89105898c0f3b015bbc8fff4f32b3375dc07c2cb06f783f35fff2bf9e26
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/issues/442-mg-cdar-assay-endpoint-scope.md
+    sha256: 2188036bade4c0b1e4b03b23a4190414762f546f6f009d98bed0b9385b508af1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/issues/443-mg-uniprot-rhea-evidence-locator-scope.md
+    sha256: b774fbbb7fd83f5e8845d5f4a0ddd1c84ebc08e7056445616049c3e75c9d3ca0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/issues/creation.json
+    sha256: 4e3c1a926d47c3e4d5e142ba0fd575d25c724182a914507169b4723b416acef2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-author-intake-20261012.json
+    sha256: ae124e220cc7086a199ca8529da5ef68cc3c1739a93eebcba99305d28e1ea08f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-authority-preparation-intake-20261012.json
+    sha256: e33a179b5bccc559e4cccc457122b55257b5bd55dbabf3cbf987b70ac2ea89d0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-canonical-preparation-intake-20261012.json
+    sha256: 80810a3ae22c6395d708ee00ebff4c51c2c68cb3f5d5406af5ec62a6331868c7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-canonical-review-intake-20261012.json
+    sha256: 5123e4c35f5f155c397f0a6bdbf059b4f725940fe6cacfe074675c20a05a664d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-preflight-intake-20261012.json
+    sha256: d0b7cd89e8ccbfe840c0728ed95d7afc97327e6a47575b2ec6367ad994404465
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-rhea-locator-complete-20261012.json
+    sha256: 281f0bb0b1412f62325bb234fe24f175d63b42eeea2442fefcde08c34eb03d0d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-science-review-intake-20261012.json
+    sha256: 4688456d45270e12dc2dd8615b07bd808392c538d6e5b5fb3a3d1bac41e96191
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-science-successor-intake-20261012.json
+    sha256: c05266c8920aa6925f53e752c8255da071f2a30e7d3ca71dd874541a54e7e0c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-root-semantic-correction-proof-20261012.json
+    sha256: 8006b0c16a49dc33ffb73edbe3b05891f4f9c5e383672154b3b0e5c7248dd76a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/root-intake/pathwaymech-next-228-science-correction-20261012-root-intake.json
+    sha256: 3e8910fb5562d4dfd11299e34bd302b85eb97e8462a3ad49178e89772be27340
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/README.md
+    sha256: a111a0d641daeff8954ddc7b60a4c63dfbd9d351d6a26844e3b3afe6a1e718c6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/artifact-manifest.json
+    sha256: 2cef34635ac8b7b517fb4b3011ab792597a925fa36e24d25cbd05f4449390096
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/correction-specification.json
+    sha256: 88809b86fdcdf0ad0e104a3a16528c9fce5bcd77d19feaf0143e0a53014e2d30
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/all-evidence-locator-replay.json
+    sha256: fceeb4d5ae81de48a27b904a165da9ab00ab7c77cc9fd0f7ceae1d17088a8ce9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/all-preflight-claim-dispositions.json
+    sha256: 8c6e9d98f9ec0e35887b0a6580eb5632a224285099c8878a09c0588c812f188b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/coverage-accounting.json
+    sha256: e5f85452b562e57d5d3b915eae2568c8cb69ba2bd1c500794bd3dab33d7663e7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/edge-to-source-coverage.json
+    sha256: a061220427a417e93091d4cc69a4f6bd193087366ab893ee7f843cdd752deed9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/exact-semantic-delta.json
+    sha256: bc599af0b8813eef4d21ed4bc4927f9fa723ed6470c5746b915a202505014f1f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/final-input-preservation.json
+    sha256: c2eca5f1907029b35c7744ebf3440631776bc62d66b9eac0707f4b029fe3a1bf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/finding-dispositions.json
+    sha256: 40c51b726d768b96b1bec3626e303c16ad9e0ee83192bf0d865a3f13d65b6b83
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/graph-page-kgx-roundtrip.json
+    sha256: 387b1040722678f39d15bbc9a4ffa80eb79cff73c18290fa6677efad1b0c1610
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/helper-checks.json
+    sha256: 1a9097ab3c8dfd940cc5ea4499e398a224ccca2428d59a8ef217ed4b4ca13c7d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/primary-assay-replay.json
+    sha256: 5e97baf5942bad27c1d08607a4b7a5b2a207e8cedc6ff6ed9217697bda500dbc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/reference-original-replay.json
+    sha256: be255e2c02e3adc1e246ab67f18f2b0c3df29358244efb7ae483422831aea00f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/research-lineage.json
+    sha256: 29b757931846f29136ca93a97e0ad58d97c074fcba30524df31ab91149c4ddb2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/rhea-exact-original-replay.json
+    sha256: 9ac873c99fbf4d23e32693f1fe71824ab331389a19c736d09b02fafc992e8c8c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/scope-and-conflicts.json
+    sha256: e2ccb3c228065286c972873faae6a0ef0ef5e08b9540bd0768b085079a27af0e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/semantic-negative-controls.json
+    sha256: 3713e5005e74d8d70203c71b417ef116673722e2a9f080e9817c51e143e5b32c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/source-to-edge-coverage.json
+    sha256: 8aec1af4ab049524b6fc7e585510be968b4f0b8529bbaee976edbae0c5467840
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/unchanged-object-proof.json
+    sha256: d1160cc3904c6cd779694243922a490155373800a383f7a33227beb20d502787
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/uniprot-assertion-replay.json
+    sha256: dac056e25ed519f58a5105274dff022f8a67b8d74be60b644570e4e6dac745c5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/derived/validation.json
+    sha256: e1af2da7f512f974893ec6c70f1e8f4680d860d4455836ec91de2751d63d1222
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/final_checks.py.txt
+    sha256: 585f6da5938f59459d57c2d3f6cf2c00a024a76b6538d306972e93594a9283f5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/handoff.json
+    sha256: 9a7c0e1d676523bb5495a0aca99b805f54d2ba90696e6581417a5b2d1447c809
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/input-bindings.json
+    sha256: 8e2c802ea8f5c8ce7b8524835e99d1afb666f422d5a2029fe04900027e2ef823
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/ledgers.py.txt
+    sha256: df446fc46da7dcb6b6932e49a767f9fd0411b95ccf1f45ad12079c1a9593c893
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/prepare_correction.py.txt
+    sha256: 812cd4ef012b2ddb4c3637313eafdba3a9ca823f8093e74313e6fb3d00618ad4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/research/mannosylglycerate-degradation.md
+    sha256: 2a68c47e7a52e9f61840c9761fd9c8092a2c27abb7000befc8eac6a9ca86250d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/run_checks.py.txt
+    sha256: fbead28832b30e29c1d4a706c6d14cb639bcbaec951e73f07e39708dd5557eaf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/runtime-bindings.json
+    sha256: 170053a37ff1018e5c04485225ab14cc82a79ff4808cb1a7628ce1c74300f9df
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/seal.py.txt
+    sha256: bddd39775ef070ed3ae77a772bb760b1fc7f24f0b33ce5738a6daffbe8f7c063
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/source_replay.py.txt
+    sha256: 3010fc4730346c0f2900f32c12268812b4aa6d301030d3d05264b6a859822752
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-correction/verify_correction.py.txt
+    sha256: b8b2b3f683a65718706ec6dd3b720c2361fb0b451adaff845465ce023163458d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/REVIEW.md
+    sha256: 732b048b50b2b485b37c7f1a2ec3bec86fa13a0c0fd70e94570340d0ccdff46b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/absence-search.json
+    sha256: 976b59996a5df3109b0c58a96b432dfc4158cce70201d3a52b1844ffbb65cbb4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/absence-search.stderr.json
+    sha256: 02375953a542bf1bcc4052c962fdfb9c2d57f4928a55019d64e6e592459510c0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/absence-search.stdout.json
+    sha256: 7fe85413f387b4ced2a9f03bc49f12b5233cdfe1946cae73dc7d94748633aa1c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/all-evidence-locator-projections.json
+    sha256: 4e5517dbd6dc8c1762e90f29302672130a4855fcd96fb691100f12797d6ea8a7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/artifact-manifest.json
+    sha256: d6de696fc51315ec7fdf8876bfc672ad93b300fe1f8c4b7b9af05cb2ed52fc48
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/context-replay.py.txt
+    sha256: 91380b07ca2c6aed8283175d17896c69711875749a294ac1b92b3f97f3929bef
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/domain-negative-controls.json
+    sha256: f639226381cc99a9927412304051181d998b404524c5ce5a143d1013ea5f0dd0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/edge-assessments.json
+    sha256: 71708981d86e4cc704f040dbc102c729fe9e5c7899bb72c3502ea2796a0f541f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/final-execution-receipt.json
+    sha256: 51c921e40f607065de8cc18c2f784dacbc16d58f2e95ed062e0d7728d657be5f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/final-input-preservation.json
+    sha256: 502efce1dad7a9798e5ccb765933af9bd3e09cd50ef9a283d12ed343fa136d15
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/finalize-review.py.txt
+    sha256: 85bf30807322c33114dbad3c1136656b6e02f763e4604abda8c00f297c84913c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/finalize.stderr.json
+    sha256: b9e74292f3ab08f26637822e7009ff1d9251d344d50bd2db0870c618acd07e2a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/finalize.stdout.json
+    sha256: 2fd2afa750bb86c526b44ecc29c5d4f30a8c185c7aeef95c72bbcc83994a6afb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/finding-source-excerpts.json
+    sha256: 5539ccd27cffd407d3a4aa0eb4b35eb1a20924a795bff9317588f877a2a2de8d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/findings.json
+    sha256: 51d37e63e7402def8ed72b2ebe6686c92aad4b94efe655da5f6205b6611ddb88
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/handoff.json
+    sha256: 36cbadc214456c366a4d579909daedd128458b398eac594f0670fbdc839e5b7a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/imodulon-independent-replay.json
+    sha256: 1f1305ce894402e82eccc5351c494b194ebdb9d0a17c691e7308688734e62cd2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/independent-probes.json
+    sha256: 76ca2f15e63f464732209d46f259c747bd3d945f740f80203143a9451e7f242d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/independent-probes.py.txt
+    sha256: f4249729dde5c301e44cbfc2d4050e458be3f56dc3c7d5e1e599212875c3610e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/independent-probes.stderr.json
+    sha256: ce1be726c9abb6fd9023e66f7ebf3f7b85b98885870aae96238910ddfb2e582c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/independent-probes.stdout.json
+    sha256: 32988e64338c58227ac61165fc0941a207d5d506ca3bf31bf3fb28a799388fb8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/input-verification.json
+    sha256: a4ebbb378f70c5491fd1cb490b8efe2cecfe42e6eacb16ed9574f82873dc923a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/inspect-originals-first.py.txt
+    sha256: b2da6a24f9dc4e982ebcde1670195004bc011c9edb4db2d22048549ea732b4e0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/inspect-originals.py.txt
+    sha256: 8ed0d41845da7151cfa22987bf36dfe227eb7d5e121d077154c3fe5f5de2fe6b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/native-compact.json
+    sha256: ae4e333342049e9430d3f3d234d20427796cc847ad163991a00dde034264969c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/native-original-projections.json
+    sha256: 21f57ba52b4c594b727b2dc35de4e3f371c92cbc9179524368b11fa7bdb7066f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/native-single-record-checks.json
+    sha256: 31921ce8174ab1c1244f8b842fc53a3f7eb8843c398d0d8a168a712a6ae7a932
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/negative-and-native-checks.py.txt
+    sha256: 445ee9916a2b75673c768c8f78525ba73c6ce2d68ec81605a6509b71dfce02e8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/negative-and-native-checks.stderr.json
+    sha256: d222214eac0a54347b8d13480e71d8931d178b238ff82dca022afc0882776cf2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/negative-and-native-checks.stdout.json
+    sha256: 16d7fa9fc26ff2690583731ac16a1b01cb96bd56969c4bb40f4409b89c73bcbf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/ontology-original-independent.json
+    sha256: 044461d388ee1e15f0a19f7a18fc0ba6802c402c665695c3863dce59dbebd930
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/outgoing-native-identities.json
+    sha256: 9b830ed4d3f3fb2a71e47e164e153b890642f5ee9b3a7e4054408f9c8f3186b9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/parsed-target.json
+    sha256: 1e95ebee41fc41aaaba72f53316a65398e3480470eb88b24d5510855d4c90219
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/preflight-claim-assessments.json
+    sha256: 9b9f8e202a152c13f5a59083f78c03ae858e39668a3294fbfff722aad9b6e080
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/protein-original-projections.json
+    sha256: bc79bf4db4720fcecd3a27f04fc984818adcb47dad5a9db424717dd9a5e9f33b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/qualifier-assessments.json
+    sha256: 7b9dcb9b70f99e89d2392c3855dc813c75f154cd1e344444b2016d7b531f32ab
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/reference-verification.json
+    sha256: 174b6e93ffc6c5fd6a554a0172e484eb59014c61fe3317777f2958f7ce9b029e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/review.json
+    sha256: 254f760db809c7636bca88f75d65a1ada685a1e6882d1bad317028afdb13a122
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/rhea-independent.json
+    sha256: 9baf22ca0a8e649324ae4d7b2371fc6af4978a19ae1a19b23d9eb7334733c1b0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/sampaio-projection-replay.json
+    sha256: 1707836c9b3ab5cdb1355722ecc3f9d4f63393a7c3c7a676ef7349a6cd70eb15
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/seal-review.py.txt
+    sha256: ba1255f9cc957aa9462039b273c24abddd8ce92a138ddb6bfc90a6a50ade2694
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-original/source-to-edge-assessments.json
+    sha256: 5c8280478c1137b97a9ed81e38411fee6221e8a930b09acb75e44f3a0a5feccb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/REVIEW.md
+    sha256: ef7f2670f48122d0e74cf32903cace6ebce97d4020de6c510d322e1045a7c6fa
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/artifact-manifest.json
+    sha256: 959d990a3bf3ab32d737d2ad40be3bb407bddc2ea749776cdd50f71ea8662852
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/bounded-native-representation.json
+    sha256: 05528abc9f5c44591290f24c85723699b9b1bef1bb17812d2d0a2922f2e8c812
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/check_successor.py.txt
+    sha256: 7f1e9b27ef6ce16a9c6af0b2263baf09f499191ba3d0e3746fc9b83b93d793a6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/edge-assessments.json
+    sha256: 385810e5ef9f809c5633058e5eff877ee47e7f89b882f638d4b23945b7c6b0a8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/evidence-accounting.json
+    sha256: 7874a65f144e50b322b7bf1a62abfaaa71e8cd8efcdae0c2dfc7320a2ff28ee6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/execution-receipt.json
+    sha256: 0a9838ef46fa890338d1165ff534f17d8f87f3066aa49ee9c69b28e9a3e78f7c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/explicit-correction-rollback.json
+    sha256: 0d0656f6802062268aeb98767f28e2079714b9c7ce8612f4312ee27512593182
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/final-input-preservation.json
+    sha256: 0688dbfb277982fa6ef4a4efaffe90a9a5e8236f5df951719c4060fdd45cc7cb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/finding-dispositions.json
+    sha256: bb1736f31e47a01465edf240a9ad64314cf19433d667eff7cfddb660621b7cb3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/finish_review.py.txt
+    sha256: d967649bd0900472ba1f834409862ab9e7c4c2a5ba3536f066e1f929ce7f1a49
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/fresh-primary-locator-replay.json
+    sha256: dc777905c4353f29a79e58175cdaf78cdac36d419a6a6912c3f0273afdd58ba0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/fresh-reference-bindings.json
+    sha256: 50cc01d91c20c6c4ec76ba267c61316364c4ed46dc21155552e2f70f2bc4d1df
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/fresh-rhea-triple-replay.json
+    sha256: 6d1ebbe364fee52cdf46d08b1666246e2b52797b923c97910bf65e864dc73637
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/fresh-uniprot-selections.json
+    sha256: 36d46b129710ea2eeffc075932474b3f63f938ed08a5f3a7f5869ffb1f1df52b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/handoff.json
+    sha256: c9802f0ce6162a572539be6e656f16f7c5756720a8964aa2cda723cd769f3a65
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/independent-negative-controls.json
+    sha256: b2193973a2b82f7afd91b48c6f3092c03dfa4b4fcef9b4e0afaef119d3c66610
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/independent-semantic-delta.json
+    sha256: cb5c206f1598cb711d6ca874adba220fd0599994b99d4d587696c9ee25b9d46e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/inheritance-proof.json
+    sha256: 18c5bfb2c195a71a921ccc64be5930c81f1c7ddf37163343792ca8456194cd0e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/intake-first.py.txt
+    sha256: f2a304c6e1db53f7774649fd86a0b2e485e9e12e6e0b8b4c637537f3f2fe479a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/intake.py.txt
+    sha256: 1fd25f1e66239e491f44f859cf0b926e6920e7114f3945e32e5fa7d1a1d12695
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/package-intake.json
+    sha256: 496bea704fd8ce7d53e80ed17621935b0cf99f9aa8f4ae9a312ca9372ef852a5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/parsed-target.json
+    sha256: 6ec998476479bc4dc86cd755f295958d8992ed94913de667d971da743c6ed832
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/replay_sources-first.py.txt
+    sha256: 8d348a75d80958f612f05402a59cdfdfccff0fcf489566ea712ebc46d2ff4312
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/replay_sources.py.txt
+    sha256: 154f930519f34d80714e33be92687294a06b666ae1870fd9421646de83bd41dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/review.json
+    sha256: cafb6fb71ad47969d286d0162df7dc979b804569e6037e93d3c77b17479fc983
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/scope-conservation.json
+    sha256: f2ada662d96e28aed4d2befdbe7693344c3fe950c60fccfbbf43d3084cefcd53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/scope-search.json
+    sha256: 317ccb1fba7158bb6cab1d2fbb1c2826e2f9ef5e8cfa48964ca6b5a601f162b7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/scope-search.stderr.json
+    sha256: 6c2b57b6fd80667ff18040400d4877f5e4c7ddbad3b00618aaf6a32954bfddf8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/scope-search.stdout.json
+    sha256: 68fcbc0bca2476097798d8019bd89853beca4eea83052fdf5f8642f9661fff86
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/seal_review.py.txt
+    sha256: 44f1706383e09cbcf96f8c6a4d56e7987d33ead0983c0d5032c05105b13a182d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/source-selected-cdar-context.json
+    sha256: 4c7ab78939d69b6d012a4e4b1f872ead46d458bdd3abf26574bf0bddc8acc460
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-228/science-successor/source-to-edge-assessments.json
+    sha256: 397764b69c68368fbbe8fe9fc7c4d4961024364dfe1cc3bd31836d46e5f81edf
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: 538dc16bbe67b5f5a3faacf01c968f32900b6fdb76e71f55ebb933ccf8e7a715
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 858b430214929628c38d64ae6cd5d71368f5a07a1eb1d93523f5332f9ab2aeba
+    role: context
+  - path: scripts/new_history_record.py
+    sha256: 290e13857618afdc1d12a4894d31d82341fe0e69564defb95ae875592dd0a738
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/assets/pathway-network.css
+    sha256: ffe62865f9ede1d8ae7c361a5576823921c850542cf03d2ca7b3c945d63d7645
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: df277b9222b84ed0d225d6a9e2c8933ac210773239d46e26faf77e19e179d923
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: 73c77e3935d0e402ecbdd205298aded196ca6a39cd6b376e1018dd4ff5225bf2
+    role: context
+  - path: src/pathwaymech/schema/history.yaml
+    sha256: b01b06f1b9a37db205c26c31ec0fd910690848507c7e1bfb73b424ac0829c52d
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: 13bc49026ce56817797f2faea8903f1484238901c50e49c6bc13571beb5657c3
+    role: context
+  - path: src/pathwaymech/strict.py
+    sha256: 2f6a7edf501952ee4aaa41be2f9512d20e1edb2dd87a22b6add6d26928c0dc84
+    role: context
+  - path: tests/test_pathbank_identifier_authority.py
+    sha256: 92abc8aab53b070c3837db127911114493b0c8e75d9f09c7897175d2ef77b014
+    role: context
+targets:
+- target_id: MetaCyc:PWY0-1300
+  path: data/pathways/mannosylglycerate-degradation.yaml
+  label: mannosylglycerate degradation
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/mannosylglycerate-degradation.yaml
+    role: Maintained pathway identity, source scope, participants and edge evidence
+summary: Exact 75-edge, 62-reference maintained MG successor retains accepted independent
+  scientific corrections for issues 441–443, original-derived canonical authorities,
+  actual full maintained gates and exact old-corpus preservation. Static graph and
+  complete qualifier/evidence text were checked. No issue closure or merge is claimed.
+checks:
+- check_id: maintained-render
+  name: Actual maintained render
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-skills
+  name: Actual maintained skills
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-validate
+  name: Actual maintained validate
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-tests
+  name: Actual maintained tests
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-lint
+  name: Actual maintained lint
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check .
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-kgx
+  name: Actual maintained kgx
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-vendored
+  name: Actual maintained vendored
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-diff-check
+  name: Actual maintained diff-check
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: git diff --check
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: maintained-site-current
+  name: Actual maintained site-current
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: Root-executed command passed; exact stdout/stderr, times and environment
+    are archived.
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  evidence_ids:
+  - gates
+  scope_note: Full maintained run includes pre-render MG history; later review/receipt
+    additions require separate native and final checks.
+- check_id: original-vendored-dns-failure
+  name: Original vendored check before network retry
+  status: failed
+  required: false
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: The initial command exited 1 because the canonical GitHub hostname could
+    not resolve. The unchanged-input retry passed; the required maintained-vendored
+    check records that final result.
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 1
+  evidence_ids:
+  - original-gate-failure
+  - gate-recovery-inputs
+  scope_note: Historical failed attempt retained explicitly; superseded by successful
+    required retry, without rerunning or relabeling six already-passed commands.
+- check_id: preservation
+  name: Exact prior-corpus conservation
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: All 228 prior records/pages, 102 native review bundles, prior history,
+    authority objects, old KGX edges and source-context multiplicities preserved.
+    Only four individually assessed shared display cells changed.
+  evidence_ids:
+  - preservation
+  - display-approval
+  - display-assessment
+- check_id: representation
+  name: Actual static graph and rendered evidence
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:PWY0-1300
+  summary: 'Root viewed complete static graph: substrate/product and activity nodes,
+    regulatory context and both separate CdaR construct nodes are present, with distinct
+    styles and no outer clipping observed. Crossings are dense in the left regulatory
+    columns; zoom is needed for small labels. Full qualifier and evidence text remains
+    in the page. Programmatic checks retain 75 ordered graph triples, 282 unique HTML
+    IDs, 318 local fragments, all 15 qualifier descriptions and all 176 evidence statements.'
+  evidence_ids:
+  - page-qa
+  - visual-observation
+```

@@ -1,0 +1,186 @@
+import json
+import shutil
+
+import yaml
+
+from prepare_correction import ADAPTER_REVIEW, AUTHOR, OUT, REVIEW, bind, load, write
+
+
+def main():
+    target = OUT / 'draft/mannosylglycerate-degradation.yaml'
+    record = yaml.safe_load(target.read_bytes())
+    old = yaml.safe_load((AUTHOR / 'draft/mannosylglycerate-degradation.yaml').read_bytes())
+    es = {e['id']:e for e in record['mechanistic_edges']}
+    references = load(OUT / 'inherited/reference-bindings.json')
+    validation = load(OUT / 'derived/validation.json')
+    assert validation['target'] == bind(target)
+    findings = load(REVIEW / 'findings.json')
+    shutil.copyfile(REVIEW/'findings.json',OUT/'inherited/original-findings.json')
+    source_to_edge = {key:{'reference':key,'source':value,'uses':[]} for key,value in references.items()}
+    edge_to_source = []
+    for edge in record['mechanistic_edges']:
+        uses = []
+        for scope,items in [('edge',edge['evidence'])] + [(q['endpoint']+'-'+q['kind'],q['evidence']) for q in edge.get('endpoint_qualifiers',[])]:
+            for number,item in enumerate(items):
+                use = {'edge':edge['id'],'scope':scope,'evidence_index':number,**item,
+                       'source_binding':references[item['reference_id']]}
+                uses.append(use)
+                source_to_edge[item['reference_id']]['uses'].append(use)
+        edge_to_source.append({'edge':edge['id'],'subject':edge['subject'],'predicate':edge['predicate'],
+                               'object':edge['object'],'description':edge['description'],
+                               'qualifiers':edge.get('endpoint_qualifiers',[]),'uses':uses})
+    assert sum(len(e['uses']) for e in edge_to_source)==176
+    assert sum(len(e['uses']) for e in source_to_edge.values())==176
+    write('derived/edge-to-source-coverage.json',edge_to_source)
+    write('derived/source-to-edge-coverage.json',list(source_to_edge.values()))
+    write('derived/coverage-accounting.json',{
+        'original':{'edges':75,'qualifiers':13,'references':62,'evidence_uses':164,'preflight_claims':29},
+        'successor':{'edges':75,'qualifiers':15,'references':62,'evidence_uses':176,'inherited_preflight_claims':29,'finding_dispositions':3},
+        'delta':{'new_edges':0,'new_identifiers':0,'new_references':0,'new_qualifiers':2,
+                 'new_entry_evidence':4,'new_qualifier_evidence_uses':8,'locator_repairs':15},
+        'all_reference_bindings_exact':True,'bidirectional_evidence_count_equal':True,
+        'bounds':'Inherited full scientific review covers the original record; this successor replays all locators/hashes and tests scoped corrections. It does not claim a fresh independent scientific review.'})
+    def differences(before,after,pointer):
+        if before==after:
+            return []
+        if isinstance(before,dict) and isinstance(after,dict):
+            rows=[]
+            for key in list(before)+[key for key in after if key not in before]:
+                if key not in before:
+                    rows.append({'pointer':pointer+'/'+key,'operation':'add','new':after[key]})
+                elif key not in after:
+                    rows.append({'pointer':pointer+'/'+key,'operation':'remove','old':before[key]})
+                else:
+                    rows.extend(differences(before[key],after[key],pointer+'/'+key))
+            return rows
+        if isinstance(before,list) and isinstance(after,list):
+            rows=[]
+            for index in range(max(len(before),len(after))):
+                if index>=len(before):
+                    rows.append({'pointer':pointer+'/'+str(index),'operation':'add','new':after[index]})
+                elif index>=len(after):
+                    rows.append({'pointer':pointer+'/'+str(index),'operation':'remove','old':before[index]})
+                else:
+                    rows.extend(differences(before[index],after[index],pointer+'/'+str(index)))
+            return rows
+        return [{'pointer':pointer,'operation':'replace','old':before,'new':after}]
+    delta=differences(old,record,'')
+    assert len(delta)==22  # 1 description, 4 evidence additions, 2 qualifiers, 15 locators.
+    write('derived/exact-semantic-delta.json',{'old_target':bind(AUTHOR/'draft/mannosylglycerate-degradation.yaml'),
+                                           'new_target':bind(target),'operations':delta})
+    scope=load(OUT/'inherited/scope-and-conflicts.json')
+    scope['predecessor']=bind(OUT/'inherited/scope-and-conflicts.json')
+    scope['taxa_and_assays']['MngA_entry_comparisons']=es['mg-mnga-catalysis']['description']
+    scope['taxa_and_assays']['CdaR']=es['mg-cdar-auto']['endpoint_qualifiers'][0]['description']
+    scope['negative_observations'] += [
+        'MC4100 induced whole-cell uptake: weak glucose/mannose/mannitol effects, smaller trehalose effect, no fructose effect; no tested non-PTS/three glycosyl analogue effects. Results weak mannose and Discussion no significant mannose inhibition remain a source tension, not a competitive-binding conclusion.',
+        '300 mM NaCl during MC4100 growth did not induce MG transport and reduced MG-dependent induction by about 50%; this induction endpoint is separate from KM522 500 mM salt protection and direct catalysis.',
+        'JA176 paper-numbered P297S and JA177 near-terminal Tn5 are loss-of-function inference controls, not active CdaR endpoints. Current P37047 385 residues is not silently mapped to the paper 391-residue reference.'
+    ]
+    scope['remaining_gaps'].remove('PathBank archive Interaction-child authority adapter')
+    scope['remaining_gaps'] += ['Results/Discussion mannose uptake effect tension unresolved; no direct binding or inhibition constant assigned',
+                                'Historical CdaR 391-aa/current 385-aa sequence-numbering relationship not established',
+                                'Independent scientific successor acceptance and root-owned full MG canonical build/adoption remain pending']
+    scope['adapter_status']={'accepted_review':bind(ADAPTER_REVIEW/'handoff.json'),
+                             'status':'Bounded archive adapter accepted separately; typed root/child identities are available. Full MG canonical build not run.'}
+    scope['finding_sources']=[{'key':f['key'],'evidence':f['evidence']} for f in findings]
+    write('derived/scope-and-conflicts.json',scope)
+    claims=load(OUT/'inherited/all-preflight-claim-dispositions.json')
+    assert len(claims['claims'])==29
+    claims['predecessor']=bind(OUT/'inherited/all-preflight-claim-dispositions.json')
+    claims['successor_updates']=[
+        {'keys':['native-entry','mnga-chain'],'edges':['mg-mnga-catalysis'],'finding':'mg-entry-assay-context-omission',
+         'disposition':'Entry context now retains MC4100 weak/negative uptake comparisons, Results/Discussion tension and distinct NaCl induction endpoint; no new compound edges.'},
+        {'keys':['cdar-regulation'],'edges':['mg-gark-reg-cdar','mg-cdar-auto'],'finding':'mg-cdar-assay-endpoint-scope',
+         'disposition':'Both subject endpoints now carry primary-backed MC4100 reporter/loss-rescue construct qualification and 391-aa/385-aa distinction.'},
+        {'keys':['ptsi-assembly','hpr-state','hns-regulation','gark-identity'],'finding':'mg-uniprot-rhea-evidence-locator-scope',
+         'disposition':'Exact His189 Active site, H-NS SUBUNIT/location, and all 13 direction/contains1/compound locator paths repaired without changing assertions or chemistry.'},
+        {'keys':['pathbank-root','opaque-pathbank-interface'],'disposition':'Separate root-accepted adapter now supports native typed root/opaque child identity. No scientific inference or child expansion changed.'}
+    ]
+    assert claims['claims']==load(OUT/'inherited/all-preflight-claim-dispositions.json')['claims']
+    write('derived/all-preflight-claim-dispositions.json',claims)
+    descriptions=[
+        'Added four source-bounded entry evidence assertions and assay prose preserving all weak and negative uptake comparisons, internal mannose tension and separate 300 mM NaCl induction effect. Intact-cell MC4100 context is not assigned to the unchanged inverted-membrane assay or KM522 osmoprotection.',
+        'Added experimental_construct subject qualifiers to both positive CdaR gene regulation claims. Exact historical/current reference distinction, paper-numbered P297S and Tn5 loss controls, MC4100/pRM1 rescue and reporter inference travel with the claims in YAML, page, graph and KGX.',
+        'Replaced 15 evidence locators: PtsI catalytic His189 Active site, H-NS location plus SUBUNIT, and 13 exact original Rhea triples using contains1. All affected scientific assertions, endpoints, predicates, native sides and prior state qualifiers remain exact.'
+    ]
+    acceptance=[
+        ['derived/primary-assay-replay.json','derived/scope-and-conflicts.json','derived/unchanged-object-proof.json','derived/semantic-negative-controls.json'],
+        ['derived/primary-assay-replay.json','derived/graph-page-kgx-roundtrip.json','derived/unchanged-object-proof.json','derived/semantic-negative-controls.json'],
+        ['derived/uniprot-assertion-replay.json','derived/rhea-exact-original-replay.json','derived/all-evidence-locator-replay.json','derived/unchanged-object-proof.json']
+    ]
+    dispositions=[]
+    for number,(finding,description,artifacts) in enumerate(zip(findings,descriptions,acceptance,strict=True),441):
+        dispositions.append({'finding_key':finding['key'],'issue':number,
+             'url':'https://github.com/Knowledge-Graph-Hub/PathwayMech/issues/'+str(number),
+             'original_finding':finding,'original_review':bind(REVIEW/'handoff.json'),
+             'disposition':'addressed_in_external_successor_pending_independent_review',
+             'reason':description,'successor':bind(target),'acceptance_evidence':[bind(OUT/p) for p in artifacts],
+             'lineage':'Stable external finding key and immutable review binding; no fabricated maintained occurrence ID or original finding rewrite.'})
+    # Use the exact issue URLs from the creation receipt, not an inferred repository owner.
+    creation=load('/private/tmp/pathwaymech-next-228-review-issues-20261012/creation.json')
+    for disposition,row in zip(dispositions,creation,strict=True):
+        disposition['url']=row['stdout'].strip()
+    write('derived/finding-dispositions.json',dispositions)
+    research=OUT/'research'
+    research.mkdir(exist_ok=True)
+    overview='\n'.join('| '+e['edge']+' | '+e['subject']+' | '+e['predicate']+' | '+e['object']+' | '+', '.join(sorted({u['reference_id'] for u in e['uses']}))+' | '+e['description'].replace('|','\\|')+' |' for e in edge_to_source)
+    doc=f'''# Mannosylglycerate degradation: scientific correction successor
+
+This external successor resolves the three accepted findings from the independent review of target `08fe9a6f3f0da2f66c4dc6cd68fc33fbe51a38770b6eeee743751f05f019d088`. The candidate SHA256 is `{bind(target)['sha256']}`. Author, preflight and review packets remain immutable; this dossier supplements their full mechanism research. It is author remediation awaiting independent successor review, not scientific acceptance or a maintained review save.
+
+## Stable pathway scope
+
+MetaCyc:PWY0-1300 retains exactly two native core events: MetaCyc:RXN0-5216 MG-phosphate hydrolysis and RHEA:27378 glycerate 2-kinase. Entry RHEA:33308 and energy-supply RHEA:23881 remain context. The 17 chemical sides, all 75 edges in their original order, 44 participants, six reaction/context nodes, two taxa, and all 62 reference objects are preserved. Generic D-mannopyranose 6-phosphate is not replaced by an alpha-specific product. HPr P0AA04 His15 phosphorylated/unphosphorylated states remain protein endpoint qualifiers; free histidine is not substituted and PEP is charged once.
+
+MngA remains the exact 658-residue P54745 chain, with putative His87/Cys192 relay sites. MngB enabling evidence, unresolved native metal/assembly and lack of purified MG-P turnover remain limited as before. GarK construct qualification and substrate/product specificity remain unchanged. MngR, FNR, Fur, H-NS, CdaR and TmaR scopes retain their source-specific organisms, assemblies, assays and conflicts. No unrelated regulon is expanded. Fur stays unsigned; the full-EI/EIC alpha-ketoglutarate findings stay separate. The PathBank child remains opaque and its label does not imply biological inhibition.
+
+## Entry uptake and induction context — issue 441
+
+The retained Sampaio full-text web observations locate the MC4100 intact-cell entry assay. Results reports weak uptake reduction with glucose, mannose and mannitol, a smaller effect with trehalose, and no observed reduction with fructose. Maltose, arabinose, gluconate, glycerate, 1-alpha-glucosylglycerol, 2-alpha-glucosylglycerate and 2-alpha-mannosylglycerol are negative comparisons. Discussion instead describes mannose and the three glycosyl analogues as not significantly inhibitory at 1 mM against 0.1 micromolar labeled MG. Both statements are retained; the weak-effect/no-significant-effect tension is unresolved. The record makes no direct binding claim, competitive mechanism or inhibition constant from these measurements.
+
+Separately, 300 mM NaCl during MC4100 growth did not induce transport and reduced MG-dependent induction by about half. This is an induction endpoint, distinct from direct enzyme inhibition, the pACS31 inverted-membrane assay, and the KM522 500 mM salt-protection experiment. Four exact L-number evidence entries now accompany the existing `mg-mnga-catalysis` context. No assay compound nodes or signed inhibition edges were invented; `mg-mnga-vesicle-assay` is unchanged. The full source passage projections and access status are in `derived/primary-assay-replay.json`.
+
+## CdaR experimental endpoints — issue 442
+
+Both CdaR subjects (`mg-gark-reg-cdar`, `mg-cdar-auto`) now have `experimental_construct` qualifiers. PMC111340 sections 5–6 describe MC4100 reporter/loss-rescue experiments: JA176 carries paper-numbered P297S, JA177 carries Tn5 20 nucleotides before the stop, and pRM1 contains MC4100 sdaR in pBluescript and restores growth of the loss mutants. Reporter activation requires functional SdaR, supporting positive control. The active wild-type or rescued regulator is the inferred regulatory endpoint; neither loss mutant is labeled active.
+
+The historical reference is described as 391 residues, whereas the exact current issuing P37047 entry is 385 residues with cdaR/sdaR/yaeG identity. No residue-numbering equivalence is asserted. Each qualifier carries the historical loss/rescue and reporter passages plus the current sequence-reference evidence. Existing positive signs and gene targets stay exact. All qualifier descriptions, four evidence assertions and locators are retained in each page and graph display instance and in KGX. This does not establish direct CdaR ligand binding.
+
+## Exact evidence locators — issue 443
+
+PtsI His189 is an `Active site` feature with a tele-phosphohistidine intermediate; the neighboring `Modified residue` feature is Tyr122 phosphotyrosine. The corrected locator selects the exact active-site position along with FUNCTION. H-NS combined nucleoid/oligomer evidence now selects both SUBCELLULAR LOCATION and SUBUNIT. These changes do not alter either assertion.
+
+All 13 selected directional Rhea evidence items now spell out three linked native triples: direction → substrates/products side; side → contains1 participant; participant → compound. A fresh hash and complete traversal of the compressed Rhea142 original verified all 39 triples, accumulating repeated subject fragments. Five malformed locator variants for each edge reject nonexistent coefficient1, wrong direction, wrong side, dangling participant and wrong compound. Original chemical sides and HPr states remain exact. The selected original fragments and complete replay are in `derived/rhea-exact-original-replay.json`.
+
+## Complete edge coverage
+
+Every row is a located paraphrase, not a quotation attributed to a publication through a database. Full 176-use evidence and 15-qualifier payloads are in the YAML and bidirectional coverage ledgers.
+
+| Edge | Subject | Predicate | Object | References | Scope and limits |
+| --- | --- | --- | --- | --- | --- |
+{overview}
+
+## Preservation, verification and remaining work
+
+All 29 original preflight claim dispositions remain exact in the inherited ledger, with explicit successor updates for affected claims. The precise semantic delta has 22 field operations on 18 existing edges: one description, four evidence additions, two qualifier additions and 15 locator replacements. The other 57 edges and every non-edge section are exactly equal as parsed objects. The serialization expands shared YAML aliases; byte-identical formatting is not claimed. Reverting only those approved field changes reconstructs the entire original semantic object.
+
+Schema, strict checks and bounded identifier validation pass. The identifier test composition preserves accepted lyxose output with 2412 prior terms and 563 prior source metadata objects; additions produce 2434 terms and 584 metadata objects. All 1945 previous ontology terms and five metadata objects remain exact, with six added ontology terms. Native PathBank typed identities use the separately accepted adapter and unchanged original archive. This is a bounded composition for testing, not a full canonical build.
+
+All 62 source bindings were freshly rehashed, and all 176 evidence locators replay successfully. Native page rendering and graph/KGX roundtrips preserve all 75 edge evidence payloads and 15 qualifier payloads. Twenty-five source-bounded semantic mutations and 67 source-selector/triple mutations are rejected. Text/structural rendering checks do not claim browser visual QA or a whole-corpus render.
+
+The Sampaio body is the retained author-uploaded web observation projection (L86–L2902), not a publisher PDF or an original-paper hash. Other full primary originals and access-limited historical/FNR/TmaR evidence retain their original declared limits. No new external acquisition or source-scope upgrade occurred. The mannose statement tension and historical/current CdaR numbering relation remain unresolved. Public-release licensing remains deferred; source exhaustion remains false.
+
+Root owns independent scientific successor review, full MG canonical building/audit, maintained adoption, history/review save, whole-corpus gates, page visual QA, issue resolution and PR/merge lifecycle. This packet makes no acceptance or completion claim for those pending tasks.
+'''
+    (research/'mannosylglycerate-degradation.md').write_text(doc)
+    write('derived/research-lineage.json',{'original_research':bind(AUTHOR/'research/mannosylglycerate-degradation.md'),
+                                         'successor_research':bind(research/'mannosylglycerate-degradation.md'),
+                                         'original_review_findings':bind(REVIEW/'findings.json'),
+                                         'scope':'Supplemental successor; original review/history and hashes unchanged'})
+    print(json.dumps({'edges':len(edge_to_source),'sources':len(source_to_edge),'evidence_uses':176,
+                      'preflight_claims':29,'dispositions':len(dispositions),'semantic_operations':len(delta),
+                      'research':bind(research/'mannosylglycerate-degradation.md')}))
+
+if __name__=='__main__':
+    main()

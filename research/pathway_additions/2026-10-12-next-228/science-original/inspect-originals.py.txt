@@ -1,0 +1,38 @@
+from pathlib import Path
+import json,hashlib,re,gzip
+from lxml import etree,html
+A=Path('/private/tmp/pathwaymech-next-228-author-20261012'); O=Path('/private/tmp/pathwaymech-next-228-science-review-20261012'); D=json.loads((O/'parsed-target.json').read_text()); B=json.loads((A/'derived/reference-bindings.json').read_text())
+H=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+refs=[]; excerpts=[]; native=[]; proteins=[]; papers=[]
+for r in D['references']:
+ b=B[r['id']];p=Path(b['path']); digest=H(p); assert digest==b['sha256'];assert not r.get('source_sha256') or r['source_sha256']==digest
+ refs.append({'id':r['id'],'path':str(p),'sha256':digest,'bytes':p.stat().st_size,'declared_body_hash':r.get('source_sha256'),'kind':b['access_level']})
+ if p.suffix in ['.xml','.owl']:
+  root=etree.parse(str(p))
+  if r['id'].startswith(('EcoCyc:','MetaCyc:')):
+   obj=root.xpath('/ptools-xml/*[not(self::metadata)]')[0]; native.append({'id':r['id'],'root_attributes':dict(root.getroot().attrib),'object':obj.tag,'attributes':dict(obj.attrib),'selected_xml':etree.tostring(obj,encoding='unicode') if p.stat().st_size<16000 else '\n'.join(etree.tostring(x,encoding='unicode') for x in obj if x.tag in ['common-name','comment','component','dblink','modified-form','unmodified-form','species','locations','gene'])})
+  if r['id'].startswith('PMID:'): papers.append((r['id'],str(p),'\n'.join(' '.join(x.itertext()).strip() for x in root.xpath('/article/body | /article/front/article-meta/abstract'))))
+ elif p.suffix=='.html':
+  root=html.parse(str(p));main=root.xpath('//main/article'); papers.append((r['id'],str(p),'\n'.join(' '.join(x.itertext()).strip() for x in (main or [root.getroot()]))))
+ elif p.suffix=='.json' and r['id'].startswith('UniProt'):
+  j=json.loads(p.read_text());proteins.append({'id':r['id'],'accession':j['primaryAccession'],'organism':j['organism'],'genes':j.get('genes'),'length':j['sequence']['length'],'description':j['proteinDescription'],'comments':j.get('comments'),'features':[x for x in j.get('features',[]) if x['type'] not in ['Beta strand','Helix','Turn','Chain','Natural variant']]})
+ elif p.suffix=='.txt':papers.append((r['id'],str(p),p.read_text()))
+for name,rows in [('reference-verification',refs),('native-original-projections',native),('protein-original-projections',proteins)]: (O/(name+'.json')).write_text(json.dumps(rows,indent=2)+'\n')
+for rid,path,txt in papers:(O/(rid.replace(':','-')+'-read.txt')).write_text(f'ORIGINAL {path}\n'+txt+'\n')
+for e in D['mechanistic_edges']:
+ for role, evs in [('edge',e['evidence'])]+[(f'qualifier:{q["endpoint"]}',q['evidence']) for q in e.get('endpoint_qualifiers',[])]:
+  for i,ev in enumerate(evs):
+   rid=ev['reference_id'];p=Path(B[rid]['path']);loc=ev.get('source_locator','');row={'edge':e['id'],'role':role,'index':i,'reference':rid,'locator':loc,'assertion':ev.get('source_assertion',ev.get('quote'))}
+   if loc.startswith('XPath '):
+    xp=loc[6:].split(';')[0];root=html.parse(str(p)) if p.suffix=='.html' else etree.parse(str(p)); ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+    try: matches=root.xpath(xp,namespaces=ns);row['matches']=[etree.tostring(x,encoding='unicode') if isinstance(x,etree._Element) else str(x) for x in matches];row['match_count']=len(matches)
+    except Exception as ex:row['error']=str(ex)
+   elif 'retained web observation' in loc:
+    start,end=map(int,re.search(r'L(\d+)–L(\d+)',loc).groups());rows=[]
+    for line in p.read_text().splitlines():
+     m=re.match(r'L(\d+):',line)
+     if m and start<=int(m[1])<=end: rows.append(line)
+    row['matches']=rows;row['match_count']=len(rows)
+   excerpts.append(row)
+(O/'all-evidence-locator-projections.json').write_text(json.dumps(excerpts,indent=2)+'\n')
+print('Verified references',len(refs),'native',len(native),'proteins',len(proteins),'papers/projection',len(papers),'evidence observations',len(excerpts),'zero/error locators',[x for x in excerpts if x.get('match_count')==0 or x.get('error')])

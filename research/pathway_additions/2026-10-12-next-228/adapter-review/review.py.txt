@@ -1,0 +1,183 @@
+"""Independent root review; all malformed archives are explicit derivatives."""
+import copy
+import datetime
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import sys
+import zipfile
+from xml.etree import ElementTree as ET
+
+OUT = Path(__file__).parent
+PACKET = Path('/private/tmp/pathwaymech-next-228-authority-implementation-20261012')
+OLD = Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012/candidate')
+NEW = PACKET / 'candidate'
+sys.path[:0] = [str(NEW), str(NEW / 'src')]
+
+
+def binding(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def load(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+old = load('old_builder', OLD / 'scripts/build_source_identifier_snapshot.py')
+new = load('new_builder', NEW / 'scripts/build_source_identifier_snapshot.py')
+handoff = json.loads((PACKET / 'handoff.json').read_text())
+assert binding(PACKET / 'handoff.json')['sha256'] == '68b1dd25ad72c8655c6c8d7876b3f7e2409c3c6b1a0cf3a29e7b2f806eb962e3'
+manifest = json.loads((PACKET / 'artifact-manifest.json').read_text())
+for item in manifest['files']:
+    actual = binding(PACKET / item['path'])
+    assert all(actual[k] == item[k] for k in ('bytes', 'sha256')), item
+
+changed = {item['relative_path']: item for item in handoff['changed_files']}
+baseline = json.loads((PACKET / 'baseline-code-bindings.json').read_text())
+for item in baseline['files']:
+    rel = item['relative_path']
+    expected = changed[rel]['after'] if rel in changed else item['original']
+    actual = binding(NEW / rel)
+    assert all(actual[k] == expected[k] for k in ('bytes', 'sha256')), rel
+
+replay = json.loads((PACKET / 'real-source-replay.json').read_text())
+regressions = []
+for item in replay['prior_pathbank_original_regressions']:
+    original = Path(item['original']['path'])
+    assert binding(original) == item['original']
+    entry = item['entry']
+    kwargs = {k: entry[k] for k in ('url', 'version', 'archive', 'sha256') if k in entry}
+    before = list(old.source_terms(entry['kind'], original, **kwargs))
+    after = list(new.source_terms(entry['kind'], original, **kwargs))
+    assert before == after
+    regressions.append({'original': binding(original), 'term_count': len(after), 'exact': True})
+
+plan = json.loads((PACKET / 'new-originals-copy-plan.json').read_text())[0]
+original = Path(plan['original']['path'])
+assert binding(original) == plan['original']
+entry = plan['entry']
+with zipfile.ZipFile(original) as archive:
+    raw = archive.read(entry['archive']['member'])
+assert hashlib.sha256(raw).hexdigest() == entry['archive']['member_sha256']
+root = ET.fromstring(raw)
+BP = '{http://www.biopax.org/release/biopax-level3.owl#}'
+RDF = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+XML = '{http://www.w3.org/XML/1998/namespace}'
+
+
+def components(tree):
+    primary = next(n for n in tree if n.get(RDF + 'about', '').endswith('/SMP0002108'))
+    child = next(n for n in tree if n.get(RDF + 'about', '').endswith('/SMP0000839'))
+    bridge = next(n for n in tree if n.get(RDF + 'ID') == 'SubPathwayControls/109883')
+    compound = next(n for n in tree if n.get(RDF + 'ID') == 'Compound/PW_C001870')
+    step = next(n for n in tree if n.get(RDF + 'ID') == 'PathwaySubPathway/109883')
+    return primary, child, bridge, compound, step
+
+
+def terms(tree):
+    return list(new.pathbank_terms(tree, url=entry['url'], archive_root=entry['archive']['root']))
+
+
+expected = terms(root)
+assert expected[:2] == [
+    ('PathBank:SMP0002108', '2-O-alpha-Mannosyl-D-glycerate Degradation', []),
+    ('PathBank:SMP0000839', 'Gluconeogenesis from L-Malic Acid', []),
+]
+positives = []
+for route in ['direct', 'ordered', 'both']:
+    tree = copy.deepcopy(root)
+    primary, child, bridge, compound, step = components(tree)
+    for link in list(primary):
+        if route == 'direct' and link.get(RDF + 'resource') == '#PathwaySubPathway/109883':
+            primary.remove(link)
+        if route == 'ordered' and link.get(RDF + 'resource') == '#SubPathwayControls/109883':
+            primary.remove(link)
+    assert terms(tree) == expected
+    positives.append(route)
+tree = copy.deepcopy(root)
+tree[:] = list(reversed(tree[:]))
+assert sorted(terms(tree)) == sorted(expected)
+positives.append('top-level-object-order-independent')
+tree = copy.deepcopy(root)
+for node in components(tree)[2:]:
+    ident = node.attrib.pop(RDF + 'ID')
+    node.set(RDF + 'about', '#' + ident)
+assert terms(tree) == expected
+positives.append('equivalent-local-rdf-about')
+
+negatives = []
+for case in [
+    'step-owner-inline-text', 'step-owner-extra-attribute', 'direct-owner-inline-object',
+    'step-process-language-attribute', 'compound-reference-two-pointers',
+    'compound-reference-pointer-inline-object', 'compound-reference-extra-subject-attribute',
+    'compound-name-language-attribute', 'compound-name-duplicate', 'compound-name-typed-integer',
+    'child-name-typed-integer', 'child-xref-inline-text', 'child-xref-language-attribute',
+    'bridge-name-marker-only-in-display', 'child-xml-base-override', 'bridge-dot-segment-identity',
+]:
+    tree = copy.deepcopy(root)
+    primary, child, bridge, compound, step = components(tree)
+    owner = next(n for n in primary if n.get(RDF + 'resource') == '#PathwaySubPathway/109883')
+    direct = next(n for n in primary if n.get(RDF + 'resource') == '#SubPathwayControls/109883')
+    ref = compound.find(BP + 'entityReference')
+    if case == 'step-owner-inline-text': owner.text = 'ambiguous'
+    elif case == 'step-owner-extra-attribute': owner.set('extra', 'yes')
+    elif case == 'direct-owner-inline-object': ET.SubElement(direct, BP + 'Interaction')
+    elif case == 'step-process-language-attribute': step[0].set(XML + 'lang', 'en')
+    elif case == 'compound-reference-two-pointers': compound.append(copy.deepcopy(ref))
+    elif case == 'compound-reference-pointer-inline-object': ET.SubElement(ref, BP + 'SmallMoleculeReference')
+    elif case == 'compound-reference-extra-subject-attribute':
+        target = next(n for n in tree if n.get(RDF + 'ID') == ref.get(RDF + 'resource')[1:])
+        target.set('extra', 'yes')
+    elif case == 'compound-name-language-attribute': compound.find(BP + 'name').set(XML + 'lang', 'en')
+    elif case == 'compound-name-duplicate': compound.append(copy.deepcopy(compound.find(BP + 'name')))
+    elif case == 'compound-name-typed-integer': compound.find(BP + 'name').set(RDF + 'datatype', 'http://www.w3.org/2001/XMLSchema#integer')
+    elif case == 'child-name-typed-integer': child.find(BP + 'name').set(RDF + 'datatype', 'http://www.w3.org/2001/XMLSchema#integer')
+    elif case == 'child-xref-inline-text': child.find(BP + 'xref').text = 'ambiguous'
+    elif case == 'child-xref-language-attribute': child.find(BP + 'xref').set(XML + 'lang', 'en')
+    elif case == 'bridge-name-marker-only-in-display':
+        bridge.find(BP + 'displayName').text = 'InhibitorySubPathwayControl'
+        next(n for n in bridge.findall(BP + 'name') if n.text == 'InhibitorySubPathwayControl').text = 'UnrelatedMarker'
+    elif case == 'child-xml-base-override': child.set(XML + 'base', 'https://elsewhere.example/')
+    elif case == 'bridge-dot-segment-identity':
+        bridge.set(RDF + 'ID', 'SubPathwayControls/../109883')
+        for node in tree.iter():
+            if node.get(RDF + 'resource') == '#SubPathwayControls/109883': node.set(RDF + 'resource', '#SubPathwayControls/../109883')
+    else: raise AssertionError(case)
+    derivative = OUT / (case + '.zip')
+    content = ET.tostring(tree)
+    with zipfile.ZipFile(derivative, 'w') as archive:
+        archive.writestr(entry['archive']['member'], content)
+    metadata = copy.deepcopy(entry['archive'])
+    metadata.update(bytes=derivative.stat().st_size, member_bytes=len(content), member_sha256=hashlib.sha256(content).hexdigest())
+    try:
+        list(new.source_terms(entry['kind'], derivative, url=entry['url'], sha256=binding(derivative)['sha256'], archive=metadata))
+    except ValueError as error:
+        negatives.append({'case': case, 'rejected': True, 'error': str(error), 'explicit_derivative': binding(derivative)})
+    else: raise AssertionError('Malformed source unexpectedly accepted: ' + case)
+
+receipt = {
+    'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'implementation_handoff': binding(PACKET / 'handoff.json'),
+    'artifact_manifest': binding(PACKET / 'artifact-manifest.json'),
+    'artifacts_verified': len(manifest['files']),
+    'candidate_files_checked': len(baseline['files']),
+    'changed_files': sorted(changed),
+    'prior_original_regressions': regressions,
+    'original_zip': binding(original),
+    'native_member': {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()},
+    'original_terms': expected,
+    'independent_positive_cases': positives,
+    'independent_negative_cases': negatives,
+    'existing_focused_tests': {'count': 500, 'claim': 'Verified bound successful execution logs; not repeated'},
+    'scope': 'Incremental identity parser review only; no full canonical build or biological acceptance',
+    'findings': [],
+    'verdict': 'accept incremental identity parser for later original-backed MG canonical build',
+    'script': binding(Path(__file__)),
+}
+(OUT / 'review.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'regressions': len(regressions), 'positives': len(positives), 'negatives': len(negatives), 'review': binding(OUT / 'review.json')}))

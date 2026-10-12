@@ -1,0 +1,111 @@
+from pathlib import Path
+import json,hashlib,copy,sqlite3,datetime,sys,shutil,subprocess,xml.etree.ElementTree as E
+import yaml
+O=Path(__file__).parent; P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012');B=Path('/private/tmp/pathwaymech-next-226-20261012');I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');L=Path('/private/tmp/pathwaymech-next-227-science-correction-20261012');A=Path('/private/tmp/pathwaymech-next-227-author-20261012/authority-preparation');C=Path('/private/tmp/pathwaymech-curation-authorities');R=O/'runtime'
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def save(n,d):(O/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+assert sha(P/'AUTHOR-HANDOFF.md')=='b996bb65214e0902da2356b92f83f32a48ff769c035b53be57c45e3fd9e2cd26'
+assert sha(P/'artifact-manifest.json')=='22eda57ee37c0103e6537ff02e7df95993fb0568816f9aab2cfa68ca819920d5'
+pre=json.loads((P/'artifact-manifest.json').read_text());pv=[]
+for x in pre['files']:
+ a=bind(P/x['path']);assert a['bytes']==x['bytes'] and a['sha256']==x['sha256'];pv.append(a)
+assert len(pv)==209
+assert sha(L/'handoff.json')=='c4a11786e4b105b3ff3d284569b73adde98c429e96620faa20374d4f9a8c6772'
+lh=json.loads((L/'handoff.json').read_text())
+for x in ['target','source_proposal','manifest_proposal','unchanged_ontology_proposal','unchanged_rhea_proposal']:assert bind(lh[x]['path'])==lh[x]
+code=[]
+for root,patterns in [(I/'candidate/src',['**/*.py']),(I/'candidate/scripts',['build_source_identifier_snapshot.py','build_ontology_identifier_snapshot.py'])]:
+ for pattern in patterns:
+  for p in root.glob(pattern):
+   if '__pycache__' in p.parts:continue
+   q=R/p.relative_to(I/'candidate');q.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,q);assert sha(q)==sha(p);code.append({'original':bind(p),'copy':bind(q)})
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+import build_source_identifier_snapshot as sb
+import build_ontology_identifier_snapshot as ob
+base_s=json.loads((L/'complete-source-proposal.json').read_text());base_m=json.loads((L/'complete-source-manifest-proposal.json').read_text());base_o=json.loads((A/'ontology-authority-proposal.json').read_text());base_r=json.loads((A/'rhea-identifier-updates-proposal.json').read_text())
+adopted_s=json.loads((B/'data/identifier_authorities/sources.json').read_text());adopted_o=json.loads((B/'data/identifier_authorities/ontology.json').read_text());adopted_m=json.loads((B/'conf/identifier_sources.json').read_text());adopted_r=json.loads((B/'conf/rhea_identifier_updates.json').read_text())
+for old,new in [(adopted_s,base_s),(adopted_o,base_o)]:
+ for k in ['terms','sources']:assert all(new[k].get(i)==t for i,t in old[k].items())
+assert base_m[:len(adopted_m)]==adopted_m and base_r['ids'][:len(adopted_r['ids'])]==adopted_r['ids']
+head=subprocess.check_output(['git','-C',str(B),'rev-parse','HEAD','HEAD^{tree}'],text=True).splitlines()
+records=[bind(p) for p in sorted((B/'data/pathways').rglob('*.yaml'))];assert len(records)==227
+save('input-bindings.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'preflight_manifest':bind(P/'artifact-manifest.json'),'preflight_files_verified':len(pv),'adopted_227':{'root':str(B),'head':head,'records':records,'source':bind(B/'data/identifier_authorities/sources.json'),'ontology':bind(B/'data/identifier_authorities/ontology.json'),'manifest':bind(B/'conf/identifier_sources.json'),'rhea_updates':bind(B/'conf/rhea_identifier_updates.json')},'prospective_lyxose_successor':{'handoff':bind(L/'handoff.json'),'scientific_acceptance':'pending independent reassessment at intake','target':lh['target'],'source_proposal':lh['source_proposal'],'manifest_proposal':lh['manifest_proposal'],'ontology_proposal':lh['unchanged_ontology_proposal'],'rhea_proposal':lh['unchanged_rhea_proposal']},'runtime':code})
+cache=O/'original-cache';cache.mkdir(exist_ok=True);entries=[];bindings=[];selection=set();terms_by_original=[]
+def add(kind,p,url,key,version='27.0',archive=None):
+ p=Path(p);entry={'key':key,'kind':kind,'path':'mg-'+p.name,'url':url,'version':version,'license':'CC-BY-4.0' if kind=='uniprot' else 'Public domain' if kind=='ncbi-entrezgene-xml' else 'Upstream terms; public-release licensing deferred','sha256':sha(p)}
+ if archive:entry['archive']=archive
+ dest=cache/entry['path'];dest.parent.mkdir(exist_ok=True,parents=True)
+ if not dest.exists():dest.symlink_to(p.resolve())
+ assert sha(dest)==entry['sha256']
+ entries.append(entry);bindings.append({'entry':entry,'original':bind(p),'candidate_cache':str(dest)})
+ if archive:ts=sb._pathbank_archive_terms(p,url=url,sha256=entry['sha256'],archive=archive)
+ else:ts=list(sb.source_terms(kind,p,url=url,version=version))
+ terms_by_original.append({'original':bind(p),'entry_key':key,'terms':ts})
+ return ts
+for acc in ['P54745','P54746','P23524','P08839','P0AA04','P13669','P37047','P0ACF8','P0A9E5','P0A9A9','P0A8M6']:
+ p=P/'raw'/f'{acc}.json'
+ if not p.exists():p=O/'raw'/f'UniProt-{acc}.json'
+ d=json.loads(p.read_text());assert d['primaryAccession']==acc
+ selection.add('UniProtKB:'+acc);add('uniprot',p,'https://rest.uniprot.org/uniprotkb/'+acc+'.json','uniprot-mg-'+acc,'UniProt original retrieved 2026-10-12; entry version '+str(d['entryAudit']['entryVersion']))
+for p in sorted((O/'raw').glob('Entrez-*-exact.xml')):
+ gid=p.name.split('-')[1];url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gid+'&rettype=xml';term,taxon=sb._ncbi_gene_record(p,url);assert taxon=='511145';selection.add(term[0]);add('ncbi-entrezgene-xml',p,url,'ncbi-gene-mg-'+gid,'NCBI Gene original retrieved 2026-10-12')
+for frame in ['PC00103','CPLX0-7797','CPLX0-7639']:
+ selection.add('EcoCyc:'+frame);add('ecocyc-protein-xml',P/'raw'/f'ECOLI-{frame}.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+frame,'ecocyc-mg-'+frame)
+selection.add('MetaCyc:CPLX0-7938');add('metacyc-protein-xml',O/'raw/META-CPLX0-7938.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX0-7938','metacyc-mg-CPLX0-7938')
+selection.add('MetaCyc:RXN0-5216');add('metacyc-reaction-xml',P/'raw/META-RXN0-5216.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN0-5216','metacyc-mg-RXN0-5216')
+for frame in ['PWY0-1300','MANNCAT-PWY','COLANSYN-PWY']:
+ p=P/'raw'/f'META-{frame}.html'
+ if not p.exists():p=O/'raw'/f'META-{frame}.html'
+ selection.add('MetaCyc:'+frame);add('metacyc-html',p,'https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object='+frame,'metacyc-mg-'+frame,'MetaCyc 27.0; original retrieved 2026-10-12')
+sel=O/'bounded-selection';sel.mkdir(exist_ok=True);(sel/'identifiers.yaml').write_text(yaml.safe_dump({'id':'MetaCyc:PWY0-1300','participants':[{'id':i} for i in sorted(selection)]}));save('incremental-source-manifest.json',entries)
+inc=sb.build_snapshot(O/'incremental-source-manifest.json',sel,cache);save('incremental-source-build.json',inc)
+s=copy.deepcopy(base_s);m=copy.deepcopy(base_m);overlap=[];added=[];activekeys=set()
+for id,t in inc['terms'].items():
+ if id in s['terms']:overlap.append({'id':id,'preserved_existing':s['terms'][id],'new_original_term':t});continue
+ s['terms'][id]=t;activekeys.add(t['source']);added.append(id)
+additions=[]
+for key in sorted(activekeys):
+ if key in s['sources']:assert s['sources'][key]==inc['sources'][key]
+ else:s['sources'][key]=inc['sources'][key]
+for e in entries:
+ if e['key'] in activekeys:
+  assert e['key'] not in {x['key'] for x in m};m.append(e);additions.append(e)
+save('source-manifest-additions.json',additions);save('source-manifest-proposal.json',m);save('source-authority-proposal.json',s);save('source-original-bindings.json',bindings);save('original-native-term-replay.json',terms_by_original);save('source-overlap-preservation.json',overlap)
+# The selected chemical/ontology identifiers are only selectors; labels and metadata come from original SQL.
+ontology_ids=set('CHEBI:'+x for x in ['57541','60331','15377','58735','16659','30616','58289','456216','15378','58702','15361','18420','60240','16810','29033','30612','16537','15379','49883','60332'])
+ontology_ids.update(['NCBITaxon:83333','NCBITaxon:511145','GO:0005829','GO:0005886','GO:0005737','GO:0009295','GO:0051478','GO:0051476'])
+o=copy.deepcopy(base_o);ont_replay=[];all_ontology_native={}
+for pref,db in [('CHEBI','chebi'),('GO','go'),('NCBITaxon','ncbitaxon')]:
+ ids=sorted(i for i in ontology_ids if i.startswith(pref+':'));path=C/(db+'.db')
+ with sqlite3.connect(path.resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as conn:
+  meta=ob.read_source(conn,path);key=db+'-'+meta['version'];terms,missing=ob.extract_terms(conn,ids,key)
+  detail={i:[dict(zip(['predicate','object','value'],r)) for r in conn.execute('SELECT predicate,object,value FROM statements WHERE subject=?',(i,))] for i in ids}
+ assert not missing,missing
+ assert key in o['sources'] and o['sources'][key]==meta
+ differences=[]
+ for id,t in terms.items():
+  if id in o['terms']:
+   if o['terms'][id]!=t:differences.append({'id':id,'preserved_existing':o['terms'][id],'original_term':t})
+  else:o['terms'][id]=t
+ all_ontology_native.update(terms);ont_replay.append({'prefix':pref,'original':bind(path),'metadata':meta,'ids':ids,'terms':terms,'existing_differences':differences,'native_rows':detail});print('ontology',pref,len(ids),flush=True)
+rm=copy.deepcopy(base_r);newr=[i for i in ['RHEA:33308'] if i not in rm['ids']];rm['ids']+=newr;save('rhea-identifier-updates-proposal.json',rm)
+rp=cache/rm['path']
+if not rp.exists():rp.symlink_to((C/'sources'/rm['path']).resolve())
+key,meta,terms=ob.read_rhea_updates(O/'rhea-identifier-updates-proposal.json',cache,set(rm['ids']));assert o['sources'][key]==meta
+for id in base_r['ids']:assert o['terms'][id]==terms[id]
+for id in newr:
+ if id in o['terms']:assert o['terms'][id]==terms[id]
+ else:o['terms'][id]=terms[id]
+# Forward terminal equations are retained from existing registry; verify current RDF independently via a separate selector.
+comparison=copy.deepcopy(rm);comparison['ids']=['RHEA:27377','RHEA:27378','RHEA:23880','RHEA:23881','RHEA:33307','RHEA:33308','RHEA:27866','RHEA:27867'];save('rhea-comparison-manifest.json',comparison)
+_,_,rterms=ob.read_rhea_updates(O/'rhea-comparison-manifest.json',cache,set(comparison['ids']));save('rhea-original-term-comparison.json',{'terms':rterms,'selected_graph_ids':['RHEA:33308','RHEA:23881','RHEA:27378'],'master_and_alpha_formulations':'comparison only; no duplicate graph events','existing_terminal_label_matches_current_rdf':o['terms']['RHEA:27378']['label']==rterms['RHEA:27378']['label'],'rhea_original':bind(rp)})
+ont_replay.append({'prefix':'RHEA','metadata':meta,'new_ids':newr,'original':bind(rp),'all_selected_terms':terms});save('ontology-authority-proposal.json',o);save('ontology-original-replay.json',ont_replay)
+for old,new in [(base_s,s),(base_o,o)]:
+ for k in ['terms','sources']:assert all(new[k].get(i)==t for i,t in old[k].items())
+assert m[:len(base_m)]==base_m and rm['ids'][:len(base_r['ids'])]==base_r['ids']
+selected_terms={i:s['terms'].get(i,o['terms'].get(i)) for i in sorted(selection|ontology_ids|{'RHEA:33308','RHEA:23881','RHEA:27378'})};assert all(selected_terms.values())
+save('validated-identity-catalog.json',{'scope':'candidate native authority selectors; final draft selection remains author owned','terms':selected_terms,'ontology_current_original_terms':all_ontology_native,'unresolved_source_shapes':['PathBank:SMP0002108','PathBank:SMP0000839'],'optional_not_selected':['EcoCyc:CPLX0-7938','EcoCyc:PTSH-PHOSPHORYLATED']})
+save('authority-preservation.json',{'baseline':{'source_terms':len(base_s['terms']),'source_metadata':len(base_s['sources']),'ontology_terms':len(base_o['terms']),'manifest_entries':len(base_m),'rhea_ids':len(base_r['ids'])},'proposal':{'source_terms':len(s['terms']),'source_metadata':len(s['sources']),'ontology_terms':len(o['terms']),'manifest_entries':len(m),'rhea_ids':len(rm['ids'])},'added_source_ids':added,'added_source_manifest_entries':len(additions),'all_prior_terms_metadata_manifest_order_and_rhea_order_exact':True,'adopted_227_objects_preserved':True,'prospective_lyxose_successor_objects_preserved':True,'full_canonical_build':False,'whole_corpus_gate':False})
+print(json.dumps({'new_source_terms':len(added),'selected_identities':len(selected_terms),'incremental_manifest':len(entries),'new_manifest_entries':len(additions),'unresolved':['PathBank:SMP0002108','PathBank:SMP0000839']}),flush=True)

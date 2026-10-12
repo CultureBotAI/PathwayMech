@@ -1,0 +1,11 @@
+from pathlib import Path
+import subprocess,os,json,datetime,hashlib
+A=Path(__file__).parent;K=A/'candidate';py='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';env=dict(os.environ,PYTHONPATH=str(K/'src'),PYTHONDONTWRITEBYTECODE='1',RUFF_CACHE_DIR=str(A/'ruff-cache'))
+checks={'focused-tests':[py,'-B','-m','pytest','-q','-p','no:cacheprovider','tests/test_metacyc_reaction_authority.py','tests/test_pathbank_identifier_authority.py','tests/test_identifiers.py','tests/test_source_identifier_snapshot.py','tests/test_identifier_snapshot_builders.py'],'lint':[py,'-B','-m','ruff','check','scripts/build_source_identifier_snapshot.py','tests/test_pathbank_identifier_authority.py']}
+rows=[]
+for name,cmd in checks.items():
+ start=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(cmd,cwd=K,env=env,text=True,capture_output=True);out=A/(name+'.stdout');err=A/(name+'.stderr');out.write_text(r.stdout);err.write_text(r.stderr)
+ def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+ rows.append({'name':name,'command':cmd,'cwd':str(K),'started':start,'finished':datetime.datetime.now(datetime.timezone.utc).isoformat(),'returncode':r.returncode,'stdout':bind(out),'stderr':bind(err)})
+ (A/'check-executions.json').write_text(json.dumps(rows,indent=2)+'\n');print(name,r.returncode,r.stdout[-1500:],flush=True)
+assert all(r['returncode']==0 for r in rows)

@@ -1,0 +1,61 @@
+from pathlib import Path
+import hashlib,json,subprocess,datetime,yaml
+O=Path(__file__).parent
+A=Path('/private/tmp/pathwaymech-next-228-author-20261012')
+C=Path('/private/tmp/pathwaymech-next-228-science-correction-20261012')
+P=Path('/private/tmp/pathwaymech-next-228-science-review-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(n,v):(O/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert sha(C/'handoff.json')=='9a7c0e1d676523bb5495a0aca99b805f54d2ba90696e6581417a5b2d1447c809'
+assert sha(C/'artifact-manifest.json')=='2cef34635ac8b7b517fb4b3011ab792597a925fa36e24d25cbd05f4449390096'
+assert sha(P/'handoff.json')=='36cbadc214456c366a4d579909daedd128458b398eac594f0670fbdc839e5b7a'
+packets=[]
+for root,expected in [(A,612),(C,319),(P,53)]:
+ m=json.loads((root/'artifact-manifest.json').read_text())
+ rows=m.get('artifacts',m.get('files')) if isinstance(m,dict) else m
+ assert len(rows)==expected
+ wanted=set()
+ for x in rows:
+  rel=x.get('relative_path',x.get('path'));p=Path(rel)
+  if p.is_absolute():p=p.relative_to(root)
+  wanted.add(str(p));p=root/p
+  assert p.stat().st_size==x['bytes'] and sha(p)==x['sha256'],p
+ r=subprocess.run(['rg','--files','--no-ignore','--hidden','--follow','.'],cwd=root,capture_output=True,text=True)
+ assert r.returncode==0 and not r.stderr,r.stderr
+ actual={str(Path(p)) for p in r.stdout.splitlines()}
+ assert actual==wanted|{'artifact-manifest.json','handoff.json'},actual.symmetric_difference(wanted)
+ packets.append({'root':str(root),'artifact_count':len(rows),'handoff_sha256':sha(root/'handoff.json'),'manifest_sha256':sha(root/'artifact-manifest.json'),'exact_hidden_ignored_followed_inventory':True})
+before=yaml.safe_load((A/'draft/mannosylglycerate-degradation.yaml').read_bytes())
+after=yaml.safe_load((C/'draft/mannosylglycerate-degradation.yaml').read_bytes())
+def diff(a,b,path=''):
+ if type(a)!=type(b):return [{'path':path,'before':a,'after':b}]
+ if isinstance(a,dict):
+  out=[]
+  for k in sorted(set(a)|set(b)):
+   if k not in a or k not in b:out.append({'path':path+'/'+k,'before':a.get(k),'after':b.get(k),'key_operation':'added' if k not in a else 'removed'})
+   else:out+=diff(a[k],b[k],path+'/'+k)
+  return out
+ if isinstance(a,list):
+  if len(a)!=len(b):return [{'path':path,'before':a,'after':b}]
+  return sum((diff(x,y,path+'/'+str(i)) for i,(x,y) in enumerate(zip(a,b))),[])
+ return [] if a==b else [{'path':path,'before':a,'after':b}]
+delta=diff(before,after)
+oldedges={e['id']:e for e in before['mechanistic_edges']};newedges={e['id']:e for e in after['mechanistic_edges']}
+assert list(oldedges)==list(newedges) and len(newedges)==75
+changed=[k for k in oldedges if oldedges[k]!=newedges[k]]
+assert len(changed)==18 and len(delta)==22
+assert before['references']==after['references'] and len(after['references'])==62
+for key in ['id','label','description','pathway_type','participants','reactions','taxa']:
+ assert before[key]==after[key],key
+retainedqual=0
+for k,e in oldedges.items():
+ for q in e.get('endpoint_qualifiers',[]):assert q in newedges[k].get('endpoint_qualifiers',[]);retainedqual+=1
+ assert (e['subject'],e['predicate'],e['object'])==(newedges[k]['subject'],newedges[k]['predicate'],newedges[k]['object'])
+assert retainedqual==13
+qualcount=sum(len(e.get('endpoint_qualifiers',[])) for e in newedges.values())
+assert qualcount==15
+write('package-intake.json',{'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'packets':packets,'target_sha256':sha(C/'draft/mannosylglycerate-degradation.yaml'),'maintained_mutations':False})
+write('independent-semantic-delta.json',delta)
+write('inheritance-proof.json',{'unchanged_edges':sorted(set(oldedges)-set(changed)),'changed_edges':changed,'field_changes':len(delta),'all75_triplets_and_order_unchanged':True,'references_exact':62,'retained_qualifiers':retainedqual,'total_qualifiers':qualcount,'other_top_level_fields_exact':True})
+write('parsed-target.json',after)
+print(json.dumps({'packets':packets,'changed_edges':changed,'delta_paths':[x['path'] for x in delta]},indent=2))

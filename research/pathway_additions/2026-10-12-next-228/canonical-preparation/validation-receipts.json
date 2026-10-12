@@ -1,0 +1,82 @@
+{
+  "executions": [
+    {
+      "name": "lint",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-m",
+        "ruff",
+        "check",
+        "--no-cache",
+        "--config",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/captured/code/pyproject.toml",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/common.py",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/capture_inputs.py",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/prepare_and_build.py",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/test_guards.py"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012",
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": "",
+      "at": "2026-10-12T03:38:15.897393+00:00"
+    },
+    {
+      "name": "guards",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/test_guards.py"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_actual_rhea_order_is_preserved (__main__.SourceBoundGuards.test_actual_rhea_order_is_preserved) ... ok\ntest_actual_shared_zip_path_is_accepted_without_collapsing_members (__main__.SourceBoundGuards.test_actual_shared_zip_path_is_accepted_without_collapsing_members) ... ok\ntest_actual_snapshot_preservation_accepted (__main__.SourceBoundGuards.test_actual_snapshot_preservation_accepted) ... ok\ntest_duplicate_rhea_selector_rejected (__main__.SourceBoundGuards.test_duplicate_rhea_selector_rejected) ... ok\ntest_duplicate_source_key_rejected (__main__.SourceBoundGuards.test_duplicate_source_key_rejected) ... ok\ntest_maintained_output_path_rejected (__main__.SourceBoundGuards.test_maintained_output_path_rejected) ... ok\ntest_old_metadata_hash_mutation_rejected (__main__.SourceBoundGuards.test_old_metadata_hash_mutation_rejected) ... ok\ntest_old_term_deletion_rejected (__main__.SourceBoundGuards.test_old_term_deletion_rejected) ... ok\ntest_only_new_external_output_allowed (__main__.SourceBoundGuards.test_only_new_external_output_allowed) ... ok\ntest_previous_manifest_reordering_rejected (__main__.SourceBoundGuards.test_previous_manifest_reordering_rejected) ... ok\ntest_prior_rhea_selector_removal_rejected (__main__.SourceBoundGuards.test_prior_rhea_selector_removal_rejected) ... ok\ntest_prior_typed_zip_member_relabeling_rejected (__main__.SourceBoundGuards.test_prior_typed_zip_member_relabeling_rejected) ... ok\ntest_shared_zip_conflicting_hash_rejected (__main__.SourceBoundGuards.test_shared_zip_conflicting_hash_rejected) ... ok\ntest_source_path_escape_rejected (__main__.SourceBoundGuards.test_source_path_escape_rejected) ... ok\ntest_stale_duplicate_provenance_overwrite_rejected (__main__.SourceBoundGuards.test_stale_duplicate_provenance_overwrite_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 15 tests in 0.167s\n\nOK\n",
+      "at": "2026-10-12T03:38:16.257107+00:00"
+    },
+    {
+      "name": "check_inputs",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/prepare_and_build.py",
+        "--check-inputs"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012",
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"inputs_checked_no_build\",\n  \"commands\": {\n    \"cwd\": \"/private/tmp/pathwaymech-next-228-canonical-build-20261012\",\n    \"environment\": {\n      \"PYTHONDONTWRITEBYTECODE\": \"1\",\n      \"UV_NO_SYNC\": \"1\",\n      \"PYTHONPATH\": \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime/src:/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime\"\n    },\n    \"source_builder\": [\n      \"/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python\",\n      \"-B\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime/scripts/build_source_identifier_snapshot.py\",\n      \"--manifest\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/manifest.json\",\n      \"--cache-dir\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/originals\",\n      \"--records\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/corpus\",\n      \"--output\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/sources.json\"\n    ],\n    \"ontology_builder\": [\n      \"/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python\",\n      \"-B\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime/scripts/build_ontology_identifier_snapshot.py\",\n      \"--source\",\n      \"CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db\",\n      \"--source\",\n      \"GO=/private/tmp/pathwaymech-curation-authorities/go.db\",\n      \"--source\",\n      \"NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db\",\n      \"--source\",\n      \"RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db\",\n      \"--corpus\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/corpus\",\n      \"--rhea-updates\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/rhea-updates.json\",\n      \"--cache-dir\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/originals\",\n      \"--output\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/ontology.json\"\n    ]\n  },\n  \"output\": \"/private/tmp/pathwaymech-next-228-canonical-build-20261012\",\n  \"will_not_overwrite\": true\n}\n",
+      "stderr": "",
+      "at": "2026-10-12T03:38:16.706521+00:00"
+    },
+    {
+      "name": "default_inert",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/prepare_and_build.py"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012",
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"inert_build_plan\",\n  \"commands\": {\n    \"cwd\": \"/private/tmp/pathwaymech-next-228-canonical-build-20261012\",\n    \"environment\": {\n      \"PYTHONDONTWRITEBYTECODE\": \"1\",\n      \"UV_NO_SYNC\": \"1\",\n      \"PYTHONPATH\": \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime/src:/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime\"\n    },\n    \"source_builder\": [\n      \"/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python\",\n      \"-B\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime/scripts/build_source_identifier_snapshot.py\",\n      \"--manifest\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/manifest.json\",\n      \"--cache-dir\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/originals\",\n      \"--records\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/corpus\",\n      \"--output\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/sources.json\"\n    ],\n    \"ontology_builder\": [\n      \"/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python\",\n      \"-B\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/runtime/scripts/build_ontology_identifier_snapshot.py\",\n      \"--source\",\n      \"CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db\",\n      \"--source\",\n      \"GO=/private/tmp/pathwaymech-curation-authorities/go.db\",\n      \"--source\",\n      \"NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db\",\n      \"--source\",\n      \"RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db\",\n      \"--corpus\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/corpus\",\n      \"--rhea-updates\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/rhea-updates.json\",\n      \"--cache-dir\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/originals\",\n      \"--output\",\n      \"/private/tmp/pathwaymech-next-228-canonical-build-20261012/ontology.json\"\n    ]\n  },\n  \"output\": \"/private/tmp/pathwaymech-next-228-canonical-build-20261012\",\n  \"will_not_overwrite\": true\n}\n",
+      "stderr": "",
+      "at": "2026-10-12T03:38:17.144316+00:00"
+    },
+    {
+      "name": "help",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012/prepare_and_build.py",
+        "--help"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-228-canonical-preparation-20261012",
+      "exit_code": 0,
+      "stdout": "usage: prepare_and_build.py [-h] [--execute] [--check-inputs]\n\nGuarded full MG source/ontology build. Default is an inert plan; --execute is\nrequired.\n\noptions:\n  -h, --help      show this help message and exit\n  --execute       Run the two full native builders in a new fixed external\n                  output directory.\n  --check-inputs  Rehash captured small files and check inherited SQL stats\n                  only; no build or writes.\n",
+      "stderr": "",
+      "at": "2026-10-12T03:38:17.351407+00:00"
+    }
+  ],
+  "full_build_executed": false,
+  "output_directory_exists": false
+}

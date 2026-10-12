@@ -1,0 +1,186 @@
+{
+  "reviewer": "Codex /root/mannosylglycerate_preflight",
+  "at": "2026-10-12T05:03:13.375555+00:00",
+  "status": "accepted_bounded_static_recheck",
+  "reviewed_helper": {
+    "path": "/private/tmp/pathwaymech-next-228-finalize-current.py",
+    "bytes": 16745,
+    "sha256": "9341223885d93c8f74eb843396e01c3d2600448cb89dcd432af815c1510cdf79"
+  },
+  "original_observation": {
+    "tool_receipts": [
+      "81a171/0",
+      "3c83a2/0",
+      "40665d/0",
+      "06e31b/0"
+    ],
+    "line_count": 223,
+    "sha256": null,
+    "limitation": "Original pre-fix script was read completely in the tool transcript but not separately frozen or hashed before root edited it. Original findings/line references are retained; no invented original byte hash."
+  },
+  "successor_reads": [
+    "f8c39f/0",
+    "bfeddf/0"
+  ],
+  "findings": [
+    {
+      "issue_key": "mg-finalizer-finished-timestamp-race",
+      "original_lines": "167,169",
+      "original_finding": "Separate clock calls could cross a second and violate native review ID/finished timestamp consistency.",
+      "fixed_lines": "203\u2013206",
+      "disposition": "resolved",
+      "basis": "Review ID derives from the captured finished string. Native validate_review requires that same UTC second."
+    },
+    {
+      "issue_key": "mg-finalizer-gate-input-binding-gap",
+      "original_lines": "55\u201375,107; preservation helper 50\u201363",
+      "original_finding": "Assembly did not bind the preservation receipt to the supplied gate receipt, verify the gate-input receipt digest, or compare its full nongenerated input inventory to current bytes.",
+      "fixed_lines": "59\u201384",
+      "disposition": "resolved_for_this_assembly",
+      "basis": "Preservation.gate_receipt equals bind(args.gates), gate inputs match their exact binding, history receipts agree, nongenerated sets/bytes match current ignored/hidden/followed inventory, and generated files match output bindings. The immutable general preservation helper remains unchanged; this assembler adds its missing gate-input guard."
+    },
+    {
+      "issue_key": "mg-finalizer-history-addition-gap",
+      "original_lines": "73\u201375",
+      "original_finding": "Checking only listed history objects missed added history files.",
+      "fixed_lines": "91\u201396",
+      "disposition": "resolved",
+      "basis": "Full ignored/hidden/followed history set equality precedes each original hash/length comparison. No native history writer is invoked."
+    },
+    {
+      "issue_key": "mg-finalizer-recovery-history-archive-gap",
+      "original_lines": "104\u2013124",
+      "original_finding": "Only successful composite gate evidence was archived; the original DNS failure and recovery context were omitted.",
+      "fixed_lines": "143\u2013157,229\u2013236",
+      "disposition": "resolved",
+      "basis": "Original failure and recovery-input files are bound and archived, recovery helper is bound/archived as text, original failed vendored stdout/stderr are bound and archived, and a failed optional historical check is explicitly superseded by the required successful retry. Composite receipt retains all nine actual final command records, including six inherited original passes. Native contract blocks failed required checks, not an honestly scoped historical optional failure."
+    },
+    {
+      "issue_key": "mg-finalizer-executable-archive-lint-regression",
+      "original_lines": "120\u2013121; QA helper 5",
+      "original_finding": "Raw helper .py files added after lint would be scanned by ruff check ., including the QA helper unused Counter import.",
+      "fixed_lines": "141\u2013142,149",
+      "disposition": "resolved",
+      "basis": "Helpers are archived as .py.txt or lossless JSON text wrappers; original source bytes are unchanged and no new maintained executable Python file is introduced."
+    },
+    {
+      "issue_key": "mg-finalizer-programmatic-qa-binding",
+      "original_lines": "69\u201372",
+      "original_finding": "Visual observation bound page/overview but did not verify its referenced programmatic receipt.",
+      "fixed_lines": "90",
+      "disposition": "resolved",
+      "basis": "The referenced programmatic receipt must equal its full path/length/SHA binding before archival. Existing 282 HTML IDs, 318 fragment links, 15 qualifier descriptions and 176 evidence claims agree with the read receipts."
+    }
+  ],
+  "remaining_findings": [],
+  "scope": "Bounded recheck of five reported fixes plus QA receipt binding, against native review shape/current-source/required-check contracts and sealed support. No fresh scientific or all-literature reassessment.",
+  "observed_native_contract": {
+    "timestamp": "review_id must begin with finished_at UTC timestamp and a hyphen",
+    "failed_optional_check": "pass_with_limitations is allowed when historical failed optional checks are explicit and no required check remains failed",
+    "serializer": "Unchanged support serializer calls native validate_review, assert_current_source, no-alias _dump_document, and round-trip load_document before exclusive YAML output."
+  },
+  "limitations": [
+    "Static read only: reviewed finalizer, native inspector, serializer, and gates were not executed.",
+    "Native assembly/serialization/save/check, final preservation/site-current/diff checks, commit and PR lifecycle remain root-owned future actions.",
+    "This is acceptance of the exact helper bytes, not a claim that its runtime preconditions have already passed.",
+    "No maintained, shared-cache, Git or GitHub writes; only this new external audit directory is created.",
+    "Historical 2394-test success and root syntax compilation were not rerun or independently asserted by this audit."
+  ],
+  "source_bindings": [
+    {
+      "path": "/private/tmp/pathwaymech-next-228-finalize-current.py",
+      "bytes": 16745,
+      "sha256": "9341223885d93c8f74eb843396e01c3d2600448cb89dcd432af815c1510cdf79"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-finalization-support-20261012/handoff.json",
+      "bytes": 3156,
+      "sha256": "940ccf583cb748ab624ae6da1b74b7569c597832189035baa52ff2a718c19c4a"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-finalization-support-20261012/artifact-manifest.json",
+      "bytes": 5118,
+      "sha256": "0faa1fd181935209bb562c8d5dff0b7a9a1263abbd65169cdbf20156fb25a147"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-finalization-support-20261012/FINALIZATION-PLAN.md",
+      "bytes": 6190,
+      "sha256": "f7c86f5d7f8332780a81f5cd3bdd62bded98cb4c35aece2c0bd113f6af478956"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-finalization-support-20261012/serialize_review.py",
+      "bytes": 1359,
+      "sha256": "6909a989e648f14e1d18583c4f13c36288e6d117d6d163e773497b32419f02dd"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-finalization-support-20261012/inspect_with_inputs.py",
+      "bytes": 1123,
+      "sha256": "0ce01988056dc5703ce46116252b586f22539da6265e5d9d4dcacd1502ff4785"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-finalization-support-20261012/review-content-fragments.json",
+      "bytes": 227876,
+      "sha256": "963500cd811edaeb2b44bbe2fb782948ba4ba2286e5297fae3da16f9c4a3ddc5"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-20261012/scripts/record_review.py",
+      "bytes": 41900,
+      "sha256": "95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-20261012/schema/record_review.yaml",
+      "bytes": 13541,
+      "sha256": "229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-20261012/pyproject.toml",
+      "bytes": 4368,
+      "sha256": "4b2e0f7c4613ca71985eac779df68d6847f12ece4c373f6a49090125bd1b2b83"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-20261012/justfile",
+      "bytes": 3912,
+      "sha256": "6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-integration-preparation-20261012/preserve-maintained.py",
+      "bytes": 11750,
+      "sha256": "59d6d551818f1f7f8796299734a507775c977dd4e7ded3570c267797805482a1"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-integration-preparation-20261012/run-gates.py",
+      "bytes": 5026,
+      "sha256": "ac0b187dc88cfc5914486c92e8446d4572222e9f1dda5ef3fa62a5f779e302b6"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-integration-preparation-20261012/common.py",
+      "bytes": 12965,
+      "sha256": "c7801cfc5b0692f3f6d150a2cab02664dbd9b5c9c9c5946679fbf004cc6a6fc2"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-page-qa.py",
+      "bytes": 4675,
+      "sha256": "baefcf48f1aadb2fab954beff8893a2cca94496a9ae392e00a3677d3e821c609"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-page-qa-20261012/receipt.json",
+      "bytes": 1104,
+      "sha256": "109c67a9de12857b7820538ae07c5bd30fde8e053240199303a18a7d7f583342"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-page-qa-20261012/root-visual-observation.json",
+      "bytes": 1312,
+      "sha256": "cafa2bcbdff6f05ad6720e679f07f0653a1c037af37bfa047b932403346b4fdf"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-maintained-gates-recovery-20261012/recovery-inputs.json",
+      "bytes": 878,
+      "sha256": "ab517c41afe235766123ba17ae8df801bd26d59350a5f6ff9c52c870038a7ad9"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-228-test-bytecode-20261012/receipt.json",
+      "bytes": 1036,
+      "sha256": "199a91cd033ff7149f903f910008b5a0d42050cb087bbaaeb1f6ef68d08b69c4"
+    }
+  ]
+}

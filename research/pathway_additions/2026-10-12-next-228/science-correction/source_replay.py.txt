@@ -1,0 +1,211 @@
+import gzip
+import json
+import re
+from pathlib import Path
+
+from lxml import etree as E
+
+from prepare_correction import OUT, PREFLIGHT, ROOT_RHEA, bind, load, write
+
+RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+RH = 'http://rdf.rhea-db.org/'
+
+def select_json(obj, locator):
+    results = []
+    for part in locator.split('; '):
+        match = re.fullmatch(r'(\w+)\[(.+)\]', part)
+        if match:
+            field, filters = match.groups()
+            selected = obj.get(field, [])
+            for criterion in filters.split(','):
+                key, value = criterion.split('=', 1)
+                def matches(row):
+                    for level in key.split('.'):
+                        if not isinstance(row, dict) or level not in row:
+                            return False
+                        row = row[level]
+                    return str(row) == value
+                selected = [row for row in selected if matches(row)]
+            results.append(selected)
+        else:
+            value = obj
+            for key in part.split('.'):
+                value = value[key]
+            results.append(value)
+    return results
+
+
+def triples(locator):
+    parsed = []
+    for part in locator.split('; '):
+        match = re.fullmatch(r'(http://rdf.rhea-db.org/\S+) rh:(\w+) (http://rdf.rhea-db.org/\S+)', part)
+        if not match:
+            return None
+        subject, predicate, obj = match.groups()
+        parsed.append((subject, RH + predicate, obj))
+    return parsed
+
+
+def rhea_valid(locator, native):
+    rows = triples(locator)
+    if rows is None or len(rows) != 3:
+        return False
+    first, second, third = rows
+    return (first[1] in {RH + 'substrates', RH + 'products'} and
+            first[2] == second[0] and second[1] == RH + 'contains1' and
+            second[2] == third[0] and third[1] == RH + 'compound' and
+            all(row in native for row in rows))
+
+
+def main():
+    import yaml
+    raw = yaml.safe_load((OUT / 'draft/mannosylglycerate-degradation.yaml').read_bytes())
+    edges = {edge['id']: edge for edge in raw['mechanistic_edges']}
+    references = load(OUT / 'inherited/reference-bindings.json')
+    # Rehash each distinct full bound original, including the compressed Rhea original.
+    originals = {value['path']: bind(value['path']) for value in references.values()}
+    hashchecks = []
+    for key, source in references.items():
+        actual = originals[source['path']]
+        assert (actual['bytes'], actual['sha256']) == (source['bytes'], source['sha256'])
+        hashchecks.append({'reference': key, **source, 'actual': actual, 'valid': True})
+    write('derived/reference-original-replay.json', hashchecks)
+    root = load(ROOT_RHEA)
+    chosen = {part for probe in root['probes'] for part in probe['parts'] if part.startswith(RH)}
+    native = set()
+    selected = {}
+    count = 0
+    rheapath = Path(root['original'])
+    with gzip.open(rheapath, 'rb') as stream:
+        for _, element in E.iterparse(stream, events=('end',)):
+            parent = element.getparent()
+            # Rhea repeats rdf:Description subjects; accumulate every top-level fragment.
+            if parent is None or parent.tag != '{' + RDF + '}RDF':
+                continue
+            count += 1
+            subject = element.get('{' + RDF + '}about')
+            if subject in chosen:
+                selected.setdefault(subject, [])
+                for child in element:
+                    value = child.get('{' + RDF + '}resource')
+                    selected[subject].append({'predicate': child.tag, 'resource': value,
+                                               'text': child.text})
+                    if value:
+                        predicate = child.tag[1:].replace('}', '', 1)
+                        native.add((subject, predicate, value))
+            element.clear()
+            while element.getprevious() is not None:
+                del parent[0]
+    checks, negatives = [], []
+    for probe in root['probes']:
+        ev = next(item for item in edges[probe['edge']]['evidence'] if item['reference_id'].startswith('RHEA:'))
+        locator = ev['source_locator']
+        assert locator == probe['corrected_locator']
+        assert rhea_valid(locator, native), probe['edge']
+        checks.append({'edge': probe['edge'], 'reference': ev['reference_id'], 'locator': locator,
+                       'triples': triples(locator), 'all_exact_native_triples': True})
+        rows = triples(locator)
+        mutations = {
+            'nonexistent_coefficient1': locator.replace('rh:contains1', 'rh:coefficient1'),
+            'wrong_direction': locator.replace(rows[0][0] + ' ', RH + '999999999 ', 1),
+            'wrong_side': locator.replace(rows[0][2], RH + '27377_WRONG', 1),
+            'dangling_participant': locator.replace(rows[1][2], RH + 'Participant_missing', 1),
+            'wrong_compound': locator.replace(rows[2][2], RH + 'Compound_missing'),
+        }
+        for kind, bad in mutations.items():
+            assert not rhea_valid(bad, native), (probe['edge'], kind)
+            negatives.append({'edge': probe['edge'], 'mutation': kind, 'locator': bad, 'rejected': True})
+    write('derived/rhea-exact-original-replay.json', {
+        'original': originals[str(rheapath)], 'root_comparison': bind(ROOT_RHEA),
+        'full_stream_completed': True, 'top_level_fragments_read': count,
+        'selected_subjects': selected, 'checks': checks, 'triples_checked': 39,
+        'negative_controls': negatives})
+    # Exact feature/comment scope, not merely a nonempty field.
+    ptsi = load(PREFLIGHT / 'raw/P08839.json')
+    ptsi_ev = edges['mg-ptsi-catalysis']['evidence'][2]
+    function, sites = select_json(ptsi, ptsi_ev['source_locator'])
+    assert len(sites) == 1 and sites[0]['type'] == 'Active site'
+    assert sites[0]['location']['start']['value'] == sites[0]['location']['end']['value'] == 189
+    assert 'Tele-phosphohistidine' in sites[0]['description']
+    assert ptsi['sequence']['value'][188] == 'H'
+    assert any('phospho' in str(row).lower() and 'HPr' in str(row) for row in function)
+    wrong = select_json(ptsi, 'features[type=Modified residue]')[0]
+    assert wrong and all(row['location']['start']['value'] != 189 for row in wrong)
+    assert any(row['location']['start']['value'] == 122 and 'tyrosine' in row['description'].lower() for row in wrong)
+    hns = load(PREFLIGHT / 'raw/P0ACF8.json')
+    locations, assemblies = select_json(hns, edges['mg-location-P0ACF8']['evidence'][0]['source_locator'])
+    assert 'nucleoid' in str(locations).lower() and 'homodimer' in str(assemblies).lower() and 'tetramer' in str(assemblies).lower()
+    assert not any(row.get('commentType') == 'SUBUNIT' for row in select_json(hns, 'comments[commentType=SUBCELLULAR LOCATION]')[0])
+    write('derived/uniprot-assertion-replay.json', {
+        'PtsI': {'original': originals[str(PREFLIGHT / 'raw/P08839.json')], 'function': function,
+                 'exact_feature': sites, 'sequence_residue189': 'H', 'rejected_adjacent_feature': wrong},
+        'HNS': {'original': originals[str(PREFLIGHT / 'raw/P0ACF8.json')], 'location': locations,
+                'subunit': assemblies},
+        'negative_controls': [
+            {'mutation': 'PtsI Modified residue Tyr122 substituted for catalytic His189', 'rejected': True},
+            {'mutation': 'HNS location-only locator for combined location/oligomer assertion', 'rejected': True}]})
+    # Preserve primary assay passages and exact issuing sequence without a numbering bridge.
+    xp = '/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section'
+    article = E.parse(str(PREFLIGHT / 'raw/PMC111340.html'), E.HTMLParser())
+    paragraphs = {}
+    for suffix in ['[4]/p[1]', '[5]/p[1]', '[5]/p[2]', '[6]/p[1]', '[6]/p[2]']:
+        matches = article.xpath(xp + suffix)
+        assert len(matches) == 1
+        paragraphs[xp + suffix] = ' '.join(''.join(matches[0].itertext()).split())
+    loss, rescue = paragraphs[xp + '[5]/p[1]'], paragraphs[xp + '[5]/p[2]']
+    assert all(token in loss for token in ['391', '297', 'Ser', 'Tn5', '20 nucleotides', 'JA176', 'JA177'])
+    assert all(token in rescue for token in ['MC4100', 'pRM1', 'pBluescript', 'JA176', 'JA177'])
+    assert 'positive' in paragraphs[xp + '[6]/p[2]'].lower()
+    cdar = load(PREFLIGHT / 'raw/P37047.json')
+    assert cdar['primaryAccession'] == 'P37047' and cdar['sequence']['length'] == len(cdar['sequence']['value']) == 385
+    assert cdar['genes'][0]['geneName']['value'] == 'cdaR'
+    assert {'sdaR', 'yaeG'} <= {item['value'] for item in cdar['genes'][0]['synonyms']}
+    sampaio_path = PREFLIGHT / 'derived/Sampaio2004-assembled.txt'
+    lines = {int(match[1]): match[2] for line in sampaio_path.read_text().splitlines()
+             if (match := re.fullmatch(r'L(\d+): ?(.*)', line))}
+    ranges = {}
+    for start, end in [(1238,1247),(1251,1310),(1323,1354),(1350,1372),(2429,2457)]:
+        assert all(number in lines for number in range(start, end + 1))
+        ranges[f'L{start}–L{end}'] = '\n'.join(f'L{number}: {lines[number]}' for number in range(start,end+1))
+    assert 'MC4100' in ranges['L1251–L1310'] and '300' in ranges['L1251–L1310']
+    assert '50%' in ranges['L1251–L1310'] or '50' in ranges['L1251–L1310']
+    assert all(token in ranges['L1350–L1372'] for token in ['glucose', 'mannose', 'mannitol', 'trehalose', 'fructose', 'maltose', 'arabinose', 'gluconate', 'glycerate'])
+    assert 'significant' in ranges['L2429–L2457'] and 'mannose' in ranges['L2429–L2457']
+    write('derived/primary-assay-replay.json', {
+        'CdaR': {'original': originals[str(PREFLIGHT / 'raw/PMC111340.html')], 'paragraphs': paragraphs,
+                 'current_protein': originals[str(PREFLIGHT / 'raw/P37047.json')],
+                 'current_length': 385, 'historical_length': 391, 'current_genes': cdar['genes'],
+                 'sequence_numbering_bridge': None, 'active_mutant_assertion': False},
+        'entry': {'projection': originals[str(sampaio_path)],
+                  'access': 'Retained author-uploaded web observations; not publisher PDF or newly acquired original',
+                  'passages': ranges, 'assay_boundary': 'MC4100 intact-cell uptake / growth induction separate from inverted membrane and KM522 salt protection'}})
+    # Replay all 176 locator instances with their source-specific syntax.
+    checks = []
+    ns = {'bp': 'http://www.biopax.org/release/biopax-level3.owl#', 'rdf': RDF}
+    for edge in raw['mechanistic_edges']:
+        scopes = [('edge', edge['evidence'])] + [(f"{q['endpoint']}-{q['kind']}", q['evidence']) for q in edge.get('endpoint_qualifiers', [])]
+        for scope, evidence in scopes:
+            for ev in evidence:
+                locator, path = ev['source_locator'], Path(references[ev['reference_id']]['path'])
+                if locator.startswith('XPath '):
+                    tree = E.parse(str(path), E.HTMLParser() if path.suffix == '.html' else E.XMLParser())
+                    counts = [len(tree.xpath(part,namespaces=ns)) for part in locator[6:].split('; paragraph')[0].split(' | ')]
+                elif path.suffix == '.json':
+                    counts = [len(item) if isinstance(item,(dict,list)) else int(item is not None) for item in select_json(load(path),locator)]
+                elif locator.startswith('Author-uploaded'):
+                    start,end = map(int,re.search(r'L(\d+)–L(\d+)',locator).groups())
+                    counts = [int(start in lines),int(end in lines)]
+                elif locator.startswith(RH):
+                    counts = [int(rhea_valid(locator,native))]
+                else:
+                    raise AssertionError(locator)
+                assert counts and all(counts), (edge['id'], scope, locator, counts)
+                checks.append({'edge':edge['id'],'scope':scope,'reference':ev['reference_id'],
+                               'locator':locator,'counts':counts,'resolves':True})
+    assert len(checks) == 176 and len(hashchecks) == 62
+    write('derived/all-evidence-locator-replay.json', checks)
+    print(json.dumps({'references':len(hashchecks),'locator_instances':len(checks),'Rhea_triples':39,
+                      'Rhea_full_fragments':count,'source_specific_negatives':len(negatives)+2}))
+
+if __name__ == '__main__':
+    main()

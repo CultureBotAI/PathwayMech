@@ -1,0 +1,88 @@
+from pathlib import Path
+import copy,json,re,sys,csv,io,html as html_std,hashlib
+from lxml import html
+O=Path(__file__).parent;C=Path('/private/tmp/pathwaymech-next-228-science-correction-20261012');A=Path('/private/tmp/pathwaymech-next-228-author-20261012');P=Path('/private/tmp/pathwaymech-next-228-science-review-20261012')
+D=json.loads((O/'parsed-target.json').read_text());R=json.loads((O/'fresh-rhea-triple-replay.json').read_text());U=json.loads((O/'fresh-uniprot-selections.json').read_text());RH='http://rdf.rhea-db.org/'
+found={tuple(t) for t in R['selected_resource_triples']};E={e['id']:e for e in D['mechanistic_edges']}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def edge(d,k):return next(e for e in d['mechanistic_edges'] if e['id']==k)
+def triples(locator):
+ out=[]
+ for part in locator.split('; '):
+  m=re.fullmatch(r'(http://rdf\.rhea-db\.org/\S+) rh:(\w+) (http://rdf\.rhea-db\.org/\S+)',part)
+  if not m:return []
+  out.append((m[1],RH+m[2],m[3]))
+ return out
+checks=[]
+def control(name,mutate,detector,source):
+ d=copy.deepcopy(D);mutate(d);assert detector(d),name
+ checks.append({'control':name,'rejected':True,'original_source_basis':source})
+for use in R['uses']:
+ eid=use['edge_id'];i=use['evidence_index']
+ control('nonexistent coefficient1 '+eid,lambda d,eid=eid,i=i:edge(d,eid)['evidence'][i].update(source_locator=edge(d,eid)['evidence'][i]['source_locator'].replace('rh:contains1','rh:coefficient1')),
+         lambda d,eid=eid,i=i:any(t not in found for t in triples(edge(d,eid)['evidence'][i]['source_locator'])), 'Fresh complete issuing Rhea142 traversal and selected resource triples')
+# The source feature and comment identities are independent of the record wording.
+assert U['P08839']['active189'][0]['description']=='Tele-phosphohistidine intermediate'
+def ptsi_bad(d):
+ locator=edge(d,'mg-ptsi-catalysis')['evidence'][2]['source_locator']
+ return 'features[type=Active site,location.start.value=189]' not in locator
+control('His189 incorrectly assigned Modified residue',lambda d:edge(d,'mg-ptsi-catalysis')['evidence'][2].update(source_locator='comments[commentType=FUNCTION]; features[type=Modified residue]'),ptsi_bad,'P08839 Active site189 versus Modified residue122 in exact issuing original')
+def hns_bad(d):return 'comments[commentType=SUBUNIT]' not in edge(d,'mg-location-P0ACF8')['evidence'][0]['source_locator']
+control('oligomer support loses SUBUNIT selector',lambda d:edge(d,'mg-location-P0ACF8')['evidence'][0].update(source_locator='comments[commentType=SUBCELLULAR LOCATION]'),hns_bad,'Exact P0ACF8 SUBUNIT contains oligomer text; LOCATION contains nucleoid location')
+cdar_text=' '.join(x['text'] for x in json.loads((O/'source-selected-cdar-context.json').read_text()))
+assert '391 residues' in cdar_text and 'Pro297' in cdar_text and '20 nucleotides' in cdar_text and 'pRM1' in cdar_text
+current_length=U['P37047']['length'];assert current_length==385
+for eid in ['mg-gark-reg-cdar','mg-cdar-auto']:
+ def bad(d,eid=eid):
+  qs=edge(d,eid).get('endpoint_qualifiers',[])
+  if len(qs)!=1:return True
+  q=qs[0];text=q['description']
+  return q['endpoint']!='subject' or q['kind']!='experimental_construct' or not all(s in text for s in ['391-aa','385 aa','P297S','Tn5 20 nt','pRM1','these mutants are not active endpoints','residue numbering is not mapped'])
+ assert not bad(D)
+ control('missing CdaR qualifier '+eid,lambda d,eid=eid:edge(d,eid).pop('endpoint_qualifiers'),bad,'CdaR source391-residue preparation vs issuing385; exact reporter/loss/rescue distinction')
+ control('CdaR qualification on gene instead of regulator '+eid,lambda d,eid=eid:edge(d,eid)['endpoint_qualifiers'][0].update(endpoint='object'),bad,'Original P37047 regulator is subject; measured Entrez gene is object')
+ control('historical reference silently relabeled current '+eid,lambda d,eid=eid:edge(d,eid)['endpoint_qualifiers'][0].update(description=edge(d,eid)['endpoint_qualifiers'][0]['description'].replace('391-aa','385-aa')),bad,'PMC111340 historical391 differs from current P37047 sequence385')
+ control('loss mutants become active subjects '+eid,lambda d,eid=eid:edge(d,eid)['endpoint_qualifiers'][0].update(description=edge(d,eid)['endpoint_qualifiers'][0]['description'].replace('these mutants are not active endpoints','these mutants are active endpoints')),bad,'Primary loss/complementation experiments infer functional regulator; mutants are controls')
+def uptake_bad(d):
+ text=edge(d,'mg-mnga-catalysis')['description']
+ return not all(s in text for s in ['weak reduction','not significantly inhibitory','tension remains unresolved','300 mM NaCl','about 50%','induction endpoint','KM522 500 mM','None of these whole-cell comparisons is attributed to the pACS31 inverted-membrane assay'])
+assert not uptake_bad(D)
+for name,before,after in [('salt condition conflated with osmoprotection','300 mM NaCl','500 mM NaCl'),('weak/no-significant tension removed','tension remains unresolved','conflict is resolved'),('whole-cell observation attributed to vesicle assay','None of these whole-cell comparisons is attributed','All of these whole-cell comparisons are attributed')]:
+ control(name,lambda d,before=before,after=after:edge(d,'mg-mnga-catalysis').update(description=edge(d,'mg-mnga-catalysis')['description'].replace(before,after)),uptake_bad,'Sampaio original Results1251–1372 and Discussion2429–2457; intact-cell/growth versus membrane endpoints')
+save('independent-negative-controls.json',{'count':len(checks),'all_rejected':True,'controls':checks,'scope':'Source-selected bounded regression probes; fixed prose guards retain manually assessed distinctions, not an automated general scientific entailment claim.'})
+# Fresh bounded consumers, no canonical build and no writes into the author candidate.
+sys.path.insert(0,str(C/'candidate/src'))
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.kgx import render_kgx
+from pathwaymech.graph_view import graph_html
+v=validate_record(D)
+strict=strict_errors([C/'draft/mannosylglycerate-degradation.yaml'],C/'candidate');assert not strict,strict
+ids=identifier_errors(C/'candidate');assert not ids,ids
+kgx=render_kgx([v]);rows=list(csv.DictReader(io.StringIO(kgx['edges.tsv']),delimiter='\t'));pending=list(rows);kgxchecks=[]
+for e in D['mechanistic_edges']:
+ matched=[r for r in pending if r['subject']==e['subject'] and r['object']==e['object'] and json.loads(r['evidence'])==e['evidence'] and json.loads(r['endpoint_qualifiers'] or '[]')==e.get('endpoint_qualifiers',[])]
+ assert len(matched)==1,e['id'];pending.remove(matched[0]);kgxchecks.append(e['id'])
+assert not pending and len(rows)==75
+network=graph_html(v,{},{});tree=html.fromstring(network);anchors=tree.xpath('//a[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]');assert len(anchors)==75
+qchecks=[]
+for index,(e,a) in enumerate(zip(D['mechanistic_edges'],anchors),1):
+ assert (a.get('data-subject-id',a.get('data-subject')),a.get('data-predicate'),a.get('data-object-id',a.get('data-object')))==(e['subject'],e['predicate'],e['object'])
+ for q in e.get('endpoint_qualifiers',[]):
+  display=a.get('data-'+q['endpoint']);node=tree.xpath('//a[@data-node-id=$key]',key=display);assert len(node)==1
+  assert node[0].get('data-base-node-id')==e[q['endpoint']]
+  detail=node[0].get('aria-label');edge_detail=a.get('aria-label')
+  for text in [q['description']]+[x['source_assertion'] for x in q['evidence']]+[x['source_locator'] for x in q['evidence']]:assert text in detail and text in edge_detail
+  qchecks.append({'edge':e['id'],'endpoint':q['endpoint'],'display_node':display,'biological_id':e[q['endpoint']],'all_qualifier_assertions_and_locators_retained':True})
+assert len(qchecks)==15
+pages=list((C/'candidate/pages/records').glob('*.html'));assert len(pages)==1
+page=html_std.unescape(pages[0].read_text())
+for eid in ['mg-gark-reg-cdar','mg-cdar-auto']:
+ q=E[eid]['endpoint_qualifiers'][0]
+ for text in [q['description']]+[x['source_assertion'] for x in q['evidence']]+[x['source_locator'] for x in q['evidence']]:assert text in page
+for text in [E['mg-mnga-catalysis']['description']]+[x['source_assertion'] for x in E['mg-mnga-catalysis']['evidence'][3:]]:assert text in page
+for name,text in kgx.items():(O/('review-'+name)).write_text(text)
+(O/'fresh-network.html').write_text(network)
+save('bounded-native-representation.json',{'shape':'pass','strict_errors':strict,'identifier_errors':ids,'authority_scope':'Author bounded original-derived proposal composition, not full canonical acceptance','KGX_edges':len(rows),'complete_KGX_payload_edges':kgxchecks,'graph_original_triples':75,'endpoint_qualifiers':qchecks,'existing_author_page_inspected':{'path':str(pages[0]),'sha256':hashlib.sha256(pages[0].read_bytes()).hexdigest(),'new_context_and_qualifications_retained':True},'fresh_network_in_memory':True,'full_page_generation_or_visual_browser_QA':False,'full_corpus_tests_or_canonical_build':False})
+print('Independent controls',len(checks),'rejected; native schema/strict/provisional IDs passed; exact KGX75 + graph75/15 qualifiers retained')

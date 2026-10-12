@@ -745,3 +745,272 @@ def test_archive_and_live_child_name_conflict_fails_before_selection(tmp_path, s
             "id": PATHWAY, "label": "Native pathway title"}))
     with pytest.raises(ValueError, match="conflicting PathBank native pathway names"):
         build_snapshot(manifest, records, tmp_path)
+
+
+def add_interaction_stub(root, *, route="both"):
+    """A second issuing format: primary Interaction points to an empty child."""
+    primary = root.find(BP + "Pathway")
+    uri = "http://identifiers.org/smpdb/SMP9999998"
+    child = ET.SubElement(root, BP + "Pathway", {RDF + "about": uri})
+    ET.SubElement(child, BP + "displayName").text = "An independently named adjacent pathway"
+    ET.SubElement(child, BP + "name").text = "InhibitorySubPathway"
+    ET.SubElement(child, BP + "xref", {RDF + "resource": "#child-smp"})
+    xref = ET.SubElement(root, BP + "UnificationXref", {RDF + "ID": "child-smp"})
+    ET.SubElement(xref, BP + "db").text = "SMPDB"
+    ET.SubElement(xref, BP + "id").text = "SMP9999998"
+    bridge = ET.SubElement(root, BP + "Interaction", {RDF + "ID": "SubPathwayControls/812"})
+    ET.SubElement(bridge, BP + "displayName").text = "Native drawing connector"
+    ET.SubElement(bridge, BP + "name").text = "SubPathway812Control"
+    ET.SubElement(bridge, BP + "name").text = "InhibitorySubPathwayControl"
+    ET.SubElement(bridge, BP + "participant", {RDF + "resource": "#Compound/interface"})
+    ET.SubElement(bridge, BP + "participant", {RDF + "resource": uri})
+    compound = ET.SubElement(root, BP + "SmallMolecule", {RDF + "ID": "Compound/interface"})
+    ET.SubElement(compound, BP + "displayName").text = "Native interface compound name"
+    ET.SubElement(compound, BP + "name").text = "SubPathwayInhibitor"
+    ET.SubElement(compound, BP + "entityReference", {RDF + "resource": "#reference/interface"})
+    ET.SubElement(root, BP + "SmallMoleculeReference", {RDF + "ID": "reference/interface"})
+    step = ET.SubElement(root, BP + "PathwayStep", {RDF + "ID": "PathwaySubPathway/812"})
+    ET.SubElement(step, BP + "stepProcess", {RDF + "resource": "#SubPathwayControls/812"})
+    if route in {"direct", "both"}:
+        ET.SubElement(primary, BP + "pathwayComponent", {
+            RDF + "resource": "#SubPathwayControls/812",
+        })
+    if route in {"ordered", "both"}:
+        ET.SubElement(primary, BP + "pathwayOrder", {
+            RDF + "resource": "#PathwaySubPathway/812",
+        })
+    return primary, child, bridge, compound, step, xref
+
+
+@pytest.mark.parametrize("route", ["direct", "ordered", "both"])
+@pytest.mark.parametrize("child_first", [True, False])
+def test_primary_owned_interaction_only_adds_an_opaque_native_identity(route, child_first):
+    root = native_source()
+    _, child, _, _, _, _ = add_interaction_stub(root, route=route)
+    if child_first:
+        root.remove(child)
+        root.insert(0, child)
+    terms = list(pathbank_terms(root, url=DOWNLOAD))
+    assert terms[:2] == [
+        (PATHWAY, "Native pathway title", []),
+        ("PathBank:SMP9999998", "An independently named adjacent pathway", []),
+    ]
+    assert all("SubPathwayControls" not in term[0] for term in terms)
+    assert not any(term[0].startswith("PathBank:SMP9999998/") for term in terms)
+    assert len([term for term in terms if term[0] == "PathBank:SMP9999998"]) == 1
+
+
+INTERACTION_PROBLEMS = [
+    "unowned", "only-catalysis-owned", "dangling-owner", "wrong-step-type", "step-conversion",
+    "extra-step-process", "duplicate-direct-owner", "duplicate-ordered-owner", "wrong-owner",
+    "wrong-process-type", "process-marker-missing", "process-marker-wrong",
+    "process-marker-duplicated", "extra-process-field", "foreign-process", "process-extra-attr",
+    "missing-participant", "extra-participant", "duplicate-participant", "dangling-participant",
+    "participant-text", "participant-extra-attr", "participant-nested", "two-pathway-participants",
+    "root-as-child", "wrong-compound-type", "compound-marker-wrong", "compound-reference-missing",
+    "compound-reference-dangling", "compound-reference-wrong-type", "compound-extra-field",
+    "foreign-compound-reference", "child-marker-missing", "child-marker-wrong",
+    "child-marker-duplicated", "child-expanded", "child-extra-field", "child-duplicate-title",
+    "child-empty-title", "child-nested-title", "child-generic-title", "child-duplicate-xref",
+    "child-dangling-xref", "child-wrong-xref-type", "child-conflicting-accession",
+    "child-conflicting-uri", "child-xref-duplicate-id", "child-xref-duplicate-db",
+    "duplicate-child", "duplicate-bridge-subject", "duplicate-bridge-to-child", "foreign-child",
+    "nested-base", "unrelated-child", "extra-literal-attribute", "nested-process-name",
+]
+
+
+def break_interaction_source(root, problem):
+    primary, child, bridge, compound, step, xref = add_interaction_stub(root)
+    names = bridge.findall(BP + "name")
+    participants = bridge.findall(BP + "participant")
+    reference = root.find(BP + "SmallMoleculeReference")
+    if problem in {"unowned", "only-catalysis-owned", "wrong-owner"}:
+        primary.remove(primary.findall(BP + "pathwayComponent")[-1])
+        primary.remove(primary.find(BP + "pathwayOrder"))
+        if problem == "only-catalysis-owned":
+            control = ET.SubElement(root, BP + "Catalysis", {RDF + "ID": "indirect-owner"})
+            ET.SubElement(control, BP + "controlled", {RDF + "resource": "#SubPathwayControls/812"})
+            ET.SubElement(primary, BP + "pathwayComponent", {RDF + "resource": "#indirect-owner"})
+        elif problem == "wrong-owner":
+            ET.SubElement(child, BP + "pathwayComponent", {
+                RDF + "resource": "#SubPathwayControls/812",
+            })
+    elif problem == "dangling-owner":
+        primary.find(BP + "pathwayOrder").set(RDF + "resource", "#missing-owner")
+    elif problem == "wrong-step-type":
+        step.tag = BP + "BiochemicalPathwayStep"
+    elif problem == "step-conversion":
+        step[0].tag = BP + "stepConversion"
+    elif problem == "extra-step-process":
+        ET.SubElement(step, BP + "stepProcess", {RDF + "resource": "#Reactions/7"})
+    elif problem == "duplicate-direct-owner":
+        primary.append(copy.deepcopy(primary.findall(BP + "pathwayComponent")[-1]))
+    elif problem == "duplicate-ordered-owner":
+        primary.append(copy.deepcopy(primary.find(BP + "pathwayOrder")))
+    elif problem == "wrong-process-type":
+        bridge.tag = BP + "Control"
+    elif problem == "process-marker-missing":
+        bridge.remove(names[1])
+    elif problem == "process-marker-wrong":
+        names[1].text = "ArbitraryControl"
+    elif problem == "process-marker-duplicated":
+        names[0].text = names[1].text
+    elif problem == "extra-process-field":
+        ET.SubElement(bridge, BP + "controlled", {RDF + "resource": child.get(RDF + "about")})
+    elif problem == "foreign-process":
+        bridge.attrib = {RDF + "about": "https://elsewhere.example/#SubPathwayControls/812"}
+    elif problem == "process-extra-attr":
+        bridge.set("scope", "trusted")
+    elif problem == "missing-participant":
+        bridge.remove(participants[1])
+    elif problem == "extra-participant":
+        ET.SubElement(bridge, BP + "participant", {RDF + "resource": "#Reactions/7"})
+    elif problem == "duplicate-participant":
+        participants[1].set(RDF + "resource", participants[0].get(RDF + "resource"))
+    elif problem == "dangling-participant":
+        participants[0].set(RDF + "resource", "#missing-compound")
+    elif problem == "participant-text":
+        participants[0].text = "ambiguous inline identity"
+    elif problem == "participant-extra-attr":
+        participants[0].set("scope", "trusted")
+    elif problem == "participant-nested":
+        ET.SubElement(participants[0], BP + "SmallMolecule")
+    elif problem == "two-pathway-participants":
+        participants[0].set(RDF + "resource", primary.get(RDF + "about"))
+    elif problem == "root-as-child":
+        participants[1].set(RDF + "resource", primary.get(RDF + "about"))
+    elif problem == "wrong-compound-type":
+        compound.tag = BP + "Protein"
+    elif problem == "compound-marker-wrong":
+        compound.find(BP + "name").text = "UnrelatedDrawingNode"
+    elif problem == "compound-reference-missing":
+        compound.remove(compound.find(BP + "entityReference"))
+    elif problem == "compound-reference-dangling":
+        root.remove(reference)
+    elif problem == "compound-reference-wrong-type":
+        reference.tag = BP + "ProteinReference"
+    elif problem == "compound-extra-field":
+        ET.SubElement(compound, BP + "controller", {RDF + "resource": "#Reactions/7"})
+    elif problem == "foreign-compound-reference":
+        reference.attrib = {RDF + "about": "https://elsewhere.example/#reference/interface"}
+    elif problem == "child-marker-missing":
+        child.remove(child.find(BP + "name"))
+    elif problem == "child-marker-wrong":
+        child.find(BP + "name").text = "UnrelatedPathway"
+    elif problem == "child-marker-duplicated":
+        child.append(copy.deepcopy(child.find(BP + "name")))
+    elif problem == "child-expanded":
+        ET.SubElement(child, BP + "pathwayComponent", {RDF + "resource": "#Reactions/7"})
+    elif problem == "child-extra-field":
+        ET.SubElement(child, BP + "organism", {RDF + "resource": "#species"})
+    elif problem == "child-duplicate-title":
+        child.append(copy.deepcopy(child.find(BP + "displayName")))
+    elif problem == "child-empty-title":
+        child.find(BP + "displayName").text = " "
+    elif problem == "child-nested-title":
+        ET.SubElement(child.find(BP + "displayName"), "em").text = "nested"
+    elif problem == "child-generic-title":
+        child.find(BP + "displayName").text = "inhibitorysubpathway"
+    elif problem == "child-duplicate-xref":
+        child.append(copy.deepcopy(child.find(BP + "xref")))
+    elif problem == "child-dangling-xref":
+        child.find(BP + "xref").set(RDF + "resource", "#absent")
+    elif problem == "child-wrong-xref-type":
+        xref.tag = BP + "RelationshipXref"
+    elif problem == "child-conflicting-accession":
+        xref.find(BP + "id").text = "SMP1234567"
+    elif problem == "child-conflicting-uri":
+        child.set(RDF + "about", "http://identifiers.org/smpdb/SMP1234567")
+    elif problem == "child-xref-duplicate-id":
+        xref.append(copy.deepcopy(xref.find(BP + "id")))
+    elif problem == "child-xref-duplicate-db":
+        xref.append(copy.deepcopy(xref.find(BP + "db")))
+    elif problem == "duplicate-child":
+        root.append(copy.deepcopy(child))
+    elif problem == "duplicate-bridge-subject":
+        root.append(copy.deepcopy(bridge))
+    elif problem == "duplicate-bridge-to-child":
+        other = copy.deepcopy(bridge)
+        other.set(RDF + "ID", "SubPathwayControls/813")
+        root.append(other)
+        ET.SubElement(primary, BP + "pathwayComponent", {
+            RDF + "resource": "#SubPathwayControls/813",
+        })
+    elif problem == "foreign-child":
+        child.tag = "{https://elsewhere.example/}Pathway"
+    elif problem == "nested-base":
+        bridge.set(XML + "base", "https://elsewhere.example/")
+    elif problem == "unrelated-child":
+        other = add_stub(root, "SMP9999997")
+        primary.remove(primary.findall(BP + "pathwayComponent")[-1])
+        assert other.get(RDF + "about").endswith("SMP9999997")
+    elif problem == "extra-literal-attribute":
+        names[1].set("verified", "yes")
+    elif problem == "nested-process-name":
+        ET.SubElement(names[1], "em").text = "nested"
+    else:
+        raise AssertionError(problem)
+
+
+@pytest.mark.parametrize("problem", INTERACTION_PROBLEMS)
+def test_interaction_shape_cannot_authorize_unproven_child_identity(tmp_path, problem):
+    root = native_source()
+    break_interaction_source(root, problem)
+    path, entry = archive_fixture(tmp_path, root)
+    with pytest.raises(ValueError, match="PathBank"):
+        parse_archive(path, entry)
+
+
+@pytest.mark.parametrize("route", ["direct", "ordered", "both"])
+def test_interaction_archive_has_separate_original_provenance_and_no_causal_terms(tmp_path, route):
+    root = native_source()
+    add_interaction_stub(root, route=route)
+    path, entry = archive_fixture(tmp_path, root)
+    records = tmp_path / "selection"
+    records.mkdir()
+    (records / "selection.yaml").write_text(yaml.safe_dump({
+        "id": PATHWAY, "label": "DO NOT USE THIS CURATED TITLE",
+        "participants": [{"id": "PathBank:SMP9999998", "label": "ALSO NOT AN AUTHORITY"}],
+    }))
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps([entry]))
+    result = build_snapshot(manifest, records, tmp_path)
+    assert set(result["terms"]) == {PATHWAY, "PathBank:SMP9999998"}
+    assert result["terms"]["PathBank:SMP9999998"] == {
+        "label": "An independently named adjacent pathway", "synonyms": [], "source": "archive",
+    }
+    assert result["sources"]["archive"]["pathway_accessions"] == ["SMP9999999", "SMP9999998"]
+    assert result["sources"]["archive"]["archive"] == entry["archive"]
+    assert not any(marker in json.dumps(result) for marker in [
+        "InhibitorySubPathway", "SubPathwayInhibitor", "DO NOT USE", "ALSO NOT",
+    ])
+    snapshot = tmp_path / "authority.json"
+    snapshot.write_text(json.dumps(result))
+    assert _load_authority(snapshot) == result["terms"]
+    assert path.read_bytes()
+
+
+@pytest.mark.parametrize("selected", [True, False])
+def test_invalid_interaction_child_preserves_previous_authority_before_selection(
+    tmp_path, monkeypatch, selected,
+):
+    root = native_source()
+    break_interaction_source(root, "unowned")
+    source, entry = archive_fixture(tmp_path, root)
+    records = tmp_path / "records"
+    records.mkdir()
+    (records / "record.yaml").write_text(yaml.safe_dump({
+        "id": "PathBank:SMP9999998" if selected else PATHWAY,
+        "label": "irrelevant selection label",
+    }))
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps([entry]))
+    output = tmp_path / "authority.json"
+    output.write_bytes(b"previous authority\n")
+    monkeypatch.setattr(sys, "argv", [
+        "builder", "--manifest", str(manifest), "--records", str(records),
+        "--cache-dir", str(source.parent), "--output", str(output),
+    ])
+    with pytest.raises(ValueError, match="PathBank"):
+        main()
+    assert output.read_bytes() == b"previous authority\n"

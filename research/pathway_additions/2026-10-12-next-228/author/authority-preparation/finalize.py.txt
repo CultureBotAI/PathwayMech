@@ -1,0 +1,70 @@
+from pathlib import Path
+import json,hashlib,copy,sys,shutil,datetime
+import yaml
+O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-226-20261012');P=Path('/private/tmp/pathwaymech-next-228-preflight-20261012');sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+from pathwaymech.identifiers import identifier_errors
+
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def save(n,d):(O/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+# Correct provisional metadata to the exact original retrieval query and replay it.
+key='metacyc-mg-PWY0-1300';exact='https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?type=PATHWAY&object=PWY0-1300';prior='https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object=PWY0-1300'
+ret=O/'retained-attempts/provenance-query-before-finalization';ret.mkdir(exist_ok=True,parents=True)
+for name in ['incremental-source-manifest.json','incremental-source-build.json','source-manifest-proposal.json','source-manifest-additions.json','source-authority-proposal.json','source-original-bindings.json']:
+ if not (ret/name).exists():shutil.copyfile(O/name,ret/name)
+ d=json.loads((O/name).read_text())
+ if name=='source-original-bindings.json':
+  for x in d:
+   if x['entry']['key']==key:assert x['entry']['url'] in [prior,exact];x['entry']['url']=exact
+ elif 'build' in name or 'authority-proposal' in name:assert d['sources'][key]['url'] in [prior,exact];d['sources'][key]['url']=exact
+ else:
+  for x in d:
+   if x['key']==key:assert x['url'] in [prior,exact];x['url']=exact
+ save(name,d)
+inc=sb.build_snapshot(O/'incremental-source-manifest.json',O/'bounded-selection',O/'original-cache');assert inc==json.loads((O/'incremental-source-build.json').read_text())
+# Every selected input URL is backed by an actual successful acquisition receipt.
+receipts=[]
+for root in [P,O]:
+ for f in root.glob('requests-*.receipts.json'):
+  for row in json.loads(f.read_text()):
+   if row.get('status')==200:receipts.append({'receipt_file':bind(f),'row':row})
+bindings=json.loads((O/'source-original-bindings.json').read_text());joined=[]
+for x in bindings:
+ assert bind(x['original']['path'])==x['original'];e=x['entry'];matches=[r for r in receipts if r['row'].get('sha256')==e['sha256'] and r['row']['request_url']==e['url']];assert matches,e['key'];joined.append({'entry_key':e['key'],'original':x['original'],'matching_receipts':matches})
+save('source-acquisition-bindings.json',joined)
+# Source generation with exact new originals is deterministic and fail closed.
+neg=[];nd=O/'negative-controls';nd.mkdir(exist_ok=True)
+base_manifest=json.loads((O/'incremental-source-manifest.json').read_text())
+for tag,edit,expected in [
+ ('wrong-original-sha',lambda d:d[0].update(sha256='0'*64),'bytes do not match manifest sha256'),
+ ('wrong-gene-request-id',lambda d:next(x for x in d if x['kind']=='ncbi-entrezgene-xml').update(url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=1&rettype=xml'),'native ID and requested ID disagree'),
+ ('wrong-native-reaction-request',lambda d:next(x for x in d if x['kind']=='metacyc-reaction-xml').update(url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN0-5217'),'query/PGDB identity or native version mismatch'),
+ ('wrong-native-complex-pgdb-version',lambda d:next(x for x in d if x['kind']=='ecocyc-protein-xml').update(version='28.0'),'native version')]:
+ d=copy.deepcopy(base_manifest);edit(d);f=nd/(tag+'.json');f.write_text(json.dumps(d,indent=2)+'\n')
+ try:sb.build_snapshot(f,O/'bounded-selection',O/'original-cache');raise AssertionError('Negative control accepted '+tag)
+ except ValueError as e:neg.append({'test':tag,'derivative':bind(f),'actual_error':str(e),'status':'rejected'})
+save('source-negative-controls.json',neg)
+# Exercise identity validation in a wholly external stub; this is not a final pathway record or schema gate.
+catalog=json.loads((O/'validated-identity-catalog.json').read_text());selected=catalog['terms'];r={'id':'MetaCyc:PWY0-1300','label':selected['MetaCyc:PWY0-1300']['label'],'taxa':[{'id':'NCBITaxon:83333','label':selected['NCBITaxon:83333']['label']}],'reactions':[{'id':id,'label':v['label'],'category':'molecular_activity'} for id,v in selected.items() if id=='MetaCyc:RXN0-5216' or id.startswith('RHEA:')],'participants':[{'id':id,'label':v['label']} for id,v in selected.items() if id!='MetaCyc:PWY0-1300' and id!='MetaCyc:RXN0-5216' and not id.startswith('RHEA:')]}
+x=O/'identifier-exercise';(x/'conf').mkdir(parents=True,exist_ok=True);(x/'data/pathways').mkdir(parents=True,exist_ok=True);(x/'data/identifier_authorities').mkdir(parents=True,exist_ok=True)
+shutil.copyfile(B/'conf/identifier_policy.yaml',x/'conf/identifier_policy.yaml');shutil.copyfile(O/'source-authority-proposal.json',x/'data/identifier_authorities/sources.json');shutil.copyfile(O/'ontology-authority-proposal.json',x/'data/identifier_authorities/ontology.json')
+f=x/'data/pathways/authority-selector.yaml';f.write_text(yaml.safe_dump(r,sort_keys=False));errors=identifier_errors(x);assert not errors,errors
+save('identifier-exercise.json',{'status':'all supported selected authority labels pass','supported_named_ids':len(selected),'errors':errors,'scope':'bounded native name/ID stub; not final record schema, final graph, final corpus or full canonical gate','original_policy':bind(B/'conf/identifier_policy.yaml'),'source_proposal':bind(O/'source-authority-proposal.json'),'ontology_proposal':bind(O/'ontology-authority-proposal.json')})
+r['participants'] += [{'id':'PathBank:SMP0002108','label':'Mannosylglycerate Degradation'},{'id':'PathBank:SMP0000839','label':'L-Malate Gluconeogenesis'}];f.write_text(yaml.safe_dump(r,sort_keys=False));errors=identifier_errors(x);assert len(errors)==2 and all(any(id in e for e in errors) for id in ['PathBank:SMP0002108','PathBank:SMP0000839']),errors
+save('required-gap-identifier-exercise.json',{'status':'two expected unavailable-authority errors; not a passing gate','actual_errors':errors,'scope':'deliberate required-gap probe only; labels are probe display text, not source authorities'})
+# Restore supported probe rather than leave a misleading final gap stub as an authored record.
+r['participants']=r['participants'][:-2];f.write_text(yaml.safe_dump(r,sort_keys=False));assert not identifier_errors(x)
+active={e['key'] for e in json.loads((O/'source-manifest-additions.json').read_text())};copyplan=[dict(x,root_adoption='Copy or symlink this exact unmodified original at entry.path in a future external canonical-build cache, reverify bytes and SHA256; no shared cache mutation performed.') for x in bindings if x['entry']['key'] in active]
+save('new-originals-copy-plan.json',copyplan)
+# Validate prior proposal object preservation at the final stage.
+inputs=json.loads((O/'input-bindings.json').read_text());prior=inputs['prospective_lyxose_successor'];source=json.loads((O/'source-authority-proposal.json').read_text());ontology=json.loads((O/'ontology-authority-proposal.json').read_text());manifest=json.loads((O/'source-manifest-proposal.json').read_text());rm=json.loads((O/'rhea-identifier-updates-proposal.json').read_text())
+for name,proposal in [('source_proposal',source),('ontology_proposal',ontology)]:
+ assert bind(prior[name]['path'])==prior[name];old=json.loads(Path(prior[name]['path']).read_text())
+ for k in ['terms','sources']:assert all(proposal[k].get(i)==v for i,v in old[k].items())
+old=json.loads(Path(prior['manifest_proposal']['path']).read_text());assert manifest[:len(old)]==old
+old=json.loads(Path(prior['rhea_proposal']['path']).read_text());assert rm['ids'][:len(old['ids'])]==old['ids']
+for row in inputs['runtime']:assert bind(row['original']['path'])==row['original'];assert bind(row['copy']['path'])==row['copy']
+save('final-verification.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'independent_original_gene_bridges':17,'supported_identity_count':len(selected),'incremental_source_build_replay':'exact','negative_controls_rejected':len(neg),'exact_acquisition_URLs_bound':len(joined),'all_prior_source_and_ontology_objects_preserved':True,'all_prior_manifest_and_rhea_selection_order_preserved':True,'all_runtime_files_exact_to_reviewed_candidate':True,'unresolved_required_ids':['PathBank:SMP0002108','PathBank:SMP0000839'],'full_canonical_build':False,'shared_cache_writes':False,'maintained_writes':False,'git_github_mutations':False})
+print(json.dumps({'supported_identities':len(selected),'source_originals':len(joined),'new_input_copy_plan':len(copyplan),'negative_controls':len(neg),'required_gaps':errors}))

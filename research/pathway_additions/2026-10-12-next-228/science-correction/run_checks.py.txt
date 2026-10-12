@@ -1,0 +1,36 @@
+import datetime
+import json
+import os
+import subprocess
+import sys
+
+from prepare_correction import OUT, bind, write
+
+PY = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+
+def main():
+    for script in sys.argv[1:]:
+        path = OUT / script
+        key = datetime.datetime.now(datetime.timezone.utc).strftime('%H%M%S%f') + '-' + path.stem
+        receipts = OUT / 'receipts'
+        receipts.mkdir(exist_ok=True)
+        start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', UV_NO_SYNC='1')
+        command = [PY, '-B', str(path)]
+        result = subprocess.run(command, cwd=OUT, env=env, capture_output=True, text=True)
+        stdout, stderr = receipts / (key + '.stdout'), receipts / (key + '.stderr')
+        stdout.write_text(result.stdout)
+        stderr.write_text(result.stderr)
+        receipt = {'command': command, 'cwd': str(OUT), 'start': start,
+                   'finished': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'exit_code': result.returncode, 'script': bind(path),
+                   'stdout': bind(stdout), 'stderr': bind(stderr),
+                   'environment': {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1'}}
+        write('receipts/' + key + '.json', receipt)
+        print(json.dumps(receipt), flush=True)
+        if result.returncode:
+            print(result.stderr, file=sys.stderr)
+            raise SystemExit(result.returncode)
+
+if __name__ == '__main__':
+    main()
