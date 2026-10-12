@@ -1,0 +1,8 @@
+import importlib.util,json,sys
+from pathlib import Path
+module=Path(sys.argv[1]);spec=importlib.util.spec_from_file_location('candidate_complex',module);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+w=Path('/private/tmp/pathwaymech-next-232-20261012');cache=Path('/private/tmp/pathwaymech-curation-authorities/sources');entries=json.loads((w/'conf/identifier_sources.json').read_bytes());out={}
+for entry in entries:
+ if entry['key'] in ['nad232-ecoli-cplx0-682','nad232-ecoli-pyrnutranshydrogen-cplx']:
+  md=m.complex_metadata(entry,cache);identifier,term=m.complex_term(md,entry['key']);out[entry['key']]={'metadata':md,'id':identifier,'term':term}
+print(json.dumps(out,ensure_ascii=False))

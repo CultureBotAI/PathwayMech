@@ -1,0 +1,1385 @@
+# NAD assay and provenance corrections: bounded successor to native review 109
+
+- Review: 20261012T121028Z-nad-assay-and-provenance-successor
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T12:08:48Z
+- Finished UTC: 2026-10-12T12:10:28.117618Z
+- Reviewer: Codex /root; bounded support by /root/thioredox_preflight (self_review)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The accepted issue483 successor distinguishes general 10 mM NAD Methods, 4.0 mM NAD Table 2 assays, and variable-NAD saturation experiments. Exactly one narrative paragraph and two active-ledger text pointers change. Issue487 separately fixes hash-seed-dependent provenance field ordering in the complex authority adapter and adds a cross-process regression. All scientific graph structure and earlier dossiers/reviews remain intact. Current post-both-corrections gates and preservation are bound separately from historical assay-only gates. This is a bounded successor with explicit inherited scientific limits.
+
+## Scope And Provenance
+
+Bounded reassessment of construct-K87, paragraph-7, successor-delta-1 and claim-nadk-redox-inhibitors, plus current integration/preservation evidence. Unchanged science remains inherited from native109 and the independent full-0f5 review. One additional runtime assessment covers issue487 provenance serialization, original-source replay and hash-seeded testing; it makes no additional scientific interpretation.
+
+Selection: Exact MetaCyc:NADPHOS-DEPHOS-PWY target SHA256 2da6fc3e5d1c1e5ce4b4d0c8a9d1857b1f234c4c872cdf73d364f1c73ad87cb2
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 0f5c2c92d8940fee8a9b2b89253091496f815490.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:NADPHOS-DEPHOS-PWY | data/pathways/nad-phosphorylation-and-dephosphorylation.yaml | maintained | NAD phosphorylation and dephosphorylation |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Actual current render | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current skills | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current validate | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current tests | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current lint | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current kgx | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current vendored | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current diff-check | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Actual current site-current | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately. |
+| Exact post-correction preservation | passed | True | MetaCyc:NADPHOS-DEPHOS-PWY | All preexisting worktree/shared-cache identities and bytes retained except exact target/page plus two runtime/test files; original25 assay additions and predeclared final archives remain additive. |
+
+## Scientific And Domain Assessments
+
+### 1987 partially purified NadK preparation and assay contexts
+
+scope: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+The unspecified K12, glycerol-grown, 93-fold enriched and explicitly nonhomogeneous preparation remains distinct from the 2001 preparation and modern MG1655 reference. General Methods used 10 mM NAD and ATP; Table 2 changed NAD to 4.0 mM; separate saturation curves varied NAD. The complete K87 ledger retains all other preparation, exact endpoint-qualifier links and typed comparator links unchanged.
+
+### Corrected description paragraph 7
+
+scope: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+The accepted paragraph assigns the Table 2 inhibition/additivity comparison to 4.0 mM NAD and the NADPH 5–30 µM / NADH 50–200 µM series to variable-NAD saturation experiments. General assay conditions, Hill ranges, binding-site inference limits and the abstract/Results Km discrepancy remain explicit.
+
+The 1987 NadK preparation came from an unspecified E. coli K12 substrain grown in forced-aerated glycerol minimal medium at37°C and harvested in late log phase. It was enriched93-fold and was explicitly not homogeneous. The general assay used 10 mM NAD and 10 mM ATP, 14 mM MgCl2 and 100 mM MOPS at pH 7.2. Table 2 instead used 4.0 mM NAD, found that roughly tenfold more NADH than NADPH was needed for similar inhibition, and reported additive inhibition when both were present. Separate saturation experiments varied NAD, using NADPH at 5–30 µM or NADH at 50–200 µM. NAD saturation became sigmoidal, with reported Hill coefficients1.8–2.1 for NADPH and1.7–2.0 for NADH; increasing NAD could overcome inhibition. These kinetic observations and native allosteric annotations do not locate a binding site experimentally. The abstract assigns Km1.9 mM to NAD and2.1 mM to ATP, whereas the Results reverse those assignments; both are retained as an internal discrepancy.
+
+### One paragraph and two complete-ledger text pointers
+
+consistency: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+This successor reinterprets the description-level scope represented by the older successor-delta-1 assessment only for issue 483. Exactly paragraph 7 and JSON pointers /6/text in paragraph-claims and /0/paragraphs/0/text in construct-dispositions change. All other 40 paragraphs and all non-description record fields are identical: 102 mechanistic edges, 48 endpoint qualifiers, 97 references, 62 participants, four reactions and one taxon. The earlier review remains immutable, including its historical full-description delta text.
+
+### NADH/NADPH inhibitory signs under distinct assay conditions
+
+evidence: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+The negative signs on nad-039/nad-040 remain supported and unchanged. The 1987 Results/Table 2 describe roughly tenfold more NADH for comparable inhibition and additive effects when both inhibitors were present; Figures 1/2 vary NAD with the separately stated inhibitor ranges. The kinetic/allosteric evidence does not experimentally locate a binding site. No potency value, condition or preparation is transferred to the distinct 2001 study.
+
+### Bounded successor relationship to native 109 and independent full review
+
+provenance: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+Native review 109 supplies the retained historical complete assessment and limitations. The independent review of exact 0f5 inspected the complete maintained candidate and identified only the assay-context defect. Its independent 23-check successor review accepted this exact correction without additional findings. This compact record reassesses the four named claim/paragraph/context/delta scopes and integration evidence, not all 415 earlier assessments or a new complete literature search.
+
+### Exact current corpus, cache and generated-output preservation
+
+consistency: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+Actual fresh combined preservation retains all prior dossiers, histories and native review bundles, other 232 pathway records/pages, all authority snapshots, cache link identities and resolved bodies, and every KGX/download row. Relative to original0f5, four existing files change: the accepted NAD YAML and exact description/history page, plus the two issue487 runtime/test files. Exactly24 assay evidence files and one pre-render EDIT are additive; current finalization adds only its fixed reviewed archive and native pair.
+
+### Current maintained gates and page freshness
+
+representation: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+The issue483 EDIT was appended before its original render. After issue487 changed two runtime/test files, all nine complete maintained gate equivalents passed again on the same corrected scientific target. Current commands, exits and streams are bound; the earlier assay-only run is separately retained as historical evidence. Review finalization changes no runtime or science, so those nine gates are not repeated again. Native validate/save/check, page-current/diff and archive preservation receive separate actual receipts.
+
+### Deterministic outer complex and nested PC-1 provenance serialization
+
+representation: supported. Targets: MetaCyc:NADPHOS-DEPHOS-PWY.
+
+Issue487 identified set iteration in provenance dictionary construction. The correction uses an immutable license/url/version/sha256 sequence matching the existing NAD snapshot, while preserving the same closed four-key validation set. It changes exactly the adapter and its regression test. Unsorted serialization is checked in fresh hash-seeded processes for unnamed and synonym-only/PC-1 fixtures; whole issuing CPLX0-682, Pnt and PC-1 originals reproduce existing metadata/term values and order. Independent bounded reassessment and root acceptance are separately bound. No scientific target, page, history or authority snapshot changes as part of issue487; distinct future THIO ordering and first-owner proposal corrections remain outside scope.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/nad-phosphorylation-and-dephosphorylation.yaml; description paragraph 7; unchanged graph and endpoint qualifiers | supports | Exact corrected maintained target. |
+| prior-native | reviews/structured/20261012T104651Z-nad-phosphorylation-and-dephosphorylation/review.yaml; Four named assessments and complete historical limits | supports | Immutable native review 109; bounded corrections supersede only the scoped assay wording. |
+| prior-native-markdown | reviews/structured/20261012T104651Z-nad-phosphorylation-and-dephosphorylation/review.md; Rendered companion of native review 109 | supports | Historical governed companion retained unchanged. |
+| primary-1987 | research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-europepmc.pdf; PDF pages 2–3 (printed 185–186): Methods, Table 2 footnote, Results, Figures 1/2 | supports | Original PDF supports distinct general, Table 2 and variable-substrate conditions. |
+| primary-pages | research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-pages.json; pages[1] and pages[2] | supports | Retained exact page extraction; support author freshly read pages 2 and 3, not the whole unchanged literature. |
+| primary-page-image | research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-pages.json.page-2.png; Table 2 footnote | supports | Prior independent reviewer/root visually verified 4.0 mM; no new visual inspection claimed by this support author. |
+| author-correction | research/pathway_additions/2026-10-12-next-232/assay-context-correction/author/correction.json; Exact semantic delta and source bindings | supports | Retained bounded author correction; source science independently accepted. |
+| active-paragraphs | research/pathway_additions/2026-10-12-next-232/assay-context-correction/active-ledgers/paragraph-claims.json; /6/text | supports | Complete active 41-paragraph ledger; other rows unchanged. |
+| active-constructs | research/pathway_additions/2026-10-12-next-232/assay-context-correction/active-ledgers/construct-dispositions.json; /0/paragraphs/0/text; K87 exact/related links | supports | Complete active 28-context ledger; only exact paragraph pointer text changes. |
+| independent-full | research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-full-review/REVIEW.md; Entire exact-0f5 independent review | supports | Independent full candidate review identified the single issue483 defect; its unchanged-science and runtime observations are inherited within its stated limits. |
+| independent-full-findings | research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-full-review/findings.json; nad-1987-inhibition-assay-nad-concentration | supports | Original external finding retained; not fabricated into an earlier native finding. |
+| independent-483 | research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-successor/REVIEW.md; Complete bounded corrective reassessment | supports | Independent reviewer accepted the exact correction and retained all unchanged science/access limits. |
+| independent-483-checks | research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-successor/independent-checks.json; 23 checks and two complete-ledger comparisons | supports | Actual independent bounded checks, not a new whole-corpus gate execution. |
+| root-science | research/pathway_additions/2026-10-12-next-232/assay-context-correction/root-acceptance.json; Exact author/reviewer closure and paragraph/ledger deltas | supports | Root scientific acceptance binds exact target2da6 and prior native109 immutability. |
+| runtime-code | src/pathwaymech/ecocyc_complex.py; PROVENANCE_FIELDS and four provenance comprehensions | supports | Exact accepted runtime keeps immutable serialized field order and closed-key checks. |
+| runtime-tests | tests/test_ecocyc_complex_authority.py; test_complex_provenance_serialization_is_stable_across_processes | supports | Unsorted byte equality across five fresh hash-seeded processes, including nested PC-1. |
+| old-target | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/old-target.yaml.txt; description paragraph7 and all unchanged fields | supports | Exact predecessor96e493 retained once. |
+| integration-adoption | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/adoption.json; fixed25 additions and exact pre-render EDIT | supports | Actual accepted assay correction adoption. |
+| integration-history | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/history.receipt.json; native history exit0 | supports | One actual issue483 EDIT before render; no later history. |
+| prior-assay-gates | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/completion.json; historical nine-gate execution | supports | Successful earlier issue483-only gates; runtime was later corrected. |
+| runtime-adoption | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/adoption.json; exact two runtime/test owners | supports | Issue487 adoption preserves record, page, history and snapshots. |
+| integration-preservation | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/preservation.json; fresh post-both-corrections baseline/cache proof | supports | Actual preservation after current nine gates. |
+| integration-gates | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/completion.json; all nine actual current gate receipts | supports | Complete maintained gates after both corrections. |
+| runtime-proposal | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/handoff.json; bounded two-file proposal with retained failures | supports | Exact author proposal; independent review is separate. |
+| runtime-patch | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/correction.patch.gz; two files only | supports | Explicit stable provenance sequence and cross-process regression. |
+| runtime-original-proof | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/proof.json; five seeded subprocesses plus three exact XML hashes | supports | Original-source replay preserves existing metadata and term byte order. |
+| runtime-independent | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/REPORT.md; complete bounded fix review | supports | Independent regression and original-source reassessment of issue487. |
+| runtime-root-acceptance | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-support/root-acceptance.json; exact author/reviewer binding | supports | Root accepted the exact runtime correction. |
+| runtime-issue | research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issue487/2-create.receipt.json; actual GitHub creation receipt | supports | External issue487, not an invented native previous occurrence. |
+
+## Limits And Additional Notes
+
+- Bounded partial scientific coverage; native109 full scientific judgments remain historical inherited observations, not newly re-executed assessments.
+- All native109 source-access limits remain inherited verbatim below, including abstract/native/computational contexts and inaccessible material. Historical pending statements describe those earlier observations.
+- Inherited native109 limitation: Integrator self-review packages separately independent complete original and bounded successor science. No fresh complete literature review is claimed.
+- Inherited native109 limitation: Historical original source-review limit: No maintained changes, native save, Git/GitHub mutations or full canonical builder execution by this reviewer.
+- Inherited native109 limitation: Historical original source-review limit: No full-corpus test rerun, full native authority acceptance, browser screenshot or interactive graph-layout review.
+- Inherited native109 limitation: Historical original source-review limit: Candidate KGX/HTML/SVG retention was checked independently, not equated with actual final canonical exports.
+- Inherited native109 limitation: Historical original source-review limit: Full primary source reading includes all scientific body sections and relevant/all stated supplements above, not inaccessible papers or unrelated residue listings.
+- Inherited native109 limitation: Historical original source-review limit: Original evolving-draft observations are preserved and final verdict binds only sealed c2fec. Full original science review is not inherited from the author tests.
+- Inherited native109 limitation: Historical bounded successor limit: No maintained changes, native save, Git/GitHub mutations or full canonical builder execution by this reviewer.
+- Inherited native109 limitation: Historical bounded successor limit: No full-corpus test rerun, full native authority acceptance, browser screenshot or interactive graph-layout review.
+- Inherited native109 limitation: Historical bounded successor limit: Candidate KGX/HTML/SVG retention was checked independently, not equated with actual final canonical exports.
+- Inherited native109 limitation: Historical bounded successor limit: Full primary source reading includes all scientific body sections and relevant/all stated supplements above, not inaccessible papers or unrelated residue listings.
+- Inherited native109 limitation: Historical bounded successor limit: Original evolving-draft observations are preserved and final verdict binds only sealed c2fec. Full original science review is not inherited from the author tests.
+- Inherited native109 limitation: Full source-access entries are retained in the access-and-scope assessment and exact archived evidence. Inaccessible studies, abstract-only sources, metadata-only identities, native assertions and computational expression contexts remain distinct.
+- Inherited native109 limitation: Earlier canonical/build/adoption pending statements remain immutable historical evidence. Later actual root acceptances and receipts are separately bound.
+- Inherited native109 limitation: Static SVG observation does not test browser keyboard/focus/interaction. Public-release data licensing remains deferred.
+- Inherited native109 limitation: Native save/check, late archive checks, PR/CI/merge and issue closure are subsequent stages; no future success is claimed.
+- The independent final reviewer reran 200 focused tests; this successor binds root's later actual complete nine-gate run separately. No new browser interaction, image QA or full authority builder is claimed.
+- This native observation does not itself close GitHub issues, approve public licensing, commit, merge or publish. Those actions have separate authorization and receipts.
+- The independent issue487 review is bounded to provenance serialization and preservation; it does not rerun the full scientific literature review. Distinct THIO defects remain pending outside this NAD native successor.
+- Issues483 and487 originated as external findings. No fabricated native previous_occurrences or terminal findings are created; their accepted corrections are recorded in evidence-linked assessments.
+- The issue483 EDIT preceded render. Native assembly/save/final archive append no curation history and do not modify the scientific record or runtime.
+- Current complete ledger files are additive successors; old ledger bytes and native109 descriptive text remain immutable historical provenance.
+- The held assay-only finalization support was never executed. Its immutable template is superseded by this combined observation, which binds the later actual runtime gate run.
+- The limitation reporting 200 focused tests describes the historical independent review of exact0f5. It does not describe the future final adversarial review of the corrected commit, which remains a separate required step.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'NAD assay and provenance corrections: bounded successor to native review 109'
+reviewer:
+  identity: Codex /root; bounded support by /root/thioredox_preflight
+  kind: agent
+  independence: self_review
+  independence_basis: Root authored/integrated the correction. Scientific acceptance
+    is explicitly inherited from the separately independent exact-0f5 and bounded
+    issue483 reviews; support author read the primary pages and prepared current provenance.
+    No claim of a newly independent full-record scientific review. The runtime-order
+    correction is authored by the support agent and separately reassessed by the independent
+    diagnostic reviewer; that review and root acceptance are bound explicitly.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: The accepted issue483 successor distinguishes general 10 mM NAD Methods,
+  4.0 mM NAD Table 2 assays, and variable-NAD saturation experiments. Exactly one
+  narrative paragraph and two active-ledger text pointers change. Issue487 separately
+  fixes hash-seed-dependent provenance field ordering in the complex authority adapter
+  and adds a cross-process regression. All scientific graph structure and earlier
+  dossiers/reviews remain intact. Current post-both-corrections gates and preservation
+  are bound separately from historical assay-only gates. This is a bounded successor
+  with explicit inherited scientific limits.
+scope:
+  description: Bounded reassessment of construct-K87, paragraph-7, successor-delta-1
+    and claim-nadk-redox-inhibitors, plus current integration/preservation evidence.
+    Unchanged science remains inherited from native109 and the independent full-0f5
+    review. One additional runtime assessment covers issue487 provenance serialization,
+    original-source replay and hash-seeded testing; it makes no additional scientific
+    interpretation.
+  selection: Exact MetaCyc:NADPHOS-DEPHOS-PWY target SHA256 2da6fc3e5d1c1e5ce4b4d0c8a9d1857b1f234c4c872cdf73d364f1c73ad87cb2
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  exclusions:
+  - target: Other NAD scientific claims
+    reason: No new full literature rereview; retain exact prior independent/native
+      scope and access limits.
+  - target: Other 232 pathway records
+    reason: Preservation and maintained gates only; no scientific rereview.
+targets:
+- target_id: MetaCyc:NADPHOS-DEPHOS-PWY
+  path: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+  label: NAD phosphorylation and dephosphorylation
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+    role: Maintained pathway and corrected description paragraph 7
+assessments:
+- assessment_id: construct-K87
+  area: scope
+  topic: 1987 partially purified NadK preparation and assay contexts
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: The unspecified K12, glycerol-grown, 93-fold enriched and explicitly nonhomogeneous
+    preparation remains distinct from the 2001 preparation and modern MG1655 reference.
+    General Methods used 10 mM NAD and ATP; Table 2 changed NAD to 4.0 mM; separate
+    saturation curves varied NAD. The complete K87 ledger retains all other preparation,
+    exact endpoint-qualifier links and typed comparator links unchanged.
+  evidence_ids:
+  - primary-1987
+  - primary-pages
+  - independent-483
+  - independent-483-checks
+  - root-science
+  - active-constructs
+- assessment_id: paragraph-7
+  area: scope
+  topic: Corrected description paragraph 7
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: The accepted paragraph assigns the Table 2 inhibition/additivity comparison
+    to 4.0 mM NAD and the NADPH 5–30 µM / NADH 50–200 µM series to variable-NAD saturation
+    experiments. General assay conditions, Hill ranges, binding-site inference limits
+    and the abstract/Results Km discrepancy remain explicit.
+  evidence_ids:
+  - primary-1987
+  - primary-pages
+  - independent-483
+  - independent-483-checks
+  - root-science
+  - target
+  - active-paragraphs
+  details: The 1987 NadK preparation came from an unspecified E. coli K12 substrain
+    grown in forced-aerated glycerol minimal medium at37°C and harvested in late log
+    phase. It was enriched93-fold and was explicitly not homogeneous. The general
+    assay used 10 mM NAD and 10 mM ATP, 14 mM MgCl2 and 100 mM MOPS at pH 7.2. Table
+    2 instead used 4.0 mM NAD, found that roughly tenfold more NADH than NADPH was
+    needed for similar inhibition, and reported additive inhibition when both were
+    present. Separate saturation experiments varied NAD, using NADPH at 5–30 µM or
+    NADH at 50–200 µM. NAD saturation became sigmoidal, with reported Hill coefficients1.8–2.1
+    for NADPH and1.7–2.0 for NADH; increasing NAD could overcome inhibition. These
+    kinetic observations and native allosteric annotations do not locate a binding
+    site experimentally. The abstract assigns Km1.9 mM to NAD and2.1 mM to ATP, whereas
+    the Results reverse those assignments; both are retained as an internal discrepancy.
+- assessment_id: successor-delta-1
+  area: consistency
+  topic: One paragraph and two complete-ledger text pointers
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: 'This successor reinterprets the description-level scope represented by
+    the older successor-delta-1 assessment only for issue 483. Exactly paragraph 7
+    and JSON pointers /6/text in paragraph-claims and /0/paragraphs/0/text in construct-dispositions
+    change. All other 40 paragraphs and all non-description record fields are identical:
+    102 mechanistic edges, 48 endpoint qualifiers, 97 references, 62 participants,
+    four reactions and one taxon. The earlier review remains immutable, including
+    its historical full-description delta text.'
+  evidence_ids:
+  - author-correction
+  - independent-483-checks
+  - root-science
+  - target
+  - prior-native
+  - old-target
+  - active-paragraphs
+  - active-constructs
+- assessment_id: claim-nadk-redox-inhibitors
+  area: evidence
+  topic: NADH/NADPH inhibitory signs under distinct assay conditions
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: The negative signs on nad-039/nad-040 remain supported and unchanged. The
+    1987 Results/Table 2 describe roughly tenfold more NADH for comparable inhibition
+    and additive effects when both inhibitors were present; Figures 1/2 vary NAD with
+    the separately stated inhibitor ranges. The kinetic/allosteric evidence does not
+    experimentally locate a binding site. No potency value, condition or preparation
+    is transferred to the distinct 2001 study.
+  evidence_ids:
+  - primary-1987
+  - primary-pages
+  - independent-483
+  - independent-483-checks
+  - root-science
+  - target
+- assessment_id: scientific-inheritance
+  area: provenance
+  topic: Bounded successor relationship to native 109 and independent full review
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: Native review 109 supplies the retained historical complete assessment
+    and limitations. The independent review of exact 0f5 inspected the complete maintained
+    candidate and identified only the assay-context defect. Its independent 23-check
+    successor review accepted this exact correction without additional findings. This
+    compact record reassesses the four named claim/paragraph/context/delta scopes
+    and integration evidence, not all 415 earlier assessments or a new complete literature
+    search.
+  evidence_ids:
+  - prior-native
+  - prior-native-markdown
+  - independent-full
+  - independent-full-findings
+  - independent-483
+  - independent-483-checks
+  - root-science
+- assessment_id: current-preservation
+  area: consistency
+  topic: Exact current corpus, cache and generated-output preservation
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: 'Actual fresh combined preservation retains all prior dossiers, histories
+    and native review bundles, other 232 pathway records/pages, all authority snapshots,
+    cache link identities and resolved bodies, and every KGX/download row. Relative
+    to original0f5, four existing files change: the accepted NAD YAML and exact description/history
+    page, plus the two issue487 runtime/test files. Exactly24 assay evidence files
+    and one pre-render EDIT are additive; current finalization adds only its fixed
+    reviewed archive and native pair.'
+  evidence_ids:
+  - integration-adoption
+  - integration-preservation
+  - integration-gates
+  - runtime-adoption
+  - runtime-proposal
+- assessment_id: current-gates
+  area: representation
+  topic: Current maintained gates and page freshness
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: The issue483 EDIT was appended before its original render. After issue487
+    changed two runtime/test files, all nine complete maintained gate equivalents
+    passed again on the same corrected scientific target. Current commands, exits
+    and streams are bound; the earlier assay-only run is separately retained as historical
+    evidence. Review finalization changes no runtime or science, so those nine gates
+    are not repeated again. Native validate/save/check, page-current/diff and archive
+    preservation receive separate actual receipts.
+  evidence_ids:
+  - integration-gates
+  - integration-preservation
+  - integration-history
+  - prior-assay-gates
+- assessment_id: runtime-provenance-order
+  area: representation
+  topic: Deterministic outer complex and nested PC-1 provenance serialization
+  outcome: supported
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: Issue487 identified set iteration in provenance dictionary construction.
+    The correction uses an immutable license/url/version/sha256 sequence matching
+    the existing NAD snapshot, while preserving the same closed four-key validation
+    set. It changes exactly the adapter and its regression test. Unsorted serialization
+    is checked in fresh hash-seeded processes for unnamed and synonym-only/PC-1 fixtures;
+    whole issuing CPLX0-682, Pnt and PC-1 originals reproduce existing metadata/term
+    values and order. Independent bounded reassessment and root acceptance are separately
+    bound. No scientific target, page, history or authority snapshot changes as part
+    of issue487; distinct future THIO ordering and first-owner proposal corrections
+    remain outside scope.
+  evidence_ids:
+  - runtime-proposal
+  - runtime-patch
+  - runtime-original-proof
+  - runtime-independent
+  - runtime-root-acceptance
+  - runtime-issue
+  - runtime-code
+  - runtime-tests
+  - runtime-adoption
+  - integration-gates
+findings: []
+actions: []
+limitations:
+- Bounded partial scientific coverage; native109 full scientific judgments remain
+  historical inherited observations, not newly re-executed assessments.
+- All native109 source-access limits remain inherited verbatim below, including abstract/native/computational
+  contexts and inaccessible material. Historical pending statements describe those
+  earlier observations.
+- 'Inherited native109 limitation: Integrator self-review packages separately independent
+  complete original and bounded successor science. No fresh complete literature review
+  is claimed.'
+- 'Inherited native109 limitation: Historical original source-review limit: No maintained
+  changes, native save, Git/GitHub mutations or full canonical builder execution by
+  this reviewer.'
+- 'Inherited native109 limitation: Historical original source-review limit: No full-corpus
+  test rerun, full native authority acceptance, browser screenshot or interactive
+  graph-layout review.'
+- 'Inherited native109 limitation: Historical original source-review limit: Candidate
+  KGX/HTML/SVG retention was checked independently, not equated with actual final
+  canonical exports.'
+- 'Inherited native109 limitation: Historical original source-review limit: Full primary
+  source reading includes all scientific body sections and relevant/all stated supplements
+  above, not inaccessible papers or unrelated residue listings.'
+- 'Inherited native109 limitation: Historical original source-review limit: Original
+  evolving-draft observations are preserved and final verdict binds only sealed c2fec.
+  Full original science review is not inherited from the author tests.'
+- 'Inherited native109 limitation: Historical bounded successor limit: No maintained
+  changes, native save, Git/GitHub mutations or full canonical builder execution by
+  this reviewer.'
+- 'Inherited native109 limitation: Historical bounded successor limit: No full-corpus
+  test rerun, full native authority acceptance, browser screenshot or interactive
+  graph-layout review.'
+- 'Inherited native109 limitation: Historical bounded successor limit: Candidate KGX/HTML/SVG
+  retention was checked independently, not equated with actual final canonical exports.'
+- 'Inherited native109 limitation: Historical bounded successor limit: Full primary
+  source reading includes all scientific body sections and relevant/all stated supplements
+  above, not inaccessible papers or unrelated residue listings.'
+- 'Inherited native109 limitation: Historical bounded successor limit: Original evolving-draft
+  observations are preserved and final verdict binds only sealed c2fec. Full original
+  science review is not inherited from the author tests.'
+- 'Inherited native109 limitation: Full source-access entries are retained in the
+  access-and-scope assessment and exact archived evidence. Inaccessible studies, abstract-only
+  sources, metadata-only identities, native assertions and computational expression
+  contexts remain distinct.'
+- 'Inherited native109 limitation: Earlier canonical/build/adoption pending statements
+  remain immutable historical evidence. Later actual root acceptances and receipts
+  are separately bound.'
+- 'Inherited native109 limitation: Static SVG observation does not test browser keyboard/focus/interaction.
+  Public-release data licensing remains deferred.'
+- 'Inherited native109 limitation: Native save/check, late archive checks, PR/CI/merge
+  and issue closure are subsequent stages; no future success is claimed.'
+- The independent final reviewer reran 200 focused tests; this successor binds root's
+  later actual complete nine-gate run separately. No new browser interaction, image
+  QA or full authority builder is claimed.
+- This native observation does not itself close GitHub issues, approve public licensing,
+  commit, merge or publish. Those actions have separate authorization and receipts.
+- The independent issue487 review is bounded to provenance serialization and preservation;
+  it does not rerun the full scientific literature review. Distinct THIO defects remain
+  pending outside this NAD native successor.
+notes:
+- Issues483 and487 originated as external findings. No fabricated native previous_occurrences
+  or terminal findings are created; their accepted corrections are recorded in evidence-linked
+  assessments.
+- The issue483 EDIT preceded render. Native assembly/save/final archive append no
+  curation history and do not modify the scientific record or runtime.
+- Current complete ledger files are additive successors; old ledger bytes and native109
+  descriptive text remain immutable historical provenance.
+- The held assay-only finalization support was never executed. Its immutable template
+  is superseded by this combined observation, which binds the later actual runtime
+  gate run.
+- The limitation reporting 200 focused tests describes the historical independent
+  review of exact0f5. It does not describe the future final adversarial review of
+  the corrected commit, which remains a separate required step.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261012T104651Z-nad-phosphorylation-and-dephosphorylation
+  relationship: Bounded successor for four named assay-context assessments; all other
+    judgments and access limitations remain inherited.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/483
+- https://github.com/CultureBotAI/PathwayMech/issues/487
+- https://github.com/CultureBotAI/PathwayMech/pull/480
+tags:
+- nad
+- issue483
+- bounded-successor
+- assay-context
+- issue487
+- provenance-order
+review_id: 20261012T121028Z-nad-assay-and-provenance-successor
+started_at: '2026-10-12T12:08:48Z'
+finished_at: '2026-10-12T12:10:28.117618Z'
+source:
+  git_revision: 0f5c2c92d8940fee8a9b2b89253091496f815490
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+    sha256: 2da6fc3e5d1c1e5ce4b4d0c8a9d1857b1f234c4c872cdf73d364f1c73ad87cb2
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/records/nad-phosphorylation-and-dephosphorylation/2026-10-12T112134Z-codex-c88959.yaml
+    sha256: 326515059cd0a6a83342e07b1cf0a1f9c7d296120ae113fd5844f66aa1c0d30f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/active-ledgers/construct-dispositions.json
+    sha256: bfc3155ec898489f15a010e638cd1607b4917f0177685ec08fc1c30300e3d58c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/active-ledgers/paragraph-claims.json
+    sha256: 79af88a3dc85a00c01255aecbe7087bc499236e969105095c0b3df5c5da17835
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/author/correction.json
+    sha256: 0693eefdd9a7bac8ce6781d942e78717caa0fe06e99bdd7732fd244b21e25a01
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/archive-map.json
+    sha256: 3f1dac9dd1dac56680fc4ef6d88f9ed63996059b8ec7f83d3370c147591104d2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/adoption.json
+    sha256: 6fe556f45f3403cd5479047b5064b5329ab762d34eec618474ff0db5bb07f5e0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/baseline.json.gz
+    sha256: 0d5e1f91f9c49a5ec71ae09b93b79dfb68377224460cc84e193ffeb804946e36
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/cache-baseline.json.gz
+    sha256: 67d842f1e200a735c92e30300574cce7771a856806ce581e0d0e277fc5da21e1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/completion.json
+    sha256: c0fc48b3ec1d2ae6fe399fe3a5935b785f1fe76a667da42b21ae264a8c2ce83e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/expected-history.json
+    sha256: 5031679296f8156b2a504a8fdaa47d5cb1789381b1e8e777e62e5c69bc8e7919
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/expected-target-page.html.gz
+    sha256: 5a9829bf237a5717357b65cae6ebe97a91ec658b128ee204588ff8aa68eacb25
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/history.receipt.json
+    sha256: 609c5842d6e675b7d61fb505063f5e8ebf8cbe37767eccb4d72d66b4861c1f11
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/history.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/history.stdout.gz
+    sha256: a4a47cf41207f79343e771434a54e6de5103a4d38914345226bbba8c3cd7e8ef
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/inputs.json
+    sha256: 43bfbdcb9bcb771081156dca3d131748e15e065cb4ef0a46828fa8505cc0319a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/old-page.html.gz
+    sha256: 3aec31233fb5f658a7820602b0ac009979dd823eb7d5b1bdf1b730a7980f85da
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/old-target.yaml.txt
+    sha256: 96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/preservation.json
+    sha256: 4754493b476bddf79c6c5cb4578b2738f8ad085d8daa6ba8d97b3de9842cef61
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/README.md
+    sha256: fd62c0db2f1c90996ac67f882873b9f9aff13b18e5df520c354d6940ed2c949b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/artifact-manifest.json
+    sha256: 92e078a2ea26266fc55232afc7c47a381c2732eca3bda37de26977878743d6ae
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/bounded-guard-checks.json
+    sha256: 79d34aaf89217b392ad80235d7007cdf84b1c2f564ef0f1d9484c9d2c1a48ec6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/handoff.json
+    sha256: 2d1386b24d04efa5618b8a5a33eefc1ce45ccc7ccf6914959e60ed20e6137d6f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/plan.json
+    sha256: 80947797fd67f9559c7df67ed3de02dc10c30271e90e71eca6ff38423df9ba74
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/projection-checks.json
+    sha256: ffb8db3490217fac74df2df6c42f4135a6c65eef74f7c5aceec5636964eeadff
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/root-acceptance.json
+    sha256: ac834a95b3e42787261759ec5f0acd08c070b15e946523a8b13797c128ac7e61
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-support/runner.py.txt
+    sha256: 9c082c408d910936601205749dedad451db470a2055921aa904afe0be7b354ae
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/diff-check.receipt.json
+    sha256: 66451c813c8ecc235a11e9a4f25f28b5ed0cd1a4d47963f7cd4d096a5406f4ed
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/diff-check.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/diff-check.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/kgx.receipt.json
+    sha256: 0d8146a1d7363d13ede7eea31ee4d96e4465ba155f6ea917efb45d901645c263
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/kgx.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/kgx.stdout.gz
+    sha256: 54c0e3ea9ce7a49c8277d6c058d4eac9022ff19625d7c6d3b2fbe7bcdaeaee48
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/lint.receipt.json
+    sha256: 09aeeb03fb4b31d6a17f942ac08c2381fc7b5b9e860169e16370d4249b1c3f6f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/lint.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/lint.stdout.gz
+    sha256: f3af4d142827f5aad2eb0c72d556d325488a57fb6219aac10afeb51085667d53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/render.receipt.json
+    sha256: ea1eabbdb6b02faf90ca34cd52101ec68a38de039bcbd7e3598921a7956da6fe
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/render.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/render.stdout.gz
+    sha256: 6d6d5227310ba6d942536280484d8850f9151425ad7301d77165ccf03d128361
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/site-current.receipt.json
+    sha256: 365436cc5879186a5d9ae738c4c539db0c3b0767cc446e0b24780881ba511d36
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/site-current.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/site-current.stdout.gz
+    sha256: e8f494e453b6bbcadf820dfd9f1eafc73438d48ac83892e633b60a699b91eb46
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/skills.receipt.json
+    sha256: f50538d2d3ff1ce07c3981d9034c67aceb46e62f954348c58b34af86fc87fc9f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/skills.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/skills.stdout.gz
+    sha256: 5eda5cd373e972ce1c6343642cd1dfa52e5dc2108cfce92ea819e4e93a2af9a6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/tests.receipt.json
+    sha256: 723e27a19518d52adbdeb29e260991827fb07d3d42d5631c1208b1c3361f6bcc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/tests.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/tests.stdout.gz
+    sha256: be01ecf0bf3052618f31b6f5ce3b1ab91e3b4821a8a1a2b097061a57dab47a00
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/validate.receipt.json
+    sha256: c6ef95d15239cb98a556cd6e725f0a567e51454feb95ed25eb86ccf2b7a3e323
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/validate.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/validate.stdout.gz
+    sha256: a8e41273871532148521963e209051fcebede87d382958969424cb5db6b2681d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/vendored.receipt.json
+    sha256: db52cb3890f4631670b6907ae8b365e2017cdb2876609a120445de316ecc12de
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/vendored.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/current-combined-gates/vendored.stdout.gz
+    sha256: 84eb2f5823f900ef37165db66efb1234f4f1b653ddd847144fe9c2ae287ce18d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issue487/2-body.md
+    sha256: 1f181a08136e313f1dedcf6f0ef65893bae5657c402f7ffca17cf4a5be2db9ea
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issue487/2-create.receipt.json
+    sha256: 8675c19e32d3d5c065e8c0b97b65e0fffd9a0f5302b1af1c604d397de4d05b2d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issue487/2-create.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issue487/2-create.stdout.gz
+    sha256: 755b864040186c7269c8c9e0b87d3b1bf60330d641206b19e845524a662085ce
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issue487/created.json
+    sha256: 1e75e5b10a35b2446d0dfbf1bcfdf0416dec5eb59c6d6b7c06e3d34697e5acd3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issuing-originals/nad232-ECOLI-CPLX0-682.xml.gz
+    sha256: f2439c1beafe740fdf11318bd027b4d86d6b63fde4745b9f1abff88c3fa8d129
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issuing-originals/nad232-ECOLI-PC-1.xml.gz
+    sha256: 52116eb8993579ca11c12e3cbf062dc78d04c24a4085be34d78ea6c0e2751ee2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issuing-originals/nad232-ECOLI-PYRNUTRANSHYDROGEN-CPLX.xml.gz
+    sha256: 2c916788e084e1535290888aef892ec09e4d2cd8cf085918f45bb0d47a88ecbc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/README.md
+    sha256: 3bde0a2959f82bab4ad07b667804099b031087b431c6acdad141220be29c4773
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/artifact-manifest.json.gz
+    sha256: 372868b7c4b444221cf083f689b7752e321f8e9293de48358242ca8f411ccaaf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/baseline-bindings.json
+    sha256: e9eb2b7c05384f452542bd84e5dd5d8320703825f395d1a263abf447a1a11951
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/baseline-regression-execution.json
+    sha256: 99cbae0c7026fa1f84c1999a7b8c120c530f7a6afd60eea3ff2dd503d4d37dbc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/baseline-regression.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/baseline-regression.stdout.gz
+    sha256: 74f95f5f7e98944f42b251f400e8301ee188b9e590b0543d95e9a14decbd4cb6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/candidate-focused-execution.json
+    sha256: e646556c4e4867446db5567cad59f8aaa798e1060a6781a30c502aef6b72caa1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/candidate-focused.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/candidate-focused.stdout.gz
+    sha256: b052853d5f2ff15abcef4a9b796a25b11731657f7ca979257020e7491962d4a0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/candidate-lint-execution.json
+    sha256: f954ef6bb1596f27db1082bdfb69c2d6fa30bcfe10b8939029042f67714020f4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/candidate-lint.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/checks-successor/candidate-lint.stdout.gz
+    sha256: 002ad6f6c033048ab376bb75ffb12b4b78cb644870cdf51d6645d4288c13d668
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/correction.patch.gz
+    sha256: d5fdb8c904447325b1d11175cac72e844542cfb7ab014b78dcf5cc4e496e6d60
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/execution-summary.json
+    sha256: 7b2faa0a37435955e8caf710cc2de03456cb3dd33c752058a5633678f1973664
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/final-checks/format-execution.json
+    sha256: 46760c55c36291f15d1215b96fa0baf84b1141af9a28a892d1bbe5dfddb1d216
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/final-checks/format.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/final-checks/format.stdout.gz
+    sha256: 9a1a2d79acccdb0f46930a600a1382606067033cfb52a4673dc15b0c1030d871
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/final-checks/lint-execution.json
+    sha256: be64bda57a17e86a0a1928962f19576af72db8c7243b1c954aec20a5d5ca189e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/final-checks/lint.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/final-checks/lint.stdout.gz
+    sha256: f3af4d142827f5aad2eb0c72d556d325488a57fb6219aac10afeb51085667d53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/handoff.json
+    sha256: f3dbfcf7da747c5c41047fddbbd111f7c0cb2c8e609bb3d7f69436facbfe7084
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/integration-plan.json
+    sha256: c223208334e209b7e386de6c18b6552869b849ae6caad43540b34011ecd4d877
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/issue-and-diagnosis-bindings.json
+    sha256: 29f17b65f7e8810243c5d991b4a3069e4ada75407bb084a57683ea0f28ece9a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/proof.json
+    sha256: ba2d563fe831841ecea7d9d16f0a932d8dc2e1b4542c28741e17219671383f18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-0.json
+    sha256: 7ee26b66c1fafda352c974f05828113b64e5e0cf19f3ae9d6917c1faa375bf6d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-0.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-1.json
+    sha256: 7ee26b66c1fafda352c974f05828113b64e5e0cf19f3ae9d6917c1faa375bf6d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-1.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-2.json
+    sha256: 7ee26b66c1fafda352c974f05828113b64e5e0cf19f3ae9d6917c1faa375bf6d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-2.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-3.json
+    sha256: 7ee26b66c1fafda352c974f05828113b64e5e0cf19f3ae9d6917c1faa375bf6d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-3.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-42.json
+    sha256: 7ee26b66c1fafda352c974f05828113b64e5e0cf19f3ae9d6917c1faa375bf6d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/seed-42.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/REPORT.md
+    sha256: 5b2b77c26e30704e7fc6399cdd017a77c5ff08c6dd70e9570254f45eda64ad73
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/artifact-manifest.json
+    sha256: 2bba06bfff3e7134b9ef8ce80e5d87bf6e08338ad554e9fb2343fe3c311f9bae
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/candidate.stdout.gz
+    sha256: 029ff53b6f70ee8714aa0219fe31d8bd64a5cbbb4cb67d4b8e130eb07da9b159
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/disposition.json
+    sha256: 1c9c5bce1d115d51564777f36aa7989594dbede70c0e4b4f52405f6f533c800d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/execution-history.json
+    sha256: 3b4f808b7dd7bdf5cef2d36b1c03c479dbf1ee865069bd93da7e34e0b42a9fd9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/handoff.json
+    sha256: 886a3063a8d2af4cf5cf02f2d77683f47a0434e994ae78969ec322678d9c1846
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/old.stderr.gz
+    sha256: 0733dc343befe9549815c7bd074b067807998387a35e2d638584a2a1299c8d4a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/patch-review.json
+    sha256: 054cd467b1c0041432d3c2b21cf23b50667b28f35c9ddad7a390b6209d064d87
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/regression_child.py.txt
+    sha256: 67f199030cb29bc0e04d7c0497b092efa7e96d3bed019f55772c2f2af4f251cd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/review_patch_v2.py.txt
+    sha256: 4f63e91143c21c3a65da9d28e013dbc76f9237b3d92f6c7a5652ff467d4ecf4d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/seal-check.json
+    sha256: d3622884bc23e89f6e67ce13ff63e1bae3bf848dda62aee6e81df6eb22e96268
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/whole-7.stdout.gz
+    sha256: aaff2cbdbefdfdbb28dc438632a3dfc0cd907dfa01a93791538dd09c1c1409be
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/whole_original_child.py.txt
+    sha256: 1519cf44c3a210b1ee7dfa19c79847d752f417bcfdeefbfeb22fe00fca2599a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/adoption.json
+    sha256: 13b89a50ce8590023d954776d3981b13437c6c51a65144ea03895bb042a6a72b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/baseline-bridge.json
+    sha256: 6e2f25e2edb54e9842fc912f4175e4666213c647e0b1aa5d6874425e4f55a095
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/completion.json
+    sha256: 40a7562a7a6747e27b4e2a8cecd3a069adb75b9c76d0b37cb5e99e3a9327f2dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/preservation.json
+    sha256: 59e9a50b63d900fc044b1420ee60e76b9e507b934bb1d3749af6addc17f8c68b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-support/root-acceptance.json
+    sha256: d48868f12a898b4f81db1f78c3cff8341b86ae72daed6d3e5262a651ad49f4ce
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-support/run.py.txt
+    sha256: fa843b18c8f22ded4c6deebafe18b6ca0d367f4d753a5699ce273613252360ac
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/diff-check.receipt.json
+    sha256: bf79de7c176f2a580dfd6c5bb9e3ee928331d87ad85104fea95cf4c3af9df75e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/diff-check.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/diff-check.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/kgx.receipt.json
+    sha256: 015926f9f62b3588b6a8dc785721ee224092c5206fbfe222d0a74412007d7024
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/kgx.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/kgx.stdout.gz
+    sha256: 54c0e3ea9ce7a49c8277d6c058d4eac9022ff19625d7c6d3b2fbe7bcdaeaee48
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/lint.receipt.json
+    sha256: 5c5ed781e51caff7bfdc900a73debc25e51fb8cd0f30a9649d0e3f9de4db0fca
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/lint.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/lint.stdout.gz
+    sha256: f3af4d142827f5aad2eb0c72d556d325488a57fb6219aac10afeb51085667d53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/render.receipt.json
+    sha256: 2b27fc46932430720cccad6181bcfa25c35c49acc278b8317ad559fdca3511f9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/render.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/render.stdout.gz
+    sha256: 6d6d5227310ba6d942536280484d8850f9151425ad7301d77165ccf03d128361
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/site-current.receipt.json
+    sha256: b44dbbcfa5f025e401aa57d4d8856edf112399d3a0fd43d7794f4ce70e17447e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/site-current.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/site-current.stdout.gz
+    sha256: e8f494e453b6bbcadf820dfd9f1eafc73438d48ac83892e633b60a699b91eb46
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/skills.receipt.json
+    sha256: 0480de1c36a8d4a8a7453163d0952fb5c6931e8995304232fcaf40363c9f9030
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/skills.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/skills.stdout.gz
+    sha256: 5eda5cd373e972ce1c6343642cd1dfa52e5dc2108cfce92ea819e4e93a2af9a6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/tests.receipt.json
+    sha256: 9c7e7985eb5f6690cf8a787e80677b38aaed2cca589371aa938e45681d2e2b68
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/tests.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/tests.stdout.gz
+    sha256: 9b8d59cd9fc373c19d866a852704ffeb4da4e3fb1c304da5c769bcf39ddb43c1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/validate.receipt.json
+    sha256: 6376602030b69c12de0a9c6d72cf184df4e514c02fc9544655c7d9c4979d2828
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/validate.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/validate.stdout.gz
+    sha256: a8e41273871532148521963e209051fcebede87d382958969424cb5db6b2681d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/vendored.receipt.json
+    sha256: c30150fa4d1f6ad558b744e1152ea5810160521e5ca58625f292ed4db5dd2953
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/vendored.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/prior-assay-gates/vendored.stdout.gz
+    sha256: 84eb2f5823f900ef37165db66efb1234f4f1b653ddd847144fe9c2ae287ce18d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/root-support-acceptance.json
+    sha256: 9e7b0311cc8258f9a25f4ff8ff0076cf1cadd5c890c6e4a5564ab525f36b544c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/README.md
+    sha256: 67044ced29719bf208e67e878beb24a9205300d7328093e96515e683ee8ef133
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/archive-plan.json
+    sha256: 785cdeef5367fd7b0ab1adf54e5117e7fb0558c23fa79a9361c5fb1c1a0d86f0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/artifact-manifest.json
+    sha256: 7ff3f78b487d66a38ed18145016111edc9650dc2bdcb5f0eac83d9c8d6d22ad9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/build_archive_plan.py.txt
+    sha256: 52e836df89e433f4ec96a9a68f8392c9f9a8e3fb09bb611091d8ff0b6191b286
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/finalize.py.txt
+    sha256: 96bb8b7e6ead89637a9a6ce3cadfe3c255df519b6a57140c8c355568ed7e9064
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/handoff.json
+    sha256: 9b104ce46fcf8263ae8418ff0ec33f25f1877892826ec92d04d529f436995f63
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/inheritance.json
+    sha256: 477060a63c360bf5085fc06c7960eef827745ec7a742ff48a4d57919886b398a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/prepare_fragments.py.txt
+    sha256: c108daac2d2650517ec55771169be5cd7b441923ad4842a3c20229933de12959
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/review-fragments.json
+    sha256: d73ae31bd6e760eb38186952e6140eac128f31f7f9591c98283f6a8d9694f696
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/support/targets.json
+    sha256: 934dc2c7e07312a26e29b2d2d06b108cb7cec3d0940b7feb3371cfbc01d70914
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-full-review/REVIEW.md
+    sha256: 7f48c8c384c1c70c3e880cfc09cae6e6c493458ea74eebdda03d344476923ae8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-full-review/findings.json
+    sha256: 05687c4d3b64a730561fd0b4ae66bf2b3197c6ef09518bd4d55bd4d5b8ecaed4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-successor/REVIEW.md
+    sha256: b2e5aed2ebc8d80039dd013811512d379d74e59e69d892fe4463b0a51d42f53e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-successor/independent-checks.json
+    sha256: 74de042d75dc0fe95838e9b85db68f40198c82af15deddf409b7349c77dff06d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-europepmc.pdf
+    sha256: e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-pages.json
+    sha256: 5c82b1cbd39125cc7a1eccf9cf38cc5c0809ecd1b58d56f06256844bcd4655e1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-pages.json.page-2.png
+    sha256: 208968905c38eee14c98bc34a6543a6e01c038000bf93009efdbacc1a7e99db7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-232/assay-context-correction/root-acceptance.json
+    sha256: 510ffd0b8c96d67ab00f2c073645c7af2d37b2a0ca54ff9b59ff7151ff798dab
+    role: context
+  - path: reviews/structured/20261012T104651Z-nad-phosphorylation-and-dephosphorylation/review.md
+    sha256: 0f93c54a81aafa85bfbdf4fa5e511f61581246b018d466d13783c5a900d1690a
+    role: context
+  - path: reviews/structured/20261012T104651Z-nad-phosphorylation-and-dephosphorylation/review.yaml
+    sha256: 7c4778a5f90f7a132a2995cd8135d4f8d43e9f2262d1fefb8b7faf3fe1a33a66
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/ecocyc_complex.py
+    sha256: 16176e59f5b62cf743ee4609da89d917c84befa7fe97386219de51b86992e6ba
+    role: context
+  - path: tests/test_ecocyc_complex_authority.py
+    sha256: c5aa442cd66dd8276a65a395554c3351b9b86a62fca7d28c002b2458455a645a
+    role: context
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+  locator: description paragraph 7; unchanged graph and endpoint qualifiers
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Exact corrected maintained target.
+  snapshot_sha256: 2da6fc3e5d1c1e5ce4b4d0c8a9d1857b1f234c4c872cdf73d364f1c73ad87cb2
+- evidence_id: prior-native
+  kind: prior_review
+  reference: reviews/structured/20261012T104651Z-nad-phosphorylation-and-dephosphorylation/review.yaml
+  locator: Four named assessments and complete historical limits
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Immutable native review 109; bounded corrections supersede only the scoped
+    assay wording.
+  snapshot_sha256: 7c4778a5f90f7a132a2995cd8135d4f8d43e9f2262d1fefb8b7faf3fe1a33a66
+- evidence_id: prior-native-markdown
+  kind: prior_review
+  reference: reviews/structured/20261012T104651Z-nad-phosphorylation-and-dephosphorylation/review.md
+  locator: Rendered companion of native review 109
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Historical governed companion retained unchanged.
+  snapshot_sha256: 0f93c54a81aafa85bfbdf4fa5e511f61581246b018d466d13783c5a900d1690a
+- evidence_id: primary-1987
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-europepmc.pdf
+  locator: 'PDF pages 2–3 (printed 185–186): Methods, Table 2 footnote, Results, Figures
+    1/2'
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Original PDF supports distinct general, Table 2 and variable-substrate
+    conditions.
+  snapshot_sha256: e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253
+- evidence_id: primary-pages
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-pages.json
+  locator: pages[1] and pages[2]
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Retained exact page extraction; support author freshly read pages 2 and
+    3, not the whole unchanged literature.
+  snapshot_sha256: 5c82b1cbd39125cc7a1eccf9cf38cc5c0809ecd1b58d56f06256844bcd4655e1
+- evidence_id: primary-page-image
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/primary/PMID3025169-pages.json.page-2.png
+  locator: Table 2 footnote
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Prior independent reviewer/root visually verified 4.0 mM; no new visual
+    inspection claimed by this support author.
+  snapshot_sha256: 208968905c38eee14c98bc34a6543a6e01c038000bf93009efdbacc1a7e99db7
+- evidence_id: author-correction
+  kind: record_content
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/author/correction.json
+  locator: Exact semantic delta and source bindings
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Retained bounded author correction; source science independently accepted.
+  snapshot_sha256: 0693eefdd9a7bac8ce6781d942e78717caa0fe06e99bdd7732fd244b21e25a01
+- evidence_id: active-paragraphs
+  kind: record_content
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/active-ledgers/paragraph-claims.json
+  locator: /6/text
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Complete active 41-paragraph ledger; other rows unchanged.
+  snapshot_sha256: 79af88a3dc85a00c01255aecbe7087bc499236e969105095c0b3df5c5da17835
+- evidence_id: active-constructs
+  kind: record_content
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/active-ledgers/construct-dispositions.json
+  locator: /0/paragraphs/0/text; K87 exact/related links
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Complete active 28-context ledger; only exact paragraph pointer text changes.
+  snapshot_sha256: bfc3155ec898489f15a010e638cd1607b4917f0177685ec08fc1c30300e3d58c
+- evidence_id: independent-full
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-full-review/REVIEW.md
+  locator: Entire exact-0f5 independent review
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Independent full candidate review identified the single issue483 defect;
+    its unchanged-science and runtime observations are inherited within its stated
+    limits.
+  snapshot_sha256: 7f48c8c384c1c70c3e880cfc09cae6e6c493458ea74eebdda03d344476923ae8
+- evidence_id: independent-full-findings
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-full-review/findings.json
+  locator: nad-1987-inhibition-assay-nad-concentration
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Original external finding retained; not fabricated into an earlier native
+    finding.
+  snapshot_sha256: 05687c4d3b64a730561fd0b4ae66bf2b3197c6ef09518bd4d55bd4d5b8ecaed4
+- evidence_id: independent-483
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-successor/REVIEW.md
+  locator: Complete bounded corrective reassessment
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Independent reviewer accepted the exact correction and retained all unchanged
+    science/access limits.
+  snapshot_sha256: b2e5aed2ebc8d80039dd013811512d379d74e59e69d892fe4463b0a51d42f53e
+- evidence_id: independent-483-checks
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/independent-successor/independent-checks.json
+  locator: 23 checks and two complete-ledger comparisons
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Actual independent bounded checks, not a new whole-corpus gate execution.
+  snapshot_sha256: 74de042d75dc0fe95838e9b85db68f40198c82af15deddf409b7349c77dff06d
+- evidence_id: root-science
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/root-acceptance.json
+  locator: Exact author/reviewer closure and paragraph/ledger deltas
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Root scientific acceptance binds exact target2da6 and prior native109 immutability.
+  snapshot_sha256: 510ffd0b8c96d67ab00f2c073645c7af2d37b2a0ca54ff9b59ff7151ff798dab
+- evidence_id: runtime-code
+  kind: record_content
+  reference: src/pathwaymech/ecocyc_complex.py
+  locator: PROVENANCE_FIELDS and four provenance comprehensions
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Exact accepted runtime keeps immutable serialized field order and closed-key
+    checks.
+  snapshot_sha256: 16176e59f5b62cf743ee4609da89d917c84befa7fe97386219de51b86992e6ba
+- evidence_id: runtime-tests
+  kind: validation
+  reference: tests/test_ecocyc_complex_authority.py
+  locator: test_complex_provenance_serialization_is_stable_across_processes
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Unsorted byte equality across five fresh hash-seeded processes, including
+    nested PC-1.
+  snapshot_sha256: c5aa442cd66dd8276a65a395554c3351b9b86a62fca7d28c002b2458455a645a
+- evidence_id: old-target
+  kind: record_content
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/old-target.yaml.txt
+  locator: description paragraph7 and all unchanged fields
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Exact predecessor96e493 retained once.
+  snapshot_sha256: 96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7
+- evidence_id: integration-adoption
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/adoption.json
+  locator: fixed25 additions and exact pre-render EDIT
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Actual accepted assay correction adoption.
+  snapshot_sha256: 6fe556f45f3403cd5479047b5064b5329ab762d34eec618474ff0db5bb07f5e0
+- evidence_id: integration-history
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/history.receipt.json
+  locator: native history exit0
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: One actual issue483 EDIT before render; no later history.
+  snapshot_sha256: 609c5842d6e675b7d61fb505063f5e8ebf8cbe37767eccb4d72d66b4861c1f11
+- evidence_id: prior-assay-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/assay-integration/completion.json
+  locator: historical nine-gate execution
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Successful earlier issue483-only gates; runtime was later corrected.
+  snapshot_sha256: c0fc48b3ec1d2ae6fe399fe3a5935b785f1fe76a667da42b21ae264a8c2ce83e
+- evidence_id: runtime-adoption
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/adoption.json
+  locator: exact two runtime/test owners
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Issue487 adoption preserves record, page, history and snapshots.
+  snapshot_sha256: 13b89a50ce8590023d954776d3981b13437c6c51a65144ea03895bb042a6a72b
+- evidence_id: integration-preservation
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/preservation.json
+  locator: fresh post-both-corrections baseline/cache proof
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Actual preservation after current nine gates.
+  snapshot_sha256: 59e9a50b63d900fc044b1420ee60e76b9e507b934bb1d3749af6addc17f8c68b
+- evidence_id: integration-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-integration/completion.json
+  locator: all nine actual current gate receipts
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Complete maintained gates after both corrections.
+  snapshot_sha256: 40a7562a7a6747e27b4e2a8cecd3a069adb75b9c76d0b37cb5e99e3a9327f2dd
+- evidence_id: runtime-proposal
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/handoff.json
+  locator: bounded two-file proposal with retained failures
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Exact author proposal; independent review is separate.
+  snapshot_sha256: f3dbfcf7da747c5c41047fddbbd111f7c0cb2c8e609bb3d7f69436facbfe7084
+- evidence_id: runtime-patch
+  kind: record_content
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/correction.patch.gz
+  locator: two files only
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Explicit stable provenance sequence and cross-process regression.
+  snapshot_sha256: d5fdb8c904447325b1d11175cac72e844542cfb7ab014b78dcf5cc4e496e6d60
+- evidence_id: runtime-original-proof
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-fix/whole-original-check/proof.json
+  locator: five seeded subprocesses plus three exact XML hashes
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Original-source replay preserves existing metadata and term byte order.
+  snapshot_sha256: ba2d563fe831841ecea7d9d16f0a932d8dc2e1b4542c28741e17219671383f18
+- evidence_id: runtime-independent
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-independent/REPORT.md
+  locator: complete bounded fix review
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Independent regression and original-source reassessment of issue487.
+  snapshot_sha256: 5b2b77c26e30704e7fc6399cdd017a77c5ff08c6dd70e9570254f45eda64ad73
+- evidence_id: runtime-root-acceptance
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/order-support/root-acceptance.json
+  locator: exact author/reviewer binding
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: Root accepted the exact runtime correction.
+  snapshot_sha256: d48868f12a898b4f81db1f78c3cff8341b86ae72daed6d3e5262a651ad49f4ce
+- evidence_id: runtime-issue
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-232/assay-context-correction/combined-finalization-evidence/issue487/2-create.receipt.json
+  locator: actual GitHub creation receipt
+  accessed_at: '2026-10-12T12:08:52.217795Z'
+  support: supports
+  summary: External issue487, not an invented native previous occurrence.
+  snapshot_sha256: 8675c19e32d3d5c065e8c0b97b65e0fffd9a0f5302b1af1c604d397de4d05b2d
+checks:
+- check_id: current-render
+  name: Actual current render
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-skills
+  name: Actual current skills
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-validate
+  name: Actual current validate
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-tests
+  name: Actual current tests
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-232-order-execution-root-20261012/pytest-temp
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-lint
+  name: Actual current lint
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check --no-cache .
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-kgx
+  name: Actual current kgx
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-vendored
+  name: Actual current vendored
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-diff-check
+  name: Actual current diff-check
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: git diff --check
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: current-site-current
+  name: Actual current site-current
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  summary: Actual complete maintained gate after both issue483 target2da6 and issue487
+    two-file runtime adoption; current command receipt and streams retained, prior
+    assay gates inherited separately.
+  evidence_ids:
+  - integration-gates
+- check_id: exact-preservation
+  name: Exact post-correction preservation
+  status: passed
+  required: true
+  target_ids:
+  - MetaCyc:NADPHOS-DEPHOS-PWY
+  summary: All preexisting worktree/shared-cache identities and bytes retained except
+    exact target/page plus two runtime/test files; original25 assay additions and
+    predeclared final archives remain additive.
+  evidence_ids:
+  - integration-preservation
+```

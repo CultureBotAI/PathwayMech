@@ -15,7 +15,9 @@ from xml.etree import ElementTree as ET
 ECOCYC_COMPLEX_KIND = "ecocyc-complex-xml"
 HOST = "bf2i-artsymbiocyc.insa-lyon.fr"
 FRAME = r"[A-Za-z0-9][A-Za-z0-9_.-]*"
-PROVENANCE = {"url", "version", "sha256", "license"}
+# Preserve the established snapshot field order across Python hash seeds.
+PROVENANCE_FIELDS = ("license", "url", "version", "sha256")
+PROVENANCE = set(PROVENANCE_FIELDS)
 
 
 def _require(condition: bool, message: str) -> None:
@@ -161,7 +163,7 @@ def _class_proof(entry: dict, cache_dir: Path, frame: str, version: str) -> dict
         bool(relative.parts) and not relative.is_absolute() and ".." not in relative.parts,
         "class_source path must be relative",
     )
-    metadata = {key: entry[key] for key in PROVENANCE}
+    metadata = {key: entry[key] for key in PROVENANCE_FIELDS}
     _require(
         _provenance(metadata) == "PC-1" and entry["version"] == version,
         "class_source identity/version mismatch",
@@ -209,7 +211,7 @@ def complex_metadata(entry: dict, cache_dir: Path) -> dict:
         "unsupported typed complex manifest fields",
     )
     _require(entry["kind"] == ECOCYC_COMPLEX_KIND, "wrong source kind")
-    provenance = {key: entry[key] for key in PROVENANCE}
+    provenance = {key: entry[key] for key in PROVENANCE_FIELDS}
     frame = _provenance(provenance)
     _require(isinstance(entry["path"], str), "original path must be relative")
     relative = Path(entry["path"])
@@ -327,7 +329,7 @@ def complex_metadata(entry: dict, cache_dir: Path) -> dict:
 def validate_complex_metadata(metadata: Any) -> None:
     """Validate snapshot consistency; original XML and class bytes remain builder-owned."""
     _keys(metadata, PROVENANCE | {"kind", "native_complex"}, "incomplete typed complex provenance")
-    frame = _provenance({key: metadata[key] for key in PROVENANCE})
+    frame = _provenance({key: metadata[key] for key in PROVENANCE_FIELDS})
     _require(metadata["kind"] == ECOCYC_COMPLEX_KIND, "wrong typed complex source kind")
     native = metadata["native_complex"]
     _keys(
@@ -400,7 +402,7 @@ def validate_complex_metadata(metadata: Any) -> None:
             "missing typed PC-1 proof",
         )
         _require(
-            _provenance({key: proof[key] for key in PROVENANCE}) == "PC-1"
+            _provenance({key: proof[key] for key in PROVENANCE_FIELDS}) == "PC-1"
             and proof["version"] == metadata["version"]
             and proof["id"] == "EcoCyc:PC-1"
             and proof["label"] == "a transporter",

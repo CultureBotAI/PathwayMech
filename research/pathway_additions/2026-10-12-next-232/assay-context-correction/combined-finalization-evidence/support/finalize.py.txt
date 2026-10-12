@@ -1,0 +1,338 @@
+"""Root-executed combined NAD issue483/487 native assembly/save; no history/runtime edits."""
+from __future__ import annotations
+
+import argparse
+import copy
+import gzip
+import json
+import os
+import shlex
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+sys.path.insert(0, '/private/tmp/pathwaymech-next-232-assay-integration-preparation-20261012')
+import runner as r
+
+HERE = Path(__file__).absolute().parent
+ASSAY = Path('/private/tmp/pathwaymech-next-232-assay-execution-root-20261012')
+EXECUTION = Path('/private/tmp/pathwaymech-next-232-order-execution-root-20261012')
+PREFIX = 'research/pathway_additions/2026-10-12-next-232/assay-context-correction'
+ARCHIVE = PREFIX + '/combined-finalization-evidence'
+FINAL = PREFIX + '/combined-native-execution'
+TID = 'MetaCyc:NADPHOS-DEPHOS-PWY'
+RUNNER_SHA = '9c082c408d910936601205749dedad451db470a2055921aa904afe0be7b354ae'
+
+
+def review_timestamp():
+    return datetime.now(timezone.utc).isoformat(timespec='microseconds').replace('+00:00', 'Z')
+
+
+def review_id(finish):
+    return datetime.fromisoformat(finish).strftime('%Y%m%dT%H%M%SZ') + '-nad-assay-and-provenance-successor'
+
+
+def native():
+    r.verified_plan()  # Pins the governed helper/schema before executing that local module.
+    path = r.ROOT / 'scripts/record_review.py'
+    module = {'__file__': str(path), '__name__': 'nad_bounded_native_support'}
+    exec(compile(r.read(path), str(path), 'exec'), module)  # noqa: S102 - exact pinned governed source
+    return module
+
+
+def size_hash(body):
+    return {'bytes': len(body), 'sha256': r.sha(body)}
+
+
+def verify_package():
+    r.need(r.binding(r.PACKAGE / 'runner.py')['sha256'] == RUNNER_SHA, 'accepted integration helper changed')
+    handoff = r.load(HERE / 'handoff.json')
+    r.verify(handoff['manifest'])
+    manifest = r.load(HERE / 'artifact-manifest.json')
+    expected = set()
+    for row in manifest['artifacts']:
+        r.verify(row)
+        expected.add(row['relative_path'])
+    actual = set()
+    for base, dirs, files in os.walk(HERE, followlinks=True):
+        for name in files:
+            actual.add(str((Path(base) / name).relative_to(HERE)))
+    r.need(actual == expected | {'handoff.json', 'artifact-manifest.json'}, 'support closure changed')
+    return r.load(HERE / 'archive-plan.json')
+
+
+def verify_execution(plan):
+    for row in plan['execution_bindings']:
+        r.verify(row)
+    done = r.load(EXECUTION / 'completion.json')
+    r.need(done['status'] == 'nine_gates_and_preservation_passed' and done['base'] == r.BASE, 'gates not complete')
+    r.need([x['name'] for x in done['receipts']] == r.GATE_NAMES, 'wrong nine-gate sequence')
+    for receipt in done['receipts']:
+        r.need(receipt['exit_code'] == 0 and receipt['cwd'] == str(r.ROOT), 'unsuccessful or foreign gate')
+        r.verify(receipt['stdout']); r.verify(receipt['stderr'])
+    assay = r.load(ASSAY / 'adoption.json')
+    order = r.load(EXECUTION / 'adoption.json')
+    for key in ('baseline', 'cache_baseline', 'inputs', 'runner', 'plan', 'expected_page_file'):
+        r.verify(assay[key])
+    for key in ('baseline', 'cache_baseline', 'proposal', 'plan', 'root_acceptance', 'runner',
+                'prior_assay_adoption', 'prior_assay_gates'):
+        r.verify(order[key])
+    r.need(order['status'] == 'two_file_runtime_fix_adopted' and order['base'] == r.BASE,
+           'wrong runtime adoption')
+    r.need(order['prior_assay_adoption'] == r.binding(ASSAY / 'adoption.json'), 'assay bridge changed')
+    r.need(order['changes'] == plan['runtime_changes'], 'runtime delta differs from fixed plan')
+    r.need(set(order['changes']) == {'src/pathwaymech/ecocyc_complex.py',
+                                   'tests/test_ecocyc_complex_authority.py'}, 'wrong runtime owners')
+    r.compare(r.load(ASSAY / 'baseline.json')['entries'],
+              r.load(EXECUTION / 'baseline.json')['entries'], assay['additions'],
+              {**assay['changes_before_render'], r.PAGE: assay['expected_page']})
+    r.need(r.load(EXECUTION / 'cache-baseline.json')['entries'] ==
+           r.load(ASSAY / 'cache-baseline.json')['entries'], 'cache baseline bridge differs')
+    r.need(r.sha(r.read(r.ROOT / r.TARGET)) == r.NEW_SHA, 'corrected target changed')
+    return done, {'assay': assay, 'order': order}
+
+
+def preservation(adoption, additional):
+    r.guard()
+    assay, order = adoption['assay'], adoption['order']
+    additions = dict(assay['additions'])
+    r.need(len(additions) == 25, 'expected exact assay evidence and one history addition')
+    r.need(not set(additions) & set(additional), 'archive overlaps adopted files')
+    additions.update(additional)
+    changes = {**assay['changes_before_render'], r.PAGE: assay['expected_page'], **order['changes']}
+    r.need(set(changes) == {r.TARGET, r.PAGE, 'src/pathwaymech/ecocyc_complex.py',
+                           'tests/test_ecocyc_complex_authority.py'}, 'wrong combined changed owners')
+    r.compare(r.load(ASSAY / 'baseline.json')['entries'], r.inventory(r.ROOT), additions, changes)
+    r.need(r.inventory(r.CACHE) == r.load(ASSAY / 'cache-baseline.json')['entries'], 'shared cache changed')
+    return additions
+
+
+def archive_payloads(plan):
+    additions = {}
+    prepared = []
+    for row in plan['copies']:
+        r.verify(row['source']); r.verify(row['payload'])
+        raw = r.read(row['payload']['path'])
+        original = gzip.decompress(raw) if row['encoding'] == 'gzip-exact-bytes' else raw
+        r.need(size_hash(original) == {k: row['source'][k] for k in ('bytes', 'sha256')}, 'archive is not lossless')
+        destination = row['destination']
+        r.need(destination.startswith(ARCHIVE + '/') and '..' not in Path(destination).parts, 'archive escaped owner')
+        r.need(destination not in additions, 'duplicate archive path')
+        r.need(not os.path.lexists(r.ROOT / destination), 'archive destination exists')
+        prepared.append((destination, raw))
+        additions[destination] = size_hash(raw)
+    for destination, raw in prepared:
+        r.new(r.ROOT / destination, raw)
+    for name in plan['seal_copies']:
+        r.need(name in ('handoff.json', 'artifact-manifest.json', 'archive-plan.json'), 'unexpected support seal')
+        raw = r.read(HERE / name)
+        destination = ARCHIVE + '/support/' + name
+        r.new(r.ROOT / destination, raw)
+        additions[destination] = size_hash(raw)
+    return additions
+
+
+def planned_additions(plan, approval):
+    expected = {row['destination']: {key: row['payload'][key] for key in ('bytes', 'sha256')}
+                for row in plan['copies']}
+    r.need(len(expected) == len(plan['copies']), 'duplicate planned archive destination')
+    for name in plan['seal_copies']:
+        r.need(name in ('handoff.json', 'artifact-manifest.json', 'archive-plan.json'), 'unexpected support seal')
+        expected[ARCHIVE + '/support/' + name] = size_hash(r.read(HERE / name))
+    expected[ARCHIVE + '/root-support-acceptance.json'] = size_hash(approval)
+    return expected
+
+
+def output(path, new=True):
+    path = path.absolute()
+    r.need(path.parent == Path('/private/tmp') and path.name.startswith('pathwaymech-next-232-combined-native-'), 'dedicated external output required')
+    if new:
+        path.mkdir()
+    else:
+        r.need(path.is_dir() and not path.is_symlink(), 'unsafe assembly output')
+    return path
+
+
+def check_acceptance(path, handoff):
+    value = r.load(path)
+    r.need(value['status'] == 'accepted' and value['reviewer'] == 'Codex /root' and value['handoff'] == handoff,
+           'exact root support acceptance required')
+    r.need(value['observed'].strip(), 'root acceptance lacks observation')
+    return r.read(path)
+
+
+def make_review(plan, inspection, done, start, finish):
+    fragments = r.load(HERE / 'review-fragments.json')
+    document = copy.deepcopy(fragments['review_fields'])
+    document.update(review_id=review_id(finish),
+                    started_at=start, finished_at=finish, source=inspection['source'], targets=inspection['targets'])
+    document['evidence'] = []
+    evidence = fragments['fixed_evidence'] + plan['execution_evidence']
+    for row in evidence:
+        bound = r.binding(r.ROOT / row['path'])
+        document['evidence'].append({'evidence_id': row['id'], 'kind': row['kind'],
+            'reference': row['path'], 'locator': row['locator'], 'accessed_at': finish,
+            'support': 'supports', 'summary': row['summary'], 'snapshot_sha256': bound['sha256']})
+    document['checks'] = [{'check_id': 'current-' + item['name'], 'name': 'Actual current ' + item['name'],
+        'status': 'passed', 'required': True, 'target_ids': [TID], 'command': shlex.join(item['command']),
+        'exit_code': item['exit_code'], 'summary': 'Actual complete maintained gate after both issue483 target2da6 and issue487 two-file runtime adoption; current command receipt and streams retained, prior assay gates inherited separately.',
+        'evidence_ids': ['integration-gates']} for item in done['receipts']]
+    document['checks'].append({'check_id': 'exact-preservation', 'name': 'Exact post-correction preservation',
+        'status': 'passed', 'required': True, 'target_ids': [TID], 'summary': 'All preexisting worktree/shared-cache identities and bytes retained except exact target/page plus two runtime/test files; original25 assay additions and predeclared final archives remain additive.',
+        'evidence_ids': ['integration-preservation']})
+    return document
+
+
+def assemble(args):
+    plan = verify_package()
+    done, adoption = verify_execution(plan)
+    out = output(args.output)
+    acceptance = check_acceptance(args.acceptance, r.binding(HERE / 'handoff.json'))
+    preservation(adoption, {})
+    additions = archive_payloads(plan)
+    approval_rel = ARCHIVE + '/root-support-acceptance.json'
+    r.new(r.ROOT / approval_rel, acceptance)
+    additions[approval_rel] = size_hash(acceptance)
+    preservation(adoption, additions)
+    fragments = r.load(HERE / 'review-fragments.json')
+    inputs = sorted(set([row['path'] for row in fragments['fixed_evidence']] +
+                        [row['path'] for row in plan['execution_evidence']] +
+                        list(additions) + [adoption['assay']['history'], 'src/pathwaymech/ecocyc_complex.py',
+                         'tests/test_ecocyc_complex_authority.py', 'scripts/record_review.py',
+                         'schema/record_review.yaml', 'docs/record-reviews.md',
+                         'docs/record-review-profile.md', '.claude/skills/review-yaml-record/SKILL.md']))
+    for path in inputs:
+        r.read(r.ROOT / path)
+    cmd = [str(r.PYTHON), '-B', 'scripts/record_review.py', 'inspect', '--targets', str(HERE / 'targets.json')]
+    for path in inputs:
+        cmd += ['--input', path]
+    receipt = r.command(out, 'inspect', cmd)
+    inspection = json.loads(r.read(out / 'inspect.stdout'))
+    r.need(inspection['source']['git_revision'] == r.BASE, 'inspect base changed')
+    document = make_review(plan, inspection, done, receipt['started_at'], review_timestamp())
+    n = native()
+    n['validate_review'](document, r.ROOT / 'schema/record_review.yaml')
+    n['assert_current_source'](r.ROOT, document)
+    body = n['_dump_document'](document).encode()
+    r.need(n['load_document'](body) == document, 'native serialization roundtrip')
+    r.new(out / 'completed-review.yaml', body)
+    r.write_json(out / 'completed-review.json', document)
+    r.write_json(out / 'assembly.json', {'status': 'assembled_pending_root_read_and_native_save',
+        'at': r.now(), 'review': r.binding(out / 'completed-review.json'),
+        'native_preview': r.binding(out / 'completed-review.yaml'),
+        'support': r.binding(HERE / 'handoff.json'), 'root_support_acceptance': r.binding(args.acceptance),
+        'gate_completion': r.binding(EXECUTION / 'completion.json'),
+        'archive_additions': additions, 'inspection': receipt,
+        'scientific_scope': 'Seven bounded/inherited science/integration assessments plus one runtime-order assessment; no full literature rereview.',
+        'maintained_review_saved': False, 'late_history_written': False})
+
+
+def save(args):
+    plan = verify_package()
+    _done, adoption = verify_execution(plan)
+    assembly_dir = output(args.assembly, new=False)
+    assembly = r.load(assembly_dir / 'assembly.json')
+    r.verify(assembly['review']); r.verify(assembly['native_preview']); r.verify(assembly['support'])
+    r.need(assembly['support'] == r.binding(HERE / 'handoff.json'), 'assembly support differs')
+    r.verify(assembly['root_support_acceptance'])
+    approval = check_acceptance(Path(assembly['root_support_acceptance']['path']), r.binding(HERE / 'handoff.json'))
+    r.need(assembly['archive_additions'] == planned_additions(plan, approval), 'assembly archive allowlist differs from fixed plan')
+    r.need(assembly['gate_completion'] == r.binding(EXECUTION / 'completion.json'), 'assembly gates differ')
+    preservation(adoption, assembly['archive_additions'])
+    read_receipt = r.load(args.root_read)
+    r.need(read_receipt['status'] == 'accepted' and read_receipt['reviewer'] == 'Codex /root', 'root read required')
+    r.need(read_receipt['review'] == assembly['review'] and read_receipt['observed'].strip(), 'wrong assembled review acceptance')
+    document = r.load(assembly['review']['path'])
+    finish = review_timestamp()
+    n = native()
+    r.need(n['timestamp'](document['started_at']) <= n['timestamp'](read_receipt['finished_at']) <= n['timestamp'](finish), 'invalid root read timing')
+    document['finished_at'] = finish
+    document['review_id'] = review_id(finish)
+    n['validate_review'](document, r.ROOT / 'schema/record_review.yaml')
+    n['assert_current_source'](r.ROOT, document)
+    raw = n['_dump_document'](document).encode()
+    r.need(n['load_document'](raw) == document, 'serialized review differs')
+    n['validate_review'](n['load_document'](raw), r.ROOT / 'schema/record_review.yaml')
+    markdown = n['render_markdown'](document, r.ROOT / 'schema/record_review.yaml').encode()
+    out = output(args.output)
+    r.new(out / 'completed-review.yaml', raw)
+    r.new(out / 'root-read-receipt.json', r.read(args.root_read))
+    r.write_json(out / 'serialization.json', {'status': 'passed', 'at': r.now(), 'input_assembly': r.binding(assembly_dir / 'assembly.json'),
+        'native_helper': r.binding(r.ROOT / 'scripts/record_review.py'), 'output': r.binding(out / 'completed-review.yaml'),
+        'validated_after_native_dump': True, 'root_read': r.binding(args.root_read)})
+    bundle = 'reviews/structured/' + document['review_id']
+    new_review = {bundle + '/review.yaml': size_hash(raw), bundle + '/review.md': size_hash(markdown)}
+    r.need(all(not os.path.lexists(r.ROOT / p) for p in new_review), 'review destination exists')
+    py = [str(r.PYTHON), '-B']
+    commands = [
+        ('validate', py + ['scripts/record_review.py', 'validate', str(out / 'completed-review.yaml')]),
+        ('save', py + ['scripts/record_review.py', 'save', '--content', str(out / 'completed-review.yaml')]),
+        ('check', py + ['scripts/record_review.py', 'check', '--require-reviews', '--base', r.BASE]),
+        ('site-current', py + ['-c', 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))']),
+        ('diff-check', ['git', 'diff', '--check'])]
+    receipts = []
+    for name, command in commands:
+        r.guard()
+        n['assert_current_source'](r.ROOT, document)
+        receipts.append(r.command(out, name, command))
+    r.need(r.read(r.ROOT / (bundle + '/review.yaml')) == raw and r.read(r.ROOT / (bundle + '/review.md')) == markdown, 'saved bundle differs from governed prediction')
+    additions = {**assembly['archive_additions'], **new_review}
+    preservation(adoption, additions)
+    # Fixed receipt names only. No scan-derived additions or new curation/history.
+    sources = [(assembly_dir / 'assembly.json', 'assembly.json'),
+               (assembly_dir / 'inspect.receipt.json', 'inspect.receipt.json'),
+               (assembly_dir / 'inspect.stdout', 'inspect.stdout.gz'),
+               (assembly_dir / 'inspect.stderr', 'inspect.stderr.gz'),
+               (out / 'root-read-receipt.json', 'root-read-receipt.json'),
+               (out / 'serialization.json', 'serialization.json')]
+    for name, _ in commands:
+        sources += [(out / (name + '.receipt.json'), name + '.receipt.json'),
+                    (out / (name + '.stdout'), name + '.stdout.gz'),
+                    (out / (name + '.stderr'), name + '.stderr.gz')]
+    mapping = []
+    for source, relative in sources:
+        original = r.read(source)
+        body = gzip.compress(original, mtime=0) if relative.endswith('.gz') else original
+        destination = FINAL + '/' + relative
+        r.new(r.ROOT / destination, body)
+        additions[destination] = size_hash(body)
+        mapping.append({'source': r.binding(source), 'destination': destination,
+                        'encoding': 'gzip-exact-bytes' if relative.endswith('.gz') else 'exact-bytes',
+                        'archived': size_hash(body)})
+    map_body = (json.dumps(mapping, indent=2) + '\n').encode()
+    r.new(r.ROOT / (FINAL + '/archive-map.json'), map_body)
+    additions[FINAL + '/archive-map.json'] = size_hash(map_body)
+    preservation(adoption, additions)
+    final_proof = {'status': 'passed', 'at': r.now(), 'base': r.BASE,
+        'gate_completion': r.binding(EXECUTION / 'completion.json'), 'native_receipts': receipts,
+        'saved_yaml': r.binding(r.ROOT / (bundle + '/review.yaml')),
+        'saved_markdown': r.binding(r.ROOT / (bundle + '/review.md')),
+        'all_planned_additions': additions,
+        'scope': 'Complete baseline/cache preservation after native pair and fixed receipt archives; this proof is appended by exact bytes only afterward. No late history, record, runtime, authority or page changes.',
+        'github_commit_merge': 'pending; no Git/GitHub writes performed'}
+    r.write_json(out / 'final-preservation.json', final_proof)
+    proof_raw = r.read(out / 'final-preservation.json')
+    r.new(r.ROOT / (FINAL + '/final-preservation.json'), proof_raw)
+    r.need(r.read(r.ROOT / (FINAL + '/final-preservation.json')) == proof_raw, 'final proof copy differs')
+    r.write_json(out / 'completion.json', {'status': 'native_saved_checked_and_fixed_receipts_archived', 'at': r.now(),
+        'proof': r.binding(r.ROOT / (FINAL + '/final-preservation.json')),
+        'proof_scope': 'All old state was verified immediately before adding the exact proof itself.',
+        'saved_yaml': final_proof['saved_yaml'], 'saved_markdown': final_proof['saved_markdown']})
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest='phase', required=True)
+    a = sub.add_parser('assemble'); a.add_argument('--acceptance', type=Path, required=True); a.add_argument('--output', type=Path, required=True)
+    s = sub.add_parser('save'); s.add_argument('--assembly', type=Path, required=True); s.add_argument('--root-read', type=Path, required=True); s.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    r.need(sys.dont_write_bytecode, 'pinned python -B required')
+    if args.phase == 'assemble':
+        assemble(args)
+    else:
+        save(args)
+    print(json.dumps({'phase': args.phase, 'output': str(args.output), 'status': 'passed'}))
+
+
+if __name__ == '__main__':
+    main()

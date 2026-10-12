@@ -5,11 +5,15 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import os
+import subprocess
+import sys
 from xml.etree import ElementTree as ET
 
 import pytest
 import yaml
 
+from pathwaymech import ecocyc_complex
 from pathwaymech.ecocyc_complex import ECOCYC_COMPLEX_KIND, complex_metadata, complex_term
 from pathwaymech.identifiers import _load_authority, identifier_errors
 from scripts.build_source_identifier_snapshot import build_snapshot
@@ -96,6 +100,46 @@ def build(tmp_path, entries, selected="ASSEMBLY"):
     manifest = tmp_path / "manifest.json"
     manifest.write_text(json.dumps(entries))
     return build_snapshot(manifest, records, tmp_path)
+
+
+def test_complex_provenance_serialization_is_stable_across_processes(tmp_path):
+    items = [
+        entry(tmp_path, shape, frame, name=frame + ".xml")
+        for shape, frame in [("unnamed", "HOMOMER"), ("synonym", "TRANSPORTER")]
+    ]
+    manifest = tmp_path / "entries.json"
+    manifest.write_text(json.dumps(items))
+    script = """
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+spec = importlib.util.spec_from_file_location("complex_authority", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+manifest = Path(sys.argv[2])
+items = json.loads(manifest.read_text())
+result = [module.complex_metadata(item, manifest.parent) for item in items]
+print(json.dumps(result))
+"""
+    outputs = [
+        subprocess.check_output(
+            [sys.executable, "-B", "-c", script, ecocyc_complex.__file__, str(manifest)],
+            env={**os.environ, "PYTHONHASHSEED": str(seed)},
+            text=True,
+        )
+        for seed in (0, 1, 2, 3, 42)
+    ]
+    # Sorting keys would hide precisely the serialization defect this tests.
+    assert all(output == outputs[0] for output in outputs[1:])
+    metadata = json.loads(outputs[0])
+    fields = ["license", "url", "version", "sha256"]
+    for source in metadata:
+        assert list(source) == fields + ["kind", "native_complex"]
+    proof = metadata[1]["native_complex"]["class_source"]
+    assert list(proof) == fields + ["id", "label", "subclasses", "instances"]
+    assert metadata == [complex_metadata(item, tmp_path) for item in items]
 
 
 @pytest.mark.parametrize(

@@ -1,0 +1,63 @@
+import ast,copy,datetime,difflib,hashlib,json,os,subprocess,sys
+from pathlib import Path
+A=Path('/private/tmp/pathwaymech-next-232-provenance-order-fix-review-20261012');P=Path('/private/tmp/pathwaymech-next-232-provenance-order-fix-20261012');W=Path('/private/tmp/pathwaymech-next-232-20261012');PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+load=lambda p:json.loads(Path(p).read_bytes())
+def bind(p):
+ p=Path(p);b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+plan=load(P/'integration-plan.json')
+for row in plan['changes']:
+ for key in ['before','after']:assert bind(row[key]['path'])==row[key]
+assert [r['relative_path'] for r in plan['changes']]==['src/pathwaymech/ecocyc_complex.py','tests/test_ecocyc_complex_authority.py']
+diff=''
+for row in plan['changes']:
+ old=Path(row['before']['path']).read_text();new=Path(row['after']['path']).read_text()
+ diff+=''.join(difflib.unified_diff(old.splitlines(True),new.splitlines(True),fromfile='a/'+row['relative_path'],tofile='b/'+row['relative_path']))
+assert diff==(P/'correction.patch').read_text()
+oldpath=W/'src/pathwaymech/ecocyc_complex.py';newpath=P/'candidate/src/pathwaymech/ecocyc_complex.py';oldast=ast.parse(oldpath.read_text());newast=ast.parse(newpath.read_text())
+fields=next(n for n in newast.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='PROVENANCE_FIELDS' for t in n.targets));assert ast.literal_eval(fields.value)==('license','url','version','sha256')
+oldset=next(n.value for n in oldast.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='PROVENANCE' for t in n.targets));assert set(ast.literal_eval(oldset))==set(ast.literal_eval(fields.value))
+newast.body.remove(fields);newassign=next(n for n in newast.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='PROVENANCE' for t in n.targets));assert isinstance(newassign.value,ast.Call) and isinstance(newassign.value.func,ast.Name) and newassign.value.func.id=='set' and len(newassign.value.args)==1 and newassign.value.args[0].id=='PROVENANCE_FIELDS' and not newassign.value.keywords;newassign.value=copy.deepcopy(oldset)
+changes=0
+for n in ast.walk(newast):
+ if isinstance(n,ast.comprehension) and isinstance(n.iter,ast.Name) and n.iter.id=='PROVENANCE_FIELDS':n.iter.id='PROVENANCE';changes+=1
+assert changes==4;assert ast.dump(newast,include_attributes=False)==ast.dump(oldast,include_attributes=False)
+# Same new regression against exact old/candidate modules, isolated subprocesses.
+child='''import importlib.util,sys,traceback
+from pathlib import Path
+sys.path[:0]=['/private/tmp/pathwaymech-next-232-20261012/src','/private/tmp/pathwaymech-next-232-20261012']
+import pathwaymech
+p=sys.argv[1]
+spec=importlib.util.spec_from_file_location('pathwaymech.ecocyc_complex',p);m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m);pathwaymech.ecocyc_complex=m
+spec=importlib.util.spec_from_file_location('order_candidate_test',sys.argv[2]);t=importlib.util.module_from_spec(spec);spec.loader.exec_module(t)
+t.test_complex_provenance_serialization_is_stable_across_processes(Path(sys.argv[3]))
+print('new cross-process regression passed')
+'''
+(A/'regression_child.py').write_text(child)
+receipts=[]
+for name,module in [('old',oldpath),('candidate',newpath)]:
+ scratch=A/(name+'-regression');scratch.mkdir();cmd=[PY,'-B',str(A/'regression_child.py'),str(module),str(P/'candidate/tests/test_ecocyc_complex_authority.py'),str(scratch)];start=datetime.datetime.now(datetime.UTC).isoformat();r=subprocess.run(cmd,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1'},capture_output=True)
+ (A/(name+'.stdout')).write_bytes(r.stdout);(A/(name+'.stderr')).write_bytes(r.stderr)
+ assert r.returncode==(1 if name=='old' else 0),(name,r.stderr.decode())
+ if name=='old':assert b'assert all(output == outputs[0]' in r.stderr and b'AssertionError' in r.stderr
+ receipts.append({'name':name,'argv':cmd,'started_at':start,'finished_at':datetime.datetime.now(datetime.UTC).isoformat(),'exit_code':r.returncode,'expected_failure':name=='old','stdout':bind(A/(name+'.stdout')),'stderr':bind(A/(name+'.stderr'))})
+# Independent complete-original replay uses different seeds and the existing whole snapshot.
+child2='''import importlib.util,json,sys
+from pathlib import Path
+module=Path(sys.argv[1]);spec=importlib.util.spec_from_file_location('candidate_complex',module);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+w=Path('/private/tmp/pathwaymech-next-232-20261012');cache=Path('/private/tmp/pathwaymech-curation-authorities/sources');entries=json.loads((w/'conf/identifier_sources.json').read_bytes());out={}
+for entry in entries:
+ if entry['key'] in ['nad232-ecoli-cplx0-682','nad232-ecoli-pyrnutranshydrogen-cplx']:
+  md=m.complex_metadata(entry,cache);identifier,term=m.complex_term(md,entry['key']);out[entry['key']]={'metadata':md,'id':identifier,'term':term}
+print(json.dumps(out,ensure_ascii=False))
+'''
+(A/'whole_original_child.py').write_text(child2)
+snapshot=load(W/'data/identifier_authorities/sources.json');outputs=[]
+for seed in [7,11,99]:
+ cmd=[PY,'-B',str(A/'whole_original_child.py'),str(newpath)];start=datetime.datetime.now(datetime.UTC).isoformat();r=subprocess.run(cmd,env={**os.environ,'PYTHONHASHSEED':str(seed),'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1'},capture_output=True)
+ (A/f'whole-{seed}.stdout').write_bytes(r.stdout);(A/f'whole-{seed}.stderr').write_bytes(r.stderr);assert r.returncode==0,r.stderr
+ d=json.loads(r.stdout);expected={k:{'metadata':snapshot['sources'][k],'id':v['id'],'term':snapshot['terms'][v['id']]} for k,v in d.items()}
+ assert r.stdout.decode()==json.dumps(expected,ensure_ascii=False)+'\n';outputs.append(r.stdout)
+ receipts.append({'seed':seed,'argv':cmd,'started_at':start,'finished_at':datetime.datetime.now(datetime.UTC).isoformat(),'exit_code':0,'stdout':bind(A/f'whole-{seed}.stdout'),'stderr':bind(A/f'whole-{seed}.stderr')})
+assert outputs[0]==outputs[1]==outputs[2]
+result={'at':datetime.datetime.now(datetime.UTC).isoformat(),'status':'bounded_patch_review_passed_pending_author_seal','source_AST_delta':'One explicit four-field tuple; unchanged provenance set membership; four comprehension iterators changed; every other AST node exact.','test_delta':'One cross-process unsorted serialization regression plus required imports; full source diff reconstructed and read.','candidate':plan['changes'],'old_regression_failed_at_intended_unsorted_equality':True,'candidate_regression_passed':True,'whole_original_seeds':[7,11,99],'all_complete_metadata_and_terms_unsorted_serialization_exact_to_existing_snapshot':True,'receipts':receipts,'full_runtime_tests_not_repeated':True,'maintained_mutations':False}
+(A/'patch-review.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'status':result['status'],'own_regression_checks':2,'whole_original_seeds':[7,11,99],'all_passed':True}))

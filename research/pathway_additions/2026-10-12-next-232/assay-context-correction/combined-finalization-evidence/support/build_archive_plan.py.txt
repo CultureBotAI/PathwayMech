@@ -1,0 +1,182 @@
+"""Bind completed issue487 gates and a fixed compact archive; never run gates."""
+
+import copy
+import gzip
+import json
+from pathlib import Path
+
+import finalize as f
+
+r, P, E, A = f.r, f.HERE, f.EXECUTION, f.ARCHIVE
+S = f.ASSAY
+FIX = Path('/private/tmp/pathwaymech-next-232-provenance-order-fix-20261012')
+REVIEW = Path('/private/tmp/pathwaymech-next-232-provenance-order-fix-review-20261012')
+ISSUES = Path('/private/tmp/pathwaymech-native-owner-order-issues-20261012')
+complete = r.load(E / 'completion.json')
+r.need(complete['status'] == 'nine_gates_and_preservation_passed', 'actual combined gates pending')
+r.need([x['name'] for x in complete['receipts']] == r.GATE_NAMES, 'wrong actual sequence')
+for item in complete['receipts']:
+    r.need(item['exit_code'] == 0, 'unsuccessful current gate')
+    r.verify(item['stdout']); r.verify(item['stderr'])
+adoption = r.load(E / 'adoption.json')
+science = r.load(S / 'adoption.json')
+fix_plan = r.load(FIX / 'integration-plan.json')
+runtime_changes = {row['relative_path']: {k: row['after'][k] for k in ('bytes', 'sha256')}
+                   for row in fix_plan['changes']}
+r.need(adoption['changes'] == runtime_changes, 'runtime changes differ from accepted proposal')
+review_handoff = r.load(REVIEW / 'handoff.json')
+r.verify(review_handoff['manifest'])
+
+# Reconstruct the redundant order pre-adoption snapshots exactly from the original
+# baseline and a small, explicitly checked delta. No whole baseline is duplicated.
+old = r.load(S / 'baseline.json')['entries']
+later = r.load(E / 'baseline.json')['entries']
+science_changes = {**science['changes_before_render'], r.PAGE: science['expected_page']}
+r.compare(old, later, science['additions'], science_changes)
+delta = {key: value for key, value in later.items() if key not in old or value != old[key]}
+rebuilt = copy.deepcopy(old)
+rebuilt.update(delta)
+ordered = {key: rebuilt[key] for key in sorted(rebuilt, key=lambda key: key.split('/'))}
+order_raw = (json.dumps({'entries': ordered}, indent=2, ensure_ascii=False) + '\n').encode()
+r.need(order_raw == r.read(E / 'baseline.json'), 'lossless order baseline reconstruction failed')
+cache = r.load(S / 'cache-baseline.json')['entries']
+cache_raw = (json.dumps({'entries': cache}, indent=2, ensure_ascii=False) + '\n').encode()
+r.need(cache_raw == r.read(E / 'cache-baseline.json'), 'lossless cache bridge failed')
+r.write_json(P / 'baseline-bridge.json', {
+    'status': 'exact_byte_reconstruction_verified',
+    'original': r.binding(S / 'baseline.json'), 'later': r.binding(E / 'baseline.json'),
+    'cache_original': r.binding(S / 'cache-baseline.json'),
+    'cache_later': r.binding(E / 'cache-baseline.json'),
+    'delta_entries': delta, 'removed_entries': [],
+    'expected_additions': science['additions'], 'expected_changes': science_changes,
+    'serialization': 'UTF-8 json.dumps({entries: entries}, indent=2, ensure_ascii=False) plus newline; working-tree keys in lexicographic path-component preorder; original cache entries order unchanged',
+    'reconstruction_code': r.binding(Path(__file__)),
+})
+
+rows = []
+
+
+def add(source, relative, compress=False):
+    source = Path(source)
+    body = r.read(source)
+    if compress:
+        payload, encoding = gzip.compress(body, mtime=0), 'gzip-exact-bytes'
+        relative += '.gz'
+    else:
+        payload, encoding = body, 'exact-bytes'
+        if source.suffix not in ('.pdf', '.png'):
+            r.need(all(line.rstrip(' \t') == line for line in body.decode().splitlines()),
+                   'archive has trailing whitespace: ' + str(source))
+    destination, payload_path = A + '/' + relative, P / 'payloads' / relative
+    r.need(not any(row['destination'] == destination for row in rows), 'duplicate destination')
+    r.new(payload_path, payload)
+    rows.append({'source': r.binding(source), 'destination': destination,
+                 'payload': r.binding(payload_path), 'encoding': encoding})
+
+
+for name in ['completion.json', 'preservation.json', 'adoption.json', 'inputs.json',
+             'expected-history.json', 'history.receipt.json']:
+    add(S / name, 'assay-integration/' + name)
+for name in ['baseline.json', 'cache-baseline.json', 'old-page.html',
+             'expected-target-page.html', 'history.stdout', 'history.stderr']:
+    add(S / name, 'assay-integration/' + name, True)
+add(S / 'old-target.yaml', 'assay-integration/old-target.yaml.txt')
+for execution, directory in [(S, 'prior-assay-gates'), (E, 'current-combined-gates')]:
+    for name in r.GATE_NAMES:
+        for suffix in ['receipt.json', 'stdout', 'stderr']:
+            add(execution / 'gates' / f'{name}.{suffix}', directory + f'/{name}.{suffix}',
+                suffix != 'receipt.json')
+for name in ['adoption.json', 'completion.json', 'preservation.json']:
+    add(E / name, 'order-integration/' + name)
+add(P / 'baseline-bridge.json', 'order-integration/baseline-bridge.json')
+for name in ['runner.py', 'plan.json', 'handoff.json', 'artifact-manifest.json',
+             'README.md', 'bounded-guard-checks.json', 'projection-checks.json']:
+    add(r.PACKAGE / name, 'assay-support/' + name + ('.txt' if name.endswith('.py') else ''))
+add('/private/tmp/pathwaymech-next-232-root-assay-integration-acceptance-20261012.json',
+    'assay-support/root-acceptance.json')
+add(adoption['runner']['path'], 'order-support/run.py.txt')
+add(adoption['root_acceptance']['path'], 'order-support/root-acceptance.json')
+for name in ['handoff.json', 'README.md', 'correction.patch', 'baseline-bindings.json',
+             'integration-plan.json', 'issue-and-diagnosis-bindings.json',
+             'execution-summary.json', 'whole-original-check/proof.json']:
+    add(FIX / name, 'order-fix/' + name, name == 'correction.patch')
+add(FIX / 'artifact-manifest.json', 'order-fix/artifact-manifest.json', True)
+for folder, names in [
+    ('checks-successor', ['baseline-regression', 'candidate-focused', 'candidate-lint']),
+    ('final-checks', ['lint', 'format']),
+]:
+    for name in names:
+        for suffix in ['-execution.json', '.stdout', '.stderr']:
+            add(FIX / folder / (name + suffix), 'order-fix/' + folder + '/' + name + suffix,
+                suffix != '-execution.json')
+for seed in (0, 1, 2, 3, 42):
+    for suffix in ('.json', '.stderr'):
+        add(FIX / 'whole-original-check' / f'seed-{seed}{suffix}',
+            f'order-fix/whole-original-check/seed-{seed}{suffix}', suffix == '.stderr')
+proof = r.load(FIX / 'whole-original-check/proof.json')
+for item in proof['originals']:
+    r.verify(item)
+    add(item['path'], 'issuing-originals/' + Path(item['path']).name, True)
+for name in ['REPORT.md', 'patch-review.json', 'seal-check.json', 'disposition.json',
+             'handoff.json', 'artifact-manifest.json', 'review_patch_v2.py',
+             'regression_child.py', 'whole_original_child.py', 'old.stderr',
+             'candidate.stdout', 'whole-7.stdout', 'execution-history.json']:
+    add(REVIEW / name, 'order-independent/' + name + ('.txt' if name.endswith('.py') else ''),
+        name.endswith(('.stdout', '.stderr')))
+for name in ['2-body.md', '2-create.receipt.json', 'created.json']:
+    add(ISSUES / name, 'issue487/' + name)
+for name in ['2-create.stdout', '2-create.stderr']:
+    add(ISSUES / name, 'issue487/' + name, True)
+for name in ['finalize.py', 'review-fragments.json', 'targets.json', 'prepare_fragments.py',
+             'build_archive_plan.py', 'README.md', 'inheritance.json']:
+    add(P / name, 'support/' + name + ('.txt' if name.endswith('.py') else ''))
+r.write_json(P / 'archive-map.json', rows)
+add(P / 'archive-map.json', 'archive-map.json')
+
+
+def evidence(eid, kind, relative, locator, summary):
+    return {'id': eid, 'kind': kind, 'path': A + '/' + relative,
+            'locator': locator, 'summary': summary}
+
+
+ev = [
+    evidence('old-target', 'record_content', 'assay-integration/old-target.yaml.txt',
+             'description paragraph7 and all unchanged fields', 'Exact predecessor96e493 retained once.'),
+    evidence('integration-adoption', 'validation', 'assay-integration/adoption.json',
+             'fixed25 additions and exact pre-render EDIT', 'Actual accepted assay correction adoption.'),
+    evidence('integration-history', 'validation', 'assay-integration/history.receipt.json',
+             'native history exit0', 'One actual issue483 EDIT before render; no later history.'),
+    evidence('prior-assay-gates', 'validation', 'assay-integration/completion.json',
+             'historical nine-gate execution', 'Successful earlier issue483-only gates; runtime was later corrected.'),
+    evidence('runtime-adoption', 'validation', 'order-integration/adoption.json',
+             'exact two runtime/test owners', 'Issue487 adoption preserves record, page, history and snapshots.'),
+    evidence('integration-preservation', 'validation', 'order-integration/preservation.json',
+             'fresh post-both-corrections baseline/cache proof', 'Actual preservation after current nine gates.'),
+    evidence('integration-gates', 'validation', 'order-integration/completion.json',
+             'all nine actual current gate receipts', 'Complete maintained gates after both corrections.'),
+    evidence('runtime-proposal', 'prior_review', 'order-fix/handoff.json',
+             'bounded two-file proposal with retained failures', 'Exact author proposal; independent review is separate.'),
+    evidence('runtime-patch', 'record_content', 'order-fix/correction.patch.gz',
+             'two files only', 'Explicit stable provenance sequence and cross-process regression.'),
+    evidence('runtime-original-proof', 'validation', 'order-fix/whole-original-check/proof.json',
+             'five seeded subprocesses plus three exact XML hashes', 'Original-source replay preserves existing metadata and term byte order.'),
+    evidence('runtime-independent', 'prior_review', 'order-independent/REPORT.md',
+             'complete bounded fix review', 'Independent regression and original-source reassessment of issue487.'),
+    evidence('runtime-root-acceptance', 'prior_review', 'order-support/root-acceptance.json',
+             'exact author/reviewer binding', 'Root accepted the exact runtime correction.'),
+    evidence('runtime-issue', 'prior_review', 'issue487/2-create.receipt.json',
+             'actual GitHub creation receipt', 'External issue487, not an invented native previous occurrence.'),
+]
+plan = {
+    'base': r.BASE, 'target_sha256': r.NEW_SHA, 'runtime_changes': runtime_changes,
+    'copies': rows, 'seal_copies': ['handoff.json', 'artifact-manifest.json', 'archive-plan.json'],
+    'execution_bindings': [r.binding(E / x) for x in ('completion.json', 'preservation.json',
+                                                   'adoption.json', 'baseline.json', 'cache-baseline.json')]
+       + [r.binding(S / x) for x in ('completion.json', 'preservation.json', 'adoption.json')],
+    'execution_evidence': ev,
+    'copy_scope': 'Fixed selected actual files only; lossless gzip originals, one original baseline/cache and exact later snapshot bridge. Python archives are inert. Scratch fixtures and unchanged dossiers are not copied.',
+    'later_fixed_native_archive': 'assembly.json, inspect receipt/stdout/stderr, root-read receipt, serialization, five declared command receipt/stdout/stderr triplets, archive-map.json, exact final-preservation.json; two predicted governed review files.',
+}
+r.write_json(P / 'archive-plan.json', plan)
+print(json.dumps({'copies': len(rows), 'archive_bytes': sum(x['payload']['bytes'] for x in rows),
+                  'plan': r.binding(P / 'archive-plan.json')}))
