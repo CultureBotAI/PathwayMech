@@ -1,0 +1,44 @@
+from datetime import datetime, timezone
+from pathlib import Path
+import hashlib
+import json
+import os
+import subprocess
+
+root = Path(__file__).parent
+commands = json.loads((root / 'commands.json').read_text())
+assert not commands['executed']
+assert not (root / 'execution.json').exists()
+env = os.environ.copy()
+env.update(commands['environment'])
+receipt = {
+    'status': 'running',
+    'scope': 'Prospective purine pathway authority builds against reviewed PR430 head; maintained adoption awaits the merged-tree bridge.',
+    'base_commit': '5a4f2c2aa491eac8143338fdf64f146fbd6f08a2',
+    'receipts': [],
+}
+for name in ('source_builder', 'ontology_builder', 'verification'):
+    row = {'name': name, 'command': commands[name], 'cwd': commands['cwd'],
+           'started_at': datetime.now(timezone.utc).isoformat()}
+    print(json.dumps({'starting': name, 'at': row['started_at']}), flush=True)
+    stdout = root / (name + '.stdout.log')
+    stderr = root / (name + '.stderr.log')
+    with stdout.open('xb') as out, stderr.open('xb') as err:
+        result = subprocess.run(commands[name], cwd=commands['cwd'], env=env,
+                                stdout=out, stderr=err)
+    row.update(exit_code=result.returncode,
+               finished_at=datetime.now(timezone.utc).isoformat())
+    for key, path in [('stdout', stdout), ('stderr', stderr)]:
+        body = path.read_bytes()
+        row[key] = {'path': str(path), 'bytes': len(body),
+                    'sha256': hashlib.sha256(body).hexdigest()}
+    receipt['receipts'].append(row)
+    receipt['status'] = 'running' if result.returncode == 0 else 'failed'
+    (root / 'execution.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps(row), flush=True)
+    if result.returncode:
+        print(stderr.read_text(errors='replace')[-5000:], flush=True)
+        raise SystemExit(result.returncode)
+receipt['status'] = 'passed'
+(root / 'execution.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'status': 'passed', 'execution': str(root / 'execution.json')}), flush=True)

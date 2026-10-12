@@ -1,0 +1,42 @@
+"""Bounded helper controls only; no corpus build, copying or maintained writes."""
+from pathlib import Path
+import ast, copy, hashlib, importlib.util, json
+import yaml
+
+O=Path(__file__).parent
+for p in O.glob('*.py'):ast.parse(p.read_text(),filename=str(p))
+spec=importlib.util.spec_from_file_location('verify',O/'verify-canonical-results.py')
+module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+base=json.loads((O/'baseline.json').read_bytes());delta=json.loads((O/'expected-delta.json').read_bytes())
+checks=[]
+for name,prefix in [('sources','source'),('ontology','ontology')]:
+    r=next(r for r in base['authority_inputs'] if r['relative_path']==f'data/identifier_authorities/{name}.json')
+    old=json.loads(Path(r['path']).read_bytes());terms=delta[prefix+'_terms'];metadata=delta[prefix+'_metadata']
+    expected={'version':old['version'],'terms':old['terms']|terms,'sources':old['sources']|metadata}
+    module.assess(expected,old,terms,metadata);checks.append(name+':exact bounded expectation accepted (synthetic union; no builder run)')
+    fixtures=[]
+    x=copy.deepcopy(expected);del x['terms'][next(iter(old['terms']))];fixtures.append(('old term omitted',x))
+    x=copy.deepcopy(expected);x['terms'][next(iter(old['terms']))]['source']='unexpected-source';fixtures.append(('old source choice changed',x))
+    x=copy.deepcopy(expected);x['terms'][next(iter(terms))]['synonyms'].append('unsupported alias');fixtures.append(('new alias invented',x))
+    x=copy.deepcopy(expected);x['sources'][next(iter(old['sources']))]['version']='different';fixtures.append(('old metadata changed',x))
+    x=copy.deepcopy(expected);x['sources']['unexpected']={'url':'unexpected'};fixtures.append(('extra metadata',x))
+    x=copy.deepcopy(expected);x['terms']['UNEXPECTED:1']={'label':'x','source':'x','synonyms':[]};fixtures.append(('extra term',x))
+    for label,x in fixtures:
+        try:module.assess(x,old,terms,metadata)
+        except AssertionError:checks.append(name+':rejected '+label)
+        else:raise AssertionError(label)
+target=yaml.load(Path(delta['target']['path']).read_bytes(),Loader=yaml.CSafeLoader)
+named={target['id']}|{n['id'] for f in ['taxa','participants','reactions'] for n in target[f]}
+old_source=json.loads(Path(next(r['path'] for r in base['authority_inputs'] if r['relative_path'].endswith('/sources.json'))).read_bytes())
+old_onto=json.loads(Path(next(r['path'] for r in base['authority_inputs'] if r['relative_path'].endswith('/ontology.json'))).read_bytes())
+available=set(old_source['terms'])|set(old_onto['terms'])|set(delta['source_terms'])|set(delta['ontology_terms'])
+assert named<=available and len(named)==76
+retention=json.loads((O/'retention-identifiers.json').read_bytes())['ids']
+assert set(retention)==set(old_source['terms'])|set(old_onto['terms']) and len(retention)==4192
+manifest=json.loads((O/'prospective-manifest.json').read_bytes())
+old_manifest=json.loads(Path(next(r['path'] for r in base['authority_inputs'] if r['relative_path']=='conf/identifier_sources.json')).read_bytes())
+assert manifest[:651]==old_manifest
+assert [r['entry'] for r in json.loads(Path('/private/tmp/pathwaymech-next-224-author-20261011/authority-proposal-final.json').read_bytes())['proposed_manifest_additions']]==manifest[651:]
+result={'status':'passed','positive_preservation_controls':2,'negative_preservation_controls':12,'checks':checks,'all_named_target_ids_accounted':76,'all_old_retention_ids':4192,'historical_manifest_objects_exact':651,'new_manifest_objects_exact':12,'helpers_syntax_checked':True,'preparation_helper_executed':False,'copy_plan_executed':False,'canonical_build_executed':False}
+with (O/'helper-controls.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps(result,indent=2))

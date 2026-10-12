@@ -1,0 +1,98 @@
+from pathlib import Path
+from collections import Counter
+import csv
+import datetime
+import hashlib
+import json
+import subprocess
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-224-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-224-finalization-20261012')
+BASELINE = Path('/private/tmp/pathwaymech-next-224-integration-preparation-20261011/baseline-kgx.json')
+TARGET = ROOT / 'data/pathways/adenosine-nucleotides-degradation-ii.yaml'
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+
+assert sha(BASELINE) == '7f112c537d3c4816d27359e78f0f36192e228a4e2c889129e9465fa256a0db78'
+assert sha(TARGET) == 'b7f837be8676b08c9a8a0f417ca17a695664e8614b30e7847f4f7e05c845cbf6'
+old = json.loads(BASELINE.read_bytes())
+with (ROOT / 'pages/downloads/nodes.tsv').open(newline='') as stream:
+    nodes = {r['id']: r for r in csv.DictReader(stream, delimiter='\t')}
+actual = []
+for identifier, before in old['nodes'].items():
+    assert identifier in nodes
+    for column, value in before['display'].items():
+        if nodes[identifier][column] != value:
+            actual.append({'id': identifier, 'column': column, 'before': value, 'after': nodes[identifier][column]})
+actual.sort(key=lambda r: (r['id'], r['column']))
+expected = [
+    {'id': 'CHEBI:29108', 'column': 'category', 'before': 'biolink:ChemicalEntity', 'after': 'biolink:ChemicalEntity|biolink:SmallMolecule'},
+    {'id': 'CHEBI:29108', 'column': 'source_category', 'before': 'cofactor', 'after': 'cofactor|small_molecule'},
+    {'id': 'CHEBI:71302', 'column': 'category', 'before': 'biolink:SmallMolecule', 'after': 'biolink:ChemicalEntity|biolink:SmallMolecule'},
+    {'id': 'CHEBI:71302', 'column': 'source_category', 'before': 'small_molecule', 'after': 'cofactor|small_molecule'},
+]
+assert actual == expected
+record = yaml.safe_load(TARGET.read_bytes())
+participants = {p['id']: p for p in record['participants']}
+edges = {e['id']: e for e in record['mechanistic_edges']}
+assert participants['CHEBI:29108']['category'] == 'small_molecule'
+assert participants['CHEBI:71302']['category'] == 'cofactor'
+assert (edges['adenosine-degradation-083']['subject'], edges['adenosine-degradation-083']['predicate'], edges['adenosine-degradation-083']['object']) == ('CHEBI:29108', 'inhibits', 'UniProtKB:P0AE22')
+assert (edges['adenosine-degradation-068']['subject'], edges['adenosine-degradation-068']['predicate'], edges['adenosine-degradation-068']['object']) == ('UniProtKB:Q46799', 'has_cofactor', 'CHEBI:71302')
+context_rows = []
+for identifier in ('CHEBI:29108', 'CHEBI:71302'):
+    current = json.loads(nodes[identifier]['source_contexts'])
+    prior = [c for c in current if c['record_id'] != record['id']]
+    addition = [c for c in current if c['record_id'] == record['id']]
+    assert Counter(digest(c) for c in prior) == Counter(old['nodes'][identifier]['context_hash_counts'])
+    assert addition == [{'record_id': record['id'], 'collection': 'participants', **participants[identifier]}]
+    context_rows.append({'id': identifier, 'retained_contexts': len(prior), 'new_context': addition[0]})
+bindings = json.loads((ROOT / 'research/pathway_additions/2026-10-11-next-224/author/final-source-bindings.json').read_bytes())
+refs = {r['reference_id']: r for r in bindings['references']}
+sources = []
+for identifier in ('UniProtKB:P0AE22', 'UniProtKB:Q46799'):
+    path = Path(refs[identifier]['originals'][0]['path'])
+    assert sha(path) == refs[identifier]['sha256']
+    body = json.loads(path.read_bytes())
+    comment = body['comments'][3]
+    if identifier == 'UniProtKB:P0AE22':
+        assert comment['commentType'] == 'ACTIVITY REGULATION'
+        assert 'Inhibited also by nucleosides, inorganic phosphate and Ca(2+)' in comment['texts'][0]['value']
+    else:
+        assert comment['commentType'] == 'COFACTOR'
+        assert comment['cofactors'][0]['cofactorCrossReference']['id'] == 'CHEBI:71302'
+        assert comment['cofactors'][0]['evidences'] == [{'evidenceCode': 'ECO:0000250'}]
+    sources.append({'id': identifier, 'path': str(path), 'sha256': sha(path), 'locator': '/comments/3', 'inspected_comment': comment})
+code = ROOT / 'src/pathwaymech/kgx.py'
+assert code.read_bytes() == subprocess.check_output(['git', 'show', 'HEAD:src/pathwaymech/kgx.py'], cwd=ROOT)
+approval = OUT / 'approved-node-display-delta.json'
+assert not approval.exists()
+approval.write_text(json.dumps(expected, indent=2) + '\n')
+assessment = {
+    'at': datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00', 'Z'),
+    'reviewer': 'Codex /root/purine_finalization',
+    'status': 'exact_four_display_cells_supported',
+    'target_sha256': sha(TARGET),
+    'baseline_kgx_sha256': sha(BASELINE),
+    'current_nodes_sha256': sha(ROOT / 'pages/downloads/nodes.tsv'),
+    'unchanged_kgx_implementation_sha256': sha(code),
+    'approval_path': str(approval),
+    'approval_sha256': sha(approval),
+    'approved_node_display_delta': expected,
+    'preserved_contexts': context_rows,
+    'inspected_sources': sources,
+    'assessment': [
+        'Calcium retains its ten prior cofactor contexts and gains a source-supported small-molecule inhibitor role for AphA; the global role union does not assert calcium is an AphA cofactor.',
+        'CHEBI:71302 is Mo-MPT, not MCD. Its existing PWY-6823 small-molecule context is retained, and the inferred XdhA cofactor role is added. The source ECO:0000250 limit and competing phenotype-based MCD interpretation remain in edge068.',
+        'The existing exporter deliberately unions supported explicit categories while retaining each complete per-record context. No identifier, label, prior context, edge or source evidence is changed by these display unions.'
+    ],
+    'limits': 'This approval is limited to these exact four before/after cells at the bound target/export/baseline. It does not waive any other node display change or the separately investigated new-edge serialization mismatch.',
+    'failed_probe': '14953d/1: initial read probe included an assumed export_kgx.py filename; rg correctly identified the actual unchanged implementation as src/pathwaymech/kgx.py. No product change.'
+}
+(OUT / 'node-display-assessment.json').write_text(json.dumps(assessment, indent=2) + '\n')
+print(json.dumps({k: assessment[k] for k in ('status', 'target_sha256', 'current_nodes_sha256', 'approval_path', 'approval_sha256')}, indent=2))

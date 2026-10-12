@@ -1,0 +1,42 @@
+"""Root-owned verifier for completed canonical outputs; never runs a build or adoption."""
+from pathlib import Path
+from datetime import datetime, timezone
+import argparse, hashlib, json
+
+PACKAGE=Path(__file__).parent
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def load(p):return json.loads(Path(p).read_bytes())
+
+def assess(actual,old,terms,metadata):
+    assert set(actual)==set(old)=={'version','sources','terms'}
+    assert actual['version']==old['version']
+    expected_terms=old['terms']|terms;expected_metadata=old['sources']|metadata
+    assert not (old['terms'].keys() & terms.keys())
+    assert not (old['sources'].keys() & metadata.keys())
+    assert actual['terms']==expected_terms,'Unexpected term, missing term, changed label/synonym/source, or wrong term selection'
+    assert actual['sources']==expected_metadata,'Unexpected or changed native provenance'
+    return {'old_terms_preserved':len(old['terms']),'old_metadata_preserved':len(old['sources']),'new_terms':len(terms),'new_metadata':len(metadata),'terms':len(actual['terms']),'metadata':len(actual['sources'])}
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--build',required=True,type=Path);a=p.parse_args()
+    base=load(PACKAGE/'baseline.json');delta=load(PACKAGE/'expected-delta.json');prep=load(a.build/'preparation.json')
+    assert prep['baseline_sha256']==sha(PACKAGE/'baseline.json') and prep['package_handoff_sha256']==sha(PACKAGE/'handoff.json')
+    assert sha(a.build/'manifest.json')==sha(PACKAGE/'prospective-manifest.json')
+    target=a.build/'corpus/adenosine-nucleotides-degradation-ii.yaml';assert sha(target)==delta['target']['sha256']
+    for row in base['records']:assert sha(a.build/'corpus'/Path(row['relative_path']).relative_to('data/pathways'))==row['sha256']
+    assert len(list((a.build/'corpus').rglob('*.yaml')))==226
+    result={}
+    for kind in ['sources','ontology']:
+        prior=next(r for r in base['authority_inputs'] if r['relative_path']==f'data/identifier_authorities/{kind}.json')
+        assert sha(prior['path'])==prior['sha256'],'Historical snapshot changed: supply a separate explicit baseline bridge, never silently rebind'
+        prefix='source' if kind=='sources' else 'ontology'
+        result[kind]=assess(load(a.build/(kind+'.json')),load(prior['path']),delta[prefix+'_terms'],delta[prefix+'_metadata'])
+    rhea=next(r for r in base['authority_inputs'] if r['relative_path']=='conf/rhea_identifier_updates.json')
+    assert sha(a.build/'rhea-updates.json')==rhea['sha256']
+    result.update(status='Exact whole-authority retention and bounded deltas passed',at=datetime.now(timezone.utc).isoformat(),record_count=225,build_only_selector_count=1,manifest_entries=663,
+                  target_sha256=sha(target),sources_sha256=sha(a.build/'sources.json'),ontology_sha256=sha(a.build/'ontology.json'),rhea_updates_unchanged=True,
+                  note='This verifies output content. Root must retain the separate actual CLI command, exit status and logs; no CLI execution is inferred here.')
+    with (a.build/'preservation.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+    print(json.dumps(result,indent=2))
+
+if __name__=='__main__':main()

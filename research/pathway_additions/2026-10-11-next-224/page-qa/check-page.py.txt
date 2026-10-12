@@ -1,0 +1,69 @@
+from collections import Counter
+from pathlib import Path
+import hashlib
+import json
+import re
+import subprocess
+from urllib.parse import unquote
+from lxml import etree, html
+import yaml
+
+root = Path('/private/tmp/pathwaymech-next-224-20261012')
+output = Path('/private/tmp/pathwaymech-next-224-page-qa-20261012')
+assert not output.exists()
+page = root/'pages/records/MetaCyc_SALVADEHYPOX-PWY.html'
+body = page.read_bytes()
+document = html.fromstring(body)
+ids = document.xpath('//*[@id]/@id')
+assert len(ids) == len(set(ids)), 'Duplicate HTML IDs'
+fragments = [unquote(href[1:]) for href in document.xpath('//@href') if href.startswith('#') and len(href)>1]
+assert set(fragments) <= set(ids), set(fragments)-set(ids)
+svgs = [s for s in re.findall(r'<svg\b.*?</svg>', body.decode(), re.S) if 'class="pathway-network-svg"' in s]
+assert len(svgs) == 1
+svg = etree.fromstring(svgs[0].encode())
+ns = {'s': 'http://www.w3.org/2000/svg'}
+nodes = svg.xpath('.//s:a[contains(concat(" ",normalize-space(@class)," ")," graph-node ")]', namespaces=ns)
+edges = svg.xpath('.//s:a[contains(concat(" ",normalize-space(@class)," ")," graph-edge ")]', namespaces=ns)
+record = yaml.load((root/'data/pathways/adenosine-nucleotides-degradation-ii.yaml').read_bytes(), Loader=yaml.CSafeLoader)
+expected = Counter((e['subject'], e['predicate'], e['object']) for e in record['mechanistic_edges'])
+actual = Counter((e.get('data-subject-id', e.get('data-subject')), e.get('data-predicate'), e.get('data-object-id', e.get('data-object'))) for e in edges)
+assert actual == expected and len(edges) == 102
+assert len(nodes) == 78
+for i, edge in enumerate(edges, 1):
+    assert edge.get('href') == '#mechanism-edge-'+str(i)
+output.mkdir()
+(output/'network.svg').write_text(svgs[0])
+# Inline the page's light-theme SVG presentation for a standalone static preview.
+svg.set('font-family', 'sans-serif')
+svg.set('font-size', '13px')
+colors = {'reaction':('#e0edff','#2563eb'), 'chemical':('#e4f5ed','#15803d'),
+          'protein':('#f1e7fb','#7e22ce'), 'context':('#fff1d6','#a16207'),
+          'taxon':('#fff1d6','#a16207'), 'participant':('#f1f5f9','#64748b'),
+          'pathway':('#f1f5f9','#64748b')}
+for node in nodes:
+    for text in node.xpath('.//s:text', namespaces=ns):
+        text.set('fill','#182a3d')
+        if text.get('class') == 'graph-node-type':
+            text.set('font-size','10px');text.set('font-weight','650')
+    for shape in node.xpath('.//*[@class="graph-node-shape"]'):
+        fill,stroke = colors[node.get('data-kind')]
+        shape.set('fill',fill);shape.set('stroke',stroke);shape.set('stroke-width','1.6')
+for edge in edges:
+    context = 'graph-edge-context' in edge.get('class','').split()
+    for path in edge.xpath('./s:path', namespaces=ns):
+        path.set('stroke','#6b7280' if context else '#52677f')
+        if context:path.set('stroke-dasharray','5 4')
+    for text in edge.xpath('./s:text', namespaces=ns):
+        text.set('fill','#182a3d');text.set('stroke','#ffffff');text.set('stroke-width','4')
+        text.set('paint-order','stroke');text.set('stroke-linejoin','round')
+styled = output/'styled.svg'
+styled.write_bytes(etree.tostring(svg,xml_declaration=True,encoding='utf-8'))
+command = ['/usr/local/bin/rsvg-convert','-b','white','-w','1600','-o',str(output/'overview.png'),str(styled)]
+result = subprocess.run(command,capture_output=True,text=True)
+receipt = {'page_sha256':hashlib.sha256(body).hexdigest(),'html_ids':len(ids),'fragment_links':len(fragments),
+           'display_nodes':len(nodes),'edges':len(edges),'native_edge_triples_match':True,
+           'preview_command':command,'preview_exit_code':result.returncode,'preview_stderr':result.stderr,
+           'scope':'Generated HTML identity/anchor checks and exact native directed-edge comparison; static SVG preview only, no live browser claim.'}
+(output/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps(receipt,indent=2))
+raise SystemExit(result.returncode)
