@@ -1,0 +1,119 @@
+--- 236-adopt-evidence.py
++++ 237-adopt-evidence.py
+@@ -1,12 +1,12 @@
+ """Verify complete sealed inputs; adopt reviewed QA and actual root evidence losslessly."""
+ from pathlib import Path
+ import datetime,gzip,hashlib,json,os,stat,sys
+-P=Path('/private/tmp/pathwaymech-next-236-local-integration-preparation-20261012')
++P=Path('/private/tmp/pathwaymech-next-237-local-integration-preparation-20261012')
+ sys.path.insert(0,str(P));import common as c
+ R=c.ROOT;REL=Path(c.DOSSIER)/'native-integration';D=R/REL
+-QA=Path('/private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012')
+-RQ=Path('/private/tmp/pathwaymech-next-236-root-maintained-qa-20261012')
+-A=Path('/private/tmp/pathwaymech-next-236-root-maintained-review-acceptance-20261012.json')
++QA=Path('/private/tmp/pathwaymech-next-237-maintained-independent-qa-20261012')
++RQ=Path('/private/tmp/pathwaymech-next-237-root-maintained-qa-20261012')
++A=Path('/private/tmp/pathwaymech-next-237-root-maintained-review-acceptance-20261012.json')
+ def pin(b):return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+ def write(p,b):
+  p.parent.mkdir(parents=True,exist_ok=True)
+@@ -15,42 +15,55 @@
+ def js(v):return (json.dumps(v,indent=2)+'\n').encode()
+ def closure(root,hsha,msha,count,dirs_count=None):
+  assert c.pin(root/'handoff.json')['sha256']==hsha
+- h=c.load(root/'handoff.json');m=c.load(root/'artifact-manifest.json')
++ h=c.load(root/'handoff.json');m=c.load(root/'artifact-manifest.json');artifacts=m.get('artifacts',m.get('files'))
+  assert c.pin(root/'artifact-manifest.json')['sha256']==msha==h['manifest']['sha256']
+  seen=set();ds=set()
+  for base,dirs,files in os.walk(root,followlinks=False):
+   ds.add(str(Path(base).relative_to(root)))
+   assert all(not (Path(base)/n).is_symlink() for n in dirs)
+   seen.update(str((Path(base)/n).relative_to(root)) for n in files)
+- assert seen=={x['relative_path'] for x in m['artifacts']}|{'handoff.json','artifact-manifest.json'}
++ assert seen=={x['relative_path'] for x in artifacts}|{'handoff.json','artifact-manifest.json'}
+  assert ds==set(m['directories'])|{'.'}
+- assert len(m['artifacts'])==count
++ assert len(artifacts)==count
+  if dirs_count is not None:assert len(ds-{'.'})==dirs_count
+- for x in m['artifacts']:c.verify(x,root/c.relative(x['relative_path']))
++ for x in artifacts:c.verify(x,root/c.relative(x['relative_path']))
+  return h
+ assert not D.exists()
+-assert c.pin(A)['sha256']=='8d4d91d42ffdd9ba42ab6a439283b6a1f5e2a8a68b61bda79244f7f77d2b4262'
+-accept=c.load(A);assert not accept['findings']
+-h=closure(QA,'eb683e307adeb0d8bb7929220d4921f63901d83e93380ddd79420550ae068f2e','e163cb1de17a35e855689031e9c7bf0de6f39e4c3f22af50b63eea88717d942c',252,41)
+-closure(RQ,'afc0c22ecaa35094ad907d369f86114a9e9c5914d9732b88ae0f6e6d4dcb4c40','f5e60f5bb246f04cd80caff185aeaabfe61bb9c387b4180118a5cc75176fa826',26)
+-G=Path('/private/tmp/pathwaymech-next-236-local-native-execution-20261012')
++assert c.pin(A)['sha256']=='9e2abdb29ebbe5bcc2acfda09ad09bdea441b4f35a09dcf801b3ce806dc3130e'
++accept=c.load(A);assert accept['status']=='maintained_peer_judgments_and_local_finalization_accepted' and not accept['publication_authorized']
++h=closure(QA,'f65993decc4347e9dddde87b7817d076f0b63bcf931ccd37f5eb3393fd8b71f5','b2ab96cb9fc9bfa057beed65c72dc1da94883925d9bc324c49d4bff043d8b676',288,35)
++closure(RQ,'3ac80eda774e6258ff7e5afb3ea4638e87f2a49aa2a6ea8771f50de6b324c98c','0cc5b4fe48d8f9ff381d64bf2882b894c9a95e4720182c199cf6eaa79e999aaa',16)
++G=Path('/private/tmp/pathwaymech-next-237-local-native-execution-20261012')
++closure(G,'393b33a5646e7c241cb93b86a241c0ba8dc14363cc3f33c08907a9a9ee43e3f2','e625c75b51a84cf85f67d86168f931e9878f134b84c5b2362c31754815b79591',65)
++F=Path('/private/tmp/pathwaymech-next-237-finalization-preparation-20261012')
++closure(F,'140a995d5f527cc7a86c7cc3ad3d3e5fc5f934576d862caa7f8eaa4114ce35aa','4b3a4c8c3df2195cb3ea98fdbaf0cab3847f7bd153321c935645a37128187a42',10)
++closure(Path('/private/tmp/pathwaymech-next-237-native-runner-preparation-20261012'),'4b85a05614defde0d4c2756dca3c581b7589476c29423f7934ed55503f08228d','20e262aaf1f545744c2b261cc2e43a68217c1168fa7f49f7c54a732ae4f90227',17)
++closure(Path('/private/tmp/pathwaymech-next-237-local-integration-independent-review-20261012'),'877271941f0c6c3ebcfdcda47210fe3aa3aefa629ddd73435d11421795aab463','1036c0568f3e38b54a4277601c9e89bb7d88e63ca4f886162d1fff09dc5e7411',22)
+ for phase in ['history-and-generation','remaining-offline-gates','vendored-gate','final-gates']:
+  assert c.load(G/phase/'completion.json')['status']=='phase_passed'
+-groups=[(G,Path('gates')),(Path('/private/tmp/pathwaymech-next-236-graph-preview-20261012'),Path('visual')),(RQ,Path('root-review')),(Path('/private/tmp/pathwaymech-next-236-local-adoption-root-20261012'),Path('root-adoption')),(Path('/private/tmp/pathwaymech-next-236-local-integration-independent-review-20261012'),Path('preparation-independent-review'))]
++groups=[(G,Path('gates')),(Path('/private/tmp/pathwaymech-next-237-graph-preview-20261012'),Path('visual')),(RQ,Path('root-review')),(Path('/private/tmp/pathwaymech-next-237-local-adoption-20261012'),Path('root-adoption')),(Path('/private/tmp/pathwaymech-next-237-local-integration-independent-review-20261012'),Path('preparation-independent-review')),(F,Path('finalization-plan')),(Path('/private/tmp/pathwaymech-next-237-native-runner-preparation-20261012'),Path('native-runner-preparation'))]
+ sources=[]
+ for source,target in groups:
+  for base,dirs,files in os.walk(source,followlinks=False):
+   assert all(not (Path(base)/n).is_symlink() for n in dirs)
+   for n in sorted(files):
+    p=Path(base)/n;sources.append((p,target/p.relative_to(source)))
+-sources += [(Path('/private/tmp/pathwaymech-next-236-root-local-adoption-acceptance-20261012.json'),Path('adoption-acceptance.json')),(A,Path('qa-acceptance.json')),(Path('/private/tmp/pathwaymech-next-236-root-run-native-20261012.py'),Path('native-stage-runner.py')),(Path('/private/tmp/pathwaymech-next-236-seal-root-qa-20261012.py'),Path('seal-root-qa.py')),(Path(__file__),Path('adopt-evidence.py'))]
++sources += [(Path('/private/tmp/pathwaymech-next-237-root-local-integration-acceptance-20261012.json'),Path('adoption-acceptance.json')),(A,Path('qa-acceptance.json')),(Path('/private/tmp/pathwaymech-next-237-root-run-native-20261012.py'),Path('native-stage-runner.py')),(Path(__file__),Path('adopt-evidence.py')),(Path(__file__+'.patch'),Path('adopt-evidence-lineage.patch'))]
++sources += [(Path(accept['retained_root_helper_diagnostic']['helper']['path']),Path('root-acceptance/initial-helper.py')),(Path(accept['helper']['path']),Path('root-acceptance/successor-helper.py'))]
++for suffix in ['txt','json']:
++ sources.append((Path('/private/tmp/pathwaymech-next-237-root-acceptance-diagnostic-transcript-20261012.'+suffix),Path('root-acceptance/diagnostic-transcript.'+suffix)))
++c.verify(accept['retained_root_helper_diagnostic']['helper']);c.verify(accept['helper'])
++binding={'status':'all_pending_bindings_resolved_by_exact_root_acceptance','acceptance':c.pin(A),'peer_handoff':c.pin(QA/'handoff.json'),'peer_manifest':c.pin(QA/'artifact-manifest.json'),'copy_plan':c.pin(QA/'copy-plan.json'),'native_drafts':accept['native_drafts'],'finalizer':accept['finalizer'],'local_plan':c.pin(F/'plan.json'),'publication_authorized':False}
++for row in accept['native_drafts']+[accept['finalizer']]:c.verify(row)
++c.write_new('/private/tmp/pathwaymech-next-237-finalization-execution-binding-20261012.json',binding)
++sources.append((Path('/private/tmp/pathwaymech-next-237-finalization-execution-binding-20261012.json'),Path('finalization-binding.json')))
+ payload=[];entries=[]
+ for source,relative in sources:
+  raw=c.regular_bytes(source);compress=source.suffix in {'.py','.stdout','.stderr','.svg'} or len(raw)>100000 and source.suffix=='.json'
+  body=gzip.compress(raw,mtime=0) if compress else raw
+  rel=Path(str(relative)+'.gz') if compress else relative
+  payload.append((D/rel,body));entries.append({'source':str(source),'original':pin(raw),'owner':str(REL/rel),'encoding':'gzip' if compress else 'identity','stored':pin(body)})
+-plan=c.load(QA/'copy-plan.json');c.verify(h['copy_plan'],QA/'copy-plan.json');assert len(plan['files'])==126
++plan=c.load(QA/'copy-plan.json');c.verify(h['copy_plan'],QA/'copy-plan.json');assert len(plan['files'])==144
+ for x in plan['files']:
+  p=Path(x['payload_path']);b=c.regular_bytes(p);assert pin(b)=={'bytes':x['bytes'],'sha256':x['sha256']}
+  if 'source_path' in x:
+@@ -61,23 +74,23 @@
+  dest=R/c.relative(x['repository_path']);assert dest.is_relative_to(D/'independent-qa');payload.append((dest,b))
+ for n in ['artifact-manifest.json','handoff.json','copy-plan.json']:
+  payload.append((D/'independent-qa'/('external-'+n),c.regular_bytes(QA/n)))
+-readme='''# Actual local acetoacetate integration evidence
++readme='''# Actual local 5-prime-deoxyadenosine degradation II integration evidence
+ 
+-The accepted acetoacetate degradation record and authority adapter are integrated on local baseline 9bd87745d842b0602d027f3d15d26bbc178474a6. Two native histories preceded SSSOM and first render. All nine required gates passed, including 4,273 tests (three skips and three dependency warnings). Four phase receipts preserve twelve successful commands and exact streams; no initial DNS failure occurred in this execution.
++The exact accepted PWY-8131 provider-successor record and complete native authority outputs are integrated on local baseline 290bd9781e43e473d88b9fd7c17f6f61da45092e. Two native histories preceded SSSOM/render. All nine gates passed, including 4,273 tests with three skips and three dependency warnings. Four phases retain twelve successful commands and all actual streams; no native DNS failure or retry occurred.
+ 
+-Root and independent maintained QA passed. Current graph/table QA covers all 25 visual nodes, 46 arrows, one qualified construct, 25 named identities and 66 references. Static light-theme limitations remain dense label overlap and one truncated construct label, whose whole text and evidence are in the table. No browser interaction is claimed. Complete scientific interpretation is inherited explicitly from accepted source reviews. Historical identity dispositions preserve their earlier planning status; current implementation and actual native outputs passed separately.
++Root and independent maintained QA passed. The actual graph has 46 nodes and 38 arrows, preserving all 12 paragraphs, 15 qualifiers, 35 named identities and 31 references. All source/ontology and KGX bodies match accepted outputs. Whole old objects/order/contexts remain intact; only the CHEBI:57642 aggregate label gains a Unicode minus. SSSOM retains its exact 7,574 bytes and 32 rows. The unchanged 270-file runtime consumes the effective 869-row manifest.
+ 
+-The hidden/ignored physical census before this evidence adoption preserves all old owners outside the exact integration plan, all 800 shared-cache identities, 236 old records/pages, 116 review pairs and 400 old histories. Current corpus size is 237. Source and ontology snapshots, both KGX surfaces and the five new SSSOM rows equal accepted outputs; previous authority objects and graph contexts remain intact. RHEA:21038 clears only its aggregate direction while preserving earlier contextual directions.
++The hidden/ignored physical census preserves 237 old record/page bodies, 118 old review pairs, 402 histories and all 800 cache identities. Current corpus 238 records; actual integration census 12,132 files/1,963 directories. Current whole-source science is inherited explicitly; unavailable SI/figures, unrendered EMF, construct/strain/metal limits persist. Static dense labels, truncation and blank space remain; no browser/mobile/dark/print interaction claim.
+ 
+-root-storage-map.json maps complete original root execution/review/visual bodies to exact durable owners. Gzip is lossless transport, and historical absolute paths inside originals resolve through that map. The independent-qa copy plan separately binds every reviewed payload. Primary scientific originals remain available through the parent portable index without duplication. Native review input extension, save and append-only checking are recorded later under finalization. No source normalization, scientific status promotion or new history is implied by saving reviews.
++The root-storage-map and independent copy plan preserve whole original bodies through identity or lossless gzip. The two peer draft metadata failures and corrected evidence-linked historical provider assessment remain intact; no native predecessor or GitHub closure is invented. Root's 080d22 helper KeyError is retained as an explicitly reconstructed verbatim tool transcript plus both exact helper bodies; it was a reader assumption about the derived index, not a packet defect.
+ 
+-This is a local integration only. No push, PR, merge, branch deletion, issue closure, licensing clearance or source-exhaustion claim is made.
++Native input extension, two saves and append-only checking follow under finalization; they are not claimed complete by this earlier evidence adoption. The root acceptance and exact binding receipt authorize only local finalization. No push, PR, merge, branch deletion, issue closure or licensing clearance is asserted.
+ '''
+ payload.append((D/'README.md',readme.encode()))
+ storage={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'entries':entries,'purpose':'Complete lossless root receipts and accepted judgment authorization; historical source paths resolve through this map.','hidden_and_ignored_files_included':True,'publication':False}
+ payload.append((D/'root-storage-map.json',js(storage)))
+ assert len({p for p,b in payload})==len(payload) and all(not p.exists() for p,b in payload)
+ for p,b in payload:write(p,b)
+-out={'status':'exact_root_and_independent_evidence_adopted','root_storage_entries':len(entries),'independent_payload_owners':126,'total_files':len(payload),'stored_bytes':sum(len(b) for p,b in payload),'root_storage_map':c.pin(D/'root-storage-map.json'),'review_acceptance':c.pin(A),'no_judgment_changes':True}
+-c.write_new('/private/tmp/pathwaymech-next-236-evidence-adoption-receipt-20261012.json',out)
++out={'status':'exact_root_and_independent_evidence_adopted','root_storage_entries':len(entries),'independent_payload_owners':144,'total_files':len(payload),'stored_bytes':sum(len(b) for p,b in payload),'root_storage_map':c.pin(D/'root-storage-map.json'),'review_acceptance':c.pin(A),'no_judgment_changes':True}
++c.write_new('/private/tmp/pathwaymech-next-237-evidence-adoption-receipt-20261012.json',out)
+ print(json.dumps(out))

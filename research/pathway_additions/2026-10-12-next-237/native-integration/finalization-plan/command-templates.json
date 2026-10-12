@@ -1,0 +1,92 @@
+{
+  "status": "templates_only_not_executed",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "UV_NO_SYNC": "1",
+    "PYTHONPATH": "/private/tmp/pathwaymech-next-237-local-20261012/src:/private/tmp/pathwaymech-next-237-local-20261012"
+  },
+  "cwd": "/private/tmp/pathwaymech-next-237-local-20261012",
+  "finalize": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "/private/tmp/pathwaymech-next-237-maintained-independent-qa-20261012/finalize_native_inputs.py",
+    "--root",
+    "/private/tmp/pathwaymech-next-237-local-20261012",
+    "--draft-directory",
+    "/private/tmp/pathwaymech-next-237-maintained-independent-qa-20261012",
+    "--output",
+    "<NEW_EXTERNAL_FINALIZED_DIRECTORY>"
+  ],
+  "save": [
+    [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-B",
+      "scripts/record_review.py",
+      "save",
+      "--content",
+      "<FINALIZED_SCIENTIFIC_YAML>"
+    ],
+    [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-B",
+      "scripts/record_review.py",
+      "save",
+      "--content",
+      "<FINALIZED_TECHNICAL_YAML>"
+    ]
+  ],
+  "narrow_checks": [
+    [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-B",
+      "scripts/record_review.py",
+      "check",
+      "--require-reviews",
+      "--base",
+      "290bd9781e43e473d88b9fd7c17f6f61da45092e"
+    ],
+    [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-B",
+      "-m",
+      "ruff",
+      "check",
+      "--no-cache",
+      "."
+    ],
+    [
+      "git",
+      "diff",
+      "--check"
+    ]
+  ],
+  "stage": [
+    "git",
+    "add",
+    "--pathspec-from-file=<VERIFIED_NUL_PATHSPEC>",
+    "--pathspec-file-nul"
+  ],
+  "full_staged_check": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "scoped_staged_check_only_if_appraised": [
+    "git",
+    "diff",
+    "--cached",
+    "--check",
+    "--",
+    ".",
+    "<EXACT_LITERAL_EXCLUSION_ARGUMENTS>"
+  ],
+  "commit": [
+    "git",
+    "commit",
+    "--file",
+    "<RETAINED_LOCAL_COMMIT_MESSAGE>"
+  ],
+  "substitution_rule": "Each angle-bracket value is resolved from fresh actual output pins after the matching prerequisite. No command with unresolved values may execute."
+}
