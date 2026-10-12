@@ -1,0 +1,13 @@
+from pathlib import Path
+import json,hashlib
+C=Path(__file__).parent
+items=[('author',Path('/private/tmp/pathwaymech-next-227-author-20261012'),400,'244b0a10567388ac44d677b435d7fd600c2ed7a36d4043bb00a9ae49dbd89aff'),('adapter',Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012'),280,'971cd166de47b8c11b4181a97991ba3abc3c4460a675959de753da8dbd4993c8'),('science',Path('/private/tmp/pathwaymech-next-227-science-review-20261012'),136,'056e3564f548b40c2cf0586ca3634e8a0b2d0a263ce22fd0c77ca97773ede8ca')]
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+out=[]
+for name,root,n,h in items:
+ assert sha(root/'handoff.json')==h
+ m=json.loads((root/'artifact-manifest.json').read_text()); rows=m['artifacts'];assert len(rows)==n
+ for row in rows:
+  p=root/row['path']; assert sha(p)==row['sha256'],p;assert p.stat().st_size==row['bytes'],p
+ out.append(dict(packet=name,path=str(root),handoff_sha256=h,manifest_sha256=sha(root/'artifact-manifest.json'),verified_artifacts=len(rows),failures=[]))
+(C/'immutable-input-verification.json').write_text(json.dumps(out,indent=2)+'\n');print(out)

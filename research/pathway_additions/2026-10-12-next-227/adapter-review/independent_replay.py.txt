@@ -1,0 +1,84 @@
+from pathlib import Path
+import importlib.util,sys,json,hashlib,zipfile,copy,warnings,shutil
+from xml.etree import ElementTree as ET
+D=Path(__file__).parent;K=D/'candidate';I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');R=Path('/private/tmp/pathwaymech-next-226-20261012');B=Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012');H=Path('/private/tmp/pathwaymech-next-227-author-20261012/authority-preparation');P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012')
+sys.path[:0]=[str(K/'src'),str(K)]
+from scripts import build_source_identifier_snapshot as new
+from pathwaymech.identifiers import _load_authority,identifier_errors
+from pathwaymech.pathbank_provenance import validate_pathbank_archive
+sp=importlib.util.spec_from_file_location('old_source_builder',R/'scripts/build_source_identifier_snapshot.py');old=importlib.util.module_from_spec(sp);sp.loader.exec_module(old)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def dump(n,o):(D/n).write_text(json.dumps(o,indent=2)+'\n')
+base_manifest=json.loads((B/'manifest.json').read_text());regress=[]
+for e in base_manifest:
+ if e['kind'] not in ['pathbank-biopax','metacyc-reaction-xml']:continue
+ p=B/'originals'/e['path'];assert sha(p)==e['sha256'];a=list(old.source_terms(e['kind'],p,url=e['url'],version=e['version']));b=list(new.source_terms(e['kind'],p,url=e['url'],version=e['version']));assert a==b
+ regress.append({'key':e['key'],'path':str(p),'sha256':sha(p),'terms':len(a),'outputs_equal':True})
+plan=json.loads((H/'source-original-manifest.json').read_text());proposal_manifest=json.loads((H/'source-manifest-proposal.json').read_text());bykey={e['key']:e for e in proposal_manifest}
+for x in plan['selected_originals']:
+ e=bykey[x['source_key']];p=Path(x['original']['path']);assert sha(p)==e['sha256'];a=list(old.source_terms(e['kind'],p,url=e['url'],version=e['version']));b=list(new.source_terms(e['kind'],p,url=e['url'],version=e['version']));assert a==b;regress.append({'key':e['key'],'path':str(p),'sha256':sha(p),'terms':len(a),'outputs_equal':True})
+assert len(regress)==27;dump('independent-legacy-regression.json',regress)
+manifest=json.loads((I/'two-source-manifest.json').read_text());reaction_entry=manifest[0];zip_entry=manifest[1];zip_path=Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip');rxpath=P/'raw/META-LYXISOM-RXN.xml';assert sha(zip_path)==zip_entry['sha256'];assert sha(rxpath)==reaction_entry['sha256'];assert zip_path.stat().st_size==zip_entry['archive']['bytes']
+with zipfile.ZipFile(zip_path) as z:
+ chosen=[x for x in z.infolist() if x.filename=='PW002100.owl'];assert len(chosen)==1;body=z.read(chosen[0])
+assert len(body)==zip_entry['archive']['member_bytes'] and hashlib.sha256(body).hexdigest()==zip_entry['archive']['member_sha256']
+def parsezip(p,e):return list(new.source_terms(e['kind'],p,url=e['url'],version=e['version'],sha256=e['sha256'],archive=e['archive']))
+actual=parsezip(zip_path,zip_entry);assert ('PathBank:SMP0121065','Pentose Phosphate',[]) in actual
+assert list(new.source_terms('metacyc-reaction-xml',rxpath,url=reaction_entry['url'],version='27.0'))==[('MetaCyc:LYXISOM-RXN','LYXISOM-RXN',[])]
+# Exercise public builder and consumer, selecting from original-derived identities.
+cache=D/'original-links';cache.mkdir();(cache/reaction_entry['path']).symlink_to(rxpath);(cache/zip_entry['path']).symlink_to(zip_path)
+selection=D/'selection';selection.mkdir();(selection/'selection.yaml').write_text('id: PathBank:SMP0121065\nlabel: Selection only\nreactions:\n- id: MetaCyc:LYXISOM-RXN\n  label: Selection only\n')
+mp=D/'original-manifest.json';mp.write_text(json.dumps(manifest,indent=2)+'\n');snapshot=new.build_snapshot(mp,selection,cache);dump('independent-two-source-build.json',snapshot);assert snapshot==json.loads((I/'two-source-build.json').read_text());assert _load_authority(D/'independent-two-source-build.json')==snapshot['terms']
+assert snapshot['sources'][zip_entry['key']]['pathway_accessions']==['SMP0002112','SMP0121065']
+# Reviewer-authored real-body derivatives, separate from originals.
+M=D/'derivatives';M.mkdir();neg=[];bp='{http://www.biopax.org/release/biopax-level3.owl#}';rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+def reject(name,fun):
+ try:fun()
+ except ValueError as ex:neg.append({'name':name,'outcome':'rejected','exception':type(ex).__name__,'reason':str(ex)});return
+ raise AssertionError('Accepted reviewer negative control '+name)
+def zipbody(name,change):
+ root=ET.fromstring(body);change(root);b=ET.tostring(root);p=M/(name+'.zip')
+ with zipfile.ZipFile(p,'w') as z:z.writestr('PW002100.owl',b)
+ e=copy.deepcopy(zip_entry);e['sha256']=sha(p);e['archive'].update(bytes=p.stat().st_size,member_bytes=len(b),member_sha256=hashlib.sha256(b).hexdigest());reject(name,lambda:parsezip(p,e))
+def child(r):return r.find(bp+'Pathway[@'+rdf+'about="http://identifiers.org/smpdb/SMP0121065"]')
+def ambiguous(r):
+ x=r.find(bp+'UnificationXref['+bp+'id="SMP0121065"]');ET.SubElement(x,bp+'id').text='SMP9999999'
+zipbody('child-xref-ambiguous-accessions',ambiguous)
+zipbody('root-accession-disagrees-with-native-about',lambda r:r.find(bp+'Pathway').set(rdf+'about','http://identifiers.org/smpdb/SMP9999999'))
+zipbody('nested-base-overrides',lambda r:child(r).set('{http://www.w3.org/XML/1998/namespace}base','https://other.example/'))
+zipbody('duplicate-rdf-child-id-and-about',lambda r:child(r).set(rdf+'ID','child'))
+zipbody('child-generic-title',lambda r:setattr(child(r).find(bp+'displayName'),'text',' SubPathway '))
+zipbody('child-duplicate-display-name',lambda r:ET.SubElement(child(r),bp+'displayName').__setattr__('text','Conflicting name'))
+zipbody('top-level-foreign-object',lambda r:ET.SubElement(r,'{https://other.example/}Protein'))
+zipbody('duplicate-native-child-accession-http-https',lambda r:(r.append(copy.deepcopy(child(r))),r[-1].set(rdf+'about','https://identifiers.org/smpdb/SMP0121065')))
+def remove_attachments(r):
+ for node in r.iter():
+  for x in list(node):
+   if x.get(rdf+'resource')=='http://identifiers.org/smpdb/SMP0121065':node.remove(x)
+zipbody('detached-child-all-native-routes',remove_attachments)
+# Corrupt ZIP metadata with hashes correctly rebound, so rejection tests structure.
+p=M/'duplicate-different-member.zip'
+with zipfile.ZipFile(p,'w') as z:
+ z.writestr('PW002100.owl',body)
+ with warnings.catch_warnings():warnings.simplefilter('ignore',UserWarning);z.writestr('PW002100.owl',b'not XML')
+e=copy.deepcopy(zip_entry);e['sha256']=sha(p);e['archive']['bytes']=p.stat().st_size;reject('duplicate-member-different-body',lambda:parsezip(p,e))
+for name,path,patch in [('archive-digest',zip_path,{'sha256':'f'*64}),('live-url',zip_path,{'url':'https://pathbank.org/view/SMP0002112/download?type=owl_markup'})]:
+ e=copy.deepcopy(zip_entry);e.update(patch);reject(name,lambda:parsezip(path,e))
+for name,key,val in [('member-digest','member_sha256','f'*64),('archive-count-bool','bytes',True),('member-size','member_bytes',41182),('member-parent-traversal','member','../PW002100.owl'),('stub-as-selected-root','root','SMP0121065')]:
+ e=copy.deepcopy(zip_entry);e['archive'][key]=val;reject(name,lambda:parsezip(zip_path,e))
+# Extra guards on the exact original class-bearing native reaction.
+for name,mut in [('true-with-unicode-space',lambda r:r.find('Reaction/right/Compound').set('class','true\u00a0')),('reaction-top-class',lambda r:r.find('Reaction').set('class','true')),('right-side-wrapper-class',lambda r:r.find('Reaction/right').set('class','true')),('compound-unknown-type',lambda r:r.find('Reaction/right/Compound').set('type','small_molecule')),('compound-extra-child',lambda r:ET.SubElement(r.find('Reaction/right/Compound'),'name'))]:
+ r=ET.parse(rxpath).getroot();mut(r);p=M/(name+'.xml');p.write_bytes(ET.tostring(r));reject(name,lambda:list(new.source_terms('metacyc-reaction-xml',p,url=reaction_entry['url'],version='27.0')))
+# Consumer corruption is evaluated independently of builder parsing.
+for name,mut in [('consumer-null-archive',lambda s:s['sources'][zip_entry['key']].update(archive=None)),('consumer-duplicate-pathways',lambda s:s['sources'][zip_entry['key']]['pathway_accessions'].append('SMP0121065')),('consumer-archive-unknown-field',lambda s:s['sources'][zip_entry['key']]['archive'].update(title='Plausible')),('consumer-local-wrong-root',lambda s:s['terms'].update({'PathBank:SMP0121065/Protein/1':{'label':'Protein','synonyms':[],'label_kind':'source_context','source':zip_entry['key']}})),('consumer-contextual-child-label',lambda s:s['terms']['PathBank:SMP0121065'].update(label_kind='source_context')),('consumer-native-reaction-as-canonical',lambda s:s['terms']['MetaCyc:LYXISOM-RXN'].update(label_kind='canonical'))]:
+ s=copy.deepcopy(snapshot);mut(s);p=M/(name+'.json');p.write_text(json.dumps(s));reject(name,lambda:_load_authority(p))
+# Positive control: redundant direct attachment may be removed while native pathwayOrder still attaches.
+r=ET.fromstring(body);primary=r.find(bp+'Pathway');primary.remove(next(x for x in primary.findall(bp+'pathwayComponent') if x.get(rdf+'resource')==child(r).get(rdf+'about')));assert ('PathBank:SMP0121065','Pentose Phosphate',[]) in list(new.pathbank_terms(r,url=zip_entry['url'],archive_root='SMP0002112'))
+# Missing class marker is an independently parseable identity; conflicting assertions must not merge.
+r=ET.parse(rxpath).getroot();r.find('Reaction/right/Compound').attrib.pop('class');p=M/'unmarked-rxn.xml';p.write_bytes(ET.tostring(r));e=copy.deepcopy(reaction_entry);e.update(key='conflicting-marker',path='unmarked-rxn.xml',sha256=sha(p));(cache/e['path']).symlink_to(p);collision=D/'conflicting-manifest.json';collision.write_text(json.dumps([*manifest,e]));reject('same-reaction-class-conflict',lambda:new.build_snapshot(collision,selection,cache))
+# Proposal is not a canonical rebuild. Check every baseline object and ordered manifest entry.
+newproposal=json.loads((I/'complete-source-proposal.json').read_text());base=json.loads((B/'sources.json').read_text());fullmanifest=json.loads((I/'complete-source-manifest-proposal.json').read_text());assert all(newproposal[f][k]==v for f in ['terms','sources'] for k,v in base[f].items());assert fullmanifest[:len(base_manifest)]==base_manifest
+exercise=D/'identifier-exercise';(exercise/'conf').mkdir(parents=True);(exercise/'data/identifier_authorities').mkdir(parents=True);(exercise/'data/pathways').mkdir()
+for fr,to in [(K/'conf/identifier_policy.yaml',exercise/'conf/identifier_policy.yaml'),(I/'complete-source-proposal.json',exercise/'data/identifier_authorities/sources.json'),(H/'ontology-authority-proposal.json',exercise/'data/identifier_authorities/ontology.json'),(P.parent/'pathwaymech-next-227-author-20261012/draft/l-lyxose-degradation.yaml',exercise/'data/pathways/l-lyxose-degradation.yaml')]:shutil.copyfile(fr,to)
+errors=identifier_errors(exercise);assert not errors
+result={'status':'pass','original_regression_count':len(regress),'reviewer_negative_controls':neg,'negative_count':len(neg),'original_archive':{'path':str(zip_path),'sha256':sha(zip_path),'bytes':zip_path.stat().st_size},'original_member':zip_entry['archive'],'two_source_build_exact_match':True,'selected_target_identifier_errors':errors,'baseline_preservation':{f:len(base[f]) for f in ['terms','sources']},'baseline_manifest_entries':len(base_manifest),'scoped_to_adapter_code':True,'scientific_successor_still_required':True,'full_canonical_build':False};dump('independent-replay-result.json',result);print(json.dumps({k:v for k,v in result.items() if k!='reviewer_negative_controls'},indent=2))

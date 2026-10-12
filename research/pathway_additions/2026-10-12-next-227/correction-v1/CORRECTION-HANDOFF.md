@@ -1,0 +1,36 @@
+# L-lyxose scientific correction successor for issues 438 and 439
+
+This immutable external successor addresses both supported independent review findings. It does not replace or modify the original author or adapter packages. Root owns reassessment, full canonical builds, maintained adoption, final review/history, PR, issue closure and merge.
+
+## Exact target and prior seals
+
+- Corrected target: `/private/tmp/pathwaymech-next-227-science-correction-20261012/draft/l-lyxose-degradation.yaml`, SHA-256 `ed850bfef8abf66b4f9786a0b1b98cee692aa415aac956d719a47aec6bb20144`.
+- Original author handoff: SHA-256 `244b0a10567388ac44d677b435d7fd600c2ed7a36d4043bb00a9ae49dbd89aff`; all 400 artifacts verified unchanged.
+- Adapter handoff: SHA-256 `971cd166de47b8c11b4181a97991ba3abc3c4460a675959de753da8dbd4993c8`; all 280 artifacts verified unchanged. Candidate source builder and identifier consumer are read-only from that package.
+- Independent scientific review handoff: SHA-256 `056e3564f548b40c2cf0586ca3634e8a0b2d0a263ce22fd0c77ca97773ede8ca`; all 136 artifacts verified, complete review and methods/context passages read.
+
+## Correction only
+
+[Issue 438](https://github.com/CultureBotAI/PathwayMech/issues/438): add `lyxose-110`, KdgR UniProtKB:P76268 inhibits plaR Entrez:948084 expression, and `lyxose-111`, PlaR UniProtKB:P37671 inhibits kdgR Entrez:946129 expression. Northern-blot results in PMID:31892694 report higher target mRNA after deletion of the opposite regulator. Both edges retain possible indirectness and explicitly do not establish direct promoter binding. Figure 5/methods scope: BW25113, JW3546 plaR deletion and JW1816 kdgR deletion; M9 plus 0.5% casamino acids, 37 C, aerobic shaking, mid-exponential sampling. MG1655 gene and K-12 protein references anchor identity, not experimental strain identity. No additional ligand, assembly, localization or downstream pathway expansion is inferred for KdgR.
+
+The exact new issuing originals were independently downloaded: UniProt P76268 complete JSON, SHA-256 a780ee6859aa264ce31b3bc46eac16f9557685fc8b91d8656a4f6c7b26b312d2; NCBI Gene 946129 XML, SHA-256 e476efddda644e1106dda6891fff0b2b22c5f03971c7337fd2b9ce6d1c48902f. Issuing joins identify kdgR/b1827, EcoCyc G7003, K-12 protein taxon 83333 and MG1655 gene taxon 511145. PlaR issuing identity was replayed against the preserved originals (plaR/b3574; UniProt P37671; Entrez 948084). Actual HTTP receipts retain final URLs, release headers, bytes and hashes.
+
+[Issue 439](https://github.com/CultureBotAI/PathwayMech/issues/439): append description context for pectinase-digested citrus/apple pectin causing 10–20-fold yiaJ-lacZ induction in ECL1, not JA134. Structural-gene expression remained unchanged even without repressor; biological significance was unresolved. Preparation is retained: 0.14% pectin in sodium acetate pH 4.0, overnight at 25 C with 400 U Aspergillus niger pectinase, tenfold dilution into medium. The material is an undefined hydrolysate; no chemical identity, direct effector claim or new edge was created. Exact result and methods XPaths, faithful source assertions and original body hash are in `context-evidence-ledger.json`.
+
+All original 109 edge objects, 53 participant objects, 64 reference objects, 8 reaction/interface entries, 2 taxa and all 10 endpoint qualifiers are semantically identical. Only two edge objects, two participants and two references were appended, plus contextual description text. Four core events/11 chemical sides and RhaT's four transport sides are unchanged. Native beta anomer chemistry, mutant 1-phosphate/adapted 5-phosphate separation, tentative SgbU and its two negative assays, frozen PathBank conflict, assay constructs, ArcA state, cofactor/regulator biology and abstract-only access limitations remain as originally reviewed.
+
+## Native authority proposals and replay
+
+The candidate production parser generated both new terms and metadata from the exact new original bodies. `bounded-selection/identifiers.yaml` is an explicitly limited ID-selection fixture, not a replacement pathway record or a source authority. `incremental-source-build.json` is the native output; no canonical term was hand-inserted. All previous 2410 source terms/562 metadata objects are retained exactly. `complete-source-proposal.json` has 2412 terms/564 metadata; `complete-source-manifest-proposal.json` has 717 entries. Original author ontology proposal (1945 terms/5 metadata) and 19-Rhea proposal are unchanged. See `new-originals-copy-plan.json` for later root cache staging; no shared cache was modified.
+
+The complete corrected record passes native schema and strict validation, the candidate identifier consumer against full provisional source/ontology proposals, 66 exact reference-body hash checks, 251 original selector replays, 17 inherited source-derived controls and 14 correction-specific controls. Controls reject sign reversals, gene/protein endpoint swaps, direct-binding upgrades, strain substitution, missing result locator, materialized pectin chemical/edge, missing negative reporter context, altered original chemistry, source hash spoof and mismatched requested Entrez identity. The new controls derive directions and gene/protein joins from original primary/issuing bodies rather than accept YAML as its own authority. Scientific interpretation limits still require independent reassessment.
+
+Native page/KGX generation passes, with all 111 edges and all 10 qualifiers retained in SVG/table and KGX. The pectin description is verified visible in the generated record page; both expression edges have negative SVG predicates. There are 236 actual edge/qualifier evidence uses, plus two contextual description observations; the broader observation ledger contains 251 rows because it preserves earlier broader source observations. No browser screenshot or interactive-layout claim is made.
+
+## Dispositions, immutability and remaining work
+
+`review-dispositions.json` records addressed-in-external-successor status, pending independent reassessment, for both issues; no GitHub closure is claimed. Updated source/construct/scope/gene and regulatory-join ledgers are provided. Thirty original preflight claim rows remain preserved as historical observations; `authority-disposition-update.json` explicitly supersedes their old implementation-blocker wording with the current provisional candidate status. Inherited novelty proof and computational iModulon context remain bound to the immutable original package. No new pathway selection occurred in this correction.
+
+`check-executions.json` records actual execution cells, exits and script hashes, including the initial DNS restriction and three corrected local author/check harness attempts. All final checks passed. There were no maintained record, code, history, review, governed artifact, Git/GitHub, environment-install or shared-cache writes. No full canonical build, whole-corpus gate, production authority adoption, independent code acceptance, scientific final acceptance, PR or merge is claimed. Source exhaustion remains false.
+
+Next: independent exact-target reassessment; completion of separate code review; root full original-backed canonical builds and whole-corpus gates; root adoption, saved successor review/history and end-to-end PR/issue/merge lifecycle.

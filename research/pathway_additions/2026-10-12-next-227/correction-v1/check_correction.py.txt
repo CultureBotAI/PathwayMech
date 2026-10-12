@@ -1,0 +1,87 @@
+"""Independent replay of exact issuing identities and literal primary experimental observations.
+Assertions about indirectness are conservative interpretation limits, not automated scientific inference.
+"""
+from pathlib import Path
+from lxml import etree,html
+import json,hashlib,copy,re,sys,shutil
+import yaml
+C=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-227-author-20261012');I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012');K=I/'candidate'
+sys.path[:0]=[str(K/'src'),str(K)]
+from scripts.build_source_identifier_snapshot import source_terms,build_snapshot
+from pathwaymech.identifiers import identifier_errors,_load_authority
+
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def dump(n,o):(C/n).write_text(json.dumps(o,indent=2,ensure_ascii=False)+'\n')
+refs=json.loads((C/'reference-original-bindings.json').read_text());draft=yaml.safe_load((C/'draft/l-lyxose-degradation.yaml').read_text());old=yaml.safe_load((A/'draft/l-lyxose-degradation.yaml').read_text())
+identities={}
+for acc in ['P76268','P37671']:
+ u=json.loads(Path(refs['UniProtKB:'+acc]['path']).read_text());genes=[x['id'] for x in u['uniProtKBCrossReferences'] if x['database']=='GeneID'];assert len(genes)==1
+ g=etree.parse(refs['Entrez:'+genes[0]]['path']);assert g.xpath('//Gene-track_geneid/text()')==genes
+ gene=g.xpath('//Gene-ref_locus/text()')[0];locus=g.xpath('//Gene-ref_locus-tag/text()')[0]
+ assert any(x['geneName']['value']==gene and locus in [y['value'] for y in x['orderedLocusNames']] for x in u['genes'])
+ assert u['organism']['taxonId']==83333 and g.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()')==['511145']
+ identities[gene]=dict(protein='UniProtKB:'+u['primaryAccession'],gene='Entrez:'+genes[0],locus=locus,protein_taxon=83333,gene_taxon=511145)
+primary=etree.parse(refs['PMID:31892694']['path']);sel='/article/body/sec[2]/sec[5]/p[3]';text=' '.join(''.join(x.itertext()) for x in primary.xpath(sel))
+m=re.search(r'level of (\w+) mRNA significantly increased in the absence of (\w+) whereas (\w+) mRNA increased in the absence of (\w+)',text);assert m
+pairs=[(m[2].lower(),m[1]),(m[4].lower(),m[3])]
+casefolded={k.casefold():v for k,v in identities.items()}
+expected=[(casefolded[reg.casefold()]['protein'],'inhibits',casefolded[target.casefold()]['gene']) for reg,target in pairs]
+fig=' '.join(''.join(x.itertext()) for x in primary.xpath('/article/body/sec[2]/sec[5]/p[1]/fig/caption'))
+for s in ['BW25113','0.5%','37','aerobic','exponential','Northern blot']:assert s in fig
+methods=' '.join(''.join(x.itertext()) for x in primary.xpath('/article/body/sec[4]/sec[1]/p'))
+for s in ['JW3546 (plaR)','JW1816 (kdgR)']:assert s in methods
+pectin=html.parse(refs['PMID:10913096']['path']);ps='/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[6]/p[4]';pt=' '.join(''.join(x.itertext()) for x in pectin.xpath(ps))
+for s in ['10- to 20-fold','ECL1','not in mutant strain JA134','did not affect the expression of the structural genes','even in the absence of repressor','do not know the significance']:assert s in pt
+prep=' '.join(''.join(x.itertext()) for x in pectin.xpath('/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[2]/p[1]'))
+for s in ['0.14%','pH 4.0','overnight','25','400 U','Aspergillus niger','10-fold']:assert s in prep
+
+def audit(d):
+ assert d['mechanistic_edges'][:109]==old['mechanistic_edges'],'original edge claim altered'
+ assert len(d['mechanistic_edges'])==111,'extra or missing correction edge'
+ edges=d['mechanistic_edges'][109:];triples=[(e['subject'],e['predicate'],e['object']) for e in edges];assert triples==expected,'source-derived deletion-expression sign or endpoints mismatch'
+ for e in edges:
+  s=e['description'];assert 'may be indirect' in s and 'direct promoter binding is not established' in s,'unsupported direct-binding upgrade'
+  for x in ['Northern blots','BW25113','JW3546','JW1816','0.5%','37 C','aerobic','mid-exponential']:assert x in s,'assay scope erased'
+  assert any(ev['reference_id']=='PMID:31892694' and ev['source_locator']=='XPath '+sel for ev in e['evidence']),'result locator absent'
+ assert d['participants'][:len(old['participants'])]==old['participants']
+ assert len(d['participants'])==len(old['participants'])+2,'undefined mixture materialized'
+ assert {p['id'] for p in d['participants'][53:]}=={identities['kdgR']['gene'],identities['kdgR']['protein']}
+ assert d['reactions']==old['reactions'] and d['taxa']==old['taxa']
+ context=d['description'][len(old['description']):]
+ for x in ['PMID:10913096','10-20-fold','ECL1, but not JA134','Structural-gene expression was unaffected','even without the repressor','biological significance remained unresolved','0.14%','pH 4.0','overnight','25 C','400 U','Aspergillus niger','tenfold','undefined hydrolysate']:
+  assert x in context,'pectin context or experimental limit missing: '+x
+ return True
+assert audit(draft)
+controls=[]
+def reject(name,mutation):
+ d=copy.deepcopy(draft);mutation(d)
+ try:audit(d)
+ except AssertionError as e:controls.append(dict(name=name,rejected=True,reason=str(e)));return
+ raise AssertionError('negative control accepted: '+name)
+reject('KdgR-to-plaR sign flipped',lambda d:d['mechanistic_edges'][109].update(predicate='activates'))
+reject('PlaR-to-kdgR sign flipped',lambda d:d['mechanistic_edges'][110].update(predicate='activates'))
+reject('direct-binding upgrade',lambda d:d['mechanistic_edges'][109].update(description='KdgR directly binds the plaR promoter.'))
+reject('protein target substituted for measured gene',lambda d:d['mechanistic_edges'][109].update(object=identities['plaR']['protein']))
+reject('gene substituted for regulator protein',lambda d:d['mechanistic_edges'][110].update(subject=identities['plaR']['gene']))
+reject('MG1655 substituted for experimental BW25113',lambda d:d['mechanistic_edges'][109].update(description=d['mechanistic_edges'][109]['description'].replace('BW25113','MG1655')))
+reject('deletion observation source removed',lambda d:d['mechanistic_edges'][109]['evidence'].pop(0))
+reject('undefined pectin mix converted into chemical',lambda d:d['participants'].append(dict(id='CHEBI:58658',label='pectin digest',category='small_molecule')))
+reject('pectin mixture materialized as an edge',lambda d:d['mechanistic_edges'].append(dict(subject='CHEBI:58658',predicate='activates',object='Entrez:948084')))
+reject('negative structural-gene observation omitted',lambda d:d.update(description=d['description'].replace('Structural-gene expression was unaffected','Structural-gene expression was induced')))
+reject('JA134 negative result lost',lambda d:d.update(description=d['description'].replace('ECL1, but not JA134','ECL1 and JA134')))
+reject('old beta anomer chemistry changed',lambda d:next(e for e in d['mechanistic_edges'] if e['subject']=='CHEBI:147210').update(subject='CHEBI:62321'))
+# Native source consumers and closed provenance remain intact; selection fixture only chooses the new exact IDs.
+man=json.loads((C/'incremental-source-manifest.json').read_text()); built=build_snapshot(C/'incremental-source-manifest.json',C/'bounded-selection',C);assert built==json.loads((C/'incremental-source-build.json').read_text());assert _load_authority(C/'incremental-source-build.json')==built['terms']
+neg=C/'negative-controls';neg.mkdir(exist_ok=True)
+for name,modify in [('source original SHA spoof',lambda x:x[0].update(sha256='0'*64)),('requested Entrez gene mismatch',lambda x:x[1].update(url=x[1]['url'].replace('946129','948084')))]:
+ mm=copy.deepcopy(man);modify(mm);p=neg/(name.replace(' ','-')+'.json');p.write_text(json.dumps(mm,indent=2)+'\n')
+ try:build_snapshot(p,C/'bounded-selection',C)
+ except ValueError as e:controls.append(dict(name=name,rejected=True,reason=str(e)))
+ else:raise AssertionError(name)
+# Whole candidate identity gate under source-built provisional authority, with full original authority preserved.
+root=C/'identifier-exercise';(root/'data/pathways').mkdir(parents=True,exist_ok=True);(root/'data/identifier_authorities').mkdir(parents=True,exist_ok=True);(root/'conf').mkdir(exist_ok=True)
+shutil.copyfile(C/'draft/l-lyxose-degradation.yaml',root/'data/pathways/l-lyxose-degradation.yaml');shutil.copyfile(K/'conf/identifier_policy.yaml',root/'conf/identifier_policy.yaml');shutil.copyfile(C/'complete-source-proposal.json',root/'data/identifier_authorities/sources.json');shutil.copyfile(A/'authority-preparation/ontology-authority-proposal.json',root/'data/identifier_authorities/ontology.json')
+errors=identifier_errors(root);assert not errors,errors
+base=json.loads((I/'complete-source-proposal.json').read_text());complete=json.loads((C/'complete-source-proposal.json').read_text());assert all(complete[k][id]==v for k in ['terms','sources'] for id,v in base[k].items())
+dump('correction-replay-result.json',dict(status='pass',target_sha256=sha(C/'draft/l-lyxose-degradation.yaml'),issuing_identities=identities,source_derived_deletion_pairs=pairs,source_derived_negative_edges=expected,original_edges_unchanged=109,negative_controls=controls,native_incremental_build_exact=True,candidate_identifier_errors=errors,source_authority_totals=dict(terms=len(complete['terms']),metadata=len(complete['sources'])),previous_source_objects_preserved=dict(terms=len(base['terms']),metadata=len(base['sources'])),full_canonical_build=False,scope='Source-literal tests and source-derived exact identity, direction and context contracts; conservative scientific interpretation still requires independent review.'))
+print('correction source replay,',len(controls),'negative controls, native-built authority and candidate identity gate passed')

@@ -1,0 +1,72 @@
+from pathlib import Path
+from copy import deepcopy
+import json,yaml,sys
+from lxml import etree,html
+O=Path('/private/tmp/pathwaymech-next-227-science-successor-review-20261012');V=Path('/private/tmp/pathwaymech-next-227-science-correction-v2-20261012');A=Path('/private/tmp/pathwaymech-next-227-author-20261012')
+r=yaml.safe_load((V/'draft/l-lyxose-degradation.yaml').read_text());old=yaml.safe_load((A/'draft/l-lyxose-degradation.yaml').read_text());bind=json.loads((V/'reference-original-bindings.json').read_text());context=json.loads((V/'context-evidence-ledger.json').read_text())
+# Issuing-source identities, independently joined rather than copied from the draft.
+maps={}
+for acc,gid in [('P76268','946129'),('P37671','948084')]:
+ u=json.loads(Path(bind['UniProtKB:'+acc]['path']).read_text());g=etree.parse(bind['Entrez:'+gid]['path'])
+ assert u['primaryAccession']==acc and any(x['database']=='GeneID' and x['id']==gid for x in u['uniProtKBCrossReferences'])
+ assert g.xpath('string(//Gene-track_geneid)')==gid
+ gene=g.xpath('string(//Gene-ref_locus)');assert gene==u['genes'][0]['geneName']['value']
+ maps[gene]={'protein':'UniProtKB:'+acc,'gene':'Entrez:'+gid,'locus':g.xpath('string(//Gene-ref_locus-tag)')}
+p=etree.parse(bind['PMID:31892694']['path']);paragraph=' '.join(' '.join(p.xpath('/article/body/sec[2]/sec[5]/p[3]')[0].itertext()).split())
+assert 'plaR mRNA significantly increased in the absence of KdgR' in paragraph and 'kdgR mRNA increased in the absence of PlaR' in paragraph
+facts={'lyxose-110':('kdgR','plaR'),'lyxose-111':('plaR','kdgR')}
+# Source-derived bounded scientific acceptance checks. These are not a general language model or shape validator.
+def assess(d):
+ problems=[];edges={e['id']:e for e in d['mechanistic_edges']}
+ for eid,(sub,obj) in facts.items():
+  if eid not in edges:problems.append(eid+':missing');continue
+  e=edges[eid]
+  if (e['subject'],e['predicate'],e['object'])!=(maps[sub]['protein'],'inhibits',maps[obj]['gene']):problems.append(eid+':signed endpoints')
+  desc=e['description'];primary=[x for x in e['evidence'] if x['reference_id']=='PMID:31892694']
+  if len(primary)!=3:problems.append(eid+':three primary scopes')
+  if 'Regulation may be indirect; direct promoter binding is not established.' not in desc or not any('Regulation may be indirect; direct promoter binding is not established.' in x['source_assertion'] for x in primary):problems.append(eid+':indirectness')
+  if not all(s in desc for s in ['Northern blots','BW25113','JW3546 (plaR deletion)','JW1816 (kdgR deletion)','M9 + 0.5% casamino acids','37 C','aerobic shaking','mid-exponential']):problems.append(eid+':assay scope')
+  role={x['reference_id']:x for x in e['evidence'] if x['reference_id'].startswith('Entrez:')}
+  s=role.get(maps[sub]['gene'],{}).get('source_assertion','');t=role.get(maps[obj]['gene'],{}).get('source_assertion','')
+  if not all(z in s for z in [sub+'/'+maps[sub]['locus'],"regulator subject's reference gene",'expression target is '+obj+' ('+maps[obj]['gene']+')','BW25113 derivatives']):problems.append(eid+':subject identity role')
+  if 'grounds the gene-expression endpoint' not in t or 'identifies '+obj not in t:problems.append(eid+':target identity role')
+  if set(x['reference_id'] for x in e['evidence'])!={'PMID:31892694',maps[sub]['protein'],maps[sub]['gene'],maps[obj]['protein'],maps[obj]['gene']}:problems.append(eid+':identity evidence completeness')
+ desc=d['description']
+ for fact in ['pectinase-digested citrus or apple pectin','yiaJ/plaR-lacZ reporter 10-20-fold in ECL1, but not JA134','Structural-gene expression was unaffected even without the repressor','biological significance remained unresolved','0.14% pectin in sodium acetate, pH 4.0','overnight at 25 C with 400 U Aspergillus niger pectinase','tenfold dilution into medium','undefined hydrolysate','without assigning an individual chemical or a PlaR-binding interaction']:
+  if fact not in desc:problems.append('pectin:missing source condition '+fact)
+ # Only source-supported additions are the reciprocal expression edges and native KdgR identities.
+ if set(edges)-{x['id'] for x in old['mechanistic_edges']}!=set(facts):problems.append('unlicensed extra edge')
+ if {x['id'] for x in d['participants']}-{x['id'] for x in old['participants']}!={maps['kdgR']['protein'],maps['kdgR']['gene']}:problems.append('unlicensed molecular identity')
+ return problems
+assert not assess(r),assess(r)
+controls=[]
+def control(name,change,expected):
+ d=deepcopy(r);change(d);fail=assess(d);assert any(expected in f for f in fail),(name,fail);controls.append({'name':name,'expected_rejection':expected,'observed_rejections':fail,'pass':True})
+control('drop KdgR to plaR',lambda d:d['mechanistic_edges'].pop(109),'lyxose-110:missing')
+control('drop PlaR to kdgR',lambda d:d['mechanistic_edges'].pop(110),'lyxose-111:missing')
+for i in (109,110):
+ control('reverse sign '+str(i),lambda d,i=i:d['mechanistic_edges'][i].update(predicate='activates'),'signed endpoints')
+ control('replace target with subject reference gene '+str(i),lambda d,i=i:d['mechanistic_edges'][i].update(object=maps[facts[d['mechanistic_edges'][i]['id']][0]]['gene']),'signed endpoints')
+ control('restore wrong subject-support role '+str(i),lambda d,i=i:d['mechanistic_edges'][i]['evidence'][4 if i==109 else 6].update(source_assertion='This grounds the gene-expression endpoint.'),'subject identity role')
+ control('misassign target evidence role '+str(i),lambda d,i=i:d['mechanistic_edges'][i]['evidence'][6 if i==109 else 4].update(source_assertion="This grounds the regulator subject's reference gene."),'target identity role')
+control('erase possible indirectness',lambda d:d['mechanistic_edges'][109].update(description=d['mechanistic_edges'][109]['description'].replace('Regulation may be indirect; direct promoter binding is not established.','Direct promoter binding establishes repression.')),'indirectness')
+control('transfer assay to MG1655',lambda d:d['mechanistic_edges'][110].update(description=d['mechanistic_edges'][110]['description'].replace('BW25113','MG1655')),'assay scope')
+control('reverse pectin strain result',lambda d:d.update(description=d['description'].replace('in ECL1, but not JA134','in JA134, but not ECL1')),'pectin:')
+control('claim structural gene induction',lambda d:d.update(description=d['description'].replace('Structural-gene expression was unaffected even without the repressor','Structural genes were induced')),'pectin:')
+control('drop unresolved significance',lambda d:d.update(description=d['description'].replace('biological significance remained unresolved','biological significance was established')),'pectin:')
+control('invent pectin chemical',lambda d:d['participants'].append({'id':'CHEBI:999999','label':'Pectin hydrolysate','category':'small_molecule'}),'unlicensed molecular identity')
+control('invent pectin-to-PlaR binding edge',lambda d:d['mechanistic_edges'].append({'id':'invented','subject':'CHEBI:58658','predicate':'binds','object':'UniProtKB:P37671','description':'Pectin digest binds PlaR.','evidence':[{'reference_id':'PMID:10913096','source_assertion':'Pectin digest binds PlaR.','source_locator':context['evidence'][0]['source_locator']}]}),'unlicensed extra edge')
+# Replay both non-graph contextual evidence locators against original HTML.
+ct=html.parse(bind['PMID:10913096']['path']);cr=[]
+for e in context['evidence']:
+ matches=ct.xpath(e['source_locator'][6:]);assert len(matches)==1
+ cr.append({'reference_id':e['reference_id'],'source_sha256':bind[e['reference_id']]['sha256'],'locator':e['source_locator'],'match_count':len(matches),'text_sha256':__import__('hashlib').sha256(' '.join(matches[0].itertext()).encode()).hexdigest()})
+assert r['description']==old['description']+context['appended_text']
+result={'source_identity_joins':maps,'positive_control':assess(r),'negative_controls':controls,'negative_controls_passed':len(controls),'context_replay':cr,'scope':'Bounded source-derived regression checks for the two correction findings; human source assessment is separately documented.'}
+(O/'adversarial-science-result.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'positive':True,'negative_controls_passed':len(controls),'context_locators':len(cr)}))
+# Focused deterministic shape checks only, against already independently reviewed code.
+sys.path.insert(0,'/private/tmp/pathwaymech-next-227-authority-implementation-20261012/candidate/src')
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+obj=validate_record(r);errors=strict_errors([V/'draft/l-lyxose-degradation.yaml'],V);assert not errors
+(O/'bounded-shape-result.json').write_text(json.dumps({'schema':'pass','strict_errors':errors,'code_root':sys.path[0],'full_test_suite_rerun':False},indent=2)+'\n');print('schema and strict passed; no full tests or canonical writes')

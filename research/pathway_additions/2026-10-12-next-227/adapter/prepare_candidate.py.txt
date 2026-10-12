@@ -1,0 +1,13 @@
+from pathlib import Path
+import shutil,json,hashlib,datetime
+A=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-226-20261012');K=A/'candidate';rows=[]
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+for sub in ['src','scripts','tests','conf','docs']:
+ for p in (B/sub).rglob('*'):
+  if p.is_file() and '__pycache__' not in p.parts:
+   rel=p.relative_to(B);dest=K/rel;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,dest);rows.append(dict(path=str(p),relative_path=str(rel),sha256=sha(p),bytes=p.stat().st_size))
+for n in ['pyproject.toml','uv.lock','CLAUDE.md']:
+ p=B/n;dest=K/n;shutil.copyfile(p,dest);rows.append(dict(path=str(p),relative_path=n,sha256=sha(p),bytes=p.stat().st_size))
+assert sha(K/'scripts/build_source_identifier_snapshot.py')=='730021774afeff293808d5128133be5360b2aac7472c3eb7ae9153bde37a9aed'
+assert sha(K/'src/pathwaymech/identifiers.py')=='e54c82d8098c007c2061fe1767c25b3f1bd5faccbe24cb36e08aed2c0b7eae7a'
+(A/'baseline-code-bindings.json').write_text(json.dumps({'root':str(B),'created':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':rows},indent=2)+'\n');print('copied',len(rows),'files; exact accepted sourcebuilder and identifiers hashes')

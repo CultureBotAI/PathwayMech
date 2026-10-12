@@ -1,0 +1,173 @@
+{
+  "source_identity_joins": {
+    "kdgR": {
+      "protein": "UniProtKB:P76268",
+      "gene": "Entrez:946129",
+      "locus": "b1827"
+    },
+    "plaR": {
+      "protein": "UniProtKB:P37671",
+      "gene": "Entrez:948084",
+      "locus": "b3574"
+    }
+  },
+  "positive_control": [],
+  "negative_controls": [
+    {
+      "name": "drop KdgR to plaR",
+      "expected_rejection": "lyxose-110:missing",
+      "observed_rejections": [
+        "lyxose-110:missing",
+        "unlicensed extra edge"
+      ],
+      "pass": true
+    },
+    {
+      "name": "drop PlaR to kdgR",
+      "expected_rejection": "lyxose-111:missing",
+      "observed_rejections": [
+        "lyxose-111:missing",
+        "unlicensed extra edge"
+      ],
+      "pass": true
+    },
+    {
+      "name": "reverse sign 109",
+      "expected_rejection": "signed endpoints",
+      "observed_rejections": [
+        "lyxose-110:signed endpoints"
+      ],
+      "pass": true
+    },
+    {
+      "name": "replace target with subject reference gene 109",
+      "expected_rejection": "signed endpoints",
+      "observed_rejections": [
+        "lyxose-110:signed endpoints"
+      ],
+      "pass": true
+    },
+    {
+      "name": "restore wrong subject-support role 109",
+      "expected_rejection": "subject identity role",
+      "observed_rejections": [
+        "lyxose-110:subject identity role"
+      ],
+      "pass": true
+    },
+    {
+      "name": "misassign target evidence role 109",
+      "expected_rejection": "target identity role",
+      "observed_rejections": [
+        "lyxose-110:target identity role"
+      ],
+      "pass": true
+    },
+    {
+      "name": "reverse sign 110",
+      "expected_rejection": "signed endpoints",
+      "observed_rejections": [
+        "lyxose-111:signed endpoints"
+      ],
+      "pass": true
+    },
+    {
+      "name": "replace target with subject reference gene 110",
+      "expected_rejection": "signed endpoints",
+      "observed_rejections": [
+        "lyxose-111:signed endpoints"
+      ],
+      "pass": true
+    },
+    {
+      "name": "restore wrong subject-support role 110",
+      "expected_rejection": "subject identity role",
+      "observed_rejections": [
+        "lyxose-111:subject identity role"
+      ],
+      "pass": true
+    },
+    {
+      "name": "misassign target evidence role 110",
+      "expected_rejection": "target identity role",
+      "observed_rejections": [
+        "lyxose-111:target identity role"
+      ],
+      "pass": true
+    },
+    {
+      "name": "erase possible indirectness",
+      "expected_rejection": "indirectness",
+      "observed_rejections": [
+        "lyxose-110:indirectness"
+      ],
+      "pass": true
+    },
+    {
+      "name": "transfer assay to MG1655",
+      "expected_rejection": "assay scope",
+      "observed_rejections": [
+        "lyxose-111:assay scope"
+      ],
+      "pass": true
+    },
+    {
+      "name": "reverse pectin strain result",
+      "expected_rejection": "pectin:",
+      "observed_rejections": [
+        "pectin:missing source condition yiaJ/plaR-lacZ reporter 10-20-fold in ECL1, but not JA134"
+      ],
+      "pass": true
+    },
+    {
+      "name": "claim structural gene induction",
+      "expected_rejection": "pectin:",
+      "observed_rejections": [
+        "pectin:missing source condition Structural-gene expression was unaffected even without the repressor"
+      ],
+      "pass": true
+    },
+    {
+      "name": "drop unresolved significance",
+      "expected_rejection": "pectin:",
+      "observed_rejections": [
+        "pectin:missing source condition biological significance remained unresolved"
+      ],
+      "pass": true
+    },
+    {
+      "name": "invent pectin chemical",
+      "expected_rejection": "unlicensed molecular identity",
+      "observed_rejections": [
+        "unlicensed molecular identity"
+      ],
+      "pass": true
+    },
+    {
+      "name": "invent pectin-to-PlaR binding edge",
+      "expected_rejection": "unlicensed extra edge",
+      "observed_rejections": [
+        "unlicensed extra edge"
+      ],
+      "pass": true
+    }
+  ],
+  "negative_controls_passed": 17,
+  "context_replay": [
+    {
+      "reference_id": "PMID:10913096",
+      "source_sha256": "0cc0161545c2db712a9faf395cc5f811d4a864e043132c7e9d7a12d75903376b",
+      "locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[6]/p[4]",
+      "match_count": 1,
+      "text_sha256": "85548f5af7223d384bf216940228728c4413199f191205e1e0af66ec285340e5"
+    },
+    {
+      "reference_id": "PMID:10913096",
+      "source_sha256": "0cc0161545c2db712a9faf395cc5f811d4a864e043132c7e9d7a12d75903376b",
+      "locator": "XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[2]/p[1]",
+      "match_count": 1,
+      "text_sha256": "9701c64487b0fed02fe0e297bb20bea522778fe5f3e5a712e8153a36447d7123"
+    }
+  ],
+  "scope": "Bounded source-derived regression checks for the two correction findings; human source assessment is separately documented."
+}

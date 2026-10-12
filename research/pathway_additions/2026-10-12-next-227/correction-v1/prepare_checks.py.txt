@@ -1,0 +1,8 @@
+from pathlib import Path
+C=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-227-author-20261012');I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012')
+s=(A/'replay_sources.py').read_text().replace("H=A/'regulator-authorities'",f"H=Path('{A}/regulator-authorities')").replace("pdf=A/'pdf-replay/Badia1991.txt'",f"pdf=Path('{A}/pdf-replay/Badia1991.txt')").replace("A/'projections/rhea-author-chemistry.json'",f"Path('{A}/projections/rhea-author-chemistry.json')")
+(C/'replay_sources.py').write_text(s)
+s=(A/'check_candidate.py').read_text().replace("str(A/'runtime/src')",f"'{I}/candidate/src'").replace("'provisional; exact named-identity failures retained separately; no production authority seeded'","'provisional complete source-built proposals; no full canonical build or production adoption'")
+(C/'check_candidate.py').write_text(s)
+s=(A/'check_exports.py').read_text().replace("str(A/'runtime/src')",f"'{I}/candidate/src'").replace("==109","==111").replace("109edge/235locator", "111edge/251locator")
+(C/'check_exports.py').write_text(s)

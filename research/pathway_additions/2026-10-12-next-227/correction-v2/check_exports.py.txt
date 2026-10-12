@@ -1,0 +1,22 @@
+from pathlib import Path
+import json,csv,hashlib,sys
+from lxml import html
+import yaml
+A=Path(__file__).parent;sys.path.insert(0,'/private/tmp/pathwaymech-next-227-authority-implementation-20261012/candidate/src')
+p=A/'draft/l-lyxose-degradation.yaml';d=yaml.safe_load(p.read_text());t=html.parse(str(A/'candidate-checks/pages/records/MetaCyc_LYXMET-PWY.html'));rows=list(csv.DictReader((A/'candidate-checks/kgx/edges.tsv').open(),delimiter='\t'));svg=t.xpath('//*[local-name()="svg" and contains(@class,"pathway-network-svg")]');assert len(svg)==1
+links=svg[0].xpath('.//*[local-name()="a" and contains(@class,"graph-edge")]');assert len(links)==len(rows)==len(d['mechanistic_edges'])==111
+ledger=json.loads((A/'edge-evidence-ledger.json').read_text());qual=[];cross=[]
+for i,e in enumerate(d['mechanistic_edges'],1):
+ matches=[r for r in rows if '_'+e['id']+'_' in r['id']];assert len(matches)==1;r=matches[0];assert (r['subject'],r['object'])==(e['subject'],e['object'])
+ assert json.loads(r['evidence'])==e['evidence'];expected=e.get('endpoint_qualifiers',[]);got=json.loads(r['endpoint_qualifiers']) if r['endpoint_qualifiers'] else [];assert expected==got
+ link=next(l for l in links if l.get('href')=='#mechanism-edge-'+str(i));assert (link.get('data-subject-id') or link.get('data-subject'),link.get('data-predicate'),link.get('data-object-id') or link.get('data-object'))==(e['subject'],e['predicate'],e['object'])
+ all_ev=list(e['evidence'])
+ for q in expected:
+  anchor=f'mechanism-edge-{i}-qualifier-{q["endpoint"]}';els=t.xpath('//*[@id=$id]',id=anchor);assert len(els)==1;assert q['description'] in ''.join(els[0].itertext());assert q['description'] in link.get('aria-label');nodes=svg[0].xpath('.//*[@data-node-id=$id]',id=f'qualified-endpoint-{i}-{q["endpoint"]}');assert len(nodes)==1 and nodes[0].get('data-base-node-id')==e[q['endpoint']];assert q['description'] in nodes[0].get('aria-label');qual.append(dict(edge=e['id'],endpoint=q['endpoint'],kind=q['kind'],table_anchor=anchor,kgx_exact=True,svg_accessible_description=True));all_ev.extend(q['evidence'])
+ binds=[]
+ for ev in all_ev:
+  found=[(k,row) for k,row in enumerate(ledger) if row['evidence']==ev];assert found,(e['id'],ev);binds.append(dict(evidence=ev,ledger_rows=[k for k,_ in found],originals=[row['binding'] for _,row in found]))
+ cross.append(dict(edge_id=e['id'],subject=e['subject'],predicate=e['predicate'],object=e['object'],evidence_original_bindings=binds))
+assert not any('imodulon' in json.dumps(e).lower() for e in d['mechanistic_edges'])
+result=dict(target_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),edges_exact=len(rows),all_evidence_retained=True,qualifiers=qual,svg_edges_exact=len(links),visual_browser_review=False,limitation='Deterministic native HTML/SVG DOM and KGX payload checks; no browser screenshot/interactive-layout claim.')
+(A/'candidate-checks/export-proof.json').write_text(json.dumps(result,indent=2)+'\n');(A/'edge-source-crosswalk.json').write_text(json.dumps(cross,indent=2)+'\n');print('111edge/251locator crosswalk and',len(qual),'endpoint qualifiers retained in KGX and SVG/table')

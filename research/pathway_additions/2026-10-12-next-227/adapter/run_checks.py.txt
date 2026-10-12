@@ -1,0 +1,8 @@
+from pathlib import Path
+import subprocess,os,json,datetime
+A=Path(__file__).parent;K=A/'candidate';PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';env=os.environ.copy();env.update(PYTHONPATH=str(K/'src'),PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1')
+checks={'focused-tests':[PY,'-B','-m','pytest','-q','-p','no:cacheprovider','tests/test_metacyc_reaction_authority.py','tests/test_pathbank_identifier_authority.py','tests/test_identifiers.py','tests/test_source_identifier_snapshot.py','tests/test_identifier_snapshot_builders.py'],'lint':[PY,'-B','-m','ruff','check','scripts/build_source_identifier_snapshot.py','src/pathwaymech/identifiers.py','src/pathwaymech/pathbank_provenance.py','tests/test_metacyc_reaction_authority.py','tests/test_pathbank_identifier_authority.py']}
+results=[]
+for name,cmd in checks.items():
+ p=subprocess.run(cmd,cwd=K,env=env,capture_output=True,text=True);(A/(name+'.stdout')).write_text(p.stdout);(A/(name+'.stderr')).write_text(p.stderr);results.append(dict(name=name,command=cmd,cwd=str(K),returncode=p.returncode,stdout=str(A/(name+'.stdout')),stderr=str(A/(name+'.stderr')),completed=datetime.datetime.now(datetime.timezone.utc).isoformat()));print(name,p.returncode,p.stdout[-400:],flush=True)
+(A/'check-executions.json').write_text(json.dumps(results,indent=2)+'\n');assert all(x['returncode']==0 for x in results)

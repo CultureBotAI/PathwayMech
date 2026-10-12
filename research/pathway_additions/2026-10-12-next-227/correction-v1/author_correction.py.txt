@@ -1,0 +1,66 @@
+"""Author only the separately authorized issue 438/439 scientific successor."""
+from pathlib import Path
+import json,hashlib,copy,sys
+from lxml import etree,html
+import yaml
+C=Path(__file__).parent; A=Path('/private/tmp/pathwaymech-next-227-author-20261012'); I=Path('/private/tmp/pathwaymech-next-227-authority-implementation-20261012')
+sys.path[:0]=[str(I/'candidate/src'),str(I/'candidate')]
+from scripts.build_source_identifier_snapshot import source_terms,build_snapshot
+
+def dump(n,o):(C/n).write_text(json.dumps(o,indent=2,ensure_ascii=False)+'\n')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+old=yaml.safe_load((A/'draft/l-lyxose-degradation.yaml').read_text()); d=copy.deepcopy(old)
+refs=json.loads((A/'reference-original-bindings.json').read_text()); ledger=json.loads((A/'edge-evidence-ledger.json').read_text())
+receipts=json.loads((C/'identity-requests-receipts.json').read_text()); receipts={x['key']:x for x in receipts}; manifest=[]
+for id,key,kind,version in [('UniProtKB:P76268','UniProt-P76268.json','uniprot','2026_03'),('Entrez:946129','Entrez-946129.xml','ncbi-entrezgene-xml','NCBI Gene update 2026-09-03; original acquired 2026-10-12')]:
+ r=receipts[key];p=Path(r['path']);assert sha(p)==r['sha256']; terms=list(source_terms(kind,p,url=r['request_url'],version=version));assert len(terms)==1 and terms[0][0]==id
+ label=terms[0][1];d['participants'].append(dict(id=id,label=label,category='gene' if id.startswith('Entrez') else 'protein'))
+ refs[id]=dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size,url=r['request_url'],version=version)
+ d['references'].append(dict(id=id,title=label,url=r['request_url'],source_version=version,source_sha256=sha(p)))
+ manifest.append(dict(key='lyxose-correction-'+id.replace(':','-'),kind=kind,path='raw/'+key,url=r['request_url'],version=version,license='Upstream terms; public-release licensing deferred',sha256=sha(p)))
+
+def ev(ref,assertion,sel,typ='xpath'):
+ b=refs[ref];p=Path(b['path'])
+ if typ=='xpath':
+  tree=html.parse(str(p)) if p.suffix=='.html' else etree.parse(str(p));obs=tree.xpath(sel);assert obs;obs=[etree.tostring(q,encoding='unicode') if isinstance(q,etree._Element) else str(q) for q in obs];loc='XPath '+sel
+ else:
+  u=json.loads(p.read_text());obs=[q for q in u['uniProtKBCrossReferences'] if all(q.get(k)==w for k,w in sel.items())];assert obs;loc='JSON uniProtKBCrossReferences database='+sel['database']+', id='+sel['id']
+ assert len(assertion)<=400,(len(assertion),assertion)
+ evidence=dict(reference_id=ref,source_assertion=assertion,source_locator=loc);ledger.append(dict(evidence=evidence,binding=b,selector_type=typ,selector=sel,observed=obs));return evidence
+pmid='PMID:31892694';result='/article/body/sec[2]/sec[5]/p[3]';fig='/article/body/sec[2]/sec[5]/p[1]/fig/caption';methods='/article/body/sec[4]/sec[1]/p'
+identity=[]
+for acc,gene,name,locus in [('P76268','946129','kdgR','b1827'),('P37671','948084','plaR','b3574')]:
+ u=json.loads(Path(refs['UniProtKB:'+acc]['path']).read_text());g=etree.parse(refs['Entrez:'+gene]['path'])
+ assert u['primaryAccession']==acc and u['organism']['taxonId']==83333
+ assert any(x['database']=='GeneID' and x['id']==gene for x in u['uniProtKBCrossReferences'])
+ assert g.xpath('//Gene-track_geneid/text()')==[gene] and g.xpath('//Gene-ref_locus/text()')==[name]
+ assert g.xpath('//Gene-ref_locus-tag/text()')==[locus]
+ assert g.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()')==['511145']
+ identity.append(dict(gene='Entrez:'+gene,protein='UniProtKB:'+acc,name=name,locus=locus,native_ecocyc_gene=g.xpath('//Gene-ref_db/Dbtag[Dbtag_db="ECOCYC"]/Dbtag_tag/Object-id/Object-id_str/text()'),protein_taxon=83333,gene_taxon=511145,protein_binding=refs['UniProtKB:'+acc],gene_binding=refs['Entrez:'+gene],assay_mapping='Reference K-12 protein and MG1655 gene identity; Northern-blot observations are explicitly scoped to BW25113 and its deletion derivatives, not an MG1655 assay.'))
+for n,sub,obj,absent,target in [(110,'UniProtKB:P76268','Entrez:948084','KdgR','plaR'),(111,'UniProtKB:P37671','Entrez:946129','PlaR','kdgR')]:
+ assertion=f'Northern blots show increased {target} mRNA after deletion of {absent}, supporting a negative influence on {target} expression under these conditions. Regulation may be indirect; direct promoter binding is not established.'
+ evidence=[ev(pmid,assertion,result),ev(pmid,'Figure 5 compares BW25113 with plaR- and kdgR-defective derivatives in M9 plus 0.5% casamino acids, 37 C, aerobic shaking; RNA was sampled at mid-exponential phase for Northern blots.',fig),ev(pmid,'Methods identify BW25113, JW3546 (plaR deletion) and JW1816 (kdgR deletion) for Northern blots. The K-12 protein and MG1655 gene accessions provide reference identities; the reported experiment used these BW25113 derivatives.',methods)]
+ for acc,gene,name in [('P76268','946129','kdgR'),('P37671','948084','plaR')]:
+  evidence.append(ev('UniProtKB:'+acc,f'The issuing K-12 protein record links {name} protein {acc} to NCBI Gene {gene}; the protein identity is distinct from the measured gene-expression target.',dict(database='GeneID',id=gene),'uniprot_crossref'))
+  evidence.append(ev('Entrez:'+gene,f'The issuing MG1655 NCBI Gene record identifies {name} and its locus tag. This grounds the gene-expression endpoint while preserving the BW25113 assay-strain limitation.','//Gene-track_geneid | //Gene-ref_locus | //Gene-ref_locus-tag | //Org-ref_taxname'))
+ d['mechanistic_edges'].append(dict(id=f'lyxose-{n:03}',subject=sub,predicate='inhibits',object=obj,description=assertion+' Northern blots: BW25113 versus JW3546 (plaR deletion) or JW1816 (kdgR deletion); M9 + 0.5% casamino acids, 37 C, aerobic shaking, mid-exponential phase.',evidence=evidence))
+context=[]
+context.append(ev('PMID:10913096','Pectinase-digested citrus or apple pectin increased the yiaJ-lacZ reporter 10-20-fold in ECL1 but not JA134. Structural-gene expression was unaffected even without the repressor; the authors left the significance unresolved.','/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[6]/p[4]'))
+context.append(ev('PMID:10913096','Pectin was prepared at 0.14% in sodium acetate at pH 4.0, digested overnight at 25 C with 400 U of Aspergillus niger pectinase, then diluted tenfold into medium. The tested hydrolysate is an undefined mixture, not an identified PlaR ligand.','/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[2]/section[2]/p[1]'))
+new_context=' PMID:10913096 additionally reports that pectinase-digested citrus or apple pectin increased the yiaJ/plaR-lacZ reporter 10-20-fold in ECL1, but not JA134. Structural-gene expression was unaffected even without the repressor, and the biological significance remained unresolved. Preparation: 0.14% pectin in sodium acetate, pH 4.0; overnight at 25 C with 400 U Aspergillus niger pectinase; tenfold dilution into medium. This undefined hydrolysate is retained as experimental context, without assigning an individual chemical or a PlaR-binding interaction.'
+d['description']+=new_context
+assert d['mechanistic_edges'][:109]==old['mechanistic_edges'];assert d['participants'][:53]==old['participants'];assert d['reactions']==old['reactions'];assert d['taxa']==old['taxa'];assert d['references'][:64]==old['references']
+(C/'draft/l-lyxose-degradation.yaml').write_text(yaml.safe_dump(d,sort_keys=False,allow_unicode=True,width=106))
+dump('edge-evidence-ledger.json',ledger);dump('reference-original-bindings.json',refs);dump('correction-identity-ledger.json',identity);dump('context-evidence-ledger.json',dict(issue=439,field='description',appended_text=new_context,evidence=context,representation='Undefined pectin hydrolysate condition; no named chemical, reaction, or mechanistic edge.'))
+dump('incremental-source-manifest.json',manifest)
+selection=C/'bounded-selection';selection.mkdir(exist_ok=True);(selection/'identifiers.yaml').write_text(yaml.safe_dump(dict(id='UniProtKB:P76268',participants=[dict(id='Entrez:946129')]),sort_keys=False))
+snapshot=build_snapshot(C/'incremental-source-manifest.json',selection,C);assert set(snapshot['terms'])=={'UniProtKB:P76268','Entrez:946129'};dump('incremental-source-build.json',snapshot)
+base=json.loads((I/'complete-source-proposal.json').read_text());complete=copy.deepcopy(base)
+for k in ('terms','sources'):
+ assert not set(snapshot[k])&set(base[k]);complete[k].update(snapshot[k]);assert all(complete[k][a]==b for a,b in base[k].items())
+dump('complete-source-proposal.json',complete)
+base_manifest=json.loads((I/'complete-source-manifest-proposal.json').read_text());new_manifest=base_manifest+manifest
+assert len({x['key'] for x in new_manifest})==len(new_manifest);dump('complete-source-manifest-proposal.json',new_manifest)
+dump('new-originals-copy-plan.json',[dict(original_path=str(C/e['path']),cache_relative_path=e['path'],sha256=e['sha256'],bytes=(C/e['path']).stat().st_size,source_key=e['key'],mode='Root later copies or symlinks verified originals into external canonical source cache; no shared cache modified here.') for e in manifest])
+dump('correction-only-summary.json',dict(issues=[438,439],old_target_sha256=sha(A/'draft/l-lyxose-degradation.yaml'),new_target_sha256=sha(C/'draft/l-lyxose-degradation.yaml'),original_edges_unchanged=109,new_edges=[e['id'] for e in d['mechanistic_edges'][109:]],new_participants=d['participants'][53:],new_references=d['references'][64:],core_reactions_unchanged=True,taxa_unchanged=True,existing_participants_and_references_unchanged=True,description_append=new_context,authority_delta=dict(terms=list(snapshot['terms']),source_metadata=list(snapshot['sources']),new_manifest_entries=len(manifest)),limits='External successor only; authority proposals built from exact issuing originals; no full canonical build, whole-corpus adoption or scientific re-review claim.'))
+print('authored',len(d['mechanistic_edges']),'edges;',len(ledger),'observations;',len(refs),'references; native-built',len(snapshot['terms']),'new terms')

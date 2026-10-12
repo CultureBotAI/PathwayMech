@@ -1,0 +1,181 @@
+from pathlib import Path
+A=Path(__file__).parent/'candidate'
+p=A/'src/pathwaymech/pathbank_provenance.py';assert not p.exists()
+p.write_text('''"""Closed provenance contract for independently acquired PathBank ZIP members."""
+
+from __future__ import annotations
+
+import re
+from typing import Any
+
+PATHBANK_ARCHIVE_KIND = "pathbank-biopax-zip"
+PATHBANK_ARCHIVE_URL = "https://pathbank.org/downloads/pathbank_primary_biopax.zip"
+
+
+def validate_pathbank_archive(url: str, sha256: str, archive: Any) -> None:
+    """Check typed bindings; the builder additionally verifies the original bytes."""
+    if url != PATHBANK_ARCHIVE_URL:
+        raise ValueError("PathBank ZIP requires the exact official archive URL")
+    if not isinstance(sha256, str) or not re.fullmatch(r"[0-9a-f]{64}", sha256):
+        raise ValueError("PathBank ZIP requires an exact archive SHA-256")
+    if not isinstance(archive, dict) or archive.keys() != {
+        "bytes", "member", "member_bytes", "member_sha256", "root",
+    }:
+        raise ValueError("PathBank ZIP requires a closed archive provenance object")
+    if any(type(archive[key]) is not int or archive[key] <= 0
+           for key in ("bytes", "member_bytes")):
+        raise ValueError("PathBank ZIP archive/member byte counts must be positive integers")
+    patterns = {
+        "member": r"PW[0-9]+\\.owl",
+        "member_sha256": r"[0-9a-f]{64}",
+        "root": r"SMP[0-9]+",
+    }
+    if any(not isinstance(archive[key], str) or not re.fullmatch(pattern, archive[key])
+           for key, pattern in patterns.items()):
+        raise ValueError("PathBank ZIP requires exact native member, hash and root identities")
+''')
+p=A/'scripts/build_source_identifier_snapshot.py';s=p.read_text();s=s.replace('import hashlib\n','import hashlib\nimport io\n').replace('import tarfile\n','import tarfile\nimport zipfile\n');s=s.replace('import yaml\n','''import yaml
+
+from pathwaymech.pathbank_provenance import (
+    PATHBANK_ARCHIVE_KIND,
+    PATHBANK_ARCHIVE_URL,
+    validate_pathbank_archive,
+)
+''')
+s=s.replace('gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html,','gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zip, metacyc-html,')
+s=s.replace('root: ElementTree.Element, *, url: str = "",\n','root: ElementTree.Element, *, url: str = "", archive_root: str | None = None,\n',1)
+s=s.replace('    requested = _pathbank_request(url)\n','''    if archive_root is None:
+        requested = _pathbank_request(url)
+    else:
+        if (url != PATHBANK_ARCHIVE_URL or not isinstance(archive_root, str)
+                or not re.fullmatch(r"SMP[0-9]+", archive_root)):
+            raise ValueError("PathBank archive selection requires exact archive/root provenance")
+        requested = archive_root
+''',1)
+needle='def _metacyc_metadata_fields(text: str) -> Iterator[str]:\n'
+insert='''def _pathbank_archive_terms(
+    path: Path, *, url: str, sha256: str, archive: Any,
+) -> list[tuple[str, str, list[str]]]:
+    """Verify actual ZIP and member bytes before native membership selection."""
+    validate_pathbank_archive(url, sha256, archive)
+    raw = path.read_bytes()
+    if len(raw) != archive["bytes"] or hashlib.sha256(raw).hexdigest() != sha256:
+        raise ValueError("PathBank ZIP original bytes disagree with archive provenance")
+    try:
+        with zipfile.ZipFile(io.BytesIO(raw)) as source:
+            members = [info for info in source.infolist() if info.filename == archive["member"]]
+            if (len(members) != 1 or members[0].is_dir()
+                    or members[0].file_size != archive["member_bytes"]):
+                raise ValueError("PathBank ZIP requires one exact member with bound byte count")
+            member = source.read(members[0])
+    except (zipfile.BadZipFile, RuntimeError, NotImplementedError) as error:
+        raise ValueError("PathBank ZIP member could not be verified") from error
+    if (len(member) != archive["member_bytes"]
+            or hashlib.sha256(member).hexdigest() != archive["member_sha256"]):
+        raise ValueError("PathBank ZIP member bytes disagree with member provenance")
+    root = ElementTree.fromstring(member)
+    if root.tag != "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF":
+        raise ValueError("PathBank ZIP member requires a native RDF root")
+    return list(pathbank_terms(root, url=url, archive_root=archive["root"]))
+
+
+'''
+assert needle in s;s=s.replace(needle,insert+needle)
+old='''                or compound.attrib != {
+                    "resource": "getxml?META:" + compound_frame,
+                    "orgid": "META", "frameid": compound_frame,
+                }
+'''
+new='''                or compound.attrib not in ({
+                    "resource": "getxml?META:" + compound_frame,
+                    "orgid": "META", "frameid": compound_frame,
+                }, {
+                    "resource": "getxml?META:" + compound_frame,
+                    "orgid": "META", "frameid": compound_frame, "class": "true",
+                })
+'''
+assert s.count(old)==1;s=s.replace(old,new);s=s.replace('            participants.append(compound_frame)\n','''            # Keep the source's class assertion in conflict comparisons. It
+            # does not establish an external chemical/anomer equivalence.
+            participants.append((compound_frame, compound.get("class")))
+''',1)
+# Duplicate frame guard must still reject repetition even when marker differs.
+s=s.replace('        if len(participants) != len(set(participants)):\n','        if len(participants) != len({frame for frame, _ in participants}):\n',1)
+s=s.replace('kind: str, path: Path, *, url: str | None = None, version: str | None = None,\n','''kind: str, path: Path, *, url: str | None = None, version: str | None = None,
+    archive: dict[str, Any] | None = None, sha256: str | None = None,
+''',1)
+s=s.replace('''    if kind in {"gocam-tar", "mibig-tar"}:
+''','''    if archive is not None and kind != PATHBANK_ARCHIVE_KIND:
+        raise ValueError("PathBank archive provenance requires the typed ZIP source kind")
+    if kind == PATHBANK_ARCHIVE_KIND:
+        yield from _pathbank_archive_terms(
+            path, url=url or "", sha256=sha256 or "", archive=archive,
+        )
+    elif kind in {"gocam-tar", "mibig-tar"}:
+''',1)
+needle='''        if entry["kind"] == "metacyc-reaction-xml":
+            term, assertion = _metacyc_reaction_record('''
+rep='''        if "archive" in entry and entry["kind"] != PATHBANK_ARCHIVE_KIND:
+            raise ValueError("PathBank archive provenance requires the typed ZIP source kind")
+        if entry["kind"] == PATHBANK_ARCHIVE_KIND:
+            if entry.keys() != {
+                "key", "kind", "path", "url", "version", "license", "sha256", "archive",
+            }:
+                raise ValueError("PathBank ZIP requires closed source manifest fields")
+            parsed_terms = _pathbank_archive_terms(
+                path, url=entry["url"], sha256=entry["sha256"], archive=entry["archive"],
+            )
+            metadata.update(
+                kind=PATHBANK_ARCHIVE_KIND, archive=dict(entry["archive"]),
+                pathway_accessions=[identifier.split(":", 1)[1]
+                                    for identifier, _, _ in parsed_terms if "/" not in identifier],
+            )
+        elif entry["kind"] == "metacyc-reaction-xml":
+            term, assertion = _metacyc_reaction_record('''
+assert needle in s;s=s.replace(needle,rep,1)
+s=s.replace('if entry["kind"] == "pathbank-biopax" and "/" not in identifier:', 'if entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND} and "/" not in identifier:')
+s=s.replace('(entry["kind"] == "pathbank-biopax" and "/" in identifier)','(entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND} and "/" in identifier)')
+p.write_text(s)
+p=A/'src/pathwaymech/identifiers.py';s=p.read_text();s=s.replace('from pathwaymech.schema import ALLOWED_CURIE_PREFIXES','''from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, validate_pathbank_archive
+from pathwaymech.schema import ALLOWED_CURIE_PREFIXES''')
+s=s.replace('{"sha256_scope", "kind"}, f"source {source}",','{"sha256_scope", "kind", "archive", "pathway_accessions"}, f"source {source}",',1)
+s=s.replace('''        if any(not _text(value) for value in metadata.values()):''','''        if any(not _text(value) for name, value in metadata.items()
+               if name not in {"archive", "pathway_accessions"}):''',1)
+s=s.replace('''        if "kind" in metadata and metadata["kind"] != "metacyc-reaction-xml":''','''        if "kind" in metadata and metadata["kind"] not in {
+            "metacyc-reaction-xml", PATHBANK_ARCHIVE_KIND,
+        }:''',1)
+needle='''        if metadata.get("kind") == "metacyc-reaction-xml":'''
+rep='''        if metadata.get("kind") == PATHBANK_ARCHIVE_KIND:
+            if set(metadata) != {
+                "url", "version", "sha256", "license", "kind", "archive", "pathway_accessions",
+            }:
+                raise ValueError(f"source {source}: incomplete typed PathBank ZIP provenance")
+            validate_pathbank_archive(metadata["url"], metadata["sha256"], metadata["archive"])
+            accessions = metadata["pathway_accessions"]
+            if (not isinstance(accessions, list) or not accessions
+                    or any(not isinstance(value, str) or not re.fullmatch(r"SMP[0-9]+", value)
+                           for value in accessions)
+                    or len(accessions) != len(set(accessions))
+                    or accessions[0] != metadata["archive"]["root"]):
+                raise ValueError(f"source {source}: invalid selected PathBank pathway identities")
+        elif "archive" in metadata or "pathway_accessions" in metadata:
+            raise ValueError(f"source {source}: archive provenance requires typed PathBank ZIP")
+        if metadata.get("kind") == "metacyc-reaction-xml":'''
+assert s.count(needle)==1;s=s.replace(needle,rep)
+needle='''        if "entity_type" in term or source_kind == "metacyc-reaction-xml":'''
+rep='''        if source_kind == PATHBANK_ARCHIVE_KIND:
+            provenance = data["sources"][term["source"]]
+            native = identifier.removeprefix("PathBank:")
+            root, separator, local = native.partition("/")
+            if (not identifier.startswith("PathBank:")
+                    or (not separator and root not in provenance["pathway_accessions"])
+                    or (separator and (root != provenance["archive"]["root"]
+                                       or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", local)
+                                       or any(part in {".", "..", ""}
+                                              for part in local.split("/"))))
+                    or term.get("label_kind", "canonical")
+                    != ("source_context" if separator else "canonical")
+                    or "entity_type" in term):
+                raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
+        if "entity_type" in term or source_kind == "metacyc-reaction-xml":'''
+assert needle in s;s=s.replace(needle,rep,1);p.write_text(s)
+print('Edited sourcebuilder, consumer; added shared closed archive provenance contract')

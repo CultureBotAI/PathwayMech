@@ -1,0 +1,110 @@
+import pathlib,json,hashlib,re,gzip,collections,copy,sys,sqlite3
+import yaml
+from lxml import etree,html
+D=pathlib.Path(__file__).parent;A=pathlib.Path('/private/tmp/pathwaymech-next-227-author-20261012');P=pathlib.Path('/private/tmp/pathwaymech-next-227-preflight-20261012');C=pathlib.Path('/private/tmp/pathwaymech-curation-authorities')
+target=D/'target-initial.yaml'; data=yaml.load(target.read_bytes(),Loader=yaml.CSafeLoader)
+def sha(p):return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+def dump(n,o):(D/n).write_text(json.dumps(o,indent=2)+'\n')
+bindings=json.loads((A/'reference-original-bindings.json').read_text());refs={r['id']:r for r in data['references']}; hashes={};trees={};jsons={}
+for id,r in refs.items():
+    b=bindings[id];p=pathlib.Path(b['path']);h=hashes.setdefault(str(p),sha(p));assert h==b['sha256']==r['source_sha256'],id;assert p.stat().st_size==b['bytes'];assert b['url']==r['url']
+    if p.suffix in ['.xml','.html','.owl']:
+        trees[id]=html.parse(str(p)) if p.suffix=='.html' else etree.parse(str(p))
+    if p.suffix=='.json':jsons[id]=json.loads(p.read_bytes())
+dump('verified-reference-originals.json',[{'id':id,**bindings[id]} for id in refs])
+ns={'rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#','rh':'http://rdf.rhea-db.org/','bp':'http://www.biopax.org/release/biopax-level3.owl#'}
+# Parse the entire original RDF independently of author projections.
+rh=etree.fromstring(gzip.decompress((C/'rhea.rdf.gz').read_bytes()));rd=collections.defaultdict(list)
+for o in rh:
+    if o.get('{'+ns['rdf']+'}about'):rd[o.get('{'+ns['rdf']+'}about')].append(o)
+def rp(uri,pred):
+    return [x.get('{'+ns['rdf']+'}resource') or x.text for o in rd[uri] for x in o if x.tag=='{'+ns['rh']+'}'+pred]
+def side(uri):
+    rows=[]
+    for participant in rp(uri,'contains'):
+        coeffs=[int(x.tag.split('contains')[1]) for o in rd[uri] for x in o if re.fullmatch(r'\{.*\}contains\d+',x.tag) and x.get('{'+ns['rdf']+'}resource')==participant]
+        assert len(coeffs)==1
+        compound=rp(participant,'compound')[0];rows.append({'participant':participant,'compound':compound,'id':rp(compound,'accession')[0],'coefficient':coeffs[0],'formula':rp(compound,'formula'),'charge':rp(compound,'charge')})
+    return rows
+chem={}
+for id in ['RHEA:18870','RHEA:18499','RHEA:22369','RHEA:29993']:
+    u=ns['rh']+id.split(':')[1];subs=rp(u,'substrates');prods=rp(u,'products');assert len(subs)==len(prods)==1
+    s=side(subs[0]);p=side(prods[0]);balance=collections.Counter()
+    for ss,sign in [(s,-1),(p,1)]:
+        for z in ss:
+            assert z['coefficient']==1
+            for atom,num in re.findall('([A-Z][a-z]?)([0-9]*)',z['formula'][0]):balance[atom]+=sign*int(num or 1)
+            balance['charge']+=sign*int(z['charge'][0])
+    assert not {k:v for k,v in balance.items() if v}
+    chem[id]={'substrates':s,'products':p,'substrate_uri':subs[0],'product_uri':prods[0],'orientation':'left_to_right' if subs[0].endswith('_L') else 'right_to_left','equation':rp(u,'equation')}
+dump('independent-rhea-chemistry.json',{'source':str(C/'rhea.rdf.gz'),'sha256':sha(C/'rhea.rdf.gz'),'chemistry':chem})
+observations=[];failures=[]
+for edge in data['mechanistic_edges']:
+    items=[('edge',e) for e in edge['evidence']]+[(f'qualifier:{q["endpoint"]}:{q["kind"]}',e) for q in edge.get('endpoint_qualifiers',[]) for e in q['evidence']]
+    for role,e in items:
+        id=e['reference_id'];loc=e.get('source_locator','');observed=[];typ=''
+        try:
+            if loc.startswith('XPath '):
+                xpath=loc[6:].split(';',1)[0];v=trees[id].xpath(xpath,namespaces=ns);assert v
+                observed=[{'xml':etree.tostring(x,encoding='unicode'),'text':' '.join(''.join(x.itertext()).split())} if isinstance(x,etree._Element) else str(x) for x in v];typ='xpath'
+                m=re.search(r"paragraph containing '([^']+)'",loc)
+                if m:assert any(m[1] in x['text'] for x in observed if isinstance(x,dict)),m[1]
+            elif loc.startswith('comments['):
+                ct=re.search(r'commentType=(.+)\]',loc)[1];observed=[x for x in jsons[id].get('comments',[]) if x['commentType']==ct];assert observed;typ='uniprot_comment'
+            elif loc.startswith('uniProtKBCrossReferences['):
+                m=re.search(r'database=([^,]+),id=(.+)\]',loc);observed=[x for x in jsons[id]['uniProtKBCrossReferences'] if x['database']==m[1] and x['id']==m[2]];assert observed;typ='uniprot_xref'
+            elif loc.startswith('rdf:Description'):
+                sn='substrates' if '/rh:substrates' in loc else 'products';m=re.search(r'; (http://rdf.rhea-db.org/Participant_[^/;]+)/rh:compound;',loc);observed=[x for x in chem[id][sn] if x['participant']==m[1]];assert observed;typ='rhea'
+            elif loc.startswith('PDF printed'):
+                assert pathlib.Path(bindings[id]['path']).read_bytes().startswith(b'%PDF');observed=[{'requires_visual_source_review':True,'locator':loc}];typ='pdf_visual'
+            else:raise ValueError('unhandled locator '+loc)
+            observations.append({'edge_id':edge['id'],'role':role,'reference_id':id,'locator':loc,'assertion':e.get('source_assertion',e.get('quote')),'kind':typ,'observed':observed})
+        except Exception as ex:failures.append({'edge_id':edge['id'],'reference_id':id,'locator':loc,'error':str(ex)})
+dump('source-locator-observations.json',observations);dump('source-locator-failures.json',failures)
+# Independent shape/core checks and narrowly targeted adversarial corruptions.
+pw=trees['MetaCyc:LYXMET-PWY'];native=pw.xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid');expected={'LYXISOM-RXN':'MetaCyc:LYXISOM-RXN','LYXK-RXN':'RHEA:18870','LXULRU5P-RXN':'RHEA:18499','RIBULPEPIM-RXN':'RHEA:22369'};assert set(native)==set(expected) and len(native)==4
+formal=[]
+for id,r in chem.items():
+    formal += [(z['id'],'consumes',id) for z in r['substrates']]+[(id,'produces',z['id']) for z in r['products']]
+formal += [('CHEBI:147210','consumes','MetaCyc:LYXISOM-RXN'),('MetaCyc:LYXISOM-RXN','produces','CHEBI:17399')]
+named=[data['id']]+[x['id'] for k in ['taxa','participants','reactions'] for x in data[k]];assert len(named)==len(set(named))
+def audit(d):
+    es=d['mechanistic_edges'];triples=[(e['subject'],e['predicate'],e['object']) for e in es]
+    assert all(e['subject'] in named and e['object'] in named for e in es)
+    assert collections.Counter(t for t in triples if t[1] in ['consumes','produces'])==collections.Counter(formal),'formal chemistry'
+    assert {e['subject'] for e in es if e['predicate']=='part_of' and e['object']==d['id']}==set(expected.values()),'core membership'
+    for r in d['reactions']:
+        if r['id'] in chem:assert r['direction']==chem[r['id']]['orientation'],'Rhea orientation'
+    sg=next(e for e in es if e['subject']=='UniProtKB:P37679' and e['object']=='RHEA:18499');assert sg['predicate']=='enables' and 'tentative' in sg['description'],'SgbU confidence'
+    ar=next(e for e in es if e['id']=='lyxose-082');assert ar['object']=='Entrez:948398' and 'indirect' in ar['description'];q=ar['endpoint_qualifiers'];assert len(q)==1 and q[0]['endpoint']=='subject' and q[0]['kind']=='molecular_state' and 'PHOSPHO-ARCA' in q[0]['description'],'ArcA state'
+    for eid,endpoint in [('lyxose-035','subject'),('lyxose-036','subject'),('lyxose-037','subject'),('lyxose-086','object'),('lyxose-090','object')]:
+        assert next(e for e in es if e['id']==eid)['endpoint_qualifiers'][0]['endpoint']==endpoint,'construct endpoint role'
+audit(data);controls=[]
+def bad(name,mut):
+    x=copy.deepcopy(data);mut(x)
+    try:audit(x)
+    except (AssertionError,KeyError,IndexError) as ex:controls.append({'name':name,'outcome':'rejected','reason':str(ex)});return
+    raise AssertionError('negative control escaped '+name)
+bad('invert_rhea18499',lambda d:next(x for x in d['reactions'] if x['id']=='RHEA:18499').update(direction='left_to_right'))
+bad('replace_beta_core_substrate_with_generic_pyranose',lambda d:next(x for x in d['mechanistic_edges'] if x['id']=='lyxose-005').update(subject='CHEBI:62321'))
+bad('remove_ATP_side',lambda d:d['mechanistic_edges'].remove(next(e for e in d['mechanistic_edges'] if e['id']=='lyxose-008')))
+bad('upgrade_tentative_SgbU_catalysis',lambda d:next(x for x in d['mechanistic_edges'] if x['id']=='lyxose-029').update(predicate='catalyzes'))
+bad('drop_ArcA_phosphorylated_state',lambda d:next(x for x in d['mechanistic_edges'] if x['id']=='lyxose-082').pop('endpoint_qualifiers'))
+bad('move_PlaR_construct_to_ligand',lambda d:next(x for x in d['mechanistic_edges'] if x['id']=='lyxose-086')['endpoint_qualifiers'][0].update(endpoint='subject'))
+dump('graph-and-negative-controls.json',{'status':'passed','target_sha256':sha(target),'edges':len(data['mechanistic_edges']),'core_events':len(native),'core_sides':11,'transport_sides':4,'negative_controls':controls,'locator_failures':failures})
+# Independent issuing ontology rows, including chemical form/structure, not author fixture labels.
+ontology={}
+for prefix,db in [('CHEBI','chebi'),('GO','go'),('NCBITaxon','ncbitaxon')]:
+    con=sqlite3.connect((C/(db+'.db')).resolve().as_uri()+'?mode=ro&immutable=1',uri=True)
+    for id in named:
+        if not id.startswith(prefix+':'):continue
+        rows=con.execute('select predicate,object,value from statements where subject=?',(id,)).fetchall();assert rows,id;ontology[id]=rows
+        label=next(v for p,o,v in rows if p=='rdfs:label'); node=next(x for k in ['taxa','participants'] for x in data[k] if x['id']==id);assert node['label']==label,(id,node['label'],label)
+    con.close()
+dump('independent-ontology-rows.json',ontology)
+# Focused runtime shape gate; no whole-corpus or canonical authority pass claimed.
+sys.path.insert(0,'/private/tmp/pathwaymech-next-226-20261012/src')
+from pathwaymech.schema import validate_record
+validate_record(data)
+dump('candidate-schema-result.json',{'status':'passed','runtime_source':'/private/tmp/pathwaymech-next-226-20261012/src','function':'pathwaymech.schema.validate_record','target_sha256':sha(target),'scope':'single draft shape, local endpoints and evidence grammar; not canonical identity or whole-corpus gates'})
+print(json.dumps({'references_verified':len(refs),'locator_observations':len(observations),'locator_failures':failures,'negative_controls':len(controls),'shape':'passed','ontology_nodes':len(ontology)},indent=2))

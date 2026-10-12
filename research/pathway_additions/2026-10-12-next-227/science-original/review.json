@@ -1,0 +1,116 @@
+{
+  "review_type": "independent_external_scientific_adversarial_review",
+  "reviewer": "/root/mannosylglycerate_preflight",
+  "created_at": "2026-10-12T02:19:27.620527+00:00",
+  "target_path": "/private/tmp/pathwaymech-next-227-author-20261012/draft/l-lyxose-degradation.yaml",
+  "target_sha256": "fa77f6b451b49863552a7bcc9543ba94cd408f2886e8477d53e3a2464eb9583b",
+  "verdict": "changes_requested",
+  "findings": [
+    {
+      "issue_key": "lyxose-plar-kdgr-reciprocal-expression-omission",
+      "severity": "major",
+      "status": "open",
+      "title": "Retain reciprocal PlaR\u2013KdgR expression regulation",
+      "affected_locations": [
+        "mechanistic_edges (missing relations adjacent to PlaR expression edges lyxose-075 through lyxose-077 and lyxose-099)",
+        "participants (missing grounded KdgR protein and kdgR gene)",
+        "conflict-and-scope-ledger.json (missing disposition)"
+      ],
+      "problem": "The record includes PlaR autoregulation and external control of plaR expression but omits the cited 2019 reciprocal regulator-expression observations. This is an evidence-backed omission in the represented regulatory context, not proof of direct promoter binding.",
+      "severity_rationale": "Material incompleteness: a characterized regulator of the included pathway repressor, and its reciprocal response, are missing despite inclusion of other PlaR expression controls and the same primary source.",
+      "evidence": {
+        "reference_id": "PMID:31892694",
+        "original_path": "/private/tmp/pathwaymech-next-227-preflight-20261012/raw/PMC6958661.xml",
+        "sha256": "3aeebd5caace657ea43d72cbe4a23d41d1a445e2b38062316e667affab29d046",
+        "xpath": "/article/body/sec[2]/sec[5]/p[3]",
+        "source_text": "Since co-regulation was suggested between PlaR and KdgR, we also examined transcription level of the PlaR-target genes in the absence of KdgR by using Northern blot analysis. In the absence of KdgR, transcription increased for the eda, kdgT, kdgK and kduD genes, which were the known targets of KdgR. In addition, the increase of mRNA was also observed for the glpT and glpA gene (Fig. 5, compare lanes 1 and 3), implying the novel targets of KdgR. It is noteworthy that the level of plaR mRNA significantly increased in the absence of KdgR whereas kdgR mRNA increased in the absence of PlaR. This finding suggests a regulatory interplay between the two transcription factors, PlaR and KdgR."
+      },
+      "source_interpretation": "Northern blots show increased plaR mRNA after kdgR deletion and increased kdgR mRNA after plaR deletion. The supported basal wild-type influences are negative in both directions. Conditions: BW25113 and deletion derivatives JW3546 (plaR) and JW1816 (kdgR), M9 plus 0.5% casamino acids, 37 C, aerobic shaking, mid-exponential cells. Indirect regulation remains possible.",
+      "acceptance_checks": [
+        "Independently ground exact KdgR protein and kdgR gene identities, including reference versus assay-strain scope; do not invent accession strings.",
+        "Represent KdgR inhibiting plaR gene expression and PlaR inhibiting kdgR gene expression, with exact gene endpoints and the source conditions.",
+        "Attach the original 2019 results paragraph and Fig. 5 support at the narrow edges; preserve negative signs and potential indirectness.",
+        "Do not infer direct DNA binding, a KdgR effector, or ordinary wild-type whole-pathway flux from these deletion data.",
+        "Replay source locators and identity/strict gates; reject flipped signs, direct-binding upgrades and gene/protein endpoint substitution."
+      ]
+    },
+    {
+      "issue_key": "lyxose-pectin-digest-reporter-context-omission",
+      "severity": "minor",
+      "status": "open",
+      "title": "Preserve chemically unresolved pectin-digest reporter context",
+      "affected_locations": [
+        "description or other supported maintained contextual prose",
+        "conflict-and-scope-ledger.json (missing explicit unresolved-mixture disposition)",
+        "PMID:10913096 evidence context"
+      ],
+      "problem": "The 2000 source reports a plaR/yiaJ reporter effect from pectinase-digested pectin, but neither the complete record nor its scope ledger records that supported, chemically unresolved context.",
+      "severity_rationale": "Bounded completeness/documentation gap: the source does not identify a single chemical effector, so the result must not become an invented molecular graph edge. The four-event core is unaffected.",
+      "evidence": {
+        "reference_id": "PMID:10913096",
+        "original_path": "/private/tmp/pathwaymech-next-227-preflight-20261012/raw/PMC94634.html",
+        "sha256": "0cc0161545c2db712a9faf395cc5f811d4a864e043132c7e9d7a12d75903376b",
+        "xpath": "/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[6]/p[4]",
+        "source_text": "As described above, citrus fruit pectin or apple pectin previously hydrolyzed by the action of pectinase did not affect the expression of the structural genes, even in the absence of repressor. However, a 10- to 20-fold induction of \u03c6(yiaJ-lacZ) was observed only in wild-type strain ECL1, but not in mutant strain JA134. At present, we do not know the significance of this effect."
+      },
+      "source_interpretation": "Pectinase-hydrolyzed citrus or apple pectin produced 10\u201320-fold yiaJ-lacZ induction in ECL1 but not JA134. Structural-gene expression was unaffected even without repressor. The authors left the significance unknown. Preparation: 0.14% pectin in sodium acetate pH 4.0, overnight 25 C treatment with 400 U Aspergillus niger pectinase, then 10-fold dilution into medium.",
+      "acceptance_checks": [
+        "Preserve the exact direction, 10\u201320-fold range, ECL1-versus-JA134 contrast, and lack of structural-gene induction.",
+        "Retain the undefined pectinase digest and preparation as mixture/condition context with exact original source locators; record unknown significance.",
+        "Do not equate the digest to galacturonate, invent a molecular identity, add a direct effector edge, or expand the four-event core.",
+        "Make the disposition visible in the successor record/context and corresponding scope dossier; verify the cited source selectors."
+      ]
+    }
+  ],
+  "checks": {
+    "whole_target_read": {
+      "bytes": 144531,
+      "lines": 2407,
+      "sha256": "fa77f6b451b49863552a7bcc9543ba94cd408f2886e8477d53e3a2464eb9583b",
+      "edges": 109,
+      "participants": 53,
+      "reaction_interface_entries": 8,
+      "references": 64,
+      "qualifiers": 10
+    },
+    "original_reference_hashes": "64 references freshly verified against whole retained originals, not author projected evidence alone",
+    "actual_target_locator_uses": {
+      "count": 222,
+      "failures": 0,
+      "note": "The author ledger has 235 observations; this independent count concerns actual edge and qualifier evidence uses in the exact target. Surplus author observations are not treated as missing target support."
+    },
+    "core": "4 native core activities and 11 formal sides; 4 additional proton-coupled transport sides; exact native pathway layout; complete Rhea formula and charge balances and direction checks",
+    "identities": "64 named identities examined scientifically: 28 ChEBI/GO/taxon original SQL rows, 12 UniProt proteins, 7 NCBI genes, 12 exact native MetaCyc/EcoCyc top-level objects, 4 original Rhea events, and 1 frozen archive child. This is not a canonical adapter pass.",
+    "native_context": "8 assemblies independently reconstructed; 22 original promoter assertions cover the 17 graph regulation edges and redundant native sites; 23 foreign-promoter statements excluded",
+    "negative_controls": "9 successful independent deliberate corruptions: Rhea orientation, beta substrate, ATP side, tentative SgbU upgrade, ArcA state loss, PlaR qualifier endpoint swap, IHF sign, wrong PlaR gene target and lost complex component",
+    "shape": "Single draft native schema and closed strict validation passed",
+    "primary_pdf": "Fresh seven-page PDFKit extraction matches preflight text after removal of added page markers; printed page 5147 visually inspected",
+    "imodulondb": "26 original responses freshly hashed/replayed, 14 queries and 11 components; computational context only, zero causal graph edges",
+    "author_seal": "All 400 artifacts verified; exact final target unchanged",
+    "corpus": "227 actual baseline record files independently inventoried including hidden/ignored/followed files, including adopted uncommitted ribose; only terminal RHEA:22369 overlaps L-arabinose degradation I",
+    "limits": [
+      "No canonical review saved, no maintained edits, no identifier gate waiver, no Git/GitHub mutation.",
+      "No whole-corpus validation/export/build/browser check is claimed by this scientific review. Root owns post-adoption gates.",
+      "1994/1998 full original bodies remained unavailable; their claims remain abstract/native-annotation scoped. AraD inhibitor and ArcA full-body access limits are retained.",
+      "No source-exhaustion assertion."
+    ]
+  },
+  "known_separate_adoption_gates": [
+    {
+      "id": "MetaCyc:LYXISOM-RXN",
+      "reason": "Existing guarded native adapter rejects the specific Compound class=true participant even though the exact issuing reaction and chemistry are supported. Separate adapter work remains required."
+    },
+    {
+      "id": "PathBank:SMP0121065",
+      "reason": "Frozen child exists as exact attached pathway in PW002100.owl; archive-aware guarded identity adapter work remains required. No standalone acquisition or passing gate is inferred."
+    }
+  ],
+  "independence": "Reviewer did not author the lyxose preflight or draft. Author ledgers were navigation aids; original hashes, locators, structures and source joins were independently replayed. The author acknowledged the two omissions; findings were independently proven before that acknowledgment.",
+  "baseline": {
+    "observed_head": "9dc303d33d7f798904edf82993211dc53312903d",
+    "maintained_records_at_merge": 226,
+    "actual_working_record_files": 227,
+    "ribose_sha256": "385101d166c9150936d81bb0f1c6c0d134b6ac1e6a47575b2ec6367ad994404465",
+    "root_owns_exact_commit_bridge": true
+  }
+}

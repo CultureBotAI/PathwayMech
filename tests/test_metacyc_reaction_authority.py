@@ -180,7 +180,7 @@ def test_ambiguous_native_identity_and_side_serialization_fail(tmp_path, problem
         else:
             key = {"compound-id": "frameid", "compound-org": "orgid",
                    "compound-resource": "resource", "compound-class": "class"}[problem]
-            compound.set(key, "true" if key == "class" else "wrong")
+            compound.set(key, "false" if key == "class" else "wrong")
     elif problem.startswith("direction-"):
         direction = reaction.find("reaction-direction")
         if problem == "direction-missing":
@@ -271,7 +271,9 @@ def test_snapshot_retains_type_and_frame_token_without_invented_name(tmp_path):
 
 @pytest.mark.parametrize("selected", [True, False])
 @pytest.mark.parametrize("reverse", [True, False])
-@pytest.mark.parametrize("problem", ["version", "side", "direction", "flag", "scope"])
+@pytest.mark.parametrize("problem", [
+    "version", "side", "direction", "flag", "scope", "compound-class",
+])
 def test_conflicts_fail_before_selection_and_never_replace_output(
     tmp_path, monkeypatch, selected, reverse, problem,
 ):
@@ -287,6 +289,8 @@ def test_conflicts_fail_before_selection_and_never_replace_output(
         node = root.find("Reaction/left/Compound")
         node.set("frameid", "OTHER")
         node.set("resource", "getxml?META:OTHER")
+    elif problem == "compound-class":
+        root.find("Reaction/right/Compound").set("class", "true")
     elif problem == "direction":
         root.find("Reaction/reaction-direction").text = "LEFT-TO-RIGHT"
     elif problem == "flag":
@@ -511,3 +515,36 @@ def test_new_typed_provenance_rules_do_not_restrict_legacy_untyped_sources(tmp_p
     del source["kind"]
     source.update(url="http://example.org/legacy.xml?release=old#record", version="Legacy release")
     assert gate(tmp_path, snapshot, record) == []
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_native_compound_class_marker_preserves_unnamed_identity(tmp_path, side):
+    root = native()
+    root.find("Reaction/" + side + "/Compound").set("class", "true")
+    assert parse(tmp_path, root) == [("MetaCyc:" + FRAME, FRAME, [])]
+
+
+@pytest.mark.parametrize("value", ["false", "True", "1", "", " true", "true "])
+def test_native_compound_class_marker_is_exact(tmp_path, value):
+    root = native()
+    root.find("Reaction/right/Compound").set("class", value)
+    with pytest.raises(ValueError, match="exact native Compound"):
+        parse(tmp_path, root)
+
+
+@pytest.mark.parametrize("problem", ["slot-marker", "unknown-attribute", "duplicate-frame"])
+def test_class_marker_does_not_relax_side_identity(tmp_path, problem):
+    root = native()
+    slot = root.find("Reaction/right")
+    compound = slot.find("Compound")
+    compound.set("class", "true")
+    if problem == "slot-marker":
+        slot.set("class", "true")
+    elif problem == "unknown-attribute":
+        compound.set("unverified", "true")
+    else:
+        duplicate = copy.deepcopy(slot)
+        duplicate.find("Compound").attrib.pop("class")
+        root.find("Reaction").append(duplicate)
+    with pytest.raises(ValueError, match="MetaCyc reaction"):
+        parse(tmp_path, root)

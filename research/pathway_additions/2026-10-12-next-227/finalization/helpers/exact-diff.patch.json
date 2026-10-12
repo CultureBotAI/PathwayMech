@@ -1,0 +1,10 @@
+{
+  "serialization": "lossless-utf8-json",
+  "original": {
+    "path": "/private/tmp/pathwaymech-next-227-finalization-v3-20261012/exact-diff.patch",
+    "bytes": 1002,
+    "sha256": "147220ef96cc03460fbaaa9d4869b95f4d970941ec0b43c9aea63c08e4231c24"
+  },
+  "content_status": "unchanged_original_bytes_encoded_as_text",
+  "text": "--- v2/assemble_review.py\n+++ v3/assemble_review.py\n@@ -2,11 +2,13 @@\n \n import argparse\n import json\n+import runpy\n import shlex\n from datetime import UTC, datetime\n from pathlib import Path\n \n import yaml\n+\n from common import (\n     AUDIT,\n     BASE,\n@@ -52,6 +54,14 @@\n     \"src/pathwaymech/kgx.py\",\n     \"src/pathwaymech/graph_view.py\",\n ]\n+\n+\n+def dump_review(review):\n+    \"\"\"Use the unchanged native saver's alias-free review serialization.\"\"\"\n+    native = runpy.run_path(\n+        str(ROOT / \"scripts/record_review.py\"), run_name=\"lyxose_native_review_serialization\"\n+    )\n+    return native[\"_dump_document\"](review)\n \n \n def main():\n@@ -442,7 +452,7 @@\n     for item in inspection[\"source\"][\"inputs\"]:\n         assert sha(ROOT / item[\"path\"]) == item[\"sha256\"], item[\"path\"]\n     (output / \"completed-review.yaml\").write_text(\n-        yaml.safe_dump(review, sort_keys=False, allow_unicode=True, width=92)\n+        dump_review(review)\n     )\n     write(\n         output / \"assembly.json\",\n"
+}

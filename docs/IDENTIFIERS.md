@@ -119,14 +119,15 @@ full META `Reaction` with matching metadata query, PGDB version, species
 match this supported serialization; it does not replace the explicit PGDB
 version check. The exact HTTPS base/service or the observed mirror's literal
 HTTP-with-port-443 base/service are supported. Alternate requests, ports,
-duplicate metadata/entities, class instances, HTML, DTDs and entities fail.
+duplicate metadata/entities, top-level reaction class instances, HTML, DTDs and entities fail.
 Original declared XML encoding and bytes are retained unchanged.
 
 This adapter requires both native `Chemical-Reactions` and
 `Small-Molecule-Reactions` parents, a native reaction direction, and nonempty
 left/right sides containing exact empty META Compound references. Explicit
-coefficient/compartment slots, generic class participants and other native
-serialization forms are currently unsupported and fail rather than being
+coefficient/compartment slots and participant objects other than exact Compound
+references remain unsupported. The optional literal Compound `class="true"`
+marker is retained; other class values or placements fail rather than being
 silently normalized. A direct `common-name` slot of any shape also fails: named
 reaction support is not an implicit fallback. Nested evidence/curator names,
 equations and curated labels never supply a canonical reaction name.
@@ -209,8 +210,10 @@ native object preserves an assembly or molecular state. This participant-only
 contextual rule does not establish pathway membership, catalytic function, or
 sequence equivalence; those claims need independent edge evidence. It does not
 extend to PathBank reaction labels or pathway titles in a MetaCyc record.
-Archive members must be extracted without rewriting bytes, with the exact member
-path and archive digest recorded in `sha256_scope` when the public URL is a ZIP.
+Legacy extracted-member inputs must preserve unmodified bytes, with the exact
+member path and archive digest recorded in `sha256_scope` when the public URL
+is a ZIP. The typed ZIP source below binds both the whole archive and member
+directly instead of using that legacy free-text scope.
 
 `ncbi-entrezgene-xml` supplies `Entrez` gene symbols from a single original NCBI
 EFetch XML response. Its official HTTPS URL must request one positive numeric
@@ -467,3 +470,42 @@ explicit `complex` and `rna` categories in curated records; graph labels and
 KGX retain them without a prefix-wide reaction classification. Public citations
 use `https://ecocyc.org/gene?id=LOCAL_ID`. Acquisition receipts and full original
 bytes remain outside curated records, and public-release licensing is deferred.
+
+### Exact PathBank archive selection
+
+`pathbank-biopax-zip` reads the independently acquired official primary ZIP at
+`https://pathbank.org/downloads/pathbank_primary_biopax.zip`. Its manifest `path`
+points to the original ZIP, and `sha256` hashes that whole ZIP. A required closed
+`archive` object contains `bytes` (positive integer archive byte count), `member`
+(an exact `PW` plus digits and `.owl` filename), `member_bytes` (positive integer),
+`member_sha256` (the exact unmodified member digest), and `root` (the selected
+native `SMP` accession). Neither a filename nor a curated label supplies the
+root identity. The ZIP and selected member hashes and byte counts are verified
+before XML parsing. Missing or duplicate selected member names fail.
+
+This separate source kind applies the existing exact primary-pathway and
+attached-interface checks to that verified member. The selected root must match
+its native SMPDB assertion; unrelated or expanded extra pathways still fail.
+The builder preserves the closed archive object, typed `kind`, real archive URL
+and whole-archive digest in source metadata. It also emits `pathway_accessions`
+from the verified primary and attached objects, with the selected root first.
+The snapshot consumer validates those typed fields and restricts associated
+terms to those pathway accessions or the selected root's local graph IDs.
+Canonical pathway titles and contextual local labels retain their prior rules.
+Typed fields cannot be attached to an untyped or different source kind.
+
+A frozen archive member is never attributed to a live per-pathway URL. This
+kind does not accept `sha256_scope` as a substitute for typed byte bindings.
+Legacy `pathbank-biopax` extracted single-pathway members retain their earlier
+`sha256_scope` behavior, and actual per-pathway downloads keep their existing
+selection contract. Existing authority entries need no format migration.
+
+### Native Compound class references
+
+An unnamed `metacyc-reaction-xml` small-molecule reaction may have the optional
+literal `class="true"` on a direct Compound side reference. The exact native
+resource, organism and frame guards still apply; other class values, extra
+attributes, class markers on side wrappers and duplicate side frames fail.
+The class marker is retained in same-frame conflict comparisons, so a class
+reference cannot silently overwrite an unmarked assertion. This does not alter
+the unnamed frame-token authority label or establish chemical/anomer identity.

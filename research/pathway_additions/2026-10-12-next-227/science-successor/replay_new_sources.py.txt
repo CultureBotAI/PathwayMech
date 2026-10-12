@@ -1,0 +1,27 @@
+from pathlib import Path
+import json,hashlib,yaml
+from lxml import etree,html
+O=Path('/private/tmp/pathwaymech-next-227-science-successor-review-20261012');V=Path('/private/tmp/pathwaymech-next-227-science-correction-v2-20261012')
+bind=json.loads((V/'reference-original-bindings.json').read_text());rec=yaml.safe_load((V/'draft/l-lyxose-degradation.yaml').read_text());rows=[]
+def norm(x):return ' '.join(' '.join(x.itertext()).split())
+for edge in rec['mechanistic_edges'][109:]:
+ for i,e in enumerate(edge['evidence']):
+  q=bind[e['reference_id']];p=Path(q['path']);loc=e['source_locator']
+  if loc.startswith('XPath '):
+   tree=etree.parse(str(p));matches=tree.xpath(loc[6:]);texts=[norm(x) for x in matches];assert texts
+  else:
+   data=json.loads(p.read_text());gene=loc.split('id=')[1];matches=[x for x in data['uniProtKBCrossReferences'] if x['database']=='GeneID' and x['id']==gene];assert len(matches)==1
+   texts=[json.dumps({'primaryAccession':data['primaryAccession'],'organism':data['organism'],'genes':data['genes'],'GeneID':matches},ensure_ascii=False)]
+  rows.append({'edge_id':edge['id'],'evidence_index':i,'reference_id':e['reference_id'],'source_path':str(p),'source_sha256':q['sha256'],'locator':loc,'selected_objects':len(matches),'selected_texts':texts,'record_assertion':e['source_assertion']})
+# Full adjacent Results subsection and Northern method, and pectin results/preparation are independently read.
+x=etree.parse(bind['PMID:31892694']['path']);p=html.parse(bind['PMID:10913096']['path']);extra=[]
+for label,t,loc in [('Northern Results',x,'/article/body/sec[2]/sec[5]'),('Strains',x,'/article/body/sec[4]/sec[1]'),('Northern method',x,"/article/body/sec[4]/sec[title[contains(.,'Northern')]]"),('Pectin results',p,'/html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[6]')]:
+ z=t.xpath(loc);assert z,(label,loc);extra.append({'label':label,'locator':loc,'texts':[norm(y) for y in z]})
+for n in p.xpath('//p'):
+ if '0.14%' in norm(n):extra.append({'label':'Pectin preparation','locator':p.getpath(n),'texts':[norm(n)]})
+assert any(e['label']=='Pectin preparation' for e in extra)
+(O/'new-evidence-replay.json').write_text(json.dumps(rows,indent=2,ensure_ascii=False)+'\n');(O/'primary-context-read.json').write_text(json.dumps(extra,indent=2,ensure_ascii=False)+'\n')
+for z in extra:print(z['label'],z['locator']);print('\n'.join(z['texts']))
+for z in rows:
+ if z['reference_id'].startswith(('UniProt','Entrez')):print(z['edge_id'],z['reference_id'],z['selected_texts'])
+print('All 14 new edge evidence uses resolved to exact original objects.')

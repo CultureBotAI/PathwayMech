@@ -1,0 +1,15 @@
+from pathlib import Path
+import json,hashlib,sys
+A=Path(__file__).parent;sys.path.insert(0,str(A/'runtime/src'))
+from pathwaymech.identifiers import identifier_errors
+errors=identifier_errors(A/'authority-preparation/identifier-exercise');assert len(errors)==2 and all('ID_NOT_FOUND' in e for e in errors);assert 'MetaCyc:LYXISOM-RXN' in errors[0];assert 'PathBank:SMP0121065' in errors[1]
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+r=json.loads((A/'runtime-bindings.json').read_text());K=Path(r['source_root'])
+for q in r['code_inputs']:
+ p=Path(q['path']);dest=A/'runtime'/p.relative_to(K);assert sha(dest)==q['sha256']==sha(p)
+B=Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012');H=A/'authority-preparation'
+# Resolve baseline/proposal files from preserved bindings, independent dictionary equality.
+comparisons=[]
+for before,after in [(B/'sources.json',H/'source-authority-supported-proposal.json'),(B/'ontology.json',H/'ontology-authority-proposal.json')]:
+ x=json.loads(before.read_text());y=json.loads(after.read_text());assert all(y['terms'].get(k)==v for k,v in x['terms'].items());assert all(y['sources'].get(k)==v for k,v in x['sources'].items());comparisons.append(dict(baseline=str(before),before_sha256=sha(before),proposal=str(after),after_sha256=sha(after),old_terms=len(x['terms']),old_metadata=len(x['sources']),exact_preservation=True))
+(A/'candidate-checks/author-final-checks.json').write_text(json.dumps(dict(native_identifier_errors=errors,status='two known failures, not a pass',runtime_files_exact=len(r['code_inputs']),baseline_preservation=comparisons),indent=2)+'\n');print('Independent candidate identifiers: exactly2missing;101code files exact; all baseline objects preserved')

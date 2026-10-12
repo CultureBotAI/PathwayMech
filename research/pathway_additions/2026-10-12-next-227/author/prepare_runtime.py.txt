@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,hashlib,shutil,datetime
+A=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-225-20261012');K=Path('/private/tmp/pathwaymech-next-226-authority-correction-20261012/candidate');P=Path('/private/tmp/pathwaymech-next-227-preflight-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+m=P/'artifact-manifest.json';assert sha(m)=='4d4dd384a0c5754322b4c7faf3892065428df54d79caa880ed146da10fced19f';d=json.loads(m.read_text())
+for q in d['artifacts']:
+ p=P/q['path'];assert p.stat().st_size==q['bytes'] and sha(p)==q['sha256'],p
+r=A/'runtime';r.mkdir(exist_ok=True);sources=[]
+for sub in ['src','scripts','conf']:
+ for p in (K/sub).rglob('*'):
+  if p.is_file() and '__pycache__' not in p.parts:
+   q=r/p.relative_to(K);q.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,q);sources.append(bind(p))
+for p in [K/'pyproject.toml',K/'uv.lock']:
+ if p.exists():shutil.copyfile(p,r/p.name);sources.append(bind(p))
+(A/'runtime-bindings.json').write_text(json.dumps({'source_root':str(K),'code_inputs':sources,'preflight_verified_artifacts':len(d['artifacts']),'manifest':bind(m),'descriptive_discrepancy':'Handoff first paragraph says 29 claims, actual sealed claim-ledger contains30; original retained unchanged.','created':datetime.datetime.now(datetime.timezone.utc).isoformat()},indent=2)+'\n')
+print(len(sources),'runtime inputs copied; preflight255 verified')

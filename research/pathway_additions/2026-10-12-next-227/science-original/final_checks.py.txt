@@ -1,0 +1,20 @@
+from pathlib import Path
+import json,hashlib,os,yaml
+D=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-226-20261012');C=Path('/private/tmp/pathwaymech-curation-authorities');A=Path('/private/tmp/pathwaymech-next-227-author-20261012')
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+rows=[];overlap=[]
+for root,dirs,files in os.walk(R/'data/pathways',followlinks=True):
+ for name in files:
+  if not name.endswith(('.yaml','.yml')):continue
+  p=Path(root)/name;j=yaml.load(p.read_bytes(),Loader=yaml.CSafeLoader);rows.append({'path':str(p),'sha256':sha(p),'id':j['id']})
+  for r in j.get('reactions',[]):
+   if r['id'] in ['MetaCyc:LYXISOM-RXN','RHEA:18870','RHEA:18499','RHEA:22369']:overlap.append({'path':str(p),'pathway':j['id'],'reaction':r['id']})
+assert len(rows)==227
+(D/'observed-corpus.json').write_text(json.dumps({'head':'9dc303d33d7f798904edf82993211dc53312903d','status':'227 files observed, including uncommitted adopted ribose; no invented 228-file baseline','hidden_ignored_followed':True,'records':rows,'shared_core_activity':overlap},indent=2)+'\n')
+(D/'ontology-original-bindings.json').write_text(json.dumps([{'path':str(C/(n+'.db')),'sha256':sha(C/(n+'.db')),'bytes':(C/(n+'.db')).stat().st_size,'access':'SQLite mode=ro&immutable=1'} for n in ['chebi','go','ncbitaxon']],indent=2)+'\n')
+assert sha(A/'draft/l-lyxose-degradation.yaml')==sha(D/'target-initial.yaml')=='fa77f6b451b49863552a7bcc9543ba94cd408f2886e8477d53e3a2464eb9583b'
+print(json.dumps({'corpus':len(rows),'core_overlap':overlap,'final_target_unchanged':True,'ontology_originals':3},indent=2))

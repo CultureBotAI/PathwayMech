@@ -1,0 +1,100 @@
+"""Extend the same exact draft with source-bounded regulatory biology."""
+from author_core import *
+import author_core as c
+H=A/'regulator-authorities'; ids={x['id']:x for x in json.loads((H/'authority-identities.json').read_text())['terms']}
+original_pre=c.original
+def original_any(frame,org='ECOLI'):
+ p=H/'raw'/f'{org}-{frame}.xml'
+ return p if p.exists() else original_pre(frame,org)
+c.original=original_any
+for id,x in ids.items():node(id,'gene' if id.startswith('Entrez:') else 'protein' if id.startswith('UniProtKB:') else 'complex',x['label'])
+for cid in ['57925','62345']:node('CHEBI:'+cid,'small_molecule')
+def he(id,typ,selector,text):
+ x=ids[id];p=Path(x['original_path']);ref(id,p,x['label'],x['url'],x['version'])
+ if typ=='xpath':
+  vals=etree.parse(str(p)).xpath(selector);assert vals,(id,selector);observed=[etree.tostring(v,encoding='unicode') if isinstance(v,etree._Element) else str(v) for v in vals]
+ elif typ=='uniprot_comment':observed=[v for v in json.loads(p.read_text())['comments'] if v['commentType']==selector];assert observed
+ else:raise AssertionError(typ)
+ return evidence(id,text,('XPath ' if typ=='xpath' else 'comments[commentType=')+selector+(']' if typ!='xpath' else ''),typ,selector,observed)
+genes=[('945294','araD','EG10055','P08203'),('948398','rhaT','EG11313','P27125'),('948400','rhaA','EG11867','P32170'),('948084','plaR','EG12278','P37671'),('948101','lyxK','EG12284','P37677'),('948100','sgbU','EG12286','P37679'),('948099','sgbE','EG12287','P37680')]
+gene_by_name={n:(gid,frame,acc) for gid,n,frame,acc in genes}
+def ge(name):
+ gid,frame,acc=gene_by_name[name];xp=f'//Dbtag[Dbtag_db="ECOCYC" and Dbtag_tag/Object-id/Object-id_str="{frame}"] | //Gene-ref_locus | //Gene-ref_locus-tag'
+ return he('Entrez:'+gid,'xpath',xp,f'Issuing MG1655 NCBI Gene identifies {name} and its exact EcoCyc frame {frame}. This binds the native transcription target to the Entrez gene, not directly to enzyme catalytic activity.')
+for gid,name,frame,acc in genes:
+ # Gene-to-product binding uses independently issuing UniProt GeneID cross-reference.
+ p=P/'raw'/f'UniProt-{acc}.json';d=json.loads(p.read_text());vals=[v for v in d['uniProtKBCrossReferences'] if v['database']=='GeneID' and v['id']==gid];assert vals
+ ue(acc,'FUNCTION','The reviewed reference protein identity and gene mapping are retained independently from the experimental strains and constructs used by the cited studies.') if 'UniProtKB:'+acc not in refs else None
+ ev=evidence('UniProtKB:'+acc,f'The issuing protein entry explicitly cross-references NCBI Gene {gid} for {name}. This represents the encoded reference product, not an assertion that every experimental derivative has the identical sequence.',f'uniProtKBCrossReferences[database=GeneID,id={gid}]','uniprot_crossref',dict(database='GeneID',id=gid),vals)
+ ge(name) # exact gene-product bindings are retained in source ledger; schema has no encodes predicate
+# Native CRP and RhaS homodimers, IHF heterodimer, bound effector complexes.
+for comp,chain,acc,num in [('PC00004','PD00257','P0ACJ8',2),('PC00086','PD00221','P09377',2),('PC00027','PD00347','P0A6X7',1),('PC00027','PD00348','P0A6Y1',1)]:
+ vals=etree.parse(str(original_any(comp))).xpath(f'/ptools-xml/Protein/component[Protein[@frameid="{chain}"]]/coefficient');assert [v.text for v in vals]==([str(num)] if comp!='PC00027' else [])
+ p=Path(ids['UniProtKB:'+acc]['original_path']);d=json.loads(p.read_text());links=[v for v in d['uniProtKBCrossReferences'] if v['database']=='BioCyc' and v['id']=='EcoCyc:'+chain];assert links
+ ref('UniProtKB:'+acc,p,ids['UniProtKB:'+acc]['label'],ids['UniProtKB:'+acc]['url'],ids['UniProtKB:'+acc]['version'])
+ cross=evidence('UniProtKB:'+acc,f'The exact issuing UniProt entry cross-references EcoCyc {chain}, binding the native assembly component to this chain.','uniProtKBCrossReferences[database=BioCyc,id=EcoCyc:'+chain+']','uniprot_crossref',dict(database='BioCyc',id='EcoCyc:'+chain),links)
+ edge('EcoCyc:'+comp,'has_part','UniProtKB:'+acc,xe(comp,f'Native {comp} contains {chain}. CRP and RhaS components have coefficient 2; IHF lists alpha/beta membership without numeric coefficients, with the heterodimer interpretation supplied by reviewed annotation.',f'/ptools-xml/Protein/component[Protein[@frameid="{chain}"]]'),cross)
+for comp,typ,frame,id in [('CPLX0-226','Protein','PC00004','EcoCyc:PC00004'),('CPLX0-226','Compound','CAMP','CHEBI:58165'),('CPLX-124','Protein','PC00086','EcoCyc:PC00086'),('CPLX-124','Compound','L-rhamnose','CHEBI:62345')]:
+ edge('EcoCyc:'+comp,'has_part',id,xe(comp,f'Native {comp} explicitly contains {frame}; this slot has no coefficient, so ligand occupancy and additional stoichiometry are not inferred. RhaS-rhamnose is not claimed to be a lyxose-bound complex.',f'/ptools-xml/Protein/component/{typ}[@frameid="{frame}"]'))
+# Three pathway-associated genes in the yiaK-S transcription unit: do not add unrelated neighboring catalytic events.
+regspec=[('UniProtKB:P37671','EG12278-MONOMER','REG0-4907','-','inhibits'),('EcoCyc:CPLX0-226','CPLX0-226','REG0-4905','+','activates'),('EcoCyc:PC00027','PC00027','REG0-4906','+','activates')]
+for name in ['lyxK','sgbU','sgbE']:
+ gid,frame,_=gene_by_name[name]
+ for regulator,native,event,mode,pred in regspec:
+  e=xe('TU592',f'Native {event} assigns {mode} regulation of yiaKp1 (PM692) by {native}. This concerns transcription of the yiaK-S unit, not direct enzyme control; JA134 has the native PlaR lesion.',f'//Regulation[@frameid="{event}" and mode="{mode}" and regulator/Protein[@frameid="{native}"]]/regulated-entity/Promoter[@frameid="PM692"]')
+  member=xe('TU592',f'Native TU592 contains {frame}, the pathway-associated {name} gene, linking promoter regulation to this exact target. Other operon genes are not assigned extra lyxose reactions.',f'/ptools-xml/Transcription-Unit/component/Gene[@frameid="{frame}"]')
+  primary=pe('10913096','resulted in a β-galactosidase activity of 42','The yiaK reporter showed low activity in ECL1 and high constitutive activity in the yiaJ-defective JA134 background, supporting repression at the operon promoter rather than direct enzyme inhibition.') if pred=='inhibits' else pe('10913096','Introduction of each of these IHF mutations','himA and himD3 mutations in the JA134 background reduced yiaK-S reporter activity about fourfold. Gel shifts supported IHF binding; DNA looping was proposed, not directly demonstrated.') if native=='PC00027' else pe('10913096','In spite of the binding observed to Crp site 2','The study supports CRP-cAMP activation of yiaK-S through site 1 centered at -106. Binding at site 2 had unknown function and supplies no signed regulatory edge.')
+  edge(regulator,pred,'Entrez:'+gid,e,member,ge(name),primary)
+for reg,native,event in [('UniProtKB:P37671','EG12278-MONOMER','REG0-10778'),('EcoCyc:CPLX0-226','CPLX0-226','REG0-4987'),('EcoCyc:PC00027','PC00027','REG0-4986')]:
+ ev=xe('TU368',f'Native {event} negatively regulates plaRp (PM449) by {native}. This is gene expression control; IHF repression is retained at native annotation level.',f'//Regulation[@frameid="{event}" and mode="-"]/regulated-entity/Promoter[@frameid="PM449"]')
+ edge(reg,'inhibits','Entrez:948084',ev,ge('plaR'))
+# Rhamnose-system expression context, exact promoters exclude embedded sodAp regulation.
+for name,tu,prom,events in [('rhaT','TU00208','PM00293',[('EcoCyc:CPLX-124','REG0-5372'),('EcoCyc:CPLX0-226','REG0-5374')]),('rhaA','TU00219','PM00303',[('EcoCyc:CPLX-124','REG0-5986'),('EcoCyc:CPLX0-226','REG0-5985')])]:
+ gid,frame,_=gene_by_name[name]
+ for regulator,event in events:
+  edge(regulator,'activates','Entrez:'+gid,xe(tu,f'Native {event} positively regulates {prom}, the promoter of the {name}-containing unit. Rhamnose-bound RhaS and CRP-cAMP provide transcriptional context; no lyxose binding to RhaS is inferred.',f'//Regulation[@frameid="{event}" and mode="+"]/regulated-entity/Promoter[@frameid="{prom}"]'),xe(tu,f'The exact native transcription unit contains {frame}; nested neighboring promoters and their regulators are not transferred to this gene.',f'/ptools-xml/Transcription-Unit/component/Gene[@frameid="{frame}"]'),ge(name))
+arcq=qual('subject','molecular_state','Phosphorylated ArcA corresponding to native PHOSPHO-ARCA, not the unmodified P0A9Q1 reference chain. Native Asp54 aspartylphosphate is annotated by similarity; promoter-binding-site inference is computational and expression effects may be indirect.',xe('PHOSPHO-ARCA','Native PHOSPHO-ARCA is a modified protein with unmodified-form ARCA-MONOMER and modified residue 54 aspartylphosphate annotated by similarity.','/ptools-xml/Protein'))
+arcev=[]
+for event in ['REG0-5375','REG0-5376','REG0-5377']:
+ arcev.append(xe(event,'Native negative rhaTp regulation is backed by gene-expression analysis; the associated promoter-binding-site evidence is similarity to consensus. Expression evidence does not exclude indirect regulation or prove direct rhaT binding.',f'/ptools-xml/Regulation[mode="-" and regulator/Protein[@frameid="PHOSPHO-ARCA"]]/regulated-entity/Promoter[@frameid="PM00293"]'))
+edge('UniProtKB:P0A9Q1','inhibits','Entrez:948398',*arcev,ge('rhaT'),qualifiers=[arcq])
+# Generic lyxose induction: no unobserved beta-specific binding claim.
+for name,acc in [('rhaA','P32170'),('rhaT','P27125')]:
+ gid,_,_=gene_by_name[name]
+ edge('CHEBI:62320','activates','Entrez:'+gid,ue(acc,'INDUCTION',f'Reviewed {name} is induced by L-lyxose. The original 1991 ECL1 assays measured enzyme/transport activities after growth with sugar; they do not establish direct lyxose binding to RhaS or RhaR.'),ge(name),pdfe('ECL1 grown with casein acid hydrolysate plus 12 mM L-lyxose showed increased rhamnose-system activities. This is induction context at generic L-lyxose granularity, not evidence for a specific anomer-binding mechanism.','PDF printed p. 5146, Table 1 and induction Results','L-lyxose induced L-rhamnose permease'))
+edge('CHEBI:62320','activates','Entrez:945294',pe('10913097','Induction of the ara operon by','L-lyxose induced the ara operon even in the JA199 rhaA insertion mutant, supporting induction independent of RhaA conversion. This does not establish direct binding to AraC or identify an active lyxose anomer.'),ge('araD'))
+# Effector assays keep their actual PlaR construct and cellular strain conditions.
+qp=pe('31892694','Expression plasmid pPlaR','The assayed PlaR was His-tagged, expressed from pET21a(+) in BL21(DE3), and affinity-purified. The exact tag position/complete construct sequence is not specified in the inspected text.')
+plaqual=qual('object','experimental_construct','His-tagged PlaR from pET21a(+) expressed in BL21(DE3), affinity-purified for promoter gel shifts; exact complete tag/construct sequence unreported. BW25113 supplied gel-shift probes; W3110 type-A supplied separate gSELEX genome fragments.',qp,pe('31892694','The gel shift assay was performed','Gel shifts used BW25113-derived promoter probes and buffer containing Tris pH 7.8, NaCl and magnesium acetate. These conditions support chosen solution species without measuring ligand protonation or anomer purity.'))
+for cid,name in [('38290','L-ascorbate'),('58658','alpha-D-galacturonate')]:
+ edge('CHEBI:'+cid,'inhibits','UniProtKB:P37671',pe('31892694','First we tested 10 mM concentrations',f'{name} reduced PlaR-yiaK promoter complexes in the 10 mM effector screen; dose-dependent dissociation was examined. The edge concerns PlaR DNA-binding activity, not inhibition of a metabolic enzyme or complete lyxose flux.'),qualifiers=[plaqual])
+ for gene in ['lyxK','sgbU','sgbE']:
+  gid,frame,_=gene_by_name[gene]
+  edge('CHEBI:'+cid,'activates','Entrez:'+gid,pe('31892694','We then examined the possible influence',f'{name} increased the yiaK reporter in wild-type BW25113, with little additional activation in the plaR mutant. Conditions were 0.2% alpha-D-galacturonate or 30 mM L-ascorbate; this is operon-expression context, not complete L-lyxose flux.'),xe('TU592',f'{frame} belongs to native yiaK-S transcription unit TU592. Reporter evidence is at operon promoter level rather than an independent assay of each downstream gene.',f'/ptools-xml/Transcription-Unit/component/Gene[@frameid="{frame}"]'),ge(gene))
+edge('CHEBI:57925','activates',r2,xe('REG0-7579','The native positive regulation event assigns glutathione activation to LyxK activity, citing PMID7961955. Its original full body was unavailable; no concentration, allosteric mechanism or in-vivo flux effect is invented.','/ptools-xml/Regulation[mode="+"]/regulator/Compound[@frameid="GLUTATHIONE"]'))
+# Reviewed regulator locations retain source granularity and evidence levels.
+node('GO:0005737','cellular_component');node('GO:0009295','cellular_component')
+for acc,location in [('P0A6X7','GO:0009295'),('P0A6Y1','GO:0005737'),('P0A9Q1','GO:0005737'),('P09377','GO:0005737')]:
+ edge('UniProtKB:'+acc,'located_in',location,he('UniProtKB:'+acc,'uniprot_comment','SUBCELLULAR LOCATION','The reviewed protein entry supplies this cellular location. IhfA nucleoid annotation includes experimental localization; ArcA is curator-inferred and RhaS is HAMAP-supported. Location does not establish pathway-specific regulator action.'))
+for edge_item in E:
+ if edge_item['subject']=='EcoCyc:PC00027' and edge_item['predicate']=='has_part':
+  edge_item['evidence'].append(he(edge_item['object'],'uniprot_comment','SUBUNIT','Reviewed IHF consists of an alpha and a beta chain, supporting a 1:1 heterodimer. Native component slots supply membership but omit numerical coefficients; no additional subunits are inferred.'))
+edge('CHEBI:17634','activates','Entrez:948084',pe('10913096','Cultures of strain JA134 carrying','Glucose enhanced the divergent yiaJ/plaR reporter while repressing yiaK-S. This is coordinated carbon-source-dependent expression in the examined reporter backgrounds, not direct glucose binding to PlaR.'),ge('plaR'))
+
+# Bound cellular culture effects, not enzyme-level regulation or direct ligand binding.
+for cid,label,pred,needle,txt in [('17634','D-glucose','inhibits','Cultures of strain JA134 carrying','Glucose reduced yiaK-S reporter activity in JA134 under aerobic and anaerobic conditions. Exogenous cAMP partly restored activity; this is carbon-source-dependent expression, not direct inhibition of LyxK/SgbU/SgbE.'),('30031','succinate','activates','Cultures of strain JA134 carrying','Growth on succinate increased yiaK-S reporter expression about threefold in the JA134 derepressed background. This bounded culture response is not evidence for direct succinate binding to any enzyme or regulator.'),('18287','L-fucose','activates','Among 80 different compounds','L-fucose modestly increased the yiaK-S reporter in ECL1 under the 2000 screening conditions, while JA134 was constitutively high. The physiological inducer was then unresolved; direct PlaR ligand binding was not shown.')]:
+ node('CHEBI:'+cid,'small_molecule')
+ for gene in ['lyxK','sgbU','sgbE']:
+  gid,frame,_=gene_by_name[gene]
+  edge('CHEBI:'+cid,pred,'Entrez:'+gid,pe('10913096',needle,txt),xe('TU592',f'TU592 includes {frame}; culture reporter results describe this transcription unit, not a separate gene-specific enzyme assay.',f'/ptools-xml/Transcription-Unit/component/Gene[@frameid="{frame}"]'),ge(gene))
+# Maintain exact source access context in a reference; no fabricated 1994 full text.
+pube('7961955','The inspected abstract describes a dimeric L-xylulose kinase with two 55-kDa subunits and phosphorylation at position 5. Its full original article was not acquired; later 2002 evidence supports additional 3-keto-L-gulonate activity.')
+pube('9525947','The inspected abstract links an IS1-mediated 920-kb chromosomal inversion to constitutive yiaK-S expression in the adapted background. The full original article was not acquired.')
+# Frozen source child remains opaque; its source-specific membership does not import disputed UlaF catalysis.
+p=P/'frozen-PW002100.owl';ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+t=etree.parse(str(p));xp='//bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002112"]/bp:pathwayComponent[@rdf:resource="http://identifiers.org/smpdb/SMP0121065"]';vals=t.xpath(xp,namespaces=ns);assert len(vals)==1
+ref('PathBank:SMP0002112',p,'Frozen PathBank L-Lyxose Degradation; PW002100.owl','https://pathbank.org/downloads/pathbank_primary_biopax.zip','Frozen primary archive Last-Modified2019-08-16; hash is exact41183-byte PW002100.owl member, not full archive')
+e=evidence('PathBank:SMP0002112','Frozen SMP0002112 directly attaches Pentose Phosphate child SMP0121065. This is source-specific opaque child membership associated with the lyxose route; child chemistry is not expanded and frozen UlaF assignment is not adopted.', 'XPath '+xp,'xpath_biopax',xp,[etree.tostring(v,encoding='unicode') for v in vals])
+reactions.append(dict(id='PathBank:SMP0121065',label='Pentose Phosphate',category='pathway'))
+edge(rp,'has_part','PathBank:SMP0121065',e)
+c.output();print('complete provisional draft',len(E),'edges',len(participants),'participants',len(refs),'references')
