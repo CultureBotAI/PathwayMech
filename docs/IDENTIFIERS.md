@@ -704,3 +704,45 @@ encoded, space-decoded, wrong-type, wrong-class, truncated or extra-query
 variants fail. This does not change carrier, state, selected-ID or request
 syntax. Consumer validation reconstructs all these typed metadata projections
 from complete retained native source slots.
+
+The aceto authority profiles retain complete native envelopes and direct source
+slots under `native_aceto`; their consumer reconstructs and validates those
+objects before checking selected terms. The producer hashes complete original
+responses. Offline reconstruction verifies internal coherence, not upstream
+reacquisition or cryptographic authentication of XML through its serialization.
+
+- `metacyc-sgd-pathway-xml` admits the exact SGD HTTPS META request and observed
+  22.5 envelope. It retains whole experimental evidence and pathway interfaces,
+  including native reverse layouts, without treating layout primaries as full
+  equations or linked pathways as selected nodes.
+- `ecocyc-nested-complex-xml` admits an unnamed two-child assembly with explicit
+  coefficient-one children. Its ordered `component_sources` descriptors bind
+  complete, named, same-release homomers with distinct leaves and reciprocal
+  parent references. Native experimental mass and activity context remain
+  attached to the original assembly; the display is the derived unnamed label.
+- `metacyc-acyl-transfer-composite-xml` admits the reversible two-constituent
+  composite profile without inventing reaction ordering. Ordered
+  `constituent_sources` preserve the whole constituent equations and Reaction
+  backlinks. Signed identity/type/class/coefficient cancellation must reproduce
+  the native composite. Source direction remains separate from pathway traversal.
+- `metacyc-protein-residue-class-xml` admits the two explicit protein-bound
+  residue profiles with a whole reciprocal `parent_source`. Mixed Compound and
+  Protein class context remains typed. Complete CML is checked as serialization,
+  with generic protein/R endpoints and unspecified formulas retained, not as a
+  newly reconciled exact molecule. Selected placement is `chemical_entity` only.
+
+Each companion descriptor has exactly `path`, `url`, `version`, `license`, and
+`sha256`. Original paths are relative to the supplied cache, without traversal;
+explicitly staged links retain the established regular-file/hash contract.
+Companion fields are rejected on unrelated kinds. Complete companion assertions
+and matching URL/version/digest are compared with separate source owners before
+corpus selection, including unselected owners and both source orders. Forward
+assembly cycles are checked separately from reciprocal parent context. Existing
+ordinary-reaction owners supply typed identity plus matching original provenance;
+they cannot replace the composite's complete constituent proof.
+
+The four profiles preserve earlier modes, source owners, and selection rules.
+Rhea labels remain selected from the pinned production SQL release; newer RDF
+reaction evidence is separate. A valid PubChem property original supplies its
+label, and existing first UniProt owners remain authoritative. Native source
+licensing remains attached; no public-release clearance follows from parsing.

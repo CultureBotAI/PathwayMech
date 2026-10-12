@@ -1,0 +1,5030 @@
+# Acetoacetate degradation: inherited full science and independent maintained QA
+
+- Review: 20261012T210220Z-aceto236-scientific
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T20:55:27Z
+- Finished UTC: 2026-10-12T21:02:20Z
+- Reviewer: Codex /root/deoxy237_science_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+Exact accepted acetoacetate science is retained. Current whole-record reading and individual inherited paragraph/edge/identity/reference assessments agree; fresh graph/table and preservation QA pass with explicit scientific-access and static-visual limitations.
+
+## Scope And Provenance
+
+Exact accepted acetoacetate science is retained. Current whole-record reading and individual inherited paragraph/edge/identity/reference assessments agree; fresh graph/table and preservation QA pass with explicit scientific-access and static-visual limitations.
+
+Selection: Exact aceto local integration on baseline9bd87745d842b0602d027f3d15d26bbc178474a6 before subsequent evidence adoption and native review save.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 9bd87745d842b0602d027f3d15d26bbc178474a6.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:ACETOACETATE-DEG-PWY | data/pathways/acetoacetate-degradation.yaml | maintained | acetoacetate degradation |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Root-executed history-1 | passed | False | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed history-2 | passed | False | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed sssom | passed | False | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed render | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed skills | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed validate | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed tests | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed lint | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed kgx | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed vendored | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed diff-check | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed site-current | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Fresh independent check_target | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact read-only helper, output and actual stream receipt retained. |
+| Fresh independent check_checkout | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact read-only helper, output and actual stream receipt retained. |
+| Fresh independent verify-bindings | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Exact read-only helper, output and actual stream receipt retained. |
+| Actual graph static visual inspection | passed | True | MetaCyc:ACETOACETATE-DEG-PWY | Actual maintained SVG raster freshly rendered and personally viewed; full DOM/evidence comparison also passes. |
+| Interactive browser checks | unavailable | False | MetaCyc:ACETOACETATE-DEG-PWY | No keyboard, JavaScript interaction, responsive or dark-theme behavior was tested. Static light raster and complete DOM correspondence were checked. |
+
+## Scientific And Domain Assessments
+
+### P01
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The two equations cancel one acetyl-CoA and acetoacetyl-CoA to give acetoacetate + CoA -&gt; acetate + acetyl-CoA. Recycling is stated as material balance rather than enzyme channeling.
+
+Current paragraph SHA256 a12c79fdf9ac757a1ca530237e905d42e94da685bf8617ebd82e22baee990d03
+
+### P02
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Native transfer L2R and native thiolase R2L agree with the selected Rhea oriented equations. Reversibility and explicit anion identities are preserved without counting the projections as extra reactions.
+
+Current paragraph SHA256 c4c09671247c755e28a23df430ef3d0146c55e4ed7e44c687e1f56624c99b51a
+
+### P03
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Both constituent equations and all eight sides agree with the complete native frames. Condensation orientation is explicit; the protein-bound residue classes do not specify free cysteine or experimental occupancy of AtoB Cys88.
+
+Current paragraph SHA256 aa2c0832d7eaf4fe18c3755c5ba9c894bafd9b23c762984564e466815ca3a2c8
+
+### P04
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Whole assembly components and reciprocal membership establish one alpha dimer plus one beta dimer and a separate AtoB tetramer. The draft does not transfer whole-complex catalysis to individual chains.
+
+Current paragraph SHA256 2fda27e9ccd1f107745de3867d90ad4f9aeb26f4cd8ba87b87420376c00e1911
+
+### P05
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Apparent experimental masses and current sequence-derived properties remain separate. The old 2003 model assignments and current membrane-associated cytoplasmic annotation are accurately attributed.
+
+Current paragraph SHA256 fa4a8fc19db52f37d66891271ff8f387a483f5e2de47109d4e216c8265787f87
+
+### P06
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Native intermediate and ping-pong discussion plus UniProt Km values are retained as database annotations of the inaccessible kinetic papers. The direction-specific values do not become a universal rate law.
+
+Current paragraph SHA256 359527ea7c8f31548cf7662274bd2f1531d3ee568eb73d97126a028881cce66d
+
+### P07
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: All four complete Regulation frames support the source-qualified inhibitory relationships. The uncited acetyl-CoA frame is identified; exact assay concentrations are not invented. The mercurial InChI matches the anion.
+
+Current paragraph SHA256 bebaa3e24a25fb41b105f016d73c8a1d8a55d7422df05e8e59780b011c80961f
+
+### P08
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The historical 200–300-fold induction statement occurs in native pathway/protein context. The draft correctly avoids assigning a freshly verified historical strain or denominator without the 1972 full paper.
+
+Current paragraph SHA256 d00104e58a81fe2b217bda6f4040bfca7d3b358a10a363d9aab3337722c124b6
+
+### P09
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The complete 1975 Methods distinguish oleate-grown wild-type B ATCC 11775 thiolase I from acetate-grown constitutive fadR16 fad-5 atoC49 thiolase II. The native broad B attribution is explicitly qualified.
+
+Current paragraph SHA256 ecdc054b684c0046672b08467654b49e2f244af9502bbe95e59cb41577474d26
+
+### P10
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The full 1975 assay recipe, 25 C conditions, substrate-concentration distinction, and below-1-percent C6 result are accurately bounded. Conditional non-detection does not become universal absence.
+
+Current paragraph SHA256 ce247e5c3d8a03a1e4a7c6d3e1c5727a42c4801470baf23a38a2b73f296e4fc0
+
+### P11
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The indexed 2016 abstract and native BL21/sequence-match statements support the qualified structural account. The full 2016 article and exact cloning alignment are not claimed; the older mass remains separate.
+
+Current paragraph SHA256 b3d81b2ef95110499280751cfe2804c3262deabef407ec1ccf1680008a1ee0e4
+
+### P12
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Native kinetic slots carry distinct directions, units and references. The 470 micromolar BRENDA/1976 annotation is not silently reconciled with 138.6 micromolar/2016, and rates are not converted into flux.
+
+Current paragraph SHA256 baffa47fdb584784becaa437e15016f1f90b01cdbc89e5c244a1ed2a4c1781b4
+
+### P13
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: AtoB 88/349/379, AtoA 46 and AtoD 24–30 are represented with their similarity or model evidence. Generic residue classes are not collapsed to a proven single protein site.
+
+Current paragraph SHA256 30794d7e087890f849f05905b5e640eb97f6150951e7cdae80a554c3cbfb9548
+
+### P14
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The two 1987 indexed abstracts distinguish structural-gene complementation from galK transcriptional regulation and preserve the historical atoDAB versus later atoDAEB nomenclature.
+
+Current paragraph SHA256 a35346e9fec644a775a467b6478245c045d9851870aca3c5cd8897437187245b
+
+### P15
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The complete 2007 promoter experiment supports the stated fragments, modified M9 glucose plus 10 mM acetoacetate and promoter-specific controls. This is expression regulation, not enzyme allostery.
+
+Current paragraph SHA256 89130eadbe2aedaa4ff989545c1ebc60192d50ddd50f0d831dfb18ccac76b454
+
+### P16
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The full 2007 study explicitly reports unsuccessful significant in-vitro phosphorylation of the His10 preparation. DNA binding and failure of added acetoacetate to improve it do not establish phosphorylation-independent physiological signaling.
+
+Current paragraph SHA256 eb692e8c95d248e2c31b07898aa3747bb98ef2eded5ca9d02340d99dc437b56e
+
+### P17
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The full footprint and promoter-mutation data support two 20-bp sites relative to a predicted start. The -53 binding/induction distinction and the predicted-coordinate limitation are retained.
+
+Current paragraph SHA256 5afc96866099c67a712b5b0e2572978949343eb119cc5292f23414d78fa9ffcf
+
+### P18
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The complete ChIP and IHF experiments use the stated BW25113/BW28878 and N99/N7193 contexts. Plasmid-promoter occupancy is not quantitative metabolic flux evidence.
+
+Current paragraph SHA256 14b24ffb80c781eb6314ccb141fe7e87e35d2ea36ca9efb745e1625d97df3a09
+
+### P19
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The 2005 indexed abstract and complete native/UniProt objects retain D55G/H73L and phosphorylation ambiguity. The separate cPHB phenotypes are not relabeled as acetoacetate flux.
+
+Current paragraph SHA256 f861137f2fa6951c71520c37811326a37372a74452369ecb96a7dc1c927fb95c
+
+### P20
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The full source contexts and indexed 1993/2006/2007/2011 abstracts support the bounded antizyme, cPHB and motility discussion; these are excluded from the core chemistry.
+
+Current paragraph SHA256 654cf15a4ca9fe0fa81d29afec949b7a4076b41894cd50e022c6e2bd127665f8
+
+### P21
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Both complete AtoC feature sets show the stated version-dependent HTH endpoints and the older sequence caution. Feature differences do not create a new wild-type allele.
+
+Current paragraph SHA256 ff7fba8d69d46d33b0cc44ccd75669298f3cb80f090b76afc975f59e2f07f83a
+
+### P22
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The complete K-12 and O157:H7 entries plus indexed 2005 abstract keep the orthologs distinct. Catalytic capacity is not evidence for route-growth necessity.
+
+Current paragraph SHA256 d9dfd6195ad464961b8a6906fb81c6b8af3f0fcee1c642c528e031d62c151e05
+
+### P23
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The complete O157:H7 UniProt and native accounts support the broad substrates, conditional isovalerate negative and glutamyl-CoA intermediate. K-12 Glu333/tetramer inheritance remains similarity evidence.
+
+Current paragraph SHA256 63bd6ea6622a9749b7fecaf07c8ec6ab7f59b050bd24eeb846b2a7b771ef8904
+
+### P24
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The full 2022 Methods and Fig.2 show the reverse acetate assay, stated donor/acceptor concentrations, enzyme amount, temperature, time and LC–MS products. Forward acetoacetate assimilation is not claimed as directly measured.
+
+Current paragraph SHA256 c1b391a63e6c9a6ce852c9d95e98b906f00001c7c09212d442b5844504af7028
+
+### P25
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: The complete 2022 main article separates pET28a/BL21(lambdaDE3) protein production from MG1655 physiology. Protein-lactylation and PykF experiments do not become route steps; supplementary cloning details remain unverified.
+
+Current paragraph SHA256 4ae761f15d00cf4697976f5f7dd73ae1665918daf8b04d4c9995de401ea8e7e5
+
+### P26
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: All five PathBank reactions and 21 sides were inspected. The CoA-product/one-acetyl-CoA thiolase equation is incompatible and correctly rejected; the three other acetate-metabolism events remain outside the boundary. AtoB four-chain coefficient is explicit while AtoDA coefficients are absent.
+
+Current paragraph SHA256 9d001b8f208ac87b8cb09b97b652158bef903def68c6872f670f982fead646d3
+
+### P27
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Native acetyl-CoA/TCA interface supports the stated metabolic connection, without ATP yield or universal flux claims. Species indexing is separated from each experimental strain context.
+
+Current paragraph SHA256 895c30cc98e9f93c79e222f9083590262fd982a702eaa60b10c75eef16c77c3c
+
+### P28
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Native engineering and nomenclature comments remain application/history context. Engineered butanol or medium-chain products do not replace the physiological acetoacetate endpoint.
+
+Current paragraph SHA256 25d071baa3edb9eaa9764e7bad1f3e1273f1c7c6bba5099b471c58c51d7244c6
+
+### P29
+
+evidence: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current paragraph: Evidence-depth wording matches the acquired originals: three full main papers, indexed abstracts where available, otherwise metadata and attributed native annotations. No blanket full-paper or supplement-reading claim is made.
+
+Current paragraph SHA256 b60661975b090d839d864b806abdbc40db2d9ce0bbbfbb1d2d60c5c5abab645a
+
+### e001
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native transfer sides: coefficients one; exact chemical InChIs; route orientation L2R while chemistry remains reversible.
+
+Whole canonical edge SHA256 a5acf70450ff17edcb0bf4a82164a9105f0aa867d940962c4538c8a0bc3791c6
+
+### e002
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native transfer sides: coefficients one; exact chemical InChIs; route orientation L2R while chemistry remains reversible.
+
+Whole canonical edge SHA256 670bd2dd160e9d3425fd4e1cd84552d07f1f0649d3081fe7e1b079ac0aa26263
+
+### e003
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native transfer sides: coefficients one; exact chemical InChIs; route orientation L2R while chemistry remains reversible.
+
+Whole canonical edge SHA256 34f8fb3ddbc4b381242c0fd0df7f7ff79d0dfe25b0e9b3f13f4b598ce71bb2d8
+
+### e004
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native transfer sides: coefficients one; exact chemical InChIs; route orientation L2R while chemistry remains reversible.
+
+Whole canonical edge SHA256 0841cba8021969e5643fd033fac2f6c105e009fa42c4e32a3a0bb8f7df4ffc99
+
+### e005
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native thiolase sides reversed for degradation: two gross acetyl-CoA products, one acetoacetyl-CoA and one CoA consumed.
+
+Whole canonical edge SHA256 6a144b50e6e7a0043050615451626445da52f35cb6719b46e58c716c33b59972
+
+### e006
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native thiolase sides reversed for degradation: two gross acetyl-CoA products, one acetoacetyl-CoA and one CoA consumed.
+
+Whole canonical edge SHA256 db5b9b7ffec12e0f7ca243543949fd656d55993986f310a49086142296cba91a
+
+### e007
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native thiolase sides reversed for degradation: two gross acetyl-CoA products, one acetoacetyl-CoA and one CoA consumed.
+
+Whole canonical edge SHA256 b5fbbda1c30a4c5b5ec7c13c9c6a3b14c2f64050af1fe7b7b421eba8e1cd3f90
+
+### e008
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 2775648c9478999c8f6c4b0f677b187a2241e7180caaa3e5d310799f90b4f38c
+
+### e009
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 cc94671f68e63487f2198406328e5d8e93a0e0dba9dd79fbc83fc468918f12cd
+
+### e010
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 c65a08a9f3b05b41dea35eda62636c1d78bf6ea622fdd6eab2b0ed160f06e565
+
+### e011
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 dc55c338274354dfc9370a2f98fb3bf5abd3e09897963570883c2e0c6817f587
+
+### e012
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 47350ffc9f07ac5c211e61907a833cf858e0bd4dbcac6279967dbf58ccf02185
+
+### e013
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 8ef68db8d73b382b2e7baeb6c45fe8b7af25ccb814252daea813e86a59c5afde
+
+### e014
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 5eeec7c66078ead4895ae634009ae4de4f8785a3f537700851ad40143211b637
+
+### e015
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Complete native reversible constituent sides in written condensation orientation; generic protein-bound residue classes and no extra physiological step claim.
+
+Whole canonical edge SHA256 70e816df990b0b1546b674fa7f4561383480a62341a1e60b143d580d0cafd4f7
+
+### e016
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact Rhea oriented side/participant objects, five charge-specific ChEBI identities and coefficient two for the thiolase product; alternative descriptions of the same events.
+
+Whole canonical edge SHA256 6c227868ce27acaf40feb78460982fe0ee2dd83f1f0153684053a17edabb1685
+
+### e017
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact Rhea oriented side/participant objects, five charge-specific ChEBI identities and coefficient two for the thiolase product; alternative descriptions of the same events.
+
+Whole canonical edge SHA256 14d177e5d116a1ea91d351f1389c71b293743a83f62542cd6c75e85e9a73cdfd
+
+### e018
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact Rhea oriented side/participant objects, five charge-specific ChEBI identities and coefficient two for the thiolase product; alternative descriptions of the same events.
+
+Whole canonical edge SHA256 a97a169c82fb41be266848c873b8ce8d04d3501a4f54bc97666218850a8a1e41
+
+### e019
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact Rhea oriented side/participant objects, five charge-specific ChEBI identities and coefficient two for the thiolase product; alternative descriptions of the same events.
+
+Whole canonical edge SHA256 bce19e73ae118740c574402101ae41d828f05f6dc01c92a82a8f3dcc549ee71f
+
+### e020
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact Rhea oriented side/participant objects, five charge-specific ChEBI identities and coefficient two for the thiolase product; alternative descriptions of the same events.
+
+Whole canonical edge SHA256 96bb814b488ba4effc8e5ebcfab6860cdcc50bf31ea5c2d1f8a001a714ef05d0
+
+### e021
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact Rhea oriented side/participant objects, five charge-specific ChEBI identities and coefficient two for the thiolase product; alternative descriptions of the same events.
+
+Whole canonical edge SHA256 56bbda3ea771764f8a7ebdc45a35a8a82aaa031d1ea9c96fe65facaaf682a087
+
+### e022
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact Rhea oriented side/participant objects, five charge-specific ChEBI identities and coefficient two for the thiolase product; alternative descriptions of the same events.
+
+Whole canonical edge SHA256 64b25d4fbbbc8120dc7abb637451322a7e4fef83452a1e50b947024b1e744a7a
+
+### e023
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Explicit native pathway membership of the two core events.
+
+Whole canonical edge SHA256 74a70d528b2c914f3fb5851c0825a02a77d87663fd834e51ae1cc4ed098a309f
+
+### e024
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Explicit native pathway membership of the two core events.
+
+Whole canonical edge SHA256 364e3cd749ecefa190b7573796f70f7d83301ac831f8c31a4bfb1eacf330e0a0
+
+### e025
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Rhea membership is explicitly an alternative oriented projection of a native event rather than an additional reaction.
+
+Whole canonical edge SHA256 3fd16f70394c78d2c159fb12f486e8108199b085d0c7221c4d113cf3adf7f948
+
+### e026
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Rhea membership is explicitly an alternative oriented projection of a native event rather than an additional reaction.
+
+Whole canonical edge SHA256 4937cb13bb9944b82d140a9e3bf9c55147aec6d58f9ff8b60424bc975cbf21cd
+
+### e027
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native composite membership of each constituent is explicit and its orientation is qualified.
+
+Whole canonical edge SHA256 3d116fad7dddf499c0e7bde18b59bc93a04a14ca7a939d465443ac40ab528e84
+
+### e028
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native composite membership of each constituent is explicit and its orientation is qualified.
+
+Whole canonical edge SHA256 9d777735fb2c4963e807e3a9d6a880a93497094bcb4638ebf8522d01ded33d02
+
+### e029
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Acetoacetyl-CoA is the shared intermediate connecting the two events; no molecular channel asserted.
+
+Whole canonical edge SHA256 6e3239c92ba19fabfbc63bc7b76a94ae17899f497ad53390e587ff7b8c53267a
+
+### e030
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Acetyl-CoA donor replenishment follows from net stoichiometry and is explicitly labeled a curated inference.
+
+Whole canonical edge SHA256 fe0cddf10228c9bff678b31bc5551ad02475eacfabde145b2589afb5eab4ddad
+
+### e031
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links support whole-complex catalysis of the corresponding native/Rhea equation. Leaf chains are not separate catalysts.
+
+Whole canonical edge SHA256 2431729ad539a30bdae5b1b6f06bb969316202f3e7f64159f9eab99a4e384601
+
+### e032
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links support whole-complex catalysis of the corresponding native/Rhea equation. Leaf chains are not separate catalysts.
+
+Whole canonical edge SHA256 ec7af05813063f91a23674adf797a3264c65fc69065e75bda7adfa46b19501ea
+
+### e033
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links support whole-complex catalysis of the corresponding native/Rhea equation. Leaf chains are not separate catalysts.
+
+Whole canonical edge SHA256 cb9967c938456ba7384d44ffb4035c611c850395a721a3511fd71ec1d57086f4
+
+### e034
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links support whole-complex catalysis of the corresponding native/Rhea equation. Leaf chains are not separate catalysts.
+
+Whole canonical edge SHA256 fdb4dc2201862e376bb4eaa8c393407bd4e4745ca3daab06a48f44d3dfc8f564
+
+### e035
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact nested assembly membership: parent-to-dimer coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.
+
+Whole canonical edge SHA256 39d08b6ca44e31af917834557cb5941aeb069f9e6ba6c8adf3089d4a22099720
+
+### e036
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact nested assembly membership: parent-to-dimer coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.
+
+Whole canonical edge SHA256 ffe98378a50858ba66f818b5abc2d2da72ff6b4c75222caef334e875d7f213b9
+
+### e037
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact nested assembly membership: parent-to-dimer coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.
+
+Whole canonical edge SHA256 0908955ba5f8fe2325d2f9d4ea6a8dd0027d704e08e9aa8fc29922b2852d97de
+
+### e038
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact nested assembly membership: parent-to-dimer coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.
+
+Whole canonical edge SHA256 cbdbd1287c9b897373f1bbc4f9e9ee8d70733ec59ecbbdb95b1d1e28d39de431
+
+### e039
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Exact nested assembly membership: parent-to-dimer coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.
+
+Whole canonical edge SHA256 00d5682e25e8795727004aad95979312cd38e4c1fdef36a67e66baf3f7718019
+
+### e040
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: The complete uncited native Regulation frame supports only source-qualified competitive inhibition by acetyl-CoA; assay conditions and potency are not fabricated.
+
+Whole canonical edge SHA256 e7406e33bf2892a837aa9cdbc468f67946b34e649f125c44ed72882beae3ef12
+
+### e041
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: The complete native Regulation frame and linked commentary specify CoA competition with respect to acyl-CoA, with missing assay conditions retained.
+
+Whole canonical edge SHA256 b1cdefb7e5f9ac97a1feac78b44476ab259fcbfaa10b58f781f1df975212fead
+
+### e042
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: The complete native mercurial inhibition frame is scoped to its database assertion; exact PubChem/native anion identity is verified.
+
+Whole canonical edge SHA256 3c74e68ad4bddfc77224e8e59f9ce317ab34f6d89b954f668e937dbc875dcee2
+
+### e043
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: The complete native thiolase Regulation frame supports source-qualified inhibition by acetoacetyl-CoA, without an in-vivo potency claim.
+
+Whole canonical edge SHA256 f7d1f534f05992afffc9309826bed1052994c561c95922d2cb9daf4f0d6e81aa
+
+### e044
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native/primary promoter evidence supports expression-level AtoC regulation; the edge explicitly rejects a direct allosteric interpretation and keeps strain/preparation contexts separate.
+
+Whole canonical edge SHA256 ecb4590271289370390bb189ea7cbb30e42902193a76d8197b747e0c4d16736e
+
+### e045
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: Native/primary promoter evidence supports expression-level AtoC regulation; the edge explicitly rejects a direct allosteric interpretation and keeps strain/preparation contexts separate.
+
+Whole canonical edge SHA256 ca2fc24c86f2a3b2247f28701e33ee9328a1078a35b67bc91e248e3886fa9825
+
+### e046
+
+graph: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited complete scientific judgment, freshly checked against current whole edge and its evidence: The reversible reaction link is supported by native annotation and the direct reverse-direction 2022 recombinant assay. The edge qualification preserves the preparation and excludes forward-assimilation and growth-necessity proof.
+
+Whole canonical edge SHA256 4f1a9f6f7d94fa5e4d8ba8a790de700083778e67325d6b8bf7992cb0c0dffe0a
+
+### e046 experimental construct
+
+scope: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+The exact whole-edge assessment includes the subject qualifier: pET28a/BL21(lambdaDE3), nickel purification, 1 mM acetoacetyl-CoA plus 10 mM acetate, pH7, 35 C and 20 min. The reverse assay does not establish forward assimilation or growth necessity. Supplemental cloning remains unverified.
+
+["e046", {"endpoint": "subject", "kind": "experimental_construct", "description": "2022 recombinant YdiF expressed from pET28a in BL21(lambdaDE3), purified by nickel affinity; 1 mM acetoacetyl-CoA plus10 mM acetate, pH7,35 °C,20 min. Exact supplement-only clone details not independently verified.", "evidence": [{"reference_id": "PMID:36333310", "source_assertion": "Methods describe pET28a/BL21(lambdaDE3) expression, nickel purification and the purified YdiF CoA-transfer assay.", "source_locator": "PDF pp11–12 expression/purification and CoA-transferase activity assay"}]}]
+
+### MetaCyc:ACETOACETATE-DEG-PWY
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole source identity and label verified, including honest unnamed-frame fallback. The two core events, composite constituents and Rhea projections retain distinct representational roles.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### MetaCyc:ACETOACETYL-COA-TRANSFER-RXN
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole source identity and label verified, including honest unnamed-frame fallback. The two core events, composite constituents and Rhea projections retain distinct representational roles.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole source identity and label verified, including honest unnamed-frame fallback. The two core events, composite constituents and Rhea projections retain distinct representational roles.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### MetaCyc:RXN-20154
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole source identity and label verified, including honest unnamed-frame fallback. The two core events, composite constituents and Rhea projections retain distinct representational roles.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### MetaCyc:RXN-20155
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole source identity and label verified, including honest unnamed-frame fallback. The two core events, composite constituents and Rhea projections retain distinct representational roles.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### EcoCyc:ACETOACETYL-COA-TRANSFER-CPLX
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing native Protein complex frame and honest common-name/fallback label verified. Components, nesting and stoichiometry are kept distinct from activity and experimental preparation.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### EcoCyc:ATOA-CPLX
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing native Protein complex frame and honest common-name/fallback label verified. Components, nesting and stoichiometry are kept distinct from activity and experimental preparation.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### EcoCyc:ATOD-CPLX
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing native Protein complex frame and honest common-name/fallback label verified. Components, nesting and stoichiometry are kept distinct from activity and experimental preparation.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### EcoCyc:ACETYL-COA-ACETYLTRANSFER-CPLX
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing native Protein complex frame and honest common-name/fallback label verified. Components, nesting and stoichiometry are kept distinct from activity and experimental preparation.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### MetaCyc:PROT-CYS
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole native class and parent context support a generic protein-bound residue class. Not a free amino acid or exclusive AtoB state; maintained typed-authority implementation remains pending.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### MetaCyc:Protein-S-Acetyl-Cysteines
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole native class and parent context support a generic protein-bound residue class. Not a free amino acid or exclusive AtoB state; maintained typed-authority implementation remains pending.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### UniProtKB:P76458
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing K-12 UniProt identity and recommended name verified. Historical mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog do not substitute for this reference sequence.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### UniProtKB:P76459
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing K-12 UniProt identity and recommended name verified. Historical mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog do not substitute for this reference sequence.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### UniProtKB:P76461
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing K-12 UniProt identity and recommended name verified. Historical mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog do not substitute for this reference sequence.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### UniProtKB:P37766
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing K-12 UniProt identity and recommended name verified. Historical mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog do not substitute for this reference sequence.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### UniProtKB:Q06065
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Issuing K-12 UniProt identity and recommended name verified. Historical mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog do not substitute for this reference sequence.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### RHEA:27807
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole source identity and label verified, including honest unnamed-frame fallback. The two core events, composite constituents and Rhea projections retain distinct representational roles.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### RHEA:21038
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole source identity and label verified, including honest unnamed-frame fallback. The two core events, composite constituents and Rhea projections retain distinct representational roles.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### CHEBI:13705
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Exact source label and charged molecular identity verified from whole issuing subject/property response, with exact native InChI cross-check. Acid-form discovery xrefs are not used as exact substitutes.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### CHEBI:57288
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Exact source label and charged molecular identity verified from whole issuing subject/property response, with exact native InChI cross-check. Acid-form discovery xrefs are not used as exact substitutes.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### CHEBI:57286
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Exact source label and charged molecular identity verified from whole issuing subject/property response, with exact native InChI cross-check. Acid-form discovery xrefs are not used as exact substitutes.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### CHEBI:30089
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Exact source label and charged molecular identity verified from whole issuing subject/property response, with exact native InChI cross-check. Acid-form discovery xrefs are not used as exact substitutes.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### CHEBI:57287
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Exact source label and charged molecular identity verified from whole issuing subject/property response, with exact native InChI cross-check. Acid-form discovery xrefs are not used as exact substitutes.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### NCBITaxon:562
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Whole NCBI species subject verified; broad species indexing does not universalize strain-specific experimental evidence.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### PubChem:21226146
+
+identity: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited issuing-identity judgment retained against the current complete target: Exact source label and charged molecular identity verified from whole issuing subject/property response, with exact native InChI cross-check. Acid-form discovery xrefs are not used as exact substitutes.
+
+Historical wording that implementation was pending describes the earlier scientific-review stage; actual implementation/output acceptance and current native gates are separate later evidence.
+
+### MetaCyc:ACETOACETYL-COA-TRANSFER-RXN
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETYL-COA
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:3-KETOBUTYRATE
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACET
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETOACETYL-COA
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:CO-A
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### MetaCyc:RXN-20154
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### MetaCyc:PROT-CYS
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### MetaCyc:Protein-S-Acetyl-Cysteines
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### MetaCyc:RXN-20155
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### RHEA:27807
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole original RDF freshly reparsed and all selected fragments aggregated; equation direction, participants and coefficients verified.
+
+Whole frozen issuing Rhea release142 RDF; all selected subject fragments freshly replayed.
+
+### RHEA:21038
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole original RDF freshly reparsed and all selected fragments aggregated; equation direction, participants and coefficients verified.
+
+Whole frozen issuing Rhea release142 RDF; all selected subject fragments freshly replayed.
+
+### MetaCyc:ACETOACETATE-DEG-PWY
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Pathway XML, PGDB 22.5, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETOACETYL-COA-TRANSFER-ENZRXN
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Enzymatic-Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETYL-COA-ACETYLTRANSFER-ENZRXN
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Enzymatic-Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETOACETYL-COA-TRANSFER-CPLX
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ATOA-CPLX
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ATOA-MONOMER
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ATOD-CPLX
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ATOD-MONOMER
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETYL-COA-ACETYLTRANSFER-CPLX
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETYL-COA-ACETYLTRANSFER-MONOMER
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:REG0-11728
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:REG0-8779
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:REG0-8781
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:REG0-7500
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### PMID:17616594
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Complete acquired main PDF freshly read by successor reviewer; supplements and cited articles are not claimed fully read.
+
+Complete acquired primary PDF read, including Methods/Results/Discussion/references; selected scientific tables/figures visually inspected. Supplements not claimed fully read.
+
+### UniProtKB:Q06065
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole issuing entry, including all comments and features, freshly inspected. Current function and evidence-code distinctions are retained.
+
+Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes, comments and features retained.
+
+### PMID:36333310
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Complete acquired main PDF freshly read by successor reviewer; supplements and cited articles are not claimed fully read.
+
+Complete acquired primary PDF read, including Methods/Results/Discussion/references; selected scientific tables/figures visually inspected. Supplements not claimed fully read.
+
+### EcoCyc:ENZRXN0-2778
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Enzymatic-Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### MetaCyc:Protein-L-amino-Acids
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### MetaCyc:Protein-S-Acyl-Cysteines
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### UniProtKB:P76458
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole issuing entry, including all comments and features, freshly inspected. Current function and evidence-code distinctions are retained.
+
+Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes, comments and features retained.
+
+### UniProtKB:P76459
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole issuing entry, including all comments and features, freshly inspected. Current function and evidence-code distinctions are retained.
+
+Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes, comments and features retained.
+
+### PMID:3025185
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:1103739
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed metadata has no abstract; biological details remain separately attributed native annotations.
+
+PubMed indexed metadata only; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:12952533
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:1103741
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed metadata has no abstract; biological details remain separately attributed native annotations.
+
+PubMed indexed metadata only; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:332081
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed metadata has no abstract; biological details remain separately attributed native annotations.
+
+PubMed indexed metadata only; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### EcoCyc:CPD-29
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### PubChem:21226146
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Exact issuing property original and native structural equivalence verified; no acid-form substitution.
+
+Whole issuing PubChem property JSON; exact native InChI, charge and formula comparison; immutable original reused.
+
+### EcoCyc:ACETOACETATE-DEG-PWY
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Pathway XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### PMID:4563344
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed metadata has no abstract; biological details remain separately attributed native annotations.
+
+PubMed indexed metadata only; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:236278
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Complete acquired main PDF freshly read by successor reviewer; supplements and cited articles are not claimed fully read.
+
+Complete acquired primary PDF read, including Methods/Results/Discussion/references; selected scientific tables/figures visually inspected. Supplements not claimed fully read.
+
+### PMID:27380370
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:9904
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed metadata has no abstract; biological details remain separately attributed native annotations.
+
+PubMed indexed metadata only; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### UniProtKB:P76461
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole issuing entry, including all comments and features, freshly inspected. Current function and evidence-code distinctions are retained.
+
+Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes, comments and features retained.
+
+### PMID:2883171
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:16153782
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:16564134
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### EcoCyc:ATOC-MONOMER
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### PMID:8346225
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:17475408
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### PMID:22083893
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### EcoCyc:EG12432-MONOMER
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### PMID:16253988
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Indexed original abstract and metadata inspected; no acquired full body and no unsupported full-paper inference.
+
+PubMed indexed abstract and metadata; complete primary body unavailable or not acquired. Native annotations cited separately.
+
+### UniProtKB:P37766
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole issuing entry, including all comments and features, freshly inspected. Current function and evidence-code distinctions are retained.
+
+Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes, comments and features retained.
+
+### UniProtKB:Q8X5X6
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole issuing entry, including all comments and features, freshly inspected. Current function and evidence-code distinctions are retained.
+
+Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes, comments and features retained.
+
+### PathBank:SMP0002102
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole discovery original freshly inspected; all five equations and all objects adjudicated. The incompatible thiolase equation is rejected.
+
+Whole BioPAX original; all165 objects and all5 reactions/21 sides adjudicated; incompatible thiolase equation rejected.
+
+### EcoCyc:ACETOACETYL-COA-TRANSFER-RXN
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:ACETYL-COA-ACETYLTRANSFER-RXN
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:PROT-CYS
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:Protein-S-Acetyl-Cysteines
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:RXN-20154
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### EcoCyc:RXN-20155
+
+provenance: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+Inherited original-reference assessment retained with exact current source hash and source-version language: Whole native frame and every direct slot freshly inspected. Database annotations remain distinct from full-primary-paper evidence; PGDB and historical limitations are preserved.
+
+Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations are not blanket full-primary-paper claims.
+
+### Two biological events and mechanistic decomposition
+
+scope: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+AtoDA transfer and AtoB cleavage yield one net acetyl-CoA. Rhea equations are alternative projections, and native cysteinyl half-reactions are decomposition context. Acetyl-CoA donor replacement is mass balance, without enzyme channeling. Incompatible PathBank thiolase chemistry is rejected.
+
+### Expression, assemblies and residue classes
+
+scope: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+AtoA2AtoD2 nested assembly and separate AtoB4 retain whole-complex activity. Generic protein-bound cysteine states remain distinct from free cysteine or demonstrated Cys88 occupancy. AtoC is expression-level control; conditional native inhibition annotations do not become universal potency claims.
+
+### Actual complete graph and evidence table
+
+representation: supported. Targets: MetaCyc:ACETOACETATE-DEG-PWY.
+
+All 46 arrows, 25 visual nodes, 25 named identities, one qualified construct and 66 references correspond to current YAML; all local anchors resolve and whole narrative text survives. Unconnected taxon remains in the component table.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| current-target | data/pathways/acetoacetate-degradation.yaml | supports | Fresh complete reading of all 1,368 YAML lines. Exact accepted target has 29 paragraphs, 46 edges, 25 identities, one construct qualifier, 66 references and five mappings. |
+| fresh-target-qa | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/target-qa.json | supports | Fresh complete graph/table/qualifier/reference and old scientific-owner comparison using exact reviewed root-prepared helper. |
+| fresh-tree-qa | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/checkout-preservation.json | supports | Fresh hidden/ignored-inclusive complete physical tree and all 800 shared-cache identities, before evidence adoption or native review saves. |
+| exact-bindings | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/exact-bindings.json | supports | Exact twelve native command receipts, streams, planned argv/environment and inspection source hashes verified after all four phases passed. |
+| static-visual | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-assessment.json | supports | Fresh static light raster extracted from the actual maintained SVG and personally viewed. Dense junction labels overlap; long construct label truncates. |
+| inherited-science | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/REPORT.md | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-claims | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-scientific-assessments.json | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-identities-references | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-identity-reference-assessments.json | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-native-output | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/REPORT.md | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-integration-preparation | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/REPORT.md | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| accepted-runtime | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-implementation-acceptance-20261012.json | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| root-history-1 | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-history-2 | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-sssom | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-render | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-skills | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-validate | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-tests | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-lint | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-kgx | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-vendored | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-diff-check | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-site-current | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+
+## Limits And Additional Notes
+
+- Full scientific source interpretation is inherited from the accepted independent review. This review freshly reads the entire current YAML and all 29 paragraph, 46 edge, 25 identity and 66 reference dispositions and compares exact current claims; it does not reread primary papers.
+- Inherited source depth remains three complete main papers (1975 thiolases, 2007 AtoC, 2022 YdiF), ten indexed abstracts and five metadata-only papers. Not all supplements or cited papers were read. No source-exhaustion or new whole-paper claim follows.
+- Distinct wild-type B, constitutive mutant, K-12/MG1655, BL21 recombinant and O157:H7 ortholog contexts remain scoped. Exact supplement-only YdiF cloning details and unavailable historical assay contexts are not newly verified.
+- Actual maintained static light SVG was freshly rasterized and viewed. Dense shared-junction labels overlap and the long construct node label truncates; the complete qualification and evidence remain in the checked tables. No browser interaction/responsive/dark-theme result is claimed.
+- Production implementation, whole-source authority semantics and the issue502 cycle correction are inherited from accepted independent runtime/output reviews; current gates and exact output identity verify integration. This is not another line-by-line adapter review or full SQL rehash.
+- The reviewer authored earlier external canonical preparation, but did not author this scientific record, production adapters, local-integration preparation or root maintained execution. Current independence is scoped to the latter maintained integration and inherited scientific adjudication; earlier self-authored planning is not independently certified here.
+- No maintained record, native review, cache, Git state or GitHub object was changed by this reviewer. Root owns exact evidence adoption, guarded final native inspection, append-only save/check and any later local commit.
+- The complete current YAML and all inherited paragraph/edge/identity/reference dispositions were read. Scientific access tiers describe the earlier source reviewers, not fresh primary-paper work here.
+- The captured interval starts with the first retained current-page raster execution; earlier contextual helper/report reads precede it.
+- Root-prepared exact deterministic checkers were reused after complete inspection. The independent reviewer separately inspected current scientific wording, inherited dispositions, the actual raster and exact native command/input bindings.
+- External drafts are schema validation inputs only. No native structured predecessor occurrence or issue closure is fabricated.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261012T210220Z-aceto236-scientific
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Acetoacetate degradation: inherited full science and independent maintained
+  QA'
+started_at: '2026-10-12T20:55:27Z'
+finished_at: '2026-10-12T21:02:20Z'
+reviewer:
+  identity: Codex /root/deoxy237_science_review
+  kind: agent
+  independence: independent
+  independence_basis: The reviewer authored earlier external canonical preparation,
+    but did not author this scientific record, production adapters, local-integration
+    preparation or root maintained execution. Current independence is scoped to the
+    latter maintained integration and inherited scientific adjudication; earlier self-authored
+    planning is not independently certified here.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: Exact accepted acetoacetate science is retained. Current whole-record reading
+  and individual inherited paragraph/edge/identity/reference assessments agree; fresh
+  graph/table and preservation QA pass with explicit scientific-access and static-visual
+  limitations.
+source:
+  git_revision: 9bd87745d842b0602d027f3d15d26bbc178474a6
+  state: working_tree
+  inputs:
+  - path: data/pathways/acetoacetate-degradation.yaml
+    sha256: c3e00916088b02b418c83e033ac1773bafc7aac036bc28eda30829e776e6779c
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: pages/records/MetaCyc_ACETOACETATE-DEG-PWY.html
+    sha256: a68090f9a5385612ffdbaad8e964097d6c3be71236525db8d480361974457c21
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/REPORT.md
+    sha256: 17edd23f437b5ecf20a00e5d3239fb24f465703bd186a34eed5fc197c5bd9d7e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-graph.png
+    sha256: 527100828b73d5b6db4542a44cb2e38ac45a7fe2637176ea78e784f86c49ba6f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-graph.svg
+    sha256: b37adf9cc09a334cf49255246ae25d9ba7770cfc62ea3851c98e3dcb16c84b51
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/completion.json
+    sha256: fbb4b897fbf0a32cab5b5befdfdb3036e73ad4ea981ee445fc3167c467bcc513
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.execution.json
+    sha256: fe79a73ccbdcac94309c24c2376ab7caf7ce1f6978aecc3e9b4779ae5edeafc2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.execution.json
+    sha256: 3a5c6e8b5aeba8f0c06e902fa00a3e735a3693d6dc2daea8a12143239c946587
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.stdout
+    sha256: dd5d3d3e1a950501ae252a20ec423c0cd01afb63c7df9b0d624f3cccbe039b73
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/completion.json
+    sha256: eceba9ba68eccac4ea420d2679ca5bfbe7192f84af680216f186b80440c6699a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.execution.json
+    sha256: 7a4ca1eeceec90df98c5a38a19f2f57f05c00b3fbd2a1df912e4e028d5658e9f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.stdout
+    sha256: fd50e6c0395bdd032aeb7bc79170bf6fa7b3d712ed3a08316a9ca32e988fcc72
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.execution.json
+    sha256: ebca171386301fcdb60b23e746bd461a8ecd3ac8c02f5b1a3004199695a9a629
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.stdout
+    sha256: ecf38161f1e84d371dd91f06553f8792c1d6c5f58a68ddb5dd84149c506a8026
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.execution.json
+    sha256: 0ffd9565cc557271a3c5e2cafb0e41ea78fce45c0ff706296c0fedcbe4c87a8f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.stdout
+    sha256: 82518afcfc2ed6121737ecf07daeb9de1056da1f0287852a17f6fe3dc14d5672
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.execution.json
+    sha256: f85e45beff40ebad7b4bce3f6a66cf5d69ba09abb43f32910418bbad52e16c42
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.stdout
+    sha256: aa2d3652343b880d16a176d45deb7b4907fb11f43e31f1840d7724658478a527
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom-preservation.json
+    sha256: fe01ec6379765aa1c90e9aba79ae377da502b13f716d8ffa745202948b7c3948
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.execution.json
+    sha256: ae18d1ee22b79ae48e0862c54bd192218179ebad6430dcf0ecb1b9db03a2259f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.stdout
+    sha256: 41bb3e5a8cd07527efa1eacefe72245c7419fc5e182b12bc2cbc00ce3b45d87c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/completion.json
+    sha256: b718f62a75812c323f3b521c1e75890938b0d5cfc01a0b81df26109297611929
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.execution.json
+    sha256: 421b89fdeec1169f62f98a7f1ba652e3dc2627b1b68f4dd16286271859f7f5a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.stdout
+    sha256: c953d92cf707c93cd840b980422e505c27452fb764a3482dc6b33624d8309e3c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.execution.json
+    sha256: 16253e9455d7815790b53a697ab3f4e7ebfbb9f0663b677dca48086f7e19adad
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.stdout
+    sha256: 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.execution.json
+    sha256: d125660ce7a09867541e28e900d54eb0bedc4e9a9046ea999f172c71e7b386d1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.stdout
+    sha256: e01704f52bf4c72ea9fe71ebe107e5ad9f659af928c9bc2b2f16b74a62e0e29e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.execution.json
+    sha256: 1c514c1a962d75b204e7c8a2ab3c2fd713d019d91b19c989b846160ca903119c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.stdout
+    sha256: 9b24245bd98c68219f21131d738ae78454a4ec426e27ef95a2d9e28cb2a35454
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/completion.json
+    sha256: eb2842f860fd5046edacfda44a2e5dba6b1a9aea2cf1660f0aac899e62afd3c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.execution.json
+    sha256: 37254e1eee89f9d130cefa8a64e194490832b4fac247f6d087d5c881b1c0f9d7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.stdout
+    sha256: 3b073aa29da7dc3996edbe18c83d0d6593ba6d03238b663efc40286be4cf428e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-235-local-20261012/output/sssom/source_mappings.sssom.tsv
+    sha256: 44f84f9863f807e8b442d9946298c6b773c71946e2fab0666214e1373963debd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-20261012/output/sssom/source_mappings.sssom.tsv
+    sha256: b459494b450a7936081024fc359e9909a8d731eba9c230aad09f456b68504d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-adoption-root-20261012/receipt.json
+    sha256: bcb676b0174af60dddba9f5ade43c4d8cadcd978a8d4d145a31dd9c620c85810
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-integration-preparation-20261012/handoff.json
+    sha256: 7455f6b4e0f57ca519e8ed5c8eb134f190d61e34ad1da1abece467d1bca5288d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-integration-preparation-20261012/semantic-preservation.json
+    sha256: dbc92688499bf943f736fe08d202094a11fe29e30cf3898294565e0d718cba62
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-integration-preparation-20261012/stages.json
+    sha256: 561fbde469236458a8f94963ed0032975e4806f8dc1bfd1d8dfd8cf5a548c899
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-local-adoption-acceptance-20261012.json
+    sha256: a5ccb6ad762b249d6a0c74549d262482c2b890b0b406b41f64e197adcad511b3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-inspection.execution.json
+    sha256: 606ace4cadaa9b2058bf4d8680e432cc8bf72b721b569c0f2661d539d67f37f9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-inspection.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-inspection.stdout
+    sha256: f8c67894d09057f370aec19d354d4005d8a15c31eb903b8dcc69c9851a0b0c8c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-targets.json
+    sha256: bc9d3ddb2936b0fbf37283d104514f21fa6a6677ba96cbcf1204a8d927a9c424
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-inspection.execution.json
+    sha256: eaf24a0f3552b0cebc476db451474f296aa3feea7bd012429e506a4315761b3c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-inspection.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-inspection.stdout
+    sha256: a44262317cd68f6d52e7b6aedd2b272b855bfd345c3bedb16d1266bd6ad63ffd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-targets.json
+    sha256: cb627660ad12e520c602f124b9f73eff085a7398775af9522f4844148d321c50
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-run-native-20261012.py.gz
+    sha256: f0146ae0f00fc0317e93038988ad41e3e39931bca8b4a87a6c1cf8866f49ea06
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble-reviews.execution.json
+    sha256: 0c9e5374b010854767fa48875911bd265b385ff13e4f179a3724b8cf4d36b820
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble-reviews.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble-reviews.stdout
+    sha256: 60a10adfeb48b18fc5d1158fa4508d10e628e91268cb2d13a6d20d2d7272aafb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble_reviews.py.gz
+    sha256: b05dd40f328264fe1a09332e2fc269ff6827d8a5ba093f77102dd8fcb23be874
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.execution.json
+    sha256: b50120dd53c4a3ee96d7612eed7b35f9b3e0babef0e1db0593f93bd3dbb870c0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.py.gz
+    sha256: ca7de65cb84578221862a4c8840409a07ef8b6422aab4362685b461c8d39626b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.stdout
+    sha256: f1b0e5f59b56541476f1cb4f8eff1511651451facb3f0a7535c52f0409be95b8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.execution.json
+    sha256: c1ebb2994ba3e600cc54c67bca42a665c4eb4392bf2dfac4c7c2117ba4dccf02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.py.gz
+    sha256: 185f9b4eb9e0ea67953ebef6620da25ca8ee7634f6737b8d59bbfc18ad458e33
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.stdout
+    sha256: 61547af81af0661ad7eb562d5e0604488fa4d786ed794a9ccfb7ad203931f454
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/checkout-preservation.json
+    sha256: c506b8818f1b69c9a59a8defac38339e5b9c97ecb427db5c1dceeb9be0031444
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/draft-summary.json
+    sha256: 60a10adfeb48b18fc5d1158fa4508d10e628e91268cb2d13a6d20d2d7272aafb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/durable-evidence-bindings.json
+    sha256: ca28e2d91fd93aef3c329da2bc5dcd8ff31b92da16f6c3dfc54291f1e82dcf08
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/evidence-copy-bindings.json
+    sha256: 1ebaa149e4ceaea0e83c899805e99dd559e9175a3cb06a2eb3be5c28e93d65de
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/exact-bindings.json
+    sha256: fc13ab79fdd3668f0e387dcc812b47db157db26d2c0f2ff75b5f442818d59bf9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/final-draft-check.json
+    sha256: 5364149ab84411bc99721e641f239f9135b930925c5b12679053ab5d1faf46e7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/final-execution.json
+    sha256: 0cbb4b39abce9a725e92ae1320c2337c9026ae4a83df9bdbb9b166df02d8a700
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/final-intake.json
+    sha256: f1ce215d94458f6e086c8546b2da09b4a4da371d0e8af2cbe26bf8ad0ce1f62e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finalize_native_inputs.py.gz
+    sha256: 5647a597105ac92d49016d9e210f68aaf8baa9fb82800126fb9a23714b653349
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finalizer-lineage.json
+    sha256: c2c4d3eb9404c91bb5c20d260cd7e9a32ca7792eb8db62a3660944bf85031d7c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finalizer-lineage.patch
+    sha256: a625556f555093b62fd3fb4db5fd8a8af0157799a57d946357705735d8819502
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finish-helper-inputs.json
+    sha256: 6cfee5b312c264ae776b37546f332822f13588c47f11d5ba03b3f0ad583b609c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finish_qa.py.gz
+    sha256: 6a01603f1e5af9919599ecd5dc0fcb68eb4b0241285b2d95845a23dc26f99cc7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/REPORT.md
+    sha256: 71ed724ff38144ea9a623f189eb7e1cf4275de6b8b0b4212b2640e239d049ebf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/handoff.json
+    sha256: 5dce545eeb45da3c7fd85039a67d4aa75c60c63126ca165347774b013df068d5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/REPORT.md
+    sha256: a867feb636923d88e980f9c586ab3b3e381e57205a85c06ed047c1760dc731fe
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/handoff.json
+    sha256: 3064c922ccf935aa1f7146380fc232d768ac5edada26221f6fa27fbee2c45f23
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/REPORT.md
+    sha256: 5586730d763641d43083f5d04fa6445cc668614793b875b80e51d0e470a2a112
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/handoff.json
+    sha256: 9737a969dfcb9ff19dbaf1ed59c3f10a75726a094c860400c48cc9b044ac2854
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-identity-reference-assessments.json
+    sha256: 10f94e414b888aba1537a6a62fb855a22328db33b20eb1098626aaedbe427146
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-scientific-assessments.json
+    sha256: 113d86c8c93b4166512247bb5ed9173abe72f5fcebe79f7ef3c9c031bf107508
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-canonical-output-acceptance-20261012.json
+    sha256: 94be6e5df1c8fee0b2dfd2e31a74eea213d2903c84835a518124ca79ef567ec7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-implementation-acceptance-20261012.json
+    sha256: e804a67f3980c689e4118e67510e5bf6d61640230129145ad02f5941c86c7213
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/light-static-graph.svg
+    sha256: 392a0438ee828999ae18b1ea496b656e1ae6687cd08235657a215d1ada8246e4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/package-execution.json
+    sha256: bcd64663c8f8ce8e8e29ec2e104a9bfdfa8c7643d2bb99a1ee02f4e2ed0c53e5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/package-index.json
+    sha256: 2a003c4fc112c843205a3503abaaf0c0c85bd92b58f2e5861db1fd4e3fa305a8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/package.py.gz
+    sha256: 44b223b6aa23051ade42435b77239616d33eb2b9f6d3f5a5ed81f0c319de5af3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/qa-and-drafts-completed.json
+    sha256: c6e04579f1b6bff45c8b6d78ad48a1c05ad9c3bde2a7c73b693e0b13a0eadca6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/rasterize_actual.execution.json
+    sha256: 34a447ad0bca88fa37e30e13241f51a0ae1a559dd01095e56bbda2ff50412275
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/rasterize_actual.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/rasterize_actual.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/read-coverage.json
+    sha256: 569fc65cd1898e7791dff660ef67fbc43dee2659bd079eecd6f61a1899c769b4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/run_qa.py.gz
+    sha256: 173c44802f4f3f9b52896bed598b3d2c0fa398db66c8e6464ef95e097548a6c5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-inspect.execution.json
+    sha256: 88efc9e52f97cfbc99235a34620d2748f7e43d9aae3a5bb6c8416b10b2737881
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-inspect.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-inspect.stdout
+    sha256: f8c67894d09057f370aec19d354d4005d8a15c31eb903b8dcc69c9851a0b0c8c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-review.yaml
+    sha256: 13c312f9b614e6d96fad5dd9e8ffe61e309a9a9753f59e10b43e9b393dbfde6c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-validate.execution.json
+    sha256: d7065070e08132d5d385a99a4a7eaf1deb62e855f54ecd8f2862ba03d07a4a44
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-validate.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-validate.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/target-qa.json
+    sha256: 23b8599c27c5ea1b6eacf8c4b9b84bf52f5c7df801c9a02cd61304d2136b9bd5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-inspect.execution.json
+    sha256: b4119e60f1c09824761f09ed08783eb4cb62d519cf14ec5e427e6942c9f05173
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-inspect.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-inspect.stdout
+    sha256: a44262317cd68f6d52e7b6aedd2b272b855bfd345c3bedb16d1266bd6ad63ffd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-review.yaml
+    sha256: 0029e15d8dc713bb793791a86c93e3560b79508f93945166d46385cbd2b1a81f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-validate.execution.json
+    sha256: c6e43dc3d1ddc5f341263ae0350c8f2524e56b077f0738f8299f4713af0088bd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-validate.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-validate.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify-bindings.execution.json
+    sha256: 1e565371e511e23ce6a86eaffaba200d21735d0f8207de4a332437acaae4964a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify-bindings.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify-bindings.stdout
+    sha256: cf0e25e4741db0abbcb281be8e2237d1574a1cf602ed6a957611cabd938ad17c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify_bindings.py.gz
+    sha256: dc37804da95a1a40d10adc18d0c70ec0c9f96694f88a30252c083cf8c7e36dc8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-assessment.json
+    sha256: 332680b8c6f0dbb0248de47e0d4fab32b110a34507c2d119ac611327d39ddcac
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-inputs.json
+    sha256: d42ca3d2cca7e54582aeb761502b6c4e6a72ed5b94921286115141a19e504b36
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+scope:
+  description: Exact accepted acetoacetate science is retained. Current whole-record
+    reading and individual inherited paragraph/edge/identity/reference assessments
+    agree; fresh graph/table and preservation QA pass with explicit scientific-access
+    and static-visual limitations.
+  selection: Exact aceto local integration on baseline9bd87745d842b0602d027f3d15d26bbc178474a6
+    before subsequent evidence adoption and native review save.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  exclusions:
+  - target: Fresh primary-paper and production-runtime audit
+    reason: Accepted full scientific and runtime interpretations are inherited and
+      exactly bound; current work assesses complete maintained content and integration.
+  - target: Native review save and publication
+    reason: Later root-owned actions require guarded evidence adoption and current-input/append-only
+      checks.
+targets:
+- target_id: MetaCyc:ACETOACETATE-DEG-PWY
+  path: data/pathways/acetoacetate-degradation.yaml
+  label: acetoacetate degradation
+  kind: maintained
+  ownership_note: This maintained YAML owns scientific claims; pages and KGX are derived.
+    Whole original science is inherited from the accepted independent review and exact
+    corrected successor.
+checks:
+- check_id: root-history-1
+  name: Root-executed history-1
+  status: passed
+  required: false
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind record --slug acetoacetate-degradation --target-root data/pathways --event
+    CREATE --outcome changed --summary ''Add the complete evidence-backed acetoacetate
+    degradation record.'' --details ''Adopted exact accepted MetaCyc:ACETOACETATE-DEG-PWY
+    science: 29 paragraphs, 46 edges, 25 named identities, one construct qualifier,
+    66 references and five mappings. Whole native pathways/reactions, nested Ato assemblies,
+    generic protein-residue classes, mechanism/assay/source limits and rejected alternative
+    equation preserved in research/pathway_additions/2026-10-12-next-236. Actual native
+    outputs independently reviewed and accepted. Fresh maintained gates and saved
+    native review remain pending.'' --actor-name codex --agent-tool codex --model
+    gpt-6'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-history-1
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-history-2
+  name: Root-executed history-2
+  status: passed
+  required: false
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind infrastructure --slug aceto-native-authority --path scripts/build_source_identifier_snapshot.py
+    --event EDIT --outcome changed --summary 'Integrate complete aceto authority contexts
+    and accepted native snapshots.' --details 'Adopted 20 accepted runtime/documentation/test
+    deltas and exact explicit 855-row manifest with two native snapshots. Keep nitrate
+    Rhea updates unchanged; complete old objects/order and all 265 UniProt originals/first
+    owners remain exact. Accepted issue 502 guard rejects mixed-profile cycles while
+    preserving legacy-only behavior. RHEA21038 aggregate direction clears only because
+    retained old and new source contexts disagree; no old context reverses. Local
+    integration only; history precedes generation and native review/gates remain pending.'
+    --issue 502 --actor-name codex --agent-tool codex --model gpt-6
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-history-2
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-sssom
+  name: Root-executed sssom
+  status: passed
+  required: false
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_sssom_main; raise SystemExit(export_sssom_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-sssom
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-render
+  name: Root-executed render
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-render
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-skills
+  name: Root-executed skills
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-skills
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-validate
+  name: Root-executed validate
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-validate
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-tests
+  name: Root-executed tests
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-236-local-gate-tests-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-tests
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-lint
+  name: Root-executed lint
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-lint
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-kgx
+  name: Root-executed kgx
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-kgx
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-vendored
+  name: Root-executed vendored
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-vendored
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-diff-check
+  name: Root-executed diff-check
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-diff-check
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-site-current
+  name: Root-executed site-current
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-site-current
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: check_target
+  name: Fresh independent check_target
+  status: passed
+  required: true
+  summary: Exact read-only helper, output and actual stream receipt retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012/check_target.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fresh-target-qa
+- check_id: check_checkout
+  name: Fresh independent check_checkout
+  status: passed
+  required: true
+  summary: Exact read-only helper, output and actual stream receipt retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012/check_checkout.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fresh-tree-qa
+- check_id: verify-bindings
+  name: Fresh independent verify-bindings
+  status: passed
+  required: true
+  summary: Exact read-only helper, output and actual stream receipt retained.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012/verify_bindings.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - exact-bindings
+- check_id: static-raster
+  name: Actual graph static visual inspection
+  status: passed
+  required: true
+  summary: Actual maintained SVG raster freshly rendered and personally viewed; full
+    DOM/evidence comparison also passes.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - static-visual
+  - fresh-target-qa
+- check_id: browser-interaction
+  name: Interactive browser checks
+  status: unavailable
+  required: false
+  summary: No keyboard, JavaScript interaction, responsive or dark-theme behavior
+    was tested. Static light raster and complete DOM correspondence were checked.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - static-visual
+evidence:
+- evidence_id: current-target
+  kind: record_content
+  reference: data/pathways/acetoacetate-degradation.yaml
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh complete reading of all 1,368 YAML lines. Exact accepted target has
+    29 paragraphs, 46 edges, 25 identities, one construct qualifier, 66 references
+    and five mappings.
+  snapshot_sha256: c3e00916088b02b418c83e033ac1773bafc7aac036bc28eda30829e776e6779c
+- evidence_id: fresh-target-qa
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/target-qa.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh complete graph/table/qualifier/reference and old scientific-owner
+    comparison using exact reviewed root-prepared helper.
+  snapshot_sha256: 23b8599c27c5ea1b6eacf8c4b9b84bf52f5c7df801c9a02cd61304d2136b9bd5
+- evidence_id: fresh-tree-qa
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/checkout-preservation.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh hidden/ignored-inclusive complete physical tree and all 800 shared-cache
+    identities, before evidence adoption or native review saves.
+  snapshot_sha256: c506b8818f1b69c9a59a8defac38339e5b9c97ecb427db5c1dceeb9be0031444
+- evidence_id: exact-bindings
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/exact-bindings.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact twelve native command receipts, streams, planned argv/environment
+    and inspection source hashes verified after all four phases passed.
+  snapshot_sha256: fc13ab79fdd3668f0e387dcc812b47db157db26d2c0f2ff75b5f442818d59bf9
+- evidence_id: static-visual
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-assessment.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh static light raster extracted from the actual maintained SVG and
+    personally viewed. Dense junction labels overlap; long construct label truncates.
+  snapshot_sha256: 332680b8c6f0dbb0248de47e0d4fab32b110a34507c2d119ac611327d39ddcac
+- evidence_id: inherited-science
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/REPORT.md
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 5586730d763641d43083f5d04fa6445cc668614793b875b80e51d0e470a2a112
+- evidence_id: inherited-claims
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-scientific-assessments.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 113d86c8c93b4166512247bb5ed9173abe72f5fcebe79f7ef3c9c031bf107508
+- evidence_id: inherited-identities-references
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-identity-reference-assessments.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 10f94e414b888aba1537a6a62fb855a22328db33b20eb1098626aaedbe427146
+- evidence_id: inherited-native-output
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/REPORT.md
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 71ed724ff38144ea9a623f189eb7e1cf4275de6b8b0b4212b2640e239d049ebf
+- evidence_id: inherited-integration-preparation
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/REPORT.md
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: a867feb636923d88e980f9c586ab3b3e381e57205a85c06ed047c1760dc731fe
+- evidence_id: accepted-runtime
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-implementation-acceptance-20261012.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: e804a67f3980c689e4118e67510e5bf6d61640230129145ad02f5941c86c7213
+- evidence_id: root-history-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 7a4ca1eeceec90df98c5a38a19f2f57f05c00b3fbd2a1df912e4e028d5658e9f
+- evidence_id: root-history-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: ebca171386301fcdb60b23e746bd461a8ecd3ac8c02f5b1a3004199695a9a629
+- evidence_id: root-sssom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: ae18d1ee22b79ae48e0862c54bd192218179ebad6430dcf0ecb1b9db03a2259f
+- evidence_id: root-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 0ffd9565cc557271a3c5e2cafb0e41ea78fce45c0ff706296c0fedcbe4c87a8f
+- evidence_id: root-skills
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: f85e45beff40ebad7b4bce3f6a66cf5d69ba09abb43f32910418bbad52e16c42
+- evidence_id: root-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 1c514c1a962d75b204e7c8a2ab3c2fd713d019d91b19c989b846160ca903119c
+- evidence_id: root-tests
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: d125660ce7a09867541e28e900d54eb0bedc4e9a9046ea999f172c71e7b386d1
+- evidence_id: root-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 16253e9455d7815790b53a697ab3f4e7ebfbb9f0663b677dca48086f7e19adad
+- evidence_id: root-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 421b89fdeec1169f62f98a7f1ba652e3dc2627b1b68f4dd16286271859f7f5a3
+- evidence_id: root-vendored
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 37254e1eee89f9d130cefa8a64e194490832b4fac247f6d087d5c881b1c0f9d7
+- evidence_id: root-diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: fe79a73ccbdcac94309c24c2376ab7caf7ce1f6978aecc3e9b4779ae5edeafc2
+- evidence_id: root-site-current
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 3a5c6e8b5aeba8f0c06e902fa00a3e735a3693d6dc2daea8a12143239c946587
+assessments:
+- assessment_id: paragraph-P01
+  area: evidence
+  topic: P01
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The two equations cancel one acetyl-CoA and acetoacetyl-CoA to give
+    acetoacetate + CoA -> acetate + acetyl-CoA. Recycling is stated as material balance
+    rather than enzyme channeling.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 a12c79fdf9ac757a1ca530237e905d42e94da685bf8617ebd82e22baee990d03
+- assessment_id: paragraph-P02
+  area: evidence
+  topic: P02
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Native transfer L2R and native thiolase R2L agree with the selected
+    Rhea oriented equations. Reversibility and explicit anion identities are preserved
+    without counting the projections as extra reactions.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 c4c09671247c755e28a23df430ef3d0146c55e4ed7e44c687e1f56624c99b51a
+- assessment_id: paragraph-P03
+  area: evidence
+  topic: P03
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Both constituent equations and all eight sides agree with the complete
+    native frames. Condensation orientation is explicit; the protein-bound residue
+    classes do not specify free cysteine or experimental occupancy of AtoB Cys88.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 aa2c0832d7eaf4fe18c3755c5ba9c894bafd9b23c762984564e466815ca3a2c8
+- assessment_id: paragraph-P04
+  area: evidence
+  topic: P04
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Whole assembly components and reciprocal membership establish one alpha
+    dimer plus one beta dimer and a separate AtoB tetramer. The draft does not transfer
+    whole-complex catalysis to individual chains.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 2fda27e9ccd1f107745de3867d90ad4f9aeb26f4cd8ba87b87420376c00e1911
+- assessment_id: paragraph-P05
+  area: evidence
+  topic: P05
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Apparent experimental masses and current sequence-derived properties
+    remain separate. The old 2003 model assignments and current membrane-associated
+    cytoplasmic annotation are accurately attributed.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 fa4a8fc19db52f37d66891271ff8f387a483f5e2de47109d4e216c8265787f87
+- assessment_id: paragraph-P06
+  area: evidence
+  topic: P06
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Native intermediate and ping-pong discussion plus UniProt Km values
+    are retained as database annotations of the inaccessible kinetic papers. The direction-specific
+    values do not become a universal rate law.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 359527ea7c8f31548cf7662274bd2f1531d3ee568eb73d97126a028881cce66d
+- assessment_id: paragraph-P07
+  area: evidence
+  topic: P07
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: All four complete Regulation frames support the source-qualified inhibitory
+    relationships. The uncited acetyl-CoA frame is identified; exact assay concentrations
+    are not invented. The mercurial InChI matches the anion.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 bebaa3e24a25fb41b105f016d73c8a1d8a55d7422df05e8e59780b011c80961f
+- assessment_id: paragraph-P08
+  area: evidence
+  topic: P08
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The historical 200–300-fold induction statement occurs in native pathway/protein
+    context. The draft correctly avoids assigning a freshly verified historical strain
+    or denominator without the 1972 full paper.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 d00104e58a81fe2b217bda6f4040bfca7d3b358a10a363d9aab3337722c124b6
+- assessment_id: paragraph-P09
+  area: evidence
+  topic: P09
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The complete 1975 Methods distinguish oleate-grown wild-type B ATCC
+    11775 thiolase I from acetate-grown constitutive fadR16 fad-5 atoC49 thiolase
+    II. The native broad B attribution is explicitly qualified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 ecdc054b684c0046672b08467654b49e2f244af9502bbe95e59cb41577474d26
+- assessment_id: paragraph-P10
+  area: evidence
+  topic: P10
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The full 1975 assay recipe, 25 C conditions, substrate-concentration
+    distinction, and below-1-percent C6 result are accurately bounded. Conditional
+    non-detection does not become universal absence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 ce247e5c3d8a03a1e4a7c6d3e1c5727a42c4801470baf23a38a2b73f296e4fc0
+- assessment_id: paragraph-P11
+  area: evidence
+  topic: P11
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The indexed 2016 abstract and native BL21/sequence-match statements
+    support the qualified structural account. The full 2016 article and exact cloning
+    alignment are not claimed; the older mass remains separate.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 b3d81b2ef95110499280751cfe2804c3262deabef407ec1ccf1680008a1ee0e4
+- assessment_id: paragraph-P12
+  area: evidence
+  topic: P12
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Native kinetic slots carry distinct directions, units and references.
+    The 470 micromolar BRENDA/1976 annotation is not silently reconciled with 138.6
+    micromolar/2016, and rates are not converted into flux.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 baffa47fdb584784becaa437e15016f1f90b01cdbc89e5c244a1ed2a4c1781b4
+- assessment_id: paragraph-P13
+  area: evidence
+  topic: P13
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: AtoB 88/349/379, AtoA 46 and AtoD 24–30 are represented with their
+    similarity or model evidence. Generic residue classes are not collapsed to a proven
+    single protein site.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 30794d7e087890f849f05905b5e640eb97f6150951e7cdae80a554c3cbfb9548
+- assessment_id: paragraph-P14
+  area: evidence
+  topic: P14
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The two 1987 indexed abstracts distinguish structural-gene complementation
+    from galK transcriptional regulation and preserve the historical atoDAB versus
+    later atoDAEB nomenclature.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 a35346e9fec644a775a467b6478245c045d9851870aca3c5cd8897437187245b
+- assessment_id: paragraph-P15
+  area: evidence
+  topic: P15
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The complete 2007 promoter experiment supports the stated fragments,
+    modified M9 glucose plus 10 mM acetoacetate and promoter-specific controls. This
+    is expression regulation, not enzyme allostery.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 89130eadbe2aedaa4ff989545c1ebc60192d50ddd50f0d831dfb18ccac76b454
+- assessment_id: paragraph-P16
+  area: evidence
+  topic: P16
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The full 2007 study explicitly reports unsuccessful significant in-vitro
+    phosphorylation of the His10 preparation. DNA binding and failure of added acetoacetate
+    to improve it do not establish phosphorylation-independent physiological signaling.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 eb692e8c95d248e2c31b07898aa3747bb98ef2eded5ca9d02340d99dc437b56e
+- assessment_id: paragraph-P17
+  area: evidence
+  topic: P17
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The full footprint and promoter-mutation data support two 20-bp sites
+    relative to a predicted start. The -53 binding/induction distinction and the predicted-coordinate
+    limitation are retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 5afc96866099c67a712b5b0e2572978949343eb119cc5292f23414d78fa9ffcf
+- assessment_id: paragraph-P18
+  area: evidence
+  topic: P18
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The complete ChIP and IHF experiments use the stated BW25113/BW28878
+    and N99/N7193 contexts. Plasmid-promoter occupancy is not quantitative metabolic
+    flux evidence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 14b24ffb80c781eb6314ccb141fe7e87e35d2ea36ca9efb745e1625d97df3a09
+- assessment_id: paragraph-P19
+  area: evidence
+  topic: P19
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The 2005 indexed abstract and complete native/UniProt objects retain
+    D55G/H73L and phosphorylation ambiguity. The separate cPHB phenotypes are not
+    relabeled as acetoacetate flux.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 f861137f2fa6951c71520c37811326a37372a74452369ecb96a7dc1c927fb95c
+- assessment_id: paragraph-P20
+  area: evidence
+  topic: P20
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The full source contexts and indexed 1993/2006/2007/2011 abstracts
+    support the bounded antizyme, cPHB and motility discussion; these are excluded
+    from the core chemistry.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 654cf15a4ca9fe0fa81d29afec949b7a4076b41894cd50e022c6e2bd127665f8
+- assessment_id: paragraph-P21
+  area: evidence
+  topic: P21
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Both complete AtoC feature sets show the stated version-dependent HTH
+    endpoints and the older sequence caution. Feature differences do not create a
+    new wild-type allele.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 ff7fba8d69d46d33b0cc44ccd75669298f3cb80f090b76afc975f59e2f07f83a
+- assessment_id: paragraph-P22
+  area: evidence
+  topic: P22
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The complete K-12 and O157:H7 entries plus indexed 2005 abstract keep
+    the orthologs distinct. Catalytic capacity is not evidence for route-growth necessity.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 d9dfd6195ad464961b8a6906fb81c6b8af3f0fcee1c642c528e031d62c151e05
+- assessment_id: paragraph-P23
+  area: evidence
+  topic: P23
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The complete O157:H7 UniProt and native accounts support the broad
+    substrates, conditional isovalerate negative and glutamyl-CoA intermediate. K-12
+    Glu333/tetramer inheritance remains similarity evidence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 63bd6ea6622a9749b7fecaf07c8ec6ab7f59b050bd24eeb846b2a7b771ef8904
+- assessment_id: paragraph-P24
+  area: evidence
+  topic: P24
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The full 2022 Methods and Fig.2 show the reverse acetate assay, stated
+    donor/acceptor concentrations, enzyme amount, temperature, time and LC–MS products.
+    Forward acetoacetate assimilation is not claimed as directly measured.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 c1b391a63e6c9a6ce852c9d95e98b906f00001c7c09212d442b5844504af7028
+- assessment_id: paragraph-P25
+  area: evidence
+  topic: P25
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: The complete 2022 main article separates pET28a/BL21(lambdaDE3) protein
+    production from MG1655 physiology. Protein-lactylation and PykF experiments do
+    not become route steps; supplementary cloning details remain unverified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 4ae761f15d00cf4697976f5f7dd73ae1665918daf8b04d4c9995de401ea8e7e5
+- assessment_id: paragraph-P26
+  area: evidence
+  topic: P26
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: All five PathBank reactions and 21 sides were inspected. The CoA-product/one-acetyl-CoA
+    thiolase equation is incompatible and correctly rejected; the three other acetate-metabolism
+    events remain outside the boundary. AtoB four-chain coefficient is explicit while
+    AtoDA coefficients are absent.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 9d001b8f208ac87b8cb09b97b652158bef903def68c6872f670f982fead646d3
+- assessment_id: paragraph-P27
+  area: evidence
+  topic: P27
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Native acetyl-CoA/TCA interface supports the stated metabolic connection,
+    without ATP yield or universal flux claims. Species indexing is separated from
+    each experimental strain context.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 895c30cc98e9f93c79e222f9083590262fd982a702eaa60b10c75eef16c77c3c
+- assessment_id: paragraph-P28
+  area: evidence
+  topic: P28
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Native engineering and nomenclature comments remain application/history
+    context. Engineered butanol or medium-chain products do not replace the physiological
+    acetoacetate endpoint.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 25d071baa3edb9eaa9764e7bad1f3e1273f1c7c6bba5099b471c58c51d7244c6
+- assessment_id: paragraph-P29
+  area: evidence
+  topic: P29
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    paragraph: Evidence-depth wording matches the acquired originals: three full main
+    papers, indexed abstracts where available, otherwise metadata and attributed native
+    annotations. No blanket full-paper or supplement-reading claim is made.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Current paragraph SHA256 b60661975b090d839d864b806abdbc40db2d9ce0bbbfbb1d2d60c5c5abab645a
+- assessment_id: edge-e001
+  area: graph
+  topic: e001
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native transfer sides: coefficients one; exact chemical
+    InChIs; route orientation L2R while chemistry remains reversible.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 a5acf70450ff17edcb0bf4a82164a9105f0aa867d940962c4538c8a0bc3791c6
+- assessment_id: edge-e002
+  area: graph
+  topic: e002
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native transfer sides: coefficients one; exact chemical
+    InChIs; route orientation L2R while chemistry remains reversible.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 670bd2dd160e9d3425fd4e1cd84552d07f1f0649d3081fe7e1b079ac0aa26263
+- assessment_id: edge-e003
+  area: graph
+  topic: e003
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native transfer sides: coefficients one; exact chemical
+    InChIs; route orientation L2R while chemistry remains reversible.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 34f8fb3ddbc4b381242c0fd0df7f7ff79d0dfe25b0e9b3f13f4b598ce71bb2d8
+- assessment_id: edge-e004
+  area: graph
+  topic: e004
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native transfer sides: coefficients one; exact chemical
+    InChIs; route orientation L2R while chemistry remains reversible.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 0841cba8021969e5643fd033fac2f6c105e009fa42c4e32a3a0bb8f7df4ffc99
+- assessment_id: edge-e005
+  area: graph
+  topic: e005
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native thiolase sides reversed for degradation: two
+    gross acetyl-CoA products, one acetoacetyl-CoA and one CoA consumed.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 6a144b50e6e7a0043050615451626445da52f35cb6719b46e58c716c33b59972
+- assessment_id: edge-e006
+  area: graph
+  topic: e006
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native thiolase sides reversed for degradation: two
+    gross acetyl-CoA products, one acetoacetyl-CoA and one CoA consumed.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 db5b9b7ffec12e0f7ca243543949fd656d55993986f310a49086142296cba91a
+- assessment_id: edge-e007
+  area: graph
+  topic: e007
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native thiolase sides reversed for degradation: two
+    gross acetyl-CoA products, one acetoacetyl-CoA and one CoA consumed.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 b5fbbda1c30a4c5b5ec7c13c9c6a3b14c2f64050af1fe7b7b421eba8e1cd3f90
+- assessment_id: edge-e008
+  area: graph
+  topic: e008
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 2775648c9478999c8f6c4b0f677b187a2241e7180caaa3e5d310799f90b4f38c
+- assessment_id: edge-e009
+  area: graph
+  topic: e009
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 cc94671f68e63487f2198406328e5d8e93a0e0dba9dd79fbc83fc468918f12cd
+- assessment_id: edge-e010
+  area: graph
+  topic: e010
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 c65a08a9f3b05b41dea35eda62636c1d78bf6ea622fdd6eab2b0ed160f06e565
+- assessment_id: edge-e011
+  area: graph
+  topic: e011
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 dc55c338274354dfc9370a2f98fb3bf5abd3e09897963570883c2e0c6817f587
+- assessment_id: edge-e012
+  area: graph
+  topic: e012
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 47350ffc9f07ac5c211e61907a833cf858e0bd4dbcac6279967dbf58ccf02185
+- assessment_id: edge-e013
+  area: graph
+  topic: e013
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 8ef68db8d73b382b2e7baeb6c45fe8b7af25ccb814252daea813e86a59c5afde
+- assessment_id: edge-e014
+  area: graph
+  topic: e014
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 5eeec7c66078ead4895ae634009ae4de4f8785a3f537700851ad40143211b637
+- assessment_id: edge-e015
+  area: graph
+  topic: e015
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Complete native reversible constituent sides in written
+    condensation orientation; generic protein-bound residue classes and no extra physiological
+    step claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 70e816df990b0b1546b674fa7f4561383480a62341a1e60b143d580d0cafd4f7
+- assessment_id: edge-e016
+  area: graph
+  topic: e016
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact Rhea oriented side/participant objects, five
+    charge-specific ChEBI identities and coefficient two for the thiolase product;
+    alternative descriptions of the same events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 6c227868ce27acaf40feb78460982fe0ee2dd83f1f0153684053a17edabb1685
+- assessment_id: edge-e017
+  area: graph
+  topic: e017
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact Rhea oriented side/participant objects, five
+    charge-specific ChEBI identities and coefficient two for the thiolase product;
+    alternative descriptions of the same events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 14d177e5d116a1ea91d351f1389c71b293743a83f62542cd6c75e85e9a73cdfd
+- assessment_id: edge-e018
+  area: graph
+  topic: e018
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact Rhea oriented side/participant objects, five
+    charge-specific ChEBI identities and coefficient two for the thiolase product;
+    alternative descriptions of the same events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 a97a169c82fb41be266848c873b8ce8d04d3501a4f54bc97666218850a8a1e41
+- assessment_id: edge-e019
+  area: graph
+  topic: e019
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact Rhea oriented side/participant objects, five
+    charge-specific ChEBI identities and coefficient two for the thiolase product;
+    alternative descriptions of the same events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 bce19e73ae118740c574402101ae41d828f05f6dc01c92a82a8f3dcc549ee71f
+- assessment_id: edge-e020
+  area: graph
+  topic: e020
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact Rhea oriented side/participant objects, five
+    charge-specific ChEBI identities and coefficient two for the thiolase product;
+    alternative descriptions of the same events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 96bb814b488ba4effc8e5ebcfab6860cdcc50bf31ea5c2d1f8a001a714ef05d0
+- assessment_id: edge-e021
+  area: graph
+  topic: e021
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact Rhea oriented side/participant objects, five
+    charge-specific ChEBI identities and coefficient two for the thiolase product;
+    alternative descriptions of the same events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 56bbda3ea771764f8a7ebdc45a35a8a82aaa031d1ea9c96fe65facaaf682a087
+- assessment_id: edge-e022
+  area: graph
+  topic: e022
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact Rhea oriented side/participant objects, five
+    charge-specific ChEBI identities and coefficient two for the thiolase product;
+    alternative descriptions of the same events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 64b25d4fbbbc8120dc7abb637451322a7e4fef83452a1e50b947024b1e744a7a
+- assessment_id: edge-e023
+  area: graph
+  topic: e023
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Explicit native pathway membership of the two core
+    events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 74a70d528b2c914f3fb5851c0825a02a77d87663fd834e51ae1cc4ed098a309f
+- assessment_id: edge-e024
+  area: graph
+  topic: e024
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Explicit native pathway membership of the two core
+    events.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 364e3cd749ecefa190b7573796f70f7d83301ac831f8c31a4bfb1eacf330e0a0
+- assessment_id: edge-e025
+  area: graph
+  topic: e025
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Rhea membership is explicitly an alternative oriented
+    projection of a native event rather than an additional reaction.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 3fd16f70394c78d2c159fb12f486e8108199b085d0c7221c4d113cf3adf7f948
+- assessment_id: edge-e026
+  area: graph
+  topic: e026
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Rhea membership is explicitly an alternative oriented
+    projection of a native event rather than an additional reaction.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 4937cb13bb9944b82d140a9e3bf9c55147aec6d58f9ff8b60424bc975cbf21cd
+- assessment_id: edge-e027
+  area: graph
+  topic: e027
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native composite membership of each constituent is
+    explicit and its orientation is qualified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 3d116fad7dddf499c0e7bde18b59bc93a04a14ca7a939d465443ac40ab528e84
+- assessment_id: edge-e028
+  area: graph
+  topic: e028
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native composite membership of each constituent is
+    explicit and its orientation is qualified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 9d777735fb2c4963e807e3a9d6a880a93497094bcb4638ebf8522d01ded33d02
+- assessment_id: edge-e029
+  area: graph
+  topic: e029
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Acetoacetyl-CoA is the shared intermediate connecting
+    the two events; no molecular channel asserted.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 6e3239c92ba19fabfbc63bc7b76a94ae17899f497ad53390e587ff7b8c53267a
+- assessment_id: edge-e030
+  area: graph
+  topic: e030
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Acetyl-CoA donor replenishment follows from net stoichiometry
+    and is explicitly labeled a curated inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 fe0cddf10228c9bff678b31bc5551ad02475eacfabde145b2589afb5eab4ddad
+- assessment_id: edge-e031
+  area: graph
+  topic: e031
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links
+    support whole-complex catalysis of the corresponding native/Rhea equation. Leaf
+    chains are not separate catalysts.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 2431729ad539a30bdae5b1b6f06bb969316202f3e7f64159f9eab99a4e384601
+- assessment_id: edge-e032
+  area: graph
+  topic: e032
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links
+    support whole-complex catalysis of the corresponding native/Rhea equation. Leaf
+    chains are not separate catalysts.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 ec7af05813063f91a23674adf797a3264c65fc69065e75bda7adfa46b19501ea
+- assessment_id: edge-e033
+  area: graph
+  topic: e033
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links
+    support whole-complex catalysis of the corresponding native/Rhea equation. Leaf
+    chains are not separate catalysts.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 cb9967c938456ba7384d44ffb4035c611c850395a721a3511fd71ec1d57086f4
+- assessment_id: edge-e034
+  area: graph
+  topic: e034
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native enzymatic-reaction and enzyme-complex links
+    support whole-complex catalysis of the corresponding native/Rhea equation. Leaf
+    chains are not separate catalysts.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 fdb4dc2201862e376bb4eaa8c393407bd4e4745ca3daab06a48f44d3dfc8f564
+- assessment_id: edge-e035
+  area: graph
+  topic: e035
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact nested assembly membership: parent-to-dimer
+    coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 39d08b6ca44e31af917834557cb5941aeb069f9e6ba6c8adf3089d4a22099720
+- assessment_id: edge-e036
+  area: graph
+  topic: e036
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact nested assembly membership: parent-to-dimer
+    coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 ffe98378a50858ba66f818b5abc2d2da72ff6b4c75222caef334e875d7f213b9
+- assessment_id: edge-e037
+  area: graph
+  topic: e037
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact nested assembly membership: parent-to-dimer
+    coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 0908955ba5f8fe2325d2f9d4ea6a8dd0027d704e08e9aa8fc29922b2852d97de
+- assessment_id: edge-e038
+  area: graph
+  topic: e038
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact nested assembly membership: parent-to-dimer
+    coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 cbdbd1287c9b897373f1bbc4f9e9ee8d70733ec59ecbbdb95b1d1e28d39de431
+- assessment_id: edge-e039
+  area: graph
+  topic: e039
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Exact nested assembly membership: parent-to-dimer
+    coefficients one, dimer-to-chain coefficients two, AtoB-to-chain coefficient four.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 00d5682e25e8795727004aad95979312cd38e4c1fdef36a67e66baf3f7718019
+- assessment_id: edge-e040
+  area: graph
+  topic: e040
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: The complete uncited native Regulation frame supports
+    only source-qualified competitive inhibition by acetyl-CoA; assay conditions and
+    potency are not fabricated.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 e7406e33bf2892a837aa9cdbc468f67946b34e649f125c44ed72882beae3ef12
+- assessment_id: edge-e041
+  area: graph
+  topic: e041
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: The complete native Regulation frame and linked commentary
+    specify CoA competition with respect to acyl-CoA, with missing assay conditions
+    retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 b1cdefb7e5f9ac97a1feac78b44476ab259fcbfaa10b58f781f1df975212fead
+- assessment_id: edge-e042
+  area: graph
+  topic: e042
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: The complete native mercurial inhibition frame is
+    scoped to its database assertion; exact PubChem/native anion identity is verified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 3c74e68ad4bddfc77224e8e59f9ce317ab34f6d89b954f668e937dbc875dcee2
+- assessment_id: edge-e043
+  area: graph
+  topic: e043
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: The complete native thiolase Regulation frame supports
+    source-qualified inhibition by acetoacetyl-CoA, without an in-vivo potency claim.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 f7d1f534f05992afffc9309826bed1052994c561c95922d2cb9daf4f0d6e81aa
+- assessment_id: edge-e044
+  area: graph
+  topic: e044
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native/primary promoter evidence supports expression-level
+    AtoC regulation; the edge explicitly rejects a direct allosteric interpretation
+    and keeps strain/preparation contexts separate.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 ecb4590271289370390bb189ea7cbb30e42902193a76d8197b747e0c4d16736e
+- assessment_id: edge-e045
+  area: graph
+  topic: e045
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: Native/primary promoter evidence supports expression-level
+    AtoC regulation; the edge explicitly rejects a direct allosteric interpretation
+    and keeps strain/preparation contexts separate.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 ca2fc24c86f2a3b2247f28701e33ee9328a1078a35b67bc91e248e3886fa9825
+- assessment_id: edge-e046
+  area: graph
+  topic: e046
+  outcome: supported
+  summary: 'Inherited complete scientific judgment, freshly checked against current
+    whole edge and its evidence: The reversible reaction link is supported by native
+    annotation and the direct reverse-direction 2022 recombinant assay. The edge qualification
+    preserves the preparation and excludes forward-assimilation and growth-necessity
+    proof.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - inherited-science
+  details: Whole canonical edge SHA256 4f1a9f6f7d94fa5e4d8ba8a790de700083778e67325d6b8bf7992cb0c0dffe0a
+- assessment_id: qualified-ydiF
+  area: scope
+  topic: e046 experimental construct
+  outcome: supported
+  summary: 'The exact whole-edge assessment includes the subject qualifier: pET28a/BL21(lambdaDE3),
+    nickel purification, 1 mM acetoacetyl-CoA plus 10 mM acetate, pH7, 35 C and 20
+    min. The reverse assay does not establish forward assimilation or growth necessity.
+    Supplemental cloning remains unverified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-claims
+  - fresh-target-qa
+  details: '["e046", {"endpoint": "subject", "kind": "experimental_construct", "description":
+    "2022 recombinant YdiF expressed from pET28a in BL21(lambdaDE3), purified by nickel
+    affinity; 1 mM acetoacetyl-CoA plus10 mM acetate, pH7,35 °C,20 min. Exact supplement-only
+    clone details not independently verified.", "evidence": [{"reference_id": "PMID:36333310",
+    "source_assertion": "Methods describe pET28a/BL21(lambdaDE3) expression, nickel
+    purification and the purified YdiF CoA-transfer assay.", "source_locator": "PDF
+    pp11–12 expression/purification and CoA-transferase activity assay"}]}]'
+- assessment_id: identity-1
+  area: identity
+  topic: MetaCyc:ACETOACETATE-DEG-PWY
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole source identity and label verified, including honest unnamed-frame
+    fallback. The two core events, composite constituents and Rhea projections retain
+    distinct representational roles.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-2
+  area: identity
+  topic: MetaCyc:ACETOACETYL-COA-TRANSFER-RXN
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole source identity and label verified, including honest unnamed-frame
+    fallback. The two core events, composite constituents and Rhea projections retain
+    distinct representational roles.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-3
+  area: identity
+  topic: MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole source identity and label verified, including honest unnamed-frame
+    fallback. The two core events, composite constituents and Rhea projections retain
+    distinct representational roles.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-4
+  area: identity
+  topic: MetaCyc:RXN-20154
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole source identity and label verified, including honest unnamed-frame
+    fallback. The two core events, composite constituents and Rhea projections retain
+    distinct representational roles.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-5
+  area: identity
+  topic: MetaCyc:RXN-20155
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole source identity and label verified, including honest unnamed-frame
+    fallback. The two core events, composite constituents and Rhea projections retain
+    distinct representational roles.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-6
+  area: identity
+  topic: EcoCyc:ACETOACETYL-COA-TRANSFER-CPLX
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing native Protein complex frame and honest common-name/fallback label
+    verified. Components, nesting and stoichiometry are kept distinct from activity
+    and experimental preparation.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-7
+  area: identity
+  topic: EcoCyc:ATOA-CPLX
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing native Protein complex frame and honest common-name/fallback label
+    verified. Components, nesting and stoichiometry are kept distinct from activity
+    and experimental preparation.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-8
+  area: identity
+  topic: EcoCyc:ATOD-CPLX
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing native Protein complex frame and honest common-name/fallback label
+    verified. Components, nesting and stoichiometry are kept distinct from activity
+    and experimental preparation.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-9
+  area: identity
+  topic: EcoCyc:ACETYL-COA-ACETYLTRANSFER-CPLX
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing native Protein complex frame and honest common-name/fallback label
+    verified. Components, nesting and stoichiometry are kept distinct from activity
+    and experimental preparation.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-10
+  area: identity
+  topic: MetaCyc:PROT-CYS
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole native class and parent context support a generic protein-bound
+    residue class. Not a free amino acid or exclusive AtoB state; maintained typed-authority
+    implementation remains pending.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-11
+  area: identity
+  topic: MetaCyc:Protein-S-Acetyl-Cysteines
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole native class and parent context support a generic protein-bound
+    residue class. Not a free amino acid or exclusive AtoB state; maintained typed-authority
+    implementation remains pending.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-12
+  area: identity
+  topic: UniProtKB:P76458
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing K-12 UniProt identity and recommended name verified. Historical
+    mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog
+    do not substitute for this reference sequence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-13
+  area: identity
+  topic: UniProtKB:P76459
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing K-12 UniProt identity and recommended name verified. Historical
+    mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog
+    do not substitute for this reference sequence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-14
+  area: identity
+  topic: UniProtKB:P76461
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing K-12 UniProt identity and recommended name verified. Historical
+    mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog
+    do not substitute for this reference sequence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-15
+  area: identity
+  topic: UniProtKB:P37766
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing K-12 UniProt identity and recommended name verified. Historical
+    mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog
+    do not substitute for this reference sequence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-16
+  area: identity
+  topic: UniProtKB:Q06065
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Issuing K-12 UniProt identity and recommended name verified. Historical
+    mutants, BL21 preparations, MG1655 physiology and the separate O157:H7 ortholog
+    do not substitute for this reference sequence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-17
+  area: identity
+  topic: RHEA:27807
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole source identity and label verified, including honest unnamed-frame
+    fallback. The two core events, composite constituents and Rhea projections retain
+    distinct representational roles.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-18
+  area: identity
+  topic: RHEA:21038
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole source identity and label verified, including honest unnamed-frame
+    fallback. The two core events, composite constituents and Rhea projections retain
+    distinct representational roles.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-19
+  area: identity
+  topic: CHEBI:13705
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Exact source label and charged molecular identity verified from whole
+    issuing subject/property response, with exact native InChI cross-check. Acid-form
+    discovery xrefs are not used as exact substitutes.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-20
+  area: identity
+  topic: CHEBI:57288
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Exact source label and charged molecular identity verified from whole
+    issuing subject/property response, with exact native InChI cross-check. Acid-form
+    discovery xrefs are not used as exact substitutes.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-21
+  area: identity
+  topic: CHEBI:57286
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Exact source label and charged molecular identity verified from whole
+    issuing subject/property response, with exact native InChI cross-check. Acid-form
+    discovery xrefs are not used as exact substitutes.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-22
+  area: identity
+  topic: CHEBI:30089
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Exact source label and charged molecular identity verified from whole
+    issuing subject/property response, with exact native InChI cross-check. Acid-form
+    discovery xrefs are not used as exact substitutes.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-23
+  area: identity
+  topic: CHEBI:57287
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Exact source label and charged molecular identity verified from whole
+    issuing subject/property response, with exact native InChI cross-check. Acid-form
+    discovery xrefs are not used as exact substitutes.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-24
+  area: identity
+  topic: NCBITaxon:562
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Whole NCBI species subject verified; broad species indexing does not universalize
+    strain-specific experimental evidence.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: identity-25
+  area: identity
+  topic: PubChem:21226146
+  outcome: supported
+  summary: 'Inherited issuing-identity judgment retained against the current complete
+    target: Exact source label and charged molecular identity verified from whole
+    issuing subject/property response, with exact native InChI cross-check. Acid-form
+    discovery xrefs are not used as exact substitutes.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - inherited-native-output
+  details: Historical wording that implementation was pending describes the earlier
+    scientific-review stage; actual implementation/output acceptance and current native
+    gates are separate later evidence.
+- assessment_id: reference-1
+  area: provenance
+  topic: MetaCyc:ACETOACETYL-COA-TRANSFER-RXN
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-2
+  area: provenance
+  topic: EcoCyc:ACETYL-COA
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-3
+  area: provenance
+  topic: EcoCyc:3-KETOBUTYRATE
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-4
+  area: provenance
+  topic: EcoCyc:ACET
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-5
+  area: provenance
+  topic: EcoCyc:ACETOACETYL-COA
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-6
+  area: provenance
+  topic: MetaCyc:ACETYL-COA-ACETYLTRANSFER-RXN
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-7
+  area: provenance
+  topic: EcoCyc:CO-A
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-8
+  area: provenance
+  topic: MetaCyc:RXN-20154
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-9
+  area: provenance
+  topic: MetaCyc:PROT-CYS
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-10
+  area: provenance
+  topic: MetaCyc:Protein-S-Acetyl-Cysteines
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-11
+  area: provenance
+  topic: MetaCyc:RXN-20155
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-12
+  area: provenance
+  topic: RHEA:27807
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole original RDF freshly reparsed and all
+    selected fragments aggregated; equation direction, participants and coefficients
+    verified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole frozen issuing Rhea release142 RDF; all selected subject fragments
+    freshly replayed.
+- assessment_id: reference-13
+  area: provenance
+  topic: RHEA:21038
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole original RDF freshly reparsed and all
+    selected fragments aggregated; equation direction, participants and coefficients
+    verified.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole frozen issuing Rhea release142 RDF; all selected subject fragments
+    freshly replayed.
+- assessment_id: reference-14
+  area: provenance
+  topic: MetaCyc:ACETOACETATE-DEG-PWY
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Pathway XML, PGDB 22.5, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-15
+  area: provenance
+  topic: EcoCyc:ACETOACETYL-COA-TRANSFER-ENZRXN
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Enzymatic-Reaction XML, PGDB 27.0, retrieved 2026-10-12;
+    native annotations are not blanket full-primary-paper claims.
+- assessment_id: reference-16
+  area: provenance
+  topic: EcoCyc:ACETYL-COA-ACETYLTRANSFER-ENZRXN
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Enzymatic-Reaction XML, PGDB 27.0, retrieved 2026-10-12;
+    native annotations are not blanket full-primary-paper claims.
+- assessment_id: reference-17
+  area: provenance
+  topic: EcoCyc:ACETOACETYL-COA-TRANSFER-CPLX
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-18
+  area: provenance
+  topic: EcoCyc:ATOA-CPLX
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-19
+  area: provenance
+  topic: EcoCyc:ATOA-MONOMER
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-20
+  area: provenance
+  topic: EcoCyc:ATOD-CPLX
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-21
+  area: provenance
+  topic: EcoCyc:ATOD-MONOMER
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-22
+  area: provenance
+  topic: EcoCyc:ACETYL-COA-ACETYLTRANSFER-CPLX
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-23
+  area: provenance
+  topic: EcoCyc:ACETYL-COA-ACETYLTRANSFER-MONOMER
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-24
+  area: provenance
+  topic: EcoCyc:REG0-11728
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-25
+  area: provenance
+  topic: EcoCyc:REG0-8779
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-26
+  area: provenance
+  topic: EcoCyc:REG0-8781
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-27
+  area: provenance
+  topic: EcoCyc:REG0-7500
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Regulation XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-28
+  area: provenance
+  topic: PMID:17616594
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Complete acquired main PDF freshly read by successor
+    reviewer; supplements and cited articles are not claimed fully read.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Complete acquired primary PDF read, including Methods/Results/Discussion/references;
+    selected scientific tables/figures visually inspected. Supplements not claimed
+    fully read.
+- assessment_id: reference-29
+  area: provenance
+  topic: UniProtKB:Q06065
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole issuing entry, including all comments
+    and features, freshly inspected. Current function and evidence-code distinctions
+    are retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes,
+    comments and features retained.
+- assessment_id: reference-30
+  area: provenance
+  topic: PMID:36333310
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Complete acquired main PDF freshly read by successor
+    reviewer; supplements and cited articles are not claimed fully read.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Complete acquired primary PDF read, including Methods/Results/Discussion/references;
+    selected scientific tables/figures visually inspected. Supplements not claimed
+    fully read.
+- assessment_id: reference-31
+  area: provenance
+  topic: EcoCyc:ENZRXN0-2778
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Enzymatic-Reaction XML, PGDB 27.0, retrieved 2026-10-12;
+    native annotations are not blanket full-primary-paper claims.
+- assessment_id: reference-32
+  area: provenance
+  topic: MetaCyc:Protein-L-amino-Acids
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-33
+  area: provenance
+  topic: MetaCyc:Protein-S-Acyl-Cysteines
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-34
+  area: provenance
+  topic: UniProtKB:P76458
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole issuing entry, including all comments
+    and features, freshly inspected. Current function and evidence-code distinctions
+    are retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes,
+    comments and features retained.
+- assessment_id: reference-35
+  area: provenance
+  topic: UniProtKB:P76459
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole issuing entry, including all comments
+    and features, freshly inspected. Current function and evidence-code distinctions
+    are retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes,
+    comments and features retained.
+- assessment_id: reference-36
+  area: provenance
+  topic: PMID:3025185
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-37
+  area: provenance
+  topic: PMID:1103739
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed metadata has no abstract; biological
+    details remain separately attributed native annotations.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed metadata only; complete primary body unavailable or not
+    acquired. Native annotations cited separately.
+- assessment_id: reference-38
+  area: provenance
+  topic: PMID:12952533
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-39
+  area: provenance
+  topic: PMID:1103741
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed metadata has no abstract; biological
+    details remain separately attributed native annotations.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed metadata only; complete primary body unavailable or not
+    acquired. Native annotations cited separately.
+- assessment_id: reference-40
+  area: provenance
+  topic: PMID:332081
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed metadata has no abstract; biological
+    details remain separately attributed native annotations.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed metadata only; complete primary body unavailable or not
+    acquired. Native annotations cited separately.
+- assessment_id: reference-41
+  area: provenance
+  topic: EcoCyc:CPD-29
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-42
+  area: provenance
+  topic: PubChem:21226146
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Exact issuing property original and native structural
+    equivalence verified; no acid-form substitution.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing PubChem property JSON; exact native InChI, charge and formula
+    comparison; immutable original reused.
+- assessment_id: reference-43
+  area: provenance
+  topic: EcoCyc:ACETOACETATE-DEG-PWY
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Pathway XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-44
+  area: provenance
+  topic: PMID:4563344
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed metadata has no abstract; biological
+    details remain separately attributed native annotations.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed metadata only; complete primary body unavailable or not
+    acquired. Native annotations cited separately.
+- assessment_id: reference-45
+  area: provenance
+  topic: PMID:236278
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Complete acquired main PDF freshly read by successor
+    reviewer; supplements and cited articles are not claimed fully read.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Complete acquired primary PDF read, including Methods/Results/Discussion/references;
+    selected scientific tables/figures visually inspected. Supplements not claimed
+    fully read.
+- assessment_id: reference-46
+  area: provenance
+  topic: PMID:27380370
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-47
+  area: provenance
+  topic: PMID:9904
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed metadata has no abstract; biological
+    details remain separately attributed native annotations.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed metadata only; complete primary body unavailable or not
+    acquired. Native annotations cited separately.
+- assessment_id: reference-48
+  area: provenance
+  topic: UniProtKB:P76461
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole issuing entry, including all comments
+    and features, freshly inspected. Current function and evidence-code distinctions
+    are retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes,
+    comments and features retained.
+- assessment_id: reference-49
+  area: provenance
+  topic: PMID:2883171
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-50
+  area: provenance
+  topic: PMID:16153782
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-51
+  area: provenance
+  topic: PMID:16564134
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-52
+  area: provenance
+  topic: EcoCyc:ATOC-MONOMER
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-53
+  area: provenance
+  topic: PMID:8346225
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-54
+  area: provenance
+  topic: PMID:17475408
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-55
+  area: provenance
+  topic: PMID:22083893
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-56
+  area: provenance
+  topic: EcoCyc:EG12432-MONOMER
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Protein XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-57
+  area: provenance
+  topic: PMID:16253988
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Indexed original abstract and metadata inspected;
+    no acquired full body and no unsupported full-paper inference.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: PubMed indexed abstract and metadata; complete primary body unavailable
+    or not acquired. Native annotations cited separately.
+- assessment_id: reference-58
+  area: provenance
+  topic: UniProtKB:P37766
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole issuing entry, including all comments
+    and features, freshly inspected. Current function and evidence-code distinctions
+    are retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes,
+    comments and features retained.
+- assessment_id: reference-59
+  area: provenance
+  topic: UniProtKB:Q8X5X6
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole issuing entry, including all comments
+    and features, freshly inspected. Current function and evidence-code distinctions
+    are retained.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole reviewed UniProt JSON, retrieved 2026-10-12; organism, evidence codes,
+    comments and features retained.
+- assessment_id: reference-60
+  area: provenance
+  topic: PathBank:SMP0002102
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole discovery original freshly inspected;
+    all five equations and all objects adjudicated. The incompatible thiolase equation
+    is rejected.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole BioPAX original; all165 objects and all5 reactions/21 sides adjudicated;
+    incompatible thiolase equation rejected.
+- assessment_id: reference-61
+  area: provenance
+  topic: EcoCyc:ACETOACETYL-COA-TRANSFER-RXN
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-62
+  area: provenance
+  topic: EcoCyc:ACETYL-COA-ACETYLTRANSFER-RXN
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-63
+  area: provenance
+  topic: EcoCyc:PROT-CYS
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-64
+  area: provenance
+  topic: EcoCyc:Protein-S-Acetyl-Cysteines
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Compound XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-65
+  area: provenance
+  topic: EcoCyc:RXN-20154
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: reference-66
+  area: provenance
+  topic: EcoCyc:RXN-20155
+  outcome: supported
+  summary: 'Inherited original-reference assessment retained with exact current source
+    hash and source-version language: Whole native frame and every direct slot freshly
+    inspected. Database annotations remain distinct from full-primary-paper evidence;
+    PGDB and historical limitations are preserved.'
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-identities-references
+  - fresh-target-qa
+  details: Whole issuing Reaction XML, PGDB 27.0, retrieved 2026-10-12; native annotations
+    are not blanket full-primary-paper claims.
+- assessment_id: route-boundary
+  area: scope
+  topic: Two biological events and mechanistic decomposition
+  outcome: supported
+  summary: AtoDA transfer and AtoB cleavage yield one net acetyl-CoA. Rhea equations
+    are alternative projections, and native cysteinyl half-reactions are decomposition
+    context. Acetyl-CoA donor replacement is mass balance, without enzyme channeling.
+    Incompatible PathBank thiolase chemistry is rejected.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-science
+- assessment_id: regulation-and-assemblies
+  area: scope
+  topic: Expression, assemblies and residue classes
+  outcome: supported
+  summary: AtoA2AtoD2 nested assembly and separate AtoB4 retain whole-complex activity.
+    Generic protein-bound cysteine states remain distinct from free cysteine or demonstrated
+    Cys88 occupancy. AtoC is expression-level control; conditional native inhibition
+    annotations do not become universal potency claims.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - current-target
+  - inherited-science
+- assessment_id: rendered-completeness
+  area: representation
+  topic: Actual complete graph and evidence table
+  outcome: supported
+  summary: All 46 arrows, 25 visual nodes, 25 named identities, one qualified construct
+    and 66 references correspond to current YAML; all local anchors resolve and whole
+    narrative text survives. Unconnected taxon remains in the component table.
+  target_ids:
+  - MetaCyc:ACETOACETATE-DEG-PWY
+  evidence_ids:
+  - fresh-target-qa
+  - static-visual
+findings: []
+actions: []
+limitations:
+- Full scientific source interpretation is inherited from the accepted independent
+  review. This review freshly reads the entire current YAML and all 29 paragraph,
+  46 edge, 25 identity and 66 reference dispositions and compares exact current claims;
+  it does not reread primary papers.
+- Inherited source depth remains three complete main papers (1975 thiolases, 2007
+  AtoC, 2022 YdiF), ten indexed abstracts and five metadata-only papers. Not all supplements
+  or cited papers were read. No source-exhaustion or new whole-paper claim follows.
+- Distinct wild-type B, constitutive mutant, K-12/MG1655, BL21 recombinant and O157:H7
+  ortholog contexts remain scoped. Exact supplement-only YdiF cloning details and
+  unavailable historical assay contexts are not newly verified.
+- Actual maintained static light SVG was freshly rasterized and viewed. Dense shared-junction
+  labels overlap and the long construct node label truncates; the complete qualification
+  and evidence remain in the checked tables. No browser interaction/responsive/dark-theme
+  result is claimed.
+- Production implementation, whole-source authority semantics and the issue502 cycle
+  correction are inherited from accepted independent runtime/output reviews; current
+  gates and exact output identity verify integration. This is not another line-by-line
+  adapter review or full SQL rehash.
+- The reviewer authored earlier external canonical preparation, but did not author
+  this scientific record, production adapters, local-integration preparation or root
+  maintained execution. Current independence is scoped to the latter maintained integration
+  and inherited scientific adjudication; earlier self-authored planning is not independently
+  certified here.
+- No maintained record, native review, cache, Git state or GitHub object was changed
+  by this reviewer. Root owns exact evidence adoption, guarded final native inspection,
+  append-only save/check and any later local commit.
+notes:
+- The complete current YAML and all inherited paragraph/edge/identity/reference dispositions
+  were read. Scientific access tiers describe the earlier source reviewers, not fresh
+  primary-paper work here.
+- The captured interval starts with the first retained current-page raster execution;
+  earlier contextual helper/report reads precede it.
+- Root-prepared exact deterministic checkers were reused after complete inspection.
+  The independent reviewer separately inspected current scientific wording, inherited
+  dispositions, the actual raster and exact native command/input bindings.
+- External drafts are schema validation inputs only. No native structured predecessor
+  occurrence or issue closure is fabricated.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/502
+tags:
+- acetoacetate
+- local-integration
+- independent-maintained-qa
+```

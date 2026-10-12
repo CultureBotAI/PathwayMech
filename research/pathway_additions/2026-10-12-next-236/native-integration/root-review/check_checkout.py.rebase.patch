@@ -1,0 +1,44 @@
+--- /private/tmp/pathwaymech-next-235-root-maintained-qa-20261012/check_checkout.py
++++ /private/tmp/pathwaymech-next-236-root-maintained-qa-20261012/check_checkout.py
+@@ -1,7 +1,7 @@
+ """Verify complete physical preservation after native gates, before review adoption."""
+ import sys,json,datetime,hashlib
+ from pathlib import Path
+-prep=Path('/private/tmp/pathwaymech-next-235-local-integration-preparation-20261012')
++prep=Path('/private/tmp/pathwaymech-next-236-local-integration-preparation-20261012')
+ sys.path.insert(0,str(prep))
+ import common as c
+ root=c.ROOT
+@@ -26,17 +26,24 @@
+ # c.inventory omits the root itself; preserve that existing representation.
+ assert set(dirs)==expected_dirs,(sorted(set(dirs)-expected_dirs),sorted(expected_dirs-set(dirs)))
+ c.cache_check()
+-receipts=Path('/private/tmp/pathwaymech-next-235-local-native-execution-20261012')
++receipts=Path('/private/tmp/pathwaymech-next-236-local-native-execution-20261012')
+ history=c.load(receipts/'history-and-generation/completion.json')
+-remaining=c.load(receipts/'remaining-gates/failure.json')
+-resumed=c.load(receipts/'network-resumption/completion.json')
+-assert history['status']==resumed['status']=='phase_passed'
+-assert [(r['name'],r['exit_code']) for r in remaining['receipts']]==[('validate',0),('tests',0),('lint',0),('kgx',0),('vendored',1)]
+-assert 'nodename nor servname provided' in (receipts/'remaining-gates/vendored.stderr').read_text()
++remaining=c.load(receipts/'remaining-offline-gates/completion.json')
++network=c.load(receipts/'vendored-gate/completion.json')
++final=c.load(receipts/'final-gates/completion.json')
++assert all(x['status']=='phase_passed' for x in [history,remaining,network,final])
++assert [r['name'] for r in remaining['receipts']]==['validate','tests','lint','kgx']
++assert [r['name'] for r in network['receipts']]==['vendored']
++assert [r['name'] for r in final['receipts']]==['diff-check','site-current']
+ hr=[r for r in history['receipts'] if r['name'].startswith('history-')]
+ render=next(r for r in history['receipts'] if r['name']=='render')
+-assert len(hr)==2 and all(r['exit_code']==0 and r['finished_at']<render['started_at'] for r in hr)
+-assert all(r['exit_code']==0 for r in history['receipts']+remaining['receipts'][:-1]+resumed['receipts'])
++sssom=next(r for r in history['receipts'] if r['name']=='sssom')
++assert len(hr)==2 and all(r['exit_code']==0 and r['finished_at']<sssom['started_at']<render['started_at'] for r in hr)
++all_receipts=history['receipts']+remaining['receipts']+network['receipts']+final['receipts']
++assert all(r['exit_code']==0 for r in all_receipts)
++for r in all_receipts:
++ c.verify(r['stdout']);c.verify(r['stderr'])
++for a,b in zip(all_receipts,all_receipts[1:]):assert a['finished_at']<=b['started_at']
+ value={'status':'complete_checkout_preservation_after_native_gates_passed','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline_files':len(before),'current_files':len(by),'baseline_directories':len(old_dirs),'current_directories':len(dirs),'whole_old_owners_preserved_outside_exact_plan':True,'hidden_and_ignored_included':True,'git_metadata_excluded':True,'cache_entries_unchanged':800,'new_histories':[by[p] for p in sorted(new_histories)],'history_completed_before_first_render':True,'adopted_owners':len(changes),'allowed_generated_paths':sorted(generated)}
+ with (out/'checkout-preservation.json').open('x') as f:json.dump(value,f,indent=2);f.write('\n')
+ print(json.dumps({k:v for k,v in value.items() if k not in ['new_histories','allowed_generated_paths']}))

@@ -1,0 +1,23 @@
+--- /private/tmp/pathwaymech-next-235-save-native-reviews-20261012.py
++++ /private/tmp/pathwaymech-next-236-save-native-reviews-20261012.py
+@@ -1,7 +1,7 @@
+ import datetime,hashlib,json,os,subprocess,time
+ from pathlib import Path
+ import yaml
+-ROOT=Path('/private/tmp/pathwaymech-next-235-local-20261012');DRAFT=Path('/private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012');FINAL=Path('/private/tmp/pathwaymech-next-235-root-native-finalized-20261012');OUT=Path('/private/tmp/pathwaymech-next-235-native-review-save-20261012');OUT.mkdir()
++ROOT=Path('/private/tmp/pathwaymech-next-236-local-20261012');DRAFT=Path('/private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012');FINAL=Path('/private/tmp/pathwaymech-next-236-root-native-finalized-20261012');OUT=Path('/private/tmp/pathwaymech-next-236-native-review-save-20261012');OUT.mkdir()
+ PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ ENV={'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(ROOT/'src')+':'+str(ROOT)}
+ def pin(p):
+@@ -10,9 +10,9 @@
+ for kind in ['scientific','technical']:
+  before=yaml.safe_load((DRAFT/(kind+'-review.yaml')).read_bytes());after=yaml.safe_load((FINAL/(kind+'-review.yaml')).read_bytes())
+  assert {k:v for k,v in before.items() if k!='source'}=={k:v for k,v in after.items() if k!='source'}
+- assert after['source']['git_revision']=='5ff01d7c59c61fd94b65b907edd50936193f7f17'
++ assert after['source']['git_revision']=='9bd87745d842b0602d027f3d15d26bbc178474a6'
+  commands.append((kind+'-save',[PY,'-B','scripts/record_review.py','save','--content',str(FINAL/(kind+'-review.yaml'))]))
+-commands += [('review-check',[PY,'-B','scripts/record_review.py','check','--base','5ff01d7c59c61fd94b65b907edd50936193f7f17']),('lint',[PY,'-B','-m','ruff','check','--no-cache','.']),('diff-check',['git','diff','--check'])]
++commands += [('review-check',[PY,'-B','scripts/record_review.py','check','--base','9bd87745d842b0602d027f3d15d26bbc178474a6']),('lint',[PY,'-B','-m','ruff','check','--no-cache','.']),('diff-check',['git','diff','--check'])]
+ results=[]
+ for name,argv in commands:
+  v={'name':name,'argv':argv,'cwd':str(ROOT),'environment':ENV,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'helper':pin(Path(__file__))};t=time.monotonic()

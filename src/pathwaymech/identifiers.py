@@ -16,6 +16,14 @@ from urllib.parse import urlparse
 
 import yaml
 
+from pathwaymech.biocyc_aceto import (
+    ACETO_KINDS,
+    RESIDUE_KIND,
+    SGD_KIND,
+    aceto_term,
+    validate_aceto_assertions,
+    validate_aceto_metadata,
+)
 from pathwaymech.biocyc_carrier import CARRIER_CLASS_KIND, class_term, validate_class_metadata
 from pathwaymech.biocyc_chemical_class import (
     CHEMICAL_CLASS_KIND,
@@ -126,6 +134,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_electron_transfer",
                 "native_chemical_class",
                 "native_named_complex",
+                "native_aceto",
                 "native_pathway",
                 "native_polymers",
                 "native_carrier_class",
@@ -145,6 +154,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_electron_transfer",
                 "native_chemical_class",
                 "native_named_complex",
+                "native_aceto",
                 "native_pathway",
                 "native_polymers",
                 "native_carrier_class",
@@ -158,7 +168,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             raise ValueError(f"source {source}: expected a public source URL")
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
-        if "kind" in metadata and metadata["kind"] not in {
+        if "kind" in metadata and metadata["kind"] not in ACETO_KINDS | {
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
             ECOCYC_COMPLEX_KIND,
@@ -197,6 +207,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 raise ValueError(f"source {source}: invalid selected PathBank pathway identities")
         elif "archive" in metadata or "pathway_accessions" in metadata:
             raise ValueError(f"source {source}: archive provenance requires typed PathBank ZIP")
+        if metadata.get("kind") in ACETO_KINDS:
+            validate_aceto_metadata(metadata)
+        elif "native_aceto" in metadata:
+            raise ValueError("aceto native metadata requires a matching typed source kind")
         for native_kind, field, validator in [
             (ELECTRON_TRANSFER_KIND, "native_electron_transfer", validate_reaction_metadata),
             (CHEMICAL_CLASS_KIND, "native_chemical_class", validate_chemical_class_metadata),
@@ -239,6 +253,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             # Check internal request/identity consistency. Original XML bytes
             # and their agreement with the request remain the builder's remit.
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
+    validate_aceto_assertions(data["sources"], [])
     # Every source above has already reconstructed its complete native object.
     # Check all owners before reading terms: an unselected owner can still
     # contradict coefficients, retained evidence, or release identity.
@@ -304,9 +319,9 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
-        if identifier in pathway_assertions and source_kind != PATHWAY_KIND:
+        if identifier in pathway_assertions and source_kind not in {PATHWAY_KIND, SGD_KIND}:
             raise ValueError(f"{identifier}: conflicting typed native pathway identity scope")
-        if "allowed_categories" in term and source_kind != CHEMICAL_CLASS_KIND:
+        if "allowed_categories" in term and source_kind not in {CHEMICAL_CLASS_KIND, RESIDUE_KIND}:
             raise ValueError(f"{identifier}: category proof requires typed native chemical class")
         if term.get("label_kind") == "source_synonym" and source_kind != ECOCYC_COMPLEX_KIND:
             raise ValueError(
@@ -332,7 +347,11 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 or "entity_type" in term
             ):
                 raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
-        if source_kind in {
+        if source_kind in ACETO_KINDS:
+            expected_id, expected_term = aceto_term(data["sources"][term["source"]], term["source"])
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid typed aceto authority projection")
+        elif source_kind in {
             ELECTRON_TRANSFER_KIND,
             CHEMICAL_CLASS_KIND,
             NAMED_COMPLEX_KIND,
@@ -378,6 +397,9 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 or term["synonyms"] != []
             ):
                 raise ValueError(f"{identifier}: invalid typed native reaction authority")
+    validate_aceto_assertions(
+        data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
+    )
     return data["terms"]
 
 

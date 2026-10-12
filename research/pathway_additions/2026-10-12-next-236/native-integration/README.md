@@ -1,0 +1,11 @@
+# Actual local acetoacetate integration evidence
+
+The accepted acetoacetate degradation record and authority adapter are integrated on local baseline 9bd87745d842b0602d027f3d15d26bbc178474a6. Two native histories preceded SSSOM and first render. All nine required gates passed, including 4,273 tests (three skips and three dependency warnings). Four phase receipts preserve twelve successful commands and exact streams; no initial DNS failure occurred in this execution.
+
+Root and independent maintained QA passed. Current graph/table QA covers all 25 visual nodes, 46 arrows, one qualified construct, 25 named identities and 66 references. Static light-theme limitations remain dense label overlap and one truncated construct label, whose whole text and evidence are in the table. No browser interaction is claimed. Complete scientific interpretation is inherited explicitly from accepted source reviews. Historical identity dispositions preserve their earlier planning status; current implementation and actual native outputs passed separately.
+
+The hidden/ignored physical census before this evidence adoption preserves all old owners outside the exact integration plan, all 800 shared-cache identities, 236 old records/pages, 116 review pairs and 400 old histories. Current corpus size is 237. Source and ontology snapshots, both KGX surfaces and the five new SSSOM rows equal accepted outputs; previous authority objects and graph contexts remain intact. RHEA:21038 clears only its aggregate direction while preserving earlier contextual directions.
+
+root-storage-map.json maps complete original root execution/review/visual bodies to exact durable owners. Gzip is lossless transport, and historical absolute paths inside originals resolve through that map. The independent-qa copy plan separately binds every reviewed payload. Primary scientific originals remain available through the parent portable index without duplication. Native review input extension, save and append-only checking are recorded later under finalization. No source normalization, scientific status promotion or new history is implied by saving reviews.
+
+This is a local integration only. No push, PR, merge, branch deletion, issue closure, licensing clearance or source-exhaustion claim is made.

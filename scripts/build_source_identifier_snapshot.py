@@ -41,6 +41,14 @@ from xml.parsers import expat
 
 import yaml
 
+from pathwaymech.biocyc_aceto import (
+    ACETO_KINDS,
+    COMPANION_FIELDS,
+    NESTED_KIND,
+    aceto_metadata,
+    aceto_term,
+    validate_aceto_assertions,
+)
 from pathwaymech.biocyc_carrier import (
     CARRIER_CLASS_KIND,
     class_metadata,
@@ -2025,6 +2033,8 @@ def source_terms(
 
 def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, Any]:
     wanted = corpus_ids(records)
+    all_aceto_sources = {}
+    all_aceto_claims = []
     terms: dict[str, Any] = {}
     sources: dict[str, Any] = {}
     source_keys: set[str] = set()
@@ -2049,6 +2059,9 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
     for entry in entries:
+        for native_kind, companion_field in COMPANION_FIELDS.items():
+            if companion_field in entry and entry["kind"] != native_kind:
+                raise ValueError("companion source field requires its matching native kind")
         if "counterpart_source" in entry and entry["kind"] != ECOCYC_STATE_KIND:
             raise ValueError(
                 "EcoCyc counterpart_source requires the typed protein-state source kind"
@@ -2063,7 +2076,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
-        if entry["kind"] in {
+        if entry["kind"] in ACETO_KINDS | {
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
             ELECTRON_TRANSFER_KIND,
@@ -2111,6 +2124,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     if "/" not in identifier
                 ],
             )
+        elif entry["kind"] in ACETO_KINDS:
+            metadata = aceto_metadata(entry, cache_dir)
+            identifier, typed_term = aceto_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in {
             ELECTRON_TRANSFER_KIND,
             CHEMICAL_CLASS_KIND,
@@ -2271,7 +2288,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 url=entry["url"],
                 version=entry["version"],
             )
+        all_aceto_sources[key] = metadata
         for identifier, label, synonyms in parsed_terms:
+            if identifier.startswith(("MetaCyc:", "EcoCyc:")):
+                all_aceto_claims.append((identifier, key))
             if identifier.startswith("MetaCyc:"):
                 kinds = metacyc_kinds.setdefault(identifier, set())
                 kinds.add(entry["kind"])
@@ -2329,7 +2349,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 identifier.startswith("EcoCyc:")
                 and entry["kind"] not in ECOCYC_SOURCE_TYPES
                 and entry["kind"]
-                not in {ECOCYC_COMPLEX_KIND, ECOCYC_STATE_KIND, NAMED_COMPLEX_KIND}
+                not in {ECOCYC_COMPLEX_KIND, ECOCYC_STATE_KIND, NAMED_COMPLEX_KIND, NESTED_KIND}
             ):
                 raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
@@ -2384,6 +2404,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     NAMED_COMPLEX_KIND: named_complex_term,
                 }[entry["kind"]]
                 terms[identifier] = projector(metadata, key)[1]
+            if entry["kind"] in ACETO_KINDS:
+                terms[identifier] = aceto_term(metadata, key)[1]
             if entry["kind"] == RHEA_POLYMER_KIND:
                 terms[identifier] = polymer_term(metadata, key, identifier)[1]
             if entry["kind"] == ECOCYC_COMPLEX_KIND:
@@ -2408,6 +2430,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             ):
                 terms[identifier]["label_kind"] = "source_context"
             sources[key] = metadata
+    validate_aceto_assertions(all_aceto_sources, all_aceto_claims)
     validate_named_complex_graph(named_assemblies)
     for source, metadata in sources.items():
         if metadata.get("kind") == RHEA_POLYMER_KIND:

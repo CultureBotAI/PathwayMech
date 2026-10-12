@@ -1,0 +1,102 @@
+--- /private/tmp/pathwaymech-next-235-root-maintained-qa-20261012/check_target.py
++++ /private/tmp/pathwaymech-next-236-root-maintained-qa-20261012/check_target.py
+@@ -3,15 +3,15 @@
+ from collections import Counter,defaultdict
+ from lxml import html
+ import yaml
+-ROOT=Path('/private/tmp/pathwaymech-next-235-local-20261012'); OUT=Path(__file__).parent
+-P='data/pathways/nitrate-reduction-viii.yaml'
+-PAGE='pages/records/MetaCyc_PWY0-1352.html'; BASE='5ff01d7c59c61fd94b65b907edd50936193f7f17'
++ROOT=Path('/private/tmp/pathwaymech-next-236-local-20261012'); OUT=Path(__file__).parent
++P='data/pathways/acetoacetate-degradation.yaml'
++PAGE='pages/records/MetaCyc_ACETOACETATE-DEG-PWY.html'; BASE='9bd87745d842b0602d027f3d15d26bbc178474a6'
+ checks=[]
+ def check(name, condition, detail=None):
+  checks.append({'name':name,'passed':bool(condition),'detail':detail})
+  if not condition: raise AssertionError((name,detail))
+ def sha(b):return hashlib.sha256(b).hexdigest()
+-def j(v):return json.dumps(v,ensure_ascii=False,sort_keys=True,separators=(',',':'))
++def j(v):return json.dumps(v,ensure_ascii=False,sort_keys=True)
+ def norm(v):return re.sub(r'[\t\r\n]+',' ',str(v)).strip()
+ def text(el):return ''.join(el.itertext())
+ def pin(p):
+@@ -20,29 +20,29 @@
+ def tsv(b):return list(csv.DictReader(io.StringIO('\n'.join(line for line in b.decode().splitlines() if not line.startswith('#'))),delimiter='\t'))
+ def main():
+  d=yaml.safe_load((ROOT/P).read_bytes()); rid=d['id']; refs={x['id']:x for x in d['references']}
+- check('exact accepted scientific draft',sha((ROOT/P).read_bytes())=='019deb06b1b58ae9c378b209a9e3815b6357685e13e6e3345b8be01aaf13f5de')
+- science=Path('/private/tmp/pathwaymech-next-235-science-review-20261012')
+- ps=json.loads((science/'paragraph-assessments.json').read_bytes()); es=json.loads((science/'edge-assessments.json').read_bytes())
+- pars=d['description'].split('\n\n');check('paragraph count',len(pars)==len(ps)==48)
+- for p,a in zip(pars,ps):check('inherited full paragraph '+a['id'],sha(p.encode())==a['successor_text_sha256'])
+- check('edge count',len(es)==len(d['mechanistic_edges'])==100)
+- for e,a in zip(d['mechanistic_edges'],es):check('inherited whole edge '+a['edge_id'],e['id']==a['edge_id'] and sha(j(e).encode())==a['whole_edge_sha256'])
+- idx=json.loads(gzip.decompress((ROOT/'research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz').read_bytes()))
++ check('exact accepted scientific draft',sha((ROOT/P).read_bytes())=='c3e00916088b02b418c83e033ac1773bafc7aac036bc28eda30829e776e6779c')
++ science=Path('/private/tmp/pathwaymech-next-236-science-review-20261012')
++ assessments=json.loads((science/'successor-scientific-assessments.json').read_bytes()); ps=assessments['paragraphs']; es=assessments['edges']
++ pars=d['description'].split('\n\n');check('paragraph count',len(pars)==len(ps)==29)
++ for p,a in zip(pars,ps):check('inherited full paragraph '+a['id'],sha(p.encode())==a['text_sha256'])
++ check('edge count',len(es)==len(d['mechanistic_edges'])==46)
++ for e,a in zip(d['mechanistic_edges'],es):check('inherited whole edge '+a['id'],e['id']==a['id'] and sha(j(e).encode())==a['claim_sha256'])
++ idx=json.loads(gzip.decompress((ROOT/'research/pathway_additions/2026-10-12-next-236/evidence-index.json.gz').read_bytes()))
+  for ref in refs.values():check('reference portable binding '+ref['id'],ref['source_sha256'] in idx['body_lookup'])
+- prep=Path('/private/tmp/pathwaymech-next-235-local-integration-preparation-20261012')
++ prep=Path('/private/tmp/pathwaymech-next-236-local-integration-preparation-20261012')
+  baseline=json.loads((prep/'baseline-files.json').read_bytes());counts=Counter()
+  for row in baseline:
+   rel=row['path']; group=next((g for g in ('data/pathways/','pages/records/','history/','reviews/structured/') if rel.startswith(g)),None)
+   if group and row['type']=='regular':
+    check('baseline preserved '+rel,pin(ROOT/rel)['sha256']==row['sha256']);counts[group]+=1
+- check('235 old records',sum(r['path'].startswith('data/pathways/') and r['path'].endswith('.yaml') for r in baseline)==235)
+- check('235 old pages',counts['pages/records/']==235)
+- check('114 old review pairs',counts['reviews/structured/']==228)
++ check('236 old records',sum(r['path'].startswith('data/pathways/') and r['path'].endswith('.yaml') for r in baseline)==236)
++ check('236 old pages',counts['pages/records/']==236)
++ check('116 old review pairs',counts['reviews/structured/']==232)
+  # Every graph arrow, table row, node, reference, qualifier and local anchor.
+  dom=html.fromstring((ROOT/PAGE).read_bytes()); ids=dom.xpath('//*[@id]/@id');check('unique HTML ids',len(ids)==len(set(ids)))
+  for href in dom.xpath('//*[@href]/@href'):
+   if href.startswith('#'):check('local HTML link '+href,href[1:] in ids)
+- graph=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]');check('100 graph arrows',len(graph)==100)
++ graph=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]');check('46 graph arrows',len(graph)==46)
+  alltext=text(dom)
+  for i,(edge,arrow) in enumerate(zip(d['mechanistic_edges'],graph),1):
+   anchor=f'mechanism-edge-{i}'; row=dom.get_element_by_id(anchor); cells=row.findall('td');check(anchor+' shape',len(cells)==4)
+@@ -63,9 +63,9 @@
+    check(anchor+' evidence target',li.find('a').get('href')=='#reference-'+str(list(refs).index(ev['reference_id'])+1))
+    for k in ('quote','source_assertion','source_locator'):
+     if k in ev:check(anchor+' '+k,ev[k] in text(li))
+- nodes=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]');check('67 graph nodes: 63 incident/non-taxon identities plus four qualified endpoints',len(nodes)==67)
++ nodes=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]');check('25 graph nodes: 24 incident/non-taxon identities plus one qualified endpoint',len(nodes)==25)
+  named=[{'id':rid,'label':d['label']}]+[n for c in ('taxa','participants','reactions') for n in d[c]]
+- check('64 named identities',len(named)==64)
++ check('25 named identities',len(named)==25)
+  for n in named:
+   if n['id']=='NCBITaxon:562':
+    check('unconnected taxon retained in component table',n['id'] in alltext);continue
+@@ -76,12 +76,12 @@
+   check('reference issuing URL '+ref['id'],ref['url'] in li.xpath('.//a/@href'))
+  check('whole description rendered',d['description'] in alltext)
+ 
+- preview=html.fromstring(Path('/private/tmp/pathwaymech-next-235-graph-preview-20261012/records/MetaCyc_PWY0-1352.html').read_bytes())
++ preview=html.fromstring(Path('/private/tmp/pathwaymech-next-236-graph-preview-20261012/records/MetaCyc_ACETOACETATE-DEG-PWY.html').read_bytes())
+  actual_svg=dom.xpath('//svg[@class="pathway-network-svg"]')[0]
+  prior_svg=preview.xpath('//svg[@class="pathway-network-svg"]')[0]
+  check('actual graph equals statically inspected preview',html.tostring(actual_svg)==html.tostring(prior_svg))
+- check('actual curation history rendered','Add the complete evidence-backed nitrate reduction VIII record.' in alltext)
+- actual_build=Path('/private/tmp/pathwaymech-next-235-canonical-build-20261012')
++ check('actual curation history rendered','Add the complete evidence-backed acetoacetate degradation record.' in alltext)
++ actual_build=Path('/private/tmp/pathwaymech-next-236-canonical-build-20261012')
+  for n in ['sources.json','ontology.json']:
+   check('actual authority body '+n,(ROOT/'data/identifier_authorities'/n).read_bytes()==(actual_build/n).read_bytes())
+  for n in ['nodes.tsv','edges.tsv']:
+@@ -90,7 +90,7 @@
+  for row in json.loads((prep/'plan.json').read_bytes())['changes']:
+   check('exact adopted owner '+row['destination'],pin(ROOT/row['destination'])['sha256']==row['payload']['sha256'])
+  erows=tsv((ROOT/'pages/downloads/edges.tsv').read_bytes());nrows=tsv((ROOT/'pages/downloads/nodes.tsv').read_bytes())
+- check('actual KGX counts',len(nrows)==4260 and len(erows)==11903)
++ check('actual KGX counts',len(nrows)==4277 and len(erows)==11949)
+  return {'status':'all_actual_maintained_target_and_preservation_checks_passed','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Fresh maintained integration and complete rendered graph/table/evidence checks. Full scientific interpretations inherited from accepted reviews and compared to whole current target; no fresh paper reading.','counts':dict(counts),'graph_nodes':len(nodes),'graph_edges':len(graph),'named_identities':len(named),'references':len(refs),'qualifiers':sum(len(e.get('endpoint_qualifiers',[])) for e in d['mechanistic_edges']),'kgx_nodes':len(nrows),'kgx_edges':len(erows),'inputs':[pin(ROOT/p) for p in [P,PAGE,'pages/downloads/nodes.tsv','pages/downloads/edges.tsv']],'checks':checks}
+ try:
+  report=main()
