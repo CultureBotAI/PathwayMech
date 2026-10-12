@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-12T02:12:29.981745+00:00",
+  "status": "supported_exact_display_tuples_only",
+  "scan": {
+    "path": "/private/tmp/pathwaymech-next-226-finalization-20261012/node-display-scan.json",
+    "bytes": 1109,
+    "sha256": "1c11d3ee06b97d10b52a5185d112986bd923baeb602fc2d6bbae86a2747842dd"
+  },
+  "approved_tuples": [
+    {
+      "id": "CHEBI:28938",
+      "column": "category",
+      "before": "biolink:SmallMolecule",
+      "after": "biolink:ChemicalEntity|biolink:SmallMolecule"
+    },
+    {
+      "id": "CHEBI:28938",
+      "column": "source_category",
+      "before": "small_molecule",
+      "after": "cofactor|small_molecule"
+    },
+    {
+      "id": "MetaCyc:NONOXIPENT-PWY",
+      "column": "source_category",
+      "before": "",
+      "after": "pathway"
+    }
+  ],
+  "assessments": [
+    {
+      "id": "CHEBI:28938",
+      "source": {
+        "id": "UniProtKB:P0A9J6",
+        "path": "/private/tmp/pathwaymech-next-226-preflight-20261012/raw-uniprot/P0A9J6.json",
+        "bytes": 39675,
+        "sha256": "cf2f51a027494bd1a52ae4715aa1949beb34c23c98da12833ee3b52b784f1ab4",
+        "url": "https://rest.uniprot.org/uniprotkb/P0A9J6.json",
+        "source_version": "UniProt 2026_03; complete reviewed entry retrieved 2026-10-12",
+        "record_sha256_match": true
+      },
+      "locator": "comments[commentType=ACTIVITY REGULATION]",
+      "original_annotation": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000255",
+                "source": "HAMAP-Rule",
+                "id": "MF_01987"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "11786021"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "16784868"
+              },
+              {
+                "evidenceCode": "ECO:0000305",
+                "source": "PubMed",
+                "id": "11786021"
+              }
+            ],
+            "value": "Activated by a monovalent cation that binds near, but not in, the active site (PubMed:11786021). The most likely occupant of the site in vivo is potassium (PubMed:11786021, PubMed:16784868). Also activated by ammonium ion (PubMed:16784868). Ion binding induces a conformational change that may alter substrate affinity (Probable)"
+          }
+        ],
+        "commentType": "ACTIVITY REGULATION"
+      },
+      "assessment": "Ammonium is explicitly an alternative monovalent activator of E. coli K-12 ribokinase. The record cofactor category is a broad non-substrate catalytic-support role and its edge is activates, not a new phosphate-incorporation or direct metal-cofactor claim. Existing small_molecule contexts remain; the global renderer unions the new cofactor role into ChemicalEntity while retaining SmallMolecule. The new role does not assert likely ammonium occupancy in vivo; potassium remains the annotation most-likely occupant. This fresh review inspected the UniProt original annotation, not its underlying full primary papers."
+    },
+    {
+      "id": "MetaCyc:NONOXIPENT-PWY",
+      "source": {
+        "id": "MetaCyc:RIBOKIN-PWY",
+        "path": "/private/tmp/pathwaymech-next-226-preflight-20261012/raw-initial-network/META-RIBOKIN-PWY.xml",
+        "bytes": 12453,
+        "sha256": "edbfc5708e2c29e18916275a18fbf58931d774f38c622520e0b0569bb80fd9b7",
+        "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RIBOKIN-PWY",
+        "source_version": "META PGDB 27.0; exact issuing original XML; inspected source assertions",
+        "record_sha256_match": true
+      },
+      "locator": "/ptools-xml/Pathway/pathway-link/link-target/Pathway[@frameid=\"NONOXIPENT-PWY\"]",
+      "original_native_object": {
+        "resource": "getxml?META:NONOXIPENT-PWY",
+        "orgid": "META",
+        "frameid": "NONOXIPENT-PWY"
+      },
+      "canonical_label_source": {
+        "path": "/private/tmp/pathwaymech-curation-authorities/sources/metacyc-NONOXIPENT-PWY.html",
+        "bytes": 34177,
+        "sha256": "a677170924c34576cf74eb52882466a4a684b29fa37ec6a18ba5e15b7fc7254d"
+      },
+      "canonical_label": "pentose phosphate pathway (non-oxidative branch)",
+      "assessment": "Exact META 27.0 parent pathway links to NONOXIPENT-PWY through a typed Pathway element. That source supports the added opaque pathway role. Existing biolink:Pathway category and canonical label are unchanged. The historical 22.5 HTML confirms the preserved label but uses a compound-page route; it is not treated as a complete child pathway definition. The current record preserves the interface only and does not infer immediate alpha-cyclic/open-chain equivalence, downstream reactions or flux."
+    }
+  ],
+  "unchanged_display_cells": "Every other display cell for all 3,937 baseline nodes matched in the fresh scan. This scan does not independently establish old source-context or edge preservation; those are root gates.",
+  "no_blanket_waiver": true,
+  "maintained_writes": false
+}

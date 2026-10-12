@@ -86,10 +86,11 @@ def _load_authority(path: Path) -> dict[str, Any]:
         raise ValueError(f"{path}: unsupported authority version")
     if not isinstance(data["sources"], dict) or not data["sources"]:
         raise ValueError(f"{path}: authority has no source provenance")
+    native_reaction_requests: dict[str, str] = {}
     for source, metadata in data["sources"].items():
         _keys(
             metadata, {"url", "version", "sha256", "license"},
-            {"sha256_scope"}, f"source {source}",
+            {"sha256_scope", "kind"}, f"source {source}",
         )
         if any(not _text(value) for value in metadata.values()):
             raise ValueError(f"source {source}: provenance fields must be nonempty strings")
@@ -98,6 +99,21 @@ def _load_authority(path: Path) -> dict[str, Any]:
             raise ValueError(f"source {source}: expected a public source URL")
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
+        if "kind" in metadata and metadata["kind"] != "metacyc-reaction-xml":
+            raise ValueError(f"source {source}: unknown typed authority source kind")
+        if metadata.get("kind") == "metacyc-reaction-xml":
+            request = re.fullmatch(
+                r"https://bf2i-artsymbiocyc\.insa-lyon\.fr/getxml\?id=META:"
+                r"([A-Za-z0-9][A-Za-z0-9_.-]*)",
+                metadata["url"],
+            )
+            if request is None or not re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", metadata["version"]):
+                raise ValueError(
+                    f"source {source}: invalid typed native reaction request or version"
+                )
+            # Check internal request/identity consistency. Original XML bytes
+            # and their agreement with the request remain the builder's remit.
+            native_reaction_requests[source] = "MetaCyc:" + request.group(1)
     if not isinstance(data["terms"], dict) or not data["terms"]:
         raise ValueError(f"{path}: authority has no terms; verification is unavailable")
     for identifier, term in data["terms"].items():
@@ -110,7 +126,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
         ):
             raise ValueError(f"{path}: invalid authority identifier {identifier!r}")
         _keys(
-            term, {"label", "synonyms", "source"}, {"label_kind"}, f"authority {identifier}"
+            term, {"label", "synonyms", "source"}, {"label_kind", "entity_type"},
+            f"authority {identifier}",
         )
         if term.get("label_kind", "canonical") not in {"canonical", "source_context"}:
             raise ValueError(f"{identifier}: unknown authority label kind")
@@ -122,6 +139,17 @@ def _load_authority(path: Path) -> dict[str, Any]:
             raise ValueError(f"{identifier}: authority synonyms must be a list of labels")
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
+        source_kind = data["sources"][term["source"]].get("kind")
+        if "entity_type" in term or source_kind == "metacyc-reaction-xml":
+            if (
+                term.get("entity_type") != "reaction"
+                or source_kind != "metacyc-reaction-xml"
+                or native_reaction_requests.get(term["source"]) != identifier
+                or not re.fullmatch(r"MetaCyc:[A-Za-z0-9][A-Za-z0-9_.-]*", identifier)
+                or term.get("label_kind") != "source_context"
+                or term["label"] != identifier.split(":", 1)[1] or term["synonyms"] != []
+            ):
+                raise ValueError(f"{identifier}: invalid typed native reaction authority")
     return data["terms"]
 
 
@@ -194,6 +222,16 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                 errors.append(
                     f"{where}: ID_NOT_FOUND {identifier!r} in the verified authority snapshot; "
                     "resolve against the source before refreshing the snapshot"
+                )
+                continue
+            # Native Reaction identity is not a pathway/protein/chemical
+            # authority, even where the namespace permits contextual labels.
+            if term.get("entity_type") == "reaction" and (
+                section != "reactions" or node.get("category") != "molecular_activity"
+            ):
+                errors.append(
+                    f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
+                    "typed native reaction requires reactions/category molecular_activity"
                 )
                 continue
             contextual = any(

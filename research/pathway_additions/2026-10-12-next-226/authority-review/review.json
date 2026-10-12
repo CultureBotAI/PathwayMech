@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "at": "2026-10-12T01:16:07.346321+00:00",
+  "reviewer": "Codex /root/ribose_adapter_review; independent of implementation author",
+  "status": "correction_required_before_adapter_adoption",
+  "scope": "External code and authority-contract review only. No maintained adoption, scientific acceptance, source exhaustion, Git/GitHub mutation, package installation, or shared-cache write.",
+  "base_commit": "6b6747ae6e14a9904efd7da9cbcca16398855582",
+  "baseline": "Actual merged225 tree plus root-accepted sealed threonine five-file patch; ribose remains a separate four-file patch.",
+  "read_scope": [
+    "Complete proposal, assessment, four-file patch and changed documentation/Python/test content",
+    "Complete implementation execution ledger, retained initial collection failure, successful authority/lint/replay logs and verification scripts/reports",
+    "Complete authentic native reaction XML and request receipt projection; fresh projection-to-original-receipt hash equality",
+    "Repository CLAUDE.md; gitignore-independent instructions search"
+  ],
+  "findings": [
+    {
+      "stable_key": "ribose-native-reaction-typed-provenance-binding",
+      "severity": "P2",
+      "adoption_blocking": true,
+      "title": "Bind the new typed reaction authority to its exact source request",
+      "file": "src/pathwaymech/identifiers.py",
+      "line_start": 128,
+      "line_end": 137,
+      "finding": "The new loader branch validates entity_type, source kind, frame-token label and contextual scope, but it never checks whether the typed source URL requests that exact MetaCyc frame at the accepted issuing endpoint, or whether version has the supported native format. The generic source check only requires an HTTP(S) netloc and nonempty strings. Consequently an internally contradictory typed authority is accepted by the blocking identifier gate.",
+      "reproduction": "Starting from the sealed complete unchanged ribose draft and composed authority, change only the native reaction source URL to https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN-OTHER, or to the ECOLI:RXN-14904 request, or to https://example.invalid/native.xml. Each still yields identifier_errors=[] for MetaCyc:RXN-14904. Changing only version to \"not a PGDB version\" also passes. Missing type and missing kind controls both reject.",
+      "evidence": "probes.json authority_provenance_mutations; probes.py; terminal f60929/0",
+      "impact": "The newly introduced closed typed provenance contract admits source records that contradict the identity they purport to establish. This is a static internal-consistency defect, not evidence that the authentic native original or builder output is wrong.",
+      "remedy": "For sources with kind=metacyc-reaction-xml only, validate the exact supported HTTPS getxml request grammar and META scope, validate the supported numeric dotted version grammar, and require each referencing typed reaction CURIE to equal the requested frame. Retain the current kind/type/label/synonym checks. Add focused loader/gate regressions for wrong host, endpoint, frame, organism, malformed/duplicate/query or fragment forms, invalid versions, and one source incorrectly reused for another typed identity. Keep all legacy untyped authorities unchanged.",
+      "limits": "Do not hard-code RXN-14904. Do not claim the loader can authenticate source-body bytes or attest that a syntactically valid version equals unavailable XML; original-body digest/request/PGDB agreement remains the builder and acquisition-receipt responsibility."
+    }
+  ],
+  "advisories": [
+    {
+      "stable_key": "ribose-native-reaction-xml-mixed-content-hardening",
+      "severity": "P3",
+      "adoption_blocking": false,
+      "title": "Optionally reject unexpected mixed content in element-only native containers",
+      "file": "scripts/build_source_identifier_snapshot.py",
+      "line_start": 766,
+      "line_end": 834,
+      "finding": "Mutating the authentic original to add non-whitespace metadata/Reaction text or Compound/parent Reaction tails is accepted and produces the same identity. Existing shape checks inspect child count, attributes and child text but omit those tail/container text locations.",
+      "evidence": "probes.json xml_mixed_content_probes and four retained mutated XML originals; terminal f60929/0",
+      "remedy": "Optional: reject non-whitespace text/tails only in containers whose supported native serialization is element-only. Preserve genuine numeric/prose slots with nested evidence; do not add a blanket recursive ban that would reject the authentic gibbs-0 evidence structure.",
+      "limits": "No wrong identity, altered chemical assertion, entity expansion or canonical-name promotion was demonstrated. This is optional parser hardening, not a separate adoption blocker."
+    }
+  ],
+  "fresh_checks": [
+    {
+      "name": "Sealed intake and independent composed patch replay",
+      "terminal": "54fad3/0",
+      "report": "intake.json",
+      "result": "645 artifacts rehashed; exact complete package inventory; actual225 plus both patches replay; seven-file union byte-matches candidate"
+    },
+    {
+      "name": "Full accepted old source reproduction",
+      "terminal": "ae92ec session29384; completion9a7c06/0",
+      "report": "reproduction.json",
+      "execution": "reproduce-execution.json",
+      "result": "All663 source bodies rehashed; all225 current YAMLs byte-match corpus; 2328 terms and510 source objects reproduce entire accepted sources.json bytes SHA6f62c939c85ea5c3285a1a132a888e02ee84806e2eafeb7cc6f8f932dbc638ba"
+    },
+    {
+      "name": "Independent malformed provenance and XML content probes",
+      "terminal": "f60929/0",
+      "report": "probes.json",
+      "result": "Required provenance defect and optional mixed-content observation reproduced; missing kind/type controls reject"
+    },
+    {
+      "name": "Actual original/request/receipt and draft replay",
+      "terminal": "3b930f/0",
+      "report": "native-replay.json",
+      "result": "Source-bound snapshot regenerated exactly; unresolved frame-only HTML still rejects; unchanged full draft passes; 8 wrong-role mutations reject ENTITY_TYPE_MISMATCH"
+    }
+  ],
+  "inherited_checks": {
+    "authority_regression_tests": "1180 passed in19.91s, including146 new tests; author log15067b0eeb2c5c0b6470d04b333d11c1f70960859be59dbdfed8e1199ccb81dd inspected, not rerun or claimed as fresh reviewer execution",
+    "lint": "Author Ruff log inspected; not claimed as a fresh reviewer run",
+    "failed_lineage": "Author disclosed12 early fixture-construction failures (initial output truncated, no complete retained log); retained broader-suite collection failure caused by an omitted unchanged external script was read; final complete successful log inspected."
+  },
+  "adoption_conditions": [
+    "Resolve ribose-native-reaction-typed-provenance-binding in the new typed source branch and reseal a successor patch for independent review.",
+    "Keep type enforcement before contextual-label bypass and the contextual-policy requirement.",
+    "Adopt builder/checker support together only after root accepts successor; retain all prior source/ontology objects and accepted threonine changes.",
+    "Root remains responsible for actual maintained integration, required corpus gates, issue tracking and separate scientific review."
+  ],
+  "input_bindings": "input-bindings.json",
+  "absence_claim_scope": "All package and instruction inventory checks included hidden/ignored files via rg --hidden --no-ignore or complete pathlib enumeration.",
+  "source_exhaustion": false
+}

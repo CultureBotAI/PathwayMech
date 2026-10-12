@@ -4,7 +4,7 @@
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, metacyc-html,
-metacyc-protein-xml, ecocyc-protein-xml, ecocyc-rna-xml, ncbi-entrezgene-xml,
+metacyc-protein-xml, metacyc-reaction-xml, ecocyc-protein-xml, ecocyc-rna-xml, ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
 bigg-universal-metabolite-json, bigg-universal-reaction-json and
@@ -712,6 +712,144 @@ def metacyc_protein_terms(
     return [("MetaCyc:" + frame, label, [])]
 
 
+class _MetaCycReactionTreeBuilder(ElementTree.TreeBuilder):
+    def doctype(self, name: str, pubid: str | None, system: str | None) -> None:
+        raise ValueError("MetaCyc reaction XML must not contain a DOCTYPE")
+
+
+def _metacyc_reaction_record(
+    path: Path, *, url: str, version: str,
+) -> tuple[tuple[str, str, list[str]], tuple]:
+    """Establish typed native identity for an unnamed small-molecule reaction.
+
+    This deliberately does not name a reaction from nested curator/evidence
+    objects, its equation, or a curated record. Named reactions and more complex
+    participant serialization remain unsupported by this bounded adapter.
+    """
+    request = re.fullmatch(
+        rf"https://{re.escape(ECOCYC_HOST)}/getxml\?id=(META:([A-Za-z0-9][A-Za-z0-9_.-]*))",
+        url,
+    )
+    if request is None:
+        raise ValueError("MetaCyc reaction requires an exact native HTTPS META request")
+    requested, frame = request.groups()
+    root = ElementTree.fromstring(
+        path.read_bytes(), parser=ElementTree.XMLParser(target=_MetaCycReactionTreeBuilder()),
+    )
+
+    def one(parent: ElementTree.Element, tag: str) -> ElementTree.Element:
+        nodes = parent.findall(tag)
+        if len(nodes) != 1:
+            raise ValueError(f"MetaCyc reaction requires exactly one direct {tag}")
+        return nodes[0]
+
+    def text(parent: ElementTree.Element, tag: str, *, native: bool = False) -> str:
+        node = one(parent, tag)
+        if (len(node) or node.attrib != ({"datatype": "string"} if native else {})
+                or not (node.text or "").strip()):
+            raise ValueError(f"MetaCyc reaction requires one nonempty native {tag}")
+        return node.text.strip()
+
+    if root.tag != "ptools-xml" or len(root) != 2:
+        raise ValueError("MetaCyc reaction requires native metadata and one direct Reaction")
+    metadata, reaction = one(root, "metadata"), one(root, "Reaction")
+    if (
+        set(root.attrib) != {"ptools-version", "{http://www.w3.org/XML/1998/namespace}base"}
+        or root.get("{http://www.w3.org/XML/1998/namespace}base") not in {
+            url, f"http://{ECOCYC_HOST}:443/getxml?{requested}",
+        }
+        or not re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", version)
+        or root.get("ptools-version") != version
+        or (root.text or "").strip() or any((child.tail or "").strip() for child in root)
+    ):
+        raise ValueError("MetaCyc reaction XML base or native version disagrees with request")
+    if metadata.attrib or sorted(n.tag for n in metadata) != sorted(
+        ["url", "service_name", "query", "num_results", "PGDB"]
+    ):
+        raise ValueError("MetaCyc reaction has malformed native metadata")
+    if (
+        text(metadata, "url") not in {
+            f"https://{ECOCYC_HOST}/", f"http://{ECOCYC_HOST}:443/",
+        }
+        or text(metadata, "service_name") != "getxml"
+        or text(metadata, "query") != requested or text(metadata, "num_results") != "1"
+    ):
+        raise ValueError("MetaCyc reaction service/query identity mismatch")
+    pgdb = one(metadata, "PGDB")
+    if (
+        pgdb.attrib != {"orgid": "META", "version": version}
+        or [child.tag for child in pgdb] != ["species"]
+        or text(pgdb, "species", native=True) != "MetaCyc"
+    ):
+        raise ValueError("MetaCyc reaction PGDB/version/species mismatch")
+    if reaction.attrib != {
+        "ID": requested, "orgid": "META", "frameid": frame, "detail": "full",
+    }:
+        raise ValueError("MetaCyc reaction has a mismatched or unresolved top-level identity")
+    # Any direct slot prevents the identity-only path, including an empty,
+    # duplicate, malformed or nested-object name copied into a direct slot.
+    if reaction.findall("common-name"):
+        raise ValueError("MetaCyc reaction identity-only adapter requires an absent common-name")
+    parents = []
+    for parent in reaction.findall("parent"):
+        child = one(parent, "Reaction")
+        parent_frame = child.get("frameid", "")
+        if (
+            len(parent) != 1 or parent.attrib or (parent.text or "").strip()
+            or len(child) or (child.text or "").strip()
+            or parent_frame not in {"Chemical-Reactions", "Small-Molecule-Reactions"}
+            or child.attrib != {
+                "resource": "getxml?META:" + parent_frame, "orgid": "META",
+                "frameid": parent_frame, "class": "true",
+            }
+        ):
+            raise ValueError("MetaCyc reaction has an unsupported native parent class")
+        parents.append(parent_frame)
+    if sorted(parents) != ["Chemical-Reactions", "Small-Molecule-Reactions"]:
+        raise ValueError("MetaCyc reaction requires chemical and small-molecule parent classes")
+    direction = text(reaction, "reaction-direction")
+    if direction not in {
+        "REVERSIBLE", "LEFT-TO-RIGHT", "RIGHT-TO-LEFT",
+        "PHYSIOL-LEFT-TO-RIGHT", "PHYSIOL-RIGHT-TO-LEFT",
+    }:
+        raise ValueError("MetaCyc reaction has an unsupported native direction")
+    sides = []
+    for side in ("left", "right"):
+        slots = reaction.findall(side)
+        if not slots:
+            raise ValueError(f"MetaCyc reaction requires nonempty native {side} slots")
+        participants = []
+        for slot in slots:
+            compound = one(slot, "Compound")
+            compound_frame = compound.get("frameid", "")
+            if (
+                len(slot) != 1 or slot.attrib or (slot.text or "").strip()
+                or len(compound) or (compound.text or "").strip()
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", compound_frame)
+                or compound.attrib != {
+                    "resource": "getxml?META:" + compound_frame,
+                    "orgid": "META", "frameid": compound_frame,
+                }
+            ):
+                raise ValueError("MetaCyc reaction requires exact native Compound side references")
+            participants.append(compound_frame)
+        if len(participants) != len(set(participants)):
+            raise ValueError("MetaCyc reaction repeats a native side participant")
+        sides.append(tuple(sorted(participants)))
+    flags = []
+    for tag in ("spontaneous", "physiologically-relevant"):
+        if reaction.findall(tag):
+            node = one(reaction, tag)
+            if (node.attrib != {"datatype": "boolean"} or len(node)
+                    or node.text not in {"true", "false"}):
+                raise ValueError(f"MetaCyc reaction has a malformed native {tag}")
+            flags.append((tag, node.text))
+    if reaction.findall("orphan"):
+        flags.append(("orphan", text(reaction, "orphan")))
+    assertion = (version, tuple(sorted(parents)), direction, *sides, tuple(flags))
+    return ("MetaCyc:" + frame, frame, []), assertion
+
+
 class _EcoCycTreeBuilder(ElementTree.TreeBuilder):
     def doctype(self, name: str, pubid: str | None, system: str | None) -> None:
         raise ValueError("EcoCyc XML must not contain a DOCTYPE")
@@ -1406,6 +1544,9 @@ def source_terms(
     elif kind == "ncbi-entrezgene-xml":
         term, _ = _ncbi_gene_record(path, url or "")
         yield term
+    elif kind == "metacyc-reaction-xml":
+        term, _ = _metacyc_reaction_record(path, url=url or "", version=version or "")
+        yield term
     elif kind in BIGG_SOURCE_TYPES:
         yield _bigg_record(kind, path, url or "")
     elif kind == "pubchem-compound-property-json":
@@ -1440,6 +1581,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     metanetx_assertions: dict[str, str] = {}
     metacyc_names: dict[str, set[str]] = {}
     metacyc_xml_ids: set[str] = set()
+    metacyc_kinds: dict[str, set[str]] = {}
+    metacyc_reaction_assertions: dict[str, tuple] = {}
     gene_assertions: dict[str, tuple[str, tuple[str, ...], str]] = {}
     bigg_assertions: dict[str, tuple[str, str, str, str]] = {}
     bigg_versions: dict[str, str] = {}
@@ -1467,7 +1610,18 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         metadata["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
         if metadata["sha256"] != entry.get("sha256"):
             raise ValueError(f"source {key} bytes do not match manifest sha256")
-        if entry["kind"] in BIGG_SOURCE_TYPES:
+        if entry["kind"] == "metacyc-reaction-xml":
+            term, assertion = _metacyc_reaction_record(
+                path, url=entry["url"], version=entry["version"],
+            )
+            identifier = term[0]
+            if (identifier in metacyc_reaction_assertions
+                    and metacyc_reaction_assertions[identifier] != assertion):
+                raise ValueError(f"conflicting MetaCyc reaction native assertions for {identifier}")
+            metacyc_reaction_assertions[identifier] = assertion
+            metadata["kind"] = "metacyc-reaction-xml"
+            parsed_terms = [term]
+        elif entry["kind"] in BIGG_SOURCE_TYPES:
             version = _bigg_version(entry, cache_dir)
             if version[0] in bigg_versions and bigg_versions[version[0]] != version[1]:
                 raise ValueError("conflicting BiGG native database version observations")
@@ -1505,6 +1659,13 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 entry["kind"], path, url=entry["url"], version=entry["version"],
             )
         for identifier, label, synonyms in parsed_terms:
+            if identifier.startswith("MetaCyc:"):
+                kinds = metacyc_kinds.setdefault(identifier, set())
+                kinds.add(entry["kind"])
+                if "metacyc-reaction-xml" in kinds and len(kinds) != 1:
+                    raise ValueError(
+                        f"conflicting MetaCyc reaction identity scope for {identifier}"
+                    )
             if identifier.startswith("PubChem:"):
                 if entry["kind"] != "pubchem-compound-property-json":
                     raise ValueError(
@@ -1556,6 +1717,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 "synonyms": sorted(set(synonyms) - {label}),
                 "source": key,
             }
+            if entry["kind"] == "metacyc-reaction-xml":
+                terms[identifier].update(label_kind="source_context", entity_type="reaction")
             if (
                 (identifier.startswith("WikiPathways:") and "/" in identifier)
                 or (entry["kind"] == "pathbank-biopax" and "/" in identifier)

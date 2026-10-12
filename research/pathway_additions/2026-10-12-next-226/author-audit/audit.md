@@ -1,0 +1,67 @@
+# Bounded ribose author-draft audit
+
+Inspected draft SHA-256: `3da5c09e5cc3b65e3cf0b209d2492d3cd51f312bfe3f45ff2d19a68634ed67ed`.
+
+Changes requested for five source-locality findings. No incorrect core chemical event, gene identity, regulatory sign, or native assembly coefficient was found within this bounded audit. This is not final scientific acceptance.
+
+## RIBOSE-AUDIT-01: medium
+
+Cofactor/regulation source assertions attribute facts to native XML slots that do not contain those facts. The biology is supported in other retained originals.
+
+{"ribose-037": "Native RIBOKIN-ENZRXN/cofactor establishes Mg2+; likely in vivo and phosphoryl-transfer interpretation is in UniProt P0A9J6 comments[COFACTOR].", "ribose-040": "REG0-9220 establishes Pi positive regulation; pH/pentavalent-ion kinetic commentary is in RIBOKIN-ENZRXN/comment."}
+
+Fix: Split or narrow each assertion and cite the exact supporting source alongside the native edge.
+
+## RIBOSE-AUDIT-02: medium
+
+SUBCELLULAR LOCATION assertions contain domain or experimental-method claims absent from that cited JSON field.
+
+{"ribose-045": "Two ATP-binding domains are supported by RBSA-MONOMER/comment, not the cited UniProt SUBCELLULAR LOCATION field.", "ribose-046": "The retained RbsC primary is PMID12923096, PMC181013; it tested 34 single-cysteine variants built from C227A, with an N-terminal His10 extension. UniProt SUBCELLULAR LOCATION cites 15919996 and 9922273 and does not state these methods."}
+
+Fix: Retain native localization annotation; remove redundant domain clause or add its own source. Cite PMID12923096 for topology-method context without claiming the unmodified chain was directly tested.
+
+## RIBOSE-AUDIT-03: medium
+
+TU00206 component-slot source assertions include Entrez IDs and b-locus mapping absent from the cited TU slot.
+
+All six retained NCBI original EFetch records independently establish the exact gene ID, locus symbol, b-locus, MG1655 taxon 511145 and direct Other-source EcoCyc gene cross-reference: 948267/EG10817, 948264/EG10814, 948262/EG10816, 948261/EG10815, 948260/EG10818, 948266/EG10819. No gene identity correction is needed.
+
+Fix: Narrow TU assertions to membership; add each NCBI original reference and a separate source assertion for the exact identity mapping.
+
+## RIBOSE-AUDIT-04: medium
+
+The native REG0-15980 source assertion includes M9-glucose/8-myc method details absent from that XML statement.
+
+The separately cited Gao primary does support those details: BioC passages 11, 17, 26 and 59. The native record supports negative regulation of EG10817 by EG11721-MONOMER and associated ChIP-exo binding context.
+
+Fix: Restrict the native assertion to native regulation; retain the primary assertion with exact passage locators. No sign or endpoint change is required.
+
+## RIBOSE-AUDIT-05: medium
+
+The PC00004 component/coefficient citation supports two PD00257 chains, but does not itself establish PD00257 is UniProt P0ACJ8.
+
+The retained reviewed UniProt source is the independent identity evidence.
+
+Fix: Split native assembly coefficient from reviewed protein mapping and attach that reviewed source reference.
+
+## Supported decisions
+
+- Native META reaction-list has exactly RXN0-5304 and RIBOKIN-RXN; narrative explicitly supplies spontaneous alpha/beta furanose interconversion. Draft retains all three events and keeps transport outside core membership.
+- Exact RXN-14904 has alpha CPD-10330 left, beta CPD0-1108 right, REVERSIBLE, spontaneous=true and physiologically-relevant=true. Draft right-to-left flux and no catalyst are correct. Native orphan=YES-PUTATIVE should also remain disclosed in author audit/record context, without replacing the event.
+- META narrative explicitly assigns alpha CPD-10330 to alpha phosphate CPD-15318. Declared pathway refinement retains the formal generic RIBOKIN-RXN disagreement. Rhea original 13697/13698 links generic CHEBI47013 and 78346; draft correctly avoids exact Rhea synonym or duplicate generic+alpha consumption.
+- Rhea original 25432/25433 supplies beta pyranose CHEBI27476 to beta furanose47002. Native transport uses D-ribopyranose47006; Rhea29903/29904 uses furanose47013. The draft does not collapse these. Compartment role annotations and all native ATP/water/ADP/Pi/H sides are retained.
+- Both native enzymatic-reaction assignments support separate RbsD and FucU alternative pyranases. Native complexes explicitly contain RbsD10, FucU10 and RbsK2. Those database assembly assignments are distinguished from tagged assay estimates and do not purport to be direct unmodified-decamer assay results.
+- Native ABC complex coefficient A1 C2 B1 is correct; frozen PathBank original has A2 C2 B1. RbsA two-domain architecture does not become two chains. Source cycle-state uncertainty is retained.
+- Ryu Table I observations support the stated C-His RbsD 7.1/15.3, C-His RbsK1.9, N-His FucU1.1, C-His FucU5.0, untagged FucU6.2/18.9 estimates. Retained observation is a web rendering, not publisher PDF; draft discloses that limitation.
+- Regulatory signs agree with REG0-5371(-), REG0-5370(+), REG0-15980(-). Six gene targets match complete TU00206. D-ribose-bound RbsR, CRP-cAMP components and unnumbered ligand coefficients remain distinct. CAMP original maps to CHEBI58165; uppercase RIBOSE maps to CHEBI16988.
+- YidZ RNA-seq supports negative rbsD regulation in the stated conditions; tagged ChIP-exo context is acknowledged without an unqualified purified-binding claim or an invented YidZ oligomer.
+- PPP and PRPP source pathway links remain opaque interfaces; no fabricated cyclic/open-chain conversion or expanded downstream mechanism is introduced.
+
+## Scope and limits
+
+- No network requests, installation, maintained/shared-cache/Git writes.
+- All 66 edge claims were read; all 82 XPath evidence locators were evaluated against hash-matched retained original XML. Nonempty XPath alone is not proof that all words in a source_assertion are entailed.
+- Exact Rhea master/directional objects and full linked participant objects were replayed from original gzip RDF; repeated rdf:about descriptions were merged. An initial exploratory property projection was incomplete and was corrected before sealing.
+- NCBI originals were checked for gene, locus, taxon and EcoCyc cross-reference. This audit does not rebuild every authority or independently repeat full formula balancing, rendering, KGX, duplicate search or maintained corpus gates.
+- Ryu primary was inspected as retained web-tool observation; publisher PDF/supplement unavailable. Gao full BioC and RbsC PMC HTML were inspected; unretained supplements were not used.
+- Known unnamed RXN14904 authority adapter gap remains for root integration; this audit neither waives nor solves identifier acceptance.

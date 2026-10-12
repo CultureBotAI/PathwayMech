@@ -1,0 +1,298 @@
+"""Independent read-only audit of the sealed ribose canonical build."""
+from pathlib import Path
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import importlib.util
+import json
+import sqlite3
+import subprocess
+from xml.etree import ElementTree as ET
+import yaml
+
+P = Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012')
+O = Path('/private/tmp/pathwaymech-next-226-canonical-root-review-20261012')
+R = Path('/private/tmp/pathwaymech-next-225-20261012')
+C = Path('/private/tmp/pathwaymech-next-226-authority-correction-20261012')
+EXPECTED_HANDOFF = 'aa9b5159d994cc55e36db673f0376028cc364b88accccc840bfae25f7c587566'
+checked = {}
+
+def read(path):
+    return json.loads(Path(path).read_bytes())
+
+def digest(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for chunk in iter(lambda: f.read(8 * 1024 * 1024), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest(path)}
+
+def check(item, base=None):
+    path = Path(item['path'])
+    if not path.is_absolute():
+        assert base is not None and '..' not in path.parts
+        path = base / path
+    assert path.is_file(), path
+    actual = bind(path)
+    assert actual['sha256'] == item['sha256'], path
+    assert 'bytes' not in item or actual['bytes'] == item['bytes'], path
+    checked[str(path)] = actual
+    return actual
+
+def walk(value):
+    if isinstance(value, dict):
+        if 'path' in value and 'sha256' in value:
+            yield value
+        for child in value.values():
+            yield from walk(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from walk(child)
+
+def load_module(name, path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+assert digest(P/'handoff.json') == EXPECTED_HANDOFF
+h = read(P/'handoff.json')
+for item in walk(h):
+    check(item)
+manifest = read(P/'artifact-manifest.json')
+assert manifest['count'] == h['artifact_count'] == len(manifest['artifacts']) == 276
+for item in manifest['artifacts']:
+    check(item, P)
+regular_files = {str(x) for x in P.rglob('*') if x.is_file() and not x.is_symlink()}
+assert regular_files == {str(P/'handoff.json'), str(P/'artifact-manifest.json')} | {
+    x['path'] for x in manifest['artifacts']
+}
+links = {str(x): str(x.resolve()) for x in P.rglob('*') if x.is_symlink()}
+assert links == {x['path']: x['target'] for x in manifest['external_original_symlinks']}
+assert len(links) == 683
+
+baseline = read(P/'baseline-capture.json')
+for group in ['authority_bindings', 'records', 'code_inputs']:
+    for item in baseline[group]:
+        check(item)
+check(baseline['ontology_builder'])
+inventory = subprocess.check_output(['rg','--files','-uu','-L',str(R/'data/pathways')], text=True).splitlines()
+assert set(inventory) == {x['path'] for x in baseline['records']}
+assert len([x for x in inventory if x.endswith('.yaml')]) == 226
+head = subprocess.check_output(['git','rev-parse','HEAD'], cwd=R, text=True).strip()
+assert head == baseline['observed_head'] == '6b6747ae6e14a9904efd7da9cbcca16398855582'
+corpus = read(P/'corpus-bindings.json')
+for item in corpus['files']:
+    check(item)
+assert set(subprocess.check_output(['rg','--files','-uu','-L',str(P/'corpus')], text=True).splitlines()) == {x['path'] for x in corpus['files']}
+for item in baseline['records']:
+    assert digest(P/'corpus'/Path(item['path']).relative_to(R/'data/pathways')) == item['sha256']
+assert digest(P/'corpus/ribose-phosphorylation.yaml') == '385101d166c9150936d81bb0f1c6c0d134b6ac1e6a6454d86e238ac0576e3d71'
+actual_paths = [Path(x['path']) for x in corpus['files'] if x['path'].endswith('.yaml') and '/_authority_retention/' not in x['path']]
+records = [yaml.safe_load(x.read_bytes()) for x in actual_paths]
+assert len(records) == len({r['id'] for r in records}) == 227
+target = yaml.safe_load((P/'corpus/ribose-phosphorylation.yaml').read_bytes())
+named = [target] + [node for section in ['taxa','participants','reactions'] for node in target[section]]
+named_ids = {n['id'] for n in named}
+assert len(named_ids) == 51
+
+old = {k:read(P/f'baseline/{k}.json') for k in ['sources','ontology']}
+new = {k:read(P/f'{k}.json') for k in ['sources','ontology']}
+for k in old:
+    assert digest(P/f'baseline/{k}.json') == digest(R/f'data/identifier_authorities/{k}.json')
+    assert set(new[k]) == set(old[k]) == {'version','sources','terms'}
+    assert new[k]['version'] == old[k]['version'] == 1
+    for section in ['sources','terms']:
+        assert all(new[k][section].get(i) == v for i,v in old[k][section].items())
+retained = sorted(set(old['sources']['terms']) | set(old['ontology']['terms']))
+selector = yaml.safe_load((P/'corpus/_authority_retention/selector.yaml').read_bytes())
+assert selector == {'id':retained[0], 'participants':[{'id':i} for i in retained[1:]]}
+assert len(retained) == 4284 and retained == corpus['retention_ids']
+added = {k:{i:v for i,v in new[k]['terms'].items() if i not in old[k]['terms']} for k in old}
+expected = read(P/'expected-additions.json')
+assert added['sources'] == expected['source_terms'] and added['ontology'] == expected['ontology_terms']
+assert set(added['sources']) | set(added['ontology']) == named_ids-set(retained)
+for name,terms in [('sources',24),('ontology',7)]:
+    assert len(added[name]) == terms
+assert [(len(new[k]['terms']),len(new[k]['sources'])) for k in ['sources','ontology']] == [(2384,545),(1931,5)]
+old_manifest = read(P/'baseline/manifest.json')
+full_manifest = read(P/'manifest.json')
+assert len(old_manifest) == 682 and len(full_manifest) == 698
+assert full_manifest == old_manifest + expected['source_manifest']
+assert len({e['key'] for e in full_manifest}) == len({e['path'] for e in full_manifest}) == 698
+assert digest(P/'baseline/manifest.json') == digest(R/'conf/identifier_sources.json')
+ordinary = read('/private/tmp/pathwaymech-next-226-author-20261012/source-authority-supported-proposal.json')
+assert {i:v for i,v in ordinary['terms'].items() if i not in old['sources']['terms']} == {i:v for i,v in added['sources'].items() if i!='MetaCyc:RXN-14904'}
+assert added['sources']['MetaCyc:RXN-14904'] == read('/private/tmp/pathwaymech-next-226-authority-implementation-20261012/actual-bounded-snapshot.json')['terms']['MetaCyc:RXN-14904']
+ontology_proposal = read('/private/tmp/pathwaymech-next-226-author-20261012/ontology-authority-proposal.json')
+assert {i:v for i,v in ontology_proposal['terms'].items() if i not in old['ontology']['terms']} == added['ontology']
+metadata = {e['key']:{k:e[k] for k in ['url','version','license','sha256'] + (['kind'] if e['kind']=='metacyc-reaction-xml' else [])} for e in expected['source_manifest']}
+assert {k:v for k,v in new['sources']['sources'].items() if k not in old['sources']['sources']} == metadata
+assert new['ontology']['sources'] == old['ontology']['sources']
+old_rhea, rhea = read(P/'baseline/rhea-updates.json'), read(P/'rhea-updates.json')
+assert rhea == {**old_rhea, 'ids':old_rhea['ids']+['RHEA:25433']}
+assert len(rhea['ids']) == len(set(rhea['ids'])) == 16
+assert digest(P/'baseline/rhea-updates.json') == digest(R/'conf/rhea_identifier_updates.json')
+
+source_originals = read(P/'source-original-bindings.json')
+assert len(source_originals['existing']) == 683 and len(source_originals['new']) == 16
+for item in source_originals['existing']:
+    check(item)
+    ext = P/'originals'/item['cache_relative_path']
+    assert ext.is_symlink() and ext.resolve() == Path(item['path']).resolve()
+    assert links[str(ext)] == str(Path(item['path']).resolve())
+for item in source_originals['new']:
+    check(item['source']); check(item['external_copy'])
+    assert item['manifest_entry'] in expected['source_manifest']
+    assert item['external_copy']['sha256'] == item['source']['sha256'] == item['manifest_entry']['sha256']
+    assert not Path(item['external_copy']['path']).is_symlink()
+assert read(P/'new-originals-copy-plan.json')['new_originals'] == source_originals['new']
+for e in full_manifest:
+    for entry in [e] + ([e['version_source']] if 'version_source' in e else []):
+        p = P/'originals'/entry['path']
+        assert digest(p) == entry['sha256']
+
+code = read(P/'code-change-bindings.json')
+check(code['composed_patch'])
+assert code['composed_patch']['sha256'] == 'a5c734d0a05046976deaf0f807edc7756a839180e4528f272766365948df4c9d'
+changes = {e['relative_path']:e for e in code['changes']}
+assert set(changes) == {'docs/IDENTIFIERS.md','scripts/build_source_identifier_snapshot.py','src/pathwaymech/identifiers.py','tests/test_metacyc_reaction_authority.py'}
+for e in changes.values():
+    check(e['candidate'])
+    if e['baseline']:
+        check(e['baseline'])
+    else:
+        assert not (R/e['relative_path']).exists() and not (R/e['relative_path']).is_symlink()
+candidate_files = subprocess.check_output(['rg','--files','-uu','-L',str(C/'candidate')],text=True).splitlines()
+assert len(candidate_files) == code['candidate_files'] == 206
+for p in candidate_files:
+    rel = Path(p).relative_to(C/'candidate').as_posix()
+    if rel not in changes:
+        assert digest(p) == digest(R/rel)
+assert digest(C/'candidate/scripts/build_source_identifier_snapshot.py') == '730021774afeff293808d5128133be5360b2aac7472c3eb7ae9153bde37a9aed'
+assert digest(C/'candidate/src/pathwaymech/identifiers.py') == 'e54c82d8098c007c2061fe1767c25b3f1bd5faccbe24cb36e08aed2c0b7eae7a'
+
+# Fresh bounded source extraction: only seventeen relevant originals, no full rebuild.
+builder = load_module('ribose_audit_source_builder', C/'candidate/scripts/build_source_identifier_snapshot.py')
+entries = {e['key']:e for e in full_manifest}
+fresh_source = {}
+for key in {v['source'] for v in added['sources'].values()}:
+    e = entries[key]
+    rows = list(builder.source_terms(e['kind'],P/'originals'/e['path'],url=e['url'],version=e['version']))
+    for identifier,value in added['sources'].items():
+        if value['source'] != key:
+            continue
+        hits = [(label,synonyms) for i,label,synonyms in rows if i==identifier]
+        assert len(hits) == 1, (identifier,hits)
+        label,synonyms = hits[0]
+        term = {'label':label,'synonyms':sorted(set(synonyms)-{label}),'source':key}
+        if e['kind'] == 'metacyc-reaction-xml':
+            term.update(label_kind='source_context',entity_type='reaction')
+        assert term == value
+        fresh_source[identifier] = term
+assert fresh_source == added['sources']
+
+# Independent read-only SQL queries for six new ChEBI terms.
+fresh_ontology = {}
+connection = sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+try:
+    for identifier,term in added['ontology'].items():
+        if not identifier.startswith('CHEBI:'):
+            continue
+        rows = list(connection.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('rdfs:label','oio:hasExactSynonym')",(identifier,)))
+        labels = {v for k,v in rows if k=='rdfs:label' and v}
+        assert len(labels)==1
+        label = labels.pop()
+        result = {'label':label,'synonyms':sorted({v for k,v in rows if k=='oio:hasExactSynonym' and v and v!=label}),'source':'chebi-255'}
+        assert result == term
+        fresh_ontology[identifier] = result
+finally:
+    connection.close()
+
+# A fresh streaming scan verifies the single added Rhea assertion and uniqueness.
+rdf = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+rdfs = '{http://www.w3.org/2000/01/rdf-schema#}'
+rh = '{http://rdf.rhea-db.org/}'
+matches = []
+with gzip.open(P/'originals'/rhea['path'],'rb') as f:
+    depth = 0
+    for event,node in ET.iterparse(f,events=['start','end']):
+        if event=='start':
+            depth += 1
+            if depth==1: root=node
+            continue
+        if depth==2:
+            if node.get(rdf+'about')=='http://rdf.rhea-db.org/25433':
+                matches.append(ET.tostring(node,encoding='unicode'))
+            root.clear()
+        depth -= 1
+assert len(matches)==1
+node = ET.fromstring(matches[0])
+assert [n.text for n in node.findall(rh+'id')] == ['25433']
+assert [n.text for n in node.findall(rh+'accession')] == ['RHEA:25433']
+assert [n.get(rdf+'resource') for n in node.findall(rh+'status')] == ['http://rdf.rhea-db.org/Approved']
+assert [n.text for n in node.findall(rh+'equation')] == [added['ontology']['RHEA:25433']['label']]
+assert [n.text for n in node.findall(rdfs+'label')] == [added['ontology']['RHEA:25433']['label']]
+fresh_ontology['RHEA:25433'] = added['ontology']['RHEA:25433']
+assert fresh_ontology == added['ontology']
+(O/'rhea-25433-original-projection.xml').write_text(matches[0])
+
+sqls = read(P/'ontology-original-bindings.json')
+for e in sqls['originals']:
+    p=Path(e['path'])
+    assert p.stat().st_size == e['bytes'] and p.stat().st_mtime_ns == e['mtime_ns']
+    assert new['ontology']['sources'][e['source_key']]['sha256'] == e['sha256']
+for key in ['prior_binding','prior_execution','prior_verification']:
+    check(sqls[key])
+ledger = read(P/'execution-ledger.json')['executions']
+commands = read(P/'commands.json')
+assert {e['name'] for e in ledger} == {'source_builder','ontology_builder'}
+for e in ledger:
+    assert e['exit_code']==0 and e['command']==commands[e['name']]
+    assert e['cwd']==commands['cwd'] and e['environment']==commands['environment']
+    check(e['stdout']);check(e['stderr'])
+    assert e['stderr']['bytes']==0
+    assert read(P/(e['name']+'-execution.json'))==e
+assert 'proposal' not in json.dumps(commands)
+ontology_log=(P/'ontology_builder.stdout').read_text()
+line_categories={}
+for line in ontology_log.splitlines():
+    category=line.split(' ',1)[0]
+    line_categories[category]=line_categories.get(category,0)+1
+
+result={
+    'status':'accepted_external_build_pending_root_merge_bridge_and_maintained_adoption',
+    'at':datetime.now(timezone.utc).isoformat(),
+    'handoff':bind(P/'handoff.json'),
+    'artifact_manifest':bind(P/'artifact-manifest.json'),
+    'artifact_count':276,
+    'independently_rehashed_unique_files':len(checked),
+    'actual_records':227,
+    'adopted_baseline_records_verified':226,
+    'current_baseline_head':head,
+    'retention_selector_exact_ids':4284,
+    'old_terms_preserved':{'sources':2360,'ontology':1924},
+    'old_metadata_preserved':{'sources':529,'ontology':5},
+    'old_manifest_entries_preserved':682,
+    'old_rhea_selection_ids_preserved':15,
+    'new_source_terms_freshly_extracted':fresh_source,
+    'new_ontology_terms_freshly_queried':fresh_ontology,
+    'new_manifest_entries':16,
+    'source_originals_rehashed':{'historical':683,'new':16},
+    'code_composition':{'existing_baseline_files':205,'candidate_files':206,'changed_or_added_files':4},
+    'sql_hash_scope':'Native full build freshly hashed all four SQL bodies; this audit checked exact path/stat/provenance and performed six read-only ChEBI queries, without independently rehashing 20 GB of SQL bodies.',
+    'full_builder_exit_codes':{e['name']:e['exit_code'] for e in ledger},
+    'ontology_stdout_line_categories':line_categories,
+    'findings':[],
+    'pending':['Bind exact adopted baseline to final merged threonine commit before guarded adoption.','Root-owned maintained adoption, gates, saved review, PR review, merge and cleanup.'],
+    'maintained_or_shared_cache_writes':False,
+    'git_github_mutations':False,
+    'source_exhaustion':False,
+}
+(O/'verification.json').write_text(json.dumps(result,indent=2)+'\n')
+(O/'checked-bindings.json').write_text(json.dumps(list(checked.values()),indent=2)+'\n')
+print(json.dumps({'status':result['status'],'artifacts':276,'bindings':len(checked),'full_builder_exit_codes':result['full_builder_exit_codes'],'source_terms':24,'ontology_terms':7,'findings':[],'verification':bind(O/'verification.json')},indent=2))

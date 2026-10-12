@@ -1,0 +1,84 @@
+{
+  "scope": "Actual executed review commands; only the domain-probe subprocess captured precise start/finish. Other result timestamps come from their emitted artifact fields, not invented execution starts. Exploratory source-extraction errors are recorded separately.",
+  "receipts": [
+    {
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-226-science-review-20261012/domain_probes.py"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-226-science-review-20261012",
+      "env_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "UV_NO_SYNC": "1",
+        "PYTHONPATH": "/private/tmp/pathwaymech-next-225-20261012/src:/private/tmp/pathwaymech-next-225-20261012"
+      },
+      "started_at": "2026-10-12T01:12:52.988197+00:00",
+      "finished_at": "2026-10-12T01:13:04.831970+00:00",
+      "exit_code": 0,
+      "stdout": "{\"checks\": 139, \"passed\": true, \"ontology_ids\": 25, \"rhea_directional_originals\": 3, \"reactions_balanced\": 4, \"negative_controls\": 4}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-226-science-review-20261012/inspect_sources.py"
+      ],
+      "exit_code": 0,
+      "stdout_observed": {
+        "utc": "2026-10-12T01:09:44.606829+00:00",
+        "refs": 51,
+        "hash_failures": [],
+        "evidence": 107,
+        "xpath": 95,
+        "xpath_failures": []
+      }
+    },
+    {
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-226-science-review-20261012/supplemental_probes.py"
+      ],
+      "exit_code": 0,
+      "stdout_observed": {
+        "checks": 13,
+        "passed": true
+      },
+      "result_timestamp": "2026-10-12T01:13:56.157052+00:00"
+    },
+    {
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-226-science-review-20261012/build_review.py"
+      ],
+      "exit_code": 0,
+      "stdout_observed": {
+        "edge_dispositions": 66,
+        "evidence_dispositions": 107,
+        "verdict": "scientifically_acceptable_with_explicit_source_and_access_limits"
+      }
+    }
+  ],
+  "exploratory_errors": [
+    {
+      "command": "primary_inspect.py initial invocation",
+      "result": "HTML was attempted with XML parser; lxml XMLSyntaxError. Fixed format dispatch to HTMLParser for retained PMC HTML, reran successfully. No source content changed."
+    },
+    {
+      "command": "Exploratory reads of replay_sources.py and author-audit/review.json",
+      "result": "Incorrect guessed filenames returned not-found. Gitignore-independent inventory identified source_replay.py and audit.json; absence was not treated as a scientific finding."
+    }
+  ],
+  "network_observations": [
+    {
+      "urls": [
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC8464067/",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC181013/"
+      ],
+      "result": "Browser challenge; retained hash-bound originals used, no fresh article-content claim."
+    }
+  ]
+}

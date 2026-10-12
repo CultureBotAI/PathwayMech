@@ -1,0 +1,116 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import copy,hashlib,importlib.util,json,shutil,sys
+import yaml
+R=Path(__file__).parent;I=Path('/private/tmp/pathwaymech-next-226-authority-implementation-20261012');C=R/'delta-replay'
+h=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+sys.path[:0]=[str(C/'src'),str(C)]
+from pathwaymech import identifiers as current
+from scripts.build_source_identifier_snapshot import build_snapshot,source_terms
+assert Path(current.__file__).resolve()==(C/'src/pathwaymech/identifiers.py').resolve()
+assert h(Path(current.__file__))=='e54c82d8098c007c2061fe1767c25b3f1bd5faccbe24cb36e08aed2c0b7eae7a'
+spec=importlib.util.spec_from_file_location('prior_identifiers',I/'candidate/src/pathwaymech/identifiers.py');prior=importlib.util.module_from_spec(spec);spec.loader.exec_module(prior)
+assert h(Path(prior.__file__))=='eddd03f1fb161d7cf71b5554ec5799fde6b569cd15b57a9626365c245492883d'
+corpus=R/'authentic-corpus';shutil.copytree(I/'actual-composed-identifier-check',corpus)
+authority_path=corpus/'data/identifier_authorities/sources.json';source=authority_path.read_bytes();original=json.loads(source)
+draft=corpus/'data/pathways/ribose-phosphorylation.yaml';draft_hash=h(draft);assert draft_hash=='385101d166c9150936d81bb0f1c6c0d134b6ac1e6a6454d86e238ac0576e3d71'
+key=original['terms']['MetaCyc:RXN-14904']['source'];url=original['sources'][key]['url'];host='bf2i-artsymbiocyc.insa-lyon.fr'
+assert current.identifier_errors(corpus)==prior.identifier_errors(corpus)==[]
+cases={
+'wrong_host':('url',url.replace(host,'example.invalid')),
+'host_suffix':('url',url.replace(host,host+'.example.invalid')),
+'wrong_endpoint':('url',url.replace('/getxml?','/META/NEW-IMAGE?')),
+'endpoint_suffix':('url',url.replace('/getxml?','/getxml/?')),
+'wrong_frame':('url',url.replace('RXN-14904','RXN-OTHER')),
+'case_changed_frame':('url',url.replace('RXN-14904','rxn-14904')),
+'wrong_organism':('url',url.replace('META:','ECOLI:')),
+'lowercase_meta':('url',url.replace('META:','meta:')),
+'http':('url',url.replace('https:','http:')),
+'explicit_port':('url',url.replace(host,host+':443')),
+'credentials':('url',url.replace(host,'user@'+host)),
+'duplicate_query':('url',url+'&id=META:RXN-14904'),
+'extra_query':('url',url+'&detail=full'),
+'blank_query':('url',url+'&id='),
+'fragment':('url',url+'#native'),
+'empty_fragment':('url',url+'#'),
+'encoded_scope':('url',url.replace('META:','META%3A')),
+'encoded_frame':('url',url.replace('RXN-14904','%52XN-14904')),
+'newline':('url',url+'\n'),
+'control_character':('url',url.replace('getxml','get\txml')),
+'blank_frame':('url',url.replace('RXN-14904','')),
+'bad_frame_separator':('url',url.replace('RXN-14904','RXN/14904')),
+'bad_version_word':('version','not a PGDB version'),
+'bad_version_major_only':('version','27'),
+'bad_version_double_dot':('version','27..0'),
+'bad_version_suffix':('version','27.0-beta'),
+'bad_version_whitespace':('version','27.0\n'),
+'bad_version_unicode':('version','２７.０'),
+'bad_version_negative':('version','-27.0'),
+}
+rows=[]
+for name,(field,value) in cases.items():
+ mutated=copy.deepcopy(original);mutated['sources'][key][field]=value
+ authority_path.write_text(json.dumps(mutated,indent=2)+'\n')
+ before=prior.identifier_errors(corpus);after=current.identifier_errors(corpus)
+ assert before==[],(name,before)
+ assert any('invalid typed native reaction' in e for e in after),(name,after)
+ rows.append({'name':name,'field':field,'value':value,'prior_errors':before,'successor_errors':after})
+for selected in [False,True]:
+ mutated=copy.deepcopy(original);node=copy.deepcopy(mutated['terms']['MetaCyc:RXN-14904']);node['label']='RXN-SECOND';mutated['terms']['MetaCyc:RXN-SECOND']=node
+ authority_path.write_text(json.dumps(mutated,indent=2)+'\n')
+ if selected:
+  record=yaml.safe_load(draft.read_text());record['reactions'].append({'id':'MetaCyc:RXN-SECOND','label':'Synthetic second identity','category':'molecular_activity'});draft.write_text(yaml.safe_dump(record,sort_keys=False))
+ before=prior.identifier_errors(corpus);after=current.identifier_errors(corpus)
+ assert before==[] and any('MetaCyc:RXN-SECOND: invalid typed native reaction authority' in e for e in after)
+ rows.append({'name':'source_reuse_selected' if selected else 'source_reuse_unselected','prior_errors':before,'successor_errors':after})
+ draft.write_bytes((I/'actual-composed-identifier-check/data/pathways/ribose-phosphorylation.yaml').read_bytes())
+mutated=copy.deepcopy(original);mutated['sources']['unused-native']={**mutated['sources'][key],'url':'https://example.invalid/unused.xml'}
+authority_path.write_text(json.dumps(mutated,indent=2)+'\n');before=prior.identifier_errors(corpus);after=current.identifier_errors(corpus)
+assert before==[] and any('source unused-native: invalid typed native reaction request or version' in e for e in after)
+rows.append({'name':'unused_invalid_typed_source','prior_errors':before,'successor_errors':after})
+authority_path.write_bytes(source)
+assert current.identifier_errors(corpus)==[] and h(draft)==draft_hash
+# Independent synthetic fixtures test the new generic syntax and legacy boundary.
+S=R/'synthetic-corpus';(S/'data/pathways').mkdir(parents=True);(S/'data/identifier_authorities').mkdir();(S/'conf').mkdir()
+policy={'version':1,'namespaces':{'MetaCyc':{'snapshot':'data/identifier_authorities/sources.json','policy':'canonical'}},'contextual_labels':[{'namespace':'MetaCyc','sections':['record','taxa','participants','reactions'],'record_prefixes':['MetaCyc'],'reason':'Synthetic broad policy to test type enforcement before label bypass'}]}
+(S/'conf/identifier_policy.yaml').write_text(yaml.safe_dump(policy))
+fixture_record={'id':'MetaCyc:TEST-PWY','label':'Synthetic pathway','taxa':[],'participants':[],'reactions':[]}
+base={'version':1,'sources':{'legacy':{'url':'http://example.invalid/old?release=text#record','version':'Legacy release','license':'Synthetic test','sha256':'0'*64}},'terms':{'MetaCyc:TEST-PWY':{'label':'Synthetic pathway','synonyms':[],'source':'legacy'}}}
+def gate(s,r,*,rules=policy):
+ (S/'conf/identifier_policy.yaml').write_text(yaml.safe_dump(rules));(S/'data/identifier_authorities/sources.json').write_text(json.dumps(s));(S/'data/pathways/test.yaml').write_text(yaml.safe_dump(r));return current.identifier_errors(S)
+compat=[]
+for frame,version in [('ALT-RXN-7721','28.1'),('Reaction_17.2','29.0.1'),('A','0.01')]:
+ s=copy.deepcopy(base);s['sources']['native']={'url':f'https://{host}/getxml?id=META:{frame}','version':version,'license':'Synthetic test','sha256':'1'*64,'kind':'metacyc-reaction-xml'}
+ s['terms']['MetaCyc:'+frame]={'label':frame,'synonyms':[],'source':'native','label_kind':'source_context','entity_type':'reaction'}
+ r=copy.deepcopy(fixture_record);r['reactions']=[{'id':'MetaCyc:'+frame,'label':'Curated synthetic activity','category':'molecular_activity'}]
+ assert gate(s,r)==[]
+ compat.append({'frame':frame,'version':version,'errors':[]})
+legacy=copy.deepcopy(s);del legacy['sources']['native']['kind'];del legacy['terms']['MetaCyc:'+frame]['entity_type'];legacy['sources']['native'].update(url='http://example.invalid/legacy?release=old#record',version='Legacy release')
+assert gate(legacy,r)==[]
+roles=[]
+for role,category in [('record','molecular_activity'),('taxa','molecular_activity'),('participants','protein'),('participants','complex'),('participants','small_molecule'),('participants','molecular_activity'),('reactions','pathway'),('reactions',None)]:
+ bad=copy.deepcopy(r);n=bad['reactions'].pop()
+ if category is None:n.pop('category')
+ else:n['category']=category
+ if role=='record':bad.update(n)
+ else:bad[role].append(n)
+ errors=gate(s,bad);assert any('ENTITY_TYPE_MISMATCH' in e for e in errors)
+ roles.append({'role':role,'category':category,'errors':errors})
+no_context=copy.deepcopy(policy);no_context['contextual_labels']=[]
+assert any('LABEL_AUTHORITY_UNAVAILABLE' in e for e in gate(s,r,rules=no_context))
+assert gate(s,r)==[]
+# New native snapshot is regenerated using reviewed original inputs and unchanged builder.
+native=build_snapshot(I/'actual-source-manifest.json',I/'actual-selection',I/'originals');assert native==json.loads((I/'actual-bounded-snapshot.json').read_text())
+(R/'native-snapshot.json').write_text(json.dumps(native,indent=2)+'\n')
+try:list(source_terms('metacyc-html',Path('/private/tmp/pathwaymech-next-226-author-20261012/raw-authority/META-RXN-14904.html'),url='https://'+host+'/META/NEW-IMAGE?object=RXN-14904'))
+except ValueError as e:html_error=str(e)
+else:raise AssertionError('frame-only HTML passed')
+# Existing frozen legacy authority data remain loadable and byte-identical.
+old_checks=[]
+for name in ['sources.json','ontology.json']:
+ p=Path('/private/tmp/pathwaymech-next-225-20261012/data/identifier_authorities')/name;digest=h(p);obj=json.loads(p.read_text())
+ assert current._load_authority(p)==obj['terms'];assert h(p)==digest
+ old_checks.append({'path':str(p),'sha256':digest,'terms':len(obj['terms']),'loaded_without_change':True})
+report={'status':'passed','at':datetime.now(timezone.utc).isoformat(),'successor_module':str(current.__file__),'successor_sha256':h(Path(current.__file__)),'prior_module':str(prior.__file__),'prior_sha256':h(Path(prior.__file__)),'unchanged_authentic_draft_sha256':h(draft),'authentic_draft_errors':current.identifier_errors(corpus),'native_snapshot_regenerated_equal':True,'html_rejected':html_error,'provenance_controls':rows,'alternative_frame_version_controls':compat,'legacy_untyped_control_errors':[],'typed_wrong_role_controls_under_broad_context':roles,'explicit_contextual_policy_still_required':True,'existing_authority_load_checks':old_checks,'scientific_acceptance':False}
+(R/'independent-probes.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'status':'passed','prior_accepts_successor_rejects':len(rows),'alternative_frame_versions':len(compat),'legacy_untyped_passes':True,'wrong_role_controls':len(roles),'authentic_draft_sha256':h(draft),'native_snapshot_regenerated_equal':True,'existing_authority_terms_loaded':sum(x['terms'] for x in old_checks)},indent=2))

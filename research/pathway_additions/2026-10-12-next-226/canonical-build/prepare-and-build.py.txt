@@ -1,0 +1,238 @@
+"""External full ribose authority build, bound to adopted but uncommitted threonine."""
+from pathlib import Path
+from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+import hashlib, json, os, shutil, subprocess, time, traceback
+import yaml
+
+ROOT=Path('/private/tmp/pathwaymech-next-225-20261012')
+OUT=Path('/private/tmp/pathwaymech-next-226-canonical-build-20261012')
+PRIOR=Path('/private/tmp/pathwaymech-next-225-canonical-build-20261012')
+AUTHOR=Path('/private/tmp/pathwaymech-next-226-author-20261012')
+SCIENCE=Path('/private/tmp/pathwaymech-next-226-science-review-20261012')
+BRIDGE=Path('/private/tmp/pathwaymech-next-226-final-predecessor-bridge-20261012')
+IMPL=Path('/private/tmp/pathwaymech-next-226-authority-implementation-20261012')
+CORRECTION=Path('/private/tmp/pathwaymech-next-226-authority-correction-20261012')
+REVIEW=Path('/private/tmp/pathwaymech-next-226-authority-successor-review-20261012')
+CACHE=Path('/private/tmp/pathwaymech-curation-authorities/sources')
+PYTHON='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+TARGET=AUTHOR/'draft/ribose-phosphorylation.yaml'
+TARGET_SHA='385101d166c9150936d81bb0f1c6c0d134b6ac1e6a6454d86e238ac0576e3d71'
+
+def now(): return datetime.now(timezone.utc).isoformat()
+def sha(path):
+    h=hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for part in iter(lambda:stream.read(8*1024*1024),b''): h.update(part)
+    return h.hexdigest()
+def row(path):
+    path=Path(path);return {'path':str(path),'bytes':path.stat().st_size,'sha256':sha(path)}
+def check(item):
+    path=Path(item['path']);assert path.is_file(),path
+    if 'bytes' in item: assert path.stat().st_size==item['bytes'],path
+    assert sha(path)==item['sha256'],path
+def load(path): return json.loads(Path(path).read_bytes())
+def write(path,value):
+    with Path(path).open('x') as stream: json.dump(value,stream,indent=2,ensure_ascii=False);stream.write('\n')
+def bindings(value):
+    if isinstance(value,dict):
+        if {'path','sha256'}<=set(value):yield value
+        for item in value.values():yield from bindings(item)
+    elif isinstance(value,list):
+        for item in value:yield from bindings(item)
+def inventory(path):
+    return sorted(subprocess.check_output(['rg','--files','-uu','-L',str(path)],text=True).splitlines())
+
+def intake():
+    packages=[(AUTHOR,'3f0332202b7885be8d8fe9f686bbc5ccfcdda3eedaf811dd6dec4085cd81a57b'),(SCIENCE,'0d8e488bc38ca666c0fff8333a416987823c5ac9eb6242f87d906279d822275b'),(BRIDGE,'e54845bfc403e9d576390273bf650e475c35f34542543f6c835488c50ed58559'),(IMPL,'b4b8ef10c7af40e1dc35a8f7971f030a2828151c7b5b4933ab389962a1091157'),(CORRECTION,'2c816026bf8497e8081322f5731e357a87cb83d066454d2993e49c6c17790517'),(REVIEW,'e18c5b6908418ba6bf12df9d81bc7d7e89b3acc9ee4ed10ee96010b1a620daf6'),(PRIOR,'7b004bc023f4cd61f5b5fdfca163379330fc6943a6d011b1e43fb7d7bdc76187')]
+    seal_results=[]
+    for package,digest in packages:
+        check({'path':str(package/'handoff.json'),'sha256':digest})
+        handoff=load(package/'handoff.json')
+        for item in bindings(handoff):check(item)
+        manifest=load(package/'artifact-manifest.json');artifacts=manifest if isinstance(manifest,list) else manifest['artifacts']
+        for item in artifacts:
+            artifact_path=Path(item['path'])
+            if not artifact_path.is_absolute():
+                assert '..'not in artifact_path.parts
+                artifact_path=package/artifact_path
+            check({**item,'path':str(artifact_path)})
+        seal_results.append({'handoff':row(package/'handoff.json'),'artifacts_verified':len(artifacts)})
+    assert load(SCIENCE/'handoff.json')['findings']=={'blocker':0,'major':0,'minor':0}
+    assert not load(REVIEW/'handoff.json')['findings']
+    assert load(REVIEW/'handoff.json')['status']=='accepted_for_root_integration_with_inherited_scope'
+    assert load(BRIDGE/'handoff.json')['status']=='accepted_final_predecessor_bridge_no_scientific_selection_change'
+    check({'path':str(TARGET),'sha256':TARGET_SHA})
+    check({'path':str(CORRECTION/'candidate/scripts/build_source_identifier_snapshot.py'),'sha256':'730021774afeff293808d5128133be5360b2aac7472c3eb7ae9153bde37a9aed'})
+    check({'path':str(CORRECTION/'candidate/src/pathwaymech/identifiers.py'),'sha256':'e54c82d8098c007c2061fe1767c25b3f1bd5faccbe24cb36e08aed2c0b7eae7a'})
+    record_paths=inventory(ROOT/'data/pathways')
+    expected=[p for p in inventory(PRIOR/'corpus') if '/_authority_retention/' not in p]
+    assert {str(Path(p).relative_to(ROOT/'data/pathways')) for p in record_paths}=={str(Path(p).relative_to(PRIOR/'corpus')) for p in expected}
+    records=[]
+    for path in record_paths:
+        p=Path(path);r=row(p);assert r['sha256']==sha(PRIOR/'corpus'/p.relative_to(ROOT/'data/pathways'));records.append(r)
+    assert len([p for p in record_paths if p.endswith('.yaml')])==226
+    old={kind:load(ROOT/f'data/identifier_authorities/{kind}.json') for kind in ('sources','ontology')}
+    for kind in old:assert sha(ROOT/f'data/identifier_authorities/{kind}.json')==sha(PRIOR/f'{kind}.json')
+    for current,prior in [('conf/identifier_sources.json','manifest.json'),('conf/rhea_identifier_updates.json','rhea-updates.json')]:assert sha(ROOT/current)==sha(PRIOR/prior)
+    assert (len(old['sources']['terms']),len(old['sources']['sources']),len(old['ontology']['terms']),len(old['ontology']['sources']))==(2360,529,1924,5)
+    code_changes=[]
+    changes=load(CORRECTION/'composed-changes.json');changed={item['path']:item for item in changes}
+    code_inputs=[]
+    candidate_files=inventory(CORRECTION/'candidate');assert len(candidate_files)==206,len(candidate_files)
+    for path in candidate_files:
+        p=Path(path);rel=p.relative_to(CORRECTION/'candidate').as_posix();base=ROOT/rel
+        if rel in changed:
+            item=changed[rel];assert sha(p)==item['candidate_sha256']
+            before=row(base) if base.exists() else None
+            assert (before['sha256'] if before else None)==item['base_sha256'],rel
+            code_changes.append({'relative_path':rel,'baseline':before,'candidate':row(p),'exact_path_absence_including_ignored_checked':before is None})
+        else:
+            assert sha(p)==sha(base),rel
+            before=row(base)
+        if before:code_inputs.append(before)
+    assert len(code_changes)==4
+    ontology_builder=row(ROOT/'scripts/build_ontology_identifier_snapshot.py')
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
+    status=subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=ROOT,text=True)
+    # The root owns other generated/review changes. Only this exact byte baseline is
+    # asserted; HEAD is not described as containing the uncommitted threonine input.
+    manifest=load(ROOT/'conf/identifier_sources.json');assert len(manifest)==682
+    updates=load(ROOT/'conf/rhea_identifier_updates.json');assert len(updates['ids'])==15
+    source_proposal=load(AUTHOR/'source-authority-supported-proposal.json')
+    ontology_proposal=load(AUTHOR/'ontology-authority-proposal.json')
+    typed_snapshot=load(IMPL/'actual-bounded-snapshot.json')
+    source_additions={i:v for i,v in source_proposal['terms'].items() if i not in old['sources']['terms']}
+    for i,v in source_proposal['terms'].items():
+        if i in old['sources']['terms']:assert old['sources']['terms'][i]==v,i
+    ontology_additions={i:v for i,v in ontology_proposal['terms'].items() if i not in old['ontology']['terms']}
+    for i,v in ontology_proposal['terms'].items():
+        if i in old['ontology']['terms']:assert old['ontology']['terms'][i]==v,i
+    for kind,proposal in [('sources',source_proposal),('ontology',ontology_proposal)]:
+        for key,value in proposal['sources'].items():
+            if key in old[kind]['sources']:assert old[kind]['sources'][key]==value,key
+    source_additions['MetaCyc:RXN-14904']=typed_snapshot['terms']['MetaCyc:RXN-14904']
+    additions=load(AUTHOR/'source-manifest-additions.json')
+    typed_entry=[item for item in load(IMPL/'actual-source-manifest.json') if item['kind']=='metacyc-reaction-xml']
+    assert len(typed_entry)==1;additions+=typed_entry
+    assert (len(source_additions),len(ontology_additions),len(additions))==(24,7,16)
+    named=yaml.safe_load(TARGET.read_bytes());named_ids={named['id']}|{item['id'] for key in ('taxa','participants','reactions') for item in named[key]}
+    assert len(named_ids)==51
+    assert (set(source_additions)|set(ontology_additions))==named_ids-set(old['sources']['terms'])-set(old['ontology']['terms'])
+    original_bindings={}
+    for entry in manifest:
+        for item in [entry]+([entry['version_source']] if 'version_source'in entry else []):
+            rel=Path(item['path']);assert not rel.is_absolute() and '..'not in rel.parts
+            body={'path':str(CACHE/rel),'sha256':item['sha256'],'bytes':(CACHE/rel).stat().st_size,'cache_relative_path':str(rel)}
+            if str(rel) in original_bindings:assert original_bindings[str(rel)]==body
+            original_bindings[str(rel)]=body
+    for item in original_bindings.values():check(item)
+    assert len(original_bindings)==683
+    provenance=load(AUTHOR/'source-original-manifest.json')
+    original_candidates=list(bindings(provenance))+[load(IMPL/'actual-source-receipt.json')]
+    new_originals=[]
+    for entry in additions:
+        matches=[item for item in original_candidates if item['sha256']==entry['sha256'] and Path(item['path']).is_file()]
+        assert matches,(entry['key'],'original binding missing')
+        actual=matches[0];check(actual)
+        assert entry['key']not in {r['key'] for r in manifest}
+        assert entry['path']not in original_bindings
+        new_originals.append({'manifest_entry':entry,'source':row(actual['path']),'cache_relative_path':entry['path']})
+    assert len({r['key'] for r in manifest+additions})==698
+    assert len({r['path'] for r in manifest+additions})==698
+    rhea_proposal=load(AUTHOR/'rhea-identifier-updates-proposal.json')
+    assert {k:v for k,v in rhea_proposal.items() if k!='ids'}=={k:v for k,v in updates.items() if k!='ids'}
+    new_rhea=[i for i in rhea_proposal['ids'] if i not in updates['ids']];assert new_rhea==['RHEA:25433']
+    updates['ids']+=new_rhea
+    retained=sorted(set(old['sources']['terms'])|set(old['ontology']['terms']));assert len(retained)==4284
+    dbs=load(PRIOR/'ontology-original-bindings.json')['originals']
+    for item in dbs:
+        path=Path(item['path']);assert path.stat().st_size==item['bytes'] and path.stat().st_mtime_ns==item['mtime_ns']
+        assert old['ontology']['sources'][item['source_key']]['sha256']==item['sha256']
+    return locals()
+
+def prepare(data):
+    assert not OUT.exists() and not OUT.is_symlink();OUT.mkdir()
+    for name in ['corpus','originals','baseline']: (OUT/name).mkdir()
+    shutil.copyfile(__file__,OUT/'prepare-and-build.py')
+    for item in data['records']:
+        rel=Path(item['path']).relative_to(ROOT/'data/pathways');dest=OUT/'corpus'/rel;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(item['path'],dest);check({**item,'path':str(dest)})
+    shutil.copyfile(TARGET,OUT/'corpus/ribose-phosphorylation.yaml')
+    (OUT/'corpus/_authority_retention').mkdir()
+    (OUT/'corpus/_authority_retention/selector.yaml').write_text(yaml.safe_dump({'id':data['retained'][0],'participants':[{'id':i} for i in data['retained'][1:]]},sort_keys=False))
+    for item in data['original_bindings'].values():
+        dest=OUT/'originals'/item['cache_relative_path'];dest.parent.mkdir(parents=True,exist_ok=True);dest.symlink_to(item['path'])
+    for item in data['new_originals']:
+        dest=OUT/'originals'/item['cache_relative_path'];dest.parent.mkdir(parents=True,exist_ok=True)
+        with dest.open('xb') as stream:stream.write(Path(item['source']['path']).read_bytes())
+        check({**item['source'],'path':str(dest)});item['external_copy']=row(dest)
+    for kind in data['old']:shutil.copyfile(ROOT/f'data/identifier_authorities/{kind}.json',OUT/f'baseline/{kind}.json')
+    shutil.copyfile(ROOT/'conf/identifier_sources.json',OUT/'baseline/manifest.json')
+    shutil.copyfile(ROOT/'conf/rhea_identifier_updates.json',OUT/'baseline/rhea-updates.json')
+    write(OUT/'manifest.json',data['manifest']+data['additions']);write(OUT/'rhea-updates.json',data['updates'])
+    write(OUT/'expected-additions.json',{'source_terms':data['source_additions'],'ontology_terms':data['ontology_additions'],'source_manifest':data['additions'],'derivation':'Exact proposal set differences against the captured adopted226 authorities, plus accepted typed native RXN-14904 authority; no proposed snapshot used as builder input'})
+    write(OUT/'source-original-bindings.json',{'existing':list(data['original_bindings'].values()),'new':data['new_originals']})
+    write(OUT/'new-originals-copy-plan.json',{'scope':'Prospective root copy plan; no shared cache writes','new_originals':data['new_originals'],'count':16})
+    write(OUT/'ontology-original-bindings.json',{'originals':data['dbs'],'intake_hash_scope':'Inherited exact complete SQL hashes from previous accepted full build, with exact path/size/mtime/source-metadata checks; the native ontology command below freshly hashes each full database again','prior_binding':row(PRIOR/'ontology-original-bindings.json'),'prior_execution':row(PRIOR/'ontology_builder-execution.json'),'prior_verification':row(PRIOR/'verification.json')})
+    write(OUT/'code-change-bindings.json',{'changes':data['code_changes'],'all_code_inputs':data['code_inputs'],'candidate_files':206,'composed_patch':row(CORRECTION/'composed.patch')})
+    write(OUT/'seal-intake.json',{'at':now(),'packages':data['seal_results']})
+    write(OUT/'corpus-bindings.json',{'files':[row(p) for p in sorted((OUT/'corpus').rglob('*')) if p.is_file()],'captured_maintained_records':data['records'],'actual_records':227,'baseline_actual_records':226,'retention_ids':data['retained'],'retention_selector_build_only':True,'inventory_command':['rg','--files','-uu','-L',str(ROOT/'data/pathways')],'ignored_hidden_symlink_targets_included':True})
+    write(OUT/'baseline-capture.json',{'at':now(),'root':str(ROOT),'observed_head':data['head'],'commit_scope':'Observed HEAD is not asserted to include adopted threonine; authoritative baseline is this exact captured record/authority/code content','observed_tracked_status':data['status'],'authority_bindings':[row(ROOT/p) for p in ['data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','conf/identifier_sources.json','conf/rhea_identifier_updates.json']],'records':data['records'],'code_inputs':data['code_inputs'],'ontology_builder':data['ontology_builder']})
+    source=[PYTHON,'-B',str(CORRECTION/'candidate/scripts/build_source_identifier_snapshot.py'),'--manifest',str(OUT/'manifest.json'),'--cache-dir',str(OUT/'originals'),'--records',str(OUT/'corpus'),'--output',str(OUT/'sources.json')]
+    ontology=[PYTHON,'-B',str(ROOT/'scripts/build_ontology_identifier_snapshot.py')]
+    for item in data['dbs']:ontology+=['--source',item['prefix']+'='+item['path']]
+    ontology+=['--corpus',str(OUT/'corpus'),'--rhea-updates',str(OUT/'rhea-updates.json'),'--cache-dir',str(OUT/'originals'),'--output',str(OUT/'ontology.json')]
+    commands={'cwd':str(ROOT),'environment':{'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(ROOT/'src')+':'+str(ROOT)},'source_builder':source,'ontology_builder':ontology}
+    write(OUT/'commands.json',commands)
+    print('INPUT_CAPTURE_COMPLETE '+json.dumps({'at':now(),'records':227,'retention_ids':4284,'manifest_entries':698,'old_original_symlinks':683,'new_original_copies':16,'rhea_ids':16,'expected_source_terms':2384,'expected_ontology_terms':1931,'maintained_writes':False}),flush=True)
+    return commands
+
+def execute(name,command,commands):
+    started=now();tick=time.monotonic()
+    with (OUT/(name+'.stdout')).open('xb') as stdout,(OUT/(name+'.stderr')).open('xb') as stderr:
+        result=subprocess.run(command,cwd=commands['cwd'],env={**os.environ,**commands['environment']},stdout=stdout,stderr=stderr)
+    receipt={'name':name,'command':command,'cwd':commands['cwd'],'environment':commands['environment'],'started_at':started,'finished_at':now(),'duration_seconds':round(time.monotonic()-tick,3),'exit_code':result.returncode,'stdout':row(OUT/(name+'.stdout')),'stderr':row(OUT/(name+'.stderr'))}
+    write(OUT/(name+'-execution.json'),receipt);print('BUILDER_TERMINAL '+json.dumps(receipt),flush=True);return receipt
+
+def verify(data,executions):
+    assert all(r['exit_code']==0 for r in executions)
+    results={}
+    for kind,expected in [('sources',data['source_additions']),('ontology',data['ontology_additions'])]:
+        old=data['old'][kind];new=load(OUT/(kind+'.json'));assert new['version']==old['version']
+        for i,value in old['terms'].items():assert new['terms'].get(i)==value,(kind,i)
+        for key,value in old['sources'].items():assert new['sources'].get(key)==value,(kind,key)
+        added={i:v for i,v in new['terms'].items() if i not in old['terms']};assert added==expected,(kind,'unexpected term content or set')
+        new_metadata={k:v for k,v in new['sources'].items() if k not in old['sources']}
+        expected_metadata={entry['key']:{k:entry[k] for k in ['url','version','license','sha256']+(['kind'] if entry['kind']=='metacyc-reaction-xml' else [])} for entry in data['additions']} if kind=='sources' else {}
+        assert new_metadata==expected_metadata,(kind,'unexpected metadata')
+        results[kind]={'old_terms_preserved':len(old['terms']),'old_metadata_preserved':len(old['sources']),'new_terms':added,'new_metadata':new_metadata,'total_terms':len(new['terms']),'total_metadata':len(new['sources']),'output':row(OUT/(kind+'.json'))}
+    assert results['sources']['total_terms']==2384 and results['sources']['total_metadata']==545
+    assert results['ontology']['total_terms']==1931 and results['ontology']['total_metadata']==5
+    assert load(OUT/'manifest.json')[:682]==data['manifest']
+    previous=load(OUT/'baseline/rhea-updates.json');updates=load(OUT/'rhea-updates.json');assert updates['ids'][:15]==previous['ids'] and updates['ids'][15:]==['RHEA:25433']
+    assert {k:v for k,v in updates.items() if k!='ids'}=={k:v for k,v in previous.items() if k!='ids'}
+    for item in load(OUT/'corpus-bindings.json')['files']:check(item)
+    for item in data['original_bindings'].values():check(item)
+    for item in data['new_originals']:check(item['source']);check(item['external_copy'])
+    ontology=load(OUT/'ontology.json')
+    for item in data['dbs']:
+        p=Path(item['path']);assert p.stat().st_size==item['bytes'] and p.stat().st_mtime_ns==item['mtime_ns'];assert ontology['sources'][item['source_key']]['sha256']==item['sha256']
+    check(data['ontology_builder'])
+    for item in data['code_inputs']:check(item)
+    for item in data['records']:check(item)
+    for item in load(OUT/'baseline-capture.json')['authority_bindings']:check(item)
+    result={'status':'full_native_ribose_build_passed_exact_adopted226_preservation','at':now(),'target_sha256':TARGET_SHA,'baseline_observed_head':data['head'],'baseline_scope':'Exact adopted226 bytes; commit and merge bridge remain root owned','actual_records':227,'retention_ids':4284,'results':results,'old_manifest_entries_preserved':682,'manifest_entries':698,'old_rhea_ids_preserved':15,'rhea_ids':16,'input_originals_verified':True,'captured_root_record_authority_code_inputs_unchanged':True,'maintained_writes':False,'shared_cache_writes':False,'git_github_actions':False,'source_exhaustion':False}
+    write(OUT/'verification.json',result);print('VERIFIED '+json.dumps({k:v for k,v in result.items() if k!='results'}),flush=True)
+
+def main():
+    data=intake();commands=prepare(data)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures=[pool.submit(execute,name,commands[name],commands) for name in ['source_builder','ontology_builder']];executions=[f.result() for f in futures]
+    write(OUT/'execution-ledger.json',{'executions':executions});verify(data,executions);print('READY_FOR_SEAL',flush=True)
+
+if __name__=='__main__':
+    try:main()
+    except Exception:
+        traceback.print_exc()
+        if OUT.exists():(OUT/('failure-'+str(time.time_ns())+'.txt')).write_text(traceback.format_exc())
+        raise

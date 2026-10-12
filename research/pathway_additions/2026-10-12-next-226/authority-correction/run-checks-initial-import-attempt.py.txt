@@ -1,0 +1,17 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import json,os,subprocess,time
+D=Path(__file__).parent; C=D/'candidate'; I=Path('/private/tmp/pathwaymech-next-226-authority-implementation-20261012/candidate')
+PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ledger=[]
+def run(name,cmd,*,imports=C,expected=0):
+ env=os.environ.copy(); env.update(PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1',PYTHONPATH=str(imports/'src')+':'+str(imports))
+ started=datetime.now(timezone.utc).isoformat(); t=time.monotonic()
+ result=subprocess.run(cmd,cwd=C,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+ log=D/'logs'/(name+'.log');log.write_bytes(result.stdout)
+ item={'action':name,'argv':cmd,'cwd':str(C),'env':{k:env[k] for k in ('PYTHONDONTWRITEBYTECODE','UV_NO_SYNC','PYTHONPATH')},'started_at':started,'finished_at':datetime.now(timezone.utc).isoformat(),'elapsed_seconds':time.monotonic()-t,'exit_code':result.returncode,'expected_exit_code':expected,'log':str(log.relative_to(D))}
+ ledger.append(item); (D/'execution-ledger.json').write_text(json.dumps(ledger,indent=2)+'\n');print(json.dumps(item),flush=True)
+ assert result.returncode==expected,result.stdout.decode(errors='replace')
+run('reviewed-defect-regressions-against-initial', [PY,'-B','-m','pytest','-q','-p','no:cacheprovider','tests/test_metacyc_reaction_authority.py','-k','typed_authority_requires_exact_source_request_before_contextual_bypass or typed_authority_requires_native_version_grammar or one_typed_source_cannot_establish_a_second_identity or unreferenced_typed_source_still_requires_valid_provenance'],imports=I,expected=1)
+run('authority-suite',[PY,'-B','-m','pytest','-q','-p','no:cacheprovider']+['tests/'+n for n in ['test_metacyc_reaction_authority.py','test_metacyc_protein_authority.py','test_metacyc_complex_naming.py','test_metacyc_authority_encoding.py','test_ecocyc_identifier_authority.py','test_identifiers.py','test_source_identifier_snapshot.py','test_identifier_snapshot_builders.py','test_pathbank_identifier_authority.py','test_pubchem_identifier_authority.py','test_bigg_identifier_authority.py','test_kegg_identifier_authority.py','test_metanetx_identifier_authority.py','test_ncbi_gene_identifier_authority.py']])
+run('ruff',[PY,'-B','-m','ruff','check','--no-cache','src/pathwaymech/identifiers.py','tests/test_metacyc_reaction_authority.py'])

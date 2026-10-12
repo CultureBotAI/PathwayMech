@@ -1,0 +1,47 @@
+from pathlib import Path
+from datetime import datetime,timezone
+from xml.etree import ElementTree as ET
+import copy,hashlib,json,shutil,sys
+R=Path(__file__).parent
+D=Path('/private/tmp/pathwaymech-next-226-authority-implementation-20261012')
+sys.path[:0]=[str(D/'candidate/src'),str(D/'candidate')]
+from pathwaymech.identifiers import identifier_errors
+from scripts.build_source_identifier_snapshot import source_terms
+S=D/'actual-composed-identifier-check'
+P=R/'probe-corpus';shutil.copytree(S,P)
+original=json.loads((P/'data/identifier_authorities/sources.json').read_text())
+key=original['terms']['MetaCyc:RXN-14904']['source']
+mutations={
+ 'unrelated_host':lambda s:s['sources'][key].update(url='https://example.invalid/native.xml'),
+ 'different_frame_request':lambda s:s['sources'][key].update(url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN-OTHER'),
+ 'wrong_organism_request':lambda s:s['sources'][key].update(url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:RXN-14904'),
+ 'invalid_version':lambda s:s['sources'][key].update(version='not a PGDB version'),
+ 'downgraded_scope':lambda s:s['sources'][key].update(sha256_scope='selected synthetic identity'),
+ 'missing_type':lambda s:s['terms']['MetaCyc:RXN-14904'].pop('entity_type'),
+ 'missing_kind':lambda s:s['sources'][key].pop('kind'),
+}
+rows=[]
+for name,mutate in mutations.items():
+ s=copy.deepcopy(original);mutate(s)
+ path=P/'data/identifier_authorities/sources.json';path.write_text(json.dumps(s,indent=2)+'\n')
+ errors=identifier_errors(P)
+ rows.append({'case':name,'gate_accepted':not errors,'errors':errors,'changed_source_metadata':s['sources'][key]})
+path.write_bytes((S/'data/identifier_authorities/sources.json').read_bytes())
+assert identifier_errors(P)==[]
+raw=D/'originals/META-RXN-14904.xml';url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN-14904'
+xml_rows=[]
+xml_mutations={
+ 'compound_nonwhitespace_tail':lambda root:setattr(root.find('Reaction/left/Compound'),'tail',' UNPARSED SIDE TEXT '),
+ 'parent_nonwhitespace_tail':lambda root:setattr(root.find('Reaction/parent/Reaction'),'tail',' UNPARSED PARENT TEXT '),
+ 'reaction_nonwhitespace_text':lambda root:setattr(root.find('Reaction'),'text',' UNPARSED REACTION TEXT '),
+ 'metadata_nonwhitespace_text':lambda root:setattr(root.find('metadata'),'text',' UNPARSED METADATA TEXT '),
+}
+for name,mutate in xml_mutations.items():
+ root=ET.fromstring(raw.read_bytes());mutate(root)
+ p=R/(name+'.xml');p.write_bytes(ET.tostring(root))
+ try:terms=list(source_terms('metacyc-reaction-xml',p,url=url,version='27.0'));error=None
+ except Exception as e:terms=[];error=repr(e)
+ xml_rows.append({'case':name,'parser_accepted':error is None,'terms':terms,'error':error})
+report={'at':datetime.now(timezone.utc).isoformat(),'original_draft_sha256':hashlib.sha256((P/'data/pathways/ribose-phosphorylation.yaml').read_bytes()).hexdigest(),'baseline_gate_errors':identifier_errors(P),'authority_provenance_mutations':rows,'xml_mixed_content_probes':xml_rows,'scope':'External mutations only; no original or maintained artifacts modified.'}
+(R/'probes.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report,indent=2))

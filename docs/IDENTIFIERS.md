@@ -111,6 +111,52 @@ contextual slot. It cannot satisfy canonical-label verification even if the
 strings happen to match. This records the evidence boundary for native IDs
 whose independently available source supplies membership but no canonical name.
 
+The `metacyc-reaction-xml` source kind supports the bounded case of a genuinely
+unnamed native small-molecule reaction. It accepts only an exact HTTPS request
+`https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:<frame>` and one original
+full META `Reaction` with matching metadata query, PGDB version, species
+`MetaCyc`, and identity attributes. The root software-version field must also
+match this supported serialization; it does not replace the explicit PGDB
+version check. The exact HTTPS base/service or the observed mirror's literal
+HTTP-with-port-443 base/service are supported. Alternate requests, ports,
+duplicate metadata/entities, class instances, HTML, DTDs and entities fail.
+Original declared XML encoding and bytes are retained unchanged.
+
+This adapter requires both native `Chemical-Reactions` and
+`Small-Molecule-Reactions` parents, a native reaction direction, and nonempty
+left/right sides containing exact empty META Compound references. Explicit
+coefficient/compartment slots, generic class participants and other native
+serialization forms are currently unsupported and fail rather than being
+silently normalized. A direct `common-name` slot of any shape also fails: named
+reaction support is not an implicit fallback. Nested evidence/curator names,
+equations and curated labels never supply a canonical reaction name.
+
+The emitted label is only the exact native frame token, with no synonyms,
+`label_kind: source_context` and `entity_type: reaction`. Its source metadata
+carries `kind: metacyc-reaction-xml`. These optional fields have closed validation:
+the type and source kind must occur together, with a coherent MetaCyc identifier,
+frame-token label and source-context scope. The loader also requires the exact
+META frame requested by its source URL at the HTTPS endpoint
+above, with no extra query fields or fragment and with a dotted numeric native
+version. Each term must match its source's requested frame; one source cannot
+establish a different typed identity. These offline checks establish internal
+snapshot consistency. The builder checks the original XML bytes, including
+their agreement with the request and version. This typed authority can satisfy
+only a `reactions` node explicitly categorized `molecular_activity`. The checker
+enforces this restriction **before** contextual-label bypass, so the same ID
+cannot pass as a record title, pathway interface, protein, complex or chemical.
+An explicit contextual policy is still required; native identity is not a
+canonical name authority. Existing authority objects without these fields keep
+their prior behavior and bytes. Builder and checker support must be adopted
+together; older checkers correctly reject the unfamiliar fields.
+
+Conflicting same-frame reaction versions, parents, directions, sides or native
+flags fail before corpus selection. A same-frame assertion from a different
+source kind also fails rather than dropping the reaction type or inventing a
+canonical name. This identity support does not establish pathway membership,
+selected physiological flux, catalytic machinery, or chemical equivalence;
+those claims still require separate mechanistic evidence.
+
 The ontology builder also accepts `--rhea-updates conf/rhea_identifier_updates.json
 --cache-dir <original-source-cache>`. This explicit manifest selects equations
 whose current Rhea release corrects the older Semantic SQL source. It contains
