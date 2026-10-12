@@ -1,0 +1,112 @@
+"""Run maintained gates only when root explicitly executes this adopted-state helper."""
+import argparse
+import json
+import os
+import subprocess
+from pathlib import Path
+from common import *
+
+
+def record_guard_failure(output, receipts, stage, error):
+    (output / 'execution.json').write_text(json.dumps({
+        'status': 'failed_guard', 'base': BASE, 'receipts': receipts,
+        'failure': {'stage': stage, 'type': type(error).__name__, 'message': str(error), 'at': now()},
+        'scope': 'Executed command receipts are retained; no final gate success is claimed.'}, indent=2) + '\n')
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', required=True, type=Path)
+    parser.add_argument('--base', required=True)
+    parser.add_argument('--adoption-receipt', required=True, type=Path)
+    parser.add_argument('--output', required=True, type=Path)
+    args = parser.parse_args()
+    root = validate_base(args.root, args.base, clean=False)
+    verify_package()
+    verify_accepted()
+    verify_adopted(root)
+    external_new(args.output, root)
+    adoption = load(args.adoption_receipt)
+    assert adoption['status'] == 'adopted_pending_maintained_gates_and_saved_review'
+    assert adoption['base'] == BASE and adoption['root'] == str(root)
+    verify(root / TARGET_REL, adoption['target'])
+    verify(adoption['baseline']['path'], adoption['baseline'])
+    verify(adoption['baseline_kgx']['path'], adoption['baseline_kgx'])
+    baseline = load(adoption['baseline']['path'])
+    for group in SURFACES:
+        for item in baseline[group]:
+            verify_path_identity(root / item['relative_path'], item)
+    history_inputs = history_ready_for_render(root, baseline)
+    env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONNOUSERSITE': '1',
+           'PYTHONPATH': str(root / 'src') + os.pathsep + str(root),
+           'RUFF_CACHE_DIR': str(args.output / 'ruff-cache')}
+    py = [str(PYTHON), '-B']
+    commands = [
+        ('render', py + ['-c', 'from pathwaymech.cli import render_pages_main; '
+                       'raise SystemExit(render_pages_main())']),
+        ('skills', py + ['scripts/validate_claude_skills.py']),
+        ('validate', py + ['-c', 'from pathwaymech.cli import run_qc_main; '
+                         'raise SystemExit(run_qc_main())']),
+        ('tests', py + ['-m', 'pytest', '-q', '-p', 'no:cacheprovider', '--basetemp', str(args.output / 'pytest-temp')]),
+        ('lint', py + ['-m', 'ruff', 'check', '--no-cache', '.']),
+        ('kgx', py + ['-c', 'from pathwaymech.cli import export_kgx_main; '
+                     'raise SystemExit(export_kgx_main())']),
+        ('vendored', ['bash', 'scripts/check_vendored_sync.sh']),
+        ('diff-check', ['git', 'diff', '--check']),
+        ('site-current', py + ['-c', 'from pathwaymech.cli import render_pages_main; '
+                              'raise SystemExit(render_pages_main(["--check"]))']),
+    ]
+    args.output.mkdir()
+    write_new(args.output / 'inputs.json', {
+        'target': binding(root / TARGET_REL), 'adoption_receipt': binding(args.adoption_receipt),
+        'canonical_handoff': binding(COMPLETION), 'helper': binding(__file__), 'at': now(),
+        'render_history_inputs': history_inputs,
+        'all_maintained_inputs': inventory(root, exclude_runtime=True)})
+    receipts = []
+    for name, command in commands:
+        try:
+            verify_render_history(root, history_inputs)
+        except Exception as error:
+            record_guard_failure(args.output, receipts, 'before-' + name, error)
+            raise
+        start = now()
+        result = subprocess.run(command, cwd=root, env=env, capture_output=True)
+        stdout, stderr = args.output / (name + '.stdout'), args.output / (name + '.stderr')
+        stdout.write_bytes(result.stdout)
+        stderr.write_bytes(result.stderr)
+        receipts.append({'name': name, 'command': command, 'cwd': str(root),
+                         'environment': {k: env[k] for k in
+                                         ('PYTHONDONTWRITEBYTECODE', 'UV_NO_SYNC', 'PYTHONNOUSERSITE',
+                                          'PYTHONPATH', 'RUFF_CACHE_DIR')},
+                         'started_at': start, 'finished_at': now(), 'exit_code': result.returncode,
+                         'stdout': binding(stdout), 'stderr': binding(stderr)})
+        (args.output / 'execution.json').write_text(json.dumps({
+            'status': 'running' if result.returncode == 0 else 'failed', 'base': BASE,
+            'receipts': receipts}, indent=2) + '\n')
+        print(name, result.returncode, flush=True)
+        if result.returncode:
+            return result.returncode
+    try:
+        verify_adopted(root)
+        verify_render_history(root, history_inputs)
+        verify_gate_input_scope(root, {'inputs': binding(args.output / 'inputs.json'),
+                                      'render_history_inputs': history_inputs}, args.adoption_receipt)
+        generated = [{'relative_path': relative, **binding(root / relative)} for relative in
+                     load(PACKAGE / 'expected-changes.json')['allowed_generated_paths']]
+    except Exception as error:
+        record_guard_failure(args.output, receipts, 'final-input-and-output-guards', error)
+        raise
+    (args.output / 'execution.json').write_text(json.dumps({
+        'status': 'passed', 'base': BASE, 'target_sha256': TARGET_SHA, 'receipts': receipts,
+        'inputs': binding(args.output / 'inputs.json'),
+        'generated_files': generated, 'render_history_inputs': history_inputs,
+        'history_verified_after_site_current': True,
+        'scope': 'Actual maintained commands completed. Later dossier/review changes and staged '
+                 'whitespace need separate checks; no PR/CI/merge completion claim.',
+        'preservation': 'pending separate helper', 'saved_scientific_review': 'pending root'},
+        indent=2) + '\n')
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

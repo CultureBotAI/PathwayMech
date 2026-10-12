@@ -1,0 +1,500 @@
+"""Strict guards for future merged PPi baseline and NAD integration."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+import os
+import stat
+
+if not __debug__:
+    raise RuntimeError('Guarded helpers require assertions; do not optimize Python.')
+
+PACKAGE = Path('/private/tmp/pathwaymech-next-232-integration-preparation-20261012')
+BASE_CONFIG = Path(os.environ['PATHWAYMECH_NAD_MERGED_BASE']) if os.environ.get('PATHWAYMECH_NAD_MERGED_BASE') else None
+BASE_INFO = json.loads(BASE_CONFIG.read_bytes()) if BASE_CONFIG is not None else {}
+ROOT = Path('/private/tmp/pathwaymech-next-232-20261012')
+BUILD = Path('/private/tmp/pathwaymech-next-232-canonical-build-20261012')
+COMPLETION = BUILD / 'handoff.json'
+CORRECTION = Path('/private/tmp/pathwaymech-next-232-author-successor-20261012')
+TARGET_SOURCE = CORRECTION / 'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+BUILD_TARGET_SHA = '96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7'
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+PYTHON = Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+MERGED_BASE = '19af3cc154dbbd757c17299b36923e5f9ccc31dc'
+MERGED_TREE = 'd0712923d0f66d4c08b25b7fa0ed5adc9dbdc7fe'
+BASE = BASE_INFO.get('base')
+TREE = BASE_INFO.get('tree')
+BRANCH = BASE_INFO.get('branch', 'feat/pathway-next-232-20261012')
+TARGET_REL = 'data/pathways/nad-phosphorylation-and-dephosphorylation.yaml'
+TARGET_SHA = '96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7'
+PAGE_REL = 'pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html'
+DOSSIER_REL = 'research/pathway_additions/2026-10-12-next-232'
+AUTHORITY_FILES = {
+    'sources': 'data/identifier_authorities/sources.json',
+    'ontology': 'data/identifier_authorities/ontology.json',
+    'manifest': 'conf/identifier_sources.json',
+    'rhea-updates': 'conf/rhea_identifier_updates.json',
+}
+IMPLEMENTATION_HISTORY_REL = 'src/pathwaymech/ecocyc_complex.py'
+HISTORICAL_CONFIGS = {'conf/identifier_sources.json': '4c33029c81a3c0143129ae0ee3bc77429d25b9cfa1696840ed878d62acd8731e', 'conf/rhea_identifier_updates.json': 'b8554eb961a257c9e38bbadf96e2840d4b9f480a0fdce3f048619f7248e9bf31'}
+SURFACES = {'records': 'data/pathways', 'pages': 'pages/records',
+            'reviews': 'reviews/structured', 'history': 'history'}
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def sha(path):
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def binding(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)}
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def verify(path, item, allow_symlink=False):
+    path = Path(path)
+    assert path.is_file() and (allow_symlink or not path.is_symlink()), path
+    assert sha(path) == item['sha256'], path
+    if 'bytes' in item:
+        assert path.stat().st_size == item['bytes'], path
+
+
+def write_new(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def git(root, *args):
+    return subprocess.check_output(['git', *args], cwd=root, text=True, env={**os.environ, 'GIT_OPTIONAL_LOCKS': '0'}).strip()
+
+
+def safe_relative(value):
+    path = Path(value)
+    assert not path.is_absolute() and '..' not in path.parts
+    assert str(path) not in ('', '.')
+    return path
+
+
+IDENTITY_FIELDS = ('file_type', 'symlink', 'link_text', 'resolved_path')
+
+
+def path_identity(path):
+    """Fresh lexical link identity plus ultimate destination; no acquisition-time claim."""
+    path = Path(path)
+    mode = path.lstat().st_mode
+    assert stat.S_ISREG(mode) or stat.S_ISLNK(mode), 'Only regular files and file symlinks are supported'
+    linked = stat.S_ISLNK(mode)
+    return {'file_type': 'symlink' if linked else 'regular', 'symlink': linked,
+            'link_text': os.readlink(path) if linked else None,
+            'resolved_path': str(path.resolve(strict=True))}
+
+
+def verify_path_identity(path, item):
+    assert all(key in item for key in IDENTITY_FIELDS), 'Fresh path identity binding required'
+    assert path_identity(path) == {key: item[key] for key in IDENTITY_FIELDS}, 'Path link identity changed'
+    verify(path, item, allow_symlink=True)
+
+
+def inventory(root, relative='.', exclude_runtime=False):
+    """Use rg's hidden/ignored/followed inventory and fail on traversal errors."""
+    command = ['rg', '--files', '-uu', '-L']
+    if exclude_runtime:
+        command += ['-g', '!.git', '-g', '!.git/**', '-g', '!.venv', '-g', '!.venv/**']
+    command.append(relative)
+    result = subprocess.run(command, cwd=root, text=True, capture_output=True)
+    assert result.returncode in (0, 1) and not result.stderr, result.stderr
+    for base, dirs, files in os.walk(root / relative, followlinks=True):
+        if exclude_runtime:
+            dirs[:] = [d for d in dirs if d not in {'.git', '.venv'}]
+            files = [f for f in files if f != '.git']
+        for name in dirs + files:
+            entry = Path(base) / name
+            assert entry.exists() and (entry.is_file() or entry.is_dir()), ('broken or special inventory entry', str(entry))
+    paths = sorted(str(Path(p)) for p in result.stdout.splitlines())
+    assert len(paths) == len(set(paths))
+    return [{'relative_path': p, **binding(root / p),
+             **path_identity(root / p)} for p in paths]
+
+
+def external_new(path, root):
+    path = Path(path).absolute()
+    assert path.parent.is_dir() and path.parent.resolve().is_relative_to(Path('/private/tmp'))
+    resolved = path.resolve()
+    protected = [Path(root).resolve(), PACKAGE.resolve(), CACHE.resolve(), BUILD.resolve(), CORRECTION.resolve()]
+    inputs = PACKAGE / 'accepted-inputs.json'
+    if inputs.is_file():
+        protected += [Path(item['handoff']['path']).parent.resolve()
+                      for item in load(inputs)['packages'].values()]
+    assert not any(resolved.is_relative_to(parent) for parent in protected)
+    assert not path.exists() and not path.is_symlink(), path
+
+
+def validate_base(root, base, clean=True):
+    assert BASE is not None and TREE is not None, 'Actual merged baseline is not yet bound'
+    assert BASE_INFO.get('status') == 'actual_merged_base_verified'
+    assert BASE == MERGED_BASE and TREE == MERGED_TREE
+    assert BASE_INFO['root'] == str(ROOT) and BASE_INFO['branch'] == BRANCH
+    verify(PACKAGE / 'handoff.json', BASE_INFO['preparation'])
+    root = Path(root).absolute()
+    assert root == ROOT and root.is_dir()
+    assert base == BASE and git(root, 'rev-parse', 'HEAD') == BASE
+    assert git(root, 'rev-parse', 'HEAD^{tree}') == TREE
+    assert git(root, 'branch', '--show-current') == BRANCH
+    subprocess.run(['git', 'merge-base', '--is-ancestor', base,
+                    'refs/remotes/origin/main'], cwd=root, check=True)
+    if clean:
+        assert not git(root, 'diff', '--name-only')
+        assert not git(root, 'diff', '--cached', '--name-only')
+        paths = {r['relative_path'] for r in inventory(root, exclude_runtime=True)}
+        assert paths == set(git(root, 'ls-files').splitlines()), (
+            'Unexpected untracked/ignored/missing maintained input', paths.symmetric_difference(
+                set(git(root, 'ls-files').splitlines())))
+    return root
+
+
+def verify_packet(item):
+    verify(item['handoff']['path'], item['handoff'])
+    verify(item['manifest']['path'], item['manifest'])
+    directory = Path(item['handoff']['path']).parent
+    manifest = load(item['manifest']['path'])
+    rows = manifest if isinstance(manifest, list) else manifest.get('artifacts', manifest.get('files'))
+    assert len(rows) == item['artifact_count'] and not item.get('allowed_external_bindings')
+    declared = set()
+    for row in rows:
+        relative = row.get('relative_path', row.get('path'))
+        path = Path(relative)
+        if not path.is_absolute(): path = directory / safe_relative(relative)
+        assert path.is_relative_to(directory), 'Outside packet artifact'
+        rel = str(path.relative_to(directory)); assert rel not in declared
+        verify_packet_file(path, row, item.get('link_identities', {}).get(rel))
+        declared.add(rel)
+    links = manifest.get('original_links', []) if isinstance(manifest, dict) else []
+    assert len(links) == item.get('original_symlink_count', 0)
+    for row in links:
+        path = Path(row['path']); assert path.is_relative_to(directory)
+        relative = str(path.relative_to(directory)); assert relative not in declared
+        verify_packet_file(path, row); declared.add(relative)
+    supplementary = set()
+    if item.get('supplemental_inventory'): verify(item['supplemental_inventory']['path'], item['supplemental_inventory'])
+    for row in item.get('supplemental_observed_files', []):
+        relative = str(safe_relative(row['relative_path']))
+        assert relative not in declared and relative not in supplementary
+        verify_packet_file(directory / relative, row, item.get('link_identities', {}).get(relative))
+        supplementary.add(relative)
+    assert {r['relative_path'] for r in inventory(directory)} == declared | {'handoff.json', 'artifact-manifest.json'} | supplementary, 'Packet inventory changed'
+
+
+def verify_packet_file(path, row, observed=None):
+    identity = observed or ({key: row[key] for key in ('file_type', 'link_text', 'resolved_path')} if 'file_type' in row else {'file_type': 'regular', 'link_text': None, 'resolved_path': str(Path(path).absolute())})
+    identity = {**identity, 'symlink': identity['file_type'] == 'symlink'}
+    verify_path_identity(path, {**row, **identity})
+
+
+def verify_package():
+    handoff = load(PACKAGE / 'handoff.json')
+    verify(PACKAGE / 'artifact-manifest.json', handoff['artifact_manifest'])
+    manifest = load(PACKAGE / 'artifact-manifest.json')
+    assert len(manifest['artifacts']) == handoff['artifact_count']
+    for item in manifest['artifacts']:
+        verify_path_identity(PACKAGE / safe_relative(item['relative_path']), item)
+    actual = {r['relative_path'] for r in inventory(PACKAGE)}
+    assert actual == {r['relative_path'] for r in manifest['artifacts']} | {
+        'artifact-manifest.json', 'handoff.json'}
+
+
+def verify_predecessor_acceptance():
+    inputs = load(PACKAGE / 'accepted-inputs.json')
+    predecessor = inputs['predecessor_guard_acceptance']
+    verify(predecessor['path'], predecessor)
+    receipt = load(predecessor['path'])
+    assert receipt['status'] == 'accepted_for_guarded_actual_merged_baseline_integration'
+    assert receipt['issue'] == 463 and receipt['stable_key'] == 'PPI-INTEGRATION-001'
+    assert receipt['preparation'] == inputs['packages']['guard-predecessor']['handoff']
+    assert receipt['independent_audit'] == inputs['packages']['guard-predecessor-audit']['handoff']
+
+
+def verify_accepted():
+    inputs = load(PACKAGE / 'accepted-inputs.json')
+    assert inputs['canonical_audit_accepted'] and inputs['science_successor_accepted'] and inputs['complex_adapter_independently_accepted']
+    for item in inputs['packages'].values(): verify_packet(item)
+    for item in inputs['root_intakes'] + inputs['issue_artifacts']: verify(item['path'], item)
+    verify_predecessor_acceptance()
+    verify(TARGET_SOURCE, inputs['target']); assert sha(TARGET_SOURCE) == TARGET_SHA
+    verify(BUILD / 'corpus' / TARGET_SOURCE.name, inputs['historical_build_target'])
+    assert inputs['target']['sha256'] == inputs['historical_build_target']['sha256'] == TARGET_SHA
+    verify(COMPLETION, inputs['packages']['canonical-build']['handoff'])
+    for item in load(COMPLETION)['outputs'].values(): verify(item['path'], item)
+    science = load(inputs['packages']['science-successor']['handoff']['path'])
+    assert science['status'] == 'accepted_exact_scientific_successor_with_explicit_original_full_review_inheritance'
+    assert science['target']['sha256'] == TARGET_SHA and science['remaining_findings'] == []
+    root_science = load(inputs['root_science_acceptance']['path'])
+    assert root_science['target'] == science['target']
+    assert root_science['successor_review_handoff'] == inputs['packages']['science-successor']['handoff']
+    assert root_science['dispositions']['scientific_successor_acceptance'] is True
+    assert root_science['dispositions']['new_actionable_findings'] == []
+    audit = load(inputs['packages']['canonical-audit']['handoff']['path'])
+    assert audit['status'] == 'accepted_actual_full_native_external_build' and audit['remaining_findings'] == []
+    assert audit['actual_native_outputs'] == load(COMPLETION)['outputs']
+    acceptance = load(inputs['canonical_root_acceptance']['path'])
+    assert acceptance['status'] == 'accepted_actual_native_outputs_with_scope_limits'
+    assert acceptance['actual_native_outputs'] == load(COMPLETION)['outputs']
+    adapter = load(inputs['adapter_root_acceptance']['path'])
+    assert adapter['status'] == 'accepted_exact_four_file_bounded_adapter_for_authority_preparation'
+    assert adapter['implementation'] == inputs['packages']['adapter-implementation']['handoff']
+    assert adapter['independent_audit'] == inputs['packages']['adapter-audit']['handoff']
+    assert len(code_changes()) == 4 and sum(row['before'] is None for row in code_changes()) == 2
+    verify_root_merge_bridge()
+    import yaml
+    record = yaml.safe_load(TARGET_SOURCE.read_bytes())
+    assert record['id'] == 'MetaCyc:NADPHOS-DEPHOS-PWY'
+    assert len(record['mechanistic_edges']) == 102 and len(record['references']) == 97
+    assert sum(len(e.get('endpoint_qualifiers', [])) for e in record['mechanistic_edges']) == 48
+    assert sum(len(e['evidence']) + sum(len(q['evidence']) for q in e.get('endpoint_qualifiers', [])) for e in record['mechanistic_edges']) == 266
+
+
+def verify_root_merge_bridge():
+    inputs = load(PACKAGE / 'accepted-inputs.json'); item = inputs['root_merge_bridge']
+    verify(item['path'], item); bridge = load(item['path'])
+    assert bridge['status'] == 'actual_merged_PPi_baseline_matches_NAD_native_build_effective_inputs_with_exact_unadopted_adapter_overlay'
+    assert (bridge['base'], bridge['tree'], bridge['root'], bridge['branch']) == (MERGED_BASE, MERGED_TREE, str(ROOT), BRANCH)
+    assert bridge['historical_runtime_config_exception']['exact_paths_and_hashes'] == HISTORICAL_CONFIGS
+    assert bridge['record_yaml_count'] == 232 and bridge['runtime_count'] == 225
+    verify(COMPLETION, bridge['native_handoff'])
+    verify(BUILD / 'preparation-capture.json', bridge['preparation_capture'])
+    verify(BUILD / 'execution-ledger.json', bridge['native_execution_ledger'])
+    verify_effective_configs()
+    return bridge
+
+
+def verify_effective_configs():
+    executions = load(BUILD / 'execution-ledger.json')['executions']
+    assert len(executions) == 2 and all(r['exit_code'] == 0 for r in executions)
+    commands = {r['name']: r['command'] for r in executions}
+    for name, flag, expected in [('source_builder', '--manifest', BUILD / 'manifest.json'), ('ontology_builder', '--rhea-updates', BUILD / 'rhea-updates.json')]:
+        command = commands[name]
+        assert command.count(flag) == 1 and command[command.index(flag) + 1] == str(expected), 'Native argv selected wrong authority config'
+        assert not any(str(BUILD / 'runtime' / p) in command for p in HISTORICAL_CONFIGS)
+    for relative, digest in HISTORICAL_CONFIGS.items():
+        assert sha(BUILD / 'runtime' / relative) == digest, 'Historical config exception changed'
+
+
+def code_changes():
+    """Exact issue471 formatting successor; no other source or gate waiver."""
+    rows = load(PACKAGE / 'expected-changes.json')['code']
+    acceptance = load('/private/tmp/pathwaymech-next-232-root-formatting-acceptance-20261012.json')
+    assert acceptance['status'] == 'accepted_exact_issue471_formatting_successor'
+    assert acceptance['issue'] == 471 and acceptance['target_sha256'] == TARGET_SHA
+    verify(acceptance['handoff']['path'], acceptance['handoff'])
+    assert acceptance['semantic_review']['accepted'] is True
+    assert acceptance['bridge']['directory'] == str(Path(__file__).resolve().parent)
+    bridge_files = acceptance['bridge']['files']
+    assert len(bridge_files) == 3 and {r['relative_path'] for r in bridge_files} == {
+        'common.py', 'run-gates.py', 'preserve-maintained.py'}
+    for item in bridge_files:
+        verify(Path(__file__).resolve().parent / safe_relative(item['relative_path']), item)
+    expected = {'src/pathwaymech/ecocyc_complex.py', 'src/pathwaymech/identifiers.py',
+                'tests/test_ecocyc_complex_authority.py'}
+    changes = acceptance['changes']
+    assert len(changes) == 3 and {r['relative_path'] for r in changes} == expected
+    by_path = {r['relative_path']: r for r in rows}
+    for item in changes:
+        relative = item['relative_path']
+        prior = by_path[relative]
+        assert {k: prior['after'][k] for k in ('bytes', 'sha256')} == {
+            k: item['before'][k] for k in ('bytes', 'sha256')}
+        for key in ('before', 'after'):
+            verify(item[key]['path'], item[key])
+        assert item['after']['path'] == str(Path(
+            '/private/tmp/pathwaymech-next-232-formatting-successor-20261012/candidate') / relative)
+        prior['after'] = item['after']
+    return rows
+
+
+def verify_code_before(root):
+    for row in code_changes():
+        path = root / safe_relative(row['relative_path'])
+        verify(row['after']['path'], row['after'])
+        if row['before'] is None:
+            assert not path.exists() and not path.is_symlink(), 'New complex-adapter test already exists'
+        else:
+            verify(path, row['before'])
+
+
+def verify_captured232(root, require_bridge=True):
+    capture = load(BUILD / 'preparation-capture.json')
+    assert capture['prior_records'] == 232
+    verify_root_merge_bridge()
+    if require_bridge:
+        bridge = BASE_INFO['bridge']
+        assert bridge['status'] == 'exact_merged232_bridge_verified' and bridge['captured_scope'] == capture['scope']
+        verify(BUILD / 'preparation-capture.json', bridge['capture'])
+        assert bridge['root_evidence'] == load(PACKAGE / 'accepted-inputs.json')['root_merge_bridge']
+    actual = {r['relative_path'] for r in inventory(root, 'data/pathways')}
+    expected = {'data/pathways/' + r['relative_path'] for r in capture['records']}
+    assert actual == expected and sum(p.endswith('.yaml') for p in expected) == 232
+    for item in capture['records']: verify(root / 'data/pathways' / safe_relative(item['relative_path']), item['captured'])
+    for kind, relative in AUTHORITY_FILES.items(): verify(root / relative, binding(BUILD / 'baseline' / (kind + '.json')))
+    changes = {row['relative_path']: row for row in code_changes()}
+    assert len(changes) == 4 and sum(r['before'] is None for r in changes.values()) == 2
+    unchanged = 0
+    for item in capture['candidate_code']:
+        relative = item['relative_path']
+        if relative in changes: verify(item['captured']['path'], changes[relative]['after'])
+        elif relative in HISTORICAL_CONFIGS:
+            verify(item['captured']['path'], {'sha256': HISTORICAL_CONFIGS[relative]})
+            assert relative in AUTHORITY_FILES.values()
+        else:
+            verify(root / safe_relative(relative), item['captured']); unchanged += 1
+    assert unchanged == 219
+    verify_code_before(root)
+    assert not (root / TARGET_REL).exists() and not (root / TARGET_REL).is_symlink()
+    return capture
+
+
+def ordered_equal(left, right):
+    if type(left) is not type(right): return False
+    if isinstance(left, dict): return list(left) == list(right) and all(ordered_equal(v, right[k]) for k, v in left.items())
+    if isinstance(left, list): return len(left) == len(right) and all(ordered_equal(x, y) for x, y in zip(left, right, strict=True))
+    return left == right
+
+
+def verify_authority_conservation(root, adopted=False):
+    expected = load(PACKAGE / 'expected-changes.json')
+    for kind in ('sources', 'ontology'):
+        baseline = load(BUILD / 'baseline' / (kind + '.json'))
+        successor = load(BUILD / (kind + '.json'))
+        assert baseline['version'] == successor['version']
+        for section in ('terms', 'sources'):
+            assert all(k in successor[section] and ordered_equal(v, successor[section][k]) for k, v in baseline[section].items()), 'Prior nested authority object/order changed'
+            assert [k for k in successor[section] if k in baseline[section]] == list(baseline[section]), 'Prior authority relative order changed'
+            additions = {k: v for k, v in successor[section].items() if k not in baseline[section]}
+            assert additions == expected['authorities'][kind][section]
+        verify(root / AUTHORITY_FILES[kind], binding(BUILD / (kind + '.json')) if adopted
+               else binding(BUILD / 'baseline' / (kind + '.json')))
+    before = load(BUILD / 'baseline/manifest.json')
+    after = load(BUILD / 'manifest.json')
+    assert after[:len(before)] == before
+    assert after[len(before):] == expected['manifest_additions']
+    prior_rhea = load(BUILD / 'baseline/rhea-updates.json')
+    next_rhea = load(BUILD / 'rhea-updates.json')
+    assert next_rhea['ids'] == prior_rhea['ids'] + expected['rhea_additions']
+    assert {k: v for k, v in prior_rhea.items() if k != 'ids'} == {
+        k: v for k, v in next_rhea.items() if k != 'ids'}
+    for kind in ('manifest', 'rhea-updates'):
+        verify(root / AUTHORITY_FILES[kind], binding(
+            BUILD / (kind + '.json') if adopted else BUILD / 'baseline' / (kind + '.json')))
+
+
+def verify_cache_inputs(adopted=False):
+    expected = load(PACKAGE / 'expected-changes.json')
+    new = {r['cache_relative_path']: r for r in expected['new_originals']}; assert len(new) == 11
+    assert 'nad232-ECOLI-PC-1.xml' in new
+    accepted = load(PACKAGE / 'accepted-inputs.json')
+    verify(accepted['source_originals_capture']['path'], accepted['source_originals_capture'])
+    originals = load(accepted['source_originals_capture']['path'])['source_originals']; assert len(originals) == 791
+    for item in originals:
+        relative = str(safe_relative(item['cache_relative_path']))
+        verify_path_identity(item['path'], {**item, 'symlink': item['file_type'] == 'symlink'})
+        if relative not in new or adopted: verify(CACHE / relative, item, allow_symlink=True)
+    initial = load(PACKAGE / 'initial-cache-identity.json')
+    cache_baseline = load(PACKAGE / 'expected-cache-baseline.json')
+    verify(PACKAGE / 'initial-cache-identity.json', cache_baseline['fresh_identity_observation'])
+    assert cache_baseline['rows'] == initial['rows']
+    previous = {r['relative_path']: r for r in initial['rows']}
+    assert len(previous) == 789 and not (set(previous) & set(new))
+    verify_cache_union(CACHE, previous, new, adopted)
+    assert new['nad232-ECOLI-PC-1.xml']['original']['sha256'] == 'e36fbeb82a86b02acd1494807251805a45aa63f7b60b83e109453d096c3ac835'
+    return originals
+
+
+def verify_cache_union(cache, previous, new, adopted=False):
+    """Check every old body, including unselected originals, and exact new paths."""
+    assert not (set(previous) & set(new)), 'New cache path collides with old cache'
+    current = {r['relative_path']: r for r in inventory(cache)}
+    assert set(current) == set(previous) | (set(new) if adopted else set()), 'Cache inventory differs from exact original union'
+    for relative, item in previous.items(): verify_path_identity(cache / safe_relative(relative), item)
+    for relative, item in new.items():
+        verify(item['original']['path'], item['original'], allow_symlink=True)
+        destination = cache / safe_relative(relative)
+        assert destination.parent.resolve().is_relative_to(cache.resolve())
+        if adopted:
+            verify(destination, item['original'])
+            identity = path_identity(destination)
+            assert identity == {'file_type': 'regular', 'symlink': False, 'link_text': None,
+                'resolved_path': str(cache.resolve(strict=True) / safe_relative(relative))}, 'New copy must remain a regular file at its exact destination'
+        else: assert not destination.exists() and not destination.is_symlink(), 'NAD original destination already occupied'
+
+
+def verify_adopted(root):
+    assert sha(root / TARGET_REL) == TARGET_SHA
+    for key, relative in AUTHORITY_FILES.items():
+        verify(root / relative, load(COMPLETION)['outputs'][key + '.json'])
+    for item in code_changes():
+        verify(root / item['relative_path'], item['after'])
+    verify_authority_conservation(root, adopted=True)
+    verify_cache_inputs(adopted=True)
+
+
+def history_ready_for_render(root, baseline):
+    import yaml
+    current = inventory(root, 'history')
+    old = {r['relative_path']: r for r in baseline['history']}
+    for relative, item in old.items():
+        verify_path_identity(root / relative, item)
+    additions = [r for r in current if r['relative_path'] not in old]
+    target_history = []
+    implementation_history = []
+    for item in additions:
+        if item['relative_path'].endswith('.yaml'):
+            document = yaml.safe_load((root / item['relative_path']).read_bytes())
+            if document.get('target', {}).get('path') == TARGET_REL:
+                target_history.append(item)
+            if document.get('target', {}).get('path') == IMPLEMENTATION_HISTORY_REL:
+                implementation_history.append(item)
+    assert implementation_history, 'Scaffold native complex-adapter implementation history before rendering and gates'
+    assert target_history, 'Scaffold the native NAD curation history before rendering and gates'
+    return current
+
+
+def verify_render_history(root, expected):
+    assert inventory(root, 'history') == expected, 'Late history invalidates rendered pages and gate scope'
+
+
+def verify_gate_input_scope(root, gates, adoption_receipt, allowed_additions=None):
+    """Full hidden/ignored input closure; additions require exact new-file bindings."""
+    verify(gates['inputs']['path'], gates['inputs'])
+    inputs = load(gates['inputs']['path'])
+    verify(adoption_receipt, inputs['adoption_receipt'])
+    verify(root / TARGET_REL, inputs['target'])
+    assert inputs['render_history_inputs'] == gates['render_history_inputs']
+    verify_render_history(root, inputs['render_history_inputs'])
+    generated = set(load(PACKAGE / 'expected-changes.json')['allowed_generated_paths'])
+    rows = inputs['all_maintained_inputs']; previous = {r['relative_path']: r for r in rows}
+    assert len(previous) == len(rows)
+    additions = {}
+    for row in allowed_additions or []:
+        relative = str(safe_relative(row['relative_path']))
+        assert relative.startswith(('reviews/structured/', 'history/', DOSSIER_REL + '/'))
+        assert relative not in previous and relative not in additions, 'Approval cannot replace gate input'
+        verify(root / relative, row); additions[relative] = row
+    current = {r['relative_path']: r for r in inventory(root, exclude_runtime=True)}
+    assert set(current) - generated == (set(previous) | set(additions)) - generated, 'Unbound nongenerated input inventory change'
+    for relative, row in previous.items():
+        if relative not in generated: verify_path_identity(root / relative, row)
+    return {'input_receipt': binding(gates['inputs']['path']),
+        'nongenerated_inputs_checked': sum(r not in generated for r in previous),
+        'exact_new_additions_checked': len(additions), 'whole_render_history_exact': True,
+        'complete_current_inventory_verified': True}

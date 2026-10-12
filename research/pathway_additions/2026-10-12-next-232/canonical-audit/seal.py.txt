@@ -1,0 +1,63 @@
+"""Seal completed actual-output audit without modifying any build or input."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+A=Path(__file__).resolve().parent
+O=Path('/private/tmp/pathwaymech-next-232-canonical-build-20261012')
+
+
+def bind(p):
+    p=Path(p)
+    with p.open('rb') as f:digest=hashlib.file_digest(f,'sha256').hexdigest()
+    return {'path':str(p),'bytes':p.stat().st_size,'sha256':digest}
+
+
+def load(p):return json.loads(Path(p).read_bytes())
+
+
+def write(name,obj):
+    with (A/name).open('x') as f:json.dump(obj,f,indent=2,ensure_ascii=False);f.write('\n')
+
+
+pins=load(A/'terminal-bindings.json')
+assert bind(O/'handoff.json')['sha256']==pins['build_handoff_sha256']
+assert bind(O/'artifact-manifest.json')['sha256']==pins['build_manifest_sha256']
+assert load(A/'successor-execution.json')['exit_code']==load(A/'streams-execution.json')['exit_code']==0
+assert load(A/'findings.json')==[]
+manifest=load(O/'artifact-manifest.json')
+for row in manifest['artifacts']+manifest['original_links']:
+    assert bind(row['path'])=={k:row[k] for k in ('path','bytes','sha256')}
+    p=Path(row['path'])
+    assert {'file_type':'symlink' if p.is_symlink() else 'regular','link_text':os.readlink(p) if p.is_symlink() else None,'resolved_path':str(p.resolve(strict=True))}=={k:row[k] for k in ('file_type','link_text','resolved_path')}
+expected={Path(r['path']) for r in manifest['artifacts']+manifest['original_links']}|{O/'handoff.json',O/'artifact-manifest.json'}
+assert {Path(x) for x in subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow',str(O)],text=True).splitlines()}==expected
+write('final-build-closure.json',{'handoff':bind(O/'handoff.json'),'manifest':bind(O/'artifact-manifest.json'),'regular_artifacts':485,'original_links':791,'all_bodies_identities_and_inventory_rechecked_before_audit_seal':True})
+paths=sorted(Path(x) for x in subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow',str(A)],text=True).splitlines())
+assert all(p.is_file() and not p.is_symlink() and p.resolve()==p for p in paths)
+rows=[{**bind(p),'file_type':'regular','link_text':None,'resolved_path':str(p)} for p in paths]
+write('artifact-manifest.json',{'artifacts':rows,'artifact_count':len(rows),'hidden_ignored_followed_included':True,'scope':'Complete independent actual-output audit; original failed auditor probe and separate successful successor preserved.'})
+write('handoff.json',{
+    'status':'accepted_actual_full_native_external_build',
+    'at':datetime.datetime.now(datetime.UTC).isoformat(),
+    'reviewer':'/root/atp_build_preparation_audit',
+    'actual_build':bind(O/'handoff.json'),'actual_build_manifest':bind(O/'artifact-manifest.json'),
+    'actual_outer_execution':bind(Path('/private/tmp/pathwaymech-next-232-root-canonical-execution-20261012/execution.json')),
+    'root_preparation_acceptance':bind(Path('/private/tmp/pathwaymech-next-232-root-canonical-preparation-acceptance-20261012.json')),
+    'target_sha256':'96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7',
+    'manifest':bind(A/'artifact-manifest.json'),'artifact_count':len(rows),'report':bind(A/'REVIEW.md'),'findings':bind(A/'findings.json'),'verdict':bind(A/'verdict.json'),
+    'actual_native_outputs':load(A/'verdict.json')['actual_outputs'],
+    'build_artifacts_closed':485,'original_links':791,'runtime_files':225,'prospective_pathways':233,'retained_authority_ids':4476,'shared_cache_identities':789,
+    'actual_fresh_preexecution_SQL_hashes':4,'actual_native_SQL_metadata_hashes':4,'audit_reran_production_SQL_hashes':False,
+    'exact_decoded_proposal_parity':True,'native_serializer_bytes_retained':True,'old_objects_and_order_exact':True,'manifest_old_prefix':782,'manifest_entries':792,'Rhea_selectors':24,
+    'actual_execution_audit':bind(A/'successor-execution.json'),'actual_stream_audit':bind(A/'streams-execution.json'),'initial_auditor_failure':bind(A/'actual-output-execution.json'),
+    'auditor_failure_scope':'Original probe expected old outer receipt format. Actual NAD commands-list format correctly records both exits; separate successor adapted this expectation and passed without altering native output or any root receipt.',
+    'inherited_adapter_acceptance':bind(Path('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json')),
+    'adapter_independence_limit':'Reviewer authored earlier complex adapter. Substantive adapter independence explicitly inherits root acceptance of the other reviewer; this is an independent actual execution/output integration audit.',
+    'new_full_scientific_review_claim':False,'remaining_findings':[],
+    'audit_native_builder_execution':False,'audit_maintained_cache_Git_GitHub_writes':False,'installs_or_sync':False,'maintained_adoption':False,'source_exhaustion':False,
+    'next_step':'Root intake may accept exact actual native outputs for separate guarded maintained-integration preparation. Bind actual PPi merged base separately before maintained adoption.'})
+print(json.dumps({'handoff':bind(A/'handoff.json'),'manifest':bind(A/'artifact-manifest.json'),'artifacts':len(rows)}))

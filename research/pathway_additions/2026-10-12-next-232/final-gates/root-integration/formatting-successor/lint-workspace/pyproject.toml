@@ -1,0 +1,98 @@
+[project]
+name = "pathwaymech"
+version = "0.1.0"
+description = "Pathway mechanism curation for CultureBotAI"
+readme = "README.md"
+license = {text = "BSD-3-Clause"}
+requires-python = ">=3.11"
+dependencies = [
+    "linkml>=1.11.1",
+    # The vendored id-label correspondence gate resolves CURIEs through OAK.
+    "oaklib>=0.7.3",
+    # oaklib imports eutils, which still imports pkg_resources; setuptools 82+ removed it.
+    "setuptools<82",
+    # jsonschema checks `format: date-time` (CurationEvent.timestamp) only when
+    # this is installed. Without it the closed gate would silently skip the
+    # check, and src/pathwaymech/schema.py would fail at import (KeyError).
+    "rfc3339-validator>=0.1.4",
+    "pyyaml>=6.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+pathwaymech-check-docs = "pathwaymech.cli:check_docs_main"
+pathwaymech-check-identifiers = "pathwaymech.cli:check_identifiers_main"
+pathwaymech-check-provenance = "pathwaymech.cli:check_provenance_main"
+pathwaymech-cross-mech-proteins = "pathwaymech.cli:cross_mech_proteins_main"
+pathwaymech-deep-research-contract = "pathwaymech.cli:deep_research_contract_main"
+pathwaymech-export-kgx = "pathwaymech.cli:export_kgx_main"
+pathwaymech-export-sssom = "pathwaymech.cli:export_sssom_main"
+pathwaymech-import-bigg = "pathwaymech.cli:import_bigg_main"
+pathwaymech-import-biopax = "pathwaymech.cli:import_biopax_main"
+pathwaymech-import-brenda = "pathwaymech.cli:import_brenda_main"
+pathwaymech-import-bvbrc = "pathwaymech.cli:import_bvbrc_main"
+pathwaymech-import-dbcan-pul = "pathwaymech.cli:import_dbcan_pul_main"
+pathwaymech-import-dram = "pathwaymech.cli:import_dram_main"
+pathwaymech-import-gapmind = "pathwaymech.cli:import_gapmind_main"
+pathwaymech-import-gocam = "pathwaymech.cli:import_gocam_main"
+pathwaymech-import-go = "pathwaymech.cli:import_go_main"
+pathwaymech-import-hadeg = "pathwaymech.cli:import_hadeg_main"
+pathwaymech-import-kegg = "pathwaymech.cli:import_kegg_main"
+pathwaymech-import-mibig = "pathwaymech.cli:import_mibig_main"
+pathwaymech-import-metacyc = "pathwaymech.cli:import_metacyc_main"
+pathwaymech-import-modelseed = "pathwaymech.cli:import_modelseed_main"
+pathwaymech-import-pmn = "pathwaymech.cli:import_pmn_main"
+pathwaymech-import-panther = "pathwaymech.cli:import_panther_main"
+pathwaymech-import-rhea = "pathwaymech.cli:import_rhea_main"
+pathwaymech-import-seed-subsystems = "pathwaymech.cli:import_seed_subsystems_main"
+pathwaymech-import-unipathway = "pathwaymech.cli:import_unipathway_main"
+pathwaymech-import-veupathdb = "pathwaymech.cli:import_veupathdb_main"
+pathwaymech-import-wikipathways = "pathwaymech.cli:import_wikipathways_main"
+pathwaymech-render-pages = "pathwaymech.cli:render_pages_main"
+pathwaymech-check-pages = "pathwaymech.cli:check_pages_main"
+pathwaymech-run-qc = "pathwaymech.cli:run_qc_main"
+pathwaymech-seed-from-sources = "pathwaymech.cli:seed_from_sources_main"
+pathwaymech-validate = "pathwaymech.cli:validate_main"
+pathwaymech-validate-sources = "pathwaymech.cli:validate_sources_main"
+pathwaymech-validate-strict = "pathwaymech.cli:validate_strict_main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# tests/test_claude_skills.py imports the scripts/ package; without the
+# repository root on the path `just test` stopped at collection.
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# extend-exclude, not exclude: `exclude` REPLACES ruff's defaults (which cover
+# .venv, .git, build/, ...). The files below are claw-governed and vendored
+# byte-identical to canon, so they are linted there, not here: reformatting one
+# would fail scripts/check_vendored_sync.sh.
+extend-exclude = [
+    "scripts/record_review.py",
+    "tests/test_record_review_contract.py",
+    "scripts/check_vendored_sync.py",
+    "scripts/validate_id_label_correspondence.py",
+    "scripts/chem_formula.py",
+    "scripts/deep_research_contract.py",
+    "scripts/auto_merge_ready_prs.py",
+    "scripts/verify_merge_integrity.py",
+    "tests/test_skill_frontmatter.py",
+    "tests/test_curation_timestamp_schema.py",
+    "tests/test_id_label_empty_adapter.py",
+    "tests/test_id_label_unknown_prefix.py",
+    "tests/test_id_label_plausibility.py",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

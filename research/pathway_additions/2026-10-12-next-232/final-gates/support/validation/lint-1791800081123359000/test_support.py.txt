@@ -1,0 +1,74 @@
+"""Isolated meaningful guards and inert lossless serialization checks."""
+from support import *
+from probe_fragment_schema import fixture
+import copy,tempfile,yaml
+import support as current
+
+def main():
+ results=[]
+ def reject(name,callback):
+  try:callback()
+  except (AssertionError,ValueError,OSError) as error:results.append({'name':name,'rejected':True,'exception':type(error).__name__,'message':str(error)[:300]})
+  else:raise AssertionError('accepted invalid fixture: '+name)
+ stamp=now();g={'status':'passed','base':BASE,'target_sha256':TARGET_SHA,'history_verified_after_site_current':True,'receipts':[{'name':n,'exit_code':0,'cwd':str(ROOT),'command':['fixture-only'],'started_at':stamp,'finished_at':stamp} for n in GATE_NAMES]}
+ validate_gate_shape(g)
+ for key,value in [('status','running'),('base','0'*40),('target_sha256','0'*64),('history_verified_after_site_current',False)]:
+  wrong=copy.deepcopy(g);wrong[key]=value;reject('gate-'+key,lambda w=wrong:validate_gate_shape(w))
+ for field,value in [('exit_code',1),('cwd','/private/tmp/wrong'),('command',[])]:
+  wrong=copy.deepcopy(g);wrong['receipts'][3][field]=value;reject('gate-command-'+field,lambda w=wrong:validate_gate_shape(w))
+ wrong=copy.deepcopy(g);wrong['receipts']=wrong['receipts'][:-1];reject('missing final site gate',lambda:validate_gate_shape(wrong))
+ wrong=copy.deepcopy(g);wrong['receipts'][0],wrong['receipts'][1]=wrong['receipts'][1],wrong['receipts'][0];reject('gate order',lambda:validate_gate_shape(wrong))
+ for path in [ROOT/'future',HERE/'future',PREP/'future',Path('/private/tmp/pathwaymech-curation-authorities/future'),Path('/private/tmp/not-ppi')]:reject('protected or unrelated output '+str(path),lambda p=path:external_new(p))
+ # Temporary fixtures are outside every maintained or sealed input surface.
+ with tempfile.TemporaryDirectory(prefix='pathwaymech-next-232-finalization-probe-',dir='/private/tmp') as directory:
+  base=Path(directory);source=base/'source.py';source.write_text('value = 1  \n\n')
+  target,body,mode=encoded_archive(source,base/'destination/source.py');assert target.name=='source.py.txt.json' and mode=='lossless-utf8-json';assert json.loads(body)['text'].encode()==source.read_bytes()
+  large=base/'original.tsv';large.write_bytes(b'\tdata\n'*400000);_,compressed,mode=encoded_archive(large,base/'destination/original.tsv');assert mode=='gzip-exact-bytes' and gzip.decompress(compressed)==large.read_bytes()
+  binary=base/'retained.pyc.bin';binary.write_bytes(bytes(range(256)));dest,compressed,mode=encoded_archive(binary,base/'destination/retained.pyc.bin');assert dest.name=='retained.pyc.bin.gz' and mode=='gzip-exact-bytes' and gzip.decompress(compressed)==binary.read_bytes()
+  alias=base/'source-link.py';alias.symlink_to(source)
+  reject('regular evidence binding rejects file symlink',lambda:bind(alias))
+  pipe=base/'fifo';os.mkfifo(pipe);reject('regular evidence binding rejects FIFO without reading',lambda:bind(pipe))
+  reject('duplicate archive destination before mutation',lambda:archive_files([(source,'same.py'),(source,'same.py')],base/'collision'))
+  assert not (base/'collision').exists()
+  root=base/'fake-root';(root/'history').mkdir(parents=True);h=root/'history/a.yaml';h.write_text('event: CREATE\n');rows=inventory(root,'history');assert_history(root,rows)
+  h.write_text('event: EDIT\n');reject('late changed history',lambda:assert_history(root,rows));h.write_text('event: CREATE\n')
+  (root/'history/b.yaml').write_text('event: EDIT\n');reject('late added history',lambda:assert_history(root,rows))
+  # Replay only this new read-only guard against isolated exact correction fixtures.
+  fake=base/'formatting-root';execution=base/'formatting-execution';execution.mkdir()
+  original=load(EXECUTION/'adoption.json');sample=copy.deepcopy(original)
+  for row in sample['changes']:
+   owner=fake/row['relative_path'];owner.parent.mkdir(parents=True,exist_ok=True);owner.write_bytes(Path(row['after']['path']).read_bytes())
+  bytecode=fake/'scripts/__pycache__/new_history_record.cpython-313.pyc'
+  sample['generated_bytecode_preserved_then_removed']['observed_cache']['path']=str(bytecode)
+  old_root,old_execution=current.ROOT,current.EXECUTION
+  current.ROOT,current.EXECUTION=fake,execution
+  def adoption(value):
+   (execution/'adoption.json').write_text(json.dumps(value));return current.verify_formatting_adoption()
+  try:
+   adoption(sample)
+   for key,value in [('status','pending'),('all_other_files_exact',False)]:
+    wrong=copy.deepcopy(sample);wrong[key]=value;reject('correction '+key,lambda w=wrong:adoption(w))
+   wrong=copy.deepcopy(sample);wrong['acceptance']['sha256']='0'*64;reject('wrong correction acceptance',lambda:adoption(wrong))
+   wrong=copy.deepcopy(sample);wrong['changes']=wrong['changes'][:-1];reject('missing corrected owner',lambda:adoption(wrong))
+   wrong=copy.deepcopy(sample);wrong['changes'][3]=copy.deepcopy(wrong['changes'][0]);reject('duplicate corrected owner',lambda:adoption(wrong))
+   wrong=copy.deepcopy(sample);wrong['changes'][0]['before']['bytes']+=1;reject('altered original formatting binding',lambda:adoption(wrong))
+   owner=fake/sample['changes'][0]['relative_path'];body=owner.read_bytes();owner.write_bytes(body+b'\n');reject('changed actual corrected body',lambda:adoption(sample));owner.write_bytes(body)
+   wrong=copy.deepcopy(sample);wrong['generated_bytecode_preserved_then_removed']['observed_cache']['path']=str(fake/'other.pyc');reject('wrong observed bytecode path',lambda:adoption(wrong))
+   bytecode.parent.mkdir(parents=True);bytecode.symlink_to(base/'missing-bytecode-target');reject('remaining broken bytecode symlink',lambda:adoption(sample))
+  finally:current.ROOT,current.EXECUTION=old_root,old_execution
+ native,doc=fixture();native['validate_review'](doc,ROOT/'schema/record_review.yaml')
+ dumped=native['_dump_document'](doc);assert native['load_document'](dumped.encode())==doc
+ reject('native YAML aliases rejected',lambda:native['load_document'](b'a: &ref [x]\nb: *ref\n'))
+ broken=copy.deepcopy(doc);broken['assessments'][0]['evidence_ids']=['missing-evidence'];reject('unknown evidence linkage',lambda:native['validate_review'](broken,ROOT/'schema/record_review.yaml'))
+ broken=copy.deepcopy(doc);broken['finished_at']=broken['finished_at'].replace('Z','+00:00');reject('non-Z review timestamp',lambda:native['validate_review'](broken,ROOT/'schema/record_review.yaml'))
+ fragments=load(HERE/'review-content-fragments.json')['review_fields'];assert fragments['findings']==[] and fragments['actions']==[] and len(fragments['assessments'])==413
+ record=yaml.safe_load((ROOT/TARGET_REL).read_bytes());assert len(record['mechanistic_edges'])==102
+ original_refs=load('/private/tmp/pathwaymech-next-232-science-review-20261012/reference-assessments.json')
+ assert record['references'][:94]==[r['reference'] for r in original_refs]
+ assert len(record['references'])==97
+ for assessment in fragments['assessments']:
+  if assessment['assessment_id'].startswith('edge-'):
+   details=json.loads(assessment['details']);edge=details['current_exact_edge'];assert edge==next(e for e in record['mechanistic_edges'] if e['id']==edge['id'])
+ write(HERE/'bounded-tests.json',{'status':'passed','negative_controls':results,'negative_count':len(results),'positive_controls':['complete9gate shape only (explicit fixture, not execution)','lossless inert Python wrapper','lossless largeTSV gzip','lossless retained binary bytecode gzip','archive collision preflight leaves no files','native no-alias roundtrip semantic validation','all102exact currentedge objects retained','413assessments with empty nativefindings/actions'],'scope':'Isolated external fixtures; not actual maintained gate/save receipts. No fullsuite.'})
+ print({'status':'passed','negative_controls':len(results)})
+if __name__=='__main__':main()

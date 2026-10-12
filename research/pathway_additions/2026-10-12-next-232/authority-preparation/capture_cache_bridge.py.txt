@@ -1,0 +1,23 @@
+"""Bind the parent's concurrent, authorized exact PPi cache adoption."""
+from common import *
+
+path=Path('/private/tmp/pathwaymech-next-231-maintained-adoption-20261012/adoption.json')
+receipt=read(path);receipt_pin=bind(path)
+assert receipt['status']=='adopted_pending_maintained_gates_and_saved_review'
+assert receipt['canonical_handoff']['sha256']=='7b51651f34562e1fc15535800623dfff85a9cba1ab60ab3a998437252130401b'
+assert receipt['canonical_target_identity']['root_actual_canonical_acceptance']['sha256']=='8571c9b1f5590c357762fa3e874909e1eb15aa9f7a91a3f85ef3c46541b5adfd'
+assert receipt['base']=='a33f81ebed11cc61880aa645e4d5b73bb8480435'
+assert receipt['cache_old_identities_verified']==765 and receipt['cache_new_copies_regular_verified']==24
+capture=read(O/'capture.json');old={r['relative_path']:r for r in capture['source_cache_initial']};current=inventory(CACHE);fresh={r['relative_path']:r for r in current}
+assert len(old)==765 and len(fresh)==789
+assert all(fresh[k]==v for k,v in old.items())
+added={str(Path(p).relative_to(CACHE)) for p in receipt['new_cache_copies']}
+assert len(added)==24 and set(fresh)-set(old)==added
+native={r['cache_relative_path']:r for r in read(B/'preparation-capture.json')['source_originals']}
+for name in added:
+    row=fresh[name];pin=native[name]
+    assert row['bytes']==pin['bytes'] and row['sha256']==pin['sha256']
+    assert row['file_type']=='regular' and row['link_text'] is None and row['resolved_path']==str(CACHE/name)
+copied=capture_file(path,O/'concurrent-cache-bridge/PPi-adoption.json',receipt_pin)
+write('concurrent-cache-bridge/receipt.json',{'at':now(),'authorization':'Parent root message: actual maintained adoption7b50f1/0 added24acceptedPPioriginals; this agent performs read-only verification.','adoption':copied,'initial_capture':bind(O/'capture.json'),'old_files_unchanged_exact_bodies_and_link_identity':765,'new_regular_files':24,'added_originals':[fresh[k] for k in sorted(added)],'expected_current_inventory':current,'scope':'Exact765old+24authorizedrootPPiadditions only. Does not relabel historical NAD capture or assert PPi merged/scientifically accepted here. No NAD shared-cache writes.'})
+print({'status':'exact_concurrent_root_adoption_bound','old':765,'new':24,'current':789,'adoption_sha256':receipt_pin['sha256']})

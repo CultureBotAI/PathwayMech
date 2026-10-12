@@ -1,0 +1,12 @@
+--- tests/test_new_history_record.py (original)
++++ tests/test_new_history_record.py (candidate)
+@@ -284,7 +284,8 @@
+     completed = subprocess.run(
+         [sys.executable, str(REPO_ROOT / "scripts" / "validate_history.py")],
+         cwd=REPO_ROOT, capture_output=True, text=True, check=False,
+-        env={"PATH": "/usr/bin:/bin", "HOME": os.environ.get("HOME", "/tmp")},
++        env={"PATH": "/usr/bin:/bin", "HOME": os.environ.get("HOME", "/tmp"),
++             "PYTHONDONTWRITEBYTECODE": "1"},
+     )
+     assert completed.returncode == 0, completed.stderr
+     assert "valid against" in completed.stdout

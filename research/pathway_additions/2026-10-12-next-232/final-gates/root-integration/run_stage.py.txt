@@ -1,0 +1,125 @@
+"""Root orchestration of separately accepted helpers, with immutable command streams."""
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import time
+
+HERE = Path(__file__).resolve().parent
+PREP = Path('/private/tmp/pathwaymech-next-232-integration-preparation-20261012')
+ROOT = Path('/private/tmp/pathwaymech-next-232-20261012')
+PYTHON = Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+BASE = '19af3cc154dbbd757c17299b36923e5f9ccc31dc'
+TREE = 'd0712923d0f66d4c08b25b7fa0ed5adc9dbdc7fe'
+ACCEPTANCE = Path('/private/tmp/pathwaymech-next-232-root-integration-acceptance-20261012.json')
+MERGED = HERE / 'merged-base.json'
+BASELINE = HERE / 'baseline'
+ADOPTION = HERE / 'adoption.json'
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def binding(path):
+    path = Path(path)
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('stage', choices=['bind', 'capture', 'dry-run', 'adopt', 'history', 'gates'])
+    stage = parser.parse_args().stage
+    acceptance = load(ACCEPTANCE)
+    assert acceptance['status'] == 'accepted_for_guarded_actual_merged_baseline_integration'
+    assert binding(PREP / 'handoff.json') == acceptance['preparation']
+    env_delta = {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONNOUSERSITE': '1',
+                 'GIT_OPTIONAL_LOCKS': '0', 'PYTHONPATH': str(PREP)}
+    assert 'PATHWAYMECH_NAD_MERGED_BASE' not in os.environ
+    if stage != 'bind':
+        assert load(MERGED)['status'] == 'actual_merged_base_verified'
+        env_delta['PATHWAYMECH_NAD_MERGED_BASE'] = str(MERGED)
+    py = [str(PYTHON), '-B']
+    shared = ['--root', str(ROOT), '--base', BASE]
+    commands = {
+        'bind': [py + [str(PREP / 'bind_merged_base.py'), *shared, '--tree', TREE,
+                      '--branch', 'feat/pathway-next-232-20261012', '--output', str(MERGED)]],
+        'capture': [py + [str(PREP / 'capture-baseline.py'), *shared, '--output', str(BASELINE)]],
+        'dry-run': [py + [str(PREP / 'adopt.py'), *shared, '--baseline-receipt', str(BASELINE / 'receipt.json'),
+                         '--receipt-output', str(ADOPTION)]],
+        'adopt': [py + [str(PREP / 'adopt.py'), *shared, '--baseline-receipt', str(BASELINE / 'receipt.json'),
+                       '--receipt-output', str(ADOPTION), '--apply']],
+        'gates': [py + [str(PREP / 'run-gates.py'), *shared, '--adoption-receipt', str(ADOPTION),
+                       '--output', str(HERE / 'gates')]],
+    }
+    history_before = None
+    if stage == 'history':
+        plan_path = Path('/private/tmp/pathwaymech-next-232-root-history-plan-20261012.json')
+        assert binding(plan_path)['sha256'] == 'cd8abe415d8bcf02a5770ebe554d5c96e916ee25649e377c4562a88f2d61be55'
+        adoption = load(ADOPTION)
+        assert adoption['status'] == 'adopted_pending_maintained_gates_and_saved_review'
+        assert binding(ROOT / 'data/pathways/nad-phosphorylation-and-dephosphorylation.yaml') == adoption['target']
+        assert not (ROOT / 'pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html').exists()
+        for row in adoption['implementation_changes']:
+            actual = binding(ROOT / row['relative_path'])
+            assert all(actual[key] == row['after'][key] for key in ('bytes', 'sha256'))
+        import sys
+        sys.path.insert(0, str(PREP))
+        import common
+        history_before = common.inventory(ROOT, 'history')
+        commands['history'] = [row['command'] for row in load(plan_path)['commands']]
+        env_delta['PYTHONPATH'] = str(ROOT / 'src') + os.pathsep + str(ROOT)
+    output = HERE / (stage + '-' + str(time.time_ns()))
+    output.mkdir()
+    write(output / 'inputs.json', {'at': now(), 'runner': binding(__file__),
+          'acceptance': binding(ACCEPTANCE), 'stage': stage, 'commands': commands[stage],
+          'history_before': history_before, 'scope': 'Root executes only this selected stage.'})
+    receipts = []
+    for index, command in enumerate(commands[stage]):
+        stdout, stderr = output / f'{index}.stdout', output / f'{index}.stderr'
+        started = now()
+        with stdout.open('xb') as out, stderr.open('xb') as err:
+            result = subprocess.run(command, cwd=ROOT, env={**os.environ, **env_delta}, stdout=out, stderr=err)
+        receipts.append({'command': command, 'cwd': str(ROOT), 'environment': env_delta,
+                         'started_at': started, 'finished_at': now(), 'exit_code': result.returncode,
+                         'stdout': binding(stdout), 'stderr': binding(stderr)})
+        print(json.dumps({'stage': stage, 'index': index, 'exit_code': result.returncode,
+                          'stdout': str(stdout), 'stderr': str(stderr)}), flush=True)
+        if result.returncode:
+            write(output / 'execution.json', {'status': 'failed', 'stage': stage, 'commands': receipts})
+            return result.returncode
+    if stage == 'history':
+        import yaml
+        after = common.inventory(ROOT, 'history')
+        old = {row['relative_path']: row for row in history_before}
+        current = {row['relative_path']: row for row in after}
+        assert all(current.get(path) == row for path, row in old.items())
+        added = [row for path, row in current.items() if path not in old]
+        assert len(added) == 2
+        targets = [yaml.safe_load(Path(row['path']).read_bytes())['target']['path'] for row in added]
+        assert set(targets) == {'data/pathways/nad-phosphorylation-and-dephosphorylation.yaml', 'src/pathwaymech/ecocyc_complex.py'}
+        write(HERE / 'history.json', {'status': 'two_native_histories_created_before_render', 'at': now(),
+              'plan': binding(plan_path), 'adoption': binding(ADOPTION), 'commands': receipts,
+              'before_count': len(history_before), 'after_count': len(after), 'new_histories': added})
+        write(HERE / 'history-extra-files.json', added)
+    write(output / 'execution.json', {'status': 'passed', 'stage': stage, 'commands': receipts})
+    print(json.dumps({'status': 'passed', 'stage': stage, 'receipt': binding(output / 'execution.json')}), flush=True)
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

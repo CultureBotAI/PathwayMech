@@ -1,0 +1,188 @@
+"""Root-only exact formatting adoption, pre-render history and fresh full gates."""
+import argparse
+from datetime import datetime, timezone
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import time
+
+HERE = Path(__file__).resolve().parent
+ROOT = Path('/private/tmp/pathwaymech-next-232-20261012')
+ORIGINAL = Path('/private/tmp/pathwaymech-next-232-root-integration-execution-20261012')
+PREP = Path('/private/tmp/pathwaymech-next-232-integration-preparation-20261012')
+BRIDGE = Path('/private/tmp/pathwaymech-next-232-formatting-bridge-20261012')
+ACCEPTANCE = Path('/private/tmp/pathwaymech-next-232-root-formatting-acceptance-20261012.json')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+BASE = '19af3cc154dbbd757c17299b36923e5f9ccc31dc'
+ENV = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+       'PYTHONNOUSERSITE': '1', 'GIT_OPTIONAL_LOCKS': '0',
+       'PATHWAYMECH_NAD_MERGED_BASE': str(ORIGINAL / 'merged-base.json'),
+       'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)}
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def bind(path):
+    path = Path(path)
+    assert path.is_file() and not path.is_symlink(), path
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def verify(row, path=None):
+    current = bind(path or row['path'])
+    assert all(current[k] == row[k] for k in ('bytes', 'sha256')), path or row['path']
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        stream.write(json.dumps(value, indent=2) + '\n')
+
+
+def common(path):
+    os.environ['PATHWAYMECH_NAD_MERGED_BASE'] = ENV['PATHWAYMECH_NAD_MERGED_BASE']
+    spec = importlib.util.spec_from_file_location('root_correction_guards', path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def run(command, directory, name):
+    started = now()
+    with (directory / (name + '.stdout')).open('xb') as stdout:
+        with (directory / (name + '.stderr')).open('xb') as stderr:
+            result = subprocess.run(command, cwd=ROOT, env=ENV, stdout=stdout, stderr=stderr)
+    receipt = {'command': command, 'cwd': str(ROOT), 'started_at': started,
+               'finished_at': now(), 'exit_code': result.returncode,
+               'stdout': bind(directory / (name + '.stdout')),
+               'stderr': bind(directory / (name + '.stderr'))}
+    write(directory / (name + '-execution.json'), receipt)
+    print(json.dumps(receipt), flush=True)
+    result.check_returncode()
+    return receipt
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('stage', choices=['adopt', 'history', 'gates', 'preserve'])
+    stage = parser.parse_args().stage
+    acceptance = load(ACCEPTANCE)
+    assert acceptance['status'] == 'accepted_exact_issue471_formatting_successor'
+    verify(acceptance['runner'], __file__)
+    for row in acceptance['bridge']['files']:
+        verify(row, BRIDGE / row['relative_path'])
+    output = HERE / (stage + '-' + str(time.time_ns()))
+    output.mkdir()
+    write(output / 'inputs.json', {'at': now(), 'stage': stage,
+                                 'acceptance': bind(ACCEPTANCE), 'runner': bind(__file__)})
+    if stage == 'adopt':
+        old = common(PREP / 'common.py')
+        old.verify_package()
+        old.validate_base(ROOT, BASE, clean=False)
+        old.verify_adopted(ROOT)
+        before = old.inventory(ROOT, exclude_runtime=True)
+        changes = acceptance['changes'] + [acceptance['history_test_correction']]
+        cache = acceptance['generated_bytecode']
+        assert cache['observed_cache']['path'] == str(ROOT / 'scripts/__pycache__/new_history_record.cpython-313.pyc')
+        verify(cache['observed_cache'])
+        verify(cache['preserved_cache'])
+        assert cache['observed_cache']['sha256'] == cache['preserved_cache']['sha256']
+        removed = 'scripts/__pycache__/new_history_record.cpython-313.pyc'
+        assert removed not in {r['relative_path'] for r in load(ORIGINAL / 'baseline/baseline.json')['all_maintained_files']}
+        assert removed not in {r['relative_path'] for r in load(ORIGINAL / 'gates/inputs.json')['all_maintained_inputs']}
+        for row in changes:
+            verify(row['before'], ROOT / row['relative_path'])
+            verify(row['before'])
+            verify(row['after'])
+        # Enforce the complete successor scope before the first maintained mutation.
+        new = common(BRIDGE / 'common.py')
+        guarded = {r['relative_path']: r for r in new.code_changes()}
+        assert len(guarded) == 5
+        for row in changes:
+            assert guarded[row['relative_path']]['after'] == row['after']
+        write(HERE / 'before-formatting.json', before)
+        for row in changes:
+            (ROOT / row['relative_path']).write_bytes(Path(row['after']['path']).read_bytes())
+        Path(cache['observed_cache']['path']).unlink()
+        new.verify_adopted(ROOT)
+        after = new.inventory(ROOT, exclude_runtime=True)
+        old_rows = {r['relative_path']: r for r in before}
+        new_rows = {r['relative_path']: r for r in after}
+        assert set(new_rows) == set(old_rows) - {removed}
+        changed = {p for p in new_rows if old_rows[p] != new_rows[p]}
+        assert changed == {r['relative_path'] for r in changes}
+        write(HERE / 'adoption.json', {'status': 'exact_formatting_and_history_test_correction_adopted',
+              'at': now(), 'acceptance': bind(ACCEPTANCE), 'before': bind(HERE / 'before-formatting.json'),
+              'changes': changes, 'generated_bytecode_preserved_then_removed': cache,
+              'all_other_files_exact': True,
+              'original_adoption': bind(ORIGINAL / 'adoption.json'), 'new_histories': False})
+    elif stage == 'history':
+        assert load(HERE / 'adoption.json')['status'] == 'exact_formatting_and_history_test_correction_adopted'
+        c = common(BRIDGE / 'common.py')
+        c.verify_adopted(ROOT)
+        previous = load(ORIGINAL / 'history.json')
+        before = c.inventory(ROOT, 'history')
+        command = [PYTHON, '-B', 'scripts/new_history_record.py', '--actor-name', 'codex',
+                   '--actor-type', 'ai_agent', '--model', 'gpt-6', '--agent-tool', 'codex',
+                   '--outcome', 'changed', '--kind', 'infrastructure', '--slug',
+                   'ecocyc-complex-authority', '--path', 'src/pathwaymech/ecocyc_complex.py',
+                   '--event', 'EDIT', '--summary', 'Correct configured Ruff style in EcoCyc complex support',
+                   '--details', 'Apply the independently reviewed issue471 formatting-only correction to '
+                   'ecocyc_complex.py, identifiers.py and test_ecocyc_complex_authority.py. All statements, '
+                   'expressions, constants, tests and comments are preserved; the sole import-order change '
+                   'exchanges independent re and pathlib imports. Preserve the original full gate run: '
+                   '2634 tests passed with 3 skipped before configured Ruff reported 126 style errors. '
+                   'The exact external formatting bridge also resolves issue472 by requiring all three '
+                   'helper identities before verifying their bodies. The scientific record and native '
+                   'authority outputs are unchanged. The issue473 test-only repair retains the no-bytecode '
+                   'setting in the isolated history validator environment while preserving its minimal PATH '
+                   'regression boundary. The exact observed generated bytecode was archived and removed. '
+                   'This EDIT precedes a fresh render and all nine '
+                   'maintained gates; it does not claim their future success, review save or publication.',
+                   '--issue', '471', '--issue', '472', '--issue', '473']
+        receipt = run(command, output, 'native-history')
+        after = c.inventory(ROOT, 'history')
+        old_rows = {r['relative_path']: r for r in before}
+        new_rows = {r['relative_path']: r for r in after}
+        assert all(new_rows[p] == r for p, r in old_rows.items())
+        added = [r for p, r in new_rows.items() if p not in old_rows]
+        assert len(added) == 1
+        import yaml
+        assert yaml.safe_load(Path(added[0]['path']).read_bytes())['target']['path'] == 'src/pathwaymech/ecocyc_complex.py'
+        write(HERE / 'history.json', {'status': 'three_native_histories_created_before_successor_render',
+              'at': now(), 'original_history': bind(ORIGINAL / 'history.json'),
+              'original_status': previous['status'], 'commands': previous['commands'] + [receipt],
+              'new_histories': previous['new_histories'] + added,
+              'before_count': previous['before_count'], 'after_count': len(after),
+              'formatting_adoption': bind(HERE / 'adoption.json')})
+        write(HERE / 'history-extra-files.json', previous['new_histories'] + added)
+    elif stage == 'gates':
+        assert load(HERE / 'history.json')['status'] == 'three_native_histories_created_before_successor_render'
+        run([PYTHON, '-B', str(BRIDGE / 'run-gates.py'), '--root', str(ROOT), '--base', BASE,
+             '--adoption-receipt', str(ORIGINAL / 'adoption.json'), '--output', str(HERE / 'gates')],
+            output, 'fresh-gates')
+    else:
+        assert load(HERE / 'gates/execution.json')['status'] == 'passed'
+        run([PYTHON, '-B', str(BRIDGE / 'preserve-maintained.py'), '--root', str(ROOT), '--base', BASE,
+             '--adoption-receipt', str(ORIGINAL / 'adoption.json'),
+             '--baseline', str(ORIGINAL / 'baseline/baseline.json'),
+             '--baseline-kgx', str(ORIGINAL / 'baseline/baseline-kgx.json'),
+             '--gate-receipt', str(HERE / 'gates/execution.json'),
+             '--approved-node-display-delta', '/private/tmp/pathwaymech-next-232-approved-node-display-delta-20261012.json',
+             '--approved-extra-files', str(HERE / 'history-extra-files.json'),
+             '--output', str(HERE / 'preservation.json')], output, 'preservation')
+    write(output / 'completion.json', {'status': 'passed', 'stage': stage, 'at': now()})
+    print(json.dumps({'status': 'passed', 'stage': stage, 'completion': bind(output / 'completion.json')}))
+
+
+if __name__ == '__main__':
+    main()

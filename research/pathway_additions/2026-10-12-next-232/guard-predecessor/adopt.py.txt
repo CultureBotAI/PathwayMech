@@ -1,0 +1,122 @@
+"""Guarded PPi adoption. Default is read-only; root must explicitly use --apply."""
+import argparse
+import json
+from pathlib import Path
+from common import *
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', required=True, type=Path)
+    parser.add_argument('--base', required=True)
+    parser.add_argument('--baseline-receipt', required=True, type=Path)
+    parser.add_argument('--receipt-output', required=True, type=Path)
+    parser.add_argument('--apply', action='store_true')
+    args = parser.parse_args()
+    root = validate_base(args.root, args.base)
+    verify_package()
+    verify_accepted()
+    verify_captured231(root)
+    verify_authority_conservation(root)
+    verify_cache_inputs()
+    external_new(args.receipt_output, root)
+    captured = load(args.baseline_receipt)
+    assert captured['status'] == 'actual_merged231_baseline_captured'
+    assert captured['base'] == BASE and captured['tree'] == TREE
+    verify(BASE_CONFIG, captured['merged_binding'])
+    verify(captured['baseline']['path'], captured['baseline'])
+    verify(captured['kgx']['path'], captured['kgx'])
+    baseline = load(captured['baseline']['path'])
+    assert baseline['head'] == BASE and baseline['root'] == str(root) and baseline['tree'] == TREE
+    for item in baseline['all_maintained_files']:
+        verify(root / item['relative_path'], item, allow_symlink=True)
+    assert inventory(root, exclude_runtime=True) == baseline['all_maintained_files']
+    assert inventory(CACHE) == baseline['source_cache_files'], 'Source cache changed since capture'
+    expected = load(PACKAGE / 'expected-changes.json')
+    changes, originals = expected['code'], expected['new_originals']
+    assert len(changes) == 4 and len(originals) == 24
+    for item in changes:
+        path = root / safe_relative(item['relative_path'])
+        verify(item['after']['path'], item['after'])
+        if item['before'] is None:
+            assert not path.exists() and not path.is_symlink()
+        else:
+            verify(path, item['before'])
+    plan = load(PACKAGE / 'dossier-plan.json')
+    assert plan['root'] == DOSSIER_REL
+    dossier = root / safe_relative(plan['root'])
+    assert not dossier.exists() and not dossier.is_symlink()
+    for item in plan['mappings']:
+        safe_relative(item['destination'])
+        verify(item['source']['path'], item['source'])
+    target = root / TARGET_REL
+    assert not target.exists() and not target.is_symlink()
+    assert sha(TARGET_SOURCE) == TARGET_SHA
+    assert sha(BUILD / 'corpus/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml') == BUILD_TARGET_SHA
+    if not args.apply:
+        print(json.dumps({'status': 'all_guards_passed_no_mutation', 'base': BASE,
+                          'baseline_receipt': binding(args.baseline_receipt),
+                          'planned_record': TARGET_REL, 'planned_code_files': 4,
+                          'planned_dossier_files': len(plan['mappings']),
+                          'planned_new_originals': 24, 'apply_required': True}, indent=2))
+        return
+    # All accepted-input, baseline, inventory, original, and destination guards precede writes.
+    copied = []
+    for item in originals:
+        dest = CACHE / safe_relative(item['cache_relative_path'])
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with dest.open('xb') as stream:
+            stream.write(Path(item['original']['path']).read_bytes())
+        copied.append(str(dest))
+    for item in changes:
+        path = root / item['relative_path']
+        if item['before'] is None:
+            with path.open('xb') as stream:
+                stream.write(Path(item['after']['path']).read_bytes())
+        else:
+            path.write_bytes(Path(item['after']['path']).read_bytes())
+    for name, relative in AUTHORITY_FILES.items():
+        (root / relative).write_bytes((BUILD / (name + '.json')).read_bytes())
+    with target.open('xb') as stream:
+        stream.write(TARGET_SOURCE.read_bytes())
+    archive = []
+    for item in plan['mappings']:
+        dest = dossier / item['destination']
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        with dest.open('xb') as stream:
+            stream.write(Path(item['source']['path']).read_bytes())
+        verify(dest, item['source'])
+        archive.append({**item, 'destination': str(dest.relative_to(root))})
+    verify_adopted(root)
+    for item in baseline['source_cache_files']:
+        verify_path_identity(CACHE / item['relative_path'], item)
+    receipt = {
+        'at': now(), 'status': 'adopted_pending_maintained_gates_and_saved_review',
+        'root': str(root), 'base': BASE, 'base_tree': TREE,
+        'baseline_receipt': binding(args.baseline_receipt),
+        'baseline': captured['baseline'], 'baseline_kgx': captured['kgx'],
+        'target': binding(target), 'canonical_handoff': binding(COMPLETION),
+        'canonical_target_identity': load(PACKAGE / 'accepted-inputs.json')['canonical_target_identity'],
+        'historical_build_target_sha256': BUILD_TARGET_SHA, 'merged_binding': binding(BASE_CONFIG),
+        'merged_base_binding': BASE_INFO,
+        'cache_identity_observation': load(PACKAGE / 'remediation-inputs.json')['initial_cache_identity'],
+        'cache_old_identities_verified': 765, 'cache_new_copies_regular_verified': 24,
+        'integration_guard_finding': {'stable_key': 'PPI-INTEGRATION-001', 'issue': 463, 'preparation_successor': binding(PACKAGE / 'handoff.json'), 'root_publication_disposition': 'pending'},
+        'accepted_inputs': binding(PACKAGE / 'accepted-inputs.json'),
+        'dossier_plan': binding(PACKAGE / 'dossier-plan.json'), 'new_cache_copies': copied,
+        'new_source_ids': sorted(expected['authorities']['sources']['terms']),
+        'new_ontology_ids': sorted(expected['authorities']['ontology']['terms']),
+        'implementation_changes': changes, 'issues_pending_merge': [455, 456, 457, 458, 459],
+        'actual_native_comparison': binding(BUILD / 'proposal-comparison.json'),
+        'maintained_gates': 'pending', 'preservation': 'pending',
+        'saved_scientific_review': 'pending', 'pull_request': 'pending',
+        'merge': 'pending', 'source_exhaustion': False,
+    }
+    write_new(dossier / 'archive-map.json', archive)
+    write_new(dossier / 'adoption.json', receipt)
+    write_new(args.receipt_output, receipt)
+    print(json.dumps(receipt, indent=2))
+
+
+if __name__ == '__main__':
+    main()

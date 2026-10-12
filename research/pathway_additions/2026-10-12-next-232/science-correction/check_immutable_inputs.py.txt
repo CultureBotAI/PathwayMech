@@ -1,0 +1,43 @@
+"""Close original input packages, including all hidden/ignored/followed files."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+
+A=Path(__file__).parent
+def load(p):return json.loads(Path(p).read_text())
+def bind(p):
+    p=Path(p)
+    with p.open('rb')as stream:sha=hashlib.file_digest(stream,'sha256').hexdigest()
+    return dict(path=str(p),bytes=p.stat().st_size,sha256=sha)
+
+packages=[('author','/private/tmp/pathwaymech-next-232-author-20261012','465dc683f7430743ebc115fcb3d57a011e9ecfdf24cad0d967a78ca8d805239b'),
+          ('science_review','/private/tmp/pathwaymech-next-232-science-review-20261012','a54db59cefa245791d7aad9076a632340c302c1230201dd4d1d0e7b8fb77af9e'),
+          ('authority_proposal','/private/tmp/pathwaymech-next-232-authority-preparation-20261012','25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102')]
+results=[]
+for role,path,sha in packages:
+    root=Path(path);assert bind(root/'handoff.json')['sha256']==sha
+    manifest=load(root/'artifact-manifest.json');rows=manifest['artifacts'];cache_rows=[]
+    if role=='science_review':cache_rows=load(root/'runtime-cache-inventory.json')['artifacts']
+    expected={'handoff.json','artifact-manifest.json'}
+    for row in rows+cache_rows:
+        rel=row.get('relative_path',row['path']);p=root/rel
+        rel=str(p.relative_to(root));expected.add(rel)
+        b=bind(p);assert b['sha256']==row['sha256']and b['bytes']==row['bytes'],p
+        if 'file_type'in row:
+            assert ('symlink'if p.is_symlink()else'regular')==row['file_type'],p
+            assert (os.readlink(p)if p.is_symlink()else None)==row['link_text'],p
+            assert str(p.resolve())==row['resolved_path'],p
+    argv=['rg','--files','--no-ignore','--hidden','--follow','-0',str(root)]
+    r=subprocess.run(argv,capture_output=True);assert r.returncode==0,r.stderr
+    actual={str(Path(os.fsdecode(v)).relative_to(root))for v in r.stdout.split(b'\0')if v}
+    assert actual==expected,(role,sorted(actual-expected),sorted(expected-actual))
+    results.append(dict(role=role,handoff=bind(root/'handoff.json'),manifest=bind(root/'artifact-manifest.json'),
+                        artifact_count=len(rows),separate_runtime_cache_count=len(cache_rows),closed_files=len(actual),
+                        inventory_argv=argv,inventory_exit=r.returncode,inventory_stderr=r.stderr.decode()))
+out=dict(at=datetime.datetime.now(datetime.timezone.utc).isoformat(),status='passed',packages=results,
+         scope='Original author, full science review (including distinctly inventoried compiler caches), and authority proposal remain exactly closed and unchanged. No ignored-file exemption.')
+(A/'immutable-input-verification.json').write_text(json.dumps(out,indent=2)+'\n')
+print('Original 377 author, 52 science + 102 separate runtime cache, and 1891 authority artifacts unchanged and closed')

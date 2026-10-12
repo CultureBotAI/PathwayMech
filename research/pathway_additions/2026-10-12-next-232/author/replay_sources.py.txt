@@ -1,0 +1,70 @@
+"""Freshly replay exact source selections; do not infer scientific truth from YAML text."""
+from pathlib import Path
+import json,hashlib,re,collections,zipfile,io
+from lxml import etree as X,html
+import openpyxl,yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+hashes={};trees={};js={}
+def check(b):
+ p=Path(b['path']);key=str(p)
+ if key not in hashes:
+  with p.open('rb')as f:hashes[key]=hashlib.file_digest(f,'sha256').hexdigest()
+ assert hashes[key]==b['sha256']and p.stat().st_size==b['bytes'],p
+ return p
+def load(p):
+ if str(p)not in js:js[str(p)]=json.loads(Path(p).read_text())
+ return js[str(p)]
+def tree(p,kind='xml'):
+ key=(str(p),kind)
+ if key not in trees:trees[key]=html.parse(str(p))if kind=='html'else X.parse(str(p))
+ return trees[key]
+def serial(v):return[X.tostring(x,encoding='unicode')if isinstance(x,X._Element)else str(x)for x in v]
+ledger=load(A/'ledgers/working-evidence-selector-ledger.json');sources=load(A/'ledgers/working-source-bindings.json')
+rd={d['id']:d for m in load(A/'derived/rhea-four-events-fresh.json')['masters']for d in m['directions']}
+rows=[];types=collections.Counter()
+for i,row in enumerate(ledger):
+ p=check(row['binding']);s=row['selector'];kind=row['selector_type'];types[kind]+=1
+ if kind in ['xpath','html_xpath']:
+  values=tree(p,'html'if kind=='html_xpath'else'xml').xpath(s);assert values;got=serial(values)
+ elif kind.startswith('uniprot_'):
+  j=load(p);acc=s['accession']if isinstance(s,dict)else s;e=next(x for x in j.get('results',[j])if x.get('primaryAccession')==acc)
+  if kind=='uniprot_comment':got=[x for x in e['comments']if x['commentType']==s['comment_type']]
+  elif kind=='uniprot_feature':got=[x for x in e['features']if x['type']==s['type']]
+  else:assert kind=='uniprot_identity';got={k:e[k]for k in ['genes','organism','sequence']}
+ elif kind=='primary_abstract':got=next(x for x in load(p)['resultList']['result']if x.get('id')==s and x.get('source')=='MED'and x.get('abstractText'))
+ elif kind=='rhea_side':got=next(x for x in rd[s['reaction']]['sides'][s['side']]if x['participant']==s['participant'])
+ elif kind=='pdf_pages':
+  j=load(check(s['projection_binding']));rr=j['pages']if isinstance(j,dict)else j;got=[r for r in rr if r['page_1based']in s['pages']];assert len(got)==len(s['pages'])
+ elif kind=='web_lines':
+  got=[]
+  for r in load(p)['originals']:
+   check(r['binding']);assert load(r['binding']['path'])==r['content'];j=r['content'];raw=j.get('response',j.get('result',''))
+   for line in raw.splitlines():
+    m=re.match(r'L(\d+):',line)
+    if m and s['start']<=int(m[1])<=s['end']:got.append(line)
+ elif kind=='zip_xpath':
+  with zipfile.ZipFile(p)as z:body=z.read(s['member'])
+  t=X.ElementTree(X.fromstring(body));got=serial(t.xpath(s['xpath'],namespaces=s['namespaces']))
+ elif kind=='zip_workbook':
+  with zipfile.ZipFile(p)as z:body=z.read(s['member'])
+  assert hashlib.sha256(body).hexdigest()==s['member_sha256'];w=openpyxl.load_workbook(io.BytesIO(body),read_only=True,data_only=True);got=list(next(w[s['sheet']].iter_rows(min_row=s['row'],max_row=s['row'],values_only=True)));w.close()
+ elif kind=='pathbank_whole':
+  archive=Path('/private/tmp/pathwaymech-curation-authorities/sources/pathbank-primary-biopax-original.zip')
+  with zipfile.ZipFile(archive)as z:assert z.namelist().count(s['member'])==1;body=z.read(s['member'])
+  assert body==p.read_bytes();got={'member_sha256':hashlib.sha256(body).hexdigest()}
+ else:raise AssertionError(kind)
+ assert got==row['observed'],(i,kind,s)
+ assert sources[row['evidence']['reference_id']]['sha256']==row['binding']['sha256']
+ rows.append(dict(row=i,kind=kind,reference=row['evidence']['reference_id'],exact=True,original_sha256=hashes[str(p)]))
+d=yaml.safe_load((A/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_text());uses=[]
+for e in d['mechanistic_edges']:
+ for role,evs in [('edge',e['evidence'])]+[(q['endpoint'],q['evidence'])for q in e.get('endpoint_qualifiers',[])]:
+  for ev in evs:
+   matches=[i for i,r in enumerate(ledger)if r['evidence']==ev];assert matches;uses.append(dict(edge=e['id'],role=role,ledger_rows=matches))
+refs={r['id']:r for r in d['references']};assert set(refs)==set(sources)
+for id,r in refs.items():assert r['source_sha256']==sources[id]['sha256']
+coverage=load(A/'ledgers/full-claim-dispositions.json');assert len(coverage)==80
+for c in coverage:assert c['paragraphs'];check(c['preflight_claim']['source_binding'])
+save('original-replay.json',dict(target_sha256=hashlib.sha256((A/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_bytes()).hexdigest(),whole_bindings_rehashed=len(hashes),references=len(refs),ledger_rows=len(rows),selector_types=types,rows=rows,actual_edge_qualifier_uses=uses,claims=80,limits='PDF selections freshly bind retained PDFKit projections to original PDFs; this is not a new PDF text extraction. Rhea selections freshly derive from whole RDF, not YAML. Scientific interpretation is additionally assessed by source-specific controls and independent review.'))
+print(len(rows),'source selectors;',len(uses),'actual edge/qualifier uses;',len(hashes),'whole bindings;',len(refs),'references;80claim source bindings')

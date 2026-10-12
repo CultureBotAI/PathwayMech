@@ -1,0 +1,13 @@
+"""Capture actual final evidence binding command; external preparation only."""
+import sys,time
+from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from support import HERE,PYTHON,ENV,now,bind,write,subprocess,json
+preservation=Path(sys.argv[1]);assert preservation.is_file()
+out=HERE/'validation'/('capture-'+str(time.time_ns()));out.mkdir(parents=True)
+for path in HERE.glob('*.py'):(out/(path.name+'.txt')).write_bytes(path.read_bytes())
+command=[PYTHON,'-B',str(HERE/'capture_final_bindings.py'),'--preservation',str(preservation)]
+started=now();result=subprocess.run(command,cwd=HERE,env={**ENV,'PYTHONPATH':str(HERE)},capture_output=True)
+(out/'stdout').write_bytes(result.stdout);(out/'stderr').write_bytes(result.stderr)
+receipt={'name':'capture','command':command,'cwd':str(HERE),'started_at':started,'finished_at':now(),'exit_code':result.returncode,'stdout':bind(out/'stdout'),'stderr':bind(out/'stderr'),'scope':'Actual completed root evidence binding; no maintained execution, gate rerun, history or native review.'}
+write(out/'receipt.json',receipt);print(json.dumps(receipt,indent=2));print(result.stdout.decode());print(result.stderr.decode());raise SystemExit(result.returncode)

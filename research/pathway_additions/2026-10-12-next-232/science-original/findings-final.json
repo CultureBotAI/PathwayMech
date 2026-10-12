@@ -1,0 +1,1020 @@
+{
+  "target": {
+    "path": "/private/tmp/pathwaymech-next-232-author-20261012/draft/nad-phosphorylation-and-dephosphorylation.yaml",
+    "bytes": 177007,
+    "sha256": "c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503"
+  },
+  "open_findings": [
+    {
+      "key": "nad-nadp-cross-study-locator",
+      "severity": "minor",
+      "status": "open provisional against captured unsealed target",
+      "target": {
+        "path": "/private/tmp/pathwaymech-next-232-science-review-20261012/working-target-c2fec44e.yaml",
+        "sha256": "c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503",
+        "bytes": 177007
+      },
+      "affected_paths": [
+        "/mechanistic_edges/40/description",
+        "/mechanistic_edges/40/evidence/0/source_assertion"
+      ],
+      "edge": {
+        "id": "nad-041",
+        "subject": "CHEBI:58349",
+        "predicate": "inhibits",
+        "object": "EcoCyc:CPLX0-682",
+        "description": "The2001 NADP additions give slight inhibition:83% and79% relative activity at50 and100µM. The1987 preparation showed no significant effect under its conditions.",
+        "evidence": [
+          {
+            "reference_id": "PMID:11488932",
+            "source_assertion": "The2001 NADP additions give slight inhibition:83% and79% relative activity at50 and100µM. The1987 preparation showed no significant effect under its conditions.",
+            "source_locator": "Retained primary rendering lines L253–L264; printed table/section as stated"
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+            "evidence": [
+              {
+                "reference_id": "PMID:11488932",
+                "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+              },
+              {
+                "reference_id": "PMID:11488932",
+                "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+              }
+            ]
+          }
+        ]
+      },
+      "problem": "The evidence asserted under PMID:11488932 includes the 1987 no-significant-effect contrast, but its exact L253–L264 locator is solely the 2001 Table 5. No PMID:3025169 evidence accompanies this edge. The biology is supported, but the edge-owned source attribution overstates what the selected source says.",
+      "original_bindings": {
+        "PMID:11488932": {
+          "path": "/private/tmp/pathwaymech-next-232-author-20261012/derived/PMID11488932-primary-rendering-bundle.json",
+          "bytes": 54061,
+          "sha256": "5f38b08bbd3b4f48a24799f1e4587022c20879925643afa899c0f9eec077c8d5",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/11488932/",
+          "version": "Primary-paper tool renderings bundled losslessly with exact original receipts; no raw publisher PDF/HTML claim"
+        },
+        "PMID:3025169": {
+          "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID3025169-europepmc.pdf",
+          "bytes": 893027,
+          "sha256": "e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/3025169/",
+          "version": "Retained full primary original; exact preparation and inspected source locators; supplementary originals separately bound"
+        }
+      },
+      "acceptance_criteria": [
+        "Limit the existing PMID:11488932 source assertion to its 2001 NADP addition results.",
+        "Add separately owned PMID:3025169 evidence for the 1987 no-significant-effect contrast with exact PDF page 2 Table 2 and adjacent text locator.",
+        "Preserve the existing 2001 experimental construct qualifier and separate the 1987 partially purified preparation; no graph/sign/ID change is needed.",
+        "Recompute final author target, evidence ledger, and relevant seal; retain captured pre-correction target."
+      ]
+    },
+    {
+      "stable_key": "nad-construct-ledger-specificity",
+      "severity": "minor",
+      "status": "open",
+      "target": {
+        "path": "/private/tmp/pathwaymech-next-232-author-20261012/draft/nad-phosphorylation-and-dephosphorylation.yaml",
+        "bytes": 177007,
+        "sha256": "c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503"
+      },
+      "owner": {
+        "path": "/private/tmp/pathwaymech-next-232-author-20261012/ledgers/construct-dispositions.json",
+        "bytes": 133621,
+        "sha256": "96d956870070c70700536bdcbe8497f5b506c0b4f7dd3563d4d6ac669d6b21d0"
+      },
+      "generator": {
+        "path": "/private/tmp/pathwaymech-next-232-author-20261012/check_scientific_contract.py",
+        "bytes": 8603,
+        "sha256": "3ce2965a8ba2a8a730563ce245db464e180e115f07ec91819964628bc6106859"
+      },
+      "location": "check_scientific_contract.py:71; construct-dispositions.json rows K01-recombinant, Archaea07, CysQ-controls07, Pnt21-H91A, SthA22-C45A/T50C, CsiR17; K87 paragraphs",
+      "problem": "The preparation-to-qualifier ledger joins only by publication ID, so distinct preparations within a paper inherit every qualifier using that paper. The ledger presents these as applicable endpoint qualifiers without distinguishing related-source context from the actual preparation. CsiR17 includes FLAG-Nac edges094/095; Archaea07 includes E.coli CysQ047–049; C45A/T50C include WT His10 edges055/058–062; recombinant NadK includes endogenous-native qualifiers. K87 also lists paragraph6, which describes2001 metal replacement. The record YAML itself correctly separates these preparations; this is a misleading audit/capture ledger, not a demonstrated incorrect graph endpoint.",
+      "evidence": [
+        {
+          "context": {
+            "id": "K87",
+            "reference": "PMID3025169",
+            "preparation": "K12 unspecified substrain, forced-aerated glycerol minimal medium37C late-log;93-fold partially purified NadK",
+            "limit": "Not homogeneous or exact MG1655 strain"
+          },
+          "paragraphs": [
+            6,
+            7,
+            8
+          ],
+          "assigned_qualifier_edges": [
+            "nad-039",
+            "nad-040"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-039",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "1987 K12, unspecified substrain, forced-aerated glycerol minimal medium at37°C, late-log harvest;93-fold partially purified and not homogeneous. It is not asserted identical to the2001 native or modern MG1655 reference preparation.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:3025169",
+                      "source_assertion": "Methods describe the K12 growth/purification and Results explicitly state that the93-fold preparation was not homogeneous.",
+                      "source_locator": "PDF 1,2; Materials and methods; Results Properties"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-040",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "1987 K12, unspecified substrain, forced-aerated glycerol minimal medium at37°C, late-log harvest;93-fold partially purified and not homogeneous. It is not asserted identical to the2001 native or modern MG1655 reference preparation.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:3025169",
+                      "source_assertion": "Methods describe the K12 growth/purification and Results explicitly state that the93-fold preparation was not homogeneous.",
+                      "source_locator": "PDF 1,2; Materials and methods; Results Properties"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "context": {
+            "id": "K01-recombinant",
+            "reference": "PMID11488932",
+            "preparation": "pSK67 yfjB NcoI/BamHI pET14b inBL21(DE3)pLysS;emptySK45",
+            "limit": "No retainedHis tag inferred solely from vector"
+          },
+          "paragraphs": [
+            4,
+            9
+          ],
+          "assigned_qualifier_edges": [
+            "nad-032",
+            "nad-033",
+            "nad-034",
+            "nad-035",
+            "nad-036",
+            "nad-037",
+            "nad-038",
+            "nad-041",
+            "nad-042"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-032",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-033",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2001 pSK67 yfjB from MG1655 cloned into pET14b with NcoI/BamHI and expressed in BL21(DE3)pLysS; empty SK45 control. No retained His tag is inferred from the vector name; the native N-terminal discrepancy remains separate.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Cloning/expression/purification Methods identify pSK67 and BL21(DE3)pLysS, with SK45 vector-only control.",
+                      "source_locator": "Retained primary rendering lines L158–L168; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-034",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-035",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-036",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-037",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-038",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-041",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-042",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+                      "source_locator": "Retained primary rendering lines L148–L177; printed table/section as stated"
+                    },
+                    {
+                      "reference_id": "PMID:11488932",
+                      "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+                      "source_locator": "Retained primary rendering lines L279–L284; printed table/section as stated"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "context": {
+            "id": "CysQ-controls07",
+            "reference": "PMID17616624",
+            "preparation": "MatchedFbp/SuhBextract negativecontrols;stabilizingbuffercomponents assayed",
+            "limit": "No broadlackofphosphatasefunction"
+          },
+          "paragraphs": [
+            15
+          ],
+          "assigned_qualifier_edges": [
+            "nad-047",
+            "nad-048",
+            "nad-049"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-047",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological NADP phosphatase.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:17616624",
+                      "source_assertion": "Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay conditions.",
+                      "source_locator": "PDF 2; Cloning and expression; Assays; Purification"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-048",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological NADP phosphatase.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:17616624",
+                      "source_assertion": "Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay conditions.",
+                      "source_locator": "PDF 2; Cloning and expression; Assays; Purification"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-049",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological NADP phosphatase.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:17616624",
+                      "source_assertion": "Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay conditions.",
+                      "source_locator": "PDF 2; Cloning and expression; Assays; Purification"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "context": {
+            "id": "Archaea07",
+            "reference": "PMID17616624",
+            "preparation": "MJ0109/AF2372/MJ0917 in vitro85C comparisonpreparations",
+            "limit": "Separatetaxa;not E.coli replacementenzyme"
+          },
+          "paragraphs": [
+            16
+          ],
+          "assigned_qualifier_edges": [
+            "nad-047",
+            "nad-048",
+            "nad-049"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-047",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological NADP phosphatase.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:17616624",
+                      "source_assertion": "Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay conditions.",
+                      "source_locator": "PDF 2; Cloning and expression; Assays; Purification"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-048",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological NADP phosphatase.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:17616624",
+                      "source_assertion": "Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay conditions.",
+                      "source_locator": "PDF 2; Cloning and expression; Assays; Purification"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-049",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological NADP phosphatase.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:17616624",
+                      "source_assertion": "Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay conditions.",
+                      "source_locator": "PDF 2; Cloning and expression; Assays; Purification"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "context": {
+            "id": "Pnt21-H91A",
+            "reference": "PMID34707181",
+            "preparation": "BetaH91A couplingmutant,co-reconstitutedATP synthase andionophore/noenzymecontrols",
+            "limit": "Mutantchain/state differs fromwildtype;ATPnot Pntsubstrate"
+          },
+          "paragraphs": [
+            19
+          ],
+          "assigned_qualifier_edges": [
+            "nad-050"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-050",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2021 E. coli THO C43(DE3) Δcyo ΔpntAB, pET16b/pSA2-derived PntAB with alpha N-terminal His6 and thrombin site; cleavage is not reported. DDM-purified protein and oriented proteoliposomes are distinct assay states, not native topology measurements.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:34707181",
+                      "source_assertion": "Cloning, expression and purification Methods specify the THO host, alpha His6/thrombin construct and detergent purification.",
+                      "source_locator": "XPath /article/body/sec[2]/sec[1] | /article/body/sec[2]/sec[2]"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "context": {
+            "id": "SthA22-C45A",
+            "reference": "PMID35933012",
+            "preparation": "C45A variant in sameHis10construct",
+            "limit": "ReducedFADoccupancy/activity,relativeadenylateactivationbaseline differsWT"
+          },
+          "paragraphs": [
+            23,
+            25
+          ],
+          "assigned_qualifier_edges": [
+            "nad-055",
+            "nad-058",
+            "nad-059",
+            "nad-060",
+            "nad-061",
+            "nad-062"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-055",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-058",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-059",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-060",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-061",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-062",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "context": {
+            "id": "SthA22-T50C",
+            "reference": "PMID35933012",
+            "preparation": "T50C variant in sameHis10construct",
+            "limit": "Separatevariant-specificeffects;notnativeactivechain"
+          },
+          "paragraphs": [
+            23,
+            25
+          ],
+          "assigned_qualifier_edges": [
+            "nad-055",
+            "nad-058",
+            "nad-059",
+            "nad-060",
+            "nad-061",
+            "nad-062"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-055",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-058",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-059",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-060",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-061",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-062",
+              "qualifiers": [
+                {
+                  "endpoint": "object",
+                  "kind": "experimental_construct",
+                  "description": "2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and the AF-B7M718-F1 structural model.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:35933012",
+                      "source_assertion": "Results specify C-terminal His10 and Methods the MC1061 expression/purification with FAD-containing lysis buffer.",
+                      "source_locator": "XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "context": {
+            "id": "CsiR17",
+            "reference": "PMID28061857",
+            "preparation": "CsiR/GlaR inducibleFLAGMG1655sameRNAseqdesign",
+            "limit": "Expression-onlypntAincrease lacksbound-targetrow;no directbinding"
+          },
+          "paragraphs": [
+            37
+          ],
+          "assigned_qualifier_edges": [
+            "nad-094",
+            "nad-095",
+            "nad-101",
+            "nad-102"
+          ],
+          "assigned_qualifiers": [
+            {
+              "edge": "nad-094",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2017 pT7-FLAG-4 inducible FLAG-Nac in MG1655, LB,1mM IPTG for2h from OD6000.2; ChIP-seq and RNA-seq. The30°C nitrogen-depletion validation was separate and does not define these pntA/cysQ rows.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:28061857",
+                      "source_assertion": "Primary Methods specify the inducible FLAG construct, host, LB induction and matched RNA-seq experiment.",
+                      "source_locator": "XPath /article/body/sec[2]/sec[2]/p | /article/body/sec[2]/sec[4]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-095",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2017 pT7-FLAG-4 inducible FLAG-Nac in MG1655, LB,1mM IPTG for2h from OD6000.2; ChIP-seq and RNA-seq. The30°C nitrogen-depletion validation was separate and does not define these pntA/cysQ rows.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:28061857",
+                      "source_assertion": "Primary Methods specify the inducible FLAG construct, host, LB induction and matched RNA-seq experiment.",
+                      "source_locator": "XPath /article/body/sec[2]/sec[2]/p | /article/body/sec[2]/sec[4]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-101",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2017 pT7-FLAG-4 induced CsiR in MG1655, LB,1mM IPTG for2h from OD6000.2. These RNA-seq rows are expression-only; neither pntA nor pntB occurs in the bound-target sheet. The current reference is GlaR/P37338.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:28061857",
+                      "source_assertion": "The primary Methods identify FLAG-tagged inducible regulators and paired transcript measurements.",
+                      "source_locator": "XPath /article/body/sec[2]/sec[2]/p | /article/body/sec[2]/sec[4]/p"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "edge": "nad-102",
+              "qualifiers": [
+                {
+                  "endpoint": "subject",
+                  "kind": "experimental_construct",
+                  "description": "2017 pT7-FLAG-4 induced CsiR in MG1655, LB,1mM IPTG for2h from OD6000.2. These RNA-seq rows are expression-only; neither pntA nor pntB occurs in the bound-target sheet. The current reference is GlaR/P37338.",
+                  "evidence": [
+                    {
+                      "reference_id": "PMID:28061857",
+                      "source_assertion": "The primary Methods identify FLAG-tagged inducible regulators and paired transcript measurements.",
+                      "source_locator": "XPath /article/body/sec[2]/sec[2]/p | /article/body/sec[2]/sec[4]/p"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "acceptance_criteria": [
+        "Replace publication-only association with explicit exact-context mapping or separately typed contextual/comparator links. Exact endpoint-qualifier mapping must not identify Nac as CsiR, E.coli CysQ as an archaeal preparation, mutant proteins as wild type, or endogenous NadK as its recombinant preparation.",
+        "Keep all28 original context rows and corrected PhoB lineage. Preserve variant, control, and archaea observations as narrative/comparator contexts where no exact graph endpoint exists; do not manufacture new graph edges solely for this ledger.",
+        "Correct K87 paragraph association by removing2001-only paragraph6 or explicitly marking it as a cross-study comparator.",
+        "Add bounded negative checks showing the above mismatched endpoint qualifications are absent from exact preparation links; retained related links must be visibly typed.",
+        "Retain original sealed packet and produce a successor; preserve all102 edge triples,48 qualifiers,19 exact reaction sides and the scientific description except supported citation/ledger repairs."
+      ]
+    },
+    {
+      "stable_key": "nad-narrative-reference-coverage",
+      "severity": "minor",
+      "status": "open",
+      "target": {
+        "path": "/private/tmp/pathwaymech-next-232-author-20261012/draft/nad-phosphorylation-and-dephosphorylation.yaml",
+        "bytes": 177007,
+        "sha256": "c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503"
+      },
+      "page": {
+        "path": "/private/tmp/pathwaymech-next-232-author-20261012/candidate-checks/pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html",
+        "bytes": 602256,
+        "sha256": "ea5b01872eadee9ccd7c7d764449e7c7d2f71e2e353e6b821d5137e71856a41d"
+      },
+      "problem": "Three primary papers are used for substantive narrative assertions but are absent from the final94 references and generated record bibliography:2004 quantitative physiological contribution,2019 phosphate reporter preparation,2012 Spot42 follow-up. Originals and per-paragraph evidence exist externally, so the science is supported; users of the maintained record/page cannot identify these primary papers through its bibliography. This is a nonblocking citation-provenance gap, not an unsupported biochemical conclusion.",
+      "search_scope": "Exact full record object and exact generated page; rg --no-ignore --hidden searches for14660605,30765722,22388518 found no occurrence in either file. Ignored-file handling does not exclude either searched file.",
+      "evidence": [
+        {
+          "reference_id": "PMID:14660605",
+          "paragraphs": [
+            {
+              "paragraph": 28,
+              "claims": [
+                "pnt-physiology2004",
+                "stha-physiology2004",
+                "stha-surrogate"
+              ],
+              "text": "In the 2004 MG1655 deletion/13C study, aerobic M9 cultures at37°C with5 g/L carbon source supported different physiological roles: PntAB supplied an estimated35–45% of biosynthetic NADPH during glucose growth, while loss of pntAB slowed growth and increased oxidative pentose-phosphate compensation. Soluble UdhA was important on acetate and in a pgi-deficient state with excess NADPH, rather than being required for ordinary glucose growth in that study. Some complementation results were described as data not shown. Crude-extract NADPH/APAD reverse assays measured enzyme capacity, not the same quantity as in-vivo redox flux."
+            },
+            {
+              "paragraph": 29,
+              "claims": [
+                "transcript-model-conflict",
+                "paraquat-negative"
+              ],
+              "text": "A 2004 redox-linked transcriptional interpretation was later tested more directly: the 2016 study found no correlation of transhydrogenase promoter activities with NADPH pools or formation/consumption fluxes across the tested perturbations. Paraquat at10 µM induced the zwf positive control without inducing pntAB or sthA. This narrows the earlier model under those conditions; it does not assert that every redox perturbation is transcriptionally inert."
+            }
+          ],
+          "original_bindings": [
+            {
+              "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID14660605-repository.pdf",
+              "bytes": 406048,
+              "sha256": "025c0ec5a5a9f50e379ba4acf12e68f4c709d4691f477f728fc6e14449cc5e34"
+            },
+            {
+              "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID14660605-repository.pdf",
+              "bytes": 406048,
+              "sha256": "025c0ec5a5a9f50e379ba4acf12e68f4c709d4691f477f728fc6e14449cc5e34"
+            }
+          ],
+          "claim_locators": [
+            "PDF pages2–6 Results/Tables",
+            "Results Tables1–4 and deletion/rescue text"
+          ]
+        },
+        {
+          "reference_id": "PMID:30765722",
+          "paragraphs": [
+            {
+              "paragraph": 38,
+              "claims": [
+                "reg-phob",
+                "reg-phosphate2019"
+              ],
+              "text": "Phosphorylated PhoB activates phoA through the exact native regulator→promoter PM00071→transcription-unit TU00052→phoA join. Its reference is P0AFJ5/phoB/b0399,229 residues, with phosphoaspartate53 and phosphorylation-dependent dimer orientation retained in the endpoint. P0A9I3 is GcvR and is explicitly rejected as PhoB. The 2013 acidic/aerobic versus microaerobic findings are available only through the primary abstract and native context, not full-body access. The 2019 phosphate-starvation reporter work used MG1655 promoter fragments, BCD2/msfgfp and pSEVA234/237 plasmids in DH10B resting cells at30°C over0–50 mM phosphate; synthetic Pliar constructs and modeled phosphorylation/feedback rates are separate from measured native-promoter outputs."
+            }
+          ],
+          "original_bindings": [
+            {
+              "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC6376016.xml",
+              "bytes": 143317,
+              "sha256": "f136ac594086c47c0e10302bec8af521c5e24b2fa2b8b1206598d31b61500d69"
+            }
+          ],
+          "claim_locators": [
+            "Methods paragraphs13–14; ResultsFig2 versusFig5"
+          ]
+        },
+        {
+          "reference_id": "PMID:22388518",
+          "paragraphs": [
+            {
+              "paragraph": 39,
+              "claims": [
+                "reg-spot42",
+                "reg-spot42-followup"
+              ],
+              "text": "Spot42 represses sthA in MG1655-derived strains. The 2011 Northern experiment used NM525 Δspf GS0433 with IPTG-induced pSpot42; the translational-fusion experiment used PM1205 Δspf GS0434 with pBAD sthA-lacZ from its TSS through9–15 codons,0.2% arabinose and ±1 mM IPTG for1 h. The table reports a−4.2±0.5 expression change. RegionIII mutation and compensatory target mutation support direct RNA pairing. The 2012 follow-up discusses multiple pairing regions, including I and III, without establishing simultaneous binding stoichiometry. Its nanC structural probing and Hfq-deletion experiments are not transferred to sthA; the sthA Hfq context in the earlier table retains that earlier source’s evidence level."
+            }
+          ],
+          "original_bindings": [
+            {
+              "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC3343335-numeric.html",
+              "bytes": 217946,
+              "sha256": "eb6e42ed8279b1b1db7adf5efc90e005ecebbff221809d4b1fcc5fc2e6d166ed"
+            }
+          ],
+          "claim_locators": [
+            "Results multi-site pairing Fig3; Discussion paragraph5"
+          ]
+        }
+      ],
+      "acceptance_criteria": [
+        "Add reference-only primary bibliographic entries for PMID14660605,PMID30765722,PMID22388518 with exact titles, stable URLs and pinned issuing original source hashes/versions. These are narrative sources; do not invent new mechanistic edges.",
+        "Make each described study readily attributable in its paragraph, for example by including its PMID or another unambiguous citation label, and ensure the bibliography entries render on the candidate/current page.",
+        "Keep the current preparation/negative-control limits, all existing94 reference objects,102 triples,48 qualifiers and19 exact reaction sides unchanged except separately approved fixes.",
+        "Retain the immutable original author packet and show exact successor semantic deltas and source-binding additions. Preserve metadata-only/unavailable historical sources as that limited level."
+      ]
+    }
+  ],
+  "resolved_on_target": [
+    {
+      "stable_key": "nad-pnt-topology-locator",
+      "issue": 465,
+      "status": "scientific correction accepted on c2fec; issue closure remains root-owned",
+      "affected_edges": [
+        "nad-051",
+        "nad-052"
+      ],
+      "basis": "Issuing location comments no longer own cytoplasmic-domain claims. Separate exact topological-domain features and primary Introduction/Figure1 support those domains, with annotation and homology-model limits. All selectors independently replay; candidate table/SVG/KGX retain the correction.",
+      "original_finding": {
+        "path": "/private/tmp/pathwaymech-next-232-science-review-20261012/preliminary-findings.json",
+        "bytes": 5711,
+        "sha256": "6d4862609f4b86716c1f68652cab9ea2ece8ea8473479f8497c963e34bee9a48"
+      },
+      "successor_source": {
+        "path": "/private/tmp/pathwaymech-next-232-author-20261012/topology-issue-disposition.json",
+        "bytes": 1892,
+        "sha256": "ba245f3aa86b8805977a57158c76a7f914820742edb01a7578276afb2db399d5"
+      }
+    }
+  ],
+  "full_finding_set_complete": true,
+  "requested_next_step": "One bounded author successor covering all three open minor provenance findings, with exact delta/binding retention; parent controls authorization, issue creation and later native persistence."
+}

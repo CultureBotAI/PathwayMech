@@ -1,0 +1,253 @@
+"""Read-only NAD actual rendered-page and KGX audit; inherited pure helpers."""
+import argparse, copy, csv, datetime, hashlib, html as std_html, io, json, os, re, subprocess, sys
+from collections import Counter
+from pathlib import Path
+from html.parser import HTMLParser
+import xml.etree.ElementTree as ET
+from lxml import etree, html
+import yaml
+ROOT=Path('/private/tmp/pathwaymech-next-232-20261012')
+TARGET_REL='data/pathways/nad-phosphorylation-and-dephosphorylation.yaml'
+PAGE_REL='pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html'
+BASE='19af3cc154dbbd757c17299b36923e5f9ccc31dc'
+TARGET_SHA='96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7'
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def bind(path):
+ path=Path(path);body=path.read_bytes();return {'path':str(path),'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest()}
+def load(path):return json.loads(Path(path).read_bytes())
+def native_contract():
+ sys.path[:0]=[str(ROOT/'src'),str(ROOT)]
+ from pathwaymech.cli import _reference_url
+ from pathwaymech.site_display import label_html
+ assert Path(sys.modules['pathwaymech.cli'].__file__).resolve()==(ROOT/'src/pathwaymech/cli.py').resolve()
+ return _reference_url,label_html
+
+
+def normalized(value):
+    return ' '.join(value.split())
+
+
+class Parsed(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.ids, self.links, self.text, self.rows = [], [], [], {}
+        self.current_row = None
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if 'id' in values:
+            self.ids.append(values['id'])
+        if values.get('href', '').startswith('#'):
+            self.links.append(values['href'][1:])
+        if tag == 'tr' and values.get('id', '').startswith('mechanism-edge-'):
+            self.current_row = values['id']; self.rows[self.current_row] = []
+    def handle_endtag(self, tag):
+        if tag == 'tr': self.current_row = None
+    def handle_data(self, data):
+        self.text.append(data)
+        if self.current_row: self.rows[self.current_row].append(data)
+
+
+def inspect_page(record, text):
+    parsed = Parsed(); parsed.feed(text)
+    assert len(parsed.ids) == len(set(parsed.ids)), 'Duplicate HTML IDs'
+    assert set(parsed.links) <= set(parsed.ids), 'Unresolved local anchors'
+    matches = re.findall(r'<svg\b[^>]*class="pathway-network-svg".*?</svg>', text, re.S)
+    assert len(matches) == 1
+    svg = ET.fromstring(matches[0])
+    links = list(svg.iter('{http://www.w3.org/2000/svg}a'))
+    edges = [e for e in links if 'graph-edge' in e.get('class', '').split()]
+    nodes = [e for e in links if 'graph-node' in e.get('class', '').split()]
+    native = [(e['subject'], e['predicate'], e['object']) for e in record['mechanistic_edges']]
+    actual = [(e.get('data-subject-id', e.get('data-subject')), e.get('data-predicate'),
+               e.get('data-object-id', e.get('data-object'))) for e in edges]
+    assert actual == native, 'Ordered native graph triples changed'
+    assert [e.get('href') for e in edges] == ['#mechanism-edge-' + str(i + 1) for i in range(len(native))]
+    rendered = {e.get('data-base-node-id', e.get('data-node-id')) for e in nodes}
+    declared = {e['id'] for field in ('participants', 'reactions') for e in record[field]}
+    assert declared <= rendered
+    assert {x for edge in native for x in (edge[0], edge[2])} <= rendered
+    node_map = {e.get('data-node-id'): e for e in nodes}
+    assert len(node_map) == len(nodes), 'Duplicate graph display node IDs'
+    visible = normalized(' '.join(parsed.text)); qualifiers, uses = [], []
+    for number, edge in enumerate(record['mechanistic_edges'], 1):
+        row_text = normalized(' '.join(parsed.rows['mechanism-edge-' + str(number)]))
+        for field in ('subject', 'predicate', 'object', 'description'):
+            if edge.get(field): assert normalized(edge[field]) in row_text, 'Edge-row field missing: ' + field
+        edge_uses = list(edge['evidence'])
+        for qualifier in edge.get('endpoint_qualifiers', []):
+            qualifiers.append(qualifier); edge_uses.extend(qualifier.get('evidence', []))
+            assert normalized(qualifier['description']) in row_text, 'Qualifier absent from its edge row'
+            role = qualifier['endpoint']; display_id = f'qualified-endpoint-{number}-{role}'
+            displayed = node_map[display_id]
+            assert displayed.get('data-base-node-id') == edge[role], 'Qualifier biological endpoint changed'
+            assert displayed.get('href') == f'#mechanism-edge-{number}-qualifier-{role}'
+            graph_detail = normalized(displayed.get('aria-label', '') + ' '.join(displayed.itertext()))
+            assert normalized(qualifier['description']) in graph_detail, 'Full qualifier not accessible in graph'
+            for evidence in qualifier.get('evidence', []):
+                for field in ('reference_id', 'source_assertion', 'quote', 'source_locator'):
+                    if evidence.get(field): assert normalized(evidence[field]) in graph_detail, 'Qualifier graph evidence missing: ' + field
+        uses.extend(edge_uses)
+        for evidence in edge_uses:
+            for field in ('reference_id', 'source_assertion', 'quote', 'source_locator'):
+                if evidence.get(field): assert normalized(evidence[field]) in row_text, 'Evidence missing from owning edge row: ' + field
+    for number, ref in enumerate(record['references'], 1):
+        assert 'reference-' + str(number) in parsed.ids
+        assert ref['id'] in visible
+        for field in ('title', 'url'):
+            if field == 'title' and ref.get(field):
+                _, native_label_html = native_contract()
+                title_fragment = html.fragment_fromstring(native_label_html(ref[field]), create_parent='span')
+                assert normalized(''.join(title_fragment.itertext())) in visible
+    return matches[0], {'html_ids': len(parsed.ids), 'fragment_links': len(parsed.links),
+        'display_nodes': len(nodes), 'unique_biological_graph_nodes': len(rendered),
+        'edges': len(edges), 'qualifiers': len(qualifiers), 'evidence_uses': len(uses),
+        'references': len(record['references']), 'native_ordered_triples_match': True,
+        'declared_component_coverage_complete': True, 'all_qualifier_evidence_text_present': True,
+        'all_evidence_in_owning_edge_row': True, 'all_qualifier_display_instances_exact': True}
+
+
+def digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+
+
+def parse_tsv(text):
+    reader = csv.DictReader(io.StringIO(text), delimiter='\t'); rows = list(reader)
+    assert all(None not in r for r in rows)
+    result = {r['id']: r for r in rows}; assert len(result) == len(rows)
+    return reader.fieldnames, result
+
+
+def inspect_kgx(record, nodes_text, edges_text, old):
+    sys.path[:0] = [str(ROOT / 'src'), str(ROOT)]
+    from pathwaymech.schema import validate_record
+    from pathwaymech.kgx import render_kgx
+    generated = render_kgx([validate_record(record)])
+    _, target_nodes = parse_tsv(generated['nodes.tsv']); _, target_edges = parse_tsv(generated['edges.tsv'])
+    node_columns, nodes = parse_tsv(nodes_text); edge_columns, edges = parse_tsv(edges_text)
+    assert node_columns == old['node_columns'] and edge_columns == old['edge_columns']
+    assert all(identifier in edges and digest(edges[identifier]) == value for identifier, value in old['edges'].items()), 'Old KGX edges changed'
+    assert {key: value for key, value in edges.items() if key not in old['edges']} == target_edges, 'Target KGX edge cells changed'
+    assert set(nodes) == set(old['nodes']) | set(target_nodes), 'KGX node identity union changed'
+    display_delta, added_contexts = [], 0
+    for identifier, row in nodes.items():
+        prior = old['nodes'].get(identifier)
+        previous = Counter(prior['context_hash_counts']) if prior else Counter()
+        wanted = Counter(digest(c) for c in json.loads(target_nodes.get(identifier, {}).get('source_contexts') or '[]'))
+        current = Counter(digest(c) for c in json.loads(row['source_contexts'] or '[]'))
+        assert current == previous + wanted, 'Context multiplicity changed: ' + identifier
+        added_contexts += sum(wanted.values())
+        if prior:
+            for column, value in prior['display'].items():
+                if row[column] != value: display_delta.append({'id': identifier, 'column': column, 'before': value, 'after': row[column]})
+        else:
+            assert row == target_nodes[identifier], 'New node cells changed'
+    return {'old_edges_exact': len(old['edges']), 'new_edges_exact': len(target_edges),
+        'old_source_contexts_exact': old['source_context_count'], 'new_source_contexts_exact': added_contexts,
+        'new_nodes': len(set(nodes) - set(old['nodes'])), 'all_context_multiplicities_exact': True,
+        'all_target_edge_metadata_evidence_qualifiers_exact': True, 'node_display_delta': display_delta,
+        'display_delta_approval': 'Not issued by QA; requires separate root preservation assessment.'}
+
+
+def content_signature(container):
+    """Preserve formatting and its location as well as complete normalized text."""
+    tokens = []
+    def walk(node):
+        if node.text and normalized(node.text): tokens.append(['text', normalized(node.text)])
+        for child in node:
+            assert isinstance(child.tag, str), 'Unexpected non-element bibliography content'
+            tokens.append(['start', child.tag, sorted(child.attrib.items())]); walk(child)
+            tokens.append(['end', child.tag])
+            if child.tail and normalized(child.tail): tokens.append(['text', normalized(child.tail)])
+    walk(container)
+    return {'text': normalized(''.join(container.itertext())), 'tokens': tokens}
+
+
+def check_bibliography(record, page, required_count=97):
+    references = record['references']; assert len(references) == required_count
+    reference_url, label_html = native_contract()
+    tree = html.fromstring(page)
+    owners = tree.xpath('//*[@id and starts-with(@id, "reference-")]')
+    expected_ids = ['reference-' + str(i) for i in range(1, required_count + 1)]
+    assert [node.get('id') for node in owners] == expected_ids, 'Missing, duplicate, unordered or stray reference anchors'
+    assert all(node.tag == 'li' for node in owners), 'Reference owner must be a list entry'
+    parent = owners[0].getparent()
+    assert parent.tag == 'ul' and all(node.getparent() is parent for node in owners), 'Reference entries must share their bibliography list'
+    assert list(parent) == owners, 'Bibliography list has extra or misplaced entries'
+    heading = parent.getprevious()
+    assert heading is not None and heading.tag == 'h2' and normalized(''.join(heading.itertext())) == 'References', 'Wrong bibliography owner section'
+    results = []
+    for number, (ref, owner) in enumerate(zip(references, owners, strict=True), 1):
+        assert not owner.text or not owner.text.strip(), f'Reference{number} has unexpected text before code'
+        codes = owner.xpath('./code')
+        assert len(codes) == 1 and len(owner) >= 1 and owner[0] is codes[0], f'Reference{number} code owner missing or misplaced'
+        code = codes[0]
+        assert ''.join(code.itertext()) == ref['id'], f'Reference{number} own code ID changed'
+        source_url = ref.get('url') or reference_url(ref['id'])
+        if source_url:
+            assert len(code) == 1 and code[0].tag == 'a', f'Reference{number} source link missing'
+            link = code[0]
+            assert not code.text or not code.text.strip()
+            assert not link.tail or not link.tail.strip()
+            assert len(link) == 0 and link.text == ref['id'], f'Reference{number} own source link text changed'
+            assert link.get('href') == source_url, f'Reference{number} own source URL changed'
+            assert set(link.attrib) == {'href'}, f'Reference{number} unexpected source link attributes'
+            resolution = 'explicit_url' if ref.get('url') else 'native_fallback'
+        else:
+            assert len(code) == 0 and code.text == ref['id'], f'Reference{number} unresolved ID must stay plain'
+            resolution = 'unresolvable_plain_identifier'
+        details = ' — '.join(label_html(ref[field]) for field in ('title', 'citation') if ref.get(field))
+        if ref.get('source_version'):
+            details += ' (source version: ' + std_html.escape(ref['source_version']) + ')'
+        expected = html.fragment_fromstring(details, create_parent='div')
+        actual = etree.Element('div'); actual.text = code.tail
+        for element in list(owner)[1:]: actual.append(copy.deepcopy(element))
+        expected_signature = content_signature(expected)
+        assert content_signature(actual) == expected_signature, f'Reference{number} own complete title/citation/version/formatting changed'
+        # Only the source code may link; label_html escapes arbitrary anchor markup.
+        assert owner.xpath('.//a') == list(code), f'Reference{number} unexpected reference-detail link'
+        results.append({'number': number, 'owner_id': owner.get('id'), 'reference_id': ref['id'],
+            'source_url': source_url, 'url_resolution': resolution,
+            'complete_normalized_details': expected_signature['text'],
+            'details_signature_sha256': hashlib.sha256(json.dumps(expected_signature, ensure_ascii=False, sort_keys=True).encode()).hexdigest()})
+    return {'references': len(results), 'ordered_owners_exact': True, 'each_own_code_and_source_link_exact': True,
+        'each_own_complete_normalized_details_and_formatting_exact': True,
+        'explicit_urls': sum(r['url_resolution'] == 'explicit_url' for r in results),
+        'native_fallback_urls': sum(r['url_resolution'] == 'native_fallback' for r in results),
+        'plain_unresolvable_ids': sum(r['url_resolution'] == 'unresolvable_plain_identifier' for r in results),
+        'rows': results}
+
+
+def main():
+ p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+ out=a.output;assert not out.exists() and out.parent==Path('/private/tmp')
+ assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()==BASE
+ target=ROOT/TARGET_REL;page=ROOT/PAGE_REL;assert bind(target)['sha256']==TARGET_SHA
+ before={name:bind(path) for name,path in [('target',target),('page',page),('nodes_file',ROOT/'pages/downloads/nodes.tsv'),('edges_file',ROOT/'pages/downloads/edges.tsv')]}
+ gates_path=Path('/private/tmp/pathwaymech-next-232-root-integration-execution-20261012/gates/execution.json')
+ gates=load(gates_path);render=[r for r in gates['receipts'] if r['name']=='render'];assert len(render)==1 and render[0]['exit_code']==0
+ record=yaml.safe_load(target.read_bytes());text=page.read_text()
+ svg,counts=inspect_page(record,text)
+ assert (counts['edges'],counts['qualifiers'],counts['references'],counts['evidence_uses'])==(102,48,97,266)
+ bibliography=check_bibliography(record,text,required_count=97)
+ baseline=Path('/private/tmp/pathwaymech-next-232-root-integration-execution-20261012/baseline/baseline-kgx.json')
+ kgx=inspect_kgx(record,(ROOT/'pages/downloads/nodes.tsv').read_text(),(ROOT/'pages/downloads/edges.tsv').read_text(),load(baseline))
+ assert not any(line.rstrip()!=line for line in text.splitlines())
+ graph=ET.fromstring(svg);nodes={e.get('data-base-node-id',e.get('data-node-id')):e for e in graph.iter('{http://www.w3.org/2000/svg}a') if 'graph-node' in e.get('class','').split()}
+ expected_directions={'RHEA:18630':'left_to_right','RHEA:28051':'left_to_right','RHEA:47994':'right_to_left','RHEA:11693':'left_to_right'}
+ assert {r['id']:r['direction'] for r in record['reactions']}==expected_directions
+ for reaction in record['reactions']:
+  node=nodes[reaction['id']];assert 'Source reaction direction: '+reaction['direction'] in node.get('aria-label','')+' '.join(node.itertext())
+ css_path=ROOT/'src/pathwaymech/assets/pathway-network.css';css=css_path.read_text().split('@media')[0]
+ for name,value in dict(re.findall(r'(--graph-[a-z]+):\s*(#[0-9a-fA-F]+)',css)).items():css=css.replace('var('+name+')',value)
+ styled=svg.replace('>','><style>'+css+'</style>',1);ET.fromstring(styled)
+ out.mkdir();(out/'original.svg').write_text(svg);(out/'styled.svg').write_text(styled)
+ (out/'gates-observation.json').write_bytes(gates_path.read_bytes())
+ for name,data in [('bibliography',bibliography),('kgx-checks',kgx)]: (out/(name+'.json')).write_text(json.dumps(data,indent=2)+'\n')
+ cmd=['/usr/local/bin/rsvg-convert','-b','white','-w','1600','-o',str(out/'overview.png'),str(out/'styled.svg')]
+ start=now();result=subprocess.run(cmd,capture_output=True);(out/'preview.stdout').write_bytes(result.stdout);(out/'preview.stderr').write_bytes(result.stderr)
+ receipt={'status':'passed' if result.returncode==0 else 'failed','started_at':start,'finished_at':now(),**before,'helper':bind(__file__),'render_receipt':render[0],**counts,'bibliography':bind(out/'bibliography.json'),'baseline':bind(baseline),'kgx_checks':bind(out/'kgx-checks.json'),'reaction_directions_verified':4,'command':cmd,'exit_code':result.returncode,'stdout':bind(out/'preview.stdout'),'stderr':bind(out/'preview.stderr'),'scope':'Actual post-render graph, owner-specific complete bibliography and native KGX output verification. Full gates still running; not a full gate verdict or new scientific review. Static SVG only; root visual inspection is separate. No maintained or cache mutation.'}
+ if result.returncode==0:receipt['overview']=bind(out/'overview.png')
+ for item in before.values():assert bind(item['path'])==item
+ (out/'receipt.json').write_text(json.dumps(receipt,indent=2)+'\n');result.check_returncode()
+ print(json.dumps({'status':receipt['status'],'counts':counts,'kgx':kgx,'receipt':bind(out/'receipt.json')}))
+if __name__=='__main__':main()

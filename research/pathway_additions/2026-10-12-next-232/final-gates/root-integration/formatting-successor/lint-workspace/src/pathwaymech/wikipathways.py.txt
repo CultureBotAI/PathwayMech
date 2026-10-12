@@ -1,0 +1,520 @@
+from __future__ import annotations
+
+import re
+from collections.abc import Iterable
+from pathlib import Path
+from typing import Any
+from xml.etree import ElementTree
+
+from pathwaymech.edge_identity import endpoint_qualifier_key
+from pathwaymech.source_mapping import (
+    CurieMappings,
+    normalized_curie,
+    source_mapping_row,
+    unique_source_mappings,
+)
+
+WIKIPATHWAYS_ACCESSION = re.compile(r"WP\d+")
+
+DATABASE_PREFIXES = {
+    "cas": "CAS",
+    "chebi": "CHEBI",
+    "chemspider": "ChemSpider",
+    "enzyme nomenclature": "EC",
+    "ensembl": "Ensembl",
+    "entrez gene": "Entrez",
+    "geneontology": "GO",
+    "hmdb": "HMDB",
+    "kegg": "KEGG",
+    "kegg compound": "KEGG",
+    "kegg.compound": "KEGG",
+    "lipid maps": "LIPIDMAPS",
+    "lipid maps structure database": "LIPIDMAPS",
+    "lipidmaps": "LIPIDMAPS",
+    "ncbi protein": "NCBIProtein",
+    "pubchem": "PubChem",
+    "pubchem compound": "PubChem",
+    "pubchem-compound": "PubChem",
+    "sgd": "SGD",
+    "tuberculist": "TubercuList",
+    "uniprot": "UniProtKB",
+    "uniprot-trembl": "UniProtKB",
+    "uniprotkb": "UniProtKB",
+}
+
+ORGANISM_TAXA = {
+    "Bacillus subtilis": "NCBITaxon:1423",
+    "Escherichia coli": "NCBITaxon:562",
+    "Saccharomyces cerevisiae": "NCBITaxon:4932",
+}
+
+
+def load_gpml_pathway(path: Path) -> ElementTree.Element:
+    return ElementTree.parse(path).getroot()
+
+
+def gpml_to_pathway_record(
+    root: ElementTree.Element,
+    fallback_id: str,
+    compound_mappings: CurieMappings | None = None,
+) -> dict[str, Any]:
+    pathway_id = _pathway_id(root) or fallback_id
+    node_by_graph_id, source_mappings = _data_nodes(
+        root,
+        pathway_id,
+        compound_mappings or {},
+    )
+    nodes_by_group_graph_id = _group_nodes(root, node_by_graph_id)
+    reaction_by_anchor_id = _anchor_reactions(root, pathway_id)
+    references = _publication_references(root)
+    evidence_reference = _fallback_reference(pathway_id)
+    references.setdefault(evidence_reference["id"], evidence_reference)
+
+    reactions = []
+    edges: list[dict[str, Any]] = []
+    for interaction in _children(root, "Interaction"):
+        graph_id = interaction.get("GraphId")
+        if not graph_id:
+            continue
+        if _contains_anchor_ref(interaction, reaction_by_anchor_id):
+            edges.extend(
+                _anchor_edges(
+                    interaction,
+                    node_by_graph_id,
+                    nodes_by_group_graph_id,
+                    reaction_by_anchor_id,
+                    evidence_reference["id"],
+                    {
+                        node_by_graph_id[n.get("GraphId")]["id"]
+                        for n in _children(root, "DataNode")
+                        if n.get("GraphId") in node_by_graph_id
+                        and n.get("Type") in {"Protein", "GeneProduct", "Complex"}
+                    },
+                )
+            )
+            continue
+
+        sources, targets = _interaction_endpoints(
+            interaction,
+            node_by_graph_id,
+            nodes_by_group_graph_id,
+        )
+        if not sources or not targets:
+            continue
+
+        reaction_id = f"{pathway_id}/{graph_id}"
+        reactions.append(
+            {
+                "id": reaction_id,
+                "label": f"{pathway_id} interaction {graph_id}",
+                "direction": _interaction_direction(interaction),
+            }
+        )
+
+        for node_id in sources:
+            edges.append(
+                _edge(
+                    subject=node_id,
+                    predicate="consumes",
+                    obj=reaction_id,
+                    evidence_reference=evidence_reference["id"],
+                    source_locator=f"/Pathway/Interaction[@GraphId='{graph_id}']/Graphics",
+                )
+            )
+        for node_id in targets:
+            edges.append(
+                _edge(
+                    subject=reaction_id,
+                    predicate="produces",
+                    obj=node_id,
+                    evidence_reference=evidence_reference["id"],
+                    source_locator=f"/Pathway/Interaction[@GraphId='{graph_id}']/Graphics",
+                )
+            )
+
+    reaction_ids = {reaction["id"] for reaction in reactions}
+    edges = [
+        edge for edge in edges if edge["subject"] in reaction_ids or edge["object"] in reaction_ids
+    ]
+    record = {
+        "id": pathway_id,
+        "label": root.get("Name") or pathway_id,
+        "description": f"WikiPathways GPML pathway {pathway_id}.",
+        "pathway_type": "pathway-diagram",
+        "taxa": _taxa(root),
+        "participants": _unique_nodes(node_by_graph_id.values()),
+        "reactions": reactions,
+        "mechanistic_edges": [
+            {"id": f"wikipathways-edge-{index}", **edge}
+            for index, edge in enumerate(_unique_edges(edges), start=1)
+        ],
+        "references": list(references.values()),
+    }
+    if source_mappings:
+        record["source_mappings"] = unique_source_mappings(source_mappings)
+    return record
+
+
+def wikipathways_curie_from_text(text: str) -> str | None:
+    match = WIKIPATHWAYS_ACCESSION.search(text)
+    if not match:
+        return None
+    return _format_curie("WikiPathways", match.group(0))
+
+
+def wikipathways_fallback_id(path: Path) -> str:
+    return wikipathways_curie_from_text(path.stem) or f"WikiPathways:{path.stem}"
+
+
+def _pathway_id(root: ElementTree.Element) -> str | None:
+    for xref in _children(root, "Xref"):
+        database = _attribute(xref, "Database", "dataSource").lower()
+        identifier = _attribute(xref, "ID", "identifier")
+        if database == "wikipathways" and identifier:
+            return _format_curie("WikiPathways", identifier)
+    return wikipathways_curie_from_text(root.get("Version") or "")
+
+
+def _data_nodes(
+    root: ElementTree.Element,
+    pathway_id: str,
+    compound_mappings: CurieMappings,
+) -> tuple[dict[str, dict[str, str]], list[dict[str, str]]]:
+    data_nodes = {}
+    source_mappings = []
+    for node in _children(root, "DataNode"):
+        graph_id = node.get("GraphId")
+        xref = _first_child(node, "Xref")
+        if not graph_id:
+            continue
+        source_id = _xref_curie(xref) if xref is not None else None
+        if not source_id:
+            if not node.get("TextLabel") or node.get("Type") == "Pathway":
+                continue
+            source_id = f"{pathway_id}/{graph_id}"
+        label = node.get("TextLabel") or source_id
+        identifier = normalized_curie(source_id, compound_mappings)
+        data_nodes[graph_id] = {
+            "id": identifier,
+            "label": label,
+        }
+        if identifier != source_id and (mapping := compound_mappings.get(source_id)):
+            source_mappings.append(
+                source_mapping_row(
+                    source_id,
+                    label,
+                    mapping,
+                    source_pathway_id=pathway_id,
+                    source_element_id=graph_id,
+                )
+            )
+    return data_nodes, source_mappings
+
+
+def _xref_curie(xref: ElementTree.Element) -> str | None:
+    database = _attribute(xref, "Database", "dataSource").lower().strip()
+    identifier = _attribute(xref, "ID", "identifier")
+    prefix = DATABASE_PREFIXES.get(database)
+    if not prefix or not identifier:
+        return None
+    return _format_curie(prefix, identifier)
+
+
+def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:
+    unique: dict[str, dict[str, str]] = {}
+    for node in nodes:
+        unique.setdefault(node["id"], node)
+    return list(unique.values())
+
+
+def _unique_edges(edges: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    unique = {}
+    for edge in edges:
+        unique.setdefault((edge["subject"], edge["predicate"], edge["object"],
+                           endpoint_qualifier_key(edge.get("endpoint_qualifiers"))), edge)
+    return list(unique.values())
+
+
+def _group_nodes(
+    root: ElementTree.Element,
+    node_by_graph_id: dict[str, dict[str, str]],
+) -> dict[str, list[str]]:
+    nodes_by_group_id: dict[str, list[str]] = {}
+    for node in _children(root, "DataNode"):
+        graph_id = node.get("GraphId")
+        group_id = node.get("GroupRef")
+        if not group_id or graph_id not in node_by_graph_id:
+            continue
+        nodes_by_group_id.setdefault(group_id, []).append(node_by_graph_id[graph_id]["id"])
+
+    nodes_by_group_graph_id = {}
+    for group in _children(root, "Group"):
+        graph_id = group.get("GraphId")
+        group_id = group.get("GroupId")
+        if graph_id and group_id:
+            nodes_by_group_graph_id[graph_id] = nodes_by_group_id.get(group_id, [])
+    return nodes_by_group_graph_id
+
+
+def _anchor_reactions(
+    root: ElementTree.Element,
+    pathway_id: str,
+) -> dict[str, str]:
+    reactions = {}
+    for interaction in _children(root, "Interaction"):
+        graph_id = interaction.get("GraphId")
+        if not graph_id:
+            continue
+        for anchor in _interaction_anchors(interaction):
+            anchor_id = anchor.get("GraphId")
+            if anchor_id:
+                reactions[anchor_id] = f"{pathway_id}/{graph_id}"
+    return reactions
+
+
+def _interaction_endpoints(
+    interaction: ElementTree.Element,
+    node_by_graph_id: dict[str, dict[str, str]],
+    nodes_by_group_graph_id: dict[str, list[str]],
+) -> tuple[list[str], list[str]]:
+    sources: list[str] = []
+    targets: list[str] = []
+    points = [point for point in _interaction_points(interaction) if point.get("GraphRef")]
+    if (
+        len(points) != 2
+        or any(
+            (point.get("ArrowHead") or "line").lower()
+            not in {"line", "none", "arrow", "mim-conversion"}
+            for point in points
+        )
+        or not any(_is_target(point) for point in points)
+    ):
+        return [], []
+    reversible = all(_is_target(point) for point in points)
+    for index, point in enumerate(points):
+        graph_ref = point.get("GraphRef")
+        node_ids = _nodes_for_graph_ref(
+            graph_ref,
+            node_by_graph_id,
+            nodes_by_group_graph_id,
+        )
+        if not node_ids:
+            return [], []
+        if (reversible and index == 1) or (not reversible and _is_target(point)):
+            targets.extend(node_ids)
+        else:
+            sources.extend(node_ids)
+    return sources, targets
+
+
+def _anchor_edges(
+    interaction: ElementTree.Element,
+    node_by_graph_id: dict[str, dict[str, str]],
+    nodes_by_group_graph_id: dict[str, list[str]],
+    reaction_by_anchor_id: dict[str, str],
+    evidence_reference: str,
+    catalyst_ids: set[str],
+) -> list[dict[str, Any]]:
+    points = _interaction_points(interaction)
+    anchor_points = [
+        point
+        for point in points
+        if point.get("GraphRef") and point.get("GraphRef") in reaction_by_anchor_id
+    ]
+    if len(anchor_points) != 1:
+        return []
+
+    anchor_point = anchor_points[0]
+    anchor_id = anchor_point.get("GraphRef", "")
+    reaction_id = reaction_by_anchor_id[anchor_id]
+    edges = []
+    locator = (
+        f"/Pathway/Interaction[@GraphId='{interaction.get('GraphId')}']/Graphics; "
+        f"/Pathway/Interaction/Graphics/Anchor[@GraphId='{anchor_id}']"
+    )
+    for point in points:
+        if point is anchor_point:
+            continue
+
+        node_ids = _nodes_for_graph_ref(
+            point.get("GraphRef"),
+            node_by_graph_id,
+            nodes_by_group_graph_id,
+        )
+        for node_id in node_ids:
+            if _is_catalysis(anchor_point):
+                edges.append(
+                    _edge(
+                        subject=node_id,
+                        predicate=(
+                            "catalyzes"
+                            if node_id in catalyst_ids and len(node_ids) == 1
+                            else "enables"
+                        ),
+                        obj=reaction_id,
+                        evidence_reference=evidence_reference,
+                        source_locator=locator,
+                    )
+                )
+            elif _is_target(anchor_point):
+                edges.append(
+                    _edge(
+                        subject=node_id,
+                        predicate="consumes",
+                        obj=reaction_id,
+                        evidence_reference=evidence_reference,
+                        source_locator=locator,
+                    )
+                )
+            elif _is_target(point):
+                edges.append(
+                    _edge(
+                        subject=reaction_id,
+                        predicate="produces",
+                        obj=node_id,
+                        evidence_reference=evidence_reference,
+                        source_locator=locator,
+                    )
+                )
+    return edges
+
+
+def _nodes_for_graph_ref(
+    graph_ref: str | None,
+    node_by_graph_id: dict[str, dict[str, str]],
+    nodes_by_group_graph_id: dict[str, list[str]],
+) -> list[str]:
+    if not graph_ref:
+        return []
+    if graph_ref in node_by_graph_id:
+        return [node_by_graph_id[graph_ref]["id"]]
+    return nodes_by_group_graph_id.get(graph_ref, [])
+
+
+def _contains_anchor_ref(
+    interaction: ElementTree.Element,
+    reaction_by_anchor_id: dict[str, str],
+) -> bool:
+    return any(
+        point.get("GraphRef") in reaction_by_anchor_id for point in _interaction_points(interaction)
+    )
+
+
+def _interaction_anchors(interaction: ElementTree.Element) -> list[ElementTree.Element]:
+    graphics = _first_child(interaction, "Graphics")
+    return _children(graphics, "Anchor") if graphics is not None else []
+
+
+def _interaction_points(interaction: ElementTree.Element) -> list[ElementTree.Element]:
+    graphics = _first_child(interaction, "Graphics")
+    return _children(graphics, "Point") if graphics is not None else []
+
+
+def _is_target(point: ElementTree.Element) -> bool:
+    return (point.get("ArrowHead") or "").lower() in {"arrow", "mim-conversion"}
+
+
+def _interaction_direction(interaction: ElementTree.Element) -> str:
+    points = [p for p in _interaction_points(interaction) if p.get("GraphRef")]
+    if all(_is_target(p) for p in points):
+        return "reversible"
+    return "right_to_left" if _is_target(points[0]) else "left_to_right"
+
+
+def _is_catalysis(point: ElementTree.Element) -> bool:
+    return "catalysis" in (point.get("ArrowHead") or "").lower()
+
+
+def _publication_references(root: ElementTree.Element) -> dict[str, dict[str, str]]:
+    references = {}
+    for element in root.iter():
+        if _local_name(element.tag) != "PublicationXref":
+            continue
+        pmid = _publication_pmid(element)
+        if not pmid:
+            continue
+        reference_id = f"PMID:{pmid}"
+        references[reference_id] = {
+            "id": reference_id,
+            "title": f"WikiPathways publication {reference_id}",
+        }
+    return references
+
+
+def _publication_pmid(element: ElementTree.Element) -> str | None:
+    for child in element.iter():
+        if _local_name(child.tag) != "ID" or not child.text:
+            continue
+        text = child.text.strip()
+        if text.isdigit():
+            return text
+    return None
+
+
+def _fallback_reference(pathway_id: str) -> dict[str, str]:
+    return {
+        "id": pathway_id,
+        "title": f"WikiPathways source pathway {pathway_id}",
+    }
+
+
+def _taxa(root: ElementTree.Element) -> list[dict[str, str]]:
+    organism = root.get("Organism")
+    if not organism or organism not in ORGANISM_TAXA:
+        return []
+    return [{"id": ORGANISM_TAXA[organism], "label": organism}]
+
+
+def _edge(
+    subject: str,
+    predicate: str,
+    obj: str,
+    evidence_reference: str,
+    source_locator: str,
+) -> dict[str, Any]:
+    return {
+        "subject": subject,
+        "predicate": predicate,
+        "object": obj,
+        "evidence": [
+            {
+                "reference_id": evidence_reference,
+                "source_assertion": (
+                    f"The native GPML interaction specifies {subject} {predicate} {obj}."
+                ),
+                "source_locator": source_locator,
+            }
+        ],
+    }
+
+
+def _first_child(
+    element: ElementTree.Element,
+    name: str,
+) -> ElementTree.Element | None:
+    return next(iter(_children(element, name)), None)
+
+
+def _children(
+    element: ElementTree.Element,
+    name: str,
+) -> list[ElementTree.Element]:
+    return [child for child in element if _local_name(child.tag) == name]
+
+
+def _attribute(
+    element: ElementTree.Element,
+    primary: str,
+    fallback: str,
+) -> str:
+    return element.get(primary) or element.get(fallback) or ""
+
+
+def _format_curie(prefix: str, identifier: str) -> str:
+    if identifier.startswith(f"{prefix}:"):
+        return identifier
+    return f"{prefix}:{identifier}"
+
+
+def _local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]

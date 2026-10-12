@@ -1,0 +1,83 @@
+"""Copy exact accepted runtime and native fixtures into a new external package."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import subprocess
+
+HERE = Path(__file__).resolve().parent
+PREFLIGHT = Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+BUILD = Path('/private/tmp/pathwaymech-next-231-canonical-build-20261012')
+
+
+def bind(path):
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def paths(root):
+    return set(map(Path, subprocess.check_output(
+        ['rg', '--files', '-uu', '-L', str(root)], text=True).splitlines()))
+
+
+def main():
+    assert not (HERE / 'baseline.json').exists()
+    assert bind(PREFLIGHT / 'handoff.json')['sha256'] == 'f84c53a70a7bb43437bf036831d96044258daed53fe0d40357bb132f8124d9df'
+    handoff = json.loads((PREFLIGHT / 'handoff.json').read_text())
+    assert bind(PREFLIGHT / handoff['artifact_manifest']['path'])['sha256'] == handoff['artifact_manifest']['sha256']
+    manifest = json.loads((PREFLIGHT / 'artifact-manifest.json').read_text())
+    rows = manifest if isinstance(manifest, list) else manifest['artifacts']
+    seen = set()
+    for row in rows:
+        path = Path(row.get('path') or row['relative_path'])
+        path = path if path.is_absolute() else PREFLIGHT / path
+        assert path.is_relative_to(PREFLIGHT) and path not in seen
+        actual = bind(path)
+        assert actual['sha256'] == row['sha256'] and actual['bytes'] == row['bytes']
+        seen.add(path)
+    assert paths(PREFLIGHT) == seen | {PREFLIGHT / 'handoff.json', PREFLIGHT / 'artifact-manifest.json'}
+    assert bind(BUILD / 'handoff.json')['sha256'] == '7b51651f34562e1fc15535800623dfff85a9cba1ab60ab3a998437252130401b'
+    build_handoff = json.loads((BUILD / 'handoff.json').read_text())
+    assert bind(BUILD / 'artifact-manifest.json')['sha256'] == build_handoff['manifest']['sha256']
+    build_rows = json.loads((BUILD / 'artifact-manifest.json').read_text())['artifacts']
+    build_bindings = {row['path']: row for row in build_rows}
+    code = []
+    for path in sorted(paths(BUILD / 'runtime')):
+        assert bind(path) == build_bindings[str(path)]
+        rel = path.relative_to(BUILD / 'runtime')
+        for directory in ['baseline', 'candidate']:
+            destination = HERE / directory / rel
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            assert not destination.exists()
+            shutil.copyfile(path, destination)
+        code.append({'relative_path': str(rel), 'original': bind(path),
+                     'baseline': bind(HERE / 'baseline' / rel),
+                     'candidate_initial': bind(HERE / 'candidate' / rel)})
+    assert len(code) == 223
+    originals = []
+    for name in ['ECOLI-CPLX0-682.xml', 'META-CPLX0-682.xml',
+                 'ECOLI-PYRNUTRANSHYDROGEN-CPLX.xml', 'ECOLI-PC-1.xml',
+                 'ECOLI-ALKAPHOSPHA-CPLX.xml', 'ECOLI-UDHA-CPLX.xml',
+                 'ECOLI-PHOSPHO-ARCA.xml', 'ECOLI-PHOSPHO-PHOB.xml',
+                 'ECOLI-PNTA-MONOMER.xml']:
+        destination = HERE / 'originals' / name
+        destination.parent.mkdir(exist_ok=True)
+        shutil.copyfile(PREFLIGHT / 'raw' / name, destination)
+        originals.append({'original': bind(PREFLIGHT / 'raw' / name), 'captured': bind(destination)})
+    for name in ['AUTHOR-HANDOFF.md', 'research/PREFLIGHT.md', 'research/AUTHORITY-REQUIREMENTS.md']:
+        destination = HERE / 'requirements' / Path(name).name
+        destination.parent.mkdir(exist_ok=True)
+        shutil.copyfile(PREFLIGHT / name, destination)
+    receipt = {'at': datetime.datetime.now(datetime.UTC).isoformat(),
+               'preflight_handoff': bind(PREFLIGHT / 'handoff.json'),
+               'preflight_manifest': bind(PREFLIGHT / 'artifact-manifest.json'),
+               'preflight_closed_artifacts': len(rows), 'preflight_hidden_ignored_followed': True,
+               'accepted_build': bind(BUILD / 'handoff.json'), 'runtime_files': code,
+               'originals': originals, 'scope': 'External copies only; no maintained/cache/Git writes.'}
+    (HERE / 'baseline.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    print({'preflight_artifacts': len(rows), 'runtime_files': len(code), 'originals': len(originals)})
+
+
+if __name__ == '__main__':
+    main()

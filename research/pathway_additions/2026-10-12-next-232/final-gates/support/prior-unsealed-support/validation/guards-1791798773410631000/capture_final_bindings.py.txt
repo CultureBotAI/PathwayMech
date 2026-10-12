@@ -1,0 +1,24 @@
+"""Bind only actual finished root execution, QA and preservation. External writes only."""
+from support import *
+import argparse
+
+def main():
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--preservation',type=Path,required=True);a=p.parse_args()
+ gates=ADOPTION.parent/'gates/execution.json';actual=load(gates);validate_gate_shape(actual)
+ preserved=verify_preservation(a.preservation,gates);verify_qa(actual,preserved);verify_histories(actual)
+ binding={'at':now(),'gates':bind(gates),'preservation':bind(a.preservation),'page_qa':bind(QA),'root_visual':bind(VISUAL),'display_approval':bind(DISPLAY),'histories':bind(HISTORY),'adoption':bind(ADOPTION),'scope':'Actual finished executions only. Native review assembly/save/check remain pending.'}
+ write(HERE/'actual-current-execution-bindings.json',binding)
+ # Retain exact root helper/failure/receipt lineage; gate workspaces are not archival inputs.
+ artifacts=[]
+ for item in sorted(ADOPTION.parent.iterdir()):
+  if item.name=='gates' or item.name.startswith('gates-'):continue
+  if item.is_file():artifacts.append({'relative_path':item.name,**bind(item)})
+  elif item.is_dir():
+   for relative in files(item,exclude_runtime=False):artifacts.append({'relative_path':item.name+'/'+relative,**bind(item/relative)})
+  else:raise AssertionError('Unsupported root input type')
+ qa_support=Path('/private/tmp/pathwaymech-next-232-page-qa-support-20261012')
+ for relative in files(qa_support,exclude_runtime=False):artifacts.append({'relative_path':'qa-support/'+relative,**bind(qa_support/relative)})
+ assert len(artifacts)==len({r['relative_path'] for r in artifacts})
+ write(HERE/'root-execution-archive-inputs.json',{'at':now(),'artifacts':artifacts,'exclusions':[{'path':str(ADOPTION.parent/'gates'),'reason':'Exact final execution/input receipts and all nine command streams are explicitly archived by assembly; temporary test and Ruff workspaces are outside the scientific archive.'},{'path_pattern':str(ADOPTION.parent/'gates-*'),'reason':'Outer live stage wrapper is not substituted for the exact native gate execution receipt; root owns its separate final receipt.'}],'scope':'Completed static root integration/history/acceptance failure and replay files plus exact QA helper failure/successor lineage. All sources verified before assembly.'})
+ print({'status':'actual_final_bindings_captured','root_archive_files':len(artifacts),'native_save':False})
+if __name__=='__main__':main()

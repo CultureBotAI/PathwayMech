@@ -1,0 +1,11 @@
+--- accepted/page_qa_successor.py
++++ fresh-render/page_qa.py
+@@ -223,7 +223,7 @@
+  assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()==BASE
+  target=ROOT/TARGET_REL;page=ROOT/PAGE_REL;assert bind(target)['sha256']==TARGET_SHA
+  before={name:bind(path) for name,path in [('target',target),('page',page),('nodes_file',ROOT/'pages/downloads/nodes.tsv'),('edges_file',ROOT/'pages/downloads/edges.tsv')]}
+- gates_path=Path('/private/tmp/pathwaymech-next-232-root-integration-execution-20261012/gates/execution.json')
++ gates_path=Path('/private/tmp/pathwaymech-next-232-root-formatting-execution-20261012/gates/execution.json')
+  gates=load(gates_path);render=[r for r in gates['receipts'] if r['name']=='render'];assert len(render)==1 and render[0]['exit_code']==0
+  record=yaml.safe_load(target.read_bytes());text=page.read_text()
+  svg,counts=inspect_page(record,text)

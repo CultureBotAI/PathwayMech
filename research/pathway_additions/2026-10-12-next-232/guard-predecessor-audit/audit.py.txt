@@ -1,0 +1,218 @@
+"""Independent successor re-audit of PPI-INTEGRATION-001; external fixtures only."""
+import ast
+import datetime
+import difflib
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+
+HERE = Path(__file__).resolve().parent
+PACK = Path('/private/tmp/pathwaymech-next-231-integration-preparation-successor-20261012')
+OLD = Path('/private/tmp/pathwaymech-next-231-integration-preparation-20261012')
+OLD_AUDIT = Path('/private/tmp/pathwaymech-next-231-integration-preparation-audit-20261012')
+sys.path.insert(0, str(PACK))
+import common as g
+
+
+def binding(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def write(name, value):
+    with (HERE / name).open('x') as f:
+        json.dump(value, f, indent=2); f.write('\n')
+
+
+def seals():
+    assert binding(PACK / 'handoff.json')['sha256'] == '665f231beeedb20e59625d435d764bbfad18ccc958062919e16f5dd5018d49c2'
+    assert binding(PACK / 'artifact-manifest.json')['sha256'] == '5a7367f462c4c18f02e70202b9712c1a921a952cb5b025e24edf9dcb5765130d'
+    g.verify_package(); remediation = g.verify_remediation_inputs()
+    assert remediation['original_preparation']['handoff']['sha256'] == '73eaef67de4f266d1e988093247e431d4b0cadf66b0c8eefe6ec1afdeb58f5ae'
+    assert remediation['independent_audit']['handoff']['sha256'] == 'a3df3abbd78c385e8420c5f1f6f589519975e4dd956a48cc9674c4cc1ccb2a2d'
+    original = g.load(OLD_AUDIT / 'cache_retarget_probe.json')
+    assert original['detail']['retargeted_link_accepted'] is True
+    return {'successor_artifacts': 151, 'original_artifacts': 199, 'original_audit_artifacts': 34,
+            'old_invalid_acceptance_preserved': True, 'issue': 463}
+
+
+def fresh_cache():
+    g.verify_accepted(); g.verify_cache_inputs()
+    initial = g.load(PACK / 'initial-cache-identity.json')
+    expected = g.load(PACK / 'expected-cache-baseline.json')
+    actual = g.inventory(g.CACHE)
+    assert actual == initial['rows'] == expected['rows']
+    assert expected['historical_identity_capture_claimed'] is False
+    assert len(actual) == 765 and sum(row['symlink'] for row in actual) == 90
+    prior = {row['relative_path']: row for row in g.load(OLD / 'expected-cache-baseline.json')['rows']}
+    for row in actual:
+        historical = prior[row['relative_path']]
+        assert {key: row[key] for key in historical} == historical
+        assert all(key in row for key in g.IDENTITY_FIELDS)
+        assert not any(key in historical for key in ['file_type', 'link_text', 'resolved_path'])
+    final = g.load(PACK / 'cache-identity-final-observation.json')
+    digest = hashlib.sha256(json.dumps(actual, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    assert digest == final['current_inventory_digest']['value']
+    assert final['historical_identity_capture_claimed'] is False and final['cache_writes'] is False
+    return {'files': 765, 'symlinks': 90, 'regular': 675, 'current_equals_fresh_initial_and_final': True,
+            'old_body_and_type_rows_exact': True, 'historical_destination_capture_claimed': False,
+            'inventory_sha256': digest}
+
+
+def helper_scope():
+    changed, unchanged, delta = [], [], []
+    assert {p.name for p in PACK.glob('*.py')} == {p.name for p in OLD.glob('*.py')}
+    for p in sorted(PACK.glob('*.py')):
+        before = OLD / p.name
+        destination = HERE / 'helpers-read' / (p.name + '.txt'); destination.parent.mkdir(exist_ok=True)
+        destination.write_bytes(p.read_bytes())
+        if before.read_bytes() == p.read_bytes(): unchanged.append(p.name)
+        else:
+            changed.append(p.name)
+            delta += difflib.unified_diff(before.read_text().splitlines(keepends=True), p.read_text().splitlines(keepends=True),
+                                         fromfile='original/' + p.name, tofile='successor/' + p.name)
+    (HERE / 'independent-helper-delta.patch').write_text(''.join(delta))
+    assert unchanged == ['run-gates.py']
+    # Confirm corrected cache verification remains on every relevant execution path.
+    calls = {}
+    for name in ['bind_merged_base.py', 'capture-baseline.py', 'adopt.py', 'run-gates.py', 'preserve-maintained.py']:
+        tree = ast.parse((PACK / name).read_text())
+        calls[name] = sorted({node.func.id for node in ast.walk(tree) if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)})
+    for name in ['bind_merged_base.py', 'capture-baseline.py', 'adopt.py']: assert 'verify_cache_inputs' in calls[name]
+    for name in ['adopt.py', 'run-gates.py', 'preserve-maintained.py']: assert 'verify_adopted' in calls[name]
+    for name in ['adopt.py', 'preserve-maintained.py']: assert 'verify_path_identity' in calls[name]
+    assert 'inventory(CACHE)' in (PACK / 'capture-baseline.py').read_text()
+    assert "assert inventory(CACHE) == baseline['source_cache_files']" in (PACK / 'adopt.py').read_text()
+    assert g.BASE_CONFIG is None and g.BASE is None and g.TREE is None
+    return {'changed_helpers': changed, 'unchanged_helpers': unchanged, 'execution_path_checks': calls,
+            'actual_merged_base_bound': False}
+
+
+def receipts():
+    summary = g.load(PACK / 'validation-summary.json'); result = []
+    assert summary['guard_tests'] == 50 and summary['new_identity_guard_cases'] == 8
+    assert len(summary['receipts']) == 6
+    for item in summary['receipts']:
+        g.verify(item['receipt']['path'], item['receipt'])
+        receipt = g.load(item['receipt']['path']); assert receipt['exit_code'] == 0
+        for field in ['stdout', 'stderr']: g.verify(receipt[field]['path'], receipt[field])
+        directory = Path(item['receipt']['path']).parent
+        differences = [p.name for p in PACK.glob('*.py') if (directory / (p.name + '.txt')).read_bytes() != p.read_bytes()]
+        if receipt['name'] == 'guards':
+            assert '50 passed' in Path(receipt['stdout']['path']).read_text()
+            assert not differences
+        result.append({'name': receipt['name'], 'receipt': item['receipt'], 'exit_code': 0,
+                       'helper_changes_since_check': differences})
+    g.verify(summary['inherited_predecessor_validation']['path'], summary['inherited_predecessor_validation'])
+    assert summary['inherited_failed_attempts'] == 4
+    write('receipt-inspection.json', result)
+    return {'successor_commands': 6, 'guard_tests': 50, 'fresh_identity_controls': 8,
+            'guard_code_exact_final': True, 'old_failed_attempts_separately_retained': 4}
+
+
+def dossier():
+    plan = g.load(PACK / 'dossier-plan.json'); destinations = set(); counts = {}
+    for row in plan['mappings']:
+        destination = str(g.safe_relative(row['destination']))
+        assert destination not in destinations and not destination.endswith('.py')
+        assert destination not in {'archive-map.json', 'adoption.json'}
+        destinations.add(destination); g.verify(row['source']['path'], row['source'])
+        kind = row['serialization']; counts[kind] = counts.get(kind, 0) + 1
+        if row.get('original'): g.verify(row['original']['path'], row['original'])
+        if kind == 'lossless_utf8_json_wrapper':
+            assert g.load(row['source']['path'])['text'].encode() == Path(row['original']['path']).read_bytes()
+    assert len(destinations) == 476
+    required = {'integration-remediation/original_preparation/handoff.json',
+        'integration-remediation/original_preparation/artifact-manifest.json',
+        'integration-remediation/independent_audit/handoff.json',
+        'integration-remediation/independent_audit/artifact-manifest.json',
+        'integration-remediation/independent_audit/cache_retarget_probe.json',
+        'integration-remediation/issue-463/receipt.json', 'integration-remediation/initial-cache-identity.json'}
+    assert required <= destinations
+    old_receipts = list((OLD / 'validation').glob('*/receipt.json'))
+    for p in old_receipts: assert 'integration-remediation/original_preparation/' + str(p.relative_to(OLD)) in destinations
+    return {'mappings': 476, 'serializations': counts, 'required_original_audit_issue_and_fresh_identity_evidence': sorted(required),
+            'predecessor_command_receipts_retained': len(old_receipts)}
+
+
+def reject(call):
+    try: call()
+    except (AssertionError, FileNotFoundError) as error: return {'type': type(error).__name__, 'message': str(error)}
+    raise AssertionError('Invalid mutation unexpectedly accepted')
+
+
+def independent_controls():
+    results = []
+    for mutation in ['alternate-destination', 'alternate-link-text', 'indirect-destination',
+                     'link-to-regular', 'regular-to-link', 'parent-link-destination']:
+        root = HERE / 'fixtures' / mutation; root.mkdir(parents=True)
+        first, second = root / 'first', root / 'second'
+        first.write_bytes(b'independent preserved body\n'); second.write_bytes(first.read_bytes())
+        cache = root / 'cache'; cache.mkdir()
+        path = cache / 'old'
+        if mutation == 'regular-to-link': path.write_bytes(first.read_bytes())
+        elif mutation == 'indirect-destination':
+            (root / 'middle').symlink_to(first); path.symlink_to(root / 'middle')
+        elif mutation == 'parent-link-destination':
+            for name in ['directory-a', 'directory-b']:
+                (root / name).mkdir(); (root / name / 'old').write_bytes(first.read_bytes())
+            (cache / 'group').symlink_to(root / 'directory-a', target_is_directory=True)
+            path = cache / 'group/old'
+        else: path.symlink_to(first)
+        before = g.inventory(cache); previous = {r['relative_path']: r for r in before}
+        g.verify_cache_union(cache, previous, {})
+        if mutation == 'indirect-destination':
+            (root / 'middle').unlink(); (root / 'middle').symlink_to(second)
+        elif mutation == 'parent-link-destination':
+            (cache / 'group').unlink(); (cache / 'group').symlink_to(root / 'directory-b', target_is_directory=True)
+        else:
+            path.unlink()
+            if mutation == 'link-to-regular': path.write_bytes(first.read_bytes())
+            elif mutation == 'alternate-link-text': path.symlink_to('../first')
+            else: path.symlink_to(second)
+        assert path.read_bytes() == first.read_bytes() == second.read_bytes()
+        assert g.inventory(cache) != before
+        results.append({'mutation': mutation, 'direct_identity': reject(lambda: g.verify_path_identity(path, previous[str(path.relative_to(cache))])),
+                        'cache_guard': reject(lambda: g.verify_cache_union(cache, previous, {})),
+                        'baseline_inventory_rejected': True})
+    root = HERE / 'fixtures/new-copy'; root.mkdir(); cache = root / 'cache'; cache.mkdir()
+    source = root / 'original'; source.write_bytes(b'independent new body\n')
+    plan = {'new': {'original': g.binding(source)}}; path = cache / 'new'
+    path.write_bytes(source.read_bytes()); g.verify_cache_union(cache, {}, plan, adopted=True)
+    path.unlink(); path.symlink_to(source)
+    results.append({'mutation': 'new-copy-link', 'cache_guard': reject(lambda: g.verify_cache_union(cache, {}, plan, adopted=True))})
+    results.append({'mutation': 'missing-fresh-fields', 'direct_identity': reject(lambda: g.verify_path_identity(path, g.binding(path)))})
+    write('independent-controls.json', results)
+    return {'negative_cases': len(results), 'same_bytes_preserved_in_each_retarget_or_type_case': True,
+            'unchanged_old_identity_positive_controls': 6, 'regular_new_copy_positive_control': True,
+            'additional_parent_directory_retarget_control': True}
+
+
+def final_preservation():
+    g.verify_package(); g.verify_remediation_inputs()
+    actual = g.inventory(g.CACHE)
+    assert actual == g.load(PACK / 'initial-cache-identity.json')['rows']
+    return {'successor151_original199_audit34_still_closed': True, 'cache765_same_initial_bodies_and_link_identities': True}
+
+
+def main():
+    assert not os.environ.get('PATHWAYMECH_PPI_MERGED_BASE')
+    checks = []
+    for name, fn in [('closed_lineage', seals), ('fresh_cache_and_accepted_inputs', fresh_cache),
+                     ('helper_delta_and_execution_paths', helper_scope), ('actual_50_test_receipts', receipts),
+                     ('dossier476', dossier), ('independent_identity_controls', independent_controls),
+                     ('final_input_preservation', final_preservation)]:
+        at = datetime.datetime.now(datetime.UTC).isoformat()
+        try: row = {'name': name, 'status': 'passed', 'details': fn()}
+        except Exception as error: row = {'name': name, 'status': 'failed', 'type': type(error).__name__, 'message': str(error)}
+        row['started_at'] = at; row['finished_at'] = datetime.datetime.now(datetime.UTC).isoformat()
+        checks.append(row); write(name + '.json', row); print(json.dumps(row), flush=True)
+    write('checks.json', checks)
+    return 0 if all(r['status'] == 'passed' for r in checks) else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

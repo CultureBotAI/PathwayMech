@@ -1,0 +1,70 @@
+{
+  "key": "nad-nadp-cross-study-locator",
+  "severity": "minor",
+  "status": "open provisional against captured unsealed target",
+  "target": {
+    "path": "/private/tmp/pathwaymech-next-232-science-review-20261012/working-target-c2fec44e.yaml",
+    "sha256": "c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503",
+    "bytes": 177007
+  },
+  "affected_paths": [
+    "/mechanistic_edges/40/description",
+    "/mechanistic_edges/40/evidence/0/source_assertion"
+  ],
+  "edge": {
+    "id": "nad-041",
+    "subject": "CHEBI:58349",
+    "predicate": "inhibits",
+    "object": "EcoCyc:CPLX0-682",
+    "description": "The2001 NADP additions give slight inhibition:83% and79% relative activity at50 and100\u00b5M. The1987 preparation showed no significant effect under its conditions.",
+    "evidence": [
+      {
+        "reference_id": "PMID:11488932",
+        "source_assertion": "The2001 NADP additions give slight inhibition:83% and79% relative activity at50 and100\u00b5M. The1987 preparation showed no significant effect under its conditions.",
+        "source_locator": "Retained primary rendering lines L253\u2013L264; printed table/section as stated"
+      }
+    ],
+    "endpoint_qualifiers": [
+      {
+        "endpoint": "object",
+        "kind": "experimental_construct",
+        "description": "2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from recombinant pSK67/BL21 and1987 K12 preparations.",
+        "evidence": [
+          {
+            "reference_id": "PMID:11488932",
+            "source_assertion": "Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous hexamer.",
+            "source_locator": "Retained primary rendering lines L148\u2013L177; printed table/section as stated"
+          },
+          {
+            "reference_id": "PMID:11488932",
+            "source_assertion": "Measured native N terminus differs from the deduced YfjB sequence at residue2; recombinant pSK67 and native preparations remain distinct.",
+            "source_locator": "Retained primary rendering lines L279\u2013L284; printed table/section as stated"
+          }
+        ]
+      }
+    ]
+  },
+  "problem": "The evidence asserted under PMID:11488932 includes the 1987 no-significant-effect contrast, but its exact L253\u2013L264 locator is solely the 2001 Table 5. No PMID:3025169 evidence accompanies this edge. The biology is supported, but the edge-owned source attribution overstates what the selected source says.",
+  "original_bindings": {
+    "PMID:11488932": {
+      "path": "/private/tmp/pathwaymech-next-232-author-20261012/derived/PMID11488932-primary-rendering-bundle.json",
+      "bytes": 54061,
+      "sha256": "5f38b08bbd3b4f48a24799f1e4587022c20879925643afa899c0f9eec077c8d5",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/11488932/",
+      "version": "Primary-paper tool renderings bundled losslessly with exact original receipts; no raw publisher PDF/HTML claim"
+    },
+    "PMID:3025169": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID3025169-europepmc.pdf",
+      "bytes": 893027,
+      "sha256": "e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/3025169/",
+      "version": "Retained full primary original; exact preparation and inspected source locators; supplementary originals separately bound"
+    }
+  },
+  "acceptance_criteria": [
+    "Limit the existing PMID:11488932 source assertion to its 2001 NADP addition results.",
+    "Add separately owned PMID:3025169 evidence for the 1987 no-significant-effect contrast with exact PDF page 2 Table 2 and adjacent text locator.",
+    "Preserve the existing 2001 experimental construct qualifier and separate the 1987 partially purified preparation; no graph/sign/ID change is needed.",
+    "Recompute final author target, evidence ledger, and relevant seal; retain captured pre-correction target."
+  ]
+}

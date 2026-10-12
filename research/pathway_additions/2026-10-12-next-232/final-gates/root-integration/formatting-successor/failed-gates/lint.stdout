@@ -1,0 +1,1401 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/pathwaymech/ecocyc_complex.py:6:1
+   |
+ 4 |   chains, classes or modified states through the new authority kind.
+ 5 |   """
+ 6 | / from __future__ import annotations
+ 7 | |
+ 8 | | import hashlib
+ 9 | | from pathlib import Path
+10 | | import re
+11 | | from typing import Any
+12 | | from xml.etree import ElementTree as ET
+   | |_______________________________________^
+13 |
+14 |   ECOCYC_COMPLEX_KIND = "ecocyc-complex-xml"
+   |
+help: Organize imports
+   |
+8  | import hashlib
+9  + import re
+10 | from pathlib import Path
+   - import re
+11 | from typing import Any
+   |
+
+E501 Line too long (121 > 100)
+  --> src/pathwaymech/ecocyc_complex.py:30:101
+   |
+29 | def _request(url: Any) -> str:
+30 |     match = re.fullmatch(rf"https://{re.escape(HOST)}/getxml\?id=ECOLI:({FRAME})", url) if isinstance(url, str) else None
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+31 |     _require(match is not None, "requires exact native HTTPS ECOLI request")
+32 |     return match[1]
+   |
+
+E501 Line too long (103 > 100)
+  --> src/pathwaymech/ecocyc_complex.py:53:101
+   |
+53 | def _identity(path: Path, url: str, version: str, *, is_class: bool = False) -> tuple[ET.Element, str]:
+   |                                                                                                     ^^^
+54 |     frame = _request(url)
+55 |     requested = "ECOLI:" + frame
+   |
+
+E501 Line too long (101 > 100)
+  --> src/pathwaymech/ecocyc_complex.py:57:101
+   |
+55 |     requested = "ECOLI:" + frame
+56 |     root = ET.fromstring(path.read_bytes(), parser=ET.XMLParser(target=_TreeBuilder()))
+57 |     _require(root.tag == "ptools-xml" and len(root) == 2, "requires metadata and one direct Protein")
+   |                                                                                                     ^
+58 |     metadata, entity = _one(root, "metadata"), _one(root, "Protein")
+59 |     _require(set(root.attrib) == {"ptools-version", "{http://www.w3.org/XML/1998/namespace}base"}
+   |
+
+E501 Line too long (103 > 100)
+  --> src/pathwaymech/ecocyc_complex.py:62:101
+   |
+60 |              and root.get("{http://www.w3.org/XML/1998/namespace}base") in {
+61 |                  url, f"http://{HOST}:443/getxml?{requested}"}
+62 |              and isinstance(version, str) and re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", version) is not None
+   |                                                                                                     ^^^
+63 |              and root.get("ptools-version") == version, "XML base/version mismatch")
+64 |     _require(not metadata.attrib and sorted(n.tag for n in metadata) == sorted(
+   |
+
+E501 Line too long (110 > 100)
+  --> src/pathwaymech/ecocyc_complex.py:74:101
+   |
+72 |              and sorted(n.tag for n in pgdb) == ["dblink", "species", "strain"]
+73 |              and _text(pgdb, "species", True) == "Escherichia coli"
+74 |              and _text(pgdb, "strain", True) == "K-12 substr. MG1655", "PGDB/version/species/strain mismatch")
+   |                                                                                                     ^^^^^^^^^^
+75 |     taxon = _one(pgdb, "dblink")
+76 |     _require(not taxon.attrib and sorted(n.tag for n in taxon) == sorted(
+   |
+
+E501 Line too long (102 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:106:101
+    |
+104 | def _provenance(value: Any) -> str:
+105 |     _keys(value, PROVENANCE, "invalid source provenance fields")
+106 |     _require(all(isinstance(v, str) and v.strip() for v in value.values()), "empty source provenance")
+    |                                                                                                     ^^
+107 |     frame = _request(value["url"])
+108 |     _require(re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", value["version"]) is not None
+    |
+
+E501 Line too long (111 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:109:101
+    |
+107 |     frame = _request(value["url"])
+108 |     _require(re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", value["version"]) is not None
+109 |              and re.fullmatch(r"[0-9a-f]{64}", value["sha256"]) is not None, "invalid provenance version/hash")
+    |                                                                                                     ^^^^^^^^^^^
+110 |     return frame
+    |
+
+E501 Line too long (119 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:120:101
+    |
+118 |              "class_source path must be relative")
+119 |     metadata = {key: entry[key] for key in PROVENANCE}
+120 |     _require(_provenance(metadata) == "PC-1" and entry["version"] == version, "class_source identity/version mismatch")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+121 |     path = cache_dir / relative
+122 |     _require(hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"], "class_source bytes do not match hash")
+    |
+
+E501 Line too long (118 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:122:101
+    |
+120 |     _require(_provenance(metadata) == "PC-1" and entry["version"] == version, "class_source identity/version mismatch")
+121 |     path = cache_dir / relative
+122 |     _require(hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"], "class_source bytes do not match hash")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^
+123 |     entity, _ = _identity(path, entry["url"], entry["version"], is_class=True)
+124 |     _require(all(n.tag in {"common-name", "subclass", "instance"} for n in entity), "unsupported PC-1 class slots")
+    |
+
+E501 Line too long (115 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:124:101
+    |
+122 |     _require(hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"], "class_source bytes do not match hash")
+123 |     entity, _ = _identity(path, entry["url"], entry["version"], is_class=True)
+124 |     _require(all(n.tag in {"common-name", "subclass", "instance"} for n in entity), "unsupported PC-1 class slots")
+    |                                                                                                     ^^^^^^^^^^^^^^^
+125 |     _require(_text(entity, "common-name", True) == "a transporter", "PC-1 must declare its native transporter name")
+126 |     subclasses = [_reference(n, is_class=True) for n in entity.findall("subclass")]
+    |
+
+E501 Line too long (116 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:125:101
+    |
+123 |     entity, _ = _identity(path, entry["url"], entry["version"], is_class=True)
+124 |     _require(all(n.tag in {"common-name", "subclass", "instance"} for n in entity), "unsupported PC-1 class slots")
+125 |     _require(_text(entity, "common-name", True) == "a transporter", "PC-1 must declare its native transporter name")
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+126 |     subclasses = [_reference(n, is_class=True) for n in entity.findall("subclass")]
+127 |     instances = [_reference(n) for n in entity.findall("instance")]
+    |
+
+E501 Line too long (103 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:128:101
+    |
+126 |     subclasses = [_reference(n, is_class=True) for n in entity.findall("subclass")]
+127 |     instances = [_reference(n) for n in entity.findall("instance")]
+128 |     _require(bool(subclasses) and len(subclasses) == len(set(subclasses)) and "PC-1" not in subclasses,
+    |                                                                                                     ^^^
+129 |              "ambiguous PC-1 subclasses")
+130 |     _require(frame in instances and len(instances) == len(set(instances)) and "PC-1" not in instances,
+    |
+
+E501 Line too long (102 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:130:101
+    |
+128 |     _require(bool(subclasses) and len(subclasses) == len(set(subclasses)) and "PC-1" not in subclasses,
+129 |              "ambiguous PC-1 subclasses")
+130 |     _require(frame in instances and len(instances) == len(set(instances)) and "PC-1" not in instances,
+    |                                                                                                     ^^
+131 |              "PC-1 must declare the exact complex instance once")
+132 |     return {**metadata, "id": "EcoCyc:PC-1", "label": "a transporter",
+    |
+
+E501 Line too long (113 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:139:101
+    |
+137 | def complex_metadata(entry: dict, cache_dir: Path) -> dict:
+138 |     """Derive typed source metadata from whole original bytes, never corpus labels."""
+139 |     _keys(entry, {"key", "kind", "path"} | PROVENANCE | ({"class_source"} if "class_source" in entry else set()),
+    |                                                                                                     ^^^^^^^^^^^^^
+140 |           "unsupported typed complex manifest fields")
+141 |     _require(entry["kind"] == ECOCYC_COMPLEX_KIND, "wrong source kind")
+    |
+
+E501 Line too long (114 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:149:101
+    |
+147 |              "original path must be relative")
+148 |     path = cache_dir / relative
+149 |     _require(hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"], "original bytes do not match hash")
+    |                                                                                                     ^^^^^^^^^^^^^^
+150 |     entity, _ = _identity(path, entry["url"], entry["version"])
+151 |     _require(all(node.tag in {"parent", "common-name", "synonym", "component", "catalyzes",
+    |
+
+E501 Line too long (109 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:156:101
+    |
+154 |     parents = [_reference(node, is_class=True) for node in entity.findall("parent")]
+155 |     _require(len(parents) == len(set(parents)) and set(parents) in (
+156 |         {"Protein-Complexes"}, {"Protein-Complexes", "PC-1"}), "unsupported/duplicate native parent classes")
+    |                                                                                                     ^^^^^^^^^
+157 |     _require(not entity.findall("common-name"), "direct common-name is unsupported by this unnamed/synonym-only adapter")
+158 |     aliases = []
+    |
+
+E501 Line too long (121 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:157:101
+    |
+155 |     _require(len(parents) == len(set(parents)) and set(parents) in (
+156 |         {"Protein-Complexes"}, {"Protein-Complexes", "PC-1"}), "unsupported/duplicate native parent classes")
+157 |     _require(not entity.findall("common-name"), "direct common-name is unsupported by this unnamed/synonym-only adapter")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+158 |     aliases = []
+159 |     for node in entity.findall("synonym"):
+    |
+
+E501 Line too long (115 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:161:101
+    |
+159 |     for node in entity.findall("synonym"):
+160 |         _require(node.attrib == {"datatype": "string"} and not len(node)
+161 |                  and isinstance(node.text, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", node.text) is not None,
+    |                                                                                                     ^^^^^^^^^^^^^^^
+162 |                  "requires one unambiguous native synonym token")
+163 |         _require(node.text != frame and not node.text.casefold().startswith(("unknown", "error", "notfound")), "unresolved synonym")
+    |
+
+E501 Line too long (132 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:163:101
+    |
+161 |                  and isinstance(node.text, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", node.text) is not None,
+162 |                  "requires one unambiguous native synonym token")
+163 |         _require(node.text != frame and not node.text.casefold().startswith(("unknown", "error", "notfound")), "unresolved synonym")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+164 |         aliases.append(node.text)
+165 |     components = []
+    |
+
+E501 Line too long (130 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:168:101
+    |
+166 |     for node in entity.findall("component"):
+167 |         _require(not node.attrib and not (node.text or "").strip()
+168 |                  and sorted(n.tag for n in node) == ["Protein", "coefficient"], "requires explicit Protein component/coefficient")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+169 |         reference = _one(node, "Protein")
+170 |         wrapper = ET.Element("component")
+    |
+
+E501 Line too long (110 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:175:101
+    |
+173 |         coefficient = _one(node, "coefficient")
+174 |         _require(component != frame and coefficient.attrib == {"datatype": "integer"}
+175 |                  and not len(coefficient) and re.fullmatch(r"[1-9][0-9]*", coefficient.text or "") is not None
+    |                                                                                                     ^^^^^^^^^^
+176 |                  and not (coefficient.tail or "").strip(), "invalid explicit component coefficient")
+177 |         components.append({"id": "EcoCyc:" + component, "coefficient": int(coefficient.text)})
+    |
+
+E501 Line too long (126 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:178:101
+    |
+176 |                  and not (coefficient.tail or "").strip(), "invalid explicit component coefficient")
+177 |         components.append({"id": "EcoCyc:" + component, "coefficient": int(coefficient.text)})
+178 |     _require(bool(components) and len({item["id"] for item in components}) == len(components), "missing/duplicate components")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+179 |     proof = None
+180 |     if parents == ["Protein-Complexes"]:
+    |
+
+E501 Line too long (126 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:182:101
+    |
+180 |     if parents == ["Protein-Complexes"]:
+181 |         _require(not aliases and len(components) == 1 and components[0]["coefficient"] >= 2
+182 |                  and "class_source" not in entry, "unnamed case requires one native homomer without names or class companion")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+183 |         status = "unnamed"
+184 |     else:
+    |
+
+E501 Line too long (129 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:203:101
+    |
+201 |     _require(metadata["kind"] == ECOCYC_COMPLEX_KIND, "wrong typed complex source kind")
+202 |     native = metadata["native_complex"]
+203 |     _keys(native, {"id", "parent_classes", "name_status", "direct_common_name", "direct_synonyms", "components", "class_source"},
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+204 |           "incomplete native complex metadata")
+205 |     _require(native["id"] == "EcoCyc:" + frame and native["direct_common_name"] is None,
+    |
+
+E501 Line too long (101 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:210:101
+    |
+208 |     _require(isinstance(parents, list) and all(isinstance(p, str) for p in parents)
+209 |              and len(parents) == len(set(parents)) and set(parents) in (
+210 |                  {"Protein-Complexes"}, {"Protein-Complexes", "PC-1"}), "unsupported parent classes")
+    |                                                                                                     ^
+211 |     components = native["components"]
+212 |     _require(isinstance(components, list) and bool(components), "components must be explicit")
+    |
+
+E501 Line too long (104 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:215:101
+    |
+213 |     for item in components:
+214 |         _keys(item, {"id", "coefficient"}, "malformed native component")
+215 |         _require(isinstance(item["id"], str) and re.fullmatch("EcoCyc:" + FRAME, item["id"]) is not None
+    |                                                                                                     ^^^^
+216 |                  and item["id"] != native["id"] and type(item["coefficient"]) is int
+217 |                  and item["coefficient"] > 0, "invalid native component identity/coefficient")
+    |
+
+E501 Line too long (103 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:218:101
+    |
+216 |                  and item["id"] != native["id"] and type(item["coefficient"]) is int
+217 |                  and item["coefficient"] > 0, "invalid native component identity/coefficient")
+218 |     _require(len({item["id"] for item in components}) == len(components), "duplicate native component")
+    |                                                                                                     ^^^
+219 |     aliases = native["direct_synonyms"]
+220 |     if native["name_status"] == "unnamed":
+    |
+
+E501 Line too long (106 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:225:101
+    |
+223 |                  "invalid unnamed homomer scope")
+224 |     else:
+225 |         _require(native["name_status"] == "synonym_only" and set(parents) == {"PC-1", "Protein-Complexes"}
+    |                                                                                                     ^^^^^^
+226 |                  and isinstance(aliases, list) and len(aliases) == 1 and isinstance(aliases[0], str)
+227 |                  and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", aliases[0]) is not None
+    |
+
+E501 Line too long (115 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:228:101
+    |
+226 |                  and isinstance(aliases, list) and len(aliases) == 1 and isinstance(aliases[0], str)
+227 |                  and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", aliases[0]) is not None
+228 |                  and aliases[0] != frame and not aliases[0].casefold().startswith(("unknown", "error", "notfound"))
+    |                                                                                                     ^^^^^^^^^^^^^^^
+229 |                  and len(components) >= 2,
+230 |                  "invalid synonym-only dual-parent complex scope")
+    |
+
+E501 Line too long (105 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:232:101
+    |
+230 |                  "invalid synonym-only dual-parent complex scope")
+231 |         proof = native["class_source"]
+232 |         _keys(proof, PROVENANCE | {"id", "label", "subclasses", "instances"}, "missing typed PC-1 proof")
+    |                                                                                                     ^^^^^
+233 |         _require(_provenance({key: proof[key] for key in PROVENANCE}) == "PC-1"
+234 |                  and proof["version"] == metadata["version"] and proof["id"] == "EcoCyc:PC-1"
+    |
+
+E501 Line too long (124 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:239:101
+    |
+237 |             values = proof[key]
+238 |             _require(isinstance(values, list) and bool(values)
+239 |                      and all(isinstance(item, str) and re.fullmatch("EcoCyc:" + FRAME, item) is not None for item in values)
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+240 |                      and len(values) == len(set(values)) and "EcoCyc:PC-1" not in values, "ambiguous class proof references")
+241 |         _require(native["id"] in proof["instances"], "class proof lacks exact complex instance")
+    |
+
+E501 Line too long (125 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:240:101
+    |
+238 |             _require(isinstance(values, list) and bool(values)
+239 |                      and all(isinstance(item, str) and re.fullmatch("EcoCyc:" + FRAME, item) is not None for item in values)
+240 |                      and len(values) == len(set(values)) and "EcoCyc:PC-1" not in values, "ambiguous class proof references")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+241 |         _require(native["id"] in proof["instances"], "class proof lacks exact complex instance")
+    |
+
+E501 Line too long (115 > 100)
+   --> src/pathwaymech/ecocyc_complex.py:248:101
+    |
+246 |     native = metadata["native_complex"]
+247 |     unnamed = native["name_status"] == "unnamed"
+248 |     label = "unnamed protein complex " + native["id"].split(":", 1)[1] if unnamed else native["direct_synonyms"][0]
+    |                                                                                                     ^^^^^^^^^^^^^^^
+249 |     return native["id"], {"label": label, "synonyms": [], "source": source,
+250 |                           "entity_type": "protein_complex",
+    |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> src/pathwaymech/identifiers.py:8:1
+   |
+ 6 |   """
+ 7 |
+ 8 | / from __future__ import annotations
+ 9 | |
+10 | | import json
+11 | | import re
+12 | | import unicodedata
+13 | | from pathlib import Path
+14 | | from typing import Any
+15 | | from urllib.parse import urlparse
+16 | |
+17 | | import yaml
+18 | |
+19 | | from pathwaymech.ecocyc_complex import (
+20 | |     ECOCYC_COMPLEX_KIND, complex_term, validate_complex_metadata,
+21 | | )
+22 | | from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, validate_pathbank_archive
+23 | | from pathwaymech.schema import ALLOWED_CURIE_PREFIXES
+24 | | from pathwaymech.yaml_io import load_yaml_file, pathway_files
+   | |_____________________________________________________________^
+25 |
+26 |   SECTIONS = {"record", "taxa", "participants", "reactions"}
+   |
+help: Organize imports
+   |
+19 | from pathwaymech.ecocyc_complex import (
+   -     ECOCYC_COMPLEX_KIND, complex_term, validate_complex_metadata,
+20 +     ECOCYC_COMPLEX_KIND,
+21 +     complex_term,
+22 +     validate_complex_metadata,
+23 | )
+   |
+
+E501 Line too long (108 > 100)
+  --> src/pathwaymech/identifiers.py:97:101
+   |
+95 |         _keys(
+96 |             metadata, {"url", "version", "sha256", "license"},
+97 |             {"sha256_scope", "kind", "archive", "pathway_accessions", "native_complex"}, f"source {source}",
+   |                                                                                                     ^^^^^^^^
+98 |         )
+99 |         if any(not _text(value) for name, value in metadata.items()
+   |
+
+E501 Line too long (106 > 100)
+   --> src/pathwaymech/identifiers.py:129:101
+    |
+127 |             validate_complex_metadata(metadata)
+128 |         elif "native_complex" in metadata:
+129 |             raise ValueError(f"source {source}: native complex provenance requires its typed source kind")
+    |                                                                                                     ^^^^^^
+130 |         if metadata.get("kind") == "metacyc-reaction-xml":
+131 |             request = re.fullmatch(
+    |
+
+E501 Line too long (104 > 100)
+   --> src/pathwaymech/identifiers.py:158:101
+    |
+156 |             f"authority {identifier}",
+157 |         )
+158 |         if term.get("label_kind", "canonical") not in {"canonical", "source_context", "source_synonym"}:
+    |                                                                                                     ^^^^
+159 |             raise ValueError(f"{identifier}: unknown authority label kind")
+160 |         if not _text(term["label"]):
+    |
+
+E501 Line too long (103 > 100)
+   --> src/pathwaymech/identifiers.py:170:101
+    |
+168 |         source_kind = data["sources"][term["source"]].get("kind")
+169 |         if term.get("label_kind") == "source_synonym" and source_kind != ECOCYC_COMPLEX_KIND:
+170 |             raise ValueError(f"{identifier}: source-synonym authority requires a typed native complex")
+    |                                                                                                     ^^^
+171 |         if source_kind == PATHBANK_ARCHIVE_KIND:
+172 |             provenance = data["sources"][term["source"]]
+    |
+
+E501 Line too long (102 > 100)
+   --> src/pathwaymech/identifiers.py:186:101
+    |
+184 |                 raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
+185 |         if source_kind == ECOCYC_COMPLEX_KIND:
+186 |             expected_id, expected_term = complex_term(data["sources"][term["source"]], term["source"])
+    |                                                                                                     ^^
+187 |             if identifier != expected_id or term != expected_term:
+188 |                 raise ValueError(f"{identifier}: invalid typed native complex authority")
+    |
+
+E501 Line too long (106 > 100)
+   --> src/pathwaymech/identifiers.py:287:101
+    |
+285 |                     errors.append(f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
+286 |                                   "typed native complex requires participants/category complex")
+287 |                 elif term["label_kind"] == "source_synonym" and entry["policy"] != "canonical_or_synonym":
+    |                                                                                                     ^^^^^^
+288 |                     errors.append(f"{where}: LABEL_AUTHORITY_UNAVAILABLE {identifier!r}; "
+289 |                                   "native source supplies a synonym, not a common-name")
+    |
+
+E501 Line too long (102 > 100)
+  --> tests/test_ecocyc_complex_authority.py:71:101
+   |
+71 | def entry(tmp_path, shape="unnamed", frame="ASSEMBLY", *, root=None, proof=None, name="original.xml"):
+   |                                                                                                     ^^
+72 |     observed, class_body = document(shape, frame)
+73 |     result = {"key": name, "kind": ECOCYC_COMPLEX_KIND,
+   |
+
+E501 Line too long (120 > 100)
+  --> tests/test_ecocyc_complex_authority.py:76:101
+   |
+74 |               **original(tmp_path, name, observed if root is None else root, frame)}
+75 |     if shape == "synonym":
+76 |         result["class_source"] = original(tmp_path, name + ".class.xml", class_body if proof is None else proof, "PC-1")
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+77 |     return result
+   |
+
+E501 Line too long (101 > 100)
+  --> tests/test_ecocyc_complex_authority.py:91:101
+   |
+89 | @pytest.mark.parametrize("shape,frame", [("unnamed", "ASSEMBLY"), ("unnamed", "SECOND-17"),
+90 |                                         ("synonym", "ASSEMBLY"), ("synonym", "OTHER.2")])
+91 | def test_supported_shapes_preserve_native_absence_types_components_and_proof(tmp_path, shape, frame):
+   |                                                                                                     ^
+92 |     item = entry(tmp_path, shape, frame)
+93 |     metadata = complex_metadata(item, tmp_path)
+   |
+
+E501 Line too long (124 > 100)
+  --> tests/test_ecocyc_complex_authority.py:97:101
+   |
+95 |     identifier, term = complex_term(metadata, item["key"])
+96 |     assert identifier == "EcoCyc:" + frame and native_data["direct_common_name"] is None
+97 |     assert native_data["parent_classes"] == (["Protein-Complexes"] if shape == "unnamed" else ["PC-1", "Protein-Complexes"])
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^
+98 |     assert native_data["components"] == ([{"id": "EcoCyc:CHAIN", "coefficient": 6}] if shape == "unnamed" else [
+99 |         {"id": "EcoCyc:B", "coefficient": 2}, {"id": "EcoCyc:A", "coefficient": 2}])
+   |
+
+E501 Line too long (112 > 100)
+   --> tests/test_ecocyc_complex_authority.py:98:101
+    |
+ 96 |     assert identifier == "EcoCyc:" + frame and native_data["direct_common_name"] is None
+ 97 |     assert native_data["parent_classes"] == (["Protein-Complexes"] if shape == "unnamed" else ["PC-1", "Protein-Complexes"])
+ 98 |     assert native_data["components"] == ([{"id": "EcoCyc:CHAIN", "coefficient": 6}] if shape == "unnamed" else [
+    |                                                                                                     ^^^^^^^^^^^^
+ 99 |         {"id": "EcoCyc:B", "coefficient": 2}, {"id": "EcoCyc:A", "coefficient": 2}])
+100 |     assert term["label"] == ("unnamed protein complex " + frame if shape == "unnamed" else "NativeAB")
+    |
+
+E501 Line too long (102 > 100)
+   --> tests/test_ecocyc_complex_authority.py:100:101
+    |
+ 98 |     assert native_data["components"] == ([{"id": "EcoCyc:CHAIN", "coefficient": 6}] if shape == "unnamed" else [
+ 99 |         {"id": "EcoCyc:B", "coefficient": 2}, {"id": "EcoCyc:A", "coefficient": 2}])
+100 |     assert term["label"] == ("unnamed protein complex " + frame if shape == "unnamed" else "NativeAB")
+    |                                                                                                     ^^
+101 |     assert term["label_kind"] == ("source_context" if shape == "unnamed" else "source_synonym")
+102 |     assert term["entity_type"] == "protein_complex" and term["synonyms"] == []
+    |
+
+E501 Line too long (101 > 100)
+   --> tests/test_ecocyc_complex_authority.py:131:101
+    |
+129 |     ("Protein/component/coefficient", "datatype", "float"),
+130 | ])
+131 | def test_exact_identity_type_and_component_attributes_fail_closed(tmp_path, shape, path, key, value):
+    |                                                                                                     ^
+132 |     root, _ = document(shape)
+133 |     root.find(path).set(key, value)
+    |
+
+E501 Line too long (111 > 100)
+   --> tests/test_ecocyc_complex_authority.py:138:101
+    |
+138 | @pytest.mark.parametrize("problem", ["no-parent", "duplicate-parent", "unrelated-parent", "conflicting-parent",
+    |                                                                                                     ^^^^^^^^^^^
+139 |     "no-component", "duplicate-component", "class-component", "nested-component", "missing-coefficient",
+140 |     "duplicate-coefficient", "zero", "negative", "fractional", "padded", "self-component",
+    |
+
+E501 Line too long (104 > 100)
+   --> tests/test_ecocyc_complex_authority.py:139:101
+    |
+138 | @pytest.mark.parametrize("problem", ["no-parent", "duplicate-parent", "unrelated-parent", "conflicting-parent",
+139 |     "no-component", "duplicate-component", "class-component", "nested-component", "missing-coefficient",
+    |                                                                                                     ^^^^
+140 |     "duplicate-coefficient", "zero", "negative", "fractional", "padded", "self-component",
+141 |     "direct-name", "empty-direct-name", "copied-nested-name", "two-aliases", "duplicate-alias",
+    |
+
+E501 Line too long (110 > 100)
+   --> tests/test_ecocyc_complex_authority.py:143:101
+    |
+141 |     "direct-name", "empty-direct-name", "copied-nested-name", "two-aliases", "duplicate-alias",
+142 |     "nested-alias", "empty-alias", "unsafe-alias", "unsupported-alias", "no-synonym",
+143 |     "wrong-type", "nested-entity", "extra-entity", "nested-parent", "modified-state", "extra-component-slot"])
+    |                                                                                                     ^^^^^^^^^^
+144 | def test_ambiguous_assemblies_and_name_forgery_are_rejected_before_selection(tmp_path, problem):
+145 |     shape = "synonym" if "alias" in problem or problem == "no-synonym" else "unnamed"
+    |
+
+E501 Line too long (186 > 100)
+   --> tests/test_ecocyc_complex_authority.py:153:101
+    |
+151 | …
+152 | …e"}:
+153 | …-parent": "Protein-Small-Molecule-Complexes", "modified-state": "Modified-Proteins"}[problem], is_class=True)
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+154 | …
+155 | …
+    |
+
+E501 Line too long (130 > 100)
+   --> tests/test_ecocyc_complex_authority.py:167:101
+    |
+165 |         entity.find("component").append(copy.deepcopy(entity.find("component/coefficient")))
+166 |     elif problem in {"zero", "negative", "fractional", "padded"}:
+167 |         entity.find("component/coefficient").text = {"zero": "0", "negative": "-2", "fractional": "1.5", "padded": " 6 "}[problem]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+168 |     elif problem == "self-component":
+169 |         node = entity.find("component/Protein")
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:170:40
+    |
+168 |     elif problem == "self-component":
+169 |         node = entity.find("component/Protein")
+170 |         node.set("frameid", "ASSEMBLY"); node.set("resource", "getxml?ECOLI:ASSEMBLY")
+    |                                        ^
+171 |     elif problem in {"direct-name", "empty-direct-name", "copied-nested-name"}:
+172 |         ET.SubElement(entity, "common-name", datatype="string").text = "" if problem == "empty-direct-name" else "Nested activity nam…
+    |
+
+E501 Line too long (135 > 100)
+   --> tests/test_ecocyc_complex_authority.py:172:101
+    |
+170 | …esource", "getxml?ECOLI:ASSEMBLY")
+171 | …me", "copied-nested-name"}:
+172 | …e="string").text = "" if problem == "empty-direct-name" else "Nested activity name"
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+173 | …"}:
+174 | …tring").text = "Other" if problem == "two-aliases" else "NativeAB"
+    |
+
+E501 Line too long (118 > 100)
+   --> tests/test_ecocyc_complex_authority.py:174:101
+    |
+172 |         ET.SubElement(entity, "common-name", datatype="string").text = "" if problem == "empty-direct-name" else "Nested activity nam…
+173 |     elif problem in {"two-aliases", "duplicate-alias"}:
+174 |         ET.SubElement(entity, "synonym", datatype="string").text = "Other" if problem == "two-aliases" else "NativeAB"
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^
+175 |     elif problem == "nested-alias":
+176 |         ET.SubElement(entity.find("synonym"), "b").text = "not direct string"
+    |
+
+E501 Line too long (152 > 100)
+   --> tests/test_ecocyc_complex_authority.py:178:101
+    |
+176 | …ot direct string"
+177 | …rted-alias"}:
+178 | …nsafe-alias": "<script>bad</script>", "unsupported-alias": "Ambiguous alias words"}[problem]
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+179 | …
+180 | …
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:184:28
+    |
+182 |         entity.tag = "RNA"
+183 |     elif problem == "nested-entity":
+184 |         root.remove(entity); ET.SubElement(root, "wrapper").append(entity)
+    |                            ^
+185 |     elif problem == "extra-entity":
+186 |         root.append(copy.deepcopy(entity))
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:188:37
+    |
+186 |         root.append(copy.deepcopy(entity))
+187 |     elif problem == "nested-parent":
+188 |         node = entity.find("parent"); entity.remove(node); ET.SubElement(entity, "wrapper").append(node)
+    |                                     ^
+189 |     else:
+190 |         ET.SubElement(entity.find("component"), "unexpected")
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:188:58
+    |
+186 |         root.append(copy.deepcopy(entity))
+187 |     elif problem == "nested-parent":
+188 |         node = entity.find("parent"); entity.remove(node); ET.SubElement(entity, "wrapper").append(node)
+    |                                                          ^
+189 |     else:
+190 |         ET.SubElement(entity.find("component"), "unexpected")
+    |
+
+E501 Line too long (104 > 100)
+   --> tests/test_ecocyc_complex_authority.py:188:101
+    |
+186 |         root.append(copy.deepcopy(entity))
+187 |     elif problem == "nested-parent":
+188 |         node = entity.find("parent"); entity.remove(node); ET.SubElement(entity, "wrapper").append(node)
+    |                                                                                                     ^^^^
+189 |     else:
+190 |         ET.SubElement(entity.find("component"), "unexpected")
+    |
+
+E501 Line too long (110 > 100)
+   --> tests/test_ecocyc_complex_authority.py:207:101
+    |
+206 | @pytest.mark.parametrize("shape", ["unnamed", "synonym"])
+207 | @pytest.mark.parametrize("slot", ["unmodified-form", "gene", "instance", "subclass", "wrapper", "unexpected"])
+    |                                                                                                     ^^^^^^^^^^
+208 | def test_conflicting_state_chain_class_or_hidden_type_slots_are_rejected(tmp_path, shape, slot):
+209 |     root, _ = document(shape)
+    |
+
+E501 Line too long (107 > 100)
+   --> tests/test_ecocyc_complex_authority.py:215:101
+    |
+215 | @pytest.mark.parametrize("problem", ["missing", "hash", "url", "version", "absolute", "traversal", "extra",
+    |                                                                                                     ^^^^^^^
+216 |     "class-false", "wrong-id", "wrong-org", "wrong-version", "wrong-label", "missing-instance",
+217 |     "duplicate-instance", "nested-instance", "wrong-instance", "instance-class", "duplicate-subclass", "extra-slot"])
+    |
+
+E501 Line too long (117 > 100)
+   --> tests/test_ecocyc_complex_authority.py:217:101
+    |
+215 | @pytest.mark.parametrize("problem", ["missing", "hash", "url", "version", "absolute", "traversal", "extra",
+216 |     "class-false", "wrong-id", "wrong-org", "wrong-version", "wrong-label", "missing-instance",
+217 |     "duplicate-instance", "nested-instance", "wrong-instance", "instance-class", "duplicate-subclass", "extra-slot"])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^
+218 | def test_PC1_proof_is_independently_bound_and_typed(tmp_path, problem):
+219 |     root, proof = document("synonym")
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:221:32
+    |
+219 |     root, proof = document("synonym")
+220 |     entity = proof.find("Protein")
+221 |     if problem == "class-false": entity.set("class", "false")
+    |                                ^
+222 |     elif problem == "wrong-id": entity.set("ID", "ECOLI:PC-8")
+223 |     elif problem == "wrong-org": proof.find("metadata/PGDB").set("orgid", "META")
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:222:31
+    |
+220 |     entity = proof.find("Protein")
+221 |     if problem == "class-false": entity.set("class", "false")
+222 |     elif problem == "wrong-id": entity.set("ID", "ECOLI:PC-8")
+    |                               ^
+223 |     elif problem == "wrong-org": proof.find("metadata/PGDB").set("orgid", "META")
+224 |     elif problem == "wrong-version": proof.find("metadata/PGDB").set("version", "28.0")
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:223:32
+    |
+221 |     if problem == "class-false": entity.set("class", "false")
+222 |     elif problem == "wrong-id": entity.set("ID", "ECOLI:PC-8")
+223 |     elif problem == "wrong-org": proof.find("metadata/PGDB").set("orgid", "META")
+    |                                ^
+224 |     elif problem == "wrong-version": proof.find("metadata/PGDB").set("version", "28.0")
+225 |     elif problem == "wrong-label": entity.find("common-name").text = "a reaction"
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:224:36
+    |
+222 |     elif problem == "wrong-id": entity.set("ID", "ECOLI:PC-8")
+223 |     elif problem == "wrong-org": proof.find("metadata/PGDB").set("orgid", "META")
+224 |     elif problem == "wrong-version": proof.find("metadata/PGDB").set("version", "28.0")
+    |                                    ^
+225 |     elif problem == "wrong-label": entity.find("common-name").text = "a reaction"
+226 |     elif problem == "missing-instance": entity.remove(entity.find("instance"))
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:225:34
+    |
+223 |     elif problem == "wrong-org": proof.find("metadata/PGDB").set("orgid", "META")
+224 |     elif problem == "wrong-version": proof.find("metadata/PGDB").set("version", "28.0")
+225 |     elif problem == "wrong-label": entity.find("common-name").text = "a reaction"
+    |                                  ^
+226 |     elif problem == "missing-instance": entity.remove(entity.find("instance"))
+227 |     elif problem == "duplicate-instance": entity.append(copy.deepcopy(entity.find("instance")))
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:226:39
+    |
+224 |     elif problem == "wrong-version": proof.find("metadata/PGDB").set("version", "28.0")
+225 |     elif problem == "wrong-label": entity.find("common-name").text = "a reaction"
+226 |     elif problem == "missing-instance": entity.remove(entity.find("instance"))
+    |                                       ^
+227 |     elif problem == "duplicate-instance": entity.append(copy.deepcopy(entity.find("instance")))
+228 |     elif problem == "nested-instance":
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:227:41
+    |
+225 |     elif problem == "wrong-label": entity.find("common-name").text = "a reaction"
+226 |     elif problem == "missing-instance": entity.remove(entity.find("instance"))
+227 |     elif problem == "duplicate-instance": entity.append(copy.deepcopy(entity.find("instance")))
+    |                                         ^
+228 |     elif problem == "nested-instance":
+229 |         node = entity.find("instance"); entity.remove(node); ET.SubElement(entity, "nested").append(node)
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:229:39
+    |
+227 |     elif problem == "duplicate-instance": entity.append(copy.deepcopy(entity.find("instance")))
+228 |     elif problem == "nested-instance":
+229 |         node = entity.find("instance"); entity.remove(node); ET.SubElement(entity, "nested").append(node)
+    |                                       ^
+230 |     elif problem == "wrong-instance":
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:229:60
+    |
+227 |     elif problem == "duplicate-instance": entity.append(copy.deepcopy(entity.find("instance")))
+228 |     elif problem == "nested-instance":
+229 |         node = entity.find("instance"); entity.remove(node); ET.SubElement(entity, "nested").append(node)
+    |                                                            ^
+230 |     elif problem == "wrong-instance":
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |
+
+E501 Line too long (105 > 100)
+   --> tests/test_ecocyc_complex_authority.py:229:101
+    |
+227 |     elif problem == "duplicate-instance": entity.append(copy.deepcopy(entity.find("instance")))
+228 |     elif problem == "nested-instance":
+229 |         node = entity.find("instance"); entity.remove(node); ET.SubElement(entity, "nested").append(node)
+    |                                                                                                     ^^^^^
+230 |     elif problem == "wrong-instance":
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:231:47
+    |
+229 |         node = entity.find("instance"); entity.remove(node); ET.SubElement(entity, "nested").append(node)
+230 |     elif problem == "wrong-instance":
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |                                               ^
+232 |     elif problem == "instance-class": entity.find("instance/Protein").set("class", "true")
+233 |     elif problem == "duplicate-subclass": entity.append(copy.deepcopy(entity.find("subclass")))
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:231:77
+    |
+229 |         node = entity.find("instance"); entity.remove(node); ET.SubElement(entity, "nested").append(node)
+230 |     elif problem == "wrong-instance":
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |                                                                             ^
+232 |     elif problem == "instance-class": entity.find("instance/Protein").set("class", "true")
+233 |     elif problem == "duplicate-subclass": entity.append(copy.deepcopy(entity.find("subclass")))
+    |
+
+E501 Line too long (120 > 100)
+   --> tests/test_ecocyc_complex_authority.py:231:101
+    |
+229 |         node = entity.find("instance"); entity.remove(node); ET.SubElement(entity, "nested").append(node)
+230 |     elif problem == "wrong-instance":
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^
+232 |     elif problem == "instance-class": entity.find("instance/Protein").set("class", "true")
+233 |     elif problem == "duplicate-subclass": entity.append(copy.deepcopy(entity.find("subclass")))
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:232:37
+    |
+230 |     elif problem == "wrong-instance":
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+232 |     elif problem == "instance-class": entity.find("instance/Protein").set("class", "true")
+    |                                     ^
+233 |     elif problem == "duplicate-subclass": entity.append(copy.deepcopy(entity.find("subclass")))
+234 |     elif problem == "extra-slot": ET.SubElement(entity, "parent")
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:233:41
+    |
+231 |         node = entity.find("instance/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+232 |     elif problem == "instance-class": entity.find("instance/Protein").set("class", "true")
+233 |     elif problem == "duplicate-subclass": entity.append(copy.deepcopy(entity.find("subclass")))
+    |                                         ^
+234 |     elif problem == "extra-slot": ET.SubElement(entity, "parent")
+235 |     item = entry(tmp_path, "synonym", root=root, proof=proof)
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:234:33
+    |
+232 |     elif problem == "instance-class": entity.find("instance/Protein").set("class", "true")
+233 |     elif problem == "duplicate-subclass": entity.append(copy.deepcopy(entity.find("subclass")))
+234 |     elif problem == "extra-slot": ET.SubElement(entity, "parent")
+    |                                 ^
+235 |     item = entry(tmp_path, "synonym", root=root, proof=proof)
+236 |     if problem == "missing": del item["class_source"]
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:236:28
+    |
+234 |     elif problem == "extra-slot": ET.SubElement(entity, "parent")
+235 |     item = entry(tmp_path, "synonym", root=root, proof=proof)
+236 |     if problem == "missing": del item["class_source"]
+    |                            ^
+237 |     elif problem in {"hash", "url", "version", "absolute", "traversal", "extra"}:
+238 |         key, value = {"hash": ("sha256", "0" * 64), "url": ("url", "https://example.org/PC-1"),
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:253:54
+    |
+251 |     overrides = {}
+252 |     if change == "component":
+253 |         node = root.find("Protein/component/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |                                                      ^
+254 |     elif change == "coefficient": root.find("Protein/component/coefficient").text = "8"
+255 |     elif change == "parent-kind":
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:253:84
+    |
+251 |     overrides = {}
+252 |     if change == "component":
+253 |         node = root.find("Protein/component/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |                                                                                    ^
+254 |     elif change == "coefficient": root.find("Protein/component/coefficient").text = "8"
+255 |     elif change == "parent-kind":
+    |
+
+E501 Line too long (127 > 100)
+   --> tests/test_ecocyc_complex_authority.py:253:101
+    |
+251 |     overrides = {}
+252 |     if change == "component":
+253 |         node = root.find("Protein/component/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+254 |     elif change == "coefficient": root.find("Protein/component/coefficient").text = "8"
+255 |     elif change == "parent-kind":
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:254:33
+    |
+252 |     if change == "component":
+253 |         node = root.find("Protein/component/Protein"); node.set("frameid", "OTHER"); node.set("resource", "getxml?ECOLI:OTHER")
+254 |     elif change == "coefficient": root.find("Protein/component/coefficient").text = "8"
+    |                                 ^
+255 |     elif change == "parent-kind":
+256 |         root.find("Protein/parent/Protein").set("frameid", "Protein-Small-Molecule-Complexes")
+    |
+
+E501 Line too long (108 > 100)
+   --> tests/test_ecocyc_complex_authority.py:257:101
+    |
+255 |     elif change == "parent-kind":
+256 |         root.find("Protein/parent/Protein").set("frameid", "Protein-Small-Molecule-Complexes")
+257 |         root.find("Protein/parent/Protein").set("resource", "getxml?ECOLI:Protein-Small-Molecule-Complexes")
+    |                                                                                                     ^^^^^^^^
+258 |         ET.SubElement(root.find("Protein"), "common-name", datatype="string").text = "Named complex"
+259 |         overrides["kind"] = "ecocyc-protein-xml"
+    |
+
+E501 Line too long (111 > 100)
+   --> tests/test_ecocyc_complex_authority.py:262:101
+    |
+260 |     else:
+261 |         root, _ = document("synonym")
+262 |     second = entry(tmp_path, "synonym" if change == "name-status" else "unnamed", root=root, name="second.xml")
+    |                                                                                                     ^^^^^^^^^^^
+263 |     second.update(overrides)
+264 |     with pytest.raises(ValueError, match="conflicting EcoCyc native identity"):
+    |
+
+E501 Line too long (121 > 100)
+   --> tests/test_ecocyc_complex_authority.py:276:101
+    |
+275 | @pytest.mark.parametrize("shape", ["unnamed", "synonym"])
+276 | @pytest.mark.parametrize("change", ["http", "host", "port", "query", "fragment", "frame", "pgdb", "encoding", "newline"])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^
+277 | def test_issuing_transport_and_request_cannot_drift(tmp_path, shape, change):
+278 |     item = entry(tmp_path, shape)
+    |
+
+E501 Line too long (105 > 100)
+   --> tests/test_ecocyc_complex_authority.py:283:101
+    |
+281 |                    "port": url.replace(HOST, HOST + ":443"), "query": url + "&detail=full",
+282 |                    "fragment": url + "#entity", "frame": url.replace("ASSEMBLY", "OTHER"),
+283 |                    "pgdb": url.replace("ECOLI:", "META:"), "encoding": url.replace("ECOLI:", "ECOLI%3A"),
+    |                                                                                                     ^^^^^
+284 |                    "newline": url + "\n"}[change]
+285 |     with pytest.raises(ValueError, match="EcoCyc complex"):
+    |
+
+E501 Line too long (110 > 100)
+   --> tests/test_ecocyc_complex_authority.py:289:101
+    |
+289 | @pytest.mark.parametrize("path,value", [("metadata/service_name", "other"), ("metadata/query", "ECOLI:OTHER"),
+    |                                                                                                     ^^^^^^^^^^
+290 |     ("metadata/num_results", "2"), ("metadata/PGDB/species", "Salmonella enterica"),
+291 |     ("metadata/PGDB/strain", "K-12"), ("metadata/PGDB/dblink/dblink-oid", "562"),
+    |
+
+E501 Line too long (105 > 100)
+   --> tests/test_ecocyc_complex_authority.py:292:101
+    |
+290 |     ("metadata/num_results", "2"), ("metadata/PGDB/species", "Salmonella enterica"),
+291 |     ("metadata/PGDB/strain", "K-12"), ("metadata/PGDB/dblink/dblink-oid", "562"),
+292 |     ("metadata/PGDB/dblink/dblink-db", "OTHER"), ("metadata/PGDB/dblink/dblink-relationship", "related"),
+    |                                                                                                     ^^^^^
+293 |     ("metadata/PGDB/dblink/dblink-URL", "https://example.org/511145")])
+294 | def test_closed_native_metadata_values(tmp_path, path, value):
+    |
+
+E501 Line too long (116 > 100)
+   --> tests/test_ecocyc_complex_authority.py:301:101
+    |
+301 | @pytest.mark.parametrize("path", ["metadata", "metadata/query", "metadata/PGDB", "metadata/PGDB/dblink", "Protein"])
+    |                                                                                                     ^^^^^^^^^^^^^^^^
+302 | def test_duplicate_native_identity_slots(tmp_path, path):
+303 |     root, _ = document()
+    |
+
+E501 Line too long (171 > 100)
+   --> tests/test_ecocyc_complex_authority.py:316:101
+    |
+314 | …]
+315 | …
+316 | …CTYPE ptools-xml [<!ENTITY bad "forged">]>' + ET.tostring(root, encoding="unicode")).encode(encoding)
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+317 | …
+318 | …
+    |
+
+E501 Line too long (112 > 100)
+   --> tests/test_ecocyc_complex_authority.py:338:101
+    |
+338 | @pytest.mark.parametrize("change", ["label", "alias", "label-kind", "entity-type", "source-kind", "native-name",
+    |                                                                                                     ^^^^^^^^^^^^
+339 |     "component-bool", "component-duplicate", "parents-duplicate", "parents-unsupported", "proof", "proof-instance", "proof-version"])
+340 | def test_snapshot_consumer_rejects_forged_typed_metadata(tmp_path, change):
+    |
+
+E501 Line too long (133 > 100)
+   --> tests/test_ecocyc_complex_authority.py:339:101
+    |
+338 | @pytest.mark.parametrize("change", ["label", "alias", "label-kind", "entity-type", "source-kind", "native-name",
+339 |     "component-bool", "component-duplicate", "parents-duplicate", "parents-unsupported", "proof", "proof-instance", "proof-version"])
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+340 | def test_snapshot_consumer_rejects_forged_typed_metadata(tmp_path, change):
+341 |     snapshot = build(tmp_path, [entry(tmp_path, "synonym")])
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:345:25
+    |
+343 |     source = snapshot["sources"][term["source"]]
+344 |     native_data = source["native_complex"]
+345 |     if change == "label": term["label"] = "Invented canonical name"
+    |                         ^
+346 |     elif change == "alias": term["synonyms"] = ["Invented"]
+347 |     elif change == "label-kind": term["label_kind"] = "canonical"
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:346:27
+    |
+344 |     native_data = source["native_complex"]
+345 |     if change == "label": term["label"] = "Invented canonical name"
+346 |     elif change == "alias": term["synonyms"] = ["Invented"]
+    |                           ^
+347 |     elif change == "label-kind": term["label_kind"] = "canonical"
+348 |     elif change == "entity-type": term["entity_type"] = "reaction"
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:347:32
+    |
+345 |     if change == "label": term["label"] = "Invented canonical name"
+346 |     elif change == "alias": term["synonyms"] = ["Invented"]
+347 |     elif change == "label-kind": term["label_kind"] = "canonical"
+    |                                ^
+348 |     elif change == "entity-type": term["entity_type"] = "reaction"
+349 |     elif change == "source-kind": source["kind"] = "ecocyc-protein-xml"
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:348:33
+    |
+346 |     elif change == "alias": term["synonyms"] = ["Invented"]
+347 |     elif change == "label-kind": term["label_kind"] = "canonical"
+348 |     elif change == "entity-type": term["entity_type"] = "reaction"
+    |                                 ^
+349 |     elif change == "source-kind": source["kind"] = "ecocyc-protein-xml"
+350 |     elif change == "native-name": native_data["direct_common_name"] = "Invented"
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:349:33
+    |
+347 |     elif change == "label-kind": term["label_kind"] = "canonical"
+348 |     elif change == "entity-type": term["entity_type"] = "reaction"
+349 |     elif change == "source-kind": source["kind"] = "ecocyc-protein-xml"
+    |                                 ^
+350 |     elif change == "native-name": native_data["direct_common_name"] = "Invented"
+351 |     elif change == "component-bool": native_data["components"][0]["coefficient"] = True
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:350:33
+    |
+348 |     elif change == "entity-type": term["entity_type"] = "reaction"
+349 |     elif change == "source-kind": source["kind"] = "ecocyc-protein-xml"
+350 |     elif change == "native-name": native_data["direct_common_name"] = "Invented"
+    |                                 ^
+351 |     elif change == "component-bool": native_data["components"][0]["coefficient"] = True
+352 |     elif change == "component-duplicate": native_data["components"].append(copy.deepcopy(native_data["components"][0]))
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:351:36
+    |
+349 |     elif change == "source-kind": source["kind"] = "ecocyc-protein-xml"
+350 |     elif change == "native-name": native_data["direct_common_name"] = "Invented"
+351 |     elif change == "component-bool": native_data["components"][0]["coefficient"] = True
+    |                                    ^
+352 |     elif change == "component-duplicate": native_data["components"].append(copy.deepcopy(native_data["components"][0]))
+353 |     elif change == "parents-duplicate": native_data["parent_classes"].append("PC-1")
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:352:41
+    |
+350 |     elif change == "native-name": native_data["direct_common_name"] = "Invented"
+351 |     elif change == "component-bool": native_data["components"][0]["coefficient"] = True
+352 |     elif change == "component-duplicate": native_data["components"].append(copy.deepcopy(native_data["components"][0]))
+    |                                         ^
+353 |     elif change == "parents-duplicate": native_data["parent_classes"].append("PC-1")
+354 |     elif change == "parents-unsupported": native_data["parent_classes"].append("Modified-Proteins")
+    |
+
+E501 Line too long (119 > 100)
+   --> tests/test_ecocyc_complex_authority.py:352:101
+    |
+350 |     elif change == "native-name": native_data["direct_common_name"] = "Invented"
+351 |     elif change == "component-bool": native_data["components"][0]["coefficient"] = True
+352 |     elif change == "component-duplicate": native_data["components"].append(copy.deepcopy(native_data["components"][0]))
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^
+353 |     elif change == "parents-duplicate": native_data["parent_classes"].append("PC-1")
+354 |     elif change == "parents-unsupported": native_data["parent_classes"].append("Modified-Proteins")
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:353:39
+    |
+351 |     elif change == "component-bool": native_data["components"][0]["coefficient"] = True
+352 |     elif change == "component-duplicate": native_data["components"].append(copy.deepcopy(native_data["components"][0]))
+353 |     elif change == "parents-duplicate": native_data["parent_classes"].append("PC-1")
+    |                                       ^
+354 |     elif change == "parents-unsupported": native_data["parent_classes"].append("Modified-Proteins")
+355 |     elif change == "proof": native_data["class_source"] = None
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:354:41
+    |
+352 |     elif change == "component-duplicate": native_data["components"].append(copy.deepcopy(native_data["components"][0]))
+353 |     elif change == "parents-duplicate": native_data["parent_classes"].append("PC-1")
+354 |     elif change == "parents-unsupported": native_data["parent_classes"].append("Modified-Proteins")
+    |                                         ^
+355 |     elif change == "proof": native_data["class_source"] = None
+356 |     elif change == "proof-instance": native_data["class_source"]["instances"] = ["EcoCyc:OTHER"]
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:355:27
+    |
+353 |     elif change == "parents-duplicate": native_data["parent_classes"].append("PC-1")
+354 |     elif change == "parents-unsupported": native_data["parent_classes"].append("Modified-Proteins")
+355 |     elif change == "proof": native_data["class_source"] = None
+    |                           ^
+356 |     elif change == "proof-instance": native_data["class_source"]["instances"] = ["EcoCyc:OTHER"]
+357 |     else: native_data["class_source"]["version"] = "28.0"
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:356:36
+    |
+354 |     elif change == "parents-unsupported": native_data["parent_classes"].append("Modified-Proteins")
+355 |     elif change == "proof": native_data["class_source"] = None
+356 |     elif change == "proof-instance": native_data["class_source"]["instances"] = ["EcoCyc:OTHER"]
+    |                                    ^
+357 |     else: native_data["class_source"]["version"] = "28.0"
+358 |     path = tmp_path / "snapshot.json"; path.write_text(json.dumps(snapshot))
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:357:9
+    |
+355 |     elif change == "proof": native_data["class_source"] = None
+356 |     elif change == "proof-instance": native_data["class_source"]["instances"] = ["EcoCyc:OTHER"]
+357 |     else: native_data["class_source"]["version"] = "28.0"
+    |         ^
+358 |     path = tmp_path / "snapshot.json"; path.write_text(json.dumps(snapshot))
+359 |     with pytest.raises(ValueError): _load_authority(path)
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:358:38
+    |
+356 |     elif change == "proof-instance": native_data["class_source"]["instances"] = ["EcoCyc:OTHER"]
+357 |     else: native_data["class_source"]["version"] = "28.0"
+358 |     path = tmp_path / "snapshot.json"; path.write_text(json.dumps(snapshot))
+    |                                      ^
+359 |     with pytest.raises(ValueError): _load_authority(path)
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:359:35
+    |
+357 |     else: native_data["class_source"]["version"] = "28.0"
+358 |     path = tmp_path / "snapshot.json"; path.write_text(json.dumps(snapshot))
+359 |     with pytest.raises(ValueError): _load_authority(path)
+    |                                   ^
+
+E501 Line too long (138 > 100)
+   --> tests/test_ecocyc_complex_authority.py:368:101
+    |
+366 | …_pass(tmp_path, shape, change, expected):
+367 | …)])
+368 | …/example.org/native", "version": "fixture", "license": "fixture", "sha256": "a" * 64}
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+369 | …st", "synonyms": [], "source": "fixture"}
+370 | …t["terms"]["EcoCyc:ASSEMBLY"]["label"], "category": "complex"}
+    |
+
+E501 Line too long (115 > 100)
+   --> tests/test_ecocyc_complex_authority.py:370:101
+    |
+368 |     snapshot["sources"]["fixture"] = {"url": "https://example.org/native", "version": "fixture", "license": "fixture", "sha256": "a" …
+369 |     snapshot["terms"]["MetaCyc:TEST"] = {"label": "test", "synonyms": [], "source": "fixture"}
+370 |     node = {"id": "EcoCyc:ASSEMBLY", "label": snapshot["terms"]["EcoCyc:ASSEMBLY"]["label"], "category": "complex"}
+    |                                                                                                     ^^^^^^^^^^^^^^^
+371 |     record = {"id": "MetaCyc:TEST", "label": "test", "taxa": [], "participants": [node], "reactions": []}
+372 |     if change in {"display", "context-rule"}: node["label"] = "Scientifically interpreted name"
+    |
+
+E501 Line too long (105 > 100)
+   --> tests/test_ecocyc_complex_authority.py:371:101
+    |
+369 |     snapshot["terms"]["MetaCyc:TEST"] = {"label": "test", "synonyms": [], "source": "fixture"}
+370 |     node = {"id": "EcoCyc:ASSEMBLY", "label": snapshot["terms"]["EcoCyc:ASSEMBLY"]["label"], "category": "complex"}
+371 |     record = {"id": "MetaCyc:TEST", "label": "test", "taxa": [], "participants": [node], "reactions": []}
+    |                                                                                                     ^^^^^
+372 |     if change in {"display", "context-rule"}: node["label"] = "Scientifically interpreted name"
+373 |     elif change == "category": node["category"] = "protein"
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:372:45
+    |
+370 |     node = {"id": "EcoCyc:ASSEMBLY", "label": snapshot["terms"]["EcoCyc:ASSEMBLY"]["label"], "category": "complex"}
+371 |     record = {"id": "MetaCyc:TEST", "label": "test", "taxa": [], "participants": [node], "reactions": []}
+372 |     if change in {"display", "context-rule"}: node["label"] = "Scientifically interpreted name"
+    |                                             ^
+373 |     elif change == "category": node["category"] = "protein"
+374 |     elif change == "section": record["participants"] = []; record["reactions"] = [node]
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:373:30
+    |
+371 |     record = {"id": "MetaCyc:TEST", "label": "test", "taxa": [], "participants": [node], "reactions": []}
+372 |     if change in {"display", "context-rule"}: node["label"] = "Scientifically interpreted name"
+373 |     elif change == "category": node["category"] = "protein"
+    |                              ^
+374 |     elif change == "section": record["participants"] = []; record["reactions"] = [node]
+375 |     directory = tmp_path / "data/pathways"; directory.mkdir(parents=True)
+    |
+
+E701 Multiple statements on one line (colon)
+   --> tests/test_ecocyc_complex_authority.py:374:29
+    |
+372 |     if change in {"display", "context-rule"}: node["label"] = "Scientifically interpreted name"
+373 |     elif change == "category": node["category"] = "protein"
+374 |     elif change == "section": record["participants"] = []; record["reactions"] = [node]
+    |                             ^
+375 |     directory = tmp_path / "data/pathways"; directory.mkdir(parents=True)
+376 |     (directory / "record.yaml").write_text(yaml.safe_dump(record))
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:374:58
+    |
+372 |     if change in {"display", "context-rule"}: node["label"] = "Scientifically interpreted name"
+373 |     elif change == "category": node["category"] = "protein"
+374 |     elif change == "section": record["participants"] = []; record["reactions"] = [node]
+    |                                                          ^
+375 |     directory = tmp_path / "data/pathways"; directory.mkdir(parents=True)
+376 |     (directory / "record.yaml").write_text(yaml.safe_dump(record))
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:375:43
+    |
+373 |     elif change == "category": node["category"] = "protein"
+374 |     elif change == "section": record["participants"] = []; record["reactions"] = [node]
+375 |     directory = tmp_path / "data/pathways"; directory.mkdir(parents=True)
+    |                                           ^
+376 |     (directory / "record.yaml").write_text(yaml.safe_dump(record))
+377 |     policy = {"version": 1, "namespaces": {prefix: {"snapshot": "data/identifier_authorities/sources.json", "policy": "canonical_or_s…
+    |
+
+E501 Line too long (204 > 100)
+   --> tests/test_ecocyc_complex_authority.py:377:101
+    |
+375 | …
+376 | …
+377 | …rities/sources.json", "policy": "canonical_or_synonym"} for prefix in ("EcoCyc", "MetaCyc")}, "contextual_labels": []}
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+378 | …
+379 | …nts"], "record_prefixes": ["MetaCyc"], "reason": "Synthetic bypass attempt"}]
+    |
+
+E501 Line too long (163 > 100)
+   --> tests/test_ecocyc_complex_authority.py:379:101
+    |
+377 | …ata/identifier_authorities/sources.json", "policy": "canonical_or_synonym"} for prefix in ("EcoCyc", "MetaCyc")}, "contextual_labels…
+378 | …
+379 | …ctions": ["participants"], "record_prefixes": ["MetaCyc"], "reason": "Synthetic bypass attempt"}]
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+380 | …
+381 | …
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:384:32
+    |
+382 |         if shape == "unnamed":
+383 |             expected = None  # Explicit fallback verifies identity, without claiming a native name.
+384 |     (tmp_path / "conf").mkdir(); (tmp_path / "conf/identifier_policy.yaml").write_text(yaml.safe_dump(policy))
+    |                                ^
+385 |     authority = tmp_path / "data/identifier_authorities/sources.json"; authority.parent.mkdir(); authority.write_text(json.dumps(snap…
+386 |     errors = identifier_errors(tmp_path)
+    |
+
+E501 Line too long (110 > 100)
+   --> tests/test_ecocyc_complex_authority.py:384:101
+    |
+382 |         if shape == "unnamed":
+383 |             expected = None  # Explicit fallback verifies identity, without claiming a native name.
+384 |     (tmp_path / "conf").mkdir(); (tmp_path / "conf/identifier_policy.yaml").write_text(yaml.safe_dump(policy))
+    |                                                                                                     ^^^^^^^^^^
+385 |     authority = tmp_path / "data/identifier_authorities/sources.json"; authority.parent.mkdir(); authority.write_text(json.dumps(snap…
+386 |     errors = identifier_errors(tmp_path)
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:385:70
+    |
+383 |             expected = None  # Explicit fallback verifies identity, without claiming a native name.
+384 |     (tmp_path / "conf").mkdir(); (tmp_path / "conf/identifier_policy.yaml").write_text(yaml.safe_dump(policy))
+385 |     authority = tmp_path / "data/identifier_authorities/sources.json"; authority.parent.mkdir(); authority.write_text(json.dumps(snap…
+    |                                                                      ^
+386 |     errors = identifier_errors(tmp_path)
+387 |     assert any(expected in error for error in errors) if expected else errors == []
+    |
+
+E702 Multiple statements on one line (semicolon)
+   --> tests/test_ecocyc_complex_authority.py:385:96
+    |
+383 |             expected = None  # Explicit fallback verifies identity, without claiming a native name.
+384 |     (tmp_path / "conf").mkdir(); (tmp_path / "conf/identifier_policy.yaml").write_text(yaml.safe_dump(policy))
+385 |     authority = tmp_path / "data/identifier_authorities/sources.json"; authority.parent.mkdir(); authority.write_text(json.dumps(snap…
+    |                                                                                                ^
+386 |     errors = identifier_errors(tmp_path)
+387 |     assert any(expected in error for error in errors) if expected else errors == []
+    |
+
+E501 Line too long (139 > 100)
+   --> tests/test_ecocyc_complex_authority.py:385:101
+    |
+383 | …ies identity, without claiming a native name.
+384 | …ntifier_policy.yaml").write_text(yaml.safe_dump(policy))
+385 | …s/sources.json"; authority.parent.mkdir(); authority.write_text(json.dumps(snapshot))
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+386 | …
+387 | …if expected else errors == []
+    |
+
+Found 126 errors.
+[*] 2 fixable with the `--fix` option.

@@ -1,0 +1,90 @@
+from pathlib import Path
+import gzip, hashlib, json, re
+from lxml import etree as E
+
+OUT = Path(__file__).parent
+PRE = Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+RH = 'http://rdf.rhea-db.org/'
+RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+source = Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz')
+packed = source.read_bytes()
+assert hashlib.sha256(packed).hexdigest() == '8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf'
+raw = gzip.decompress(packed).decode()
+starts = {}
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">', raw):
+    starts.setdefault(m[1], []).append(m.start())
+wrapper = '<root xmlns:rdf="'+RDF+'" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:rh="'+RH+'">'
+nodes = {}
+def get(uri):
+    if uri in nodes:
+        return nodes[uri]
+    props = {}
+    for start in starts[uri]:
+        end = raw.index('</rdf:Description>', start)+len('</rdf:Description>')
+        obj = E.fromstring((wrapper+raw[start:end]+'</root>').encode())[0]
+        for e in obj:
+            k = E.QName(e).localname
+            v = e.get('{'+RDF+'}resource') or e.text
+            if v not in props.setdefault(k, []):
+                props[k].append(v)
+    nodes[uri] = props
+    return props
+events = []
+for number in ['18630','28051','47994','11693']:
+    obj = get(RH+number)
+    event = {'id':'RHEA:'+number, 'issuing_properties':obj, 'sides':{}}
+    for side in ['substrates','products']:
+        rows = []
+        for side_uri in obj[side]:
+            side_obj = get(side_uri)
+            coefficients = {}
+            for key, vals in side_obj.items():
+                if re.fullmatch('contains[0-9]+', key):
+                    for v in vals:
+                        coefficients[v] = int(key[8:])
+            for part_uri in side_obj['contains']:
+                participant = get(part_uri)
+                compound_uri = participant['compound'][0]
+                compound = get(compound_uri)
+                rows.append({'side_uri':side_uri, 'participant':part_uri,
+                    'participant_properties':participant, 'compound':compound_uri,
+                    'coefficient':coefficients[part_uri], 'compound_properties':compound})
+        event['sides'][side] = rows
+    events.append(event)
+BP='http://www.biopax.org/release/biopax-level3.owl#'
+pbsource=PRE/'raw/PW002081.owl'
+root=E.fromstring(pbsource.read_bytes())
+byid={x.get('{'+RDF+'}ID'):x for x in root if x.get('{'+RDF+'}ID')}
+def bpnode(ident):
+    x=byid[ident]
+    return {'id':ident,'type':E.QName(x).localname,'properties':[
+        {'key':E.QName(v).localname,'value':v.get('{'+RDF+'}resource') or v.text} for v in x]}
+pb=[]
+for ident,x in byid.items():
+    if E.QName(x).localname in ['BiochemicalReaction','TransportWithBiochemicalReaction']:
+        entry=bpnode(ident);entry['side_objects']=[]
+        for side in ['left','right']:
+            for e in x.findall('{'+BP+'}'+side):
+                particle=e.get('{'+RDF+'}resource').lstrip('#');node=bpnode(particle);node['side']=side
+                node['children']=[]
+                for z in byid[particle]:
+                    if E.QName(z).localname in ['entityReference','cellularLocation']:
+                        reference=z.get('{'+RDF+'}resource').lstrip('#');child=bpnode(reference)
+                        child['xrefs']=[bpnode(q.get('{'+RDF+'}resource').lstrip('#')) for q in byid[reference] if E.QName(q).localname=='xref']
+                        node['children'].append(child)
+                entry['side_objects'].append(node)
+        entry['stoichiometry']=[bpnode(z.get('{'+RDF+'}resource').lstrip('#')) for z in x if E.QName(z).localname=='participantStoichiometry']
+        pb.append(entry)
+out={'rhea_source':str(source),'rhea_source_sha256':hashlib.sha256(packed).hexdigest(),
+     'events':events,'selected_nodes':nodes,'pathbank_source':str(pbsource),
+     'pathbank_source_sha256':hashlib.sha256(pbsource.read_bytes()).hexdigest(),'pathbank_events':pb}
+(OUT/'reaction-original-independent.json').write_text(json.dumps(out,indent=2)+'\n')
+for e in events:
+    print(e['id'], e['issuing_properties'].get('equation'), e['issuing_properties'].get('direction'))
+    for side, rows in e['sides'].items():
+        print(side, [(r['compound_properties'].get('accession'),r['coefficient'],r['compound_properties'].get('charge'),r['participant_properties']) for r in rows])
+print('PathBank events',len(pb),'sides',sum(len(e['side_objects']) for e in pb))
+for e in pb:
+    print(e['id'],e['type'],e['properties'])
+    for s in e['side_objects']:
+        print(s['side'],s['id'],s['children'])

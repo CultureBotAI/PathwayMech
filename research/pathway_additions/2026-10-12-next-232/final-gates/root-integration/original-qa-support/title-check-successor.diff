@@ -1,0 +1,14 @@
+--- initial-NAD-QA
++++ successor-NAD-QA
+@@ -94,7 +94,10 @@
+         assert 'reference-' + str(number) in parsed.ids
+         assert ref['id'] in visible
+         for field in ('title', 'url'):
+-            if field == 'title' and ref.get(field): assert normalized(ref[field]) in visible
++            if field == 'title' and ref.get(field):
++                _, native_label_html = native_contract()
++                title_fragment = html.fragment_fromstring(native_label_html(ref[field]), create_parent='span')
++                assert normalized(''.join(title_fragment.itertext())) in visible
+     return matches[0], {'html_ids': len(parsed.ids), 'fragment_links': len(parsed.links),
+         'display_nodes': len(nodes), 'unique_biological_graph_nodes': len(rendered),
+         'edges': len(edges), 'qualifiers': len(qualifiers), 'evidence_uses': len(uses),

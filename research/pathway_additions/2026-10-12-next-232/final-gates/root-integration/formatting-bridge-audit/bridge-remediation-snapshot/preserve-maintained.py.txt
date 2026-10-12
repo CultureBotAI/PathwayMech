@@ -1,0 +1,211 @@
+"""Verify adopted NAD preservation without waiving old rows, contexts, or files."""
+import argparse
+from collections import Counter
+import csv
+import hashlib
+import io
+import json
+from pathlib import Path
+import sys
+from common import *
+
+
+def digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'),
+                                    ensure_ascii=False).encode()).hexdigest()
+
+
+def table(path):
+    with path.open(newline='') as stream:
+        reader = csv.DictReader(stream, delimiter='\t')
+        rows, columns = list(reader), reader.fieldnames
+    assert len({r['id'] for r in rows}) == len(rows) and all(None not in r for r in rows)
+    return columns, {r['id']: r for r in rows}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', required=True, type=Path)
+    parser.add_argument('--base', required=True)
+    parser.add_argument('--adoption-receipt', required=True, type=Path)
+    parser.add_argument('--baseline', required=True, type=Path)
+    parser.add_argument('--baseline-kgx', required=True, type=Path)
+    parser.add_argument('--gate-receipt', required=True, type=Path)
+    parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--approved-node-display-delta', type=Path)
+    parser.add_argument('--approved-extra-files', type=Path)
+    args = parser.parse_args()
+    root = validate_base(args.root, args.base, clean=False)
+    verify_package()
+    verify_accepted()
+    verify_adopted(root)
+    external_new(args.output, root)
+    adoption = load(args.adoption_receipt)
+    assert adoption['base'] == BASE and adoption['root'] == str(root)
+    verify(args.baseline, adoption['baseline'])
+    verify(args.baseline_kgx, adoption['baseline_kgx'])
+    baseline, old = load(args.baseline), load(args.baseline_kgx)
+    assert baseline['head'] == BASE and baseline['root'] == str(root)
+    assert baseline['tree'] == TREE and baseline['kgx']['sha256'] == sha(args.baseline_kgx)
+    gates = load(args.gate_receipt)
+    assert gates['status'] == 'passed' and gates['base'] == BASE
+    assert gates['target_sha256'] == TARGET_SHA
+    assert [r['name'] for r in gates['receipts']] == [
+        'render', 'skills', 'validate', 'tests', 'lint', 'kgx', 'vendored', 'diff-check', 'site-current']
+    assert gates['history_verified_after_site_current'] is True
+    verify_render_history(root, gates['render_history_inputs'])
+    preapproved_extras = load(args.approved_extra_files) if args.approved_extra_files else []
+    input_paths = {r['relative_path'] for r in load(gates['inputs']['path'])['all_maintained_inputs']}
+    gate_scope = verify_gate_input_scope(root, gates, args.adoption_receipt,
+        [row for row in preapproved_extras if row['relative_path'] not in input_paths])
+    for row in gates['receipts']:
+        assert row['exit_code'] == 0
+        verify(row['stdout']['path'], row['stdout'])
+        verify(row['stderr']['path'], row['stderr'])
+    for row in gates['generated_files']:
+        verify(root / row['relative_path'], row)
+    problems, retained = [], {}
+    for field in SURFACES:
+        bad = []
+        for row in baseline[field]:
+            path = root / row['relative_path']
+            if not path.is_file() or sha(path) != row['sha256'] or path_identity(path) != {key: row[key] for key in IDENTITY_FIELDS}:
+                bad.append(row['relative_path'])
+        retained[field] = {'checked': len(baseline[field]), 'changed_or_missing': bad}
+        problems.extend(field + ': ' + path for path in bad)
+    expected = load(PACKAGE / 'expected-changes.json')
+    allowed_changed = {r['relative_path'] for r in code_changes()} | set(AUTHORITY_FILES.values())
+    generated_paths = set(expected['allowed_generated_paths'])
+    old_files = {r['relative_path']: r for r in baseline['all_maintained_files']}
+    current_files = {r['relative_path']: r for r in inventory(root, exclude_runtime=True)}
+    unapproved_old_changes = []
+    for relative, item in old_files.items():
+        if relative in allowed_changed | generated_paths:
+            continue
+        current = current_files.get(relative)
+        if current is None or current['sha256'] != item['sha256'] or current['bytes'] != item['bytes'] or any(current[key] != item[key] for key in IDENTITY_FIELDS):
+            unapproved_old_changes.append(relative)
+    if unapproved_old_changes:
+        problems.append('Unexpected old maintained files changed or missing')
+    extras = load(args.approved_extra_files) if args.approved_extra_files else []
+    extra_paths = set()
+    for item in extras:
+        relative = str(safe_relative(item['relative_path']))
+        assert relative not in old_files, 'Extra-file approval cannot change an old file'
+        assert relative.startswith(('reviews/structured/', 'history/', DOSSIER_REL + '/'))
+        assert relative not in extra_paths
+        verify(root / relative, item)
+        extra_paths.add(relative)
+    dossier = load(PACKAGE / 'dossier-plan.json')
+    dossier_paths = {DOSSIER_REL + '/' + r['destination'] for r in dossier['mappings']}
+    for item in dossier['mappings']:
+        verify(root / DOSSIER_REL / item['destination'], item['source'])
+    dossier_paths |= {DOSSIER_REL + '/archive-map.json', DOSSIER_REL + '/adoption.json'}
+    assert load(root / DOSSIER_REL / 'adoption.json') == adoption
+    archive_map = load(root / DOSSIER_REL / 'archive-map.json')
+    assert archive_map == [{**r, 'destination': DOSSIER_REL + '/' + r['destination']}
+                           for r in dossier['mappings']]
+    allowed_new = {TARGET_REL} | allowed_changed | generated_paths | dossier_paths | extra_paths
+    unexpected_paths = sorted(set(current_files) - set(old_files) - allowed_new)
+    if unexpected_paths:
+        problems.append('Unexpected new maintained or ignored files')
+    expected_records = {r['relative_path'] for r in baseline['records']} | {TARGET_REL}
+    if {r['relative_path'] for r in inventory(root, 'data/pathways')} != expected_records:
+        problems.append('Record inventory differs from exact target-only addition')
+    expected_pages = {r['relative_path'] for r in baseline['pages']} | {PAGE_REL}
+    if {r['relative_path'] for r in inventory(root, 'pages/records')} != expected_pages:
+        problems.append('Record page inventory differs from exact target-only addition')
+    cache_now = {r['relative_path']: r for r in inventory(CACHE)}
+    cache_before = {r['relative_path']: r for r in baseline['source_cache_files']}
+    cache_new = {r['cache_relative_path'] for r in expected['new_originals']}
+    if set(cache_now) != set(cache_before) | cache_new:
+        problems.append('Unexpected source cache inventory delta')
+    for relative, item in cache_before.items(): verify_path_identity(CACHE / relative, item)
+    changed_cache = [p for p, r in cache_before.items() if p not in cache_now or
+                     any(cache_now[p][key] != r[key] for key in ('sha256', 'bytes') + IDENTITY_FIELDS)]
+    if changed_cache:
+        problems.append('Old source cache bytes changed')
+    sys.path[:0] = [str(root / 'src'), str(root)]
+    import yaml
+    from pathwaymech.schema import validate_record
+    from pathwaymech.kgx import render_kgx
+    model = validate_record(yaml.load((root / TARGET_REL).read_bytes(), Loader=yaml.CSafeLoader))
+    new_tables = render_kgx([model])
+    target_nodes = {r['id']: r for r in csv.DictReader(io.StringIO(new_tables['nodes.tsv']), delimiter='\t')}
+    target_edges = {r['id']: r for r in csv.DictReader(io.StringIO(new_tables['edges.tsv']), delimiter='\t')}
+    node_columns, nodes = table(root / 'pages/downloads/nodes.tsv')
+    edge_columns, edges = table(root / 'pages/downloads/edges.tsv')
+    if node_columns != old['node_columns'] or edge_columns != old['edge_columns']:
+        problems.append('KGX column schema changed')
+    lost_edges = sorted(set(old['edges']) - set(edges))
+    changed_edges = [key for key, value in old['edges'].items()
+                     if key in edges and digest(edges[key]) != value]
+    if lost_edges or changed_edges:
+        problems.append('Old KGX edges missing or changed')
+    actual_new_edges = {key: value for key, value in edges.items() if key not in old['edges']}
+    if actual_new_edges != target_edges:
+        problems.append('New KGX edges differ from the exact accepted target')
+    if set(nodes) != set(old['nodes']) | set(target_nodes):
+        problems.append('KGX node identities differ from exact target union')
+    actual_new_nodes = {key: value for key, value in nodes.items() if key not in old['nodes']}
+    if actual_new_nodes != {key: value for key, value in target_nodes.items() if key not in old['nodes']}:
+        problems.append('New KGX node cells differ from the exact accepted target')
+    display_delta, lost_contexts, unexpected_contexts = [], [], []
+    added_contexts = 0
+    for identity, row in nodes.items():
+        prior = old['nodes'].get(identity)
+        current = Counter(digest(c) for c in json.loads(row['source_contexts'] or '[]'))
+        previous = Counter(prior['context_hash_counts']) if prior else Counter()
+        missing = previous - current
+        if missing:
+            lost_contexts.append({'id': identity, 'missing': dict(missing)})
+        wanted = Counter(digest(c) for c in json.loads(
+            target_nodes.get(identity, {}).get('source_contexts') or '[]'))
+        additions = current - previous
+        added_contexts += sum(additions.values())
+        if additions != wanted:
+            unexpected_contexts.append(identity)
+        if prior:
+            for column, value in prior['display'].items():
+                if row[column] != value:
+                    display_delta.append({'id': identity, 'column': column,
+                                          'before': value, 'after': row[column]})
+    display_delta.sort(key=lambda row: (row['id'], row['column']))
+    approved = load(args.approved_node_display_delta) if args.approved_node_display_delta else []
+    if display_delta != approved:
+        problems.append('Unreviewed shared node display-cell differences')
+    if lost_contexts or unexpected_contexts:
+        problems.append('Old contexts lost or target context multiplicities changed')
+    for name in ('nodes.tsv', 'edges.tsv'):
+        if sha(root / 'pages/downloads' / name) != sha(root / 'output/kgx' / name):
+            problems.append('Published and output KGX differ: ' + name)
+    result = {
+        'status': 'passed' if not problems else 'needs_review', 'baseline': binding(args.baseline),
+        'baseline_kgx': binding(args.baseline_kgx), 'gate_receipt': binding(args.gate_receipt),
+        'target_sha256': TARGET_SHA, 'retained_files': retained, 'gate_input_scope': gate_scope,
+        'old_record_count': 232, 'old_page_count': 232, 'old_review_bundles': baseline['counts']['structured_review_bundles'],
+        'old_edges': old['edge_count'], 'old_edge_cells_exact': not lost_edges and not changed_edges,
+        'old_source_contexts': old['source_context_count'], 'lost_contexts': lost_contexts,
+        'unexpected_context_nodes': unexpected_contexts, 'new_edges': len(actual_new_edges),
+        'new_nodes': len(actual_new_nodes), 'new_source_contexts': added_contexts,
+        'node_display_delta': display_delta,
+        'approved_node_display_delta': binding(args.approved_node_display_delta)
+        if args.approved_node_display_delta else None,
+        'approved_extra_files': binding(args.approved_extra_files) if args.approved_extra_files else None,
+        'unapproved_old_file_changes': unapproved_old_changes, 'unexpected_new_files': unexpected_paths,
+        'cache_identity_observation': binding(PACKAGE / 'initial-cache-identity.json'),
+        'old_cache_identities_verified': len(cache_before), 'old_cache_symlinks_verified': sum(r['symlink'] for r in cache_before.values()),
+        'new_cache_copies_regular_verified': len(cache_new), 'changed_old_cache_files': changed_cache, 'problems': problems,
+        'scope': 'No blanket waiver: all old records, pages, review/history bytes, authorities, '
+                 'edge cells, node identities, context multiplicities and cache originals preserved. '
+                 'Only exact separately supplied shared display differences or new review receipt '
+                 'files may be approved; neither approval can change old protected files.',
+    }
+    write_new(args.output, result)
+    print(json.dumps({k: v for k, v in result.items() if k not in
+                      {'retained_files', 'lost_contexts', 'node_display_delta'}}, indent=2))
+    return 0 if not problems else 1
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

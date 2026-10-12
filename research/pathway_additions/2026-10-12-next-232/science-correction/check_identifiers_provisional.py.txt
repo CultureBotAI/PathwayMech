@@ -1,0 +1,61 @@
+"""Candidate-only native consumer of accepted append-only authority proposals; no full canonical build."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import sys
+
+import yaml
+
+A = Path(__file__).parent
+H = Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+P = H / 'proposal'
+sys.path[:0] = [str(A / 'runtime/src'), str(A / 'runtime/scripts')]
+from pathwaymech.identifiers import identifier_errors, _named_nodes
+from build_source_identifier_snapshot import corpus_ids
+from build_ontology_identifier_snapshot import walk_identifiers
+
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+target = A / 'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+assert bind(target)['sha256'] == '96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7'
+assert bind(P / 'sources.json')['sha256'] == 'b6c983846bfde46e16ec780f1d33cec0f293ef0c811b42caf8ba6cf5d0184bc3'
+assert bind(P / 'ontology.json')['sha256'] == 'c7695597d03a1fb505ec891e085f04b95ced5b19451e984b5d48653d4265f92d'
+fixture = A / 'identifier-consumer-fixture-96e493c58ab8'
+assert not fixture.exists()
+copies = []
+for source, relative in [(target, 'data/pathways/' + target.name),
+                         (A / 'runtime/conf/identifier_policy.yaml', 'conf/identifier_policy.yaml'),
+                         (P / 'sources.json', 'data/identifier_authorities/sources.json'),
+                         (P / 'ontology.json', 'data/identifier_authorities/ontology.json')]:
+    before = bind(source)
+    destination = fixture / relative
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(source.read_bytes())
+    assert bind(source) == before
+    assert bind(destination)['sha256'] == before['sha256']
+    copies.append({'original': before, 'copy': bind(destination)})
+record = yaml.safe_load(target.read_text())
+errors = identifier_errors(fixture)
+selected = sorted(corpus_ids(fixture / 'data/pathways'))
+named = [{ 'section': section, 'location': location,
+           'node': {k: node[k] for k in ['id', 'label', 'category', 'direction'] if k in node}}
+         for section, location, node in _named_nodes(record)]
+ontology_ids = sorted(walk_identifiers(record, {'CHEBI', 'GO', 'RHEA', 'NCBITaxon'}))
+assert len(selected) == len(named) == 68 and len(ontology_ids) == 36
+receipt = {
+    'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'target': bind(target), 'copies': copies, 'identifier_errors': errors,
+    'native_source_collector': selected, 'native_ontology_collector': ontology_ids,
+    'named_nodes': named,
+    'adapter_acceptance': bind(Path('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json')),
+    'authority_status': 'Actual single-record native identifier consumer using independently accepted append-only authority proposals. Exact successor collector/code bridge is separately recorded. No full canonical authority build is asserted.',
+    'scope': 'No full canonical builder, full production suite, scientific acceptance, maintained adoption or shared-cache write.'}
+(A / 'provisional-identifier-consumer.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'errors': errors, 'named_ids': len(selected), 'ontology_ids': len(ontology_ids)}))
+assert not errors

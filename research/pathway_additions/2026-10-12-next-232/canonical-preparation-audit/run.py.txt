@@ -1,0 +1,25 @@
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+p = Path(__file__).resolve().parent
+helper = p / sys.argv[1]
+prefix = sys.argv[2]
+cmd = [sys.executable, '-B', str(helper)]
+start = datetime.datetime.now(datetime.UTC).isoformat()
+tick = time.monotonic()
+with (p/(prefix+'.stdout')).open('xb') as out, (p/(prefix+'.stderr')).open('xb') as err:
+    result = subprocess.run(cmd,cwd=p,env=os.environ,stdout=out,stderr=err)
+def bind(q):
+    return {'path':str(q),'bytes':q.stat().st_size,'sha256':hashlib.sha256(q.read_bytes()).hexdigest()}
+receipt = {'command':cmd,'started_at':start,'finished_at':datetime.datetime.now(datetime.UTC).isoformat(),'seconds':round(time.monotonic()-tick,3),'exit_code':result.returncode,'helper':bind(helper),'stdout':bind(p/(prefix+'.stdout')),'stderr':bind(p/(prefix+'.stderr')),'environment':{k:os.environ.get(k) for k in ('PYTHONDONTWRITEBYTECODE','UV_NO_SYNC','PYTHONNOUSERSITE')}}
+with (p/(prefix+'-execution.json')).open('x') as f:json.dump(receipt,f,indent=2);f.write('\n')
+print(json.dumps(receipt))
+print((p/(prefix+'.stdout')).read_text())
+print((p/(prefix+'.stderr')).read_text())
+raise SystemExit(result.returncode)

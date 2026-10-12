@@ -1,0 +1,51 @@
+"""Final exact input/link checks and retained narrative evidence; external output only."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+
+HERE=Path(__file__).resolve().parent
+PACK=Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+def read(p):return json.loads(Path(p).read_bytes())
+def bind(p):
+    p=Path(p)
+    with p.open('rb') as f:sha=hashlib.file_digest(f,'sha256').hexdigest()
+    return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha}
+def ident(p):
+    p=Path(p);return {'file_type':'symlink' if p.is_symlink() else 'regular','link_text':os.readlink(p) if p.is_symlink() else None,'resolved_path':str(p.resolve(strict=True))}
+def check(p,r):
+    b=bind(p);assert b['bytes']==r['bytes'] and b['sha256']==r['sha256']
+capture=read(PACK/'capture.json')
+for row in capture['source_originals']:
+    check(row['original']['path'],row['original'])
+    for key in ['input_link','captured_link']:
+        link=row[key];assert ident(link['path'])=={k:link[k] for k in ['file_type','link_text','resolved_path']}
+for row in read(PACK/'scientific-input-bindings.json')['whole_original_and_lossless_bundle_bindings']:
+    check(row['binding']['path'],row['binding']);assert ident(row['binding']['path'])==row['fresh_identity']
+manifest=read(PACK/'artifact-manifest.json')['artifacts'];declared=set()
+for row in manifest:
+    p=PACK/row['relative_path'];check(p,row);assert ident(p)=={k:row[k] for k in ['file_type','link_text','resolved_path']};declared.add(p)
+actual=set(map(Path,subprocess.check_output(['rg','--files','-uu','-L',str(PACK)],text=True).splitlines()))
+assert actual==declared|{PACK/'handoff.json',PACK/'artifact-manifest.json'}
+assert not any('retained-attempts/initial-target-drift/selection/' in str(p) for p in actual)
+cache=Path('/private/tmp/pathwaymech-curation-authorities/sources');rows=read(PACK/'concurrent-cache-bridge/receipt.json')['expected_current_inventory']
+actual=set(map(Path,subprocess.check_output(['rg','--files','-uu','-L',str(cache)],text=True).splitlines()))
+assert actual=={cache/r['relative_path'] for r in rows}
+for row in rows:check(cache/row['relative_path'],row);assert ident(cache/row['relative_path'])=={k:row[k] for k in ['file_type','link_text','resolved_path']}
+for name in ['pathbank-relocation-observation.json','execution-summary.json']:
+    with (HERE/name).open('xb') as f:f.write((PACK/name).read_bytes())
+finding={'key':'NAD-AUTHORITY-PROPOSAL-001','severity':'low','blocking_authority_proposal':False,
+    'title':'README and seal template incorrectly describe a missing-parent search error',
+    'owners':['README.md:33','seal.py:64'],
+    'claim':'its ignored-aware parent search (including the actual missing-parent error)',
+    'actual_relocation_observation':bind(PACK/'pathbank-relocation-observation.json'),
+    'actual_parent_inventory':{k:read(PACK/'pathbank-relocation-observation.json')[k] for k in ['ignored_aware_parent_inventory_command','inventory_exit_code','stdout','stderr']},
+    'impact':'Provenance narrative is inaccurate. The historical ZIP path is correctly absent, the parent directory exists, and whole current archive identity/body hashes pass. No selected authority object is affected.',
+    'remediation':'Preserve the sealed packet and record an explicit successor or addendum correcting the description to a successful ignored-aware parent listing that did not contain the historical ZIP; retain exact original exit/stdout/stderr evidence.'}
+with (HERE/'findings.json').open('x') as f:json.dump([finding],f,indent=2);f.write('\n')
+with (HERE/'final-preservation.json').open('x') as f:
+    json.dump({'status':'passed','authority_packet_artifacts':1891,'old_source_originals':780,'old_original_input_and_capture_link_identities_exact':True,
+               'scientific_bindings':94,'cache_rows':789,'retained_initial_capture_has_no_selection_copy':True,
+               'inventory_ignored_hidden_followed':True,'handoff':bind(PACK/'handoff.json')},f,indent=2);f.write('\n')
+print({'status':'passed','originals':780,'packet_artifacts':1891,'shared_cache_rows':789,'nonblocking_findings':1})

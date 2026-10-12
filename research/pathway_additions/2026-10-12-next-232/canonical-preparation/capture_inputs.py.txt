@@ -1,0 +1,178 @@
+"""Capture actual merged ATP corpus plus exact prospective PPi/NAD; no builders."""
+import copy
+import importlib.util
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+from common import (AUTHOR, AUTHORITY, BASE, HERE, PC1_SHA, PPI_NAME,
+                    PPI_SHA, PRIOR, TARGET_NAME, TARGET_SHA, TREE, WORKTREE,
+                    bind, check, check_cache, check_identity, check_sql_stat,
+                    identity, inventory, load, now, preserve, validate_manifest,
+                    validate_updates, verify_packet, write)
+
+PACKETS = {
+    'ppi_build': (PRIOR, '7b51651f34562e1fc15535800623dfff85a9cba1ab60ab3a998437252130401b'),
+    'nad_proposal': (AUTHORITY, '25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102'),
+    'nad_original_author': (Path('/private/tmp/pathwaymech-next-232-author-20261012'), '465dc683f7430743ebc115fcb3d57a011e9ecfdf24cad0d967a78ca8d805239b'),
+    'nad_successor': (AUTHOR, 'd5e05d0030980d9aaac8fc231e9146b59e22919c1f144c7949e4442cf4343bfd'),
+    'proposal_audit': (Path('/private/tmp/pathwaymech-next-232-authority-proposal-audit-20261012'), '449f52cf5e71a25f3c279e402f387304100233b1b172310285f7d539a528f665'),
+    'relocation_correction_audit': (Path('/private/tmp/pathwaymech-next-232-relocation-correction-audit-20261012'), '31b107ca9ba430df7d6623b382750ffaf6ee26b5524613a25609b1bd64d6acd6'),
+}
+RECEIPTS = {
+    'authority_proposal': ('/private/tmp/pathwaymech-next-232-root-authority-proposal-acceptance-20261012.json', '9cdb60e26dd87dc89f65ccf8efdbf59197bd1fc4223e08b22aa6374b40d53606'),
+    'complex_adapter': ('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json', '743ff1057249ed13f00cdc76ebe3cd2ab2d0c6ebf5dad553de4142492571887a'),
+    'relocation_correction': ('/private/tmp/pathwaymech-next-232-root-relocation-correction-20261012/correction.json', 'f75d1764dfeeed94078ebf0fc767da03bf74090290241a3f453be645574b57e8'),
+}
+
+
+def copy_binding(source, destination):
+    before = bind(source)
+    before_identity = identity(source)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    assert not destination.exists() and not destination.is_symlink()
+    shutil.copyfile(source, destination)
+    after = bind(destination)
+    assert (before['bytes'], before['sha256']) == (after['bytes'], after['sha256'])
+    return {'original': before, 'original_identity': before_identity, 'captured': after, 'captured_identity': identity(destination)}
+
+
+def collectors():
+    sys.path.insert(0, str(HERE / 'captured/code/src'))
+    importlib.invalidate_caches()
+    package = importlib.import_module('pathwaymech')
+    assert Path(package.__file__).resolve() == (HERE / 'captured/code/src/pathwaymech/__init__.py').resolve()
+    result = {}
+    for kind in ('source', 'ontology'):
+        path = HERE / 'captured/code/scripts' / ('build_' + kind + '_identifier_snapshot.py')
+        spec = importlib.util.spec_from_file_location('nad_capture_' + kind, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        result[kind] = module
+    return result
+
+
+def selections(path, modules):
+    assert list(path.parent.glob('*.yaml')) == [path]
+    source = sorted(modules['source'].corpus_ids(path.parent))
+    return {'named_ids': source,
+            'source_ids': [i for i in source if i.partition(':')[0] in modules['source'].SOURCE_NAMESPACES],
+            'ontology_ids': sorted(modules['ontology'].walk_identifiers(yaml.safe_load(path.read_bytes()), {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'}))}
+
+
+def main():
+    assert not (HERE / 'capture.json').exists()
+    packages = [verify_packet(n, p, h) for n, (p, h) in PACKETS.items()]
+    receipts = {n: check({'path': p, 'sha256': h}) for n, (p, h) in RECEIPTS.items()}
+    prior_capture = load(AUTHORITY / 'capture.json')
+    baseline = []
+    proposals = {}
+    for name in ('sources.json', 'ontology.json', 'manifest.json', 'rhea-updates.json'):
+        baseline.append({'relative_path': name, **copy_binding(PRIOR / name, HERE / 'captured/baseline' / name)})
+        proposals[name] = copy_binding(AUTHORITY / 'proposal' / name, HERE / 'captured/proposals' / name)
+    old = {k: load(PRIOR / (k + '.json')) for k in ('sources', 'ontology')}
+    expected = {k: load(AUTHORITY / 'proposal' / (k + '.json')) for k in old}
+    for kind in old:
+        preserve(old[kind], expected[kind])
+    manifest = load(AUTHORITY / 'proposal/manifest.json')
+    hashes = validate_manifest(load(PRIOR / 'manifest.json'), manifest)
+    updates = load(AUTHORITY / 'proposal/rhea-updates.json')
+    validate_updates(load(PRIOR / 'rhea-updates.json'), updates)
+    hashes[updates['path']] = updates['sha256']
+    accounting = load(AUTHORITY / 'source-original-accounting.json')
+    originals = []
+    assert len(accounting['originals']) == len(hashes) == 791
+    for row in accounting['originals']:
+        actual = check_identity(row['binding'], row['identity'])
+        assert hashes[row['cache_relative_path']] == actual['sha256']
+        originals.append({'cache_relative_path': row['cache_relative_path'], **actual,
+                          'roles': row['roles'], 'new': row['new'],
+                          'hash_scope': 'Fresh preparation body hash; execution must fresh-hash and recheck identity.'})
+    assert {r['cache_relative_path'] for r in originals} == set(hashes)
+    companion = [r for r in originals if r['cache_relative_path'] == 'nad232-ECOLI-PC-1.xml']
+    assert len(companion) == 1 and companion[0]['sha256'] == PC1_SHA
+    code = []
+    assert set(inventory(AUTHORITY / 'runtime')) == {Path(r['captured']['path']) for r in prior_capture['runtime']}
+    for row in prior_capture['runtime']:
+        check(row['captured'])
+        code.append({'relative_path': row['relative_path'], **copy_binding(row['captured']['path'], HERE / 'captured/code' / row['relative_path'])})
+    assert len(code) == 225
+    # Freeze commit-owned records from Git; these are actual merged records at
+    # BASE even if a later merge advances the user's main checkout concurrently.
+    assert subprocess.check_output(['git', '-C', str(WORKTREE), 'rev-parse', BASE + '^{tree}'], text=True).strip() == TREE
+    subprocess.run(['git', '-C', str(WORKTREE), 'merge-base', '--is-ancestor', BASE, 'main'], check=True)
+    committed_paths = subprocess.check_output(['git', '-C', str(WORKTREE), 'ls-tree', '-r', '--name-only', BASE, '--', 'data/pathways'], text=True).splitlines()
+    prior_paths = {str(p.relative_to(PRIOR / 'corpus')): p for p in inventory(PRIOR / 'corpus') if '_authority_retention' not in p.relative_to(PRIOR / 'corpus').parts}
+    assert {str(Path(p).relative_to('data/pathways')) for p in committed_paths} == set(prior_paths) - {PPI_NAME}
+    records = []
+    for name in committed_paths:
+        rel = str(Path(name).relative_to('data/pathways'))
+        committed = subprocess.check_output(['git', '-C', str(WORKTREE), 'show', BASE + ':' + name])
+        assert committed == prior_paths[rel].read_bytes(), rel
+        records.append({'relative_path': rel, 'role': 'actual_merged_ATP_main_record', 'git_owner': BASE + ':' + name, **copy_binding(prior_paths[rel], HERE / 'captured/corpus' / rel)})
+    assert sum(r['relative_path'].endswith('.yaml') for r in records) == 231
+    records.append({'relative_path': PPI_NAME, 'role': 'exact_accepted_PPi_prospective_record_not_merge_claim', **copy_binding(PRIOR / 'corpus' / PPI_NAME, HERE / 'captured/corpus' / PPI_NAME)})
+    assert records[-1]['captured']['sha256'] == PPI_SHA
+    target = copy_binding(AUTHOR / 'draft' / TARGET_NAME, HERE / 'captured/target' / TARGET_NAME)
+    assert target['captured']['sha256'] == TARGET_SHA
+    bridge_binding = copy_binding(AUTHOR / 'authority-successor-bridge.json', HERE / 'captured/lineage/authority-successor-bridge.json')
+    bridge = load(bridge_binding['captured']['path'])
+    check(bridge['original'])
+    assert bridge['successor'] == target['original']
+    assert bridge['authority_proposal'] == next(p['handoff'] for p in packages if p['name'] == 'nad_proposal')
+    assert bridge['acceptance'] == receipts['authority_proposal']
+    assert {r['relative_path']: (r['sha256'], r['bytes']) for r in bridge['runtime_files']} == {r['relative_path']: (r['captured']['sha256'], r['captured']['bytes']) for r in code}
+    original = copy_binding(bridge['original']['path'], HERE / 'captured/bridge-original' / TARGET_NAME)
+    modules = collectors()
+    both = [selections(Path(r['captured']['path']), modules) for r in (original, target)]
+    assert both[0] == both[1]
+    selected = both[1]
+    assert selected['named_ids'] == bridge['named_ids_unchanged'] and len(selected['named_ids']) == 68
+    assert selected['ontology_ids'] == bridge['ontology_ids_unchanged'] and len(selected['ontology_ids']) == 36
+    assert selected['source_ids'] == load(AUTHORITY / 'proposal.json')['collectors']['source_ids'] and len(selected['source_ids']) == 32
+    original_record, successor_record = (yaml.safe_load(Path(r['captured']['path']).read_bytes()) for r in (original, target))
+    reset = copy.deepcopy(successor_record)
+    assert len(reset['references']) == 97 and reset['references'][:94] == original_record['references']
+    reset['references'] = reset['references'][:94]
+    reset['description'] = original_record['description']
+    reset['mechanistic_edges'][40]['evidence'] = original_record['mechanistic_edges'][40]['evidence']
+    assert reset == original_record
+    assert {r['path'] for r in bridge['semantic_deltas']} == {'/references/94', '/references/95', '/references/96', '/description', '/mechanistic_edges/40/evidence/0/source_assertion', '/mechanistic_edges/40/evidence/1'}
+    assert bridge['pc1_exact_copy_plan'] == next(r for r in accounting['new_copy_plan'] if r['cache_relative_path'] == 'nad232-ECOLI-PC-1.xml')
+    sql = copy.deepcopy(prior_capture['sql_originals'])
+    for row in sql:
+        row['identity'] = identity(row['path'])
+        assert row['identity']['resolved_path'] == row['resolved_path']
+        check_sql_stat(row)
+        assert old['ontology']['sources'][row['source_key']]['sha256'] == row['sha256']
+    cache = load(AUTHORITY / 'concurrent-cache-bridge/receipt.json')['expected_current_inventory']
+    assert len(cache) == 789
+    check_cache(cache)
+    retention = sorted(set(old['sources']['terms']) | set(old['ontology']['terms']))
+    assert len(retention) == 4476
+    for filename in ('correction.json', 'README.md'):
+        copy_binding(Path('/private/tmp/pathwaymech-next-232-root-relocation-correction-20261012') / filename, HERE / 'captured/lineage/relocation-correction' / filename)
+    write(HERE / 'collector-bridge.json', {'at': now(), 'original': original['captured'], 'target': target['captured'], 'selections': selected,
+          'same_native_selectors': True, 'six_record_changes_only': True,
+          'authority_successor_bridge': bridge_binding, 'runtime_files': 225,
+          'PC1_separate_original': companion[0], 'no_scientific_acceptance_inferred': True})
+    capture = {'at': now(), 'scope': '232-record prospective baseline: 231 actual merged records at ATP commit ' + BASE + '/tree ' + TREE + ' plus exact accepted PPi20541f. PPi merge is not asserted. Exact NAD96e493 gives 233 prospective records; legacy retention is build-only.',
+               'observed_head': BASE, 'observed_tree': TREE, 'records': records, 'target': target,
+               'baseline': baseline, 'proposals': proposals, 'candidate_code': code, 'packages': packages,
+               'root_receipts': receipts, 'collector_bridge': bind(HERE / 'collector-bridge.json'),
+               'source_originals': originals, 'sql_originals': sql, 'source_cache': cache,
+               'retention_ids': retention, 'new_manifest_entries': 10, 'new_original_paths': 11,
+               'new_copy_plan': accounting['new_copy_plan'], 'class_source_companions': bridge['mandatory_class_source_companions'],
+               'prior_records': 232, 'prospective_records_with_NAD': 233,
+               'sql_hash_scope': 'Preparation inherits pinned native full hashes and checks identity/stat; actual build must freshly hash all four before execution and native output must match.',
+               'full_build_executed': False, 'maintained_or_shared_cache_writes': False}
+    write(HERE / 'expected-native-comparison.json', {'snapshots': expected, 'scope': 'Comparison only; full native output must derive independently from 233 records plus retention and all originals.', 'expected_counts': {'source_terms': 2527, 'source_metadata': 627, 'ontology_terms': 1977, 'ontology_metadata': 5}})
+    write(HERE / 'capture.json', capture)
+    print({'baseline_records': 232, 'prospective_records': 233, 'runtime_files': 225, 'originals': 791, 'retention_ids': len(retention), 'full_build': False})
+
+
+if __name__ == '__main__':
+    main()

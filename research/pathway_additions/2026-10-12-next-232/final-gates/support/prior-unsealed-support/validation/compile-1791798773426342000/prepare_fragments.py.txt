@@ -1,0 +1,95 @@
+"""Package complete accepted NAD judgments; no fresh independent science or native save."""
+from support import *
+import yaml,re
+
+def main():
+ assert bind(ROOT/TARGET_REL)['sha256']==TARGET_SHA
+ prior=Path('/private/tmp/pathwaymech-next-232-science-review-20261012')
+ succ=Path('/private/tmp/pathwaymech-next-232-science-successor-review-20261012')
+ inherited=load(succ/'science-inheritance.json');checks=load(succ/'independent-checks.json');dispositions=load(succ/'dispositions.json')
+ assert inherited['successor_target']['sha256']==TARGET_SHA==dispositions['target']['sha256']
+ for row in inherited['original_assessment_bindings']:verify(row)
+ assert len(checks['semantic_deltas'])==6 and not dispositions['new_actionable_findings']
+ assert checks['evidence_accounting']=={'unchanged':264,'modified':1,'added':1,'total':266,'selector_rows':247}
+ accepted=load(PREP/'accepted-inputs.json')
+ for key in ['root_science_acceptance','canonical_root_acceptance','adapter_root_acceptance']:verify(accepted[key])
+ record=yaml.safe_load((ROOT/TARGET_REL).read_bytes());edges={r['id']:r for r in record['mechanistic_edges']};paragraphs=record['description'].split('\n\n');refs={r['id']:r for r in record['references']}
+ assert len(edges)==102 and len(paragraphs)==41 and len(refs)==97
+ plan=load(PREP/'dossier-plan.json');mapping={r['source']['path']:r for r in plan['mappings']}
+ evidence=[];bindings=[]
+ def add(eid,path,summary,kind='prior_review'):
+  path=Path(path);exact=bind(path);row=mapping.get(str(path));existing=bool(row and row['source']==exact and row['serialization']=='exact_bytes')
+  reference=DOSSIER_REL+'/'+row['destination'] if existing else DOSSIER_REL+'/final-gates/evidence/'+eid+path.suffix
+  if existing:verify(exact,ROOT/reference)
+  else:
+   destination,body,mode=encoded_archive(path,ROOT/reference);assert mode=='exact_bytes' and destination==ROOT/reference
+  evidence.append({'evidence_id':eid,'kind':kind,'reference':reference,'accessed_at':now(),'snapshot_sha256':exact['sha256'],'support':'supports','summary':summary})
+  bindings.append({'evidence_id':eid,'original':exact,'maintained_reference':reference,'requires_archive':not existing})
+ for name in ['edge','qualifier','claim','construct','paragraph','reference']:
+  add('original-'+name,prior/(name+'-assessments.json'),'Complete original independent '+name+' assessments; original historical findings superseded only by the accepted exact successor. Every object is retained losslessly in current assessment details.')
+ for eid,path,summary in [
+  ('original-science',prior/'handoff.json','Complete independent original scientific review binds c2fec44e; its historical limitations and findings remain unchanged.'),
+  ('original-findings',prior/'findings-final.json','Historical findings and already resolved topology465; not current unresolved findings after accepted successor.'),
+  ('source-access',prior/'source-reading-coverage.json','Full-body/supplement, abstract-only, metadata-only, native-annotation and inaccessible-source distinctions, preserved in full.'),
+  ('original-failures',prior/'probe-failure-history.json','Original failed probes and bounded corrections retained.'),
+  ('successor-science',succ/'handoff.json','Exact independently accepted 96e493 bounded successor; not a second complete literature rereview.'),
+  ('successor-dispositions',succ/'dispositions.json','Accepted external corrections466468469 and unchanged topology465 resolution; no native previous occurrence or GitHub closure invented.'),
+  ('science-inheritance',succ/'science-inheritance.json','Explicit complete102edge48qualifier80claim28context41paragraph94originalreference inheritance.'),
+  ('successor-checks',succ/'independent-checks.json','Six exact semantic deltas,28 corrected exact construct mappings,97 reference identities and exact evidence continuity.'),
+  ('successor-primary',succ/'primary-reference-and-companion-checks.json','Separate1987 Methods/Table2, three narrative primary reference additions and mandatory PC-1 companion.'),
+  ('successor-failures',succ/'failure-and-execution-history.json','Actual successor reviewer and author failure history retained.'),
+  ('candidate-export',succ/'candidate-export-independent.json','Independent bounded candidate102edge48qualifier export check; not a current full maintained gate.'),
+  ('relocation-correction',Path('/private/tmp/pathwaymech-next-232-root-relocation-correction-20261012/correction.json'),'Additive correction for467: actual inventory exit0, empty stderr and three existing parents; original misleading sealed prose unchanged.'),
+  ('relocation-audit',Path('/private/tmp/pathwaymech-next-232-relocation-correction-audit-20261012/handoff.json'),'Independent addendum assessment, inherited as external evidence; no new audit of own earlier work.'),
+  ('integration-acceptance',Path('/private/tmp/pathwaymech-next-232-root-integration-acceptance-20261012.json'),'Root acceptance of current four-file/native-output/11-original integration helpers before actual execution.')]:
+  add(eid,path,summary)
+ for eid,key in [('root-science-acceptance','root_science_acceptance'),('canonical-acceptance','canonical_root_acceptance'),('adapter-acceptance','adapter_root_acceptance')]:add(eid,accepted[key]['path'],'Exact later root acceptance; earlier pending statements are retained historically, not rewritten.')
+ for issue in accepted['issues']:
+  for row in issue['artifacts']:
+   add('issue-'+str(issue['number'])+'-'+Path(row['relative_path']).stem,row['path'],'Actual external issue creation body/finding/receipt for '+str(issue['number'])+'; no issue closure claim.')
+ assessments=[]
+ def assess(aid,area,topic,summary,details,eids):
+  assessments.append({'assessment_id':aid,'area':area,'topic':topic,'outcome':'supported','target_ids':[TARGET_ID],'summary':summary,'details':json.dumps(details,ensure_ascii=False,sort_keys=True),'evidence_ids':eids})
+ old={name:load(prior/(name+'-assessments.json')) for name in ['edge','qualifier','claim','construct','paragraph','reference']}
+ assert [len(old[n]) for n in old]==[102,48,80,28,41,94]
+ assert record['references'][:94]==[r['reference'] for r in old['reference']]
+ for row in old['edge']:
+  current=edges[row['edge_id']];assert row['triple']=={k:current[k] for k in ['subject','predicate','object']}
+  assess('edge-'+row['edge_id'],'evidence','mechanistic edge','Original independent biological judgment retained with the complete current edge. The exact successor separately owns the nad-041 evidence correction.',{'historical_independent_judgment':row,'current_exact_edge':current,'inheritance':inherited['inheritance']},['original-edge','successor-dispositions','successor-checks'])
+ for index,row in enumerate(old['qualifier']):
+  qi=int(re.search(r'endpoint_qualifiers\[(\d+)\]',row['path']).group(1));current=edges[row['edge_id']]['endpoint_qualifiers'][qi];assert current==row['qualifier']
+  assess('qualifier-'+str(index+1),'scope',row['path'],'Exact unchanged qualifier retains organism, strain, construct, preparation and source scope.',{'historical_independent_judgment':row,'current_exact_qualifier':current},['original-qualifier','science-inheritance','successor-checks'])
+ for row in old['claim']:
+  assess('claim-'+row['key'],'completeness',row['key'],'Complete original claim assessment retained; accepted successor governs only the exact scoped corrections.',{'historical_independent_judgment':row,'successor_inheritance':inherited['inheritance']},['original-claim','successor-dispositions','science-inheritance'])
+ contexts={r['preflight_original']['id']:r for r in checks['exact_contexts']};assert len(contexts)==28
+ for row in old['construct']:
+  assess('construct-'+row['id'],'scope','preparation context '+row['id'],'Original preparation and limits retained; accepted corrected exact links and typed related-context links supersede the original ledger defect.',{'historical_independent_judgment':row,'accepted_exact_successor_context':contexts[row['id']]},['original-construct','successor-checks','successor-dispositions'])
+ for row in old['paragraph']:
+  text=paragraphs[row['paragraph']-1]
+  assess('paragraph-'+str(row['paragraph']),'scope','description paragraph '+str(row['paragraph']),'Complete original paragraph judgment with current exact text; changed attributions are accepted through the bounded successor.',{'historical_independent_judgment':row,'current_text':text,'changed':row['text']!=text},['original-paragraph','successor-checks','successor-primary'])
+ for row in old['reference']:
+  assert refs[row['reference']['id']]==row['reference']
+  assess('reference-'+str(len([a for a in assessments if a['assessment_id'].startswith('reference-')])+1),'evidence',row['reference']['id'],'Exact original reference identity and scoped source-access judgment retained.',{'historical_independent_judgment':row,'current_reference':refs[row['reference']['id']]},['original-reference','source-access','science-inheritance'])
+ for index,row in enumerate(checks['new_reference_bindings'],95):
+  assert row['reference']==refs[row['reference']['id']]
+  assess('reference-'+str(index),'evidence',row['reference']['id'],'New narrative-only reference identity and source interpretation independently accepted in the exact bounded successor; no new mechanistic edge inferred.',row,['successor-checks','successor-primary','successor-dispositions'])
+ for index,row in enumerate(checks['semantic_deltas'],1):
+  assess('successor-delta-'+str(index),'consistency',row['path'],'Exact bounded semantic correction accepted; historical original remains unchanged.',row,['successor-checks','successor-dispositions'])
+ by_issue={r['issue']:r for r in dispositions['findings']}
+ for issue in accepted['issues']:
+  number=issue['number'];detail=by_issue.get(number,dispositions['retained_resolved_finding'] if number==465 else load('/private/tmp/pathwaymech-next-232-root-relocation-correction-20261012/correction.json'))
+  assess('external-issue-'+str(number),'consistency',issue['stable_key'],'Accepted external correction for issue '+str(number)+'; original evidence and creation records preserved. No native predecessor identity or external closure is claimed.',{'disposition':detail,'external_issue':issue},['successor-dispositions','relocation-correction','issue-'+str(number)+'-receipt','issue-'+str(number)+'-body'])
+ for aid,area,summary,details,eids in [
+  ('identity','identity','Three native core events and separate supporting SthA preserve19 complete sides and4 directions. Physiological cytosolic NADP phosphatase remains unknown; PhoA/CysQ assays do not identify it.',inherited,['original-science','successor-science','root-science-acceptance']),
+  ('access-and-scope','scope','The full original source-access accounting is retained; metadata, abstract, annotation and expression contexts are not promoted to direct experimental evidence.',load(prior/'source-reading-coverage.json'),['source-access','original-science','successor-primary']),
+  ('authority','grounding','Actual native2527source627metadata/1977ontology5metadata,792manifest/24Rhea outputs and strict complex adapter were separately accepted. The support author does not independently re-review their own adapter or integration helper work.',{'canonical':accepted['canonical_root_acceptance'],'adapter':accepted['adapter_root_acceptance']},['canonical-acceptance','adapter-acceptance','integration-acceptance'])]:assess(aid,area,aid,summary,details,eids)
+ assert len(assessments)==410
+ fields={'schema_version':'1.0.0','kind':'record','repository':'CultureBotAI/PathwayMech','title':'NAD phosphorylation and dephosphorylation: maintained integration with independent scientific inheritance','scientific_review':True,'scope':{'description':'Complete102edge48qualifier80claim28construct41paragraph97reference coverage inherited from the original independent review and exact bounded successor; later current execution bound at assembly.','selection':TARGET_ID+' SHA256 '+TARGET_SHA,'coverage':'full','population_size':1,'reviewed_target_ids':[TARGET_ID],'exclusions':[{'target':'Other232pathways','reason':'Whole preservation and maintained gates only; no new scientific rereview.'}]},'evidence':evidence,'assessments':assessments,'findings':[],'actions':[],'limitations':['Integrator self-review packages separately independent complete original and bounded successor science. No fresh complete literature review is claimed.',*['Historical original source-review limit: '+v for v in load(prior/'source-reading-coverage.json')['limits']],*['Historical bounded successor limit: '+v for v in inherited['limits']],'Full source-access entries are retained in the access-and-scope assessment and exact archived evidence. Inaccessible studies, abstract-only sources, metadata-only identities, native assertions and computational expression contexts remain distinct.','Earlier canonical/build/adoption pending statements remain immutable historical evidence. Later actual root acceptances and receipts are separately bound.','Static SVG observation does not test browser keyboard/focus/interaction. Public-release data licensing remains deferred.','Native save/check, late archive checks, PR/CI/merge and issue closure are subsequent stages; no future success is claimed.'],'notes':['No native previous_occurrences are invented. Issues465–469 are external evidence-linked assessments; findings/actions are empty after exact accepted corrections.','Both actual native histories precede rendering. Review assembly/save/archive append no history.','The support author previously authored the complex adapter and integration preparation; their independent root/audit acceptance is inherited, not freshly self-audited.'],'links':[i['url'] for i in accepted['issues']],'tags':['pathway','nad-phosphorylation','self-review','independent-inheritance']}
+ write(HERE/'review-content-fragments.json',{'status':'incomplete_fragments_not_a_saved_review','target_sha256':TARGET_SHA,'review_fields':fields})
+ write(HERE/'review-evidence-bindings.json',bindings)
+ write(HERE/'fragment-consistency.json',{'status':'passed','edges':102,'qualifiers':48,'claims':80,'constructs':28,'paragraphs':41,'references':97,'original_references':94,'new_references':3,'successor_deltas':6,'external_findings':5,'assessments':410,'current_evidence':checks['evidence_accounting'],'scientific_fresh_rereview':False})
+ (HERE/'targets.yaml').write_text(yaml.safe_dump({'targets':[{'target_id':TARGET_ID,'path':TARGET_REL,'label':record['label'],'kind':'maintained','owner_paths':[{'repository':'CultureBotAI/PathwayMech','path':TARGET_REL,'role':'Maintained pathway identity, source scope, participants, qualifiers and edge evidence'}]}]},sort_keys=False))
+ contract=['scripts/record_review.py','schema/record_review.yaml','docs/record-reviews.md','docs/record-review-profile.md','conf/record_review.yaml','CLAUDE.md','.claude/skills/review-yaml-record/SKILL.md','.claude/skills/pathwaymech-resolve-reviews/SKILL.md','.claude/skills/add-pathway/SKILL.md','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','docs/IDENTIFIERS.md','history/README.md','scripts/new_history_record.py','src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/strict.py','src/pathwaymech/identifiers.py','src/pathwaymech/ecocyc_complex.py','src/pathwaymech/kgx.py','src/pathwaymech/graph_view.py','src/pathwaymech/cli.py','scripts/build_source_identifier_snapshot.py','conf/identifier_policy.yaml','conf/identifier_sources.json','conf/rhea_identifier_updates.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','tests/test_ecocyc_complex_authority.py']
+ write(HERE/'preparation-input-bindings.json',{'at':now(),'maintained_contract':[{'relative_path':p,**bind(ROOT/p)} for p in contract],'target':bind(ROOT/TARGET_REL),'adoption':bind(ADOPTION),'merged_binding':bind(MERGED),'histories':bind(HISTORY),'integration_handoff':bind(PREP/'handoff.json'),'evidence':bindings,'full_gates':'Not asserted by fragments; require actual passed receipt separately.','current_review_saved':False})
+ print({'status':'prepared','assessments':410,'evidence':len(evidence),'native_saved':False})
+if __name__=='__main__':main()

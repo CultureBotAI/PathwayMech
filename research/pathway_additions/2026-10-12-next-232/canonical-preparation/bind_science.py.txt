@@ -1,0 +1,31 @@
+"""Bind real root scientific acceptance; no acceptance is manufactured here."""
+from pathlib import Path
+from common import HERE, TARGET_SHA, bind, check, load, now, verify_packet, write
+from capture_inputs import copy_binding
+
+ROOT = Path('/private/tmp/pathwaymech-next-232-root-science-successor-acceptance-20261012.json')
+ROOT_SHA = '9ec05fdf70cb64110ed519fda150ddbf93544d961b7c2210516e5b9e09c3bc0e'
+root = check({'path': str(ROOT), 'sha256': ROOT_SHA, 'bytes': 11287})
+acceptance = load(ROOT)
+assert acceptance['status'] == 'accepted_exact_scientific_successor_with_explicit_original_full_review_inheritance'
+assert acceptance['target']['sha256'] == TARGET_SHA
+assert acceptance['dispositions']['scientific_successor_acceptance'] is True
+review = acceptance['successor_review_handoff']
+packet = verify_packet('nad_science_successor', Path(review['path']).parent, review['sha256'])
+assert packet['manifest'] == acceptance['successor_review_manifest']
+data = load(review['path'])
+assert data['target'] == acceptance['target'] and data['remaining_findings'] == []
+assert data['status'] == acceptance['status']
+for name in ('author_handoff', 'author_manifest', 'original_full_science'):
+    check(acceptance[name])
+    assert data[name] == acceptance[name]
+copy_binding(ROOT, HERE / 'captured/lineage/root-science-successor-acceptance.json')
+for name in ('handoff.json', 'REVIEW.md', 'science-inheritance.json', 'dispositions.json'):
+    copy_binding(Path(review['path']).parent / name, HERE / 'captured/lineage/science-successor' / name)
+write(HERE / 'science-gate.json', {'at': now(), 'target_sha256': TARGET_SHA, 'successor_review': review,
+      'successor_manifest': packet['manifest'], 'root_science_acceptance': root,
+      'root_science_acceptance_assessed': True, 'assessed_successor_target_sha256': TARGET_SHA,
+      'accepted_for_full_canonical_build': True, 'meaning': 'Scientific prerequisite accepted; independent canonical preparation audit/root acceptance still required before actual builders. This is not full canonical build acceptance.',
+      'original_full_science': acceptance['original_full_science'], 'root_author_intake': acceptance['root_author_intake'],
+      'scope': 'Real independently sealed successor and real root receipt, both read in full and pinned. Unchanged science inherits complete original review and access limits.'})
+print(bind(HERE / 'science-gate.json'))

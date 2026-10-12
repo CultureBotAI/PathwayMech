@@ -1,0 +1,26 @@
+"""Own the newly explicit 2004 half of paragraph 29's cross-study comparison."""
+from pathlib import Path
+import hashlib
+import json
+
+A=Path(__file__).parent
+P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+def bind(p):
+    p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+path=A/'ledgers/paragraph-source-accounting.json';rows=json.loads(path.read_text())
+p=rows[28];assert p['paragraph']==29
+original=P/'raw/PMID14660605-repository.pdf';projection=P/'derived/PMID14660605-pages.json'
+j=json.loads(projection.read_text());pages=j['pages']if isinstance(j,dict)else j
+page=next(r for r in pages if r['page_1based']==6)
+assert 'expression was affected by the redox state' in page['text']
+row=dict(claim='transcript-model-conflict',reference_id='PMID:14660605',whole_original=bind(original),
+         nearest_source_locator='PDF page 6 (printed p. 6618), Redox Metabolism and Transhydrogenase Expression on Alternative Carbon Substrates; Fig. 7 and adjacent interpretation',
+         limits='Owns only the 2004 redox-linked transcription interpretation. The separate 2016 contradiction and paraquat experiment keep their original PMID:27488847 source accounting.',
+         exact_selected_passages=[dict(selector_type='pdf_pages',projection=bind(projection),pages=[6],observed=[page])])
+assert not any(x['whole_original']['sha256']==row['whole_original']['sha256']for x in p['source_accounting'])
+p['source_accounting'].append(row)
+path.write_text(json.dumps(rows,indent=2,ensure_ascii=False)+'\n')
+(A/'paragraph-accounting-correction.json').write_text(json.dumps(dict(paragraph=29,added_source_accounting=row,
+    target_unchanged=bind(A/'draft/nad-phosphorylation-and-dephosphorylation.yaml'),
+    reason='The bibliography gate correctly found that the prior ledger assigned the cross-study paragraph only to the 2016 original. The new explicit 2004 citation now has its own exact original/page accounting.'),indent=2,ensure_ascii=False)+'\n')
+print('Paragraph 29 now owns separate 2004 and 2016 primary source accounting; candidate bytes unchanged')

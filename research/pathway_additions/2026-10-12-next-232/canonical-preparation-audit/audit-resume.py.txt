@@ -1,0 +1,190 @@
+"""Independent read-only NAD preparation audit; fixtures live in this audit only."""
+import copy
+import difflib
+import hashlib
+import importlib
+import json
+import os
+from pathlib import Path
+import shutil
+import stat
+import subprocess
+import sys
+from unittest.mock import patch
+
+P = Path('/private/tmp/pathwaymech-next-232-canonical-preparation-20261012')
+A = Path(__file__).resolve().parent
+H = '9a0d1cb8c2f339b7d5b0380da31da985f86b67eaa6d41b96f6f87b129f579355'
+M = '5846d555e63b3399ab32313d491138c59ef5ed4ab755fcde2bf486a0628f0370'
+sys.path.insert(0, str(P))
+import common as c
+import prepare_and_build as b
+import capture_inputs as ci
+import yaml
+
+
+def save(name, value):
+    with (A / name).open('x') as f:
+        json.dump(value, f, indent=2, ensure_ascii=False)
+        f.write('\n')
+
+
+def bind(path):
+    path = Path(path)
+    with path.open('rb') as f:
+        digest = hashlib.file_digest(f, 'sha256').hexdigest()
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest}
+
+
+def verify(row):
+    got = bind(row['path'])
+    assert got == {k: row[k] for k in got}, row['path']
+    return got
+
+
+def ident(path):
+    path = Path(path)
+    mode = path.lstat().st_mode
+    assert stat.S_ISREG(mode) or stat.S_ISLNK(mode)
+    return {'file_type': 'symlink' if stat.S_ISLNK(mode) else 'regular',
+            'link_text': os.readlink(path) if stat.S_ISLNK(mode) else None,
+            'resolved_path': str(path.resolve(strict=True))}
+
+
+def closure():
+    assert bind(P/'handoff.json')['sha256'] == H
+    assert bind(P/'artifact-manifest.json')['sha256'] == M
+    rows = c.load(P/'artifact-manifest.json')['artifacts']
+    assert len(rows) == 1696
+    paths = set()
+    for r in rows:
+        verify(r)
+        assert ident(r['path']) == {k: r[k] for k in ('file_type','link_text','resolved_path')}
+        q = Path(r['path'])
+        assert q.is_relative_to(P) and q not in paths
+        paths.add(q)
+    raw = subprocess.run(['rg','--files','--no-ignore','--hidden','--follow',str(P)], capture_output=True, text=True, check=True)
+    assert not raw.stderr
+    assert {Path(x) for x in raw.stdout.splitlines()} == paths | {P/'handoff.json',P/'artifact-manifest.json'}
+    assert not os.path.lexists(c.OUTPUT)
+    return {'artifacts':len(rows),'identities':len(rows),'hidden_ignored_followed':True,'output_absent':True,'handoff':bind(P/'handoff.json'),'manifest':bind(P/'artifact-manifest.json')}
+
+
+# Resume after the retained auditor-only test filename expectation failure.
+cap = c.load(P/'capture.json')
+old = {k:c.load(P/'captured/baseline'/(k+'.json')) for k in ('sources','ontology')}
+expected = c.load(P/'expected-native-comparison.json')
+# Accepted runtime identity; audit integration, inherit independent adapter review.
+prior_runtime = c.PRIOR/'runtime'
+prior = {str(q.relative_to(prior_runtime)):bind(q)['sha256'] for q in c.inventory(prior_runtime)}
+new = {r['relative_path']:r['captured']['sha256'] for r in cap['candidate_code']}
+added = sorted(set(new)-set(prior)); removed = sorted(set(prior)-set(new))
+changed = sorted(k for k in prior.keys()&new.keys() if prior[k]!=new[k])
+assert len(prior)==223 and len(new)==225 and not removed
+assert added==['src/pathwaymech/ecocyc_complex.py','tests/test_ecocyc_complex_authority.py']
+assert changed==['scripts/build_source_identifier_snapshot.py','src/pathwaymech/identifiers.py']
+assert new['scripts/build_ontology_identifier_snapshot.py']==prior['scripts/build_ontology_identifier_snapshot.py']
+adapter_root = c.load('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json')
+save('runtime-inheritance.json', {'old_files':223,'new_files':225,'added':added,'changed':changed,'unchanged':221,'removed':removed,'adapter_acceptance':bind('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json'),'scope':'Exact accepted code integration checked independently. Adapter semantics inherit root independent acceptance; this auditor authored that adapter and does not claim a new independent review of its own implementation.'})
+
+# Fresh native collectors only; no native build/output generation.
+modules=ci.collectors()
+sel=ci.selections(Path(cap['target']['captured']['path']),modules)
+bridge=c.load(P/'collector-bridge.json')
+assert sel==bridge['selections']
+assert ci.selections(Path(bridge['original']['path']),modules)==sel
+assert [len(sel[x]) for x in ('named_ids','source_ids','ontology_ids')]==[68,32,36]
+source_union=set(modules['source'].corpus_ids(P/'captured/corpus')) | set(sel['named_ids']) | set(cap['retention_ids'])
+ontology_union=set()
+for r in cap['records']+[{'captured':cap['target']['captured']}]:
+    if r['captured']['path'].endswith('.yaml'):
+        ontology_union.update(modules['ontology'].walk_identifiers(yaml.safe_load(Path(r['captured']['path']).read_bytes()),{'GO','CHEBI','NCBITaxon','RHEA'}))
+ontology_union |= {i for i in cap['retention_ids'] if i.partition(':')[0] in {'GO','CHEBI','NCBITaxon','RHEA'}}
+assert set(expected['snapshots']['ontology']['terms']) == ontology_union
+assert set(expected['snapshots']['sources']['terms']) <= source_union
+assert set(cap['retention_ids'])==set(old['sources']['terms'])|set(old['ontology']['terms'])
+oldrecord=yaml.safe_load(Path(bridge['original']['path']).read_bytes())
+newrecord=yaml.safe_load(Path(cap['target']['captured']['path']).read_bytes())
+reset=copy.deepcopy(newrecord);reset['references']=reset['references'][:94];reset['description']=oldrecord['description'];reset['mechanistic_edges'][40]['evidence']=oldrecord['mechanistic_edges'][40]['evidence']
+assert reset==oldrecord and newrecord['references'][:94]==oldrecord['references']
+save('selectors-and-record-bridge.json', {'selectors':sel,'all_prospective_ontology_ids':sorted(ontology_union),'all_prospective_source_collector_ids_with_retention':sorted(source_union),'retained_ids':4476,'target_record_semantic_bridge':'Only description, nad-041 evidence, and three appended references; unchanged selectors and other full objects.','full_build':False,'module_owner':str(Path(importlib.import_module('pathwaymech').__file__).resolve())})
+
+# Verify exact delta and all actual validation receipts; do not rerun 44 tests.
+diff=[]
+for name in ('common.py','capture_inputs.py','prepare_and_build.py','test_build_guards.py','run_check.py','seal_preparation.py'):
+    before=P/'inspected-predecessor'/name
+    assert before.read_bytes()==(Path('/private/tmp/pathwaymech-next-231-canonical-preparation-20261012')/name).read_bytes()
+    diff.extend(difflib.unified_diff(before.read_text().splitlines(keepends=True),(P/name).read_text().splitlines(keepends=True),fromfile='accepted-PPi/'+name,tofile='NAD/'+name))
+assert ''.join(diff)==(P/'exact-helper-adaptation.diff').read_text()
+history=c.load(P/'validation-history.json')
+for r in history['actual_commands']:
+    verify(r['stdout']);verify(r['stderr'])
+    assert c.load(Path(r['stdout']['path']).parent/'receipt.json')==r
+assert len(history['actual_commands'])==17 and len(history['failed_commands_retained'])==3
+latest={}
+for r in sorted(history['actual_commands'],key=lambda x:x['started_at']): latest[r['name']]=r
+assert set(latest)=={'capture','guards','ruff','compile','inputs','science','bind-science'}
+assert all(r['exit_code']==0 for r in latest.values())
+guarddir=Path(latest['guards']['stdout']['path']).parent
+for name in ('common.py','prepare_and_build.py','test_build_guards.py','bind_science.py'):
+    assert (guarddir/(name+'.txt')).read_bytes()==(P/name).read_bytes()
+assert '44 passed' in Path(latest['guards']['stdout']['path']).read_text()
+save('validation-assessment.json', {'recorded_commands':17,'passed':14,'failed_retained':history['failed_commands_retained'],'latest_seven_stages_passed':True,'latest_guard_count':44,'latest_guard_snapshots_match_final':True,'exact_adaptation_recomputed':True,'failure_assessment':'Runtime-file list ordering changed to keyed comparison with same byte coverage; importer failure fixed by cache invalidation and exact module owner assertion; unused CACHE import removed. Both partial capture trees and all command streams/snapshots retained. No full builder/test suite run.'})
+
+# Additional independent bounded controls, using external temporary fixtures only.
+controls=[]
+def rejected(name, fn):
+    try: fn()
+    except (AssertionError,KeyError,FileNotFoundError) as e: controls.append({'name':name,'result':'rejected','exception':type(e).__name__,'detail':str(e)})
+    else: raise AssertionError('accepted invalid fixture '+name)
+fixtures=A/'fixtures';fixtures.mkdir()
+for x in ('a','b'):
+    (fixtures/x).mkdir();(fixtures/x/'original').write_bytes(b'unchanged bytes\n')
+(fixtures/'parent').symlink_to(fixtures/'a',target_is_directory=True)
+f=fixtures/'parent/original';row={**bind(f),**ident(f)}
+c.check_identity(row)
+(fixtures/'parent').unlink();(fixtures/'parent').symlink_to(fixtures/'b',target_is_directory=True)
+rejected('same_body_parent_directory_symlink_retarget',lambda:c.check_identity(row))
+missing=dict(row);del missing['resolved_path']
+rejected('missing_resolved_identity_field',lambda:c.check_identity(missing))
+prior_obj={'version':1,'terms':{'a':{'label':'a'},'b':{'label':'b'}},'sources':{'s':{'x':1,'y':2}}}
+new_obj=copy.deepcopy(prior_obj);new_obj['terms']={'b':{'label':'b'},'a':{'label':'a'}}
+rejected('relative_order_of_old_term_map',lambda:c.preserve(prior_obj,new_obj))
+new_obj=copy.deepcopy(prior_obj);new_obj['sources']['s']={'y':2,'x':1}
+rejected('old_metadata_nested_order',lambda:c.preserve(prior_obj,new_obj))
+rejected('class_companion_conflicts_with_top_level_hash',lambda:c.manifest_originals([{'path':'x','sha256':'a','class_source':{'path':'x','sha256':'b'}}]))
+broken=fixtures/'broken-output';broken.symlink_to(fixtures/'missing')
+with patch.object(c,'OUTPUT',broken):
+    rejected('dangling_output_symlink',lambda:c.validate_output(broken))
+
+# Fresh pre-output SQL hashing is exercised on four tiny external files; stop
+# deliberately before mkdir. This neither hashes production SQL nor stages output.
+sql=[]
+for i in range(4):
+    p=fixtures/('sql-'+str(i));p.write_bytes(('sql fixture '+str(i)).encode())
+    sql.append({**bind(p),'mtime_ns':p.stat().st_mtime_ns,'identity':ident(p)})
+calls=[]
+def checking(r):
+    calls.append(r['path']);return c.check(r)
+for i in range(4):
+    changed_sql=copy.deepcopy(sql);changed_sql[i]['sha256']='0'*64
+    mini={'source_originals':[],'source_cache':[],'sql_originals':changed_sql}
+    with patch.object(b,'science_check',return_value={}),patch.object(b,'check_cache',return_value=0),patch.object(b,'check',side_effect=checking):
+        rejected('fresh_SQL_hash_mismatch_before_output_'+str(i+1),lambda:b.stage(mini,{}))
+    assert not os.path.lexists(c.OUTPUT) and not b.CREATED_BY_THIS_RUN
+assert len(calls)==10
+save('independent-negative-controls.json', {'controls':controls,'negative_count':len(controls),'SQL_fixture_hash_calls':len(calls),'SQL_production_files_not_mutated_or_fully_rehashed':True,'full_builder_executed':False,'fixed_output_absent':not os.path.lexists(c.OUTPUT)})
+
+# Fresh inert CLI invocation, with all output captured externally.
+env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONNOUSERSITE':'1'}
+cmd=[c.PYTHON,'-B',str(P/'prepare_and_build.py'),'--check-inputs']
+r=subprocess.run(cmd,cwd=A,env=env,capture_output=True)
+(A/'input-check.stdout').write_bytes(r.stdout);(A/'input-check.stderr').write_bytes(r.stderr)
+assert r.returncode==0 and not r.stderr
+out=json.loads(r.stdout);assert out['status']=='inputs_checked_no_build'
+assert out['commands']==c.load(P/'root-build-commands.json')==b.plan(cap)
+assert all('expected-native-comparison' not in v for name in ('source_builder','ontology_builder') for v in out['commands'][name])
+save('inert-cli.json', {'command':cmd,'exit_code':r.returncode,'stdout':bind(A/'input-check.stdout'),'stderr':bind(A/'input-check.stderr'),'fixed_output_absent':not os.path.lexists(c.OUTPUT)})
+save('closure-after.json',closure())
+save('findings.json',[])
+print(json.dumps({'status':'passed','manifest_artifacts':1696,'originals':791,'cache':789,'runtime':225,'prospective_records':233,'native_collector_named_ids':68,'retention_ids':4476,'negative_controls':len(controls),'full_build':False,'output_absent':True}))

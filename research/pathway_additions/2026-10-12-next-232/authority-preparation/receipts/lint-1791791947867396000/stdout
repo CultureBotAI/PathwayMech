@@ -1,0 +1,47 @@
+F401 [*] `collections` imported but unused
+ --> check_proposal.py:5:8
+  |
+3 | from prepare_proposal import preserve,original_paths
+4 | import copy
+5 | import collections
+  |        ^^^^^^^^^^^
+6 | import sys
+7 | import yaml
+  |
+help: Remove unused import: `collections`
+  |
+4 | import copy
+  - import collections
+5 | import sys
+  |
+
+F401 [*] `build_source_identifier_snapshot` imported but unused
+  --> check_proposal.py:13:44
+   |
+11 | from pathwaymech.identifiers import identifier_errors,_load_authority
+12 | from pathwaymech.ecocyc_complex import complex_metadata
+13 | import build_source_identifier_snapshot as sb
+   |                                            ^^
+14 | import build_ontology_identifier_snapshot as ob
+   |
+help: Remove unused import: `build_source_identifier_snapshot`
+   |
+12 | from pathwaymech.ecocyc_complex import complex_metadata
+   - import build_source_identifier_snapshot as sb
+13 | import build_ontology_identifier_snapshot as ob
+   |
+
+F841 Local variable `entries` is assigned to but never used
+  --> check_proposal.py:44:5
+   |
+42 |         path=O/'originals'/row['cache_relative_path'];verify(path,row['binding']);assert identity(path)==row['identity']
+43 |     checks.append(f"all{len(accounting['originals'])}whole original bodies and fresh exact link identities; separately hashedPC1 compa…
+44 |     entries={r['key']:r for r in manifest};complexes=[r for r in manifest if r['kind']=='ecocyc-complex-xml'];assert len(complexes)==2
+   |     ^^^^^^^
+45 |     source=read(O/'proposal/sources.json')
+46 |     for entry in complexes:
+   |
+help: Remove assignment to unused variable `entries`
+
+Found 3 errors.
+[*] 2 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).

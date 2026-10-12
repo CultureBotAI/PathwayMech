@@ -1,0 +1,127 @@
+"""Close the external author packet after all actual bounded receipts exist."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+
+import yaml
+
+A = Path(__file__).parent
+assert not (A / 'handoff.json').exists(), 'Author packet is already sealed'
+
+
+def sha(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)}
+
+
+def read(name):
+    return json.loads((A / name).read_text())
+
+
+def save(name, value):
+    (A / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+
+target = A / 'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+expected = 'c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503'
+assert bind(target)['sha256'] == expected
+record = yaml.safe_load(target.read_text())
+for name in ['original-replay.json', 'candidate-checks/result.json', 'candidate-checks/export-proof.json']:
+    assert read(name)['target_sha256'] == expected
+for name in ['scientific-contract-checks.json', 'final-integrity-checks.json', 'author-status.json', 'authority-intake.json']:
+    assert read(name)['target'] == bind(target)
+assert not read('candidate-checks/result.json')['strict_errors']
+assert not read('provisional-identifier-consumer.json')['identifier_errors']
+assert read('authority-intake.json')['sealed_consumer_byte_bridge'] is True
+history = read('validation/execution-history.json')
+required = ['replay_sources.py', 'check_scientific_contract.py', 'check_candidate.py',
+            'check_exports.py', 'check_novelty.py', 'check_search_scope.py',
+            'check_draft_lineage.py', 'check_identifiers_provisional.py',
+            'intake_authorities.py', 'prepare_final_report.py']
+for script in required:
+    last = [row for row in history if Path(row['argv'][-1]).name == script][-1]
+    assert last['exit_code'] == 0, script
+for row in read('final-integrity-checks.json')['runtime_bindings']:
+    assert bind(row['path']) == row
+edges = record['mechanistic_edges']
+counts = {'edges': len(edges), 'participants': len(record['participants']),
+          'references': len(record['references']), 'reaction_entries': len(record['reactions']),
+          'endpoint_qualifiers': sum(len(edge.get('endpoint_qualifiers', [])) for edge in edges),
+          'claims': len(read('ledgers/full-claim-dispositions.json')),
+          'construct_contexts': len(read('ledgers/construct-dispositions.json')),
+          'core_events': 3, 'core_sides': 15, 'supporting_events': 1, 'supporting_sides': 4,
+          'selector_ledger_rows': len(read('ledgers/working-evidence-selector-ledger.json')),
+          'actual_evidence_uses': read('bidirectional-source-coverage.json')['actual_evidence_uses'],
+          'native_named_ids': len(read('provisional-identifier-consumer.json')['native_source_collector']),
+          'native_ontology_ids': len(read('provisional-identifier-consumer.json')['native_ontology_collector'])}
+assert (counts['edges'], counts['references'], counts['endpoint_qualifiers'], counts['claims'],
+        counts['construct_contexts'], counts['selector_ledger_rows'], counts['actual_evidence_uses']) == (102,94,48,80,28,246,265)
+save('receipt.json', {
+    'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'status': 'Complete external author candidate, ready for independent whole-record review; bounded actual checks passed.',
+    'target': bind(target), 'counts': counts,
+    'issue_dispositions': [{'issue': 465, 'stable_key': 'nad-pnt-topology-locator',
+                            'status': 'author correction in exact target; independent acceptance and closure pending',
+                            'binding': bind(A / 'topology-issue-disposition.json')}],
+    'authority_intake': bind(A / 'authority-intake.json'),
+    'scope': 'Only external authoring, native-derived authority proposal intake, source-selected controls and single-record checks. The helper used a bounded native source builder; no complete canonical build or production full suite is claimed.',
+    'maintained_adoption': False, 'independent_scientific_acceptance': False,
+    'full_canonical_build': False, 'full_tests': False, 'browser_review': False,
+    'source_exhaustion': False})
+command = ['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(A)]
+result = subprocess.run(command, capture_output=True)
+assert result.returncode == 0, result.stderr.decode()
+artifacts = []
+for filename in sorted(part for part in result.stdout.split(b'\0') if part):
+    path = Path(filename.decode())
+    if path.parent == A and path.name in ['handoff.json', 'artifact-manifest.json']:
+        continue
+    assert '__pycache__' not in path.parts and path.suffix != '.pyc', path
+    artifacts.append({'path': str(path.relative_to(A)), 'bytes': path.stat().st_size,
+                      'sha256': sha(path)})
+save('artifact-manifest.json', {
+    'package': str(A), 'scope': 'All hidden, ignored and followed files; only this manifest and handoff excluded to avoid circular hashes.',
+    'inventory_command': command, 'inventory_exit': result.returncode,
+    'inventory_stderr': result.stderr.decode(), 'artifacts': artifacts})
+authority = read('authority-intake.json')
+preflight = read('preflight-intake.json')
+save('handoff.json', {
+    'schema_version': 1, 'status': 'Sealed full-scope external author candidate; independent scientific review and root-owned full canonical build pending.',
+    'package': str(A), 'candidate': record['id'], 'label': record['label'],
+    'proposed_maintained_path': 'data/pathways/' + target.name,
+    'target': bind(target), 'counts': counts, 'author_report': bind(A / 'AUTHOR-HANDOFF.md'),
+    'manifest': bind(A / 'artifact-manifest.json'), 'artifact_count': len(artifacts),
+    'receipt': bind(A / 'receipt.json'), 'preflight': preflight['preflight_handoff'],
+    'root_preflight_intake': preflight['root_acceptance'],
+    'authority_handoff': authority['handoff'], 'authority_manifest': authority['manifest'],
+    'authority_intake': bind(A / 'authority-intake.json'),
+    'authority_proposal_files': authority['proposal_files'],
+    'source_cache_copy_plan': authority['copy_plan'],
+    'draft_lineage': bind(A / 'draft-lineage.json'),
+    'claim_coverage': bind(A / 'ledgers/full-claim-dispositions.json'),
+    'paragraph_source_accounting': bind(A / 'ledgers/paragraph-source-accounting.json'),
+    'source_coverage': bind(A / 'bidirectional-source-coverage.json'),
+    'source_selectors': bind(A / 'ledgers/working-evidence-selector-ledger.json'),
+    'construct_dispositions': bind(A / 'ledgers/construct-dispositions.json'),
+    'actual_validation': bind(A / 'validation/execution-history.json'),
+    'scientific_contract': bind(A / 'scientific-contract-checks.json'),
+    'original_replay': bind(A / 'original-replay.json'),
+    'native_identifier_check': bind(A / 'provisional-identifier-consumer.json'),
+    'page_graph_kgx_check': bind(A / 'candidate-checks/export-proof.json'),
+    'novelty': bind(A / 'derived/semantic-novelty-fresh.json'),
+    'whole_repository_search': bind(A / 'derived/whole-repository-search.json'),
+    'issue_465_disposition': bind(A / 'topology-issue-disposition.json'),
+    'full_canonical_build': False, 'independent_scientific_acceptance': False,
+    'maintained_adoption': False, 'source_exhaustion': False,
+    'immutability': 'No further writes; any corrections must use an immutable successor. Run replay scripts only in an external copy.'})
+for row in artifacts:
+    assert sha(A / row['path']) == row['sha256']
+print(json.dumps({'handoff': bind(A / 'handoff.json'), 'manifest': bind(A / 'artifact-manifest.json'),
+                  'artifact_count': len(artifacts), 'target': bind(target)}))

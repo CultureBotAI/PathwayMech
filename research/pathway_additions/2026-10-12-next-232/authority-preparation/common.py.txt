@@ -1,0 +1,77 @@
+"""External NAD authority proposal provenance and guards; no maintained writes."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+import stat
+import subprocess
+
+if not __debug__: raise RuntimeError('Assertions are required')
+O = Path(__file__).resolve().parent
+B = Path('/private/tmp/pathwaymech-next-231-canonical-build-20261012')
+A = Path('/private/tmp/pathwaymech-next-232-author-20261012')
+P = Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+D = Path('/private/tmp/pathwaymech-next-232-complex-adapter-preparation-20261012')
+AUDIT = Path('/private/tmp/pathwaymech-next-232-complex-adapter-independent-audit-20261012')
+PYTHON = Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+TARGET_NAME = 'nad-phosphorylation-and-dephosphorylation.yaml'
+TARGET_SHA = 'c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503'
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+
+
+def now(): return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+def read(path): return json.loads(Path(path).read_bytes())
+def bind(path):
+    path=Path(path)
+    with path.open('rb') as stream: digest=hashlib.file_digest(stream,'sha256').hexdigest()
+    return {'path':str(path),'bytes':path.stat().st_size,'sha256':digest}
+def identity(path):
+    path=Path(path);mode=path.lstat().st_mode
+    assert stat.S_ISREG(mode) or stat.S_ISLNK(mode)
+    return {'file_type':'symlink' if path.is_symlink() else 'regular','link_text':os.readlink(path) if path.is_symlink() else None,'resolved_path':str(path.resolve(strict=True))}
+def verify(path,row):
+    result=bind(path);assert result['sha256']==row['sha256'] and result['bytes']==row['bytes'],str(path)
+    return result
+
+def write(name,data):
+    path=O/name;path.parent.mkdir(parents=True,exist_ok=True)
+    with path.open('x') as stream: json.dump(data,stream,indent=2,ensure_ascii=False);stream.write('\n')
+    return bind(path)
+
+def relative(path):
+    path=Path(path);assert not path.is_absolute() and '..' not in path.parts and str(path) not in ('','.');return path
+
+def paths(root):
+    result=subprocess.run(['rg','--files','-uu','-L','.'],cwd=root,text=True,capture_output=True)
+    assert result.returncode in (0,1) and not result.stderr,result.stderr
+    out=sorted(str(Path(p)) for p in result.stdout.splitlines());assert len(out)==len(set(out));return out
+
+def inventory(root): return [{'relative_path':p,**bind(root/p),**identity(root/p)} for p in paths(root)]
+
+def manifest_rows(directory):
+    raw=read(directory/'artifact-manifest.json');return raw if isinstance(raw,list) else raw.get('artifacts',raw.get('files'))
+
+def close_packet(directory,expected_sha,original_links=False):
+    handoff=bind(directory/'handoff.json');assert handoff['sha256']==expected_sha
+    info=read(handoff['path']);manifest=info.get('manifest') or info['artifact_manifest']
+    verify(directory/'artifact-manifest.json',manifest)
+    rows=manifest_rows(directory);declared=set()
+    for row in rows:
+        path=Path(row.get('relative_path') or row['path']);path=path if path.is_absolute() else directory/relative(path)
+        assert path.is_relative_to(directory);verify(path,row);declared.add(str(path.relative_to(directory)))
+    extra=set()
+    if original_links:
+        for row in read(directory/'execution-intake.json')['source_originals_freshly_hashed']:
+            path=directory/'originals'/relative(row['cache_relative_path'])
+            assert path.is_symlink() and path.resolve()==Path(row['path']).resolve();verify(path,row);extra.add(str(path.relative_to(directory)))
+    assert set(paths(directory))==declared|extra|{'handoff.json','artifact-manifest.json'},directory
+    return {'handoff':handoff,'manifest':bind(directory/'artifact-manifest.json'),'artifacts':len(rows),'original_links':len(extra),'closed_hidden_ignored_followed':True}
+
+def capture_file(source,destination,pin=None):
+    source=Path(source);destination=Path(destination)
+    if pin:verify(source,pin)
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    with destination.open('xb') as stream:stream.write(source.read_bytes())
+    before=bind(source);verify(destination,before)
+    return {'original':before,'original_identity':identity(source),'captured':bind(destination)}

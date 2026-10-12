@@ -1,0 +1,60 @@
+from pathlib import Path
+import ast, copy, hashlib, importlib.util, json, sys, xml.etree.ElementTree as ET
+P=Path('/private/tmp/pathwaymech-next-232-complex-adapter-preparation-20261012');A=Path(__file__).parent
+sys.path[:0]=[str(P/'candidate/src'),str(P/'candidate')]
+from pathwaymech.ecocyc_complex import complex_metadata,complex_term
+from pathwaymech.identifiers import _load_authority
+from scripts.build_source_identifier_snapshot import build_snapshot, _ecocyc_record
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def loaded(p,name):
+ s=importlib.util.spec_from_file_location(name,p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
+baseline=loaded(P/'baseline/scripts/build_source_identifier_snapshot.py','review_baseline_builder')
+manifest=json.loads((P/'receipts/originals-1791790019833385000/bounded-manifest.json').read_text())
+records=A/'bounded-records';records.mkdir(exist_ok=True);(records/'ids.yaml').write_text('id: EcoCyc:CPLX0-682\nparticipants:\n- id: EcoCyc:PYRNUTRANSHYDROGEN-CPLX\n')
+out=build_snapshot(P/'receipts/originals-1791790019833385000/bounded-manifest.json',records,P/'originals')
+assert out==json.loads((P/'receipts/originals-1791790019833385000/bounded-native-snapshot.json').read_text())
+(A/'bounded-native-output.json').write_text(json.dumps(out,indent=2)+'\n');assert _load_authority(A/'bounded-native-output.json')==out['terms']
+results=[{'check':'independent whole-original two-entry build and consumer load','passed':True,'selected_terms':list(out['terms'])}]
+for frame in ['ALKAPHOSPHA-CPLX','UDHA-CPLX']:
+ p=P/'originals'/('ECOLI-'+frame+'.xml');kw={'url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+frame,'version':'27.0'}
+ assert _ecocyc_record('ecocyc-protein-xml',p,**kw)==baseline._ecocyc_record('ecocyc-protein-xml',p,**kw);results.append({'check':'legacy named original equality '+frame,'passed':True})
+for frame in ['PHOSPHO-ARCA','PHOSPHO-PHOB','PNTA-MONOMER','PC-1']:
+ p=P/'originals'/('ECOLI-'+frame+'.xml');e={**manifest[0],'key':'negative-'+frame,'path':p.name,'url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:'+frame,'sha256':sha(p)}
+ try:complex_metadata(e,P/'originals')
+ except ValueError as ex:results.append({'check':'reject whole original '+frame,'passed':True,'error':str(ex)})
+ else:raise AssertionError(frame)
+mut=A/'mutants';mut.mkdir(exist_ok=True)
+for case in ['class-missing-instance','class-wrong-version','class-bad-hash','absent-companion','unnamed-singleton','direct-name-promotion','unsupported-state-slot','parent-order','component-order']:
+ d=mut/case;d.mkdir(exist_ok=True);e=copy.deepcopy(manifest[0 if case in ['unnamed-singleton','direct-name-promotion','unsupported-state-slot'] else 1]);root=ET.parse(P/'originals'/e['path']).getroot();entity=root.find('Protein')
+ if 'class_source' in e:
+  proof=ET.parse(P/'originals'/e['class_source']['path']).getroot()
+  if case=='class-missing-instance':
+   cls=proof.find('Protein');cls.remove(next(x for x in cls.findall('instance') if x.find('Protein').get('frameid')=='PYRNUTRANSHYDROGEN-CPLX'))
+  if case=='class-wrong-version':proof.find('metadata/PGDB').set('version','28.0')
+  cp=d/e['class_source']['path'];cp.write_bytes(ET.tostring(proof,encoding='utf-8',xml_declaration=True));e['class_source']['sha256']=sha(cp)
+  if case=='class-bad-hash':e['class_source']['sha256']='0'*64
+  if case=='absent-companion':cp.unlink()
+ if case=='unnamed-singleton':entity.find('component/coefficient').text='1'
+ if case=='direct-name-promotion':ET.SubElement(entity,'common-name',datatype='string').text='NAD kinase'
+ if case=='unsupported-state-slot':ET.SubElement(entity,'unmodified-form')
+ if case in ['parent-order','component-order']:
+  tag='parent' if case=='parent-order' else 'component';ns=entity.findall(tag);indices=[list(entity).index(n) for n in ns]
+  for n in ns:entity.remove(n)
+  for i,n in zip(indices,reversed(ns)):entity.insert(i,n)
+ p=d/e['path'];p.write_bytes(ET.tostring(root,encoding='utf-8',xml_declaration=True));e['sha256']=sha(p)
+ try:
+  result=complex_metadata(e,d)
+ except (ValueError,FileNotFoundError) as ex:
+  assert case not in ['parent-order','component-order'];results.append({'check':case,'passed':True,'error':str(ex)})
+ else:
+  assert case in ['parent-order','component-order'];actual=result['native_complex']['parent_classes' if case=='parent-order' else 'components'];expected=out['sources'][manifest[1]['key']]['native_complex']['parent_classes' if case=='parent-order' else 'components'];assert actual==list(reversed(expected));results.append({'check':case,'passed':True,'order_preserved':actual})
+unchanged=[];changed=[]
+for p in sorted((P/'baseline').rglob('*')):
+ if p.is_file():
+  rel=p.relative_to(P/'baseline');q=P/'candidate'/rel;(unchanged if sha(p)==sha(q) else changed).append(str(rel))
+assert len(unchanged)==221 and changed==['scripts/build_source_identifier_snapshot.py','src/pathwaymech/identifiers.py']
+base_source=(P/'baseline/scripts/build_source_identifier_snapshot.py').read_text();cand_source=(P/'candidate/scripts/build_source_identifier_snapshot.py').read_text();bs={n.name:ast.get_source_segment(base_source,n) for n in ast.parse(base_source).body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))};cs={n.name:ast.get_source_segment(cand_source,n) for n in ast.parse(cand_source).body if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef))};function_changes=[n for n in bs if bs[n]!=cs[n]];assert function_changes==['build_snapshot']
+report={'status':'passed','checks':results,'unchanged_existing_files':len(unchanged),'changed_existing_files':changed,'changed_builder_function_bodies':function_changes,'unchanged_builder_function_bodies':len(bs)-1,'complete_selected_scope':'two manifest entries and one class companion only; no full-corpus build or record scientific acceptance','output':bind(A/'bounded-native-output.json'),'originals':[bind(p) for p in sorted((P/'originals').glob('*.xml'))]}
+(A/'adapter-probes.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':'passed','checks':len(results),'unchanged_files':len(unchanged),'unchanged_builder_functions':len(bs)-1,'receipt':bind(A/'adapter-probes.json')}))

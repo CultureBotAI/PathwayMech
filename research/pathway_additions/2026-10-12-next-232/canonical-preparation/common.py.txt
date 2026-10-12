@@ -1,0 +1,190 @@
+"""NAD external preparation guards; no writes to source owners or shared cache."""
+import datetime
+import hashlib
+import json
+import os
+import stat
+import subprocess
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+WORKTREE = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+PRIOR = Path('/private/tmp/pathwaymech-next-231-canonical-build-20261012')
+AUTHORITY = Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+AUTHOR = Path('/private/tmp/pathwaymech-next-232-author-successor-20261012')
+OUTPUT = Path('/private/tmp/pathwaymech-next-232-canonical-build-20261012')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+TARGET_SHA = '96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7'
+PPI_SHA = '20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5'
+TARGET_NAME = 'nad-phosphorylation-and-dephosphorylation.yaml'
+PPI_NAME = 'pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+PC1_SHA = 'e36fbeb82a86b02acd1494807251805a45aa63f7b60b83e109453d096c3ac835'
+BASE = 'a33f81ebed11cc61880aa645e4d5b73bb8480435'
+TREE = 'd7d07b03bbdf2ec01b96045e365b7cb3e357a285'
+
+
+def now():
+    return datetime.datetime.now(datetime.UTC).isoformat().replace('+00:00', 'Z')
+
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+
+def sha(path):
+    digest = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def identity(path):
+    path = Path(path)
+    mode = path.lstat().st_mode
+    assert stat.S_ISREG(mode) or stat.S_ISLNK(mode), ('unsupported type', str(path))
+    resolved = path.resolve(strict=True)
+    assert resolved.is_file(), path
+    return {'file_type': 'symlink' if path.is_symlink() else 'regular',
+            'link_text': os.readlink(path) if path.is_symlink() else None,
+            'resolved_path': str(resolved)}
+
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)}
+
+
+def check(row):
+    actual = bind(row['path'])
+    assert actual['sha256'] == row['sha256'], row['path']
+    if 'bytes' in row:
+        assert actual['bytes'] == row['bytes'], row['path']
+    return actual
+
+
+def check_identity(row, expected=None):
+    actual = check(row)
+    expected = expected or {k: row[k] for k in ('file_type', 'link_text', 'resolved_path')}
+    assert identity(row['path']) == expected, ('file identity changed', row['path'])
+    return {**actual, **expected}
+
+
+def write(path, value):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+
+def inventory(path):
+    # Followed inventory includes dotfiles and ignores no gitignore rules. Also
+    # reject broken links/special entries that rg --files would omit silently.
+    path = Path(path)
+    result = subprocess.run(['rg', '--files', '--no-ignore', '--hidden', '--follow', str(path)], text=True, capture_output=True, check=False)
+    assert result.returncode in (0, 1) and not result.stderr, result.stderr
+    for base, dirs, files in os.walk(path, followlinks=True):
+        for name in dirs + files:
+            entry = Path(base) / name
+            assert entry.exists(), ('broken entry', str(entry))
+            assert entry.is_file() or entry.is_dir(), ('special entry', str(entry))
+    return sorted(Path(line) for line in result.stdout.splitlines())
+
+
+def relative(path):
+    value = Path(path)
+    assert not value.is_absolute() and value.parts and '..' not in value.parts, path
+    return value
+
+
+def manifest_originals(entries):
+    hashes = {}
+    for entry in entries:
+        for role in ('top_level', 'version_source', 'class_source'):
+            item = entry if role == 'top_level' else entry.get(role)
+            if item is None:
+                continue
+            path = str(relative(item['path']))
+            assert path not in hashes or hashes[path] == item['sha256'], 'conflicting original path'
+            hashes[path] = item['sha256']
+    return hashes
+
+
+def validate_manifest(old, new):
+    assert new[:len(old)] == old, 'prior ordered manifest changed'
+    assert len({e['key'] for e in new}) == len(new), 'duplicate source key'
+    return manifest_originals(new)
+
+
+def validate_updates(old, new):
+    assert new == old, 'Rhea configuration must remain byte-decoded exact'
+    assert len(new['ids']) == len(set(new['ids'])), 'duplicate Rhea selector'
+
+
+def ordered_equal(left, right):
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, dict):
+        return list(left) == list(right) and all(ordered_equal(v, right[k]) for k, v in left.items())
+    if isinstance(left, list):
+        return len(left) == len(right) and all(ordered_equal(x, y) for x, y in zip(left, right, strict=True))
+    return left == right
+
+
+def preserve(old, new):
+    assert old['version'] == new['version'], 'snapshot version changed'
+    for section in ('terms', 'sources'):
+        assert all(k in new[section] and ordered_equal(v, new[section][k]) for k, v in old[section].items()), (section, 'old object/order changed')
+        assert [k for k in new[section] if k in old[section]] == list(old[section]), (section, 'old relative map order changed')
+
+
+def differences(expected, actual):
+    return {section: [{'id': k, 'expected': expected[section].get(k), 'actual': actual[section].get(k)}
+                      for k in sorted(set(expected[section]) | set(actual[section]))
+                      if expected[section].get(k) != actual[section].get(k)]
+            for section in ('terms', 'sources')}
+
+
+def check_sql_stat(row):
+    path = Path(row['path'])
+    assert path.stat().st_size == row['bytes'] and path.stat().st_mtime_ns == row['mtime_ns'], path
+    assert identity(path) == row['identity'], ('SQL identity changed', str(path))
+
+
+def check_cache(rows):
+    assert set(inventory(CACHE)) == {Path(r['path']) for r in rows}, 'shared cache inventory changed'
+    for row in rows:
+        check_identity(row)
+    return len(rows)
+
+
+def validate_output(path):
+    path = Path(path)
+    assert path == OUTPUT and not path.exists() and not path.is_symlink(), 'output must be new fixed external directory'
+    assert path.parent.resolve() == Path('/private/tmp').resolve()
+
+
+def verify_packet(name, directory, digest):
+    handoff = check({'path': str(directory / 'handoff.json'), 'sha256': digest})
+    data = load(handoff['path'])
+    manifest = check(data.get('manifest') or data['artifact_manifest'])
+    rows = load(manifest['path'])['artifacts']
+    paths = set()
+    for row in rows:
+        path = Path(row.get('path') or row['relative_path'])
+        if not path.is_absolute():
+            path = directory / relative(path)
+        assert path.is_relative_to(directory) and path not in paths
+        check({**row, 'path': str(path)})
+        paths.add(path)
+    links = set()
+    if name == 'ppi_build':
+        for row in load(directory / 'execution-intake.json')['source_originals_freshly_hashed']:
+            p = directory / 'originals' / relative(row['cache_relative_path'])
+            assert identity(p) == {'file_type': 'symlink', 'link_text': str(Path(row['path']).resolve()), 'resolved_path': str(Path(row['path']).resolve())}
+            check({**row, 'path': str(p)})
+            links.add(p)
+    assert set(inventory(directory)) == paths | {directory / 'handoff.json', Path(manifest['path'])} | links, ('packet inventory', name)
+    return {'name': name, 'handoff': handoff, 'manifest': manifest, 'artifacts_verified': len(rows), 'original_symlinks_verified': len(links), 'closed_hidden_ignored_followed_inventory': True}

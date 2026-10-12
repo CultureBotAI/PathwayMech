@@ -1,0 +1,27 @@
+"""Retain bounded external preparation commands; never invoke maintained actions."""
+import os
+import subprocess
+import sys
+import time
+from common import PACKAGE as HERE, PYTHON, binding, now, write_new
+name=sys.argv[1]
+assert name in {'inputs','dossier','guards','lint','compile','verify'}
+commands={
+ 'inputs':[str(PYTHON),'-B',str(HERE/'prepare_inputs.py'),'--canonical-root',os.environ.get('PATHWAYMECH_PPI_CANONICAL_ROOT', '')],
+ 'dossier':[str(PYTHON),'-B',str(HERE/'prepare_dossier.py')],
+ 'guards':[str(PYTHON),'-B','-m','pytest','-q','-p','no:cacheprovider',str(HERE/'test_integration_guards.py')],
+ 'lint':[str(PYTHON),'-B','-m','ruff','check','--select','F','--ignore','F403,F405',*[str(p) for p in HERE.glob('*.py')]],
+ 'compile':[str(PYTHON),'-B','-c','import pathlib; paths=list(pathlib.Path.cwd().glob("*.py")); [(compile(p.read_bytes(),str(p),"exec")) for p in paths]; print(f"Compiled {len(paths)} helpers without bytecode writes")'],
+ 'verify':[str(PYTHON),'-B',str(HERE/'verify_preparation.py')],
+}
+directory=HERE/'validation'/f'{name}-{time.time_ns()}';directory.mkdir(parents=True)
+for file in HERE.glob('*.py'):(directory/(file.name+'.txt')).write_bytes(file.read_bytes())
+env={'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','RUFF_CACHE_DIR':'/private/tmp/pathwaymech-next-231-integration-preparation-successor-ruff-cache-20261012','PYTHONPATH':str(HERE)}
+assert 'PATHWAYMECH_PPI_MERGED_BASE' not in os.environ
+started=now();tick=time.monotonic()
+with (directory/'stdout').open('xb') as out,(directory/'stderr').open('xb') as err:
+ result=subprocess.run(commands[name],cwd=HERE,env={**os.environ,**env},stdout=out,stderr=err,check=False)
+receipt={'name':name,'command':commands[name],'cwd':str(HERE),'environment':env,'started_at':started,'finished_at':now(),'seconds':round(time.monotonic()-tick,3),'exit_code':result.returncode,'stdout':binding(directory/'stdout'),'stderr':binding(directory/'stderr')}
+write_new(directory/'receipt.json',receipt)
+print(receipt)
+print((directory/'stdout').read_text());print((directory/'stderr').read_text());sys.exit(result.returncode)

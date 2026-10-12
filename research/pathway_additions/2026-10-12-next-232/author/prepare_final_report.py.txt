@@ -1,0 +1,113 @@
+"""Finalize bounded author reporting after the sealed authority intake exists."""
+from pathlib import Path
+import ast
+import datetime
+import hashlib
+import json
+
+import yaml
+
+A = Path(__file__).parent
+
+
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def read(name):
+    return json.loads((A / name).read_text())
+
+
+def save(name, value):
+    (A / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+
+target = A / 'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+expected = 'c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503'
+assert bind(target)['sha256'] == expected
+record = yaml.safe_load(target.read_text())
+authority = read('authority-intake.json')
+assert authority['target'] == bind(target)
+assert authority['sealed_consumer_byte_bridge'] is True
+assert not read('provisional-identifier-consumer.json')['identifier_errors']
+sources = read('ledgers/working-source-bindings.json')
+selectors = read('ledgers/working-evidence-selector-ledger.json')
+paragraphs = read('ledgers/paragraph-source-accounting.json')
+edges = record['mechanistic_edges']
+coverage = []
+for ref in record['references']:
+    identifier = ref['id']
+    original = sources[identifier]
+    fresh = bind(original['path'])
+    assert all(fresh[k] == original[k] for k in fresh)
+    uses = []
+    for edge in edges:
+        roles = [('edge', edge['evidence'])] + [
+            (qualifier['endpoint'] + ' qualifier', qualifier['evidence'])
+            for qualifier in edge.get('endpoint_qualifiers', [])]
+        for role, evidence in roles:
+            for index, item in enumerate(evidence):
+                if item['reference_id'] == identifier:
+                    uses.append({'edge': edge['id'], 'role': role, 'index': index, 'evidence': item})
+    contexts = []
+    for paragraph in paragraphs:
+        matches = [item for item in paragraph['source_accounting']
+                   if item['whole_original']['sha256'] == original['sha256']]
+        if matches:
+            contexts.append({'paragraph': paragraph['paragraph'], 'source_accounting': matches})
+    coverage.append({'reference': ref, 'original': original, 'actual_evidence_uses': uses,
+                     'paragraph_source_matches': contexts,
+                     'selector_ledger_rows': [i for i, item in enumerate(selectors)
+                                             if item['evidence']['reference_id'] == identifier]})
+save('bidirectional-source-coverage.json', {
+    'target': bind(target), 'references': coverage, 'reference_count': len(coverage),
+    'actual_evidence_uses': sum(len(item['actual_evidence_uses']) for item in coverage),
+    'paragraph_source_accounting': bind(A / 'ledgers/paragraph-source-accounting.json'),
+    'full_claim_dispositions': bind(A / 'ledgers/full-claim-dispositions.json'),
+    'construct_dispositions': bind(A / 'ledgers/construct-dispositions.json'),
+    'scope': 'Bidirectional actual reference/edge/qualifier and exact-original paragraph accounting. Empty paragraph matches do not imply a source was not inspected: context-only native identity observations are also retained in the source-selector ledger.246 selector observations are distinct from265 actual evidence occurrences.'})
+assert len(coverage) == 94
+assert sum(len(item['actual_evidence_uses']) for item in coverage) == 265
+runtime = {row['path']: row for row in read('preflight-intake.json')['runtime']}
+changes = read('adapter-runtime-intake.json')['changes']
+for change in changes:
+    runtime[change['after']['path']] = change['after']
+for path, row in runtime.items():
+    assert bind(path) == row
+assert len(runtime) == 225
+syntax = []
+for path in sorted(A.glob('*.py')):
+    ast.parse(path.read_text(), filename=str(path))
+    syntax.append(bind(path))
+save('final-integrity-checks.json', {
+    'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'target': bind(target), 'runtime_files_verified': len(runtime),
+    'runtime_bindings': list(runtime.values()), 'author_script_syntax': syntax,
+    'scope': 'Exact accepted runtime delta and Python AST syntax checks; not full repository lint or full tests.'})
+status = read('author-status.json')
+status['at'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+status['status'] = 'Complete external scientific author candidate; original-derived bounded schema/strict/identifier/page/KGX checks passed. Independent scientific acceptance, full canonical build and maintained integration pending.'
+status['authority_intake'] = bind(A / 'authority-intake.json')
+status['identifier_consumer'] = bind(A / 'provisional-identifier-consumer.json')
+status['metadata_correction'] = 'The earlier candidate-checks/result.json retained a conservative stale adapter-pending status string from its script template. Root accepted the exact four-file adapter before that check; adapter-runtime-intake.json and the later native consumer provide actual current status. Earlier receipts remain unchanged.'
+save('author-status.json', status)
+report = A / 'AUTHOR-HANDOFF.md'
+text = report.read_text()
+text += '\n## Final native authority intake\n\n'
+text += ('The independently prepared authority packet is now sealed and freshly verified by this author intake. '
+         'Its exact final snapshots are byte-identical to those consumed by the successful native identifier gate: '
+         'all 68 named IDs and 36 ontology selectors. The actual frozen authority target is the final c2fec44 target, '
+         'so no unobserved target change is bridged. `authority-intake.json` binds the complete closed artifact seal, '
+         'proposal outputs, actual helper checks and original copy plan. The source builder preserved native first-source '
+         'precedence; newly inspected full protein records are scientific evidence and do not replace earlier selected '
+         'canonical provenance. The complete whole-source/ontology build remains a later root-owned step.\n\n')
+text += ('The earlier native page/schema receipt contains a conservative stale adapter-pending template string. '
+         'The actual accepted four-file runtime, its root acceptance, and the later successful identifier consumer '
+         'are separately bound in `adapter-runtime-intake.json`, `provisional-identifier-consumer.json`, and '
+         '`authority-intake.json`; no earlier execution receipt was rewritten. All 225 runtime files match the '
+         'captured baseline plus the exact accepted four-file delta.\n')
+report.write_text(text)
+print(json.dumps({'references': 94, 'actual_evidence_uses': 265, 'runtime_files': len(runtime),
+                  'target': expected, 'status': 'final report prepared; seal not yet written'}))

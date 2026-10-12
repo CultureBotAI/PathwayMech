@@ -1,0 +1,94 @@
+from pathlib import Path
+import hashlib, io, json, re, zipfile, subprocess
+from lxml import etree as E, html
+import openpyxl
+
+OUT=Path(__file__).parent
+AUTHOR=Path('/private/tmp/pathwaymech-next-232-author-20261012')
+ledger=json.loads((AUTHOR/'ledgers/working-evidence-selector-ledger.json').read_text())
+reactions=json.loads((OUT/'reaction-original-independent.json').read_text())
+cache={}
+pdf_cache={}
+def blob(binding):
+    name=binding['path']
+    if name not in cache:
+        data=Path(name).read_bytes()
+        assert len(data)==binding['bytes']
+        assert hashlib.sha256(data).hexdigest()==binding['sha256']
+        cache[name]=data
+    return cache[name]
+def accession(data, ident):
+    j=json.loads(data)
+    vals=j.get('results',[j])
+    hits=[x for x in vals if x.get('primaryAccession')==ident]
+    assert len(hits)==1
+    return hits[0]
+def papers(j,ident):
+    if isinstance(j,dict):
+        if j.get('id')==ident and j.get('source')=='MED':
+            yield j
+        else:
+            for v in j.values():yield from papers(v,ident)
+    elif isinstance(j,list):
+        for v in j:yield from papers(v,ident)
+def strings(j):
+    if isinstance(j,str):yield j
+    elif isinstance(j,dict):
+        for v in j.values():yield from strings(v)
+    elif isinstance(j,list):
+        for v in j:yield from strings(v)
+def xml_values(tree, selector, namespaces=None):
+    return [E.tostring(x,encoding='unicode') if isinstance(x,E._Element) else str(x) for x in tree.xpath(selector,namespaces=namespaces or {})]
+results=[]
+for i,row in enumerate(ledger):
+    kind=row['selector_type'];s=row['selector'];data=blob(row['binding'])
+    try:
+        limit=None
+        if kind=='xpath':v=xml_values(E.fromstring(data),s)
+        elif kind=='html_xpath':v=xml_values(html.fromstring(data),s)
+        elif kind=='uniprot_identity':
+            j=accession(data,s);v={k:j[k] for k in ['genes','organism','sequence']}
+        elif kind=='uniprot_comment':v=[x for x in accession(data,s['accession']).get('comments',[]) if x['commentType']==s['comment_type']]
+        elif kind=='uniprot_feature':v=[x for x in accession(data,s['accession']).get('features',[]) if x['type']==s['type']]
+        elif kind=='primary_abstract':
+            hits=list(papers(json.loads(data),s));assert len(hits)==1;v=hits[0]
+        elif kind=='zip_xpath':
+            with zipfile.ZipFile(io.BytesIO(data)) as z:v=xml_values(E.fromstring(z.read(s['member'])),s['xpath'],s['namespaces'])
+        elif kind=='zip_workbook':
+            with zipfile.ZipFile(io.BytesIO(data)) as z:
+                members=[n for n in z.namelist() if n.endswith(s['member'])];assert len(members)==1;member=z.read(members[0]);assert hashlib.sha256(member).hexdigest()==s['member_sha256']
+            w=openpyxl.load_workbook(io.BytesIO(member),read_only=True,data_only=True)
+            v=list(next(w[s['sheet']].iter_rows(min_row=s['row'],max_row=s['row'],values_only=True)))
+        elif kind=='web_lines':
+            j=json.loads(data)
+            for entry in j['originals']:
+                original=blob(entry['binding']);assert json.loads(original)==entry['content']
+            v=[]
+            for txt in strings(j):
+                for line in txt.splitlines():
+                    m=re.match(r'L(\d+):',line)
+                    if m and s['start']<=int(m[1])<=s['end']:v.append(line)
+        elif kind=='rhea_side':
+            event=next(x for x in reactions['events'] if x['id']==s['reaction'])
+            hit=next(x for x in event['sides'][s['side']] if x['participant']==s['participant'])
+            v={'participant':hit['participant'],'compound_uri':hit['compound'],'coefficient':hit['coefficient'],'properties':hit['compound_properties']}
+        elif kind=='pdf_pages':
+            projection=json.loads(blob(s['projection_binding']));assert Path(projection['original']).resolve()==Path(row['binding']['path']).resolve()
+            v=[x for x in projection['pages'] if x['page_1based'] in s['pages']]
+            path=row['binding']['path']
+            if path not in pdf_cache:
+                proc=subprocess.run(['swift','-module-cache-path',str(OUT/'swift-module-cache'),str(OUT/'read_pdf_independent.swift'),path],capture_output=True,check=True)
+                pdf_cache[path]=json.loads(proc.stdout)
+            fresh=[x for x in pdf_cache[path] if x['page_1based'] in s['pages']]
+            assert all(x['text'] for x in fresh)
+            assert fresh==v
+            limit='Original PDF freshly independently extracted with macOS PDFKit; selected text exactly matches bound projection. Full semantic reading and selected table visuals are recorded separately.'
+        elif kind=='pathbank_whole':v={'member_sha256':hashlib.sha256(data).hexdigest()}
+        else:raise RuntimeError(kind)
+        assert v
+        same=v==row['observed']
+        results.append({'index':i,'type':kind,'evidence':row['evidence'],'binding':row['binding'],'selector':s,'exact_observed_match':same,'observed_independently':v,'limit':limit})
+    except Exception as ex:
+        results.append({'index':i,'type':kind,'evidence':row['evidence'],'error':repr(ex)})
+(OUT/'selector-original-independent.json').write_text(json.dumps(results,indent=2)+'\n')
+print(json.dumps({'selectors':len(results),'originals_verified':len(cache),'errors':[(x['index'],x['error']) for x in results if 'error' in x],'differences':[(x['index'],x['type']) for x in results if x.get('exact_observed_match') is False]}))

@@ -1,0 +1,183 @@
+"""Bounded external successor: no maintained, cache, Git or network mutation."""
+from pathlib import Path
+import copy
+import datetime
+import hashlib
+import json
+import shutil
+import subprocess
+import yaml
+from lxml import etree, html
+
+A = Path(__file__).parent
+O = Path('/private/tmp/pathwaymech-next-232-author-20261012')
+S = Path('/private/tmp/pathwaymech-next-232-science-review-20261012')
+P = Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+H = Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+
+def load(p):
+    return json.loads(Path(p).read_text())
+
+def bind(p):
+    p = Path(p)
+    return dict(path=str(p), bytes=p.stat().st_size, sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+
+def save(n, value):
+    p = A / n
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+def verify(root, expected):
+    assert bind(root / 'handoff.json')['sha256'] == expected
+    manifest = load(root / 'artifact-manifest.json')
+    rows = manifest['artifacts']
+    for row in rows:
+        relative = row.get('relative_path', row['path'])
+        p = root / relative
+        assert bind(p)['sha256'] == row['sha256'] and p.stat().st_size == row['bytes'], p
+    return dict(handoff=bind(root / 'handoff.json'), manifest=bind(root / 'artifact-manifest.json'), verified_artifacts=len(rows))
+
+intakes = [verify(O, '465dc683f7430743ebc115fcb3d57a011e9ecfdf24cad0d967a78ca8d805239b'),
+           verify(S, 'a54db59cefa245791d7aad9076a632340c302c1230201dd4d1d0e7b8fb77af9e'),
+           verify(H, '25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102')]
+save('initial-seal-intake.json', dict(at=datetime.datetime.now(datetime.timezone.utc).isoformat(), packages=intakes,
+     scope='Fresh hashes of all listed scientific/authority artifacts. Closed inventory and separately inventoried reviewer runtime caches are verified in final integrity checks.'))
+assert not (A / 'draft').exists()
+shutil.copytree(O / 'runtime', A / 'runtime')
+copies = []
+for name in ['ledgers/working-evidence-selector-ledger.json', 'ledgers/working-source-bindings.json',
+             'ledgers/paragraph-claims.json', 'ledgers/paragraph-source-accounting.json',
+             'ledgers/full-claim-dispositions.json', 'ledgers/working-edge-claims.json',
+             'derived/rhea-four-events-fresh.json']:
+    dst = A / name
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    dst.write_bytes((O / name).read_bytes())
+    copies.append(dict(original=bind(O / name), copy=bind(dst)))
+save('copied-inputs.json', copies)
+old_path = O / 'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+assert bind(old_path)['sha256'] == 'c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503'
+old = yaml.safe_load(old_path.read_text())
+d = copy.deepcopy(old)
+
+# #466: one publication owns only its own observation; preserve the 2001 endpoint.
+edge = next(e for e in d['mechanistic_edges'] if e['id'] == 'nad-041')
+old_ev = copy.deepcopy(edge['evidence'][0])
+edge['evidence'][0]['source_assertion'] = 'The 2001 NADP additions give slight inhibition: 83% and 79% relative activity at 50 and 100 µM.'
+new_ev = dict(reference_id='PMID:3025169',
+              source_assertion='The separate 1987, 93-fold partially purified K12 preparation showed no significant NADP effect under its assay conditions; Table 2 reports 102%, 96% and 96% relative activity at 0.05, 0.10 and 0.20 mM NADP. This comparison does not describe the 2001 endpoint preparation.',
+              source_locator='PDF page 2 (printed p. 185), Table 2 NADP rows and adjacent Results: Regulation of NAD kinase; preparation in Results: Properties of NAD kinase')
+assert len(new_ev['source_assertion']) <= 400
+edge['evidence'].append(new_ev)
+ledger = load(A / 'ledgers/working-evidence-selector-ledger.json')
+changed = [i for i, r in enumerate(ledger) if r['evidence'] == old_ev]
+assert len(changed) == 1
+ledger[changed[0]]['evidence'] = copy.deepcopy(edge['evidence'][0])
+sources = load(A / 'ledgers/working-source-bindings.json')
+projection = P / 'derived/PMID3025169-pages.json'
+pages = load(projection)
+pages = pages['pages'] if isinstance(pages, dict) else pages
+observed = [r for r in pages if r['page_1based'] == 2]
+assert len(observed) == 1 and 'NADP 0.05 102' in observed[0]['text']
+ledger.append(dict(evidence=new_ev, binding=sources['PMID:3025169'], selector_type='pdf_pages',
+                   selector=dict(projection=str(projection), projection_binding=bind(projection), pages=[2]), observed=observed))
+
+# #469: narrative references are not promoted to mechanistic edges.
+reference_specs = [
+    ('14660605', 'PMID14660605-repository.pdf', 'The soluble and membrane-bound transhydrogenases UdhA and PntAB have divergent functions in NADPH metabolism of Escherichia coli.'),
+    ('30765722', 'PMC6376016.xml', 'Quantifying dynamic mechanisms of auto-regulation in Escherichia coli with synthetic promoter in response to varying external phosphate levels.'),
+    ('22388518', 'PMC3343335-numeric.html', 'Multiple factors dictate target selection by Hfq-binding small RNAs')]
+new_reference_rows = []
+for pmid, name, title in reference_specs:
+    p = P / 'raw' / name
+    url = 'https://pubmed.ncbi.nlm.nih.gov/' + pmid + '/'
+    version = 'Retained full primary original; narrative-only citation with exact paragraph/source accounting; not a new mechanistic edge or fresh retrieval'
+    ref = dict(id='PMID:' + pmid, title=title, url=url, source_version=version, source_sha256=bind(p)['sha256'])
+    assert ref['id'] not in sources
+    d['references'].append(ref)
+    sources[ref['id']] = dict(**bind(p), url=url, version=version)
+    new_reference_rows.append(dict(reference=ref, original=bind(p)))
+assert html.parse(str(P / 'raw/PMC3343335-numeric.html')).xpath('//meta[@name="citation_title"]/@content') == [reference_specs[2][2]]
+t = etree.parse(str(P / 'raw/PMC6376016.xml'))
+assert ' '.join(' '.join(t.xpath('/article/front/article-meta/title-group/article-title//text()')).split()).rstrip('.') == reference_specs[1][2].rstrip('.')
+metadata = load(P / 'raw/nad-publications-full-scope.json')['resultList']['result']
+assert next(r for r in metadata if r['id'] == '14660605')['title'] == reference_specs[0][2]
+paras = d['description'].split('\n\n')
+changes = {
+    28: ('In the 2004 MG1655 deletion/13C study,', 'In the 2004 MG1655 deletion/13C study (PMID:14660605),'),
+    29: ('A 2004 redox-linked transcriptional interpretation was later tested more directly: the 2016 study', 'A 2004 redox-linked transcriptional interpretation (PMID:14660605) was later tested more directly: the 2016 study (PMID:27488847)'),
+    38: ('The 2019 phosphate-starvation reporter work', 'The 2019 phosphate-starvation reporter work (PMID:30765722)'),
+    39: ('The 2012 follow-up', 'The 2012 follow-up (PMID:22388518)')}
+for n, (before, after) in changes.items():
+    assert paras[n - 1].count(before) == 1
+    paras[n - 1] = paras[n - 1].replace(before, after)
+d['description'] = '\n\n'.join(paras)
+pc = load(A / 'ledgers/paragraph-claims.json')
+accounting = load(A / 'ledgers/paragraph-source-accounting.json')
+for rows in [pc, accounting]:
+    for r in rows:
+        r['text'] = paras[r['paragraph'] - 1]
+save('ledgers/paragraph-claims.json', pc)
+save('ledgers/paragraph-source-accounting.json', accounting)
+save('ledgers/working-evidence-selector-ledger.json', ledger)
+save('ledgers/working-source-bindings.json', sources)
+save('narrative-reference-additions.json', new_reference_rows)
+
+# #468: explicit exact-context mapping, never a publication-wide join.
+mapping = {
+    'K87': ([7, 8], [39, 40]),
+    'K01-native': ([4, 5, 6, 8, 9], [32, 34, 35, 36, 37, 38, 41, 42]),
+    'K01-recombinant': ([4], [33]),
+    'PhoA62': ([11, 13], [43]), 'PhoA-reference': ([12], []),
+    'CysQ07': ([14, 15], [47, 48, 49]), 'CysQ-controls07': ([15], []),
+    'Archaea07': ([16, 41], []), 'Pnt04': ([28, 29], []),
+    'Pnt21': ([17, 18, 19], [50]), 'Pnt21-H91A': ([19], []),
+    'SthA22': ([22, 23, 24, 25, 26], [55, 58, 59, 60, 61, 62]),
+    'SthA22-C45A': ([23, 25], []), 'SthA22-T50C': ([23, 25], []),
+    'Reporter16': ([29, 30, 31, 32, 33, 34], list(range(74, 83))),
+    'ArcA14': ([32], [92, 93]), 'Lrp19': ([35], [89, 90, 91]),
+    'Nac17': ([36, 37], [94, 95]), 'CsiR17': ([36, 37, 40], [101, 102]),
+    'PhoA19': ([38], []), 'Spot42-Northern11': ([39], []),
+    'Spot42-fusion11': ([39], []), 'Spot42-followup12': ([39], []),
+    'ArcA-native': ([32], [92, 93]), 'PhoB-native': ([38], [97]),
+    'NadK-R175-series': ([10], []), 'SthA2011-fusion': ([27], list(range(63, 68))),
+    'Pnt-DCCD-variants': ([20], [])}
+comparators = {
+    'K87': ([41], 'cross_study_comparator', 'The 1987 NADP negative result is compared with the distinct 2001 preparation on nad-041; its endpoint qualifier belongs only to 2001.'),
+    'K01-recombinant': ([32], 'distinct_preparation_comparator', 'Endogenous MG1655 and recombinant pSK67/BL21 preparations are compared in paragraph 4, not identified as the same construct.'),
+    'CysQ-controls07': ([47, 48, 49], 'negative_control_comparator', 'Fbp/SuhB extracts and buffer controls constrain the CysQ experiment; the CysQ endpoint is not those controls.'),
+    'Archaea07': ([47, 48, 49], 'cross_taxon_comparator', 'MJ0109/AF2372/MJ0917 are separate archaeal assay preparations and are not E. coli CysQ endpoints.'),
+    'Pnt21-H91A': ([50], 'variant_control_comparator', 'Beta H91A and no-enzyme/ionophore/ATP-synthase controls constrain wild-type Pnt coupling; the variant is not the wild-type endpoint.'),
+    'SthA22-C45A': ([55, 58, 59, 60, 61, 62], 'variant_comparator', 'C45A has its own activity/FAD/ROS baseline; His10 wild-type endpoints are not C45A.'),
+    'SthA22-T50C': ([55, 58, 59, 60, 61, 62], 'variant_comparator', 'T50C has its own activity/FAD/ROS baseline; His10 wild-type endpoints are not T50C.'),
+    'Pnt-DCCD-variants': ([53], 'historical_variant_comparator', 'The alpha D232/E238/E240 mutant series is narrative/abstract context; nad-053 qualifies a broader historical purified preparation, not any exact mutant.')}
+edges = {e['id']: e for e in d['mechanistic_edges']}
+contexts = load(P / 'derived/construct-state-ledger.json')
+assert set(mapping) == {c['id'] for c in contexts} and len(contexts) == 28
+out = []
+for c in contexts:
+    nums, ens = mapping[c['id']]
+    exact = []
+    for n in ens:
+        e = edges[f'nad-{n:03d}']
+        for qi, q in enumerate(e['endpoint_qualifiers']):
+            exact.append(dict(edge=e['id'], qualifier_index=qi, endpoint=q['endpoint'], endpoint_id=e[q['endpoint']],
+                              relationship='exact_preparation_or_state', qualifier=q))
+    related = []
+    if c['id'] in comparators:
+        ns, relationship, reason = comparators[c['id']]
+        related = [dict(edge=f'nad-{n:03d}', relationship=relationship, reason=reason,
+                        exact_preparation_or_state=False) for n in ns]
+    out.append(dict(preflight_original=c,
+        author_correction='PhoB is P0AFJ5, not the rejected GcvR/P0A9I3 in the immutable preflight row.' if c['id'] == 'PhoB-native' else None,
+        paragraphs=[pc[n - 1] for n in nums],
+        paragraph_scope='Only the sentences explicitly describing this preparation/state; mixed paragraphs retain cross-study distinctions.',
+        endpoint_qualifiers=exact, related_context_links=related,
+        disposition='Exact preparation/state is linked only where the complete qualifier describes it. Narrative-only, variant and negative-control observations remain retained without new graph edges.'))
+save('ledgers/construct-dispositions.json', out)
+(A / 'draft').mkdir()
+target = A / 'draft' / old_path.name
+target.write_text(yaml.safe_dump(d, sort_keys=False, allow_unicode=True, width=100))
+save('preparation-summary.json', dict(target=bind(target), original=bind(old_path), references=len(d['references']),
+     selector_rows=len(ledger), existing_selector_row_modified=changed, appended_selector_rows=[len(ledger)-1],
+     paragraphs_changed=sorted(changes), contexts=28, source_exhaustion=False))
+print(json.dumps(load(A / 'preparation-summary.json')))

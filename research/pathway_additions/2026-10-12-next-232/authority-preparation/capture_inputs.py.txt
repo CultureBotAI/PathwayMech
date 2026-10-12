@@ -1,0 +1,75 @@
+"""Capture accepted runtime/baseline, complete current author selection and originals."""
+import json
+from pathlib import Path
+import yaml
+from common import *
+
+
+def main():
+    packets={
+        'accepted_PPi_native':close_packet(B,'7b51651f34562e1fc15535800623dfff85a9cba1ab60ab3a998437252130401b',True),
+        'preflight':close_packet(P,'f84c53a70a7bb43437bf036831d96044258daed53fe0d40357bb132f8124d9df'),
+        'adapter':close_packet(D,'00e213b81423ead6b2738845d10816a79bf58864bc0042a81bc7226258559591'),
+        'adapter_audit':close_packet(AUDIT,'d6037a98fe4d38d9823f65f105de68a61d57812647a5e68e590a44d047865b6d')}
+    root_native=Path('/private/tmp/pathwaymech-next-231-root-canonical-acceptance-20261012.json');assert bind(root_native)['sha256']=='8571c9b1f5590c357762fa3e874909e1eb15aa9f7a91a3f85ef3c46541b5adfd'
+    root_adapter=Path('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json');assert bind(root_adapter)['sha256']=='743ff1057249ed13f00cdc76ebe3cd2ab2d0c6ebf5dad553de4142492571887a'
+    assert read(root_adapter)['status']=='accepted_exact_four_file_bounded_adapter_for_authority_preparation'
+    assert read(AUDIT/'handoff.json')['open_findings']==0
+    baseline={}
+    for name,row in read(B/'handoff.json')['outputs'].items():
+        assert read(root_native)['actual_native_outputs'][name]==row
+        baseline[name]=capture_file(B/name,O/'baseline'/name,row)
+    code=read(D/'copy-plan.json')['files'];assert len(code)==4
+    deltas={r['relative_path']:r for r in code};runtime=[]
+    old_runtime=paths(B/'runtime');assert len(old_runtime)==223
+    for name in old_runtime:
+        original=B/'runtime'/name
+        if name in deltas:
+            assert deltas[name]['operation']=='replace';verify(original,deltas[name]['baseline'])
+            source=Path(deltas[name]['candidate']['path'])
+        else:source=original
+        row=capture_file(source,O/'runtime'/name);runtime.append({'relative_path':name,'PPi_before':bind(original),**row})
+    for name,row in deltas.items():
+        if row['operation']=='add':
+            assert name not in old_runtime and not (B/'runtime'/name).exists() and not (B/'runtime'/name).is_symlink()
+            runtime.append({'relative_path':name,'PPi_before':None,**capture_file(row['candidate']['path'],O/'runtime'/name,row['candidate'])})
+    assert len(runtime)==225
+    prior=read(B/'preparation-capture.json');corpus=[]
+    for row in prior['records']:
+        source=B/'corpus'/row['relative_path'];corpus.append({'relative_path':row['relative_path'],'scope':row['role'],**capture_file(source,O/'captured/corpus'/row['relative_path'],row['captured'])})
+    ppi_name=Path(prior['target']['captured']['path']).name
+    corpus.append({'relative_path':ppi_name,'scope':'Accepted actual PPi native target; maintained merge not asserted',**capture_file(B/'corpus'/ppi_name,O/'captured/corpus'/ppi_name,prior['target']['captured'])})
+    assert len(corpus)==233 and sum(r['relative_path'].endswith('.yaml') for r in corpus)==232
+    target=A/'draft'/TARGET_NAME;assert bind(target)['sha256']==TARGET_SHA
+    selection=capture_file(target,O/'selection'/TARGET_NAME)
+    selected=read(A/'selected-identities-provisional.json');assert selected['target']['sha256']==TARGET_SHA and len(selected['ids'])==68
+    author_files=['selected-identities-provisional.json','derived/phob-identity-correction.json','derived/old-incomplete-draft-with-rejected-phob.json','derived/pre-iron-correction-draft.json','derived/pathbank-current-original-binding.json','derived/selected-protein-full-issuing-checks.json','ledgers/working-source-bindings.json','ledgers/working-evidence-selector-ledger.json','ledgers/full-claim-dispositions.json','edge-source-crosswalk.json']
+    authors={name:capture_file(A/name,O/'author-inputs'/name) for name in author_files}
+    record=yaml.safe_load(target.read_bytes());declared=[record['id']]+[n['id'] for c in ['taxa','participants','reactions'] for n in record[c]]
+    assert set(declared)=={r['id'] for r in selected['ids']} and len(declared)==68
+    assert 'UniProtKB:P0A9I3' not in declared and 'UniProtKB:P0AFJ5' in declared
+    assert 'CHEBI:29034' not in declared and 'CHEBI:29033' in declared
+    for name in ['P0AFJ5.json','ECOLI-PHOB-MONOMER.xml','ECOLI-ARCA-MONOMER.xml']:
+        authors['raw/'+name]=capture_file(A/'raw'/name,O/'author-inputs/raw'/name)
+    # Every inherited original is rehashed, with a fresh exact path/link identity observation.
+    originals=[]
+    (O/'originals').mkdir()
+    for row in prior['source_originals']:
+        name=row['cache_relative_path'];source=B/'originals'/relative(name);verify(source,row)
+        resolved=source.resolve(strict=True);link=O/'originals'/relative(name);link.parent.mkdir(parents=True,exist_ok=True);link.symlink_to(resolved)
+        originals.append({'cache_relative_path':name,'original':bind(resolved),'input_link':{'path':str(source),**identity(source)},'captured_link':{'path':str(link),**identity(link)},'roles':['inherited_actual_PPi_native_input'],'new':False})
+    assert len(originals)==780
+    source_cache=inventory(CACHE)
+    sql=[]
+    for row in prior['sql_originals']:
+        source=Path(row['path']);assert source.stat().st_size==row['bytes'] and source.stat().st_mtime_ns==row['mtime_ns']
+        assert read(B/'ontology.json')['sources'][row['source_key']]['sha256']==row['sha256']
+        sql.append({**row,'resolved_path':str(source.resolve(strict=True)),'hash_scope':'Full hash inherited from accepted actual PPi native build; current size/mtime checked here, not a repeated full SQL hash'})
+    relocation=read(A/'derived/pathbank-current-original-binding.json');verify(relocation['path'],relocation)
+    historical=Path(relocation['historical_path']);result=__import__('subprocess').run(['rg','--files','-uu','-L',str(historical.parent)],text=True,capture_output=True)
+    assert not historical.exists() and not historical.is_symlink()
+    write('pathbank-relocation-observation.json',{'at':now(),'author_bridge':authors['derived/pathbank-current-original-binding.json'],'historical_path':str(historical),'historical_path_exists':False,'historical_path_symlink':False,'ignored_aware_parent_inventory_command':result.args,'inventory_exit_code':result.returncode,'stdout':result.stdout,'stderr':result.stderr,'exact_current_original':bind(relocation['path']),'current_identity':identity(relocation['path']),'native_build_original_alias':{'path':str(B/'originals/pathbank-primary-biopax-original.zip'),**identity(B/'originals/pathbank-primary-biopax-original.zip')},'scope':'Existing identical canonical-cache whole ZIP reused read-only. Missing historical temporary path retained explicitly; no live download or historical pin rewrite.'})
+    write('capture.json',{'at':now(),'packages':packets,'root_native_acceptance':bind(root_native),'root_adapter_acceptance':bind(root_adapter),'baseline':baseline,'runtime':runtime,'code_delta':code,'prior_corpus':corpus,'prior_record_yaml_count':232,'target':selection,'selected_named_ids':selected['ids'],'author_inputs':authors,'author_status':'Unsealed complete working scope, no scientific acceptance; exact selected input frozen here. Later author edits require collector/evidence bridge.','source_originals':originals,'sql_originals':sql,'source_cache_initial':source_cache,'scope':'Actual accepted PPi native outputs and exact 225-file adapter overlay. Corpus retains historical230 EG main + correctedATP + acceptedPPi prospective scope; actual ATP/PPi merges not asserted.','full_canonical_build':False,'maintained_or_shared_cache_writes':False})
+    print(json.dumps({'status':'captured','runtime_files':len(runtime),'prior_record_yaml':232,'selected_named_ids':68,'inherited_originals':780,'current_shared_cache_files':len(source_cache)}))
+
+if __name__=='__main__':main()

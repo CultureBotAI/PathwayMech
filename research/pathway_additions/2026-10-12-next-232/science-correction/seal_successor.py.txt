@@ -1,0 +1,139 @@
+"""Seal the external successor after all actual bounded checks complete."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import yaml
+
+A=Path(__file__).parent
+O=Path('/private/tmp/pathwaymech-next-232-author-20261012')
+S=Path('/private/tmp/pathwaymech-next-232-science-review-20261012')
+H=Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+def load(p):return json.loads(Path(p).read_text())
+def bind(p):
+    p=Path(p)
+    with p.open('rb')as stream:sha=hashlib.file_digest(stream,'sha256').hexdigest()
+    return dict(path=str(p),bytes=p.stat().st_size,sha256=sha)
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert not (A/'handoff.json').exists() and not (A/'artifact-manifest.json').exists()
+target=A/'draft/nad-phosphorylation-and-dephosphorylation.yaml';tb=bind(target)
+assert tb['sha256']=='96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7'
+d=yaml.safe_load(target.read_text());assert len(d['mechanistic_edges'])==102 and len(d['references'])==97
+history=load(A/'validation/execution-history.json')
+for name in ['prepare_successor.py','repair_paragraph_accounting.py','refine_1987_locator.py','check_successor.py',
+             'check_candidate.py','check_identifiers_provisional.py','replay_sources.py','check_exports.py',
+             'check_bibliography.py','check_immutable_inputs.py']:
+    rows=[r for r in history if Path(r['argv'][-1]).name==name]
+    assert rows and rows[-1]['exit_code']==0,name
+for name in ['bounded-scientific-checks.json','provisional-identifier-consumer.json','bibliography-checks.json']:
+    assert load(A/name)['target']['sha256']==tb['sha256'],name
+for name in ['candidate-checks/result.json','candidate-checks/export-proof.json','original-replay.json']:
+    assert load(A/name)['target_sha256']==tb['sha256'],name
+assert load(A/'authority-successor-bridge.json')['successor']==tb
+assert load(A/'immutable-input-verification.json')['status']=='passed'
+for root,sha in [(O,'465dc683f7430743ebc115fcb3d57a011e9ecfdf24cad0d967a78ca8d805239b'),
+                 (S,'a54db59cefa245791d7aad9076a632340c302c1230201dd4d1d0e7b8fb77af9e'),
+                 (H,'25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102')]:
+    assert bind(root/'handoff.json')['sha256']==sha
+
+issues=[]
+for number,stem,key,fix in [
+    (466,'cross-study-locator','nad-nadp-cross-study-locator','Narrowed the existing 2001 assertion and added independently owned 1987 evidence with PDF pages 1–2, K12 Methods, preparation, Table 2 and adjacent Results. The 2001 endpoint qualifier is byte-equivalent as a decoded object.'),
+    (468,'construct-ledger-specificity','nad-construct-ledger-specificity','Replaced publication-only joins with an explicit 28-context map. Exact roles/endpoints and complete qualifier objects are retained; mutant, negative-control, cross-taxon and cross-study links are visibly typed comparators. K87 excludes the 2001-only metal paragraph. PhoB correction lineage remains explicit.'),
+    (469,'narrative-reference-coverage','nad-narrative-reference-coverage','Added three narrative-only primary references and explicit PMID attributions in paragraphs 28, 29, 38 and 39. Paragraph 29 now separately owns its 2004 and 2016 source observations. All 97 complete bibliography rows and source hashes were checked.')]:
+    packet=Path('/private/tmp/pathwaymech-next-232-'+stem+'-issue-20261012')
+    receipt=load(packet/'receipt.json');assert receipt['issue']['number']==number
+    issues.append(dict(key=key,issue=number,url=receipt['issue']['url'],initial_issue_packet=bind(packet/'receipt.json'),
+                       finding=bind(S/('finding-'+key+'.json')),status='author_addressed_pending_independent_exact_successor_reassessment',
+                       repair=fix,target=tb,github_changed=False,native_review_saved=False))
+save('findings-dispositions.json',dict(original_review=bind(S/'handoff.json'),successor=tb,findings=issues,
+    retained_465='Original full scientific review resolved #465 on c2fec. Both topology edges and their complete evidence remain unchanged on this successor.',
+    independent_successor_acceptance=False))
+failures=[]
+for r in history:
+    if r['exit_code']:
+        failures.append(dict(command=r,stdout=bind(r['stdout']),stderr=bind(r['stderr'])))
+assert len(failures)==3
+save('failure-history.json',dict(actual_bounded_failures=failures,explanations=[
+    'Initial check_successor.py compared _named_nodes full record dictionaries, which include deliberately changed description/references. The corrected comparison projects the exact native identity fields; a separate strict six-path semantic diff protects all other content. Failed helper v1 and full stderr remain.',
+    'Initial bibliography check compared the literal <i> title markup with visible DOM text. The existing reference object stays unchanged; the corrected test checks the complete visible title. Failed helper v1 remains.',
+    'The next bibliography check found paragraph 29 accounting only bound the 2016 half of its comparison. A separate 2004 PDF page 6 source-accounting row now owns the explicit 2004 citation. Candidate biology stayed unchanged; failed helper v2 remains.'
+],exploratory_tool_failures=[
+    dict(operation='Initial read and AGENTS filename search',observation='Read CLAUDE/add-pathway skill succeeded; gitignore-independent hidden/followed AGENTS filename search in the specified repository and two packets returned no matches (exit 1). Supplied user AGENTS instructions were followed; no broader filesystem absence claim.'),
+    dict(operation='Ad hoc read-only Python structure probe',observation='SyntaxError from a missing space in type(v).__name__for. Corrected read-only probe succeeded. No file mutation or validation result was produced by the failed probe.'),
+    dict(operation='Read guessed runtime-cache-manifest.json',observation='Filename was absent. Subsequent ignored-inclusive filename inventory located the actual runtime-cache-inventory.json; full final cache closure verified. No cache content was discarded.')
+],truncated_exploratory_output='Some combined displays were truncated. Relevant missing primary passages were reread in smaller selections; no full-source reread is claimed. Full script output streams are retained even when tool display truncated.',
+    status='All bounded failures are resolved in subsequent actual commands; none suppressed.'))
+save('source-reading-notes.json',dict(mode='Bounded successor source interpretation; full unchanged coverage explicitly inherited from sealed independent original-target review.',
+    inherited_review=bind(S/'handoff.json'),inherited_limits=bind(S/'source-reading-coverage.json'),
+    reads=[
+        dict(reference='PMID:3025169',scope='Retained PDFKit projection pages 1–2: K12 growth, 93-fold nonhomogeneous preparation, Table 2 and adjacent text. Original PDF freshly hashed. No fresh PDF extraction or visual-table claim by this author.'),
+        dict(reference='PMID:11488932',scope='Original finding includes exact 2001 Table 5 locator and assay values; retained existing selector replays unchanged. New assertion is narrowed to those already reviewed values.'),
+        dict(reference='PMID:14660605',scope='Retained PDF projection pages 1, 2, 4, 5 and 6 selected scientific text, including original title, strains/media, physiology/13C inference, mutant rescue and redox-linked transcription interpretation. No fresh extraction or complete paper reread claimed.'),
+        dict(reference='PMID:30765722',scope='Issuing XML title, Methods paragraphs 13–14 and Fig. 2 caption; MG1655 promoter versus DH10B host and BCD2/msfgfp/resting-cell phosphate assay retained.'),
+        dict(reference='PMID:22388518',scope='Issuing HTML citation title, multi-site pairing paragraphs/Fig. 3 caption and Discussion paragraph 5; sthA follow-up versus nanC probing and unknown simultaneous binding retained.'),
+        dict(reference='28 preparation contexts',scope='All 28 original rows and all 48 complete qualifier descriptions inspected and mapped to source-qualified paragraph contexts. No publication-wide identity inference; original full scientific source reading inherited.')],
+    no_new_network_retrieval=True,source_exhaustion=False))
+save('command-summary.json',dict(history=bind(A/'validation/execution-history.json'),actual_commands=len(history),
+    failed_actual_commands=len(failures),current_target=tb,last_results={Path(r['argv'][-1]).name:r['exit_code']for r in history},
+    scope='Candidate-only actual commands; no full-corpus gate, full canonical builder or maintained execution is claimed.'))
+
+report=f'''# NAD author successor
+
+This sealed external successor addresses scientific findings #466, #468 and #469 for `MetaCyc:NADPHOS-DEPHOS-PWY`. The final candidate is `{tb['sha256']}` ({tb['bytes']} bytes), at `draft/nad-phosphorylation-and-dephosphorylation.yaml`. Independent exact-successor reassessment remains pending; GitHub issues are not closed by this packet.
+
+The original author target `c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503`, its 377-artifact seal, the full scientific review's 52 scientific artifacts plus 102 separately inventoried compiler caches, and the authority proposal's 1891 artifacts remain exactly closed and unchanged. Inventory checks include hidden, ignored and followed files. The add-pathway skill was applied within the authorized external-successor boundary.
+
+There are exactly six decoded record changes: one description value (only explicit PMID additions in four paragraphs), one narrowed 2001 evidence assertion, one added separately owned 1987 evidence item, and three appended narrative-only references. All 94 prior reference objects, 102 triples, 48 qualifier payloads, 19 reaction sides, four reaction directions and 68 named identities are unchanged. The new references are PMID:14660605, PMID:30765722 and PMID:22388518; no new graph edges or biological node IDs were created.
+
+For #466, nad-041 now attributes its 2001 NADP results only to the 2001 table. The separate 1987 assertion owns its K12 Methods on PDF page 1 and 93-fold/nonhomogeneous preparation, Table 2 and adjacent text on page 2. Its 102/96/96 relative activities at 0.05/0.10/0.20 mM NADP remain a comparison with the distinct 2001 endpoint. The reviewer requested page 1 before sealing; the earlier unsealed `dad689d3...` candidate and its checks are retained in `working-lineage/first-candidate`, not silently relabeled as final.
+
+For #468, `ledgers/construct-dispositions.json` contains all 28 immutable original context rows, exact full qualifiers where applicable, and separately typed comparator links. Recombinant/endogenous NadK, CsiR/Nac, E. coli/archaeal phosphatases, negative controls and mutant/wild-type preparations remain distinct. K87 excludes the 2001 metal paragraph. Forty-six unique qualifiers have exact context matches; two broader historical inhibitor qualifiers deliberately remain outside an exact named-variant match. ArcA preparation and phosphorylation are two true facets of the same qualifier. No graph endpoint was changed to accommodate the ledger.
+
+For #469, the bibliography now contains 97 complete reference entries. The 2004 study is explicitly cited in paragraphs 28–29, the 2019 reporter study in paragraph 38, and the 2012 Spot42 follow-up in paragraph 39. Paragraph 29's newly explicit 2004 attribution has its own primary page-6 source accounting alongside the original 2016 accounting. Shared original-container links are visibly typed as container provenance, not exact paper attribution. Every complete title, source version, URL and original hash was verified in its owning bibliography row.
+
+Actual final candidate-only validation passed: native schema and strict schema; native identifier consumer (68 named IDs, 36 ontology IDs); rendering of nine site files and two KGX files; 247 source selectors from 102 whole original/projection bindings; all 266 edge/qualifier evidence uses; 102 graph links and 48 qualifier payloads; 97 bibliography rows; and 129 bounded scientific/identity/negative checks. This is deterministic HTML/SVG/KGX checking, without browser visual or interaction review. Three failed probes and their exact helpers/streams remain in `failure-history.json`; all have subsequent successful commands.
+
+`authority-successor-bridge.json` binds the original accepted proposal and final target. The native collectors, all 225 runtime files and all four authority proposal outputs are unchanged. The mandatory PC-1 `class_source.path` is retained with original/captured hashes and exact copy-plan row. The authority proposal is an append-only expectation, not a full native canonical build. Later full native preparation must freshly hash SQL, preserve the PC-1 companion and separately bind the actual PPi merge before maintained adoption.
+
+Unchanged science inherits the sealed full original-target review, not a new full literature review by this author. The physiological cytosolic NADP phosphatase remains unknown; PhoA/CysQ in-vitro evidence, experimental construct limits, conditional regulation, historical abstract-only/metadata-only access and the bounded iModulon negative result remain intact. #465's corrected topology evidence is unchanged. No maintained files, shared source cache, Git/GitHub objects or native history/review records were written. No full canonical build or production test suite ran here. Source exhaustion remains false, and licensing remains deferred as authorized.
+
+Do not rerun these one-shot helpers in this sealed directory. A future change requires another external successor or an explicit independent correction artifact; the originals and failed/unsealed lineage remain immutable.
+'''
+(A/'AUTHOR-SUCCESSOR.md').write_text(report)
+argv=['rg','--files','--no-ignore','--hidden','--follow','-0',str(A)]
+r=subprocess.run(argv,capture_output=True);assert r.returncode==0,r.stderr
+paths=sorted(Path(os.fsdecode(x))for x in r.stdout.split(b'\0')if x)
+rows=[]
+for p in paths:
+    rel=str(p.relative_to(A));assert rel not in ['artifact-manifest.json','handoff.json']
+    b=bind(p);rows.append(dict(path=rel,bytes=b['bytes'],sha256=b['sha256'],file_type='symlink'if p.is_symlink()else'regular',
+                             link_text=os.readlink(p)if p.is_symlink()else None,resolved_path=str(p.resolve())))
+assert not any('__pycache__'in row['path']for row in rows)
+save('artifact-manifest.json',dict(package=str(A),scope='Every hidden, ignored and followed file; only self and handoff excluded to avoid circular hashing. Retained failed and unsealed-working artifacts are explicit, not exclusions.',
+                                  inventory_command=argv,inventory_exit=r.returncode,inventory_stderr=r.stderr.decode(),artifacts=rows))
+handoff=dict(status='sealed_external_bounded_author_successor_pending_independent_reassessment',
+    at=datetime.datetime.now(datetime.timezone.utc).isoformat(),target=tb,original_author=bind(O/'handoff.json'),
+    original_full_science_review=bind(S/'handoff.json'),authority_proposal=bind(H/'handoff.json'),
+    manifest=bind(A/'artifact-manifest.json'),artifact_count=len(rows),report=bind(A/'AUTHOR-SUCCESSOR.md'),
+    findings=bind(A/'findings-dispositions.json'),semantic_deltas=bind(A/'semantic-deltas.json'),
+    authority_bridge=bind(A/'authority-successor-bridge.json'),construct_dispositions=bind(A/'ledgers/construct-dispositions.json'),
+    source_coverage=bind(A/'bidirectional-source-coverage.json'),selectors=bind(A/'ledgers/working-evidence-selector-ledger.json'),
+    original_replay=bind(A/'original-replay.json'),bounded_checks=bind(A/'bounded-scientific-checks.json'),
+    native_identifier_check=bind(A/'provisional-identifier-consumer.json'),export_check=bind(A/'candidate-checks/export-proof.json'),
+    bibliography_check=bind(A/'bibliography-checks.json'),immutable_inputs=bind(A/'immutable-input-verification.json'),
+    execution=bind(A/'validation/execution-history.json'),failure_history=bind(A/'failure-history.json'),
+    counts=dict(edges=102,qualifiers=48,reaction_sides=19,core_events=3,supporting_events=1,participants=62,named_ids=68,
+                ontology_ids=36,references=97,original_references_unchanged=94,claims=80,contexts=28,paragraphs=41,
+                selector_rows=247,evidence_uses=266,semantic_deltas=6,runtime_files_unchanged=225,bounded_checks=129),
+    independent_successor_acceptance=False,full_canonical_build=False,maintained_adoption=False,source_exhaustion=False)
+save('handoff.json',handoff)
+# Final closure includes the two newly written seal records.
+r=subprocess.run(argv,capture_output=True);assert r.returncode==0
+actual={str(Path(os.fsdecode(x)).relative_to(A))for x in r.stdout.split(b'\0')if x}
+assert actual=={row['path']for row in rows}|{'artifact-manifest.json','handoff.json'}
+for row in rows:
+    b=bind(A/row['path']);assert b['sha256']==row['sha256']and b['bytes']==row['bytes']
+print(json.dumps(dict(handoff=bind(A/'handoff.json'),manifest=bind(A/'artifact-manifest.json'),target=tb,artifacts=len(rows))))

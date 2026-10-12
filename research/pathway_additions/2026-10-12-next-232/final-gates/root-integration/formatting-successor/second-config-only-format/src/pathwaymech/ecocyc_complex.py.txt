@@ -1,0 +1,440 @@
+"""Bounded unnamed/synonym-only EcoCyc assemblies with original class proof.
+
+This does not infer a Protein name from its activities or admit named complexes,
+chains, classes or modified states through the new authority kind.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import re
+from pathlib import Path
+from typing import Any
+from xml.etree import ElementTree as ET
+
+ECOCYC_COMPLEX_KIND = "ecocyc-complex-xml"
+HOST = "bf2i-artsymbiocyc.insa-lyon.fr"
+FRAME = r"[A-Za-z0-9][A-Za-z0-9_.-]*"
+PROVENANCE = {"url", "version", "sha256", "license"}
+
+
+def _require(condition: bool, message: str) -> None:
+    if not condition:
+        raise ValueError("EcoCyc complex: " + message)
+
+
+def _keys(value: Any, keys: set[str], message: str) -> None:
+    _require(isinstance(value, dict) and set(value) == keys, message)
+
+
+def _request(url: Any) -> str:
+    match = (
+        re.fullmatch(rf"https://{re.escape(HOST)}/getxml\?id=ECOLI:({FRAME})", url)
+        if isinstance(url, str)
+        else None
+    )
+    _require(match is not None, "requires exact native HTTPS ECOLI request")
+    return match[1]
+
+
+def _one(parent: ET.Element, tag: str) -> ET.Element:
+    nodes = parent.findall(tag)
+    _require(len(nodes) == 1, "requires exactly one direct " + tag)
+    return nodes[0]
+
+
+def _text(parent: ET.Element, tag: str, native: bool = False) -> str:
+    node = _one(parent, tag)
+    _require(
+        not len(node)
+        and node.attrib == ({"datatype": "string"} if native else {})
+        and bool((node.text or "").strip()),
+        "invalid direct " + tag,
+    )
+    return node.text.strip()
+
+
+class _TreeBuilder(ET.TreeBuilder):
+    def doctype(self, name: str, pubid: str | None, system: str | None) -> None:
+        raise ValueError("EcoCyc complex XML must not contain a DOCTYPE")
+
+
+def _identity(
+    path: Path, url: str, version: str, *, is_class: bool = False
+) -> tuple[ET.Element, str]:
+    frame = _request(url)
+    requested = "ECOLI:" + frame
+    root = ET.fromstring(path.read_bytes(), parser=ET.XMLParser(target=_TreeBuilder()))
+    _require(
+        root.tag == "ptools-xml" and len(root) == 2, "requires metadata and one direct Protein"
+    )
+    metadata, entity = _one(root, "metadata"), _one(root, "Protein")
+    _require(
+        set(root.attrib) == {"ptools-version", "{http://www.w3.org/XML/1998/namespace}base"}
+        and root.get("{http://www.w3.org/XML/1998/namespace}base")
+        in {url, f"http://{HOST}:443/getxml?{requested}"}
+        and isinstance(version, str)
+        and re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", version) is not None
+        and root.get("ptools-version") == version,
+        "XML base/version mismatch",
+    )
+    _require(
+        not metadata.attrib
+        and sorted(n.tag for n in metadata)
+        == sorted(["url", "service_name", "query", "num_results", "PGDB"]),
+        "malformed metadata",
+    )
+    _require(
+        _text(metadata, "url") in {f"https://{HOST}/", f"http://{HOST}:443/"}
+        and _text(metadata, "service_name") == "getxml"
+        and _text(metadata, "query") == requested
+        and _text(metadata, "num_results") == "1",
+        "service/query identity mismatch",
+    )
+    pgdb = _one(metadata, "PGDB")
+    _require(
+        pgdb.attrib == {"orgid": "ECOLI", "version": version}
+        and sorted(n.tag for n in pgdb) == ["dblink", "species", "strain"]
+        and _text(pgdb, "species", True) == "Escherichia coli"
+        and _text(pgdb, "strain", True) == "K-12 substr. MG1655",
+        "PGDB/version/species/strain mismatch",
+    )
+    taxon = _one(pgdb, "dblink")
+    _require(
+        not taxon.attrib
+        and sorted(n.tag for n in taxon)
+        == sorted(["dblink-db", "dblink-oid", "dblink-relationship", "dblink-URL"])
+        and _text(taxon, "dblink-db") == "NCBI-TAXONOMY-DB"
+        and _text(taxon, "dblink-oid") == "511145"
+        and _text(taxon, "dblink-relationship") == "unification"
+        and _text(taxon, "dblink-URL")
+        == "http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=511145",
+        "native taxon mismatch",
+    )
+    attributes = {"ID": requested, "orgid": "ECOLI", "frameid": frame, "detail": "full"}
+    if is_class:
+        attributes["class"] = "true"
+    _require(entity.attrib == attributes, "mismatched or unresolved top-level identity/type")
+    return entity, frame
+
+
+def _reference(wrapper: ET.Element, *, is_class: bool = False) -> str:
+    _require(
+        not wrapper.attrib and not (wrapper.text or "").strip() and len(wrapper) == 1,
+        "malformed direct native reference wrapper",
+    )
+    node = _one(wrapper, "Protein")
+    frame = node.get("frameid", "")
+    attributes = {"resource": "getxml?ECOLI:" + frame, "orgid": "ECOLI", "frameid": frame}
+    if is_class:
+        attributes["class"] = "true"
+    _require(
+        re.fullmatch(FRAME, frame) is not None
+        and node.attrib == attributes
+        and not len(node)
+        and not (node.text or "").strip()
+        and not (node.tail or "").strip(),
+        "invalid native reference identity/type",
+    )
+    return frame
+
+
+def _provenance(value: Any) -> str:
+    _keys(value, PROVENANCE, "invalid source provenance fields")
+    _require(
+        all(isinstance(v, str) and v.strip() for v in value.values()), "empty source provenance"
+    )
+    frame = _request(value["url"])
+    _require(
+        re.fullmatch(r"[0-9]+(?:\.[0-9]+)+", value["version"]) is not None
+        and re.fullmatch(r"[0-9a-f]{64}", value["sha256"]) is not None,
+        "invalid provenance version/hash",
+    )
+    return frame
+
+
+def _class_proof(entry: dict, cache_dir: Path, frame: str, version: str) -> dict:
+    _keys(entry, PROVENANCE | {"path"}, "class_source requires closed original provenance")
+    _require(isinstance(entry["path"], str), "class_source path must be relative")
+    relative = Path(entry["path"])
+    _require(
+        bool(relative.parts) and not relative.is_absolute() and ".." not in relative.parts,
+        "class_source path must be relative",
+    )
+    metadata = {key: entry[key] for key in PROVENANCE}
+    _require(
+        _provenance(metadata) == "PC-1" and entry["version"] == version,
+        "class_source identity/version mismatch",
+    )
+    path = cache_dir / relative
+    _require(
+        hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"],
+        "class_source bytes do not match hash",
+    )
+    entity, _ = _identity(path, entry["url"], entry["version"], is_class=True)
+    _require(
+        all(n.tag in {"common-name", "subclass", "instance"} for n in entity),
+        "unsupported PC-1 class slots",
+    )
+    _require(
+        _text(entity, "common-name", True) == "a transporter",
+        "PC-1 must declare its native transporter name",
+    )
+    subclasses = [_reference(n, is_class=True) for n in entity.findall("subclass")]
+    instances = [_reference(n) for n in entity.findall("instance")]
+    _require(
+        bool(subclasses) and len(subclasses) == len(set(subclasses)) and "PC-1" not in subclasses,
+        "ambiguous PC-1 subclasses",
+    )
+    _require(
+        frame in instances and len(instances) == len(set(instances)) and "PC-1" not in instances,
+        "PC-1 must declare the exact complex instance once",
+    )
+    return {
+        **metadata,
+        "id": "EcoCyc:PC-1",
+        "label": "a transporter",
+        "subclasses": ["EcoCyc:" + item for item in subclasses],
+        "instances": ["EcoCyc:" + item for item in instances],
+    }
+
+
+def complex_metadata(entry: dict, cache_dir: Path) -> dict:
+    """Derive typed source metadata from whole original bytes, never corpus labels."""
+    _keys(
+        entry,
+        {"key", "kind", "path"}
+        | PROVENANCE
+        | ({"class_source"} if "class_source" in entry else set()),
+        "unsupported typed complex manifest fields",
+    )
+    _require(entry["kind"] == ECOCYC_COMPLEX_KIND, "wrong source kind")
+    provenance = {key: entry[key] for key in PROVENANCE}
+    frame = _provenance(provenance)
+    _require(isinstance(entry["path"], str), "original path must be relative")
+    relative = Path(entry["path"])
+    _require(
+        bool(relative.parts) and not relative.is_absolute() and ".." not in relative.parts,
+        "original path must be relative",
+    )
+    path = cache_dir / relative
+    _require(
+        hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"],
+        "original bytes do not match hash",
+    )
+    entity, _ = _identity(path, entry["url"], entry["version"])
+    _require(
+        all(
+            node.tag
+            in {
+                "parent",
+                "common-name",
+                "synonym",
+                "component",
+                "catalyzes",
+                "credits",
+                "molecular-weight-exp",
+                "species",
+                "citation",
+                "comment",
+            }
+            for node in entity
+        ),
+        "unsupported direct complex slots or modified state",
+    )
+    parents = [_reference(node, is_class=True) for node in entity.findall("parent")]
+    _require(
+        len(parents) == len(set(parents))
+        and set(parents) in ({"Protein-Complexes"}, {"Protein-Complexes", "PC-1"}),
+        "unsupported/duplicate native parent classes",
+    )
+    _require(
+        not entity.findall("common-name"),
+        "direct common-name is unsupported by this unnamed/synonym-only adapter",
+    )
+    aliases = []
+    for node in entity.findall("synonym"):
+        _require(
+            node.attrib == {"datatype": "string"}
+            and not len(node)
+            and isinstance(node.text, str)
+            and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", node.text) is not None,
+            "requires one unambiguous native synonym token",
+        )
+        _require(
+            node.text != frame
+            and not node.text.casefold().startswith(("unknown", "error", "notfound")),
+            "unresolved synonym",
+        )
+        aliases.append(node.text)
+    components = []
+    for node in entity.findall("component"):
+        _require(
+            not node.attrib
+            and not (node.text or "").strip()
+            and sorted(n.tag for n in node) == ["Protein", "coefficient"],
+            "requires explicit Protein component/coefficient",
+        )
+        reference = _one(node, "Protein")
+        wrapper = ET.Element("component")
+        wrapper.append(reference)
+        component = _reference(wrapper)
+        coefficient = _one(node, "coefficient")
+        _require(
+            component != frame
+            and coefficient.attrib == {"datatype": "integer"}
+            and not len(coefficient)
+            and re.fullmatch(r"[1-9][0-9]*", coefficient.text or "") is not None
+            and not (coefficient.tail or "").strip(),
+            "invalid explicit component coefficient",
+        )
+        components.append({"id": "EcoCyc:" + component, "coefficient": int(coefficient.text)})
+    _require(
+        bool(components) and len({item["id"] for item in components}) == len(components),
+        "missing/duplicate components",
+    )
+    proof = None
+    if parents == ["Protein-Complexes"]:
+        _require(
+            not aliases
+            and len(components) == 1
+            and components[0]["coefficient"] >= 2
+            and "class_source" not in entry,
+            "unnamed case requires one native homomer without names or class companion",
+        )
+        status = "unnamed"
+    else:
+        _require(
+            len(aliases) == 1 and len(components) >= 2 and "class_source" in entry,
+            "dual-parent case requires one direct synonym, multiple components and PC-1 proof",
+        )
+        proof = _class_proof(entry["class_source"], cache_dir, frame, entry["version"])
+        status = "synonym_only"
+    native = {
+        "id": "EcoCyc:" + frame,
+        "parent_classes": parents,
+        "name_status": status,
+        "direct_common_name": None,
+        "direct_synonyms": aliases,
+        "components": components,
+        "class_source": proof,
+    }
+    result = {**provenance, "kind": ECOCYC_COMPLEX_KIND, "native_complex": native}
+    validate_complex_metadata(result)
+    return result
+
+
+def validate_complex_metadata(metadata: Any) -> None:
+    """Validate snapshot consistency; original XML and class bytes remain builder-owned."""
+    _keys(metadata, PROVENANCE | {"kind", "native_complex"}, "incomplete typed complex provenance")
+    frame = _provenance({key: metadata[key] for key in PROVENANCE})
+    _require(metadata["kind"] == ECOCYC_COMPLEX_KIND, "wrong typed complex source kind")
+    native = metadata["native_complex"]
+    _keys(
+        native,
+        {
+            "id",
+            "parent_classes",
+            "name_status",
+            "direct_common_name",
+            "direct_synonyms",
+            "components",
+            "class_source",
+        },
+        "incomplete native complex metadata",
+    )
+    _require(
+        native["id"] == "EcoCyc:" + frame and native["direct_common_name"] is None,
+        "native identity/name status mismatch",
+    )
+    parents = native["parent_classes"]
+    _require(
+        isinstance(parents, list)
+        and all(isinstance(p, str) for p in parents)
+        and len(parents) == len(set(parents))
+        and set(parents) in ({"Protein-Complexes"}, {"Protein-Complexes", "PC-1"}),
+        "unsupported parent classes",
+    )
+    components = native["components"]
+    _require(isinstance(components, list) and bool(components), "components must be explicit")
+    for item in components:
+        _keys(item, {"id", "coefficient"}, "malformed native component")
+        _require(
+            isinstance(item["id"], str)
+            and re.fullmatch("EcoCyc:" + FRAME, item["id"]) is not None
+            and item["id"] != native["id"]
+            and type(item["coefficient"]) is int
+            and item["coefficient"] > 0,
+            "invalid native component identity/coefficient",
+        )
+    _require(
+        len({item["id"] for item in components}) == len(components), "duplicate native component"
+    )
+    aliases = native["direct_synonyms"]
+    if native["name_status"] == "unnamed":
+        _require(
+            parents == ["Protein-Complexes"]
+            and aliases == []
+            and len(components) == 1
+            and components[0]["coefficient"] >= 2
+            and native["class_source"] is None,
+            "invalid unnamed homomer scope",
+        )
+    else:
+        _require(
+            native["name_status"] == "synonym_only"
+            and set(parents) == {"PC-1", "Protein-Complexes"}
+            and isinstance(aliases, list)
+            and len(aliases) == 1
+            and isinstance(aliases[0], str)
+            and re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", aliases[0]) is not None
+            and aliases[0] != frame
+            and not aliases[0].casefold().startswith(("unknown", "error", "notfound"))
+            and len(components) >= 2,
+            "invalid synonym-only dual-parent complex scope",
+        )
+        proof = native["class_source"]
+        _keys(
+            proof,
+            PROVENANCE | {"id", "label", "subclasses", "instances"},
+            "missing typed PC-1 proof",
+        )
+        _require(
+            _provenance({key: proof[key] for key in PROVENANCE}) == "PC-1"
+            and proof["version"] == metadata["version"]
+            and proof["id"] == "EcoCyc:PC-1"
+            and proof["label"] == "a transporter",
+            "invalid class proof identity/version",
+        )
+        for key in ("subclasses", "instances"):
+            values = proof[key]
+            _require(
+                isinstance(values, list)
+                and bool(values)
+                and all(
+                    isinstance(item, str) and re.fullmatch("EcoCyc:" + FRAME, item) is not None
+                    for item in values
+                )
+                and len(values) == len(set(values))
+                and "EcoCyc:PC-1" not in values,
+                "ambiguous class proof references",
+            )
+        _require(native["id"] in proof["instances"], "class proof lacks exact complex instance")
+
+
+def complex_term(metadata: dict, source: str) -> tuple[str, dict]:
+    validate_complex_metadata(metadata)
+    native = metadata["native_complex"]
+    unnamed = native["name_status"] == "unnamed"
+    label = (
+        "unnamed protein complex " + native["id"].split(":", 1)[1]
+        if unnamed
+        else native["direct_synonyms"][0]
+    )
+    return native["id"], {
+        "label": label,
+        "synonyms": [],
+        "source": source,
+        "entity_type": "protein_complex",
+        "label_kind": "source_context" if unnamed else "source_synonym",
+    }

@@ -1,0 +1,51 @@
+"""Seal independent bounded remediation acceptance once."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+HERE = Path(__file__).resolve().parent
+PACK = Path('/private/tmp/pathwaymech-next-231-integration-preparation-successor-20261012')
+
+
+def bind(path):
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def write(name, value):
+    with (HERE / name).open('x') as f:
+        json.dump(value, f, indent=2); f.write('\n')
+
+
+assert bind(PACK / 'handoff.json')['sha256'] == '665f231beeedb20e59625d435d764bbfad18ccc958062919e16f5dd5018d49c2'
+checks = json.loads((HERE / 'checks.json').read_text())
+assert len(checks) == 7 and all(row['status'] == 'passed' for row in checks)
+write('findings.json', {'remaining_findings': [], 'dispositions': [{
+    'stable_key': 'PPI-INTEGRATION-001', 'issue': 463,
+    'status': 'remediated_in_exact_external_successor_independently_verified',
+    'accepted_successor': bind(PACK / 'handoff.json'),
+    'independent_controls': bind(HERE / 'independent-controls.json'),
+    'original_evidence': bind(Path('/private/tmp/pathwaymech-next-231-integration-preparation-audit-20261012/handoff.json')),
+    'scope': 'External helper repair accepted. Actual merged-base binding, maintained integration, publication and issue closure remain separate; no native review occurrence is invented.'}]})
+write('execution.json', {'status': 'passed', 'actual_terminal': '2b1719/0', 'session_id': 12375,
+    'helper': bind(HERE / 'audit.py'), 'stdout': bind(HERE / 'audit.stdout'), 'stderr': bind(HERE / 'audit.stderr'),
+    'python': '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', 'python_flag': '-B',
+    'environment': {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONNOUSERSITE': '1'},
+    'independent_check_groups': 7, 'independent_negative_identity_controls': 8,
+    'maintained_or_cache_writes': False, 'full_build_or_gate_reruns': False})
+paths = sorted(map(Path, subprocess.check_output(['rg', '--files', '-uu', '-L', str(HERE)], text=True).splitlines()))
+artifacts = [bind(p) for p in paths]
+write('artifact-manifest.json', {'artifacts': artifacts, 'count': len(artifacts),
+    'inventory': 'rg --files -uu -L; hidden/ignored/followed files included', 'excluded': ['artifact-manifest.json', 'handoff.json']})
+write('handoff.json', {'status': 'accepted_bounded_external_remediation', 'created_at': datetime.datetime.now(datetime.UTC).isoformat(),
+    'reviewed_successor': bind(PACK / 'handoff.json'), 'reviewed_manifest': bind(PACK / 'artifact-manifest.json'),
+    'manifest': bind(HERE / 'artifact-manifest.json'), 'artifact_count': len(artifacts),
+    'report': bind(HERE / 'REPORT.md'), 'findings': bind(HERE / 'findings.json'),
+    'execution': bind(HERE / 'execution.json'), 'checks': bind(HERE / 'checks.json'),
+    'resolved_external_finding_keys': ['PPI-INTEGRATION-001'], 'blocking_findings': [], 'nonblocking_findings': [],
+    'original199_and_audit34_preserved': True, 'cache765_bodies_and_current_fresh_identities_exact': True,
+    'actual_merged_ATP_base_bound': False, 'maintained_or_cache_mutations': False,
+    'scope': 'Independent acceptance of exact successor guard repair; no actual merge, maintained adoption/gates, native review, issue closure or publication claim.'})
+print(json.dumps({'handoff': bind(HERE / 'handoff.json'), 'manifest': bind(HERE / 'artifact-manifest.json'), 'artifacts': len(artifacts)}, indent=2))

@@ -1,0 +1,11 @@
+# NAD complex-adapter formatting successor — issue471
+
+The maintained full gate run failed the repository's configured Ruff check with126 style diagnostics across the complex adapter, identifier consumer and new tests. The earlier2634 passing tests, three skips and three warnings are preserved as original-code evidence; they do not constitute a test pass on future maintained formatting bytes. Original failed execution and lint streams are retained unchanged.
+
+This candidate changes exactly three files, with no string, expression, branch, guard, test case or native authority behavior change. Identifiers and tests have exactly equal Python ASTs. The complex module AST is equal after one explicitly constrained swap of independent `import re` and `from pathlib import Path`; no general sorting or normalization is used. Compilation creates no bytecode. The fourth original adapter file, the source builder, is unchanged.
+
+All original bytes, complete diff, copy plan and exact AST proof are provided. Ruff ran with all configured E/F/I/UP/B rules and line-length100, without exclusions or suppressions added, over a full copied Python/config layout. This avoids partial-workspace first-party import inference. The first two isolated three-file/config-only formatting trials did return zero but moved project imports; those trials were rejected as final candidates and are retained with their actual commands and bodies. The final full-layout trial preserves project import order exactly and passes `ruff check --no-cache .`.
+
+The copy plan is a proposal, not maintained adoption. This author wrote the earlier complex adapter and is not its independent reviewer. Root will independently assess the candidate, create a narrow explicit integration bridge, append an actual native EDIT history before fresh rendering, and run all nine gates afresh. No old gate result is spliced or waived. Original sealed science, canonical build, adapter and integration packets remain untouched. The unsealed native-review support remains stopped pending that future successor execution.
+
+No maintained file, shared cache, Git/GitHub object, native history or native review was changed here. The issue471 packet was created by root and is retained as external lineage.

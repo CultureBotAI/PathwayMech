@@ -1,0 +1,365 @@
+"""External fixture tests; no maintained worktree, shared cache or canonical mutations."""
+import copy
+import json
+from pathlib import Path
+
+import pytest
+
+import common as guard
+
+
+def write_json(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value) + '\n')
+
+
+def history_fixture(tmp_path):
+    root = tmp_path / 'root'
+    old = root / 'history/records/old/old.yaml'
+    old.parent.mkdir(parents=True)
+    old.write_text('target:\n  path: data/pathways/old.yaml\n')
+    baseline = {'history': guard.inventory(root, 'history')}
+    fresh = root / 'history/records/pentose-phosphate-pathway-non-oxidative-branch-ii/session.yaml'
+    fresh.parent.mkdir(parents=True)
+    fresh.write_text('target:\n  path: ' + guard.TARGET_REL + '\n')
+    return root, baseline, old, fresh
+
+
+def test_unbound_base_cannot_execute_maintained_actions(tmp_path, monkeypatch):
+    monkeypatch.setattr(guard, 'BASE', None)
+    with pytest.raises(AssertionError, match='not yet bound'):
+        guard.validate_base(tmp_path, 'invented')
+
+
+def test_history_must_precede_render(tmp_path):
+    root, baseline, _, fresh = history_fixture(tmp_path)
+    fresh.unlink()
+    with pytest.raises(AssertionError, match='before rendering'):
+        guard.history_ready_for_render(root, baseline)
+
+
+def test_exact_history_input_accepted(tmp_path):
+    root, baseline, _, _ = history_fixture(tmp_path)
+    observed = guard.history_ready_for_render(root, baseline)
+    guard.verify_render_history(root, observed)
+
+
+def test_changed_old_history_rejected(tmp_path):
+    root, baseline, old, _ = history_fixture(tmp_path)
+    old.write_text('target:\n  path: altered.yaml\n')
+    with pytest.raises(AssertionError):
+        guard.history_ready_for_render(root, baseline)
+
+
+@pytest.mark.parametrize('change', ['append', 'modify', 'delete', 'hidden'])
+def test_late_history_cannot_reuse_page_gate_receipt(tmp_path, change):
+    root, baseline, _, fresh = history_fixture(tmp_path)
+    observed = guard.history_ready_for_render(root, baseline)
+    if change == 'append':
+        (fresh.parent / 'late.yaml').write_text('target: {}\n')
+    elif change == 'modify':
+        fresh.write_text(fresh.read_text() + 'late: true\n')
+    elif change == 'delete':
+        fresh.unlink()
+    else:
+        (root / 'history/.ignored-late').write_text('late\n')
+    with pytest.raises(AssertionError, match='Late history'):
+        guard.verify_render_history(root, observed)
+
+
+def test_actual_native_build_packet_binding():
+    packet = json.loads((Path(__file__).parent / 'accepted-inputs.json').read_bytes())['packages']['canonical-build']
+    guard.verify_packet(packet)
+
+
+def test_arbitrary_external_packet_path_rejected(tmp_path):
+    package = tmp_path / 'package'
+    package.mkdir()
+    outside = tmp_path / 'unapproved.py'
+    outside.write_text('pass\n')
+    write_json(package / 'artifact-manifest.json', {'artifacts': [guard.binding(outside)]})
+    write_json(package / 'handoff.json', {'scope': 'isolated fixture'})
+    packet = {'handoff': guard.binding(package / 'handoff.json'),
+              'manifest': guard.binding(package / 'artifact-manifest.json'), 'artifact_count': 1,
+              'allowed_external_bindings': [guard.binding(outside)]}
+    with pytest.raises(AssertionError):
+        guard.verify_packet(packet)
+
+
+@pytest.fixture
+def authority_fixture(tmp_path, monkeypatch):
+    build, root, package = (tmp_path / name for name in ['build', 'root', 'package'])
+    package.mkdir()
+    before = {'version': 1, 'terms': {'Old:1': {'label': 'old', 'source': 'first'}, 'Old:2': {'label': 'second', 'source': 'first'}},
+              'sources': {'first': {'sha256': 'original', 'url': 'original'}}}
+    after = copy.deepcopy(before)
+    after['terms']['New:1'] = {'label': 'new', 'source': 'first'}
+    expected = {'authorities': {name: {'terms': {'New:1': after['terms']['New:1']}, 'sources': {}}
+                                for name in ['sources', 'ontology']},
+                'manifest_additions': [{'key': 'new'}], 'rhea_additions': ['RHEA:27631']}
+    for name in ['sources', 'ontology']:
+        write_json(build / 'baseline' / (name + '.json'), before)
+        write_json(build / (name + '.json'), after)
+        write_json(root / guard.AUTHORITY_FILES[name], before)
+    for name, baseline, successor in [
+        ('manifest', [{'key': 'old'}], [{'key': 'old'}, {'key': 'new'}]),
+        ('rhea-updates', {'ids': ['RHEA:1'], 'source': 'unchanged'},
+         {'ids': ['RHEA:1', 'RHEA:27631'], 'source': 'unchanged'})]:
+        write_json(build / 'baseline' / (name + '.json'), baseline)
+        write_json(build / (name + '.json'), successor)
+        write_json(root / guard.AUTHORITY_FILES[name], baseline)
+    write_json(package / 'expected-changes.json', expected)
+    monkeypatch.setattr(guard, 'BUILD', build)
+    monkeypatch.setattr(guard, 'PACKAGE', package)
+    return root, build
+
+
+def test_append_only_authorities_accepted(authority_fixture):
+    root, _ = authority_fixture
+    guard.verify_authority_conservation(root)
+
+
+@pytest.mark.parametrize('change', ['old-label', 'old-provenance', 'manifest-order', 'rhea-order', 'rhea-original'])
+def test_prior_authority_changes_rejected(authority_fixture, change):
+    root, build = authority_fixture
+    name = 'sources' if change.startswith('old-') else 'manifest' if change == 'manifest-order' else 'rhea-updates'
+    path = build / (name + '.json')
+    value = guard.load(path)
+    if change == 'old-label':
+        value['terms']['Old:1']['label'] = 'changed'
+    elif change == 'old-provenance':
+        value['sources']['first']['sha256'] = 'changed'
+    elif change == 'manifest-order':
+        value.reverse()
+    elif change == 'rhea-order':
+        value['ids'].reverse()
+    else:
+        value['source'] = 'different'
+    write_json(path, value)
+    with pytest.raises(AssertionError):
+        guard.verify_authority_conservation(root)
+
+
+def test_actual_prior_source_inputs_remain_bound():
+    inputs = json.loads((Path(__file__).parent / 'accepted-inputs.json').read_bytes())
+    completion = json.loads(Path(inputs['packages']['canonical-build']['handoff']['path']).read_bytes())
+    assert inputs['canonical_outputs'] == completion['outputs']
+    for item in completion['outputs'].values():
+        guard.verify(item['path'], item)
+
+
+def test_exact_accepted_successor_bridge():
+    guard.verify_accepted()
+
+
+def test_uncorrected_author_target_cannot_be_adopted(monkeypatch):
+    monkeypatch.setattr(guard, 'TARGET_SOURCE', Path('/private/tmp/pathwaymech-next-231-author-20261012/draft/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'))
+    with pytest.raises(AssertionError):
+        guard.verify_accepted()
+
+
+def test_all_maintained_actions_require_separate_merged_binding(tmp_path, monkeypatch):
+    monkeypatch.setattr(guard, 'BASE', None)
+    monkeypatch.setattr(guard, 'BASE_INFO', {})
+    with pytest.raises(AssertionError, match='not yet bound'):
+        guard.validate_base(tmp_path, 'not-a-merged-commit')
+
+
+@pytest.mark.parametrize('change', ['target', 'runtime', 'adoption', 'history'])
+def test_gate_success_does_not_waive_changed_inputs(tmp_path, monkeypatch, change):
+    root, baseline, _, fresh = history_fixture(tmp_path)
+    target = root / guard.TARGET_REL
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text('id: MetaCyc:PWY-8178\n')
+    runtime = root / 'src/code.py'
+    runtime.parent.mkdir()
+    runtime.write_text('original = True\n')
+    receipt = tmp_path / 'adoption.json'
+    write_json(receipt, {'status':'actual fixture'})
+    package = tmp_path / 'package'
+    write_json(package / 'expected-changes.json', {'allowed_generated_paths':[]})
+    history = guard.history_ready_for_render(root, baseline)
+    inputs = {'adoption_receipt':guard.binding(receipt),'target':guard.binding(target),
+              'render_history_inputs':history,'all_maintained_inputs':guard.inventory(root)}
+    input_path = tmp_path / 'inputs.json'
+    write_json(input_path, inputs)
+    gates = {'inputs':guard.binding(input_path),'render_history_inputs':history}
+    monkeypatch.setattr(guard, 'PACKAGE', package)
+    guard.verify_gate_input_scope(root, gates, receipt)
+    selected = {'target':target,'runtime':runtime,'adoption':receipt,'history':fresh}[change]
+    selected.write_text(selected.read_text() + 'changed\n')
+    with pytest.raises(AssertionError):
+        guard.verify_gate_input_scope(root, gates, receipt)
+
+
+def test_closed_packet_rejects_unlisted_hidden_file(tmp_path):
+    directory=tmp_path/'packet';directory.mkdir()
+    data=directory/'data.json';write_json(data,{'original':True})
+    write_json(directory/'artifact-manifest.json',{'artifacts':[guard.binding(data)]})
+    write_json(directory/'handoff.json',{'scope':'fixture'})
+    packet={'handoff':guard.binding(directory/'handoff.json'),'manifest':guard.binding(directory/'artifact-manifest.json'),
+            'artifact_count':1,'allowed_external_bindings':[],'original_symlinks':[]}
+    guard.verify_packet(packet)
+    (directory/'.ignored-extra').write_text('not declared\n')
+    with pytest.raises(AssertionError,match='inventory changed'):
+        guard.verify_packet(packet)
+
+@pytest.mark.parametrize('change', ['modified-before', 'new-file', 'new-dangling-link'])
+def test_handle_adoption_requires_exact_prior_owners(tmp_path, monkeypatch, change):
+    root = tmp_path / 'root'; root.mkdir()
+    before = root / 'schema.py'; before.write_text('prior\n')
+    candidate = tmp_path / 'candidate.py'; candidate.write_text('accepted\n')
+    plan = [{'relative_path': 'schema.py', 'before': guard.binding(before), 'after': guard.binding(candidate)},
+            {'relative_path': 'test_handle.py', 'before': None, 'after': guard.binding(candidate)}]
+    monkeypatch.setattr(guard, 'code_changes', lambda: plan)
+    guard.verify_code_before(root)
+    if change == 'modified-before': before.write_text('different\n')
+    elif change == 'new-file': (root / 'test_handle.py').write_text('already exists\n')
+    else: (root / 'test_handle.py').symlink_to(root / 'absent')
+    with pytest.raises(AssertionError): guard.verify_code_before(root)
+
+
+@pytest.mark.parametrize('change', ['old-unused-change', 'old-unused-delete', 'extra-hidden', 'new-occupied', 'wrong-new-body'])
+def test_whole_cache_union_cannot_drop_unselected_old_body(tmp_path, change):
+    cache = tmp_path / 'cache'; cache.mkdir()
+    old = cache / 'unselected-old'; old.write_text('original old body\n')
+    source = tmp_path / 'new-original'; source.write_text('new original body\n')
+    previous = {'unselected-old': guard.inventory(cache)[0]}
+    new = {'new': {'original': guard.binding(source)}}
+    guard.verify_cache_union(cache, previous, new)
+    if change == 'old-unused-change': old.write_text('modified\n')
+    elif change == 'old-unused-delete': old.unlink()
+    elif change == 'extra-hidden': (cache / '.unexpected').write_text('extra\n')
+    elif change == 'new-occupied': (cache / 'new').write_text(source.read_text())
+    else:
+        (cache / 'new').write_text('wrong body\n')
+    with pytest.raises(AssertionError): guard.verify_cache_union(cache, previous, new, adopted=change == 'wrong-new-body')
+
+
+def test_exact_cache_adoption_union_accepted(tmp_path):
+    cache = tmp_path / 'cache'; cache.mkdir()
+    old = cache / 'unselected-old'; old.write_text('old\n')
+    source = tmp_path / 'new-original'; source.write_text('new\n')
+    previous = {'unselected-old': guard.inventory(cache)[0]}; new = {'new': {'original': guard.binding(source)}}
+    (cache / 'new').write_bytes(source.read_bytes())
+    guard.verify_cache_union(cache, previous, new, adopted=True)
+
+
+def gate_fixture(tmp_path, monkeypatch):
+    root, baseline, _, _ = history_fixture(tmp_path)
+    target = root / guard.TARGET_REL; target.parent.mkdir(parents=True); target.write_text('id: fixture\n')
+    code = root / 'src/code.py'; code.parent.mkdir(); code.write_text('original\n')
+    adoption = tmp_path / 'adoption.json'; write_json(adoption, {'status': 'fixture'})
+    package = tmp_path / 'package'; write_json(package / 'expected-changes.json', {'allowed_generated_paths': []})
+    history = guard.history_ready_for_render(root, baseline)
+    path = tmp_path / 'inputs.json'; write_json(path, {'adoption_receipt': guard.binding(adoption),
+        'target': guard.binding(target), 'render_history_inputs': history, 'all_maintained_inputs': guard.inventory(root)})
+    monkeypatch.setattr(guard, 'PACKAGE', package)
+    return root, {'inputs': guard.binding(path), 'render_history_inputs': history}, adoption, code
+
+
+@pytest.mark.parametrize('change', ['hidden', 'pyc', 'deleted'])
+def test_complete_gate_inventory_rejects_ignored_changes(tmp_path, monkeypatch, change):
+    root, gates, adoption, code = gate_fixture(tmp_path, monkeypatch)
+    guard.verify_gate_input_scope(root, gates, adoption)
+    if change == 'deleted': code.unlink()
+    else: (root / ('.hidden' if change == 'hidden' else 'unexpected.pyc')).write_bytes(b'changed')
+    with pytest.raises(AssertionError, match='inventory change'): guard.verify_gate_input_scope(root, gates, adoption)
+
+
+def test_new_review_addition_requires_exact_binding(tmp_path, monkeypatch):
+    root, gates, adoption, _ = gate_fixture(tmp_path, monkeypatch)
+    review = root / 'reviews/structured/new/evidence.txt'; review.parent.mkdir(parents=True); review.write_text('new review\n')
+    item = {'relative_path': str(review.relative_to(root)), **guard.binding(review)}
+    guard.verify_gate_input_scope(root, gates, adoption, [item])
+    review.write_text('altered\n')
+    with pytest.raises(AssertionError): guard.verify_gate_input_scope(root, gates, adoption, [item])
+
+
+def test_new_file_approval_cannot_replace_gate_input(tmp_path, monkeypatch):
+    root, gates, adoption, _ = gate_fixture(tmp_path, monkeypatch)
+    history = root / 'history/records/pentose-phosphate-pathway-non-oxidative-branch-ii/session.yaml'
+    item = {'relative_path': str(history.relative_to(root)), **guard.binding(history)}
+    with pytest.raises(AssertionError, match='cannot replace'): guard.verify_gate_input_scope(root, gates, adoption, [item])
+
+
+def test_supplemental_observation_is_exact_not_cache_prefix_waiver(tmp_path):
+    directory = tmp_path / 'packet'; directory.mkdir()
+    data = directory / 'sealed.txt'; data.write_text('sealed\n')
+    extra = directory / 'swift-cache/module'; extra.parent.mkdir(); extra.write_text('observed\n')
+    write_json(directory / 'artifact-manifest.json', {'artifacts': [guard.binding(data)]})
+    write_json(directory / 'handoff.json', {'scope': 'fixture'})
+    item = {'handoff': guard.binding(directory / 'handoff.json'), 'manifest': guard.binding(directory / 'artifact-manifest.json'),
+        'artifact_count': 1, 'supplemental_observed_files': [{'relative_path': 'swift-cache/module', **guard.binding(extra)}]}
+    guard.verify_packet(item)
+    extra.write_text('changed\n')
+    with pytest.raises(AssertionError): guard.verify_packet(item)
+
+
+def test_guard_failure_receipt_preserves_actual_command_results(tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('gate_helper_fixture', Path(__file__).with_name('run-gates.py'))
+    helper = importlib.util.module_from_spec(spec); spec.loader.exec_module(helper)
+    commands = [{'name': 'fixture', 'exit_code': 0, 'scope': 'fixture only'}]
+    helper.record_guard_failure(tmp_path, commands, 'final-guard', AssertionError('changed input'))
+    result = guard.load(tmp_path / 'execution.json')
+    assert result['status'] == 'failed_guard' and result['receipts'] == commands
+    assert result['failure']['stage'] == 'final-guard'
+
+
+def test_prior_authority_relative_order_rejected(authority_fixture):
+    root, build = authority_fixture
+    value = guard.load(build / 'sources.json')
+    value['terms'] = {key: value['terms'][key] for key in ['Old:2', 'Old:1', 'New:1']}
+    write_json(build / 'sources.json', value)
+    with pytest.raises(AssertionError, match='relative order'): guard.verify_authority_conservation(root)
+
+@pytest.mark.parametrize('change', ['same-byte-retarget', 'same-target-link-text', 'symlink-to-regular', 'regular-to-symlink', 'indirect-retarget'])
+def test_cache_identity_cannot_drift_with_identical_bodies(tmp_path, change):
+    cache = tmp_path / 'cache'; cache.mkdir()
+    first = tmp_path / 'first'; first.write_bytes(b'identical original body\n')
+    second = tmp_path / 'second'; second.write_bytes(first.read_bytes())
+    link = cache / 'old'
+    intermediary = tmp_path / 'intermediary'
+    if change == 'regular-to-symlink': link.write_bytes(first.read_bytes())
+    elif change == 'indirect-retarget':
+        intermediary.symlink_to(first); link.symlink_to(intermediary)
+    else: link.symlink_to(first)
+    rows = guard.inventory(cache); previous = {'old': rows[0]}
+    guard.verify_cache_union(cache, previous, {})
+    if change == 'indirect-retarget': intermediary.unlink(); intermediary.symlink_to(second)
+    else:
+        link.unlink()
+        if change == 'symlink-to-regular': link.write_bytes(first.read_bytes())
+        elif change == 'same-target-link-text': link.symlink_to('../first')
+        else: link.symlink_to(second)
+    assert link.read_bytes() == first.read_bytes() == second.read_bytes()
+    assert guard.inventory(cache) != rows, 'Full baseline equality must also reject identity change'
+    with pytest.raises(AssertionError, match='identity changed'):
+        guard.verify_cache_union(cache, previous, {})
+
+
+def test_historical_body_only_cache_row_is_not_identity_binding(tmp_path):
+    cache = tmp_path / 'cache'; cache.mkdir()
+    file = cache / 'old'; file.write_text('original\n')
+    historical = {'old': {**guard.binding(file), 'symlink': False}}
+    with pytest.raises(AssertionError, match='Fresh path identity binding required'):
+        guard.verify_cache_union(cache, historical, {})
+
+
+def test_new_cache_copy_cannot_be_a_same_byte_symlink(tmp_path):
+    cache = tmp_path / 'cache'; cache.mkdir()
+    original = tmp_path / 'original'; original.write_text('new original\n')
+    (cache / 'new').symlink_to(original)
+    with pytest.raises(AssertionError):
+        guard.verify_cache_union(cache, {}, {'new': {'original': guard.binding(original)}}, adopted=True)
+
+
+def test_exact_symlink_identity_and_regular_new_copy_pass(tmp_path):
+    cache = tmp_path / 'cache'; cache.mkdir()
+    first = tmp_path / 'first'; first.write_text('old body\n')
+    (cache / 'old').symlink_to('../first')
+    previous = {'old': guard.inventory(cache)[0]}
+    original = tmp_path / 'original'; original.write_text('new body\n')
+    (cache / 'new').write_bytes(original.read_bytes())
+    guard.verify_cache_union(cache, previous, {'new': {'original': guard.binding(original)}}, adopted=True)

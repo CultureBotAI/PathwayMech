@@ -1,0 +1,54 @@
+"""Independent additive narrative confirmation, preserving original audit and packet."""
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+HERE=Path(__file__).resolve().parent
+CORRECTION=Path('/private/tmp/pathwaymech-next-232-root-relocation-correction-20261012')
+PACK=Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+AUDIT=Path('/private/tmp/pathwaymech-next-232-authority-proposal-audit-20261012')
+def bind(p):
+    p=Path(p)
+    with p.open('rb') as f:d=hashlib.file_digest(f,'sha256').hexdigest()
+    return {'path':str(p),'bytes':p.stat().st_size,'sha256':d}
+def read(p):return json.loads(Path(p).read_bytes())
+def verify(p,r):
+    b=bind(p);assert b['sha256']==r['sha256'] and b['bytes']==r['bytes']
+def close(p,pin,count):
+    assert bind(p/'handoff.json')['sha256']==pin
+    h=read(p/'handoff.json');m=h.get('manifest') or h['artifact_manifest'];verify(p/'artifact-manifest.json',m)
+    rows=read(p/'artifact-manifest.json')['artifacts'];assert len(rows)==count;seen=set()
+    for row in rows:
+        q=Path(row.get('relative_path') or row['path']);q=q if q.is_absolute() else p/q
+        assert q.is_relative_to(p) and q not in seen;seen.add(q);verify(q,row)
+    actual=set(map(Path,subprocess.check_output(['rg','--files','-uu','-L',str(p)],text=True).splitlines()))
+    assert actual==seen|{p/'handoff.json',p/'artifact-manifest.json'}
+assert bind(CORRECTION/'correction.json')['sha256']=='f75d1764dfeeed94078ebf0fc767da03bf74090290241a3f453be645574b57e8'
+assert bind(CORRECTION/'README.md')['sha256']=='d9b8bcc1427a02f42391b8969db877544c4dfd2985cb8ce5efebc86758839b6e'
+correction=read(CORRECTION/'correction.json')
+for name in ['original_readme','original_observation','initial_finding','issue_receipt','addendum']:
+    verify(correction[name]['path'],correction[name])
+assert correction['issue']==467 and correction['stable_key']=='nad-authority-relocation-narrative'
+observation=read(correction['original_observation']['path'])
+assert observation['historical_path_exists'] is False and observation['historical_path_symlink'] is False
+assert observation['inventory_exit_code']==0 and observation['stderr']=='' and len(observation['stdout'].splitlines())==3
+assert '-uu' in observation['ignored_aware_parent_inventory_command'] and '-L' in observation['ignored_aware_parent_inventory_command']
+verify(observation['exact_current_original']['path'],observation['exact_current_original'])
+assert observation['exact_current_original']['sha256']=='b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44'
+assert correction['corrected_statement'] in Path(correction['addendum']['path']).read_text()
+assert 'parent directory existed' in correction['corrected_statement'] and 'No missing-parent error occurred' in correction['corrected_statement']
+receipt=read(correction['issue_receipt']['path']);assert receipt['status']=='created_and_verified'
+assert receipt['issue']['number']==467 and receipt['issue']['state']=='OPEN'
+assert len(receipt['commands'])==3 and all(row['returncode']==0 for row in receipt['commands'])
+close(PACK,'25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102',1891)
+close(AUDIT,'449f52cf5e71a25f3c279e402f387304100233b1b172310285f7d539a528f665',30)
+result={'status':'additive_narrative_correction_independently_confirmed','stable_key':'nad-authority-relocation-narrative','issue':467,
+    'correction':bind(CORRECTION/'correction.json'),'addendum':bind(CORRECTION/'README.md'),
+    'original_authority_proposal':bind(PACK/'handoff.json'),'original_independent_audit':bind(AUDIT/'handoff.json'),
+    'original_observation':correction['original_observation'],'actual_exit_code':0,'actual_stderr':'','actual_stdout':observation['stdout'],
+    'whole_archive_body_exact':observation['exact_current_original'],'original1891_and_audit30_unchanged':True,
+    'issue_status_scope':'OPEN in exact root creation/verification receipt; no live GitHub action run in this audit.',
+    'maintained_archive_adoption':'pending','github_closure':'pending','broader_scientific_or_full_build_acceptance':False}
+with (HERE/'assessment.json').open('x') as f:json.dump(result,f,indent=2);f.write('\n')
+print(json.dumps({'status':result['status'],'issue':467,'original_packet_artifacts':1891,'original_audit_artifacts':30}))

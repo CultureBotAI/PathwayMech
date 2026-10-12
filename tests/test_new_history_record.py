@@ -284,7 +284,8 @@ def test_the_history_gate_runs_without_the_virtualenv_on_path():
     completed = subprocess.run(
         [sys.executable, str(REPO_ROOT / "scripts" / "validate_history.py")],
         cwd=REPO_ROOT, capture_output=True, text=True, check=False,
-        env={"PATH": "/usr/bin:/bin", "HOME": os.environ.get("HOME", "/tmp")},
+        env={"PATH": "/usr/bin:/bin", "HOME": os.environ.get("HOME", "/tmp"),
+             "PYTHONDONTWRITEBYTECODE": "1"},
     )
     assert completed.returncode == 0, completed.stderr
     assert "valid against" in completed.stdout

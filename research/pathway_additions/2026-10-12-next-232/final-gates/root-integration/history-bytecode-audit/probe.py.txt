@@ -1,0 +1,59 @@
+"""Independent bounded test/bridge correction audit; no maintained execution."""
+from pathlib import Path
+import ast,copy,hashlib,json,runpy,subprocess,os,marshal,struct,sys
+P=Path(__file__).resolve().parent
+C=Path('/private/tmp/pathwaymech-next-232-history-bytecode-correction-20261012')
+B=Path('/private/tmp/pathwaymech-next-232-formatting-bridge-20261012')
+F=Path('/private/tmp/pathwaymech-next-232-formatting-successor-20261012')
+ROOT=Path('/private/tmp/pathwaymech-next-232-20261012')
+RUNNER=Path('/private/tmp/pathwaymech-next-232-root-formatting-execution-20261012/run_correction.py')
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def write(p,d):
+ with p.open('x') as s:json.dump(d,s,indent=2);s.write('\n')
+proposal=json.loads((C/'proposal.json').read_bytes())
+for key in ['before','after','observed_cache','preserved_cache']:assert bind(Path(proposal[key]['path']))==proposal[key]
+assert (ROOT/proposal['relative_path']).read_bytes()==Path(proposal['before']['path']).read_bytes()
+old=ast.parse(Path(proposal['before']['path']).read_bytes());new=ast.parse(Path(proposal['after']['path']).read_bytes())
+fn=lambda tree:next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='test_the_history_gate_runs_without_the_virtualenv_on_path')
+a=fn(old);b=fn(new)
+env=lambda f:next(k.value for n in ast.walk(f) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='run' for k in n.keywords if k.arg=='env')
+x=env(a);y=env(b);assert [k.value for k in x.keys]==['PATH','HOME'];assert [k.value for k in y.keys]==['PATH','HOME','PYTHONDONTWRITEBYTECODE'];assert ast.literal_eval(y.values[-1])=='1'
+y.keys.pop();y.values.pop();assert ast.dump(old)==ast.dump(new)
+# Header and code are inspected, never executed.
+source=ROOT/'scripts/new_history_record.py';raw=Path(proposal['preserved_cache']['path']).read_bytes();magic,flags,mtime,size=struct.unpack('<4sIII',raw[:16]);assert magic==__import__('importlib.util',fromlist=['MAGIC_NUMBER']).MAGIC_NUMBER and flags==0
+assert (mtime,size)==(int(source.stat().st_mtime)&0xffffffff,source.stat().st_size)
+compiled=compile(source.read_bytes(),str(source),'exec',dont_inherit=True,optimize=0);assert marshal.loads(raw[16:])==compiled
+write(P/'test-and-bytecode-proof.json',{'status':'passed','proposal':bind(C/'proposal.json'),'only_AST_change':'One env dict entry PYTHONDONTWRITEBYTECODE=1 in the existing isolated PATH/HOME history validator regression; all other module AST exact.','source':bind(source),'preserved_bytecode':proposal['preserved_cache'],'timestamp_header_matches_source':True,'compiled_code_equal_without_execution':True,'maintained_bytes_unchanged':True})
+# Use the real config/layout for this single proposed test body; no source writes.
+command=[sys.executable,'-B','-m','ruff','check','--no-cache','--stdin-filename','tests/test_new_history_record.py','-']
+r=subprocess.run(command,input=Path(proposal['after']['path']).read_bytes(),cwd=ROOT,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'},capture_output=True);(P/'lint.stdout').write_bytes(r.stdout);(P/'lint.stderr').write_bytes(r.stderr);write(P/'lint-receipt.json',{'command':command,'cwd':str(ROOT),'input':proposal['after'],'exit_code':r.returncode,'stdout':bind(P/'lint.stdout'),'stderr':bind(P/'lint.stderr')});r.check_returncode()
+ns=runpy.run_path(str(B/'common.py'),run_name='independent_history_bridge_probe');f=ns['code_changes'];g=f.__globals__;load=g['load']
+changes=json.loads((F/'copy-plan.json').read_bytes())['files']
+for row in changes:row['before']=bind(F/'original'/row['relative_path'])
+accept={'status':'accepted_exact_issue471_formatting_successor','issue':471,'target_sha256':ns['TARGET_SHA'],'handoff':bind(F/'handoff.json'),'semantic_review':{'accepted':True},'bridge':{'directory':str(B),'files':[{'relative_path':n,**bind(B/n)} for n in ['common.py','run-gates.py','preserve-maintained.py']]},'changes':changes,'history_test_correction':{k:proposal[k] for k in ['relative_path','before','after']},'history_test_review':{'accepted':True}}
+active=accept
+def injected(path):return copy.deepcopy(active) if str(path)=='/private/tmp/pathwaymech-next-232-root-formatting-acceptance-20261012.json' else load(path)
+g['load']=injected
+result=f();assert len(result)==5 and sum(x['before'] is None for x in result)==2
+results=[]
+def reject(name,mutate):
+ global active
+ active=copy.deepcopy(accept);mutate(active)
+ try:f()
+ except (AssertionError,KeyError,FileNotFoundError) as e:results.append({'name':name,'rejected':True,'exception':type(e).__name__})
+ else:raise AssertionError('invalid fixture accepted: '+name)
+for field in ['history_test_correction','history_test_review']:reject('missing '+field,lambda a,k=field:a.pop(k))
+reject('test review not accepted',lambda a:a['history_test_review'].update(accepted=False))
+reject('wrong test owner',lambda a:a['history_test_correction'].update(relative_path='tests/test_linkml_schema.py'))
+for key in ['before','after']:
+ reject('wrong '+key+' hash',lambda a,k=key:a['history_test_correction'][k].update(sha256='0'*64))
+ reject('wrong '+key+' size',lambda a,k=key:a['history_test_correction'][k].update(bytes=1))
+ reject('wrong '+key+' path',lambda a,k=key:a['history_test_correction'][k].update(path=str(P/'wrong.py')))
+ reject('missing '+key,lambda a,k=key:a['history_test_correction'].pop(k))
+reject('empty bridge identities',lambda a:a['bridge'].update(files=[]))
+reject('duplicate bridge identity',lambda a:a['bridge'].update(files=[a['bridge']['files'][0]]*3))
+reject('wrong bridge body',lambda a:a['bridge']['files'][0].update(sha256='0'*64))
+reject('wrong issue',lambda a:a.update(issue=473))
+reject('wrong scientific target',lambda a:a.update(target_sha256='0'*64))
+write(P/'bridge-controls.json',{'scope':'Synthetic fixture only, no actual root acceptance or maintained mutation','bridge':bind(B/'common.py'),'fixture':accept,'five_owner_result':result,'negative_controls':results,'count':len(results)})
+print(json.dumps({'status':'passed','test_only_AST_change':True,'bytecode_source_code_equal':True,'configured_lint':r.returncode,'guard_controls':len(results)}))

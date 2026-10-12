@@ -4,7 +4,8 @@
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zip, metacyc-html,
-metacyc-protein-xml, metacyc-reaction-xml, ecocyc-protein-xml, ecocyc-rna-xml, ncbi-entrezgene-xml,
+metacyc-protein-xml, metacyc-reaction-xml, ecocyc-protein-xml, ecocyc-rna-xml,
+ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
 bigg-universal-metabolite-json, bigg-universal-reaction-json and
@@ -37,6 +38,7 @@ from xml.parsers import expat
 
 import yaml
 
+from pathwaymech.ecocyc_complex import ECOCYC_COMPLEX_KIND, complex_metadata, complex_term
 from pathwaymech.pathbank_provenance import (
     PATHBANK_ARCHIVE_KIND,
     PATHBANK_ARCHIVE_URL,
@@ -1765,6 +1767,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     if not isinstance(entries, list) or not entries:
         raise ValueError("source manifest must be a nonempty list")
     for entry in entries:
+        if "class_source" in entry and entry["kind"] != ECOCYC_COMPLEX_KIND:
+            raise ValueError("EcoCyc class_source requires the typed complex source kind")
         key = entry["key"]
         if key in source_keys:
             raise ValueError(f"duplicate source key: {key}")
@@ -1819,6 +1823,18 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 raise ValueError(f"conflicting BiGG native identity assertions for {identifier}")
             bigg_assertions[identifier] = assertion
             parsed_terms = [term]
+        elif entry["kind"] == ECOCYC_COMPLEX_KIND:
+            metadata = complex_metadata(entry, cache_dir)
+            identifier, typed_term = complex_term(metadata, key)
+            assertion = (entry["kind"], json.dumps(metadata["native_complex"], sort_keys=True),
+                         entry["version"])
+            if identifier in ecocyc_assertions and ecocyc_assertions[identifier] != assertion:
+                raise ValueError(f"conflicting EcoCyc native identity assertions for {identifier}")
+            ecocyc_assertions[identifier] = assertion
+            ecocyc_versions.add(entry["version"])
+            if len(ecocyc_versions) != 1:
+                raise ValueError("conflicting EcoCyc native PGDB versions")
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in ECOCYC_SOURCE_TYPES:
             term, parent_class = _ecocyc_record(
                 entry["kind"], path, url=entry["url"], version=entry["version"],
@@ -1865,7 +1881,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 if identifier in pathbank_assertions and pathbank_assertions[identifier] != label:
                     raise ValueError(f"conflicting PathBank native pathway names for {identifier}")
                 pathbank_assertions[identifier] = label
-            if identifier.startswith("EcoCyc:") and entry["kind"] not in ECOCYC_SOURCE_TYPES:
+            if (identifier.startswith("EcoCyc:") and entry["kind"] not in ECOCYC_SOURCE_TYPES
+                    and entry["kind"] != ECOCYC_COMPLEX_KIND):
                 raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
                 raise ValueError("BiGG identifiers require native universal JSON authority")
@@ -1904,6 +1921,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 "synonyms": sorted(set(synonyms) - {label}),
                 "source": key,
             }
+            if entry["kind"] == ECOCYC_COMPLEX_KIND:
+                terms[identifier] = complex_term(metadata, key)[1]
             if entry["kind"] == "metacyc-reaction-xml":
                 terms[identifier].update(label_kind="source_context", entity_type="reaction")
             if (

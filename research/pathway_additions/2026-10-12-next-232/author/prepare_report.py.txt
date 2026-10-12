@@ -1,0 +1,20 @@
+from pathlib import Path
+import json,hashlib,yaml,datetime
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+def js(p):return json.loads(Path(p).read_text())
+d=yaml.safe_load((A/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_text());sources=js(A/'ledgers/working-source-bindings.json');claims=js(A/'ledgers/full-claim-dispositions.json');paras=js(A/'ledgers/paragraph-claims.json')
+raw=[]
+for id,b in sources.items():
+ actual=bind(b['path']);assert actual['sha256']==b['sha256'];raw.append(dict(reference_id=id,**b))
+(A/'all-reference-original-bindings.json').write_text(json.dumps(raw,indent=2,ensure_ascii=False)+'\n')
+rows=[]
+for p in paras:
+ selected=[c for c in claims if c['key']in p['claims']]
+ rows.append(dict(**p,source_accounting=[dict(claim=c['key'],whole_original=c['preflight_claim']['source_binding'],nearest_source_locator=c['preflight_claim']['source_locator'],limits=c['preflight_claim']['limits'],exact_selected_passages=c['preflight_claim']['source_selected_passages'])for c in selected]))
+(A/'ledgers/paragraph-source-accounting.json').write_text(json.dumps(rows,indent=2,ensure_ascii=False)+'\n')
+visual_names=['PMID27488847-supplement-pages.json.page-16.png','PMID27488847-supplement-pages.json.page-18.png','pgen.1004264.s009-pages.json.page-1.png','pgen.1004264.s009-pages.json.page-3.png','pgen.1004264.s010-pages.json.page-2.png','pgen.1004264.s010-pages.json.page-3.png','PMID17616624-pages.json.page-4.png']
+(A/'primary-table-visual-inspection.json').write_text(json.dumps(dict(inspected=[bind(P/'derived'/n)for n in visual_names],observations=['2016 S4 sthA WT801.20 deviation167.35 and TyrR332.83 deviation14.09 align in separate growth/activity columns.','2014 S1/S2 original pntAB activation and sthA repression rows align with recorded coordinates/occupancies; occupancy column is described as log2 peak ratio.','2007 CysQ Table2 kinetic values and Table3 LiCl IC50 columns/ND-dash legend visually agree with target.'],scope='Fresh author view_image inspection of retained preflight PDF-rendered PNGs; no new rendering or browser-interaction claim.'),indent=2)+'\n')
+status={'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':bind(A/'draft/nad-phosphorylation-and-dephosphorylation.yaml'),'edges':len(d['mechanistic_edges']),'references':len(d['references']),'participants':len(d['participants']),'named_ids':1+len(d['taxa'])+len(d['participants'])+len(d['reactions']),'core_events':3,'core_sides':15,'supporting_events':1,'supporting_sides':4,'preflight_claims':80,'preflight_constructs':28,'paragraphs':len(paras),'endpoint_qualifiers':sum(len(e.get('endpoint_qualifiers',[]))for e in d['mechanistic_edges']),'source_exhaustion':False,'status':'Scientific draft complete; final authority proposal intake and gates pending; independent review active, no acceptance claim.'}
+(A/'author-status.json').write_text(json.dumps(status,indent=2)+'\n')
+print(json.dumps(status))

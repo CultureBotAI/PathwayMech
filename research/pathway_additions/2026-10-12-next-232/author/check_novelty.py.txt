@@ -1,0 +1,40 @@
+from pathlib import Path
+import json,re,yaml,hashlib,subprocess
+from lxml import etree as E
+A=Path(__file__).parent;D=Path('/private/tmp/pathwaymech-next-232-preflight-20261012');old=json.loads((D/'derived/corpus-all-records.json').read_text());rh=json.loads((D/'derived/rhea-core-chemistry.json').read_text());sel=['RHEA:18630','RHEA:28051','RHEA:47994'];family=set();core=[]
+for m in rh['masters']:
+ family.add(m['master_id'])
+ family.update('RHEA:'+u.rsplit('/',1)[-1] for u in m['master'].get('bidirectionalReaction',[]))
+ for r in m['directions']:
+  family.add(r['id'])
+  if r['id'] in sel:core.append(r)
+chem={}
+for r in core:
+ for v in r['sides'].values():
+  for x in v:chem[x['properties']['accession'][0]]=x['properties']['name'][0]
+
+def norm(i,l):
+ s=re.sub('<[^>]*>','',l).lower();s=re.sub(r'\([^)]*\)|\[[^]]*\]','',s);s=re.sub(r'[^a-z0-9]','',s)
+ if i in chem:s=re.sub('[^a-z0-9]','',chem[i].lower())
+ aliases={'nadp':'NADP','nadph':'NADPH','nadh':'NADH','nad':'NAD','atp':'ATP','adenosinetriphosphate':'ATP','adp':'ADP','adenosinediphosphate':'ADP','water':'H2O','h2o':'H2O','proton':'H','hydron':'H','hydrogenion':'H','h':'H','hydrogenphosphate':'Pi','phosphate':'Pi','phosphoricacid':'Pi','dihydrogenphosphate':'Pi'}
+ if s in aliases:return aliases[s]
+ return i
+sigs={r['id']:([norm(x['properties']['accession'][0],x['properties']['name'][0]) for x in r['sides']['substrates']],[norm(x['properties']['accession'][0],x['properties']['name'][0])for x in r['sides']['products']])for r in core}
+rows=[]
+for row in old:
+ p=Path(row['path']);b=p.read_bytes();assert hashlib.sha256(b).hexdigest()==row['sha256'];y=yaml.safe_load(b);nodes={x['id']:x for f in ['participants','reactions','taxa']for x in y.get(f,[])};events=[]
+ for e in row['reaction_signatures']:
+  a={norm(i,nodes.get(i,{}).get('label',''))for i in e['inputs']};b={norm(i,nodes.get(i,{}).get('label',''))for i in e['outputs']};matches=[]
+  for rid,(ca,cb)in sigs.items():
+   # generous screen drops H2O/H and orientation, charge-form specificity; never claims equality from coefficient omissions.
+   da=set(ca)-{'H','H2O'};db=set(cb)-{'H','H2O'};aa=a-{'H','H2O'};bb=b-{'H','H2O'}
+   if (da==aa and db==bb)or(da==bb and db==aa):matches.append(rid)
+  hits=(a|b)&{'NAD','NADH','NADP','NADPH'}
+  if matches or hits or e['id']in family:events.append(dict(**e,normalized_input=sorted(a),normalized_output=sorted(b),family_hit=e['id']in family,generous_match=matches))
+ rows.append(dict(record=row['id'],original={k:row[k]for k in ['path','bytes','sha256']},candidate_events=events,complete_core_match=set(sel)<={i for e in events for i in e['generous_match']}))
+thal=next(x for x in old if x['id']=='MetaCyc:THRDLCTCAT-PWY');thal_events=[x for x in thal['reaction_signatures']if x['id'] in ['RHEA:13162','RHEA:25654','RHEA:28187']]
+assert len(thal_events)==3
+xml=E.parse(str(D/'raw/PW002106.owl'));ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+thal_pathbank=[dict(id=x.get('{'+ns['rdf']+'}ID'),name=x.findtext('bp:name',namespaces=ns),left=[q.get('{'+ns['rdf']+'}resource')for q in x.findall('bp:left',ns)],right=[q.get('{'+ns['rdf']+'}resource')for q in x.findall('bp:right',ns)])for x in xml.findall('bp:BiochemicalReaction',ns)]
+result=dict(corpus_count=len(rows),captured_baseline='230 EG-branch records plus ATP and PPi accepted prospects; main was229 at intake. Later merges are not silently substituted.',method='Every named reaction and chemical edge inspected from all exact record bytes; broad NAD/nucleotide/charge aliases, both orientations and omission of ubiquitous water/proton are generous duplicate screening only, not identity equivalence. Coefficients are not defaulted.',candidate_core=sigs,families=sorted(family),records=rows,whole_route_matches=[x['record']for x in rows if x['complete_core_match']],individual_matches=[dict(record=x['record'],event=e)for x in rows for e in x['candidate_events']if e['generous_match']or e['family_hit']],threonine_disposition=dict(status='exact previously maintained defined route; reject addition',record=thal,three_events=thal_events,pathbank_events=thal_pathbank,limits='TynA hypothetical bacterial assignment and spontaneous aminobutyrate chemistry already qualified in maintained record; yeast CHA1/GLY1 label is irrelevant to this positive duplicate.'))
+(A/'derived/semantic-novelty-fresh.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k]for k in ['corpus_count','whole_route_matches','individual_matches']},indent=2))

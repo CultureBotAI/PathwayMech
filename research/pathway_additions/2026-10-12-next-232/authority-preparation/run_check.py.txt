@@ -1,0 +1,23 @@
+"""Run and retain actual external bounded preparation commands with exact helpers."""
+import os
+import subprocess
+import sys
+import time
+from common import O,PYTHON,bind,now,write
+name=sys.argv[1]
+commands={
+ 'capture':[str(PYTHON),'-B',str(O/'capture_inputs.py')],
+ 'cache_bridge':[str(PYTHON),'-B',str(O/'capture_cache_bridge.py')],
+ 'prepare':[str(PYTHON),'-B',str(O/'prepare_proposal.py')],
+ 'check':[str(PYTHON),'-B',str(O/'check_proposal.py')],
+ 'lint':[str(PYTHON),'-B','-m','ruff','check','--select','F','--ignore','F403,F405',*[str(p) for p in O.glob('*.py')]],
+ 'compile':[str(PYTHON),'-B','-c','import pathlib; paths=list(pathlib.Path.cwd().glob("*.py")); [compile(p.read_bytes(),str(p),"exec") for p in paths]; print(len(paths))']}
+assert name in commands
+out=O/'receipts'/f'{name}-{time.time_ns()}';out.mkdir(parents=True)
+for f in O.glob('*.py'):(out/(f.name+'.txt')).write_bytes(f.read_bytes())
+env={'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(O),'RUFF_CACHE_DIR':'/private/tmp/pathwaymech-next-232-authority-preparation-ruff-cache-20261012'}
+start=now();tick=time.monotonic()
+with (out/'stdout').open('xb') as stdout,(out/'stderr').open('xb') as stderr:
+ result=subprocess.run(commands[name],cwd=O,env={**os.environ,**env},stdout=stdout,stderr=stderr)
+r={'name':name,'command':commands[name],'cwd':str(O),'environment':env,'started_at':start,'finished_at':now(),'seconds':round(time.monotonic()-tick,3),'exit_code':result.returncode,'stdout':bind(out/'stdout'),'stderr':bind(out/'stderr')}
+write(str((out/'receipt.json').relative_to(O)),r);print(r);print((out/'stdout').read_text());print((out/'stderr').read_text());sys.exit(result.returncode)

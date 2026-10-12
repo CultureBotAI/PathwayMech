@@ -1,0 +1,5 @@
+The existing `test_the_history_gate_runs_without_the_virtualenv_on_path` regression test sanitizes its child environment to PATH and HOME, discarding the caller’s `PYTHONDONTWRITEBYTECODE=1`. Its `validate_history.py` child launches `validate_history_links.py`, which imports `new_history_record` and leaves `scripts/__pycache__/new_history_record.cpython-313.pyc` in the maintained worktree. The observed file was absent from the captured baseline and initial gate inputs.
+
+Retain the observed generated body and failed-run lineage, then preserve `PYTHONDONTWRITEBYTECODE=1` in this test’s deliberately minimal child environment. Keep the original no-virtualenv-on-PATH regression meaningful. Verify the corrected test still passes without creating a bytecode file, run the fresh full suite, and preserve exact old files/cache originals. Do not weaken inventory checks or add a blanket cache exclusion.
+
+Finding: `nad-history-test-drops-bytecode-setting`. This additional test-only fix does not alter pathway data, production runtime behavior, schema or scientific authority outputs.

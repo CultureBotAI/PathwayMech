@@ -1,0 +1,41 @@
+"""Bounded actual-stream and native-complex output observations."""
+import collections
+import hashlib
+import json
+from pathlib import Path
+
+A=Path(__file__).resolve().parent
+O=Path('/private/tmp/pathwaymech-next-232-canonical-build-20261012')
+PRIOR=Path('/private/tmp/pathwaymech-next-231-canonical-build-20261012')
+
+
+def bind(p):
+    return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+
+
+def warnings(root):
+    return [x.replace(str(root/'corpus')+'/', '') for x in (root/'ontology_builder.stdout').read_text().splitlines() if x.startswith('LABEL_DIFFERENCE\t')]
+
+
+current=warnings(O);prior=warnings(PRIOR)
+assert len(current)==916
+assert collections.Counter(current)==collections.Counter(prior)
+assert not any('\tnad-phosphorylation-and-dephosphorylation.yaml\t' in x for x in current)
+lines=(O/'ontology_builder.stdout').read_text().splitlines()
+assert len(lines)==921
+assert lines[0].startswith('CHEBI: resolved 982/982 ')
+assert lines[1].startswith('GO: resolved 133/133 ')
+assert lines[2].startswith('NCBITaxon: resolved 43/43 ')
+assert lines[3].startswith('RHEA: resolved 795/819 ')
+assert lines[-1]=='Wrote 1977 authority terms to '+str(O/'ontology.json')
+assert (O/'source_builder.stdout').read_text()=='Retained 2527 independently sourced identifiers from 627 sources\n'
+s=json.loads((O/'sources.json').read_bytes())
+observed={}
+for key in ('EcoCyc:CPLX0-682','EcoCyc:PYRNUTRANSHYDROGEN-CPLX'):
+    term=s['terms'][key];observed[key]={'term':term,'metadata':s['sources'][term['source']]}
+assert observed['EcoCyc:CPLX0-682']['term']=={'label':'unnamed protein complex CPLX0-682','synonyms':[],'source':'nad232-ecoli-cplx0-682','entity_type':'protein_complex','label_kind':'source_context'}
+assert observed['EcoCyc:PYRNUTRANSHYDROGEN-CPLX']['term']['label_kind']=='source_synonym'
+assert observed['EcoCyc:PYRNUTRANSHYDROGEN-CPLX']['metadata']['native_complex']['class_source']['sha256']=='e36fbeb82a86b02acd1494807251805a45aa63f7b60b83e109453d096c3ac835'
+result={'source_stdout':bind(O/'source_builder.stdout'),'ontology_stdout':bind(O/'ontology_builder.stdout'),'source_resolution':{'terms':2527,'sources':627},'ontology_resolution':{'CHEBI':982,'GO':133,'NCBITaxon':43,'RHEA_SQL':795,'RHEA_update':24,'RHEA_total':819,'all_terms':1977},'label_difference_rows':916,'old_label_difference_multiset_exact_after_output_root_normalization':True,'NAD_label_difference_rows':0,'actual_complex_objects':observed,'interpretation':'Actual native serialization retains accepted truthful unnamed/synonym-only status, components, native parents and independent class proof. Substantive adapter judgment inherits root independent acceptance; this is a byte/object output observation.'}
+with (A/'actual-stream-assessment.json').open('x') as f:json.dump(result,f,indent=2,ensure_ascii=False);f.write('\n')
+print(json.dumps({'actual_streams':'passed','label_difference_rows':916,'new_NAD_label_differences':0,'old_diagnostics_exact':True}))

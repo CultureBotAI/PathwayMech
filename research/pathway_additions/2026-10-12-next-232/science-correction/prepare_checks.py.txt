@@ -1,0 +1,29 @@
+"""Adapt already-read candidate-only helpers; preserve source attribution."""
+from pathlib import Path
+import hashlib
+import json
+
+A = Path(__file__).parent
+O = Path('/private/tmp/pathwaymech-next-232-author-20261012')
+target = A / 'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+sha = hashlib.sha256(target.read_bytes()).hexdigest()
+rows = []
+for name in ['replay_sources.py', 'check_candidate.py', 'check_exports.py', 'check_identifiers_provisional.py']:
+    original = (O / name).read_text()
+    text = original
+    if name == 'check_candidate.py':
+        text = text.replace('Accepted prospective PPi baseline runtime; complex adapter independent acceptance and source proposals pending; no full NAD canonical build',
+                            'Exact accepted external 225-file runtime and independently accepted authority proposal; candidate-only successor validation, not a full NAD canonical build')
+    if name == 'check_identifiers_provisional.py':
+        text = text.replace('c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503', sha)
+        text = text.replace("fixture = A / 'identifier-consumer-fixture'", "fixture = A / 'identifier-consumer-fixture-" + sha[:12] + "'")
+        text = text.replace('Consume actual native-produced snapshots before the helper\'s final sealing step.',
+                            'Candidate-only native consumer of accepted append-only authority proposals; no full canonical build.')
+        text = text.replace('Actual single-record native identifier consumer using final native-produced proposal snapshots; final authority handoff sealing and exact-byte bridge are still required. No full canonical authority build is asserted.',
+                            'Actual single-record native identifier consumer using independently accepted append-only authority proposals. Exact successor collector/code bridge is separately recorded. No full canonical authority build is asserted.')
+    (A / name).write_text(text)
+    rows.append(dict(name=name, original_path=str(O/name), original_sha256=hashlib.sha256(original.encode()).hexdigest(),
+                     successor_sha256=hashlib.sha256(text.encode()).hexdigest(),
+                     modification='No changes' if original == text else 'Only exact successor digest and truthful current candidate/authority-status strings'))
+(A / 'helper-lineage.json').write_text(json.dumps(rows, indent=2) + '\n')
+print('Prepared four candidate-only helpers with source lineage')
