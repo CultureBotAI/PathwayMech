@@ -1,0 +1,26 @@
+{
+  "issue_key": "adenosine-degradation-mg1655-add-induction-completeness",
+  "severity": "major",
+  "priority": "P2",
+  "target_sha256": "b2e32140bbdc4a242e89166c1090db8d6eac84aa6c55abc8b030d80ff82bd528",
+  "target": "data/pathways/adenosine-nucleotides-degradation-ii.yaml",
+  "title": "Retain experimentally supported MG1655 adenine induction of add",
+  "finding": "The draft represents expression induction for xapA, umpH and deoD, but omits the measured adenine-induced add response in its declared MG1655 scope. Its description mentions only historical E. coli B induction as a nontransferable observation, overlooking independent K-12 MG1655 primary evidence already retained for the shared Add step in the preceding salvage-II record.",
+  "primary_source": {
+    "id": "PMID:21572102",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3159470/",
+    "path": "/private/tmp/pathwaymech-next-222-preflight-20261011/raw/PMC3159470.html",
+    "sha256": "6894d332e33b1779d56624171bb0c65fa765c512f806b4e1580d97b51378a1aa",
+    "inspected": ["sec2", "sec3", "sec9", "sec12", "sec13"],
+    "result": "Methods explicitly use K-12 MG1655 and derivatives, M9 with 2 g/L glucose, 37 C, mid-log phase, with or without 100 micrograms/mL adenine. Results sec9 explicitly report 17.61-fold induction of add transcript. Sec13 explicitly excludes add and deoD from direct PurR regulation."
+  },
+  "proposed_fix": "Add independently verified CHEBI:16708 adenine and Entrez:945851 add gene nodes and an adenine activates add gene-expression edge with this primary reference, exact locators, MG1655 culture scope and no direct binding/allostery/PurR claim. Retain the historical E. coli B scope limit separately. Reuse already retained issuing authority identities only after checking the actual original Gene record and chemical label.",
+  "acceptance": [
+    "Exact added chemical/gene IDs resolve against issuing originals; gene maps to MG1655 b1623 and P22333.",
+    "Gene-level induction edge cites PMID21572102 Methods sec3 and Results sec9; sec13 non-PurR limit preserved.",
+    "No adenine activates Add protein or PurR directly represses add edge is introduced.",
+    "All 101 original graph edges and their scientific scope remain unchanged except explicit, reviewed textual clarification.",
+    "Both native and closed schemas, independent source replay and graph/KGX evidence preservation pass on the successor SHA."
+  ],
+  "basis": "Direct independent inspection of the original article, not reliance on the previous curated record as authority. Full draft read and complete parsed node/edge inventory establish the target omission."
+}

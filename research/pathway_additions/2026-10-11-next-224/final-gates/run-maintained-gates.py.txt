@@ -1,0 +1,34 @@
+"""Prepared root-owned gate runner. This helper is inert until root executes it."""
+from pathlib import Path
+from datetime import datetime,timezone
+import argparse,hashlib,json,os,subprocess,sys
+PYTHON=Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+def main():
+ p=argparse.ArgumentParser(description=__doc__);p.add_argument('--root',required=True,type=Path);p.add_argument('--output',required=True,type=Path)
+ for name in ['sources','ontology','manifest']:p.add_argument('--'+name+'-sha256',required=True)
+ a=p.parse_args();root=a.root.resolve();a.output.mkdir(parents=True,exist_ok=False)
+ assert root==Path('/private/tmp/pathwaymech-next-224-20261012')
+ assert sha(root/'data/pathways/adenosine-nucleotides-degradation-ii.yaml')=='b7f837be8676b08c9a8a0f417ca17a695664e8614b30e7847f4f7e05c845cbf6'
+ assert sha(root/'scripts/build_source_identifier_snapshot.py')=='f2d255e77dca1f162e75018865992227586b9df55ed72adbeb8f2a001197f0d5'
+ for name,rel in [('sources','data/identifier_authorities/sources.json'),('ontology','data/identifier_authorities/ontology.json'),('manifest','conf/identifier_sources.json')]:assert sha(root/rel)==getattr(a,name+'_sha256')
+ env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(root/'src')+os.pathsep+str(root)}
+ py=[str(PYTHON),'-B'];commands=[
+  ('render',py+['-c','from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())']),
+  ('skills',py+['scripts/validate_claude_skills.py']),
+  ('validate',py+['-c','from pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())']),
+  ('tests',py+['-m','pytest','-q']),('lint',py+['-m','ruff','check','.']),
+  ('kgx',py+['-c','from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())']),
+  ('vendored',['bash','scripts/check_vendored_sync.sh']),
+  ('diff-check',['git','diff','--check'])]
+ receipts=[]
+ for name,cmd in commands:
+  start=datetime.now(timezone.utc).isoformat();r=subprocess.run(cmd,cwd=root,env=env,capture_output=True)
+  (a.output/(name+'.stdout')).write_bytes(r.stdout);(a.output/(name+'.stderr')).write_bytes(r.stderr)
+  receipts.append({'name':name,'command':cmd,'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':r.returncode})
+  (a.output/'execution.json').write_text(json.dumps({'status':'running' if r.returncode==0 else 'failed','receipts':receipts},indent=2)+'\n')
+  print(name,r.returncode,flush=True)
+  if r.returncode:return r.returncode
+ (a.output/'execution.json').write_text(json.dumps({'status':'passed','receipts':receipts,'scope':'Actual maintained gates; unstaged diff-check does not cover later untracked/staged dossier packaging.'},indent=2)+'\n')
+ return 0
+if __name__=='__main__':raise SystemExit(main())

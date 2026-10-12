@@ -1,0 +1,99 @@
+{
+  "status": "passed",
+  "scope": "Prospective purine pathway authority builds against reviewed PR430 head; maintained adoption awaits the merged-tree bridge.",
+  "base_commit": "5a4f2c2aa491eac8143338fdf64f146fbd6f08a2",
+  "receipts": [
+    {
+      "name": "source_builder",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-223-20261011/scripts/build_source_identifier_snapshot.py",
+        "--manifest",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/manifest.json",
+        "--cache-dir",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/originals",
+        "--records",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/corpus",
+        "--output",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/sources.json"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-223-20261011",
+      "started_at": "2026-10-12T00:16:11.587578+00:00",
+      "exit_code": 0,
+      "finished_at": "2026-10-12T00:17:15.175369+00:00",
+      "stdout": {
+        "path": "/private/tmp/pathwaymech-next-224-canonical-build-20261012/source_builder.stdout.log",
+        "bytes": 65,
+        "sha256": "2b78ef4ad250943bf1c55e165679c29a400e7814b127759ef9e99edf3e1fb579"
+      },
+      "stderr": {
+        "path": "/private/tmp/pathwaymech-next-224-canonical-build-20261012/source_builder.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "ontology_builder",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-223-20261011/scripts/build_ontology_identifier_snapshot.py",
+        "--source",
+        "CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db",
+        "--source",
+        "GO=/private/tmp/pathwaymech-curation-authorities/go.db",
+        "--source",
+        "NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+        "--source",
+        "RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db",
+        "--corpus",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/corpus",
+        "--rhea-updates",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/rhea-updates.json",
+        "--cache-dir",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/originals",
+        "--output",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012/ontology.json"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-223-20261011",
+      "started_at": "2026-10-12T00:17:15.176314+00:00",
+      "exit_code": 0,
+      "finished_at": "2026-10-12T00:19:07.027600+00:00",
+      "stdout": {
+        "path": "/private/tmp/pathwaymech-next-224-canonical-build-20261012/ontology_builder.stdout.log",
+        "bytes": 177082,
+        "sha256": "ff0f6cf0fec5fb15c1c976d364b8f0f402a32c20a4ad866fb498c0461d7fbc3f"
+      },
+      "stderr": {
+        "path": "/private/tmp/pathwaymech-next-224-canonical-build-20261012/ontology_builder.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "name": "verification",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "/private/tmp/pathwaymech-next-224-integration-preparation-20261011/verify-canonical-results.py",
+        "--build",
+        "/private/tmp/pathwaymech-next-224-canonical-build-20261012"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-223-20261011",
+      "started_at": "2026-10-12T00:19:07.030559+00:00",
+      "exit_code": 0,
+      "finished_at": "2026-10-12T00:19:07.616102+00:00",
+      "stdout": {
+        "path": "/private/tmp/pathwaymech-next-224-canonical-build-20261012/verification.stdout.log",
+        "bytes": 992,
+        "sha256": "0e00e8e4fd8c0e74469fc2a3963bbdeeffcc217077245ef263122b537bfdd5a5"
+      },
+      "stderr": {
+        "path": "/private/tmp/pathwaymech-next-224-canonical-build-20261012/verification.stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+"""Root-owned, unexecuted preparation helper. Creates external inputs; runs no builders.
+
+Usage: python -B prepare-canonical-inputs.py --root FUTURE_WORKTREE
+       --expected-head EXACT_MERGED_AMINO_COMMIT --output NEW_EXTERNAL_DIRECTORY
+The merge bridge is byte based and recorded; the earlier working HEAD is not asserted merged.
+"""
+from pathlib import Path
+from datetime import datetime, timezone
+import argparse, hashlib, json, os, shutil, subprocess
+import yaml
+
+PACKAGE=Path(__file__).parent
+PYTHON='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+
+def sha(path):
+    h=hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+    return h.hexdigest()
+
+def load(name):return json.loads((PACKAGE/name).read_bytes())
+def verify(path,row):
+    assert Path(path).stat().st_size==row['bytes'] and sha(path)==row['sha256'],str(path)
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--root',required=True,type=Path)
+    p.add_argument('--expected-head',required=True)
+    p.add_argument('--output',required=True,type=Path)
+    a=p.parse_args();root=a.root.resolve();out=a.output.absolute()
+    for row in load('artifact-manifest.json')['artifacts']:verify(row['path'],row)
+    assert out.parent.resolve().is_relative_to(Path('/private/tmp'))
+    assert not out.exists() and not out.is_symlink()
+    assert not out.is_relative_to(root) and not out.is_relative_to(PACKAGE)
+    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+    assert head==a.expected_head and len(head)==40
+    base=load('baseline.json');delta=load('expected-delta.json');oldroot=Path(base['root'])
+    actual=set(subprocess.check_output(['rg','--files','-uu','-L','data/pathways'],cwd=root,text=True).splitlines())
+    assert actual=={r['relative_path'] for r in base['records']},'Cohort differs from the captured 224-record baseline'
+    for r in base['records']+base['authority_inputs']:verify(root/r['relative_path'],r)
+    for r in base['implementation_inputs']:verify(root/Path(r['path']).relative_to(oldroot),r)
+    verify(delta['target']['path'],delta['target'])
+    originals=load('historical-original-bindings.json')['bodies']
+    new=load('guarded-copy-plan.json')['new_originals']
+    dbs=load('ontology-original-bindings.json')['originals']
+    for r in originals+dbs:verify(r['path'],r)
+    for r in new:verify(r['source']['path'],r['source'])
+    manifest=load('prospective-manifest.json')
+    assert manifest[:651]==json.loads((root/'conf/identifier_sources.json').read_bytes()) and len(manifest)==663
+    # All guards complete before the first output mutation. Existing directories are never reused.
+    out.mkdir();(out/'corpus').mkdir();(out/'originals').mkdir()
+    for r in base['records']:
+        relative=Path(r['relative_path']).relative_to('data/pathways')
+        destination=out/'corpus'/relative;destination.parent.mkdir(parents=True,exist_ok=True)
+        with destination.open('xb') as f:f.write((root/r['relative_path']).read_bytes())
+        verify(destination,r)
+    target=out/'corpus/adenosine-nucleotides-degradation-ii.yaml'
+    with target.open('xb') as f:f.write(Path(delta['target']['path']).read_bytes())
+    verify(target,delta['target'])
+    retained=load('retention-identifiers.json')['ids']
+    selector={'id':retained[0],'participants':[{'id':i} for i in retained[1:]]}
+    (out/'corpus/_authority_retention').mkdir()
+    (out/'corpus/_authority_retention/selector.yaml').write_text(yaml.safe_dump(selector,sort_keys=False))
+    # Selector is a build-only identifier request, never a maintained pathway record.
+    for r in originals:
+        destination=out/'originals'/r['cache_relative_path'];destination.parent.mkdir(parents=True,exist_ok=True)
+        destination.symlink_to(r['path'])
+    for r in new:
+        destination=out/'originals'/r['destination_cache_relative_path'];destination.parent.mkdir(parents=True,exist_ok=True)
+        with destination.open('xb') as f:f.write(Path(r['source']['path']).read_bytes())
+        verify(destination,r['source'])
+    shutil.copyfile(PACKAGE/'prospective-manifest.json',out/'manifest.json')
+    shutil.copyfile(root/'conf/rhea_identifier_updates.json',out/'rhea-updates.json')
+    source_command=[PYTHON,'-B',str(root/'scripts/build_source_identifier_snapshot.py'),'--manifest',str(out/'manifest.json'),'--cache-dir',str(out/'originals'),'--records',str(out/'corpus'),'--output',str(out/'sources.json')]
+    ontology_command=[PYTHON,'-B',str(root/'scripts/build_ontology_identifier_snapshot.py')]
+    for r in dbs:ontology_command+=['--source',r['prefix']+'='+r['path']]
+    ontology_command+=['--corpus',str(out/'corpus'),'--rhea-updates',str(out/'rhea-updates.json'),'--cache-dir',str(out/'originals'),'--output',str(out/'ontology.json')]
+    commands={'environment':{'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(root/'src')+':'+str(root)},'cwd':str(root),'source_builder':source_command,'ontology_builder':ontology_command,
+              'verification':[PYTHON,'-B',str(PACKAGE/'verify-canonical-results.py'),'--build',str(out)],'executed':False}
+    (out/'commands.json').write_text(json.dumps(commands,indent=2)+'\n')
+    receipt={'at':datetime.now(timezone.utc).isoformat(),'status':'Inputs prepared; canonical builders not executed','actual_root':str(root),'actual_head':head,'captured_working_head':base['head'],'explicit_byte_bridge':True,'baseline_sha256':sha(PACKAGE/'baseline.json'),'package_handoff_sha256':sha(PACKAGE/'handoff.json'),'target_sha256':sha(target),'records':225,'build_only_retention_selectors':1,'retention_ids':len(retained),'manifest_sha256':sha(out/'manifest.json'),'manifest_entries':663,'old_original_symlinks':len(originals),'new_original_copies':len(new),'rhea_updates_sha256':sha(out/'rhea-updates.json'),'shared_cache_writes':False,'maintained_writes':False,'commands':commands}
+    (out/'preparation.json').write_text(json.dumps(receipt,indent=2)+'\n')
+    print(json.dumps(receipt,indent=2))
+
+if __name__=='__main__':main()

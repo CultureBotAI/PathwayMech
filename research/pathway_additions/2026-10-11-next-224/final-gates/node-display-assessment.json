@@ -1,0 +1,131 @@
+{
+  "at": "2026-10-12T00:40:18.442349Z",
+  "reviewer": "Codex /root/purine_finalization",
+  "status": "exact_four_display_cells_supported",
+  "target_sha256": "b7f837be8676b08c9a8a0f417ca17a695664e8614b30e7847f4f7e05c845cbf6",
+  "baseline_kgx_sha256": "7f112c537d3c4816d27359e78f0f36192e228a4e2c889129e9465fa256a0db78",
+  "current_nodes_sha256": "4ea88351755f974b194f742b511dec693cd43eef4e3eb2b602e3c3e0833d9513",
+  "unchanged_kgx_implementation_sha256": "4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9",
+  "approval_path": "/private/tmp/pathwaymech-next-224-finalization-20261012/approved-node-display-delta.json",
+  "approval_sha256": "5fae4a21cf19292e3d717739834e7c448d365f36876a4eddc75a4fb7424de2bf",
+  "approved_node_display_delta": [
+    {
+      "id": "CHEBI:29108",
+      "column": "category",
+      "before": "biolink:ChemicalEntity",
+      "after": "biolink:ChemicalEntity|biolink:SmallMolecule"
+    },
+    {
+      "id": "CHEBI:29108",
+      "column": "source_category",
+      "before": "cofactor",
+      "after": "cofactor|small_molecule"
+    },
+    {
+      "id": "CHEBI:71302",
+      "column": "category",
+      "before": "biolink:SmallMolecule",
+      "after": "biolink:ChemicalEntity|biolink:SmallMolecule"
+    },
+    {
+      "id": "CHEBI:71302",
+      "column": "source_category",
+      "before": "small_molecule",
+      "after": "cofactor|small_molecule"
+    }
+  ],
+  "preserved_contexts": [
+    {
+      "id": "CHEBI:29108",
+      "retained_contexts": 10,
+      "new_context": {
+        "category": "small_molecule",
+        "collection": "participants",
+        "id": "CHEBI:29108",
+        "label": "calcium(2+)",
+        "record_id": "MetaCyc:SALVADEHYPOX-PWY"
+      }
+    },
+    {
+      "id": "CHEBI:71302",
+      "retained_contexts": 1,
+      "new_context": {
+        "category": "cofactor",
+        "collection": "participants",
+        "id": "CHEBI:71302",
+        "label": "Mo(VI)O2(OH)-molybdopterin cofactor(4-)",
+        "record_id": "MetaCyc:SALVADEHYPOX-PWY"
+      }
+    }
+  ],
+  "inspected_sources": [
+    {
+      "id": "UniProtKB:P0AE22",
+      "path": "/private/tmp/pathwaymech-next-224-preflight-20261011/raw-components/P0AE22.json",
+      "sha256": "36c63e459953942cf2363627809b4bd79c7e582965ebaf73596be84b5aa745b1",
+      "locator": "/comments/3",
+      "inspected_comment": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "16297670"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "9011040"
+              }
+            ],
+            "value": "Activated by ethanol. Inhibited strongly by EDTA and more weakly by other divalent ions chelators 1,10-phenanthroline, EGTA and dipicolinic acid. Inhibited also by nucleosides, inorganic phosphate and Ca(2+). Unaffected by F(-)"
+          }
+        ],
+        "commentType": "ACTIVITY REGULATION"
+      }
+    },
+    {
+      "id": "UniProtKB:Q46799",
+      "path": "/private/tmp/pathwaymech-next-224-preflight-20261011/raw-retry/Q46799.json",
+      "sha256": "35d34f53a060da18cfb01792a8f039232b7f068a2fbd04bacb3437851c543d75",
+      "locator": "/comments/3",
+      "inspected_comment": {
+        "commentType": "COFACTOR",
+        "cofactors": [
+          {
+            "name": "Mo-molybdopterin",
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000250"
+              }
+            ],
+            "cofactorCrossReference": {
+              "database": "ChEBI",
+              "id": "CHEBI:71302"
+            }
+          }
+        ],
+        "note": {
+          "texts": [
+            {
+              "evidences": [
+                {
+                  "evidenceCode": "ECO:0000250"
+                }
+              ],
+              "value": "Binds 1 Mo-molybdopterin (Mo-MPT) cofactor per subunit."
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "assessment": [
+    "Calcium retains its ten prior cofactor contexts and gains a source-supported small-molecule inhibitor role for AphA; the global role union does not assert calcium is an AphA cofactor.",
+    "CHEBI:71302 is Mo-MPT, not MCD. Its existing PWY-6823 small-molecule context is retained, and the inferred XdhA cofactor role is added. The source ECO:0000250 limit and competing phenotype-based MCD interpretation remain in edge068.",
+    "The existing exporter deliberately unions supported explicit categories while retaining each complete per-record context. No identifier, label, prior context, edge or source evidence is changed by these display unions."
+  ],
+  "limits": "This approval is limited to these exact four before/after cells at the bound target/export/baseline. It does not waive any other node display change or the separately investigated new-edge serialization mismatch.",
+  "failed_probe": "14953d/1: initial read probe included an assumed export_kgx.py filename; rg correctly identified the actual unchanged implementation as src/pathwaymech/kgx.py. No product change."
+}
