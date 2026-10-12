@@ -1,0 +1,77 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import ast, base64, gzip, hashlib, json
+OUT=Path(__file__).parent
+BASE='research/pathway_additions/2026-10-11-next-223'
+STAGE=OUT/'staged-v2'/BASE
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def write(name,obj):
+ p=STAGE/name;assert not p.exists();p.parent.mkdir(parents=True,exist_ok=True)
+ p.write_text(json.dumps(obj,indent=2,ensure_ascii=False)+'\n')
+readme='''# Amino-sugar superpathway integration preparation
+
+This compact dossier records the accepted corrected target `MetaCyc:GLCMANNANAUT-PWY` at SHA-256 `ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff`: 80 named identifiers, 114 mechanism edges and 66 references. The original 77-identifier target received a request for changes in issue [425](https://github.com/CultureBotAI/PathwayMech/issues/425). Its report remains intact beside the independently accepted scientific successor. Native CRP complex/state and SgrS RNA identities, expression controls and assembly are explicit; reference-only CAMP and PD00257 mappings do not become authority terms. The BiGG universal/model direction distinction and acmana chemistry discrepancy retain their documented limits.
+
+The independent science and software reports are completed external assessments. Reviewed complex, endpoint, BiGG and EcoCyc support was adopted by the root integrator. Root's actual combined source and ontology CLIs subsequently passed: all 2,265 prior source terms and 476 prior metadata objects are exact, with 39 new terms and 22 new metadata objects; all 1,873 prior ontology terms and five source metadata objects are retained, with 15 new ontology terms. The source build verified 651 manifest entries and 652 original bodies including the BiGG version companion. The separate root adoption receipt binds the target and outputs; the maintained render subsequently produced 224 record pages. Earlier immutable receipts still state the status at their own timestamps.
+
+At this preparation snapshot, full maintained validation, tests, lint, final KGX preservation, governed structured review and publication remain root-owned and pending. No command in this preparation package was used by its author to mutate the maintained worktree, save a review, or run maintained gates. Later root results belong in an explicit final-integration successor; this preparation is not a final acceptance or merge decision.
+
+The preservation baseline was captured before data adoption: 223 records, 223 record pages, 96 complete structured review bundles, 367 history entries, 10,808 KGX edges and 7,135 node source contexts. Enumeration included hidden, ignored and symlink-followed paths. Tracked `pages/downloads` tables are the old preservation authority; ignored `output/kgx` was separately bound and differed at capture. The first baseline helper's mistaken equality assertion failed and is retained; its corrected successor captured both faithfully. The preservation helper requires byte retention of old records, pages, review bundles and history, every old edge cell and ID, and every old node context. Its sole preauthorized KGX column change is a new blank `endpoint_qualifiers` cell for legacy edges. Any global node display change requires a separate exact reviewed delta.
+
+The iModulonDB context followup is dated after the sealed science reviews. It adds no edges or direction claims, and its initial DNS failure and successful retry remain distinct. Search results and transcriptomic associations are not used to infer absent regulation, signs or broader taxon coverage.
+
+`archive-map.json` binds each selected source and archived representation. Scripts and draft YAML are inert `.txt` artifacts. Logs and patches use lossless UTF-8 JSON wrappers; the two complete baseline inventories use lossless gzip/base64 JSON wrappers. `integration-preparation/decode-wrapper.py.txt` decodes either format to a new external path and verifies byte length and SHA-256. No wrapped bytes were stripped or normalized. Selected acquisition metadata explicitly omits HTTP headers/cookies and identifies its original digest. Full source articles, XML/RDF bodies, mutated fixtures and cloned repositories are excluded. Large redundant inventories remain external under exact path/hash/length bindings in `external-seal-bindings.json`; this archive does not claim to contain those originals.
+
+The author of this preparation also implemented the bounded BiGG and EcoCyc adapters and earlier conducted integration review. Independent scientific assessments and EcoCyc code review were performed by a separate reviewer; root independently reviewed and adopted the code. Those roles and inherited evidence are distinct from a fresh governed scientific review, which remains pending.
+
+Root may execute the prepared native scaffold commands and retained-runtime gates after checking their input bindings. The scaffold commands use native IDs/timestamps and issue 425; no prepared history event claims that pending gates passed. All helpers use the existing next-195 runtime without environment synchronization. The final staged archive still requires root's staged diff check after adoption; an earlier unstaged check cannot substitute for that check.
+'''
+(STAGE/'README.md').write_text(readme)
+decoder='''"""Decode a preserved lossless wrapper to a new external file."""
+from pathlib import Path
+import argparse,base64,gzip,hashlib,json
+p=argparse.ArgumentParser(description=__doc__)
+p.add_argument('wrapper',type=Path);p.add_argument('output',type=Path)
+a=p.parse_args();o=json.loads(a.wrapper.read_bytes())
+if o['encoding']=='utf-8':b=o['text'].encode('utf-8')
+elif o['encoding']=='gzip+base64':b=gzip.decompress(base64.b64decode(o['data'],validate=True))
+else:raise ValueError('Unsupported wrapper encoding')
+assert len(b)==o['source_bytes'] and hashlib.sha256(b).hexdigest()==o['source_sha256']
+a.output.parent.mkdir(parents=True,exist_ok=True)
+with a.output.open('xb') as stream:stream.write(b)
+print(o['source_sha256'],len(b),a.output)
+'''
+(OUT/'decode-wrapper.py').write_text(decoder)
+(STAGE/'integration-preparation/decode-wrapper.py.txt').write_text(decoder)
+copy=json.loads((OUT/'copy-map-v2.json').read_bytes())
+for row in copy['files']:
+ source=Path(row['source']);target=Path(row['staged_path']);raw=source.read_bytes();data=target.read_bytes()
+ assert len(raw)==row['source_bytes'] and sha(raw)==row['source_sha256'],str(source)
+ assert len(data)==row['staged_bytes'] and sha(data)==row['staged_sha256'],str(target)
+ if 'lossless_' in row['transformation']:
+  obj=json.loads(data);decoded=obj['text'].encode() if obj['encoding']=='utf-8' else gzip.decompress(base64.b64decode(obj['data'],validate=True))
+  assert len(decoded)==obj['source_bytes'] and sha(decoded)==obj['source_sha256']
+  if not row['transformation'].startswith('explicit_metadata'):assert decoded==raw
+for row in json.loads((STAGE/'external-seal-bindings.json').read_bytes())['artifacts']:
+ raw=Path(row['external_path']).read_bytes();assert sha(raw)==row['sha256'] and len(raw)==row['bytes']
+write('archive-map.json',copy)
+write('preparation-status.json',{'at':datetime.now(timezone.utc).isoformat(),'status':'compact_preparation_complete_pending_root_full_gates_and_review','maintained_writes_by_preparer':False,'target_sha256':'ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff','completed':['external scientific successor review','independent bounded adapter reviews','root combined canonical source and ontology builds','root data adoption','root maintained render'],'pending':['full maintained gates and KGX preservation','governed structured review','staged package audit','commit PR exact-head review and publication'],'first_unsealed_assembly':{'path':str(OUT/'staged'),'copy_map_sha256':sha((OUT/'copy-map.json').read_bytes()),'disposition':'Unadopted preparation draft retained externally; compact successor omits duplicate inventories with explicit bindings.'},'roles':'Preparation author implemented BiGG and EcoCyc adapters; independent science and EcoCyc code assessments were authored by another reviewer. Root owns maintained adoption and subsequent validation.'})
+for name in ['assemble-dossier.py','assemble-dossier-v2.py','finish-preparation.py']:
+ (STAGE/'integration-preparation'/f'{name}.txt').write_bytes((OUT/name).read_bytes())
+static=[]
+for name in ['capture-baseline.py','capture-baseline-v2.py','preserve-maintained.py','run-maintained-gates.py','decode-wrapper.py','assemble-dossier.py','assemble-dossier-v2.py','finish-preparation.py']:
+ raw=(OUT/name).read_bytes();ast.parse(raw);static.append({'path':str(OUT/name),'sha256':sha(raw),'status':'AST parse passed; no maintained execution'})
+write('integration-preparation/final-static-check.json',{'helpers':static,'archive_selected_inputs_rehashed':len(copy['files']),'lossless_wrappers_decoded_and_verified':True,'maintained_gates_executed_by_preparer':False})
+files=[]
+for p in sorted(STAGE.rglob('*')):
+ assert not p.is_symlink(),str(p)
+ if p.is_file():
+  raw=p.read_bytes();assert not any(line.rstrip(b'\r\n').endswith((b' ',b'\t')) for line in raw.splitlines(keepends=True)),str(p)
+  assert p.suffix not in {'.py','.yaml','.yml','.sh','.xml','.rdf','.html','.pdf'},str(p)
+  assert b'__cf_bm=' not in raw and b'JSESSIONID=' not in raw and b'cf_clearance=' not in raw,str(p)
+  files.append({'path':BASE+'/'+str(p.relative_to(STAGE)),'source':str(p),'sha256':sha(raw),'bytes':len(raw)})
+manifest={'prepared_at':datetime.now(timezone.utc).isoformat(),'stage':str(STAGE),'file_count':len(files),'total_bytes':sum(r['bytes'] for r in files),'files':files}
+(OUT/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+handoff={'status':'sealed_compact_integration_preparation','manifest':str(OUT/'artifact-manifest.json'),'manifest_sha256':sha((OUT/'artifact-manifest.json').read_bytes()),'files':len(files),'bytes':manifest['total_bytes'],'stage':str(STAGE),'maintained_destination':BASE,'baseline':str(OUT/'baseline.json'),'baseline_sha256':sha((OUT/'baseline.json').read_bytes()),'baseline_kgx':str(OUT/'baseline-kgx.json'),'baseline_kgx_sha256':sha((OUT/'baseline-kgx.json').read_bytes()),'preservation_helper':str(OUT/'preserve-maintained.py'),'preservation_helper_sha256':sha((OUT/'preserve-maintained.py').read_bytes()),'gate_helper':str(OUT/'run-maintained-gates.py'),'gate_helper_sha256':sha((OUT/'run-maintained-gates.py').read_bytes()),'history_commands':str(OUT/'history-commands.json'),'history_commands_sha256':sha((OUT/'history-commands.json').read_bytes()),'maintained_writes':False,'full_gates_and_final_governed_review':'pending root-owned successors; do not infer pass from this preparation','verification':'All selected original/staged bytes and excluded inventory bindings rehashed; all lossless wrappers decoded; helper AST and staged trailing whitespace checks passed; no maintained gates executed.'}
+(OUT/'handoff.json').write_text(json.dumps(handoff,indent=2)+'\n')
+print(json.dumps({'handoff_sha256':sha((OUT/'handoff.json').read_bytes()),'manifest_sha256':handoff['manifest_sha256'],'files':len(files),'bytes':manifest['total_bytes']},indent=2))

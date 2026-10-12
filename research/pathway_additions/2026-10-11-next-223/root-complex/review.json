@@ -1,0 +1,137 @@
+{
+  "at": "2026-10-11T22:36:25.587909+00:00",
+  "status": "independent_scoped_code_and_original_source_review_passed",
+  "findings": [],
+  "artifact_count_rehashed": 1565,
+  "positives": [
+    {
+      "frame": "ACNEULY-CPLX",
+      "original_sha256": "c037dd59fd3fb3eabd658bf9129aacf354404d13a31663531759e9b94c1627c3",
+      "terms": [
+        [
+          "MetaCyc:ACNEULY-CPLX",
+          "N-acetylneuraminate lyase",
+          []
+        ]
+      ]
+    },
+    {
+      "frame": "CPLX0-8588",
+      "original_sha256": "89f5fab3075a5a87af04ba132bf4f246589b2c8ea2fe466a4a58c89e2c030ab0",
+      "terms": [
+        [
+          "MetaCyc:CPLX0-8588",
+          "N-acetylmannosamine kinase",
+          []
+        ]
+      ]
+    },
+    {
+      "frame": "GLUCOSAMINE-6-P-DEAMIN-CPLX",
+      "original_sha256": "13dc60ae053e4308b50baa11cef490bcef926927f749a0688c72e096a53897ca",
+      "terms": [
+        [
+          "MetaCyc:GLUCOSAMINE-6-P-DEAMIN-CPLX",
+          "glucosamine-6-phosphate deaminase",
+          []
+        ]
+      ]
+    },
+    {
+      "frame": "NAG6PDEACET-CPLX",
+      "original_sha256": "470fd6b4c6f92ce500a3650f9c0cbde0942cd93bf8ff7ba44f19425e7f3f0b18",
+      "terms": [
+        [
+          "MetaCyc:NAG6PDEACET-CPLX",
+          "N-acetylglucosamine-6-phosphate deacetylase",
+          []
+        ]
+      ]
+    }
+  ],
+  "negative_controls": [
+    {
+      "case": "another-complex-backref",
+      "status": "rejected",
+      "sha256": "fe275180dd7544443dfe8df677db7169bb217b3121c4ef31e7b4dfe8480f9407",
+      "error": "MetaCyc protein source requires an exact empty native reference"
+    },
+    {
+      "case": "same-name-two-activities",
+      "status": "rejected",
+      "sha256": "286e5075dbe349a23a98123511a800945cb4e5f59693054d453d09a6a59c9530",
+      "error": "MetaCyc protein source requires exactly one catalyzes"
+    },
+    {
+      "case": "heteromer-unqualified-label",
+      "status": "rejected",
+      "sha256": "7c3e1ff991a9f0c08d007e70df9bef187bedd63f5e613072ed5c856e6bda9a75",
+      "error": "MetaCyc protein source requires exactly one component"
+    },
+    {
+      "case": "zero-stoichiometry",
+      "status": "rejected",
+      "sha256": "9300bacb316aa4b666a3705275beb6bb1c5dd06163f4bdeb16e6b2e263ee5a18",
+      "error": "MetaCyc enzyme-name fallback requires a homomer coefficient at least two"
+    },
+    {
+      "case": "monomer-stoichiometry",
+      "status": "rejected",
+      "sha256": "d66618753ae58324c0bf2c695faaabdd8b05a42f136d20e801ac044491f8c448",
+      "error": "MetaCyc enzyme-name fallback requires a homomer coefficient at least two"
+    },
+    {
+      "case": "different-reaction-reference",
+      "status": "rejected",
+      "sha256": "4892e858e6458298ab7fd6a2b3b7c43709a9d6c37a044e5d62b7ef9fb75e2ba1",
+      "error": "MetaCyc protein source requires an exact empty native reference"
+    },
+    {
+      "case": "class-not-complex",
+      "status": "rejected",
+      "sha256": "3c084692869bd6af376d5200f772c4c5687ebc20802b782720fd0af20f9c97c4",
+      "error": "MetaCyc enzyme-name fallback requires native Protein-Complexes membership"
+    },
+    {
+      "case": "empty-direct-name-no-fallback",
+      "status": "rejected",
+      "sha256": "a8eacdad9638059a4c7167f31d8e926db70819399cf0b14c301cd997877f38c2",
+      "error": "MetaCyc protein source requires one nonempty common-name"
+    },
+    {
+      "case": "invalid-direct-name-no-fallback",
+      "status": "rejected",
+      "sha256": "3259c47995808eb6a2f9f2fca4f0192e69e887603c8f8c6e26a7cb3804d5ee46",
+      "error": "MetaCyc protein name has unsupported markup"
+    },
+    {
+      "case": "activity-name-is-frame",
+      "status": "rejected",
+      "sha256": "167fd86882937a011bf80d4011f4740496db6322df8f23265f07987f4944ef71",
+      "error": "MetaCyc protein source lacks a resolved native common-name"
+    },
+    {
+      "case": "activity-unresolved-entity",
+      "status": "rejected",
+      "sha256": "433ff0c67093dc761d98cf19d1b87663fdc857b132939f08b39b19f6896b202d",
+      "error": "MetaCyc protein name contains an unknown entity"
+    },
+    {
+      "case": "nonempty-component-reference",
+      "status": "rejected",
+      "sha256": "51eef4e346c072abe6b5e884c27b24e7f6a2e92d826c5b3099526733b5aab2e9",
+      "error": "MetaCyc protein source requires an exact empty native reference"
+    }
+  ],
+  "implementation_sha256": "ebc34e83669c50080123819a95c4bb2145a5ccef0099f435b606af53b0734c03",
+  "handoff_sha256": "665c6b58f64d16276681502b5ca538d85f748ba5ac3160ac5dfeb74d97c4742c",
+  "code_review": "Reviewed the complete three-file diff and new tests; shared identity and safe name decoding retain direct-name precedence. The fallback is limited to native single-activity homomers and exact enzyme/reaction references, with no borrowed aliases or policy exemption.",
+  "native_basis": "Previously root-read SRI BioWarehouse BioCyc loader manual explicitly states proteins may lack COMMON-NAME and use the corresponding enzymatic-reaction name; the proposal binds the original documentation.",
+  "retained_output_byte_equality_verified": true,
+  "limits": [
+    "Scoped adapter review, not scientific approval of next223 record.",
+    "Author-owned 288 tests and full retained-source CLI receipts inspected, not rerun broadly.",
+    "Actual later merged-223 baseline bridge and final canonical authority build remain required before maintained adoption."
+  ],
+  "helper_sha256": "5af0e322ef21872ed71b21627432a2b8a5e694ff27253389ab1b90cb55806b7f"
+}

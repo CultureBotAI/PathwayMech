@@ -34,7 +34,7 @@ class Element {
 }
 
 const maliciousLabel = '<img src=x onerror="alert(1)"> & <script>bad()</script>';
-function fixture({missingSection = false, missingSvg = false, width = 1000} = {}) {
+function fixture({missingSection = false, missingSvg = false, width = 1000, qualified = false} = {}) {
   const nodes = ['a', 'b', 'c', 'd'].map(id => new Element({
     dataset: {nodeId: id, nodeLabel: id === 'a' ? maliciousLabel : id.toUpperCase()},
     attributes: {href: '#component-' + id},
@@ -46,6 +46,16 @@ function fixture({missingSection = false, missingSvg = false, width = 1000} = {}
       dataset: {subject, object, predicate: 'has_output'},
       attributes: {href: '#mechanism-edge-' + (index + 1)},
     }));
+  if (qualified) {
+    const key = 'qualified-endpoint-1-object';
+    nodes.push(new Element({
+      dataset: {nodeId: key, baseNodeId: 'b', nodeLabel: 'NagB [experimental construct: Ser1-NagB]'},
+      attributes: {href: '#mechanism-edge-1-qualifier-object'},
+      box: {x: 500, y: 200, width: 236, height: 140},
+    }));
+    edges[0].dataset.object = key;
+    edges[0].dataset.objectId = 'b';
+  }
   const svg = new Element({attributes: {width: String(width), height: '800'}});
   svg.querySelectorAll = selector => {
     if (selector === '.graph-node') return nodes;
@@ -115,6 +125,21 @@ function noSelection(f) {
 }
 
 const scenarios = {
+  qualified_endpoint_selection() {
+    const f = fixture({qualified: true});
+    select(f, 'b');
+    assert.equal(f.edges[0].classList.contains('graph-connected'), false);
+    assert.equal(f.nodes[4].classList.contains('graph-selected'), false);
+    select(f, 'qualified-endpoint-1-object');
+    assert.deepEqual(selected(f), [f.nodes[4]]);
+    assert.deepEqual(f.edges.map(e => e.classList.contains('graph-connected')),
+                     [true, false, false, false, false]);
+    assert.match(f.status.textContent, /Ser1-NagB/);
+    assert.match(f.status.textContent, /1 connected relationships/);
+    assert.equal(f.nodes[4].getAttribute('href'), '#mechanism-edge-1-qualifier-object');
+    assert.equal(f.edges[0].dataset.objectId, 'b');
+    for (const item of [...f.nodes, ...f.edges]) assert.equal(item.hidden, false);
+  },
   zoom_and_fit() {
     const f = fixture();
     size(f, 0.5);

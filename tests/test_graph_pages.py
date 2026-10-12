@@ -83,26 +83,47 @@ def raw_record():
 
 def test_every_published_graph_preserves_directed_edges_and_evidence_targets(records):
     """No loss, reversal, or deduplication in the page-to-graph integration."""
+    def native_triple(edge):
+        return (edge.get("data-subject-id", edge.get("data-subject")),
+                edge.get("data-predicate"),
+                edge.get("data-object-id", edge.get("data-object")))
+
     for name, record in records.items():
         page = _record_page(record)
         parsed = Page(page)
         rendered = svg_elements(page, "graph-edge")
         expected = Counter((edge["subject"], edge["predicate"], edge["object"])
                            for edge in record.mechanistic_edges)
-        actual = Counter((edge.get("data-subject"), edge.get("data-predicate"),
-                          edge.get("data-object")) for edge in rendered)
+        actual = Counter(native_triple(edge) for edge in rendered)
         assert actual == expected, name
         assert len(rendered) == len(record.mechanistic_edges), name
+        rendered_nodes = svg_elements(page, "graph-node")
+        nodes = {node.get("data-node-id"): node for node in rendered_nodes}
+        assert len(nodes) == len(rendered_nodes), name
         by_target = {edge.get("href"): edge for edge in rendered}
         assert len(by_target) == len(rendered), name
         for index, edge in enumerate(record.mechanistic_edges, 1):
             row_id = f"mechanism-edge-{index}"
             assert f"#{row_id}" in by_target, (name, row_id)
             diagram_edge = by_target[f"#{row_id}"]
-            assert (diagram_edge.get("data-subject"), diagram_edge.get("data-predicate"),
-                    diagram_edge.get("data-object")) == (
-                        edge["subject"], edge["predicate"], edge["object"]
-                    ), (name, row_id)
+            assert native_triple(diagram_edge) == (
+                edge["subject"], edge["predicate"], edge["object"]
+            ), (name, row_id)
+            qualifiers = {q["endpoint"]: q for q in edge.get("endpoint_qualifiers", [])}
+            for role in ("subject", "object"):
+                display_key = diagram_edge.get(f"data-{role}")
+                assert display_key in nodes, (name, row_id, role)
+                if role in qualifiers:
+                    assert display_key != edge[role], (name, row_id, role)
+                    assert diagram_edge.get(f"data-{role}-id") == edge[role]
+                    node = nodes[display_key]
+                    assert node.get("data-base-node-id") == edge[role]
+                    assert node.get("data-qualified") == "true"
+                    anchor = f"{row_id}-qualifier-{role}"
+                    assert node.get("href") == f"#{anchor}"
+                    assert any(attrs.get("id") == anchor for _, attrs in parsed.elements)
+                else:
+                    assert display_key == edge[role], (name, row_id, role)
             row = " ".join(parsed.rows[row_id])
             for evidence in edge["evidence"]:
                 assert evidence["reference_id"] in row, (name, row_id)

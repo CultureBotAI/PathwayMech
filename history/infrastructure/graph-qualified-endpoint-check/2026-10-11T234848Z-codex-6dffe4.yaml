@@ -1,0 +1,27 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: tests/test_graph_pages.py
+  slug: graph-qualified-endpoint-check
+session:
+  id: 2026-10-11T234848Z-codex-6dffe4
+  timestamp: '2026-10-11T23:48:48Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/428
+events:
+- type: EDIT
+  outcome: changed
+  summary: Verify native and qualified display identities in the corpus graph check
+  details: The full suite passed 1,945 tests and skipped 3, but its original directed-edge
+    comparison incorrectly treated scoped construct display nodes as native entity IDs. The
+    renderer already retains native identities separately. The integration check now compares
+    native directed triples and also verifies each display endpoint, unique scoped node, native
+    identifier, qualification marker and evidence anchor. All prior edge count, uniqueness
+    and evidence checks remain. Independent contract analysis rejected eight identity/navigation
+    mutations. Root graph-page and interaction tests passed 21 cases. No renderer or scientific-record
+    change was needed.

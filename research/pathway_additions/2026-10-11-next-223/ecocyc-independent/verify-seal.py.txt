@@ -1,0 +1,41 @@
+from pathlib import Path
+import hashlib,json,os
+from concurrent.futures import ThreadPoolExecutor
+I=Path('/private/tmp/pathwaymech-next-223-ecocyc-implementation-20261011');O=Path(__file__).parent
+H=I/'handoff.json'
+def sha(p):
+ with p.open('rb') as stream:return hashlib.file_digest(stream,'sha256').hexdigest()
+assert sha(H)=='edad7922adcf5489a97c87726160352bb43df4da7e00aaab97b19f8d2a71fe26'
+h=json.loads(H.read_text())
+def verify(row):
+ p=I/row['relative'];assert p.is_symlink()==(row['kind']=='symlink'),row
+ if row['kind']=='symlink':assert os.readlink(p)==row['link_target'] and str(p.resolve())==row['resolved_path']
+ assert p.stat().st_size==row['bytes'] and sha(p)==row['sha256'],row
+ return {'path':str(p),'resolved_path':str(p.resolve()),**row}
+with ThreadPoolExecutor(max_workers=4) as pool:checked=list(pool.map(verify,h['artifacts']))
+assert len(checked)==1522
+# File traversal includes hidden/ignored paths, independently of gitignore.
+actual={str(p.relative_to(I)) for p in I.rglob('*') if p.is_file() or p.is_symlink()}
+assert actual=={x['relative'] for x in h['artifacts']}|{'handoff.json'}, actual-({x['relative'] for x in h['artifacts']}|{'handoff.json'})
+scope=json.loads((I/'file-scope.json').read_text());read=json.loads((O/'provisional-diff-bindings.json').read_text())
+assert {x['relative']:x['after_sha256'] for x in scope}=={x['relative']:x['proposed_sha256'] for x in read}
+assert {x['relative']:x['before_sha256'] for x in scope}=={x['relative']:x['baseline_sha256'] for x in read}
+baseline=I/'repo/data/identifier_authorities/sources.json';repro=I/'checks-final/baseline-sources.json';aug=I/'checks-final/augmented-sources.json'
+assert baseline.read_bytes()==repro.read_bytes()
+b=json.loads(baseline.read_text());a=json.loads(aug.read_text());assert len(b['terms'])==2265 and len(b['sources'])==476
+assert len(a['terms'])==2268 and len(a['sources'])==479
+assert all(a['terms'][k]==v for k,v in b['terms'].items()) and all(a['sources'][k]==v for k,v in b['sources'].items())
+assert {k:a[k] for k in a if k not in {'sources','terms'}}=={k:b[k] for k in b if k not in {'sources','terms'}}
+for cmd in json.loads((I/'checks-final/execution.json').read_text()):assert cmd['exit_code']==0
+before=json.loads((I/'checks-final/source-inputs-before.json').read_text());after=json.loads((I/'checks-final/source-inputs-after.json').read_text())
+assert len(before)==len(after)
+assert {r['path']:r['sha256'] for r in before}=={r['path']:r['sha256'] for r in after}
+# Rehash compact external bindings, skipping duplicates already verified by resolved original path.
+seen={r['resolved_path']:r['sha256'] for r in checked};additional=[]
+for row in after:
+ p=Path(row['path']);resolved=str(p.resolve())
+ if resolved in seen:assert seen[resolved]==row['sha256']
+ else:assert sha(p)==row['sha256'];additional.append(row);seen[resolved]=row['sha256']
+report={'status':'passed','implementation_handoff':{'path':str(H),'sha256':sha(H)},'artifact_count':len(checked),'artifact_inventory_exact':True,'ignored_hidden_included':True,'artifacts':checked,'additional_external_bindings':additional,'retained_baseline_byte_equal':True,'retained_terms':2265,'retained_metadata':476,'augmented_terms':2268,'augmented_metadata':479,'source_before_after_bindings':len(after),'code_seven_files_equal_provisional_read':True,'no_production_adoption':True}
+(O/'sealed-package-verification.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k not in {'artifacts','additional_external_bindings'}}))

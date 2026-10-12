@@ -1,0 +1,51 @@
+from pathlib import Path
+from xml.etree import ElementTree as ET
+import copy,csv,hashlib,importlib.util,io,json,re,tempfile
+import yaml
+from pathwaymech.kgx import _tsv,NODE_COLUMNS
+from pathwaymech.schema import validate_record
+ROOT=Path('/private/tmp/pathwaymech-next-223-20261011');OUT=Path('/private/tmp/pathwaymech-next-223-tsv-remedy-review-20261011')
+def module(name,path):
+ spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
+kgxtest=module('review_kgx_tests',ROOT/'tests/test_kgx_export.py')
+with tempfile.TemporaryDirectory(dir=OUT) as d:kgxtest.test_write_kgx_uses_lf_tsv_with_stable_headers(Path(d))
+kgxtest.test_tsv_empty_terminal_fields_round_trip_without_changing_populated_cells()
+results=[{'name':'both maintained TSV regressions execute successfully','passed':True}]
+proposed=(OUT/'edges-proposed.tsv').read_text();reader=csv.DictReader(io.StringIO(proposed),delimiter='\t');rows=list(reader)
+serialized=_tsv(tuple(reader.fieldnames),rows)
+assert serialized==proposed
+assert len(rows)==10922
+results.append({'name':'maintained serializer exactly reproduces independently proposed 10922-row output','passed':True,'sha256':hashlib.sha256(serialized.encode()).hexdigest()})
+nodetext=(ROOT/'pages/downloads/nodes.tsv').read_text();ns=list(csv.DictReader(io.StringIO(nodetext),delimiter='\t'));assert _tsv(NODE_COLUMNS,ns)==nodetext
+results.append({'name':'actual 3845-row node TSV unchanged through maintained serializer','passed':True})
+graphtest=module('review_graph_tests',ROOT/'tests/test_graph_pages.py')
+record=validate_record(yaml.safe_load((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_text()));records={'amino-sugar-superpathway':record}
+graphtest.test_every_published_graph_preserves_directed_edges_and_evidence_targets(records)
+results.append({'name':'exact adapted maintained graph test accepts actual qualified record','passed':True})
+original_renderer=graphtest._record_page
+page=original_renderer(record);svg=next(s for s in re.findall(r'<svg\b.*?</svg>',page,re.S) if 'class="pathway-network-svg"' in s);original=ET.fromstring(svg);nsuri='{http://www.w3.org/2000/svg}'
+ET.register_namespace('','http://www.w3.org/2000/svg')
+for problem in ['missing_native_subject','reversed_native_ids','bare_node_collapse','wrong_base_identity','lost_marker','wrong_anchor','substituted_ordinary_node','duplicate_display_key','missing_evidence_cell_anchor']:
+ tree=copy.deepcopy(original);links=tree.findall('.//'+nsuri+'a');edges=[e for e in links if e.get('data-predicate')];nodes=[n for n in links if n.get('data-node-id')];q=edges[106];node=next(n for n in nodes if n.get('data-node-id')==q.get('data-subject'))
+ if problem=='missing_native_subject':q.attrib.pop('data-subject-id')
+ elif problem=='reversed_native_ids':q.set('data-subject-id',q.get('data-object-id'))
+ elif problem=='bare_node_collapse':q.set('data-subject',q.get('data-subject-id'))
+ elif problem=='wrong_base_identity':node.set('data-base-node-id','UniProtKB:P0A759')
+ elif problem=='lost_marker':node.set('data-qualified','false')
+ elif problem=='wrong_anchor':node.set('href','#mechanism-edge-108-qualifier-subject')
+ elif problem=='substituted_ordinary_node':edges[0].set('data-subject-id',edges[0].get('data-subject'));edges[0].set('data-subject',q.get('data-subject'))
+ elif problem=='duplicate_display_key':tree.append(copy.deepcopy(node))
+ mutated=page.replace(svg,ET.tostring(tree,encoding='unicode'))
+ if problem=='missing_evidence_cell_anchor':mutated=mutated.replace('id="mechanism-edge-107-qualifier-subject"','id="removed-qualification-evidence-cell"')
+ graphtest._record_page=lambda _record:mutated
+ try:
+  graphtest.test_every_published_graph_preserves_directed_edges_and_evidence_targets(records)
+ except AssertionError:results.append({'name':'maintained graph test rejects '+problem,'passed':True})
+ else:raise AssertionError('Maintained test missed '+problem)
+ finally:graphtest._record_page=original_renderer
+assert hashlib.sha256((ROOT/'src/pathwaymech/graph_view.py').read_bytes()).hexdigest()=='df277b9222b84ed0d225d6a9e2c8933ac210773239d46e26faf77e19e179d923'
+assert hashlib.sha256((ROOT/'src/pathwaymech/assets/pathway-network.js').read_bytes()).hexdigest()=='23b6fc25a1522c945cf61b7c269dadf93a90b8c78c357652e6653a05bcb97eac'
+results.append({'name':'reviewed renderer and JavaScript remain unchanged','passed':True})
+bound=['src/pathwaymech/kgx.py','tests/test_kgx_export.py','tests/test_graph_pages.py','src/pathwaymech/graph_view.py','src/pathwaymech/assets/pathway-network.js','data/pathways/amino-sugar-superpathway.yaml']
+x={'passed':len(results),'results':results,'bindings':{p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in bound},'maintained_changes_by_reviewer':False}
+(OUT/'successor-results.json').write_text(json.dumps(x,indent=2)+'\n');print(json.dumps(x))

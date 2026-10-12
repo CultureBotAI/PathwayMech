@@ -1,0 +1,191 @@
+"""External future-schema author draft; not a production authority rebuild."""
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import json,html,re,hashlib,copy
+from lxml import etree
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-223-preflight-20261011')
+R='MetaCyc:GLCMANNANAUT-PWY'
+refs={};nodes={};rxns={};edges=[];bindings={};chem=[]
+def plain(s):return html.unescape(re.sub('<[^>]+>','',s or ''))
+def ref(i,title=None,url=None):
+ if i not in refs:
+  if url is None:
+   pref,suf=i.split(':',1);url={'MetaCyc':'https://biocyc.org/META/NEW-IMAGE?object=','RHEA':'https://www.rhea-db.org/rhea/','UniProtKB':'https://www.uniprot.org/uniprotkb/','PMID':'https://pubmed.ncbi.nlm.nih.gov/','BiGG':'https://bigg.ucsd.edu/universal/reactions/'}[pref]+suf
+  refs[i]={'id':i,'title':title or i,'url':url}
+ return i
+def ev(i,text,loc):
+ assert len(text)<=400,(len(text),text)
+ return {'reference_id':ref(i),'source_assertion':text,'source_locator':loc}
+def part(i,label,cat='small_molecule',source=None):
+ if i in nodes:assert nodes[i]['label']==label,(i,label,nodes[i])
+ else:nodes[i]={'id':i,'label':label,'category':cat}
+ if source:bindings.setdefault(i,[]).append(source)
+ return i
+def rx(i,label,d=None):
+ rxns[i]={'id':i,'label':label}
+ if d:rxns[i]['direction']=d
+ return i
+def edge(s,p,o,e,qual=None):
+ q={'id':f'amino-{len(edges)+1:03d}','subject':s,'predicate':p,'object':o,'evidence':e if isinstance(e,list) else [e]}
+ if qual:q['endpoint_qualifiers']=copy.deepcopy(qual)
+ edges.append(q);return q
+
+def native(n):
+ p=A/'raw'/(n+'.xml');p=p if p.exists() else P/'raw'/(n+'.xml')
+ t=etree.parse(str(p));r=next(x for x in t.getroot() if x.tag!='metadata')
+ assert r.get('frameid')==n and t.findtext('metadata/query')=='META:'+n
+ return p,r
+ups={}
+for p in [*(P/'raw').glob('*.json'),*(A/'raw').glob('*.json')]:
+ j=json.loads(p.read_text())
+ for v in ([j] if 'primaryAccession' in j else j.get('results',[])):
+  if 'primaryAccession' in v:ups[v['primaryAccession']]=(p,v)
+upids=['P0A6L4','P45425','P0A761','P0AF18','P0A759','P45424','P41036','P0A8W0','P50456','P69801','P69805','P69797','P09323','P08839','P0A9Z1','P0AF20','P0ACJ8']
+for i in upids:
+ p,j=ups[i];name=j['proteinDescription']['recommendedName']['fullName']['value'];part('UniProtKB:'+i,name,'protein',str(p));ref('UniProtKB:'+i,name)
+
+# Both complete native children, and a downstream opaque pathway interface.
+for n in ['PWY0-1324','GLUAMCAT-PWY']:
+ p,x=native(n);i=rx('MetaCyc:'+n,plain(x.findtext('common-name')));ref(i,rxns[i]['label']);bindings[i]=[str(p)]
+ edge(R,'has_part',i,ev(R,f'META 27.0 lists {n} as a complete child pathway of this superpathway.','Pathway/reaction-list and Pathway/sub-pathways'))
+rx('MetaCyc:GLYCOLYSIS','glycolysis I (from glucose 6-phosphate)');ref('MetaCyc:GLYCOLYSIS','Native downstream glycolysis interface');bindings['MetaCyc:GLYCOLYSIS']=[str(A/'raw/GLYCOLYSIS.xml'),str(P/'raw/GLCMANNANAUT-PWY.xml')]
+
+# Preserve each native Rhea direction and complete participant sides.
+rd=json.loads((A/'projections/rhea-author-chemistry.json').read_text())
+selected=['RHEA:67741','RHEA:67737','RHEA:23297','RHEA:25254','RHEA:25259','RHEA:22937','RHEA:12173','RHEA:28989','RHEA:49241','RHEA:23881']
+for m in rd['masters']:
+ for d in m['directions']:
+  if d['id'] not in selected:continue
+  i=d['id'];rx(i,d['equation'][0],d['orientation']);ref(i,d['equation'][0]);bindings[i]=[rd['source']]
+  for side,pred in [('substrates','consumes'),('products','produces')]:
+   for q in d['sides'][side]:
+    v=q['properties'];ci=v['accession'][0].replace('GENERIC:','RHEA-COMP:');part(ci,v['name'][0],'protein' if ci.startswith('RHEA-COMP:') else 'small_molecule',rd['source'])
+    e=ev(i,f'Rhea release 142 places {ci} with coefficient {q["coefficient"]} on the {side} side of {i}. Its directional object is {d["orientation"]} relative to master {m["master_id"]}.',f'rdf:Description[@rdf:about="http://rdf.rhea-db.org/{i.split(":")[1]}"]/rh:{side}; rh:contains and coefficient predicate rh:contains{q["coefficient"]}; rh:compound/rh:accession')
+    ee=edge(ci,pred,i,e) if side=='substrates' else edge(i,pred,ci,e)
+    chem.append({'edge_id':ee['id'],'reaction':i,'side':side,'participant':ci,'coefficient':q['coefficient']})
+  if i in ['RHEA:67741','RHEA:23297','RHEA:25254','RHEA:25259']:
+   mp={'RHEA:67741':'RXN0-7389','RHEA:23297':'RXN0-7390','RHEA:25254':'NANK-RXN','RHEA:25259':'NANE-RXN'}[i]
+   edge(i,'part_of','MetaCyc:PWY0-1324',ev('MetaCyc:PWY0-1324',f'The native child includes {mp}; reaction layout and corresponding Rhea sides establish this degradation direction. RXN0-7389 uses native right-to-left ring opening; NANE-RXN maps to Rhea right-to-left.','Pathway/reaction-list, reaction-layout and reaction-ordering'))
+  if i in ['RHEA:22937','RHEA:12173']:
+   edge(i,'part_of','MetaCyc:GLUAMCAT-PWY',ev('MetaCyc:GLUAMCAT-PWY','The child pathway contains sequential NAG6PDEACET-RXN and GLUCOSAMINE-6-P-DEAMIN-RXN in their degradation directions.','Pathway/reaction-list and reaction-layout'))
+
+# Coupled ManNAc transport: exact issuing model chemistry, not relabeled mannose PTS.
+model=json.loads((A/'raw/bigg-iML1515.json').read_text());br=next(x for x in model['reactions'] if x['id']=='ACMANAptspp');bi='BiGG:ACMANAptspp'
+rx(bi,br['name'],'left_to_right');ref(bi,br['name']);bindings[bi]=[str(A/'raw/bigg-ACMANAptspp.json'),str(A/'raw/bigg-iML1515.json')]
+for mi in ['acmana','acmanap']:
+ q=json.loads((A/'raw'/('bigg-'+mi+'.json')).read_text());assert q['bigg_id']==mi
+ ref('BiGG:'+mi,q['name'],'https://bigg.ucsd.edu/models/universal/metabolites/'+mi)
+ref('CHEBI:17122','aldehydo-N-acetyl-D-mannosamine','https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:17122')
+bmap={'pep_c':'CHEBI:58702','pyr_c':'CHEBI:15361','acmana_p':'BiGG:acmana','acmanap_c':'BiGG:acmanap'}
+for mi,stoich in br['metabolites'].items():
+ mm=next(x for x in model['metabolites'] if x['id']==mi);ci=bmap[mi]
+ if ci.startswith('BiGG:'):part(ci,mm['name'],'small_molecule',str(A/'raw/bigg-iML1515.json'))
+ e=ev(bi,f'iML1515 assigns {mi} ({mm["compartment"]} compartment) coefficient {stoich:g}; lower_bound=0 and upper_bound=1000 permit the written uptake direction. This is the coupled PEP-dependent transport reaction, not an elementary phosphoryl transfer.',f'iML1515/reactions[id=ACMANAptspp]/metabolites/{mi}; bounds; metabolites[id={mi}]')
+ ee=edge(ci,'consumes',bi,e) if stoich<0 else edge(bi,'produces',ci,e)
+ if mi=='acmana_p':
+  ee['evidence'] += [ev('BiGG:acmana','The native substrate annotation gives InChIKey MBLBDJOUHNCFQT-XAMCCFCMSA-N and multiple ChEBI cross-references. This model compound is retained without an exact ChEBI alias; the cross-references do not resolve their conflicting structural scope.','Universal metabolite database_links[InChI Key, CHEBI]; iML1515/metabolites[id=acmana_p]/annotation'),ev('CHEBI:17122','The issuing ChEBI SQL record gives MBLBDJOUHNCFQT-WCTZXXKLSA-N. Its different stereochemical hash block prevents equating this exact aldehydo species to the BiGG substrate annotation. No conversion between these structures is inferred.','ChEBI release 255 statements[subject=CHEBI:17122,predicate=chemrof:inchi_key_string]')]
+ chem.append({'edge_id':ee['id'],'reaction':bi,'side':'substrates' if stoich<0 else 'products','participant':ci,'coefficient':abs(stoich),'native_metabolite':mi})
+edge(bi,'part_of',R,ev('PMID:9864311','Extracellular ManNAc enters through ManXYZ-dependent PTS uptake and phosphorylation. Rapid growth in the tested K-12 backgrounds required mlc/nanR derepression; this is an entry route to the complete superpathway.','PMC103530, Results, Transport and phosphorylation of ManNAc; Table 1 and Fig. 1'))
+for i in ['RHEA:28989','RHEA:49241']:
+ edge(i,'part_of',R,ev(R,'The superpathway definition explicitly includes transport and convergence of neuraminate, mannosamine and glucosamine acetylated amino sugars at N-acetylglucosamine 6-phosphate. Individual transport chemistry is separately grounded.','Pathway/comment; Plumbridge99'))
+
+# Native supported assemblies, with exact native coefficient statements kept in evidence.
+complexes={'ACNEULY-CPLX':('N-acetylneuraminate lyase',{'ACNEULY-MONOMER':'P0A6L4'}),'CPLX0-8588':(None,{'NANK-MONOMER':'P45425'}),'NAG6PDEACET-CPLX':('N-acetylglucosamine-6-phosphate deacetylase',{'NAG6PDEACET-MONOMER':'P0AF18'}),'GLUCOSAMINE-6-P-DEAMIN-CPLX':('glucosamine-6-phosphate deaminase',{'GLUCOSAMINE-6-P-DEAMIN-MONOMER':'P0A759'}),'CPLX0-7938':(None,{'PTSI-MONOMER':'P08839'}),'CPLX0-7921':(None,{'MANX-MONOMER':'P69797'}),'CPLX-165':(None,{'MANX-MONOMER':'P69797','MANY-MONOMER':'P69801','MANZ-MONOMER':'P69805'}),'CPLX-167':(None,{'NAGE-MONOMER':'P09323'}),'PIIPROTEIN-CPLX':(None,{'PROTEIN-PII':'P0A9Z1'})}
+for n,(label,cm) in complexes.items():
+ p,x=native(n);i=part('MetaCyc:'+n,label or plain(x.findtext('common-name')),'complex',str(p));ref(i,nodes[i]['label'])
+ for c in x.findall('component'):
+  fid=c.find('Protein').get('frameid');coef=c.findtext('coefficient');up='UniProtKB:'+cm[fid]
+  extra=' ManYZ cryo-EM resolves three Y/Z pairs without ManX; native ManX also has a separately annotated dimer. Do not infer a reconciled full-complex stoichiometry.' if n=='CPLX-165' and fid=='MANX-MONOMER' else ''
+  edge(i,'has_part',up,[ev(i,f'META 27.0 assigns component {fid} coefficient {coef}.{extra}',f'Protein[@frameid="{n}"]/component[Protein/@frameid="{fid}"]/coefficient'),ev(up,f'The reviewed protein entry cross-references native {fid}; this identifies the corresponding polypeptide without altering the native assembly coefficient.','uniProtKBCrossReferences[database=BioCyc]')])
+
+for n in ['PTSH-MONOMER','PTSH-PHOSPHORYLATED','URIDYLYL-PII','CPLX0-8568']:
+ p,x=native(n);i=part('MetaCyc:'+n,plain(x.findtext('common-name')),'complex' if n=='CPLX0-8568' else 'protein',str(p));ref(i,nodes[i]['label'])
+# State-to-base relation is source semantics only, not a conversion/processing edge.
+# The native modified PII assembly lacks components/occupancy: retain without invented has_part.
+edge('MetaCyc:PIIPROTEIN-CPLX','part_of',R,ev('UniProtKB:P0A9Z1','GlnB is a homotrimer. Its uridylylation state controls the separately qualified NagB assays; this native assembly node does not imply an occupancy or assembly for those preparations.','comments[commentType=SUBUNIT]; PMID:29229699 methods sec4-6'))
+edge('MetaCyc:CPLX0-8568','part_of',R,ev('MetaCyc:CPLX0-8568','The native modified PII-1 complex has unmodified-form PIIPROTEIN-CPLX, but this original gives no component coefficients or uridylylation occupancy. It is retained as state context, not equated to an assay preparation.','Protein/unmodified-form; common-name; absence of direct component slots'))
+
+# Catalysis is grounded independently of the functional-name extraction.
+for enzyme,ri,nativeid in [('MetaCyc:ACNEULY-CPLX','RHEA:23297','RXN0-7390'),('MetaCyc:CPLX0-8588','RHEA:25254','NANK-RXN'),('MetaCyc:NAG6PDEACET-CPLX','RHEA:22937','NAG6PDEACET-RXN'),('MetaCyc:GLUCOSAMINE-6-P-DEAMIN-CPLX','RHEA:12173','GLUCOSAMINE-6-P-DEAMIN-RXN')]:
+ edge(enzyme,'catalyzes',ri,ev(enzyme,f'The exact native complex catalyzes an Enzymatic-Reaction with an enzyme back-reference to this frame and reaction {nativeid}. The represented Rhea direction is the independently resolved degradation direction.','Protein/catalyzes/Enzymatic-Reaction/{enzyme,reaction}'))
+for ri in ['RHEA:67741','RHEA:67737']:
+ edge('UniProtKB:P45424','catalyzes',ri,[ev('UniProtKB:P45424','NanQ opens both beta- and alpha-Neu5Ac to aceneuramate and favors the beta anomer. The alpha route is a supported alternative beyond the native beta ring-opening step.','comments[commentType=FUNCTION], ECO:0000269 PMID:33895133'),ev('PMID:33895133','NanQ accelerates anomer opening to the linear substrate preferred by NanA. Growth defects of the knockout are conditional on assay temperature/pH; they do not establish universal essentiality.','PMC8141875, Results and Discussion, anomerase assays and mutant growth experiments')])
+edge('UniProtKB:P0A761','catalyzes','RHEA:25259',ev('UniProtKB:P0A761','K-12 NanE is annotated as probable ManNAc6P-to-GlcNAc6P epimerase, ECO:0000305 from PMID:9864311. The homodimer annotation comes from HAMAP MF_01235, ECO:0000255, not purified K-12 assembly measurements.','comments[commentType=FUNCTION or SUBUNIT]'))
+edge('UniProtKB:P41036','catalyzes','RHEA:28989',[ev('UniProtKB:P41036','NanT mediates proton-dependent reversible sialic-acid transport. The imported direction shown serves catabolism; the Rhea formal one-proton equation is not a measured coupling stoichiometry.','comments[commentType=FUNCTION], PMID:22167185'),ev('PMID:22167185','E. coli K-12 NanT was reconstituted as a proton-driven transporter capable of counterflow; this differs from the sodium-driven TRAP transporter comparators.','PMC3271013, Results, NanT proton-dependence and counterflow experiments')])
+for c in ['MetaCyc:CPLX-167','MetaCyc:CPLX-165']:
+ edge(c,'catalyzes','RHEA:49241',[ev(c,'Native catalyzes links include N-acetyl-D-glucosamine PTS permease activity. Transport phosphorylates incoming GlcNAc through the PTS relay; the Rhea histidyl-protein participants are formal generic states.','Protein/catalyzes/Enzymatic-Reaction'),ev('PMID:9864311','GlcNAc uptake/phosphorylation can use NagE or the broad-specificity ManXYZ PTS. These alternatives must not be generalized to ManNAc: nagE and ptsG did not replace ManXYZ for that tested substrate.','PMC103530, Introduction and Results, Table 1')])
+edge('MetaCyc:CPLX0-7938','catalyzes','RHEA:23881',ev('UniProtKB:P08839','Enzyme I transfers a phosphoryl group from PEP to HPr. The Rhea equation uses generic histidyl-protein states; the native enzyme is a homodimer and Mg2+-dependent.','comments[commentType=FUNCTION, SUBUNIT, COFACTOR]'))
+for i in ['MetaCyc:CPLX-165','MetaCyc:CPLX0-7938','MetaCyc:PTSH-MONOMER']:
+ edge(i,'enables',bi,ev(bi,'The exact MG1655 iML1515 gene rule requires ptsH b2415, ptsI b2416, manX b1817, manY b1818 and manZ b1819 for the coupled ManNAc PTS reaction. Native subunits/assemblies are grounded separately.','reactions[id=ACMANAptspp]/gene_reaction_rule; genes[id=b2415,b2416,b1817,b1818,b1819]'))
+edge('MetaCyc:PTSH-PHOSPHORYLATED','enables','RHEA:49241',ev('MetaCyc:PTSH-MONOMER','The native PTS relay transfers phosphate from enzyme I through HPr His15 and sugar-specific EII domains to the transported sugar; the phosphorylated HPr state is native PTSH-PHOSPHORYLATED.','Protein/comment; modified-form'))
+edge('MetaCyc:CPLX0-7921','part_of',R,ev('MetaCyc:CPLX0-7921','ManX IIAB is separately represented as a homodimer; no direct has_part relation to a full ManXYZ assembly is inferred from the inconsistent granularity of the native complex frames.','Protein/component and common-name'))
+
+# Route order, including broad-state/anomer boundaries kept explicit.
+for s,o in [('RHEA:67741','RHEA:23297'),('RHEA:67737','RHEA:23297'),('RHEA:23297','RHEA:25254'),('RHEA:25254','RHEA:25259'),('RHEA:25259','RHEA:22937'),('RHEA:22937','RHEA:12173')]:
+ text='The native reaction ordering and primary convergence route connect these steps. NagA produces anomer-unspecified GlcN6P whereas the directed NagB equation uses alpha-GlcN6P; this ordering does not equate those exact chemical identifiers.' if s=='RHEA:22937' else 'The complete native degradation route orders these reactions; the alternative alpha ring-opening reaction is supported by the NanQ primary assays and converges on the same linear NanA substrate.'
+ edge(s,'provides_input_for',o,[ev(R,text,'Pathway/reaction-ordering; child PWY0-1324 and GLUAMCAT-PWY reaction-ordering'),ev('PMID:33895133','The linear product of NanQ is the preferred NanA substrate; the supported alpha and beta inputs converge before downstream sugar catabolism.','PMC8141875, Results and Discussion') ] if s.startswith('RHEA:677') else ev(R,text,'Pathway/reaction-ordering; child reaction-ordering'))
+edge('RHEA:28989','provides_input_for','RHEA:67741',ev('PMID:33895133','Imported Neu5Ac supplies the cytosolic NanQ/NanA route. The transport equation pools anomers, while the native core specifies beta ring opening; this is pathway context, not an anomer-specific transport claim.','PMC8141875, Introduction, Results and Discussion; PMID:22167185 transport context'))
+edge(bi,'provides_input_for','RHEA:25259',[ev('PMID:9864311','PTS uptake supplies ManNAc6P to NanE without the NanK ATP step. This physiological ordering does not independently determine the exact transported anomer or validate model structural cross-references.','PMC103530, Results and Discussion, convergence model Fig. 1'),ev('BiGG:acmanap','The native product has formula C8H14NO9P, charge -2 and InChIKey QDSLHWJDSQGPEE-WCTZXXKLSA-L. It is retained as its native model identity; the substrate annotation conflict is separately stated on the consumed model compound.','Universal metabolite formulae/charges/database_links[InChI Key]; iML1515/metabolites[id=acmanap_c]')])
+edge('RHEA:49241','provides_input_for','RHEA:22937',ev('PMID:9864311','PTS-mediated GlcNAc uptake directly supplies GlcNAc6P, which NagA deacetylates before NagB deamination.','PMC103530, Fig. 1 and Introduction'))
+edge('RHEA:23881','provides_input_for','RHEA:49241',ev('UniProtKB:P08839','Enzyme I supplies phosphorylated HPr to the sugar-specific PTS relay. This shared energy-transfer context overlaps the net BiGG ManNAc transport equation and is not an additional net stoichiometric input.','comments[commentType=FUNCTION]'))
+edge('RHEA:12173','provides_input_for','MetaCyc:GLYCOLYSIS',ev(R,'The native parent pathway-link connects FRUCTOSE-6P to GLYCOLYSIS. Only that downstream interface is represented, without importing the connected glycolysis network.','Pathway/pathway-link'))
+
+# Supported cofactor choices and conditions, retaining source-specific inference strength.
+for ci,label in [('CHEBI:29105','zinc(2+)'),('CHEBI:48828','cobalt(2+)'),('CHEBI:29035','manganese(2+)'),('CHEBI:48775','cadmium(2+)'),('CHEBI:29033','iron(2+)'),('CHEBI:49786','nickel(2+)'),('CHEBI:18420','magnesium(2+)')]:part(ci,label,'cofactor')
+for ci in ['CHEBI:29105','CHEBI:48828','CHEBI:29035','CHEBI:48775','CHEBI:29033','CHEBI:49786']:
+ edge('MetaCyc:NAG6PDEACET-CPLX','has_cofactor',ci,ev('PMID:17567047','E. coli NagA uses one divalent metal per subunit. Reconstituted Zn, Co, Mn, Cd, Fe and Ni enzymes were active to different degrees; these are alternatives, not six simultaneously required metals. Zn and Co had the highest catalytic efficiencies.','PMC2533526, Results and Discussion S16/S17, Table 1; Methods S9/S10'))
+edge('UniProtKB:P45424','has_cofactor','CHEBI:29105',ev('UniProtKB:P45424','NanQ binds Zn2+; the proposed catalytic role is annotated with ECO:0000305, while Zn association is supported by PMID:33895133. Do not transfer the Zn-dependent interpretation to NanR.','comments[commentType=COFACTOR]'))
+edge('MetaCyc:CPLX0-7938','has_cofactor','CHEBI:18420',ev('UniProtKB:P08839','Reviewed enzyme I cofactor annotation specifies Mg2+, supported by PMID:17053069.','comments[commentType=COFACTOR], ECO:0000269'))
+
+# Gene-expression control is scoped to the corresponding pathway/subunit abundance.
+for protein,target,text in [('UniProtKB:P0A8W0','MetaCyc:PWY0-1324','NanR represses the nanATEK-yhcH catabolic operon. The pathway-level edge denotes transcriptional control of those components, not direct inhibition of every chemical reaction.'),('UniProtKB:P50456','MetaCyc:CPLX-165','Mlc represses manXYZ expression; mlc loss increases transport capacity. The edge concerns transporter abundance, not direct catalytic inhibition.'),('UniProtKB:P0AF20','MetaCyc:GLUAMCAT-PWY','NagC represses nagE-nagBACD expression; intracellular GlcNAc6P is the inducing signal. The edge concerns expression, not direct inhibition of NagA or NagB.')]:
+ edge(protein,'inhibits',target,ev('PMID:9864311',text,'PMC103530, Introduction, Results and Discussion'))
+edge('CHEBI:35418','inhibits','UniProtKB:P0A8W0',ev('PMID:33790291','Neu5Ac binding reduced NanR DNA affinity under the reported conditions. NanR remained dimeric with and without ligand; cooperative binding places three dimers on the three-repeat operator, contrary to the older ligand-induced monomerization interpretation.','PMC8012715, Results Sec4/Sec5/Sec6; Methods Sec12/Sec13'))
+edge('CHEBI:57513','inhibits','UniProtKB:P0AF20',ev('PMID:19700525','GlcNAc6P is the NagC inducing signal and increases nagE-nagBACD expression. Growth on GlcN provides only partial NagC induction from peptidoglycan recycling; native NagB can already be allosterically activated under those conditions.','PMC2753035, Abstract; Results and Discussion sec8/sec11'))
+edge('CHEBI:57513','activates','MetaCyc:GLUCOSAMINE-6-P-DEAMIN-CPLX',ev('PMID:19700525','GlcNAc6P allosterically activates wild-type NagB; the reported in vivo growth experiments show substrate supply rather than additional allosteric activation can limit growth. This native mechanism is distinct from the Ser1 construct assays.','PMC2753035, Results and Discussion sec8/sec11'))
+
+# Direct native promoter context includes cAMP/CRP and NagC binding upstream of manXYZ.
+part('CHEBI:58165',"3',5'-cyclic AMP(1-)",source='/private/tmp/pathwaymech-curation-authorities/chebi.db')
+edge('CHEBI:58165','activates','UniProtKB:P0ACJ8',ev('UniProtKB:P0ACJ8','cAMP allosterically activates DNA binding by CRP homodimers; binding-site annotations explicitly identify CHEBI:58165. This does not imply that every CRP target is transcriptionally activated.','comments[commentType=FUNCTION or SUBUNIT]; features[type=Binding site]/ligand'))
+edge('UniProtKB:P0ACJ8','regulates','MetaCyc:GLUAMCAT-PWY',[ev('MetaCyc:CPLX-167','The native NagE description names regulation by NagC together with the cAMP-CRP complex. This edge preserves promoter-regulation context without assigning a universal positive sign.','Protein/comment, paragraph beginning Expression of the nagE monocistronic operon'),ev('PMID:7791215','The primary abstract reports cAMP/CAP effects on NagC apparent binding to wild-type versus super-operators. Full text was not inspected; no additional promoter-architecture result is inferred.','Issuing Europe PMC primary abstract')],[{'endpoint':'subject','kind':'molecular_state','description':'cAMP-bound CRP homodimer in the reported Nag promoter regulatory context; no claim about other CRP targets.','evidence':[ev('UniProtKB:P0ACJ8','CRP is a homodimer whose DNA binding is activated by cAMP.','comments[commentType=FUNCTION and SUBUNIT]')]}])
+edge('UniProtKB:P0AF20','regulates','MetaCyc:CPLX-165',ev('PMID:7791215','The primary abstract reports NagC binding at two sites upstream of manXYZ. This is promoter-regulatory context without an inferred magnitude or universal direction of expression change.','Issuing Europe PMC primary abstract'))
+
+# Future-schema qualified assay edges: preserve both engineered target and tagged regulators.
+def qual(role,desc,loc='PMC5809692, Materials and Methods sec4-2/sec4-5'):
+ return {'endpoint':role,'kind':'experimental_construct','description':desc,'evidence':[ev('PMID:29229699','The study identifies the recombinant preparation and its construct/purification scope; this qualification restricts the endpoint to that assay material.',loc)]}
+qtarget=qual('object','Ser1-NagB from E. coli BW25113: first nagB codon omitted in a SUMO fusion; Ulp1 cleavage yields N-terminal Ser instead of native Met. No sequence equivalence elsewhere is asserted.')
+for s,desc,text,loc in [
+ ('MetaCyc:URIDYLYL-PII','His-tagged ASKA GlnB, refolded and uridylylated with GlnD. Partial and fully modified preparations were compared; U-PII was not repurified from the uridylylation mixture.','Uridylylated PII increased Ser1-NagB activity in the presence of GlcNAc6P; magnitude depended on modification, pH and substrate conditions. GlnD-only mixture controls did not explain activation. No exact modified-trimer occupancy is inferred.','PMC5809692, Results sec2-1/sec2-2; Methods sec4-3/sec4-6'),
+ ('UniProtKB:P0A761','His-tagged recombinant ASKA NanE preparation, purified by Ni2+-chelating chromatography.','NanE activated Ser1-NagB with or without GlcNAc6P. At 0.7 micromolar NanE, effects depended on pH and substrate conditions. This regulatory assay does not independently establish purified K-12 NanE epimerase chemistry.','PMC5809692, Results sec2-1/sec2-3; Methods sec4-3/sec4-5'),
+ ('MetaCyc:PTSH-MONOMER','Recombinant HPr assay preparation in its nonphosphorylated state; the earlier study identifies an ASKA His-tagged preparation.','Nonphosphorylated HPr enhanced Ser1-NagB activity in the reported GlcNAc6P-dependent assays. HPr plus U-PII or NanE showed conditional synergy; docking models do not establish a new physical multi-protein complex.','PMC5809692, Results sec2-1/sec2-4 and Fig. 5; PMID:28634232, Methods sec9/sec10')]:
+ sq=qual('subject',desc,'PMC5809692, Materials and Methods sec4-3/sec4-6')
+ if s=='MetaCyc:PTSH-MONOMER':
+  sq['evidence']=[ev('PMID:28634232','The earlier study purified ASKA HPr with an N-terminal His6 tag.','PMC5572926, Experimental procedures sec9/sec10')]
+ edge(s,'activates','UniProtKB:P0A759',ev('PMID:29229699',text,loc.split('; PMID:28634232')[0]),[sq,qtarget])
+
+# Assembly facts supported by primary originals remain on their exact assembly edges.
+for e in edges:
+ if e['subject']=='MetaCyc:NAG6PDEACET-CPLX' and e['predicate']=='has_part':e['evidence'].append(ev('PMID:17567047','Purified E. coli NagA behaved as a tetramer in the presence of disulfide reducing agents; the primary experiment does not claim that disulfides are required for the native assembly.','PMC2533526, Results and Discussion S15'))
+ if e['subject']=='MetaCyc:GLUCOSAMINE-6-P-DEAMIN-CPLX' and e['predicate']=='has_part':e['evidence'].append(ev('PMID:8240271','The abstract describes a hexamer arranged as a trimer of dimers; Cys-to-Ser variants lacking the interchain disulfide remain stable hexamers. Full scanned article access failed, so no further full-text claim is made.','Primary abstract; PMC1134607 abstract1'))
+ if e['subject']=='MetaCyc:CPLX-165' and e['predicate']=='has_part' and e['object'] in ['UniProtKB:P69801','UniProtKB:P69805']:e['evidence'].append(ev('PMID:31209249','Cryo-EM resolves a ManYZ trimer with one ManY and one ManZ per protomer. The isolated structural assembly does not include ManX and does not fix complete ManXYZ stoichiometry.','PMC6796895, main letter paragraphs beginning In this study and The structure of ManYZ; Fig. 1a/b'))
+
+# Reference metadata from actual acquired primary documents, not invented bibliographic fields.
+for i,v in refs.items():
+ if i.startswith('PMID:'):
+  pm=i.split(':')[1]
+  for directory in [P/'raw',A/'raw']:
+   for p in directory.glob('*.json'):
+    try:j=json.loads(p.read_text())
+    except Exception:continue
+    rr=j.get('resultList',{}).get('result',[]) if isinstance(j,dict) else []
+    for z in rr:
+     if str(z.get('id'))==pm and z.get('title'):v['title']=plain(z['title'])
+
+_,root=native('GLCMANNANAUT-PWY');ref(R,plain(root.findtext('common-name')))
+record={'id':R,'label':plain(root.findtext('common-name')),'description':'Complete META 27.0 two-child, six-core-reaction amino-sugar degradation pathway, scoped here to E. coli K-12 evidence. NanQ ring opening feeds NanA, NanK and NanE, then NagA and NagB produce fructose 6-phosphate; alpha ring opening is a supported alternative. Neu5Ac/NanT, ManNAc/ManXYZ PTS and GlcNAc/NagE or ManXYZ PTS supply the three entry contexts. Native assemblies, alternative metal cofactors and transcriptional control are retained. Ser1-NagB regulatory assays carry explicit construct qualifiers. Generic transport pools and anomer-specific core species remain distinct. BiGG ManNAc identities retain their native model scope: the substrate InChIKey conflicts with ChEBI:17122, so no exact cross-database alias or intervening stereochemical conversion is asserted. The coupled ManNAc PTS and shared PTS phosphorylation reaction are overlapping descriptions, not additive net stoichiometry. The glycolysis link is an opaque downstream interface. PathBank SMP0002044 is a related conflicting definition lacking NanQ, not an exact identifier synonym.','pathway_type':'carbohydrate-degradation','taxa':[{'id':'NCBITaxon:83333','label':'Escherichia coli K-12'}],'participants':list(nodes.values()),'reactions':list(rxns.values()),'mechanistic_edges':edges,'references':list(refs.values())}
+(A/'draft/amino-sugar-superpathway.future-schema.yaml').write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100))
+(A/'projections/draft-node-original-bindings.json').write_text(json.dumps(bindings,indent=2)+'\n')
+(A/'projections/draft-chemistry-edge-bindings.json').write_text(json.dumps(chem,indent=2)+'\n')
+print(json.dumps({'status':'external future-schema draft; unsealed; independent science and endpoint schema pending','participants':len(nodes),'reactions':len(rxns),'edges':len(edges),'references':len(refs),'sha256':hashlib.sha256((A/'draft/amino-sugar-superpathway.future-schema.yaml').read_bytes()).hexdigest()},indent=2))

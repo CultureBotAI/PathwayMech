@@ -1,0 +1,68 @@
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import copy,json,hashlib,shutil
+from lxml import etree,html
+import yaml
+C=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-223-author-20261011');V=Path('/private/tmp/pathwaymech-next-223-science-review-20261011')
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  while b:=f.read(8*1024*1024):h.update(b)
+ return h.hexdigest()
+def bind(p):return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def save(n,v):
+ with (C/n).open('x') as f:json.dump(v,f,indent=2);f.write('\n')
+(C/'review-originals').mkdir();copies=[]
+for rel in ['regulatory-followup-raw-v3/ECOLI-CPLX0-226.xml','regulatory-followup-raw-v3/ECOLI-RNA0-241.xml','regulatory-followup-raw-v4/ECOLI-PC00004.xml','regulatory-followup-raw-v2/PMID9484892.json','regulatory-followup-raw-v2/PMID22988087.json','regulatory-acquisition-receipt-v2.json','regulatory-acquisition-receipt-v3.json','regulatory-acquisition-receipt-v4.json','issue-425-finding.md']:
+ p=V/rel;q=C/'review-originals'/p.name;shutil.copyfile(p,q);assert sha(p)==sha(q);copies.append({'source':bind(p),'immutable_copy':bind(q)})
+save('review-original-lineage.json',copies)
+target=A/'draft/amino-sugar-superpathway.future-schema.yaml';assert sha(target)=='a6c42b952683c9b3b69b11b800ea6b9b32f9d2380e8e851e4328c3091581cb0c'
+old=yaml.safe_load(target.read_text());r=copy.deepcopy(old)
+newnodes=[{'id':'EcoCyc:CPLX0-226','label':'CRP-cyclic-AMP DNA-binding transcriptional dual regulator','category':'complex'},
+          {'id':'EcoCyc:RNA0-241','label':'small regulatory RNA SgrS','category':'rna'},
+          {'id':'EcoCyc:PC00004','label':'DNA-binding transcriptional dual regulator CRP','category':'complex'}]
+r['participants']+=newnodes
+def ev(ref,text,loc):
+ assert len(text)<=400
+ return {'reference_id':ref,'source_assertion':text,'source_locator':loc}
+e105=next(e for e in r['mechanistic_edges'] if e['id']=='amino-105');e105['subject']='EcoCyc:CPLX0-226';del e105['endpoint_qualifiers']
+e105['evidence'].append(ev('EcoCyc:CPLX0-226','The exact cAMP-bound CRP complex is issued in ECOLI 27.0 for K-12 substr. MG1655 (NCBITaxon:511145). Native nagEp regulations have both signs; this contextual Nag edge remains unsigned.','Protein/common-name; metadata/PGDB; regulated promoter nagEp and modes'))
+def edge(n,s,p,o,e):return {'id':f'amino-{n:03d}','subject':s,'predicate':p,'object':o,'evidence':e}
+newedges=[
+ edge(110,'EcoCyc:CPLX0-226','activates','MetaCyc:CPLX-165',[
+  ev('EcoCyc:CPLX0-226','ECOLI 27.0 MG1655 regulations REG0-5729 and REG0-5728 positively regulate manXp with the cAMP-bound CRP complex. This edge concerns ManXYZ expression, not direct stimulation of assembled transporter catalysis.','Protein/regulated-by/Regulation[@frameid=REG0-5729 or REG0-5728]/mode, regulator and regulated-entity/Promoter[@frameid=PM00276]'),
+  ev('PMID:9484892','The primary abstract reports cAMP/CAP-dependent manX transcription and class II promoter activation. Full article methods and experimental strain details were not inspected; no universal amino-sugar growth-condition effect is inferred.','Europe PMC exact MED result, abstractText')]),
+ edge(111,'EcoCyc:RNA0-241','inhibits','MetaCyc:CPLX-165',[
+  ev('PMID:22988087','SgrS represses ManXYZ synthesis through two manXYZ mRNA binding sites: the manX coding site and the manX-manY intergenic site independently control manX and manYZ translation. manZ is coupled to manY; both sites support efficient message degradation and full 2DG-stress recovery. This is not direct inhibition of assembled transport or an SgrT protein effect.','PMC3479541, Results sec2-sec8, Discussion s2; Figs. 1-7'),
+  ev('PMID:22988087','Reporter, binding-site mutant, RNase E mutant, footprinting and stress-growth assays support the mechanism. Main-text methods name CS104/JH derivatives and DJ480; Table S1 was not inspected. These assay backgrounds are not all asserted to be unmodified MG1655 or identical to the native SgrS sequence.','PMC3479541, Materials and Methods s3/sec11-sec16; Figs. 1-6'),
+  ev('EcoCyc:RNA0-241','The native ECOLI 27.0 MG1655 record identifies the regulatory RNA SgrS, aliases SgrS/RyaA, distinct from its G0-9941 gene and the SgrT protein. Its first comment paragraph cites Rice12 for independent manX and manYZ translational repression.','RNA/common-name, synonym, gene; metadata/PGDB; RNA/comment paragraph1')]),
+ edge(112,'EcoCyc:CPLX0-226','has_part','EcoCyc:PC00004',[
+  ev('EcoCyc:CPLX0-226','The ECOLI 27.0 MG1655 cAMP-bound complex explicitly contains protein complex PC00004 and compound CAMP. No component coefficient is supplied here; no bound-complex occupancy or numerical stoichiometry is inferred.','Protein/component/Protein[@frameid=PC00004]; component/Compound[@frameid=CAMP]')]),
+ edge(113,'EcoCyc:CPLX0-226','has_part','CHEBI:58165',[
+  ev('EcoCyc:CPLX0-226','CAMP is an explicit component of the native cAMP-bound CRP complex; its component coefficient is absent. This records composition without asserting cAMP occupancy.','Protein/component/Compound[@frameid=CAMP]'),
+  ev('EcoCyc:CAMP','The exact ECOLI CAMP compound has a CHEBI58165 unification link and a charged InChI matching the issuing ChEBI compound. Its identity is distinct from any inferred binding occupancy.','Compound/dblink[dblink-db=CHEBI]; Compound/inchi')]),
+ edge(114,'EcoCyc:PC00004','has_part','UniProtKB:P0ACJ8',[
+  ev('EcoCyc:PC00004','The ECOLI 27.0 MG1655 CRP protein complex contains component PD00257 with coefficient 2. This establishes the protein homodimer, without inferring a cAMP coefficient for the separately named bound complex.','Protein/component/Protein[@frameid=PD00257]; component/coefficient'),
+  ev('EcoCyc:PD00257','The exact ECOLI polypeptide PD00257 has a native UniProt P0ACJ8 unification link. Native MG1655 provenance and the reviewed K-12 UniProt sequence scope remain distinct.','Protein/dblink[dblink-db=UNIPROT][dblink-relationship=unification]')])]
+r['mechanistic_edges']+=newedges
+for node in newnodes:
+ r['references'].append({'id':node['id'],'title':node['label']+' (ECOLI 27.0; MG1655)','url':'https://ecocyc.org/ECOLI/NEW-IMAGE?object='+node['id'].split(':')[1]})
+for i,title in [('CAMP','cyclic-AMP native identity and ChEBI unification'),('PD00257','CRP polypeptide native identity and UniProt unification')]:
+ r['references'].append({'id':'EcoCyc:'+i,'title':title+' (ECOLI 27.0; MG1655)','url':'https://ecocyc.org/ECOLI/NEW-IMAGE?object='+i})
+for i in ['9484892','22988087']:
+ j=json.loads((C/f'review-originals/PMID{i}.json').read_text());q=j['resultList']['result'];assert len(q)==1 and q[0]['pmid']==i
+ r['references'].append({'id':'PMID:'+i,'title':q[0]['title'],'url':'https://pubmed.ncbi.nlm.nih.gov/'+i})
+assert len(r['mechanistic_edges'])==114 and len(r['participants'])==64 and len(r['references'])==66
+assert all(old[k]==r[k] for k in old if k not in {'participants','mechanistic_edges','references'})
+assert r['participants'][:61]==old['participants'] and r['references'][:59]==old['references']
+assert all(e==r['mechanistic_edges'][j] for j,e in enumerate(old['mechanistic_edges']) if e['id']!='amino-105')
+(C/'draft').mkdir();newtarget=C/'draft/amino-sugar-superpathway.future-schema.yaml';newtarget.write_text(yaml.safe_dump(r,sort_keys=False,allow_unicode=True,width=100))
+save('delta.json',{'issue':425,'old_target':bind(target),'new_target':bind(newtarget),'unchanged_old_edges':108,'changed_old_edges':{'amino-105':{'old':old['mechanistic_edges'][104],'new':r['mechanistic_edges'][104]}},'added_participants':newnodes,'added_edges':newedges,'added_references':r['references'][59:],'counts':{'named_nodes':80,'edges':114,'references':66,'qualified_edges':3,'endpoint_qualifiers':6,'core_reactions':6,'entry_contexts':3},'all_other_fields_unchanged':True})
+contract=json.loads((A/'science-contract.json').read_text());contract.update(node_sections={k:r[k] for k in ['taxa','participants','reactions']},structural_edges=[{k:e[k] for k in ['id','subject','predicate','object']} for e in r['mechanistic_edges']],evidence_by_edge={e['id']:{k:e[k] for k in ['evidence','endpoint_qualifiers'] if k in e} for e in r['mechanistic_edges']},references=r['references'])
+save('science-contract.json',contract)
+paper=C/'raw-v2/PMC3479541-fulltext-original.html';doc=html.fromstring(paper.read_bytes());sections=[]
+for sid in ['s1','s2','s3']:
+ xs=doc.xpath('//*[@id=$id]',id=sid);assert len(xs)==1;text=xs[0].text_content();sections.append({'id':sid,'xpath':f'//*[@id="{sid}"]','text_sha256':hashlib.sha256(text.encode()).hexdigest(),'characters':len(text)})
+save('primary-inspection-successor.json',{'original':bind(paper),'PMCID':'PMC3479541','PMID':'22988087','text_extraction':'lxml.text_content.raw','inspected_sections':sections,'access':'actual full-text HTML acquired; Results, Discussion, Methods and embedded captions inspected; Supplementary TableS1 not inspected','limits':'PMID9484892 remains abstract-only. No unsupported primary-strain equivalence or direct transporter inhibition is asserted.'})
+print(json.dumps({'status':'prepared','target':bind(newtarget),'named':80,'edges':114,'references':66},indent=2))

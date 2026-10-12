@@ -1,0 +1,184 @@
+"""Isolated focused checks, original-source probes and full retained-ID replay."""
+import hashlib
+import importlib.util
+import json
+import os
+import shutil
+import subprocess
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+from xml.etree import ElementTree
+
+import yaml
+
+OUT = Path(__file__).resolve().parent
+REPO = OUT / 'repo'
+BASE = OUT / 'baseline'
+CHECKS = OUT / 'validation-run-1'
+CHECKS.mkdir(exist_ok=False)
+assert __debug__ and sys.dont_write_bytecode
+assert Path(sys.executable) == Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=str(REPO / 'src'))
+bindings = {}
+started = datetime.now(UTC).isoformat()
+
+def sha(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+def capture(path, expected=None):
+    path = Path(path)
+    value = sha(path)
+    assert expected is None or value == expected, str(path)
+    row = {'sha256': value, 'bytes': path.stat().st_size,
+           'resolved_path': str(path.resolve(strict=True))}
+    assert str(path) not in bindings or bindings[str(path)] == row
+    bindings[str(path)] = row
+    return value
+
+def save(name, value):
+    with (CHECKS / name).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+def command(name, argv):
+    before = datetime.now(UTC).isoformat()
+    result = subprocess.run(argv, cwd=REPO, env=env, capture_output=True, check=False)
+    stdout = CHECKS / (name + '.stdout.log')
+    stderr = CHECKS / (name + '.stderr.log')
+    stdout.write_bytes(result.stdout)
+    stderr.write_bytes(result.stderr)
+    receipt = {'argv': argv, 'cwd': str(REPO), 'started': before,
+               'finished': datetime.now(UTC).isoformat(), 'exit_code': result.returncode,
+               'stdout_sha256': sha(stdout), 'stderr_sha256': sha(stderr)}
+    save(name + '.receipt.json', receipt)
+    assert result.returncode == 0, receipt
+    print(name + ': ' + result.stdout.decode().strip(), flush=True)
+    return receipt
+
+baseline_binding = json.loads((OUT / 'baseline-binding.json').read_bytes())
+capture(OUT / 'baseline-binding.json')
+capture(__file__)
+capture(OUT / 'prepare.py')
+capture(Path(sys.executable).resolve())
+capture(Path(yaml.__file__))
+for row in baseline_binding['bindings']:
+    capture(row['source'], row['sha256'])
+    capture(row['copy'], row['sha256'])
+for path in sorted(REPO.rglob('*')):
+    if path.is_file():
+        assert '__pycache__' not in path.parts and path.suffix != '.pyc'
+        capture(path)
+
+spec = importlib.util.spec_from_file_location('candidate_builder', REPO / 'scripts/build_source_identifier_snapshot.py')
+adapter = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = adapter
+spec.loader.exec_module(adapter)
+proposal = json.loads((OUT / 'proposal/proposal-checks.json').read_bytes())
+acquisitions = json.loads((OUT / 'predecessor/acquisition-components-receipt.json').read_bytes())
+positive, negative, manifest = [], [], []
+records = CHECKS / 'original-id-selection'
+records.mkdir()
+for case in proposal['positive_originals']:
+    identifier = case['id']
+    frame = identifier.removeprefix('MetaCyc:')
+    path = OUT / 'authentic-originals' / (frame + '.xml')
+    digest = capture(path, case['source']['sha256'])
+    url = 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:' + frame
+    assert any(row.get('url') == url and row.get('sha256') == digest and row.get('status') == 200
+               for row in acquisitions)
+    terms = list(adapter.source_terms('metacyc-protein-xml', path, url=url, version='27.0'))
+    assert json.loads(json.dumps(terms)) == case['proposal']
+    positive.append({'id': identifier, 'source': str(path), 'sha256': digest,
+                     'url': url, 'version': '27.0', 'terms': terms,
+                     'name_derivation': case['name_derivation']})
+    manifest.append({'key': frame, 'kind': 'metacyc-protein-xml', 'path': path.name,
+                     'sha256': digest, 'url': url, 'version': '27.0',
+                     'license': 'Upstream terms; external validation fixture only'})
+assert len(positive) == 4
+for case in proposal['negative_controls']:
+    source = Path(case['fixture'])
+    capture(source, case['sha256'])
+    path = CHECKS / 'negative-original-fixtures' / source.name
+    path.parent.mkdir(exist_ok=True)
+    shutil.copyfile(source, path)
+    capture(path, case['sha256'])
+    try:
+        list(adapter.source_terms('metacyc-protein-xml', path, url=case['url'], version=case['version']))
+    except (ValueError, ElementTree.ParseError) as error:
+        negative.append({'case': case['case'], 'path': str(path), 'sha256': sha(path),
+                         'url': case['url'], 'version': case['version'], 'rejected': str(error)})
+    else:
+        raise AssertionError('Accepted negative control: ' + case['case'])
+assert len(negative) == 22
+save('authentic-source-checks.json', {'positive': positive, 'negative': negative})
+print('Four authentic source positives and 22 authentic-source negative controls passed.', flush=True)
+
+selection_path = records / 'ids.yaml'
+selection_path.write_text(yaml.safe_dump({'id': positive[0]['id'],
+    'participants': [{'id': item['id']} for item in positive[1:]]}))
+capture(selection_path)
+manifest_path = CHECKS / 'authentic-manifest.json'
+manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+capture(manifest_path)
+output = CHECKS / 'authentic-source-output.json'
+command('authentic-cli', [sys.executable, '-B', str(REPO / 'scripts/build_source_identifier_snapshot.py'),
+    '--manifest', str(manifest_path), '--records', str(records),
+    '--cache-dir', str(OUT / 'authentic-originals'), '--output', str(output)])
+actual = json.loads(output.read_bytes())
+assert len(actual['terms']) == len(actual['sources']) == 4
+for row in positive:
+    identifier, label, aliases = row['terms'][0]
+    assert actual['terms'][identifier] == {'label': label, 'synonyms': aliases,
+                                           'source': identifier.removeprefix('MetaCyc:')}
+
+command('focused-pytest', [sys.executable, '-B', '-m', 'pytest', '-p', 'no:cacheprovider', '-q',
+    '--junitxml=' + str(CHECKS / 'focused-pytest.junit.xml'),
+    'tests/test_metacyc_complex_naming.py', 'tests/test_metacyc_protein_authority.py',
+    'tests/test_metacyc_authority_encoding.py', 'tests/test_source_identifier_snapshot.py',
+    'tests/test_identifier_snapshot_builders.py'])
+command('ruff', [sys.executable, '-B', '-m', 'ruff', 'check', '--no-cache',
+                'scripts/build_source_identifier_snapshot.py', 'tests/test_metacyc_complex_naming.py'])
+
+baseline_path = BASE / 'data/identifier_authorities/sources.json'
+expected_bytes = baseline_path.read_bytes()
+expected = json.loads(expected_bytes)
+assert len(expected['terms']) == 2265 and len(expected['sources']) == 476
+retained = CHECKS / 'all-retained-id-selection'
+retained.mkdir()
+retained_path = retained / 'ids.yaml'
+retained_path.write_text(yaml.safe_dump({'id': next(iter(expected['terms'])),
+    'participants': [{'id': identifier} for identifier in sorted(expected['terms'])]}))
+capture(retained_path)
+current_ids = adapter.corpus_ids(REPO / 'data/pathways')
+required = {value for value in current_ids if value.split(':', 1)[0] in adapter.SOURCE_NAMESPACES}
+assert required <= expected['terms'].keys()
+output = CHECKS / 'retained-source-snapshot.json'
+print('Starting full retained-ID source snapshot replay using all 629 copied original bodies.', flush=True)
+receipt = command('retained-cli', [sys.executable, '-B', str(REPO / 'scripts/build_source_identifier_snapshot.py'),
+    '--manifest', str(REPO / 'conf/identifier_sources.json'), '--records', str(retained),
+    '--cache-dir', str(OUT / 'source-cache'), '--output', str(output)])
+assert output.read_bytes() == expected_bytes
+assert json.loads(output.read_bytes()) == expected
+for name, row in bindings.items():
+    path = Path(name)
+    assert sha(path) == row['sha256'], name
+    assert str(path.resolve(strict=True)) == row['resolved_path'], name
+save('retained-reproduction.json', {'status': 'passed', 'record_count': 223,
+    'source_manifest_entries': 629, 'snapshot_terms': 2265, 'source_metadata_entries': 476,
+    'current_corpus_source_ids': len(required),
+    'retained_not_currently_selected': sorted(expected['terms'].keys() - required),
+    'byte_identical_to_actual_working_baseline': True, 'sha256': sha(output),
+    'all_bound_inputs_rehashed_unchanged': True, 'native_cli_exit_code': receipt['exit_code'],
+    'scope': 'Full original-source replay of every retained ID; no proposed new candidate snapshot.'})
+save('input-bindings.json', bindings)
+save('result.json', {'status': 'external_implementation_validation_passed', 'started': started,
+    'finished': datetime.now(UTC).isoformat(), 'bound_input_count': len(bindings),
+    'authentic_positive_count': len(positive), 'authentic_negative_count': len(negative),
+    'focused_pytest_count': 288, 'runtime': sys.version, 'executable': sys.executable,
+    'yaml_version': yaml.__version__, 'baseline_HEAD': baseline_binding['HEAD'],
+    'baseline_kind': baseline_binding['baseline_kind'],
+    'later_actual_merged_223_bridge_required': True,
+    'no_maintained_adoption_or_shared_cache_writes': True})
+print('All checks and final input rehash passed; retained source snapshot is byte-identical.', flush=True)

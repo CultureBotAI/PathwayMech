@@ -1,0 +1,89 @@
+"""Bridge reviewed external code to the actual merged baseline, then adopt it."""
+from pathlib import Path
+import hashlib, json, os, subprocess, sys
+from datetime import datetime, timezone
+
+ROOT = Path('/private/tmp/pathwaymech-next-223-20261011')
+OLD = Path('/private/tmp/pathwaymech-next-222-20261011')
+OUT = Path('/private/tmp/pathwaymech-next-223-reviewed-code-adoption-20261011')
+BASE = '24c91a1b232f2879281003c4abfab70a624b9016'
+TREE = '95f0024c852507536d62c754a0e940dbd2d91894'
+PACKAGES = [
+    ('complex', '/private/tmp/pathwaymech-next-223-authority-implementation-20261011',
+     '665c6b58f64d16276681502b5ca538d85f748ba5ac3160ac5dfeb74d97c4742c',
+     '/private/tmp/pathwaymech-next-223-complex-root-review-20261011/review.json',
+     'd3c59141ef75e38c0ff3bae28b678c5475b610d5859a6ef72abcc585258dc332'),
+    ('endpoint', '/private/tmp/pathwaymech-next-223-endpoint-implementation-20261011',
+     '1065edf52ae801969488a3a00020bd182b39eacf47726c1e4073ca38c867eacf',
+     '/private/tmp/pathwaymech-next-223-endpoint-root-review-20261011/review.json',
+     '74a5e18850ec146a4d301a801cac33ee293c8d2c635bc48ccb357b68af8f1526'),
+]
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=ROOT, text=True).strip()
+
+assert sys.dont_write_bytecode and __debug__
+assert git('rev-parse', 'HEAD') == BASE and git('rev-parse', 'HEAD^{tree}') == TREE
+assert git('status', '--porcelain=v1') == ''
+assert len(list((ROOT / 'data/pathways').glob('*.yaml'))) == 223
+OUT.mkdir(exist_ok=False)
+bridges, copies = [], []
+for name, directory, handoff_sha, review_path, review_sha in PACKAGES:
+    package = Path(directory)
+    assert sha(package / 'handoff.json') == handoff_sha
+    assert sha(review_path) == review_sha
+    handoff = json.loads((package / 'handoff.json').read_bytes())
+    binding = json.loads((package / 'baseline-binding.json').read_bytes())
+    checked, external, mismatches = [], [], []
+    for row in binding['bindings']:
+        source = Path(row['source'])
+        if source.is_relative_to(OLD):
+            relative = source.relative_to(OLD)
+            target = ROOT / relative
+            observed = sha(target) if target.is_file() else None
+            item = {'path':str(relative), 'sha256':row['sha256'], 'actual_merged_sha256':observed}
+            checked.append(item)
+            if observed != row['sha256']:
+                mismatches.append(item)
+        else:
+            external.append({'path':str(source), 'sha256':row['sha256']})
+    bridge = {'package':name, 'captured_baseline_HEAD':binding['HEAD'],
+              'captured_scope':'Actual pending working bytes, not captured HEAD tree',
+              'actual_merged_commit':BASE, 'actual_merged_tree':TREE,
+              'checked':checked, 'external_sources_not_repo_bridge':external, 'mismatches':mismatches}
+    (OUT / (name + '-baseline-bridge.json')).write_text(json.dumps(bridge, indent=2)+'\n')
+    assert not mismatches, mismatches
+    bridges.append({'package':name, 'count':len(checked), 'receipt_sha256':sha(OUT / (name + '-baseline-bridge.json'))})
+    for row in handoff['implementation_files']:
+        relative = row.get('path', row.get('file'))
+        original = package / 'repo' / relative
+        target = ROOT / relative
+        assert sha(original) == row['after_sha256']
+        if row['before_sha256'] is None:
+            assert not os.path.lexists(target), relative
+        else:
+            assert sha(target) == row['before_sha256'], relative
+        copies.append({'package':name,'source':str(original),'destination':str(target),
+                       'relative':relative, 'before_sha256':row['before_sha256'],
+                       'after_sha256':row['after_sha256']})
+assert len(copies) == 15 and len({c['relative'] for c in copies}) == 15
+for row in copies:
+    target = Path(row['destination'])
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(Path(row['source']).read_bytes())
+    assert sha(target) == row['after_sha256']
+link = ROOT / '.venv'
+assert not os.path.lexists(link)
+link.symlink_to('/private/tmp/pathwaymech-next-195-20261011/.venv', target_is_directory=True)
+receipt = {'status':'reviewed_complex_and_endpoint_code_adopted',
+           'at':datetime.now(timezone.utc).isoformat(), 'base':BASE,'tree':TREE,
+           'baseline_bridges':bridges, 'copies':copies, 'helper_sha256':sha(__file__),
+           'scope':'Code only; no target record or authority snapshot adopted.',
+           'pending':['BiGG and EcoCyc authority support', 'Issue425 science correction and reassessment',
+                      'Combined canonical build', 'Maintained gates and review', 'PR workflow']}
+(OUT / 'receipt.json').write_text(json.dumps(receipt, indent=2)+'\n')
+print(json.dumps({'status':receipt['status'],'files':len(copies),'baseline_bridges':bridges,
+                  'receipt_sha256':sha(OUT/'receipt.json')}), flush=True)

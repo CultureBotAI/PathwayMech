@@ -1,0 +1,49 @@
+import json,hashlib,subprocess,datetime,shutil,os
+from pathlib import Path
+import yaml
+R=Path('/private/tmp/pathwaymech-next-223-20261011')
+S=Path('/private/tmp/pathwaymech-next-223-authority-selection-20261011')
+T=Path('/private/tmp/pathwaymech-next-223-correction-20261011/draft/amino-sugar-superpathway.future-schema.yaml')
+O=Path('/private/tmp/pathwaymech-next-223-canonical-ontology-20261011');O.mkdir(exist_ok=False)
+P='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+C=Path('/private/tmp/pathwaymech-curation-authorities')
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def write(n,d):(O/n).write_text(json.dumps(d,indent=2)+'\n')
+assert sha(T)=='ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff'
+assert sha(S/'handoff.json')=='9d77b3e873bfda1790a68309e59468fbcfdfaf22b63c0e818b894a316367e2f5'
+assert sha(S/'artifact-manifest.json')=='152aaac3de7144ce18e32c27cfa6e1b8f766fd00e784ee1723569c4cef8e6b04'
+am=json.loads((S/'artifact-manifest.json').read_text())
+for a in am['artifacts']:
+ p=S/a['path'];assert sha(p)==a['sha256'] and p.stat().st_size==a['bytes'],a['path']
+old=json.loads((R/'data/identifier_authorities/ontology.json').read_text())
+sourceold=json.loads((R/'data/identifier_authorities/sources.json').read_text())
+builder=R/'scripts/build_ontology_identifier_snapshot.py'
+assert sha(builder)=='538dc16bbe67b5f5a3faacf01c968f32900b6fdb76e71f55ebb933ccf8e7a715'
+corpus=O/'selection-corpus';corpus.mkdir();shutil.copyfile(T,corpus/'amino-sugar-superpathway.yaml')
+(corpus/'retained-identifiers.yaml').write_text(yaml.safe_dump({'selected_identifiers':[{'id':x} for x in sorted(set(old['terms'])|set(sourceold['terms']))]},sort_keys=False))
+shutil.copyfile(S/'rhea-updates-proposed.json',O/'rhea-updates.json')
+args=[P,'-B',str(builder)]
+stats={}
+for prefix,name in [('GO','go'),('CHEBI','chebi'),('NCBITaxon','ncbitaxon'),('RHEA','rhea')]:
+ p=C/(name+'.db');s=p.stat();stats[str(p)]={'resolved_path':str(p.resolve()),'bytes':s.st_size,'mtime_ns':s.st_mtime_ns};args.extend(['--source',prefix+'='+str(p)])
+args.extend(['--corpus',str(corpus),'--rhea-updates',str(O/'rhea-updates.json'),'--cache-dir',str(C/'sources'),'--output',str(O/'ontology.json')])
+receipt={'status':'running','started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':args,'builder_sha256':sha(builder),'target_sha256':sha(T),'retained_terms':len(old['terms']),'retained_sources':len(old['sources']),'selection_package_artifacts_verified':len(am['artifacts']),'original_stats':stats}
+write('execution.json',receipt)
+with (O/'build.stdout').open('w') as out,(O/'build.stderr').open('w') as err:p=subprocess.run(args,cwd=R,stdout=out,stderr=err,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(R/'src')})
+receipt.update(status='terminal',exit_code=p.returncode,finished_at=datetime.datetime.now(datetime.timezone.utc).isoformat());write('execution.json',receipt)
+print('builder',p.returncode,(O/'build.stdout').read_text()[-2500:],(O/'build.stderr').read_text()[-1000:],flush=True)
+assert p.returncode==0
+new=json.loads((O/'ontology.json').read_text());expected=json.loads((S/'ontology-id-delta.json').read_text())
+assert new['sources']==old['sources']
+for k,v in old['terms'].items():assert new['terms'][k]==v,k
+assert {k:v for k,v in new['terms'].items() if k not in old['terms']}==expected['selected_new_terms']
+assert len(new['terms'])==1888 and len(new['sources'])==5
+for name,before in stats.items():
+ p=Path(name);s=p.stat();assert str(p.resolve())==before['resolved_path'] and s.st_size==before['bytes'] and s.st_mtime_ns==before['mtime_ns'],name
+assert sha(T)==receipt['target_sha256'] and sha(builder)==receipt['builder_sha256']
+write('preservation.json',{'status':'passed','old_terms_retained_exact':len(old['terms']),'new_terms':len(new['terms'])-len(old['terms']),'total_terms':len(new['terms']),'all_five_source_metadata_and_complete_original_hashes_equal':True,'original_stats_unchanged':True,'whole_database_hashing':'The production builder read_source hashes every complete issuing SQL database; its original hashes exactly match the retained five-source metadata. Rhea whole compressed original hash checked too.','snapshot_sha256':sha(O/'ontology.json'),'production_cli':True,'output_adopted':False,'target_science_and_ecocyc_support_acceptance_pending':True})
+print('ontology preservation passed',sha(O/'ontology.json'),flush=True)

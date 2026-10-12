@@ -23,6 +23,12 @@ role. A chemical may be both a reaction participant and an enzyme cofactor;
 the incident edges distinguish those roles. Cellular components and biological
 processes are context nodes, not metabolites to consume.
 
+Use `category: pathway` for an identified child pathway or downstream pathway
+interface in the `reactions` collection. Its native identifier and evidence must
+establish the pathway scope. This explicit type renders and exports as a pathway;
+the identifier prefix alone does not distinguish it from an individual reaction.
+Pathway nodes cannot serve as consumed metabolites or physical-location subjects.
+
 Use `chemical_entity` when the source establishes a chemical entity or generic
 chemical class without restricting it to a narrower molecular kind. For example,
 the generic methyl acceptors in the SAM cycle can include small molecules and
@@ -60,6 +66,32 @@ Reaction `direction` records source orientation (`left_to_right`,
 `right_to_left`, or `reversible`). Distinguish a pathway's selected physiological
 flux from thermodynamic reversibility, and describe source disagreements.
 
+## Experimental constructs and molecular states
+
+Prefer an exact issuing identifier for a modified protein or assembly when one
+exists. If evidence tests a construct that differs from the named native protein,
+qualify the affected edge endpoint. Do not mint a biological CURIE for the assay
+material or let an unqualified base-protein edge imply that the native molecule
+was tested. A qualifier describes the source-limited change; it does not assert
+sequence identity elsewhere or an assembly's modification occupancy.
+
+An optional `endpoint_qualifiers` list contains at most two objects, one per
+`subject` or `object`. Each requires `endpoint`, `kind` (`experimental_construct`
+or `molecular_state`), a nonempty `description` of at most 400 characters, and a
+nonempty `evidence` list using the same Evidence grammar and locally declared
+references as the edge. Only endpoints explicitly declared as protein or complex
+participants may be qualified. Unknown kinds or fields, repeated endpoint roles,
+and taxon, reaction, pathway or untyped participant endpoints are rejected.
+
+The endpoint plus its qualification forms the complete edge claim. For example,
+an activation assay on Ser1-NagB must retain the NagB construct qualification
+beside its object ID; moving it to a regulator subject changes the assertion.
+Keep phosphorylation, ligand dependence, preparation and assay conditions where
+the inspected source establishes them. Absence of measured activation does not
+establish inhibition. Generic validation checks shape, endpoint kind and local
+evidence references; scientific review and source-specific replay must detect a
+missing qualification, a plausible but wrong role, or changed construct wording.
+
 ## Evidence and provenance
 
 Each evidence item cites a declared reference and contains exactly one of:
@@ -95,6 +127,13 @@ highlighting. Highlighting keeps every relationship in the diagram. The complete
 component, edge and evidence tables remain available below it; records with no
 mechanistic edges display an explicit empty state.
 
+Qualified endpoints have distinct graph display instances bearing a visible
+construct/state label. Their complete description and evidence appear in
+accessible graph details and in the adjacent subject/object table cell, without
+JavaScript. Display-instance keys serve navigation only; the table and exports
+retain the native biological ID. A qualifier applies to its specific edge, so
+another edge using the base protein does not inherit it.
+
 The renderer owns `pages/assets/pathway-network.css` and
 `pages/assets/pathway-network.js` as well as each record page. Edit their sources
 under `src/pathwaymech/assets/` and the graph renderer in
@@ -123,3 +162,11 @@ local labels and reaction directions. A global direction is left blank when
 different records assign different directions to a shared identifier; the
 per-record contexts retain both assertions. Explicit biological kinds override
 prefix-based category guesses regardless of record order.
+
+KGX adds an `endpoint_qualifiers` JSON column preserving every role, kind,
+description and Evidence object. Its reference metadata includes qualifier-only
+citations. Complete qualifier payloads participate in edge identity and
+deduplication, so a qualified claim cannot collapse into an unqualified edge.
+Consumers that cannot preserve this column must explicitly reject or omit the
+qualified claim. Empty or absent qualifiers retain previous edge IDs and field
+values; the added TSV column and header still change export bytes and checksums.

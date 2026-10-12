@@ -1,0 +1,162 @@
+"""Independent scientific successor checks; not a production schema/policy waiver."""
+import copy,hashlib,json,sqlite3,sys
+from datetime import UTC,datetime
+from pathlib import Path
+from lxml import etree,html
+import yaml
+O=Path(__file__).parent;C=Path('/private/tmp/pathwaymech-next-223-correction-20261011');R=Path('/private/tmp/pathwaymech-next-223-science-review-20261011');A=Path('/private/tmp/pathwaymech-next-223-author-20261011')
+START=datetime.now(UTC).isoformat(); assert sys.dont_write_bytecode
+paths=set()
+def digest(p):
+ p=Path(p)
+ with p.open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def read(p):
+ p=Path(p);paths.add(p);return p.read_bytes()
+def js(p):return json.loads(read(p))
+def dump(name,data):
+ with (O/name).open('x') as f:json.dump(data,f,indent=2,ensure_ascii=False);f.write('\n')
+old=yaml.safe_load(read(A/'draft/amino-sugar-superpathway.future-schema.yaml'))
+new=yaml.safe_load(read(C/'draft/amino-sugar-superpathway.future-schema.yaml'))
+assert digest(C/'draft/amino-sugar-superpathway.future-schema.yaml')=='ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff'
+assert digest(R/'handoff.json')=='aa5d24abd807e7f5b072f00e524351804310e02bc9e47cbcda5c3d5c504ceb00'
+prior=js(R/'handoff.json');manifest=js(R/prior['artifact_manifest'])
+for name,binding in manifest.items():
+ p=R/name;paths.add(p);assert digest(p)==binding['sha256'] and p.stat().st_size==binding['bytes'],p
+# Source assertions require intact native identity independently of HTTP status.
+native={};source_rows={}
+for frame,tag,folder in [('CPLX0-226','Protein','review-originals'),('PC00004','Protein','review-originals'),('RNA0-241','RNA','review-originals'),('PD00257','Protein','raw-v2'),('CAMP','Compound','raw-v2')]:
+ p=C/folder/('ECOLI-'+frame+'.xml');root=etree.fromstring(read(p),etree.XMLParser(resolve_entities=False,no_network=True))
+ assert root.tag=='ptools-xml' and root.get('ptools-version')=='27.0'
+ assert root.findtext('metadata/query')=='ECOLI:'+frame and root.findtext('metadata/num_results')=='1'
+ pgdb=root.find('metadata/PGDB');assert pgdb.get('orgid')=='ECOLI' and pgdb.get('version')=='27.0'
+ assert pgdb.findtext('strain')=='K-12 substr. MG1655'
+ tax,=pgdb.xpath('dblink[dblink-db="NCBI-TAXONOMY-DB"][dblink-relationship="unification"]/dblink-oid/text()');assert tax=='511145'
+ top=[n for n in root if n.tag!='metadata'];assert len(top)==1
+ n,=top;assert n.tag==tag and (n.get('ID'),n.get('orgid'),n.get('frameid'))==('ECOLI:'+frame,'ECOLI',frame)
+ native[frame]=n
+ source_rows[frame]={'path':str(p),'sha256':digest(p),'native_id':n.get('ID'),'tag':n.tag,'name':n.findtext('common-name'),'synonyms':[v.text for v in n.findall('synonym')],'parent_classes':[v[0].get('frameid') for v in n.findall('parent')],'version':'27.0','strain':pgdb.findtext('strain'),'taxon':'NCBITaxon:'+tax}
+crp=native['CPLX0-226'];rna=native['RNA0-241'];dimer=native['PC00004'];camp=native['CAMP'];polypeptide=native['PD00257']
+assert source_rows['CPLX0-226']['parent_classes']==['Protein-Small-Molecule-Complexes']
+assert source_rows['RNA0-241']['parent_classes']==['Regulatory-RNAs']
+assert source_rows['PC00004']['parent_classes']==['Protein-Complexes']
+assert rna.find('gene/Gene').get('frameid')=='G0-9941'
+components=[{'tag':n[0].tag,'frame':n[0].get('frameid'),'coefficient':n.findtext('coefficient')} for n in crp.findall('component')]
+assert components==[{'tag':'Protein','frame':'PC00004','coefficient':None},{'tag':'Compound','frame':'CAMP','coefficient':None}]
+dcomp,=dimer.findall('component');assert dcomp.find('Protein').get('frameid')=='PD00257' and dcomp.findtext('coefficient')=='2'
+assert polypeptide.xpath('dblink[dblink-db="UNIPROT"][dblink-relationship="unification"]/dblink-oid/text()')==['P0ACJ8']
+assert camp.xpath('dblink[dblink-db="CHEBI"][dblink-relationship="unification"]/dblink-oid/text()')==['58165']
+chebi=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');paths.add(chebi)
+c=sqlite3.connect('file:'+str(chebi)+'?mode=ro',uri=True)
+inchi,=c.execute("SELECT value FROM statements WHERE subject='CHEBI:58165' AND predicate='chemrof:inchi_string'").fetchone();c.close()
+assert camp.findtext('inchi')==inchi and '/p-1/' in inchi
+regulation=[]
+# Resolve each exact complete native relation, not every descendant that happens
+# to contain a manXp string; the second relation is genuinely nested.
+for frame in ['REG0-5729','REG0-5728']:
+ reg,=crp.xpath('.//Regulation[@ID=$identifier]',identifier='ECOLI:'+frame)
+ p=reg.find('regulated-entity/Promoter');r=reg.find('regulator/Protein')
+ assert p.get('frameid')=='PM00276' and r.get('frameid')=='CPLX0-226' and reg.findtext('mode')=='+'
+ regulation.append({'frame':frame,'target':p.get('frameid'),'mode':reg.findtext('mode'),'regulator':r.get('frameid'),'xpath':reg.getroottree().getpath(reg)})
+assert crp.find('regulates/Regulation[@frameid="REG0-5729"]') is not None
+nag,=crp.xpath('.//Promoter[common-name="nagEp"]')
+nag_modes={reg.findtext('mode') for reg in nag.findall('regulated-by/Regulation') if reg.find('regulator/Protein') is not None and reg.find('regulator/Protein').get('frameid')=='CPLX0-226'}
+assert nag_modes=={'+','-'}
+source_rows['CPLX0-226'].update(components=components,manXp=regulation,nagEp_modes=sorted(nag_modes))
+source_rows['PC00004']['polypeptide_component']={'frame':'PD00257','coefficient':2,'unified':'UniProtKB:P0ACJ8'}
+source_rows['CAMP'].update(unified='CHEBI:58165',inchi=inchi)
+source_rows['RNA0-241'].update(gene='G0-9941',comment=rna.findtext('comment'))
+# Inspect exact primary metadata + full article anchors independently.
+primaries={}
+for pmid in ['9484892','22988087']:
+ d=js(C/'review-originals'/('PMID'+pmid+'.json'));row,=d['resultList']['result'];assert d['hitCount']==1 and row['pmid']==pmid and row['source']=='MED'
+ primaries[pmid]={'title':row['title'],'abstract':row['abstractText']}
+rice=C/'raw-v2/PMC3479541-fulltext-original.html';article=html.fromstring(read(rice));assert article.xpath('//meta[@name="citation_pmid"]/@content')==['22988087']
+assert digest(rice)=='61b77bfb025062f367c064227a377eb253029722a55b1446983722f8f3bcb9fc'
+anchors={}
+for identifier in ['sec2','sec3','sec4','sec5','sec6','sec7','sec8','s2','s3']:
+ node,=article.xpath('//*[@id=$id]',id=identifier);text=' '.join(node.text_content().split())
+ anchors[identifier]={'text':text,'text_sha256':hashlib.sha256(text.encode()).hexdigest()}
+assert 'cAMP/CAP' in primaries['9484892']['abstract'] and 'activation' in primaries['9484892']['abstract']
+assert 'manX' in anchors['sec3']['text'] and 'independent' in anchors['sec3']['text']
+assert 'coupled' in anchors['sec6']['text'] and 'CS104' in anchors['s3']['text']
+assert 'not yet elucidated' in anchors['s2']['text'] # hypothesis boundary retained
+# Verify same reviewed UniProt source and taxon chain used for the narrow mapping.
+uniprot=js(A/'raw/P0ACJ8.json');assert uniprot['primaryAccession']=='P0ACJ8' and uniprot['organism']['taxonId']==83333 and uniprot['entryType']=='UniProtKB reviewed (Swiss-Prot)'
+taxon=Path('/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db');paths.add(taxon);c=sqlite3.connect('file:'+str(taxon)+'?mode=ro',uri=True)
+assert c.execute("SELECT object FROM statements WHERE subject='NCBITaxon:511145' AND predicate='rdfs:subClassOf'").fetchall()==[('NCBITaxon:83333',)];c.close()
+# Every former field and old assertion must remain, except the explicit source-
+# grounded CRP state replacement. The new relation oracle comes from native
+# composition/sign/type and independently read primary evidence above.
+old_edges={e['id']:e for e in old['mechanistic_edges']}
+new_ids={'EcoCyc:'+x for x in ['CPLX0-226','RNA0-241','PC00004']}
+triples={105:('EcoCyc:CPLX0-226','regulates','MetaCyc:GLUAMCAT-PWY'),110:('EcoCyc:CPLX0-226','activates','MetaCyc:CPLX-165'),111:('EcoCyc:RNA0-241','inhibits','MetaCyc:CPLX-165'),112:('EcoCyc:CPLX0-226','has_part','EcoCyc:PC00004'),113:('EcoCyc:CPLX0-226','has_part','CHEBI:58165'),114:('EcoCyc:PC00004','has_part','UniProtKB:P0ACJ8')}
+def verify(candidate):
+ for key in old:
+  if key not in ['participants','mechanistic_edges','references']:assert candidate[key]==old[key],('preserved full scope field',key)
+ nodes={n['id']:n for n in candidate['participants']};edges={e['id']:e for e in candidate['mechanistic_edges']};refs={r['id']:r for r in candidate['references']}
+ assert len(nodes)==64 and len(edges)==114 and len(refs)==66
+ assert set(nodes)-{n['id'] for n in old['participants']}==new_ids,'exact three new native identities'
+ for n in old['participants']:assert nodes[n['id']]==n,'old participant changed'
+ for rid,e in old_edges.items():
+  if rid!='amino-105':assert edges.get(rid)==e,('old scientific scope changed',rid)
+ for r in old['references']:assert refs[r['id']]==r,'old reference changed'
+ for frame,category in [('CPLX0-226','complex'),('PC00004','complex'),('RNA0-241','rna')]:
+  n=nodes['EcoCyc:'+frame];assert n['category']==category and n['label']==source_rows[frame]['name'],'native type/direct name'
+ for i,triple in triples.items():
+  e=edges['amino-'+str(i)];assert tuple(e[k] for k in ['subject','predicate','object'])==triple,('new source relation',i)
+  assert not e.get('endpoint_qualifiers'),'exact native state retained'
+ assert edges['amino-105']['evidence'][:2]==old_edges['amino-105']['evidence'],'preserve unsigned Nag evidence'
+ req_refs={105:{'EcoCyc:CPLX0-226'},110:{'EcoCyc:CPLX0-226','PMID:9484892'},111:{'EcoCyc:RNA0-241','PMID:22988087'},112:{'EcoCyc:CPLX0-226'},113:{'EcoCyc:CPLX0-226','EcoCyc:CAMP'},114:{'EcoCyc:PC00004','EcoCyc:PD00257'}}
+ for i,expected in req_refs.items():assert expected<={e['reference_id'] for e in edges['amino-'+str(i)]['evidence']},'exact local evidence reference'
+ assert 'not direct stimulation' in edges['amino-110']['evidence'][0]['source_assertion'] and 'Full article methods' in edges['amino-110']['evidence'][1]['source_assertion'],'expression/abstract scope'
+ rna_evidence=' '.join(e['source_assertion'] for e in edges['amino-111']['evidence'])
+ assert all(v in rna_evidence for v in ['not direct inhibition','SgrT','Table S1 was not inspected','not all asserted to be unmodified MG1655','manZ is coupled to manY']),'RNA synthesis/strain limits'
+ assert 'coefficient is absent' in edges['amino-113']['evidence'][0]['source_assertion'],'no cAMP occupancy'
+ assert 'coefficient 2.' in edges['amino-114']['evidence'][0]['source_assertion'],'native CRP dimer coefficient'
+ assert edges['amino-110']['evidence'][0]['source_locator'].startswith('Protein/regulates/Regulation'),'actual native relation path'
+ local={candidate['id'],*[n['id'] for n in candidate['participants']],*[n['id'] for n in candidate['reactions']],*[n['id'] for n in candidate['taxa']]}
+ for e in edges.values():
+  assert e['subject'] in local and e['object'] in local
+  for ev in e['evidence']:assert ev['reference_id'] in refs and ev.get('source_locator') and ev.get('source_assertion')
+ return True
+assert verify(new)
+controls=[]
+def alter(name,change):
+ n=copy.deepcopy(new);change(n)
+ try:verify(n)
+ except (AssertionError,KeyError,ValueError) as e:controls.append({'name':name,'rejected':True,'reason':str(e)})
+ else:raise AssertionError('false pass '+name)
+ (O/('control-'+name+'.yaml')).write_text(yaml.safe_dump(n,sort_keys=False))
+def edge(n,i):return next(e for e in n['mechanistic_edges'] if e['id']=='amino-'+str(i))
+alter('missing-CRP-control',lambda n:n['mechanistic_edges'].remove(edge(n,110)))
+alter('missing-SgrS-control',lambda n:n['mechanistic_edges'].remove(edge(n,111)))
+alter('CRP-sign-reversal',lambda n:edge(n,110).update(predicate='inhibits'))
+alter('SgrS-sign-reversal',lambda n:edge(n,111).update(predicate='activates'))
+alter('apo-CRP-substitution',lambda n:edge(n,110).update(subject='EcoCyc:PC00004'))
+alter('SgrS-treated-as-protein',lambda n:next(x for x in n['participants'] if x['id']=='EcoCyc:RNA0-241').update(category='protein'))
+alter('MetaCyc-namespace-fabrication',lambda n:next(x for x in n['participants'] if x['id']=='EcoCyc:RNA0-241').update(id='MetaCyc:RNA0-241'))
+alter('native-state-loss-in-Nag',lambda n:edge(n,105).update(subject='UniProtKB:P0ACJ8'))
+alter('Nag-positive-overgeneralization',lambda n:edge(n,105).update(predicate='activates'))
+alter('invented-cAMP-occupancy',lambda n:edge(n,113)['evidence'][0].update(source_assertion='Native cAMP occupancy is two per complex.'))
+alter('CRP-monomer-coefficient',lambda n:edge(n,114)['evidence'][0].update(source_assertion='Native component PD00257 coefficient 1.'))
+alter('wrong-CRP-primary',lambda n:edge(n,110)['evidence'][1].update(reference_id='PMID:22988087'))
+alter('lost-SgrS-strain-limit',lambda n:edge(n,111)['evidence'][1].update(source_assertion='All assays use unmodified native MG1655.'))
+alter('wrong-native-locator',lambda n:edge(n,110)['evidence'][0].update(source_locator='Protein/regulated-by/Regulation'))
+alter('lost-alpha-NanQ',lambda n:n['mechanistic_edges'].remove(edge(n,68)))
+alter('lost-Ser1-qualification',lambda n:edge(n,108).pop('endpoint_qualifiers'))
+# Bind checked scientific source paths, authority proposal and receipt originals.
+for p in [C/'authority-addendum.json',C/'delta.json',C/'locator-correction-receipt.json',C/'source-manifest.json',C/'primary-inspection-successor.json',C/'replay-attempt2/success.json',C/'replay-attempt2/controls.json',C/'acquisition-bounded-followup-v2.json']:
+ read(p)
+for p in (C/'review-originals').glob('*'):read(p)
+addendum=js(C/'authority-addendum.json')
+for row in addendum['new_named_terms']:
+ native_row=source_rows[row['id'].split(':')[1]]
+ assert row['label']==native_row['name'] and sorted(row['synonyms'])==sorted(native_row['synonyms'])
+ assert row['native_taxon']==native_row['taxon'] and row['native_pgdb']=='ECOLI' and row['native_version']=='27.0'
+ assert digest(row['whole_original']['path'])==row['whole_original']['sha256']
+dump('native-and-primary-projection.json',{'native':source_rows,'primaries':primaries,'Rice12_inspected_sections':anchors})
+dump('controls.json',controls)
+dump('fresh-delta.json',{'old_named_nodes':77,'new_named_nodes':80,'old_edges_preserved':108,'changed_edge':'amino-105','new_edges':['amino-'+str(i) for i in range(110,115)],'all_old_reactions_participants_references_and_top_level_fields_preserved':True,'old_qualified_edges':4,'new_qualified_edges':3,'current_endpoint_qualifiers':6,'new_reference_IDs':sorted({x['id'] for x in new['references']}-{x['id'] for x in old['references']})})
+dump('input-bindings.json',{str(p):{'sha256':digest(p),'bytes':p.stat().st_size,'resolved_path':str(p.resolve())} for p in sorted(paths)})
+dump('result.json',{'status':'PASS_INDEPENDENT_SCIENCE_SUCCESSOR_CHECKS','started':START,'finished':datetime.now(UTC).isoformat(),'target_sha256':digest(C/'draft/amino-sugar-superpathway.future-schema.yaml'),'named_nodes':80,'participants':64,'reaction_context_nodes':14,'edges':114,'references':66,'negative_controls':len(controls),'old_review_artifacts_rehashed':len(manifest),'new_named_native_identities':3,'native_supporting_mapping_originals':2,'limits':'No generic-schema, namespace/software, canonical build, merged-baseline bridge or maintained gate acceptance. Prior full scientific review remains independently sealed.'})
+print('Independent successor passed: three exact native identities, 108 unchanged edges, six reviewed changed/new edges, 16 fresh negative controls.',flush=True)

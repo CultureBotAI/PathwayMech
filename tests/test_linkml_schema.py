@@ -201,6 +201,16 @@ def _source_mapping(r: dict) -> dict:
     return r["source_mappings"][0]
 
 
+def _endpoint_qualifier(r: dict) -> dict:
+    r["mechanistic_edges"][0]["endpoint_qualifiers"] = [{
+        "endpoint": "subject", "kind": "experimental_construct",
+        "description": "Synthetic schema fixture for a tagged protein.",
+        "evidence": [{"reference_id": r["references"][0]["id"],
+                      "quote": "Synthetic schema fixture evidence."}],
+    }]
+    return r["mechanistic_edges"][0]["endpoint_qualifiers"][0]
+
+
 _WHERE = {
     "PathwayRecord": lambda r: r,
     "NamedNode": lambda r: r["participants"][0],
@@ -209,6 +219,7 @@ _WHERE = {
     "GenomicLocus": _genomic_locus,
     "SourceMapping": _source_mapping,
     "MechanisticEdge": lambda r: r["mechanistic_edges"][0],
+    "EndpointQualifier": _endpoint_qualifier,
     "EvidenceItem": lambda r: r["mechanistic_edges"][0]["evidence"][0],
     "Reference": lambda r: r["references"][0],
     "CurationEvent": lambda r: r.setdefault("curation_history", [dict(_CURATION_EVENT)])[0],
@@ -259,12 +270,14 @@ EXPECTED_REQUIRED = (
         )
     }
     | {("MechanisticEdge", slot) for slot in ("id", "subject", "predicate", "object", "evidence")}
+    | {("EndpointQualifier", slot) for slot in ("endpoint", "kind", "description", "evidence")}
     | {("NamedNode", "id"), ("NamedNode", "label"), ("Reference", "id"),
        ("EvidenceItem", "reference_id"),
        ("CurationEvent", "timestamp")}
 )
 EXPECTED_NON_BLANK = (
     {("PathwayRecord", slot) for slot in ("id", "label", "description", "pathway_type")}
+    | {("EndpointQualifier", "description")}
     | {("NamedNode", "id"), ("NamedNode", "label"), ("MechanisticEdge", "id"),
        ("EvidenceItem", "quote"), ("Reference", "id"), ("Reference", "title"),
        ("EvidenceItem", "source_assertion"), ("EvidenceItem", "source_locator"),

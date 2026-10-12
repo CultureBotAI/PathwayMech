@@ -111,7 +111,10 @@ def _validate_identifier_gate() -> int:
 def check_provenance_main() -> int:
     records = load_pathway_records(ROOT / "data" / "pathways")
     evidence_count = sum(
-        len(edge["evidence"]) for record in records for edge in record.mechanistic_edges
+        len(edge["evidence"]) + sum(
+            len(qualifier["evidence"]) for qualifier in edge.get("endpoint_qualifiers", [])
+        )
+        for record in records for edge in record.mechanistic_edges
     )
     print(f"checked {evidence_count} evidence blocks")
     return 0
@@ -1079,6 +1082,8 @@ def _reference_url(identifier: str) -> str | None:
         return f"https://mibig.secondarymetabolites.org/go/{local_id}"
     if prefix == "Reactome" and re.fullmatch(r"R-[A-Z]+-[0-9]+(?:\.[0-9]+)?", local_id):
         return f"https://reactome.org/content/detail/{local_id}"
+    if prefix == "EcoCyc" and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", local_id):
+        return f"https://ecocyc.org/gene?id={local_id}"
     if prefix == "MetaCyc" and re.fullmatch(r"[A-Za-z0-9_.-]+", local_id):
         return f"https://metacyc.org/META/NEW-IMAGE?type=PATHWAY&object={local_id}"
     if prefix == "gomodel" and re.fullmatch(r"[A-Za-z0-9_.-]+", local_id):
@@ -1118,17 +1123,27 @@ def _record_page(record: object, source_path: str | None = None,
         f"<tbody>{''.join(components)}</tbody></table></div>"
     ) if components else ""
 
-    def endpoint(identifier: str) -> str:
+    def endpoint(identifier: str, edge: dict, number: int, role: str) -> str:
         label = nodes.get(identifier, identifier)
-        return (f"{label_html(label)}<br><code>{html.escape(identifier)}</code>"
-                if label != identifier else f"<code>{html.escape(identifier)}</code>")
+        rendered = (f"{label_html(label)}<br><code>{html.escape(identifier)}</code>"
+                    if label != identifier else f"<code>{html.escape(identifier)}</code>")
+        for qualifier in edge.get("endpoint_qualifiers", []):
+            if qualifier["endpoint"] == role:
+                rendered += (
+                    '<div class="endpoint-qualifier" '
+                    f'id="mechanism-edge-{number}-qualifier-{role}">'
+                    f'<p><strong>{html.escape(qualifier["kind"].replace("_", " "))}:</strong> '
+                    f'{html.escape(qualifier["description"])}</p>'
+                    '<details><summary>Qualification evidence</summary><ul>'
+                    + citations_html(qualifier["evidence"]) + '</ul></details></div>'
+                )
+        return rendered
 
     references = getattr(record, "references", [])
     ref_anchors = {ref["id"]: f"reference-{number}" for number, ref in enumerate(references, 1)}
-    rows = []
-    for edge_number, edge in enumerate(record.mechanistic_edges, 1):
+    def citations_html(items: list[dict]) -> str:
         citations = []
-        for evidence in edge.get("evidence", []):
+        for evidence in items:
             reference = html.escape(evidence["reference_id"])
             anchor = ref_anchors.get(evidence["reference_id"])
             citation = f'<a href="#{anchor}">{reference}</a>' if anchor else reference
@@ -1141,11 +1156,16 @@ def _record_page(record: object, source_path: str | None = None,
                 support += ("<details><summary>Source location</summary><code>"
                             f"{html.escape(evidence['source_locator'])}</code></details>")
             citations.append(f"<li>{citation}{support}</li>")
+        return "".join(citations)
+
+    rows = []
+    for edge_number, edge in enumerate(record.mechanistic_edges, 1):
         description = html.escape(edge.get("description", ""))
         rows.append(f'<tr id="mechanism-edge-{edge_number}">'
-                    f"<td>{endpoint(edge['subject'])}</td>"
+                    f"<td>{endpoint(edge['subject'], edge, edge_number, 'subject')}</td>"
                     f"<td>{html.escape(edge['predicate'])}<p>{description}</p></td>"
-                    f"<td>{endpoint(edge['object'])}</td><td><ul>{''.join(citations)}</ul></td></tr>")
+                    f"<td>{endpoint(edge['object'], edge, edge_number, 'object')}</td>"
+                    f"<td><ul>{citations_html(edge.get('evidence', []))}</ul></td></tr>")
     edges = ('<div class="table-scroll" role="region" tabindex="0" '
              'aria-label="Mechanistic edges and evidence">'
              '<table><caption>Mechanistic edges and their cited evidence</caption><thead><tr>'

@@ -1,0 +1,70 @@
+{
+  "status": "bounded_native_contract_supported; implementation_not_reviewed",
+  "reviewer": "/root/salvage_integration_review/ecocyc_native_contract",
+  "scope": "Read-only independent native EcoCyc authority contract review of three root-accepted originals, recorded acquisition receipts and current source/configuration boundary. No tests, network, Git mutation, maintained mutation, shared cache mutation or implementation acceptance.",
+  "support_boundary": {
+    "searched": "src, scripts, conf, tests, docs with rg -n -uu -L, excluding binary Python caches and generated HTML; ignored and hidden files and symlink targets included. This is a scoped runtime/configuration absence claim, not absence of all EcoCyc references in the repository.",
+    "found": [
+      "GO-CAM external type recognition and UniProt BioCyc cofactor cross-reference logic already mention EcoCyc. These do not establish a native EcoCyc source-backed identifier authority.",
+      "Current source builder SOURCE_NAMESPACES and source kind dispatch have no native EcoCyc authority; native and closed schema prefix enumerations, source-backed policy and public citation route require matching new support."
+    ],
+    "bound_files": "input-bindings.json"
+  },
+  "authentic_fields": {
+    "all_three": "ISO-8859-1 XML declaration; ptools-xml ptools-version 27.0; exactly metadata then one full Protein or RNA; ECOLI PGDB version 27.0, Escherichia coli, K-12 substr. MG1655, NCBI-TAXONOMY-DB unification 511145. Full direct observations and original byte hashes are in native-observations.json.",
+    "CPLX0-226": {
+      "kind": "Protein",
+      "parent": "Protein-Small-Molecule-Complexes",
+      "label": "CRP-cyclic-AMP DNA-binding transcriptional dual regulator",
+      "synonyms": [
+        "CRP-cAMP"
+      ],
+      "components": "PC00004 and CAMP; no coefficients. Never infer CAMP occupancy."
+    },
+    "RNA0-241": {
+      "kind": "RNA",
+      "parent": "Regulatory-RNAs",
+      "label": "small regulatory RNA SgrS",
+      "synonyms": [
+        "SgrS",
+        "RyaA"
+      ],
+      "separate_identity": "Native gene G0-9941 is a separate object; SgrT protein is not this RNA."
+    },
+    "PC00004": {
+      "kind": "Protein",
+      "parent": "Protein-Complexes",
+      "label": "DNA-binding transcriptional dual regulator CRP",
+      "synonyms": [
+        "CRP"
+      ],
+      "components": "Native coefficient 2 for PD00257. No CAMP occupancy assertion."
+    }
+  },
+  "contract_recommendations": [
+    "Transport/request: allow exact evidenced HTTPS host bf2i-artsymbiocyc.insa-lyon.fr and /getxml request with one id=ECOLI:FRAME. Require conservative local frame syntax, exact case, no credentials, fragment, whitespace, extraneous query or alternative port. Do not infer permission to use other hosts or HTTP transport from a serialized URL.",
+    "Serializer compatibility: authentic xml:base is exactly http://bf2i-artsymbiocyc.insa-lyon.fr:443/getxml?ECOLI:FRAME, and metadata/url is exactly http://bf2i-artsymbiocyc.insa-lyon.fr:443/. Support these as explicit source serialization forms tied to the evidenced HTTPS request and matching frame. Do not use generic host-only http/https or arbitrary-port equivalence; changes need authentic evidence.",
+    "Parse the original bytes using the declared XML encoding. Reject DOCTYPE and entities at parser level, including UTF-16 encodings, and reject error/HTML roots. Require one metadata and one direct full requested entity, no additional direct object, matching ID/orgid/frameid/detail and no class/resource substitution.",
+    "Require one exact service_name getxml, query ECOLI:FRAME, num_results 1, PGDB ECOLI version 27.0 and matching ptools-version 27.0; one species and strain native string, and one exact taxonomy dblink/database/oid/relationship for NCBITaxon:511145. Do not confuse PGDB version, Pathway Tools version or acquisition date.",
+    "Use distinct ecocyc-protein-xml and ecocyc-rna-xml source kinds. Verify an exact direct native parent reference whose entity tag/orgid/resource/frameid/class agree. The evidenced protein parents are Protein-Complexes and Protein-Small-Molecule-Complexes; evidenced RNA parent is Regulatory-RNAs. Additional protein classes should require final authentic issuing objects, not an unreviewed broad fallback.",
+    "Require exactly one direct common-name datatype string, no nested XML children, nonempty safe resolved text, and no native frame/ECOLI frame/EcoCyc ID fallback or placeholders. Reuse safe character/markup validation carefully while leaving existing MetaCyc behavior unchanged. No activity fallback or recursive descendant name selection.",
+    "Only direct native synonym datatype string slots may become aliases. Validate each with the same nonempty safe resolved text checks; malformed aliases must fail the source, not be skipped. Do not promote genes, publications, nested complex names, database cross-references or sequence/component facts into identity aliases.",
+    "Before filtering for corpus IDs, reject duplicate-source conflicts on native type, parent class, canonical name, canonicalized alias set, PGDB/release/taxon/species/strain assertions. Prevent non-EcoCyc source kinds from smuggling EcoCyc authority entries. Preserve preexisting authority snapshot values and metadata completely.",
+    "Add EcoCyc with exact casing to all native/closed schema patterns and allowed prefixes, SOURCE_NAMESPACES, source-backed policy and citation resolver. canonical_or_synonym is justified only for validated direct aliases; no contextual-label exception or MetaCyc alias.",
+    "Citation route is https://ecocyc.org/gene?id=LOCAL_ID, from root-accepted proposal and its Bioregistry/GO registry review. No independent network revalidation was performed here. Restrict local IDs or encode safely; do not route these proteins/RNA through a MetaCyc pathway URL.",
+    "Keep explicit participant category rna for SgrS and complex for both CRP assemblies. Existing KGX explicit categories map to biolink:RNAProduct and biolink:MacromolecularComplex. Existing graph retains declared rna/complex type labels, although RNA uses the generic participant shape and complexes use the shared Protein / complex visual style. No prefix-wide EcoCyc biochemical reaction category is supported; unqualified objects should not gain inferred RNA/protein/reaction semantics."
+  ],
+  "required_followup_validation": [
+    "Authentic positives for all three bodies, plus any author-justified additional native objects; retain full original hashes and acquisition receipts.",
+    "Meaningful mutation negatives for transport/base/service/query/PGDB/version/taxon/species/strain, missing/duplicate fields, RNA/protein/gene/parent substitution, DTD/entity or HTML input, malformed names/synonyms and duplicate assertions before selection.",
+    "Real CLI negative controls must prove absent output remains absent and existing output remains unchanged; source original bytes remain exact. Tests must assert schema/policy parity, exact citation routes and explicit graph/KGX rna/complex categories.",
+    "Full retained source snapshot preservation includes historical unused IDs, not only current corpus-selected terms. Verify all source metadata values and original cache hashes, and run focused legacy MetaCyc tests unchanged.",
+    "Implementation must capture the root-provided exact combined baseline once ready. This contract review binds only bytes read now and does not constitute combined code, record science, regulatory truth, CI, merge or publication acceptance."
+  ],
+  "limits": [
+    "No new regulatory assertion, component coefficient or molecular occupancy is established by this adapter review.",
+    "The failed META request bodies are not EcoCyc issuing positives and must not be reinterpreted as META identities.",
+    "Raw originals and articles belong in external evidence/cache, not maintained records.",
+    "No tests or network calls were run; acceptance of a concrete implementation remains independent work."
+  ]
+}

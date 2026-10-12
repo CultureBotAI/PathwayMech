@@ -1,0 +1,220 @@
+"""External endpoint feature validation; no current-worktree gate or write."""
+import copy
+import csv
+import hashlib
+import io
+import json
+import os
+import subprocess
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+from xml.etree import ElementTree as ET
+
+import yaml
+
+OUT = Path(__file__).resolve().parent
+REPO = OUT / 'repo'
+CHECKS = OUT / 'validation-run-1'
+CHECKS.mkdir(exist_ok=False)
+assert __debug__ and sys.dont_write_bytecode
+sys.path.insert(0, str(REPO / 'src'))
+from pathwaymech.cli import _record_page, render_pages_main
+from pathwaymech.kgx import kgx_edges, render_kgx
+from pathwaymech.schema import ValidationError, validate_record
+from pathwaymech.strict import TARGET_CLASS, json_schema, validator
+
+env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONPATH=str(REPO / 'src'))
+bindings = {}
+started = datetime.now(UTC).isoformat()
+
+def sha(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+def capture(path, expected=None):
+    path = Path(path)
+    digest = sha(path)
+    assert expected is None or digest == expected, str(path)
+    row = {'sha256': digest, 'bytes': path.stat().st_size, 'resolved_path': str(path.resolve())}
+    assert str(path) not in bindings or bindings[str(path)] == row
+    bindings[str(path)] = row
+    return digest
+
+def save(name, value):
+    with (CHECKS / name).open('x') as stream:
+        json.dump(value, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+def command(name, argv, expected=0, cwd=REPO):
+    before = datetime.now(UTC).isoformat()
+    result = subprocess.run(argv, cwd=cwd, env=env, capture_output=True, check=False)
+    stdout = CHECKS / (name + '.stdout.log')
+    stderr = CHECKS / (name + '.stderr.log')
+    stdout.write_bytes(result.stdout)
+    stderr.write_bytes(result.stderr)
+    receipt = {'argv': argv, 'cwd': str(cwd), 'started': before,
+               'finished': datetime.now(UTC).isoformat(), 'exit_code': result.returncode,
+               'stdout_sha256': sha(stdout), 'stderr_sha256': sha(stderr)}
+    save(name + '.receipt.json', receipt)
+    assert result.returncode == expected, receipt
+    print(name + ': ' + result.stdout.decode().strip(), flush=True)
+    return receipt
+
+base = json.loads((OUT / 'baseline-binding.json').read_bytes())
+capture(OUT / 'baseline-binding.json')
+capture(__file__)
+capture(Path(sys.executable).resolve())
+for row in base['bindings']:
+    capture(row['source'], row['sha256'])
+    capture(row['copy'], row['sha256'])
+for directory in ['src', 'scripts', 'tests', 'conf', 'data', 'docs', 'history']:
+    for path in sorted((REPO / directory).rglob('*')):
+        if path.is_file():
+            assert '__pycache__' not in path.parts and path.suffix != '.pyc'
+            capture(path)
+for name in ['pyproject.toml', 'uv.lock']:
+    capture(REPO / name)
+
+examples = json.loads((OUT / 'source-examples/endpoint-examples-v1.json').read_bytes())
+fixture = {'id': 'MetaCyc:GLCMANNANAUT-PWY', 'label': 'Source endpoint qualification examples',
+    'description': 'Isolated representation replay, not the complete scientific pathway.',
+    'pathway_type': 'external-support-validation', 'taxa': [],
+    'participants': examples['participants'], 'reactions': examples['reactions'],
+    'references': examples['references'], 'mechanistic_edges': examples['edges']}
+checked = validate_record(fixture)
+checker = validator()
+assert not checker.validate(fixture, TARGET_CLASS).results
+(CHECKS / 'source-example-record.yaml').write_text(yaml.safe_dump(fixture, sort_keys=False))
+(CHECKS / 'closed-schema.json').write_text(json_schema())
+page = _record_page(checked)
+(CHECKS / 'source-example-page.html').write_text(page)
+start = page.index('<svg xmlns=')
+svg_text = page[start:page.index('</svg>', start) + 6]
+(CHECKS / 'source-example-network.svg').write_text(svg_text)
+exports = render_kgx([checked])
+for name, text in exports.items():
+    (CHECKS / ('source-example-' + name)).write_text(text)
+rows = list(csv.DictReader(io.StringIO(exports['edges.tsv']), delimiter='\t'))
+assert len(rows) == 4
+NS = {'s': 'http://www.w3.org/2000/svg'}
+svg = ET.fromstring(svg_text)
+svg_nodes = {node.get('data-node-id'): node for node in svg.findall('.//s:a', NS)
+             if node.get('data-node-id')}
+svg_edges = [node for node in svg.findall('.//s:a', NS) if node.get('data-predicate')]
+for number, (edge, row, view) in enumerate(zip(examples['edges'], rows, svg_edges, strict=True), 1):
+    assert row['subject'] == edge['subject'] and row['object'] == edge['object']
+    assert json.loads(row['endpoint_qualifiers']) == edge['endpoint_qualifiers']
+    refs = {item['reference_id'] for item in edge['evidence']}
+    for qualifier in edge['endpoint_qualifiers']:
+        role = qualifier['endpoint']
+        node = svg_nodes[view.get('data-' + role)]
+        assert node.get('data-base-node-id') == edge[role]
+        assert qualifier['description'] in node.get('aria-label')
+        assert node.get('href') == f'#mechanism-edge-{number}-qualifier-{role}'
+        for evidence in qualifier['evidence']:
+            refs.add(evidence['reference_id'])
+            assert evidence['reference_id'] in node.get('aria-label')
+            assert evidence.get('quote', evidence.get('source_assertion')) in node.get('aria-label')
+    assert set(row['source_records'].split('|')) == refs
+    assert {ref['id'] for ref in json.loads(row['reference_metadata'])} == refs
+
+# Exact source-example replay is intentionally separate from generic grammar.
+# A deletion, scientifically wrong role or changed construct wording can remain
+# syntactically valid; the fixed source-qualified claim must still differ.
+def replay(candidate):
+    observed = {edge['id']: edge for edge in candidate['mechanistic_edges']}
+    for original in examples['edges']:
+        assert observed[original['id']] == original, original['id']
+
+replay(fixture)
+controls = []
+def negative(name, mutate, generic_failure=False):
+    candidate = copy.deepcopy(fixture)
+    mutate(candidate)
+    (CHECKS / ('negative-' + name + '.yaml')).write_text(yaml.safe_dump(candidate, sort_keys=False))
+    try:
+        replay(candidate)
+    except AssertionError:
+        pass
+    else:
+        raise AssertionError('Source-specific control accepted: ' + name)
+    try:
+        validate_record(candidate)
+        generic = 'valid grammar; rejected by exact source replay'
+        assert not generic_failure, name
+    except ValidationError as error:
+        generic = str(error)
+    controls.append({'case': name, 'source_replay_rejected': True, 'native_result': generic})
+
+negative('deleted-NagB-construct', lambda r: r['mechanistic_edges'][1]['endpoint_qualifiers'].pop())
+def swap_roles(r):
+    for q in r['mechanistic_edges'][1]['endpoint_qualifiers']:
+        q['endpoint'] = {'subject': 'object', 'object': 'subject'}[q['endpoint']]
+negative('swapped-protein-roles', swap_roles)
+negative('Met1-restoration', lambda r: r['mechanistic_edges'][1]['endpoint_qualifiers'][1].update(
+    description='Native Met1-NagB; no construct qualification.'))
+negative('lost-qualifier-evidence', lambda r: r['mechanistic_edges'][1]['endpoint_qualifiers'][1].update(
+    evidence=[]), True)
+negative('lost-NanE-tag', lambda r: r['mechanistic_edges'][2]['endpoint_qualifiers'].pop(0))
+negative('lost-CRP-state', lambda r: r['mechanistic_edges'][0].pop('endpoint_qualifiers'))
+negative('duplicate-role', lambda r: r['mechanistic_edges'][1]['endpoint_qualifiers'][1].update(
+    endpoint='subject'), True)
+negative('unknown-kind', lambda r: r['mechanistic_edges'][1]['endpoint_qualifiers'][1].update(
+    kind='wild-type'), True)
+negative('bad-reference', lambda r: r['mechanistic_edges'][1]['endpoint_qualifiers'][1]['evidence'][0].update(
+    reference_id='PMID:999'), True)
+negative('flattened-KGX-input', lambda r: [e.pop('endpoint_qualifiers') for e in r['mechanistic_edges']])
+flattened = copy.deepcopy(fixture)
+for edge in flattened['mechanistic_edges']:
+    edge.pop('endpoint_qualifiers')
+assert all(a.id != b.id for a, b in zip(kgx_edges([checked]), kgx_edges([validate_record(flattened)]), strict=True))
+save('source-replay.json', {'status': 'passed', 'positive_edges': 4, 'qualified_endpoints': 7,
+    'controls': controls, 'scope': 'Bound author examples, not independent whole-candidate scientific acceptance.'})
+command('source-example-svg', ['/usr/local/bin/rsvg-convert', '-w', '1600',
+    '-o', str(CHECKS / 'source-example-network.png'), str(CHECKS / 'source-example-network.svg')])
+print('Source-specific examples and controls passed; rendering external baseline corpus.', flush=True)
+command('corpus-render', [sys.executable, '-B', '-c',
+    'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main([]))'])
+before_pages, after_pages = OUT / 'baseline/pages', REPO / 'pages'
+changes = []
+for path in sorted(before_pages.rglob('*')):
+    if not path.is_file():
+        continue
+    relative = path.relative_to(before_pages)
+    target = after_pages / relative
+    if path.read_bytes() != target.read_bytes():
+        changes.append({'path': str(relative), 'before': sha(path), 'after': sha(target)})
+assert {row['path'] for row in changes} == {'downloads/edges.tsv', 'downloads/manifest.json', 'index.html'}
+before_rows = list(csv.DictReader(io.StringIO((before_pages / 'downloads/edges.tsv').read_text()), delimiter='\t'))
+after_rows = list(csv.DictReader(io.StringIO((after_pages / 'downloads/edges.tsv').read_text()), delimiter='\t'))
+assert len(before_rows) == len(after_rows)
+for old, new in zip(before_rows, after_rows, strict=True):
+    assert new.pop('endpoint_qualifiers') == ''
+    assert new == old
+assert (before_pages / 'downloads/nodes.tsv').read_bytes() == (after_pages / 'downloads/nodes.tsv').read_bytes()
+save('legacy-corpus-output-accounting.json', {'status': 'passed', 'record_count': 223,
+    'edge_rows': len(before_rows), 'all_prior_edge_cells_and_ids_unchanged': True,
+    'new_qualifier_cells_empty': True, 'nodes_tsv_byte_identical': True,
+    'all_223_record_pages_byte_identical': True, 'changed_outputs': changes,
+    'note': 'The new empty TSV column changes bytes and download checksums/fingerprint, not legacy claim meaning.'})
+command('focused-pytest', [sys.executable, '-B', '-m', 'pytest', '-p', 'no:cacheprovider', '-q',
+    '--junitxml=' + str(CHECKS / 'focused-pytest.junit.xml'),
+    'tests/test_endpoint_qualifiers.py', 'tests/test_linkml_schema.py', 'tests/test_graph_view.py',
+    'tests/test_kgx_export.py', 'tests/test_graph_context.py', 'tests/test_wikipathways.py',
+    'tests/test_graph_interaction.py', 'tests/test_render_pages.py', 'tests/test_graph_pages.py'])
+command('ruff', [sys.executable, '-B', '-m', 'ruff', 'check', '--no-cache',
+    'src/pathwaymech/schema.py', 'src/pathwaymech/graph_view.py', 'src/pathwaymech/cli.py',
+    'src/pathwaymech/kgx.py', 'src/pathwaymech/edge_identity.py', 'src/pathwaymech/wikipathways.py',
+    'tests/test_linkml_schema.py', 'tests/test_endpoint_qualifiers.py', 'tests/test_graph_interaction.py'])
+for name, row in bindings.items():
+    assert sha(name) == row['sha256'], name
+    assert str(Path(name).resolve()) == row['resolved_path'], name
+save('input-bindings.json', bindings)
+save('result.json', {'status': 'external_endpoint_validation_passed', 'started': started,
+    'finished': datetime.now(UTC).isoformat(), 'input_count': len(bindings),
+    'all_bound_inputs_rehashed_unchanged': True, 'baseline_HEAD': base['HEAD'],
+    'baseline_kind': base['baseline_kind'], 'merged_baseline_bridge_required': True,
+    'runtime': sys.version, 'executable': sys.executable,
+    'scope': 'Isolated endpoint feature implementation; no maintained adoption or whole-candidate acceptance.'})
+print('Final focused tests, source replay, legacy output accounting and input rehash passed.', flush=True)

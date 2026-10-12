@@ -1,0 +1,47 @@
+from pathlib import Path
+from collections import Counter
+from xml.etree import ElementTree as ET
+import copy,hashlib,json,re
+import yaml
+from pathwaymech.schema import validate_record
+from pathwaymech.cli import _record_page
+ROOT=Path('/private/tmp/pathwaymech-next-223-20261011');OUT=Path('/private/tmp/pathwaymech-next-223-graph-contract-review-20261011')
+raw=yaml.safe_load((ROOT/'data/pathways/amino-sugar-superpathway.yaml').read_text());r=validate_record(raw);page=_record_page(r)
+svg=next(s for s in re.findall(r'<svg\b.*?</svg>',page,re.S) if 'class="pathway-network-svg"' in s);tree=ET.fromstring(svg)
+links=tree.findall('.//{http://www.w3.org/2000/svg}a');edges=[dict(e.attrib) for e in links if e.get('data-predicate')];nodes=[dict(n.attrib) for n in links if n.get('data-node-id')]
+def triple(v):return (v.get('data-subject-id',v.get('data-subject')),v.get('data-predicate'),v.get('data-object-id',v.get('data-object')))
+def verify(edges,nodes):
+ assert len(edges)==len(raw['mechanistic_edges'])
+ index={n['data-node-id']:n for n in nodes};assert len(index)==len(nodes)
+ assert Counter(map(triple,edges))==Counter((e['subject'],e['predicate'],e['object']) for e in raw['mechanistic_edges'])
+ bytarget={e['href']:e for e in edges};assert len(bytarget)==len(edges)
+ for n,edge in enumerate(raw['mechanistic_edges'],1):
+  v=bytarget[f'#mechanism-edge-{n}'];assert triple(v)==(edge['subject'],edge['predicate'],edge['object'])
+  qualifiers={q['endpoint']:q for q in edge.get('endpoint_qualifiers',[])}
+  for role in ('subject','object'):
+   key=v['data-'+role];assert key in index
+   if role in qualifiers:
+    node=index[key];assert key!=edge[role];assert node['data-qualified']=='true';assert node['data-base-node-id']==edge[role]
+    assert node['href']==f'#mechanism-edge-{n}-qualifier-{role}'
+    assert qualifiers[role]['description'] in node['aria-label']
+   else:assert key==edge[role]
+verify(edges,nodes)
+old=Counter((e['data-subject'],e['data-predicate'],e['data-object']) for e in edges)
+expected=Counter((e['subject'],e['predicate'],e['object']) for e in raw['mechanistic_edges'])
+assert sum((old-expected).values())==3
+controls=[]
+for problem in ['missing_native_subject','reversed_native_ids','lost_qualifier_visual_node','wrong_base_identity','lost_qualification_marker','wrong_qualifier_anchor','ordinary_node_replaced','duplicate_display_key']:
+ e=copy.deepcopy(edges);n=copy.deepcopy(nodes);q=e[106];subject=q['data-subject'];node=next(x for x in n if x['data-node-id']==subject)
+ if problem=='missing_native_subject':q.pop('data-subject-id')
+ elif problem=='reversed_native_ids':q['data-subject-id'],q['data-object-id']=q['data-object-id'],q['data-subject-id']
+ elif problem=='lost_qualifier_visual_node':q['data-subject']=q['data-subject-id']
+ elif problem=='wrong_base_identity':node['data-base-node-id']='UniProtKB:P0A759'
+ elif problem=='lost_qualification_marker':node['data-qualified']='false'
+ elif problem=='wrong_qualifier_anchor':node['href']='#mechanism-edge-108-qualifier-subject'
+ elif problem=='ordinary_node_replaced':e[0]['data-subject-id']=e[0]['data-subject'];e[0]['data-subject']=subject
+ elif problem=='duplicate_display_key':n.append(copy.deepcopy(node))
+ try:verify(e,n)
+ except AssertionError:controls.append({'mutation':problem,'rejected':True})
+ else:raise AssertionError('Missed '+problem)
+result={'disposition':'adapt_stale_test_preserve_product_visual_and_native_identity_contract','actual_edges':114,'qualified_edges':3,'distinct_qualified_endpoints':6,'native_directed_counter_exact':True,'old_counter_mismatched_edges':3,'negative_controls':controls,'source_bindings':{p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in ['data/pathways/amino-sugar-superpathway.yaml','src/pathwaymech/graph_view.py','src/pathwaymech/assets/pathway-network.js','tests/graph_interaction_harness.cjs']}}
+(OUT/'results.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result))

@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+from pathwaymech.edge_identity import endpoint_qualifier_key
 from pathwaymech.schema import PathwayRecord
 
 KNOWLEDGE_SOURCE = "infores:pathwaymech"
@@ -29,6 +30,7 @@ EDGE_COLUMNS = (
     "description",
     "evidence",
     "reference_metadata",
+    "endpoint_qualifiers",
 )
 
 LOCAL_PREDICATE_CURIES = {
@@ -65,6 +67,7 @@ EXPLICIT_CATEGORIES = {
     "cellular_component": "biolink:CellularComponent",
     "molecular_activity": "biolink:MolecularActivity",
     "biological_process": "biolink:BiologicalProcess",
+    "pathway": "biolink:Pathway",
 }
 
 _PREFIX_CATEGORIES = {
@@ -124,6 +127,7 @@ class KgxEdge:
     description: str = ""
     evidence: str = ""
     reference_metadata: str = ""
+    endpoint_qualifiers: str = ""
 
 
 def kgx_nodes(records: list[PathwayRecord]) -> list[KgxNode]:
@@ -167,16 +171,20 @@ def kgx_edges(records: list[PathwayRecord]) -> list[KgxEdge]:
         references = {reference["id"]: reference for reference in record.references}
         for edge in record.mechanistic_edges:
             predicate = LOCAL_PREDICATE_CURIES[edge["predicate"]]
+            qualifiers = edge.get("endpoint_qualifiers", [])
             source_records = sorted(
                 {
                     evidence["reference_id"]
-                    for evidence in edge["evidence"]
+                    for evidence in [
+                        *edge["evidence"],
+                        *(item for qualifier in qualifiers for item in qualifier["evidence"]),
+                    ]
                     if evidence.get("reference_id")
                 }
             )
             edges.append(
                 KgxEdge(
-                    id=_edge_id(record.id, edge["id"]),
+                    id=_edge_id(record.id, edge["id"], qualifiers),
                     subject=edge["subject"],
                     predicate=predicate,
                     object=edge["object"],
@@ -186,6 +194,10 @@ def kgx_edges(records: list[PathwayRecord]) -> list[KgxEdge]:
                     reference_metadata=json.dumps(
                         [references[identifier] for identifier in source_records],
                         ensure_ascii=False, sort_keys=True,
+                    ),
+                    endpoint_qualifiers=(
+                        json.dumps(qualifiers, ensure_ascii=False, sort_keys=True)
+                        if qualifiers else ""
                     ),
                 )
             )
@@ -251,8 +263,13 @@ def _category(identifier: str) -> str:
     return _PREFIX_CATEGORIES.get(identifier.split(":", 1)[0], "biolink:NamedThing")
 
 
-def _edge_id(record_id: str, edge_id: str) -> str:
-    digest = hashlib.sha256(f"{record_id}\0{edge_id}".encode()).hexdigest()[:12]
+def _edge_id(record_id: str, edge_id: str, qualifiers: list[dict] | None = None) -> str:
+    identity = f"{record_id}\0{edge_id}"
+    if qualifiers:
+        # Role order is not a biological distinction. Preserve complete payloads
+        # in identity so a consumer deduplicating by ID cannot erase qualification.
+        identity += "\0" + endpoint_qualifier_key(qualifiers)
+    digest = hashlib.sha256(identity.encode()).hexdigest()[:12]
     safe = _UNSAFE_EDGE_ID.sub("_", f"{record_id}_{edge_id}").strip("_")
     return f"pathwaymech:{safe}_{digest}"
 
@@ -276,7 +293,9 @@ def _tsv(columns: tuple[str, ...], rows: list[dict[str, Any]]) -> str:
     writer.writeheader()
     for row in rows:
         writer.writerow({column: _cell(row.get(column)) for column in columns})
-    return stream.getvalue()
+    # Cells are normalized to single lines, so this pattern only denotes an
+    # empty final field. Quote it to preserve the value without trailing tabs.
+    return stream.getvalue().replace("\t\n", '\t""\n')
 
 
 def _cell(value: Any) -> str:

@@ -1,0 +1,132 @@
+"""Finish an external scientific review; never modify assessed input packages."""
+import hashlib, json, re, sqlite3, subprocess, sys
+from collections import Counter
+from datetime import UTC, datetime
+from pathlib import Path
+from lxml import etree, html
+import yaml
+OUT=Path(__file__).resolve().parent
+A=Path('/private/tmp/pathwaymech-next-223-author-20261011')
+P=Path('/private/tmp/pathwaymech-next-223-preflight-20261011')
+BASE=Path('/private/tmp/pathwaymech-next-222-20261011')
+ENDPOINT=Path('/private/tmp/pathwaymech-next-223-endpoint-implementation-20261011')
+TARGET=A/'draft/amino-sugar-superpathway.future-schema.yaml'
+START=datetime.now(UTC).isoformat()
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def save(name,data):
+ with (OUT/name).open('x') as f:json.dump(data,f,indent=2,ensure_ascii=False);f.write('\n')
+assert sys.dont_write_bytecode
+record=yaml.safe_load(TARGET.read_text())
+assert sha(TARGET)=='a6c42b952683c9b3b69b11b800ea6b9b32f9d2380e8e851e4328c3091581cb0c'
+original_inputs=json.loads((OUT/'input-bindings.json').read_text())
+for name,binding in original_inputs.items():
+ p=Path(name);assert p.resolve()==Path(binding['resolved_path']) and p.stat().st_size==binding['bytes'] and sha(p)==binding['sha256'],name
+print('Rehashed all 342 initial inputs unchanged.',flush=True)
+# Verify exact scientific reference identities independently from source metadata.
+pmids={}
+for directory in [P/'raw',A/'raw']:
+ for p in directory.glob('*.json'):
+  d=json.loads(p.read_bytes())
+  if isinstance(d,dict):
+   for r in d.get('resultList',{}).get('result',[]):
+    if r.get('source')=='MED' and r.get('pmid'):
+     pmids.setdefault(r['pmid'],[]).append({'path':str(p),'sha256':sha(p),'title':r['title'],'locator':'resultList/result[pmid='+r['pmid']+']','access':'metadata and supplied abstract'})
+ for p in directory.glob('PMC*.html'):
+  root=html.fromstring(p.read_bytes())
+  identifier=root.xpath('//meta[@name="citation_pmid"]/@content')
+  if identifier:
+   assert len(identifier)==1
+   pmids.setdefault(identifier[0],[]).append({'path':str(p),'sha256':sha(p),'title':root.xpath('//meta[@name="citation_title"]/@content')[0],'locator':'meta citation_pmid/citation_title; reviewed article sections in report','access':'archived HTML; reading limits in report'})
+refs={r['id']:r for r in record['references']}
+assert len(refs)==59
+reference_audit=[]
+for identifier,r in refs.items():
+ if identifier.startswith('PMID:'):
+  number=identifier.split(':')[1];assert number in pmids,identifier
+  assert r['url'].rstrip('/').endswith('/'+number),r
+  reference_audit.append({'id':identifier,'status':'exact primary identity verified','originals':pmids[number]})
+ else:
+  reference_audit.append({'id':identifier,'status':'exact native authority identity independently checked','projection': 'checks-attempt1/fresh-rhea.json' if identifier.startswith('RHEA:') else 'checks-attempt1/fresh-proteins.json' if identifier.startswith('UniProtKB:') else 'checks-attempt1/fresh-model-and-chebi.json' if identifier.startswith(('BiGG:','CHEBI:')) else 'checks-attempt1/fresh-native.json'})
+# Taxon label and exact MG1655 containment for the new ECOLI sources.
+taxon_path=Path('/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db')
+c=sqlite3.connect('file:'+str(taxon_path)+'?mode=ro',uri=True)
+taxa={identifier:c.execute("SELECT predicate,value,object FROM statements WHERE subject=? AND predicate IN ('rdfs:label','rdfs:subClassOf','owl:deprecated')",(identifier,)).fetchall() for identifier in ['NCBITaxon:83333','NCBITaxon:511145']};c.close()
+assert ['NCBITaxon:83333','Escherichia coli K-12']==[record['taxa'][0]['id'],record['taxa'][0]['label']]
+assert ('rdfs:label','Escherichia coli K-12',None) in taxa['NCBITaxon:83333']
+assert ('rdfs:subClassOf',None,'NCBITaxon:83333') in taxa['NCBITaxon:511145']
+# Exact source-completeness probe. These are missing assertions, so the record
+# is deliberately not marked scientifically accepted because other checks pass.
+all_text=TARGET.read_text()
+participants={n['id']:n for n in record['participants']}
+man_edges=[e for e in record['mechanistic_edges'] if e['object']=='MetaCyc:CPLX-165' and e['predicate'] in ['activates','inhibits','regulates']]
+assert {e['subject'] for e in man_edges}=={'UniProtKB:P50456','UniProtKB:P0AF20'}
+assert not any('sgrs' in n['label'].lower() for n in record['participants'])
+assert not any(n['id'].endswith(':CPLX0-226') for n in record['participants'])
+# Verify source bodies, rejecting successful HTTP statuses containing non-articles.
+source_status=[]
+for version in ['', '-v2','-v3','-v4']:
+ for row in json.loads((OUT/('regulatory-acquisition-receipt'+version+'.json')).read_text()):
+  if 'sha256' in row:assert sha(row['path'])==row['sha256']
+  name=Path(row['path']).name
+  accepted = name.startswith('ECOLI-') and row.get('status')==200 or name.startswith('PMID') and row.get('status')==200
+  source_status.append({'receipt_version':version or 'v1','path':row['path'],'status':row.get('status'),'accepted_evidence_body':accepted,'error':row.get('error')})
+# Review judgments authored from the independently read originals. Grouping
+# controls report size; every assessed edge retains its own exact local locator.
+groups=[
+ (1,2,'native hierarchy','META parent reaction-list preserves both named children; no flattening.'),
+ (3,46,'complete chemical sides','Fresh full RDF object closure and iML1515 model determine all 38 chemical edge triples; remaining child memberships reflect native layout. Exact directions, full protein participants, protons/water, and anomers retained.'),
+ (47,49,'entry contexts','PMC103530 physiology plus native hierarchy supports three entry contexts; derepression and K-12 tested backgrounds retained.'),
+ (50,60,'native assembly components','Exact component frames and coefficients with reviewed UniProt native back-references; ManXYZ 3Y/3Z/1X versus separate ManX dimer conflict remains explicit.'),
+ (61,62,'assembly context','PII native trimer and native modified assembly are distinct; modified occupancy/components are not invented.'),
+ (63,66,'core catalysis','Native complex Enzymatic-Reaction enzyme back-references and complete native steps support catalyst assignment; three unnamed homomers use separately reviewed guarded source naming.'),
+ (67,68,'NanQ anomer alternatives','PMC8141875 Results/Methods support both anomers, beta favored, open-form supply; recombinant preparation and zinc interpretation limits retained.'),
+ (69,69,'NanE catalysis','Reviewed exact K-12 entry and native NANE reaction; HAMAP homodimer inference not mislabeled direct experimental assembly.'),
+ (70,70,'NanT transport','PMC3271013 NanT-specific Results/Methods support proton-driven reversible K-12 transport; not Na-driven TRAP and not experimentally measured H stoichiometry.'),
+ (71,72,'GlcNAc PTS catalysts','Native NagE and ManXYZ activities plus PMC103530 support alternatives for GlcNAc. NagE does not substitute for ManXYZ in the specific ManNAc entry result.'),
+ (73,73,'shared PTS phosphorylation','Reviewed PtsI/native homodimer supports generic histidyl-protein phosphorylation context.'),
+ (74,76,'model-supported ManNAc requirements','Exact iML1515 reaction and five-gene AND rule support bounded enables relations, not separately quantified enzyme kinetics; coupled reaction already spends PEP.'),
+ (77,78,'PTS native states and assembly context','Native phospho-HPr relay and ManX dimer are not collapsed into generic chemical reactive parts or a resolved complete ManXYZ stoichiometry.'),
+ (79,89,'physiological ordering and interface','Native five-step ordering, primary NanQ/entry context and opaque glycolysis interface; ordering is not exact chemical-form equivalence or an invented ring conversion.'),
+ (90,95,'alternative NagA metals','PMC2533526 metal reconstitution and Table1 support six alternatives with one metal per monomer, not simultaneous essential requirements.'),
+ (96,96,'NanQ zinc association','Reviewed entry and PMC8141875 support association; proposed catalytic role distinguished from proven universal requirement.'),
+ (97,97,'PtsI magnesium','Reviewed K-12 native cofactor annotation; scoped to PtsI.'),
+ (98,100,'transcriptional repression','PMC103530 and exact regulators support NanR/Mlc/NagC expression relations, not direct enzyme inhibition. Additional ManXYZ regulation is missing (issue425).'),
+ (101,101,'NanR ligand response','PMC8012715 K-12 construct, DNA-binding and oligomer tests support reduced affinity while dimers remain; PMC3807447 older monomer interpretation retained as conflict.'),
+ (102,103,'native NagC/NagB GlcNAc6P responses','PMC2753035 supports native regulation and distinguishes substrate/growth limitation; not evidence for universal glucose-free growth effects or Ser1 construct equivalence.'),
+ (104,104,'CRP ligand response','Reviewed native CRP cAMP-dependent DNA binding supports activator relation; no universal target sign inferred.'),
+ (105,105,'qualified CRP nag regulation','Existing cAMP-bound subject restriction and unsigned promoter-context relation are supported; new exact EcoCyc CPLX0-226 should replace avoidable qualifier in issue425 successor. Mixed native nagEp signs remain bounded.'),
+ (106,106,'NagC man promoter context','PMID7791215 abstract supports binding/promoter relation, retained unsigned and abstract-limited; do not infer universal magnitude.'),
+ (107,107,'U-PII recombinant activation','PMC5809692 sec2-1/2-3/4-2/4-3/4-6 supports modified refolded tagged PII mixture against Ser1-NagB; not unmodified PII or exact modified trimer occupancy.'),
+ (108,108,'NanE recombinant activation','PMC5809692 sec2-2/4-2/4-3 supports tagged ASKA NanE against Ser1-NagB with/without GlcNAc6P; no invented physical multimer from docking.'),
+ (109,109,'HPr recombinant activation','PMC5809692 sec2-4 and PMC5572926 NagB Results/Methods preserve nonphosphorylated tagged HPr, Ser1 construct, pH/GlcNAc6P study conditions and earlier exception.')]
+ledger=[]
+for edge in record['mechanistic_edges']:
+ i=int(edge['id'].split('-')[1]);matches=[g for g in groups if g[0]<=i<=g[1]];assert len(matches)==1
+ _,_,domain,assessment=matches[0]
+ evidence=[{'reference_id':e['reference_id'],'source_locator':e.get('source_locator'),'has_source_assertion':bool(e.get('source_assertion')),'has_supporting_text':bool(e.get('supporting_text'))} for e in edge['evidence']]
+ assert all(e['reference_id'] in refs for e in evidence)
+ ledger.append({'id':edge['id'],'subject':edge['subject'],'predicate':edge['predicate'],'object':edge['object'],'locator':'mechanistic_edges[id='+edge['id']+']','assessment':'supported within stated scope','domain':domain,'reviewer_rationale':assessment,'evidence_locators':evidence,'qualified_endpoints':[q['endpoint'] for q in edge.get('endpoint_qualifiers',[])]})
+assert len(ledger)==109
+nodes=[]
+for n in [record,*record['taxa'],*record['participants'],*record['reactions']]:
+ identifier=n['id'];projection='checks-attempt1/fresh-native.json'
+ if identifier.startswith('UniProtKB:'):projection='checks-attempt1/fresh-proteins.json'
+ elif identifier.startswith(('CHEBI:','BiGG:')):projection='checks-attempt1/fresh-model-and-chebi.json'
+ elif identifier.startswith(('RHEA:','RHEA-COMP:')):projection='checks-attempt1/fresh-rhea.json'
+ elif identifier.startswith('NCBITaxon:'):projection='supplemental-checks.json:taxonomy'
+ nodes.append({'id':identifier,'label':n['label'],'category':n.get('category', 'pathway' if identifier==record['id'] else 'taxon' if identifier.startswith('NCBITaxon:') else 'reaction/context'),'assessment':'identity supported at exact source scope','fresh_projection':projection})
+assert len(nodes)==77
+save('edge-assessment-ledger.json',ledger);save('node-assessment-ledger.json',nodes);save('reference-identity-ledger.json',reference_audit)
+save('supplemental-checks.json',{'started':START,'finished':datetime.now(UTC).isoformat(),'status':'passed bounded supplemental checks; science verdict requests changes','initial_inputs_rehashed':len(original_inputs),'taxonomy':taxa,'native_ManXYZ_regulatory_edges_observed':[e['id'] for e in man_edges],'missing_controls':['cAMP-CRP positive manXYZ expression','SgrS negative manXYZ translation'],'http_content_results':source_status,'reference_identities':len(reference_audit)})
+# Additional scope and runtime bindings; original input bytes remain immutable.
+paths=[taxon_path,Path('/private/tmp/pathwaymech-curation-authorities/ontology-inputs.json'),ENDPOINT/'handoff.json',ENDPOINT/'artifact-manifest.json',Path(sys.executable).resolve(),Path(yaml.__file__),Path(etree.__file__),Path(html.__file__)]
+paths += [BASE/p for p in ['CLAUDE.md','justfile','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','docs/record-review-profile.md','.claude/skills/review-yaml-record/SKILL.md','.claude/skills/add-pathway/SKILL.md','conf/identifier_policy.yaml','scripts/build_source_identifier_snapshot.py','src/pathwaymech/schema.py']]
+paths += list((ENDPOINT/'repo/src/pathwaymech').glob('*.py'))+list((ENDPOINT/'repo/schema').glob('*.yaml'))
+additional={str(p):{'sha256':sha(p),'bytes':p.stat().st_size,'resolved_path':str(p.resolve())} for p in paths}
+save('additional-input-bindings.json',additional)
+base={}
+for command in [['git','rev-parse','HEAD'],['git','rev-parse','HEAD^{tree}']]:
+ r=subprocess.run(command,cwd=BASE,text=True,capture_output=True);assert r.returncode==0;base[' '.join(command)]=r.stdout.strip()
+save('runtime-and-baseline.json',{'python':sys.version,'executable':sys.executable,'bytecode_disabled':sys.dont_write_bytecode,'current222_readonly_base_observation':base,'initial_review_baseline':'d8e3888528088e7bba468df57056f9f0e588b463 plus pending working bytes; external endpoint implementation sealed runtime','later_merged223_reported_by_parent':'24c91a1b232f2879281003c4abfab70a624b9016; this review does not claim bridge validation','software_independence':'Reviewer authored endpoint qualification and complex naming support; root owns independent software review. Scientific pathway draft was authored separately.'})
+print('All 77 nodes, 109 edges and 59 references have individual review-ledger entries; taxonomy and regulatory omissions confirmed.',flush=True)

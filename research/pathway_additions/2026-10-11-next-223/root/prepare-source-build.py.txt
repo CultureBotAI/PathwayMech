@@ -1,0 +1,45 @@
+import json,hashlib,os,shutil,datetime
+from pathlib import Path
+R=Path('/private/tmp/pathwaymech-next-223-20261011');P=Path('/private/tmp/pathwaymech-next-223-authority-selection-20261011');S=Path('/private/tmp/pathwaymech-next-223-authority-selection-successor-20261011');C=Path('/private/tmp/pathwaymech-curation-authorities/sources');O=Path('/private/tmp/pathwaymech-next-223-canonical-sources-20261011');O.mkdir(exist_ok=False);overlay=O/'originals';overlay.mkdir()
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def write(n,d):(O/n).write_text(json.dumps(d,indent=2)+'\n')
+assert sha(S/'handoff.json')=='f27009dd16244800bb3ea62452164eee8c3d412d73f12d280bf5faa79cd0112d'
+assert sha(S/'artifact-manifest.json')=='a806df970b79b2032176661c74678f55d3b6096521a956dd1b89f360bebd9463'
+m=json.loads((S/'artifact-manifest.json').read_text())
+for a in m['artifacts']:
+ p=S/a['path'];assert sha(p)==a['sha256'] and p.stat().st_size==a['bytes'],a['path']
+old=json.loads((R/'conf/identifier_sources.json').read_text());new=json.loads((S/'manifest-proposed.json').read_text());prior=json.loads((P/'manifest-proposed.json').read_text());assert len(old)==629 and len(new)==651 and new[:629]==old and new[:648]==prior
+lineage=json.loads((P/'new-original-lineage.json').read_text());native=json.loads((S/'new-ecocyc-original-lineage.json').read_text());neworig={x['entry']['path']:x['whole_original'] for x in lineage['identity_sources']}
+comp=lineage['shared_companion'];print('companion_keys',list(comp),flush=True)
+if 'entry' in comp:comp_entry=comp['entry']
+else:comp_entry=comp.get('version_source') or comp.get('descriptor')
+print('companion',json.dumps(comp)[:1500],flush=True)
+# Follow the explicit companion body and cache destination recorded in the lineage.
+body=comp.get('whole_original') or comp.get('original')
+assert body is not None,comp
+comp_path=next(x['version_source']['path'] for x in new if 'version_source' in x)
+neworig[comp_path]=body
+for x in native:neworig[x['manifest_entry']['path']]=x['original']['whole_original']
+assert len(neworig)==23
+bindings=[]
+for entry in new:
+ for desc in [entry]+([entry['version_source']] if 'version_source' in entry else []):
+  rel=Path(desc['path']);assert not rel.is_absolute() and '..' not in rel.parts
+  dest=overlay/rel
+  if os.path.lexists(dest):
+   assert sha(dest)==desc['sha256'];continue
+  dest.parent.mkdir(parents=True,exist_ok=True)
+  if desc['path'] in neworig:
+   binding=neworig[desc['path']];src=Path(binding['path']);assert sha(src)==binding['sha256']==desc['sha256'];shutil.copyfile(src,dest);assert sha(dest)==desc['sha256'];kind='new_body_exact_copy'
+  else:
+   src=C/rel;assert src.is_file(),str(src);dest.symlink_to(src);kind='old_original_symlink'
+  stat=src.stat();bindings.append({'path':str(dest),'original':str(src),'resolved_original':str(src.resolve()),'sha256':desc['sha256'],'bytes':stat.st_size,'mtime_ns':stat.st_mtime_ns,'role':kind})
+assert sum(x['role']=='new_body_exact_copy' for x in bindings)==23
+shutil.copyfile(S/'manifest-proposed.json',O/'manifest.json');shutil.copytree(S/'ids-only-selection',O/'selection');shutil.copyfile(S/'expected-source-delta.json',O/'expected-delta.json')
+write('original-bindings-before.json',bindings)
+write('preparation.json',{'status':'prepared_source_build_not_run','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'successor_handoff_sha256':sha(S/'handoff.json'),'successor_artifacts_rehashed':len(m['artifacts']),'manifest_entries':len(new),'old_entries_preserved':629,'prior19_proposed_entries_preserved':True,'all23_new_bodies_rehashed':True,'original_count_with_companion':len(bindings),'shared_cache_modified':False,'full_original_hash_verification':'Each full old source body remains to be hash-verified by actual canonical builder; all new copied bodies verified now.','expected_source_terms':2304,'expected_source_metadata':498,'maintained_adopted':False})
+print('source build prepared',len(bindings),'originals;651 entries;23 exact new bodies',flush=True)

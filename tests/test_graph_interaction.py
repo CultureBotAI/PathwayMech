@@ -13,6 +13,7 @@ import pytest
     "directed_selection_preserves_graph",
     "clear_and_escape",
     "absent_or_invalid_graph",
+    "qualified_endpoint_selection",
 ])
 def test_shipped_graph_interactions(scenario):
     root = Path(__file__).resolve().parents[1]

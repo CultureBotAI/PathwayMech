@@ -1,0 +1,74 @@
+"""Derive the exact three-term native EcoCyc append after the owner supplies its exact contract.
+No canonical build, maintained write or shared-cache mutation is performed.
+"""
+import sys
+sys.dont_write_bytecode=True
+from pathlib import Path
+import argparse,hashlib,importlib.util,json,os,shutil
+import yaml
+O=Path(__file__).parent;S=Path('/private/tmp/pathwaymech-next-223-authority-selection-20261011');C=Path('/private/tmp/pathwaymech-next-223-correction-20261011');R=Path('/private/tmp/pathwaymech-next-223-20261011');CACHE=Path('/private/tmp/pathwaymech-curation-authorities/sources')
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  while b:=f.read(8*1024*1024):h.update(b)
+ return h.hexdigest()
+def read(p):return json.loads(Path(p).read_text())
+def bind(p):return {'path':str(p),'sha256':sha(p),'bytes':Path(p).stat().st_size}
+def save(n,v):
+ with (O/n).open('x') as f:json.dump(v,f,indent=2);f.write('\n')
+ap=argparse.ArgumentParser();ap.add_argument('--entries',type=Path,required=True);ap.add_argument('--builder',type=Path,required=True);ap.add_argument('--implementation-contract-receipt',type=Path,required=True);args=ap.parse_args()
+bridge=read(O/'baseline-bridge.json')
+for q in bridge['current_bindings']:assert sha(q['path'])==q['sha256'],q['path']
+assert sha(C/'draft/amino-sugar-superpathway.future-schema.yaml')=='ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff'
+previous=read(S/'manifest-proposed.json');entries=read(args.entries);assert isinstance(entries,list) and len(entries)==3
+author=read(C/'authority-addendum.json');byid={q['id']:q for q in author['new_named_terms']}
+spec=importlib.util.spec_from_file_location('owner_native_ecocyc_source_oracle',args.builder);builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
+runtime_before=bind(args.builder);implementation_before=bind(args.implementation_contract_receipt);entry_before=bind(args.entries)
+newterms={};metadata={};lineage=[];assertions=[]
+for e in entries:
+ assert e['kind'] in {'ecocyc-protein-xml','ecocyc-rna-xml'} and e['version']=='27.0'
+ assert e['key'] not in {q['key'] for q in previous} and e['path'] not in {q['path'] for q in previous}
+ assert not os.path.lexists(CACHE/e['path']),e['path']
+ matches=[q for q in byid.values() if q['whole_original']['sha256']==e['sha256'] and q['acquisition']['original_request']['requested_url']==e['url']]
+ assert len(matches)==1;origin=matches[0];p=Path(origin['whole_original']['path'])
+ assert sha(p)==e['sha256'] and sha(origin['acquisition']['receipt']['path'])==origin['acquisition']['receipt']['sha256']
+ rows=list(builder.source_terms(e['kind'],p,url=e['url'],version=e['version']))
+ assertions.append({'entry':e['key'],'all_assertions_before_target_filtering':rows})
+ assert len(rows)==1
+ i,label,synonyms=rows[0];assert i==origin['id'] and label==origin['label'] and sorted(set(synonyms)-{label})==origin['synonyms']
+ assert i not in newterms
+ newterms[i]={'label':label,'synonyms':sorted(set(synonyms)-{label}),'source':e['key']}
+ metadata[e['key']]={k:e[k] for k in ['url','version','license','sha256']}
+ lineage.append({'id':i,'manifest_entry':e,'original':origin,'destination_absent_including_symlink':str(CACHE/e['path'])})
+ assert sha(p)==e['sha256']
+assert set(newterms)==set(byid)
+oldsource=read(R/'data/identifier_authorities/sources.json');oldontology=read(R/'data/identifier_authorities/ontology.json')
+prior_delta=read(S/'expected-source-term-delta.json');assert not (newterms.keys() & (oldsource['terms'].keys()|oldontology['terms'].keys()|prior_delta['new_terms'].keys()))
+assert not (metadata.keys() & (oldsource['sources'].keys()|prior_delta['new_metadata'].keys()))
+all_new_terms={**prior_delta['new_terms'],**newterms};all_new_metadata={**prior_delta['new_metadata'],**metadata}
+assert len(all_new_terms)==39 and len(all_new_metadata)==22
+target=yaml.safe_load(Path(author['record']['path']).read_text());named={n['id'] for n in [target]+target['taxa']+target['participants']+target['reactions']};assert len(named)==80
+retained=set(oldsource['terms'])|set(oldontology['terms'])|named
+selection={'id':target['id'],'participants':[{'id':i} for i in sorted(retained-{target['id']})]}
+(O/'ids-only-selection').mkdir();(O/'ids-only-selection/authority-scope.yaml').write_text(yaml.safe_dump(selection,sort_keys=False))
+selected=read(S/'target-selected-terms.json')['terms'];selected.update(newterms);assert set(selected)==named
+for q in bridge['current_bindings']:assert sha(q['path'])==q['sha256'],q['path']
+for q in [runtime_before,implementation_before,entry_before]:assert sha(q['path'])==q['sha256'],q['path']
+shutil.copyfile(args.builder,O/'executed-native-builder.py')
+save('new-ecocyc-manifest-entries.json',entries)
+save('manifest-proposed.json',previous+entries)
+save('all22-manifest-additions.json',read(S/'manifest-delta.json')+entries)
+save('new-ecocyc-original-lineage.json',lineage)
+save('new-ecocyc-assertions-before-filtering.json',assertions)
+save('expected-source-delta.json',{'status':'native-function derived expected delta, not actual canonical full rebuild','new_terms':dict(sorted(all_new_terms.items())),'new_metadata':dict(sorted(all_new_metadata.items())),'old_term_count':2265,'old_metadata_count':476,'new_term_count':39,'new_metadata_count':22,'expected_total_terms':2304,'expected_total_metadata':498,'retention_requirement':'Exact every old term/metadata object; full historical IDs included, not current-corpus-only projection.'})
+save('target-selected-terms.json',{'target':author['record'],'named_count':80,'terms':selected})
+save('proposal.json',{'status':'sealed-input scientific successor authority preparation; no canonical production output',
+ 'target':author['record'],'correction_handoff':bind(C/'handoff.json'),'prior_selection_handoff':bind(S/'handoff.json'),
+ 'baseline_bridge':bind(O/'baseline-bridge.json'),'oracle':runtime_before,'owner_entries':entry_before,'owner_implementation_contract_evidence_pending_acceptance':implementation_before,
+ 'counts':{'old_manifest_entries':629,'retained_prior_additions':19,'new_EcoCyc_entries':3,'all_appended_entries':22,'proposed_manifest_entries':651,'new_original_bodies':23,'source_terms':2304,'source_metadata':498,'ontology_terms':1888,'ontology_metadata':5,'named_target_ids':80,'retention_IDs':len(retained)},
+ 'ontology_delta_unchanged':bind(S/'ontology-id-delta.json'),'rhea_updates_unchanged':bind(S/'rhea-updates-proposed.json'),
+ 'all_old629_and_prior19_manifest_objects_unchanged':True,'all77_prior_named_IDs_and_labels_preserved':True,
+ 'no_new_reference_only_authority_terms':['EcoCyc:CAMP','EcoCyc:PD00257'],
+ 'conflict_scope':'Prior all629-original pre-filter inventory remains bound; new3 exact EcoCyc native assertions checked before filtering and do not duplicate any prior selected identity. Root actual combined canonical build must rerun full original conflict checks.',
+ 'limitations':['No canonical full source or ontology builder invoked.','Owner implementation acceptance and final maintained adoption remain root responsibilities.','No public-release licensing clearance inferred.','No source-exhaustion conclusion.']})
+print(json.dumps({'status':'80-ID minimal proposal passed','manifest_entries':651,'source_terms':2304,'source_metadata':498,'ontology_terms':1888,'new_EcoCyc_entries':3,'all_prior_choices_preserved':True},indent=2))

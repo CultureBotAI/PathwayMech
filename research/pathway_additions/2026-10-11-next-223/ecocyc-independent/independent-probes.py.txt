@@ -1,0 +1,173 @@
+"""Independent external review; originals are read-only, mutations remain external."""
+from pathlib import Path
+import copy, csv, dataclasses, hashlib, html, io, json, os, subprocess, sys
+from xml.etree import ElementTree as ET
+import yaml
+R=Path(__file__).parent
+I=Path('/private/tmp/pathwaymech-next-223-ecocyc-implementation-20261011')
+REPO=I/'repo'
+sys.path[:0]=[str(REPO),str(REPO/'src')]
+from scripts.build_source_identifier_snapshot import source_terms,build_snapshot
+from pathwaymech.schema import validate_record,ValidationError
+from pathwaymech.strict import validator,TARGET_CLASS
+from pathwaymech.cli import _reference_url,_record_page
+from pathwaymech.graph_view import graph_html,_declared_nodes
+from pathwaymech.kgx import render_kgx
+OUT=R/'probes-attempt1'; OUT.mkdir()
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(p,data):p.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+ORIG=Path('/private/tmp/pathwaymech-next-223-science-review-20261011')
+SPECS=[('CPLX0-226','protein','regulatory-followup-raw-v3','c57ac58eede2aa783699734be039b9365df521f39d2890968d24c515f72920b1','CRP-cyclic-AMP DNA-binding transcriptional dual regulator',['CRP-cAMP']),('PC00004','protein','regulatory-followup-raw-v4','55ab5eea74d7a40e8059c1a6cc040aca2dab5e12af81265be62e544c8bccdf58','DNA-binding transcriptional dual regulator CRP',['CRP']),('RNA0-241','rna','regulatory-followup-raw-v3','3be238a3151c4e14c23d60496f299cb8bcb6dfab3659854f00c59b01a9d39b64','small regulatory RNA SgrS',['RyaA','SgrS'])]
+HOST='bf2i-artsymbiocyc.insa-lyon.fr'; URL=f'https://{HOST}/getxml?id=ECOLI:PC00004'; KIND='ecocyc-protein-xml'
+bindings=[]; results=[]; entries=[]
+for frame,kind,sub,digest,label,aliases in SPECS:
+ p=ORIG/sub/f'ECOLI-{frame}.xml'; assert sha(p)==digest
+ bindings.append({'path':str(p),'sha256':digest,'bytes':p.stat().st_size})
+ url=f'https://{HOST}/getxml?id=ECOLI:{frame}'; got=list(source_terms(f'ecocyc-{kind}-xml',p,url=url,version='27.0'))
+ assert got==[(f'EcoCyc:{frame}',label,aliases)],got
+ results.append({'positive':frame,'terms':got})
+ q=OUT/f'{frame}.xml';q.write_bytes(p.read_bytes()); entries.append({'key':frame,'kind':f'ecocyc-{kind}-xml','path':q.name,'url':url,'version':'27.0','license':'Review original binding; publication policy unchanged','sha256':sha(q)})
+base=ET.fromstring((OUT/'PC00004.xml').read_bytes())
+def attr(path,key,value):
+ def f(t):t.find(path).set(key,value)
+ return f
+def value(path,text):
+ def f(t):t.find(path).text=text
+ return f
+def remove(path):
+ def f(t):t.find(path.rsplit('/',1)[0]) .remove(t.find(path)) if '/' in path else t.remove(t.find(path))
+ return f
+def duplicate(path):
+ def f(t):(t.find(path.rsplit('/',1)[0]) if '/' in path else t).append(copy.deepcopy(t.find(path)))
+ return f
+mutants={
+ 'native_gene_instead_of_protein':lambda t:setattr(t.find('Protein'),'tag','Gene'),
+ 'wrong_request_frame_in_xml':attr('Protein','frameid','CPLX0-226'),
+ 'wrong_native_pgdb':attr('metadata/PGDB','orgid','META'),
+ 'different_strain':value('metadata/PGDB/strain','K-12 substr. W3110'),
+ 'species_level_taxon':value('metadata/PGDB/dblink/dblink-oid','562'),
+ 'related_not_unified_taxon':value('metadata/PGDB/dblink/dblink-relationship','related'),
+ 'wrong_taxon_link':value('metadata/PGDB/dblink/dblink-URL','http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?mode=Info&id=562'),
+ 'release_disagreement':attr('metadata/PGDB','version','28.0'),
+ 'extra_pgdb':duplicate('metadata/PGDB'),
+ 'extra_name':duplicate('Protein/common-name'),
+ 'extra_full_entity':duplicate('Protein'),
+ 'missing_direct_name':remove('Protein/common-name'),
+ 'blank_alias':value('Protein/synonym','  '),
+ 'wrong_alias_datatype':attr('Protein/synonym','datatype','symbol'),
+ 'unsafe_encoded_alias':value('Protein/synonym','&lt;script&gt;x&lt;/script&gt;'),
+ 'unresolved_frame_alias':value('Protein/synonym','ECOLI:PC00004'),
+ 'unsafe_name_control':value('Protein/common-name','CRP&#x0A;changed'),
+ 'nested_direct_name':lambda t:ET.SubElement(t.find('Protein/common-name'),'common-name').__setattr__('text','Nested'),
+ 'wrong_parent_resource':attr('Protein/parent/Protein','resource','getxml?META:Protein-Complexes'),
+ 'unsupported_polypeptide_parent':lambda t:[t.find('Protein/parent/Protein').set(k,v) for k,v in {'frameid':'Polypeptides','resource':'getxml?ECOLI:Polypeptides'}.items()],
+ 'parent_not_class':attr('Protein/parent/Protein','class','false'),
+ 'metadata_query_wrong':value('metadata/query','ECOLI:CPLX0-226'),
+ 'metadata_service_wrong':value('metadata/service_name','getname'),
+ 'metadata_service_port_broadened':value('metadata/url',f'http://{HOST}:80/'),
+ 'base_with_foreign_host':attr('.','{http://www.w3.org/XML/1998/namespace}base','https://example.org/getxml?id=ECOLI:PC00004'),
+}
+for name,mutate in mutants.items():
+ t=copy.deepcopy(base);mutate(t);p=OUT/f'negative-{name}.xml';p.write_bytes(ET.tostring(t,encoding='utf-8',xml_declaration=True))
+ try:list(source_terms(KIND,p,url=URL,version='27.0'))
+ except (ValueError,ET.ParseError) as error:results.append({'negative':name,'rejected':True,'error':str(error)})
+ else:raise AssertionError('accepted malformed original mutation: '+name)
+for name,url in {'transport_http':URL.replace('https:','http:'),'duplicate_parameter':URL+'&id=ECOLI:PC00004','credentials':URL.replace(HOST,'user@'+HOST),'encoded_query':URL.replace('ECOLI:', 'ECOLI%3A'),'fragment':URL+'#native','dot_segment':URL.replace('/getxml','/a/../getxml'),'explicit_port':URL.replace(HOST,HOST+':443')}.items():
+ try:list(source_terms(KIND,OUT/'PC00004.xml',url=url,version='27.0'))
+ except ValueError as error:results.append({'negative':name,'rejected':True,'error':str(error)})
+ else:raise AssertionError(name)
+for enc in ['utf-8','utf-16']:
+ body=ET.tostring(base,encoding='unicode');text=f'<?xml version="1.0" encoding="{enc}"?><!DOCTYPE ptools-xml SYSTEM "file:///NONEXISTENT-REVIEW-ENTITY">'+body
+ p=OUT/f'negative-doctype-{enc}.xml';p.write_bytes(text.encode(enc))
+ try:list(source_terms(KIND,p,url=URL,version='27.0'))
+ except ValueError as error:assert 'DOCTYPE' in str(error);results.append({'negative':'doctype-'+enc,'rejected':True,'error':str(error)})
+ else:raise AssertionError('DTD accepted')
+# Full original-based positives use real CLI and only three selected IDs.
+records=OUT/'records'; records.mkdir();(records/'ids.yaml').write_text(yaml.safe_dump({'participants':[{'id':'EcoCyc:'+s[0]} for s in SPECS]}))
+man=OUT/'manifest.json';save(man,entries)
+def cli(manifest,output,label):
+ command=[sys.executable,'-B',str(REPO/'scripts/build_source_identifier_snapshot.py'),'--manifest',str(manifest),'--cache-dir',str(OUT),'--records',str(records),'--output',str(output)]
+ run=subprocess.run(command,cwd=REPO,env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','PYTHONPATH':str(REPO/'src')},capture_output=True,text=True)
+ (OUT/f'{label}.stdout').write_text(run.stdout);(OUT/f'{label}.stderr').write_text(run.stderr);save(OUT/f'{label}.receipt.json',{'command':command,'cwd':str(REPO),'exit_code':run.returncode,'stdout':run.stdout,'stderr':run.stderr})
+ return run
+snap=OUT/'positive-snapshot.json'; assert cli(man,snap,'positive-cli').returncode==0
+snapshot=json.loads(snap.read_text());assert len(snapshot['terms'])==3
+bad=copy.deepcopy(entries);bad[1]['path']='negative-different_strain.xml';bad[1]['sha256']=sha(OUT/bad[1]['path']);badman=OUT/'bad-manifest.json';save(badman,bad)
+for exists in [False,True]:
+ out=OUT/f'protected-{exists}.json'
+ if exists:out.write_bytes(b'EXISTING VERIFIED SNAPSHOT\n')
+ run=cli(badman,out,f'negative-cli-{exists}');assert run.returncode!=0 and 'strain' in run.stderr
+ assert out.read_bytes()==b'EXISTING VERIFIED SNAPSHOT\n' if exists else not out.exists()
+ results.append({'negative':'cli-output-preservation-'+str(exists),'rejected':True,'exit_code':run.returncode})
+# Validate duplicate assertions before any term is selected, with a valid unrelated selection.
+(records/'ids.yaml').write_text('id: EcoCyc:NOT-SELECTED\n')
+for change in ['alias','type','release']:
+ t=copy.deepcopy(base);entry=copy.deepcopy(entries[1]);entry['key']='duplicate-'+change
+ if change=='alias':t.find('Protein/synonym').text='Another direct synonym'
+ elif change=='type':
+  t.find('Protein').tag='RNA';p=t.find('RNA/parent/Protein');p.tag='RNA';p.set('frameid','Regulatory-RNAs');p.set('resource','getxml?ECOLI:Regulatory-RNAs');entry['kind']='ecocyc-rna-xml'
+ else:t.set('ptools-version','28.0');t.find('metadata/PGDB').set('version','28.0');entry['version']='28.0'
+ p=OUT/f'duplicate-{change}.xml';p.write_bytes(ET.tostring(t));entry['path']=p.name;entry['sha256']=sha(p);m=OUT/f'duplicate-{change}.json';save(m,[entries[1],entry])
+ try:build_snapshot(m,records,OUT)
+ except ValueError as error:assert 'conflicting EcoCyc native identity' in str(error);results.append({'negative':'unselected-duplicate-'+change,'rejected':True,'error':str(error)})
+ else:raise AssertionError('unselected conflict accepted')
+# Full scientifically accepted target: native/closed parity and exact UI/export identity.
+target=Path('/private/tmp/pathwaymech-next-223-correction-20261011/draft/amino-sugar-superpathway.future-schema.yaml')
+assert sha(target)=='ebbc3eb8334b28b975444285a6e0aab7315a3153a73492270a083cd87fb4f5ff';bindings.append({'path':str(target),'sha256':sha(target),'bytes':target.stat().st_size})
+raw=yaml.safe_load(target.read_text());model=validate_record(raw);checker=validator();assert not checker.validate(raw,TARGET_CLASS).results
+page=_record_page(model);(OUT/'full-target.html').write_text(page);svg=graph_html(model,{},{});(OUT/'full-target-graph.html').write_text(svg)
+rendered=render_kgx([model]);
+for name,body in rendered.items():(OUT/name).write_text(body)
+node_text=next(body for name,body in rendered.items() if 'nodes' in name);nodes={x['id']:x for x in csv.DictReader(io.StringIO(node_text),delimiter='\t')};graph=_declared_nodes(model,{})
+for frame,_,_,_,label,_ in SPECS:
+ curie='EcoCyc:'+frame;category='rna' if frame=='RNA0-241' else 'complex';link=f'https://ecocyc.org/gene?id={frame}'
+ assert _reference_url(curie)==link
+ assert html.escape(next(r['url'] for r in raw['references'] if r['id']==curie)) in page
+ assert nodes[curie]['category']==('biolink:RNAProduct' if category=='rna' else 'biolink:MacromolecularComplex')
+ assert nodes[curie]['source_category']==category and graph[curie]['type_label']==category
+ assert curie in svg and 'Declared type: '+category in svg
+ results.append({'positive':'full-target-'+frame,'category':nodes[curie]['category'],'citation':link})
+# Explicit authored source URLs take precedence; exercise fallback on a copy.
+fallback=copy.deepcopy(raw)
+for r in fallback['references']:
+ if r['id'].startswith('EcoCyc:'):
+  assert html.escape(r['url']) in page
+  r.pop('url')
+fallback_page=_record_page(validate_record(fallback))
+for r in fallback['references']:
+ if r['id'].startswith('EcoCyc:'):assert _reference_url(r['id']) in fallback_page
+(OUT/'fallback-reference-page.html').write_text(fallback_page)
+# Each schema entry point gets exact prefix parity, rather than participants alone.
+for location in ['record','participant','reference']:
+ for prefix in ['EcoCyc','ECOLI','ecocyc','ECocyc']:
+  t=copy.deepcopy(raw)
+  if location=='record':
+   old=t['id'];t['id']=prefix+':SCHEMA-TEST'
+   for e in t['mechanistic_edges']:
+    for role in ['subject','object']:
+     if e[role]==old:e[role]=t['id']
+  elif location=='participant':
+   before='EcoCyc:RNA0-241';after=prefix+':RNA0-241'
+   for p in t['participants']:
+    if p['id']==before:p['id']=after
+   for e in t['mechanistic_edges']:
+    for role in ['subject','object']:
+     if e[role]==before:e[role]=after
+  else:t['references'].append({'id':prefix+':SCHEMA-TEST','title':'Software namespace check'})
+  try:validate_record(t);native=True
+  except ValidationError:native=False
+  closed=not checker.validate(t,TARGET_CLASS).results
+  assert native==closed==(prefix=='EcoCyc'),(location,prefix,native,closed)
+  results.append({'schema_location':location,'prefix':prefix,'accepted':native})
+for bad_id in ['EcoCyc:RNA0-241?x=1','EcoCyc:PC00004/extra','EcoCyc:CPLX0-226&x=1','ecocyc:RNA0-241','EcoCyc:']:
+ assert _reference_url(bad_id) is None
+for row in raw['participants']:
+ if row['id'].startswith('EcoCyc:'):row.pop('category')
+plain=render_kgx([validate_record(raw)]);body=next(v for k,v in plain.items() if 'nodes' in k)
+assert all(r['category']=='biolink:NamedThing' for r in csv.DictReader(io.StringIO(body),delimiter='\t') if r['id'].startswith('EcoCyc:'))
+# Inputs pre/post checks bind actual runtime imports, not just changed files.
+for rel in ['scripts/build_source_identifier_snapshot.py','src/pathwaymech/schema.py','src/pathwaymech/strict.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/schema/mech_shared.yaml','src/pathwaymech/cli.py','src/pathwaymech/graph_view.py','src/pathwaymech/kgx.py','src/pathwaymech/edge_identity.py','conf/identifier_policy.yaml','docs/IDENTIFIERS.md','tests/test_ecocyc_identifier_authority.py']:
+ p=REPO/rel;bindings.append({'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size})
+for item in bindings:assert sha(Path(item['path']))==item['sha256']
+save(OUT/'input-bindings.json',bindings);save(OUT/'results.json',{'status':'passed','checks':results,'negative_count':sum('negative'in x for x in results),'schema_cases':12,'scientific_target_sha256':sha(target),'authentic_originals':3,'limitations':'Software evidence only; independent scientific successor review is separate; retained full source reproduction reviewed separately.'})
+print(json.dumps({'status':'passed','checks':len(results),'negative_count':sum('negative'in x for x in results)}))

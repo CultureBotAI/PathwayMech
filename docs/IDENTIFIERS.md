@@ -74,14 +74,31 @@ does not establish the database release. Original bytes are hashed unchanged
 and parsed according to their declared XML encoding. DTDs and custom entities,
 HTML/login responses, duplicate top-level objects and unresolved names fail.
 
-Only the direct `common-name` supplies the canonical label. Native inline
-presentation markup and character entities are decoded, with no curated-label
-fallback or imported synonyms. Malformed or still-escaped numeric references
-and decoded characters outside the supported XML character ranges are rejected;
-references are not recursively unescaped to guess a label. Nested enzyme,
-component, organism and curator names are not emitted as authority terms.
-Nested unresolved protein references
-do not imply unresolved identity of the full top-level object. This extraction
+The direct `common-name` supplies the canonical label whenever that slot exists;
+an empty, duplicate or malformed direct name fails instead of triggering another
+name search. When the slot is entirely absent, a bounded native enzyme-name
+rule supports a `Protein-Complexes` member with one component at integer
+coefficient two or greater and exactly one resolved `catalyzes/Enzymatic-Reaction`.
+That activity must have a coherent META identity, exactly one enzyme reference
+back to the same complex, one coherent native reaction reference and one string
+`common-name`. The resulting authority retains the exact complex ID. SRI's
+[BioCyc loader manual](https://bioinformatics.ai.sri.com/biowarehouse/repos/biocyc-loader/flatfile/doc/biocyc-manual.html)
+documents linked activity names for proteins lacking `COMMON-NAME`, and its
+[`full-enzyme-name` function](https://bioinformatics.ai.sri.com/ptools/ptools-fns.html)
+describes native protein naming from those slots. The adapter implements only
+the single-activity homomer case; unnamed monomers, heteromers, absent or
+noninteger coefficients, multiple activities (even with identical names), and
+unresolved or mismatched back-references remain unsupported. It does not
+concatenate activity names or add assembly words to a label.
+
+Both name paths decode native inline presentation markup and character entities,
+with no curated-label fallback or imported synonyms, including activity aliases.
+Malformed or still-escaped numeric references and decoded characters outside the
+supported XML character ranges are rejected; references are not recursively
+unescaped to guess a label. Component, organism and curator names are not
+emitted as authority terms. Apart from the explicitly validated enzyme-name
+relation, nested names are not used. Nested unresolved protein references do
+not imply unresolved identity of a directly named full top-level object. This extraction
 establishes identifier/name provenance, not species/strain equivalence,
 assembly, sequence, reaction or experimental function. Conflicting canonical
 names involving an XML source fail before corpus selection, including conflicts
@@ -161,6 +178,33 @@ declarations fail in every supported XML encoding. Original bytes and their
 acquisition/update-date provenance are retained. No status or strain equivalence
 is added to the source. Missing Entrez authority terms fail the snapshot builder
 and identifier gate.
+
+`bigg-universal-metabolite-json` and `bigg-universal-reaction-json` read one
+original BiGG universal API object. An exact HTTPS request under
+`https://bigg.ucsd.edu/api/v2/universal/metabolites/<id>` or
+`https://bigg.ucsd.edu/api/v2/universal/reactions/<id>` must agree with the source
+kind, native `bigg_id` and object shape. Model-specific endpoints, lists,
+HTML/error bodies, non-UTF-8 JSON, duplicate JSON keys and missing or ambiguous names fail.
+Only the universal native name supplies the canonical `BiGG` label; there is
+no contextual-label exemption. `old_identifiers` are not name synonyms, and
+cross-database links do not emit other authority terms.
+
+Each BiGG manifest entry requires a `version_source` object containing a
+relative cache `path`, `sha256`, and the exact URL
+`https://bigg.ucsd.edu/api/v2/database_version`. Its original JSON must state
+API `v2`, a `bigg_models_version` matching the manifest's
+`BiGG Models <version>; retrieved YYYY-MM-DD`, and a valid `last_updated`.
+This companion remains explicitly hash-bound in the manifest; the existing
+snapshot source metadata shape is unchanged. Conflicting names, object kinds
+or releases for the same BiGG identity fail before corpus selection. Observations
+of one native release must also agree on its unaltered update timestamp; no
+timezone is inferred from that timestamp.
+
+Universal metabolite and reaction objects remain distinct. Their names do not
+establish chemical equivalence, compartments, model reaction bounds, gene
+rules or physiological direction. In particular, acmana's source InChIKey
+discrepancy and the universal ACMANAptspp arrow versus iML1515 bounds remain
+separate evidence assertions, never silently repaired by label extraction.
 
 `RHEA-COMP` identifies whole generic protein participants, including distinct
 oxidized and reduced carrier states. This is the namespace used by UniProt's
@@ -312,3 +356,38 @@ and retain the original [MNXref release documentation](https://www.metanetx.org/
 with its own digest when assigning the observed release. This records a production
 observation; it does not claim acquisition of a versioned bulk dump. Upstream
 licenses still apply as described by the issuing source.
+
+
+### Native EcoCyc complex and RNA identities
+
+The `ecocyc-protein-xml` and `ecocyc-rna-xml` source kinds establish exact
+`EcoCyc` authority from native ECOLI objects. The current bounded protein
+classes are `Protein-Complexes` and `Protein-Small-Molecule-Complexes`; the RNA
+class is `Regulatory-RNAs`. The adapter requires one direct full entity, one
+direct resolved string common-name, and matching native parent identity.
+Only direct native string synonyms become aliases. Names and aliases share
+safe markup/character checks; malformed or duplicated names fail. Nested
+genes, proteins, activities and cross-references are never promoted. There is
+no enzyme-name fallback and no contextual-label exception. The namespace uses
+`canonical_or_synonym` solely for these independently sourced names.
+
+The issuing URL must be exactly
+`https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:FRAME`.
+The request, XML base, metadata service/query, PGDB/version, species, strain
+and NCBITaxon 511145 must agree. The native originals serialize their XML base
+as `http://bf2i-artsymbiocyc.insa-lyon.fr:443/getxml?ECOLI:FRAME` and service as
+`http://bf2i-artsymbiocyc.insa-lyon.fr:443/`; only those literal legacy forms
+are accepted alongside the exact HTTPS forms. This serialization exception
+does not permit HTTP issuing requests, arbitrary mirrors or alternate ports.
+DTD/entity declarations are rejected during XML parsing, including UTF-16.
+Duplicate identities must agree on type, parent, name, aliases and version;
+conflicting ECOLI releases fail before corpus filtering. Unsupported upstream
+serialization changes require a reviewed adapter change.
+
+`EcoCyc:CPLX0-226` names the CRP–cAMP complex, `EcoCyc:PC00004` the CRP
+complex, and `EcoCyc:RNA0-241` SgrS RNA. Identifier authority does not infer
+component coefficients, sequence equivalence or regulatory effects. Preserve
+explicit `complex` and `rna` categories in curated records; graph labels and
+KGX retain them without a prefix-wide reaction classification. Public citations
+use `https://ecocyc.org/gene?id=LOCAL_ID`. Acquisition receipts and full original
+bytes remain outside curated records, and public-release licensing is deferred.

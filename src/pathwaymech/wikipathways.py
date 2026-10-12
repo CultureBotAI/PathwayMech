@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree
 
+from pathwaymech.edge_identity import endpoint_qualifier_key
 from pathwaymech.source_mapping import (
     CurieMappings,
     normalized_curie,
@@ -229,7 +230,8 @@ def _unique_nodes(nodes: Iterable[dict[str, str]]) -> list[dict[str, str]]:
 def _unique_edges(edges: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     unique = {}
     for edge in edges:
-        unique.setdefault((edge["subject"], edge["predicate"], edge["object"]), edge)
+        unique.setdefault((edge["subject"], edge["predicate"], edge["object"],
+                           endpoint_qualifier_key(edge.get("endpoint_qualifiers"))), edge)
     return list(unique.values())
 
 
