@@ -136,7 +136,13 @@ def test_authority_policy_cannot_configure_handle_namespace(tmp_path):
         _load_policy(path, tmp_path)
 
 
-def test_native_snapshot_collectors_do_not_select_handle_references(record, tmp_path, monkeypatch):
+@pytest.mark.parametrize("reference", [
+    HANDLE, "RHEA:29170", "RHEA:30251", "CHEBI:9999999", "GO:9999999", "NCBITaxon:9999999",
+])
+def test_native_snapshot_collectors_do_not_select_citations(
+    record, tmp_path, monkeypatch, reference,
+):
+    set_reference(record, reference)
     monkeypatch.syspath_prepend(str(ROOT / "scripts"))
     source = importlib.import_module("build_source_identifier_snapshot")
     ontology = importlib.import_module("build_ontology_identifier_snapshot")
@@ -149,17 +155,19 @@ def test_native_snapshot_collectors_do_not_select_handle_references(record, tmp_
     }
 
 
-def test_reference_url_and_metadata_survive_page_and_kgx_without_a_handle_node(record):
+@pytest.mark.parametrize("reference", [HANDLE, "RHEA:29170", "RHEA:30251"])
+def test_reference_url_and_metadata_survive_page_and_kgx_without_citation_node(record, reference):
+    set_reference(record, reference)
     checked = validate_record(record)
     page = html.fromstring(_record_page(checked))
     assert page.xpath("//a[@href=$url]", url=ISSUING_URL)
-    assert HANDLE in page.text_content()
-    assert not page.xpath("//*[@data-node-id=$identifier]", identifier=HANDLE)
+    assert reference in page.text_content()
+    assert not page.xpath("//*[@data-node-id=$identifier]", identifier=reference)
     exported = render_kgx([checked])
     nodes = list(csv.DictReader(io.StringIO(exported["nodes.tsv"]), delimiter="\t"))
     edges = list(csv.DictReader(io.StringIO(exported["edges.tsv"]), delimiter="\t"))
-    assert HANDLE not in {node["id"] for node in nodes}
+    assert reference not in {node["id"] for node in nodes}
     assert len(edges) == 1
     assert json.loads(edges[0]["reference_metadata"]) == record["references"]
     assert json.loads(edges[0]["evidence"]) == record["mechanistic_edges"][0]["evidence"]
-    assert edges[0]["source_records"] == HANDLE
+    assert edges[0]["source_records"] == reference

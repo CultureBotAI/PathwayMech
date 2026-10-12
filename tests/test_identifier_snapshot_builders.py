@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from scripts.build_ontology_identifier_snapshot import main
+from scripts.build_ontology_identifier_snapshot import main, walk_identifiers, walk_labels
 
 
 @pytest.fixture
@@ -190,3 +190,90 @@ def test_rhea_correction_uses_original_rdf_and_fails_closed(
         assert snapshot["terms"]["GO:0008150"]["label"] == "biological_process"
         assert snapshot["sources"]["rhea-rdf-142"]["sha256"] == sha
         assert snapshot["sources"]["rhea-rdf-142"]["sha256_scope"] == "complete_original_gzip_rdf"
+
+
+@pytest.mark.parametrize("prefix,identifier,reference", [
+    ("GO", "GO:0008150", "GO:9999999"),
+    ("RHEA", "RHEA:16109", "RHEA:29170"),
+])
+def test_obsolete_reference_only_id_does_not_enter_nested_snapshot(
+    tmp_path: Path, authority: Path, prefix: str, identifier: str, reference: str,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    if prefix == "RHEA":
+        with sqlite3.connect(authority) as connection:
+            connection.execute("INSERT INTO statements VALUES (?, ?, ?, ?)",
+                               (identifier, "rdfs:label", None, "fixture reaction"))
+    corpus = tmp_path / "corpus"
+    path = corpus / "nested/deep/record.yaml"
+    path.parent.mkdir(parents=True)
+    record = {
+        "id": identifier, "label": "biological_process" if prefix == "GO" else "fixture reaction",
+        "references": [{"id": reference, "label": "historical citation", "title": "Obsolete"}],
+        "nested": [{"references": [{"id": identifier, "label": "citation, not canonical label"}]}],
+    }
+    path.write_text(yaml.safe_dump(record), encoding="utf-8")
+    original = path.read_bytes()
+    output = tmp_path / "snapshot.json"
+    assert main(["--source", f"{prefix}={authority}", "--corpus", str(corpus),
+                 "--output", str(output)]) == 0
+    assert set(json.loads(output.read_text())["terms"]) == {identifier}
+    assert path.read_bytes() == original
+    streams = capsys.readouterr()
+    assert "UNRESOLVED" not in streams.err
+    assert "citation, not canonical label" not in streams.out
+
+
+@pytest.mark.parametrize("slot", ["id", "subject_id", "object_id", "source_id", "target_id"])
+def test_reference_exclusion_keeps_nested_nonreference_identifier_slots(slot: str) -> None:
+    record = {
+        "id": "GO:0008150", "label": "biological_process",
+        "nested": [{"mapping": {slot: "GO:0006096"}, "references": [{
+            "id": "GO:9999999", "label": "obsolete citation",
+            "nested": {"source_id": "GO:8888888", "target_id": "GO:7777777"},
+        }]}],
+    }
+    assert walk_identifiers(record, {"GO"}) == {"GO:0008150", "GO:0006096"}
+    assert walk_labels(record) == [("GO:0008150", "biological_process")]
+
+
+@pytest.mark.parametrize("placement", ["record", "participant", "mapping", "explicit_include"])
+def test_citation_does_not_exempt_an_unresolved_actual_identifier(
+    tmp_path: Path, authority: Path, placement: str, capsys: pytest.CaptureFixture[str],
+) -> None:
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    identifier = "GO:9999999"
+    record = {"id": "GO:0008150", "label": "biological_process",
+              "references": [{"id": identifier, "title": "Historical citation"}]}
+    if placement == "record":
+        record["id"] = identifier
+    elif placement == "participant":
+        record["participants"] = [{"id": identifier, "label": "invented"}]
+    elif placement == "mapping":
+        record["nested"] = [{"source_id": identifier}]
+    (corpus / "record.yaml").write_text(yaml.safe_dump(record), encoding="utf-8")
+    output = tmp_path / "snapshot.json"
+    output.write_text("previous reviewed snapshot\n")
+    args = ["--source", f"GO={authority}", "--corpus", str(corpus), "--output", str(output)]
+    if placement == "explicit_include":
+        args += ["--include-id", identifier]
+    assert main(args) == 1
+    assert "UNRESOLVED\tGO:9999999" in capsys.readouterr().err
+    assert output.read_text() == "previous reviewed snapshot\n"
+
+
+def test_explicit_retention_keeps_reference_only_authority(
+    tmp_path: Path, authority: Path,
+) -> None:
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    record = {"id": "GO:0008150", "label": "biological_process", "references": [
+        {"id": "GO:0006096", "title": "Retained old authority"},
+        {"id": "GO:9999999", "title": "Obsolete historical citation"},
+    ]}
+    (corpus / "record.yaml").write_text(yaml.safe_dump(record), encoding="utf-8")
+    output = tmp_path / "snapshot.json"
+    assert main(["--source", f"GO={authority}", "--corpus", str(corpus),
+                 "--include-id", "GO:0006096", "--output", str(output)]) == 0
+    assert set(json.loads(output.read_text())["terms"]) == {"GO:0008150", "GO:0006096"}

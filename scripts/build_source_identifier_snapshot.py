@@ -7,7 +7,9 @@ gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zi
 metacyc-protein-xml, metacyc-reaction-xml, metacyc-carrier-class-xml,
 ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
-ncbi-protein-xml, rhea-components-rdf-gz, kegg-module-flatfile,
+ncbi-protein-xml, rhea-components-rdf-gz, rhea-polymer-rdf,
+metacyc-electron-transfer-reaction-xml, metacyc-chemical-class-xml,
+ecocyc-named-protein-complex-xml, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
 bigg-universal-metabolite-json, bigg-universal-reaction-json and
 pubchem-compound-property-json. Source files are
@@ -48,13 +50,29 @@ from pathwaymech.biocyc_carrier import (
 from pathwaymech.biocyc_carrier import (
     original_path as carrier_original_path,
 )
+from pathwaymech.biocyc_chemical_class import (
+    CHEMICAL_CLASS_KIND,
+    chemical_class_metadata,
+    chemical_class_term,
+)
+from pathwaymech.biocyc_electron_transfer import (
+    ELECTRON_TRANSFER_KIND,
+    reaction_metadata,
+    reaction_term,
+)
 from pathwaymech.ecocyc_complex import ECOCYC_COMPLEX_KIND, complex_metadata, complex_term
+from pathwaymech.ecocyc_named_complex import (
+    NAMED_COMPLEX_KIND,
+    named_complex_metadata,
+    named_complex_term,
+)
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_metadata, state_term
 from pathwaymech.pathbank_provenance import (
     PATHBANK_ARCHIVE_KIND,
     PATHBANK_ARCHIVE_URL,
     validate_pathbank_archive,
 )
+from pathwaymech.rhea_polymer import RHEA_POLYMER_KIND, polymer_metadata, polymer_term
 
 SOURCE_NAMESPACES = frozenset(
     {
@@ -2015,6 +2033,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     metacyc_kinds: dict[str, set[str]] = {}
     metacyc_reaction_assertions: dict[str, tuple] = {}
     metacyc_carrier_assertions: dict[str, tuple] = {}
+    new_native_assertions: dict[str, tuple] = {}
+    component_assertions: dict[str, tuple] = {}
     gene_assertions: dict[str, tuple[str, tuple[str, ...], str]] = {}
     bigg_assertions: dict[str, tuple[str, str, str, str]] = {}
     bigg_versions: dict[str, str] = {}
@@ -2040,7 +2060,14 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
-        if entry["kind"] in {CARRIER_CLASS_KIND, ECOCYC_STATE_KIND}:
+        if entry["kind"] in {
+            CARRIER_CLASS_KIND,
+            ECOCYC_STATE_KIND,
+            ELECTRON_TRANSFER_KIND,
+            CHEMICAL_CLASS_KIND,
+            NAMED_COMPLEX_KIND,
+            RHEA_POLYMER_KIND,
+        }:
             # Refuse non-regular resolved originals before the common byte read.
             carrier_original_path(entry, cache_dir)
         metadata = {name: entry[name] for name in ("url", "version", "license")}
@@ -2080,6 +2107,48 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     if "/" not in identifier
                 ],
             )
+        elif entry["kind"] in {ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND, NAMED_COMPLEX_KIND}:
+            builder, projector, field = {
+                ELECTRON_TRANSFER_KIND: (
+                    reaction_metadata,
+                    reaction_term,
+                    "native_electron_transfer",
+                ),
+                CHEMICAL_CLASS_KIND: (
+                    chemical_class_metadata,
+                    chemical_class_term,
+                    "native_chemical_class",
+                ),
+                NAMED_COMPLEX_KIND: (
+                    named_complex_metadata,
+                    named_complex_term,
+                    "native_named_complex",
+                ),
+            }[entry["kind"]]
+            metadata = builder(entry, cache_dir)
+            identifier, typed_term = projector(metadata, key)
+            assertion = (
+                entry["kind"],
+                json.dumps(metadata[field], sort_keys=True),
+                entry["version"],
+            )
+            registry = (
+                ecocyc_assertions if entry["kind"] == NAMED_COMPLEX_KIND else new_native_assertions
+            )
+            if identifier in registry and registry[identifier] != assertion:
+                raise ValueError(f"conflicting native identity/context assertions for {identifier}")
+            registry[identifier] = assertion
+            if entry["kind"] == NAMED_COMPLEX_KIND:
+                ecocyc_versions.add(entry["version"])
+                if len(ecocyc_versions) != 1:
+                    raise ValueError("conflicting EcoCyc native PGDB versions")
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
+        elif entry["kind"] == RHEA_POLYMER_KIND:
+            metadata = polymer_metadata(entry, cache_dir)
+            parsed_terms = [
+                (identifier, native["name"], [])
+                for identifier, native in metadata["native_polymers"].items()
+            ]
         elif entry["kind"] == "metacyc-reaction-xml":
             term, assertion = _metacyc_reaction_record(
                 path,
@@ -2199,10 +2268,37 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     raise ValueError(
                         f"conflicting MetaCyc reaction identity scope for {identifier}"
                     )
+                if (
+                    kinds.intersection({ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND})
+                    and len(kinds) != 1
+                ):
+                    raise ValueError(
+                        f"conflicting MetaCyc typed native identity scope for {identifier}"
+                    )
                 if CARRIER_CLASS_KIND in kinds and len(kinds) != 1:
                     raise ValueError(
                         f"conflicting MetaCyc carrier-class identity scope for {identifier}"
                     )
+            if identifier.startswith("RHEA-COMP:"):
+                native = (
+                    metadata["native_polymers"][identifier]
+                    if entry["kind"] == RHEA_POLYMER_KIND
+                    else None
+                )
+                assertion = (
+                    entry["kind"],
+                    json.dumps(native, sort_keys=True) if native else (label, tuple(synonyms)),
+                )
+                previous = component_assertions.get(identifier)
+                if (
+                    previous is not None
+                    and (RHEA_POLYMER_KIND in {previous[0], entry["kind"]})
+                    and previous != assertion
+                ):
+                    raise ValueError(
+                        f"conflicting Rhea component identity assertions for {identifier}"
+                    )
+                component_assertions[identifier] = assertion
             if identifier.startswith("PubChem:"):
                 if entry["kind"] != "pubchem-compound-property-json":
                     raise ValueError(
@@ -2221,7 +2317,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             if (
                 identifier.startswith("EcoCyc:")
                 and entry["kind"] not in ECOCYC_SOURCE_TYPES
-                and entry["kind"] not in {ECOCYC_COMPLEX_KIND, ECOCYC_STATE_KIND}
+                and entry["kind"]
+                not in {ECOCYC_COMPLEX_KIND, ECOCYC_STATE_KIND, NAMED_COMPLEX_KIND}
             ):
                 raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
@@ -2263,6 +2360,15 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 "synonyms": sorted(set(synonyms) - {label}),
                 "source": key,
             }
+            if entry["kind"] in {ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND, NAMED_COMPLEX_KIND}:
+                projector = {
+                    ELECTRON_TRANSFER_KIND: reaction_term,
+                    CHEMICAL_CLASS_KIND: chemical_class_term,
+                    NAMED_COMPLEX_KIND: named_complex_term,
+                }[entry["kind"]]
+                terms[identifier] = projector(metadata, key)[1]
+            if entry["kind"] == RHEA_POLYMER_KIND:
+                terms[identifier] = polymer_term(metadata, key, identifier)[1]
             if entry["kind"] == ECOCYC_COMPLEX_KIND:
                 terms[identifier] = complex_term(metadata, key)[1]
             if entry["kind"] == CARRIER_CLASS_KIND:
@@ -2285,6 +2391,13 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             ):
                 terms[identifier]["label_kind"] = "source_context"
             sources[key] = metadata
+    for source, metadata in sources.items():
+        if metadata.get("kind") == RHEA_POLYMER_KIND:
+            metadata["native_polymers"] = {
+                identifier: native
+                for identifier, native in metadata["native_polymers"].items()
+                if identifier in terms and terms[identifier]["source"] == source
+            }
     if not terms:
         raise ValueError("no corpus identifiers matched the supplied sources")
     required = {

@@ -1,0 +1,135 @@
+import csv,datetime,gzip,hashlib,io,json,re,subprocess,sys
+from pathlib import Path
+from collections import Counter,defaultdict
+from lxml import html
+import yaml
+ROOT=Path('/private/tmp/pathwaymech-next-234-local-20261012'); OUT=Path(__file__).parent
+P='data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml'
+PAGE='pages/records/MetaCyc_PWY-7545.html'; BASE='8c871a5808c73b0f21a397a2561269d068ee7368'
+checks=[]
+def check(name, condition, detail=None):
+ checks.append({'name':name,'passed':bool(condition),'detail':detail})
+ if not condition: raise AssertionError((name,detail))
+def sha(b):return hashlib.sha256(b).hexdigest()
+def j(v):return json.dumps(v,ensure_ascii=False,sort_keys=True)
+def norm(v):return re.sub(r'[\t\r\n]+',' ',str(v)).strip()
+def text(el):return ''.join(el.itertext())
+def pin(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':sha(b)}
+def gitbody(p):return subprocess.check_output(['git','show',f'{BASE}:{p}'],cwd=ROOT)
+def tsv(b):return list(csv.DictReader(io.StringIO(b.decode()),delimiter='\t'))
+def main():
+ d=yaml.safe_load((ROOT/P).read_bytes()); rid=d['id']; refs={x['id']:x for x in d['references']}
+ check('exact scientific draft',sha((ROOT/P).read_bytes())=='0c5854f77ff0cf86215d7b8f1aa53cadec53bb7df673efd7cb7e2407c0f07f80')
+ science=Path('/private/tmp/pathwaymech-next-234-science-review-20261012'); man=json.loads((science/'artifact-manifest.json').read_text())
+ for row in man['artifacts']:check('scientific review artifact '+row['path'],pin(science/row['path'])['sha256']==row['sha256'] and (science/row['path']).stat().st_size==row['bytes'])
+ names={str(p.relative_to(science)) for p in science.rglob('*') if p.is_file()};check('scientific review closed membership',names=={x['path'] for x in man['artifacts']}|{'artifact-manifest.json','handoff.json'},len(names))
+ ps=json.loads((science/'paragraph-assessments.json').read_text()); es=json.loads((science/'edge-assessments.json').read_text())
+ pars=d['description'].split('\n\n');check('paragraph count',len(pars)==len(ps)==44)
+ for p,a in zip(pars,ps):check('paragraph '+a['id'],sha(p.encode())==a['sha256'])
+ for e,a in zip(d['mechanistic_edges'],es):check('edge '+a['id'],e['id']==a['id'] and sha(j(e).encode())==a['edge_sha256'])
+ check('edge count',len(es)==len(d['mechanistic_edges'])==69)
+ idx=json.loads(gzip.decompress((ROOT/'research/pathway_additions/2026-10-12-next-234/evidence-index.json.gz').read_bytes()))
+ for ref in refs.values():check('reference portable binding '+ref['id'],ref['source_sha256'] in idx['body_lookup'])
+ # Entire original snapshots, records, pages, history and reviews are compared with baseline bytes.
+ baseline=json.loads(Path('/private/tmp/pathwaymech-next-234-local-baseline-20261012/files.json').read_text())
+ counts=Counter()
+ for row in baseline:
+  rel=row['path']; group=next((g for g in ('data/pathways/','pages/records/','history/','reviews/structured/') if rel.startswith(g)),None)
+  if group and row['type']=='regular':
+   check('baseline preserved '+rel,pin(ROOT/rel)['sha256']==row['sha256']);counts[group]+=1
+ check('234 old records',sum(r['path'].startswith('data/pathways/') and r['path'].endswith('.yaml') for r in baseline)==234)
+ check('234 old pages',counts['pages/records/']==234)
+ check('112 old review pairs',counts['reviews/structured/']==224)
+ # Every graph arrow, table row, node, reference, qualifier and local anchor.
+ dom=html.fromstring((ROOT/PAGE).read_bytes()); ids=dom.xpath('//*[@id]/@id');check('unique HTML ids',len(ids)==len(set(ids)))
+ for href in dom.xpath('//*[@href]/@href'):
+  if href.startswith('#'):check('local HTML link '+href,href[1:] in ids)
+ graph=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]');check('69 graph arrows',len(graph)==69)
+ alltext=text(dom)
+ for i,(edge,arrow) in enumerate(zip(d['mechanistic_edges'],graph),1):
+  anchor=f'mechanism-edge-{i}'; row=dom.get_element_by_id(anchor); cells=row.findall('td');check(anchor+' shape',len(cells)==4)
+  check(anchor+' source',cells[0].find('code').text==edge['subject']);check(anchor+' target',cells[2].find('code').text==edge['object'])
+  check(anchor+' predicate',cells[1].text==edge['predicate']);check(anchor+' description',cells[1].find('p').text==edge['description'])
+  check(anchor+' graph predicate',arrow.get('data-predicate')==edge['predicate']);check(anchor+' graph link',arrow.get('href')=='#'+anchor)
+  expectedends={'subject':edge['subject'],'object':edge['object']}
+  for q in edge.get('endpoint_qualifiers',[]):
+   role=q['endpoint'];expectedends[role]=f'qualified-endpoint-{i}-{role}';qd=dom.get_element_by_id(f'{anchor}-qualifier-{role}')
+   check(anchor+' qualifier text',q['description'] in text(qd));check(anchor+' original endpoint',arrow.get('data-'+role+'-id')==edge[role])
+   for ev in q['evidence']:
+    for k in ('quote','source_assertion','source_locator'):
+     if k in ev:check(anchor+' qualifier '+k,ev[k] in text(qd))
+  for role,value in expectedends.items():check(anchor+' graphical '+role,arrow.get('data-'+role)==value)
+  lis=cells[3].xpath('./ul/li');check(anchor+' evidence count',len(lis)==len(edge['evidence']))
+  for ev,li in zip(edge['evidence'],lis):
+   check(anchor+' evidence ref',li.find('a').text==ev['reference_id'])
+   check(anchor+' evidence target',li.find('a').get('href')=='#reference-'+str(list(refs).index(ev['reference_id'])+1))
+   for k in ('quote','source_assertion','source_locator'):
+    if k in ev:check(anchor+' '+k,ev[k] in text(li))
+ nodes=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]');check('49 graph nodes: 48 declared incident/non-taxon plus one qualified endpoint',len(nodes)==49)
+ named=[{'id':rid,'label':d['label']}]+[n for c in ('taxa','participants','reactions') for n in d[c]]
+ check('49 named identities',len(named)==49)
+ for n in named:
+  if n['id']=='NCBITaxon:562':
+   check('unconnected taxon retained in component table',n['id'] in alltext);continue
+  matches=[x for x in nodes if x.get('data-node-id')==n['id']];check('graph node '+n['id'],len(matches)==1 and matches[0].get('data-node-label')==n['label'])
+ for i,ref in enumerate(d['references'],1):
+  li=dom.get_element_by_id('reference-'+str(i));s=text(li)
+  for k in ('id','title','source_version','source_sha256'):check('rendered reference '+ref['id']+' '+k,ref[k] in s)
+  check('reference issuing URL '+ref['id'],ref['url'] in li.xpath('.//a/@href'))
+ check('whole description rendered',d['description'] in alltext)
+ # Whole corpus edge cells, with independent identity construction.
+ records=[yaml.safe_load(p.read_bytes()) for p in sorted((ROOT/'data/pathways').glob('*.yaml'))]
+ # Schema canonical predicate/category constants are inspected local contract, not exporter output.
+ from pathwaymech.kgx import LOCAL_PREDICATE_CURIES,EXPLICIT_CATEGORIES,_PREFIX_CATEGORIES
+ erows=tsv((ROOT/'pages/downloads/edges.tsv').read_bytes());nrows=tsv((ROOT/'pages/downloads/nodes.tsv').read_bytes())
+ emap={r['id']:r for r in erows};check('unique corpus edge ids',len(emap)==len(erows));expectedids=[]
+ for rec in records:
+  rrefs={x['id']:x for x in rec['references']}
+  for e in rec['mechanistic_edges']:
+   qs=e.get('endpoint_qualifiers',[]); identity=rec['id']+'\0'+e['id']
+   if qs:identity+='\0'+j(sorted(qs,key=lambda q:q['endpoint']))
+   eid='pathwaymech:'+re.sub('[^A-Za-z0-9._-]+','_',rec['id']+'_'+e['id']).strip('_')+'_'+sha(identity.encode())[:12];expectedids.append(eid)
+   rset=sorted({v['reference_id'] for v in e['evidence']+[v for q in qs for v in q['evidence']]})
+   exp={'id':eid,'subject':e['subject'],'predicate':LOCAL_PREDICATE_CURIES[e['predicate']],'object':e['object'],'category':'biolink:Association','primary_knowledge_source':'infores:pathwaymech','knowledge_level':'knowledge_assertion','agent_type':'manual_validation_of_automated_agent','source_records':'|'.join(rset),'description':e.get('description',''),'evidence':j(e['evidence']),'reference_metadata':j([rrefs[x] for x in rset]),'endpoint_qualifiers':j(qs) if qs else ''}
+   check('all 13 edge cells '+eid,emap.get(eid)=={k:norm(v) for k,v in exp.items()})
+ check('corpus edge order and multiplicity',[x['id'] for x in erows]==expectedids,len(erows))
+ # Full context multiplicities and presentation projection, including all 7 node cells.
+ expnodes={}
+ for rec in records:
+  contexts=[('pathway',{'id':rec['id'],'label':rec['label']})]+[(c,n) for c in ('taxa','participants','reactions','gene_clusters') for n in rec.get(c,[])]
+  for collection,n in contexts:
+   context={'record_id':rec['id'],'collection':collection,**(n if collection!='pathway' else {'label':n['label']})};ident=n['id'];sc=n.get('category','');di=n.get('direction','')
+   category=('biolink:BiochemicalReaction' if re.fullmatch('KEGG:R[0-9]{5}',ident) else _PREFIX_CATEGORIES.get(ident.split(':')[0],'biolink:NamedThing'))
+   if collection=='pathway':category='biolink:Pathway'
+   if collection=='gene_clusters':category='biolink:GenomicEntity'
+   if collection=='participants' and category=='biolink:BiochemicalReaction':category='biolink:NamedThing'
+   category=EXPLICIT_CATEGORIES.get(sc,category)
+   if ident not in expnodes:expnodes[ident]={'id':ident,'name':n['label'],'category':category,'provided_by':'infores:pathwaymech','source_category':sc,'direction':di,'contexts':[context]};continue
+   old=expnodes[ident]
+   if sc and not old['source_category']:old['category']=category
+   elif not(sc=='' and old['source_category']):old['category']='|'.join(sorted(set(old['category'].split('|'))|{category}))
+   old['source_category']='|'.join(sorted((set(old['source_category'].split('|'))|{sc})-{''}))
+   if context not in old['contexts']:old['contexts'].append(context)
+   old['contexts'].sort(key=lambda x:json.dumps(x,sort_keys=True));dirs={x['direction'] for x in old['contexts'] if x.get('direction')};old['direction']=next(iter(dirs)) if len(dirs)==1 else ''
+ for row in nrows:
+  exp=expnodes[row['id']];expected={k:norm(v) for k,v in exp.items() if k!='contexts'};expected['source_contexts']=norm(j(exp['contexts']))
+  check('all 7 node cells '+row['id'],row==expected)
+ check('corpus node order and multiplicity',[x['id'] for x in nrows]==list(expnodes),len(nrows))
+ for kind in ('nodes','edges'):check('download equals CLI '+kind,(ROOT/f'pages/downloads/{kind}.tsv').read_bytes()==(ROOT/f'output/kgx/{kind}.tsv').read_bytes())
+ oldedges=tsv(gitbody('pages/downloads/edges.tsv'));check('all old edge cells preserved',all(emap[x['id']]==x for x in oldedges),len(oldedges))
+ oldnodes=tsv(gitbody('pages/downloads/nodes.tsv')); nmap={r['id']:r for r in nrows}; categorychanges=[]
+ for row in oldnodes:
+  new=nmap[row['id']]; oldctx=Counter(j(x) for x in json.loads(row['source_contexts']));remctx=Counter(j(x) for x in json.loads(new['source_contexts']) if x['record_id']!=rid)
+  check('old node context multiplicity '+row['id'],oldctx==remctx)
+  if new['category']!=row['category']:categorychanges.append({'id':row['id'],'before':row['category'],'after':new['category']})
+ check('only accepted CHEBI7896 category change',categorychanges==[{'id':'CHEBI:7896','before':'biolink:ChemicalEntity','after':'biolink:ChemicalEntity|biolink:SmallMolecule'}],categorychanges)
+ before=tsv(gitbody('output/sssom/source_mappings.sssom.tsv')); after=tsv((ROOT/'output/sssom/source_mappings.sssom.tsv').read_bytes())
+ check('SSSOM all old rows/order', [x for x in after if x in before]==before and len(before)==15)
+ added=[x for x in after if x not in before];check('SSSOM exact6',len(added)==6 and all('source_pathway_id=MetaCyc:PWY-7545;' in x['comment'] for x in added))
+ check('SSSOM native preview',(ROOT/'output/sssom/source_mappings.sssom.tsv').read_bytes()==Path('/private/tmp/pathwaymech-next-234-root-local-integration-review-20261012/expected-source_mappings.sssom.tsv').read_bytes())
+ return {'status':'all_actual_integration_checks_passed','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'counts':dict(counts),'current_records':len(records),'kgx_nodes':len(nrows),'kgx_edges':len(erows),'old_kgx_edges':len(oldedges),'graph_nodes':len(nodes),'graph_edges':len(graph),'named_identities':len(named),'references':len(refs),'qualifiers':sum(len(e.get('endpoint_qualifiers',[])) for e in d['mechanistic_edges']),'sssom_before':len(before),'sssom_after':len(after),'inputs':[pin(ROOT/p) for p in [P,PAGE,'pages/downloads/nodes.tsv','pages/downloads/edges.tsv','output/sssom/source_mappings.sssom.tsv']], 'checks':checks}
+try:
+ report=main();(OUT/'audit.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n');print(json.dumps({k:v for k,v in report.items() if k not in ('checks','inputs')},indent=2))
+except BaseException as e:
+ (OUT/'audit-failed.json').write_text(json.dumps({'status':'failed','error':repr(e),'checks':checks},indent=2,ensure_ascii=False)+'\n');raise

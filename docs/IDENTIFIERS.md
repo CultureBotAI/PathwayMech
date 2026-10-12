@@ -580,3 +580,82 @@ bypass placement checks. Whole Rhea components 10698/10700 remain whole generic
 protein redox states; ChEBI reactive parts do not replace those proteins. Native
 Protein and Compound class references preserve both events of a carrier cycle,
 including the generic-client reaction when it lacks an exact Rhea mapping.
+
+## Native electron transfer, named complexes and chemical classes
+
+Four explicit source kinds support complete electron-transfer route identities.
+Their manifest entries have closed `key`, `kind`, `path`, `url`, `version`,
+`license` and `sha256` fields. Original paths must resolve to regular files;
+whole original bytes, issuing request identity and native release are checked
+before corpus filtering. Existing source precedence remains unchanged.
+
+`metacyc-electron-transfer-reaction-xml` accepts an unnamed full META Reaction
+instance with exactly `Electron-Transfer-Reactions` and
+`Small-Molecule-Reactions` parents. It retains direction, every ordered Compound
+side, explicit coefficient versus implicit one, and exact optional native
+CCO-IN/CCO-OUT compartment references. Composite reaction lists and their
+ordering must be complete, member-consistent and acyclic. The term keeps the
+frame token, `entity_type: reaction` and `label_kind: source_context`. Only
+`reactions/category: molecular_activity` can use the existing contextual-label
+rule. Opposite-side hydrons remain separate entries; native compartments do not
+automatically assert a taxon's anatomy. Constituent half-event originals are
+scientific evidence, including literal electrons, rather than invented CURIEs.
+The existing `metacyc-reaction-xml` reader retains its own contract.
+
+`ecocyc-named-protein-complex-xml` requires one directly named ECOLI Protein
+instance with the sole `Protein-Complexes` parent and complete explicit Protein
+components and positive integer coefficients. A one-component complex requires
+at least two copies. Its canonical name and direct synonyms are retained in
+`native_named_complex`; the term is `protein_complex`, with a canonical label.
+Only `participants/category: complex` is allowed. The namespace's normal label
+policy governs real synonyms; contextual labels cannot bypass placement or name
+checks. This mode shares whole ECOLI conflict and release guards with proteins,
+states and unnamed complexes without changing their accepted parsers. Native
+reference composition does not identify a purified or engineered construct.
+
+`metacyc-chemical-class-xml` requires a whole directly named META Compound with
+explicit `class="true"`. Exact structural parent sets determine the profile:
+`ETR-Quinones`; `ETR-Quinols` plus `Methoxybenzenes`; `Cofactors`, `Hemes` and
+`Organometallics`; `Organometallics`; or `Glycerolipids`. These profiles allow
+`chemical_entity`, with `cofactor` additionally allowed for the two cofactor
+profiles and `lipid` for glycerolipids. Cofactor profiles require complete native
+activity annotations. Direct parent, subclass and instance lists remain ordered,
+distinct and class/instance-consistent. `native_chemical_class` metadata derives
+the new `native_chemical_class` term type and allowed participant categories.
+This does not broaden the existing carrier-class mode or equate a class drawing,
+xref, heme stereoisomer or mixed lipid preparation with an exact chemical species.
+
+All three XML modes preserve complete ordered source slots, native attributes and
+ancillary context. The closed slot grammar checks direct structures and xrefs;
+scientific comments and embedded activity context remain source assertions rather
+than aliases or independently verified biological claims. Consumer validation
+reconstructs the typed projection from the retained safe XML subtrees and checks
+all projected fields. Incompatible native facts or cross-kind assertions fail
+in either manifest order, including when the identifier is not selected.
+
+## Whole Rhea Polymer components
+
+`rhea-polymer-rdf` reads the whole pinned gzip at the issuing Rhea RDF URL. It
+uses `RHEA-COMP` for complete Polymer objects while retaining their native
+`POLYMER` accessions; it introduces no new prefix or exact-chain-length claim.
+The existing `rhea-components-rdf-gz` GenericPolypeptide reader remains separate.
+Whole subjects aggregate all original RDF fragments before selection. Conflicting
+ID, accession, type, name, index or underlying-ChEBI assertions fail. Compatible
+split descriptions and exact repeated triples retain every original fragment.
+
+Closed `native_polymers` metadata retains plain and HTML names, formula, charge,
+variable index, underlying ChEBI resource and complete original fragments for
+emitted terms. The required index grammar is `n` or `n` plus/minus a positive
+integer. The exact native plain name is canonical, with no manufactured aliases.
+Terms have `entity_type: rhea_polymer` and are restricted to
+`participants/category: polymer` under the existing canonical label policy.
+
+HTML/plain comparison validates balanced lowercase `i`, `small`, `sub` and `sup`
+without attributes. Only alpha, beta, gamma, omega, right/bidirectional arrows and
+Unicode minus receive explicit comparison-only typography substitutions. Subscript
+text is preserved; positive integer or minus superscripts become parenthesized
+text. Numeric references must decode to permitted safe characters. Case, spacing,
+stereochemical letters, punctuation, indices and arrow direction are otherwise
+exact. Formula and charge remain validated source strings rather than evaluated
+expressions. Comparison projections are never emitted aliases. Unsupported
+upstream shapes require a separately reviewed adapter change.

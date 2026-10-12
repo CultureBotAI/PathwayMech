@@ -47,10 +47,17 @@ def sha256_file(path: Path) -> str:
 
 
 def walk_identifiers(value: Any, prefixes: set[str]) -> set[str]:
-    """Select identifier slots, including those in nested files and mappings."""
+    """Select nested identifier slots, excluding citation-only references.
+
+    References may preserve obsolete source identifiers without declaring
+    biological nodes. The same identifier elsewhere, or in --include-id,
+    still requires independent authority resolution.
+    """
     if isinstance(value, dict):
         identifiers = set()
         for key, item in value.items():
+            if key == "references":
+                continue
             if key in {"id", "subject_id", "object_id", "source_id", "target_id"}:
                 identifiers.update(walk_identifiers(item, prefixes))
             elif isinstance(item, (dict, list)):
@@ -70,8 +77,9 @@ def walk_labels(value: Any) -> list[tuple[str, str]]:
         pairs = []
         if isinstance(value.get("id"), str) and isinstance(value.get("label"), str):
             pairs.append((value["id"], value["label"]))
-        for item in value.values():
-            pairs.extend(walk_labels(item))
+        for key, item in value.items():
+            if key != "references":
+                pairs.extend(walk_labels(item))
         return pairs
     if isinstance(value, list):
         return [pair for item in value for pair in walk_labels(item)]

@@ -17,13 +17,29 @@ from urllib.parse import urlparse
 import yaml
 
 from pathwaymech.biocyc_carrier import CARRIER_CLASS_KIND, class_term, validate_class_metadata
+from pathwaymech.biocyc_chemical_class import (
+    CHEMICAL_CLASS_KIND,
+    chemical_class_term,
+    validate_chemical_class_metadata,
+)
+from pathwaymech.biocyc_electron_transfer import (
+    ELECTRON_TRANSFER_KIND,
+    reaction_term,
+    validate_reaction_metadata,
+)
 from pathwaymech.ecocyc_complex import (
     ECOCYC_COMPLEX_KIND,
     complex_term,
     validate_complex_metadata,
 )
+from pathwaymech.ecocyc_named_complex import (
+    NAMED_COMPLEX_KIND,
+    named_complex_term,
+    validate_named_complex_metadata,
+)
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_term, validate_state_metadata
 from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, validate_pathbank_archive
+from pathwaymech.rhea_polymer import RHEA_POLYMER_KIND, polymer_term, validate_polymer_metadata
 from pathwaymech.schema import ALLOWED_CURIE_PREFIXES
 from pathwaymech.yaml_io import load_yaml_file, pathway_files
 
@@ -105,6 +121,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "archive",
                 "pathway_accessions",
                 "native_complex",
+                "native_electron_transfer",
+                "native_chemical_class",
+                "native_named_complex",
+                "native_polymers",
                 "native_carrier_class",
                 "native_protein_state",
                 "counterpart",
@@ -119,6 +139,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "archive",
                 "pathway_accessions",
                 "native_complex",
+                "native_electron_transfer",
+                "native_chemical_class",
+                "native_named_complex",
+                "native_polymers",
                 "native_carrier_class",
                 "native_protein_state",
                 "counterpart",
@@ -136,6 +160,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
             ECOCYC_COMPLEX_KIND,
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
+            ELECTRON_TRANSFER_KIND,
+            CHEMICAL_CLASS_KIND,
+            NAMED_COMPLEX_KIND,
+            RHEA_POLYMER_KIND,
         }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
         if metadata.get("kind") == PATHBANK_ARCHIVE_KIND:
@@ -164,6 +192,16 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 raise ValueError(f"source {source}: invalid selected PathBank pathway identities")
         elif "archive" in metadata or "pathway_accessions" in metadata:
             raise ValueError(f"source {source}: archive provenance requires typed PathBank ZIP")
+        for native_kind, field, validator in [
+            (ELECTRON_TRANSFER_KIND, "native_electron_transfer", validate_reaction_metadata),
+            (CHEMICAL_CLASS_KIND, "native_chemical_class", validate_chemical_class_metadata),
+            (NAMED_COMPLEX_KIND, "native_named_complex", validate_named_complex_metadata),
+            (RHEA_POLYMER_KIND, "native_polymers", validate_polymer_metadata),
+        ]:
+            if metadata.get("kind") == native_kind:
+                validator(metadata)
+            elif field in metadata:
+                raise ValueError(f"source {source}: typed native metadata requires its source kind")
         if metadata.get("kind") == ECOCYC_COMPLEX_KIND:
             validate_complex_metadata(metadata)
         elif "native_complex" in metadata:
@@ -209,7 +247,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
         _keys(
             term,
             {"label", "synonyms", "source"},
-            {"label_kind", "entity_type"},
+            {"label_kind", "entity_type", "allowed_categories"},
             f"authority {identifier}",
         )
         if term.get("label_kind", "canonical") not in {
@@ -227,6 +265,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
+        if "allowed_categories" in term and source_kind != CHEMICAL_CLASS_KIND:
+            raise ValueError(f"{identifier}: category proof requires typed native chemical class")
         if term.get("label_kind") == "source_synonym" and source_kind != ECOCYC_COMPLEX_KIND:
             raise ValueError(
                 f"{identifier}: source-synonym authority requires a typed native complex"
@@ -251,7 +291,29 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 or "entity_type" in term
             ):
                 raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
-        if source_kind == ECOCYC_COMPLEX_KIND:
+        if source_kind in {
+            ELECTRON_TRANSFER_KIND,
+            CHEMICAL_CLASS_KIND,
+            NAMED_COMPLEX_KIND,
+            RHEA_POLYMER_KIND,
+        }:
+            metadata = data["sources"][term["source"]]
+            if source_kind == RHEA_POLYMER_KIND:
+                if identifier not in metadata["native_polymers"]:
+                    raise ValueError(f"{identifier}: missing whole Polymer metadata")
+                expected_id, expected_term = polymer_term(metadata, term["source"], identifier)
+            else:
+                projector = {
+                    ELECTRON_TRANSFER_KIND: reaction_term,
+                    CHEMICAL_CLASS_KIND: chemical_class_term,
+                    NAMED_COMPLEX_KIND: named_complex_term,
+                }[source_kind]
+                expected_id, expected_term = projector(metadata, term["source"])
+            if identifier != expected_id or json.dumps(term, sort_keys=True) != json.dumps(
+                expected_term, sort_keys=True
+            ):
+                raise ValueError(f"{identifier}: invalid typed native authority projection")
+        elif source_kind == ECOCYC_COMPLEX_KIND:
             expected_id, expected_term = complex_term(
                 data["sources"][term["source"]], term["source"]
             )
@@ -356,6 +418,35 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
                     "typed native reaction requires reactions/category molecular_activity"
                 )
+                continue
+            if (
+                term.get("entity_type") == "protein_complex"
+                and term.get("label_kind") == "canonical"
+            ) or term.get("entity_type") in {"native_chemical_class", "rhea_polymer"}:
+                allowed = (
+                    ["complex"]
+                    if term["entity_type"] == "protein_complex"
+                    else ["polymer"]
+                    if term["entity_type"] == "rhea_polymer"
+                    else term["allowed_categories"]
+                )
+                if section != "participants" or node.get("category") not in allowed:
+                    errors.append(
+                        f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
+                        f"typed native participant requires category in {allowed!r}"
+                    )
+                else:
+                    labels = [term["label"]]
+                    if (
+                        entry["policy"] == "canonical_or_synonym"
+                        and term["entity_type"] != "rhea_polymer"
+                    ):
+                        labels += term["synonyms"]
+                    if _normalize(label) not in {_normalize(value) for value in labels}:
+                        errors.append(
+                            f"{where}: LABEL_MISMATCH {identifier!r}: {label!r}; "
+                            f"authority label is {term['label']!r}"
+                        )
                 continue
             if term.get("entity_type") == "protein_complex":
                 if section != "participants" or node.get("category") != "complex":
