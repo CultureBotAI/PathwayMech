@@ -1,0 +1,148 @@
+"""Original-driven bounded NAD proposal, not a full canonical build."""
+from common import *
+import copy
+import sqlite3
+import sys
+import yaml
+sys.path[:0]=[str(O/'runtime/src'),str(O/'runtime/scripts')]
+import build_source_identifier_snapshot as sb
+import build_ontology_identifier_snapshot as ob
+
+LICENSE='Upstream terms; public-release licensing deferred'
+
+
+def preserve(old,new):
+    assert old['version']==new['version']==1
+    for section in ['sources','terms']:
+        assert list(new[section])[:len(old[section])]==list(old[section]),section
+        assert all(new[section][key]==value for key,value in old[section].items()),section
+
+
+def original_paths(manifest,rhea):
+    result={}
+    for entry in manifest:
+        for role,value in [('top_level',entry),('version_source',entry.get('version_source')),('class_source',entry.get('class_source'))]:
+            if value is None:continue
+            path=str(relative(value['path']));item=result.setdefault(path,{'sha256':value['sha256'],'roles':[]})
+            assert item['sha256']==value['sha256']
+            item['roles'].append({'key':entry['key'],'role':role})
+    path=str(relative(rhea['path']));item=result.setdefault(path,{'sha256':rhea['sha256'],'roles':[]})
+    assert item['sha256']==rhea['sha256'];item['roles'].append({'key':rhea['key'],'role':'rhea_update'})
+    return result
+
+
+def metadata_without_hash(connection):
+    prefixes=dict(connection.execute('SELECT prefix, base FROM prefix'))
+    declarations=list(connection.execute("SELECT subject, object FROM statements WHERE predicate='owl:versionIRI'"))
+    assert len(declarations)==1 and declarations[0][1]
+    subject,release=declarations[0]
+    metadata={pred:obj or value for pred,obj,value in connection.execute("SELECT predicate,object,value FROM statements WHERE subject=? AND predicate IN ('owl:versionInfo','dcterms:license')",(subject,))}
+    assert metadata['owl:versionInfo'] and metadata['dcterms:license']
+    return {'url':ob.expand_iri(release,prefixes),'version':metadata['owl:versionInfo'],'license':ob.expand_iri(metadata['dcterms:license'],prefixes),'sha256_scope':'uncompressed_semantic_sql_database'}
+
+
+def main():
+    capture=read(O/'capture.json')
+    for row in capture['runtime']:verify(row['captured']['path'],row['captured'])
+    verify(O/'selection'/TARGET_NAME,capture['target']['captured'])
+    assert Path(sb.__file__).resolve()==O/'runtime/scripts/build_source_identifier_snapshot.py'
+    assert Path(ob.__file__).resolve()==O/'runtime/scripts/build_ontology_identifier_snapshot.py'
+    record=yaml.safe_load((O/'selection'/TARGET_NAME).read_bytes())
+    named=sb.corpus_ids(O/'selection');wanted={i for i in named if i.split(':')[0] in sb.SOURCE_NAMESPACES}
+    ontology_ids=ob.walk_identifiers(record,{'CHEBI','GO','NCBITaxon','RHEA'})
+    assert len(named)==68 and len(wanted)==32 and len(ontology_ids)==36
+    assert named=={r['id'] for r in capture['selected_named_ids']}
+    assert 'UniProtKB:P0AFJ5' in wanted and 'UniProtKB:P0A9I3' not in wanted
+    assert 'CHEBI:29033' in ontology_ids and 'CHEBI:29034' not in ontology_ids
+    oldsources=read(O/'baseline/sources.json');oldonto=read(O/'baseline/ontology.json');manifest=read(O/'baseline/manifest.json');rhea=read(O/'baseline/rhea-updates.json')
+    assert len(manifest)==782 and len(oldsources['terms'])==2507 and len(oldonto['terms'])==1969
+    for name,row in capture['baseline'].items():verify(O/'baseline'/name,row['captured'])
+    oldpaths=original_paths(manifest,rhea)
+    assert set(oldpaths)=={r['cache_relative_path'] for r in capture['source_originals']} and len(oldpaths)==780
+    # Replay issuing originals in existing native manifest order; no source is chosen from a corpus label.
+    matches={};replay=[]
+    for entry in manifest:
+        path=O/'originals'/relative(entry['path']);assert bind(path)['sha256']==entry['sha256']
+        selected=[]
+        for identifier,label,synonyms in sb.source_terms(entry['kind'],path,url=entry['url'],version=entry['version'],archive=entry.get('archive'),sha256=entry['sha256']):
+            if identifier in wanted:
+                selected.append({'id':identifier,'label':label,'synonyms':synonyms})
+                matches.setdefault(identifier,{'source':entry['key'],'path':entry['path'],'label':label,'synonyms':synonyms})
+        if selected:replay.append({'key':entry['key'],'path':entry['path'],'selected':selected})
+    missing=wanted-set(matches)
+    snapshot_missing=wanted-set(oldsources['terms'])
+    assert missing<=snapshot_missing and len(snapshot_missing)==20
+    write('inherited-source-gap-replay.json',{'selected':sorted(wanted),'existing_first_source_matches':matches,'existing_selected_source_entries':replay,'unresolved_in_all_inherited_originals':sorted(missing),'snapshot_missing':sorted(snapshot_missing),'snapshot_additions_resolved_from_existing_originals':sorted(snapshot_missing-missing),'scope':'All782 original entries replayed in original order through captured native parsers; target selection only. Complete typed whole-manifest validation follows in bounded build_snapshot.'})
+    recipes=read(P/'derived/authority-original-copy-candidates.json')['recipes']
+    recipes=[copy.deepcopy(r) for r in recipes if missing&set(r['candidate_ids'])]
+    if 'UniProtKB:P0AFJ5' in missing:recipes.append({'original':capture['author_inputs']['raw/P0AFJ5.json']['captured'],'kind':'uniprot','url':'https://rest.uniprot.org/uniprotkb/P0AFJ5.json','version':'retrieved 2026-10-12','candidate_ids':['UniProtKB:P0AFJ5']})
+    for frame in ['CPLX0-682','PYRNUTRANSHYDROGEN-CPLX']:
+        recipes.append({'original':bind(P/'raw'/f'ECOLI-{frame}.xml'),'kind':'ecocyc-complex-xml','url':f'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:{frame}','version':'27.0','candidate_ids':['EcoCyc:'+frame]})
+    assert set().union(*(set(r['candidate_ids'])&missing for r in recipes))==missing
+    new=[];new_originals=[]
+    def acquire(original,role):
+        source=Path(original['path']);verify(source,original)
+        path='nad232-'+source.name
+        assert path not in oldpaths and not (CACHE/path).exists() and not (CACHE/path).is_symlink()
+        captured=capture_file(source,O/'originals'/path,original)
+        new_originals.append({'cache_relative_path':path,**captured,'roles':[role],'new':True})
+        return path
+    for recipe in recipes:
+        source=Path(recipe['original']['path']);path=acquire(recipe['original'],'top_level')
+        key='nad232-'+source.stem.lower()
+        entry={'key':key,'kind':recipe['kind'],'path':path,'url':recipe['url'],'version':recipe['version'],'license':LICENSE,'sha256':recipe['original']['sha256']}
+        if recipe['candidate_ids']==['EcoCyc:PYRNUTRANSHYDROGEN-CPLX']:
+            companion=bind(P/'raw/ECOLI-PC-1.xml');assert companion['sha256']=='e36fbeb82a86b02acd1494807251805a45aa63f7b60b83e109453d096c3ac835'
+            entry['class_source']={'path':acquire(companion,'class_source'),'url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PC-1','version':'27.0','license':LICENSE,'sha256':companion['sha256']}
+        new.append(entry)
+    assert len(new_originals)==len(new)+1
+    proposed_manifest=manifest+new
+    assert len({r['key'] for r in proposed_manifest})==len(proposed_manifest)
+    write('proposal/manifest.json',proposed_manifest)
+    native=sb.build_snapshot(O/'proposal/manifest.json',O/'selection',O/'originals')
+    assert set(native['terms'])==wanted
+    write('bounded-native/sources.json',native)
+    proposed=copy.deepcopy(oldsources)
+    for section in ['sources','terms']:
+        for key,value in native[section].items():
+            if key in proposed[section]:assert proposed[section][key]==value,(section,key)
+            else:proposed[section][key]=value
+    preserve(oldsources,proposed);write('proposal/sources.json',proposed)
+    native_ontology={};sql_receipts=[]
+    for row in capture['sql_originals']:
+        path=Path(row['path']);before=path.stat()
+        assert str(path.resolve())==row['resolved_path'] and before.st_size==row['bytes'] and before.st_mtime_ns==row['mtime_ns']
+        selected=sorted(i for i in ontology_ids if i.startswith(row['prefix']+':'))
+        with sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True) as connection:
+            meta=metadata_without_hash(connection)
+            assert {k:oldonto['sources'][row['source_key']][k] for k in meta}==meta
+            terms,unresolved=ob.extract_terms(connection,selected,row['source_key']);assert not unresolved,unresolved
+        after=path.stat();assert (before.st_size,before.st_mtime_ns)==(after.st_size,after.st_mtime_ns)
+        native_ontology.update(terms)
+        sql_receipts.append({'original':row,'readonly_sqlite_uri':path.resolve().as_uri()+'?mode=ro','selected_ids':selected,'source_metadata_read_fresh':meta,'missing':unresolved,'fresh_full_hash':False})
+    assert set(native_ontology)==ontology_ids
+    write('bounded-native/ontology-terms.json',native_ontology)
+    proposedonto=copy.deepcopy(oldonto)
+    for key,value in sorted(native_ontology.items()):
+        if key in proposedonto['terms']:assert proposedonto['terms'][key]==value,key
+        else:proposedonto['terms'][key]=value
+    preserve(oldonto,proposedonto);write('proposal/ontology.json',proposedonto)
+    capture_file(O/'baseline/rhea-updates.json',O/'proposal/rhea-updates.json')
+    inventory_paths=original_paths(proposed_manifest,rhea);expected=set(oldpaths)|{r['cache_relative_path'] for r in new_originals}
+    assert set(inventory_paths)==expected and len(expected)==780+len(new_originals)
+    accounting=[]
+    for name,row in inventory_paths.items():
+        path=O/'originals'/name;assert bind(path)['sha256']==row['sha256']
+        accounting.append({'cache_relative_path':name,'binding':bind(path),'identity':identity(path),'roles':row['roles'],'new':name not in oldpaths})
+    assert set(paths(O/'originals'))==expected
+    assert all(identity(O/'originals'/r['cache_relative_path'])['file_type']=='regular' for r in new_originals)
+    write('source-original-accounting.json',{'old_unique_originals':780,'new_unique_originals':len(new_originals),'all_unique_originals':len(expected),'new_top_level_originals':len(new),'new_class_companion_originals':1,'all_top_level_entries':len(proposed_manifest),'originals':accounting,'new_copy_plan':new_originals,'scope':'Whole original bodies; class_source and version_source sidecars plus separate Rhea configuration counted by exact unique path, never top-level entries alone.'})
+    labels={r['id']:r['label'] for r in capture['selected_named_ids']}
+    observed={**native['terms'],**native_ontology};assert set(observed)==named
+    assert all(observed[i]['label']==labels[i] for i in named),[(i,labels[i],observed[i]['label']) for i in named if observed[i]['label']!=labels[i]]
+    totals={'source_terms':len(proposed['terms']),'source_metadata':len(proposed['sources']),'ontology_terms':len(proposedonto['terms']),'ontology_metadata':len(proposedonto['sources']),'manifest_entries':len(proposed_manifest),'Rhea_update_ids':len(rhea['ids']),'selected_named':len(named),'selected_source':len(wanted),'selected_ontology':len(ontology_ids),'new_source_terms':len(snapshot_missing),'new_ontology_terms':len(ontology_ids-set(oldonto['terms'])),'new_top_level_originals':len(new),'new_class_originals':1}
+    write('proposal.json',{'at':now(),'capture':bind(O/'capture.json'),'target':bind(O/'selection'/TARGET_NAME),'runtime_scope':'Accepted PPi runtime + exact accepted four-file adapter;225files','collectors':{'named_ids':sorted(named),'source_ids':sorted(wanted),'ontology_ids':sorted(ontology_ids),'reference_only_ontology_ids':sorted(ontology_ids-named)},'counts':totals,'new_source_manifest_entries':new,'new_ontology_ids':sorted(ontology_ids-set(oldonto['terms'])),'sql_receipts':sql_receipts,'outputs':{p.name:bind(p) for p in sorted((O/'proposal').iterdir())},'typed_complex_terms':{i:native['terms'][i] for i in ['EcoCyc:CPLX0-682','EcoCyc:PYRNUTRANSHYDROGEN-CPLX']},'old_authority_objects_and_relative_order_preserved':True,'old_manifest_prefix_preserved':True,'source_cache_concurrent_root_bridge':bind(O/'concurrent-cache-bridge/receipt.json'),'source_cache_matches_exact_authorized_bridge':inventory(CACHE)==read(O/'concurrent-cache-bridge/receipt.json')['expected_current_inventory'],'native_scope':'One actual native source build with only frozen NAD selection; bounded read-only native ontology extract_terms. Proposal unions preserve accepted prior objects/order; not a full native canonical build or serialization claim.','scientific_acceptance':False,'maintained_or_cache_writes':False,'actual_ATP_PPi_merged_base_asserted':False})
+    assert inventory(CACHE)==read(O/'concurrent-cache-bridge/receipt.json')['expected_current_inventory']
+    print(json.dumps(totals))
+
+if __name__=='__main__':main()

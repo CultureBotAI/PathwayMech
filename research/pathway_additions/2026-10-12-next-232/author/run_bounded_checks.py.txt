@@ -1,0 +1,17 @@
+"""Capture real bounded commands and exits; never manufacture gate receipts."""
+from pathlib import Path
+import os,sys,json,subprocess,datetime,hashlib
+A=Path(__file__).parent;PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+assert sys.executable==PY or Path(sys.executable).resolve()==Path(PY).resolve()
+out=A/'validation';out.mkdir(exist_ok=True)
+env=os.environ.copy();env.update(PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1')
+commands=sys.argv[1:];assert commands
+history=[];hp=out/'execution-history.json'
+if hp.exists():history=json.loads(hp.read_text())
+for name in commands:
+ script=A/name;assert script.is_file()and script.parent==A
+ argv=[PY,'-B',str(script)];start=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(argv,cwd=A,env=env,text=True,capture_output=True)
+ n=len(history)+1;stdout=out/f'{n:02d}-{script.stem}.stdout.txt';stderr=out/f'{n:02d}-{script.stem}.stderr.txt';stdout.write_text(r.stdout);stderr.write_text(r.stderr)
+ item=dict(argv=argv,cwd=str(A),environment_overrides={'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'},start_utc=start,end_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=r.returncode,script_sha256=hashlib.sha256(script.read_bytes()).hexdigest(),stdout=str(stdout),stderr=str(stderr));history.append(item);hp.write_text(json.dumps(history,indent=2)+'\n')
+ print(name,'exit',r.returncode,r.stdout.strip());
+ if r.returncode:print(r.stderr);sys.exit(r.returncode)

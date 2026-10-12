@@ -1,0 +1,14 @@
+--- bridge-initial/common.py
++++ bridge-successor/common.py
+@@ -300,7 +300,10 @@
+     verify(acceptance['handoff']['path'], acceptance['handoff'])
+     assert acceptance['semantic_review']['accepted'] is True
+     assert acceptance['bridge']['directory'] == str(Path(__file__).resolve().parent)
+-    for item in acceptance['bridge']['files']:
++    bridge_files = acceptance['bridge']['files']
++    assert len(bridge_files) == 3 and {r['relative_path'] for r in bridge_files} == {
++        'common.py', 'run-gates.py', 'preserve-maintained.py'}
++    for item in bridge_files:
+         verify(Path(__file__).resolve().parent / safe_relative(item['relative_path']), item)
+     expected = {'src/pathwaymech/ecocyc_complex.py', 'src/pathwaymech/identifiers.py',
+                 'tests/test_ecocyc_complex_authority.py'}

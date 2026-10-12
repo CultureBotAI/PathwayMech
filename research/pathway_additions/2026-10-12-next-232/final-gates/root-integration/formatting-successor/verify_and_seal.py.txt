@@ -1,0 +1,50 @@
+"""Exact formatting proof and external seal; no maintained writes."""
+from prepare import *
+import ast,difflib,copy
+
+def main():
+ rows=[];diff=[];proof=[]
+ for relative in FILES:
+  before=P/'original'/relative;after=P/'candidate'/relative;assert bind(ROOT/relative)['sha256']==bind(before)['sha256']
+  old=ast.parse(before.read_bytes());new=ast.parse(after.read_bytes());strict=ast.dump(old,include_attributes=False)==ast.dump(new,include_attributes=False)
+  normalized=copy.deepcopy(old);allowed=[]
+  if relative=='src/pathwaymech/ecocyc_complex.py':
+   assert ast.unparse(old.body[3])=='from pathlib import Path' and ast.unparse(old.body[4])=='import re'
+   assert ast.unparse(new.body[3])=='import re' and ast.unparse(new.body[4])=='from pathlib import Path'
+   normalized.body[3],normalized.body[4]=normalized.body[4],normalized.body[3]
+   allowed=[{'before_indices':[3,4],'after_indices':[4,3],'before':['from pathlib import Path','import re'],'after':['import re','from pathlib import Path'],'reason':'Independent standard-library bindings; neither import references the other. No assignment, call, lookup, branch or other statement is moved. Runtime module already imports both before declarations.'}]
+  else:assert strict
+  assert ast.dump(normalized,include_attributes=False)==ast.dump(new,include_attributes=False)
+  compile(after.read_bytes(),str(after),'exec')
+  ast_sha=lambda tree:hashlib.sha256(ast.dump(tree,include_attributes=False).encode()).hexdigest()
+  proof.append({'relative_path':relative,'before':bind(before),'after':bind(after),'strict_ast_equal':strict,'explicit_allowed_changes':allowed,'normalized_ast_equal':True,'before_ast_sha256':ast_sha(old),'normalized_before_ast_sha256':ast_sha(normalized),'after_ast_sha256':ast_sha(new),'compile_without_bytecode':'passed'})
+  rows.append({'relative_path':relative,'before':bind(ROOT/relative),'after':bind(after)})
+  diff.extend(difflib.unified_diff(before.read_text().splitlines(True),after.read_text().splitlines(True),fromfile='a/'+relative,tofile='b/'+relative))
+ baseline=load_json(P/'lint-workspace-baseline.json');unchanged=[]
+ for row in baseline:
+  relative=row['relative_path'];current=P/'lint-workspace'/relative
+  if relative in FILES:assert bind(current)['sha256']==bind(P/'candidate'/relative)['sha256']
+  else:assert bind(current)['sha256']==row['source']['sha256'];unchanged.append(relative)
+ commands=[load_json(f) for f in sorted((P/'commands').glob('*/receipt.json'))]
+ assert all(r['exit_code']==0 for r in commands)
+ exact=next(r for r in commands if r['name']=='whole-layout-configured-lint');assert exact['command']==[PYTHON,'-B','-m','ruff','check','--no-cache','.']
+ for r in commands:
+  for key in ['stdout','stderr']:assert bind(Path(r[key]['path']))==r[key]
+ write(P/'ast-equivalence.json',{'status':'passed','files':proof,'no_other_ast_normalization':True,'no_behavioral_retest_claim':'Earlier2634test successes bind original code. Fresh maintained nine-gate run remains root-owned future work.'})
+ write(P/'copy-plan.json',{'status':'formatting_only_candidate_pending_root_independent_review','files':rows,'configuration':bind(ROOT/'pyproject.toml'),'unchanged_fourth_adapter_file':bind(ROOT/'scripts/build_source_identifier_snapshot.py')})
+ (P/'formatting-only.diff').write_text(''.join(diff))
+ write(P/'full-configured-lint-proof.json',{'status':'passed','receipt':exact,'workspace_baseline':bind(P/'lint-workspace-baseline.json'),'total_python_and_config_files':len(baseline),'unchanged_non_target_files':unchanged,'scope':'Full configured Ruff over a complete tracked Python/config copy plus the two actual new untracked adapter/test files. Only three explicit candidate files changed. No maintained/gate/source/cache writes.'})
+ issue=Path('/private/tmp/pathwaymech-next-232-adapter-formatting-issue-20261012');issuefiles=[]
+ for f in sorted(issue.iterdir()):
+  if f.is_file():
+   dest=P/'issue471'/f.name;dest.parent.mkdir(exist_ok=True);dest.write_bytes(f.read_bytes());issuefiles.append({'original':bind(f),'retained':bind(dest)})
+ write(P/'lineage.json',{'at':now(),'issue471':issuefiles,'original_full_gate':load_json(P/'failed-gates/execution.json'),'initial_isolated_context_attempts':'The first two partial-file formatting/lint passes returned0 but were rejected as final candidates because isolated module layout reordered project imports. Both intermediate three-file candidates and all6 command receipts are preserved. Full-layout successor preserves exact identifier/test AST and only standard-library import ordering in complex module.','root_finalization_support':'Unsealed support at next-232-finalization-support remains stopped; its earlier expected full gate/preservation requirements are not satisfied by this lint-only external successor.','no_native_history_written':True})
+ manifest=[]
+ for f in sorted(P.rglob('*')):
+  assert not f.is_symlink()
+  if f.is_file():manifest.append({'relative_path':str(f.relative_to(P)),**bind(f)})
+ write(P/'artifact-manifest.json',{'scope':'Complete hidden/ignored-inclusive regular-file inventory, no exclusions','artifacts':manifest})
+ write(P/'handoff.json',{'status':'sealed_formatting_only_successor_pending_independent_root_review_and_adoption','at':now(),'author':'Codex /root/atp_build_preparation_audit; author of original complex adapter, not independent reviewer of this correction','issue':'https://github.com/CultureBotAI/PathwayMech/issues/471','manifest':bind(P/'artifact-manifest.json'),'artifact_count':len(manifest),'copy_plan':bind(P/'copy-plan.json'),'ast_proof':bind(P/'ast-equivalence.json'),'diff':bind(P/'formatting-only.diff'),'full_configured_lint':bind(P/'full-configured-lint-proof.json'),'files':rows,'no_maintained_cache_git_writes':True,'native_history_written':False,'fresh_maintained_gates_run':False,'native_rebuild_run':False,'limitations':['Only formatting/explicit independent standard-library import ordering changes. Exact original and intermediate formatting bodies, failed original full lint, accepted original full tests and actual formatter/lint receipts retained.','Fresh root independent review, exact integration bridge, native EDIT history before fresh render, full nine-gate run, native-review successor and publication remain pending. Original failed gates are not waived or spliced.']})
+ print(json.dumps({'handoff':bind(P/'handoff.json'),'manifest':bind(P/'artifact-manifest.json'),'artifact_count':len(manifest),'files':rows},indent=2))
+def load_json(path):return json.loads(Path(path).read_bytes())
+if __name__=='__main__':main()

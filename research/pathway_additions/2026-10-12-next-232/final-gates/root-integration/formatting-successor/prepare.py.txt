@@ -1,0 +1,30 @@
+"""External formatting successor; never edits the maintained owner or old packets."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,os,subprocess
+P=Path(__file__).resolve().parent
+ROOT=Path('/private/tmp/pathwaymech-next-232-20261012')
+PYTHON='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+FILES=['src/pathwaymech/ecocyc_complex.py','src/pathwaymech/identifiers.py','tests/test_ecocyc_complex_authority.py']
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def write(p,value):
+ with p.open('x') as f:json.dump(value,f,indent=2);f.write('\n')
+def now():return datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
+def run(name,command):
+ out=P/'commands'/name;out.mkdir(parents=True);start=now();r=subprocess.run(command,cwd=P/'candidate',env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1'},capture_output=True)
+ (out/'stdout').write_bytes(r.stdout);(out/'stderr').write_bytes(r.stderr)
+ write(out/'receipt.json',{'name':name,'command':command,'cwd':str(P/'candidate'),'started_at':start,'finished_at':now(),'exit_code':r.returncode,'stdout':bind(out/'stdout'),'stderr':bind(out/'stderr')});print(name,r.returncode,flush=True);print(r.stdout.decode());return r
+if __name__=='__main__':
+ rows=[]
+ for relative in FILES+['pyproject.toml']:
+  original=ROOT/relative
+  for folder in ['original','candidate']:
+   target=P/folder/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(original.read_bytes())
+  rows.append({'relative_path':relative,'original':bind(original),'retained':bind(P/'original'/relative)})
+ gate=Path('/private/tmp/pathwaymech-next-232-root-integration-execution-20261012/gates')
+ (P/'failed-gates').mkdir()
+ for name in ['execution.json','lint.stdout','lint.stderr','tests.stdout','tests.stderr']:(P/'failed-gates'/name).write_bytes((gate/name).read_bytes())
+ write(P/'original-bindings.json',{'at':now(),'files':rows,'failed_gate':bind(gate/'execution.json'),'scope':'Original maintained bytes retained before any formatting; no maintained/cache/Git mutation. Initial long lint display was truncated; exact original74134bytes retained.'})
+ run('import-format',[PYTHON,'-B','-m','ruff','check','--no-cache','--select','I','--fix',*FILES]).check_returncode()
+ run('format',[PYTHON,'-B','-m','ruff','format','--no-cache',*FILES]).check_returncode()
+ result=run('configured-lint',[PYTHON,'-B','-m','ruff','check','--no-cache',*FILES]);raise SystemExit(result.returncode)

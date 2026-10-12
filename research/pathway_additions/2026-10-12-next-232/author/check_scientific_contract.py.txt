@@ -1,0 +1,74 @@
+"""Original-selected biological checks and deliberately wrong hypotheses."""
+from pathlib import Path
+import json,hashlib,zipfile,io,re,collections
+from lxml import etree as X
+import yaml,openpyxl
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+def js(p):return json.loads(Path(p).read_text())
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+checks=[]
+def test(name,observed,expected,negative=None):
+ assert observed==expected,(name,observed,expected)
+ checks.append(dict(name=name,observed=observed,expected=expected,pass_=True))
+ if negative is not None:
+  assert observed!=negative,(name,'negative unexpectedly accepted')
+  checks.append(dict(name=name+' — negative control',proposed=negative,rejected_by_original=True))
+def native(frame):
+ p=A/'raw'/('ECOLI-'+frame+'.xml')
+ if not p.exists():p=P/'raw'/('ECOLI-'+frame+'.xml')
+ t=X.parse(str(p));assert t.xpath('/ptools-xml/metadata/query/text()')==['ECOLI:'+frame];assert t.xpath('/ptools-xml/metadata/PGDB/@version')==['27.0'];return t
+d=yaml.safe_load((A/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_text())
+proofs=js(A/'derived/selected-protein-full-issuing-checks.json')
+for row in proofs:
+ j=js(row['original']['path']);j=next(r for r in j.get('results',[j])if r.get('primaryAccession')==row['accession'])
+ test(row['accession']+' issuing identity',dict(gene=j['genes'][0]['geneName']['value'],taxon=j['organism']['taxonId'],length=len(j['sequence']['value'])),dict(gene=row['gene'],taxon=83333,length=j['sequence']['length']))
+test('PhoB native exact chain accession',native('PHOB-MONOMER').xpath('/ptools-xml/Protein/dblink[dblink-db="UNIPROT"]/dblink-oid/text()'),['P0AFJ5'],['P0A9I3'])
+test('Rejected provisional PhoB original actually GcvR',js(P/'raw/P0A9I3.json')['genes'][0]['geneName']['value'],'gcvR','phoB')
+for acc,res in [('P0AFJ5',53),('P0A9Q1',54)]:
+ p=A/'raw'/f'{acc}.json'if acc=='P0AFJ5'else P/'raw'/f'{acc}.json';j=js(p)
+ test(acc+' exact phosphoaspartate',[f['location']['start']['value']for f in j['features']if f['type']=='Modified residue'and f['description']=='4-aspartylphosphate'],[res],[res+1])
+for frame,parts in [('CPLX0-682',{'MONOMER0-541':6}),('PYRNUTRANSHYDROGEN-CPLX',{'PNTA-MONOMER':2,'PNTB-MONOMER':2}),('ALKAPHOSPHA-CPLX',{'ALKAPHOSPHA-MONOMER':2}),('UDHA-CPLX',{'UDHA-MONOMER':8})]:
+ t=native(frame);got={v.find('Protein').get('frameid'):int(v.findtext('coefficient'))for v in t.xpath('/ptools-xml/Protein/component')}
+ test(frame+' native assembly',got,parts,{k:1 for k in parts})
+test('NadK genuinely unnamed direct object',native('CPLX0-682').xpath('/ptools-xml/Protein/common-name/text() | /ptools-xml/Protein/synonym/text()'),[],['NadK hexamer'])
+rd={r['id']:r for m in js(A/'derived/rhea-four-events-fresh.json')['masters']for r in m['directions']}
+expected={
+ 'RHEA:18630':[['CHEBI:30616','CHEBI:57540'],['CHEBI:15378','CHEBI:456216','CHEBI:58349']],
+ 'RHEA:28051':[['CHEBI:15377','CHEBI:58349'],['CHEBI:43474','CHEBI:57540']],
+ 'RHEA:47994':[['CHEBI:15378','CHEBI:57945','CHEBI:58349'],['CHEBI:15378','CHEBI:57540','CHEBI:57783']],
+ 'RHEA:11693':[['CHEBI:57540','CHEBI:57783'],['CHEBI:57945','CHEBI:58349']]}
+for rid,want in expected.items():
+ r=rd[rid];got=[sorted(q['properties']['accession'][0]for q in r['sides'][s])for s in ['substrates','products']];test(rid+' original chemistry',got,want,list(reversed(want)))
+ test(rid+' whole source formula/charge balance',r['formula_charge_imbalance'],{})
+ test(rid+' exact coefficients',[q['coefficient']for s in r['sides'].values()for q in s],[1]*sum(map(len,want)),[2]*sum(map(len,want)))
+ ge=[[sorted(e['subject']for e in d['mechanistic_edges']if e['predicate']=='consumes'and e['object']==rid),sorted(e['object']for e in d['mechanistic_edges']if e['predicate']=='produces'and e['subject']==rid)]][0];test(rid+' graph matches independent source sides',ge,want)
+test('Pnt orientation selected from actual RDF',rd['RHEA:47994']['orientation'],'right_to_left','left_to_right')
+pb=X.parse(str(P/'raw/PW002081.owl'));ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+test('Frozen PathBank full event-class boundary',[len(pb.xpath('/rdf:RDF/bp:BiochemicalReaction',namespaces=ns)),len(pb.xpath('/rdf:RDF/bp:TransportWithBiochemicalReaction',namespaces=ns))],[2,1],[2,0])
+native_core=X.parse(str(P/'raw/META-NADPHOS-DEPHOS-PWY.xml')).xpath('/ptools-xml/Pathway/reaction-list/Reaction/@frameid')
+test('Native exact complete core',sorted(native_core),sorted(['NAD-KIN-RXN','RXN-5822','TRANS-RXN0-277']),['NAD-KIN-RXN','RXN-5822'])
+with zipfile.ZipFile(P/'raw/PMC5217608-supplements.zip')as z:
+ def wb(member):return openpyxl.load_workbook(io.BytesIO(z.read(member)),read_only=True,data_only=True)
+ w=wb('12918_2016_376_MOESM2_ESM.xlsx');rows=list(w['All CsiR RNA-Seq'].iter_rows(values_only=True));bound=list(w['CsiR Binding and RNA-Seq'].iter_rows(values_only=True))
+ test('CsiR pntA observed normalized FC',round(rows[2450][5],6),2.793539)
+ test('CsiR pntB opposite observed FC',round(rows[2451][5],6),0.440537,2.793539)
+ test('CsiR target-binding absence within full selected sheet',[r[0]for r in bound if r[0]in ['pntA','pntB']],[],['pntA'])
+ w.close();w=wb('12918_2016_376_MOESM3_ESM.xlsx');rr=list(w['Nac Binding and RNA-Seq'].iter_rows(values_only=True));r=rr[237]
+ test('Nac pntA normalized versus raw ratio',round(r[9],6),0.372191,round(r[7]/r[8],6));test('Nac cysQ independent joined row',[rr[61][0],rr[61][3],rr[61][4],rr[61][6]],['cysQ',22,-145,4434633]);w.close()
+with zipfile.ZipFile(P/'raw/PMC9460512-supplements/mmc1.docx')as z:t=X.fromstring(z.read('word/document.xml'))
+n={'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+cells=[[''.join(c.itertext())for c in row]for row in t.xpath('/w:document/w:body/w:tbl[1]/w:tr',namespaces=n)]
+texts=[''.join(row.xpath('.//w:t/text()',namespaces=n))for row in t.xpath('/w:document/w:body/w:tbl[1]/w:tr',namespaces=n)]
+test('SthA original WT adenylate response present',all(s in texts[2]for s in ['160.7','171.1','148.2']),True)
+test('SthA mutant baseline paragraph distinct from WT','0.55'in ''.join(t.xpath('/w:document/w:body/w:p[60]//w:t/text()',namespaces=n)),True)
+phoa=js(P/'raw/P00634.json');co={c['cofactors'][0]['name']:c['note']['texts'][0]['value']for c in phoa['comments']if c['commentType']=='COFACTOR'}
+test('PhoA exact per-chain Mg/Zn annotation',co,{'Mg(2+)':'Binds 1 Mg(2+) ion.','Zn(2+)':'Binds 2 Zn(2+) ions.'},{'Mg(2+)':'Binds 1 Mg(2+) ion.','Zn(2+)':'Binds 1 Zn(2+) ion.'})
+constructs=js(P/'derived/construct-state-ledger.json');mapping={'K87':[6,7,8],'K01-native':[4,5,6,8,9],'K01-recombinant':[4,9],'PhoA62':[11,13],'PhoA-reference':[12],'CysQ07':[14,15],'CysQ-controls07':[15],'Archaea07':[16],'Pnt04':[28],'Pnt21':[17,18,19],'Pnt21-H91A':[19],'SthA22':[22,23,24,25],'SthA22-C45A':[23,25],'SthA22-T50C':[23,25],'Reporter16':[30,31,32,33,34],'ArcA14':[32],'Lrp19':[35],'Nac17':[36,37],'CsiR17':[37],'PhoA19':[38],'Spot42-Northern11':[39],'Spot42-fusion11':[39],'Spot42-followup12':[39],'ArcA-native':[32],'PhoB-native':[38],'NadK-R175-series':[10],'SthA2011-fusion':[27],'Pnt-DCCD-variants':[20]}
+assert len(mapping)==len(constructs)==28
+pc=js(A/'ledgers/paragraph-claims.json');out=[]
+for c in constructs:
+ ps=mapping[c['id']];out.append(dict(preflight_original=c,author_correction='PhoB is P0AFJ5, not the rejected GcvR/P0A9I3 in the immutable preflight row.'if c['id']=='PhoB-native'else None,paragraphs=[pc[i-1]for i in ps],endpoint_qualifiers=[dict(edge=e['id'],qualifiers=e['endpoint_qualifiers'])for e in d['mechanistic_edges']if e.get('endpoint_qualifiers')and any(c['reference'].replace('PMID','PMID:')==v['reference_id']for q in e['endpoint_qualifiers']for v in q['evidence'])],disposition='Preparation is retained in explicit source-qualified prose and applicable protein/complex endpoint qualifiers; negative-control or hypothesis-only preparation is not promoted to a wild-type catalytic claim.'))
+save('ledgers/construct-dispositions.json',out)
+save('scientific-contract-checks.json',dict(target=bind(A/'draft/nad-phosphorylation-and-dephosphorylation.yaml'),checks=checks,passed=len(checks),constructs=28,limits='Source-selected tests verify specified scientific invariants and reject explicit wrong hypotheses. They do not replace whole-record independent scientific review.'))
+print(len(checks),'original-selected positive/negative checks;28construct contexts retained')

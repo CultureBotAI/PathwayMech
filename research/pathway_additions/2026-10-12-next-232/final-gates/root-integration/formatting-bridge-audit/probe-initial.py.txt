@@ -1,0 +1,44 @@
+"""Independent bridge-only isolated acceptance controls; no execution or maintained mutation."""
+from pathlib import Path
+import hashlib,json,runpy,copy
+P=Path(__file__).resolve().parent
+B=Path('/private/tmp/pathwaymech-next-232-formatting-bridge-20261012')
+F=Path('/private/tmp/pathwaymech-next-232-formatting-successor-20261012')
+A=Path('/private/tmp/pathwaymech-next-232-integration-preparation-20261012')
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def write(p,d):p.write_text(json.dumps(d,indent=2)+'\n')
+ns=runpy.run_path(str(B/'common.py'),run_name='independent_bridge_probe');fn=ns['code_changes'];g=fn.__globals__;original_load=g['load']
+changes=json.loads((F/'copy-plan.json').read_bytes())['files']
+for r in changes:r['before']=bind(F/'original'/r['relative_path'])
+accept={'status':'accepted_exact_issue471_formatting_successor','issue':471,'target_sha256':ns['TARGET_SHA'],'handoff':bind(F/'handoff.json'),'semantic_review':{'accepted':True},'bridge':{'directory':str(B),'files':[{'relative_path':n,**bind(B/n)} for n in ['common.py','run-gates.py','preserve-maintained.py']]},'changes':changes}
+active=accept
+
+def fixture_load(path):
+ if str(path)=='/private/tmp/pathwaymech-next-232-root-formatting-acceptance-20261012.json':return copy.deepcopy(active)
+ return original_load(path)
+g['load']=fixture_load
+result=fn();assert len(result)==4
+rows=[]
+def check(name,mutator):
+ global active
+ active=copy.deepcopy(accept);mutator(active)
+ try:fn()
+ except (AssertionError,KeyError,FileNotFoundError) as e:rows.append({'name':name,'rejected':True,'exception':type(e).__name__,'message':str(e)})
+ else:rows.append({'name':name,'rejected':False})
+check('wrong issue',lambda a:a.update(issue=470))
+check('missing issue',lambda a:a.pop('issue'))
+check('wrong target',lambda a:a.update(target_sha256='0'*64))
+check('wrong acceptance status',lambda a:a.update(status='proposed'))
+check('semantic review not accepted',lambda a:a['semantic_review'].update(accepted=False))
+check('wrong changed path',lambda a:a['changes'][0].update(relative_path='src/pathwaymech/schema.py'))
+check('missing changed path',lambda a:a['changes'].pop())
+check('before hash mismatch',lambda a:a['changes'][0]['before'].update(sha256='0'*64))
+check('after hash mismatch',lambda a:a['changes'][0]['after'].update(sha256='0'*64))
+check('wrong after destination',lambda a:a['changes'][0].update(after=bind(F/'original'/a['changes'][0]['relative_path'])))
+check('wrong bridge directory',lambda a:a['bridge'].update(directory=str(P)))
+check('wrong bridge body',lambda a:a['bridge']['files'][0].update(sha256='0'*64))
+check('empty bridge file identity list',lambda a:a['bridge'].update(files=[]))
+check('missing common bridge identity',lambda a:a['bridge'].update(files=a['bridge']['files'][1:]))
+check('duplicate bridge identity and missing preserve identity',lambda a:a['bridge'].update(files=[a['bridge']['files'][0],a['bridge']['files'][1],a['bridge']['files'][1]]))
+write(P/'initial-controls.json',{'scope':'Synthetic isolated root acceptance injected only into read-only code_changes globals; not an actual root acceptance or adopted state','bridge':bind(B/'common.py'),'fixture':accept,'positive_four_file_result':result,'controls':rows,'unexpected_acceptances':[r for r in rows if not r['rejected']]})
+print(json.dumps({'rejected':sum(r['rejected'] for r in rows),'unexpected_acceptances':[r['name'] for r in rows if not r['rejected']]},indent=2))

@@ -1,0 +1,156 @@
+"""Exact PPi finalization guards. Read-only unless a root-only helper executes."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,os,subprocess,runpy,gzip
+if not __debug__:raise RuntimeError('Assertions required')
+HERE=Path(__file__).resolve().parent
+ROOT=Path('/private/tmp/pathwaymech-next-231-20261012')
+PREP=Path('/private/tmp/pathwaymech-next-231-integration-preparation-successor-20261012')
+BASE='a33f81ebed11cc61880aa645e4d5b73bb8480435';TREE='d7d07b03bbdf2ec01b96045e365b7cb3e357a285'
+TARGET_REL='data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml'
+TARGET_ID='MetaCyc:PWY-8178';TARGET_SHA='20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5'
+PAGE_REL='pages/records/MetaCyc_PWY-8178.html';DOSSIER_REL='research/pathway_additions/2026-10-12-next-231'
+PYTHON='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ADOPTION=Path('/private/tmp/pathwaymech-next-231-maintained-adoption-20261012/adoption.json')
+MERGED=ADOPTION.parent/'merged-binding.json'
+HISTORY=Path('/private/tmp/pathwaymech-next-231-maintained-history-20261012/execution.json')
+QA=Path('/private/tmp/pathwaymech-next-231-page-qa-20261012/receipt.json')
+VISUAL=Path('/private/tmp/pathwaymech-next-231-root-page-observation-20261012.json')
+DISPLAY=Path('/private/tmp/pathwaymech-next-231-approved-node-display-delta-20261012.json')
+GATE_NAMES=['render','skills','validate','tests','lint','kgx','vendored','diff-check','site-current']
+ENV={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(ROOT/'src')+os.pathsep+str(ROOT),'PATHWAYMECH_PPI_MERGED_BASE':str(MERGED)}
+def now():return datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
+def load(p):return json.loads(Path(p).read_bytes())
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:d=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':d}
+def verify(row,path=None):
+ p=Path(path or row['path']);b=bind(p);assert b['sha256']==row['sha256'] and ('bytes' not in row or b['bytes']==row['bytes']),p
+ return b
+def write(p,value):
+ p=Path(p);p.parent.mkdir(parents=True,exist_ok=True)
+ with p.open('x') as f:json.dump(value,f,indent=2,ensure_ascii=False);f.write('\n')
+def files(root,relative='.',exclude_runtime=True):
+ cmd=['rg','--files','-uu','-L']
+ if exclude_runtime:cmd+=['-g','!.git','-g','!.git/**','-g','!.venv','-g','!.venv/**']
+ r=subprocess.run(cmd+[relative],cwd=root,text=True,capture_output=True);assert r.returncode in (0,1) and not r.stderr,r.stderr
+ return sorted(str(Path(p)) for p in r.stdout.splitlines())
+def inventory(root,relative='.',exclude_runtime=True):return [{'relative_path':p,**bind(root/p)} for p in files(root,relative,exclude_runtime)]
+def external_new(path):
+ p=Path(path).absolute();assert p.parent.is_dir() and p.parent.resolve().is_relative_to(Path('/private/tmp'))
+ assert not p.exists() and not p.is_symlink()
+ # Explicit sibling-only output prevents writes anywhere inside existing packets/worktrees/cache.
+ assert p.parent.resolve()==Path('/private/tmp') and p.name.startswith('pathwaymech-next-231-'),p
+ return p
+def integration():
+ os.environ['PATHWAYMECH_PPI_MERGED_BASE']=str(MERGED)
+ return runpy.run_path(str(PREP/'common.py'),run_name='ppi_accepted_integration_guards')
+def verify_support():
+ h=load(HERE/'handoff.json');verify(h['manifest']);rows=load(HERE/'artifact-manifest.json')['artifacts']
+ assert len(rows)==h['artifact_count'];assert set(files(HERE,exclude_runtime=False))=={r['relative_path'] for r in rows}|{'handoff.json','artifact-manifest.json'}
+ for row in rows:verify(row,HERE/row['relative_path'])
+def assert_head():
+ c=integration();c['verify_package']();c['validate_base'](ROOT,BASE,clean=False);c['verify_adopted'](ROOT)
+ assert bind(ROOT/TARGET_REL)['sha256']==TARGET_SHA
+ for row in load(HERE/'preparation-input-bindings.json')['maintained_contract']:verify(row,ROOT/row['relative_path'])
+ return c
+def assert_history(root,rows):
+ assert set(files(root,'history'))=={r['relative_path'] for r in rows}
+ for row in rows:verify(row,root/row['relative_path'])
+def validate_gate_shape(gates):
+ assert gates['status']=='passed' and gates['base']==BASE and gates['target_sha256']==TARGET_SHA
+ assert [r['name'] for r in gates['receipts']]==GATE_NAMES
+ assert gates['history_verified_after_site_current'] is True
+ for row in gates['receipts']:
+  assert row['exit_code']==0 and row['cwd']==str(ROOT) and row['command']
+  assert datetime.fromisoformat(row['started_at'])<=datetime.fromisoformat(row['finished_at'])
+def verify_gates(path,extras=None):
+ gates=load(path);validate_gate_shape(gates);c=assert_head();verify(gates['inputs']);inputs=load(gates['inputs']['path'])
+ if 'original_failed_execution' in gates:
+  verify(gates['original_failed_execution']);failed=load(gates['original_failed_execution']['path'])
+  assert failed['status']=='failed_guard' and failed['receipts']==gates['receipts'] and failed['base']==BASE
+  assert Path(path).parent==Path('/private/tmp/pathwaymech-next-231-final-guard-recovery-20261012')
+  verify_recovery(gates)
+ for row in gates['receipts']:
+  for field in ['stdout','stderr']:verify(row[field])
+ for row in gates['generated_files']:verify(row,ROOT/row['relative_path'])
+ assert_history(ROOT,gates['render_history_inputs'])
+ c['verify_gate_input_scope'](ROOT,gates,ADOPTION,extras or [])
+ return gates,inputs
+
+def verify_qa(gates,preserved):
+ qa=load(QA);assert qa['status']=='passed' and qa['render_receipt']==gates['receipts'][0]
+ assert (qa['edges'],qa['qualifiers'],qa['evidence_uses'],qa['references'],qa['reaction_directions_verified'])==(51,14,120,53,6)
+ for field in ['target','page','nodes','helper','bibliography','kgx_checks','overview','stdout','stderr']:verify(qa[field])
+ assert qa['target']==bind(ROOT/TARGET_REL)
+ assert all(qa[key] for key in ['native_ordered_triples_match','declared_component_coverage_complete','all_qualifier_evidence_text_present','all_evidence_in_owning_edge_row','all_qualifier_display_instances_exact'])
+ kgx=load(qa['kgx_checks']['path']);assert kgx['all_context_multiplicities_exact'] and kgx['all_target_edge_metadata_evidence_qualifiers_exact']
+ assert (kgx['old_edges_exact'],kgx['old_source_contexts_exact'],kgx['new_edges_exact'],kgx['new_source_contexts_exact'],kgx['new_nodes'])==(11536,7668,51,50,39)
+ delta=load(DISPLAY);norm=lambda rows:sorted(rows,key=lambda r:(r['id'],r['column']))
+ assert len(delta)==9 and norm(delta)==norm(kgx['node_display_delta'])==norm(preserved['node_display_delta'])
+ visual=load(VISUAL);assert visual['reviewer']=='Codex /root' and visual['page_qa']==bind(QA) and visual['static_image']==qa['overview']
+ assert visual['approved_display_delta']==bind(DISPLAY) and visual['visual_observation'].strip()
+ return qa,visual
+
+def verify_preservation(path,gates_path):
+ p=load(path);assert p['status']=='passed' and not p['problems'] and p['target_sha256']==TARGET_SHA
+ assert p['gate_receipt']==bind(gates_path) and p['baseline']==load(ADOPTION)['baseline']
+ assert p['old_edge_cells_exact'] and (p['old_record_count'],p['old_page_count'],p['old_edges'],p['old_source_contexts'],p['new_edges'],p['new_source_contexts'],p['new_nodes'])==(231,231,11536,7668,51,50,39)
+ assert not p['lost_contexts'] and not p['unexpected_context_nodes'] and not p['changed_old_cache_files']
+ assert not p['unapproved_old_file_changes'] and not p['unexpected_new_files']
+ assert p['old_cache_identities_verified']==765 and p['new_cache_copies_regular_verified']==24
+ for field in ['baseline','baseline_kgx','approved_node_display_delta','approved_extra_files']:verify(p[field])
+ return p
+
+def verify_histories(gates):
+ h=load(HISTORY);assert h['status']=='native_history_scaffolded_before_render' and h['pre_render'] is True
+ assert len(h['commands'])==len(h['new_history_files'])==2
+ for row in h['commands']:
+  assert row['exit_code']==0 and datetime.fromisoformat(row['finished_at'])<=datetime.fromisoformat(gates['receipts'][0]['started_at'])
+  for field in ['stdout','stderr']:verify(row[field])
+ for row in h['new_history_files']:
+  verify(row,ROOT/row['relative_path']);assert any(r['relative_path']==row['relative_path'] and r['sha256']==row['sha256'] for r in gates['render_history_inputs'])
+ return h
+
+def encoded_archive(path,destination):
+ """Lossless inert wrappers; no executable source enters dossier as .py."""
+ path=Path(path);destination=Path(destination);body=path.read_bytes();mode='exact_bytes'
+ if destination.suffix=='.py':destination=destination.with_name(destination.name+'.txt')
+ if path.suffix in {'.pyc','.bin'} or (len(body)>2*1024*1024 and path.suffix in {'.html','.tsv'}):
+  body=gzip.compress(body,mtime=0);destination=destination.with_name(destination.name+'.gz');mode='gzip-exact-bytes';assert gzip.decompress(body)==path.read_bytes()
+ elif path.suffix not in {'.png','.jpg','.pdf','.gz','.zip'}:
+  text=body.decode('utf-8')
+  if any(line.rstrip()!=line for line in text.splitlines()) or text.endswith('\n\n'):
+   body=(json.dumps({'serialization':'lossless-utf8-json','original':bind(path),'text':text},indent=2,ensure_ascii=False)+'\n').encode();destination=destination.with_name(destination.name+'.json');mode='lossless-utf8-json'
+ return destination,body,mode
+
+def archive_files(sources,destination):
+ plans=[];names=set()
+ for source,relative in sources:
+  relative=Path(relative);assert not relative.is_absolute() and '..' not in relative.parts
+  dest,body,mode=encoded_archive(source,destination/relative);assert dest not in names and not dest.exists();names.add(dest)
+  plans.append((Path(source),dest,body,mode))
+ result=[]
+ for source,dest,body,mode in plans:
+  dest.parent.mkdir(parents=True,exist_ok=True)
+  with dest.open('xb') as stream:stream.write(body)
+  result.append({'source':bind(source),'archived':bind(dest),'serialization':mode})
+ return result
+
+def execute(command,out,name):
+ started=now();r=subprocess.run(command,cwd=ROOT,env=ENV,capture_output=True)
+ (out/(name+'.stdout')).write_bytes(r.stdout);(out/(name+'.stderr')).write_bytes(r.stderr)
+ receipt={'name':name,'command':command,'cwd':str(ROOT),'started_at':started,'finished_at':now(),'exit_code':r.returncode,'stdout':bind(out/(name+'.stdout')),'stderr':bind(out/(name+'.stderr'))}
+ write(out/(name+'-execution.json'),receipt);return r,receipt
+
+
+def verify_recovery(gates):
+ """Require the exact root-approved bytecode-only recovery, never a generic waiver."""
+ receipt=load(HERE/'root-recovery-bindings.json')
+ assert receipt['status']=='actual_root_recovery_bound'
+ for row in receipt['files']:verify(row)
+ assert gates==load(receipt['gate_receipt']['path'])
+ assert not (ROOT/'scripts/__pycache__/new_history_record.cpython-313.pyc').exists()
+ assert bind(ROOT/'scripts/new_history_record.py')['sha256']==receipt['maintained_history_helper']['sha256']
+ return receipt

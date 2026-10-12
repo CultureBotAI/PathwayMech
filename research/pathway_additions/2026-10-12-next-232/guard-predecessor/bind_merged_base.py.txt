@@ -1,0 +1,59 @@
+"""Read-only future actually merged corrected ATP binding; never edits this packet."""
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+from common import (PACKAGE, ROOT, BUILD, TARGET_REL, AUTHORITY_FILES, BASE_CONFIG, binding,
+                    external_new, git, inventory, now, verify_accepted, verify_captured231,
+                    verify_cache_inputs, verify_package, write_new, code_changes, load)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ('root', 'output'): parser.add_argument('--' + name, required=True, type=Path)
+    for name in ('base', 'tree', 'branch'): parser.add_argument('--' + name, required=True)
+    args = parser.parse_args()
+    assert BASE_CONFIG is None, 'Unset PATHWAYMECH_PPI_MERGED_BASE before its initial binding'
+    root = args.root.absolute(); assert root == ROOT == Path('/private/tmp/pathwaymech-next-231-20261012')
+    assert args.branch == 'feat/pathway-next-231-20261012'
+    assert args.base != '95ed7deec1ea749f3ebe60e170bb4463921b80dc', 'EG-only main cannot be the231-record ATP baseline'
+    verify_package(); verify_accepted(); external_new(args.output, root)
+    assert git(root, 'rev-parse', 'HEAD') == args.base and git(root, 'rev-parse', 'HEAD^{tree}') == args.tree
+    assert git(root, 'branch', '--show-current') == args.branch
+    subprocess.run(['git', 'merge-base', '--is-ancestor', args.base, 'refs/remotes/origin/main'], cwd=root,
+                   check=True, env={**os.environ, 'GIT_OPTIONAL_LOCKS': '0'})
+    assert not git(root, 'diff', '--name-only') and not git(root, 'diff', '--cached', '--name-only')
+    assert {r['relative_path'] for r in inventory(root, exclude_runtime=True)} == set(git(root, 'ls-files').splitlines())
+    capture = verify_captured231(root, require_bridge=False); verify_cache_inputs()
+    assert sum(r['relative_path'].endswith('.html') for r in inventory(root, 'pages/records')) == 231
+    reviews = sum(r['relative_path'].endswith('/review.yaml') for r in inventory(root, 'reviews/structured'))
+    assert reviews >= 105
+    rows = [{'relative_path': 'data/pathways/' + row['relative_path'], 'captured': row['captured'],
+             'merged': binding(root / 'data/pathways' / row['relative_path'])} for row in capture['records']]
+    authorities = [{'relative_path': relative, 'captured': binding(BUILD / 'baseline' / (kind + '.json')),
+                    'merged': binding(root / relative)} for kind, relative in AUTHORITY_FILES.items()]
+    changes = {r['relative_path']: r for r in code_changes()}; runtime = []
+    for row in capture['candidate_code']:
+        relative = row['relative_path']
+        if relative in AUTHORITY_FILES.values(): continue
+        expected = changes[relative]['before'] if relative in changes else row['captured']
+        runtime.append({'relative_path': relative, 'expected_before_Handle': expected,
+                        'merged': binding(root / relative) if expected else None})
+    assert not (root / TARGET_REL).exists()
+    data = {'status': 'actual_merged_base_verified', 'at': now(), 'preparation': binding(PACKAGE / 'handoff.json'),
+        'root': str(root), 'base': args.base, 'tree': args.tree, 'branch': args.branch,
+        'origin_main_observed': git(root, 'rev-parse', 'refs/remotes/origin/main'),
+        'scope': 'Root-supplied future actual merged corrected ATP commit/tree, clean and ancestor of observed origin/main. Prospective native-build capture is retained under its original scope.',
+        'bridge': {'status': 'exact_merged231_bridge_verified', 'capture': binding(BUILD / 'preparation-capture.json'),
+            'captured_scope': capture['scope'], 'records': rows, 'authorities': authorities, 'code': runtime,
+            'all231_records_exact': True, 'corrected_ATP_SHA256': capture['ATP_final_sha256'],
+            'all4_ATP_canonical_files_exact': True, 'Handle_three_before_files_exact_and_new_test_absent': True,
+            'runtime_config_note': 'Two historical runtime authority configs are checked against actual ATP canonical baseline owners.'},
+        'actual_counts': {'records': 231, 'pages': 231, 'structured_review_bundles': reviews, 'source_cache_files': 765},
+        'cache_identity': {'fresh_observation': load(PACKAGE / 'remediation-inputs.json')['initial_cache_identity'], 'baseline': binding(PACKAGE / 'expected-cache-baseline.json'), 'files_checked': 765, 'symlinks_checked': 90, 'new_copies_require_regular_type': True},
+        'actual_full_baseline_capture': False, 'maintained_writes': False}
+    write_new(args.output, data)
+    print(json.dumps({'status': data['status'], 'binding': binding(args.output), 'base': args.base, 'tree': args.tree, 'records': 231}))
+
+if __name__ == '__main__': main()

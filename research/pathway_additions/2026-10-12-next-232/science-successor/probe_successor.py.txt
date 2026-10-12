@@ -1,0 +1,135 @@
+from pathlib import Path
+from datetime import datetime,timezone
+from collections import Counter
+import json,yaml,hashlib,copy,re,subprocess,sys
+from lxml import etree as E,html
+O=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-232-author-successor-20261012');B=Path('/private/tmp/pathwaymech-next-232-author-20261012');R=Path('/private/tmp/pathwaymech-next-232-science-review-20261012');H=Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012');P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+def load(p):return json.loads(Path(p).read_text())
+def bind(p):
+ p=Path(p);b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def verify(b):
+ got=bind(b['path']);assert all(got[k]==b[k]for k in ['bytes','sha256']);return got
+checks=[]
+def ck(name,condition,detail=None):
+ assert condition,name;checks.append({'name':name,'passed':True,'detail':detail})
+def files(p):return set(subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow','-0',str(p)]).decode().strip('\0').split('\0'))
+def seal(p,cache=False):
+ m=load(p/'artifact-manifest.json');rows=m['artifacts'];expected=set()
+ for row in rows:
+  q=Path(row['path']);q=q if q.is_absolute()else p/q;got=bind(q);assert got['bytes']==row['bytes']and got['sha256']==row['sha256'];expected.add(str(q))
+ extra=[]
+ if cache:
+  for row in load(p/'runtime-cache-inventory.json')['artifacts']:
+   q=p/row['path'];got=bind(q);assert got['bytes']==row['bytes']and got['sha256']==row['sha256'];extra.append(str(q))
+ ck('Closed ignored/hidden/followed seal '+str(p),files(p)==expected|set(extra)|{str(p/'artifact-manifest.json'),str(p/'handoff.json')})
+ return {'handoff':bind(p/'handoff.json'),'manifest':bind(p/'artifact-manifest.json'),'scientific_artifacts':len(rows),'runtime_cache_files':len(extra)}
+seals={'original_author':seal(B),'original_full_science':seal(R,True),'successor':seal(A)}
+ck('Original science handoff unchanged',seals['original_full_science']['handoff']['sha256']=='a54db59cefa245791d7aad9076a632340c302c1230201dd4d1d0e7b8fb77af9e')
+old=yaml.safe_load((B/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_text());new=yaml.safe_load((A/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_text())
+deltas=[]
+def diff(x,y,path=''):
+ if type(x)!=type(y):deltas.append({'path':path,'before':x,'after':y});return
+ if isinstance(x,dict):
+  for k in sorted(x.keys()|y.keys()):
+   if k not in x or k not in y:deltas.append({'path':path+'/'+k,'before':x.get(k),'after':y.get(k)})
+   else:diff(x[k],y[k],path+'/'+k)
+ elif isinstance(x,list):
+  for i in range(max(len(x),len(y))):
+   if i>=len(x)or i>=len(y):deltas.append({'path':path+'/'+str(i),'before':x[i]if i<len(x)else None,'after':y[i]if i<len(y)else None})
+   else:diff(x[i],y[i],path+'/'+str(i))
+ elif x!=y:deltas.append({'path':path,'before':x,'after':y})
+diff(old,new)
+allowed={'/description','/mechanistic_edges/40/evidence/0/source_assertion','/mechanistic_edges/40/evidence/1','/references/94','/references/95','/references/96'}
+ck('Exactly six permitted semantic deltas',{x['path']for x in deltas}==allowed and len(deltas)==6)
+ck('Declared author deltas complete',sorted(deltas,key=lambda x:x['path'])==sorted(load(A/'semantic-deltas.json')['deltas'],key=lambda x:x['path']))
+for k in ['id','label','pathway_type','taxa','participants','reactions']:ck('Identity/full section unchanged '+k,new[k]==old[k])
+ck('Original94 references and order exact',new['references'][:94]==old['references']and len(new['references'])==97)
+ck('102 exact triples',[(e['id'],e['subject'],e['predicate'],e['object'])for e in new['mechanistic_edges']]==[(e['id'],e['subject'],e['predicate'],e['object'])for e in old['mechanistic_edges']]and len(new['mechanistic_edges'])==102)
+ck('48 complete qualifiers exact',[(e['id'],e.get('endpoint_qualifiers',[]))for e in new['mechanistic_edges']]==[(e['id'],e.get('endpoint_qualifiers',[]))for e in old['mechanistic_edges']]and sum(len(e.get('endpoint_qualifiers',[]))for e in new['mechanistic_edges'])==48)
+ck('19 complete reaction side edge objects exact',[e for e in new['mechanistic_edges']if e['predicate']in ['consumes','produces']]==[e for e in old['mechanistic_edges']if e['predicate']in ['consumes','produces']])
+ck('Retained exact corrected465 edges',new['mechanistic_edges'][50:52]==old['mechanistic_edges'][50:52])
+op=old['description'].split('\n\n');np=new['description'].split('\n\n');changed=[i for i,(x,y)in enumerate(zip(op,np),1)if x!=y]
+ck('Only four paragraph citation additions',changed==[28,29,38,39]and len(np)==41)
+for i in changed:ck('Paragraph science unchanged '+str(i),re.sub(r' \(PMID:\d+\)','',np[i-1])==op[i-1])
+def all_evidence(r):return [v for e in r['mechanistic_edges']for vs in [e['evidence']]+[q['evidence']for q in e.get('endpoint_qualifiers',[])]for v in vs]
+canonical=lambda v:json.dumps(v,sort_keys=True,ensure_ascii=False)
+oev=all_evidence(old);nev=all_evidence(new);oc=Counter(map(canonical,oev));nc=Counter(map(canonical,nev));ck('264 unchanged uses;one modified;one added',sum((oc&nc).values())==264 and sum((oc-nc).values())==1 and sum((nc-oc).values())==2 and [len(oev),len(nev)]==[265,266])
+oldl=load(B/'ledgers/working-evidence-selector-ledger.json');newl=load(A/'ledgers/working-evidence-selector-ledger.json');changedrows=[i for i,(x,y)in enumerate(zip(oldl,newl))if x!=y];ck('One old selector changed plus one appended',changedrows==[63]and len(oldl)==246 and len(newl)==247)
+q=copy.deepcopy(oldl[63]);z=copy.deepcopy(newl[63]);q.pop('evidence');z.pop('evidence');ck('Changed evidence keeps identical original/selector/observation',q==z)
+ck('Added evidence own original exact',newl[-1]['evidence']==new['mechanistic_edges'][40]['evidence'][1]and newl[-1]['binding']['sha256']=='e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253')
+ck('1987 strain and table pages selected',newl[-1]['selector']['pages']==[1,2])
+verify(newl[-1]['binding']);pb=newl[-1]['selector']['projection_binding'];verify(pb);proj=load(pb['path']);selected=[x for x in proj['pages']if x['page_1based']in [1,2]];ck('Selected original projection exact',selected==newl[-1]['observed'])
+def cross_guard(r):
+ e=r['mechanistic_edges'][40];assert '1987'not in e['evidence'][0]['source_assertion'];v=e['evidence'][1];assert v['reference_id']=='PMID:3025169'and all(s in v['source_assertion']for s in ['102%','96%','0.05','0.10','0.20','93-fold','K12','2001 endpoint']);assert 'page' in v['source_locator'].lower()and '185'in v['source_locator'];assert e['endpoint_qualifiers']==old['mechanistic_edges'][40]['endpoint_qualifiers']
+cross_guard(new);ck('Separate cross-study scope/2001 qualifier retained',True)
+contexts=load(A/'ledgers/construct-dispositions.json');expected={c['id']:c['independent_exact_endpoint_qualifier_edges']for c in load(R/'construct-assessments.json')};ed={e['id']:e for e in new['mechanistic_edges']}
+def context_guard(rows):
+ assert [x['preflight_original']for x in rows]==load(P/'derived/construct-state-ledger.json')
+ assert len(rows)==28
+ for c in rows:
+  cid=c['preflight_original']['id'];assert [x['edge']for x in c['endpoint_qualifiers']]==expected[cid],cid
+  for v in c['endpoint_qualifiers']:
+   assert v['relationship']=='exact_preparation_or_state';assert v['qualifier']==ed[v['edge']]['endpoint_qualifiers'][v['qualifier_index']]
+  for v in c['related_context_links']:assert v['relationship']!='exact_preparation_or_state'and v['exact_preparation_or_state']is False and v['reason']
+  for p in c['paragraphs']:assert p['text']==np[p['paragraph']-1]
+ assert 6 not in [p['paragraph']for p in rows[0]['paragraphs']]
+context_guard(contexts);ck('All28 exact context mappings and typed comparisons correct',True)
+neg=[]
+def rejects(name,fn):
+ try:fn()
+ except (AssertionError,IndexError):neg.append({'name':name,'rejected':True});return
+ raise AssertionError('Negative control not rejected: '+name)
+bad=copy.deepcopy(new);bad['mechanistic_edges'][40]['evidence']=copy.deepcopy(old['mechanistic_edges'][40]['evidence']);rejects('Original cross-study ownership defect',lambda:cross_guard(bad))
+for target,wrong in [('CsiR17','Nac17'),('Archaea07','CysQ07'),('CysQ-controls07','CysQ07'),('SthA22-C45A','SthA22'),('SthA22-T50C','SthA22'),('Pnt21-H91A','Pnt21'),('K01-recombinant','K01-native')]:
+ bad=copy.deepcopy(contexts);by={c['preflight_original']['id']:c for c in bad};by[target]['endpoint_qualifiers']=copy.deepcopy(by[wrong]['endpoint_qualifiers']);rejects('Reject exact context conflation '+target,lambda:context_guard(bad))
+bad=copy.deepcopy(contexts);bad[0]['paragraphs'].append({'paragraph':6,'text':np[5]});rejects('Reject K87/2001-only paragraph6',lambda:context_guard(bad))
+bad=copy.deepcopy(contexts);bad[0]['related_context_links'][0]['exact_preparation_or_state']=True;rejects('Reject comparator falsely marked exact',lambda:context_guard(bad))
+bs=load(A/'ledgers/working-source-bindings.json');newrefs=[]
+for ref in new['references']:
+ b=bs[ref['id']];verify(b);ck('Reference pinned original '+ref['id'],ref['source_sha256']==b['sha256'])
+ if ref in new['references'][94:]:newrefs.append({'reference':ref,'binding':b})
+for rid,ps in [('PMID:14660605',[28,29]),('PMID:30765722',[38]),('PMID:22388518',[39])]:
+ ck('Narrative citation '+rid,all(rid in np[i-1]for i in ps));ck('No invented mechanistic evidence '+rid,all(v['reference_id']!=rid for v in nev))
+page=A/'candidate-checks/pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html';dom=html.fromstring(page.read_text())
+def bibliography_guard(tree):
+ for i,ref in enumerate(new['references'],1):
+  nodes=tree.xpath(f'//li[@id="reference-{i}"]');assert len(nodes)==1
+  li=nodes[0];assert ref['id']in ''.join(li.itertext());assert re.sub(r'<[^>]*>','',ref['title'])in ''.join(li.itertext());links=li.xpath('.//a');assert len(links)==1;assert ''.join(links[0].itertext())==ref['id'];assert links[0].get('href')==ref['url']
+bibliography_guard(dom);ck('All97 bibliography owners exact ID/title/URL',True)
+for kind in ['title','url','id']:
+ bad=copy.deepcopy(dom);li=bad.xpath('//li[@id="reference-95"]')[0]
+ if kind=='title':li.xpath('./code')[0].tail=' wrong title'
+ elif kind=='url':li.xpath('.//a')[0].set('href','https://example.invalid/wrong')
+ else:li.xpath('.//a')[0].text='PMID:wrong'
+ rejects('Bibliography owner wrong '+kind,lambda:bibliography_guard(bad))
+# Pure native collectors, pinned implementation; no builders invoked.
+sys.path[:0]=[str(A/'runtime/src'),str(A/'runtime/scripts')]
+from build_source_identifier_snapshot import corpus_ids
+from build_ontology_identifier_snapshot import walk_identifiers
+ids=sorted(corpus_ids(A/'draft'));onto=sorted(walk_identifiers(new,{'CHEBI','GO','RHEA','NCBITaxon'}));ck('Exact source68 and ontology36 collector continuity',ids==sorted(corpus_ids(B/'draft'))and onto==sorted(walk_identifiers(old,{'CHEBI','GO','RHEA','NCBITaxon'}))and[len(ids),len(onto)]==[68,36])
+runtime=[]
+for path in sorted((A/'runtime').rglob('*')):
+ if path.is_file():
+  rel=path.relative_to(A/'runtime');row=bind(path);ck('Runtime unchanged '+str(rel),row['sha256']==bind(B/'runtime'/rel)['sha256']==bind(H/'runtime'/rel)['sha256']);runtime.append({'relative':str(rel),'sha256':row['sha256'],'bytes':row['bytes']})
+ck('225 runtime files accounted',len(runtime)==225)
+bridge=load(A/'authority-successor-bridge.json');verify(bridge['acceptance']);verify(bridge['authority_proposal']);accept=load(bridge['acceptance']['path']);ck('Accepted proposal exact old target',accept['proposal_target_sha256']==bind(B/'draft/nad-phosphorylation-and-dephosphorylation.yaml')['sha256'])
+for b in bridge['authority_outputs'].values():verify(b)
+verify(bridge['source_cache_copy_plan']);ck('Fullbuild/adoption limits retained',bridge['full_canonical_build']is False and bridge['maintained_adoption']is False)
+companions=bridge['mandatory_class_source_companions'];ck('PC-1 class_source companion retained',any(x['class_source']['path']=='nad232-ECOLI-PC-1.xml'and x['class_source']['sha256']=='e36fbeb82a86b02acd1494807251805a45aa63f7b60b83e109453d096c3ac835'for x in companions))
+old_bindings=load(B/'ledgers/working-source-bindings.json')
+ck('All94 previous source bindings unchanged',all(bs[k]==v for k,v in old_bindings.items())and len(bs)==97)
+oldclaims=load(B/'ledgers/full-claim-dispositions.json');newclaims=load(A/'ledgers/full-claim-dispositions.json')
+ck('All80 original claim objects preserved',[x['preflight_claim']for x in oldclaims]==[x['preflight_claim']for x in newclaims]and len(newclaims)==80)
+oldacc=load(B/'ledgers/paragraph-source-accounting.json');newacc=load(A/'ledgers/paragraph-source-accounting.json')
+ck('All41 paragraph source ledgers retained',len(newacc)==len(oldacc)==41)
+for before,after in zip(oldacc,newacc):
+ ck('Old paragraph source observations preserved '+str(after['paragraph']),after['source_accounting'][:len(before['source_accounting'])]==before['source_accounting'])
+ ck('Additional source accounting bounded '+str(after['paragraph']),len(after['source_accounting'])==len(before['source_accounting'])+(1 if after['paragraph']==29 else 0))
+addition=newacc[28]['source_accounting'][-1];verify(addition['whole_original']);ck('2004 owns its distinct paragraph29 claim',addition['reference_id']=='PMID:14660605'and addition['claim']=='transcript-model-conflict'and 'separate 2016' in addition['limits'])
+v=addition['exact_selected_passages'][0];verify(v['projection']);pr=load(v['projection']['path']);ck('Exact original2004 page6 paragraph29 observation',v['pages']==[6]and v['observed']==[x for x in pr['pages']if x['page_1based']==6])
+issues=[]
+for suffix in ['cross-study-locator','construct-ledger-specificity','narrative-reference-coverage']:
+ p=Path('/private/tmp/pathwaymech-next-232-'+suffix+'-issue-20261012');j=load(p/'receipt.json');issues.append({'receipt':bind(p/'receipt.json'),'body':bind(p/'body.md'),'finding':bind(p/'initial-finding.json'),'number':j['issue']['number'],'state_at_receipt':j['issue']['state'],'url':j['issue']['url']})
+save('independent-checks.json',{'target':bind(A/'draft/nad-phosphorylation-and-dephosphorylation.yaml'),'seals':seals,'checks':checks,'negative_controls':neg,'semantic_deltas':deltas,'evidence_accounting':{'unchanged':264,'modified':1,'added':1,'total':266,'selector_rows':247},'exact_contexts':contexts,'new_reference_bindings':newrefs,'selected1987pages':selected,'runtime':runtime,'page':bind(page),'issues':issues,'scope':'Bounded successor reassessment with explicitly inherited complete scientific review. No whole-corpus builders, SQL rehashes, tests, maintained writes or native save.'})
+print(json.dumps({'checks':len(checks),'negative_controls':len(neg),'target':bind(A/'draft/nad-phosphorylation-and-dephosphorylation.yaml'),'sealed_successor':seals['successor'],'passed':True}))

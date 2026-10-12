@@ -1,0 +1,145 @@
+"""Apply the exact reviewed issue487 two-file fix and run current maintained gates."""
+import argparse
+import hashlib
+import json
+import os
+import sys
+from pathlib import Path
+
+OLD = Path('/private/tmp/pathwaymech-next-232-assay-integration-preparation-20261012')
+assert hashlib.sha256((OLD / 'runner.py').read_bytes()).hexdigest() == '9c082c408d910936601205749dedad451db470a2055921aa904afe0be7b354ae'
+sys.path.insert(0, str(OLD))
+import runner as r
+
+PROPOSAL = Path('/private/tmp/pathwaymech-next-232-provenance-order-fix-20261012')
+ASSAY = Path('/private/tmp/pathwaymech-next-232-assay-execution-root-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-232-order-execution-root-20261012')
+OWNERS = {'src/pathwaymech/ecocyc_complex.py', 'tests/test_ecocyc_complex_authority.py'}
+
+
+def proposal(acceptance):
+    r.guard()
+    r.verified_plan()
+    approval = r.load(acceptance)
+    r.need(approval['status'] == 'accepted' and approval['reviewer'] == 'Codex /root', 'root acceptance required')
+    r.need(approval['handoff'] == r.binding(PROPOSAL / 'handoff.json'), 'wrong proposal acceptance')
+    handoff = r.load(PROPOSAL / 'handoff.json')
+    r.verify(handoff['manifest'])
+    manifest = r.load(PROPOSAL / 'artifact-manifest.json')
+    inventory = r.inventory(PROPOSAL)
+    declared_links = {str(Path(row['path']).relative_to(PROPOSAL)): row
+                      for row in manifest['directory_or_file_links']}
+    r.need({p for p, value in inventory.items() if value['type'] == 'symlink'} == set(declared_links), 'proposal link closure changed')
+    for path, row in declared_links.items():
+        value = inventory[path]
+        r.need(value['link_text'] == row['link_text'] and
+               value['resolved_path'] == row['resolved_path'] and
+               value['resolved_type'] == row['resolved_type'], 'proposal link identity changed')
+    expected = set()
+    for row in manifest['artifacts']:
+        path = Path(row['path'])
+        relative = str(path.relative_to(PROPOSAL))
+        value = inventory[relative]
+        r.need(value['type'] == row['file_type'] and
+               str(path.resolve(strict=True)) == row['resolved_path'], 'proposal artifact identity changed')
+        r.need(all(value[key] == row[key] for key in ('bytes', 'sha256')), 'proposal artifact body changed')
+        expected.add(relative)
+    actual = {path for path, value in inventory.items()
+              if value['type'] == 'regular' or value.get('resolved_type') == 'regular'}
+    r.need(actual == expected | {'handoff.json', 'artifact-manifest.json'}, 'proposal closure changed')
+    plan = r.load(PROPOSAL / 'integration-plan.json')
+    r.need({row['relative_path'] for row in plan['changes']} == OWNERS and len(plan['changes']) == 2, 'two declared owners only')
+    for row in plan['changes']:
+        r.need(row['before']['path'] == str(r.ROOT / row['relative_path']), 'wrong maintained owner')
+        r.verify(row['after'])
+    for key in ('unchanged_scientific_target', 'unchanged_page', 'unchanged_authority', 'prior_adoption', 'prior_gate_completion', 'prior_preservation', 'held_finalization'):
+        r.verify(plan[key])
+    r.need(plan['head'] == r.BASE and plan['branch'] == r.BRANCH, 'wrong head or branch')
+    return plan
+
+
+def current(adoption):
+    r.guard()
+    r.verify(adoption['baseline'])
+    r.verify(adoption['cache_baseline'])
+    r.compare(r.load(OUT / 'baseline.json')['entries'], r.inventory(r.ROOT), {}, adoption['changes'])
+    r.need(r.inventory(r.CACHE) == r.load(OUT / 'cache-baseline.json')['entries'], 'cache drift')
+
+
+def adopt(acceptance):
+    plan = proposal(acceptance)
+    r.need(not os.path.lexists(OUT), 'execution output must be new')
+    old = r.load(ASSAY / 'adoption.json')
+    done = r.load(ASSAY / 'completion.json')
+    r.need(done['status'] == 'nine_gates_and_preservation_passed', 'assay gates incomplete')
+    for receipt in done['receipts']:
+        r.need(receipt['exit_code'] == 0, 'assay gate failed')
+        r.verify(receipt['stdout']); r.verify(receipt['stderr'])
+    before = r.inventory(r.ROOT)
+    cache = r.inventory(r.CACHE)
+    r.compare(r.load(ASSAY / 'baseline.json')['entries'], before, old['additions'],
+              {**old['changes_before_render'], r.PAGE: old['expected_page']})
+    r.need(cache == r.load(ASSAY / 'cache-baseline.json')['entries'], 'old cache changed')
+    for row in plan['changes']:
+        r.verify(row['before'])
+    OUT.mkdir()
+    r.write_json(OUT / 'baseline.json', {'entries': before})
+    r.write_json(OUT / 'cache-baseline.json', {'entries': cache})
+    changes = {}
+    for row in plan['changes']:
+        body = r.read(row['after']['path'])
+        (r.ROOT / row['relative_path']).write_bytes(body)
+        changes[row['relative_path']] = {'bytes': len(body), 'sha256': r.sha(body)}
+    adoption = {'status': 'two_file_runtime_fix_adopted', 'at': r.now(), 'base': r.BASE,
+        'baseline': r.binding(OUT / 'baseline.json'), 'cache_baseline': r.binding(OUT / 'cache-baseline.json'),
+        'proposal': r.binding(PROPOSAL / 'handoff.json'), 'plan': r.binding(PROPOSAL / 'integration-plan.json'),
+        'root_acceptance': r.binding(acceptance), 'runner': r.binding(Path(__file__)),
+        'prior_assay_adoption': r.binding(ASSAY / 'adoption.json'),
+        'prior_assay_gates': r.binding(ASSAY / 'completion.json'), 'changes': changes,
+        'scientific_record_history_pages_authorities_changed': False}
+    current(adoption)
+    r.write_json(OUT / 'adoption.json', adoption)
+
+
+def gates(acceptance):
+    proposal(acceptance)
+    adoption = r.load(OUT / 'adoption.json')
+    for key in ('proposal', 'plan', 'root_acceptance', 'runner', 'prior_assay_adoption', 'prior_assay_gates'):
+        r.verify(adoption[key])
+    current(adoption)
+    gate = OUT / 'gates'
+    gate.mkdir()
+    py = [str(r.PYTHON), '-B']
+    commands = [
+        ('render', py + ['-c', 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())']),
+        ('skills', py + ['scripts/validate_claude_skills.py']),
+        ('validate', py + ['-c', 'from pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())']),
+        ('tests', py + ['-m', 'pytest', '-q', '-p', 'no:cacheprovider', '--basetemp', str(OUT / 'pytest-temp')]),
+        ('lint', py + ['-m', 'ruff', 'check', '--no-cache', '.']),
+        ('kgx', py + ['-c', 'from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())']),
+        ('vendored', ['bash', 'scripts/check_vendored_sync.sh']),
+        ('diff-check', ['git', 'diff', '--check']),
+        ('site-current', py + ['-c', 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'])]
+    receipts = []
+    for name, command in commands:
+        r.guard()
+        receipts.append(r.command(gate, name, command))
+    r.need([x['name'] for x in receipts] == r.GATE_NAMES, 'nine-gate sequence changed')
+    current(adoption)
+    proof = {'status': 'passed', 'at': r.now(), 'base': r.BASE, 'adoption': r.binding(OUT / 'adoption.json'),
+        'allowed_changes': adoption['changes'], 'additional_paths': [],
+        'scope': 'Exact issue483-adopted baseline preserved except two declared runtime/test files. All records, pages, history, reviews, authorities, KGX/downloads and shared-cache identities/bytes preserved. No new history.'}
+    r.write_json(OUT / 'preservation.json', proof)
+    r.write_json(OUT / 'completion.json', {'status': 'nine_gates_and_preservation_passed', 'at': r.now(),
+        'base': r.BASE, 'receipts': receipts, 'preservation': r.binding(OUT / 'preservation.json'),
+        'native_successor_commit_PR_merge': 'pending'})
+
+
+if __name__ == '__main__':
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('phase', choices=('adopt', 'gates'))
+    p.add_argument('--acceptance', type=Path, required=True)
+    args = p.parse_args()
+    r.need(sys.dont_write_bytecode, 'pinned no-bytecode execution required')
+    (adopt if args.phase == 'adopt' else gates)(args.acceptance)
+    print(json.dumps({'phase': args.phase, 'status': 'passed', 'output': str(OUT)}))

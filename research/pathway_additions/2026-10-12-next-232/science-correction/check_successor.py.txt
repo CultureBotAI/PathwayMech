@@ -1,0 +1,157 @@
+"""Bounded scientific, identity, evidence and implementation bridge."""
+from pathlib import Path
+import collections
+import copy
+import hashlib
+import json
+import re
+import sys
+import yaml
+from lxml import etree, html
+
+A = Path(__file__).parent
+O = Path('/private/tmp/pathwaymech-next-232-author-20261012')
+H = Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+P = Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+sys.path[:0] = [str(A/'runtime/src'), str(A/'runtime/scripts')]
+from pathwaymech.identifiers import _named_nodes
+from build_source_identifier_snapshot import corpus_ids
+from build_ontology_identifier_snapshot import walk_identifiers
+
+def load(p): return json.loads(Path(p).read_text())
+def bind(p):
+    p=Path(p)
+    return dict(path=str(p), bytes=p.stat().st_size, sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+def save(n,v): (A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+
+old_path=O/'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+new_path=A/'draft'/old_path.name
+old=yaml.safe_load(old_path.read_text());new=yaml.safe_load(new_path.read_text())
+checks=[]
+def check(name, got, expected):
+    assert got == expected, (name,got,expected)
+    checks.append(dict(name=name,observed=got,expected=expected,passed=True))
+
+def diff(x,y,p=''):
+    if type(x) is not type(y): return [dict(path=p,before=x,after=y)]
+    if isinstance(x,dict):
+        out=[]
+        for k in x.keys()|y.keys():
+            if k not in x or k not in y: out.append(dict(path=p+'/'+k,before=x.get(k),after=y.get(k)))
+            else: out+=diff(x[k],y[k],p+'/'+k)
+        return out
+    if isinstance(x,list):
+        out=[]
+        for i in range(max(len(x),len(y))):
+            if i>=len(x) or i>=len(y):out.append(dict(path=p+'/'+str(i),before=x[i] if i<len(x) else None,after=y[i] if i<len(y) else None))
+            else:out+=diff(x[i],y[i],p+'/'+str(i))
+        return out
+    return [] if x==y else [dict(path=p,before=x,after=y)]
+deltas=diff(old,new)
+allowed={'/description','/mechanistic_edges/40/evidence/0/source_assertion','/mechanistic_edges/40/evidence/1','/references/94','/references/95','/references/96'}
+check('Only six bounded semantic changes',sorted(r['path'] for r in deltas),sorted(allowed))
+check('All 94 original reference objects and order',new['references'][:94],old['references'])
+check('102 exact edge triples',[(e['id'],e['subject'],e['predicate'],e['object'])for e in new['mechanistic_edges']],[(e['id'],e['subject'],e['predicate'],e['object'])for e in old['mechanistic_edges']])
+check('48 exact qualifier payloads',[(e['id'],e.get('endpoint_qualifiers',[]))for e in new['mechanistic_edges']],[(e['id'],e.get('endpoint_qualifiers',[]))for e in old['mechanistic_edges']])
+check('All 19 reaction sides unchanged',[e for e in new['mechanistic_edges']if e['predicate']in ['consumes','produces']],[e for e in old['mechanistic_edges']if e['predicate']in ['consumes','produces']])
+named=lambda record:[(section,location,{k:node[k] for k in ['id','label','category','direction'] if k in node})for section,location,node in _named_nodes(record)]
+check('All existing named identity fields unchanged',named(new),named(old))
+old_ids=sorted(corpus_ids(O/'draft'));new_ids=sorted(corpus_ids(A/'draft'))
+old_onto=sorted(walk_identifiers(old,{'CHEBI','GO','RHEA','NCBITaxon'}));new_onto=sorted(walk_identifiers(new,{'CHEBI','GO','RHEA','NCBITaxon'}))
+check('Native named collector unchanged',new_ids,old_ids);check('Native ontology collector unchanged',new_onto,old_onto)
+check('Named and ontology counts',[len(new_ids),len(new_onto)],[68,36])
+check('Reaction entries and directions',new['reactions'],old['reactions'])
+check('Physiological cytosolic NADP phosphatase remains unknown','does not identify the physiological cytosolic NADP phosphatase' in new['description'],True)
+check('No unknown phosphatase guessed protein',any(n['id']=='EcoCyc:NADPPHOSPHAT-MONOMER'for n in new['participants']),False)
+check('Issue 465 fixed topology edges exact',[e for e in new['mechanistic_edges']if e['id']in ['nad-051','nad-052']],[e for e in old['mechanistic_edges']if e['id']in ['nad-051','nad-052']])
+paras_old=old['description'].split('\n\n');paras_new=new['description'].split('\n\n')
+check('Four paragraph citation changes',[i+1 for i,(x,y)in enumerate(zip(paras_old,paras_new))if x!=y],[28,29,38,39])
+check('41 paragraphs preserved',len(paras_new),41)
+for n in [28,29,38,39]:
+    stripped=re.sub(r' \(PMID:\d+\)','',paras_new[n-1])
+    check('Paragraph '+str(n)+' unchanged science after citation removal',stripped,paras_old[n-1])
+ev_old=[v for e in old['mechanistic_edges']for vs in [e['evidence']]+[q['evidence']for q in e.get('endpoint_qualifiers',[])]for v in vs]
+ev_new=[v for e in new['mechanistic_edges']for vs in [e['evidence']]+[q['evidence']for q in e.get('endpoint_qualifiers',[])]for v in vs]
+check('Evidence-use counts',[len(ev_old),len(ev_new)],[265,266])
+canon=lambda v:json.dumps(v,sort_keys=True,ensure_ascii=False)
+old_counter=collections.Counter(map(canon,ev_old));new_counter=collections.Counter(map(canon,ev_new))
+removed=list((old_counter-new_counter).elements());added=list((new_counter-old_counter).elements())
+check('One modified and one added evidence use',[len(removed),len(added)],[1,2])
+old_ledger=load(O/'ledgers/working-evidence-selector-ledger.json');ledger=load(A/'ledgers/working-evidence-selector-ledger.json')
+check('247 exact selector rows',len(ledger),247)
+changed=[i for i,(x,y)in enumerate(zip(old_ledger,ledger))if x!=y]
+check('One prior selector evidence text changes',len(changed),1)
+old_row=copy.deepcopy(old_ledger[changed[0]]);new_row=copy.deepcopy(ledger[changed[0]])
+old_row.pop('evidence');new_row.pop('evidence');check('Changed row retains exact selector and observation',new_row,old_row)
+check('Added selector source',ledger[-1]['evidence']['reference_id'],'PMID:3025169')
+e41=new['mechanistic_edges'][40]
+check('2001 assertion does not own 1987 contrast','1987' in e41['evidence'][0]['source_assertion'],False)
+check('1987 contrast does not relabel 2001 qualifier',e41['endpoint_qualifiers'],old['mechanistic_edges'][40]['endpoint_qualifiers'])
+check('1987 source is exact PDF',bind(P/'raw/PMID3025169-europepmc.pdf')['sha256'],'e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253')
+check('Complete 1987 K12 and assay pages',ledger[-1]['selector']['pages'],[1,2])
+check('1987 K12 growth source included','E. coli K-12 was grown' in ledger[-1]['observed'][0]['text'],True)
+text=next(r['text']for r in ledger[-1]['observed']if r['page_1based']==2)
+check('1987 selected Table 2 values and adjacent no significant text',all(v in text for v in ['NADP 0.05 102','0.10 96','0.20 96','had no significant effect']),True)
+check('New references are narrative-only',sorted({r['id']for r in new['references'][94:]}&{e['reference_id']for e in ev_new}),[])
+
+contexts=load(A/'ledgers/construct-dispositions.json')
+check('28 original context rows retained',[c['preflight_original']for c in contexts],load(P/'derived/construct-state-ledger.json'))
+byid={c['preflight_original']['id']:c for c in contexts}
+exact=lambda k:[v['edge']for v in byid[k]['endpoint_qualifiers']]
+for key,want in {'K01-recombinant':['nad-033'],'K87':['nad-039','nad-040'],
+                 'CsiR17':['nad-101','nad-102'],'Nac17':['nad-094','nad-095'],
+                 'Archaea07':[],'CysQ-controls07':[],'Pnt21-H91A':[],
+                 'SthA22-C45A':[],'SthA22-T50C':[],'PhoA19':[],
+                 'NadK-R175-series':[],'Pnt-DCCD-variants':[]}.items():
+    check('Exact preparation links '+key,exact(key),want)
+    if not want:check('Narrative comparator retained '+key,len(byid[key]['paragraphs'])>0,True)
+check('K87 excludes 2001-only metal paragraph',6 in [p['paragraph']for p in byid['K87']['paragraphs']],False)
+check('Corrected PhoB lineage retained','P0AFJ5' in byid['PhoB-native']['author_correction'] and 'P0A9I3' in byid['PhoB-native']['preflight_original']['preparation'],True)
+ed={e['id']:e for e in new['mechanistic_edges']}
+for c in contexts:
+    for r in c['endpoint_qualifiers']:
+        check(c['preflight_original']['id']+' '+r['edge']+' exact complete qualifier',r['qualifier'],ed[r['edge']]['endpoint_qualifiers'][r['qualifier_index']])
+    for r in c['related_context_links']:
+        check(c['preflight_original']['id']+' '+r['edge']+' comparator not exact',r['exact_preparation_or_state'],False)
+        assert r['relationship']!='exact_preparation_or_state'
+    for p in c['paragraphs']:assert p['text']==paras_new[p['paragraph']-1]
+mapped={(r['edge'],r['qualifier_index'])for c in contexts for r in c['endpoint_qualifiers']}
+unmapped=[dict(edge=e['id'],qualifier_index=i,qualifier=q,reason='Broad historical inhibitor preparation is not one exact named mutant preparation in the 28-context preflight ledger; retained unchanged and not forced into a variant context.')for e in new['mechanistic_edges']for i,q in enumerate(e.get('endpoint_qualifiers',[]))if(e['id'],i)not in mapped]
+check('Only historical broader preparations have no exact context map',[r['edge']for r in unmapped],['nad-053','nad-054'])
+save('construct-qualifier-coverage.json',dict(exact_unique_qualifiers=len(mapped),unmapped_exact_qualifiers=unmapped,context_count=28,scope='A qualifier can express two true facets (ArcA preparation and molecular state); exact matches are never inferred from publication identity.'))
+
+# All implementation bytes are inherited exactly from the accepted authority proposal.
+runtime=[]
+for p in sorted((A/'runtime').rglob('*')):
+    if p.is_file():
+        rel=p.relative_to(A/'runtime'); ob=bind(O/'runtime'/rel); hb=bind(H/'runtime'/rel); nb=bind(p)
+        assert ob['sha256']==hb['sha256']==nb['sha256'],rel
+        runtime.append(dict(relative_path=str(rel),sha256=nb['sha256'],bytes=nb['bytes']))
+check('All accepted runtime files unchanged',len(runtime),225)
+proposal=load(H/'proposal/manifest.json')
+entries=proposal['sources'] if isinstance(proposal,dict)and 'sources'in proposal else proposal
+companions=[]
+for row in entries:
+    if row.get('class_source'):
+        c=row['class_source']
+        companions.append(dict(owner=row['key'],class_source=c))
+assert any(c['class_source']['path']=='nad232-ECOLI-PC-1.xml'and c['class_source']['sha256']=='e36fbeb82a86b02acd1494807251805a45aa63f7b60b83e109453d096c3ac835'for c in companions)
+copy_plan=load(O/'source-cache-copy-plan-projection.json')
+pc1=next(r for r in copy_plan['entries']if r['cache_relative_path']=='nad232-ECOLI-PC-1.xml')
+for role in ['original','captured']:
+    actual=bind(pc1[role]['path'])
+    check('Mandatory PC-1 '+role+' bytes and hash',[actual['bytes'],actual['sha256']],[pc1[role]['bytes'],pc1[role]['sha256']])
+bridge=dict(original=bind(old_path),successor=bind(new_path),authority_proposal=bind(H/'handoff.json'),
+    acceptance=bind('/private/tmp/pathwaymech-next-232-root-authority-proposal-acceptance-20261012.json'),
+    semantic_deltas=deltas,named_ids_unchanged=new_ids,ontology_ids_unchanged=new_onto,
+    runtime_files=runtime,authority_outputs={n:bind(H/'proposal'/n)for n in ['manifest.json','sources.json','ontology.json','rhea-updates.json']},
+    mandatory_class_source_companions=companions,pc1_exact_copy_plan=pc1,source_cache_copy_plan=bind(O/'source-cache-copy-plan-projection.json'),
+    evidence_delta=dict(unchanged_uses=264,modified_uses=1,added_uses=1,removed=removed,added=added,
+        old_selector_rows=246,new_selector_rows=247,modified_prior_selector_rows=changed,
+        narrative_only_reference_additions=load(A/'narrative-reference-additions.json')),
+    meaning='Candidate named identity/authority requirements and all 225 implementation files are exactly unchanged. Three already inspected scientific originals are added only as narrative references; one existing original gains one edge-owned selector. Proposal remains an append-only expectation, not full canonical serialization. Future full build must rehash SQL and preserve every class_source.path; maintained adoption requires actual PPi merge binding.',
+    full_canonical_build=False,maintained_adoption=False,source_exhaustion=False)
+save('authority-successor-bridge.json',bridge)
+save('semantic-deltas.json',dict(original=bind(old_path),successor=bind(new_path),deltas=deltas))
+save('bounded-scientific-checks.json',dict(target=bind(new_path),checks=checks,passed=len(checks),scope='Bounded successor checks and selected-source rereads; unchanged full science coverage is inherited from the sealed independent original-target review, not re-performed here.'))
+print(len(checks),'bounded positive/negative checks; six exact semantic deltas; 225 unchanged implementation files')

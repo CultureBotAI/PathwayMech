@@ -1,0 +1,74 @@
+"""Replay the unchanged accepted full gate helper with network access."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+HERE = Path(__file__).resolve().parent
+ROOT = Path('/private/tmp/pathwaymech-next-232-20261012')
+ORIGINAL = Path('/private/tmp/pathwaymech-next-232-root-integration-execution-20261012')
+CORRECTION = Path('/private/tmp/pathwaymech-next-232-root-formatting-execution-20261012')
+BRIDGE = Path('/private/tmp/pathwaymech-next-232-formatting-bridge-20261012')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+BASE = '19af3cc154dbbd757c17299b36923e5f9ccc31dc'
+
+
+def bind(path):
+    path = Path(path)
+    assert path.is_file() and not path.is_symlink(), path
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def main():
+    stage, = sys.argv[1:]
+    assert stage in {'gates', 'preserve'}
+    acceptance = json.loads(Path('/private/tmp/pathwaymech-next-232-root-formatting-acceptance-20261012.json').read_bytes())
+    for row in acceptance['bridge']['files']:
+        current = bind(BRIDGE / row['relative_path'])
+        assert (current['bytes'], current['sha256']) == (row['bytes'], row['sha256'])
+    failed = json.loads((CORRECTION / 'gates/execution.json').read_bytes())
+    assert failed['status'] == 'failed'
+    assert [(r['name'], r['exit_code']) for r in failed['receipts']] == [
+        ('render', 0), ('skills', 0), ('validate', 0), ('tests', 0),
+        ('lint', 0), ('kgx', 0), ('vendored', 1)]
+    env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+           'PYTHONNOUSERSITE': '1', 'GIT_OPTIONAL_LOCKS': '0',
+           'PATHWAYMECH_NAD_MERGED_BASE': str(ORIGINAL / 'merged-base.json'),
+           'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)}
+    command = [PYTHON, '-B', str(BRIDGE / ('run-gates.py' if stage == 'gates' else 'preserve-maintained.py')),
+               '--root', str(ROOT), '--base', BASE, '--adoption-receipt', str(ORIGINAL / 'adoption.json')]
+    if stage == 'gates':
+        command += ['--output', str(HERE / 'gates')]
+    else:
+        assert json.loads((HERE / 'gates/execution.json').read_bytes())['status'] == 'passed'
+        command += ['--baseline', str(ORIGINAL / 'baseline/baseline.json'),
+                    '--baseline-kgx', str(ORIGINAL / 'baseline/baseline-kgx.json'),
+                    '--gate-receipt', str(HERE / 'gates/execution.json'),
+                    '--approved-node-display-delta', '/private/tmp/pathwaymech-next-232-approved-node-display-delta-20261012.json',
+                    '--approved-extra-files', str(CORRECTION / 'history-extra-files.json'),
+                    '--output', str(HERE / 'preservation.json')]
+    started = now()
+    with (HERE / (stage + '.stdout')).open('xb') as stdout, (HERE / (stage + '.stderr')).open('xb') as stderr:
+        result = subprocess.run(command, cwd=ROOT, env=env, stdout=stdout, stderr=stderr)
+    receipt = {'stage': stage, 'started_at': started, 'finished_at': now(),
+               'command': command, 'cwd': str(ROOT), 'exit_code': result.returncode,
+               'runner': bind(__file__), 'helper': bind(command[2]),
+               'prior_failed_gate_receipt': bind(CORRECTION / 'gates/execution.json'),
+               'stdout': bind(HERE / (stage + '.stdout')), 'stderr': bind(HERE / (stage + '.stderr'))}
+    with (HERE / (stage + '-execution.json')).open('x') as stream:
+        json.dump(receipt, stream, indent=2)
+        stream.write('\n')
+    print(json.dumps(receipt), flush=True)
+    result.check_returncode()
+
+
+if __name__ == '__main__':
+    main()

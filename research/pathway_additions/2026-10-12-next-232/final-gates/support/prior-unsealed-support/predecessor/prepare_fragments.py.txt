@@ -1,0 +1,67 @@
+"""Freeze full accepted external science as incomplete native content fragments."""
+from support import *
+import yaml
+
+def main():
+ assert bind(ROOT/TARGET_REL)['sha256']==TARGET_SHA
+ prior=Path('/private/tmp/pathwaymech-next-231-science-review-20261012');succ=Path('/private/tmp/pathwaymech-next-231-science-successor-review-20261012')
+ old=load(prior/'review.json');new=load(succ/'review.json');continuity=load(succ/'intake-and-continuity.json');record=yaml.safe_load((ROOT/TARGET_REL).read_bytes())
+ assert old['target']['sha256']=='a5fb4208601109e5939577f84276a0fbe6ff28a324fa40a4b057b7bfe338e35a' and new['target']['sha256']==TARGET_SHA
+ assert len(new['dispositions'])==5 and not new['new_findings'] and len(new['delta_assessments'])==31
+ assert continuity['evidence_counts']=={'old':116,'new':120,'unchanged':108,'same_source_changes':8,'additions':4}
+ assert [len(old[k]) for k in ['edge_assessments','qualifier_assessments','context_assessments','preflight_claim_assessments']]==[51,14,13,28]
+ plan=load(PREP/'dossier-plan.json');mapping={r['source']['path']:r for r in plan['mappings']}
+ evidence=[];bindings=[]
+ def add(eid,path,summary,kind='prior_review'):
+  path=Path(path);exact=bind(path);row=mapping.get(str(path));existing=bool(row and row['source']==exact and row['serialization']=='exact_bytes')
+  reference=DOSSIER_REL+'/'+row['destination'] if existing else DOSSIER_REL+'/final-gates/evidence/'+eid+'.json'
+  if existing:verify(exact,ROOT/reference)
+  evidence.append({'evidence_id':eid,'kind':kind,'reference':reference,'accessed_at':now(),'snapshot_sha256':exact['sha256'],'support':'supports','summary':summary})
+  bindings.append({'evidence_id':eid,'original':exact,'maintained_reference':reference,'requires_archive':not existing})
+ add('original-science',prior/'review.json','Complete independent original review:51edge14qualifier13context28preflight judgments, original five findings and explicit access limits. Original defects are superseded only by accepted exact successor.')
+ add('successor-science',succ/'review.json','Independent bounded31-change successor; unchanged original science inherited, not a fresh full literature review.')
+ add('successor-dispositions',succ/'finding-dispositions.json','Exact external finding lineage for455–459; no native predecessor identities or issue closure claims.')
+ add('continuity',succ/'intake-and-continuity.json','All biological triples/20fullsides/14qualifier assignments/53reference identities retained;108unchanged+8modified+4added evidence.')
+ add('semantic-delta',succ/'independent-semantic-delta.json','Exact31 semantic changes and unchanged-field boundary.')
+ add('selector-replay',succ/'selector-replay.json','104XML observations replayed exactly; bounded fresh reading retains source limitations.')
+ add('preflight-inheritance',succ/'preflight-inheritance.json','All28 prior preflight claim dispositions retained with explicit continuity.')
+ add('export-probe','/private/tmp/pathwaymech-next-231-science-successor-export-probe-20261012/handoff.json','Independent52checks, six reversible fields and native target export. Historical external scope, not current maintained gate.')
+ add('root-science-acceptance','/private/tmp/pathwaymech-next-231-root-successor-acceptance-20261012.json','Root acceptance of exact scientific successor.')
+ add('canonical-acceptance','/private/tmp/pathwaymech-next-231-root-canonical-acceptance-20261012.json','Actual full native PPi source/ontology outputs independently audited and root accepted; separate from original review historical pending statements.')
+ add('integration-guard-acceptance','/private/tmp/pathwaymech-next-231-root-integration-successor-acceptance-20261012.json','Root acceptance of independently re-audited PPI-INTEGRATION-001 fix; exact old cache path identities through adoption/preservation.')
+ add('integration-guard-finding','/private/tmp/pathwaymech-next-231-integration-preparation-audit-20261012/handoff.json','Original confirmed same-byte link-identity weakness, preserved with externalissue463. No fabricated native occurrence.')
+ add('issue-ledger','/private/tmp/pathwaymech-next-231-issue-creation-20261012.json','Actual external GitHub creation ledger for455–459; lifecycle closure is separate.')
+ assessments=[];current={e['id']:e for e in record['mechanistic_edges']}
+ def assess(aid,area,topic,summary,details,eids):
+  assessments.append({'assessment_id':aid,'area':area,'topic':topic,'outcome':'supported','target_ids':[TARGET_ID],'summary':summary,'details':json.dumps(details,ensure_ascii=False,sort_keys=True),'evidence_ids':eids})
+ for row in old['edge_assessments']:
+  edge=current[row['edge_id']];assert row['triple']==[edge[k] for k in ['subject','predicate','object']]
+  assess('edge-'+row['edge_id'],'evidence',row['field_path'],'Accepted current edge preserves the original biological triple and scoped science; the exact successor corrections govern any historical finding below.',{'historical_independent_judgment':row,'current_exact_edge':edge,'successor_scope':new['scope'],'inheritance':'Original complete judgment retained. This packaging is not a fresh source rereview.'},['original-science','successor-science','continuity','successor-dispositions'])
+ for row in old['qualifier_assessments']:
+  q=current[row['edge_id']]['endpoint_qualifiers'][row['qualifier_index']];assert (q['endpoint'],q['kind'])==(row['endpoint'],row['kind'])
+  assess('qualifier-'+row['edge_id']+'-'+str(row['qualifier_index']),'scope','experimental_construct','Exact current endpoint qualifier retains strain, preparation, assay and source limits; successor dispositions replace only the accepted construct/preparation defects.',{'historical_independent_judgment':row,'current_exact_qualifier':q},['original-science','successor-science','successor-dispositions','continuity'])
+ paragraphs=record['description'].split('\n\n');assert len(paragraphs)==13
+ for row in old['context_assessments']:
+  assess('context-'+str(row['paragraph']),'scope','description paragraph '+str(row['paragraph']),'Inherited complete context judgment with exact current text; only paragraphs4and6 changed under the accepted successor.',{'historical_independent_judgment':row,'current_text':paragraphs[row['paragraph']-1],'changed_in_successor':row['paragraph'] in [4,6]},['original-science','successor-science','semantic-delta'])
+ for row in old['preflight_claim_assessments']:
+  assess(row['claim_id'],'completeness','preflight disposition','The complete original preflight judgment and its boundary are retained through accepted successor continuity.',{'historical_independent_judgment':row,'current_continuity':continuity['scope']},['original-science','preflight-inheritance','successor-science'])
+ for index,row in enumerate(new['delta_assessments']):
+  assess('successor-delta-'+str(index+1),'consistency',row['path'],'Exact bounded semantic change independently accepted; unchanged science remains inherited.',row,['successor-science','semantic-delta','successor-dispositions'])
+ for row in new['dispositions']:
+  assess('external-issue-'+row['issue_url'].rsplit('/',1)[-1],'evidence',row['issue_key'],row['disposition_reason'],row,['original-science','successor-dispositions','issue-ledger'])
+ assess('integration-guard-463','consistency','PPI-INTEGRATION-001','Root accepted the independently re-audited guard correction. Current actual preservation must separately prove old765cache link identities and24regular additions; no native predecessor or external closure is invented.',load('/private/tmp/pathwaymech-next-231-root-integration-successor-acceptance-20261012.json'),['integration-guard-finding','integration-guard-acceptance'])
+ for aid,area,summary,eids in [
+  ('identity','identity','Six native reversible events and20complete sides define the PPi-dependent non-oxidative branch. This route remains distinct from the ATP-dependent SBP bypass, conventional transaldolase route and Calvin condensation. Generic classes, source charge conflicts and absent coefficients are retained.', ['original-science','successor-science','export-probe']),
+  ('experimental-scope','scope','Historical amoebal activity has no fabricated sequence. Rabbit coupling does not prove native clostridial SBP cleavage. DSM1313/ATCC27405/DSM5809, FBP versus SBP, negative controls, pairedTktAB genetics and unsignedRex binding retain their explicit evidence boundaries.', ['original-science','successor-science']),
+  ('authority','grounding','Actual native authority acceptance is separate from historical scientific-review pending statements. Preserve2507source/617metadata,1969ontology/5metadata,782manifest/24Rhea actual native bytes and all old objects; identity validation alone does not prove an experimental catalytic claim.', ['canonical-acceptance','root-science-acceptance'])]:assess(aid,area,aid,summary,{'scope':'Accepted external science and later root canonical acceptance, not a fresh full literature review.'},eids)
+ fields={'schema_version':'1.0.0','kind':'record','repository':'CultureBotAI/PathwayMech','title':'PPi-dependent pentose phosphate branch: maintained integration with independent scientific inheritance','scientific_review':True,'scope':{'description':'Complete51edge14qualifier13context28preflight coverage inherited through exact31-change successor; current execution independently bound at assembly.','selection':TARGET_ID+' SHA256 '+TARGET_SHA,'coverage':'full','population_size':1,'reviewed_target_ids':[TARGET_ID],'exclusions':[{'target':'Other231pathways','reason':'Preservation and full maintained gates only; no new scientific rereview.'}]},'evidence':evidence,'assessments':assessments,'findings':[],'actions':[],'limitations':['Maintained integrator self-review packages separately independent original and bounded successor science. No fresh full literature rereview is claimed.',*['Original review limitation (historical scope): '+v for v in old['limitations']],*['Successor limitation (historical scope): '+v for v in new['limitations']],'Historical pending canonical/ATP-bridge statements remain unchanged inside archived preparation/review evidence; later actual accepted execution is separately bound, not backdated into those packets.','StaticSVG observation does not test browser keyboard/focus/interaction. Public-release data licensing remains deferred.','Native validation/save/check and later archives/PR/CI/merge/issueclosure follow separately; current review content cannot claim their future success.'],'notes':['No previous_occurrences are invented. All455–459and463 corrections are evidence-linked external assessments, with empty nativefindings/actions.','Native CREATE and schemaEDIT histories must both precede render. Review persistence appends no history.','Full maintained tests precede late review/archive additions; root must run final native review, whitespace/site and preservation checks afterward.'],'links':[d['issue_url'] for d in new['dispositions']]+['https://github.com/CultureBotAI/PathwayMech/issues/463'],'tags':['pathway','ppi-dependent-pentose-phosphate','self-review','independent-inheritance']}
+ write(HERE/'review-content-fragments.json',{'status':'incomplete_fragments_not_a_saved_review','target_sha256':TARGET_SHA,'review_fields':fields})
+ write(HERE/'review-evidence-bindings.json',bindings)
+ write(HERE/'fragment-consistency.json',{'status':'passed','edges':51,'qualifiers':14,'contexts':13,'preflight_judgments':28,'successor_delta_judgments':31,'scientific_external_findings':5,'integration_external_findings':1,'evidence_continuity':continuity['evidence_counts'],'references':53,'assessments':len(assessments),'scientific_fresh_rereview':False})
+ target={'targets':[{'target_id':TARGET_ID,'path':TARGET_REL,'label':record['label'],'kind':'maintained','owner_paths':[{'repository':'CultureBotAI/PathwayMech','path':TARGET_REL,'role':'Maintained pathway identity, source scope, participants, qualifiers and edge evidence'}]}]}
+ (HERE/'targets.yaml').write_text(yaml.safe_dump(target,sort_keys=False))
+ contract=['scripts/record_review.py','schema/record_review.yaml','docs/record-reviews.md','docs/record-review-profile.md','conf/record_review.yaml','CLAUDE.md','.claude/skills/review-yaml-record/SKILL.md','.claude/skills/add-pathway/SKILL.md','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','history/README.md','scripts/new_history_record.py','src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/strict.py','src/pathwaymech/identifiers.py','src/pathwaymech/kgx.py','src/pathwaymech/graph_view.py','src/pathwaymech/cli.py','conf/identifier_policy.yaml','conf/identifier_sources.json','conf/rhea_identifier_updates.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','tests/test_handle_references.py','tests/test_linkml_schema.py']
+ inputs={'at':now(),'maintained_contract':[{'relative_path':p,**bind(ROOT/p)} for p in contract],'target':bind(ROOT/TARGET_REL),'adoption':bind(ADOPTION),'merged_binding':bind(MERGED),'histories':bind(HISTORY),'qa':bind(QA),'visual':bind(VISUAL),'display':bind(DISPLAY),'integration_handoff':bind(PREP/'handoff.json'),'evidence':bindings,'full_gates':'not asserted by preparation; require later actual passed receipt','current_review_saved':False}
+ write(HERE/'preparation-input-bindings.json',inputs)
+ print({'status':'prepared','assessments':len(assessments),'evidence':len(evidence),'pending_gates_not_claimed':True})
+if __name__=='__main__':main()

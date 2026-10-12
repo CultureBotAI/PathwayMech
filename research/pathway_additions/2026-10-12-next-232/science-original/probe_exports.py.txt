@@ -1,0 +1,19 @@
+from pathlib import Path
+import csv,json,yaml,hashlib
+from lxml import html
+A=Path('/private/tmp/pathwaymech-next-232-author-20261012');O=Path(__file__).parent;P=A/'candidate-checks'
+r=yaml.safe_load((A/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_text());rows=list(csv.DictReader((P/'kgx/edges.tsv').open(),delimiter='\t'));h=html.fromstring((P/'pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html').read_text());results=[]
+assert len(rows)==len(r['mechanistic_edges'])==102
+for i,(e,row)in enumerate(zip(r['mechanistic_edges'],rows),1):
+ predicate={'part_of':'BFO:0000050','has_part':'BFO:0000051','located_in':'RO:0001025'}.get(e['predicate'],'pathwaymech:'+e['predicate'])
+ assert row['subject']==e['subject']and row['object']==e['object']and row['predicate']==predicate,(i,'triple');assert json.loads(row['evidence'])==e['evidence'],(i,'ev');assert json.loads(row['endpoint_qualifiers']or'[]')==e.get('endpoint_qualifiers',[]),(i,'quals')
+ a=h.xpath(f'//a[@href="#mechanism-edge-{i}" and contains(@class,"graph-edge")]');assert len(a)==1,(i,'anchor')
+ assert a[0].get('data-subject-id',a[0].get('data-subject'))==e['subject']and a[0].get('data-object-id',a[0].get('data-object'))==e['object']and a[0].get('data-predicate')==e['predicate'],(i,'SVG')
+ t=h.xpath(f'//*[@id="mechanism-edge-{i}"]');assert len(t)==1;text=' '.join(t[0].itertext())
+ for ev in e['evidence']:
+  for k in ['reference_id','source_assertion','source_locator']:assert ev[k]in text,(i,k)
+ for q in e.get('endpoint_qualifiers',[]):
+  anchor=f'mechanism-edge-{i}-qualifier-{q["endpoint"]}';v=h.xpath(f'//*[@id="{anchor}"]');assert len(v)==1;assert q['description']in ''.join(v[0].itertext());assert q['description']in a[0].get('aria-label')
+ results.append({'edge':e['id'],'kgx_triple_and_all_evidence_exact':True,'kgx_full_qualifiers_exact':True,'html_all_edge_assertions_and_locators':True,'svg_triple_exact':True,'qualifier_descriptions_html_svg':len(e.get('endpoint_qualifiers',[]))})
+files=[A/'draft/nad-phosphorylation-and-dephosphorylation.yaml',P/'kgx/edges.tsv',P/'pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html',A/'runtime/src/pathwaymech/kgx.py'];bindings=[{'path':str(x),'bytes':x.stat().st_size,'sha256':hashlib.sha256(x.read_bytes()).hexdigest()}for x in files]
+(O/'candidate-export-independent.json').write_text(json.dumps({'bindings':bindings,'scope':'Read-only checks of sealed candidate artifacts, not current full canonical native acceptance or browser/layout review.','edges':results},indent=2)+'\n');print('102 edges and 48 qualifiers exact in candidate exports')

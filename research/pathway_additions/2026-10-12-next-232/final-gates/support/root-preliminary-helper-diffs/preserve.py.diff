@@ -1,0 +1,14 @@
+--- /private/tmp/pathwaymech-next-232-finalization-support-20261012/preserve.py
++++ /private/tmp/pathwaymech-next-232-finalization-successor-support-20261012/preserve.py
+@@ -13,9 +13,9 @@
+  assert len(extras)==len({r['relative_path'] for r in extras})
+  for row in extras:assert row['relative_path'] not in old;verify(row,ROOT/row['relative_path'])
+  out=external_new(a.output)
+- command=[PYTHON,'-B',str(PREP/'preserve-maintained.py'),'--root',str(ROOT),'--base',BASE,'--adoption-receipt',str(ADOPTION),'--baseline',adoption['baseline']['path'],'--baseline-kgx',adoption['baseline_kgx']['path'],'--gate-receipt',str(a.gates),'--approved-node-display-delta',str(DISPLAY),'--approved-extra-files',str(a.approved_extra_files),'--output',str(out/'preservation.json')]
++ command=[PYTHON,'-B',str(BRIDGE/'preserve-maintained.py'),'--root',str(ROOT),'--base',BASE,'--adoption-receipt',str(ADOPTION),'--baseline',adoption['baseline']['path'],'--baseline-kgx',adoption['baseline_kgx']['path'],'--gate-receipt',str(a.gates),'--approved-node-display-delta',str(DISPLAY),'--approved-extra-files',str(a.approved_extra_files),'--output',str(out/'preservation.json')]
+  if a.check_inputs:print(json.dumps({'status':'verified_no_writes','command':command}));return
+  out.mkdir();result,receipt=execute(command,out,'preservation');result.check_returncode()
+- verify_preservation(out/'preservation.json',a.gates);write(out/'execution.json',{'status':'passed','receipt':receipt,'preservation':bind(out/'preservation.json'),'unchanged_accepted_helper':bind(PREP/'preserve-maintained.py'),'maintained_writes':False})
++ verify_preservation(out/'preservation.json',a.gates);write(out/'execution.json',{'status':'passed','receipt':receipt,'preservation':bind(out/'preservation.json'),'unchanged_accepted_helper':bind(BRIDGE/'preserve-maintained.py'),'maintained_writes':False})
+  print(json.dumps(load(out/'execution.json'),indent=2))
+ if __name__=='__main__':main()

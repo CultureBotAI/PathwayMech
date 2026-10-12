@@ -1,0 +1,39 @@
+"""Isolated runner-order controls; all mutations confined to disposable audit fixture."""
+from pathlib import Path
+import copy,hashlib,json,runpy,sys,types,tempfile
+P=Path(__file__).resolve().parent
+RUNNER=Path('/private/tmp/pathwaymech-next-232-root-formatting-execution-20261012/run_correction.py')
+B=Path('/private/tmp/pathwaymech-next-232-formatting-bridge-20261012')
+C=Path('/private/tmp/pathwaymech-next-232-history-bytecode-correction-20261012')
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+fixture=json.loads((P/'bridge-controls.json').read_bytes())['fixture'];proposal=json.loads((C/'proposal.json').read_bytes());results=[]
+for name in ['review not accepted','test after size wrong']:
+ with tempfile.TemporaryDirectory(prefix='pathwaymech-next-232-runner-order-',dir='/private/tmp') as temp:
+  t=Path(temp);root=t/'fake-root';root.mkdir();out=t/'execution';out.mkdir();accept=copy.deepcopy(fixture)
+  for row in accept['changes']+[accept['history_test_correction']]:
+   dest=root/row['relative_path'];dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(Path(row['before']['path']).read_bytes())
+  pyc=root/'scripts/__pycache__/new_history_record.cpython-313.pyc';pyc.parent.mkdir(parents=True);pyc.write_bytes(Path(proposal['preserved_cache']['path']).read_bytes())
+  before={str(f.relative_to(root)):bind(f) for f in root.rglob('*') if f.is_file()}
+  accept['runner']=bind(RUNNER);accept['generated_bytecode']={**proposal,'observed_cache':bind(pyc)}
+  if name=='review not accepted':accept['history_test_review']['accepted']=False
+  else:accept['history_test_correction']['after']['bytes']+=1
+  n=runpy.run_path(str(B/'common.py'),run_name='runner_fixture_bridge');cg=n['code_changes'];cgload=cg.__globals__['load'];cg.__globals__['load']=lambda p:copy.deepcopy(accept) if str(p)=='/private/tmp/pathwaymech-next-232-root-formatting-acceptance-20261012.json' else cgload(p)
+  r=runpy.run_path(str(RUNNER),run_name='runner_order_fixture');main=r['main'];g=main.__globals__;g['HERE']=out;g['ROOT']=root
+  original_load=g['load'];g['load']=lambda p:copy.deepcopy(accept) if Path(p)==g['ACCEPTANCE'] else original_load(p)
+  events=[]
+  def code_guard():events.append('new.code_changes');return cg()
+  old=types.SimpleNamespace(verify_package=lambda:None,validate_base=lambda *a,**k:None,verify_adopted=lambda *a:None,inventory=lambda *a,**k:list(before.values()))
+  new=types.SimpleNamespace(code_changes=code_guard,verify_adopted=lambda *a:events.append('forbidden-postwrite'))
+  g['common']=lambda path:old if Path(path).parent==g['PREP'] else new
+  argv=sys.argv;sys.argv=['run_correction.py','adopt']
+  try:
+   main()
+  except AssertionError:
+   pass
+  else:raise AssertionError('invalid fixture accepted')
+  finally:sys.argv=argv
+  after={str(f.relative_to(root)):bind(f) for f in root.rglob('*') if f.is_file()};assert before==after and pyc.exists() and not (out/'before-formatting.json').exists()
+  if name=='review not accepted':assert events==['new.code_changes']
+  results.append({'name':name,'rejected_before_any_fake_owner_write_or_bytecode_unlink':True,'events':events})
+(P/'runner-order-controls.json').write_text(json.dumps({'status':'passed','runner':bind(RUNNER),'controls':results,'scope':'Isolated fake-root fixture, original guard made inert solely to reach correction ordering. Real bridge acceptance controls execute. No real maintained/cache/Git writes.'},indent=2)+'\n')
+print(json.dumps({'status':'passed','controls':len(results)}))

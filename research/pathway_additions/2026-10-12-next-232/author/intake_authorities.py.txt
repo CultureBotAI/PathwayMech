@@ -1,0 +1,110 @@
+"""Verify the closed native authority proposal and bridge exact consumed bytes."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import sys
+
+import yaml
+
+A = Path(__file__).parent
+H = Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+sys.path[:0] = [str(A / 'runtime/src'), str(A / 'runtime/scripts')]
+from build_source_identifier_snapshot import corpus_ids
+from build_ontology_identifier_snapshot import walk_identifiers
+
+
+def bind(path):
+    path = Path(path)
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest}
+
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+
+def verify(row):
+    assert bind(row['path']) == {key: row[key] for key in ['path', 'bytes', 'sha256']}
+
+
+def save(name, value):
+    (A / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+
+assert bind(H / 'handoff.json')['sha256'] == '25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102'
+handoff = read(H / 'handoff.json')
+verify(handoff['artifact_manifest'])
+assert handoff['artifact_manifest']['sha256'] == 'e4cb0f6b7bd0ec4ab8e3265295fcec8f469220406c8bdfc4142b346557897cb8'
+manifest = read(handoff['artifact_manifest']['path'])
+rows = manifest['artifacts']
+assert len(rows) == handoff['artifact_count'] == 1891
+for row in rows:
+    path = H / row['relative_path']
+    assert str(path) == row['path']
+    verify(row)
+    identity = {'file_type': 'symlink' if path.is_symlink() else 'regular',
+                'link_text': os.readlink(path) if path.is_symlink() else None,
+                'resolved_path': str(path.resolve(strict=True))}
+    assert identity == {key: row[key] for key in identity}
+command = ['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(H)]
+result = subprocess.run(command, capture_output=True)
+assert result.returncode == 0, result.stderr.decode()
+observed = {str(Path(part.decode()).relative_to(H)) for part in result.stdout.split(b'\0') if part}
+assert observed == {row['relative_path'] for row in rows} | {'handoff.json', 'artifact-manifest.json'}
+target = A / 'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+verify(handoff['target'])
+assert target.read_bytes() == Path(handoff['target']['path']).read_bytes()
+record = yaml.safe_load(target.read_text())
+proposal = read(H / 'proposal.json')
+consumer = read(A / 'provisional-identifier-consumer.json')
+assert not consumer['identifier_errors']
+for name in ['sources.json', 'ontology.json']:
+    verify(handoff['outputs'][name])
+    fixture = A / 'identifier-consumer-fixture/data/identifier_authorities' / name
+    assert bind(fixture)['sha256'] == handoff['outputs'][name]['sha256']
+    new = read(H / 'proposal' / name)
+    old = read(H / 'baseline' / name)
+    for section in ['sources', 'terms']:
+        assert all(new[section][key] == value for key, value in old[section].items())
+        assert [key for key in new[section] if key in old[section]] == list(old[section])
+old_manifest = read(H / 'baseline/manifest.json')
+new_manifest = read(H / 'proposal/manifest.json')
+assert new_manifest[:len(old_manifest)] == old_manifest
+assert (H / 'proposal/rhea-updates.json').read_bytes() == (H / 'baseline/rhea-updates.json').read_bytes()
+named = sorted(corpus_ids(A / 'draft'))
+ontology = sorted(walk_identifiers(record, {'CHEBI', 'GO', 'RHEA', 'NCBITaxon'}))
+assert named == proposal['collectors']['named_ids'] == consumer['native_source_collector']
+assert ontology == proposal['collectors']['ontology_ids'] == consumer['native_ontology_collector']
+accounting = read(H / 'source-original-accounting.json')
+assert len(accounting['new_copy_plan']) == 11
+save('source-cache-copy-plan-projection.json', {
+    'source': bind(H / 'source-original-accounting.json'),
+    'selector': '/new_copy_plan', 'entries': accounting['new_copy_plan'],
+    'scope': 'Exact lossless projection of the sealed helper copy plan, not an executed shared-cache adoption. Original class_source.path and all original byte bindings retained.'})
+checks = read(H / 'checks.json')
+assert checks['status'] == 'passed' and checks['negative_count'] == 14
+execution = read(H / 'execution-summary.json')
+assert all(row['exit_code'] == 0 for row in execution['latest_per_stage'].values())
+save('authority-intake.json', {
+    'at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'target': bind(target),
+    'handoff': bind(H / 'handoff.json'), 'manifest': handoff['artifact_manifest'],
+    'artifacts_freshly_verified': len(rows),
+    'hidden_ignored_followed_closure': {'command': command, 'exit_code': result.returncode,
+                                      'stderr': result.stderr.decode(), 'closed': True},
+    'proposal_files': handoff['outputs'], 'counts': handoff['counts'],
+    'copy_plan': bind(A / 'source-cache-copy-plan-projection.json'),
+    'original_accounting': bind(H / 'source-original-accounting.json'),
+    'actual_helper_checks': handoff['checks'], 'execution_summary': handoff['execution_summary'],
+    'source_collector': named, 'ontology_collector': ontology,
+    'consumer': bind(A / 'provisional-identifier-consumer.json'),
+    'sealed_consumer_byte_bridge': True,
+    'all_prior_authority_objects_and_order_preserved': True,
+    'scope': 'Fresh closed artifact, exact-body/link-identity, proposal-preservation and actual consumer-byte verification by author; not independent scientific or canonical-build acceptance. Helper original parser controls are inherited receipts, not rerun by this author intake.',
+    'full_canonical_build': False, 'maintained_or_shared_cache_writes': False})
+print(json.dumps({'artifacts': len(rows), 'named_ids': len(named), 'ontology_ids': len(ontology),
+                  'new_original_copy_plan_entries': len(accounting['new_copy_plan']),
+                  'sealed_consumer_byte_bridge': True}))

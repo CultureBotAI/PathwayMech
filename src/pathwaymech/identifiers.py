@@ -16,6 +16,11 @@ from urllib.parse import urlparse
 
 import yaml
 
+from pathwaymech.ecocyc_complex import (
+    ECOCYC_COMPLEX_KIND,
+    complex_term,
+    validate_complex_metadata,
+)
 from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, validate_pathbank_archive
 from pathwaymech.schema import ALLOWED_CURIE_PREFIXES
 from pathwaymech.yaml_io import load_yaml_file, pathway_files
@@ -90,11 +95,16 @@ def _load_authority(path: Path) -> dict[str, Any]:
     native_reaction_requests: dict[str, str] = {}
     for source, metadata in data["sources"].items():
         _keys(
-            metadata, {"url", "version", "sha256", "license"},
-            {"sha256_scope", "kind", "archive", "pathway_accessions"}, f"source {source}",
+            metadata,
+            {"url", "version", "sha256", "license"},
+            {"sha256_scope", "kind", "archive", "pathway_accessions", "native_complex"},
+            f"source {source}",
         )
-        if any(not _text(value) for name, value in metadata.items()
-               if name not in {"archive", "pathway_accessions"}):
+        if any(
+            not _text(value)
+            for name, value in metadata.items()
+            if name not in {"archive", "pathway_accessions", "native_complex"}
+        ):
             raise ValueError(f"source {source}: provenance fields must be nonempty strings")
         url = urlparse(metadata["url"])
         if url.scheme not in {"http", "https"} or not url.netloc:
@@ -102,24 +112,43 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
         if "kind" in metadata and metadata["kind"] not in {
-            "metacyc-reaction-xml", PATHBANK_ARCHIVE_KIND,
+            "metacyc-reaction-xml",
+            PATHBANK_ARCHIVE_KIND,
+            ECOCYC_COMPLEX_KIND,
         }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
         if metadata.get("kind") == PATHBANK_ARCHIVE_KIND:
             if set(metadata) != {
-                "url", "version", "sha256", "license", "kind", "archive", "pathway_accessions",
+                "url",
+                "version",
+                "sha256",
+                "license",
+                "kind",
+                "archive",
+                "pathway_accessions",
             }:
                 raise ValueError(f"source {source}: incomplete typed PathBank ZIP provenance")
             validate_pathbank_archive(metadata["url"], metadata["sha256"], metadata["archive"])
             accessions = metadata["pathway_accessions"]
-            if (not isinstance(accessions, list) or not accessions
-                    or any(not isinstance(value, str) or not re.fullmatch(r"SMP[0-9]+", value)
-                           for value in accessions)
-                    or len(accessions) != len(set(accessions))
-                    or accessions[0] != metadata["archive"]["root"]):
+            if (
+                not isinstance(accessions, list)
+                or not accessions
+                or any(
+                    not isinstance(value, str) or not re.fullmatch(r"SMP[0-9]+", value)
+                    for value in accessions
+                )
+                or len(accessions) != len(set(accessions))
+                or accessions[0] != metadata["archive"]["root"]
+            ):
                 raise ValueError(f"source {source}: invalid selected PathBank pathway identities")
         elif "archive" in metadata or "pathway_accessions" in metadata:
             raise ValueError(f"source {source}: archive provenance requires typed PathBank ZIP")
+        if metadata.get("kind") == ECOCYC_COMPLEX_KIND:
+            validate_complex_metadata(metadata)
+        elif "native_complex" in metadata:
+            raise ValueError(
+                f"source {source}: native complex provenance requires its typed source kind"
+            )
         if metadata.get("kind") == "metacyc-reaction-xml":
             request = re.fullmatch(
                 r"https://bf2i-artsymbiocyc\.insa-lyon\.fr/getxml\?id=META:"
@@ -145,10 +174,16 @@ def _load_authority(path: Path) -> dict[str, Any]:
         ):
             raise ValueError(f"{path}: invalid authority identifier {identifier!r}")
         _keys(
-            term, {"label", "synonyms", "source"}, {"label_kind", "entity_type"},
+            term,
+            {"label", "synonyms", "source"},
+            {"label_kind", "entity_type"},
             f"authority {identifier}",
         )
-        if term.get("label_kind", "canonical") not in {"canonical", "source_context"}:
+        if term.get("label_kind", "canonical") not in {
+            "canonical",
+            "source_context",
+            "source_synonym",
+        }:
             raise ValueError(f"{identifier}: unknown authority label kind")
         if not _text(term["label"]):
             raise ValueError(f"{identifier}: authority label must be nonempty")
@@ -159,28 +194,45 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
+        if term.get("label_kind") == "source_synonym" and source_kind != ECOCYC_COMPLEX_KIND:
+            raise ValueError(
+                f"{identifier}: source-synonym authority requires a typed native complex"
+            )
         if source_kind == PATHBANK_ARCHIVE_KIND:
             provenance = data["sources"][term["source"]]
             native = identifier.removeprefix("PathBank:")
             root, separator, local = native.partition("/")
-            if (not identifier.startswith("PathBank:")
-                    or (not separator and root not in provenance["pathway_accessions"])
-                    or (separator and (root != provenance["archive"]["root"]
-                                       or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", local)
-                                       or any(part in {".", "..", ""}
-                                              for part in local.split("/"))))
-                    or term.get("label_kind", "canonical")
-                    != ("source_context" if separator else "canonical")
-                    or "entity_type" in term):
+            if (
+                not identifier.startswith("PathBank:")
+                or (not separator and root not in provenance["pathway_accessions"])
+                or (
+                    separator
+                    and (
+                        root != provenance["archive"]["root"]
+                        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", local)
+                        or any(part in {".", "..", ""} for part in local.split("/"))
+                    )
+                )
+                or term.get("label_kind", "canonical")
+                != ("source_context" if separator else "canonical")
+                or "entity_type" in term
+            ):
                 raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
-        if "entity_type" in term or source_kind == "metacyc-reaction-xml":
+        if source_kind == ECOCYC_COMPLEX_KIND:
+            expected_id, expected_term = complex_term(
+                data["sources"][term["source"]], term["source"]
+            )
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid typed native complex authority")
+        elif "entity_type" in term or source_kind == "metacyc-reaction-xml":
             if (
                 term.get("entity_type") != "reaction"
                 or source_kind != "metacyc-reaction-xml"
                 or native_reaction_requests.get(term["source"]) != identifier
                 or not re.fullmatch(r"MetaCyc:[A-Za-z0-9][A-Za-z0-9_.-]*", identifier)
                 or term.get("label_kind") != "source_context"
-                or term["label"] != identifier.split(":", 1)[1] or term["synonyms"] != []
+                or term["label"] != identifier.split(":", 1)[1]
+                or term["synonyms"] != []
             ):
                 raise ValueError(f"{identifier}: invalid typed native reaction authority")
     return data["terms"]
@@ -266,6 +318,28 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
                     "typed native reaction requires reactions/category molecular_activity"
                 )
+                continue
+            if term.get("entity_type") == "protein_complex":
+                if section != "participants" or node.get("category") != "complex":
+                    errors.append(
+                        f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
+                        "typed native complex requires participants/category complex"
+                    )
+                elif (
+                    term["label_kind"] == "source_synonym"
+                    and entry["policy"] != "canonical_or_synonym"
+                ):
+                    errors.append(
+                        f"{where}: LABEL_AUTHORITY_UNAVAILABLE {identifier!r}; "
+                        "native source supplies a synonym, not a common-name"
+                    )
+                elif _normalize(label) != _normalize(term["label"]):
+                    errors.append(
+                        f"{where}: LABEL_MISMATCH {identifier!r}: {label!r}; "
+                        f"typed source display is {term['label']!r}"
+                    )
+                # No broad contextual-label rule may invent names for this
+                # bounded unnamed/synonym-only authority representation.
                 continue
             contextual = any(
                 rule["namespace"] == prefix

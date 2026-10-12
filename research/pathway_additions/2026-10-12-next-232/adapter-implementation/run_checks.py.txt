@@ -1,0 +1,57 @@
+"""Retain every bounded preparation invocation and exact changed code snapshot."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+HERE = Path(__file__).resolve().parent
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+FILES = ['src/pathwaymech/ecocyc_complex.py', 'src/pathwaymech/identifiers.py',
+         'scripts/build_source_identifier_snapshot.py', 'tests/test_ecocyc_complex_authority.py']
+
+
+def bind(path):
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def now():
+    return datetime.datetime.now(datetime.UTC).isoformat()
+
+
+name = sys.argv[1]
+commands = {
+    'focused': [PYTHON, '-B', '-m', 'pytest', '-q', '-p', 'no:cacheprovider',
+                'tests/test_ecocyc_complex_authority.py', 'tests/test_ecocyc_identifier_authority.py',
+                'tests/test_metacyc_reaction_authority.py', 'tests/test_metacyc_complex_naming.py',
+                'tests/test_identifiers.py', 'tests/test_handle_references.py'],
+    'lint': [PYTHON, '-B', '-m', 'ruff', 'check', '--select', 'F', *FILES],
+    'originals': [PYTHON, '-B', str(HERE / 'replay_originals.py')],
+}
+assert name in commands
+directory = HERE / 'receipts' / (name + '-' + str(time.time_ns()))
+directory.mkdir(parents=True)
+for relative in FILES:
+    destination = directory / 'code' / (relative + '.txt')
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes((HERE / 'candidate' / relative).read_bytes())
+environment = {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONNOUSERSITE': '1',
+               'PYTHONPATH': str(HERE / 'candidate/src') + ':' + str(HERE / 'candidate'),
+               'RUFF_CACHE_DIR': '/private/tmp/pathwaymech-next-232-complex-adapter-ruff-cache-20261012'}
+if name == 'focused':
+    commands[name] += ['--basetemp', str(directory / 'pytest-tmp')]
+environment['PATHWAYMECH_COMPLEX_CHECK_OUTPUT'] = str(directory)
+started = now()
+with (directory / 'stdout').open('xb') as out, (directory / 'stderr').open('xb') as err:
+    result = subprocess.run(commands[name], cwd=HERE / 'candidate', env={**os.environ, **environment}, stdout=out, stderr=err, check=False)
+receipt = {'name': name, 'command': commands[name], 'cwd': str(HERE / 'candidate'),
+           'environment': environment, 'started_at': started, 'finished_at': now(),
+           'exit_code': result.returncode, 'stdout': bind(directory / 'stdout'), 'stderr': bind(directory / 'stderr')}
+(directory / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps(receipt, indent=2))
+print((directory / 'stdout').read_text()); print((directory / 'stderr').read_text())
+sys.exit(result.returncode)

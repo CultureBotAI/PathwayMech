@@ -1,0 +1,32 @@
+"""Retain actual bounded checks and exact helper snapshots; no builders."""
+import os
+import subprocess
+import sys
+import time
+from common import HERE, PYTHON, bind, now, write
+
+name = sys.argv[1]
+assert name in {'capture', 'guards', 'ruff', 'compile', 'inputs', 'science', 'bind-science'}
+directory = HERE / 'validation' / f'{name}-{time.time_ns()}'
+directory.mkdir(parents=True)
+commands = {
+    'bind-science': [PYTHON, '-B', str(HERE / 'bind_science.py')],
+    'capture': [PYTHON, '-B', str(HERE / 'capture_inputs.py')],
+    'guards': [PYTHON, '-B', '-m', 'pytest', '-q', '-p', 'no:cacheprovider', '--basetemp', str(directory / 'pytest-temp'), str(HERE / 'test_build_guards.py')],
+    'ruff': [PYTHON, '-B', '-m', 'ruff', 'check', '--no-cache', '--select', 'F', *[str(p) for p in HERE.glob('*.py')]],
+    'compile': [PYTHON, '-B', '-c', 'import pathlib; paths=list(pathlib.Path.cwd().glob("*.py")); [(compile(p.read_bytes(),str(p),"exec")) for p in paths]; print(f"Compiled {len(paths)} helpers without bytecode writes")'],
+    'inputs': [PYTHON, '-B', str(HERE / 'prepare_and_build.py'), '--check-inputs'],
+    'science': [PYTHON, '-B', '-c', 'import prepare_and_build; print(prepare_and_build.science_check())'],
+}
+for file in HERE.glob('*.py'):
+    (directory / (file.name + '.txt')).write_bytes(file.read_bytes())
+env = {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONNOUSERSITE': '1', 'PYTHONPATH': str(HERE / 'captured/code/src')}
+started, tick = now(), time.monotonic()
+with (directory / 'stdout').open('xb') as out, (directory / 'stderr').open('xb') as err:
+    result = subprocess.run(commands[name], cwd=HERE, env={**os.environ, **env}, stdout=out, stderr=err, check=False)
+receipt = {'name': name, 'command': commands[name], 'cwd': str(HERE), 'environment': env, 'started_at': started, 'finished_at': now(), 'seconds': round(time.monotonic() - tick, 3), 'exit_code': result.returncode, 'stdout': bind(directory / 'stdout'), 'stderr': bind(directory / 'stderr')}
+write(directory / 'receipt.json', receipt)
+print(receipt)
+print((directory / 'stdout').read_text())
+print((directory / 'stderr').read_text())
+sys.exit(result.returncode)

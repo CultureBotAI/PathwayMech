@@ -1,0 +1,415 @@
+"""Exact NAD issue483 adoption/history/gates. No native-review or Git writes."""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import os
+import stat
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+
+PACKAGE = Path(__file__).absolute().parent
+ROOT = Path('/private/tmp/pathwaymech-next-232-20261012')
+BASE = '0f5c2c92d8940fee8a9b2b89253091496f815490'
+BRANCH = 'feat/pathway-next-232-20261012'
+PYTHON = Path('/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python')
+CACHE = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+TARGET = 'data/pathways/nad-phosphorylation-and-dephosphorylation.yaml'
+PAGE = 'pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html'
+OLD_SHA = '96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7'
+NEW_SHA = '2da6fc3e5d1c1e5ce4b4d0c8a9d1857b1f234c4c872cdf73d364f1c73ad87cb2'
+GATE_NAMES = ['render', 'skills', 'validate', 'tests', 'lint', 'kgx', 'vendored', 'diff-check', 'site-current']
+ENV = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+       'PYTHONNOUSERSITE': '1', 'GIT_OPTIONAL_LOCKS': '0',
+       'GIT_NO_LAZY_FETCH': '1', 'GIT_TERMINAL_PROMPT': '0',
+       'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)}
+
+
+def need(ok, message):
+    if not ok:
+        raise ValueError(message)
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
+
+
+def read(path):
+    """Check type before any body read; pin final component against symlink swaps."""
+    path = Path(path)
+    info = path.lstat()
+    need(stat.S_ISREG(info.st_mode), f'not a regular file: {path}')
+    # All parents must also be literal directories (resolved cache paths use this too).
+    for parent in path.absolute().parents:
+        need(stat.S_ISDIR(parent.lstat().st_mode), f'non-directory parent: {parent}')
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, 'rb') as stream:
+        actual = os.fstat(stream.fileno())
+        need(stat.S_ISREG(actual.st_mode) and (actual.st_dev, actual.st_ino) ==
+             (info.st_dev, info.st_ino), f'file changed during open: {path}')
+        return stream.read()
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def binding(path):
+    path = Path(path)
+    info = path.lstat()
+    need(stat.S_ISREG(info.st_mode), f'not a regular file: {path}')
+    for parent in path.absolute().parents:
+        need(stat.S_ISDIR(parent.lstat().st_mode), f'non-directory parent: {parent}')
+    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    digest = hashlib.sha256()
+    size = 0
+    with os.fdopen(fd, 'rb') as stream:
+        actual = os.fstat(stream.fileno())
+        need(stat.S_ISREG(actual.st_mode) and (actual.st_dev, actual.st_ino) ==
+             (info.st_dev, info.st_ino), f'file changed during open: {path}')
+        while chunk := stream.read(1024 * 1024):
+            size += len(chunk)
+            digest.update(chunk)
+    return {'path': str(path), 'bytes': size, 'sha256': digest.hexdigest()}
+
+
+def verify(item):
+    actual = binding(Path(item['path']))
+    need(all(actual[k] == item[k] for k in ('bytes', 'sha256')), f'binding changed: {item["path"]}')
+    return actual
+
+
+def load(path):
+    return json.loads(read(path))
+
+
+def new(path, raw):
+    path = Path(path)
+    for parent in reversed(path.absolute().parents):
+        if not os.path.lexists(parent):
+            parent.mkdir()
+        need(stat.S_ISDIR(parent.lstat().st_mode), f'unsafe output parent: {parent}')
+    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o644)
+    with os.fdopen(fd, 'wb') as stream:
+        stream.write(raw)
+
+
+def write_json(path, value):
+    new(path, (json.dumps(value, indent=2, ensure_ascii=False) + '\n').encode())
+
+
+def git(*args):
+    return subprocess.check_output(['git', '-C', str(ROOT), *args], env=ENV)
+
+
+def guard(clean=False):
+    need(git('rev-parse', '--show-toplevel').decode().strip() == str(ROOT), 'wrong worktree')
+    need(git('rev-parse', 'HEAD').decode().strip() == BASE, 'HEAD changed')
+    need(git('branch', '--show-current').decode().strip() == BRANCH, 'branch changed')
+    need(git('remote', 'get-url', 'origin').decode().strip() in {
+        'https://github.com/CultureBotAI/PathwayMech.git',
+        'git@github.com:CultureBotAI/PathwayMech.git'}, 'wrong origin')
+    if clean:
+        need(not git('status', '--porcelain=v1', '--untracked-files=all'), 'worktree is not clean')
+
+
+def inventory(root):
+    """Ignored/hidden-inclusive, link-followed scan; entire type pass precedes hashing.
+
+    Git administration alone is outside scope. Directories, symlinks, and their
+    resolved targets are captured. No bodies are read until all types pass.
+    """
+    root = Path(root)
+    typed = {}
+    def walk(directory, relative='', ancestors=()):
+        real = directory.resolve(strict=True)
+        need(real not in ancestors, f'directory cycle: {directory}')
+        for entry in sorted(os.scandir(directory), key=lambda e: e.name):
+            rel = f'{relative}/{entry.name}'.lstrip('/')
+            if rel == '.git':
+                continue
+            path = Path(entry.path)
+            info = path.lstat()
+            kind = ('directory' if stat.S_ISDIR(info.st_mode) else
+                    'regular' if stat.S_ISREG(info.st_mode) else
+                    'symlink' if stat.S_ISLNK(info.st_mode) else 'unsafe')
+            need(kind != 'unsafe', f'unsupported file type: {path}')
+            item = {'type': kind, 'mode': stat.S_IMODE(info.st_mode)}
+            if kind == 'symlink':
+                item['link_text'] = os.readlink(path)
+                resolved = path.resolve(strict=True)
+                target = resolved.lstat()
+                need(stat.S_ISREG(target.st_mode) or stat.S_ISDIR(target.st_mode),
+                     f'unsafe symlink target: {path}')
+                item['resolved_path'] = str(resolved)
+                item['resolved_type'] = 'regular' if stat.S_ISREG(target.st_mode) else 'directory'
+                item['resolved_mode'] = stat.S_IMODE(target.st_mode)
+            typed[rel] = item
+            if kind == 'directory' or item.get('resolved_type') == 'directory':
+                walk(path, rel, (*ancestors, real))
+    walk(root)
+    # The scan above establishes all node types before this first body read.
+    for rel, item in typed.items():
+        if item['type'] == 'regular' or item.get('resolved_type') == 'regular':
+            path = (root / rel).resolve(strict=True)
+            bound = binding(path)
+            item.update(bytes=bound['bytes'], sha256=bound['sha256'])
+    return typed
+
+
+def expected_directories(paths):
+    return {str(p) for rel in paths for p in Path(rel).parents if str(p) != '.'}
+
+
+def compare(before, after, expected_new, expected_changed):
+    """Changes come from the reviewed plan, never from observed changed-path lists."""
+    need(set(before) <= set(after), f'old paths removed: {sorted(set(before)-set(after))[:5]}')
+    extra = set(after) - set(before)
+    allowed_dirs = expected_directories(expected_new) - set(before)
+    need(extra == set(expected_new) | allowed_dirs,
+         f'unexpected additions/missing outputs: {sorted(extra ^ (set(expected_new)|allowed_dirs))[:8]}')
+    for rel in before:
+        if rel in expected_changed:
+            need(after[rel] == {**before[rel], **expected_changed[rel]}, f'wrong expected change: {rel}')
+        else:
+            need(after[rel] == before[rel], f'preservation failure: {rel}')
+    for rel, expected in expected_new.items():
+        need(after[rel] == {'type': 'regular', 'mode': 0o644, **expected}, f'wrong addition: {rel}')
+    for rel in allowed_dirs:
+        need(after[rel]['type'] == 'directory', f'non-directory addition: {rel}')
+
+
+def command(out, name, args):
+    start = now()
+    result = subprocess.run(args, cwd=ROOT, env=ENV, capture_output=True, check=False)
+    new(out / f'{name}.stdout', result.stdout)
+    new(out / f'{name}.stderr', result.stderr)
+    receipt = {'name': name, 'command': args, 'cwd': str(ROOT), 'started_at': start,
+               'finished_at': now(), 'exit_code': result.returncode,
+               'environment': {k: ENV[k] for k in ('PYTHONDONTWRITEBYTECODE', 'UV_NO_SYNC',
+                    'PYTHONNOUSERSITE', 'GIT_OPTIONAL_LOCKS', 'PYTHONPATH')},
+               'stdout': binding(out / f'{name}.stdout'), 'stderr': binding(out / f'{name}.stderr')}
+    write_json(out / f'{name}.receipt.json', receipt)
+    print(name, result.returncode, flush=True)
+    need(result.returncode == 0, f'{name} failed; actual streams retained')
+    return receipt
+
+
+def verified_plan():
+    plan = load(PACKAGE / 'plan.json')
+    need(plan['base'] == BASE and plan['branch'] == BRANCH, 'plan baseline mismatch')
+    for item in plan['bindings']:
+        verify(item)
+    for item in plan['copies']:
+        verify(item['source'])
+        rel = Path(item['destination'])
+        need(not rel.is_absolute() and '..' not in rel.parts, 'unsafe copy destination')
+    need(len({x['destination'] for x in plan['copies']}) == len(plan['copies']), 'duplicate copy')
+    return plan
+
+
+def exact_science(plan):
+    old = yaml.safe_load(read(ROOT / TARGET))
+    new_record = yaml.safe_load(read(plan['target']['path']))
+    need(sha(read(ROOT / TARGET)) == OLD_SHA, 'predecessor target changed')
+    need(sha(read(plan['target']['path'])) == NEW_SHA, 'accepted draft changed')
+    need({k:v for k,v in old.items() if k != 'description'} ==
+         {k:v for k,v in new_record.items() if k != 'description'}, 'non-description delta')
+    a, b = old['description'].split('\n\n'), new_record['description'].split('\n\n')
+    need(len(a) == len(b) == 41 and [i for i in range(41) if a[i] != b[i]] == [6], 'paragraph scope')
+    for entry in plan['ledgers']:
+        before, after = load(ROOT / entry['predecessor']), load(entry['successor']['path'])
+        selected = before
+        for component in entry['pointer'][:-1]:
+            selected = selected[component]
+        need(selected[entry['pointer'][-1]] == a[6], 'predecessor ledger pointer')
+        selected[entry['pointer'][-1]] = b[6]
+        need(before == after, 'more than one ledger text pointer changed')
+    return old, new_record
+
+
+def external_output(path, create):
+    path = path.absolute()
+    need(path.parent == Path('/private/tmp') and
+         path.name.startswith('pathwaymech-next-232-assay-execution-'), 'output must be a dedicated external sibling')
+    if create:
+        path.mkdir()
+    else:
+        need(stat.S_ISDIR(path.lstat().st_mode), 'run is not a literal directory')
+    return path
+
+
+def capture(out, plan):
+    guard(clean=True)
+    old, accepted = exact_science(plan)
+    snapshot = inventory(ROOT)
+    cache = inventory(CACHE)
+    tracked = git('ls-files', '-z').decode().split('\0')[:-1]
+    need(all(snapshot[p]['type'] == 'regular' for p in tracked), 'nonregular tracked input')
+    for item in plan['copies']:
+        need(item['destination'] not in snapshot, 'additive destination already exists')
+    write_json(out / 'baseline.json', {'at': now(), 'head': BASE, 'branch': BRANCH,
+               'tracked_paths': tracked, 'entries': snapshot,
+               'scope': 'All working-tree paths including ignored/hidden and followed links; Git administration excluded.'})
+    write_json(out / 'cache-baseline.json', {'root': str(CACHE), 'at': now(), 'entries': cache,
+               'scope': 'Full shared issuing-source cache including hidden/ignored and followed links; no cache writes authorized.'})
+    new(out / 'old-target.yaml', read(ROOT / TARGET))
+    new(out / 'old-page.html', read(ROOT / PAGE))
+    write_json(out / 'inputs.json', {'runner': binding(__file__), 'plan': binding(PACKAGE / 'plan.json'),
+               'baseline': binding(out / 'baseline.json'), 'target': binding(ROOT / TARGET),
+               'accepted': plan['target'], 'started_at': now()})
+    guard(clean=True)
+    return snapshot, old, accepted
+
+
+def history(out, plan):
+    stamp = now()  # Actual runtime observation, supplied to the native scaffolder.
+    args = plan['history']
+    slug = 'nad-phosphorylation-and-dephosphorylation'
+    seed = f'{TARGET}|{args["summary"]}|{args["details"]}'
+    sid = stamp[:10] + 'T' + stamp[11:].replace(':', '') + '-codex-' + sha(seed.encode())[:6]
+    rel = f'history/records/{slug}/{sid}.yaml'
+    record = {'history_version': 1, 'target': {'kind': 'record', 'path': TARGET, 'slug': slug},
+        'session': {'id': sid, 'timestamp': stamp, 'actors': [{'type': 'ai_agent', 'name': 'codex', 'agent_tool': 'codex'}]},
+        'links': {'issues': ['https://github.com/CultureBotAI/PathwayMech/issues/483'],
+                  'prs': ['https://github.com/CultureBotAI/PathwayMech/pull/480']},
+        'events': [{'type': 'EDIT', 'outcome': 'changed', 'sections': ['description'], **args}]}
+    body = yaml.safe_dump(record, sort_keys=False, allow_unicode=True, default_flow_style=False, width=88).encode()
+    write_json(out / 'expected-history.json', {'path': rel, 'sha256': sha(body), 'bytes': len(body), 'record': record})
+    need(not os.path.lexists(ROOT / rel), 'history destination exists')
+    cmd = [str(PYTHON), '-B', 'scripts/new_history_record.py', '--kind', 'record', '--slug', slug,
+           '--target-root', 'data/pathways', '--event', 'EDIT', '--outcome', 'changed',
+           '--sections', 'description', '--summary', args['summary'], '--details', args['details'],
+           '--actor-name', 'codex', '--actor-type', 'ai_agent', '--agent-tool', 'codex',
+           '--issue', '483', '--pr', '480', '--timestamp', stamp]
+    command(out, 'history', cmd)
+    need(read(out / 'history.stdout').decode().strip().splitlines()[-1] == rel, 'history output path')
+    need(read(ROOT / rel) == body, 'native history differs from planned event')
+    return rel, body
+
+
+def page_expectation(out, old, accepted, history_rel):
+    # One target page only; no canonical full-site build or export here.
+    sys.path[:0] = [str(ROOT / 'src'), str(ROOT)]
+    from types import SimpleNamespace
+
+    from pathwaymech.site_display import history_html, label_html, load_site_history
+    sessions = load_site_history(ROOT)[TARGET]
+    need(sum(x['source_path'] == history_rel for x in sessions) == 1, 'history not bound to target')
+    old_sessions = [x for x in sessions if x['source_path'] != history_rel]
+    old_page = read(out / 'old-page.html').decode()
+    old_description = '<p>' + label_html(old['description']) + '</p>'
+    new_description = '<p>' + label_html(accepted['description']) + '</p>'
+    old_history = history_html(SimpleNamespace(**old), old_sessions)
+    new_history = history_html(SimpleNamespace(**accepted), sessions)
+    need(old_page.count(old_description) == old_page.count(old_history) == 1, 'page anchors not unique')
+    expected = old_page.replace(old_description, new_description).replace(old_history, new_history).encode()
+    new(out / 'expected-target-page.html', expected)
+    return {'sha256': sha(expected), 'bytes': len(expected)}
+
+
+def adopt(out, plan):
+    before, old, accepted = capture(out, plan)
+    additions = {}
+    for item in plan['copies']:
+        body = read(item['source']['path'])
+        new(ROOT / item['destination'], body)
+        additions[item['destination']] = {'bytes': len(body), 'sha256': sha(body)}
+    # Guard exact regular predecessor again immediately before the sole overwrite.
+    need(sha(read(ROOT / TARGET)) == OLD_SHA, 'target changed during adoption')
+    body = read(plan['target']['path'])
+    fd = os.open(ROOT / TARGET, os.O_WRONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(fd, 'wb') as stream:
+        need(stat.S_ISREG(os.fstat(stream.fileno()).st_mode), 'target no longer regular')
+        os.ftruncate(stream.fileno(), 0)
+        stream.write(body)
+    history_rel, history_body = history(out, plan)
+    additions[history_rel] = {'bytes': len(history_body), 'sha256': sha(history_body)}
+    page = page_expectation(out, old, accepted, history_rel)
+    changes = {TARGET: {'bytes': len(body), 'sha256': sha(body)}}
+    compare(before, inventory(ROOT), additions, changes)
+    need(inventory(CACHE) == load(out / 'cache-baseline.json')['entries'], 'shared cache changed during adoption')
+    write_json(out / 'adoption.json', {'status': 'adopted_history_before_render_gates_pending', 'at': now(),
+        'base': BASE, 'inputs': binding(out / 'inputs.json'), 'baseline': binding(out / 'baseline.json'),
+        'cache_baseline': binding(out / 'cache-baseline.json'),
+        'plan': binding(PACKAGE / 'plan.json'), 'runner': binding(__file__),
+        'additions': additions, 'changes_before_render': changes,
+        'history': history_rel, 'expected_page': page, 'expected_page_file': binding(out / 'expected-target-page.html')})
+
+
+def gates(out, plan):
+    guard()
+    adoption = load(out / 'adoption.json')
+    for key in ('inputs', 'baseline', 'cache_baseline', 'plan', 'runner', 'expected_page_file'):
+        verify(adoption[key])
+    before = load(out / 'baseline.json')['entries']
+    compare(before, inventory(ROOT), adoption['additions'], adoption['changes_before_render'])
+    cache = load(out / 'cache-baseline.json')['entries']
+    need(inventory(CACHE) == cache, 'shared cache changed before gates')
+    gate_out = out / 'gates'
+    gate_out.mkdir()
+    py = [str(PYTHON), '-B']
+    commands = [
+        ('render', py + ['-c', 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())']),
+        ('skills', py + ['scripts/validate_claude_skills.py']),
+        ('validate', py + ['-c', 'from pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())']),
+        ('tests', py + ['-m', 'pytest', '-q', '-p', 'no:cacheprovider', '--basetemp', str(out / 'pytest-temp')]),
+        ('lint', py + ['-m', 'ruff', 'check', '--no-cache', '.']),
+        ('kgx', py + ['-c', 'from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())']),
+        ('vendored', ['bash', 'scripts/check_vendored_sync.sh']),
+        ('diff-check', ['git', 'diff', '--check']),
+        ('site-current', py + ['-c', 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'])]
+    receipts = []
+    for name, cmd in commands:
+        guard()
+        need(sha(read(ROOT / TARGET)) == NEW_SHA, 'target changed before gate')
+        h = adoption['history']
+        need(sha(read(ROOT / h)) == adoption['additions'][h]['sha256'], 'history changed before gate')
+        receipts.append(command(gate_out, name, cmd))
+    need([r['name'] for r in receipts] == GATE_NAMES, 'gate sequence mismatch')
+    expected_changes = {**adoption['changes_before_render'], PAGE: adoption['expected_page']}
+    compare(before, inventory(ROOT), adoption['additions'], expected_changes)
+    need(inventory(CACHE) == cache, 'shared cache changed during gates')
+    guard()
+    write_json(out / 'preservation.json', {'status': 'passed', 'at': now(), 'base': BASE,
+        'baseline': binding(out / 'baseline.json'), 'adoption': binding(out / 'adoption.json'),
+        'changed_preexisting_paths': [TARGET, PAGE], 'additive_paths': sorted(adoption['additions']),
+        'preserved': 'Every other working-tree path, regular bytes/mode, links and resolved bytes, including cache, all old history/reviews/other232records/pages, authorities/code and complete KGX/downloads.',
+        'native_review_successor': 'pending separate preparation, actual gate receipts now available'})
+    write_json(out / 'completion.json', {'status': 'nine_gates_and_preservation_passed', 'at': now(),
+        'base': BASE, 'receipts': receipts, 'preservation': binding(out / 'preservation.json'),
+        'native_successor_commit_PR_merge': 'pending; no Git or GitHub write performed'})
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('phase', choices=['probe', 'adopt', 'gates'])
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    need(sys.dont_write_bytecode, 'run with pinned python -B')
+    plan = verified_plan()
+    out = external_output(args.output, args.phase != 'gates')
+    try:
+        if args.phase == 'probe':
+            capture(out, plan)
+            write_json(out / 'probe.json', {'status': 'read_only_preparation_passed', 'at': now(),
+                       'maintained_mutations': False, 'nine_gates_executed': False})
+        elif args.phase == 'adopt':
+            adopt(out, plan)
+        else:
+            gates(out, plan)
+    except Exception as error:
+        write_json(out / f'{args.phase}-failure.json', {'status': 'failed', 'at': now(),
+            'type': type(error).__name__, 'message': str(error), 'automatic_rollback': False,
+            'note': 'Partial state and actual command streams retained; do not infer success.'})
+        raise
+    print(json.dumps({'phase': args.phase, 'output': str(out), 'status': 'passed'}))
+
+
+if __name__ == '__main__':
+    main()

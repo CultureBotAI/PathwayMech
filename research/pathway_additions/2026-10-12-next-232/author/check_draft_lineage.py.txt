@@ -1,0 +1,33 @@
+from pathlib import Path
+import json,hashlib,sys
+import yaml
+A=Path(__file__).parent;sys.path[:0]=[str(A/'runtime'),str(A/'runtime/src')]
+from scripts.build_source_identifier_snapshot import corpus_ids,SOURCE_NAMESPACES
+from scripts.build_ontology_identifier_snapshot import walk_identifiers
+from pathwaymech.identifiers import _named_nodes
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+def diff(x,y,path=''):
+ if type(x)!=type(y):return[dict(path=path,before=x,after=y)]
+ if isinstance(x,dict):return[v for k in sorted(x.keys()|y.keys())for v in (diff(x.get(k),y.get(k),path+'/'+k))]
+ if isinstance(x,list):return[v for i in range(max(len(x),len(y)))for v in diff(x[i]if i<len(x)else None,y[i]if i<len(y)else None,path+'/'+str(i))]
+ return[]if x==y else[dict(path=path,before=x,after=y)]
+out=A/'derived/lineage';out.mkdir(exist_ok=True)
+versions={}
+for name in ['pre-iron-correction-draft','pre-topology-locator-draft']:
+ j=json.loads((A/'derived'/(name+'.json')).read_text());assert hashlib.sha256(j['content'].encode()).hexdigest()==j['sha256'];p=out/(j['sha256'][:8]+'.yaml');p.write_text(j['content']);versions[j['sha256'][:8]]=p
+# Recover the uncaptured intermediate by reversing only recorded additive changes.
+j=yaml.safe_load(versions['13fbfd2e'].read_text());j['references']=[r for r in j['references']if r['id']!='PMID:10383409']
+for sentence in [' Native historical annotation gives AB (Re–Si) specificity, transferring the pro-R hydrogen of NADH and pro-S hydrogen of NADPH; this is not a new stereochemical measurement in the 2021 experiment.','The native report of additional phosphite oxidation is a separate PhoA function, not another NADP-core reaction. ']:
+ assert sentence in j['description'];j['description']=j['description'].replace(sentence,'')
+raw=yaml.safe_dump(j,sort_keys=False,allow_unicode=True,width=100);assert hashlib.sha256(raw.encode()).hexdigest()=='79424105671c9d1de49f0d3edd0a5b99b280847ae463911735fd7d808d70d249'
+p=out/'79424105-reconstructed.yaml';p.write_text(raw);versions['79424105']=p
+current=A/'draft/nad-phosphorylation-and-dephosphorylation.yaml';versions['current']=current
+proof=[]
+for name,p in versions.items():
+ obj=yaml.safe_load(p.read_text());scope=out/(name+'-collector');scope.mkdir(exist_ok=True);(scope/'target.yaml').write_bytes(p.read_bytes())
+ proof.append(dict(name=name,binding=bind(p),source_collector=sorted(corpus_ids(scope)),ontology_collector=sorted(walk_identifiers(obj,{'GO','CHEBI','RHEA','NCBITaxon'})),named=[dict(section=sec,location=loc,node={k:v for k,v in node.items()if k in ['id','label','category','direction']})for sec,loc,node in _named_nodes(obj)]))
+old=next(r for r in proof if r['name']=='79424105');new=next(r for r in proof if r['name']=='current')
+assert old['source_collector']==new['source_collector'];assert old['ontology_collector']==new['ontology_collector'];assert old['named']==new['named']
+base=yaml.safe_load(versions['7631c529'].read_text());now=yaml.safe_load(current.read_text());deltas=diff(base,now)
+result=dict(status='Observed7631/13fb retained losslessly;794241 exact bytes reconstructed and hash-verified, not claimed captured at creation; current actual target frozen for authority preparation.',versions=proof,delta_from_captured7631=deltas,collector_bridge_794241_to_current=True,named_count=len(new['named']),source_collector_count=len(new['source_collector']),ontology_collector_count=len(new['ontology_collector']))
+(A/'draft-lineage.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n');print(len(deltas),'field deltas from7631;',len(new['named']),'named IDs; actual native collectors unchanged from reconstructed794241')

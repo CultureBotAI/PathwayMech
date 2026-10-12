@@ -1,0 +1,118 @@
+from pathlib import Path
+import json,yaml,hashlib
+O=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-232-author-20261012');P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+r=yaml.safe_load((A/'draft/nad-phosphorylation-and-dephosphorylation.yaml').read_text());ledger=json.loads((A/'ledgers/working-evidence-selector-ledger.json').read_text());claims=json.loads((A/'ledgers/full-claim-dispositions.json').read_text());bindings=json.loads((A/'ledgers/working-source-bindings.json').read_text())
+notes='''Native XML has precisely the three named members. SthA is clearly marked as supporting chemistry, and the Escherichia coli record does not claim universal flux across the native pathway's broad taxa.
+The original OWL contains two BiochemicalReaction instances plus one TransportWithBiochemicalReaction attached to the pathway. Counting only the first class was not the biological boundary; the final prose corrects it.
+Fresh Rhea participant/compound traversal and elemental/charge accounting support all five NadK sides. ATP is the core donor and NAD oxidation state is preserved.
+Fresh Rhea hydrolysis sides consume water and produce hydrogenphosphate. Neither the reaction identity nor native unassigned activity identifies a physiological cytosolic enzyme.
+Fresh Rhea 47994 is the selected reverse direction of its master. Its six sides preserve outside and inside proton participants even though both use the same chemical CURIE.
+The original PathBank event uses the same Inner_Membrane entity for both protons. Final prose treats it as a coarse representation; physiological orientation is established independently.
+Native component coefficient six and the 2001 approximately 180/30-kDa measurements agree. The unnamed native object is retained without inventing a direct name; adapter acceptance is separate from science.
+The measured MDNHFKCIGI and reference MNNHFKCIGI differ at position two. Native purification and recombinant construct qualifiers preserve this rather than claiming identical sequences.
+The original cloning and host passages support pSK67 in pET14b/BL21(DE3)pLysS and SK45 control. No retained tag is inferred merely from vector choice.
+The original donor table supports 100/109/60/56/42/40 percent for ATP/UTP/CTP/GTP/dATP/TTP at the stated concentration. These alternatives are narrative assay scope, not extra core chemistry.
+The original donor table includes polyphosphate variants and negative small donors. The final paragraph preserves tested conditions, including metaphosphate/hexametaphosphate, without converting absence into inhibitor edges.
+The replacement-metal table supports Mg/Mn/Zn/Ca/Co at 1 mM. Metal-support edges are alternative assay cofactors, not a claim of simultaneous occupancy.
+FeCl2 establishes Fe(II), now CHEBI:29033. Copper and monovalent chloride substitutions and metal omission failed to support activity; none is misrepresented as inhibition of a Mg-containing assay.
+Original 1987 rate curves and the 2001 table support NADH/NADPH negative effects. Native allosteric signs agree; the 93-fold partially purified K12 preparation is explicitly distinct from the later MG1655 protein.
+Both studies support the described difference, but nad-041 currently assigns the 1987 comparison solely to a 2001 table locator. Issue 466 requires a separately owned PMID3025169 Table2/adjacent-text citation; the inhibition direction under 2001 conditions is valid.
+The 2001 thiol reagent table and adjacent method specify reporter substitution because of sensitivity. HgCl2 is an exact reagent node; PCMB and unchanged reducing agents remain properly bounded prose.
+The 1987 adenylate-charge experiment uses fixed total adenylates with and without NADPH. Its negative result does not contradict later SthA activation, a different enzyme and assay.
+The original abstract and Results swap the 1.9/2.1 mM NAD/ATP assignment. The record preserves the discrepancy instead of selecting one as an uncontested value.
+The complete retained 1962 transcription explicitly states TPN-to-DPN conversion. It does not identify which of four preparations supplied that particular observation, and the record avoids inventing one.
+Issuing PhoA location, signal peptide and mature-chain features support periplasmic processing. This evidence does not support a physiological cytosolic NADP loop.
+Issuing PhoA cofactor annotation specifies two Zn and one Mg per chain. Edge endpoints and prose keep per-chain capacity separate from the native dimer and historical metal occupancy.
+The 1962 paper's metal, heat, urea and polyamine results concern broad-substrate pNPP/AMP experiments. No NADP-specific causal edges are inferred from them.
+The native hypothetical NADP phosphatase has neither a gene nor an exact UniProt bridge. The record retains the unknown physiological activity and the authors' negative CysQ interpretation.
+The 2007 Methods identify AG1 ASKA, GFP removal and both terminal extensions. The final qualifier preserves a tagged recombinant preparation rather than pretending it is an exact native chain.
+The 2007 Table2 and adjacent results support in-vitro NADP/NADPH hydrolysis at pH8, 37C, 10mM Mg. The extra NADPH substrate is not promoted into the three-member core.
+The near-physiological pH/low-Mg failures, SuhB/Fbp negative controls and buffer controls are preserved. These bounds materially weaken a physiological NADPase assignment without denying other CysQ activity.
+The visually checked lithium table gives 70/60/10/0.05/0.15 mM for the five substrates. Dashes mean not determined, and the edge uses the LiCl reagent rather than an unqualified elemental lithium node.
+The study's substrate preferences and low-Mg/pH limitations explicitly oppose physiological NADPase assignment. Current reference localization and general calcium inhibition do not override that conclusion.
+The archaeal enzymes and 85C assays are separate comparative contexts. The paper's starred/undetermined measurements are not transferred to E. coli.
+Native coefficients are two alpha plus two beta; the 2021 dimer-of-heterodimers model agrees. A UniProt heterodimer describes the protomer and does not contradict the assembly.
+Issue 465 is corrected in c2fec: location-comment assertions are narrowed, own topological features support cytoplasmic domains, and the primary introduction/Figure1 citation is explicitly a homology model.
+The primary 2021 construct and purification passages identify alpha His6/thrombin-site PntAB and the THO deletion host. No unreported cleavage or native liposome orientation is asserted.
+H91A, no-enzyme and ionophore controls support coupled proton transport. ATP production belongs to co-reconstituted ATP synthase, not a PntAB substrate/product edge.
+The forward natural-nucleotide reconstitution experiment shows pmf stimulation under those conditions. Reported fold effects and ionophore controls remain assay-specific, not universal cellular flux.
+APAD reverse/cyclic assays and orientation measurements are distinguished from natural forward transfer. The Methods/Results 50-versus-500-uM NADH inconsistency remains visible.
+Native negative regulation and available older primary abstracts support DCCD/NBD inhibition. The record accurately says older full bodies and full construct details were inaccessible.
+The 2004 deletion and carbon-balance analysis supports a condition-specific 35–45 percent anabolic contribution estimate. It is not a direct enzyme flux measurement or universal fraction.
+The 2004 acetate/pgi phenotypes and reported plasmid rescue distinguish SthA's disposal role from PntAB supply. Rescue stated as data-not-shown is not presented as a displayed quantitative result.
+The 2016 reporter work challenges the earlier broad redox-pool transcription hypothesis. Both interpretations and their assay differences remain; neither creates a direct metabolite-binding edge.
+The paraquat experiment includes zwf as a response comparator while the two transhydrogenase reporters do not rise at the tested dose. No global claim of oxidative-stress insensitivity is made.
+Methods support BW25113/Keio, low-copy intergenic GFP reporters and specified growth/readout conditions. Endpoint qualifiers describe deletion-based inference, not direct promoter occupancy.
+The complete screen and main text support reduced pnt reporter after IHF-alpha deletion. The native alpha/beta complex bridge is explicit and a binding mechanism is not claimed.
+The reporter ratios support conditional Lrp activation of pnt and repression of sth; amino-acid supplementation changes these effects. Separate 2019 native assertions do not replace these conditions.
+ArgP/glucose and Fur/succinate effects are conditional reporter inferences. The record does not assume direct binding or a measured Fur metal state.
+Aerobic ArcA deletion raises sth expression but does not reproduce anaerobic pnt activation. The unmeasured phosphorylation state of this particular experiment is explicit.
+The amino-acid-mixture table supports H-NS/CRP repression under that condition, with different basal outcomes. Known cAMP-bound CRP is an inferred reference state, not measured promoter occupancy.
+The single-amino-acid experiments support directional reporter responses at 5mM. Suggested Lrp/ArgP mediation is not promoted to direct ligand/protein or gene-binding evidence.
+The cAMP experiment controls growth through two constitutive reporters and confirms CRP response. Extracellular cAMP lowering pnt expression is kept separate from general CRP activation.
+TableS4 supports the TyrR screen ratio under amino-acid mixture. Its evidentiary level is explicitly a supplementary expression observation, not validated direct binding or a universal sign.
+All supplementary screen conditions and 62 TF rows were read, including variation/growth columns. Failure to pass a threshold is not turned into an exhaustive negative biological claim.
+Original 2014 ChIP and expression supplements support pnt activation and sth repression in anaerobic glucose with and without nitrate. Native phosphorylated ArcA and the ArcA-8myc/knockout preparations are distinguished.
+The exact native 2019 regulation/target/phase joins support the three Lrp signs. Full primary Methods were read, but unavailable per-gene supplemental rows are not falsely claimed as directly inspected.
+Fresh workbook row pntA gives peak1675942/coverage45/distance-15 and normalized FC0.372191. Raw coverage division is not substituted; proximity/operon assignment is weaker than target-site mutagenesis.
+Fresh CsiR RNA-seq row gives pntA FC2.793539, with no matching bound-target row in the complete bound sheet. The graph explicitly labels an indirect expression response.
+The exact phosphorylated-PhoB/regulation/promoter/TU join identifies phoA. P0AFJ5, not rejected GcvR P0A9I3, is the correct issuing PhoB sequence and Asp53 state.
+The 2019 phosphate work uses MG1655 promoter fragments in a DH10B plasmid reporter. Measured outputs, synthetic Pliar and model-derived feedback/phosphorylation remain distinct evidence levels.
+The 2011 Northern/fusion experiments and compensatory mutations support Spot42-sth pairing. The two strain/construct systems are stated in prose because RNA is not a permitted protein endpoint qualifier.
+The 2012 paper discusses multiple pairing regions but does not establish simultaneous stoichiometry. nanC probing/Hfq results are not misassigned as sth experiments.
+Native octamer and 2022 SEC/DLS estimates agree at assembly level. Older seven-to-eight-subunit annotation and other-species filament observations remain separate.
+The primary 2022 construct is His10-tagged SthA in MC1061, with FAD in lysis. It is distinct from the older fused protein and the AlphaFold structure identifier.
+The 2022 kinetic donor/acceptor pair is NADH/thioNADP; the 2004 extract capacity uses APAD. Neither surrogate is silently made natural NADP/NAD or a new native pathway substrate.
+FAD occupancy, SEC loss and lower variant activity are supported by primary results and supplements. Native per-chain capacity is not universal occupancy, and mutant findings stay out of wild-type edges.
+The original supplement gives WT responses160.7/171.1/148.2 percent at5mM, on its own baseline. Large C45A/T50C percentages use much smaller separate baselines and are not assigned to WT.
+Phosphate inhibition and Na/K chloride controls are concentration-dependent. Low-salt absence of an effect is not generalized to500mM, and buffer phosphate protonation is not directly measured.
+High NADH inhibits the thioNADP assay with the stated concentration range and fitted KI. The older NADPH-direction observation and unresolved thioNADP chemical identity remain separate.
+Primary uncoupled oxidase/oxygen experiments support side activity and ROS, with mutant relative versus absolute yields distinguished. These are not added as native core reactions or proven cellular ROS flux.
+The 12-base overlap motivates an OxyR hypothesis only. The record has no invented OxyR regulatory edge.
+The paper's reference sequence and AF-B7M718-F1 model are not the same identity claim. No experimentally determined reference-protein crystal structure is asserted.
+Freshly hashed 25 API originals and all ten selected module tables contain no six-locus candidate members. This is a bounded computational screen, not global absence or mechanistic regulation.
+Exact issuing R175 mutagenesis features and the available 2005 abstract support gain-of-NADH-kinase variants. Wild-type NADH phosphorylation and unavailable full preparation details are not inferred.
+The 2011 abstract specifies fused EcSTH and time-dependent metal effects. The graph retains abstract-only preparation limits and distinguishes its NADPH/thioNAD direction from2022.
+Older DCCD abstracts retain nucleotide-dependent protection, charged-residue mutants and preserved pumping. They are not conflated with the2021 H91A coupling mutant.
+The NBD abstract includes beta cysteine and other modification sites and the inhibitory NBD-NADPH adduct. The record avoids a simplistic universal NADPH-protection claim and leaves unresolved adduct chemistry in prose.
+The1999 abstract/native annotation supports a corrected N terminus and soluble enzyme identity. Modern issuing sequence grounding is independent; no unavailable full paper is credited.
+Fresh Rhea11693 and issuing SthA chemistry support NAD+NADPH to NADH+NADP without proton transport. It is clearly a supporting opposed redox route outside the native three-member boundary.
+Frozen PathBank acid/base forms and its structural references were read independently of Rhea. The final record does not claim exact equivalence between the differing charge forms.
+The1971/1973 historical metabolism papers are metadata-only in the inspected corpus. The record explicitly avoids inventing first-hand assays from those inaccessible papers.
+Reviewed PhoA signal/chain/PTM comments support processing and isozymes. DsbA/Iap context and native phosphite oxidation are not presented as NADP-specific regulation or core reactions.
+The fresh Nac workbook cysQ row supports the positive expression/binding join with exact normalized value. It adds conditional regulation, not evidence that CysQ is the physiological NADP phosphatase.
+All16 selected expression rows and duplicate pntB annotations were independently read. CsiR pntA and pntB have opposite signs, both expression-only; unreported significance is not invented.'''.splitlines()
+assert len(notes)==80,len(notes)
+ca=[]
+for i,(c,n) in enumerate(zip(claims,notes)):
+ ca.append({'key':c['key'],'claim':c['preflight_claim']['claim'],'record_paragraphs':c['paragraphs'],'edges':c['edges'],'assessment':'needs_evidence_ownership_repair'if i==14 else'supported_with_stated_scope','independent_reason':n,'preflight_source':c['preflight_claim']['source_binding'],'preflight_locator':c['preflight_claim'].get('source_locator'),'explicit_limit':c['preflight_claim']['limits'],'finding':'nad-nadp-cross-study-locator'if i==14 else None})
+byev={}
+for i,x in enumerate(ledger):byev.setdefault(json.dumps(x['evidence'],sort_keys=True),[]).append(i)
+extra={98:'Fresh issuing SUBCELLULAR LOCATION evidence is rule-based cytoplasm annotation, not direct localization of every historical preparation.',99:'Fresh issuing CysQ annotation says peripheral inner-membrane protein on the cytoplasmic side. No unsupported soluble cytosol or physiological NADPase inference is made.',100:'Fresh issuing CysQ ACTIVITY REGULATION cites a separate bisphosphate-nucleotidase study. Calcium inhibition is general annotation context, not a claimed 2007 NADP assay result.'}
+ea=[];qa=[]
+for i,e in enumerate(r['mechanistic_edges'],1):
+ cs=[x for x in ca if e['id']in x['edges']];reason=[x['independent_reason']for x in cs]
+ if i in extra:reason.append(extra[i])
+ assert reason,(i,e['id'])
+ sources=[{'evidence':v,'independent_selector_rows':byev[json.dumps(v,sort_keys=True)]}for v in e['evidence']]
+ ea.append({'edge_index':i-1,'edge_id':e['id'],'triple':{k:e[k]for k in ['subject','predicate','object']},'description':e['description'],'assessment':'needs_evidence_ownership_repair'if i==41 else'supported_with_stated_scope','independent_reason':reason,'claims':[x['key']for x in cs],'evidence_review':sources,'endpoint_qualifier_count':len(e.get('endpoint_qualifiers',[]))})
+ for qi,q in enumerate(e.get('endpoint_qualifiers',[])):
+  qa.append({'edge_id':e['id'],'path':f'mechanistic_edges[{i-1}].endpoint_qualifiers[{qi}]','qualifier':q,'assessment':'supported_with_stated_scope','independent_reason':reason+['The specified protein/complex endpoint, state or experimental preparation was checked against the cited original Methods, native modified-state join or issuing feature. This qualifier does not convert reference identity into exact identity of all experimental preparations.'],'evidence_review':[{'evidence':v,'independent_selector_rows':byev[json.dumps(v,sort_keys=True)]}for v in q['evidence']]})
+co=[]
+context_map={
+'K87':([7,8],[39,40]),'K01-native':([4,5,6,8,9],[32,34,35,36,37,38,41,42]),'K01-recombinant':([4,9],[33]),'PhoA62':([11,13],[43]),'PhoA-reference':([12],[]),'CysQ07':([14,15],[47,48,49]),'CysQ-controls07':([15],[]),'Archaea07':([16],[]),'Pnt04':([28],[]),'Pnt21':([17,18,19],[50]),'Pnt21-H91A':([19],[]),'SthA22':([22,23,24,25],[55,58,59,60,61,62]),'SthA22-C45A':([23,25],[]),'SthA22-T50C':([23,25],[]),'Reporter16':([30,31,32,33,34],[74,75,76,77,78,79,80,81,82]),'ArcA14':([32],[92,93]),'Lrp19':([35],[89,90,91]),'Nac17':([36,37],[94,95]),'CsiR17':([37],[101,102]),'PhoA19':([38],[]),'Spot42-Northern11':([39],[]),'Spot42-fusion11':([39],[]),'Spot42-followup12':([39],[]),'ArcA-native':([32],[92,93]),'PhoB-native':([38],[97]),'NadK-R175-series':([10],[]),'SthA2011-fusion':([27],[63,64,65,66,67]),'Pnt-DCCD-variants':([20],[])}
+for c in json.loads((A/'ledgers/construct-dispositions.json').read_text()):
+ cid=c['preflight_original']['id'];paras,exact=context_map[cid];matched=[x for x in ca if set(x['record_paragraphs'])&set(paras)]
+ claimed=[x['edge']for x in c['endpoint_qualifiers']];correct=[f'nad-{i:03d}'for i in exact]
+ co.append({'id':cid,'preflight_original':c['preflight_original'],'author_correction':c.get('author_correction'),'independent_paragraphs':paras,'independent_exact_endpoint_qualifier_edges':correct,'author_claimed_endpoint_links':claimed,'author_links_match_exact_context':claimed==correct,'assessment':'record_scope_supported; ledger_links_require_repair'if claimed!=correct or cid=='K87'else'supported_with_stated_scope','independent_reason':[x['independent_reason']for x in matched],'limit':c['preflight_original']['limit'],'link_limit':'Exact preparation links only. Same-paper wild type, mutants, control proteins and other taxa are related context, not identical endpoint qualifications. RNA constructs remain explicit edge prose under current schema.'})
+pa=[]
+for p in json.loads((A/'ledgers/paragraph-claims.json').read_text()):
+ cs=[x for x in ca if p['paragraph']in x['record_paragraphs']];pa.append({'paragraph':p['paragraph'],'text':p['text'],'claims':[x['key']for x in cs],'independent_assessments':[x['independent_reason']for x in cs],'assessment':'science_supported; edge_citation_repair_pending'if p['paragraph']==8 else'supported_with_stated_scope'})
+refa=[]
+for ref in r['references']:
+ rid=ref['id'];uses=[{'edge':e['edge_id'],'evidence':v['evidence']}for e in ea for v in e['evidence_review']if v['evidence']['reference_id']==rid]
+ refa.append({'reference':ref,'original_binding':bindings[rid],'assessment':'issuing_or_primary_identity_and_scope_verified','edge_evidence_uses':uses,'scope':'Reference identity and source bytes verified independently. Full primary body access is limited exactly as documented in source-reading-coverage.json; native assertions, abstracts, metadata-only references and frozen computational context are not upgraded to direct experimental proof.'})
+assert [len(ea),len(qa),len(ca),len(co),len(pa),len(refa)]==[102,48,80,28,41,94]
+for name,val in [('edge-assessments.json',ea),('qualifier-assessments.json',qa),('claim-assessments.json',ca),('construct-assessments.json',co),('paragraph-assessments.json',pa),('reference-assessments.json',refa)]:
+ (O/name).write_text(json.dumps(val,indent=2,ensure_ascii=False)+'\n')
+print('Independent written assessments:102 edges,48 qualifiers,80 claims,28 contexts,41 paragraphs,94 references')

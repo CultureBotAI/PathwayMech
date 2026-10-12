@@ -1,0 +1,35 @@
+"""External bounded adaptation, never maintained execution."""
+from pathlib import Path
+import json
+P=Path(__file__).resolve().parent
+OLD=Path('/private/tmp/pathwaymech-next-231-finalization-support-20261012')
+for name in ['support.py','assemble_review.py','inspect_with_inputs.py','save_review.py','archive_native.py','preserve.py','probe_current.py','probe_fragment_schema.py','test_support.py','run_check.py']:
+ s=(OLD/name).read_text().replace('next-231','next-232').replace('PPI','NAD').replace('PPi','NAD').replace('ppi_','nad_').replace('ppi-','nad-')
+ s=s.replace('a33f81ebed11cc61880aa645e4d5b73bb8480435','19af3cc154dbbd757c17299b36923e5f9ccc31dc').replace('d7d07b03bbdf2ec01b96045e365b7cb3e357a285','d0712923d0f66d4c08b25b7fa0ed5adc9dbdc7fe').replace('20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5','96e493c58ab830ec79f0e4ed4e49d68a9f4e49d761e62b58e86c8783a7a569c7')
+ s=s.replace('pentose-phosphate-pathway-non-oxidative-branch-ii','nad-phosphorylation-and-dephosphorylation').replace('MetaCyc:PWY-8178','MetaCyc:NADPHOS-DEPHOS-PWY').replace('MetaCyc_PWY-8178','MetaCyc_NADPHOS-DEPHOS-PWY').replace('nad-pentose-phosphate-branch','nad-phosphorylation-and-dephosphorylation')
+ s=s.replace('/root/atp_canonical_preparation','/root/atp_build_preparation_audit')
+ if name=='support.py':
+  s=s.replace('integration-preparation-successor','integration-preparation').replace('pathwaymech-next-232-maintained-adoption-20261012/adoption.json','pathwaymech-next-232-root-integration-execution-20261012/adoption.json').replace("ADOPTION.parent/'merged-binding.json'","ADOPTION.parent/'merged-base.json'").replace('pathwaymech-next-232-maintained-history-20261012/execution.json','pathwaymech-next-232-root-integration-execution-20261012/history.json')
+  s=s.replace("'UV_NO_SYNC':'1',","'UV_NO_SYNC':'1','PYTHONNOUSERSITE':'1','GIT_OPTIONAL_LOCKS':'0',")
+  start=s.index(" if 'original_failed_execution' in gates:");end=s.index(" for row in gates['receipts']:",start);s=s[:start]+" assert 'original_failed_execution' not in gates, 'A recovery requires a separately reviewed successor; no generic waiver'\n"+s[end:]
+  s=s[:s.index('\n\ndef verify_recovery(')]+'\n'
+  s=s.replace('(51,14,120,53,6)','(102,48,266,97,4)').replace("'page','nodes','helper'","'page','nodes_file','edges_file','helper'").replace('(11536,7668,51,50,39)','(11587,7718,102,68,28)').replace('len(delta)==9','len(delta)==0').replace('(231,231,11536,7668,51,50,39)','(232,232,11587,7718,102,68,28)').replace("==765 and p['new_cache_copies_regular_verified']==24","==789 and p['new_cache_copies_regular_verified']==11")
+  s=s.replace("h['status']=='native_history_scaffolded_before_render' and h['pre_render'] is True","h['status']=='two_native_histories_created_before_render'").replace("h['new_history_files']","h['new_histories']")
+  s=s.replace(" assert not p['lost_contexts']", " assert p['old_review_bundles']==108 and p['old_cache_symlinks_verified']==90\n assert not p['lost_contexts']")
+ if name=='assemble_review.py':
+  a=s.index(" if 'original_failed_execution' in gates:");b=s.index(' # All actual command streams',a);s=s[:a]+s[b:]
+  s=s.replace(" for key,packet in [('page-qa',QA.parent),('native-history',HISTORY.parent)]:", " for key,packet in [('page-qa',QA.parent)]:")
+  s=s.replace(" for i,packet in enumerate(args.failed_execution):", " for index,row in enumerate(load(HISTORY)['commands']):\n  for key in ['stdout','stderr']:sources.append((Path(row[key]['path']),'native-history/'+str(index)+'.'+key))\n for i,packet in enumerate(args.failed_execution):")
+  s=s.replace("sources.append((Path(row['original']['path']),'evidence/'+row['evidence_id']+'.json'))", "sources.append((Path(row['original']['path']),'evidence/'+Path(row['maintained_reference']).name))")
+  a=s.index(" if 'original_failed_execution' in gates:");b=s.index(" assert_history(ROOT,gates['render_history_inputs']);write",a);s=s[:a]+s[b:]
+  s=s.replace('Exact51-edge53-reference NAD successor retains five accepted scientific corrections455–459 and separately accepted guard fix463.', 'Exact 102-edge, 48-qualifier, 97-reference NAD successor retains the accepted external corrections for issues 465–469.')
+  s=s.replace('actualtarget20541f','exact target96e493').replace('exacttarget20541f','exact target96e493')
+  s=s.replace('All231old records/pages and prior reviews/history remain exact; all11536old edges and7668old contexts preserved. Exact51new edges50contexts39nodes; nine independently inspected category union cells only. Old765cache identities unchanged and24newregular original copies exact.', 'All 232 old records/pages and 108 prior review bundles/history remain exact; all 11587 old edges and 7718 old contexts preserved. Exactly 102 new edges, 68 contexts and 28 nodes; no shared display-cell change. Old 789 cache identities unchanged and 11 new regular original copies exact.')
+  s=s.replace('Complete51edge14qualifier120evidence53owner-reference and six-direction', 'Complete 102-edge, 48-qualifier, 266-evidence, 97-owner-reference and four-direction')
+ if name=='probe_current.py':s=s.replace("'gates','original_failure','preservation'","'gates','preservation'").replace('target/Handle/native','target/complex-adapter/native')
+ if name=='test_support.py':
+  a=s.index(" recovery=load(");b=s.index(' native,doc=fixture()',a);s=s[:a]+s[b:]
+  s=s.replace('==146','==410').replace('==51','==102').replace('all51','all102').replace('146assessments','410assessments').replace(",'exact actual recovery bindings read-only'",'').replace(' and read-only actual recovery binding','')
+ if name=='run_check.py':s=s.replace("'check','--select'","'check','--no-cache','--select'")
+ (P/name).write_text(s)
+(P/'preparation-read-failure.json').write_text(json.dumps({'status':'retained_harmless_external_read_probe_failure','actual_tool_chunk':'eadefd','exit_code':1,'stderr':'  File "<stdin>", line 9\n    printout=False\nIndentationError: unexpected indent\n','scope':'An exploratory read-only inline listing failed before execution; corrected read completed 87445a/0. No file, source, maintained state or cache was changed. One combined later display truncated; not credited as complete code review.'},indent=2)+'\n')

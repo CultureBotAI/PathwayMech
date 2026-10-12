@@ -1,0 +1,33 @@
+[
+  {
+    "key": "nad-authority-relocation-narrative",
+    "severity": "low",
+    "blocking_authority_proposal": false,
+    "title": "README and seal template incorrectly describe a missing-parent search error",
+    "owners": [
+      "README.md:33",
+      "seal.py:73"
+    ],
+    "claim": "its ignored-aware parent search (including the actual missing-parent error)",
+    "actual_relocation_observation": {
+      "path": "/private/tmp/pathwaymech-next-232-authority-preparation-20261012/pathbank-relocation-observation.json",
+      "bytes": 2470,
+      "sha256": "566765637ef41e7082e475ce71c9b24f83762fdc6acac6461168ce758fef659b"
+    },
+    "actual_parent_inventory": {
+      "ignored_aware_parent_inventory_command": [
+        "rg",
+        "--files",
+        "-uu",
+        "-L",
+        "/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank"
+      ],
+      "inventory_exit_code": 0,
+      "stdout": "/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/acquisition.json\n/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/cli-before.stderr.txt\n/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/SMP0000983-draft-review300.yaml\n",
+      "stderr": ""
+    },
+    "impact": "Provenance narrative is inaccurate. The historical ZIP path is correctly absent, the parent directory exists, and whole current archive identity/body hashes pass. No selected authority object is affected.",
+    "remediation": "Preserve the sealed packet and record an explicit successor or addendum correcting the description to a successful ignored-aware parent listing that did not contain the historical ZIP; retain exact original exit/stdout/stderr evidence.",
+    "stable_key_scope": "Final stable key supplied by parent after independent reproduction; source-line pointer verified from exact sealed template."
+  }
+]

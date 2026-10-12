@@ -1,0 +1,20 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib,subprocess
+O=Path(__file__).parent;A=Path('/private/tmp/pathwaymech-next-232-author-20261012');P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+def bind(p,relative=False):
+ b=p.read_bytes();return {'path':str(p.relative_to(O))if relative else str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def inventory():return sorted(Path(x)for x in subprocess.check_output(['rg','--files','--no-ignore','--hidden','--follow','-0',str(O)]).decode().split('\0')if x)
+cache=[bind(p,True)for p in inventory()if 'swift-module-cache'in p.parts]
+save('runtime-cache-inventory.json',{'role':'Runtime compiler caches generated only inside this reviewer packet; excluded from scientific evidence manifest and fully inventoried here. No shared cache was written.','artifacts':cache})
+files=[p for p in inventory()if 'swift-module-cache'not in p.parts and p.name not in ['artifact-manifest.json','handoff.json']]
+manifest={'package':str(O),'scope':'Every hidden, ignored and followed scientific/audit file; excludes only self, handoff and separately inventoried Swift runtime caches.','inventory_command':['rg','--files','--no-ignore','--hidden','--follow','-0',str(O)],'artifacts':[bind(p,True)for p in files],'runtime_exclusions':len(cache)}
+save('artifact-manifest.json',manifest)
+save('handoff.json',{'kind':'independent_full_scientific_review','reviewer':'/root/ppi_science_review','start_utc':'2026-10-12T07:49:28.498850+00:00','finished_utc':datetime.now(timezone.utc).isoformat(),'status':'full original-target scientific review complete; three minor provenance repairs required; no final acceptance of unchanged packet','target':bind(A/'draft/nad-phosphorylation-and-dephosphorylation.yaml'),'author_handoff':bind(A/'handoff.json'),'author_manifest':bind(A/'artifact-manifest.json'),'preflight_handoff':bind(P/'handoff.json'),'review_manifest':bind(O/'artifact-manifest.json'),'report':bind(O/'REVIEW.md'),'findings':bind(O/'findings-final.json'),'counts':{'edges':102,'qualifiers':48,'claims':80,'preparation_contexts':28,'paragraphs':41,'existing_references':94,'selector_rows':246,'actual_evidence_uses':265,'unique_evidence_objects':224,'author_seal_artifacts':377,'review_scientific_artifacts':len(files),'review_runtime_cache_files':len(cache)},'finding_keys':{'resolved_on_target':['nad-pnt-topology-locator'],'open':['nad-nadp-cross-study-locator','nad-construct-ledger-specificity','nad-narrative-reference-coverage']},'parent_next_step':'Create/disposition issues, authorize a single bounded author successor, then obtain exact-delta independent reassessment. Original full science coverage may be explicitly inherited only for unchanged material. Authority/full canonical native acceptance and integration remain separate.','limitations_file':bind(O/'source-reading-coverage.json'),'failure_history':bind(O/'probe-failure-history.json'),'mutations':'External reviewer directory only; no maintained/cache/Git/GitHub/native-save/full-builder mutations.'})
+# Verify the final closed sets and every artifact, without rewriting the seal.
+for x in manifest['artifacts']:
+ p=O/x['path'];assert bind(p,True)==x
+for x in cache:assert bind(O/x['path'],True)==x
+expected={str(O/x['path'])for x in manifest['artifacts']+cache}|{str(O/'artifact-manifest.json'),str(O/'handoff.json')};assert {str(p)for p in inventory()}==expected
+print(json.dumps({'handoff':bind(O/'handoff.json'),'manifest':bind(O/'artifact-manifest.json'),'scientific_files':len(files),'runtime_cache_files':len(cache),'closed':True}))

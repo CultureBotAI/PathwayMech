@@ -1,0 +1,55 @@
+from author_regulation import *
+
+# Complete direct issuing identity checks are separate from activity inference.
+expected={'P0A7B3':'nadK','P00634':'phoA','P07001':'pntA','P0AB67':'pntB','P27306':'sthA','P22255':'cysQ','P0A9Q1':'arcA','P0AFJ5':'phoB','P0ACJ0':'lrp','Q47005':'nac','P0ACJ8':'crp','P0A6X7':'ihfA','P0A6Y1':'ihfB','P0ACF8':'hns','P0A8S1':'argP','P0A9A9':'fur','P07604':'tyrR','P37338':'glaR'}
+checks=[]
+for acc,gene in expected.items():
+ p,j=upentry(acc);names={g['geneName']['value']for g in j['genes']};assert gene in names,(acc,names,gene);assert j['organism']['taxonId']==83333,(acc,j['organism']);assert len(j['sequence']['value'])==j['sequence']['length']
+ checks.append(dict(accession=acc,gene=gene,original=bind(p),observed_genes=j['genes'],organism=j['organism'],sequence=j['sequence'],entryAudit=j['entryAudit'],features=j.get('features',[]),comments=j.get('comments',[])))
+save('derived/selected-protein-full-issuing-checks.json',checks)
+badp,bad=upentry('P0A9I3');assert bad['genes'][0]['geneName']['value']=='gcvR'
+save('derived/phob-identity-correction.json',dict(status='Unsealed author correction; sealed preflight remains unchanged',rejected=dict(accession='P0A9I3',gene='gcvR',original=bind(badp)),accepted=dict(accession='P0AFJ5',gene='phoB',original=bind(A/'raw/P0AFJ5.json')),native_chain=bind(A/'raw/ECOLI-PHOB-MONOMER.xml'),native_state=bind(P/'raw/ECOLI-PHOSPHO-PHOB.xml'),reason='Exact native PHOB-MONOMER UniProt dblink and complete issuing gene/taxon/sequence contradict the provisional P0A9I3 mapping.'))
+
+# State evidence must ground the correct reference chain, not just an extant CURIE.
+for e in edges:
+ if e['subject']=='UniProtKB:P0AFJ5':
+  e['evidence'].append(uid('P0AFJ5','The exact PhoB reference is P0AFJ5, phoB/b0399,229residues in E. coli K12. P0A9I3 is GcvR and is rejected for this role.'))
+  e['endpoint_qualifiers'][0]['evidence'].append(uf('P0AFJ5','Modified residue','The issuing PhoB reference has phosphoaspartate53, supporting the stated phosphorylated endpoint; this is not an unmodified chain.'))
+ if e['subject']=='UniProtKB:P0A9Q1'and any(q['kind']=='molecular_state'for q in e.get('endpoint_qualifiers',[])):
+  e['endpoint_qualifiers'][0]['evidence'].append(uf('P0A9Q1','Modified residue','The issuing ArcA reference has phosphoaspartate54; the active modified state is distinguished from the unmodified reference sequence.'))
+edge('UniProtKB:P0A7B3','located_in','GO:0005829',ue('P0A7B3','SUBCELLULAR LOCATION','The issuing NadK annotation places the reference protein in the cytoplasm, by rule-based inference rather than direct localization of every historical preparation.'),claims=['nadk-assembly'])
+edge('UniProtKB:P22255','located_in','GO:0005886',ue('P22255','SUBCELLULAR LOCATION','The issuing CysQ annotation describes a peripheral inner-membrane protein on the cytoplasmic side. This reference localization does not establish physiological NADP phosphatase function.'),claims=['cysq-physiological-limit'])
+edge('CHEBI:29108','inhibits','UniProtKB:P22255',ue('P22255','ACTIVITY REGULATION','The reviewed CysQ annotation reports calcium inhibition from the2006 bisphosphate-nucleotidase study. This is general enzyme context, not a measured calcium effect on the2007 NADP assay.'),claims=['cysq-physiological-limit'])
+qcsi=qual('subject','experimental_construct','2017 pT7-FLAG-4 induced CsiR in MG1655, LB,1mM IPTG for2h from OD6000.2. These RNA-seq rows are expression-only; neither pntA nor pntB occurs in the bound-target sheet. The current reference is GlaR/P37338.',pe('28061857','/article/body/sec[2]/sec[2]/p | /article/body/sec[2]/sec[4]/p','The primary Methods identify FLAG-tagged inducible regulators and paired transcript measurements.'))
+for gid,row,pred,text in [(pnta,2451,'activates','Induced CsiR gives pntA normalized FC2.793539; no pntA bound-target row was found. The edge denotes a potentially indirect expression response.'),(pntb,2452,'inhibits','Induced CsiR gives pntB normalized FC0.440537, opposite to pntA; no pntB bound-target row was found. The edge denotes a potentially indirect expression response.')]:
+ edge('UniProtKB:P37338',pred,gid,workbook('28061857','12918_2016_376_MOESM2_ESM.xlsx','All CsiR RNA-Seq',row,text),uid('P37338','Issuing P37338 identifies glaR with the historical csiR alias; the induced paper construct and modern reference are not assumed sequence-identical.'),ge(gid.split(':')[1],'The exact issuing Gene record grounds the expression object, independently of the regulator identity.'),qualifiers=[qcsi],claims=['reg2017-csir-context','reg2017-expression-screen-complete'])
+
+# Reference-only originals supporting the prose are kept with their actual access level.
+for pmid in ['8100227','9922271','15855156','23274360']:
+ pube(pmid,'This primary abstract is used only for the source-qualified historical observation stated in the description; no full-body access is claimed.')
+uf('P0A7B3','Mutagenesis','The exact R175 variant annotations distinguish gained NADH-kinase activity from the wild-type reference and inactive alternatives.')
+uf('P00634','Signal','PhoA carries a1–21 signal peptide; the mature reference chain begins at22. Historical preparations are not assigned a specific processed isozyme.')
+uf('P00634','Active site','Reviewed PhoA Ser124 forms a phosphoserine intermediate; reference numbering is not renumbered to the mature chain.')
+ue('P00634','SUBUNIT','The reviewed PhoA isozymes distinguish identical-chain dimers1/3 and a mixed processed-chain dimer2; this is not evidence for which isozyme was assayed in1962.')
+xe('NADPPHOSPHAT-MONOMER','The native physiological NADP-phosphatase object has no assigned gene; this uncertainty is retained rather than assigned to CysQ.','/ptools-xml/Protein')
+for acc in ['P0ACF8','P0A8S1','P0A9A9','P07604','P37338']:
+ ue(acc,'ACTIVITY REGULATION','This issuing reference activity-regulation annotation supplies protein context only; it does not establish that the stated modification or effector mediates this pathway reporter response.')
+for acc in ['P07604','P0ACF8']:
+ ue(acc,'SUBUNIT','The complete issuing oligomer annotation is retained; the pathway reporter did not measure which oligomer was present.')
+
+# Exact supplementary DOI objects are separate originals, not replacements for the main XML.
+for suffix,pages,values in [('s009',[1,3],{'pntA':'peak1675896–1676296; occupancy3.44; activation','sthA':'peak4158619–4159036; occupancy9.69; repression'}),('s010',[2,3],{'pntA':'peak1675706–1676221; occupancy7.42; activation','sthA':'peak4158474–4159090; occupancy10.7; repression'})]:
+ p=P/'raw'/('pgen.1004264.'+suffix+'.pdf');q=P/'derived'/('pgen.1004264.'+suffix+'-pages.json');j=json.loads(q.read_text());rows=j['pages']if isinstance(j,dict)else j
+ id=ref('DOI:10.1371/journal.pgen.1004264.'+suffix,p,'ArcA supplementary table '+('S1'if suffix=='s009'else'S2'),'https://journals.plos.org/plosgenetics/article/file?type=supplementary&id=10.1371/journal.pgen.1004264.'+suffix,'Exact publisher supplemental PDF; separately acquired and bound; table context retained')
+ for gid,gene in [(pnta,'pntA'),(sg,'sthA')]:
+  ev=evidence(id,'The original ArcA table reports '+values[gene]+'. Coordinates and log2 occupancy are source-specific, not modern remapped loci.','PDF '+','.join(map(str,pages))+'; '+gene+' operon row','pdf_pages',dict(projection=str(q),projection_binding=bind(q),pages=pages),[r for r in rows if r['page_1based']in pages])
+  for e in edges:
+   if e['subject']=='UniProtKB:P0A9Q1'and e['object']==gid and any(x['kind']=='molecular_state'for x in e.get('endpoint_qualifiers',[])):e['evidence'].append(ev)
+
+pb=P/'raw/PW002081.owl'
+ref('PathBank:SMP0002093',pb,'NAD phosphorylation and dephosphorylation — frozen PW002081 BioPAX','https://pathbank.org/view/SMP0002093','Frozen archive member PW002081.owl SHA256 b6f8df0db6bf06cd671f3518481285f00b17d1eb384d8834826527c2201593e0; whole archive SHA256 b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44; no live-download claim')
+evidence('PathBank:SMP0002093','The frozen root contains two biochemical reactions and one coupled transport. Collapsed proton locations and different chemical charge forms limit exact interpretation.','Whole PW002081.owl: root pathwayComponent and selected reaction/chemical/location objects','pathbank_whole',dict(root='SMP0002093',member='PW002081.owl'),dict(member_sha256=bind(pb)['sha256']))
+we('11488932',238,252,'Table4 reports FeCl2, not ferric salt. CHEBI:29033 identifies its iron(2+) species; failure to replace Mg is negative cofactor context, not an inhibitory edge. The provisional unconnected iron(3+) declaration was rejected.')
+pube('10383409','The1999 topology abstract describes a His-tagged cysteine-free variant series with four alpha and nine beta membrane spans; this preparation is distinct from2021 proteoliposomes.')
+xe('ALKAPHOSPHA-MONOMER','Native commentary describes signal cleavage, Iap removal of the N-terminal arginine and DsbA-assisted folding; additional phosphite oxidation is separate enzyme context, not NADP-specific regulation.','/ptools-xml/Protein/comment')
+xe('PYRNUTRANSHYDROGEN-CPLX','The native complex annotation describes AB(Re–Si) hydride-transfer stereospecificity, pro-R hydrogen of NADH and pro-S of NADPH. This remains native historical annotation, not a new2021 stereochemical assay.','/ptools-xml/Protein/comment')

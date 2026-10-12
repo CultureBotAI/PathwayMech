@@ -1,0 +1,42 @@
+"""Seal bounded NAD authority proposal audit and its one narrative finding."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+HERE=Path(__file__).resolve().parent
+PACK=Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+def bind(p):
+    p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def write(name,value):
+    with (HERE/name).open('x') as f:json.dump(value,f,indent=2);f.write('\n')
+assert bind(PACK/'handoff.json')['sha256']=='25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102'
+checks=json.loads((HERE/'checks.json').read_text());assert len(checks)==7 and all(r['status']=='passed' for r in checks)
+assert json.loads((HERE/'final-preservation.json').read_text())['status']=='passed'
+findings=json.loads((HERE/'findings.json').read_text());assert len(findings)==1 and findings[0]['key']=='nad-authority-relocation-narrative'
+write('execution.json',{'status':'passed_with_one_nonblocking_narrative_finding','audit_terminal':'b14a6c/0','audit_session':53868,
+    'final_preservation_terminal':'2958e9/0','final_preservation_session':64344,'audit_helper':bind(HERE/'audit.py'),
+    'final_preservation_helper':bind(HERE/'final_preservation.py'),'stdout':bind(HERE/'audit.stdout'),'stderr':bind(HERE/'audit.stderr'),
+    'python':'/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','flag':'-B',
+    'environment':{'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1','PYTHONNOUSERSITE':'1'},
+    'independent_checks':7,'source_replay':'Native build_snapshot with only frozen NAD selection','ontology_replay':'36 selected terms via read-only SQLite extract_terms',
+    'full_canonical_build':False,'full_SQL_rehash':False,'maintained_or_cache_writes':False,
+    'metadata_finalization':'Parent requested stable finding key nad-authority-relocation-narrative after reproduction; seal-template source-line pointer corrected to73 from independent rg output. No audit logic or evidence altered.'})
+paths=sorted(map(Path,subprocess.check_output(['rg','--files','-uu','-L',str(HERE)],text=True).splitlines()))
+artifacts=[bind(p) for p in paths]
+write('artifact-manifest.json',{'artifacts':artifacts,'count':len(artifacts),'inventory':'rg --files -uu -L; hidden/ignored/followed files included','excluded':['artifact-manifest.json','handoff.json']})
+write('handoff.json',{'status':'authority_proposal_passed_with_nonblocking_narrative_finding','at':datetime.datetime.now(datetime.UTC).isoformat(),
+    'reviewed_proposal':bind(PACK/'handoff.json'),'reviewed_manifest':bind(PACK/'artifact-manifest.json'),
+    'target_sha256':'c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503',
+    'manifest':bind(HERE/'artifact-manifest.json'),'artifact_count':len(artifacts),'report':bind(HERE/'REPORT.md'),
+    'findings':bind(HERE/'findings.json'),'checks':bind(HERE/'checks.json'),'execution':bind(HERE/'execution.json'),
+    'final_preservation':bind(HERE/'final-preservation.json'),'blocking_findings':[],
+    'nonblocking_findings':['nad-authority-relocation-narrative'],
+    'named_scope':{'all':68,'source':32,'ontology':36},'originals':791,'class_source_companion_accounted':True,
+    'actual_cache_bridge':{'old_preserved':765,'authorized_PPi_additions':24,'current':789},
+    'adapter_acceptance_inherited':bind(Path('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json')),
+    'independent_adapter_implementation_review_claimed':False,'full_canonical_acceptance':False,'scientific_acceptance':False,
+    'maintained_or_cache_writes':False,'future_author_successor_accepted':False,
+    'scope':'Exact frozen authority proposal integration only. Original native outputs/source precedence, original accounting and preservation pass; root additive narrative correction and separate science/full-build/integration remain required.'})
+print(json.dumps({'handoff':bind(HERE/'handoff.json'),'manifest':bind(HERE/'artifact-manifest.json'),'artifacts':len(artifacts)},indent=2))

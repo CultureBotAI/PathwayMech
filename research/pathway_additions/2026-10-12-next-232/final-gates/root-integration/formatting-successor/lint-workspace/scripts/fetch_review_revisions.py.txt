@@ -1,0 +1,121 @@
+"""Restore exact historical review commits before running the unchanged review gate.
+
+Squash merges do not retain feature commits in ordinary branch history. This
+PathwayMech-specific preparation fetches only validated SHA-1 commit IDs from
+the official repository and pins them under local refs/record-reviews/ refs.
+It never edits a review or treats successful retrieval as scientific approval.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+if __package__:
+    from . import record_review
+else:
+    import record_review
+
+REPOSITORY = "CultureBotAI/PathwayMech"
+FETCH_URL = f"https://github.com/{REPOSITORY}.git"
+REVISION = re.compile(r"[0-9a-f]{40}")
+
+
+def git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["git", "-C", str(root), *args],
+        check=check, capture_output=True, text=True, timeout=120,
+        env={**os.environ, "GIT_NO_LAZY_FETCH": "1", "GIT_TERMINAL_PROMPT": "0"},
+    )
+
+
+def collect_revisions(root: Path) -> tuple[list[str], list[str]]:
+    """Validate every pair and repository claim before making any network request."""
+    if record_review.repository_identity(root).lower() != REPOSITORY.lower():
+        raise ValueError(f"origin must identify {REPOSITORY}")
+    paths = record_review.review_paths(root)  # Includes hidden and ignored bundles.
+    revisions = set()
+    for relative in paths:
+        markdown = str(Path(relative).with_name("review.md"))
+        review = record_review.parse_review_bundle(
+            relative, record_review.read_bytes(root, relative),
+            record_review.read_bytes(root, markdown),
+        )
+        if review["repository"].lower() != REPOSITORY.lower():
+            raise ValueError(f"foreign review repository: {relative}")
+        revision = review["source"]["git_revision"]
+        if not REVISION.fullmatch(revision):
+            raise ValueError(f"expected a full lowercase SHA-1 commit ID: {relative}")
+        revisions.add(revision)
+    return paths, sorted(revisions)
+
+
+def reject_symbolic_ref(root: Path, ref: str) -> None:
+    result = git(root, "symbolic-ref", "--quiet", "--no-recurse", ref, check=False)
+    if result.returncode == 0:
+        raise ValueError(f"symbolic retention ref is unsafe: {ref}")
+    if result.returncode != 1:
+        result.check_returncode()
+
+
+def restore_revisions(root: Path, revisions: list[str], fetch_url: str) -> list[str]:
+    """Fetch missing commits and retain exact objects without overwriting other refs."""
+    # The CLI supplies only FETCH_URL. A URL argument lets isolated tests use a
+    # local bare repository without network access or changing production policy.
+    plan = []
+    for revision in sorted(set(revisions)):
+        if not REVISION.fullmatch(revision):
+            raise ValueError("expected a full lowercase SHA-1 commit ID")
+        ref = f"refs/record-reviews/{revision}"
+        reject_symbolic_ref(root, ref)
+        retained = git(root, "rev-parse", "--verify", "--quiet", ref, check=False)
+        if retained.returncode == 0 and retained.stdout.strip() != revision:
+            raise ValueError(f"retention ref disagrees with requested commit: {ref}")
+        kind = git(root, "cat-file", "-t", revision, check=False)
+        if kind.returncode == 0 and kind.stdout.strip() != "commit":
+            raise ValueError(f"review revision is not a commit: {revision}")
+        plan.append((revision, ref, kind.returncode != 0))
+    fetched = []
+    for revision, ref, missing in plan:
+        if missing:
+            git(root, "fetch", "--no-tags", "--no-recurse-submodules",
+                "--no-write-fetch-head", fetch_url, revision)
+            fetched.append(revision)
+        if git(root, "cat-file", "-t", revision).stdout.strip() != "commit":
+            raise ValueError(f"fetched review revision is not a commit: {revision}")
+        resolved = git(root, "rev-parse", "--verify", "--end-of-options",
+                       f"{revision}^{{commit}}").stdout.strip()
+        if resolved != revision:
+            raise ValueError(f"resolved review commit differs from requested ID: {revision}")
+        # Compare-and-swap also refuses a concurrently changed retention ref.
+        reject_symbolic_ref(root, ref)
+        present = git(root, "rev-parse", "--verify", "--quiet", ref, check=False)
+        old = revision if present.returncode == 0 else "0" * 40
+        git(root, "update-ref", "--no-deref", ref, revision, old)
+    return fetched
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo-root", type=Path, default=Path.cwd())
+    args = parser.parse_args(argv)
+    try:
+        paths, revisions = collect_revisions(args.repo_root)
+        fetched = restore_revisions(args.repo_root, revisions, FETCH_URL)
+        for relative in paths:
+            record_review.read_review(args.repo_root, relative)
+        print(json.dumps({"reviews": len(paths), "revisions": revisions, "fetched": fetched,
+                          "retained_ref_prefix": "refs/record-reviews/"}, indent=2))
+    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+        print(f"Review revision preparation failed: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,126 @@
+"""Verify closed input/code preservation and seal this external candidate once."""
+import datetime
+import difflib
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+HERE = Path(__file__).resolve().parent
+CHANGED = {'scripts/build_source_identifier_snapshot.py', 'src/pathwaymech/identifiers.py'}
+NEW = {'src/pathwaymech/ecocyc_complex.py', 'tests/test_ecocyc_complex_authority.py'}
+FINAL = {'focused': 'focused-1791790012199822000', 'lint': 'lint-1791790019845279000',
+         'originals': 'originals-1791790019833385000'}
+
+
+def bind(path):
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def paths(root):
+    return set(map(Path, subprocess.check_output(['rg', '--files', '-uu', '-L', str(root)], text=True).splitlines()))
+
+
+def write(name, value):
+    path = HERE / name
+    assert not path.exists()
+    path.write_text(json.dumps(value, indent=2) + '\n')
+
+
+def main():
+    assert not (HERE / 'handoff.json').exists() and not (HERE / 'artifact-manifest.json').exists()
+    baseline = json.loads((HERE / 'baseline.json').read_text())
+    for key in ['preflight_handoff', 'preflight_manifest', 'accepted_build']:
+        assert bind(Path(baseline[key]['path'])) == baseline[key]
+    originals = []
+    for row in baseline['originals']:
+        for side in ['original', 'captured']:
+            assert bind(Path(row[side]['path'])) == row[side]
+        originals.append(row['captured'])
+    old = set()
+    changed = set()
+    for row in baseline['runtime_files']:
+        rel = row['relative_path']; old.add(rel)
+        for side in ['original', 'baseline']:
+            assert bind(Path(row[side]['path'])) == row[side]
+        current = bind(HERE / 'candidate' / rel)
+        if current['sha256'] != row['original']['sha256']:
+            changed.add(rel)
+    assert len(old) == 223 and changed == CHANGED
+    runtime = Path(baseline['runtime_files'][0]['original']['path']).parent
+    assert {str(p.relative_to(runtime)) for p in paths(runtime)} == old
+    assert {str(p.relative_to(HERE / 'baseline')) for p in paths(HERE / 'baseline')} == old
+    assert {str(p.relative_to(HERE / 'candidate')) for p in paths(HERE / 'candidate')} == old | NEW
+    preflight = Path(baseline['preflight_handoff']['path']).parent
+    rows = json.loads((preflight / 'artifact-manifest.json').read_text())
+    seen = set()
+    for row in rows:
+        p = Path(row.get('path') or row['relative_path'])
+        p = p if p.is_absolute() else preflight / p
+        assert p.is_relative_to(preflight) and p not in seen
+        item = bind(p)
+        assert item['sha256'] == row['sha256'] and item['bytes'] == row['bytes']
+        seen.add(p)
+    assert paths(preflight) == seen | {preflight / 'artifact-manifest.json', preflight / 'handoff.json'}
+    checks = []
+    for kind, name in FINAL.items():
+        directory = HERE / 'receipts' / name
+        receipt = json.loads((directory / 'receipt.json').read_text())
+        assert receipt['name'] == kind and receipt['exit_code'] == 0
+        for output in ['stdout', 'stderr']:
+            assert bind(Path(receipt[output]['path'])) == receipt[output]
+        for rel in CHANGED | NEW:
+            assert (directory / 'code' / (rel + '.txt')).read_bytes() == (HERE / 'candidate' / rel).read_bytes()
+        if kind == 'focused':
+            assert '785 passed' in (directory / 'stdout').read_text()
+        checks.append(bind(directory / 'receipt.json'))
+    plan = []
+    patch = []
+    for rel in sorted(CHANGED | NEW):
+        before = (HERE / 'baseline' / rel).read_text().splitlines(keepends=True) if rel in CHANGED else []
+        after = (HERE / 'candidate' / rel).read_text().splitlines(keepends=True)
+        patch.extend(difflib.unified_diff(before, after, fromfile='a/' + rel if rel in CHANGED else '/dev/null', tofile='b/' + rel))
+        plan.append({'relative_path': rel, 'operation': 'replace' if rel in CHANGED else 'add',
+                     'baseline': bind(HERE / 'baseline' / rel) if rel in CHANGED else None,
+                     'candidate': bind(HERE / 'candidate' / rel)})
+    (HERE / 'delta.patch').write_text(''.join(patch))
+    write('copy-plan.json', {'files': plan, 'scope': 'Only four reviewed files; independently bridge actual maintained base before integration.'})
+    write('preservation.json', {'status': 'passed', 'inventory_includes_hidden_ignored_followed': True,
+          'accepted_runtime_files': 223, 'existing_unchanged': 221, 'existing_changed': sorted(CHANGED),
+          'new_files': sorted(NEW), 'candidate_files': 225, 'preflight_closed_artifacts_unchanged': len(rows),
+          'originals': originals, 'final_checks_exact_current_code': checks,
+          'maintained_shared_cache_git_writes': False, 'full_native_build_executed': False})
+    history = []
+    for p in sorted((HERE / 'receipts').glob('*/receipt.json')):
+        receipt = json.loads(p.read_text())
+        assert receipt['exit_code'] == 0
+        history.append({'receipt': bind(p), 'name': receipt['name'], 'exit_code': receipt['exit_code'],
+                        'final_current_code': p.parent.name in FINAL.values()})
+    write('validation-history.json', {'checks': history,
+          'initial_capture_failure': bind(HERE / 'initial-capture-attempt.json'),
+          'failed_test_runs': 0, 'focused_pass_counts': [732, 773, 785]})
+    artifacts = [bind(p) for p in sorted(paths(HERE))]
+    write('artifact-manifest.json', {'artifacts': artifacts, 'count': len(artifacts),
+          'inventory': 'rg --files -uu -L; includes hidden/ignored and followed files',
+          'excluded': ['artifact-manifest.json', 'handoff.json']})
+    write('handoff.json', {'status': 'implementation-prepared-for-independent-review',
+          'created_at': datetime.datetime.now(datetime.UTC).isoformat(),
+          'manifest': bind(HERE / 'artifact-manifest.json'), 'artifact_count': len(artifacts),
+          'readme': bind(HERE / 'README.md'), 'copy_plan': bind(HERE / 'copy-plan.json'),
+          'delta': bind(HERE / 'delta.patch'), 'preservation': bind(HERE / 'preservation.json'),
+          'validation_history': bind(HERE / 'validation-history.json'),
+          'baseline': bind(HERE / 'baseline.json'), 'final_validation': checks,
+          'final_original_replay': bind(HERE / 'receipts' / FINAL['originals'] / 'original-replay.json'),
+          'final_bounded_native_output': bind(HERE / 'receipts' / FINAL['originals'] / 'bounded-native-snapshot.json'),
+          'new_manifest_companion': 'Inventory/capture class_source.path explicitly in subsequent preparation and integration.',
+          'labels': {'EcoCyc:CPLX0-682': 'unnamed protein complex CPLX0-682', 'EcoCyc:PYRNUTRANSHYDROGEN-CPLX': 'PntAB'},
+          'scope_limits': ['No full canonical build', 'No completed-record scientific acceptance',
+                           'No maintained/shared-cache/Git writes', 'No actual merge-state claim',
+                           'Root independent code review and original-driven full build still required']})
+    print(json.dumps({'handoff': bind(HERE / 'handoff.json'), 'manifest': bind(HERE / 'artifact-manifest.json'),
+                      'artifacts': len(artifacts)}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

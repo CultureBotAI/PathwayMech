@@ -1,0 +1,77 @@
+"""Independent root acceptance after completed source reads and actual closure."""
+import sys
+from pathlib import Path
+import hashlib
+import json
+import yaml  # Import before the longer closure; the first probe hit transient EINTR here.
+
+P = Path('/private/tmp/pathwaymech-next-232-integration-preparation-20261012')
+HERE = Path(__file__).resolve().parent
+
+
+def pin(path, digest):
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == digest, path
+
+
+pin(P / 'handoff.json', 'f54d957973f343e88719029a56479a35272b83ac88fbd78d9258fac9610594fc')
+pin(P / 'artifact-manifest.json', 'bc80f0c7c53644593876f45014c666d5821575ccff597ce640dcf9a76f514ceb')
+pin(P / 'common.py', '6d8f09e5b5ea3db2eaec2e7f1fe2d4b484e95931cac9945a478126272d1a2c5b')
+sys.path.insert(0, str(P))
+import common as c
+
+c.verify_package()
+print('317 artifact body and path identity closure passed', flush=True)
+c.verify_accepted()
+print('16 accepted packet closures and exact lineage passed', flush=True)
+c.verify_cache_inputs()
+c.verify_captured232(c.ROOT, require_bridge=False)
+c.verify_authority_conservation(c.ROOT)
+h = c.load(P / 'handoff.json')
+v = c.load(P / 'validation-summary.json')
+assert v['count'] == 16 and v['passed'] == 13 and v['failed_retained'] == 3
+assert set(v['latest']) == {'inputs', 'dossier', 'guards', 'lint', 'compile', 'verify'}
+for row in v['commands']:
+    for key in ('receipt', 'stdout', 'stderr'):
+        c.verify(row[key]['path'], row[key])
+for name, row in v['latest'].items():
+    assert row['exit_code'] == 0
+    print(name, Path(row['stdout']['path']).read_text()[-130:].strip(), flush=True)
+assert '64 passed' in Path(v['latest']['guards']['stdout']['path']).read_text()
+assert c.git(c.ROOT, 'rev-parse', 'HEAD') == c.MERGED_BASE
+assert not c.git(c.ROOT, 'status', '--porcelain=v1', '--untracked-files=all')
+assert {r['relative_path'] for r in c.inventory(c.ROOT, exclude_runtime=True)} == set(c.git(c.ROOT, 'ls-files').splitlines())
+for row in h['final_helper_bindings']:
+    c.verify(row['path'], row)
+assert len(h['final_helper_bindings']) == 13
+assert h['target']['sha256'] == c.TARGET_SHA and h['dossier_mappings'] == 550
+assert yaml.safe_load(Path(h['target']['path']).read_bytes())['id'] == 'MetaCyc:NADPHOS-DEPHOS-PWY'
+result = {
+    'status': 'accepted_for_guarded_actual_merged_baseline_integration', 'at': c.now(),
+    'preparation': c.binding(P / 'handoff.json'), 'manifest': c.binding(P / 'artifact-manifest.json'),
+    'artifact_count': 317, 'root_read_evidence': [c.binding(Path('/private/tmp/pathwaymech-next-232-root-integration-preliminary-read-20261012.json')),
+        c.binding(Path('/private/tmp/pathwaymech-next-232-root-integration-second-preliminary-read-20261012.json'))],
+    'later_full_reads': {'adaptation_builder': 'f33ef4/0', 'adopt_capture': '10371a/0',
+        'gates_bind': '8ee2d4/0', 'preservation': 'a4e061/0', 'final_four_helper_deltas': 'a76ecf/0',
+        'readme_and_checks': '501f59/0', 'ADAPTATION_and_sealer': '5f97cb/0', 'handoff_and_delta_record': '51bff3/0'},
+    'final_helper_bindings': h['final_helper_bindings'], 'validation_summary': c.binding(P / 'validation-summary.json'),
+    'actual_preparation_commands': 16, 'passed_commands': 13, 'retained_failed_commands': 3,
+    'guard_cases': 64, 'final_preparation_stages_passed': list(v['latest']), 'findings': [],
+    'accepted_scope': [
+        'Root independent source review of all preparation/execution helpers and final deltas; preparer did not independently accept own work.',
+        'Fresh 317-artifact body/path-identity closure, all 16 accepted packets, all 789 cache identities and actual 232-record/runtime/authority bridge.',
+        'Exact accepted NAD target, four implementation files, four actual native outputs, eleven regular originals including separate PC-1 proof, and 550 dossier mappings.',
+        'Execute separately: actual merged-base seal binding, complete baseline capture, dry plan, adoption, two native histories before render, then nine maintained gates.'],
+    'limitations': [
+        'No maintained adoption, render, full gates, QA, saved review, PR/CI/merge or publication is claimed by this acceptance.',
+        'Original full scientific and bounded successor reviews remain independently attributed with their source-access limits.',
+        'Three preparation failures retain exact commands and snapshots; they concern fixture setup, expected diagnostics and an unused local.',
+        'First root read-only closure probe exited on InterruptedError in Python yaml import after package verification; no maintained or acceptance write occurred. This is a separate complete replay, not continuation or an erased failure.'],
+    'first_root_probe': c.binding(HERE / 'acceptance-first-probe.json'),
+    'acceptance_script': c.binding(__file__), 'root_merge_bridge': h['root_merge_bridge'],
+    'native_output_acceptance': h['actual_native_acceptance'], 'target': h['target'],
+    'actual_native_outputs': h['actual_native_outputs'], 'base': c.MERGED_BASE, 'tree': c.MERGED_TREE,
+    'source_exhaustion': False, 'maintained_or_cache_writes': False,
+}
+out = Path('/private/tmp/pathwaymech-next-232-root-integration-acceptance-20261012.json')
+c.write_new(out, result)
+print(json.dumps(c.binding(out)), flush=True)

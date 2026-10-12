@@ -1,0 +1,1 @@
+These are the proposed active accounting successors for issue483. Only paragraph7 text and its K87 paragraph linkage differ; all other paragraph/claim/construct/qualifier/comparator objects are exact. Prior sealed accounting and native reviews remain immutable. Independent scientific acceptance and maintained adoption are pending.

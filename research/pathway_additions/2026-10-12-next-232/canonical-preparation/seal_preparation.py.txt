@@ -1,0 +1,30 @@
+"""Close actual external preparation after real bounded checks; no builders."""
+import difflib
+from common import HERE, OUTPUT, bind, identity, inventory, load, now, write
+from prepare_and_build import input_check, plan, science_check
+
+
+def main():
+    assert not (HERE / 'handoff.json').exists() and not OUTPUT.exists()
+    capture, old, expected = input_check()
+    gate = science_check()
+    receipts = [load(p) for p in sorted((HERE / 'validation').glob('*/receipt.json'))]
+    for name in ('capture', 'guards', 'ruff', 'compile', 'inputs', 'science', 'bind-science'):
+        entries = [r for r in receipts if r['name'] == name]
+        assert entries and entries[-1]['exit_code'] == 0, name
+    write(HERE / 'validation-history.json', {'actual_commands': receipts, 'full_build_executed': False, 'failed_commands_retained': [r for r in receipts if r['exit_code']]})
+    write(HERE / 'root-build-commands.json', plan(capture))
+    changes = []
+    for name in ('common.py', 'capture_inputs.py', 'prepare_and_build.py', 'test_build_guards.py', 'run_check.py', 'seal_preparation.py'):
+        before = (HERE / 'inspected-predecessor' / name).read_text().splitlines(keepends=True)
+        after = (HERE / name).read_text().splitlines(keepends=True)
+        changes.extend(difflib.unified_diff(before, after, fromfile='accepted-PPi/' + name, tofile='NAD/' + name))
+    (HERE / 'exact-helper-adaptation.diff').write_text(''.join(changes))
+    files = [{**bind(p), **identity(p)} for p in inventory(HERE)]
+    write(HERE / 'artifact-manifest.json', {'scope': 'Closed hidden, ignored and followed files, retaining actual failed attempts and test fixtures; each body and path identity pinned', 'artifacts': files, 'artifact_count': len(files)})
+    write(HERE / 'handoff.json', {'status': 'sealed_external_preparation_pending_independent_audit_and_root_execution', 'at': now(), 'manifest': bind(HERE / 'artifact-manifest.json'), 'artifact_count': len(files), 'report': bind(HERE / 'README.md'), 'capture': bind(HERE / 'capture.json'), 'commands': bind(HERE / 'root-build-commands.json'), 'validation': bind(HERE / 'validation-history.json'), 'science_gate': bind(HERE / 'science-gate.json'), 'root_science_acceptance': gate['root_science_acceptance'], 'prospective_base_scope': capture['scope'], 'observed_head': capture['observed_head'], 'observed_tree': capture['observed_tree'], 'target': capture['target']['captured'], 'prior_records': 232, 'records_with_NAD': 233, 'prospective_PPi_sha256': capture['records'][-1]['captured']['sha256'], 'old_source_counts': {'terms': len(old['sources']['terms']), 'metadata': len(old['sources']['sources'])}, 'old_ontology_counts': {'terms': len(old['ontology']['terms']), 'metadata': len(old['ontology']['sources'])}, 'expected_native_counts': expected['expected_counts'], 'manifest_entries': 792, 'rhea_selectors': 24, 'retention_ids': 4476, 'source_original_paths': 791, 'SQL_originals': 4, 'cache_files': 789, 'new_copy_originals': 11, 'full_build_executed': False, 'new_scientific_review_claim': False, 'independent_canonical_acceptance': False, 'maintained_adoption': False, 'source_exhaustion': False, 'writes': 'New external preparation directory only; no maintained/cache/Git/GitHub/install mutations', 'remaining_root_tasks': ['Independently audit complete preparation and bindings', 'Execute unchanged full native builders in new fixed output under real science acceptance', 'Audit actual output bytes and decoded old-object preservation', 'Bind actual PPi merge separately before maintained NAD adoption']})
+    print(bind(HERE / 'handoff.json'))
+
+
+if __name__ == '__main__':
+    main()

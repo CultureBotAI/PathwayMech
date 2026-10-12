@@ -1,0 +1,3050 @@
+id: MetaCyc:NADPHOS-DEPHOS-PWY
+label: NAD phosphorylation and dephosphorylation
+description: 'The native NAD phosphorylation and dephosphorylation pathway contains three core transformations:
+  ATP-dependent NAD phosphorylation, NADP hydrolysis, and proton-coupled transhydrogenation. The E. coli
+  evidence supports individual activities and condition-dependent nucleotide balancing, but does not identify
+  the physiological cytosolic NADP phosphatase or establish a complete cycle in every strain. The broader
+  native taxonomic range is curated pathway scope, not a measurement of flux in every listed organism.
+  Soluble SthA is included as an opposing supporting redox activity, outside the three native member reactions.
+
+
+  The exact directional reactions are RHEA:18630, NAD(1−)+ATP(4−)→NADP(3−)+ADP(3−)+H+; RHEA:28051, NADP(3−)+water→NAD(1−)+hydrogenphosphate(2−);
+  and RHEA:47994, NADH(2−)+NADP(3−)+H+(outside)→NAD(1−)+NADPH(4−)+H+(inside). Each side has coefficient
+  one. The two proton appearances are distinct transport sides and are not canceled. RHEA:11693 describes
+  the supporting soluble NAD(1−)+NADPH(4−)→NADH(2−)+NADP(3−) reaction without proton transport. Compartments
+  remain explicit in the source participants and edge descriptions; one shared proton chemical identity
+  does not erase the transport.
+
+
+  Frozen PathBank SMP0002093/PW002081 corroborates the three-event boundary: two BiochemicalReaction objects
+  plus one TransportWithBiochemicalReaction. Its class-specific count of two does not mean that the transport
+  event is absent. Its NAD, NADH, NADP, NADPH, ATP, ADP and phosphate references use CHEBI:15846,16908,18009,16474,15422,16761
+  and18367, respectively, rather than all of the exact Rhea charge forms. Those forms are not asserted
+  to be exact chemical matches. The frozen diagram also assigns both transport protons to the same Inner_Membrane
+  entity; it supplies structural context, not inside/outside topology or physical membrane localization
+  of the nucleotide pools.
+
+
+  NadK is a homohexamer in the native assembly and the 2001 purification, approximately180 kDa with approximately30-kDa
+  subunits. The native assembly object CPLX0-682 has no direct name, so its display remains unnamed while
+  its six-chain NadK interpretation is stated here. Endogenous MG1655 protein was purified3400-fold after
+  growth at37°C for18 h. Its measured N terminus MDNHFKCIGI differs at residue2 from the deduced/current
+  reference MNNHFKCIGI. The separately expressed pSK67 yfjB construct used pET14b NcoI/BamHI in BL21(DE3)pLysS,
+  with empty SK45 as control; the vector name alone does not establish a retained His tag. The reference
+  NadK is cytoplasmic by reviewed rule-based annotation, with an annotated proton-accepting residue73;
+  the historical preparations are not assigned that exact sequence merely by accession.
+
+
+  The 2001 purified-NadK assay used5 mM NAD and ATP,5 mM MgCl2,100 mM Tris at pH7.0 and37°C. At5 mM donor,
+  reported relative activities were ATP100%, UTP109%, CTP60%, GTP56%, dATP42% and TTP40%. These alternate
+  in-vitro donors do not redefine the native ATP core. Polyphosphate at1 mg/mL and the tested pyrophosphate,
+  tripolyphosphate, trimetaphosphate, hexametaphosphate, metaphosphate, ADP, AMP, phosphoenolpyruvate,
+  phosphocreatine, glucose6-phosphate and p-nitrophenylphosphate did not support the measured phosphorylation.
+  NADH, ADP-ribose, adenosine, AMP, ADP and ATP were not phosphorylated as acceptors in experiments described
+  as data not shown. Activity peaked near pH7.5 and60°C;65°C for10 min removed about half the activity.
+
+
+  Replacing the divalent metal at1 mM gave relative NadK activities Mg100%, Mn242%, Zn104%, Ca85% and
+  Co73%. FeCl2, CuCl2, NaCl, KCl, LiCl and no-metal conditions gave no detected activity in that replacement
+  experiment. Failure to substitute for Mg is not inhibition of an Mg-containing assay. The supported
+  metals are alternatives, not a claim that all occupy the hexamer simultaneously or that the fastest
+  in-vitro metal is physiologically preferred.
+
+
+  The 1987 NadK preparation came from an unspecified E. coli K12 substrain grown in forced-aerated
+  glycerol minimal medium at37°C and harvested in late log phase. It was enriched93-fold and was
+  explicitly not homogeneous. The general assay used 10 mM NAD and 10 mM ATP, 14 mM MgCl2 and 100 mM
+  MOPS at pH 7.2. Table 2 instead used 4.0 mM NAD, found that roughly tenfold more NADH than NADPH
+  was needed for similar inhibition, and reported additive inhibition when both were present.
+  Separate saturation experiments varied NAD, using NADPH at 5–30 µM or NADH at 50–200 µM. NAD
+  saturation became sigmoidal, with reported Hill coefficients1.8–2.1 for NADPH and1.7–2.0 for NADH;
+  increasing NAD could overcome inhibition. These kinetic observations and native allosteric
+  annotations do not locate a binding site experimentally. The abstract assigns Km1.9 mM to NAD
+  and2.1 mM to ATP, whereas the Results reverse those assignments; both are retained as an internal
+  discrepancy.
+
+
+  In the 2001 preparation, NADPH at5 and10 µM left58% and24% activity, while NADH left68% and39%. NADP
+  at50 and100 µM left83% and79%, contrasting with the absence of a significant NADP effect in the 1987
+  conditions. Quinolinate, nicotinate, nicotinamide, nicotinamide mononucleotide, ADP and AMP likewise
+  had no significant effect in the earlier experiment. Varying adenylate energy charge from0 to1 at4 mM
+  total adenylates, with or without15 µM NADPH, did not change the 1987 rate. Those negative findings
+  are condition-limited and do not imply that adenylate composition never influences nucleotide metabolism.
+
+
+  The 2001 NadK thiol-reagent experiment used a glucose6-phosphate dehydrogenase reporter instead of the
+  inhibitor-sensitive isocitrate dehydrogenase reporter. DTT,2-mercaptoethanol and glutathione at1 mM
+  left100% activity. PCMB at1,0.25 and0.1 mM gave no detected activity,33% and51%; HgCl2 gave no detected
+  activity,35% and54%. HgCl2 remains the salt, not a free-mercury node. The unspecified PCMB salt/charge
+  is retained as reagent prose rather than forced onto an acid or anion identity. Table3 reports its own
+  kcat values55/125 and efficiencies22/38; these are not silently recalculated from another table. Failed
+  recovery of a yfjB disruption, described as data not shown, suggested essentiality under those conditions
+  rather than proving universal essentiality.
+
+
+  The 2005 primary abstract and issuing NadK variant annotations distinguish R175G/H/Q/T, which gain NADH-kinase
+  activity, from R175E/I/K, which do not. R175G also lowers the NAD-kinase Vmax. These variants are not
+  assigned to the wild-type endpoint and do not contradict the negative wild-type acceptor assay. The
+  full 2005 body was unavailable.
+
+
+  The native physiological NADP-phosphatase object has no assigned gene. Purified alkaline phosphatase
+  converted historical TPN to DPN in the 1962 source, supporting in-vitro NADP hydrolysis. That paper
+  used GL, BAP, PV and HH preparations with AMP-based specific activities1230,1130,1130 and1060 units/mg,
+  but the TPN sentence identifies neither a particular fraction nor an E. coli strain. Its standard assayA
+  contained0.05 M Tris pH8.2,0.01 M substrate and0.2–1 enzyme units in0.5 mL for20 min at37°C; assayB
+  used p-nitrophenylphosphate at4×10−4 M. No exact reference sequence, processing isozyme or particular
+  fraction is retrospectively assigned to the TPN observation.
+
+
+  Reviewed PhoA is periplasmic, with a1–21 signal peptide and a mature reference chain beginning at22.
+  Its Ser124 annotation describes the phosphoserine catalytic intermediate. The reference binds two Zn
+  ions and one Mg ion per subunit; these are per-chain capacities, not three coefficient-one ions assigned
+  indiscriminately to a whole dimer. Isozymes1 and3 have identical-chain dimers, whereas isozyme2 combines
+  the differently processed chains. DsbA-assisted folding and Iap-related N-terminal processing are protein-maturation
+  context, not evidence for NADP-specific regulation. The native report of additional phosphite oxidation
+  is a separate PhoA function, not another NADP-core reaction. Periplasmic localization and the native
+  enzyme record’s physiological-relevance flag do not establish a cytosolic recycling loop.
+
+
+  The 1962 PhoA inhibitor/activation observations largely concern p-nitrophenylphosphate or AMP, not NADP.
+  They include strong cadmium inhibition, urea effects that depend on exposure time and can reverse, and
+  substrate/salt-dependent stimulation; the text reports activating fluoride and p-hydroxymercuribenzoate
+  conditions and more modest mercury/cobalt effects. Competitive phosphate inhibition is discussed with
+  prior-work attribution. Mg plus phosphate can protect against heat inactivation, while concentrated
+  NaCl can worsen it; KCl can block recovery and fluoride, urea or CuSO4 can slow recovery in their stated
+  experiments. The flattened primary-table rendering does not justify invented precise row/column values,
+  and none of these broad-substrate or renaturation results is relabeled a direct inhibition measurement
+  of NADP turnover.
+
+
+  The 2007 CysQ preparation was the GFP-free ASKA AG1 pCA24N construct, carrying N-terminal His6 plus
+  TDPALRA and C-terminal GLCGR extensions. At37°C, pH8.0 and10 mM MgCl2 it hydrolyzed NADP and NADPH.
+  Reported Km and kcat were2.70±0.53 mM and0.70±0.09 s−1 for NADP, and2.13±0.25 mM and1.45±0.18 s−1 for
+  NADPH. The additional NADPH substrate activity is retained as assay context, not an extra member of
+  the three-event core. PAP preference and the different optima led the authors to conclude that CysQ
+  probably is not the physiological E. coli NADP phosphatase.
+
+
+  CysQ NADP(H)ase activity was undetectable at pH6.4 or0.2 mM Mg, conditions more favorable to its PAPase.
+  Matched Fbp and SuhB extracts were negative controls;15 mM NaCl,7.5 mM imidazole and2.5% glycerol carried
+  with the preparation did not explain the activity. LiCl IC50 values were70 mM for NADP,60 mM for NADPH,10
+  mM for FBP,0.05 mM for3-PAP and0.15 mM for2-PAP; table dashes mean not determined. Reviewed CysQ calcium/lithium
+  inhibition from the separate 2006 nucleotidase study is general protein context, not a calcium experiment
+  on the 2007 NADP assay. Its annotated peripheral inner-membrane location is on the cytoplasmic side
+  and still does not resolve the physiological catalyst.
+
+
+  The 2007 archaeal comparisons used MJ0109, AF2372 and MJ0917 constructs in separately specified BL21/OrigamiB
+  expression contexts and assays at85°C with20 mM Mg, pH8.5. Their activities are not assigned to E. coli
+  CysQ or to one physiological E. coli loop. A later paper’s estimate of approximately140 NADP molecules
+  dephosphorylated per cell per second is a citation to older work, not a firsthand reconstruction of
+  that experiment. The 1971/1973 primary bodies and abstracts were unavailable; their bibliographic records
+  and native/later-paper framing remain explicitly secondary evidence for the historical turnover claim.
+
+
+  PntAB is a dimer of heterodimers: two PntA and two PntB chains in the native complex. The UniProt heterodimer
+  description denotes the protomer and does not conflict with the α2β2 assembly. Its cytoplasmic nucleotide-binding
+  domains dI and dIII handle NAD(H) and NADP(H), while membrane domain dII couples them to proton movement;
+  FAD is not assigned as a Pnt cofactor. Native historical annotation gives AB (Re–Si) specificity, transferring
+  the pro-R hydrogen of NADH and pro-S hydrogen of NADPH; this is not a new stereochemical measurement
+  in the 2021 experiment. The 2021 pSA2-derived pET16b construct was expressed in THO C43(DE3) Δcyo ΔpntAB
+  with an alpha N-terminal His6 tag and thrombin site. Tag cleavage was not reported. DDM-purified protein
+  and proteoliposomes represent distinct preparations.
+
+
+  The 2021 natural forward NADH/NADP and reverse NADPH/NAD assays used their stated regenerating systems;
+  APAD-dependent reverse and cyclic assays were separate. The cyclic reaction does not carry net proton
+  transport. Reported apparent Km values were NADPH4.1±1.2 µM, NAD108±12 µM, NADP37±7 µM and NADH6.8±1
+  µM. The source gives fixed NADH as50 µM in Methods but500 µM in Results; those descriptions are not
+  silently reconciled. Reconstitution incorporated65±10% protein, with approximately75±5% of reverse-active
+  and85±5% of cyclic-active sites facing outward. These are proteoliposome orientation estimates, not
+  an inversion of cellular topology.
+
+
+  Reverse Pnt hydride transfer generated a proton gradient and supported a co-reconstituted ATP synthase.
+  The βH91A variant, no-enzyme controls and ionophores tested the coupling; ATP synthesis belongs to the
+  separate ATP synthase, not the Pnt stoichiometry. An ATPase-generated proton motive force stimulated
+  NADPH formation7±1.8-fold without ionophore,6.4±0.8-fold with valinomycin, and1.6±0.3-fold with CCCP
+  plus valinomycin. The proposed gated-channel and dIII-flip mechanisms are mechanistic interpretations.
+  Thermus thermophilus structural models and prior domain experiments do not become an experimental E.
+  coli full-complex structure.
+
+
+  Older Pnt inhibitor papers were available as primary abstracts and native annotations. DCCD inhibits
+  transhydrogenation and proton pumping; NADH protects, while NADP and, less strongly, NADPH accelerate
+  inhibition. In the 1993 αD232/E238/E240 mutant series, the proteins retained40–90% activity and proton
+  pumping, while triple substitutions reduced DCCD sensitivity. Those historical residues/preparations
+  are distinct from the 2021 βH91A construct. NBD chloride modifies βC147/260 and other residues; NADPH
+  protects some domain modification, but an NBD–NADPH reaction product is itself strongly inhibitory.
+  The adduct has no invented exact chemical identity here.
+
+
+  The 1999 Pnt topology abstract used cysteine-free, His-tagged single-cysteine variants in intact cells
+  and inside-out membranes, supporting four alpha and nine beta membrane spans in that experimental model.
+  Native comments also preserve older nucleotide-affinity, cysteine-free and βD213 contexts. These are
+  source-specific topology and kinetic studies, not measurements on the 2021 preparation. Reference-chain
+  residue numbering, domain models, tags and assay directions remain distinct.
+
+
+  Soluble SthA, also called UdhA, is represented as an octamer with reference P27306. The 1999 cloning
+  abstract corrected an N-terminal genome-sequencing error; its older7–8-subunit interpretation is retained
+  alongside the exact native octamer and the later approximately440-kDa SEC/DLS estimate. The 2022 K12
+  sthA construct carried a C-terminal His10 tag in pBXC3H and was expressed in MC1061; FAD was added during
+  lysis before affinity and SEC purification. Reviewed capacity is one FAD per subunit, whereas a native
+  historical comment reports measured occupancy0.76 mol FAD/subunit. Partial FAD loss during SEC is preparation-dependent.
+  Native B-stereospecificity is explicitly not experimentally determined.
+
+
+  The 2022 kinetic assay followed NADH/thioNADP transhydrogenation, opposite to the supporting physiological
+  NADPH-to-NAD reaction. ThioNADP is a surrogate, not NADP. At5 mM, AMP, ADP and ATP raised wild-type
+  activity to160.7±2.9%,171.1±7.2% and148.2±8.9%. Corresponding C45A values were454.9%,991.8% and363.1%;
+  T50C values were222.9%,319.2% and177.4%. Each series uses its own no-adenylate baseline:8.66±0.83,0.55±0.10
+  and0.92±0.18 µmol/min/mg for wild type, C45A and T50C. Large mutant percentages therefore do not imply
+  higher absolute mutant activity or restore the wild-type mechanism.
+
+
+  Sodium and potassium phosphate inhibited the 2022 SthA surrogate assay, approaching residual activities
+  of approximately20–25% and15% around50 mM. NaCl/KCl controls showed no significant change through50
+  mM, but500 mM left approximately70% and40%; high ionic strength is not universally inert. The hydrogenphosphate
+  reference node denotes phosphate-buffer chemistry, not isolation of one protonation species. NADH above7
+  mM gave substrate inhibition with KI12.1±2.0 mM at0.5 mM thioNADP; thioNADP itself had KI0.59±0.26 mM.
+  Neither observation establishes inhibition by natural NADP under all conditions.
+
+
+  SthA can also oxidize NADH or NADPH with oxygen in uncoupled assays, releasing predominantly hydrogen
+  peroxide with some superoxide. No-enzyme blanks and anaerobic persistence of reduced flavin constrain
+  that interpretation. The wild-type coupled assay partitioned approximately98% to thioNADPH and2% to
+  ROS; C45A gave62.3% hydride-transfer and37.1% peroxide-associated partitioning, while T50C gave89.2%
+  and10.2%, at much lower total transfer rates. Reported flavin-reduction k_red/Kd were303±50 s−1/88±27
+  µM for wild type,710±160/300±100 for C45A and2200±400/227±61 for T50C. These mutant and side-activity
+  observations do not add an oxygen-consuming core reaction or establish a universal cellular ROS flux.
+
+
+  The 2022 paper distinguishes the reference P27306 sequence from AlphaFold model AF-B7M718-F1 and modeling
+  with Thermus thermophilus lipoamide dehydrogenase2EQ7; these are not an experimental structure of the
+  exact reference chain. A12-nucleotide sthA/oxyR overlap motivated a redox-stress hypothesis but did
+  not demonstrate an OxyR→sthA regulatory edge.
+
+
+  The 2011 purified fused-EcSTH primary abstract describes NADPH/thio-NAD activity, Km68.29 and133.2 µM,
+  optimum35°C and pH7.5, stimulation by adenylates at2 mM, and inhibition by Mn, Co, Zn, Ni and Cu. After30
+  min preincubation, strong inhibition persisted only for Zn, Ni and Cu. Full Methods and the exact fusion
+  sequence were unavailable. Its description of excess-NADPH product inhibition is preserved as the source’s
+  terminology even though NADPH is the named assay substrate; it is not converted into a different reaction
+  direction. These abstract-level results do not replace the 2022 salt controls or wild-type His10 preparation.
+
+
+  In the 2004 MG1655 deletion/13C study (PMID:14660605), aerobic M9 cultures at37°C with5 g/L carbon source
+  supported different physiological roles: PntAB supplied an estimated35–45% of biosynthetic NADPH during
+  glucose growth, while loss of pntAB slowed growth and increased oxidative pentose-phosphate compensation.
+  Soluble UdhA was important on acetate and in a pgi-deficient state with excess NADPH, rather than being
+  required for ordinary glucose growth in that study. Some complementation results were described as data
+  not shown. Crude-extract NADPH/APAD reverse assays measured enzyme capacity, not the same quantity as
+  in-vivo redox flux.
+
+
+  A 2004 redox-linked transcriptional interpretation (PMID:14660605) was later tested more directly: the
+  2016 study (PMID:27488847) found no correlation of transhydrogenase promoter activities with NADPH pools
+  or formation/consumption fluxes across the tested perturbations. Paraquat at10 µM induced the zwf positive
+  control without inducing pntAB or sthA. This narrows the earlier model under those conditions; it does
+  not assert that every redox perturbation is transcriptionally inert.
+
+
+  The 2016 regulatory screen compared BW25113 with62 Keio transcription-factor deletions using low-copy
+  whole-intergenic gfpmut2 reporters containing50–100 bp flanks. M9 cultures contained5 g/L glucose, glycerol
+  or succinate at37°C; mid-exponential OD-normalized activity was taken over OD6000.7–1.5. All screen
+  rows retain growth rates and deviations; most had two biological replicates and selected validations
+  three. These are conditional expression responses. Below-threshold differences are not proof of absence,
+  and a deletion response alone does not demonstrate direct promoter binding.
+
+
+  IHF-alpha deletion reduced pntAB reporter activity to approximately0.15,0.16 and0.12 of wild type on
+  succinate, glycerol and glucose, respectively. The IHF reference is an alpha/beta heterodimer; native
+  component slots have no explicit coefficients, so the source descriptions are retained without inventing
+  new component counts. Lrp deletion gave pntAB ratios0.43,0.42 and0.22 and sthA ratios1.43,1.68 and1.83
+  in the same carbon-source order; the main interpretation emphasized activation/repression on glycerol
+  and glucose. ArgP activation of pntAB was identified on glucose and Fur activation on succinate. The
+  proteins’ exact promoter-bound assemblies or metal states were not measured in this reporter study.
+
+
+  The aerobic 2016 ArcA-deletion experiment increased sthA expression on glucose, but did not detect ArcA
+  activation of pntAB. This is distinct from the 2014 anaerobic MG1655 study: ArcA-8myc ChIP and ΔarcA
+  expression comparisons in M9 with0.2% glucose and0.1% ammonium chloride, with or without20 mmol KNO3
+  at37°C, supported pntAB activation and sthA repression. Native PHOSPHO-ARCA remains the cited active
+  state, mapped to reference ArcA with phosphoaspartate54. The original supplementary promoter-region
+  peaks and occupancies are retained in the evidence ledger; modern coordinates are not substituted for
+  that source genome version.
+
+
+  With a20-amino-acid mixture, H-NS and CRP repressed the pntAB reporter; basal-medium results were different,
+  including CRP-deletion glucose ratios0.53 for pntAB and0.57 for sthA and failure of that mutant to grow
+  on glycerol or succinate. Supplementary mixture-condition pntAB activities were WT274.91±5.93, H-NS
+  deletion630.91±16.85, CRP deletion499.85±29.74, IHF deletion139.95 and Lrp deletion319.20. TyrR deletion
+  lowered sthA activity from WT801.20±167.35 to332.83±14.09 in this supplementary screen. This supports
+  conditional expression effects, not a measured direct interaction or a universal sign.
+
+
+  At5 mM single amino acid, leucine lowered pntAB and increased sthA reporter activity; lysine and histidine
+  lowered pntAB, and methionine increased sthA. Valine prevented growth in that experiment and is not
+  assigned an inhibitory promoter edge. Exact reference amino-acid charge forms identify the molecules
+  without claiming that the medium contained an isolated ionic species. Exogenous cAMP reduced normalized
+  pntAB activity by roughly50%, with only a marginal sthA decrease, after normalization to two constitutive
+  reporters and verification of increased CRP activity. Native cAMP-bound CRP and the CRP dimer are represented,
+  but the native component slots provide no ligand coefficient; direct pntA binding and occupancy were
+  not measured.
+
+
+  The 2019 Lrp source used MG1655 ATCC47076 versus lrp::kan in MOPS0.2% glycerol,37°C,200 rpm, with MIN
+  log OD6000.15–0.25 and transition OD6001.8–2.2. Native located assertions assign Lrp activation of pntA
+  in log phase and phoA in transition, and repression of sthA in log phase. The full primary Methods were
+  inspected, but the exact per-gene supplementary data were unavailable, so these target-level statements
+  remain native curated assertions. The His-tagged Lrp used to generate antibody is not a tag on the cellular
+  ChIP endpoint.
+
+
+  The 2017 Nac/CsiR study induced FLAG-tagged regulators from pT7-FLAG-4 in MG1655 in LB,1 mM IPTG for2
+  h from OD6000.2, with paired ChIP-seq and RNA-seq. Nac’s bound pntA row has peak1675942, coverage45,
+  distance−15 and published normalized FC0.372191; this is not the raw4.3/13.24 ratio. Its cysQ row has
+  peak4434633, coverage22, distance−145 and FC2.176844. Target assignment used the study’s proximity/operon
+  framework, not promoter-specific site mutagenesis. Separate30°C nitrogen-depletion validation does not
+  define these two rows or establish CysQ as the physiological NADP phosphatase.
+
+
+  All16 selected-gene workbook rows are retained, including duplicate pntB operon annotations. CsiR, now
+  called GlaR in the issuing reference, gave RNA-seq fold changes cysQ1.407187, nadK0.754291, phoA0.756034,
+  pntA2.793539, pntB0.440537 and sthA0.587882; neither pntA nor pntB appeared in its bound-target sheet.
+  Their opposite expression signs are preserved as potentially indirect responses. Corresponding Nac values
+  were cysQ2.176844, nadK0.683302, phoA0.878483, pntA0.372191, pntB0.645038 and sthA0.879588. The ratios
+  outside the bound Nac joins are quantitative context without invented statistical significance or blanket
+  promoter-binding edges.
+
+
+  Phosphorylated PhoB activates phoA through the exact native regulator→promoter PM00071→transcription-unit
+  TU00052→phoA join. Its reference is P0AFJ5/phoB/b0399,229 residues, with phosphoaspartate53 and phosphorylation-dependent
+  dimer orientation retained in the endpoint. P0A9I3 is GcvR and is explicitly rejected as PhoB. The 2013
+  acidic/aerobic versus microaerobic findings are available only through the primary abstract and native
+  context, not full-body access. The 2019 phosphate-starvation reporter work (PMID:30765722) used MG1655
+  promoter fragments, BCD2/msfgfp and pSEVA234/237 plasmids in DH10B resting cells at30°C over0–50 mM
+  phosphate; synthetic Pliar constructs and modeled phosphorylation/feedback rates are separate from measured
+  native-promoter outputs.
+
+
+  Spot42 represses sthA in MG1655-derived strains. The 2011 Northern experiment used NM525 Δspf GS0433
+  with IPTG-induced pSpot42; the translational-fusion experiment used PM1205 Δspf GS0434 with pBAD sthA-lacZ
+  from its TSS through9–15 codons,0.2% arabinose and ±1 mM IPTG for1 h. The table reports a−4.2±0.5 expression
+  change. RegionIII mutation and compensatory target mutation support direct RNA pairing. The 2012 follow-up
+  (PMID:22388518) discusses multiple pairing regions, including I and III, without establishing simultaneous
+  binding stoichiometry. Its nanC structural probing and Hfq-deletion experiments are not transferred
+  to sthA; the sthA Hfq context in the earlier table retains that earlier source’s evidence level.
+
+
+  Regulator reference annotations are retained separately from the pathway experiments. Lrp and ArgP have
+  homodimer annotations; H-NS can form dimers and higher oligomers; TyrR changes between dimeric and tyrosine/ATP-associated
+  higher assemblies. TyrR ATP binding enhances tyrosine affinity, but no particular TyrR assembly was
+  measured at sthA. H-NS Lys121 hydroxyisobutyrylation, Fur His118 UMPylation, ArgP proteolysis, and GlaR
+  glutarate relief of repression at glaH are known protein contexts, not demonstrated intermediates of
+  the transhydrogenase reporter responses. Those unrelated target-specific mechanisms are not recursively
+  imported as new pathway regulatory edges.
+
+
+  The bounded iModulonDB check queried the six exact pathway loci and inspected ten selected module-member
+  tables. None contained an exact target-locus match in that selection; alias/product substring matches
+  were excluded. This is computational context and a bounded negative result, not global absence from
+  iModulonDB or causal regulatory evidence. The Pseudomonas PathBank kinase/transhydrogenase definition
+  with an unresolved protein and the archaeal phosphatases remain separate cross-source candidates, not
+  organism-equivalent substitutes for the E. coli evidence.'
+pathway_type: cofactor metabolism
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+participants:
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:43474
+  label: hydrogenphosphate
+  category: small_molecule
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:57783
+  label: NADPH(4-)
+  category: small_molecule
+- id: CHEBI:456215
+  label: adenosine 5'-monophosphate(2-)
+  category: small_molecule
+- id: CHEBI:31823
+  label: mercury dichloride
+  category: small_molecule
+- id: CHEBI:48607
+  label: lithium chloride
+  category: small_molecule
+- id: CHEBI:53090
+  label: 1,3-dicyclohexylcarbodiimide
+  category: small_molecule
+- id: CHEBI:78878
+  label: 4-chloro-7-nitrobenzofurazan
+  category: small_molecule
+- id: CHEBI:57427
+  label: L-leucine zwitterion
+  category: small_molecule
+- id: CHEBI:32551
+  label: L-lysinium(1+)
+  category: small_molecule
+- id: CHEBI:57595
+  label: L-histidine zwitterion
+  category: small_molecule
+- id: CHEBI:57844
+  label: L-methionine zwitterion
+  category: small_molecule
+- id: CHEBI:58165
+  label: 3',5'-cyclic AMP(1-)
+  category: small_molecule
+- id: CHEBI:18420
+  label: magnesium(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: cofactor
+- id: CHEBI:29108
+  label: calcium(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:57692
+  label: FAD(3-)
+  category: cofactor
+- id: CHEBI:29033
+  label: iron(2+)
+  category: small_molecule
+- id: CHEBI:29036
+  label: copper(2+)
+  category: small_molecule
+- id: UniProtKB:P0A7B3
+  label: NAD kinase
+  category: protein
+- id: UniProtKB:P00634
+  label: Alkaline phosphatase
+  category: protein
+- id: UniProtKB:P07001
+  label: NAD(P) transhydrogenase subunit alpha
+  category: protein
+- id: UniProtKB:P0AB67
+  label: NAD(P) transhydrogenase subunit beta
+  category: protein
+- id: UniProtKB:P27306
+  label: Soluble pyridine nucleotide transhydrogenase
+  category: protein
+- id: UniProtKB:P22255
+  label: 3'(2'),5'-bisphosphate nucleotidase CysQ
+  category: protein
+- id: UniProtKB:P0A9Q1
+  label: Aerobic respiration control protein ArcA
+  category: protein
+- id: UniProtKB:P0AFJ5
+  label: Phosphate regulon transcriptional regulatory protein PhoB
+  category: protein
+- id: UniProtKB:P0ACJ0
+  label: Leucine-responsive regulatory protein
+  category: protein
+- id: UniProtKB:Q47005
+  label: Nitrogen assimilation regulatory protein nac
+  category: protein
+- id: UniProtKB:P0ACJ8
+  label: DNA-binding transcriptional dual regulator CRP
+  category: protein
+- id: UniProtKB:P0A6X7
+  label: Integration host factor subunit alpha
+  category: protein
+- id: UniProtKB:P0A6Y1
+  label: Integration host factor subunit beta
+  category: protein
+- id: UniProtKB:P0ACF8
+  label: DNA-binding protein H-NS
+  category: protein
+- id: UniProtKB:P0A8S1
+  label: HTH-type transcriptional regulator ArgP
+  category: protein
+- id: UniProtKB:P0A9A9
+  label: Ferric uptake regulation protein
+  category: protein
+- id: UniProtKB:P07604
+  label: HTH-type transcriptional regulatory protein TyrR
+  category: protein
+- id: UniProtKB:P37338
+  label: HTH-type transcriptional repressor GlaR
+  category: protein
+- id: EcoCyc:CPLX0-682
+  label: unnamed protein complex CPLX0-682
+  category: complex
+- id: EcoCyc:ALKAPHOSPHA-CPLX
+  label: alkaline phosphatase
+  category: complex
+- id: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  label: PntAB
+  category: complex
+- id: EcoCyc:UDHA-CPLX
+  label: soluble pyridine nucleotide transhydrogenase
+  category: complex
+- id: EcoCyc:PC00027
+  label: DNA-binding transcriptional dual regulator IHF
+  category: complex
+- id: EcoCyc:CPLX0-226
+  label: CRP-cyclic-AMP DNA-binding transcriptional dual regulator
+  category: complex
+- id: EcoCyc:SPF-RNA
+  label: small regulatory RNA Spot 42
+  category: rna
+- id: Entrez:945041
+  label: phoA
+  category: gene
+- id: Entrez:946628
+  label: pntA
+  category: gene
+- id: Entrez:946144
+  label: pntB
+  category: gene
+- id: Entrez:948461
+  label: sthA
+  category: gene
+- id: Entrez:948728
+  label: cysQ
+  category: gene
+- id: GO:0005829
+  label: cytosol
+  category: cellular_component
+- id: GO:0005886
+  label: plasma membrane
+  category: cellular_component
+- id: GO:0042597
+  label: periplasmic space
+  category: cellular_component
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: small_molecule
+- id: EcoCyc:PC00004
+  label: DNA-binding transcriptional dual regulator CRP
+  category: complex
+reactions:
+- id: RHEA:18630
+  label: NAD(+) + ATP => ADP + NADP(+) + H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:28051
+  label: NADP(+) + H2O => phosphate + NAD(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:47994
+  label: NADH + NADP(+) + H(+)(out) => NAD(+) + NADPH + H(+)(in)
+  category: molecular_activity
+  direction: right_to_left
+- id: RHEA:11693
+  label: NAD(+) + NADPH => NADH + NADP(+)
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: nad-001
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:18630
+  description: RHEA:18630 substrates includes CHEBI:57540 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:18630
+    source_assertion: RHEA:18630 substrates includes CHEBI:57540 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:18630 rh:substrates; http://rdf.rhea-db.org/Participant_18629_compound_3484 rh:compound
+      http://rdf.rhea-db.org/Compound_3484; rh:contains1
+- id: nad-002
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:18630
+  description: RHEA:18630 substrates includes CHEBI:30616 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:18630
+    source_assertion: RHEA:18630 substrates includes CHEBI:30616 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:18630 rh:substrates; http://rdf.rhea-db.org/Participant_18629_compound_6372 rh:compound
+      http://rdf.rhea-db.org/Compound_6372; rh:contains1
+- id: nad-003
+  subject: RHEA:18630
+  predicate: produces
+  object: CHEBI:456216
+  description: RHEA:18630 products includes CHEBI:456216 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:18630
+    source_assertion: RHEA:18630 products includes CHEBI:456216 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:18630 rh:products; http://rdf.rhea-db.org/Participant_18629_compound_2710 rh:compound
+      http://rdf.rhea-db.org/Compound_2710; rh:contains1
+- id: nad-004
+  subject: RHEA:18630
+  predicate: produces
+  object: CHEBI:58349
+  description: RHEA:18630 products includes CHEBI:58349 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:18630
+    source_assertion: RHEA:18630 products includes CHEBI:58349 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:18630 rh:products; http://rdf.rhea-db.org/Participant_18629_compound_5188 rh:compound
+      http://rdf.rhea-db.org/Compound_5188; rh:contains1
+- id: nad-005
+  subject: RHEA:18630
+  predicate: produces
+  object: CHEBI:15378
+  description: RHEA:18630 products includes CHEBI:15378 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:18630
+    source_assertion: RHEA:18630 products includes CHEBI:15378 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:18630 rh:products; http://rdf.rhea-db.org/Participant_18629_compound_3249 rh:compound
+      http://rdf.rhea-db.org/Compound_3249; rh:contains1
+- id: nad-006
+  subject: CHEBI:58349
+  predicate: consumes
+  object: RHEA:28051
+  description: RHEA:28051 substrates includes CHEBI:58349 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:28051
+    source_assertion: RHEA:28051 substrates includes CHEBI:58349 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:28051 rh:substrates; http://rdf.rhea-db.org/Participant_28050_compound_5188 rh:compound
+      http://rdf.rhea-db.org/Compound_5188; rh:contains1
+- id: nad-007
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:28051
+  description: RHEA:28051 substrates includes CHEBI:15377 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:28051
+    source_assertion: RHEA:28051 substrates includes CHEBI:15377 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:28051 rh:substrates; http://rdf.rhea-db.org/Participant_28050_compound_1283 rh:compound
+      http://rdf.rhea-db.org/Compound_1283; rh:contains1
+- id: nad-008
+  subject: RHEA:28051
+  predicate: produces
+  object: CHEBI:43474
+  description: RHEA:28051 products includes CHEBI:43474 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:28051
+    source_assertion: RHEA:28051 products includes CHEBI:43474 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:28051 rh:products; http://rdf.rhea-db.org/Participant_28050_compound_5518 rh:compound
+      http://rdf.rhea-db.org/Compound_5518; rh:contains1
+- id: nad-009
+  subject: RHEA:28051
+  predicate: produces
+  object: CHEBI:57540
+  description: RHEA:28051 products includes CHEBI:57540 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:28051
+    source_assertion: RHEA:28051 products includes CHEBI:57540 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:28051 rh:products; http://rdf.rhea-db.org/Participant_28050_compound_3484 rh:compound
+      http://rdf.rhea-db.org/Compound_3484; rh:contains1
+- id: nad-010
+  subject: CHEBI:57945
+  predicate: consumes
+  object: RHEA:47994
+  description: RHEA:47994 substrates includes CHEBI:57945 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:47994
+    source_assertion: RHEA:47994 substrates includes CHEBI:57945 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:47994 rh:substrates; http://rdf.rhea-db.org/Participant_47992_compound_1650 rh:compound
+      http://rdf.rhea-db.org/Compound_1650; rh:contains1
+- id: nad-011
+  subject: CHEBI:58349
+  predicate: consumes
+  object: RHEA:47994
+  description: RHEA:47994 substrates includes CHEBI:58349 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:47994
+    source_assertion: RHEA:47994 substrates includes CHEBI:58349 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:47994 rh:substrates; http://rdf.rhea-db.org/Participant_47992_compound_5188 rh:compound
+      http://rdf.rhea-db.org/Compound_5188; rh:contains1
+- id: nad-012
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:47994
+  description: RHEA:47994 substrates includes CHEBI:15378 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity. This is the proton outside.
+  evidence:
+  - reference_id: RHEA:47994
+    source_assertion: RHEA:47994 substrates includes CHEBI:15378 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity. This is the proton outside.
+    source_locator: RHEA:47994 rh:substrates; http://rdf.rhea-db.org/Participant_47992_compound_3249_out
+      rh:compound http://rdf.rhea-db.org/Compound_3249; rh:contains1
+- id: nad-013
+  subject: RHEA:47994
+  predicate: produces
+  object: CHEBI:57540
+  description: RHEA:47994 products includes CHEBI:57540 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:47994
+    source_assertion: RHEA:47994 products includes CHEBI:57540 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:47994 rh:products; http://rdf.rhea-db.org/Participant_47992_compound_3484 rh:compound
+      http://rdf.rhea-db.org/Compound_3484; rh:contains1
+- id: nad-014
+  subject: RHEA:47994
+  predicate: produces
+  object: CHEBI:57783
+  description: RHEA:47994 products includes CHEBI:57783 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:47994
+    source_assertion: RHEA:47994 products includes CHEBI:57783 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:47994 rh:products; http://rdf.rhea-db.org/Participant_47992_compound_3438 rh:compound
+      http://rdf.rhea-db.org/Compound_3438; rh:contains1
+- id: nad-015
+  subject: RHEA:47994
+  predicate: produces
+  object: CHEBI:15378
+  description: RHEA:47994 products includes CHEBI:15378 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity. This is the proton inside.
+  evidence:
+  - reference_id: RHEA:47994
+    source_assertion: RHEA:47994 products includes CHEBI:15378 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity. This is the proton inside.
+    source_locator: RHEA:47994 rh:products; http://rdf.rhea-db.org/Participant_47992_compound_3249_in
+      rh:compound http://rdf.rhea-db.org/Compound_3249; rh:contains1
+- id: nad-016
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:11693
+  description: RHEA:11693 substrates includes CHEBI:57540 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:11693
+    source_assertion: RHEA:11693 substrates includes CHEBI:57540 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:11693 rh:substrates; http://rdf.rhea-db.org/Participant_11692_compound_3484 rh:compound
+      http://rdf.rhea-db.org/Compound_3484; rh:contains1
+- id: nad-017
+  subject: CHEBI:57783
+  predicate: consumes
+  object: RHEA:11693
+  description: RHEA:11693 substrates includes CHEBI:57783 with coefficient 1; the issuing participant
+    and containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:11693
+    source_assertion: RHEA:11693 substrates includes CHEBI:57783 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:11693 rh:substrates; http://rdf.rhea-db.org/Participant_11692_compound_3438 rh:compound
+      http://rdf.rhea-db.org/Compound_3438; rh:contains1
+- id: nad-018
+  subject: RHEA:11693
+  predicate: produces
+  object: CHEBI:57945
+  description: RHEA:11693 products includes CHEBI:57945 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:11693
+    source_assertion: RHEA:11693 products includes CHEBI:57945 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:11693 rh:products; http://rdf.rhea-db.org/Participant_11692_compound_1650 rh:compound
+      http://rdf.rhea-db.org/Compound_1650; rh:contains1
+- id: nad-019
+  subject: RHEA:11693
+  predicate: produces
+  object: CHEBI:58349
+  description: RHEA:11693 products includes CHEBI:58349 with coefficient 1; the issuing participant and
+    containsN chain establish the exact charge form and multiplicity.
+  evidence:
+  - reference_id: RHEA:11693
+    source_assertion: RHEA:11693 products includes CHEBI:58349 with coefficient 1; the issuing participant
+      and containsN chain establish the exact charge form and multiplicity.
+    source_locator: RHEA:11693 rh:products; http://rdf.rhea-db.org/Participant_11692_compound_5188 rh:compound
+      http://rdf.rhea-db.org/Compound_5188; rh:contains1
+- id: nad-020
+  subject: RHEA:18630
+  predicate: part_of
+  object: MetaCyc:NADPHOS-DEPHOS-PWY
+  description: The native pathway reaction-list includes NAD-KIN-RXN; the full definition has three core
+    transformations. This is a curated boundary, not proof of complete physiological flux in every listed
+    taxon.
+  evidence:
+  - reference_id: MetaCyc:NADPHOS-DEPHOS-PWY
+    source_assertion: The native pathway reaction-list includes NAD-KIN-RXN; the full definition has three
+      core transformations. This is a curated boundary, not proof of complete physiological flux in every
+      listed taxon.
+    source_locator: XPath /ptools-xml/Pathway/reaction-list/Reaction[@frameid="NAD-KIN-RXN"]
+- id: nad-021
+  subject: RHEA:28051
+  predicate: part_of
+  object: MetaCyc:NADPHOS-DEPHOS-PWY
+  description: The native pathway reaction-list includes RXN-5822; the full definition has three core
+    transformations. This is a curated boundary, not proof of complete physiological flux in every listed
+    taxon.
+  evidence:
+  - reference_id: MetaCyc:NADPHOS-DEPHOS-PWY
+    source_assertion: The native pathway reaction-list includes RXN-5822; the full definition has three
+      core transformations. This is a curated boundary, not proof of complete physiological flux in every
+      listed taxon.
+    source_locator: XPath /ptools-xml/Pathway/reaction-list/Reaction[@frameid="RXN-5822"]
+- id: nad-022
+  subject: RHEA:47994
+  predicate: part_of
+  object: MetaCyc:NADPHOS-DEPHOS-PWY
+  description: The native pathway reaction-list includes TRANS-RXN0-277; the full definition has three
+    core transformations. This is a curated boundary, not proof of complete physiological flux in every
+    listed taxon.
+  evidence:
+  - reference_id: MetaCyc:NADPHOS-DEPHOS-PWY
+    source_assertion: The native pathway reaction-list includes TRANS-RXN0-277; the full definition has
+      three core transformations. This is a curated boundary, not proof of complete physiological flux
+      in every listed taxon.
+    source_locator: XPath /ptools-xml/Pathway/reaction-list/Reaction[@frameid="TRANS-RXN0-277"]
+- id: nad-023
+  subject: EcoCyc:CPLX0-682
+  predicate: catalyzes
+  object: RHEA:18630
+  description: The exact native enzyme/reaction join supports this catalytic assembly. Evidence codes
+    and cited preparations remain source-qualified.
+  evidence:
+  - reference_id: EcoCyc:NAD-KIN-ENZRXN
+    source_assertion: The exact native enzyme/reaction join supports this catalytic assembly. Evidence
+      codes and cited preparations remain source-qualified.
+    source_locator: XPath /ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction
+      | /ptools-xml/Enzymatic-Reaction/evidence
+- id: nad-024
+  subject: EcoCyc:ALKAPHOSPHA-CPLX
+  predicate: catalyzes
+  object: RHEA:28051
+  description: The exact native enzyme/reaction join supports this catalytic assembly. Evidence codes
+    and cited preparations remain source-qualified. Its physiological-relevance flag does not establish
+    cytosolic PhoA localization or complete cellular recycling.
+  evidence:
+  - reference_id: EcoCyc:ENZRXN0-7742
+    source_assertion: The exact native enzyme/reaction join supports this catalytic assembly. Evidence
+      codes and cited preparations remain source-qualified. Its physiological-relevance flag does not
+      establish cytosolic PhoA localization or complete cellular recycling.
+    source_locator: XPath /ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction
+      | /ptools-xml/Enzymatic-Reaction/evidence
+- id: nad-025
+  subject: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  predicate: catalyzes
+  object: RHEA:47994
+  description: The exact native enzyme/reaction join supports this catalytic assembly. Evidence codes
+    and cited preparations remain source-qualified.
+  evidence:
+  - reference_id: EcoCyc:PYRNUTRANSHYDROGEN-ENZRXN
+    source_assertion: The exact native enzyme/reaction join supports this catalytic assembly. Evidence
+      codes and cited preparations remain source-qualified.
+    source_locator: XPath /ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction
+      | /ptools-xml/Enzymatic-Reaction/evidence
+- id: nad-026
+  subject: EcoCyc:UDHA-CPLX
+  predicate: catalyzes
+  object: RHEA:11693
+  description: The exact native enzyme/reaction join supports this catalytic assembly. Evidence codes
+    and cited preparations remain source-qualified. SthA is supporting soluble redox chemistry, outside
+    the three native core members.
+  evidence:
+  - reference_id: EcoCyc:UDHA-ENZRXN
+    source_assertion: The exact native enzyme/reaction join supports this catalytic assembly. Evidence
+      codes and cited preparations remain source-qualified. SthA is supporting soluble redox chemistry,
+      outside the three native core members.
+    source_locator: XPath /ptools-xml/Enzymatic-Reaction/enzyme | /ptools-xml/Enzymatic-Reaction/reaction
+      | /ptools-xml/Enzymatic-Reaction/evidence
+- id: nad-027
+  subject: EcoCyc:CPLX0-682
+  predicate: has_part
+  object: UniProtKB:P0A7B3
+  description: The native component specifies 6 copies of MONOMER0-541; this is assembly stoichiometry,
+    not a claim that an isolated chain is fully catalytic.
+  evidence:
+  - reference_id: EcoCyc:CPLX0-682
+    source_assertion: The native component specifies 6 copies of MONOMER0-541; this is assembly stoichiometry,
+      not a claim that an isolated chain is fully catalytic.
+    source_locator: XPath /ptools-xml/Protein/component[Protein[@frameid="MONOMER0-541"]]
+  - reference_id: EcoCyc:MONOMER0-541
+    source_assertion: The exact native chain cross-reference grounds UniProtKB:P0A7B3. Historical preparations
+      and tagged variants require their separate qualifications.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT" and dblink-oid="P0A7B3"]
+  - reference_id: UniProtKB:P0A7B3
+    source_assertion: The issuing reference chain identifies the b2615 locus in E. coli K-12; this is
+      an identity join, not separate proof of catalytic or regulatory activity.
+    source_locator: entry[primaryAccession='P0A7B3'].genes,organism,sequence
+  - reference_id: Entrez:947092
+    source_assertion: Entrez:947092 identifies b2615 in MG1655 taxon511145. This grounds the reference
+      gene-to-chain join, not the exact sequence of every experimental preparation.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-028
+  subject: EcoCyc:ALKAPHOSPHA-CPLX
+  predicate: has_part
+  object: UniProtKB:P00634
+  description: The native component specifies 2 copies of ALKAPHOSPHA-MONOMER; this is assembly stoichiometry,
+    not a claim that an isolated chain is fully catalytic.
+  evidence:
+  - reference_id: EcoCyc:ALKAPHOSPHA-CPLX
+    source_assertion: The native component specifies 2 copies of ALKAPHOSPHA-MONOMER; this is assembly
+      stoichiometry, not a claim that an isolated chain is fully catalytic.
+    source_locator: XPath /ptools-xml/Protein/component[Protein[@frameid="ALKAPHOSPHA-MONOMER"]]
+  - reference_id: EcoCyc:ALKAPHOSPHA-MONOMER
+    source_assertion: The exact native chain cross-reference grounds UniProtKB:P00634. Historical preparations
+      and tagged variants require their separate qualifications.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT" and dblink-oid="P00634"]
+  - reference_id: UniProtKB:P00634
+    source_assertion: The issuing reference chain identifies the b0383 locus in E. coli K-12; this is
+      an identity join, not separate proof of catalytic or regulatory activity.
+    source_locator: entry[primaryAccession='P00634'].genes,organism,sequence
+  - reference_id: Entrez:945041
+    source_assertion: Entrez:945041 identifies b0383 in MG1655 taxon511145. This grounds the reference
+      gene-to-chain join, not the exact sequence of every experimental preparation.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-029
+  subject: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  predicate: has_part
+  object: UniProtKB:P07001
+  description: The native component specifies 2 copies of PNTA-MONOMER; this is assembly stoichiometry,
+    not a claim that an isolated chain is fully catalytic.
+  evidence:
+  - reference_id: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+    source_assertion: The native component specifies 2 copies of PNTA-MONOMER; this is assembly stoichiometry,
+      not a claim that an isolated chain is fully catalytic.
+    source_locator: XPath /ptools-xml/Protein/component[Protein[@frameid="PNTA-MONOMER"]]
+  - reference_id: EcoCyc:PNTA-MONOMER
+    source_assertion: The exact native chain cross-reference grounds UniProtKB:P07001. Historical preparations
+      and tagged variants require their separate qualifications.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT" and dblink-oid="P07001"]
+  - reference_id: UniProtKB:P07001
+    source_assertion: The issuing reference chain identifies the b1603 locus in E. coli K-12; this is
+      an identity join, not separate proof of catalytic or regulatory activity.
+    source_locator: entry[primaryAccession='P07001'].genes,organism,sequence
+  - reference_id: Entrez:946628
+    source_assertion: Entrez:946628 identifies b1603 in MG1655 taxon511145. This grounds the reference
+      gene-to-chain join, not the exact sequence of every experimental preparation.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-030
+  subject: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  predicate: has_part
+  object: UniProtKB:P0AB67
+  description: The native component specifies 2 copies of PNTB-MONOMER; this is assembly stoichiometry,
+    not a claim that an isolated chain is fully catalytic.
+  evidence:
+  - reference_id: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+    source_assertion: The native component specifies 2 copies of PNTB-MONOMER; this is assembly stoichiometry,
+      not a claim that an isolated chain is fully catalytic.
+    source_locator: XPath /ptools-xml/Protein/component[Protein[@frameid="PNTB-MONOMER"]]
+  - reference_id: EcoCyc:PNTB-MONOMER
+    source_assertion: The exact native chain cross-reference grounds UniProtKB:P0AB67. Historical preparations
+      and tagged variants require their separate qualifications.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT" and dblink-oid="P0AB67"]
+  - reference_id: UniProtKB:P0AB67
+    source_assertion: The issuing reference chain identifies the b1602 locus in E. coli K-12; this is
+      an identity join, not separate proof of catalytic or regulatory activity.
+    source_locator: entry[primaryAccession='P0AB67'].genes,organism,sequence
+  - reference_id: Entrez:946144
+    source_assertion: Entrez:946144 identifies b1602 in MG1655 taxon511145. This grounds the reference
+      gene-to-chain join, not the exact sequence of every experimental preparation.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-031
+  subject: EcoCyc:UDHA-CPLX
+  predicate: has_part
+  object: UniProtKB:P27306
+  description: The native component specifies 8 copies of UDHA-MONOMER; this is assembly stoichiometry,
+    not a claim that an isolated chain is fully catalytic.
+  evidence:
+  - reference_id: EcoCyc:UDHA-CPLX
+    source_assertion: The native component specifies 8 copies of UDHA-MONOMER; this is assembly stoichiometry,
+      not a claim that an isolated chain is fully catalytic.
+    source_locator: XPath /ptools-xml/Protein/component[Protein[@frameid="UDHA-MONOMER"]]
+  - reference_id: EcoCyc:UDHA-MONOMER
+    source_assertion: The exact native chain cross-reference grounds UniProtKB:P27306. Historical preparations
+      and tagged variants require their separate qualifications.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT" and dblink-oid="P27306"]
+  - reference_id: UniProtKB:P27306
+    source_assertion: The issuing reference chain identifies the b3962 locus in E. coli K-12; this is
+      an identity join, not separate proof of catalytic or regulatory activity.
+    source_locator: entry[primaryAccession='P27306'].genes,organism,sequence
+  - reference_id: Entrez:948461
+    source_assertion: Entrez:948461 identifies b3962 in MG1655 taxon511145. This grounds the reference
+      gene-to-chain join, not the exact sequence of every experimental preparation.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-032
+  subject: EcoCyc:CPLX0-682
+  predicate: catalyzes
+  object: RHEA:18630
+  description: Purified native NadK is a hexamer and phosphorylates NAD with ATP; other tested acceptors
+    including NADH were not phosphorylated in the reported experiment.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: Purified native NadK is a hexamer and phosphorylates NAD with ATP; other tested
+      acceptors including NADH were not phosphorylated in the reported experiment.
+    source_locator: Retained primary rendering lines L177–L205; printed table/section as stated
+  endpoint_qualifiers:
+  - &id001
+    endpoint: subject
+    kind: experimental_construct
+    description: 2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa
+      chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from
+      recombinant pSK67/BL21 and1987 K12 preparations.
+    evidence:
+    - reference_id: PMID:11488932
+      source_assertion: Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous
+        hexamer.
+      source_locator: Retained primary rendering lines L148–L177; printed table/section as stated
+    - reference_id: PMID:11488932
+      source_assertion: Measured native N terminus differs from the deduced YfjB sequence at residue2;
+        recombinant pSK67 and native preparations remain distinct.
+      source_locator: Retained primary rendering lines L279–L284; printed table/section as stated
+- id: nad-033
+  subject: EcoCyc:CPLX0-682
+  predicate: catalyzes
+  object: RHEA:18630
+  description: Recombinant yfjB expression and purified product support NadK activity; SK67 cell extract
+    is highly active compared with the SK45 control.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: Recombinant yfjB expression and purified product support NadK activity; SK67 cell
+      extract is highly active compared with the SK45 control.
+    source_locator: Retained primary rendering lines L280–L284; printed table/section as stated
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2001 pSK67 yfjB from MG1655 cloned into pET14b with NcoI/BamHI and expressed in BL21(DE3)pLysS;
+      empty SK45 control. No retained His tag is inferred from the vector name; the native N-terminal
+      discrepancy remains separate.
+    evidence:
+    - reference_id: PMID:11488932
+      source_assertion: Cloning/expression/purification Methods identify pSK67 and BL21(DE3)pLysS, with
+        SK45 vector-only control.
+      source_locator: Retained primary rendering lines L158–L168; printed table/section as stated
+- id: nad-034
+  subject: EcoCyc:CPLX0-682
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: Mg2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay cofactor,
+    not simultaneous occupancy or a preferred cellular metal assignment.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: Mg2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay
+      cofactor, not simultaneous occupancy or a preferred cellular metal assignment.
+    source_locator: Retained primary rendering lines L238–L252; printed table/section as stated
+  endpoint_qualifiers:
+  - *id001
+- id: nad-035
+  subject: EcoCyc:CPLX0-682
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Mn2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay cofactor,
+    not simultaneous occupancy or a preferred cellular metal assignment.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: Mn2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay
+      cofactor, not simultaneous occupancy or a preferred cellular metal assignment.
+    source_locator: Retained primary rendering lines L238–L252; printed table/section as stated
+  endpoint_qualifiers:
+  - *id001
+- id: nad-036
+  subject: EcoCyc:CPLX0-682
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: Zn2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay cofactor,
+    not simultaneous occupancy or a preferred cellular metal assignment.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: Zn2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay
+      cofactor, not simultaneous occupancy or a preferred cellular metal assignment.
+    source_locator: Retained primary rendering lines L238–L252; printed table/section as stated
+  endpoint_qualifiers:
+  - *id001
+- id: nad-037
+  subject: EcoCyc:CPLX0-682
+  predicate: has_cofactor
+  object: CHEBI:29108
+  description: Ca2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay cofactor,
+    not simultaneous occupancy or a preferred cellular metal assignment.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: Ca2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay
+      cofactor, not simultaneous occupancy or a preferred cellular metal assignment.
+    source_locator: Retained primary rendering lines L238–L252; printed table/section as stated
+  endpoint_qualifiers:
+  - *id001
+- id: nad-038
+  subject: EcoCyc:CPLX0-682
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Co2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay cofactor,
+    not simultaneous occupancy or a preferred cellular metal assignment.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: Co2+ supports NadK in the1-mM replacement-metal assay. This is an alternative assay
+      cofactor, not simultaneous occupancy or a preferred cellular metal assignment.
+    source_locator: Retained primary rendering lines L238–L252; printed table/section as stated
+  endpoint_qualifiers:
+  - *id001
+- id: nad-039
+  subject: CHEBI:57945
+  predicate: inhibits
+  object: EcoCyc:CPLX0-682
+  description: The exact native regulation gives an allosteric negative sign for NADH acting on NAD-KIN-ENZRXN.
+  evidence:
+  - reference_id: EcoCyc:REG0-7644
+    source_assertion: The exact native regulation gives an allosteric negative sign for NADH acting on
+      NAD-KIN-ENZRXN.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/mechanism
+  - reference_id: PMID:3025169
+    source_assertion: NADH inhibits the1987 preparation and changes NAD saturation to a sigmoidal curve;
+      combined reduced-nucleotide effects are additive.
+    source_locator: PDF 2,3,4; Table2; Figures1–2; Results
+  endpoint_qualifiers:
+  - &id002
+    endpoint: object
+    kind: experimental_construct
+    description: 1987 K12, unspecified substrain, forced-aerated glycerol minimal medium at37°C, late-log
+      harvest;93-fold partially purified and not homogeneous. It is not asserted identical to the2001
+      native or modern MG1655 reference preparation.
+    evidence:
+    - reference_id: PMID:3025169
+      source_assertion: Methods describe the K12 growth/purification and Results explicitly state that
+        the93-fold preparation was not homogeneous.
+      source_locator: PDF 1,2; Materials and methods; Results Properties
+- id: nad-040
+  subject: CHEBI:57783
+  predicate: inhibits
+  object: EcoCyc:CPLX0-682
+  description: The exact native regulation gives an allosteric negative sign for NADPH acting on NAD-KIN-ENZRXN.
+  evidence:
+  - reference_id: EcoCyc:REG0-7643
+    source_assertion: The exact native regulation gives an allosteric negative sign for NADPH acting on
+      NAD-KIN-ENZRXN.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/mechanism
+  - reference_id: PMID:3025169
+    source_assertion: NADPH inhibits the1987 preparation and changes NAD saturation to a sigmoidal curve;
+      combined reduced-nucleotide effects are additive.
+    source_locator: PDF 2,3,4; Table2; Figures1–2; Results
+  endpoint_qualifiers:
+  - *id002
+- id: nad-041
+  subject: CHEBI:58349
+  predicate: inhibits
+  object: EcoCyc:CPLX0-682
+  description: The2001 NADP additions give slight inhibition:83% and79% relative activity at50 and100µM.
+    The1987 preparation showed no significant effect under its conditions.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: 'The 2001 NADP additions give slight inhibition: 83% and 79% relative activity at
+      50 and 100 µM.'
+    source_locator: Retained primary rendering lines L253–L264; printed table/section as stated
+  - reference_id: PMID:3025169
+    source_assertion: The separate 1987, 93-fold partially purified K12 preparation showed no significant
+      NADP effect under its assay conditions; Table 2 reports 102%, 96% and 96% relative activity at 0.05,
+      0.10 and 0.20 mM NADP. This comparison does not describe the 2001 endpoint preparation.
+    source_locator: 'PDF pages 1–2 (printed pp. 184–185): p. 1 Materials and methods, Growth conditions
+      (K12); p. 2 Results, Properties of NAD kinase (93-fold, nonhomogeneous), Table 2 NADP rows and adjacent
+      Regulation of NAD kinase'
+  endpoint_qualifiers:
+  - &id003
+    endpoint: object
+    kind: experimental_construct
+    description: 2001 endogenous MG1655 NadK, purified 3400-fold, approximately180-kDa hexamer/30-kDa
+      chain; N terminus MDNHFKCIGI differs at residue2 from current MNNHFKCIGI. This is separate from
+      recombinant pSK67/BL21 and1987 K12 preparations.
+    evidence:
+    - reference_id: PMID:11488932
+      source_assertion: Methods identify endogenous MG1655 cultivation/purification and Results the homogeneous
+        hexamer.
+      source_locator: Retained primary rendering lines L148–L177; printed table/section as stated
+    - reference_id: PMID:11488932
+      source_assertion: Measured native N terminus differs from the deduced YfjB sequence at residue2;
+        recombinant pSK67 and native preparations remain distinct.
+      source_locator: Retained primary rendering lines L279–L284; printed table/section as stated
+- id: nad-042
+  subject: CHEBI:31823
+  predicate: inhibits
+  object: EcoCyc:CPLX0-682
+  description: HgCl2 inhibits the purified NadK assay. Glucose-6-phosphate dehydrogenase replaced the
+    inhibitor-sensitive isocitrate reporter in this experiment; HgCl2 is not relabeled as free mercury
+    ion.
+  evidence:
+  - reference_id: PMID:11488932
+    source_assertion: HgCl2 inhibits the purified NadK assay. Glucose-6-phosphate dehydrogenase replaced
+      the inhibitor-sensitive isocitrate reporter in this experiment; HgCl2 is not relabeled as free mercury
+      ion.
+    source_locator: Retained primary rendering lines L253–L273; printed table/section as stated
+  endpoint_qualifiers:
+  - *id003
+- id: nad-043
+  subject: EcoCyc:ALKAPHOSPHA-CPLX
+  predicate: catalyzes
+  object: RHEA:28051
+  description: Purified alkaline phosphatase converts historical TPN to DPN; this supports NADP hydrolysis
+    in vitro without identifying a cytosolic physiological recycling enzyme.
+  evidence:
+  - reference_id: PMID:13906598
+    source_assertion: Purified alkaline phosphatase converts historical TPN to DPN; this supports NADP
+      hydrolysis in vitro without identifying a cytosolic physiological recycling enzyme.
+    source_locator: Retained primary rendering lines L552–L562; printed table/section as stated
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 1962 purified E. coli alkaline phosphatase; strain unspecified. GL, BAP, PV and HH fractions
+      were used in the paper, but the TPN-to-DPN sentence identifies no particular fraction. No exact
+      native sequence or mature isozyme is assigned.
+    evidence:
+    - reference_id: PMID:13906598
+      source_assertion: Methods distinguish four purified preparations, with reported specific activities.
+      source_locator: Retained primary rendering lines L179–L194; printed table/section as stated
+    - reference_id: PMID:13906598
+      source_assertion: The substrate-specificity passage reports TPN conversion to DPN without naming
+        a preparation for that observation.
+      source_locator: Retained primary rendering lines L552–L562; printed table/section as stated
+- id: nad-044
+  subject: UniProtKB:P00634
+  predicate: has_cofactor
+  object: CHEBI:29105
+  description: The reviewed PhoA annotation gives 2 Zn2+ per subunit. Per-chain binding capacity is not
+    an assumed coefficient for the whole dimer or every historical preparation.
+  evidence:
+  - reference_id: UniProtKB:P00634
+    source_assertion: The reviewed PhoA annotation gives 2 Zn2+ per subunit. Per-chain binding capacity
+      is not an assumed coefficient for the whole dimer or every historical preparation.
+    source_locator: entry[primaryAccession='P00634'].comments[commentType='COFACTOR']
+- id: nad-045
+  subject: UniProtKB:P00634
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: The reviewed PhoA annotation gives 1 Mg2+ per subunit. Per-chain binding capacity is not
+    an assumed coefficient for the whole dimer or every historical preparation.
+  evidence:
+  - reference_id: UniProtKB:P00634
+    source_assertion: The reviewed PhoA annotation gives 1 Mg2+ per subunit. Per-chain binding capacity
+      is not an assumed coefficient for the whole dimer or every historical preparation.
+    source_locator: entry[primaryAccession='P00634'].comments[commentType='COFACTOR']
+- id: nad-046
+  subject: UniProtKB:P00634
+  predicate: located_in
+  object: GO:0042597
+  description: The issuing annotation places PhoA in the periplasm; this does not establish cytosolic
+    NADP turnover.
+  evidence:
+  - reference_id: UniProtKB:P00634
+    source_assertion: The issuing annotation places PhoA in the periplasm; this does not establish cytosolic
+      NADP turnover.
+    source_locator: entry[primaryAccession='P00634'].comments[commentType='SUBCELLULAR LOCATION']
+- id: nad-047
+  subject: UniProtKB:P22255
+  predicate: catalyzes
+  object: RHEA:28051
+  description: Tagged CysQ hydrolyzes NADP in vitro, while kinetic preferences and conditions led the
+    authors to reject its assignment as the physiological E. coli NADP phosphatase.
+  evidence:
+  - reference_id: PMID:17616624
+    source_assertion: Tagged CysQ hydrolyzes NADP in vitro, while kinetic preferences and conditions led
+      the authors to reject its assignment as the physiological E. coli NADP phosphatase.
+    source_locator: PDF 3,4,5; Tables1–2; Results and Discussion
+  - reference_id: UniProtKB:P22255
+    source_assertion: The issuing reference chain identifies the b4214 locus in E. coli K-12; this is
+      an identity join, not separate proof of catalytic or regulatory activity.
+    source_locator: entry[primaryAccession='P22255'].genes,organism,sequence
+  - reference_id: Entrez:948728
+    source_assertion: Entrez:948728 identifies b4214 in MG1655 taxon511145. This grounds the reference
+      gene-to-chain join, not the exact sequence of every experimental preparation.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - &id004
+    endpoint: subject
+    kind: experimental_construct
+    description: 2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal
+      GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological
+      NADP phosphatase.
+    evidence:
+    - reference_id: PMID:17616624
+      source_assertion: Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay
+        conditions.
+      source_locator: PDF 2; Cloning and expression; Assays; Purification
+- id: nad-048
+  subject: UniProtKB:P22255
+  predicate: has_cofactor
+  object: CHEBI:18420
+  description: CysQ NADP(H)ase activity is maximal at10mM MgCl2 in this assay and undetectable at0.2mM;
+    its PAPase has different Mg dependence.
+  evidence:
+  - reference_id: PMID:17616624
+    source_assertion: CysQ NADP(H)ase activity is maximal at10mM MgCl2 in this assay and undetectable
+      at0.2mM; its PAPase has different Mg dependence.
+    source_locator: PDF 2,4; Assays; Properties of CysQ
+  endpoint_qualifiers:
+  - *id004
+- id: nad-049
+  subject: CHEBI:48607
+  predicate: inhibits
+  object: UniProtKB:P22255
+  description: 'LiCl inhibits CysQ in a substrate-dependent assay: IC50 values70mM for NADP,60mM for NADPH,10mM
+    for FBP,0.05mM for3-PAP and0.15mM for2-PAP. Table dashes mean not determined.'
+  evidence:
+  - reference_id: PMID:17616624
+    source_assertion: 'LiCl inhibits CysQ in a substrate-dependent assay: IC50 values70mM for NADP,60mM
+      for NADPH,10mM for FBP,0.05mM for3-PAP and0.15mM for2-PAP. Table dashes mean not determined.'
+    source_locator: PDF 2,4; Assays; Table3
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: experimental_construct
+    description: 2007 E. coli AG1 ASKA GFP-free pCA24N CysQ, N-terminal His6 plus TDPALRA and C-terminal
+      GLCGR extensions;37°C, pH8.0,10mM MgCl2. This tagged assay protein is not an established physiological
+      NADP phosphatase.
+    evidence:
+    - reference_id: PMID:17616624
+      source_assertion: Methods specify AG1 ASKA pCA24N, both terminal extensions and purified-CysQ assay
+        conditions.
+      source_locator: PDF 2; Cloning and expression; Assays; Purification
+- id: nad-050
+  subject: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  predicate: catalyzes
+  object: RHEA:47994
+  description: Natural NADH/NADP forward assays support proton-coupled transhydrogenation; reverse and
+    cyclic APAD assays are separate, and the cyclic reaction has no net proton transport.
+  evidence:
+  - reference_id: PMID:34707181
+    source_assertion: Natural NADH/NADP forward assays support proton-coupled transhydrogenation; reverse
+      and cyclic APAD assays are separate, and the cyclic reaction has no net proton transport.
+    source_locator: XPath /article/body/sec[1]/p[2] | /article/body/sec[1]/p[4] | /article/body/sec[2]/sec[3]/p[1]
+      | /article/body/sec[2]/sec[6]/p | /article/body/sec[3]/sec[2]/p[3] | /article/body/sec[3]/sec[2]/table-wrap/caption/p
+      | /article/body/sec[3]/sec[4]/p[2] | /article/body/sec[3]/sec[5]/p | /article/body/sec[3]/sec[6]/fig/caption/p
+      | /article/body/sec[3]/sec[7]/p[2] | /article/body/sec[4]/p[1] | /article/body/sec[4]/p[3]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2021 E. coli THO C43(DE3) Δcyo ΔpntAB, pET16b/pSA2-derived PntAB with alpha N-terminal
+      His6 and thrombin site; cleavage is not reported. DDM-purified protein and oriented proteoliposomes
+      are distinct assay states, not native topology measurements.
+    evidence:
+    - reference_id: PMID:34707181
+      source_assertion: Cloning, expression and purification Methods specify the THO host, alpha His6/thrombin
+        construct and detergent purification.
+      source_locator: XPath /article/body/sec[2]/sec[1] | /article/body/sec[2]/sec[2]
+- id: nad-051
+  subject: UniProtKB:P07001
+  predicate: located_in
+  object: GO:0005886
+  description: The issuing subcellular-location annotation places this reference PntAB subunit in the
+    inner membrane as a multi-pass membrane protein.
+  evidence:
+  - reference_id: UniProtKB:P07001
+    source_assertion: The issuing subcellular-location annotation places this reference PntAB subunit
+      in the inner membrane as a multi-pass membrane protein.
+    source_locator: entry[primaryAccession='P07001'].comments[commentType='SUBCELLULAR LOCATION']
+  - reference_id: UniProtKB:P07001
+    source_assertion: The separate issuing topological-domain features locate the alpha N-terminal or
+      beta C-terminal soluble domain on the cytoplasmic side; these are annotation-based topology assignments.
+    source_locator: entry[primaryAccession='P07001'].features[type='Topological domain']
+  - reference_id: PMID:34707181
+    source_assertion: The2021 Introduction and Figure1 explain cytoplasmic dI/NAD(H) and dIII/NADP(H),
+      with alpha forming dI and beta forming dIII. The figure is a homology model, not an experimental
+      E. coli complex structure.
+    source_locator: XPath /article/body/sec[1]/p[3] | /article/body/sec[1]/fig/caption/p[1]
+- id: nad-052
+  subject: UniProtKB:P0AB67
+  predicate: located_in
+  object: GO:0005886
+  description: The issuing subcellular-location annotation places this reference PntAB subunit in the
+    inner membrane as a multi-pass membrane protein.
+  evidence:
+  - reference_id: UniProtKB:P0AB67
+    source_assertion: The issuing subcellular-location annotation places this reference PntAB subunit
+      in the inner membrane as a multi-pass membrane protein.
+    source_locator: entry[primaryAccession='P0AB67'].comments[commentType='SUBCELLULAR LOCATION']
+  - reference_id: UniProtKB:P0AB67
+    source_assertion: The separate issuing topological-domain features locate the alpha N-terminal or
+      beta C-terminal soluble domain on the cytoplasmic side; these are annotation-based topology assignments.
+    source_locator: entry[primaryAccession='P0AB67'].features[type='Topological domain']
+  - reference_id: PMID:34707181
+    source_assertion: The2021 Introduction and Figure1 explain cytoplasmic dI/NAD(H) and dIII/NADP(H),
+      with alpha forming dI and beta forming dIII. The figure is a homology model, not an experimental
+      E. coli complex structure.
+    source_locator: XPath /article/body/sec[1]/p[3] | /article/body/sec[1]/fig/caption/p[1]
+- id: nad-053
+  subject: CHEBI:53090
+  predicate: inhibits
+  object: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  description: The exact native regulation identifies the reagent, a negative sign and the PntAB enzymatic
+    reaction.
+  evidence:
+  - reference_id: EcoCyc:REG0-8848
+    source_assertion: The exact native regulation identifies the reagent, a negative sign and the PntAB
+      enzymatic reaction.
+    source_locator: XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity
+  - reference_id: PMID:3891338
+    source_assertion: DCCD inhibits transhydrogenation and proton pumping; NADH protects, whereas NADP
+      and less strongly NADPH accelerate inhibition.
+    source_locator: resultList.result[id='3891338' and source='MED'].abstractText
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: experimental_construct
+    description: Historical purified E. coli transhydrogenase assays; full older bodies unavailable. The
+      primary abstract and exact native regulation support inhibition, with preparation, cysteine variants
+      and nucleotide-dependent protection retained separately.
+    evidence:
+    - reference_id: PMID:3891338
+      source_assertion: The primary abstract reports inhibition of E. coli transhydrogenase by the named
+        reagent; this is abstract-level preparation evidence, not access to full Methods.
+      source_locator: resultList.result[id='3891338' and source='MED'].abstractText
+- id: nad-054
+  subject: CHEBI:78878
+  predicate: inhibits
+  object: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  description: The exact native regulation identifies the reagent, a negative sign and the PntAB enzymatic
+    reaction.
+  evidence:
+  - reference_id: EcoCyc:REG0-9666
+    source_assertion: The exact native regulation identifies the reagent, a negative sign and the PntAB
+      enzymatic reaction.
+    source_locator: XPath /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulated-entity
+  - reference_id: PMID:10556628
+    source_assertion: NBD chloride inhibits transhydrogenation by several modifications. NADPH protects
+      domain2/3 modification, but the NBD–NADPH reaction product is itself strongly inhibitory.
+    source_locator: resultList.result[id='10556628' and source='MED'].abstractText
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: experimental_construct
+    description: Historical purified E. coli transhydrogenase assays; full older bodies unavailable. The
+      primary abstract and exact native regulation support inhibition, with preparation, cysteine variants
+      and nucleotide-dependent protection retained separately.
+    evidence:
+    - reference_id: PMID:10556628
+      source_assertion: The primary abstract reports inhibition of E. coli transhydrogenase by the named
+        reagent; this is abstract-level preparation evidence, not access to full Methods.
+      source_locator: resultList.result[id='10556628' and source='MED'].abstractText
+- id: nad-055
+  subject: EcoCyc:UDHA-CPLX
+  predicate: has_part
+  object: UniProtKB:P27306
+  description: SEC and DLS support an approximately440-kDa octamer for the purified2022 construct; this
+    does not establish filamentous assemblies reported for other species.
+  evidence:
+  - reference_id: PMID:35933012
+    source_assertion: SEC and DLS support an approximately440-kDa octamer for the purified2022 construct;
+      this does not establish filamentous assemblies reported for other species.
+    source_locator: XPath /article/body/sec[1]/sec[1]/p[2]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during
+      lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and
+      the AF-B7M718-F1 structural model.
+    evidence:
+    - reference_id: PMID:35933012
+      source_assertion: Results specify C-terminal His10 and Methods the MC1061 expression/purification
+        with FAD-containing lysis buffer.
+      source_locator: XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p
+- id: nad-056
+  subject: UniProtKB:P27306
+  predicate: has_cofactor
+  object: CHEBI:57692
+  description: The issuing SthA annotation identifies one FAD per subunit as cofactor capacity.
+  evidence:
+  - reference_id: UniProtKB:P27306
+    source_assertion: The issuing SthA annotation identifies one FAD per subunit as cofactor capacity.
+    source_locator: entry[primaryAccession='P27306'].comments[commentType='COFACTOR']
+  - reference_id: EcoCyc:UDHA-ENZRXN
+    source_assertion: The native historical enzyme comment reports0.76mol FAD per subunit; this observed
+      occupancy is distinct from reference binding capacity.
+    source_locator: XPath /ptools-xml/Enzymatic-Reaction/comment
+  - reference_id: PMID:35933012
+    source_assertion: Purified2022 SthA is predominantly holoenzyme, with a small FAD loss during SEC;
+      occupancy depends on preparation.
+    source_locator: XPath /article/body/sec[1]/sec[1]/p[1]
+- id: nad-057
+  subject: UniProtKB:P27306
+  predicate: located_in
+  object: GO:0005829
+  description: The issuing reference places soluble SthA in the cytoplasm; unlike PntAB its redox reaction
+    is not coupled to membrane proton translocation.
+  evidence:
+  - reference_id: UniProtKB:P27306
+    source_assertion: The issuing reference places soluble SthA in the cytoplasm; unlike PntAB its redox
+      reaction is not coupled to membrane proton translocation.
+    source_locator: entry[primaryAccession='P27306'].comments[commentType='SUBCELLULAR LOCATION']
+- id: nad-058
+  subject: CHEBI:456215
+  predicate: activates
+  object: EcoCyc:UDHA-CPLX
+  description: At5mM, AMP increases the rate of NADH/thioNADP transhydrogenation by the2022 construct;
+    this is an assay activation, not an additional phosphoryl donor.
+  evidence:
+  - reference_id: PMID:35933012
+    source_assertion: At5mM, AMP increases the rate of NADH/thioNADP transhydrogenation by the2022 construct;
+      this is an assay activation, not an additional phosphoryl donor.
+    source_locator: XPath /article/body/sec[1]/sec[2]/p[3] | /article/body/sec[3]/sec[5]/p[4]
+  - reference_id: DOI:10.1016/j.jbc.2022.102304
+    source_assertion: Supplemental Table1 reports WT activity 160.7±2.9% with AMP, normalized to WT without
+      adenylate. Mutant percentages have their own lower baselines.
+    source_locator: word/document.xml XPath /w:document/w:body/w:tbl[1]/w:tr[2] | /w:document/w:body/w:tbl[1]/w:tr[3]/w:tc[3]
+      | /w:document/w:body/w:p[60]
+  endpoint_qualifiers:
+  - &id005
+    endpoint: object
+    kind: experimental_construct
+    description: 2022 K12 sthA in pBXC3H_SthA, C-terminal His10, expressed in MC1061; FAD added during
+      lysis, affinity plus SEC purification. Wild-type sequence construct is distinct from C45A/T50C and
+      the AF-B7M718-F1 structural model.
+    evidence:
+    - reference_id: PMID:35933012
+      source_assertion: Results specify C-terminal His10 and Methods the MC1061 expression/purification
+        with FAD-containing lysis buffer.
+      source_locator: XPath /article/body/sec[1]/sec[1]/p[1] | /article/body/sec[3]/sec[2]/p
+- id: nad-059
+  subject: CHEBI:456216
+  predicate: activates
+  object: EcoCyc:UDHA-CPLX
+  description: At5mM, ADP increases the rate of NADH/thioNADP transhydrogenation by the2022 construct;
+    this is an assay activation, not an additional phosphoryl donor.
+  evidence:
+  - reference_id: PMID:35933012
+    source_assertion: At5mM, ADP increases the rate of NADH/thioNADP transhydrogenation by the2022 construct;
+      this is an assay activation, not an additional phosphoryl donor.
+    source_locator: XPath /article/body/sec[1]/sec[2]/p[3] | /article/body/sec[3]/sec[5]/p[4]
+  - reference_id: DOI:10.1016/j.jbc.2022.102304
+    source_assertion: Supplemental Table1 reports WT activity 171.1±7.2% with ADP, normalized to WT without
+      adenylate. Mutant percentages have their own lower baselines.
+    source_locator: word/document.xml XPath /w:document/w:body/w:tbl[1]/w:tr[2] | /w:document/w:body/w:tbl[1]/w:tr[3]/w:tc[4]
+      | /w:document/w:body/w:p[60]
+  endpoint_qualifiers:
+  - *id005
+- id: nad-060
+  subject: CHEBI:30616
+  predicate: activates
+  object: EcoCyc:UDHA-CPLX
+  description: At5mM, ATP increases the rate of NADH/thioNADP transhydrogenation by the2022 construct;
+    this is an assay activation, not an additional phosphoryl donor.
+  evidence:
+  - reference_id: PMID:35933012
+    source_assertion: At5mM, ATP increases the rate of NADH/thioNADP transhydrogenation by the2022 construct;
+      this is an assay activation, not an additional phosphoryl donor.
+    source_locator: XPath /article/body/sec[1]/sec[2]/p[3] | /article/body/sec[3]/sec[5]/p[4]
+  - reference_id: DOI:10.1016/j.jbc.2022.102304
+    source_assertion: Supplemental Table1 reports WT activity 148.2±8.9% with ATP, normalized to WT without
+      adenylate. Mutant percentages have their own lower baselines.
+    source_locator: word/document.xml XPath /w:document/w:body/w:tbl[1]/w:tr[2] | /w:document/w:body/w:tbl[1]/w:tr[3]/w:tc[5]
+      | /w:document/w:body/w:p[60]
+  endpoint_qualifiers:
+  - *id005
+- id: nad-061
+  subject: CHEBI:43474
+  predicate: inhibits
+  object: EcoCyc:UDHA-CPLX
+  description: Sodium and potassium phosphate suppress NADH/thioNADP activity, leveling off around50mM.
+    The reference phosphate node represents the buffer species; exact assay protonation is not isolated.
+  evidence:
+  - reference_id: PMID:35933012
+    source_assertion: Sodium and potassium phosphate suppress NADH/thioNADP activity, leveling off around50mM.
+      The reference phosphate node represents the buffer species; exact assay protonation is not isolated.
+    source_locator: XPath /article/body/sec[1]/sec[2]/p[1] | /article/body/sec[3]/sec[5]/p[4]
+  - reference_id: DOI:10.1016/j.jbc.2022.102304
+    source_assertion: The salt control shows no significant change up to50mM NaCl/KCl, but500mM leaves
+      about70%/40% activity, so high ionic strength is not universally inert.
+    source_locator: word/document.xml XPath /w:document/w:body/w:p[32]
+  endpoint_qualifiers:
+  - *id005
+- id: nad-062
+  subject: CHEBI:57945
+  predicate: inhibits
+  object: EcoCyc:UDHA-CPLX
+  description: With thioNADP fixed at0.5mM, NADH above7mM causes substrate inhibition; fitted KI12.1±2.0mM.
+    This is not inhibition at every NADH concentration.
+  evidence:
+  - reference_id: PMID:35933012
+    source_assertion: With thioNADP fixed at0.5mM, NADH above7mM causes substrate inhibition; fitted KI12.1±2.0mM.
+      This is not inhibition at every NADH concentration.
+    source_locator: XPath /article/body/sec[1]/sec[2]/p[2] | /article/body/sec[3]/sec[5]/p[1]
+  endpoint_qualifiers:
+  - *id005
+- id: nad-063
+  subject: CHEBI:29035
+  predicate: inhibits
+  object: EcoCyc:UDHA-CPLX
+  description: Mn2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+ and Cu2+
+    retain strong inhibition; exact metal salt and full experimental details were unavailable.
+  evidence:
+  - reference_id: PMID:21545646
+    source_assertion: Mn2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+
+      and Cu2+ retain strong inhibition; exact metal salt and full experimental details were unavailable.
+    source_locator: resultList.result[id='21545646' and source='MED'].abstractText
+  endpoint_qualifiers:
+  - &id006
+    endpoint: object
+    kind: experimental_construct
+    description: 2011 purified fused E. coli STH; exact fusion sequence and full Methods were unavailable.
+      The primary abstract measures NADPH/thio-NAD activity and reports time-dependent metal effects;
+      this is distinct from2022 C-terminal His10 SthA.
+    evidence:
+    - reference_id: PMID:21545646
+      source_assertion: The primary abstract specifies a fused purified EcSTH protein, NADPH/thio-NAD
+        kinetics and time-dependent divalent-metal effects.
+      source_locator: resultList.result[id='21545646' and source='MED'].abstractText
+- id: nad-064
+  subject: CHEBI:48828
+  predicate: inhibits
+  object: EcoCyc:UDHA-CPLX
+  description: Co2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+ and Cu2+
+    retain strong inhibition; exact metal salt and full experimental details were unavailable.
+  evidence:
+  - reference_id: PMID:21545646
+    source_assertion: Co2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+
+      and Cu2+ retain strong inhibition; exact metal salt and full experimental details were unavailable.
+    source_locator: resultList.result[id='21545646' and source='MED'].abstractText
+  endpoint_qualifiers:
+  - *id006
+- id: nad-065
+  subject: CHEBI:29105
+  predicate: inhibits
+  object: EcoCyc:UDHA-CPLX
+  description: Zn2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+ and Cu2+
+    retain strong inhibition; exact metal salt and full experimental details were unavailable.
+  evidence:
+  - reference_id: PMID:21545646
+    source_assertion: Zn2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+
+      and Cu2+ retain strong inhibition; exact metal salt and full experimental details were unavailable.
+    source_locator: resultList.result[id='21545646' and source='MED'].abstractText
+  endpoint_qualifiers:
+  - *id006
+- id: nad-066
+  subject: CHEBI:49786
+  predicate: inhibits
+  object: EcoCyc:UDHA-CPLX
+  description: Ni2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+ and Cu2+
+    retain strong inhibition; exact metal salt and full experimental details were unavailable.
+  evidence:
+  - reference_id: PMID:21545646
+    source_assertion: Ni2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+
+      and Cu2+ retain strong inhibition; exact metal salt and full experimental details were unavailable.
+    source_locator: resultList.result[id='21545646' and source='MED'].abstractText
+  endpoint_qualifiers:
+  - *id006
+- id: nad-067
+  subject: CHEBI:29036
+  predicate: inhibits
+  object: EcoCyc:UDHA-CPLX
+  description: Cu2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+ and Cu2+
+    retain strong inhibition; exact metal salt and full experimental details were unavailable.
+  evidence:
+  - reference_id: PMID:21545646
+    source_assertion: Cu2+ inhibits the2011 fused-SthA assay. After30min preincubation only Zn2+, Ni2+
+      and Cu2+ retain strong inhibition; exact metal salt and full experimental details were unavailable.
+    source_locator: resultList.result[id='21545646' and source='MED'].abstractText
+  endpoint_qualifiers:
+  - *id006
+- id: nad-068
+  subject: EcoCyc:PC00027
+  predicate: has_part
+  object: UniProtKB:P0A6X7
+  description: The native IHF complex contains the stated chain; native component slots give no coefficient,
+    while the reviewed chain describes the alpha/beta heterodimer.
+  evidence:
+  - reference_id: EcoCyc:PC00027
+    source_assertion: The native IHF complex contains the stated chain; native component slots give no
+      coefficient, while the reviewed chain describes the alpha/beta heterodimer.
+    source_locator: XPath /ptools-xml/Protein/component
+  - reference_id: EcoCyc:PD00347
+    source_assertion: The issuing native chain cross-reference identifies this exact IHF subunit.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: UniProtKB:P0A6X7
+    source_assertion: The reviewed IHF chain annotation identifies a heterodimer of alpha and beta chains.
+    source_locator: entry[primaryAccession='P0A6X7'].comments[commentType='SUBUNIT']
+- id: nad-069
+  subject: EcoCyc:PC00027
+  predicate: has_part
+  object: UniProtKB:P0A6Y1
+  description: The native IHF complex contains the stated chain; native component slots give no coefficient,
+    while the reviewed chain describes the alpha/beta heterodimer.
+  evidence:
+  - reference_id: EcoCyc:PC00027
+    source_assertion: The native IHF complex contains the stated chain; native component slots give no
+      coefficient, while the reviewed chain describes the alpha/beta heterodimer.
+    source_locator: XPath /ptools-xml/Protein/component
+  - reference_id: EcoCyc:PD00348
+    source_assertion: The issuing native chain cross-reference identifies this exact IHF subunit.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: UniProtKB:P0A6Y1
+    source_assertion: The reviewed IHF chain annotation identifies a heterodimer of alpha and beta chains.
+    source_locator: entry[primaryAccession='P0A6Y1'].comments[commentType='SUBUNIT']
+- id: nad-070
+  subject: EcoCyc:CPLX0-226
+  predicate: has_part
+  object: EcoCyc:PC00004
+  description: The native cAMP-bound CRP complex contains the exact PC00004 CRP assembly; native component
+    slots give no coefficient.
+  evidence:
+  - reference_id: EcoCyc:CPLX0-226
+    source_assertion: The native cAMP-bound CRP complex contains the exact PC00004 CRP assembly; native
+      component slots give no coefficient.
+    source_locator: XPath /ptools-xml/Protein/component[Protein]
+- id: nad-071
+  subject: EcoCyc:CPLX0-226
+  predicate: has_part
+  object: CHEBI:58165
+  description: The native complex contains CAMP; no ligand coefficient is given in this component slot.
+  evidence:
+  - reference_id: EcoCyc:CPLX0-226
+    source_assertion: The native complex contains CAMP; no ligand coefficient is given in this component
+      slot.
+    source_locator: XPath /ptools-xml/Protein/component[Compound]
+  - reference_id: UniProtKB:P0ACJ8
+    source_assertion: Issuing CRP binding features identify cAMP CHEBI:58165; this reference ligand mapping
+      is distinct from the reporter assay.
+    source_locator: entry[primaryAccession='P0ACJ8'].features[type='Binding site']
+- id: nad-072
+  subject: EcoCyc:PC00004
+  predicate: has_part
+  object: UniProtKB:P0ACJ8
+  description: The native CRP assembly contains its reference protein chain; stoichiometry is source-local.
+  evidence:
+  - reference_id: EcoCyc:PC00004
+    source_assertion: The native CRP assembly contains its reference protein chain; stoichiometry is source-local.
+    source_locator: XPath /ptools-xml/Protein/component
+  - reference_id: UniProtKB:P0ACJ8
+    source_assertion: The reviewed CRP reference is a homodimer able to bind DNA on cAMP binding.
+    source_locator: entry[primaryAccession='P0ACJ8'].comments[commentType='SUBUNIT']
+  - reference_id: UniProtKB:P0ACJ8
+    source_assertion: The reference CRP accession and gene identity ground the native complex chain.
+    source_locator: entry[primaryAccession='P0ACJ8'].genes,organism,sequence
+- id: nad-073
+  subject: CHEBI:58165
+  predicate: activates
+  object: UniProtKB:P0ACJ8
+  description: cAMP binding stabilizes the active DNA-binding conformation of CRP. This general allosteric
+    annotation alone does not establish binding to the pntA promoter.
+  evidence:
+  - reference_id: UniProtKB:P0ACJ8
+    source_assertion: cAMP binding stabilizes the active DNA-binding conformation of CRP. This general
+      allosteric annotation alone does not establish binding to the pntA promoter.
+    source_locator: entry[primaryAccession='P0ACJ8'].comments[commentType='ACTIVITY REGULATION']
+- id: nad-074
+  subject: EcoCyc:PC00027
+  predicate: activates
+  object: Entrez:946628
+  description: Loss of IHF alpha reduces pntAB reporter activity on succinate, glycerol and glucose. The
+    source infers IHF activation; direct promoter binding is not demonstrated by this reporter experiment.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Loss of IHF alpha reduces pntAB reporter activity on succinate, glycerol and glucose.
+      The source infers IHF activation; direct promoter binding is not demonstrated by this reporter experiment.
+    source_locator: PDF 5,7; Results; indicated reporter condition
+  - reference_id: Entrez:946628
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. IHF alpha deletion probes the heterodimer.
+    evidence:
+    - &id007
+      reference_id: PMID:27488847
+      source_assertion: Methods specify BW25113/Keio strains, low-copy intergenic GFP fusions, M9 growth
+        and mid-exponential OD-normalized promoter activity.
+      source_locator: 'PDF 3,4; Methods: strain/growth, reporter construction and calculations'
+- id: nad-075
+  subject: UniProtKB:P0ACJ0
+  predicate: activates
+  object: Entrez:946628
+  description: Lrp deletion reduces pntAB promoter activity, with activation identified on glycerol and
+    glucose; the full succinate result is retained in the supplementary screen.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Lrp deletion reduces pntAB promoter activity, with activation identified on glycerol
+      and glucose; the full succinate result is retained in the supplementary screen.
+    source_locator: PDF 5,7; Results; indicated reporter condition
+  - reference_id: Entrez:946628
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P0ACJ0
+    source_assertion: This issuing reference grounds the regulator identity; exact tested strain and protein
+      state remain source-qualified.
+    source_locator: entry[primaryAccession='P0ACJ0'].genes,organism,sequence
+  - reference_id: UniProtKB:P0ACJ0
+    source_assertion: The reviewed Lrp reference has a homodimer annotation; condition-dependent higher
+      oligomers are not resolved by this reporter experiment.
+    source_locator: entry[primaryAccession='P0ACJ0'].comments[commentType='SUBUNIT']
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: '2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. '
+    evidence:
+    - *id007
+- id: nad-076
+  subject: UniProtKB:P0ACJ0
+  predicate: inhibits
+  object: Entrez:948461
+  description: Lrp deletion increases sthA/udhA reporter activity on glycerol and glucose; this condition-specific
+    repression is distinct from promoter occupancy.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Lrp deletion increases sthA/udhA reporter activity on glycerol and glucose; this
+      condition-specific repression is distinct from promoter occupancy.
+    source_locator: PDF 5,7; Results; indicated reporter condition
+  - reference_id: Entrez:948461
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P0ACJ0
+    source_assertion: This issuing reference grounds the regulator identity; exact tested strain and protein
+      state remain source-qualified.
+    source_locator: entry[primaryAccession='P0ACJ0'].genes,organism,sequence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: '2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. '
+    evidence:
+    - *id007
+- id: nad-077
+  subject: UniProtKB:P0A8S1
+  predicate: activates
+  object: Entrez:946628
+  description: ArgP deletion lowers pntAB reporter activity on glucose. Direct promoter binding remains
+    unshown in this study.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: ArgP deletion lowers pntAB reporter activity on glucose. Direct promoter binding
+      remains unshown in this study.
+    source_locator: PDF 5,7; Results; indicated reporter condition
+  - reference_id: Entrez:946628
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P0A8S1
+    source_assertion: This issuing reference grounds the regulator identity; exact tested strain and protein
+      state remain source-qualified.
+    source_locator: entry[primaryAccession='P0A8S1'].genes,organism,sequence
+  - reference_id: UniProtKB:P0A8S1
+    source_assertion: The issuing ArgP reference is homodimeric; the reporter screen does not isolate
+      an active monomer.
+    source_locator: entry[primaryAccession='P0A8S1'].comments[commentType='SUBUNIT']
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: '2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. '
+    evidence:
+    - *id007
+- id: nad-078
+  subject: UniProtKB:P0A9A9
+  predicate: activates
+  object: Entrez:946628
+  description: Fur deletion lowers pntAB reporter activity on succinate. This is a condition-limited expression
+    inference, without direct promoter binding or measured Fur metal occupancy.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Fur deletion lowers pntAB reporter activity on succinate. This is a condition-limited
+      expression inference, without direct promoter binding or measured Fur metal occupancy.
+    source_locator: PDF 5,7; Results; indicated reporter condition
+  - reference_id: Entrez:946628
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P0A9A9
+    source_assertion: This issuing reference grounds the regulator identity; exact tested strain and protein
+      state remain source-qualified.
+    source_locator: entry[primaryAccession='P0A9A9'].genes,organism,sequence
+  - reference_id: UniProtKB:P0A9A9
+    source_assertion: The issuing Fur homodimer annotation is by similarity; its oligomer and metal state
+      were not measured in this reporter screen.
+    source_locator: entry[primaryAccession='P0A9A9'].comments[commentType='SUBUNIT']
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: '2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. '
+    evidence:
+    - *id007
+- id: nad-079
+  subject: UniProtKB:P0A9Q1
+  predicate: inhibits
+  object: Entrez:948461
+  description: ArcA deletion increases sthA/udhA reporter activity on glucose. The study detects no ArcA
+    activation of pntAB in its aerobic conditions; phosphorylation state is not directly measured here.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: ArcA deletion increases sthA/udhA reporter activity on glucose. The study detects
+      no ArcA activation of pntAB in its aerobic conditions; phosphorylation state is not directly measured
+      here.
+    source_locator: PDF 5,7; Results; indicated reporter condition
+  - reference_id: Entrez:948461
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P0A9Q1
+    source_assertion: This issuing reference grounds the regulator identity; exact tested strain and protein
+      state remain source-qualified.
+    source_locator: entry[primaryAccession='P0A9Q1'].genes,organism,sequence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: '2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. '
+    evidence:
+    - *id007
+- id: nad-080
+  subject: UniProtKB:P0ACF8
+  predicate: inhibits
+  object: Entrez:946628
+  description: H-NS deletion increases pntAB promoter activity in glucose plus20 amino acids. Basal-medium
+    outcomes differ; this is conditional repression without a demonstrated direct promoter interaction.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: H-NS deletion increases pntAB promoter activity in glucose plus20 amino acids. Basal-medium
+      outcomes differ; this is conditional repression without a demonstrated direct promoter interaction.
+    source_locator: PDF 6,7; Results; indicated reporter condition
+  - reference_id: Entrez:946628
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P0ACF8
+    source_assertion: This issuing reference grounds the regulator identity; exact tested strain and protein
+      state remain source-qualified.
+    source_locator: entry[primaryAccession='P0ACF8'].genes,organism,sequence
+  - reference_id: UniProtKB:P0ACF8
+    source_assertion: H-NS forms dimers and higher oligomers; the exact complex at pntA is unmeasured.
+    source_locator: entry[primaryAccession='P0ACF8'].comments[commentType='SUBUNIT']
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: '2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. '
+    evidence:
+    - *id007
+- id: nad-081
+  subject: EcoCyc:CPLX0-226
+  predicate: inhibits
+  object: Entrez:946628
+  description: CRP deletion increases pntAB reporter activity with20 amino acids. The active cAMP-bound
+    reference complex is inferred from known CRP biology; the study does not directly measure pntA promoter
+    binding.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: CRP deletion increases pntAB reporter activity with20 amino acids. The active cAMP-bound
+      reference complex is inferred from known CRP biology; the study does not directly measure pntA promoter
+      binding.
+    source_locator: PDF 6,7; Results; indicated reporter condition
+  - reference_id: Entrez:946628
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. cAMP occupancy and stoichiometry were
+      unmeasured.
+    evidence:
+    - *id007
+- id: nad-082
+  subject: UniProtKB:P07604
+  predicate: activates
+  object: Entrez:948461
+  description: In the amino-acid mixture screen, deleting TyrR lowers sthA reporter activity. This supplementary
+    observation is expression-level evidence; no direct binding or defined TyrR oligomer was established.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: In the amino-acid mixture screen, deleting TyrR lowers sthA reporter activity. This
+      supplementary observation is expression-level evidence; no direct binding or defined TyrR oligomer
+      was established.
+    source_locator: PDF 6; Results; indicated reporter condition
+  - reference_id: Entrez:948461
+    source_assertion: The exact MG1655 issuing Gene identity grounds this reference expression endpoint;
+      the experiment itself used BW25113.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P07604
+    source_assertion: This issuing reference grounds the regulator identity; exact tested strain and protein
+      state remain source-qualified.
+    source_locator: entry[primaryAccession='P07604'].genes,organism,sequence
+  - reference_id: DOI:10.1099/mic.0.000346
+    source_assertion: TableS4 gives WT sthA activity801.20±167.35 and TyrR-deletion332.83±14.09 under
+      glucose plus20 amino acids. These are absolute activities, not a reported fold change.
+    source_locator: Supplement PDF 16,18; TableS4, WT and TyrR rows
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: '2016 BW25113 versus isogenic Keio deletion, low-copy whole-intergenic gfpmut2 transcriptional
+      reporter, M9 at37°C, mid-exponential growth. The endpoint is the reference regulator whose loss
+      changes expression, not the deletion as an active protein. '
+    evidence:
+    - *id007
+- id: nad-083
+  subject: CHEBI:57427
+  predicate: inhibits
+  object: Entrez:946628
+  description: Leucine addition reduces pntAB reporter activity. WT BW25113 received5mM single amino acid
+    in M9 glucose; this is a reporter response, not direct chemical binding to the gene or proven action
+    through one regulator.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Leucine addition reduces pntAB reporter activity. WT BW25113 received5mM single
+      amino acid in M9 glucose; this is a reporter response, not direct chemical binding to the gene or
+      proven action through one regulator.
+    source_locator: PDF 3,6; Methods single-amino-acid additions; Figure4b and Results
+  - reference_id: Entrez:946628
+    source_assertion: The issuing reference Gene ID grounds the corresponding reporter target locus.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-084
+  subject: CHEBI:57427
+  predicate: activates
+  object: Entrez:948461
+  description: Leucine addition increases sthA/udhA reporter activity. WT BW25113 received5mM single amino
+    acid in M9 glucose; this is a reporter response, not direct chemical binding to the gene or proven
+    action through one regulator.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Leucine addition increases sthA/udhA reporter activity. WT BW25113 received5mM single
+      amino acid in M9 glucose; this is a reporter response, not direct chemical binding to the gene or
+      proven action through one regulator.
+    source_locator: PDF 3,6; Methods single-amino-acid additions; Figure4b and Results
+  - reference_id: Entrez:948461
+    source_assertion: The issuing reference Gene ID grounds the corresponding reporter target locus.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-085
+  subject: CHEBI:32551
+  predicate: inhibits
+  object: Entrez:946628
+  description: Lysine addition reduces pntAB reporter activity. WT BW25113 received5mM single amino acid
+    in M9 glucose; this is a reporter response, not direct chemical binding to the gene or proven action
+    through one regulator.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Lysine addition reduces pntAB reporter activity. WT BW25113 received5mM single amino
+      acid in M9 glucose; this is a reporter response, not direct chemical binding to the gene or proven
+      action through one regulator.
+    source_locator: PDF 3,6; Methods single-amino-acid additions; Figure4b and Results
+  - reference_id: Entrez:946628
+    source_assertion: The issuing reference Gene ID grounds the corresponding reporter target locus.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-086
+  subject: CHEBI:57595
+  predicate: inhibits
+  object: Entrez:946628
+  description: Histidine addition reduces pntAB reporter activity. WT BW25113 received5mM single amino
+    acid in M9 glucose; this is a reporter response, not direct chemical binding to the gene or proven
+    action through one regulator.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Histidine addition reduces pntAB reporter activity. WT BW25113 received5mM single
+      amino acid in M9 glucose; this is a reporter response, not direct chemical binding to the gene or
+      proven action through one regulator.
+    source_locator: PDF 3,6; Methods single-amino-acid additions; Figure4b and Results
+  - reference_id: Entrez:946628
+    source_assertion: The issuing reference Gene ID grounds the corresponding reporter target locus.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-087
+  subject: CHEBI:57844
+  predicate: activates
+  object: Entrez:948461
+  description: Methionine addition increases sthA/udhA reporter activity. WT BW25113 received5mM single
+    amino acid in M9 glucose; this is a reporter response, not direct chemical binding to the gene or
+    proven action through one regulator.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Methionine addition increases sthA/udhA reporter activity. WT BW25113 received5mM
+      single amino acid in M9 glucose; this is a reporter response, not direct chemical binding to the
+      gene or proven action through one regulator.
+    source_locator: PDF 3,6; Methods single-amino-acid additions; Figure4b and Results
+  - reference_id: Entrez:948461
+    source_assertion: The issuing reference Gene ID grounds the corresponding reporter target locus.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-088
+  subject: CHEBI:58165
+  predicate: inhibits
+  object: Entrez:946628
+  description: Extracellular cAMP lowers pntAB promoter activity after normalization to two constitutive
+    reporters; growth effects are controlled and CRP activity rises. This does not demonstrate direct
+    pntA promoter binding.
+  evidence:
+  - reference_id: PMID:27488847
+    source_assertion: Extracellular cAMP lowers pntAB promoter activity after normalization to two constitutive
+      reporters; growth effects are controlled and CRP activity rises. This does not demonstrate direct
+      pntA promoter binding.
+    source_locator: PDF 3,6,7; Methods reporter controls; Figure5
+- id: nad-089
+  subject: UniProtKB:P0ACJ0
+  predicate: activates
+  object: Entrez:945041
+  description: The exact native regulation reports this sign and gene target under the stated2019 phase-specific
+    condition. This is a located curated assertion, not a claim to have read unavailable target supplementary
+    rows.
+  evidence:
+  - reference_id: EcoCyc:REG0-15526
+    source_assertion: The exact native regulation reports this sign and gene target under the stated2019
+      phase-specific condition. This is a located curated assertion, not a claim to have read unavailable
+      target supplementary rows.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: EcoCyc:PD00353
+    source_assertion: The native Lrp regulator chain unifies to UniProtKB:P0ACJ0.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:945041
+    source_assertion: The exact issuing Gene ID grounds this regulatory object.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2019 native Lrp in MG1655 ATCC47076 versus lrp::kan, MOPS0.2% glycerol,37°C,200rpm; MIN
+      transition, OD6001.8–2.2. The antibody preparation is not a His tag on cellular Lrp. Exact per-gene
+      supplementary data were unavailable; the target claim uses native annotation.
+    evidence:
+    - reference_id: PMID:30420454
+      source_assertion: Methods specify MG1655 ATCC47076, lrp::kan, MIN medium, phase-specific harvest
+        and antibody-based ChIP/RNA-seq.
+      source_locator: PDF 16,17; Materials and methods
+- id: nad-090
+  subject: UniProtKB:P0ACJ0
+  predicate: activates
+  object: Entrez:946628
+  description: The exact native regulation reports this sign and gene target under the stated2019 phase-specific
+    condition. This is a located curated assertion, not a claim to have read unavailable target supplementary
+    rows.
+  evidence:
+  - reference_id: EcoCyc:REG0-15529
+    source_assertion: The exact native regulation reports this sign and gene target under the stated2019
+      phase-specific condition. This is a located curated assertion, not a claim to have read unavailable
+      target supplementary rows.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: EcoCyc:PD00353
+    source_assertion: The native Lrp regulator chain unifies to UniProtKB:P0ACJ0.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:946628
+    source_assertion: The exact issuing Gene ID grounds this regulatory object.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2019 native Lrp in MG1655 ATCC47076 versus lrp::kan, MOPS0.2% glycerol,37°C,200rpm; MIN
+      log, OD6000.15–0.25. The antibody preparation is not a His tag on cellular Lrp. Exact per-gene supplementary
+      data were unavailable; the target claim uses native annotation.
+    evidence:
+    - reference_id: PMID:30420454
+      source_assertion: Methods specify MG1655 ATCC47076, lrp::kan, MIN medium, phase-specific harvest
+        and antibody-based ChIP/RNA-seq.
+      source_locator: PDF 16,17; Materials and methods
+- id: nad-091
+  subject: UniProtKB:P0ACJ0
+  predicate: inhibits
+  object: Entrez:948461
+  description: The exact native regulation reports this sign and gene target under the stated2019 phase-specific
+    condition. This is a located curated assertion, not a claim to have read unavailable target supplementary
+    rows.
+  evidence:
+  - reference_id: EcoCyc:REG0-15570
+    source_assertion: The exact native regulation reports this sign and gene target under the stated2019
+      phase-specific condition. This is a located curated assertion, not a claim to have read unavailable
+      target supplementary rows.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: EcoCyc:PD00353
+    source_assertion: The native Lrp regulator chain unifies to UniProtKB:P0ACJ0.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:948461
+    source_assertion: The exact issuing Gene ID grounds this regulatory object.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 2019 native Lrp in MG1655 ATCC47076 versus lrp::kan, MOPS0.2% glycerol,37°C,200rpm; MIN
+      log, OD6000.15–0.25. The antibody preparation is not a His tag on cellular Lrp. Exact per-gene supplementary
+      data were unavailable; the target claim uses native annotation.
+    evidence:
+    - reference_id: PMID:30420454
+      source_assertion: Methods specify MG1655 ATCC47076, lrp::kan, MIN medium, phase-specific harvest
+        and antibody-based ChIP/RNA-seq.
+      source_locator: PDF 16,17; Materials and methods
+- id: nad-092
+  subject: UniProtKB:P0A9Q1
+  predicate: activates
+  object: Entrez:946628
+  description: The native ArcA regulation records the exact sign, PHOSPHO-ARCA regulator and target gene
+    under anaerobic source conditions.
+  evidence:
+  - reference_id: EcoCyc:REG0-14088
+    source_assertion: The native ArcA regulation records the exact sign, PHOSPHO-ARCA regulator and target
+      gene under anaerobic source conditions.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: EcoCyc:REG0-14089
+    source_assertion: The native ArcA regulation records the exact sign, PHOSPHO-ARCA regulator and target
+      gene under anaerobic source conditions.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: PMID:24699140
+    source_assertion: The primary Results report ArcA activation of pntAB and repression of sthA in the
+      studied redox conditions.
+    source_locator: XPath /article/body/sec[2]/sec[3]/p[3]
+  - reference_id: EcoCyc:ARCA-MONOMER
+    source_assertion: The unmodified native ArcA chain unifies to the exact UniProt reference; phosphorylation
+      is carried in the endpoint qualifier.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:946628
+    source_assertion: The exact Gene ID grounds this regulatory object.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: DOI:10.1371/journal.pgen.1004264.s009
+    source_assertion: The original ArcA table reports peak1675896–1676296; occupancy3.44; activation.
+      Coordinates and log2 occupancy are source-specific, not modern remapped loci.
+    source_locator: PDF 1,3; pntA operon row
+  - reference_id: DOI:10.1371/journal.pgen.1004264.s010
+    source_assertion: The original ArcA table reports peak1675706–1676221; occupancy7.42; activation.
+      Coordinates and log2 occupancy are source-specific, not modern remapped loci.
+    source_locator: PDF 2,3; pntA operon row
+  endpoint_qualifiers:
+  - &id008
+    endpoint: subject
+    kind: molecular_state
+    description: Phosphorylated ArcA (native PHOSPHO-ARCA), mapped to reference P0A9Q1. The2014 binding
+      preparation is ArcA-8myc in MG1655; expression comparisons use ΔarcA in anaerobic M9 glucose/ammonium±20mmol
+      KNO3 at37°C. No active deletion protein is asserted.
+    evidence:
+    - reference_id: EcoCyc:PHOSPHO-ARCA
+      source_assertion: The exact source state points to unmodified ARCA-MONOMER; state identity remains
+        explicit rather than being treated as unmodified reference protein.
+      source_locator: XPath /ptools-xml/Protein/unmodified-form
+    - reference_id: PMID:24699140
+      source_assertion: Methods specify ArcA-8myc, MG1655 derivatives, ΔarcA and anaerobic media with/without
+        nitrate.
+      source_locator: XPath /article/body/sec[4]/sec[1]/p
+    - reference_id: UniProtKB:P0A9Q1
+      source_assertion: The issuing ArcA reference has phosphoaspartate54; the active modified state is
+        distinguished from the unmodified reference sequence.
+      source_locator: entry[primaryAccession='P0A9Q1'].features[type='Modified residue']
+    - reference_id: UniProtKB:P0A9Q1
+      source_assertion: The issuing ArcA reference has phosphoaspartate54; the active modified state is
+        distinguished from the unmodified reference sequence.
+      source_locator: entry[primaryAccession='P0A9Q1'].features[type='Modified residue']
+- id: nad-093
+  subject: UniProtKB:P0A9Q1
+  predicate: inhibits
+  object: Entrez:948461
+  description: The native ArcA regulation records the exact sign, PHOSPHO-ARCA regulator and target gene
+    under anaerobic source conditions.
+  evidence:
+  - reference_id: EcoCyc:REG0-14101
+    source_assertion: The native ArcA regulation records the exact sign, PHOSPHO-ARCA regulator and target
+      gene under anaerobic source conditions.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: EcoCyc:REG0-14102
+    source_assertion: The native ArcA regulation records the exact sign, PHOSPHO-ARCA regulator and target
+      gene under anaerobic source conditions.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: EcoCyc:REG0-14103
+    source_assertion: The native ArcA regulation records the exact sign, PHOSPHO-ARCA regulator and target
+      gene under anaerobic source conditions.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/comment
+  - reference_id: PMID:24699140
+    source_assertion: The primary Results report ArcA activation of pntAB and repression of sthA in the
+      studied redox conditions.
+    source_locator: XPath /article/body/sec[2]/sec[3]/p[3]
+  - reference_id: EcoCyc:ARCA-MONOMER
+    source_assertion: The unmodified native ArcA chain unifies to the exact UniProt reference; phosphorylation
+      is carried in the endpoint qualifier.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:948461
+    source_assertion: The exact Gene ID grounds this regulatory object.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: DOI:10.1371/journal.pgen.1004264.s009
+    source_assertion: The original ArcA table reports peak4158619–4159036; occupancy9.69; repression.
+      Coordinates and log2 occupancy are source-specific, not modern remapped loci.
+    source_locator: PDF 1,3; sthA operon row
+  - reference_id: DOI:10.1371/journal.pgen.1004264.s010
+    source_assertion: The original ArcA table reports peak4158474–4159090; occupancy10.7; repression.
+      Coordinates and log2 occupancy are source-specific, not modern remapped loci.
+    source_locator: PDF 2,3; sthA operon row
+  endpoint_qualifiers:
+  - *id008
+- id: nad-094
+  subject: UniProtKB:Q47005
+  predicate: inhibits
+  object: Entrez:946628
+  description: 'Nac-bound pntA row: peak1675942, coverage45, distance−15, published normalized FC0.372191;
+    raw4.3/13.24 is not that normalized value.'
+  evidence:
+  - reference_id: DOI:10.1186/s12918-016-0376-y
+    source_assertion: 'Nac-bound pntA row: peak1675942, coverage45, distance−15, published normalized
+      FC0.372191; raw4.3/13.24 is not that normalized value.'
+    source_locator: ZIP member 12918_2016_376_MOESM3_ESM.xlsx; worksheet 'Nac Binding and RNA-Seq', row238
+  - reference_id: EcoCyc:G7072-MONOMER
+    source_assertion: The exact native Nac chain cross-reference identifies Q47005.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:946628
+    source_assertion: The issuing reference gene grounds the expression object, distinct from the regulator
+      chain.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - &id009
+    endpoint: subject
+    kind: experimental_construct
+    description: 2017 pT7-FLAG-4 inducible FLAG-Nac in MG1655, LB,1mM IPTG for2h from OD6000.2; ChIP-seq
+      and RNA-seq. The30°C nitrogen-depletion validation was separate and does not define these pntA/cysQ
+      rows.
+    evidence:
+    - reference_id: PMID:28061857
+      source_assertion: Primary Methods specify the inducible FLAG construct, host, LB induction and matched
+        RNA-seq experiment.
+      source_locator: XPath /article/body/sec[2]/sec[2]/p | /article/body/sec[2]/sec[4]/p
+- id: nad-095
+  subject: UniProtKB:Q47005
+  predicate: activates
+  object: Entrez:948728
+  description: 'Nac-bound cysQ row: peak4434633, coverage22, distance−145, published normalized FC2.176844.
+    The row supports a condition-qualified binding/expression join.'
+  evidence:
+  - reference_id: DOI:10.1186/s12918-016-0376-y
+    source_assertion: 'Nac-bound cysQ row: peak4434633, coverage22, distance−145, published normalized
+      FC2.176844. The row supports a condition-qualified binding/expression join.'
+    source_locator: ZIP member 12918_2016_376_MOESM3_ESM.xlsx; worksheet 'Nac Binding and RNA-Seq', row62
+  - reference_id: EcoCyc:G7072-MONOMER
+    source_assertion: The exact native Nac chain cross-reference identifies Q47005.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:948728
+    source_assertion: The issuing reference gene grounds the expression object, distinct from the regulator
+      chain.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - *id009
+- id: nad-096
+  subject: EcoCyc:SPF-RNA
+  predicate: inhibits
+  object: Entrez:948461
+  description: Spot42 represses sthA mRNA/translation in MG1655-derived NM525Δspf GS0433 Northern and
+    PM1205Δspf GS0434 pBAD sthA-lacZ experiments. The fusion spans the TSS through9–15 codons;0.2% arabinose±1mM
+    IPTG for1h, with regionIII and compensatory target mutants. This RNA construct context is explicit
+    prose because endpoint qualifiers are restricted to proteins/complexes.
+  evidence:
+  - reference_id: EcoCyc:REG0-11863
+    source_assertion: The native source records negative Spot42 regulation of EG11428/sthA with expression
+      and site-mutation evidence.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+      | /ptools-xml/Regulation/evidence
+  - reference_id: PMID:21292161
+    source_assertion: Compensatory Spot42/target mutations restore sthA fusion repression, supporting
+      direct RNA pairing rather than mere expression correlation.
+    source_locator: HTML XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/p[4]
+  - reference_id: PMID:21292161
+    source_assertion: Northern assays used NM525Δspf GS0433 with IPTG-induced pSpot42; fusion assays used
+      PM1205Δspf GS0434 and pBAD sthA-lacZ.
+    source_locator: HTML XPath /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[1]/figure/figcaption/p
+      | /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[2]/figure[2]/figcaption/p
+      | /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[3]/section[3]/figure/figcaption/p
+      | /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[5]/section[4]/p
+      | /html/body/div[2]/div[2]/div/div[1]/div/div[2]/main/article/section[2]/section/section[7]/p
+  - reference_id: Entrez:948461
+    source_assertion: The reference sthA Gene ID grounds the transcript target; RNA pairing does not mean
+      binding of Spot42 to the encoded enzyme.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+- id: nad-097
+  subject: UniProtKB:P0AFJ5
+  predicate: activates
+  object: Entrez:945041
+  description: The native regulation identifies phosphorylated PhoB activating PM00071.
+  evidence:
+  - reference_id: EcoCyc:REG0-4617
+    source_assertion: The native regulation identifies phosphorylated PhoB activating PM00071.
+    source_locator: XPath /ptools-xml/Regulation/mode | /ptools-xml/Regulation/regulator | /ptools-xml/Regulation/regulated-entity
+  - reference_id: EcoCyc:PM00071
+    source_assertion: The exact native promoter is a component of TU00052.
+    source_locator: XPath /ptools-xml/Promoter/component-of
+  - reference_id: EcoCyc:TU00052
+    source_assertion: The native transcription unit contains the phoA gene EG10727.
+    source_locator: XPath /ptools-xml/Transcription-Unit/component[Gene[@frameid="EG10727"]]
+  - reference_id: EcoCyc:PHOB-MONOMER
+    source_assertion: The native unmodified PhoB chain unifies to P0AFJ5; the active modified state is
+      retained in the qualifier.
+    source_locator: XPath /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: Entrez:945041
+    source_assertion: The issuing Gene ID grounds the phoA expression endpoint.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  - reference_id: UniProtKB:P0AFJ5
+    source_assertion: The exact PhoB reference is P0AFJ5, phoB/b0399,229residues in E. coli K12. P0A9I3
+      is GcvR and is rejected for this role.
+    source_locator: entry[primaryAccession='P0AFJ5'].genes,organism,sequence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Phosphorylated PhoB (native PHOSPHO-PHOB), mapped to P0AFJ5 reference chain; phosphorylation-dependent
+      dimer orientation is required for the active DNA-binding state. It is not an unmodified monomer
+      or a synthetic-promoter preparation.
+    evidence:
+    - reference_id: EcoCyc:PHOSPHO-PHOB
+      source_assertion: The native state identifies unmodified PHOB-MONOMER and explains phosphorylation-dependent
+        dimer orientation and activation.
+      source_locator: XPath /ptools-xml/Protein/unmodified-form | /ptools-xml/Protein/comment
+    - reference_id: UniProtKB:P0AFJ5
+      source_assertion: The issuing PhoB reference has phosphoaspartate53, supporting the stated phosphorylated
+        endpoint; this is not an unmodified chain.
+      source_locator: entry[primaryAccession='P0AFJ5'].features[type='Modified residue']
+- id: nad-098
+  subject: UniProtKB:P0A7B3
+  predicate: located_in
+  object: GO:0005829
+  description: The issuing NadK annotation places the reference protein in the cytoplasm, by rule-based
+    inference rather than direct localization of every historical preparation.
+  evidence:
+  - reference_id: UniProtKB:P0A7B3
+    source_assertion: The issuing NadK annotation places the reference protein in the cytoplasm, by rule-based
+      inference rather than direct localization of every historical preparation.
+    source_locator: entry[primaryAccession='P0A7B3'].comments[commentType='SUBCELLULAR LOCATION']
+- id: nad-099
+  subject: UniProtKB:P22255
+  predicate: located_in
+  object: GO:0005886
+  description: The issuing CysQ annotation describes a peripheral inner-membrane protein on the cytoplasmic
+    side. This reference localization does not establish physiological NADP phosphatase function.
+  evidence:
+  - reference_id: UniProtKB:P22255
+    source_assertion: The issuing CysQ annotation describes a peripheral inner-membrane protein on the
+      cytoplasmic side. This reference localization does not establish physiological NADP phosphatase
+      function.
+    source_locator: entry[primaryAccession='P22255'].comments[commentType='SUBCELLULAR LOCATION']
+- id: nad-100
+  subject: CHEBI:29108
+  predicate: inhibits
+  object: UniProtKB:P22255
+  description: The reviewed CysQ annotation reports calcium inhibition from the2006 bisphosphate-nucleotidase
+    study. This is general enzyme context, not a measured calcium effect on the2007 NADP assay.
+  evidence:
+  - reference_id: UniProtKB:P22255
+    source_assertion: The reviewed CysQ annotation reports calcium inhibition from the2006 bisphosphate-nucleotidase
+      study. This is general enzyme context, not a measured calcium effect on the2007 NADP assay.
+    source_locator: entry[primaryAccession='P22255'].comments[commentType='ACTIVITY REGULATION']
+- id: nad-101
+  subject: UniProtKB:P37338
+  predicate: activates
+  object: Entrez:946628
+  description: Induced CsiR gives pntA normalized FC2.793539; no pntA bound-target row was found. The
+    edge denotes a potentially indirect expression response.
+  evidence:
+  - reference_id: DOI:10.1186/s12918-016-0376-y
+    source_assertion: Induced CsiR gives pntA normalized FC2.793539; no pntA bound-target row was found.
+      The edge denotes a potentially indirect expression response.
+    source_locator: ZIP member 12918_2016_376_MOESM2_ESM.xlsx; worksheet 'All CsiR RNA-Seq', row2451
+  - reference_id: UniProtKB:P37338
+    source_assertion: Issuing P37338 identifies glaR with the historical csiR alias; the induced paper
+      construct and modern reference are not assumed sequence-identical.
+    source_locator: entry[primaryAccession='P37338'].genes,organism,sequence
+  - reference_id: Entrez:946628
+    source_assertion: The exact issuing Gene record grounds the expression object, independently of the
+      regulator identity.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - &id010
+    endpoint: subject
+    kind: experimental_construct
+    description: 2017 pT7-FLAG-4 induced CsiR in MG1655, LB,1mM IPTG for2h from OD6000.2. These RNA-seq
+      rows are expression-only; neither pntA nor pntB occurs in the bound-target sheet. The current reference
+      is GlaR/P37338.
+    evidence:
+    - reference_id: PMID:28061857
+      source_assertion: The primary Methods identify FLAG-tagged inducible regulators and paired transcript
+        measurements.
+      source_locator: XPath /article/body/sec[2]/sec[2]/p | /article/body/sec[2]/sec[4]/p
+- id: nad-102
+  subject: UniProtKB:P37338
+  predicate: inhibits
+  object: Entrez:946144
+  description: Induced CsiR gives pntB normalized FC0.440537, opposite to pntA; no pntB bound-target row
+    was found. The edge denotes a potentially indirect expression response.
+  evidence:
+  - reference_id: DOI:10.1186/s12918-016-0376-y
+    source_assertion: Induced CsiR gives pntB normalized FC0.440537, opposite to pntA; no pntB bound-target
+      row was found. The edge denotes a potentially indirect expression response.
+    source_locator: ZIP member 12918_2016_376_MOESM2_ESM.xlsx; worksheet 'All CsiR RNA-Seq', row2452
+  - reference_id: UniProtKB:P37338
+    source_assertion: Issuing P37338 identifies glaR with the historical csiR alias; the induced paper
+      construct and modern reference are not assumed sequence-identical.
+    source_locator: entry[primaryAccession='P37338'].genes,organism,sequence
+  - reference_id: Entrez:946144
+    source_assertion: The exact issuing Gene record grounds the expression object, independently of the
+      regulator identity.
+    source_locator: XPath /Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source
+  endpoint_qualifiers:
+  - *id010
+references:
+- id: RHEA:18630
+  title: 'Rhea RHEA:18630: exact directional reaction'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea142 issuing RDF; original selected direction/side/participant/containsN chains;
+    pinned Rhea139 SQL separately supplies display label
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28051
+  title: 'Rhea RHEA:28051: exact directional reaction'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea142 issuing RDF; original selected direction/side/participant/containsN chains;
+    pinned Rhea139 SQL separately supplies display label
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:47994
+  title: 'Rhea RHEA:47994: exact directional reaction'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea142 issuing RDF; original selected direction/side/participant/containsN chains;
+    pinned Rhea139 SQL separately supplies display label
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:11693
+  title: 'Rhea RHEA:11693: exact directional reaction'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea142 issuing RDF; original selected direction/side/participant/containsN chains;
+    pinned Rhea139 SQL separately supplies display label
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:NADPHOS-DEPHOS-PWY
+  title: 'MetaCyc NADPHOS-DEPHOS-PWY: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:NADPHOS-DEPHOS-PWY
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: b8f1ab171fad09d72563f170110357b2fe1cc901962175bf22fe06177b7e1552
+- id: EcoCyc:NAD-KIN-ENZRXN
+  title: 'EcoCyc NAD-KIN-ENZRXN: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:NAD-KIN-ENZRXN
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 48fd2d49c2f0db7b50f66e44834c869beef12f832cf5f2223f4351b1529b91a6
+- id: EcoCyc:ENZRXN0-7742
+  title: 'EcoCyc ENZRXN0-7742: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:ENZRXN0-7742
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: e5c4619656a82eca3173b18c3af00d2ff432c1d3bed30b9054636ea8e3d3826d
+- id: EcoCyc:PYRNUTRANSHYDROGEN-ENZRXN
+  title: 'EcoCyc PYRNUTRANSHYDROGEN-ENZRXN: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PYRNUTRANSHYDROGEN-ENZRXN
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 1a6b307d39fd8e13a29ff6cf03d244be22e54c5e307d58989bbff0e4acf9ef7a
+- id: EcoCyc:UDHA-ENZRXN
+  title: 'EcoCyc UDHA-ENZRXN: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:UDHA-ENZRXN
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 16f32f2e32a22f812932a2656f0ba2719d7448f99aa1ef7b1e18f26e71486584
+- id: EcoCyc:CPLX0-682
+  title: 'EcoCyc CPLX0-682: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:CPLX0-682
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 2e347c5eda9d0fc55c857fd33b9da50d255e4f2719cae462d4b14bc0b6ae2f1e
+- id: EcoCyc:MONOMER0-541
+  title: 'EcoCyc MONOMER0-541: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:MONOMER0-541
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 2ff6e973b6de0816ca7abe506e8a0759feaa624338d282d809ba4bc308f85699
+- id: EcoCyc:ALKAPHOSPHA-CPLX
+  title: 'EcoCyc ALKAPHOSPHA-CPLX: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:ALKAPHOSPHA-CPLX
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 916ee5e2a9972e2d51d99cb194ec8f86c314f6abba083b12037ca36793aa8e1e
+- id: EcoCyc:ALKAPHOSPHA-MONOMER
+  title: 'EcoCyc ALKAPHOSPHA-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:ALKAPHOSPHA-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 69c70d1548f42dbf0dfa0be4ff7bbaf538701ac4f87850733e59b48c4fd358ae
+- id: EcoCyc:PYRNUTRANSHYDROGEN-CPLX
+  title: 'EcoCyc PYRNUTRANSHYDROGEN-CPLX: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PYRNUTRANSHYDROGEN-CPLX
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 6c7fdfc46d1596d4e8009dbec61f0d29e5331b2fb793b9997a23e5783cb2fcc6
+- id: EcoCyc:PNTA-MONOMER
+  title: 'EcoCyc PNTA-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PNTA-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: f1c06095388dc32bedd68911e1b7006c73d0254d0e3a17b96d0457bed8746075
+- id: EcoCyc:PNTB-MONOMER
+  title: 'EcoCyc PNTB-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PNTB-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 0d8b964a03b180774b315cf057c2786117937ef6c30e30092d7ac217af14f5c0
+- id: EcoCyc:UDHA-CPLX
+  title: 'EcoCyc UDHA-CPLX: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:UDHA-CPLX
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 34f1fd868c126ca65fa1d5b15f226221769afe5b415c8955c694345d109e34be
+- id: EcoCyc:UDHA-MONOMER
+  title: 'EcoCyc UDHA-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:UDHA-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: df2f160fc228ad368652c1803794347891989001f1500e5df4de4dfd96dc2671
+- id: UniProtKB:P0A7B3
+  title: NAD kinase
+  url: https://rest.uniprot.org/uniprotkb/P0A7B3.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 26faac394929cc9de01c03bef1d5b5494abdfe80a3642c22673d9ae973f9e167
+- id: Entrez:947092
+  title: 'nadK: issuing MG1655 Gene record'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=947092&rettype=xml
+  source_version: Exact Entrezgene XML, GeneID, b-locus and taxon511145; retrieved2026-10-12
+  source_sha256: 07f74fda993130222207e652a53c371972a3ad0b077c14020b073a82b0846a07
+- id: UniProtKB:P00634
+  title: Alkaline phosphatase
+  url: https://rest.uniprot.org/uniprotkb/P00634.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 3daf839ecfe721bb781dc3f569c692923808cb6cc60a6b8f1ded7a98a528f7c8
+- id: Entrez:945041
+  title: 'phoA: issuing MG1655 Gene record'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=945041&rettype=xml
+  source_version: Exact Entrezgene XML, GeneID, b-locus and taxon511145; retrieved2026-10-12
+  source_sha256: 21c6def059f135dd12bce50147ef7d24dbba1c3bd1d24b38823b2b5c9f9c1696
+- id: UniProtKB:P07001
+  title: NAD(P) transhydrogenase subunit alpha
+  url: https://rest.uniprot.org/uniprotkb/P07001.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: c1a07fc32905f32101ef2796eabed6bf1f513c52873c924177bbff17a5038633
+- id: Entrez:946628
+  title: 'pntA: issuing MG1655 Gene record'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=946628&rettype=xml
+  source_version: Exact Entrezgene XML, GeneID, b-locus and taxon511145; retrieved2026-10-12
+  source_sha256: be137d6a660d8c13130cbb74c225f6d311d8b70dfacf7c512febb4fc35d10456
+- id: UniProtKB:P0AB67
+  title: NAD(P) transhydrogenase subunit beta
+  url: https://rest.uniprot.org/uniprotkb/P0AB67.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 136fea7ee43efb6aad747ba16a85675f19cfb573b83ac625bfcb24cc492a63c7
+- id: Entrez:946144
+  title: 'pntB: issuing MG1655 Gene record'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=946144&rettype=xml
+  source_version: Exact Entrezgene XML, GeneID, b-locus and taxon511145; retrieved2026-10-12
+  source_sha256: 2264f0fe31e43c8f74f54fc73882380b7e5b5f06328e0af5ee6be8e22aeef5a0
+- id: UniProtKB:P27306
+  title: Soluble pyridine nucleotide transhydrogenase
+  url: https://rest.uniprot.org/uniprotkb/P27306.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 6563f169d29078cae9e4b262ebadafcc3d1eaa68cf29bf485431b99880595845
+- id: Entrez:948461
+  title: 'sthA: issuing MG1655 Gene record'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=948461&rettype=xml
+  source_version: Exact Entrezgene XML, GeneID, b-locus and taxon511145; retrieved2026-10-12
+  source_sha256: c260200b26ee39f47b6a9d54c0dd217da8a3939a339dac58496abdafb84ab959
+- id: UniProtKB:P22255
+  title: 3'(2'),5'-bisphosphate nucleotidase CysQ
+  url: https://rest.uniprot.org/uniprotkb/P22255.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: c6b45016e8e6157c3e1d4efb933105fb9a74277b5e8f7fbed8b86e9983edc4dc
+- id: Entrez:948728
+  title: 'cysQ: issuing MG1655 Gene record'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=948728&rettype=xml
+  source_version: Exact Entrezgene XML, GeneID, b-locus and taxon511145; retrieved2026-10-12
+  source_sha256: 625244bfbe8375a639a56030fa868500ccec7d380d9eb1d2cb7d1fd441e0f1ee
+- id: PMID:11488932
+  title: Molecular characterization of Escherichia coli NAD kinase.
+  url: https://pubmed.ncbi.nlm.nih.gov/11488932/
+  source_version: Primary-paper tool renderings bundled losslessly with exact original receipts; no raw
+    publisher PDF/HTML claim
+  source_sha256: 5f38b08bbd3b4f48a24799f1e4587022c20879925643afa899c0f9eec077c8d5
+- id: PMID:3025169
+  title: Negative modulation of Escherichia coli NAD kinase by NADPH and NADH.
+  url: https://pubmed.ncbi.nlm.nih.gov/3025169/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253
+- id: EcoCyc:REG0-7644
+  title: 'EcoCyc REG0-7644: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-7644
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: f7662c4288fd31816a51c158c8041a5a27de67eed5d2c4d0b7b448c5079f7509
+- id: EcoCyc:REG0-7643
+  title: 'EcoCyc REG0-7643: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-7643
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 83f397a92aa15ad62852dd5059bd89b6c90978c6ca2a9e0f92e8dc01ee43eac1
+- id: PMID:13906598
+  title: A study of the substrate specificity and other properties of the alkaline phosphatase of Escherichia
+    coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/13906598/
+  source_version: Primary-paper tool renderings bundled losslessly with exact original receipts; no raw
+    publisher PDF/HTML claim
+  source_sha256: e91812786ef7ea8d7ca6f1ac4b03699ada103a0fff5fa8322b3c6c2ea166a241
+- id: PMID:17616624
+  title: NADP(H) phosphatase activities of archaeal inositol monophosphatase and eubacterial 3'-phosphoadenosine
+    5'-phosphate phosphatase.
+  url: https://pubmed.ncbi.nlm.nih.gov/17616624/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: e4980d2ff3fca31f928175f3e8ffc03b3974020f83bb7041ed9e544c52221b06
+- id: PMID:34707181
+  title: Energy transfer between the nicotinamide nucleotide transhydrogenase and ATP synthase of Escherichia
+    coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/34707181/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: 9d9ccb8543e7473a5fbf9d253ea6d20a80b1143b8c8d49c5d329ba9920d38e5a
+- id: PMID:3891338
+  title: Purification and properties of reconstitutively active nicotinamide nucleotide transhydrogenase
+    of Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/3891338/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5
+- id: EcoCyc:REG0-8848
+  title: 'EcoCyc REG0-8848: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-8848
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: c77ff4955d330bfbd9d7ec4ee3da82bd926fd2f8f602af35ac625d176cd69131
+- id: PMID:10556628
+  title: Effect of NBD chloride (4-chloro-7-nitrobenzo-2-oxa-1,3-diazole) on the pyridine nucleotide transhydrogenase
+    of Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/10556628/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5
+- id: EcoCyc:REG0-9666
+  title: 'EcoCyc REG0-9666: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-9666
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 039b758b28bc35fd52aa44500a968903686d4d8cd8ec95b89c22a63b9bcf549f
+- id: PMID:35933012
+  title: A conserved sequence motif in the Escherichia coli soluble FAD-containing pyridine nucleotide
+    transhydrogenase is important for reaction efficiency.
+  url: https://pubmed.ncbi.nlm.nih.gov/35933012/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe
+- id: DOI:10.1016/j.jbc.2022.102304
+  title: A conserved sequence motif in the Escherichia coli soluble FAD-containing pyridine nucleotide
+    transhydrogenase is important for reaction efficiency. — original supplementary document
+  url: https://doi.org/10.1016/j.jbc.2022.102304
+  source_version: Exact original supplementary DOCX; member word/document.xml SHA256 0317575d294ddc66cbe14e16d0fe5c95b47584b70df31eb60b7c0ff08fe39a49;
+    separately bound from main paper
+  source_sha256: 60c9ceb8cedd0e3096838a983f90cdb1f72f26a40add364e54af66f7b7a1c6e1
+- id: PMID:21545646
+  title: Overexpression and biochemical characterization of soluble pyridine nucleotide transhydrogenase
+    from Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/21545646/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5
+- id: EcoCyc:PC00027
+  title: 'EcoCyc PC00027: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PC00027
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 82fdea97a3ace3840e3d8ef4242b39074a64ce737af3f09a28ffe7d6988f75de
+- id: EcoCyc:PD00347
+  title: 'EcoCyc PD00347: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PD00347
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: cffddf3be3c0f367c3a052aeb79c55f93f69bda79362b67a44c89012ff6ef503
+- id: UniProtKB:P0A6X7
+  title: Integration host factor subunit alpha
+  url: https://rest.uniprot.org/uniprotkb/P0A6X7.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 443ba5d81e02adf48c4e893a050fe589e232d4f74bf55891a91811f34d70dc09
+- id: EcoCyc:PD00348
+  title: 'EcoCyc PD00348: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PD00348
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: d8f97cdfa819344f77454688dc813661f74690152f2f975b78fccfea8796f877
+- id: UniProtKB:P0A6Y1
+  title: Integration host factor subunit beta
+  url: https://rest.uniprot.org/uniprotkb/P0A6Y1.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 00e7d54c17acfe2db9536cac8f82c66606733b43bb3d6b6a337b744198d6d2e1
+- id: EcoCyc:CPLX0-226
+  title: 'EcoCyc CPLX0-226: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:CPLX0-226
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: c57ac58eede2aa783699734be039b9365df521f39d2890968d24c515f72920b1
+- id: UniProtKB:P0ACJ8
+  title: DNA-binding transcriptional dual regulator CRP
+  url: https://rest.uniprot.org/uniprotkb/P0ACJ8.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 78363826a61b49132c01d2811a8a2d68439b35023ce5a602672d6aa82927a9a1
+- id: EcoCyc:PC00004
+  title: 'EcoCyc PC00004: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PC00004
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 55ab5eea74d7a40e8059c1a6cc040aca2dab5e12af81265be62e544c8bccdf58
+- id: PMID:27488847
+  title: Distinct transcriptional regulation of the two Escherichia coli transhydrogenases PntAB and UdhA.
+  url: https://pubmed.ncbi.nlm.nih.gov/27488847/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: 6b0fbbf8594cb7e7ddebc70fe8aa50dfff10f032556bc16890b536a76c9cff9e
+- id: UniProtKB:P0ACJ0
+  title: Leucine-responsive regulatory protein
+  url: https://rest.uniprot.org/uniprotkb/P0ACJ0.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 489fd47ba7b2289de1d5cd8cb26a8fecd07dd03e02c60d5e4e8674361d025534
+- id: UniProtKB:P0A8S1
+  title: HTH-type transcriptional regulator ArgP
+  url: https://rest.uniprot.org/uniprotkb/search?query=organism_id%3A83333%20AND%20%28gene_exact%3AargP%20OR%20gene_exact%3Ahns%20OR%20gene_exact%3Afur%20OR%20gene_exact%3AcysQ%29&format=json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 7a03511fb7bcbab8e56cc3539f326085bd3eb2996f5477d2ccf39e5c2bf3c946
+- id: UniProtKB:P0A9A9
+  title: Ferric uptake regulation protein
+  url: https://rest.uniprot.org/uniprotkb/search?query=organism_id%3A83333%20AND%20%28gene_exact%3AargP%20OR%20gene_exact%3Ahns%20OR%20gene_exact%3Afur%20OR%20gene_exact%3AcysQ%29&format=json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 7a03511fb7bcbab8e56cc3539f326085bd3eb2996f5477d2ccf39e5c2bf3c946
+- id: UniProtKB:P0A9Q1
+  title: Aerobic respiration control protein ArcA
+  url: https://rest.uniprot.org/uniprotkb/P0A9Q1.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 1cf9da9d9f471a999f225da89aaaa3e0c70684d850fa502888351050913aabb5
+- id: UniProtKB:P0ACF8
+  title: DNA-binding protein H-NS
+  url: https://rest.uniprot.org/uniprotkb/search?query=organism_id%3A83333%20AND%20%28gene_exact%3AargP%20OR%20gene_exact%3Ahns%20OR%20gene_exact%3Afur%20OR%20gene_exact%3AcysQ%29&format=json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 7a03511fb7bcbab8e56cc3539f326085bd3eb2996f5477d2ccf39e5c2bf3c946
+- id: UniProtKB:P07604
+  title: HTH-type transcriptional regulatory protein TyrR
+  url: https://rest.uniprot.org/uniprotkb/search?query=organism_id%3A83333%20AND%20%28gene_exact%3AtyrR%20OR%20gene_exact%3AcsiR%20OR%20gene_exact%3Ahfq%29&format=json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 3085b1f7eb1f3e56fdef46cb324d29c3faec7eeddad5512d1be50a9d8c3d8c74
+- id: DOI:10.1099/mic.0.000346
+  title: Distinct transcriptional regulation of the two Escherichia coli transhydrogenases PntAB and UdhA.
+    — original supplementary PDF
+  url: https://doi.org/10.1099/mic.0.000346
+  source_version: Original supplemental PDF, source-qualified page/row selection; main paper separately
+    bound
+  source_sha256: 03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae
+- id: PMID:30420454
+  title: <i>Escherichia coli</i> Lrp Regulates One-Third of the Genome via Direct, Cooperative, and Indirect
+    Routes.
+  url: https://pubmed.ncbi.nlm.nih.gov/30420454/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: 664a904cfef6fcb5cbdfb65f7582f0e28fcde2ebdf9a83daca1ceeb1ec21ca55
+- id: EcoCyc:REG0-15526
+  title: 'EcoCyc REG0-15526: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-15526
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: facb77d0a2fcc1aac70c88f8a0aeeaf1134753ad0d87fe7b05bf0ffd21a3a819
+- id: EcoCyc:PD00353
+  title: 'EcoCyc PD00353: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PD00353
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: c35732fc9607c245ee01f74936da5183891e05cf76669be6c7b6c38b7da401d5
+- id: EcoCyc:REG0-15529
+  title: 'EcoCyc REG0-15529: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-15529
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 744cea4fa08bc5ee3c85cafde519dc89e879e36d5185f295439e76edcde7232b
+- id: EcoCyc:REG0-15570
+  title: 'EcoCyc REG0-15570: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-15570
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: d95ff0a0f9428b1c24c61ed97bbde6c30011881d15f5d37e38d578b86176af13
+- id: EcoCyc:PHOSPHO-ARCA
+  title: 'EcoCyc PHOSPHO-ARCA: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PHOSPHO-ARCA
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: a2b9435ac786af6b00ae8446b3def98c84230e693e682a3989dcd295d69e07e8
+- id: PMID:24699140
+  title: Determining the control circuitry of redox metabolism at the genome-scale.
+  url: https://pubmed.ncbi.nlm.nih.gov/24699140/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: 3c002c1995627b15ab643a697dcee1133b2a236d9d696f849ed5e63f58065197
+- id: EcoCyc:REG0-14088
+  title: 'EcoCyc REG0-14088: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-14088
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 3fb547d5032195805f25c53e76a5d03545df034e38fc228d3e7354e56532b449
+- id: EcoCyc:REG0-14089
+  title: 'EcoCyc REG0-14089: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-14089
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 40fa13f24a79e2f8605e5492d0e3884a462769ac1fa6edbe9e5ffdd8420029e6
+- id: EcoCyc:ARCA-MONOMER
+  title: 'EcoCyc ARCA-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:ARCA-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 7c99a70375c65e56c16fe8cae9bd00b4a846f6e9375a42793331b1182eac89ca
+- id: EcoCyc:REG0-14101
+  title: 'EcoCyc REG0-14101: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-14101
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 46c663cf38412f51c7c7089bc15227a1695655b8805029c1abe27ebaa90bee53
+- id: EcoCyc:REG0-14102
+  title: 'EcoCyc REG0-14102: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-14102
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: ff03da60b3dce78f3cf1fd9a472e703ae8ea6a1fd535dc4d9fd934592fa16e00
+- id: EcoCyc:REG0-14103
+  title: 'EcoCyc REG0-14103: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-14103
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 87d4ed365d9569fd987986e2d4d1aa2ecbeb2f232f2028026f36bb9c56bbc82d
+- id: PMID:28061857
+  title: Coordinated regulation of acid resistance in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/28061857/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: d0fe128331ee990d4c5d0662303de858c29bf644999e25d1614e9cabc074be9d
+- id: DOI:10.1186/s12918-016-0376-y
+  title: Coordinated regulation of acid resistance in Escherichia coli. — original supplementary archive
+  url: https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5217608/supplementaryFiles
+  source_version: Original supplementary ZIP; exact XLSX member SHA and worksheet/row retained separately
+  source_sha256: 2c76a2fd6ba35ed48d35545af2d939412ab2bfb52bc19766a90d71c5268467e9
+- id: EcoCyc:G7072-MONOMER
+  title: 'EcoCyc G7072-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:G7072-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 7b00bd0eb95c82f77e9c3af1defe1b3922eda535f0fcd219285ecabc69767c9b
+- id: EcoCyc:REG0-11863
+  title: 'EcoCyc REG0-11863: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-11863
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 9c2291ca92eea2f3251ebf73d809d8cf6ed4b3c4b079e9b7241eeddae20f4979
+- id: PMID:21292161
+  title: The base-pairing RNA spot 42 participates in a multioutput feedforward loop to help enact catabolite
+    repression in Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/21292161/
+  source_version: Retained full primary original; exact preparation and inspected source locators; supplementary
+    originals separately bound
+  source_sha256: 936de783f461cb502b9ed58dc67051e0376406464e077c5daf9135a120de5838
+- id: EcoCyc:PHOSPHO-PHOB
+  title: 'EcoCyc PHOSPHO-PHOB: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PHOSPHO-PHOB
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 682af9d1cb1c1503bcb01f28c9d1a1dd425e3f222b8eec7229401d54e5ffa5e2
+- id: EcoCyc:REG0-4617
+  title: 'EcoCyc REG0-4617: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:REG0-4617
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 5cd5b77688f9858053743d8ede77c578a760416a675f2d10670363d0486b5096
+- id: EcoCyc:PM00071
+  title: 'EcoCyc PM00071: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PM00071
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 5f3f24ca468995af845c1b1d755b08b0b5fa318cfd5b202fd129d6719693a4b8
+- id: EcoCyc:TU00052
+  title: 'EcoCyc TU00052: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:TU00052
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 1e72e17c7bb21b037fa22c3d0fa365412e5acd458a563e3939ed03142eacec8d
+- id: EcoCyc:PHOB-MONOMER
+  title: 'EcoCyc PHOB-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:PHOB-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: 7951e2d054a499d1e1ebf6224dd4efcb82aedce1130ac37f5af9b39d23653be9
+- id: UniProtKB:P0AFJ5
+  title: Phosphate regulon transcriptional regulatory protein PhoB
+  url: https://rest.uniprot.org/uniprotkb/P0AFJ5.json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 6f928dfaf8bf50ee59d68ded7f4ce1b998db8b5a9524d314079995ebaa7fa9d3
+- id: UniProtKB:P37338
+  title: HTH-type transcriptional repressor GlaR
+  url: https://rest.uniprot.org/uniprotkb/search?query=organism_id%3A83333%20AND%20%28gene_exact%3AtyrR%20OR%20gene_exact%3AcsiR%20OR%20gene_exact%3Ahfq%29&format=json
+  source_version: Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit;
+    retrieved2026-10-12
+  source_sha256: 3085b1f7eb1f3e56fdef46cb324d29c3faec7eeddad5512d1be50a9d8c3d8c74
+- id: PMID:8100227
+  title: Identification of N,N'-dicyclohexylcarbodiimide-reactive glutamic and aspartic acid residues
+    in Escherichia coli transhydrogenase and the exchange of these by site-specific mutagenesis.
+  url: https://pubmed.ncbi.nlm.nih.gov/8100227/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5
+- id: PMID:9922271
+  title: The udhA gene of Escherichia coli encodes a soluble pyridine nucleotide transhydrogenase.
+  url: https://pubmed.ncbi.nlm.nih.gov/9922271/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5
+- id: PMID:15855156
+  title: Molecular conversion of NAD kinase to NADH kinase through single amino acid residue substitution.
+  url: https://pubmed.ncbi.nlm.nih.gov/15855156/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5
+- id: PMID:23274360
+  title: Effect of acidic condition on the metabolic regulation of Escherichia coli and its phoB mutant.
+  url: https://pubmed.ncbi.nlm.nih.gov/23274360/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 0ed040e3747ba5c4039dedc4eb6dfbc03475dd604671dcc1d134a08cf5d40bec
+- id: EcoCyc:NADPPHOSPHAT-MONOMER
+  title: 'EcoCyc NADPPHOSPHAT-MONOMER: issuing native original'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:NADPPHOSPHAT-MONOMER
+  source_version: PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards
+  source_sha256: bb8ed2e8dc2428f1ef96ffa9dae5138b697af5dbf824655246d4ae1868ffc4a0
+- id: DOI:10.1371/journal.pgen.1004264.s009
+  title: ArcA supplementary table S1
+  url: https://journals.plos.org/plosgenetics/article/file?type=supplementary&id=10.1371/journal.pgen.1004264.s009
+  source_version: Exact publisher supplemental PDF; separately acquired and bound; table context retained
+  source_sha256: 4b85ab54d51f23c75616a6c50cbb6bc61a71464c633f7d51baf28e18ca729f74
+- id: DOI:10.1371/journal.pgen.1004264.s010
+  title: ArcA supplementary table S2
+  url: https://journals.plos.org/plosgenetics/article/file?type=supplementary&id=10.1371/journal.pgen.1004264.s010
+  source_version: Exact publisher supplemental PDF; separately acquired and bound; table context retained
+  source_sha256: a207fa37cb22c67ca42a3f3c0729c0a9764c977382a6534388210770b6e46613
+- id: PathBank:SMP0002093
+  title: NAD phosphorylation and dephosphorylation — frozen PW002081 BioPAX
+  url: https://pathbank.org/view/SMP0002093
+  source_version: Frozen archive member PW002081.owl SHA256 b6f8df0db6bf06cd671f3518481285f00b17d1eb384d8834826527c2201593e0;
+    whole archive SHA256 b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44; no live-download
+    claim
+  source_sha256: b6f8df0db6bf06cd671f3518481285f00b17d1eb384d8834826527c2201593e0
+- id: PMID:10383409
+  title: The membrane topology of proton-pumping Escherichia coli transhydrogenase determined by cysteine
+    labeling.
+  url: https://pubmed.ncbi.nlm.nih.gov/10383409/
+  source_version: Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access
+  source_sha256: 622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5
+- id: PMID:14660605
+  title: The soluble and membrane-bound transhydrogenases UdhA and PntAB have divergent functions in NADPH
+    metabolism of Escherichia coli.
+  url: https://pubmed.ncbi.nlm.nih.gov/14660605/
+  source_version: Retained full primary original; narrative-only citation with exact paragraph/source
+    accounting; not a new mechanistic edge or fresh retrieval
+  source_sha256: 025c0ec5a5a9f50e379ba4acf12e68f4c709d4691f477f728fc6e14449cc5e34
+- id: PMID:30765722
+  title: Quantifying dynamic mechanisms of auto-regulation in Escherichia coli with synthetic promoter
+    in response to varying external phosphate levels.
+  url: https://pubmed.ncbi.nlm.nih.gov/30765722/
+  source_version: Retained full primary original; narrative-only citation with exact paragraph/source
+    accounting; not a new mechanistic edge or fresh retrieval
+  source_sha256: f136ac594086c47c0e10302bec8af521c5e24b2fa2b8b1206598d31b61500d69
+- id: PMID:22388518
+  title: Multiple factors dictate target selection by Hfq-binding small RNAs
+  url: https://pubmed.ncbi.nlm.nih.gov/22388518/
+  source_version: Retained full primary original; narrative-only citation with exact paragraph/source
+    accounting; not a new mechanistic edge or fresh retrieval
+  source_sha256: eb6e42ed8279b1b1db7adf5efc90e005ecebbff221809d4b1fcc5fc2e6d166ed

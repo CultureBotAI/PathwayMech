@@ -1,0 +1,103 @@
+"""Prepare a guarded combined review template; actual new gate results remain pending."""
+
+import copy
+import sys
+from pathlib import Path
+
+sys.path.insert(0, '/private/tmp/pathwaymech-next-232-assay-integration-preparation-20261012')
+import runner as r
+
+HERE = Path(__file__).absolute().parent
+OLD = Path('/private/tmp/pathwaymech-next-232-assay-finalization-successor-20261012')
+value = copy.deepcopy(r.load(OLD / 'review-fragments.json'))
+f = value['review_fields']
+f['title'] = 'NAD assay and provenance corrections: bounded successor to native review 109'
+f['reviewer']['independence_basis'] += (
+    ' The runtime-order correction is authored by the support agent and separately reassessed '
+    'by the independent diagnostic reviewer; that review and root acceptance are bound explicitly.'
+)
+f['summary'] = (
+    'The accepted issue483 successor distinguishes general 10 mM NAD Methods, 4.0 mM NAD '
+    'Table 2 assays, and variable-NAD saturation experiments. Exactly one narrative paragraph '
+    'and two active-ledger text pointers change. Issue487 separately fixes hash-seed-dependent '
+    'provenance field ordering in the complex authority adapter and adds a cross-process '
+    'regression. All scientific graph structure and earlier dossiers/reviews remain intact. '
+    'Current post-both-corrections gates and preservation are bound separately from historical '
+    'assay-only gates. This is a bounded successor with explicit inherited scientific limits.'
+)
+f['scope']['description'] += (
+    ' One additional runtime assessment covers issue487 provenance serialization, original-source '
+    'replay and hash-seeded testing; it makes no additional scientific interpretation.'
+)
+f['assessments'][5]['summary'] = (
+    'Actual fresh combined preservation retains all prior dossiers, histories and native review '
+    'bundles, other 232 pathway records/pages, all authority snapshots, cache link identities '
+    'and resolved bodies, and every KGX/download row. Relative to original0f5, four existing '
+    'files change: the accepted NAD YAML and exact description/history page, plus the two '
+    'issue487 runtime/test files. Exactly24 assay evidence files and one pre-render EDIT are '
+    'additive; current finalization adds only its fixed reviewed archive and native pair.'
+)
+f['assessments'][5]['evidence_ids'] += ['runtime-adoption', 'runtime-proposal']
+f['assessments'][6]['summary'] = (
+    'The issue483 EDIT was appended before its original render. After issue487 changed two '
+    'runtime/test files, all nine complete maintained gate equivalents passed again on the '
+    'same corrected scientific target. Current commands, exits and streams are bound; the '
+    'earlier assay-only run is separately retained as historical evidence. Review finalization '
+    'changes no runtime or science, so those nine gates are not repeated again. Native '
+    'validate/save/check, page-current/diff and archive preservation receive separate actual receipts.'
+)
+f['assessments'][6]['evidence_ids'] += ['prior-assay-gates']
+f['assessments'].append({
+    'assessment_id': 'runtime-provenance-order', 'area': 'representation',
+    'topic': 'Deterministic outer complex and nested PC-1 provenance serialization',
+    'outcome': 'supported', 'target_ids': ['MetaCyc:NADPHOS-DEPHOS-PWY'],
+    'summary': (
+        'Issue487 identified set iteration in provenance dictionary construction. The correction '
+        'uses an immutable license/url/version/sha256 sequence matching the existing NAD '
+        'snapshot, while preserving the same closed four-key validation set. It changes exactly '
+        'the adapter and its regression test. Unsorted serialization is checked in fresh '
+        'hash-seeded processes for unnamed and synonym-only/PC-1 fixtures; whole issuing '
+        'CPLX0-682, Pnt and PC-1 originals reproduce existing metadata/term values and order. '
+        'Independent bounded reassessment and root acceptance are separately bound. No '
+        'scientific target, page, history or authority snapshot changes as part of issue487; '
+        'distinct future THIO ordering and first-owner proposal corrections remain outside scope.'
+    ),
+    'evidence_ids': ['runtime-proposal', 'runtime-patch', 'runtime-original-proof',
+                     'runtime-independent', 'runtime-root-acceptance', 'runtime-issue',
+                     'runtime-code', 'runtime-tests', 'runtime-adoption', 'integration-gates'],
+})
+f['limitations'].append(
+    'The independent issue487 review is bounded to provenance serialization and preservation; '
+    'it does not rerun the full scientific literature review. Distinct THIO defects remain pending '
+    'outside this NAD native successor.'
+)
+f['notes'][0] = (
+    'Issues483 and487 originated as external findings. No fabricated native previous_occurrences '
+    'or terminal findings are created; their accepted corrections are recorded in evidence-linked assessments.'
+)
+f['notes'].append(
+    'The held assay-only finalization support was never executed. Its immutable template is '
+    'superseded by this combined observation, which binds the later actual runtime gate run.'
+)
+f['notes'].append(
+    'The limitation reporting 200 focused tests describes the historical independent review of '
+    'exact0f5. It does not describe the future final adversarial review of the corrected commit, '
+    'which remains a separate required step.'
+)
+f['links'].insert(1, 'https://github.com/CultureBotAI/PathwayMech/issues/487')
+f['tags'] += ['issue487', 'provenance-order']
+value['fixed_evidence'] += [
+    {'id': 'runtime-code', 'kind': 'record_content', 'path': 'src/pathwaymech/ecocyc_complex.py',
+     'locator': 'PROVENANCE_FIELDS and four provenance comprehensions',
+     'summary': 'Exact accepted runtime keeps immutable serialized field order and closed-key checks.'},
+    {'id': 'runtime-tests', 'kind': 'validation', 'path': 'tests/test_ecocyc_complex_authority.py',
+     'locator': 'test_complex_provenance_serialization_is_stable_across_processes',
+     'summary': 'Unsorted byte equality across five fresh hash-seeded processes, including nested PC-1.'},
+]
+# All first five scientific assessments and all inherited limitations remain exact.
+prior = r.load(OLD / 'review-fragments.json')['review_fields']
+r.need(f['assessments'][:5] == prior['assessments'][:5], 'scientific narrative drift')
+r.need(f['limitations'][:-1] == prior['limitations'], 'inherited limitation drift')
+r.write_json(HERE / 'review-fragments.json', value)
+r.write_json(HERE / 'targets.json', {'targets': f['targets']})
+print('Prepared eight guarded template assessments; actual runtime gate receipts still required.')

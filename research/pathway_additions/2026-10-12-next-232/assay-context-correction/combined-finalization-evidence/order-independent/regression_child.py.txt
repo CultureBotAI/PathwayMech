@@ -1,0 +1,9 @@
+import importlib.util,sys,traceback
+from pathlib import Path
+sys.path[:0]=['/private/tmp/pathwaymech-next-232-20261012/src','/private/tmp/pathwaymech-next-232-20261012']
+import pathwaymech
+p=sys.argv[1]
+spec=importlib.util.spec_from_file_location('pathwaymech.ecocyc_complex',p);m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m);pathwaymech.ecocyc_complex=m
+spec=importlib.util.spec_from_file_location('order_candidate_test',sys.argv[2]);t=importlib.util.module_from_spec(spec);spec.loader.exec_module(t)
+t.test_complex_provenance_serialization_is_stable_across_processes(Path(sys.argv[3]))
+print('new cross-process regression passed')

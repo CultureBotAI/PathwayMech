@@ -1,0 +1,1655 @@
+[
+  {
+    "key": "boundary-native",
+    "claim": "The complete native pathway has NAD-KIN-RXN, RXN-5822 and TRANS-RXN0-277, not a two-event kinase/phosphatase-only record.",
+    "record_paragraphs": [
+      1
+    ],
+    "edges": [
+      "nad-020",
+      "nad-021",
+      "nad-022"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Native XML has precisely the three named members. SthA is clearly marked as supporting chemistry, and the Escherichia coli record does not claim universal flux across the native pathway's broad taxa.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/META-NADPHOS-DEPHOS-PWY.xml",
+      "bytes": 22520,
+      "sha256": "b8f1ab171fad09d72563f170110357b2fe1cc901962175bf22fe06177b7e1552"
+    },
+    "preflight_locator": "/ptools-xml/Pathway/reaction-list and reaction-layout",
+    "explicit_limit": "Broad native taxonomic range is curated occurrence scope, not physiological flux proof for every taxon.",
+    "finding": null
+  },
+  {
+    "key": "boundary-pathbank",
+    "claim": "Frozen PW002081 contains two BiochemicalReaction nodes and one TransportWithBiochemicalReaction, all attached to SMP0002093. The screening count of 2 is class-specific, not a missing third event.",
+    "record_paragraphs": [
+      3,
+      41
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The original OWL contains two BiochemicalReaction instances plus one TransportWithBiochemicalReaction attached to the pathway. Counting only the first class was not the biological boundary; the final prose corrects it.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PW002081.owl",
+      "bytes": 45885,
+      "sha256": "b6f8df0db6bf06cd671f3518481285f00b17d1eb384d8834826527c2201593e0"
+    },
+    "preflight_locator": "/rdf:RDF/bp:Pathway/bp:pathwayComponent; bp:TransportWithBiochemicalReaction[@rdf:ID=\"ReactionCoupledTransports/189\"]",
+    "explicit_limit": "Corrects preliminary progress inference; never equate document BiochemicalReaction count with full biological boundary.",
+    "finding": null
+  },
+  {
+    "key": "core-nadk",
+    "claim": "NadK catalyzes ATP-dependent oxidation-state-preserving NAD phosphorylation; exact Rhea18630 five sides.",
+    "record_paragraphs": [
+      2,
+      5
+    ],
+    "edges": [
+      "nad-001",
+      "nad-002",
+      "nad-003",
+      "nad-004",
+      "nad-005",
+      "nad-023",
+      "nad-032"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Fresh Rhea participant/compound traversal and elemental/charge accounting support all five NadK sides. ATP is the core donor and NAD oxidation state is preserved.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/META-NAD-KIN-RXN.xml",
+      "bytes": 6607,
+      "sha256": "4b1d5fa336713a504d2834844542ef376d989bd97d577658432c0c116d2ea537"
+    },
+    "preflight_locator": "/ptools-xml/Reaction/{left,right,dblink,reaction-direction}",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "core-phosphatase",
+    "claim": "Rhea28051 hydrolyzes NADP to NAD plus hydrogenphosphate, consuming water.",
+    "record_paragraphs": [
+      2
+    ],
+    "edges": [
+      "nad-006",
+      "nad-007",
+      "nad-008",
+      "nad-009"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Fresh Rhea hydrolysis sides consume water and produce hydrogenphosphate. Neither the reaction identity nor native unassigned activity identifies a physiological cytosolic enzyme.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/META-RXN-5822.xml",
+      "bytes": 7063,
+      "sha256": "bfa0bbcb2bf1fce4444b7e10eab7fd725434c5cea504e90eec16265996e0353c"
+    },
+    "preflight_locator": "/ptools-xml/Reaction/{left,right,dblink,reaction-direction}",
+    "explicit_limit": "Reaction authority does not identify the physiological cytosolic catalyst.",
+    "finding": null
+  },
+  {
+    "key": "core-pnt",
+    "claim": "Rhea47994 consumes NADH,NADP and one proton outside, producing NAD,NADPH and one proton inside.",
+    "record_paragraphs": [
+      2
+    ],
+    "edges": [
+      "nad-010",
+      "nad-011",
+      "nad-012",
+      "nad-013",
+      "nad-014",
+      "nad-015",
+      "nad-025"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Fresh Rhea 47994 is the selected reverse direction of its master. Its six sides preserve outside and inside proton participants even though both use the same chemical CURIE.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-TRANS-RXN0-277.xml",
+      "bytes": 3493,
+      "sha256": "186706b152a06510d6642f62c4cd3fde151ac13769ffc89bc2551313948705d6"
+    },
+    "preflight_locator": "/ptools-xml/Reaction/{left,right} with compartment tags",
+    "explicit_limit": "Native/Rhea actual orientation is opposite47993; protons are not canceled as a nontransport redox event.",
+    "finding": null
+  },
+  {
+    "key": "frozen-proton-conflict",
+    "claim": "PathBank transport assigns both proton sides to the same Inner_Membrane entity; preserve frozen source as coarse structural context.",
+    "record_paragraphs": [
+      3
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The original PathBank event uses the same Inner_Membrane entity for both protons. Final prose treats it as a coarse representation; physiological orientation is established independently.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PW002081.owl",
+      "bytes": 45885,
+      "sha256": "b6f8df0db6bf06cd671f3518481285f00b17d1eb384d8834826527c2201593e0"
+    },
+    "preflight_locator": "bp:TransportWithBiochemicalReaction/bp:left and bp:right",
+    "explicit_limit": "Do not derive inside/outside transport direction or physical nucleotide membrane localization from this collapsed diagram.",
+    "finding": null
+  },
+  {
+    "key": "nadk-assembly",
+    "claim": "Native NadK complex CPLX0-682 has six MONOMER0-541 chains, corroborated by purified approximately180kDa/30kDa measurements.",
+    "record_paragraphs": [
+      4
+    ],
+    "edges": [
+      "nad-027",
+      "nad-032",
+      "nad-098"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Native component coefficient six and the 2001 approximately 180/30-kDa measurements agree. The unnamed native object is retained without inventing a direct name; adapter acceptance is separate from science.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-CPLX0-682.xml",
+      "bytes": 10748,
+      "sha256": "2e347c5eda9d0fc55c857fd33b9da50d255e4f2719cae462d4b14bc0b6ae2f1e"
+    },
+    "preflight_locator": "/ptools-xml/Protein/component/coefficient",
+    "explicit_limit": "Native object has no direct common-name/synonym. Current strict complex adapter rejects it; source-derived extension required, no invented canonical label.",
+    "finding": null
+  },
+  {
+    "key": "nadk-sequence",
+    "claim": "Native purified NadK N-terminal MDNHFKCIGI differs at residue2 from predicted MNNHFKCIGI; do not equate exact preparation to current reference sequence.",
+    "record_paragraphs": [
+      4
+    ],
+    "edges": [
+      "nad-032"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The measured MDNHFKCIGI and reference MNNHFKCIGI differ at position two. Native purification and recombinant construct qualifiers preserve this rather than claiming identical sequences.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Results Identification of yfjB and N-terminal sequence",
+    "explicit_limit": "Full primary web rendering read; raw publisher body unavailable. Untagged native MG1655 and recombinant SK67 BL21 preparations distinct.",
+    "finding": null
+  },
+  {
+    "key": "nadk-construct",
+    "claim": "Recombinant pSK67 uses yfjB in pET14b NcoI/BamHI, BL21(DE3)pLysS; empty SK45 negative control. Vector name alone does not prove a retained His tag.",
+    "record_paragraphs": [
+      4,
+      9
+    ],
+    "edges": [
+      "nad-033"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The original cloning and host passages support pSK67 in pET14b/BL21(DE3)pLysS and SK45 control. No retained tag is inferred merely from vector choice.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Materials and methods Construction/purification and Results Identification",
+    "explicit_limit": "Reference protein P0A7B3 grounds identity; experimental_construct preserves host/vector/native N-terminal discrepancy.",
+    "finding": null
+  },
+  {
+    "key": "nadk-donor",
+    "claim": "NadK supports ATP,UTP,CTP,GTP,dATP,TTP donor assays with reported relative activities100,109,60,56,42,40.",
+    "record_paragraphs": [
+      5
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The original donor table supports 100/109/60/56/42/40 percent for ATP/UTP/CTP/GTP/dATP/TTP at the stated concentration. These alternatives are narrative assay scope, not extra core chemistry.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Table2",
+    "explicit_limit": "5mM donors; do not convert alternate in vitro donors into physiological core ATP-independent pathways.",
+    "finding": null
+  },
+  {
+    "key": "nadk-donor-negative",
+    "claim": "Polyphosphate,ADP,AMP,glucose6P and p-nitrophenylphosphate did not support the measured NadK phosphorylation.",
+    "record_paragraphs": [
+      5
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The original donor table includes polyphosphate variants and negative small donors. The final paragraph preserves tested conditions, including metaphosphate/hexametaphosphate, without converting absence into inhibitor edges.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Table2 and donor specificity text",
+    "explicit_limit": "Concentration and assay-defined absence; no global zero-activity claim for all conditions.",
+    "finding": null
+  },
+  {
+    "key": "nadk-metal",
+    "claim": "Replacing Mg with Mn,Zn,Ca or Co supports NadK at1mM; reported relative100,242,104,85,73%.",
+    "record_paragraphs": [
+      6
+    ],
+    "edges": [
+      "nad-034",
+      "nad-035",
+      "nad-036",
+      "nad-037",
+      "nad-038"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The replacement-metal table supports Mg/Mn/Zn/Ca/Co at 1 mM. Metal-support edges are alternative assay cofactors, not a claim of simultaneous occupancy.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Table4",
+    "explicit_limit": "Alternative assay cofactors, not simultaneous assembly occupancy or in vivo preferred-metal proof.",
+    "finding": null
+  },
+  {
+    "key": "nadk-metal-negative",
+    "claim": "Fe,Cu,Na,K,Li and omission of metal gave no detected NadK activity in the replacement assay.",
+    "record_paragraphs": [
+      6
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "FeCl2 establishes Fe(II), now CHEBI:29033. Copper and monovalent chloride substitutions and metal omission failed to support activity; none is misrepresented as inhibition of a Mg-containing assay.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Table4",
+    "explicit_limit": "Failure to replace Mg is not inhibition of a Mg-containing assay.",
+    "finding": null
+  },
+  {
+    "key": "nadk-redox-inhibitors",
+    "claim": "NADH and NADPH inhibit E.coli NadK in vitro in2001 and1987; native REG0-7644/7643 retain allosteric negative signs.",
+    "record_paragraphs": [
+      7,
+      8
+    ],
+    "edges": [
+      "nad-039",
+      "nad-040"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Original 1987 rate curves and the 2001 table support NADH/NADPH negative effects. Native allosteric signs agree; the 93-fold partially purified K12 preparation is explicitly distinct from the later MG1655 protein.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID3025169-europepmc.pdf",
+      "bytes": 893027,
+      "sha256": "e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253"
+    },
+    "preflight_locator": "PDF pages2–4 Figures1–3/Table2",
+    "explicit_limit": "1987 partially purified93fold K12 glycerol-grown preparation; do not treat it as homogeneous2001 or exact MG1655 sequence.",
+    "finding": null
+  },
+  {
+    "key": "nadk-nadp-conflict",
+    "claim": "1987 describes no significant NADP effect at tested conditions;2001 finds slight inhibition at50–100µM.",
+    "record_paragraphs": [
+      8
+    ],
+    "edges": [
+      "nad-041"
+    ],
+    "assessment": "needs_evidence_ownership_repair",
+    "independent_reason": "Both studies support the described difference, but nad-041 currently assigns the 1987 comparison solely to a 2001 table locator. Issue 466 requires a separately owned PMID3025169 Table2/adjacent-text citation; the inhibition direction under 2001 conditions is valid.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Table5; contrast PMID3025169 Table2",
+    "explicit_limit": "Retain both assay contexts, not a universal NADP sign.",
+    "finding": "nad-nadp-cross-study-locator"
+  },
+  {
+    "key": "nadk-thiol",
+    "claim": "PCMB and HgCl2 inhibit NadK, whereas tested DTT,2-mercaptoethanol and glutathione do not affect it.",
+    "record_paragraphs": [
+      9
+    ],
+    "edges": [
+      "nad-042"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2001 thiol reagent table and adjacent method specify reporter substitution because of sensitivity. HgCl2 is an exact reagent node; PCMB and unchanged reducing agents remain properly bounded prose.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID11488932-publisher-web-rendering.json",
+      "bytes": 26531,
+      "sha256": "8dca731c47b22e7894b4657c3dbdb89d7b0c2f0bcf77bf6dee7fbc75721f903f"
+    },
+    "preflight_locator": "Table5 and Results effectors",
+    "explicit_limit": "Reporter enzyme was changed for this experiment; keep reagent chemical/ionic uncertainty rather than force mercury salt to free ion.",
+    "finding": null
+  },
+  {
+    "key": "nadk-energy-negative",
+    "claim": "Adenylate energy charge variation did not alter the1987 NadK rate, with or without NADPH.",
+    "record_paragraphs": [
+      8
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 1987 adenylate-charge experiment uses fixed total adenylates with and without NADPH. Its negative result does not contradict later SthA activation, a different enzyme and assay.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID3025169-europepmc.pdf",
+      "bytes": 893027,
+      "sha256": "e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253"
+    },
+    "preflight_locator": "PDF page3 Effect of adenylate energy charge",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "nadk-km-conflict",
+    "claim": "The1987 abstract and Results reverse the1.9/2.1mM NAD/ATP Km assignment.",
+    "record_paragraphs": [
+      7
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The original abstract and Results swap the 1.9/2.1 mM NAD/ATP assignment. The record preserves the discrepancy instead of selecting one as an uncontested value.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID3025169-europepmc.pdf",
+      "bytes": 893027,
+      "sha256": "e23a001f6a149cc59e705caf30bbd5def870282395f10ae1b115e97812b53253"
+    },
+    "preflight_locator": "PDF page1 abstract versus page2 Results",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "phoa-assay",
+    "claim": "Purified E.coli alkaline phosphatase converted historical TPN to DPN.",
+    "record_paragraphs": [
+      11
+    ],
+    "edges": [
+      "nad-024",
+      "nad-043"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The complete retained 1962 transcription explicitly states TPN-to-DPN conversion. It does not identify which of four preparations supplied that particular observation, and the record avoids inventing one.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID13906598-fulltext-web-rendering.json",
+      "bytes": 25310,
+      "sha256": "cf3779263d58c311108b525a0768b90ee7e8e711b3b9e533eb6a4e8b814c6a75"
+    },
+    "preflight_locator": "Results Compounds Tested as Substrates, printedpage842",
+    "explicit_limit": "Historical undefined strain and multiple preparations; exact TPN sentence does not identify one preparation. Body accessed through primary-paper transcription, not a raw publisher PDF.",
+    "finding": null
+  },
+  {
+    "key": "phoa-periplasm",
+    "claim": "PhoA is a secreted/periplasmic homodimer, not proof of a cytosolic NADP recycling loop.",
+    "record_paragraphs": [
+      12
+    ],
+    "edges": [
+      "nad-028",
+      "nad-046"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Issuing PhoA location, signal peptide and mature-chain features support periplasmic processing. This evidence does not support a physiological cytosolic NADP loop.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/P00634.json",
+      "bytes": 61640,
+      "sha256": "3daf839ecfe721bb781dc3f569c692923808cb6cc60a6b8f1ded7a98a528f7c8"
+    },
+    "preflight_locator": "comments SUBUNIT/SUBCELLULAR LOCATION; features signal/chain",
+    "explicit_limit": "Signal cleavage and N-terminal isozyme processing states must remain qualified.",
+    "finding": null
+  },
+  {
+    "key": "phoa-metal",
+    "claim": "PhoA binds two zinc and one magnesium ions per subunit according to issuing reviewed annotation.",
+    "record_paragraphs": [
+      12
+    ],
+    "edges": [
+      "nad-044",
+      "nad-045"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Issuing PhoA cofactor annotation specifies two Zn and one Mg per chain. Edge endpoints and prose keep per-chain capacity separate from the native dimer and historical metal occupancy.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/P00634.json",
+      "bytes": 61640,
+      "sha256": "3daf839ecfe721bb781dc3f569c692923808cb6cc60a6b8f1ded7a98a528f7c8"
+    },
+    "preflight_locator": "comments COFACTOR; binding features",
+    "explicit_limit": "Do not attach all three ions with coefficient1 to a whole dimer without specifying per-chain multiplicity.",
+    "finding": null
+  },
+  {
+    "key": "phoa-broad-inhibitors",
+    "claim": "1962 broad-substrate PhoA inhibitor and activation assays used pNPP/AMP contexts; they are not NADP-specific inhibition experiments.",
+    "record_paragraphs": [
+      13
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 1962 paper's metal, heat, urea and polyamine results concern broad-substrate pNPP/AMP experiments. No NADP-specific causal edges are inferred from them.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/receipts/PMID13906598-fulltext-web-rendering.json",
+      "bytes": 25310,
+      "sha256": "cf3779263d58c311108b525a0768b90ee7e8e711b3b9e533eb6a4e8b814c6a75"
+    },
+    "preflight_locator": "TablesII–III and Discussion",
+    "explicit_limit": "Pi,metal/urea/polyamine/thiol effects must retain exact substrate and prior-work roles; no transposition onto NADP flux.",
+    "finding": null
+  },
+  {
+    "key": "unknown-phosphatase",
+    "claim": "Native NADPPHOSPHAT-MONOMER is an unnamed/gene-unassigned hypothetical physiological activity; it cannot be silently assigned to CysQ.",
+    "record_paragraphs": [
+      1,
+      11,
+      12
+    ],
+    "edges": [
+      "nad-024",
+      "nad-043"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The native hypothetical NADP phosphatase has neither a gene nor an exact UniProt bridge. The record retains the unknown physiological activity and the authors' negative CysQ interpretation.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-NADPPHOSPHAT-MONOMER.xml",
+      "bytes": 2851,
+      "sha256": "bb8ed2e8dc2428f1ef96ffa9dae5138b697af5dbf824655246d4ae1868ffc4a0"
+    },
+    "preflight_locator": "whole Protein and NADPPHOSPHAT-ENZRXN evidence",
+    "explicit_limit": "Keep unknown catalyst as prose/activity uncertainty, not an invented protein CURIE.",
+    "finding": null
+  },
+  {
+    "key": "cysq-construct",
+    "claim": "The2007 E.coli CysQ assay used ASKA AG1 pCA24N with N-terminal His6+TDPALRA and C-terminal GLCGR extensions, GFP removed.",
+    "record_paragraphs": [
+      14
+    ],
+    "edges": [
+      "nad-047"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2007 Methods identify AG1 ASKA, GFP removal and both terminal extensions. The final qualifier preserves a tagged recombinant preparation rather than pretending it is an exact native chain.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC2042097.pdf",
+      "bytes": 169314,
+      "sha256": "e4980d2ff3fca31f928175f3e8ffc03b3974020f83bb7041ed9e544c52221b06"
+    },
+    "preflight_locator": "PDF pages1–2 Materials and methods",
+    "explicit_limit": "Tag-bearing protein is not exact native reference chain.",
+    "finding": null
+  },
+  {
+    "key": "cysq-nadpase",
+    "claim": "Purified tagged CysQ hydrolyzed NADP and NADPH at pH8,37C,10mM Mg; both rate and substrate scope remain in vitro.",
+    "record_paragraphs": [
+      14
+    ],
+    "edges": [
+      "nad-047",
+      "nad-048"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2007 Table2 and adjacent results support in-vitro NADP/NADPH hydrolysis at pH8, 37C, 10mM Mg. The extra NADPH substrate is not promoted into the three-member core.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC2042097.pdf",
+      "bytes": 169314,
+      "sha256": "e4980d2ff3fca31f928175f3e8ffc03b3974020f83bb7041ed9e544c52221b06"
+    },
+    "preflight_locator": "PDF pages3–4 Table2/Results",
+    "explicit_limit": "NADPH phosphatase is additional substrate context, not an unlisted native core event.",
+    "finding": null
+  },
+  {
+    "key": "cysq-negative",
+    "claim": "CysQ NADPase was undetectable at pH6.4 or0.2mM Mg; SuhB/Fbp extracts were negative controls.",
+    "record_paragraphs": [
+      15
+    ],
+    "edges": [
+      "nad-048"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The near-physiological pH/low-Mg failures, SuhB/Fbp negative controls and buffer controls are preserved. These bounds materially weaken a physiological NADPase assignment without denying other CysQ activity.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC2042097.pdf",
+      "bytes": 169314,
+      "sha256": "e4980d2ff3fca31f928175f3e8ffc03b3974020f83bb7041ed9e544c52221b06"
+    },
+    "preflight_locator": "PDF pages3–5 Results",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "cysq-lithium",
+    "claim": "LiCl inhibited CysQ with substrate-dependent IC50: NADP70mM,NADPH60mM,FBP10mM,3-PAP0.05mM,2-PAP0.15mM.",
+    "record_paragraphs": [
+      15
+    ],
+    "edges": [
+      "nad-049"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The visually checked lithium table gives 70/60/10/0.05/0.15 mM for the five substrates. Dashes mean not determined, and the edge uses the LiCl reagent rather than an unqualified elemental lithium node.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC2042097.pdf",
+      "bytes": 169314,
+      "sha256": "e4980d2ff3fca31f928175f3e8ffc03b3974020f83bb7041ed9e544c52221b06"
+    },
+    "preflight_locator": "PDF page4 Table3",
+    "explicit_limit": "Dashes are not determined, not zero inhibition; chemical node if used must retain LiCl reagent context.",
+    "finding": null
+  },
+  {
+    "key": "cysq-physiological-limit",
+    "claim": "Authors concluded CysQ probably is not the physiological E.coli NADP phosphatase; PAP specificity/conditions favored another role.",
+    "record_paragraphs": [
+      14,
+      15
+    ],
+    "edges": [
+      "nad-047",
+      "nad-099",
+      "nad-100"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The study's substrate preferences and low-Mg/pH limitations explicitly oppose physiological NADPase assignment. Current reference localization and general calcium inhibition do not override that conclusion.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC2042097.pdf",
+      "bytes": 169314,
+      "sha256": "e4980d2ff3fca31f928175f3e8ffc03b3974020f83bb7041ed9e544c52221b06"
+    },
+    "preflight_locator": "PDF page5 Discussion",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "cysq-archaea",
+    "claim": "MJ0109/AF2372/MJ0917 activities in archaeal preparations remain separate organism/temperature/construct comparisons.",
+    "record_paragraphs": [
+      16,
+      41
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The archaeal enzymes and 85C assays are separate comparative contexts. The paper's starred/undetermined measurements are not transferred to E. coli.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC2042097.pdf",
+      "bytes": 169314,
+      "sha256": "e4980d2ff3fca31f928175f3e8ffc03b3974020f83bb7041ed9e544c52221b06"
+    },
+    "preflight_locator": "PDF pages2–5 and Table2",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "pnt-assembly",
+    "claim": "Native PntAB has two PntA plus two PntB chains;2021 describes a dimer of heterodimers.",
+    "record_paragraphs": [
+      17
+    ],
+    "edges": [
+      "nad-029",
+      "nad-030"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Native coefficients are two alpha plus two beta; the 2021 dimer-of-heterodimers model agrees. A UniProt heterodimer describes the protomer and does not contradict the assembly.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-PYRNUTRANSHYDROGEN-CPLX.xml",
+      "bytes": 60154,
+      "sha256": "6c7fdfc46d1596d4e8009dbec61f0d29e5331b2fb793b9997a23e5783cb2fcc6"
+    },
+    "preflight_locator": "/ptools-xml/Protein/component",
+    "explicit_limit": "UniProt heterodimer protomer description is not a contradiction; two native parents and missing common-name trigger a real strict adapter gap.",
+    "finding": null
+  },
+  {
+    "key": "pnt-localization",
+    "claim": "PntAB is inner-membrane proton-coupled; nucleotide binding domains face the cytoplasm.",
+    "record_paragraphs": [
+      17,
+      18,
+      21
+    ],
+    "edges": [
+      "nad-051",
+      "nad-052"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Issue 465 is corrected in c2fec: location-comment assertions are narrowed, own topological features support cytoplasmic domains, and the primary introduction/Figure1 citation is explicitly a homology model.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC8551311.xml",
+      "bytes": 125037,
+      "sha256": "9d9ccb8543e7473a5fbf9d253ea6d20a80b1143b8c8d49c5d329ba9920d38e5a"
+    },
+    "preflight_locator": "Introduction and Fig1; Results and Methods orientation",
+    "explicit_limit": "Reconstituted liposome outside-facing fractions are preparation orientation, not inverted cellular topology.",
+    "finding": null
+  },
+  {
+    "key": "pnt-construct2021",
+    "claim": "2021 PntAB construct is N-terminal alpha His6 with thrombin site, expressed in THOC43(DE3)ΔcyoΔpntAB; do not assume tag removal.",
+    "record_paragraphs": [
+      17,
+      18
+    ],
+    "edges": [
+      "nad-050"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The primary 2021 construct and purification passages identify alpha His6/thrombin-site PntAB and the THO deletion host. No unreported cleavage or native liposome orientation is asserted.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC8551311.xml",
+      "bytes": 125037,
+      "sha256": "9d9ccb8543e7473a5fbf9d253ea6d20a80b1143b8c8d49c5d329ba9920d38e5a"
+    },
+    "preflight_locator": "Methods Protein expression and purification",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "pnt-proton-controls",
+    "claim": "Reverse PntAB hydride transfer builds a proton gradient and supports co-reconstituted ATP synthase; betaH91A/noenzyme/ionophore controls test coupling.",
+    "record_paragraphs": [
+      19
+    ],
+    "edges": [
+      "nad-050"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "H91A, no-enzyme and ionophore controls support coupled proton transport. ATP production belongs to co-reconstituted ATP synthase, not a PntAB substrate/product edge.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC8551311.xml",
+      "bytes": 125037,
+      "sha256": "9d9ccb8543e7473a5fbf9d253ea6d20a80b1143b8c8d49c5d329ba9920d38e5a"
+    },
+    "preflight_locator": "Results Figs2–4 and Methods",
+    "explicit_limit": "ATP belongs to the separate ATP synthase, never Pnt reaction chemistry.",
+    "finding": null
+  },
+  {
+    "key": "pnt-pmf",
+    "claim": "ATP-synthase-generated pmf stimulated forward PntAB NADPH formation in reconstituted proteoliposomes.",
+    "record_paragraphs": [
+      19
+    ],
+    "edges": [
+      "nad-050"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The forward natural-nucleotide reconstitution experiment shows pmf stimulation under those conditions. Reported fold effects and ionophore controls remain assay-specific, not universal cellular flux.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC8551311.xml",
+      "bytes": 125037,
+      "sha256": "9d9ccb8543e7473a5fbf9d253ea6d20a80b1143b8c8d49c5d329ba9920d38e5a"
+    },
+    "preflight_locator": "Results Fig4",
+    "explicit_limit": "Assay direction, pmf and host/protein construct retained; not a fixed physiological fold change.",
+    "finding": null
+  },
+  {
+    "key": "pnt-surrogates",
+    "claim": "APAD was used for reverse/cyclic and orientation readouts; natural NAD(H)/NADP(H) assays are separate.",
+    "record_paragraphs": [
+      18
+    ],
+    "edges": [
+      "nad-050"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "APAD reverse/cyclic assays and orientation measurements are distinguished from natural forward transfer. The Methods/Results 50-versus-500-uM NADH inconsistency remains visible.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC8551311.xml",
+      "bytes": 125037,
+      "sha256": "9d9ccb8543e7473a5fbf9d253ea6d20a80b1143b8c8d49c5d329ba9920d38e5a"
+    },
+    "preflight_locator": "Methods Activity assays and orientation",
+    "explicit_limit": "50 versus500µM forward NADH in Methods/Results is an internal concentration discrepancy if quoted.",
+    "finding": null
+  },
+  {
+    "key": "pnt-inhibitors",
+    "claim": "Native annotations report inhibition by dicyclohexylcarbodiimide and irreversible NBDchloride inhibition.",
+    "record_paragraphs": [
+      20
+    ],
+    "edges": [
+      "nad-053",
+      "nad-054"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Native negative regulation and available older primary abstracts support DCCD/NBD inhibition. The record accurately says older full bodies and full construct details were inaccessible.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-REG0-8848.xml",
+      "bytes": 3135,
+      "sha256": "c77ff4955d330bfbd9d7ec4ee3da82bd926fd2f8f602af35ac625d176cd69131"
+    },
+    "preflight_locator": "whole Regulation; REG0-9666; corresponding compound originals",
+    "explicit_limit": "Older cited bodies unavailable; attribute to native annotation/available abstracts, not direct reading of full experiments.",
+    "finding": null
+  },
+  {
+    "key": "pnt-physiology2004",
+    "claim": "MG1655 deletion/13C balance supports35–45% anabolic NADPH contribution by PntAB during aerobic glucose growth.",
+    "record_paragraphs": [
+      28
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2004 deletion and carbon-balance analysis supports a condition-specific 35–45 percent anabolic contribution estimate. It is not a direct enzyme flux measurement or universal fraction.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID14660605-repository.pdf",
+      "bytes": 406048,
+      "sha256": "025c0ec5a5a9f50e379ba4acf12e68f4c709d4691f477f728fc6e14449cc5e34"
+    },
+    "preflight_locator": "PDF pages2–6 Results/Tables",
+    "explicit_limit": "Flux estimate condition-specific; cannot imply universal or direct measured transhydrogenase flux.",
+    "finding": null,
+    "additional_provenance_finding": "nad-narrative-reference-coverage"
+  },
+  {
+    "key": "stha-physiology2004",
+    "claim": "SthA/UdhA was needed for growth on acetate and in the NADPH-overproducing pgi background, while standard glucose growth showed little requirement.",
+    "record_paragraphs": [
+      28
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2004 acetate/pgi phenotypes and reported plasmid rescue distinguish SthA's disposal role from PntAB supply. Rescue stated as data-not-shown is not presented as a displayed quantitative result.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID14660605-repository.pdf",
+      "bytes": 406048,
+      "sha256": "025c0ec5a5a9f50e379ba4acf12e68f4c709d4691f477f728fc6e14449cc5e34"
+    },
+    "preflight_locator": "Results Tables1–4 and deletion/rescue text",
+    "explicit_limit": "pgi-udhA plasmid rescue described as data not shown; do not invent displayed measurements.",
+    "finding": null,
+    "additional_provenance_finding": "nad-narrative-reference-coverage"
+  },
+  {
+    "key": "transcript-model-conflict",
+    "claim": "2004 expression/redox interpretation was a hypothesis;2016 reporter data did not support direct NAD(P)H-pool-dependent transcription of either enzyme.",
+    "record_paragraphs": [
+      29
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2016 reporter work challenges the earlier broad redox-pool transcription hypothesis. Both interpretations and their assay differences remain; neither creates a direct metabolite-binding edge.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-rug.pdf",
+      "bytes": 730362,
+      "sha256": "6b0fbbf8594cb7e7ddebc70fe8aa50dfff10f032556bc16890b536a76c9cff9e"
+    },
+    "preflight_locator": "Results Figs1–3; Discussion",
+    "explicit_limit": "Preserve earlier observation and later interpretation; metabolite/growth correlations are not causal ligand edges.",
+    "finding": null
+  },
+  {
+    "key": "paraquat-negative",
+    "claim": "10µM paraquat did not induce pntAB/udhA reporter activity; zwf served as oxidative-stress response comparison.",
+    "record_paragraphs": [
+      29
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The paraquat experiment includes zwf as a response comparator while the two transhydrogenase reporters do not rise at the tested dose. No global claim of oxidative-stress insensitivity is made.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-rug.pdf",
+      "bytes": 730362,
+      "sha256": "6b0fbbf8594cb7e7ddebc70fe8aa50dfff10f032556bc16890b536a76c9cff9e"
+    },
+    "preflight_locator": "Results Fig3",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "reg2016-construct",
+    "claim": "BW25113 Keio mutants carry low-copy whole-intergenic GFPmut2 reporters with50–100bp flanks, M9 5g/L carbon37C mid-exponential.",
+    "record_paragraphs": [
+      30
+    ],
+    "edges": [
+      "nad-074",
+      "nad-075",
+      "nad-076",
+      "nad-077",
+      "nad-078",
+      "nad-079",
+      "nad-080",
+      "nad-081",
+      "nad-082"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Methods support BW25113/Keio, low-copy intergenic GFP reporters and specified growth/readout conditions. Endpoint qualifiers describe deletion-based inference, not direct promoter occupancy.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-rug.pdf",
+      "bytes": 730362,
+      "sha256": "6b0fbbf8594cb7e7ddebc70fe8aa50dfff10f032556bc16890b536a76c9cff9e"
+    },
+    "preflight_locator": "Methods and supplement TableS1",
+    "explicit_limit": "Do not label these experiments MG1655/native promoter-locus binding tests.",
+    "finding": null
+  },
+  {
+    "key": "reg2016-ihf",
+    "claim": "Deletion of IHF A substantially lowers pntAB reporter under succinate,glycerol,glucose; the tested deletion is the alpha subunit.",
+    "record_paragraphs": [
+      31
+    ],
+    "edges": [
+      "nad-068",
+      "nad-069",
+      "nad-074"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The complete screen and main text support reduced pnt reporter after IHF-alpha deletion. The native alpha/beta complex bridge is explicit and a binding mechanism is not claimed.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-supplement.pdf",
+      "bytes": 498407,
+      "sha256": "03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae"
+    },
+    "preflight_locator": "TableS3 PDFpage10, IHF A row",
+    "explicit_limit": "Can qualify intact IHF assembly regulation with the deletion design; do not present a direct binding assay.",
+    "finding": null
+  },
+  {
+    "key": "reg2016-lrp",
+    "claim": "Lrp loss reduces pntAB and raises udhA with carbon-dependent magnitudes; amino-acid mixture removes much of that effect.",
+    "record_paragraphs": [
+      31,
+      40
+    ],
+    "edges": [
+      "nad-075",
+      "nad-076"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The reporter ratios support conditional Lrp activation of pnt and repression of sth; amino-acid supplementation changes these effects. Separate 2019 native assertions do not replace these conditions.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-supplement.pdf",
+      "bytes": 498407,
+      "sha256": "03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae"
+    },
+    "preflight_locator": "TableS3 pages10/12 and TableS4 pages15/17",
+    "explicit_limit": "Native2019 ChIP+RNA joins are independent condition-specific evidence.",
+    "finding": null
+  },
+  {
+    "key": "reg2016-argp-fur",
+    "claim": "ArgP loss reduces pntAB on glucose, Fur loss on succinate; both are conditional reporter effects, not demonstrated promoter binding.",
+    "record_paragraphs": [
+      31,
+      40
+    ],
+    "edges": [
+      "nad-077",
+      "nad-078"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "ArgP/glucose and Fur/succinate effects are conditional reporter inferences. The record does not assume direct binding or a measured Fur metal state.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-supplement.pdf",
+      "bytes": 498407,
+      "sha256": "03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae"
+    },
+    "preflight_locator": "TableS3 PDFpage9 ArgP/Fur rows",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "reg2016-arca",
+    "claim": "ArcA loss raises udhA on glucose; the2016 aerobic conditions do not reproduce2014 anaerobic pntAB activation.",
+    "record_paragraphs": [
+      32
+    ],
+    "edges": [
+      "nad-079"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Aerobic ArcA deletion raises sth expression but does not reproduce anaerobic pnt activation. The unmeasured phosphorylation state of this particular experiment is explicit.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-supplement.pdf",
+      "bytes": 498407,
+      "sha256": "03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae"
+    },
+    "preflight_locator": "TableS3 PDFpages9/11 ArcA rows; TableS4 page16",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "reg2016-hns-crp",
+    "claim": "With20-amino-acid mixture H-NS and CRP deletions raise pntAB reporter; without mixture the measured effects differ.",
+    "record_paragraphs": [
+      33,
+      40
+    ],
+    "edges": [
+      "nad-080",
+      "nad-081"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The amino-acid-mixture table supports H-NS/CRP repression under that condition, with different basal outcomes. Known cAMP-bound CRP is an inferred reference state, not measured promoter occupancy.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-supplement.pdf",
+      "bytes": 498407,
+      "sha256": "03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae"
+    },
+    "preflight_locator": "TableS4 pages14/15 versus TableS3 pages9/10",
+    "explicit_limit": "No global sign collapsing; CRP cAMP dosing and growth-normalized reporter experiment separate.",
+    "finding": null
+  },
+  {
+    "key": "reg2016-effectors",
+    "claim": "Leucine lowered pntAB and raised udhA reporters; lysine/histidine lowered pntAB; methionine raised udhA.",
+    "record_paragraphs": [
+      34
+    ],
+    "edges": [
+      "nad-083",
+      "nad-084",
+      "nad-085",
+      "nad-086",
+      "nad-087"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The single-amino-acid experiments support directional reporter responses at 5mM. Suggested Lrp/ArgP mediation is not promoted to direct ligand/protein or gene-binding evidence.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-rug.pdf",
+      "bytes": 730362,
+      "sha256": "6b0fbbf8594cb7e7ddebc70fe8aa50dfff10f032556bc16890b536a76c9cff9e"
+    },
+    "preflight_locator": "Results Figure6/individual amino acids",
+    "explicit_limit": "External nutrient perturbation. Proposed mediation by Lrp/ArgP does not establish direct ligand binding in this experiment.",
+    "finding": null
+  },
+  {
+    "key": "reg2016-camp",
+    "claim": "Extracellular cAMP activates the CRP reporter and lowers normalized pntAB reporter, with only marginal udhA reduction.",
+    "record_paragraphs": [
+      34
+    ],
+    "edges": [
+      "nad-070",
+      "nad-071",
+      "nad-072",
+      "nad-073",
+      "nad-088"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The cAMP experiment controls growth through two constitutive reporters and confirms CRP response. Extracellular cAMP lowering pnt expression is kept separate from general CRP activation.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-rug.pdf",
+      "bytes": 730362,
+      "sha256": "6b0fbbf8594cb7e7ddebc70fe8aa50dfff10f032556bc16890b536a76c9cff9e"
+    },
+    "preflight_locator": "Results Figure7 and Methods normalization",
+    "explicit_limit": "Use exact cAMP reference chemistry with extracellular context; no direct pnt promoter binding claim.",
+    "finding": null
+  },
+  {
+    "key": "reg2016-tyrr",
+    "claim": "TableS4 TyrR deletion has udhA332.83 versusWT801.20 under amino-acid mixture, a supported additional screen observation.",
+    "record_paragraphs": [
+      33,
+      40
+    ],
+    "edges": [
+      "nad-082"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "TableS4 supports the TyrR screen ratio under amino-acid mixture. Its evidentiary level is explicitly a supplementary expression observation, not validated direct binding or a universal sign.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-supplement.pdf",
+      "bytes": 498407,
+      "sha256": "03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae"
+    },
+    "preflight_locator": "PDFpages16/18 TableS4 WT/TyrR rows",
+    "explicit_limit": "Preserve as conditional screen context; it is not a main-text validated direct interaction or a global regulatory sign.",
+    "finding": null
+  },
+  {
+    "key": "reg2016-all-controls",
+    "claim": "All62 TF-screen rows and their growth rates/deviations are retained; below-threshold changes are not proof of no biology.",
+    "record_paragraphs": [
+      30,
+      33
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "All supplementary screen conditions and 62 TF rows were read, including variation/growth columns. Failure to pass a threshold is not turned into an exhaustive negative biological claim.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID27488847-supplement.pdf",
+      "bytes": 498407,
+      "sha256": "03116a1795676cb6717b425f1edeb94b7d720db44b2a67116ecbfc54d7b5cbae"
+    },
+    "preflight_locator": "TablesS2–S4 PDFpages7–18",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "reg2014-arca",
+    "claim": "ArcA binding+expression gives pntAB activation and sthA repression under anaerobic glucose fermentation and nitrate respiration.",
+    "record_paragraphs": [
+      32
+    ],
+    "edges": [
+      "nad-092",
+      "nad-093"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Original 2014 ChIP and expression supplements support pnt activation and sth repression in anaerobic glucose with and without nitrate. Native phosphorylated ArcA and the ArcA-8myc/knockout preparations are distinguished.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC3974632.xml",
+      "bytes": 177134,
+      "sha256": "3c002c1995627b15ab643a697dcee1133b2a236d9d696f849ed5e63f58065197"
+    },
+    "preflight_locator": "Results section2/3; Methods strains; S1/S2 exact rows",
+    "explicit_limit": "Phosphorylated native ArcA endpoint, MG1655 ChIP strain ArcA8myc; no unqualified wild-type reference-construct identity.",
+    "finding": null
+  },
+  {
+    "key": "reg2019-lrp",
+    "claim": "Native2019 curated joins assign Lrp activation of phoA in MIN transition and pntA in MIN log, repression of sthA in MIN log.",
+    "record_paragraphs": [
+      35
+    ],
+    "edges": [
+      "nad-089",
+      "nad-090",
+      "nad-091"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The exact native 2019 regulation/target/phase joins support the three Lrp signs. Full primary Methods were read, but unavailable per-gene supplemental rows are not falsely claimed as directly inspected.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-REG0-15526.xml",
+      "bytes": 5191,
+      "sha256": "facb77d0a2fcc1aac70c88f8a0aeeaf1134753ad0d87fe7b05bf0ffd21a3a819"
+    },
+    "preflight_locator": "Regulation and REG0-15529/REG0-15570",
+    "explicit_limit": "Full2019 primary body Methods read; exact supplemental per-gene spreadsheet unavailable. Native structured assertions, not fictitious direct TableS1 reading.",
+    "finding": null
+  },
+  {
+    "key": "reg2017-nac",
+    "claim": "Nac induced-FLAG ChIP+RNA has pntA peak1675942,45coverage,−15bp and publishedFC0.372191.",
+    "record_paragraphs": [
+      36
+    ],
+    "edges": [
+      "nad-094"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Fresh workbook row pntA gives peak1675942/coverage45/distance-15 and normalized FC0.372191. Raw coverage division is not substituted; proximity/operon assignment is weaker than target-site mutagenesis.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC5217608.xml",
+      "bytes": 194083,
+      "sha256": "d0fe128331ee990d4c5d0662303de858c29bf644999e25d1614e9cabc074be9d"
+    },
+    "preflight_locator": "Methods2/1,2/2,2/4,2/6; supplementalMOESM3 Nac Binding and RNA-Seq row238",
+    "explicit_limit": "Use reported normalizedFC; it is not exactly raw4.3/13.24. Binding target assigned from proximity/operon logic, not promoter-specific binding-site mutagenesis.",
+    "finding": null
+  },
+  {
+    "key": "reg2017-csir-context",
+    "claim": "CsiR induced RNA-seq has pntAFC2.793539 but it is absent from its bound-target sheet.",
+    "record_paragraphs": [
+      37,
+      40
+    ],
+    "edges": [
+      "nad-101",
+      "nad-102"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Fresh CsiR RNA-seq row gives pntA FC2.793539, with no matching bound-target row in the complete bound sheet. The graph explicitly labels an indirect expression response.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC5217608.xml",
+      "bytes": 194083,
+      "sha256": "d0fe128331ee990d4c5d0662303de858c29bf644999e25d1614e9cabc074be9d"
+    },
+    "preflight_locator": "MOESM2 All CsiR RNA-Seq row2451 versus CsiR Binding and RNA-Seq entire sheet",
+    "explicit_limit": "Do not promote into direct CsiR-pntA binding; entire target-gene screen saved separately.",
+    "finding": null
+  },
+  {
+    "key": "reg-phob",
+    "claim": "Phosphorylated PhoB activates phoA in the native promoter/regulation join; acidic/aerobic context differs from microaerobic.",
+    "record_paragraphs": [
+      38
+    ],
+    "edges": [
+      "nad-097"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The exact phosphorylated-PhoB/regulation/promoter/TU join identifies phoA. P0AFJ5, not rejected GcvR P0A9I3, is the correct issuing PhoB sequence and Asp53 state.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-REG0-4617.xml",
+      "bytes": 9261,
+      "sha256": "5cd5b77688f9858053743d8ede77c578a760416a675f2d10670363d0486b5096"
+    },
+    "preflight_locator": "Regulation + PM00071/TU00052",
+    "explicit_limit": "PMID23274360 full body unavailable; retain native/abstract evidence level.",
+    "finding": null
+  },
+  {
+    "key": "reg-phosphate2019",
+    "claim": "2019 phosphate-starvation measurements use MG1655 promoter fragments fused to BCD2/msfgfp in DH10B pSEVA plasmids; syntheticPliar experiments and model rates are distinct.",
+    "record_paragraphs": [
+      38
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2019 phosphate work uses MG1655 promoter fragments in a DH10B plasmid reporter. Measured outputs, synthetic Pliar and model-derived feedback/phosphorylation remain distinct evidence levels.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC6376016.xml",
+      "bytes": 143317,
+      "sha256": "f136ac594086c47c0e10302bec8af521c5e24b2fa2b8b1206598d31b61500d69"
+    },
+    "preflight_locator": "Methods paragraphs13–14; ResultsFig2 versusFig5",
+    "explicit_limit": "Measurements are reporter outputs, not proof that all model phosphorylation/feedback edges were directly measured.",
+    "finding": null,
+    "additional_provenance_finding": "nad-narrative-reference-coverage"
+  },
+  {
+    "key": "reg-spot42",
+    "claim": "Spot42 overexpression reduces sthA transcript and translational-fusion output; regionIII mutation and compensatory target mutation support base pairing.",
+    "record_paragraphs": [
+      39
+    ],
+    "edges": [
+      "nad-096"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2011 Northern/fusion experiments and compensatory mutations support Spot42-sth pairing. The two strain/construct systems are stated in prose because RNA is not a permitted protein endpoint qualifier.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMID21292161-pmc-numeric.html",
+      "bytes": 209140,
+      "sha256": "936de783f461cb502b9ed58dc67051e0376406464e077c5daf9135a120de5838"
+    },
+    "preflight_locator": "Results Spot42 repression and base-pairing; Figs1–3",
+    "explicit_limit": "NM525Δspf northern versusPM1205Δspf pBAD-lacZ reporter; both MG1655 derivatives, not unmodifiednative endpoint.",
+    "finding": null
+  },
+  {
+    "key": "reg-spot42-followup",
+    "claim": "2012 analysis supports multiple Spot42 pairing regions for sthA but simultaneous binding/stoichiometry remains unresolved.",
+    "record_paragraphs": [
+      39
+    ],
+    "edges": [
+      "nad-096"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2012 paper discusses multiple pairing regions but does not establish simultaneous stoichiometry. nanC probing/Hfq results are not misassigned as sth experiments.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC3343335-numeric.html",
+      "bytes": 217946,
+      "sha256": "eb6e42ed8279b1b1db7adf5efc90e005ecebbff221809d4b1fcc5fc2e6d166ed"
+    },
+    "preflight_locator": "Results multi-site pairing Fig3; Discussion paragraph5",
+    "explicit_limit": "Structural probing in this paper is nanC, not sthA. No transfer of direct nanC Hfq deletion/probing evidence onto sthA.",
+    "finding": null,
+    "additional_provenance_finding": "nad-narrative-reference-coverage"
+  },
+  {
+    "key": "stha-assembly",
+    "claim": "Native UDHA-CPLX octamer matches2022 size estimates;1999 reported7–8 subunits remains older abstract/native context.",
+    "record_paragraphs": [
+      22
+    ],
+    "edges": [
+      "nad-031",
+      "nad-055"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Native octamer and 2022 SEC/DLS estimates agree at assembly level. Older seven-to-eight-subunit annotation and other-species filament observations remain separate.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/ECOLI-UDHA-CPLX.xml",
+      "bytes": 4003,
+      "sha256": "34f1fd868c126ca65fa1d5b15f226221769afe5b415c8955c694345d109e34be"
+    },
+    "preflight_locator": "Protein/component",
+    "explicit_limit": "SthA is FAD-containing soluble enzyme, not Pnt membrane complex.",
+    "finding": null
+  },
+  {
+    "key": "stha-construct2022",
+    "claim": "2022 SthA is C-terminalHis10 E.coliK12 reference cloned in pBXC3H and expressed in MC1061; FAD supplemented duringlysis.",
+    "record_paragraphs": [
+      22
+    ],
+    "edges": [
+      "nad-055"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The primary 2022 construct is His10-tagged SthA in MC1061, with FAD in lysis. It is distinct from the older fused protein and the AlphaFold structure identifier.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Methods gene cloning/expression/protein purification",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "stha-surrogate",
+    "claim": "2022 transhydrogenation kinetic assay uses NADH and thioNADP;2004 crudeextract reverse assay uses APAD.",
+    "record_paragraphs": [
+      23,
+      28
+    ],
+    "edges": [
+      "nad-058",
+      "nad-059",
+      "nad-060"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2022 kinetic donor/acceptor pair is NADH/thioNADP; the 2004 extract capacity uses APAD. Neither surrogate is silently made natural NADP/NAD or a new native pathway substrate.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Results transhydrogenation; Methods assays",
+    "explicit_limit": "Surrogates are not natural NADP/NAD chemistry nor new native substrates.",
+    "finding": null
+  },
+  {
+    "key": "stha-fad",
+    "claim": "SthA tightly binds FAD, with partial SEC cofactor loss;2022 C45A/T50C variants lose moreFAD and have lower transfer activity.",
+    "record_paragraphs": [
+      22,
+      23,
+      25
+    ],
+    "edges": [
+      "nad-056"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "FAD occupancy, SEC loss and lower variant activity are supported by primary results and supplements. Native per-chain capacity is not universal occupancy, and mutant findings stay out of wild-type edges.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Results FAD binding/variants; supplementS1,S8",
+    "explicit_limit": "Variants require separate molecular_state/experimental_construct qualifiers; not wildtypephenotypes.",
+    "finding": null
+  },
+  {
+    "key": "stha-adenylates",
+    "claim": "AMP,ADP,ATP at5mM increased WT SthA surrogate transhydrogenation; ADP gave the largest response.",
+    "record_paragraphs": [
+      23
+    ],
+    "edges": [
+      "nad-058",
+      "nad-059",
+      "nad-060"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The original supplement gives WT responses160.7/171.1/148.2 percent at5mM, on its own baseline. Large C45A/T50C percentages use much smaller separate baselines and are not assigned to WT.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Results adenine nucleotides; supplementTable1 exactWT andvariantrows",
+    "explicit_limit": "WT160.7%,171.1%,148.2% versus100%; mutant relative responses have different baselines.",
+    "finding": null
+  },
+  {
+    "key": "stha-phosphate",
+    "claim": "Phosphate inhibits the2022 SthA surrogate assay;NaCl/KClcontrols did not at<=50mM but high500mM salt loweredactivity.",
+    "record_paragraphs": [
+      24
+    ],
+    "edges": [
+      "nad-061"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Phosphate inhibition and Na/K chloride controls are concentration-dependent. Low-salt absence of an effect is not generalized to500mM, and buffer phosphate protonation is not directly measured.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Results inhibition; supplementS4",
+    "explicit_limit": "Do not state all concentrations of salt have no effect.",
+    "finding": null
+  },
+  {
+    "key": "stha-substrate-inhib",
+    "claim": "HighNADH and thioNADP inhibited the2022 surrogate assay;2011nativeannotationNADPHsubstrateinhibition is anotherdirection.",
+    "record_paragraphs": [
+      24,
+      27
+    ],
+    "edges": [
+      "nad-062"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "High NADH inhibits the thioNADP assay with the stated concentration range and fitted KI. The older NADPH-direction observation and unresolved thioNADP chemical identity remain separate.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Results kinetics; nativeUDHA annotationPMID21545646",
+    "explicit_limit": "No thioNADP→NADP identity collapse.",
+    "finding": null
+  },
+  {
+    "key": "stha-oxidase",
+    "claim": "SthA oxidizes NADH/NADPH with oxygen, releasingH2O2and superoxide in uncoupled assays; oxygen omission prevents repeatedflavinreoxidation.",
+    "record_paragraphs": [
+      25
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Primary uncoupled oxidase/oxygen experiments support side activity and ROS, with mutant relative versus absolute yields distinguished. These are not added as native core reactions or proven cellular ROS flux.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Results oxidase andanaerobiccontrols; supplementS5/S6/S9",
+    "explicit_limit": "Supporting side-activity, not an extra native NADPHOS-DEPHOS core event or universal cellularROSflux.",
+    "finding": null
+  },
+  {
+    "key": "stha-nocausal-oxyr",
+    "claim": "The12nt sthA/oxyR overlap motivated a redox-stresshypothesis, not a demonstrated OxyR→sthA regulatoryedge.",
+    "record_paragraphs": [
+      26
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 12-base overlap motivates an OxyR hypothesis only. The record has no invented OxyR regulatory edge.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Discussion; supplementS10",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "stha-model-id",
+    "claim": "Paper lists referenceP27306 but AlphaFoldAF-B7M718-F1; do not claim exact experimental structure of the reference chain.",
+    "record_paragraphs": [
+      26
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The paper's reference sequence and AF-B7M718-F1 model are not the same identity claim. No experimentally determined reference-protein crystal structure is asserted.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC9460512.xml",
+      "bytes": 141716,
+      "sha256": "af97bd62586396dbc477797e90b34c221094568f6ebe2d369a7db4b9fb58e1fe"
+    },
+    "preflight_locator": "Dataavailability/structuralmodel Methods",
+    "explicit_limit": "",
+    "finding": null
+  },
+  {
+    "key": "imodulon",
+    "claim": "iModulonDB exactgene queries and10selectedmodules provide computational context only.",
+    "record_paragraphs": [
+      41
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Freshly hashed 25 API originals and all ten selected module tables contain no six-locus candidate members. This is a bounded computational screen, not global absence or mechanistic regulation.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/imodulondb/attempt1/context.json",
+      "bytes": 20451,
+      "sha256": "66d3ba8b2d78f68772b2edc1cae245ad9da65fcdc52944c5636dade860c34041"
+    },
+    "preflight_locator": "queries, summaries and raw gene tables",
+    "explicit_limit": "No exactcandidate gene found in these10modulemember tables; bounded absence is not globalmoduleabsence. Alias/product substring matches excluded.",
+    "finding": null
+  },
+  {
+    "key": "nadk-2005-variants",
+    "claim": "UniProtP0A7B3 documents R175G/H/Q/T gaining NADH kinase activity, unlikeR175E/I/K;R175G lowersNADkinaseVmax.",
+    "record_paragraphs": [
+      10
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Exact issuing R175 mutagenesis features and the available 2005 abstract support gain-of-NADH-kinase variants. Wild-type NADH phosphorylation and unavailable full preparation details are not inferred.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/P0A7B3.json",
+      "bytes": 27105,
+      "sha256": "26faac394929cc9de01c03bef1d5b5494abdfe80a3642c22673d9ae973f9e167"
+    },
+    "preflight_locator": "features Mutagenesis position175",
+    "explicit_limit": "Reference annotation plus2005abstract;no fullbody access or WT NADHphosphorylation claim",
+    "finding": null
+  },
+  {
+    "key": "stha-2011-metals",
+    "claim": "2011 fusedEcSTH abstract reports adenylate stimulation and inhibition byMn/Co/Zn/Ni/Cu;after30minpreincubation most effectswane exceptZn/Ni/Cu.",
+    "record_paragraphs": [
+      27
+    ],
+    "edges": [
+      "nad-063",
+      "nad-064",
+      "nad-065",
+      "nad-066",
+      "nad-067"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The 2011 abstract specifies fused EcSTH and time-dependent metal effects. The graph retains abstract-only preparation limits and distinguishes its NADPH/thioNAD direction from2022.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/nad-publications-full-scope.json",
+      "bytes": 920766,
+      "sha256": "622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5"
+    },
+    "preflight_locator": "resultList.result[id=21545646].abstractText",
+    "explicit_limit": "Retain abstract-only/fusedprotein/assaydirectionconditions;do not replace2022Na/Ksaltcontrols",
+    "finding": null
+  },
+  {
+    "key": "pnt-dccd-details",
+    "claim": "DCCD inhibition/protonpumping observations include NADHprotection andNADP/NADPHenhancement;1993D232/E238/E240triplemutants retainpumping andbecomelessDCCD-sensitive.",
+    "record_paragraphs": [
+      20
+    ],
+    "edges": [
+      "nad-053"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Older DCCD abstracts retain nucleotide-dependent protection, charged-residue mutants and preserved pumping. They are not conflated with the2021 H91A coupling mutant.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/nad-publications-full-scope.json",
+      "bytes": 920766,
+      "sha256": "622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5"
+    },
+    "preflight_locator": "PMID3891338 and8100227 abstractText",
+    "explicit_limit": "Olderprimaryabstract/nativeannotations only;numbering/constructvariants distinct from2021betaH91A",
+    "finding": null
+  },
+  {
+    "key": "pnt-nbd-details",
+    "claim": "NBDchloride modifiesbetaC147/C260andotherresidues;NADPHprotectssomedomainsbutreactiveNBD-NADPHadductisalsoan inhibitor.",
+    "record_paragraphs": [
+      20,
+      21
+    ],
+    "edges": [
+      "nad-054"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The NBD abstract includes beta cysteine and other modification sites and the inhibitory NBD-NADPH adduct. The record avoids a simplistic universal NADPH-protection claim and leaves unresolved adduct chemistry in prose.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/nad-publications-full-scope.json",
+      "bytes": 920766,
+      "sha256": "622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5"
+    },
+    "preflight_locator": "PMID10556628 abstractText",
+    "explicit_limit": "No simpleNADPHprotectsall claim;adduct chemicalidentityunresolvedretainprose",
+    "finding": null
+  },
+  {
+    "key": "stha-historical-sequence",
+    "claim": "1999 cloning corrected an N-terminal genome sequencing error and identified soluble UdhA;currentreference chain is sequence-grounded separately.",
+    "record_paragraphs": [
+      22
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The1999 abstract/native annotation supports a corrected N terminus and soluble enzyme identity. Modern issuing sequence grounding is independent; no unavailable full paper is credited.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/nad-publications-full-scope.json",
+      "bytes": 920766,
+      "sha256": "622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5"
+    },
+    "preflight_locator": "PMID9922271 abstractText",
+    "explicit_limit": "No1999wholepaper access claim;7–8subunits available throughnative annotation and laterprimary",
+    "finding": null
+  },
+  {
+    "key": "stha-supporting-event",
+    "claim": "SthA natural redox reaction is Rhea11693 NAD+NADPH→NADH+NADP, without proton transport, supported by issuingP27306.",
+    "record_paragraphs": [
+      1,
+      2
+    ],
+    "edges": [
+      "nad-016",
+      "nad-017",
+      "nad-018",
+      "nad-019",
+      "nad-026",
+      "nad-057"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Fresh Rhea11693 and issuing SthA chemistry support NAD+NADPH to NADH+NADP without proton transport. It is clearly a supporting opposed redox route outside the native three-member boundary.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/P27306.json",
+      "bytes": 17949,
+      "sha256": "6563f169d29078cae9e4b262ebadafcc3d1eaa68cf29bf485431b99880595845"
+    },
+    "preflight_locator": "comments CATALYTIC ACTIVITY/physiologicalReactions",
+    "explicit_limit": "Retain as supporting opposed redox route, not one of thethree nativeNADPHOS-DEPHOS memberreactions",
+    "finding": null
+  },
+  {
+    "key": "frozen-chemical-forms",
+    "claim": "PathBanklinksNAD15846/NADH16908/NADP18009/NADPH16474/ATP15422/ADP16761/Pi18367; exactRheausesdifferent chargeforms.",
+    "record_paragraphs": [
+      3
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Frozen PathBank acid/base forms and its structural references were read independently of Rhea. The final record does not claim exact equivalence between the differing charge forms.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PW002081.owl",
+      "bytes": 45885,
+      "sha256": "b6f8df0db6bf06cd671f3518481285f00b17d1eb384d8834826527c2201593e0"
+    },
+    "preflight_locator": "SmallMoleculeReference/xref toChEBI unificationobjects",
+    "explicit_limit": "No silentexactmatch acrossacid/base/class forms;retainsourceSMILES andreferencechemistry",
+    "finding": null
+  },
+  {
+    "key": "historical-turnover",
+    "claim": "1971/1973 pyridine nucleotide metabolism papers cited forphysiologicaldephosphorylation were notaccessible asfulltext orabstract.",
+    "record_paragraphs": [
+      16
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The1971/1973 historical metabolism papers are metadata-only in the inspected corpus. The record explicitly avoids inventing first-hand assays from those inaccessible papers.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/nad-publications-full-scope.json",
+      "bytes": 920766,
+      "sha256": "622fc39095d9bd9126bae3a83c1602757e7dcdc89965618f5af03c9a396872e5"
+    },
+    "preflight_locator": "PMID5543676 and4146187 metadata",
+    "explicit_limit": "Only nativehypotheticalannotation and laterprimary framing;do notinventfirsthandfluxassays",
+    "finding": null
+  },
+  {
+    "key": "phoa-processing",
+    "claim": "PhoA signalpeptide andN-terminalArg processingisozymes are reviewedsourcecontext;DsbA-assistedfolding/Iapprocessingare notNADPsubstrate-specificregulation.",
+    "record_paragraphs": [
+      12
+    ],
+    "edges": [],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "Reviewed PhoA signal/chain/PTM comments support processing and isozymes. DsbA/Iap context and native phosphite oxidation are not presented as NADP-specific regulation or core reactions.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/P00634.json",
+      "bytes": 61640,
+      "sha256": "3daf839ecfe721bb781dc3f569c692923808cb6cc60a6b8f1ded7a98a528f7c8"
+    },
+    "preflight_locator": "comments PTM/SUBUNIT/SUBCELLULAR LOCATION andfeatures",
+    "explicit_limit": "Includeprocessinglimits;avoidassigningoneisozyme to1962undefinedpreparations",
+    "finding": null
+  },
+  {
+    "key": "reg2017-nac-cysq",
+    "claim": "The Nac bound-target sheet also contains cysQ: peak4434633,coverage22,−145bp, published inductionFC2.176844. Preserve this positive conditional expression/binding context for the assayed CysQ reference protein.",
+    "record_paragraphs": [
+      36
+    ],
+    "edges": [
+      "nad-095"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "The fresh Nac workbook cysQ row supports the positive expression/binding join with exact normalized value. It adds conditional regulation, not evidence that CysQ is the physiological NADP phosphatase.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/raw/PMC5217608-supplements/12918_2016_376_MOESM3_ESM.xlsx",
+      "bytes": 477260,
+      "sha256": "e84892ddc0061fd6f29669cd7fb3c9696601ba81602ea54a35a9369900767af5"
+    },
+    "preflight_locator": "Nac Binding and RNA-Seq!A62:K62",
+    "explicit_limit": "This does not establish CysQ as the physiological NADP phosphatase. Same induced FLAG-Nac design as pntA.",
+    "finding": null
+  },
+  {
+    "key": "reg2017-expression-screen-complete",
+    "claim": "All sixteen selected-gene rows are retained. CsiR pntA and pntB have opposite measured fold-change signs; neither is in its bound-target sheet. Other target rows retain values without invented statistical significance.",
+    "record_paragraphs": [
+      37
+    ],
+    "edges": [
+      "nad-101",
+      "nad-102"
+    ],
+    "assessment": "supported_with_stated_scope",
+    "independent_reason": "All16 selected expression rows and duplicate pntB annotations were independently read. CsiR pntA and pntB have opposite signs, both expression-only; unreported significance is not invented.",
+    "preflight_source": {
+      "path": "/private/tmp/pathwaymech-next-232-preflight-20261012/derived/primary-workbook-target-rows.json",
+      "bytes": 14709,
+      "sha256": "f8576e657d02d5fd2d0b4d47e6c5c229b504cef4aa408751f38a3433794d2787"
+    },
+    "preflight_locator": "all sixteen rows with exact workbook/sheet/row bindings",
+    "explicit_limit": "Multiple operon annotations duplicate pntB rows. Do not average away opposite pntA/pntB observations or treat all ratios as validated causal regulation.",
+    "finding": null
+  }
+]

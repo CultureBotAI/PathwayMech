@@ -1,0 +1,54 @@
+"""Full owning-row bibliography verification and precise successor accounting."""
+from pathlib import Path
+import hashlib
+import json
+import yaml
+from lxml import html
+
+A=Path(__file__).parent
+O=Path('/private/tmp/pathwaymech-next-232-author-20261012')
+def load(p):return json.loads(Path(p).read_text())
+def bind(p):
+    p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+target=A/'draft/nad-phosphorylation-and-dephosphorylation.yaml'
+d=yaml.safe_load(target.read_text());sources=load(A/'ledgers/working-source-bindings.json')
+ledger=load(A/'ledgers/working-evidence-selector-ledger.json');accounting=load(A/'ledgers/paragraph-source-accounting.json')
+page=A/'candidate-checks/pages/records/MetaCyc_NADPHOS-DEPHOS-PWY.html';t=html.parse(str(page))
+rows=[];uses=[]
+for e in d['mechanistic_edges']:
+    for role,evs in [('edge',e['evidence'])]+[(q['endpoint'],q['evidence'])for q in e.get('endpoint_qualifiers',[])]:
+        uses.extend(dict(edge=e['id'],role=role,evidence=v)for v in evs)
+for i,r in enumerate(d['references'],1):
+    source=sources[r['id']];actual=bind(source['path'])
+    assert actual['sha256']==source['sha256']==r['source_sha256'] and actual['bytes']==source['bytes']
+    els=t.xpath('//*[@id=$id]',id=f'reference-{i}');assert len(els)==1
+    rowtext=' '.join(''.join(els[0].itertext()).split())
+    visible_title=html.fromstring('<span>'+r['title']+'</span>').text_content()
+    assert r['id']in rowtext and visible_title in rowtext and r['source_version']in rowtext
+    assert r['url']in els[0].xpath('.//a/@href')
+    # A batch original can contain many papers. Shared byte hashes are provenance
+    # context, never a claim that every paragraph cites every paper in the batch.
+    container_context=[dict(paragraph=p['paragraph'],relationship='same_original_container_only',
+                             source_accounting=[x for x in p['source_accounting']if x['whole_original']['sha256']==r['source_sha256']])
+                       for p in accounting if any(x['whole_original']['sha256']==r['source_sha256']for x in p['source_accounting'])]
+    explicit=[p['paragraph']for p in accounting if r['id']in p['text']]
+    rows.append(dict(reference=r,original=source,actual_evidence_uses=[u for u in uses if u['evidence']['reference_id']==r['id']],
+                     explicit_paragraph_citations=explicit,original_container_contexts=container_context,
+                     selector_ledger_rows=[n for n,x in enumerate(ledger)if x['evidence']['reference_id']==r['id']],
+                     owning_bibliography_row=f'reference-{i}',complete_title_version_url_verified=True))
+assert len(rows)==97 and len(uses)==266
+for ref,paragraphs in [('PMID:14660605',[28,29]),('PMID:30765722',[38]),('PMID:22388518',[39])]:
+    row=next(r for r in rows if r['reference']['id']==ref)
+    assert row['explicit_paragraph_citations']==paragraphs and not row['actual_evidence_uses']
+    for n in paragraphs:
+        assert any(x['whole_original']['sha256']==row['original']['sha256']for x in accounting[n-1]['source_accounting'])
+        assert any(ref in ''.join(el.itertext())for el in t.xpath('//p'))
+save('bidirectional-source-coverage.json',dict(target=bind(target),references=rows,reference_count=97,actual_evidence_uses=266,
+     paragraph_source_accounting=bind(A/'ledgers/paragraph-source-accounting.json'),
+     full_claim_dispositions=bind(A/'ledgers/full-claim-dispositions.json'),construct_dispositions=bind(A/'ledgers/construct-dispositions.json'),
+     scope='Complete edge/qualifier reference use and 97 original bindings. Three new primary references have exact narrative paragraph attributions. Shared-original contexts are visibly typed and never conflated with exact reference attribution.'))
+save('bibliography-checks.json',dict(target=bind(target),page=bind(page),references=97,owning_rows=97,
+    complete_titles_versions_urls=True,all_original_sha256_rehashed=True,new_narrative_citations={'PMID:14660605':[28,29],'PMID:30765722':[38],'PMID:22388518':[39]},
+    new_graph_edges=0,visual_browser_review=False))
+print('97 complete owning bibliography rows and original hashes; three explicit narrative-only references')

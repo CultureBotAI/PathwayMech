@@ -1,0 +1,252 @@
+"""Bounded original-backed safeguards; never executes a native builder."""
+import copy
+from pathlib import Path
+
+import pytest
+import common
+import prepare_and_build as build
+
+
+def test_real_capture_and_commands():
+    capture, old, expected = build.input_check()
+    assert len(capture['retention_ids']) == 4476
+    assert len(old['sources']['terms']) == 2507
+    assert len(expected['snapshots']['sources']['terms']) == 2527
+    config = build.plan(capture)
+    for key in ('source_builder', 'ontology_builder'):
+        assert config[key][:2] == [common.PYTHON, '-B']
+        assert not any('expected-native-comparison' in a or 'captured/proposals' in a for a in config[key])
+    assert config['environment']['UV_NO_SYNC'] == '1'
+
+
+@pytest.mark.parametrize('mutation', ['target', 'record', 'code', 'retention', 'original_map', 'duplicate_original', 'receipt', 'ppi', 'retention_as_record', 'PC1_copy', 'PC1_companion'])
+def test_mutated_capture_rejected(monkeypatch, mutation):
+    real_load = build.load
+    def changed(path):
+        data = real_load(path)
+        if Path(path) == build.HERE / 'capture.json':
+            data = copy.deepcopy(data)
+            if mutation == 'target':
+                data['target']['captured']['sha256'] = '0' * 64
+            elif mutation in ('record', 'code'):
+                data['records' if mutation == 'record' else 'candidate_code'][0]['captured']['sha256'] = '0' * 64
+            elif mutation == 'retention':
+                data['retention_ids'].pop()
+            elif mutation == 'original_map':
+                data['source_originals'] = [r for r in data['source_originals'] if r['cache_relative_path'] != 'nad232-ECOLI-PC-1.xml']
+            elif mutation == 'duplicate_original':
+                data['source_originals'].append(data['source_originals'][0])
+            elif mutation == 'receipt':
+                next(iter(data['root_receipts'].values()))['sha256'] = '0' * 64
+            elif mutation == 'ppi':
+                next(r for r in data['records'] if r['relative_path'] == common.PPI_NAME)['captured']['sha256'] = '0' * 64
+            elif mutation == 'retention_as_record':
+                data['records'][0]['relative_path'] = '_authority_retention/selector.yaml'
+            elif mutation == 'PC1_copy':
+                data['new_copy_plan'].pop()
+            else:
+                data['class_source_companions'][0]['class_source']['sha256'] = '0' * 64
+        return data
+    monkeypatch.setattr(build, 'load', changed)
+    with pytest.raises(AssertionError):
+        build.input_check()
+
+
+@pytest.mark.parametrize('mutation', ['prior_manifest', 'cache_collision', 'class_collision', 'unsafe_companion', 'rhea_order', 'old_term', 'old_metadata', 'nested_order'])
+def test_authority_guards(mutation):
+    old = common.load(common.HERE / 'captured/baseline/manifest.json')
+    new = common.load(common.HERE / 'captured/proposals/manifest.json')
+    if mutation in ('prior_manifest', 'cache_collision', 'class_collision', 'unsafe_companion'):
+        if mutation == 'prior_manifest':
+            new[0]['key'] += '-changed'
+        elif mutation == 'cache_collision':
+            new[-1]['path'], new[-1]['sha256'] = new[0]['path'], '0' * 64
+        else:
+            item = next(e['class_source'] for e in new if 'class_source' in e)
+            if mutation == 'class_collision':
+                item['path'], item['sha256'] = new[0]['path'], '0' * 64
+            else:
+                item['path'] = '../escaped.xml'
+        with pytest.raises(AssertionError):
+            common.validate_manifest(old, new)
+    elif mutation == 'rhea_order':
+        old = common.load(common.HERE / 'captured/baseline/rhea-updates.json')
+        new = copy.deepcopy(old)
+        new['ids'].reverse()
+        with pytest.raises(AssertionError):
+            common.validate_updates(old, new)
+    else:
+        old = common.load(common.HERE / 'captured/baseline/sources.json')
+        new = common.load(common.HERE / 'captured/proposals/sources.json')
+        section = 'terms' if mutation != 'old_metadata' else 'sources'
+        key = next(iter(old[section]))
+        new[section][key] = dict(reversed(list(new[section][key].items()))) if mutation == 'nested_order' else {'changed': True}
+        with pytest.raises(AssertionError):
+            common.preserve(old, new)
+
+
+@pytest.mark.parametrize('mutation', ['link_retarget', 'link_text_only', 'regular_to_symlink', 'symlink_to_regular', 'body'])
+def test_original_identity_same_byte_mutations(tmp_path, mutation):
+    first, second, observed = (tmp_path / n for n in ('first', 'second', 'observed'))
+    first.write_bytes(b'original')
+    second.write_bytes(b'original')
+    if mutation == 'regular_to_symlink':
+        observed.write_bytes(first.read_bytes())
+    else:
+        observed.symlink_to(first)
+    row = {**common.bind(observed), **common.identity(observed)}
+    if mutation == 'body':
+        first.write_bytes(b'modified')
+    else:
+        observed.unlink()
+        if mutation == 'link_retarget':
+            observed.symlink_to(second)
+        elif mutation == 'link_text_only':
+            observed.symlink_to('first')
+        elif mutation == 'symlink_to_regular':
+            observed.write_bytes(first.read_bytes())
+        else:
+            observed.symlink_to(first)
+    with pytest.raises(AssertionError):
+        common.check_identity(row)
+
+
+def test_actual_PC1_explicitly_counted():
+    manifest = common.load(common.HERE / 'captured/proposals/manifest.json')
+    top_only = {e['path'] for e in manifest}
+    all_paths = common.manifest_originals(manifest)
+    assert 'nad232-ECOLI-PC-1.xml' not in top_only
+    assert all_paths['nad232-ECOLI-PC-1.xml'] == common.PC1_SHA
+
+
+def test_bad_original_rejected_before_output(monkeypatch):
+    capture = common.load(common.HERE / 'capture.json')
+    capture['source_originals'][0]['sha256'] = '0' * 64
+    monkeypatch.setattr(build, 'science_check', lambda: {'test_only': True})
+    assert not common.OUTPUT.exists()
+    with pytest.raises(AssertionError):
+        build.stage(capture, build.plan(capture))
+    assert not common.OUTPUT.exists() and build.CREATED_BY_THIS_RUN is False
+
+
+def test_missing_science_gate_stops_before_output(monkeypatch):
+    def fail():
+        raise AssertionError('science acceptance missing')
+    monkeypatch.setattr(build, 'science_check', fail)
+    with pytest.raises(AssertionError, match='science acceptance missing'):
+        build.stage(common.load(common.HERE / 'capture.json'), {})
+    assert not common.OUTPUT.exists()
+
+
+def test_changed_SQL_stat_rejected():
+    row = common.load(common.HERE / 'capture.json')['sql_originals'][0]
+    row['mtime_ns'] += 1
+    with pytest.raises(AssertionError):
+        common.check_sql_stat(row)
+
+
+def test_SQL_same_byte_link_retarget(tmp_path):
+    first, second, link = (tmp_path / n for n in ('a.db', 'b.db', 'current.db'))
+    first.write_bytes(b'SQL fixture')
+    second.write_bytes(first.read_bytes())
+    link.symlink_to(first)
+    row = {**common.bind(link), 'mtime_ns': link.stat().st_mtime_ns, 'identity': common.identity(link)}
+    link.unlink()
+    link.symlink_to(second)
+    import os
+    os.utime(second, ns=(second.stat().st_atime_ns, row['mtime_ns']))
+    with pytest.raises(AssertionError):
+        common.check_sql_stat(row)
+
+
+def test_unlisted_hidden_corpus_file_rejected(monkeypatch):
+    real_inventory = build.inventory
+    def changed(path):
+        return real_inventory(path) + ([Path(path) / '.ignored.yaml'] if Path(path) == build.HERE / 'captured/corpus' else [])
+    monkeypatch.setattr(build, 'inventory', changed)
+    with pytest.raises(AssertionError, match='corpus'):
+        build.input_check()
+
+
+def test_comparison_snapshot_is_not_mutable_input(monkeypatch):
+    real_load = build.load
+    def changed(path):
+        data = real_load(path)
+        if Path(path) == build.HERE / 'expected-native-comparison.json':
+            data['snapshots']['sources']['version'] = 'bad'
+        return data
+    monkeypatch.setattr(build, 'load', changed)
+    with pytest.raises(AssertionError):
+        build.input_check()
+
+
+@pytest.mark.parametrize('kind', ['existing', 'symlink', 'other'])
+def test_output_boundaries(tmp_path, monkeypatch, kind):
+    target = tmp_path / 'build'
+    if kind == 'existing':
+        target.mkdir()
+    elif kind == 'symlink':
+        source = tmp_path / 'original'
+        source.write_bytes(b'original')
+        target.symlink_to(source)
+    if kind != 'other':
+        monkeypatch.setattr(common, 'OUTPUT', target)
+    with pytest.raises(AssertionError):
+        common.validate_output(target)
+
+
+def test_ignored_hidden_and_followed_inventory(tmp_path):
+    (tmp_path / '.gitignore').write_text('ignored\n')
+    (tmp_path / 'ignored').mkdir()
+    (tmp_path / 'ignored/body').write_bytes(b'body')
+    (tmp_path / '.hidden').write_bytes(b'hidden')
+    (tmp_path / 'alias').symlink_to(tmp_path / 'ignored/body')
+    assert set(common.inventory(tmp_path)) == {tmp_path / n for n in ('.gitignore', 'ignored/body', '.hidden', 'alias')}
+
+
+def test_broken_link_is_not_silently_omitted(tmp_path):
+    path = tmp_path / 'broken'
+    path.symlink_to(tmp_path / 'absent')
+    try:
+        with pytest.raises(AssertionError):
+            common.inventory(tmp_path)
+    finally:
+        path.unlink()
+
+
+def test_directory_cycle_is_rejected(tmp_path):
+    path = tmp_path / 'cycle'
+    path.symlink_to(tmp_path, target_is_directory=True)
+    try:
+        with pytest.raises(AssertionError):
+            common.inventory(tmp_path)
+    finally:
+        path.unlink()
+
+
+def test_real_science_gate():
+    gate = build.science_check()
+    assert gate['target_sha256'] == common.TARGET_SHA
+
+
+@pytest.mark.parametrize('mutation', ['target', 'root_status', 'root_target', 'findings', 'acceptance_false'])
+def test_science_gate_rejects_stale_or_unaccepted_target(monkeypatch, mutation):
+    real_load = build.load
+    gate = real_load(build.HERE / 'science-gate.json')
+    def changed(path):
+        data = real_load(path)
+        if Path(path) == build.HERE / 'science-gate.json' and mutation == 'target':
+            data['target_sha256'] = '0' * 64
+        if str(path) == gate['root_science_acceptance']['path']:
+            if mutation == 'root_status':
+                data['status'] = 'pending'
+            elif mutation == 'root_target':
+                data['target']['sha256'] = 'c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503'
+            elif mutation == 'acceptance_false':
+                data['dispositions']['scientific_successor_acceptance'] = False
+        if str(path) == gate['successor_review']['path'] and mutation == 'findings':
+            data['remaining_findings'] = [{'severity': 'minor', 'id': 'unresolved'}]
+        return data
+    monkeypatch.setattr(build, 'load', changed)
+    with pytest.raises(AssertionError):
+        build.science_check()

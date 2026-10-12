@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,hashlib
+A=Path(__file__).parent;R=A/'runtime';I=Path('/private/tmp/pathwaymech-next-232-complex-adapter-preparation-20261012');root=Path('/private/tmp/pathwaymech-next-232-root-complex-adapter-acceptance-20261012.json')
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+assert bind(root)['sha256']=='743ff1057249ed13f00cdc76ebe3cd2ab2d0c6ebf5dad553de4142492571887a'
+j=json.loads(root.read_text());assert bind(I/'handoff.json')['sha256']==j['implementation']['sha256']
+plan=json.loads((I/'copy-plan.json').read_text());before={str(p.relative_to(R)):bind(p)for p in R.rglob('*')if p.is_file()};changes=[]
+for row in plan['files']:
+ p=R/row['relative_path'];c=Path(row['candidate']['path']);assert bind(c)==row['candidate']
+ if row['baseline']:assert bind(p)['sha256']==row['baseline']['sha256']
+ else:assert not p.exists()
+ p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(c.read_bytes());changes.append(dict(relative_path=row['relative_path'],before=before.get(row['relative_path']),after=bind(p)))
+changed={r['relative_path']for r in plan['files']}
+for key,b in before.items():
+ if key not in changed:assert bind(R/key)==b
+out=dict(root_acceptance=bind(root),implementation_handoff=bind(I/'handoff.json'),copy_plan=bind(I/'copy-plan.json'),changes=changes,other_files_preserved=len(before)-sum(k in before for k in changed),status='External runtime only; exact accepted four-file delta. No maintained adoption or full canonical build.')
+(A/'adapter-runtime-intake.json').write_text(json.dumps(out,indent=2)+'\n');print('Exact accepted4files staged externally;',out['other_files_preserved'],'other runtime files unchanged')

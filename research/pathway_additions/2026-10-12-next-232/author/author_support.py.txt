@@ -1,0 +1,133 @@
+"""External NAD authoring helpers; every assertion binds an unchanged original and selector."""
+from pathlib import Path
+from lxml import etree as X,html
+import json,hashlib,sqlite3,re,copy
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012');C=Path('/private/tmp/pathwaymech-curation-authorities')
+refs={};sources={};ledger=[];edges=[];participants=[];reactions=[];edge_claims={};paragraphs=[];paragraph_claims=[]
+claims={r['key']:r for r in json.loads((P/'derived/claim-dispositions.json').read_text())}
+catalogue=json.loads((P/'derived/source-original-catalogue.json').read_text())
+publications=[];publication_origins={}
+for pn in ['nad-publications-full-scope.json','nad-publications-complete-native.json','nad-publications1.json','regulator-publications.json']:
+ for r in json.loads((P/'raw'/pn).read_text())['resultList']['result']:
+  if r['id']not in publication_origins:publications.append(r);publication_origins[r['id']]=P/'raw'/pn
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+def save(n,v):p=A/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def ref(id,p,title,url,version):
+ p=Path(p);b=bind(p)
+ if id in refs:assert sources[id]['sha256']==b['sha256'],(id,p);return id
+ refs[id]=dict(id=id,title=' '.join(title.split()),url=url,source_version=version,source_sha256=b['sha256']);sources[id]={**b,'url':url,'version':version};return id
+def evidence(id,text,loc,kind,selector,observed):
+ assert 0<len(text)<=400,(len(text),text)
+ ev=dict(reference_id=id,source_assertion=text,source_locator=loc);ledger.append(dict(evidence=ev,binding=sources[id],selector_type=kind,selector=selector,observed=observed));return ev
+extra_native={
+ 'PC00004':Path('/private/tmp/pathwaymech-next-230-preflight-20261012/raw/ECOLI-PC00004.xml'),
+ 'PD00347':Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012/raw/ECOLI-PD00347.xml'),
+ 'PD00348':Path('/private/tmp/pathwaymech-next-229-authority-preparation-20261012/raw/ECOLI-PD00348.xml'),
+ 'PHOB-MONOMER':A/'raw/ECOLI-PHOB-MONOMER.xml',
+ 'ARCA-MONOMER':A/'raw/ECOLI-ARCA-MONOMER.xml'}
+def original(frame,org='ECOLI'):
+ p=extra_native.get(frame,P/'raw'/f'{org}-{frame}.xml')if org=='ECOLI'else P/'raw'/f'{org}-{frame}.xml';t=X.parse(str(p));assert t.findtext('metadata/query')==org+':'+frame;assert t.xpath('/ptools-xml/metadata/PGDB/@version')==['27.0'];return p,t
+def xe(frame,text,xpath,org='ECOLI'):
+ p,t=original(frame,org);vs=t.xpath(xpath);assert vs,(frame,xpath);prefix='EcoCyc'if org=='ECOLI'else'MetaCyc';id=ref(prefix+':'+frame,p,prefix+' '+frame+': issuing native original','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+org+':'+frame,'PGDB27.0; unmodified native XML; retrieved2026-10-12; exact request/frame guards')
+ return evidence(id,text,'XPath '+xpath,'xpath',xpath,[X.tostring(v,encoding='unicode')if isinstance(v,X._Element)else str(v)for v in vs])
+def upentry(acc):
+ if acc=='P0AFJ5':p=A/'raw/P0AFJ5.json';return p,json.loads(p.read_text())
+ rows=json.loads((P/'derived/protein-full-identity-ledger.json').read_text());p=Path(next(r['original']['path']for r in rows if r['id']=='UniProtKB:'+acc));j=json.loads(p.read_text());return p,next(x for x in j.get('results',[j])if x.get('primaryAccession')==acc)
+def uref(acc):
+ p,j=upentry(acc);u='https://rest.uniprot.org/uniprotkb/P0AFJ5.json'if acc=='P0AFJ5'else next(x for x in catalogue if x['path']==str(p))['acquisition_receipts'][0]['url'];return ref('UniProtKB:'+acc,p,j['proteinDescription']['recommendedName']['fullName']['value'],u,'Complete issuing UniProt JSON; exact accession, taxonomy, locus, sequence and entryAudit; retrieved2026-10-12')
+def ue(acc,typ,text):
+ p,j=upentry(acc);vs=[x for x in j['comments']if x['commentType']==typ];assert vs,(acc,typ);return evidence(uref(acc),text,f"entry[primaryAccession='{acc}'].comments[commentType='{typ}']",'uniprot_comment',dict(accession=acc,comment_type=typ),vs)
+def uid(acc,text):
+ p,j=upentry(acc);return evidence(uref(acc),text,f"entry[primaryAccession='{acc}'].genes,organism,sequence",'uniprot_identity',acc,{k:j[k]for k in ['genes','organism','sequence']})
+def uf(acc,typ,text):
+ p,j=upentry(acc);vs=[x for x in j['features']if x['type']==typ];assert vs,(acc,typ);return evidence(uref(acc),text,f"entry[primaryAccession='{acc}'].features[type='{typ}']",'uniprot_feature',dict(accession=acc,type=typ),vs)
+def ge(gid,text):
+ row=next(r for r in json.loads((P/'derived/gene-identity-ledger.json').read_text())if r['geneid']==gid);p=Path(row['original']['path']);t=X.parse(str(p));assert row['taxon']==['511145'];id=ref('Entrez:'+gid,p,row['locus']+': issuing MG1655 Gene record','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+gid+'&rettype=xml','Exact Entrezgene XML, GeneID, b-locus and taxon511145; retrieved2026-10-12');xp='/Entrezgene-Set/Entrezgene/Entrezgene_gene | /Entrezgene-Set/Entrezgene/Entrezgene_source'
+ return evidence(id,text,'XPath '+xp,'xpath',xp,[X.tostring(v,encoding='unicode')for v in t.xpath(xp)])
+paper_sources={
+ '3025169':('PMID3025169-europepmc.pdf','PMID3025169-pages.json'),
+ '17616624':('PMC2042097.pdf','PMID17616624-pages.json'),
+ '14660605':('PMID14660605-repository.pdf','PMID14660605-pages.json'),
+ '27488847':('PMID27488847-rug.pdf','PMID27488847-pages.json'),
+ '30420454':('PMC6349092.pdf','PMID30420454-pages.json'),
+ '34707181':('PMC8551311.xml',None),'35933012':('PMC9460512.xml',None),
+ '24699140':('PMC3974632.xml',None),'28061857':('PMC5217608.xml',None),'30765722':('PMC6376016.xml',None),
+ '21292161':('PMID21292161-pmc-numeric.html','PMID21292161-html-paragraphs.json'),
+ '22388518':('PMC3343335-numeric.html','PMC3343335-numeric.html-paragraphs.json')}
+def pubrow(pmid):return next(r for r in publications if r.get('id')==str(pmid))
+def pref(pmid):
+ pmid=str(pmid);name,proj=paper_sources[pmid];p=P/'raw'/name;assert p.exists(),p;title=pubrow(pmid)['title'];id=ref('PMID:'+pmid,p,title,'https://pubmed.ncbi.nlm.nih.gov/'+pmid+'/','Retained full primary original; exact preparation and inspected source locators; supplementary originals separately bound');return id,p,proj
+def pe(pmid,xpath,text):
+ id,p,_=pref(pmid);t=X.parse(str(p));vs=t.xpath(xpath);assert vs,(pmid,xpath);return evidence(id,text,'XPath '+xpath,'xpath',xpath,[X.tostring(v,encoding='unicode')if isinstance(v,X._Element)else str(v)for v in vs])
+def pfind(pmid,needle,text):
+ id,p,_=pref(pmid);t=X.parse(str(p));vs=t.xpath('//p[contains(string(.),$s)]',s=needle);vs=[v for v in vs if not any(w is not v and w in v.iterdescendants()for w in vs)];assert vs,(pmid,needle);return pe(pmid,' | '.join(t.getpath(v)for v in vs),text)
+def pdf(pmid,pages,text,section):
+ id,p,proj=pref(pmid);j=json.loads((P/'derived'/proj).read_text());rows=j['pages']if isinstance(j,dict) else j
+ # PDFKit projection retains original file and page numbers; full original remains reference authority.
+ vs=[r for r in rows if r.get('page_1based',r.get('page',r.get('page_number')))in pages];assert len(vs)==len(pages),(proj,pages,rows[0]);return evidence(id,text,'PDF '+','.join(str(i)for i in pages)+'; '+section,'pdf_pages',dict(projection=str(P/'derived'/proj),projection_binding=bind(P/'derived'/proj),pages=pages),vs)
+def webref(pmid):
+ pmid=str(pmid);names={'11488932':['PMID11488932-publisher-web-rendering.json','PMID11488932-publisher-web-rendering-remainder.json'],'13906598':['PMID13906598-fulltext-web-rendering.json','PMID13906598-fulltext-web-rendering-middle.json']}[pmid]
+ p=A/'derived'/('PMID'+pmid+'-primary-rendering-bundle.json');obj=dict(kind='Lossless retained tool-rendering bundle, not raw HTML or PDF',originals=[dict(binding=bind(P/'receipts'/n),content=json.loads((P/'receipts'/n).read_text()))for n in names])
+ if pmid=='13906598':q=A/'derived/PMID13906598-author-remainder-web.json';obj['additional_author_read']=dict(binding=bind(q),content=json.loads(q.read_text()))
+ serialized=json.dumps(obj,indent=2,ensure_ascii=False)+'\n'
+ if p.exists():assert p.read_text()==serialized
+ else:p.write_text(serialized)
+ id=ref('PMID:'+pmid,p,pubrow(pmid)['title'],'https://pubmed.ncbi.nlm.nih.gov/'+pmid+'/','Primary-paper tool renderings bundled losslessly with exact original receipts; no raw publisher PDF/HTML claim');return id,obj
+def we(pmid,start,end,text):
+ id,obj=webref(pmid);lines=[]
+ for r in obj['originals']:
+  j=r['content'];s=j.get('response',j.get('result',''))
+  for line in s.splitlines():
+   m=re.match(r'L(\d+):',line)
+   if m and start<=int(m[1])<=end:lines.append(line)
+ assert lines,(pmid,start,end);return evidence(id,text,f'Retained primary rendering lines L{start}–L{end}; printed table/section as stated','web_lines',dict(start=start,end=end),lines)
+def pube(pmid,text):
+ pmid=str(pmid);r=pubrow(pmid);assert r.get('abstractText');p=publication_origins[pmid];id=ref('PMID:'+pmid,p,r['title'],'https://pubmed.ncbi.nlm.nih.gov/'+pmid+'/','Primary abstract/metadata only; exact EuropePMC MED PMID selector, not full-body access');return evidence(id,text,f"resultList.result[id='{pmid}' and source='MED'].abstractText",'primary_abstract',pmid,r)
+def docxe(pmid,name,xpath,text):
+ import zipfile
+ pmid=str(pmid);r=pubrow(pmid);p=P/'raw'/name;member='word/document.xml';ns={'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+ with zipfile.ZipFile(p)as z:body=z.read(member)
+ t=X.ElementTree(X.fromstring(body));vs=t.xpath(xpath,namespaces=ns);assert vs
+ id=ref('DOI:'+r['doi'],p,r['title']+' — original supplementary document','https://doi.org/'+r['doi'],'Exact original supplementary DOCX; member word/document.xml SHA256 '+hashlib.sha256(body).hexdigest()+'; separately bound from main paper')
+ return evidence(id,text,member+' XPath '+xpath,'zip_xpath',dict(member=member,xpath=xpath,namespaces=ns),[X.tostring(v,encoding='unicode')for v in vs])
+def supppdf(pmid,name,projection,pages,text,section):
+ r=pubrow(str(pmid));p=P/'raw'/name;q=P/'derived'/projection
+ id=ref('DOI:'+r['doi'],p,r['title']+' — original supplementary PDF','https://doi.org/'+r['doi'],'Original supplemental PDF, source-qualified page/row selection; main paper separately bound')
+ j=json.loads(q.read_text());rows=j['pages']if isinstance(j,dict)else j;vs=[r for r in rows if r['page_1based']in pages];assert len(vs)==len(pages)
+ return evidence(id,text,'Supplement PDF '+','.join(map(str,pages))+'; '+section,'pdf_pages',dict(projection=str(q),projection_binding=bind(q),pages=pages),vs)
+def he(pmid,xpath,text):
+ id,p,_=pref(pmid);t=html.parse(str(p));vs=t.xpath(xpath);assert vs,(pmid,xpath)
+ return evidence(id,text,'HTML XPath '+xpath,'html_xpath',xpath,[X.tostring(v,encoding='unicode')for v in vs])
+def hfind(pmid,needle,text):
+ id,p,_=pref(pmid);t=html.parse(str(p));vs=t.xpath('//p[contains(string(.),$s)]',s=needle);vs=[v for v in vs if not any(w is not v and w in v.iterdescendants()for w in vs)];assert vs
+ return he(pmid,' | '.join(t.getpath(v)for v in vs),text)
+def workbook(pmid,member,sheet,row,text):
+ import zipfile,io,openpyxl
+ p=P/'raw/PMC5217608-supplements.zip';r=pubrow(str(pmid))
+ with zipfile.ZipFile(p)as z:b=z.read(member)
+ w=openpyxl.load_workbook(io.BytesIO(b),read_only=True,data_only=True);ws=w[sheet];values=list(next(ws.iter_rows(min_row=row,max_row=row,values_only=True)));w.close()
+ id=ref('DOI:'+r['doi'],p,r['title']+' — original supplementary archive','https://www.ebi.ac.uk/europepmc/webservices/rest/PMC5217608/supplementaryFiles','Original supplementary ZIP; exact XLSX member SHA and worksheet/row retained separately')
+ return evidence(id,text,f"ZIP member {member}; worksheet '{sheet}', row{row}",'zip_workbook',dict(member=member,member_sha256=hashlib.sha256(b).hexdigest(),sheet=sheet,row=row),values)
+def edge(s,p,o,*ev,description=None,qualifiers=None,claims=()):
+ assert ev;d=dict(id=f'nad-{len(edges)+1:03d}',subject=s,predicate=p,object=o,description=description or ev[0]['source_assertion'],evidence=list(ev));
+ if qualifiers:d['endpoint_qualifiers']=qualifiers
+ edges.append(d);edge_claims[d['id']]=list(claims);return d
+def qual(endpoint,kind,description,*ev):
+ assert len(description)<=400 and ev;return dict(endpoint=endpoint,kind=kind,description=description,evidence=list(ev))
+def para(text,*keys):paragraphs.append(text);paragraph_claims.append(dict(paragraph=len(paragraphs),claims=list(keys),text=text))
+def ont(id):
+ db={'CHEBI':'chebi','RHEA':'rhea','GO':'go','NCBITaxon':'ncbitaxon'}[id.split(':')[0]]
+ with sqlite3.connect('file:'+str(C/(db+'.db'))+'?mode=ro&immutable=1',uri=True)as c:rows=c.execute('select value from statements where subject=? and predicate="rdfs:label"',(id,)).fetchall()
+ assert len(rows)==1,(id,rows);return rows[0][0]
+def node(id,category,label=None):
+ if id in {r['id']for r in participants}:return id
+ if label is None:
+  if id.startswith('UniProtKB:'):label=upentry(id.split(':')[1])[1]['proteinDescription']['recommendedName']['fullName']['value']
+  elif id.startswith('EcoCyc:'):
+   if id=='EcoCyc:CPLX0-682':label='unnamed protein complex CPLX0-682'
+   elif id=='EcoCyc:PYRNUTRANSHYDROGEN-CPLX':label='PntAB'
+   else:
+    _,t=original(id.split(':')[1]);raw=t.xpath('/ptools-xml/*[@detail="full"]/common-name/text()');assert len(raw)==1,(id,raw);label=html.fromstring('<span>'+raw[0]+'</span>').text_content()
+  elif id.startswith('Entrez:'):label=next(r['locus']for r in json.loads((P/'derived/gene-identity-ledger.json').read_text())if r['geneid']==id.split(':')[1])
+  else:label=ont(id)
+ participants.append(dict(id=id,label=label,category=category));return id

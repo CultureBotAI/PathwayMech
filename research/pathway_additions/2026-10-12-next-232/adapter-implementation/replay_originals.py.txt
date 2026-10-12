@@ -1,0 +1,106 @@
+"""Bounded exact-original probes only; not a full-corpus authority build."""
+import ast
+import hashlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import sys
+
+import yaml
+
+from pathwaymech.ecocyc_complex import ECOCYC_COMPLEX_KIND, complex_metadata
+from pathwaymech.identifiers import _load_authority
+from scripts import build_source_identifier_snapshot as candidate
+
+HERE = Path(__file__).resolve().parent
+OUTPUT = Path(os.environ['PATHWAYMECH_COMPLEX_CHECK_OUTPUT'])
+ROOT = HERE / 'originals'
+HOST = 'bf2i-artsymbiocyc.insa-lyon.fr'
+LICENSE = 'Upstream terms; public-release licensing deferred'
+
+
+def bind(path):
+    return {'path': str(path), 'bytes': path.stat().st_size,
+            'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+
+
+def source(frame, kind=ECOCYC_COMPLEX_KIND):
+    path = ROOT / ('ECOLI-' + frame + '.xml')
+    return {'key': 'ecocyc-' + frame, 'kind': kind, 'path': path.name,
+            'url': f'https://{HOST}/getxml?id=ECOLI:{frame}', 'version': '27.0',
+            'license': LICENSE, 'sha256': bind(path)['sha256']}
+
+
+baseline_path = HERE / 'baseline/scripts/build_source_identifier_snapshot.py'
+spec = importlib.util.spec_from_file_location('baseline_native_source', baseline_path)
+baseline = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(baseline)
+assert Path(candidate.__file__).resolve() == HERE / 'candidate/scripts/build_source_identifier_snapshot.py'
+for name, module in list(sys.modules.items()):
+    if name == 'pathwaymech' or name.startswith('pathwaymech.'):
+        assert Path(module.__file__).resolve().is_relative_to(HERE / 'candidate/src/pathwaymech')
+entries = [source('CPLX0-682'), source('PYRNUTRANSHYDROGEN-CPLX')]
+entries[1]['class_source'] = {key: value for key, value in source('PC-1').items() if key not in {'key', 'kind'}}
+records = OUTPUT / 'bounded-selector'
+records.mkdir()
+(records / 'ids.yaml').write_text(yaml.safe_dump({'id': 'EcoCyc:CPLX0-682', 'participants': [{'id': 'EcoCyc:PYRNUTRANSHYDROGEN-CPLX'}]}))
+manifest = OUTPUT / 'bounded-manifest.json'
+manifest.write_text(json.dumps(entries, indent=2) + '\n')
+snapshot = candidate.build_snapshot(manifest, records, ROOT)
+native = {frame: snapshot['sources']['ecocyc-' + frame]['native_complex'] for frame in ['CPLX0-682', 'PYRNUTRANSHYDROGEN-CPLX']}
+assert native['CPLX0-682']['components'] == [{'id': 'EcoCyc:MONOMER0-541', 'coefficient': 6}]
+assert native['CPLX0-682']['parent_classes'] == ['Protein-Complexes']
+assert native['CPLX0-682']['name_status'] == 'unnamed'
+assert native['CPLX0-682']['direct_synonyms'] == []
+assert snapshot['terms']['EcoCyc:CPLX0-682']['label'] == 'unnamed protein complex CPLX0-682'
+assert native['PYRNUTRANSHYDROGEN-CPLX']['components'] == [{'id': 'EcoCyc:PNTB-MONOMER', 'coefficient': 2}, {'id': 'EcoCyc:PNTA-MONOMER', 'coefficient': 2}]
+assert native['PYRNUTRANSHYDROGEN-CPLX']['parent_classes'] == ['PC-1', 'Protein-Complexes']
+assert native['PYRNUTRANSHYDROGEN-CPLX']['name_status'] == 'synonym_only'
+assert native['PYRNUTRANSHYDROGEN-CPLX']['direct_synonyms'] == ['PntAB']
+assert snapshot['terms']['EcoCyc:PYRNUTRANSHYDROGEN-CPLX']['label'] == 'PntAB'
+for row in native.values():
+    assert row['direct_common_name'] is None
+(OUTPUT / 'bounded-native-snapshot.json').write_text(json.dumps(snapshot, indent=2, ensure_ascii=False) + '\n')
+assert _load_authority(OUTPUT / 'bounded-native-snapshot.json') == snapshot['terms']
+baseline_rejections = {}
+for frame in native:
+    item = source(frame, 'ecocyc-protein-xml')
+    try:
+        list(baseline.source_terms(item['kind'], ROOT / item['path'], url=item['url'], version=item['version']))
+    except ValueError as error:
+        baseline_rejections[frame] = str(error)
+    else:
+        raise AssertionError('Baseline unexpectedly accepted ' + frame)
+legacy = {}
+for frame in ['ALKAPHOSPHA-CPLX', 'UDHA-CPLX']:
+    item = source(frame, 'ecocyc-protein-xml')
+    before = list(baseline.source_terms(item['kind'], ROOT / item['path'], url=item['url'], version=item['version']))
+    after = list(candidate.source_terms(item['kind'], ROOT / item['path'], url=item['url'], version=item['version']))
+    assert before == after
+    legacy[frame] = after
+rejected = {}
+for frame in ['PHOSPHO-ARCA', 'PHOSPHO-PHOB', 'PNTA-MONOMER', 'PC-1']:
+    try:
+        complex_metadata(source(frame), ROOT)
+    except ValueError as error:
+        rejected[frame] = str(error)
+    else:
+        raise AssertionError('Noncomplex/type control accepted ' + frame)
+functions = ['_ecocyc_record', '_ecocyc_name', '_metacyc_reaction_record', 'metacyc_protein_terms', '_metacyc_complex_activity']
+def bodies(path):
+    text = path.read_text()
+    return {node.name: ast.get_source_segment(text, node) for node in ast.parse(text).body if isinstance(node, ast.FunctionDef) and node.name in functions}
+assert bodies(baseline_path) == bodies(HERE / 'candidate/scripts/build_source_identifier_snapshot.py')
+for row in json.loads((HERE / 'baseline.json').read_text())['originals']:
+    assert bind(Path(row['original']['path'])) == row['original']
+    assert bind(Path(row['captured']['path'])) == row['captured']
+report = {'status': 'passed', 'scope': 'Two selected native assemblies and one independent class original only; not a full canonical build or scientific record.',
+          'actual_native_snapshot': bind(OUTPUT / 'bounded-native-snapshot.json'), 'manifest': bind(manifest),
+          'originals': [bind(path) for path in sorted(ROOT.iterdir())], 'baseline_precise_rejections': baseline_rejections,
+          'unchanged_named_complexes': legacy, 'rejected_noncomplex_modified_class_objects': rejected,
+          'unchanged_legacy_function_bodies': functions, 'all_originals_unchanged': True,
+          'licensing_provenance': 'Same explicit upstream-terms/deferred-public-release marker as accepted next231 EcoCyc manifest entries.',
+          'full_build_executed': False}
+(OUTPUT / 'original-replay.json').write_text(json.dumps(report, indent=2) + '\n')
+print(json.dumps({'status': 'passed', 'actual_assemblies': 2, 'independent_class_original': 1, 'unchanged_named_complexes': 2, 'expected_rejected_objects': 4, 'legacy_functions_exact': 5}, indent=2))

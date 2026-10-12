@@ -1,0 +1,9 @@
+from pathlib import Path
+import json,subprocess,hashlib,datetime
+A=Path(__file__).parent;R=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech');P=Path('/private/tmp/pathwaymech-next-232-preflight-20261012')
+patterns='NADPHOS-DEPHOS-PWY|SMP0002093|SMP0122247|PW002081|PW123555|NAD-KIN-RXN|RXN-5822|TRANS-RXN0-277|NAD phosphorylation|NAD kinase|nadK|yfjB|pntA|pntB|sthA|udhA|cysQ'
+cmd=['rg','--no-ignore','--hidden','--follow','--files-with-matches','--ignore-case',patterns,str(R),'--glob','!**/.git/**','--glob','!**/.git']
+r=subprocess.run(cmd,text=True,capture_output=True);assert r.returncode in [0,1],r.stderr
+(A/'derived/whole-repository-matched-files.txt').write_text(r.stdout)
+receipt=dict(command=cmd,exit=r.returncode,stderr=r.stderr,utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),hidden=True,ignored=True,follow=True,matched_files=len(r.stdout.splitlines()),scope='Whole current repository, .git object storage excluded. Positive prior-research/context hits are retained; semantic novelty is separately freshly checked over the exact232record frozen corpus.',preflight_prior_read=dict(path=str(P/'derived/prior-research-exact-lines.txt'),sha256=hashlib.sha256((P/'derived/prior-research-exact-lines.txt').read_bytes()).hexdigest()))
+(A/'derived/whole-repository-search.json').write_text(json.dumps(receipt,indent=2)+'\n');print(len(r.stdout.splitlines()),'prior files retained;hidden/ignored/followed scan exit',r.returncode)

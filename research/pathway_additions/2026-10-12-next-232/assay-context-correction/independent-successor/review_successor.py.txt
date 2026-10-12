@@ -1,0 +1,130 @@
+import copy
+import hashlib
+import json
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+
+OUT = Path('/private/tmp/pathwaymech-next-232-assay-context-successor-review-20261012')
+AUTHOR = Path('/private/tmp/pathwaymech-next-232-assay-context-successor-20261012')
+PRIOR = Path('/private/tmp/pathwaymech-next-232-final-adversarial-20261012')
+ROOT = Path('/private/tmp/pathwaymech-next-232-20261012')
+checks=[]
+def binding(p):
+    p=Path(p);b=p.read_bytes()
+    return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def verify(item):
+    actual=binding(item['path'])
+    assert all(actual[k]==item[k] for k in ('bytes','sha256')),item['path']
+def check(name, condition, detail=None):
+    assert condition,name
+    checks.append({'name':name,'passed':True,'detail':detail})
+def save(name,data):
+    with (OUT/name).open('x') as f: json.dump(data,f,indent=2);f.write('\n')
+def diff(a,b,path=''):
+    if type(a)!=type(b):return [path]
+    if isinstance(a,dict):
+        if a.keys()!=b.keys():return [path]
+        return [d for k in a for d in diff(a[k],b[k],path+'/'+k)]
+    if isinstance(a,list):
+        if len(a)!=len(b):return [path]
+        return [d for i,(x,y) in enumerate(zip(a,b)) for d in diff(x,y,path+'/'+str(i))]
+    return [] if a==b else [path]
+
+handoff=json.loads((AUTHOR/'handoff.json').read_text())
+check('exact_author_handoff',binding(AUTHOR/'handoff.json')['sha256']=='fdd8e75da826f5ba3dbf126dcf2306e637ef18c59bb3ffd0400acf1e639ce392')
+verify(handoff['manifest'])
+manifest=json.loads((AUTHOR/'artifact-manifest.json').read_text())
+for item in manifest['artifacts']:verify(item)
+inventory=subprocess.run(['rg','--files','-uu','-L','.'],cwd=AUTHOR,text=True,capture_output=True,check=True)
+check('complete_author_packet_closure',not inventory.stderr and {str(Path(x)) for x in inventory.stdout.splitlines()}=={str(Path(x['path']).relative_to(AUTHOR)) for x in manifest['artifacts']}|{'handoff.json','artifact-manifest.json'},len(manifest['artifacts']))
+
+prior_handoff=json.loads((PRIOR/'handoff.json').read_text());verify(prior_handoff['manifest'])
+prior_manifest=json.loads((PRIOR/'artifact-manifest.json').read_text())
+for item in prior_manifest['artifacts']:verify(item)
+check('prior_834_artifacts_unchanged',len(prior_manifest['artifacts'])==834)
+correction=json.loads((AUTHOR/'correction.json').read_text())
+for key in ('predecessor','successor','primary','native_review_predecessor'):verify(correction[key])
+old=yaml.safe_load(Path(correction['predecessor']['path']).read_text())
+new=yaml.safe_load(Path(correction['successor']['path']).read_text())
+changed=diff(old,new)
+check('record_only_description_changed',changed==['/description'],changed)
+oldparas=old['description'].split('\n\n');newparas=new['description'].split('\n\n')
+indices=[i for i,(a,b) in enumerate(zip(oldparas,newparas)) if a!=b]
+check('only_paragraph_7_changed',len(oldparas)==len(newparas)==41 and indices==[6],indices)
+check('declared_paragraphs_exact',oldparas[6]==correction['paragraph_before'] and newparas[6]==correction['paragraph_after'])
+for key in ('mechanistic_edges','references','participants','reactions','taxa'):
+    check('exact_'+key,new[key]==old[key],len(new[key]))
+check('48_endpoint_qualifiers_exact',sum(len(e.get('endpoint_qualifiers',[])) for e in new['mechanistic_edges'])==48)
+
+ledger_results=[]
+for item in correction['active_accounting']:
+    verify(item['predecessor']);verify(item['successor'])
+    a=json.loads(Path(item['predecessor']['path']).read_text());b=json.loads(Path(item['successor']['path']).read_text())
+    changes=diff(a,b)
+    check('ledger_exact_scope_'+item['only_json_pointer'],changes==[item['only_json_pointer']],changes)
+    cur=b
+    for part in item['only_json_pointer'].strip('/').split('/'):
+        cur=cur[int(part)] if isinstance(cur,list) else cur[part]
+    check('ledger_paragraph_matches_target_'+item['only_json_pointer'],cur==newparas[6])
+    ledger_results.append({'predecessor':item['predecessor'],'successor':item['successor'],'complete_structural_diff':changes,'rows':len(b)})
+
+old_finding=json.loads((PRIOR/'findings.json').read_text())['findings'][0]
+for item in old_finding['primary_evidence']:verify(item)
+primary_text=json.loads(Path(old_finding['primary_evidence'][1]['path']).read_text())
+page2=primary_text['pages'][1]['text'];page3=primary_text['pages'][2]['text']
+check('Table2_footnote_original', 'concentration was 4.0 mM' in page2)
+check('Figures1_2_varied_substrate_original',page3.count('varied substrate')==2)
+check('source_distinctions_in_successor',all(text in newparas[6] for text in ['The general assay used 10 mM NAD and 10 mM ATP','Table 2 instead used 4.0 mM NAD','Separate saturation experiments varied NAD','NADPH at 5–30 µM or NADH at 50–200 µM']))
+
+# Negative controls demonstrate that the scope checker rejects extra changes.
+control=copy.deepcopy(new);control['mechanistic_edges'][0]['object']='RHEA:11693'
+check('negative_extra_graph_change_rejected',diff(old,control)!=['/description'])
+control=json.loads(Path(correction['active_accounting'][1]['successor']['path']).read_text())
+old_control=json.loads(Path(correction['active_accounting'][1]['predecessor']['path']).read_text())
+control[0]['endpoint_qualifiers'][0]['qualifier']['description']='wrong preparation'
+check('negative_extra_qualifier_change_rejected',diff(old_control,control)!=['/0/paragraphs/0/text'])
+check('negative_restored_bad_paragraph_rejected','Table 2 instead used 4.0 mM NAD' not in oldparas[6])
+
+issue=Path('/private/tmp/pathwaymech-next-232-assay-context-issue-20261012')
+creation=json.loads((issue/'creation.json').read_text())
+verify(creation['stdout']);verify(creation['stderr'])
+check('issue483_creation_receipt',creation['exit_code']==0 and (issue/'creation.stdout').read_text().strip()=='https://github.com/CultureBotAI/PathwayMech/issues/483')
+save('independent-checks.json',{'checks':checks,'complete_ledger_comparisons':ledger_results,
+ 'author_handoff':binding(AUTHOR/'handoff.json'),'current_draft':binding(Path(correction['successor']['path'])),
+ 'primary_bindings':old_finding['primary_evidence'],'prior_review_handoff':binding(PRIOR/'handoff.json'),
+ 'native_review109_unchanged':correction['native_review_predecessor']})
+save('disposition.json',{'stable_key':'nad-1987-inhibition-assay-nad-concentration','issue':483,
+ 'url':'https://github.com/CultureBotAI/PathwayMech/issues/483','status':'resolved_in_exact_external_scientific_successor',
+ 'target':binding(Path(correction['successor']['path'])),
+ 'assessment':'Paragraph 7 now separates the general 10 mM NAD assay from the inhibitor table at 4.0 mM NAD and the varied-NAD curves. The tenfold NADH/NADPH comparison and additivity remain table-owned; the 5–30 and 50–200 micromolar ranges belong to the varied-NAD experiments. Other supported preparations, signs, kinetic qualifications and Km conflict are unchanged.',
+ 'current_accounting':'Both complete active ledger successor objects contain the exact corrected paragraph and differ only at /6/text and /0/paragraphs/0/text, respectively. All other claim/construct/qualifier/comparator objects are unchanged.',
+ 'inheritance':'The prior independent exact-head 0f5c2c92d8940fee8a9b2b89253091496f815490 review is inherited except this resolved bounded finding. No new full literature or changed-code review claimed.',
+ 'native_previous_occurrences':[],'native_prior_limit':'Issue483 and this review are external artifacts; no native finding identity is fabricated.',
+ 'maintained_adoption_accepted':False,'native_save_or_gate_completion_claimed':False,'github_issue_closed':False,'new_findings':[]})
+report='''# Bounded independent review of NAD issue 483 successor
+
+**The exact external successor resolves issue 483.** Paragraph 7 now distinguishes the general assay containing 10 mM NAD, Table 2 containing 4.0 mM NAD, and Figures 1/2 with varied NAD. The primary table owns the approximately tenfold inhibitor comparison and additivity; the separate varied-NAD curves own the stated inhibitor ranges. The unchanged preparation, Hill coefficients and Km-discrepancy limits remain intact.
+
+Accepted draft SHA-256: `2da6fc3e5d1c1e5ce4b4d0c8a9d1857b1f234c4c872cdf73d364f1c73ad87cb2` (179,098 bytes). The complete five-artifact author packet has an exact ignored/hidden/followed closure. Only paragraph 7 differs; all 40 other paragraphs, 102 complete edges, 48 endpoint qualifiers, 97 references, reaction directions and named fields are exact.
+
+Both complete proposed active ledger objects were independently compared against their current predecessors. The paragraph ledger differs only at `/6/text`; the K87 construct ledger differs only at `/0/paragraphs/0/text`. Both new values equal the corrected record paragraph. All other claims, preparation rows, qualifier payloads and comparator relationships remain unchanged. Old sealed ledgers and the 109th native review remain untouched; their later dispositions should explicitly inherit and supersede only this assay context.
+
+The primary PDF, prior inspected page-2 image and pages 2–3 text were freshly hash-verified. I rechecked the table footnote and figure-caption distinctions against the corrected paragraph. All 834 artifacts of the prior independent review remain unchanged. This reassessment inherits that exact-head review and its code/integration checks; it does not claim a fresh complete literature review, full gate run, generated-page inspection or native review save.
+
+No new actionable finding was identified. Scientific acceptance here applies to the exact external successor. Root adoption, history/render/gates, successor native review, PR update, CI, merge, publication and issue closure remain subsequent steps.
+'''
+(OUT/'REVIEW.md').write_text(report)
+items=[]
+inventory=subprocess.run(['rg','--files','-uu','-L','.'],cwd=OUT,text=True,capture_output=True,check=True)
+assert not inventory.stderr
+for rel in sorted(inventory.stdout.splitlines()):items.append({'relative_path':str(Path(rel)),**binding(OUT/rel)})
+save('artifact-manifest.json',{'artifacts':items,'excluded_seals':['handoff.json','artifact-manifest.json']})
+save('handoff.json',{'status':'accepted_exact_bounded_scientific_successor','reviewer':'Codex /root/nad_final_adversarial','at':datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+ 'author_handoff':binding(AUTHOR/'handoff.json'),'draft':binding(Path(correction['successor']['path'])),
+ 'manifest':binding(OUT/'artifact-manifest.json'),'artifact_count':len(items),
+ 'checks':binding(OUT/'independent-checks.json'),'disposition':binding(OUT/'disposition.json'),'report':binding(OUT/'REVIEW.md'),
+ 'passed_checks':len(checks),'new_findings':0,'issue483':'resolved_in_exact_external_successor_only','maintained_mutations':False,'github_mutations':False})
+print(json.dumps({'handoff':binding(OUT/'handoff.json'),'manifest':binding(OUT/'artifact-manifest.json'),'checks':len(checks),'artifacts':len(items)},indent=2))

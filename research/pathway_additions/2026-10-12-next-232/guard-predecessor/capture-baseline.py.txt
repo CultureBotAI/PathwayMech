@@ -1,0 +1,98 @@
+"""Capture the actual merged 231-record baseline into a new external directory."""
+import argparse
+import csv
+import hashlib
+import json
+from collections import Counter
+from pathlib import Path
+from common import *
+
+
+def digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'),
+                                    ensure_ascii=False).encode()).hexdigest()
+
+
+def table(root, relative):
+    with (root / relative).open(newline='') as stream:
+        reader = csv.DictReader(stream, delimiter='\t')
+        rows, columns = list(reader), reader.fieldnames
+    assert len({r['id'] for r in rows}) == len(rows) and all(None not in r for r in rows)
+    return columns, rows
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--root', required=True, type=Path)
+    parser.add_argument('--base', required=True)
+    parser.add_argument('--output', required=True, type=Path)
+    args = parser.parse_args()
+    root = validate_base(args.root, args.base)
+    verify_package()
+    verify_accepted()
+    verify_captured231(root)
+    verify_authority_conservation(root)
+    verify_cache_inputs()
+    external_new(args.output, root)
+    sets = {key: inventory(root, value) for key, value in SURFACES.items()}
+    import yaml
+    ids = [yaml.safe_load((root / row['relative_path']).read_bytes())['id']
+           for row in sets['records'] if row['relative_path'].endswith('.yaml')]
+    assert len(ids) == len(set(ids)) == 231 and 'MetaCyc:PWY-8178' not in ids
+    assert sum(r['relative_path'].endswith('.html') for r in sets['pages']) == 231
+    review_count = sum(r['relative_path'].endswith('/review.yaml') for r in sets['reviews'])
+    assert review_count >= 105, 'Actual review inventory must retain the predecessor bundles'
+    node_columns, nodes = table(root, 'pages/downloads/nodes.tsv')
+    edge_columns, edges = table(root, 'pages/downloads/edges.tsv')
+    contexts, node_rows = 0, {}
+    for node in nodes:
+        values = json.loads(node['source_contexts'] or '[]')
+        contexts += len(values)
+        node_rows[node['id']] = {
+            'display': {k: v for k, v in node.items() if k != 'source_contexts'},
+            'context_hash_counts': dict(Counter(digest(v) for v in values)),
+        }
+    kgx = {'node_columns': node_columns, 'edge_columns': edge_columns, 'nodes': node_rows,
+           'edges': {r['id']: digest(r) for r in edges}, 'node_count': len(nodes),
+           'edge_count': len(edges), 'source_context_count': contexts,
+           'files': [binding(root / p) for p in
+                     ('pages/downloads/nodes.tsv', 'pages/downloads/edges.tsv')],
+           'authority': 'Actual merged pages/downloads; ignored output/kgx is not assumed current'}
+    all_files = inventory(root, exclude_runtime=True)
+    source_cache = inventory(CACHE)
+    implementation = [r for r in all_files if r['relative_path'].split('/')[0] in
+                      {'src', 'scripts', 'tests', 'conf', 'docs', '.claude'}]
+    # Every verification completes before the first external write.
+    args.output.mkdir()
+    write_new(args.output / 'baseline-kgx.json', kgx)
+    baseline = {
+        'captured_at': now(), 'root': str(root), 'head': BASE, 'tree': TREE,
+        'origin_main_observed': git(root, 'rev-parse', 'refs/remotes/origin/main'),
+        'merge_scope': 'Explicit root-supplied merged commit; ancestor of local origin/main',
+        'accepted_build_baseline': binding(BUILD / 'preparation-capture.json'),
+        **sets, 'record_ids': ids, 'all_maintained_files': all_files,
+        'implementation_inputs': implementation, 'source_cache_files': source_cache,
+        'cache_identity_observation': load(PACKAGE / 'remediation-inputs.json')['initial_cache_identity'],
+        'cache_identity_scope': 'Fresh actual merged-base capture includes each path type, literal link text and resolved destination, checked against the successor observation; no historical capture claim.',
+        'authority_inputs': [{'relative_path': p, **binding(root / p)}
+                             for p in AUTHORITY_FILES.values()],
+        'kgx': binding(args.output / 'baseline-kgx.json'),
+        'counts': {'records': 231, 'pages': 231, 'structured_review_bundles': review_count,
+                   'history_yaml': sum(r['relative_path'].endswith('.yaml') for r in sets['history']),
+                   'node_count': len(nodes), 'edge_count': len(edges),
+                   'source_context_count': contexts, 'source_cache_files': len(source_cache)},
+        'inventory_includes_ignored_hidden_followed_symlink_targets': True,
+        'excluded_only_runtime_surfaces': ['.git', '.venv'],
+    }
+    write_new(args.output / 'baseline.json', baseline)
+    receipt = {'status': 'actual_merged231_baseline_captured',
+               'baseline': binding(args.output / 'baseline.json'),
+               'kgx': binding(args.output / 'baseline-kgx.json'),
+               'base': BASE, 'tree': TREE, 'merged_binding': binding(BASE_CONFIG), 'counts': baseline['counts'],
+               'helper': binding(__file__)}
+    write_new(args.output / 'receipt.json', receipt)
+    print(json.dumps(receipt, indent=2))
+
+
+if __name__ == '__main__':
+    main()

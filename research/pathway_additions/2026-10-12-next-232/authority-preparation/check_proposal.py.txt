@@ -1,0 +1,139 @@
+"""Bounded proposal invariants, original bindings and negative controls."""
+from common import *
+from prepare_proposal import preserve,original_paths
+import copy
+import sys
+import yaml
+sys.path[:0]=[str(O/'runtime/src'),str(O/'runtime/scripts')]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from pathwaymech.identifiers import identifier_errors,_load_authority
+from pathwaymech.ecocyc_complex import complex_metadata
+import build_source_identifier_snapshot as sb
+import build_ontology_identifier_snapshot as ob
+
+
+def main():
+    proposal=read(O/'proposal.json');capture=read(O/'capture.json');checks=[];negative=[]
+    for row in proposal['outputs'].values():verify(row['path'],row)
+    for row in capture['runtime']:verify(row['captured']['path'],row['captured'])
+    target=O/'selection'/TARGET_NAME;verify(target,proposal['target'])
+    assert bind(target)['sha256']==TARGET_SHA
+    record=yaml.safe_load(target.read_bytes());validate_record(record)
+    assert not strict_errors([target],O)
+    checks.append('actual frozen single-record native and closed-schema validation')
+    fixture=O/'validation-fixture';(fixture/'data/pathways').mkdir(parents=True)
+    capture_file(target,fixture/'data/pathways'/TARGET_NAME)
+    capture_file(O/'runtime/conf/identifier_policy.yaml',fixture/'conf/identifier_policy.yaml')
+    for name in ['sources.json','ontology.json']:capture_file(O/'proposal'/name,fixture/'data/identifier_authorities'/name)
+    errors=identifier_errors(fixture);assert not errors,errors
+    checks.append('actual frozen single-record identifier gate with unchanged policy and complete proposed authority objects')
+    for name in ['sources.json','ontology.json']:
+        old=read(O/'baseline'/name);new=read(O/'proposal'/name);preserve(old,new)
+        _load_authority(O/'proposal'/name)
+    manifest=read(O/'proposal/manifest.json');oldmanifest=read(O/'baseline/manifest.json');rhea=read(O/'proposal/rhea-updates.json')
+    assert manifest[:len(oldmanifest)]==oldmanifest
+    assert (O/'proposal/rhea-updates.json').read_bytes()==(O/'baseline/rhea-updates.json').read_bytes()
+    checks.append('every old authority object and relative key order exact;782entry original manifest prefix and24Rhea config exact')
+    accounting=read(O/'source-original-accounting.json');expected=original_paths(manifest,rhea)
+    assert set(expected)=={r['cache_relative_path'] for r in accounting['originals']}==set(paths(O/'originals'))
+    for row in accounting['originals']:
+        path=O/'originals'/row['cache_relative_path'];verify(path,row['binding']);assert identity(path)==row['identity']
+    checks.append(f"all{len(accounting['originals'])}whole original bodies and fresh exact link identities; separately hashedPC1 companion and inheritedversion/Rhea sidecars")
+    complexes=[r for r in manifest if r['kind']=='ecocyc-complex-xml'];assert len(complexes)==2
+    source=read(O/'proposal/sources.json')
+    for entry in complexes:
+        assert complex_metadata(entry,O/'originals')==source['sources'][entry['key']]
+    checks.append('both typed complexes replay original whole XML and separately hashed PC1 class original through accepted adapter')
+    def rejects(name,callback):
+        try:callback()
+        except (AssertionError,ValueError,OSError) as error:
+            negative.append({'name':name,'rejected':True,'error_type':type(error).__name__,'error':str(error)[:800]})
+        else:raise AssertionError('negative control accepted: '+name)
+    old=read(O/'baseline/sources.json');new=read(O/'proposal/sources.json')
+    changed=copy.deepcopy(new);changed['terms'][next(iter(old['terms']))]['label']='corrupted historical label'
+    rejects('old term object cannot change',lambda:preserve(old,changed))
+    reordered=copy.deepcopy(new);items=list(reordered['terms'].items());items[0],items[1]=items[1],items[0];reordered['terms']=dict(items)
+    rejects('old map order cannot change',lambda:preserve(old,reordered))
+    changedmeta=copy.deepcopy(new);changedmeta['sources'][next(iter(old['sources']))]['url']='https://example.invalid/changed'
+    rejects('old source metadata cannot change',lambda:preserve(old,changedmeta))
+    pnt=next(r for r in complexes if 'class_source' in r)
+    missing=copy.deepcopy(pnt);del missing['class_source'];rejects('missing class_source fails native original parser',lambda:complex_metadata(missing,O/'originals'))
+    wronghash=copy.deepcopy(pnt);wronghash['class_source']['sha256']='0'*64;rejects('class original hash mismatch fails native parser',lambda:complex_metadata(wronghash,O/'originals'))
+    wrongbody=copy.deepcopy(pnt);other=next(r for r in complexes if r!=pnt);wrongbody['class_source']['path']=other['path'];wrongbody['class_source']['sha256']=other['sha256']
+    rejects('assembly body cannot replace PC1 class original even with truthful bodyhash',lambda:complex_metadata(wrongbody,O/'originals'))
+    no_class_accounting={k:v for k,v in expected.items() if k!=pnt['class_source']['path']}
+    def require_accounting(actual):assert set(actual)==set(expected)
+    rejects('top-level-only inventory cannot omit companion',lambda:require_accounting(no_class_accounting))
+    case=O/'negative-fixtures';case.mkdir()
+    for identifier in ['EcoCyc:CPLX0-682','EcoCyc:PYRNUTRANSHYDROGEN-CPLX']:
+        altered=copy.deepcopy(new);altered['terms'][identifier]['label']='Invented common name'
+        path=case/(identifier.split(':')[1]+'.json');write(str(path.relative_to(O)),altered)
+        rejects(identifier+' arbitrary authority label rejected',lambda p=path:_load_authority(p))
+    # Guard corpus placement and name even where broad MetaCyc contextual rules exist.
+    fixture_target=fixture/'data/pathways'/TARGET_NAME
+    for identifier,field,value,reason in [('EcoCyc:CPLX0-682','label','NAD kinase complex','unnamed complex corpus display remains exact'),('EcoCyc:PYRNUTRANSHYDROGEN-CPLX','label','PntAB transhydrogenase','synonym-only corpus display remains exact'),('EcoCyc:CPLX0-682','category','protein','typed complex corpus placement required')]:
+        altered=copy.deepcopy(record);next(r for r in altered['participants'] if r['id']==identifier)[field]=value
+        fixture_target.write_text(yaml.safe_dump(altered,sort_keys=False,allow_unicode=True))
+        found=identifier_errors(fixture);assert found
+        negative.append({'name':reason,'rejected':True,'errors':found})
+    fixture_target.write_bytes(target.read_bytes());assert not identifier_errors(fixture)
+    # Link identity controls are isolated copies, never shared-cache changes.
+    body=case/'body.bin';body.write_bytes(b'whole issuing body\n');same=case/'same.bin';same.write_bytes(body.read_bytes());link=case/'identity-link';link.symlink_to(body)
+    pin={**bind(link),**identity(link)}
+    def identity_guard():
+        verify(link,pin);assert identity(link)=={k:pin[k] for k in ['file_type','link_text','resolved_path']}
+    identity_guard();link.unlink();link.symlink_to(same)
+    rejects('same-byte symlink retarget rejected',identity_guard)
+    link.unlink();link.write_bytes(body.read_bytes());rejects('same-byte symlink-to-regular swap rejected',identity_guard)
+    # Bind every scientific source and selector body, while leaving scientific acceptance to the independent reviewer.
+    sources=read(O/'author-inputs/ledgers/working-source-bindings.json');selectors=read(O/'author-inputs/ledgers/working-evidence-selector-ledger.json')
+    assert {r['id'] for r in record['references']}==set(sources) and len(sources)==94
+    full={}
+    def add(value,role):
+        if isinstance(value,dict):
+            if {'path','bytes','sha256'}<=value.keys() and isinstance(value['path'],str):
+                existing=full.setdefault(value['path'],{'binding':{k:value[k] for k in ['path','bytes','sha256']},'roles':[]})
+                assert existing['binding']=={k:value[k] for k in ['path','bytes','sha256']}
+                existing['roles'].append(role)
+            for key,item in value.items():add(item,role+'/'+key)
+        elif isinstance(value,list):
+            for index,item in enumerate(value):add(item,role+'/'+str(index))
+    add(sources,'reference_sources');add(selectors,'selector_bindings')
+    for path in list(full):
+        if path.endswith('-primary-rendering-bundle.json'):add(read(path),'lossless_tool_rendering_bundle')
+    observed=[]
+    for path,row in full.items():
+        verify(path,row['binding']);observed.append({**row,'fresh_identity':identity(path)})
+    wanted_evidence=[]
+    def evidence(value):
+        if isinstance(value,dict):
+            for key,item in value.items():
+                if key=='evidence':wanted_evidence.extend(item)
+                else:evidence(item)
+        elif isinstance(value,list):
+            for item in value:evidence(item)
+    evidence(record)
+    canonical=lambda x:__import__('json').dumps(x,sort_keys=True,ensure_ascii=False)
+    have={canonical(row['evidence']) for row in selectors};missing=[e for e in wanted_evidence if canonical(e) not in have];assert not missing
+    write('scientific-input-bindings.json',{'references':len(sources),'selector_ledger_entries':len(selectors),'record_evidence_occurrences':len(wanted_evidence),'whole_original_and_lossless_bundle_bindings':observed,'scope':'Exact author source/selector binding verification; not an independent scientific adjudication or a claim all referenced publications were retrieved as full text. Tool renderings retain their original explicit limitations.'})
+    checks.append('all94reference bindings and every record evidence occurrence retained; whole bodies freshly verified without promoting reference-only IDs into named selection')
+    # Capture historical-vs-reconstructed lineage with actual original labels intact.
+    lineage=read(A/'draft-lineage.json');capturedlineage=capture_file(A/'draft-lineage.json',O/'author-lineage/draft-lineage.json')
+    lineages=[]
+    for version in lineage['versions']:
+        row=version['binding'];capturefile=capture_file(row['path'],O/'author-lineage/versions'/version['name']/Path(row['path']).name,row)
+        value=yaml.safe_load(Path(row['path']).read_bytes())
+        assert sorted(ob.walk_identifiers(value,{'CHEBI','GO','NCBITaxon','RHEA'}))==version['ontology_collector']
+        assert sorted(sb.corpus_ids(Path(capturefile['captured']['path']).parent))==version['source_collector'] and len(version['source_collector'])==68
+        lineages.append({'name':version['name'],'binding':capturefile,'scope':'794241 version is explicitly author reconstruction; not earlier historical capture. Other lineage statuses retained in full original draft-lineage.json.'})
+    write('author-lineage/receipt.json',{'at':now(),'author_lineage':capturedlineage,'versions':lineages,'actual_first_frozen_author_target':proposal['target'],'note':'Initial authority capture failed before copying794241; exact c2fec44 is first captured working target.'})
+    current=inventory(CACHE);assert current==read(O/'concurrent-cache-bridge/receipt.json')['expected_current_inventory']
+    checks.append('current shared-cache complete ignored-aware inventory,whole bodies,linktypes,texts and destinations preserved765files plus exact24authorizedrootPPi additions=789')
+    for row in capture['prior_corpus']:verify(row['captured']['path'],row['captured'])
+    assert len(capture['prior_corpus'])==233
+    checks.append('captured232prospective prior records unchanged; no maintained merge or fullbuild claim')
+    write('checks.json',{'at':now(),'status':'passed','target':bind(target),'positive_checks':checks,'negative_controls':negative,'negative_count':len(negative),'record_shape':{'named_ids':68,'edges':len(record['mechanistic_edges']),'references':len(record['references']),'qualifiers':sum(len(e.get('endpoint_qualifiers',[])) for e in record['mechanistic_edges']),'evidence_occurrences':len(wanted_evidence)},'counts':proposal['counts'],'shared_cache_fresh':current,'scope':'Bounded original and proposal safeguards; actual single-record schema/strict/identifier gates. No full suite, full corpus native builder, maintained adoption, scientific acceptance or new GitHub/native review occurrence.'})
+    print({'status':'passed','positive_checks':len(checks),'negative_controls':len(negative),'source_body_bindings':len(observed)})
+
+if __name__=='__main__':main()

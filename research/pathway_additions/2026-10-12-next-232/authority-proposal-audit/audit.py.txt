@@ -1,0 +1,250 @@
+"""Independent NAD proposal integration audit; accepted adapter is inherited."""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import sqlite3
+import subprocess
+import sys
+
+OUT=Path(__file__).resolve().parent
+PACK=Path('/private/tmp/pathwaymech-next-232-authority-preparation-20261012')
+sys.path[:0]=[str(PACK/'runtime/src'),str(PACK/'runtime/scripts')]
+import yaml
+import build_source_identifier_snapshot as sb
+import build_ontology_identifier_snapshot as ob
+
+
+def read(p):return json.loads(Path(p).read_bytes())
+def bind(p):
+    p=Path(p)
+    with p.open('rb') as f:d=hashlib.file_digest(f,'sha256').hexdigest()
+    return {'path':str(p),'bytes':p.stat().st_size,'sha256':d}
+def check(p,r):
+    actual=bind(p);assert actual['sha256']==r['sha256'] and actual['bytes']==r['bytes'],str(p)
+def identity(p):
+    p=Path(p);return {'file_type':'symlink' if p.is_symlink() else 'regular','link_text':os.readlink(p) if p.is_symlink() else None,'resolved_path':str(p.resolve(strict=True))}
+def paths(root):
+    result=subprocess.run(['rg','--files','-uu','-L',str(root)],text=True,capture_output=True)
+    assert result.returncode in (0,1) and not result.stderr
+    return set(map(Path,result.stdout.splitlines()))
+def write(name,data):
+    with (OUT/name).open('x') as f:json.dump(data,f,indent=2);f.write('\n')
+def ordered(v):return json.dumps(v,ensure_ascii=False,separators=(',',':'))
+
+
+capture=read(PACK/'capture.json');proposal=read(PACK/'proposal.json')
+target=PACK/'selection/nad-phosphorylation-and-dephosphorylation.yaml'
+record=yaml.safe_load(target.read_bytes())
+old_sources=read(PACK/'baseline/sources.json');sources=read(PACK/'proposal/sources.json')
+old_onto=read(PACK/'baseline/ontology.json');onto=read(PACK/'proposal/ontology.json')
+manifest=read(PACK/'proposal/manifest.json');old_manifest=read(PACK/'baseline/manifest.json')
+
+
+def closure():
+    assert bind(PACK/'handoff.json')['sha256']=='25c3d3cb85acbe0a1510bd7e7f5961b065f0bd1bf5d897b2c9eb282be92d0102'
+    assert bind(PACK/'artifact-manifest.json')['sha256']=='e4cb0f6b7bd0ec4ab8e3265295fcec8f469220406c8bdfc4142b346557897cb8'
+    rows=read(PACK/'artifact-manifest.json')['artifacts'];seen=set()
+    for row in rows:
+        p=PACK/row['relative_path'];assert p not in seen and '..' not in Path(row['relative_path']).parts;seen.add(p)
+        check(p,row);assert identity(p)=={k:row[k] for k in ['file_type','link_text','resolved_path']}
+    assert len(rows)==1891 and paths(PACK)==seen|{PACK/'handoff.json',PACK/'artifact-manifest.json'}
+    assert bind(target)['sha256']=='c2fec44e8c4f9a10f3ba96148a88afd7f3a16c25ac075167286bb81ef975f503'
+    for row in capture['baseline'].values():check(row['original']['path'],row['original']);check(row['captured']['path'],row['captured'])
+    return {'artifacts':1891,'inventory_hidden_ignored_followed':True,'target':bind(target)}
+
+
+def scope_and_runtime():
+    acceptance=capture['root_adapter_acceptance'];check(acceptance['path'],acceptance)
+    assert acceptance['sha256']=='743ff1057249ed13f00cdc76ebe3cd2ab2d0c6ebf5dad553de4142492571887a'
+    accepted=read(acceptance['path']);assert accepted['status']=='accepted_exact_four_file_bounded_adapter_for_authority_preparation'
+    for name in ['implementation','copy_plan','independent_audit']:check(accepted[name]['path'],accepted[name])
+    overlay={r['relative_path']:r for r in read(accepted['copy_plan']['path'])['files']}
+    changed=[];unchanged=0
+    for row in capture['runtime']:
+        rel=row['relative_path'];check(row['captured']['path'],row['captured'])
+        if rel in overlay:
+            check(row['captured']['path'],overlay[rel]['candidate']);changed.append(rel)
+        else:
+            assert row['PPi_before'] is not None;check(row['captured']['path'],row['PPi_before']);unchanged+=1
+    assert len(capture['runtime'])==225 and len(changed)==4 and unchanged==221
+    assert {str(p.relative_to(PACK/'runtime')) for p in paths(PACK/'runtime')}=={r['relative_path'] for r in capture['runtime']}
+    for row in capture['prior_corpus']:check(row['captured']['path'],row['captured'])
+    assert len(capture['prior_corpus'])==233 and sum(r['relative_path'].endswith('.yaml') for r in capture['prior_corpus'])==232
+    named=[record['id']]+[node['id'] for section in ['taxa','participants','reactions'] for node in record[section]]
+    assert len(named)==len(set(named))==68
+    assert set(named)==set(proposal['collectors']['named_ids'])=={r['id'] for r in capture['selected_named_ids']}
+    assert sb.corpus_ids(PACK/'selection')==set(named)
+    source_ids={i for i in named if i.split(':')[0] in sb.SOURCE_NAMESPACES}
+    ontology_ids=ob.walk_identifiers(record,{'CHEBI','GO','NCBITaxon','RHEA'})
+    assert len(source_ids)==32 and len(ontology_ids)==36
+    assert source_ids==set(proposal['collectors']['source_ids']) and ontology_ids==set(proposal['collectors']['ontology_ids'])
+    assert set(named)==source_ids|ontology_ids and not source_ids&ontology_ids
+    assert 'UniProtKB:P0AFJ5' in named and 'UniProtKB:P0A9I3' not in named
+    assert 'CHEBI:29033' in named and 'CHEBI:29034' not in named
+    return {'adapter_acceptance_inherited':acceptance,'independent_adapter_review_claimed_here':False,
+            'runtime_files':225,'unchanged_files':221,'overlay_files':changed,'prior_yaml':232,
+            'named_ids':sorted(named),'source_ids':sorted(source_ids),'ontology_ids':sorted(ontology_ids)}
+
+
+def originals_and_cache():
+    expected={}
+    def add(item,key,role):
+        path=item['path'];assert not Path(path).is_absolute() and '..' not in Path(path).parts
+        row=expected.setdefault(path,{'sha256':item['sha256'],'roles':[]});assert row['sha256']==item['sha256'];row['roles'].append({'key':key,'role':role})
+    for entry in manifest:
+        add(entry,entry['key'],'top_level')
+        for role in ['version_source','class_source']:
+            if role in entry:add(entry[role],entry['key'],role)
+    rhea=read(PACK/'proposal/rhea-updates.json');add(rhea,rhea['key'],'rhea_update')
+    accounting=read(PACK/'source-original-accounting.json');actual={r['cache_relative_path']:r for r in accounting['originals']}
+    assert len(expected)==len(actual)==791 and set(expected)==set(actual)=={str(p.relative_to(PACK/'originals')) for p in paths(PACK/'originals')}
+    for path,pin in expected.items():
+        row=actual[path];check(PACK/'originals'/path,row['binding']);assert row['binding']['sha256']==pin['sha256'] and row['roles']==pin['roles'];assert identity(PACK/'originals'/path)==row['identity']
+    new=accounting['new_copy_plan'];assert len(new)==11 and sum(r['new'] for r in actual.values())==11
+    for row in new:
+        check(row['original']['path'],row['original']);check(row['captured']['path'],row['captured'])
+        assert row['captured']['sha256']==row['original']['sha256'] and identity(row['captured']['path'])['file_type']=='regular'
+    pnt=next(e for e in manifest if e['key']=='nad232-ecoli-pyrnutranshydrogen-cplx')
+    companion=pnt['class_source'];assert companion['path']=='nad232-ECOLI-PC-1.xml'
+    assert companion['sha256']=='e36fbeb82a86b02acd1494807251805a45aa63f7b60b83e109453d096c3ac835'
+    assert actual[companion['path']]['new'] and actual[companion['path']]['roles']==[{'key':pnt['key'],'role':'class_source'}]
+    proof=sources['sources'][pnt['key']]['native_complex']['class_source'];assert proof['sha256']==companion['sha256'] and proof['url']==companion['url']
+    assert 'EcoCyc:PYRNUTRANSHYDROGEN-CPLX' in proof['instances'] and 'EcoCyc:PC-1' not in proposal['collectors']['named_ids']
+    bridge=read(PACK/'concurrent-cache-bridge/receipt.json');adoption=bridge['adoption']
+    check(adoption['original']['path'],adoption['original']);check(adoption['captured']['path'],adoption['captured'])
+    assert adoption['original']['sha256']==adoption['captured']['sha256']
+    adopted=read(adoption['captured']['path']);assert adopted['status']=='adopted_pending_maintained_gates_and_saved_review'
+    cache=Path('/private/tmp/pathwaymech-curation-authorities/sources')
+    rows=bridge['expected_current_inventory'];assert len(rows)==789
+    assert {r['relative_path'] for r in rows}=={str(p.relative_to(cache)) for p in paths(cache)}
+    for row in rows:
+        check(cache/row['relative_path'],row);assert identity(cache/row['relative_path'])=={k:row[k] for k in ['file_type','link_text','resolved_path']}
+    before={r['relative_path']:r for r in capture['source_cache_initial']};after={r['relative_path']:r for r in rows}
+    assert len(before)==765 and all(after[k]==v for k,v in before.items())
+    added=set(after)-set(before);assert len(added)==24 and added=={str(Path(p).relative_to(cache)) for p in adopted['new_cache_copies']}
+    inherited={r['cache_relative_path']:r for r in capture['source_originals']}
+    for key in added:assert after[key]['sha256']==inherited[key]['original']['sha256'] and after[key]['file_type']=='regular'
+    assert all(not (cache/r['cache_relative_path']).exists() and not (cache/r['cache_relative_path']).is_symlink() for r in new)
+    return {'originals':791,'old':780,'new_top_level':10,'separate_class_companion':companion,'new_regular_copy_plan':11,
+            'cache_old_preserved':765,'root_authorized_additions':24,'cache_current':789,'adoption_binding':adoption['original']}
+
+
+def objects_and_order():
+    counts={}
+    for name,old,new in [('sources',old_sources,sources),('ontology',old_onto,onto)]:
+        assert old['version']==new['version']
+        for section in ['sources','terms']:
+            assert list(new[section])[:len(old[section])]==list(old[section])
+            assert all(ordered(new[section][key])==ordered(value) for key,value in old[section].items())
+            counts[name+'_'+section]={'old':len(old[section]),'new':len(new[section]),'added':len(new[section])-len(old[section])}
+    assert len(old_manifest)==782 and len(manifest)==792 and ordered(manifest[:782])==ordered(old_manifest)
+    assert ordered(manifest[782:])==ordered(proposal['new_source_manifest_entries'])
+    assert (PACK/'baseline/rhea-updates.json').read_bytes()==(PACK/'proposal/rhea-updates.json').read_bytes()
+    assert len(read(PACK/'proposal/rhea-updates.json')['ids'])==24
+    return {'counts':counts,'all_old_objects_including_nested_key_order_exact':True,'manifest_old_ordered_prefix':782,'manifest_added':10,'rhea24_bytes_exact':True}
+
+
+def native_selected_replay():
+    assert Path(sb.__file__).resolve()==PACK/'runtime/scripts/build_source_identifier_snapshot.py'
+    native=sb.build_snapshot(PACK/'proposal/manifest.json',PACK/'selection',PACK/'originals')
+    write('independent-bounded-native-sources.json',native)
+    expected=read(PACK/'bounded-native/sources.json');assert native==expected and list(native['terms'])==list(expected['terms']) and list(native['sources'])==list(expected['sources'])
+    assert set(native['terms'])==set(proposal['collectors']['source_ids'])
+    for section in ['sources','terms']:
+        for key,value in native[section].items():assert sources[section][key]==value
+        assert set(sources[section])-set(old_sources[section])==set(native[section])-set(old_sources[section])
+    gap=read(PACK/'inherited-source-gap-replay.json')
+    existing=gap['existing_first_source_matches']
+    for key,value in existing.items():assert native['terms'][key]['source']==value['source'] and native['terms'][key]['label']==value['label']
+    newly_selected=set(native['terms'])-set(old_sources['terms']);inherited_new=newly_selected&set(existing)
+    assert len(newly_selected)==20 and len(inherited_new)==10 and all(k.startswith('UniProtKB:') for k in inherited_new)
+    # Independently replay the recorded first whole UniProt source for its selected batch.
+    groups={}
+    for key in inherited_new:groups.setdefault(native['terms'][key]['source'],set()).add(key)
+    for source,ids in groups.items():
+        entry=next(e for e in manifest if e['key']==source)
+        parsed={i:(label,synonyms) for i,label,synonyms in sb.source_terms(entry['kind'],PACK/'originals'/entry['path'],url=entry['url'],version=entry['version'],sha256=entry['sha256']) if i in ids}
+        assert set(parsed)==ids
+        for key,(label,synonyms) in parsed.items():assert native['terms'][key]['label']==label and native['terms'][key]['synonyms']==sorted(set(synonyms)-{label})
+    assert 'UniProtKB:P0AFJ5' in inherited_new and not any('P0AFJ5' in e['path'] for e in manifest[782:])
+    return {'source_terms':len(native['terms']),'native_sources':len(native['sources']),'whole_bounded_objects_equal':True,
+            'native_source_and_term_map_order_equal':True,'new_terms_from_old_whole_originals':sorted(inherited_new),
+            'first_source_groups':{k:sorted(v) for k,v in groups.items()},'scope':'Frozen NAD only; no full-corpus canonical build or independent adapter implementation review.'}
+
+
+def ontology_selected_replay():
+    assert Path(ob.__file__).resolve()==PACK/'runtime/scripts/build_ontology_identifier_snapshot.py'
+    terms={};details=[]
+    for receipt in proposal['sql_receipts']:
+        row=receipt['original'];path=Path(row['path']);st=path.stat()
+        assert str(path.resolve())==row['resolved_path'] and st.st_size==row['bytes'] and st.st_mtime_ns==row['mtime_ns']
+        assert receipt['fresh_full_hash'] is False and old_onto['sources'][row['source_key']]['sha256']==row['sha256']
+        with sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True) as conn:
+            observed,missing=ob.extract_terms(conn,receipt['selected_ids'],row['source_key']);assert not missing
+            prefixes=dict(conn.execute('SELECT prefix,base FROM prefix'))
+            version=list(conn.execute("SELECT subject,object FROM statements WHERE predicate='owl:versionIRI'"));assert len(version)==1
+            subject,url=version[0];data={pred:obj or value for pred,obj,value in conn.execute("SELECT predicate,object,value FROM statements WHERE subject=? AND predicate IN ('owl:versionInfo','dcterms:license')",(subject,))}
+            meta={'url':ob.expand_iri(url,prefixes),'version':data['owl:versionInfo'],'license':ob.expand_iri(data['dcterms:license'],prefixes),'sha256_scope':'uncompressed_semantic_sql_database'}
+            assert meta==receipt['source_metadata_read_fresh']
+        assert (path.stat().st_size,path.stat().st_mtime_ns)==(st.st_size,st.st_mtime_ns)
+        terms.update(observed);details.append({'prefix':row['prefix'],'selected':len(observed),'full_hash_inherited':row['sha256'],'current_stat_and_metadata_verified':True})
+    assert set(terms)==set(proposal['collectors']['ontology_ids']) and terms==read(PACK/'bounded-native/ontology-terms.json')
+    assert all(onto['terms'][k]==v for k,v in terms.items()) and set(onto['terms'])-set(old_onto['terms'])==set(terms)-set(old_onto['terms'])
+    write('independent-bounded-ontology-terms.json',terms)
+    return {'selected':36,'new_terms':8,'metadata':details,'fresh_full_SQL_hashes_claimed':False,'read_only':True}
+
+
+def receipts_and_lineage():
+    execution=read(PACK/'execution-summary.json');rows=execution['actual_commands'];assert len(rows)==12
+    summary=[]
+    for item in rows:
+        check(item['receipt']['path'],item['receipt']);receipt=read(item['receipt']['path']);assert receipt['exit_code']==item['exit_code']
+        for key in ['stdout','stderr']:check(receipt[key]['path'],receipt[key])
+        summary.append({'name':receipt['name'],'exit_code':receipt['exit_code'],'receipt':item['receipt']})
+    assert sum(r['exit_code']!=0 for r in summary)==4
+    for name,script in [('capture','capture_inputs.py'),('prepare','prepare_proposal.py'),('check','check_proposal.py'),('cache_bridge','capture_cache_bridge.py')]:
+        receipt=execution['latest_per_stage'][name];directory=Path(receipt['receipt']['path']).parent
+        assert receipt['exit_code']==0 and (directory/(script+'.txt')).read_bytes()==(PACK/script).read_bytes()
+        assert (directory/'common.py.txt').read_bytes()==(PACK/'common.py').read_bytes()
+    checks=read(PACK/'checks.json');assert len(checks['positive_checks'])==8 and len(checks['negative_controls'])==14 and all(r['rejected'] for r in checks['negative_controls'])
+    selectors=read(PACK/'author-inputs/ledgers/working-evidence-selector-ledger.json');evidence=[]
+    def visit(v):
+        if isinstance(v,dict):
+            for key,value in v.items():
+                if key=='evidence':evidence.extend(value)
+                else:visit(value)
+        elif isinstance(v,list):
+            for item in v:visit(item)
+    visit(record);normal=lambda x:json.dumps(x,sort_keys=True,ensure_ascii=False)
+    assert len(evidence)==265 and len(selectors)==246 and all(normal(e) in {normal(r['evidence']) for r in selectors} for e in evidence)
+    science=read(PACK/'scientific-input-bindings.json');observed=science['whole_original_and_lossless_bundle_bindings'];assert len(observed)==94
+    for row in observed:check(row['binding']['path'],row['binding']);assert identity(row['binding']['path'])==row['fresh_identity']
+    lineage=read(PACK/'author-lineage/receipt.json')
+    for row in lineage['versions']:
+        check(row['binding']['captured']['path'],row['binding']['captured'])
+    assert any(r['name']=='79424105' and 'reconstruction' in r['scope'] for r in lineage['versions'])
+    relocation=read(PACK/'pathbank-relocation-observation.json');check(relocation['exact_current_original']['path'],relocation['exact_current_original'])
+    assert relocation['inventory_exit_code']==0 and relocation['stderr']=='' and relocation['historical_path_exists'] is False
+    assert '-uu' in relocation['ignored_aware_parent_inventory_command']
+    write('actual-command-inspection.json',summary)
+    return {'commands':12,'failures_retained':4,'positive_groups':8,'negative_controls':14,'evidence_occurrences':265,'selector_entries':246,'scientific_bindings':94,'scientific_adjudication_claimed':False,
+            'reconstructed_794241_labeled':True,'relocation_current_hash_exact':True,'relocation_parent_search_exit':0,'relocation_parent_search_stderr':'',
+            'documentation_discrepancy':'README/seal template says actual missing-parent error; recorded parent inventory succeeded with exit0 and empty stderr. Historical ZIP itself is correctly absent.'}
+
+
+def main():
+    for p in PACK.glob('*.py'):
+        dest=OUT/'helpers-read'/(p.name+'.txt');dest.parent.mkdir(exist_ok=True);dest.write_bytes(p.read_bytes())
+    checks=[]
+    for name,fn in [('closed_proposal',closure),('named_scope_and_runtime',scope_and_runtime),('originals_companion_and_cache_bridge',originals_and_cache),('old_objects_and_order',objects_and_order),('bounded_native_source_replay',native_selected_replay),('bounded_SQL_selection_replay',ontology_selected_replay),('actual_receipts_and_lineage',receipts_and_lineage)]:
+        at=datetime.datetime.now(datetime.UTC).isoformat()
+        try:row={'name':name,'status':'passed','detail':fn()}
+        except Exception as e:row={'name':name,'status':'failed','type':type(e).__name__,'message':str(e)}
+        row['started_at']=at;row['finished_at']=datetime.datetime.now(datetime.UTC).isoformat();checks.append(row);write(name+'.json',row);print(json.dumps(row),flush=True)
+    write('checks.json',checks)
+    return 0 if all(r['status']=='passed' for r in checks) else 1
+
+
+if __name__=='__main__':raise SystemExit(main())
