@@ -9,9 +9,12 @@ from pathwaymech.biocyc_carrier import native_identity, require
 from pathwaymech.biocyc_native_context import (
     ancillary,
     attributes,
+    blank,
+    charged_context_reference,
     direct_names,
     metadata_build,
     metadata_validate,
+    ref_node,
     refs,
     retained,
 )
@@ -35,6 +38,7 @@ ANCILLARY = {
     "inchi-key",
     "molecular-weight",
     "monoisotopic-mw",
+    "component-of",
 }
 PROFILES = {
     frozenset({"ETR-Quinones"}): ("quinone", ("chemical_entity",)),
@@ -45,6 +49,10 @@ PROFILES = {
     ),
     frozenset({"Organometallics"}): ("organometallic-cofactor", ("chemical_entity", "cofactor")),
     frozenset({"Glycerolipids"}): ("glycerolipid", ("chemical_entity", "lipid")),
+    frozenset({"CPD-11501", "ETR-Quinones"}): ("naphthoquinone", ("chemical_entity",)),
+    frozenset({"ETR-Quinols"}): ("unsubstituted-quinol", ("chemical_entity",)),
+    frozenset({"FeS-Centers"}): ("iron-sulfur-cofactor", ("chemical_entity", "cofactor")),
+    frozenset({"Metal-sulfur-Clusters"}): ("iron-sulfur-family", ("chemical_entity", "cofactor")),
 }
 
 
@@ -59,7 +67,19 @@ def project(entity: ET.Element, frame: str) -> dict:
         require(
             len(entity.findall("cofactors-of")) == 1, "cofactor profile needs whole activity proof"
         )
-    subclasses = refs(entity, "subclass", "META", "Compound", is_class=True)
+    # Charge-bearing subclass frames remain retained native class references;
+    # they do not broaden the public selected-ID or legacy carrier grammar.
+    subclasses = []
+    for wrapper in entity.findall("subclass"):
+        blank(wrapper)
+        require(not wrapper.attrib and len(wrapper) == 1, "invalid chemical subclass wrapper")
+        reader = charged_context_reference if "+" in wrapper[0].get("frameid", "") else ref_node
+        subclasses.append(reader(wrapper[0], "META", "Compound", is_class=True))
+    require(
+        len({p["id"] for p in subclasses}) == len(subclasses)
+        and all(p["attributes"]["frameid"] != frame for p in subclasses),
+        "duplicate/self chemical subclass",
+    )
     instances = refs(entity, "instance", "META", "Compound", is_class=False)
     class_ids = {p["id"] for p in parents + subclasses}
     require(

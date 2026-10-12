@@ -30,6 +30,9 @@ ANCILLARY = {
     "citation",
     "comment",
     "dblink",
+    "has-go-term",
+    "component-of",
+    "location",
 }
 
 
@@ -95,3 +98,24 @@ def named_complex_term(metadata: dict, source: str) -> tuple[str, dict]:
         "entity_type": "protein_complex",
         "label_kind": "canonical",
     }
+
+
+def validate_named_complex_graph(natives: list[dict]) -> None:
+    """Reject forward assembly cycles; component-of is retained reverse context.
+
+    Only supplied whole assemblies are traversed. Unresolved leaf references are
+    not inferred to be complexes or claimed as independently verified monomers.
+    """
+    graph = {}
+    for native in natives:
+        children = tuple(c["entity"]["id"] for c in native["components"])
+        require(
+            native["id"] not in graph or graph[native["id"]] == children,
+            "conflicting forward assembly components",
+        )
+        graph[native["id"]] = children
+    pending = set(graph)
+    while pending:
+        leaves = {n for n in pending if not pending.intersection(graph[n])}
+        require(bool(leaves), "cyclic forward assembly components")
+        pending -= leaves

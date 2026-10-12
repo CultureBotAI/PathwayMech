@@ -27,6 +27,7 @@ from pathwaymech.biocyc_electron_transfer import (
     reaction_term,
     validate_reaction_metadata,
 )
+from pathwaymech.biocyc_pathway import PATHWAY_KIND, pathway_term, validate_pathway_metadata
 from pathwaymech.ecocyc_complex import (
     ECOCYC_COMPLEX_KIND,
     complex_term,
@@ -35,6 +36,7 @@ from pathwaymech.ecocyc_complex import (
 from pathwaymech.ecocyc_named_complex import (
     NAMED_COMPLEX_KIND,
     named_complex_term,
+    validate_named_complex_graph,
     validate_named_complex_metadata,
 )
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_term, validate_state_metadata
@@ -124,6 +126,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_electron_transfer",
                 "native_chemical_class",
                 "native_named_complex",
+                "native_pathway",
                 "native_polymers",
                 "native_carrier_class",
                 "native_protein_state",
@@ -142,6 +145,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_electron_transfer",
                 "native_chemical_class",
                 "native_named_complex",
+                "native_pathway",
                 "native_polymers",
                 "native_carrier_class",
                 "native_protein_state",
@@ -163,6 +167,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             ELECTRON_TRANSFER_KIND,
             CHEMICAL_CLASS_KIND,
             NAMED_COMPLEX_KIND,
+            PATHWAY_KIND,
             RHEA_POLYMER_KIND,
         }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
@@ -196,6 +201,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             (ELECTRON_TRANSFER_KIND, "native_electron_transfer", validate_reaction_metadata),
             (CHEMICAL_CLASS_KIND, "native_chemical_class", validate_chemical_class_metadata),
             (NAMED_COMPLEX_KIND, "native_named_complex", validate_named_complex_metadata),
+            (PATHWAY_KIND, "native_pathway", validate_pathway_metadata),
             (RHEA_POLYMER_KIND, "native_polymers", validate_polymer_metadata),
         ]:
             if metadata.get("kind") == native_kind:
@@ -233,6 +239,39 @@ def _load_authority(path: Path) -> dict[str, Any]:
             # Check internal request/identity consistency. Original XML bytes
             # and their agreement with the request remain the builder's remit.
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
+    # Every source above has already reconstructed its complete native object.
+    # Check all owners before reading terms: an unselected owner can still
+    # contradict coefficients, retained evidence, or release identity.
+    named_complex_assertions = {}
+    for metadata in data["sources"].values():
+        if metadata.get("kind") == NAMED_COMPLEX_KIND:
+            identifier = metadata["native_named_complex"]["id"]
+            assertion = (
+                metadata["kind"],
+                json.dumps(metadata["native_named_complex"], sort_keys=True),
+                metadata["version"],
+            )
+            if (
+                identifier in named_complex_assertions
+                and named_complex_assertions[identifier] != assertion
+            ):
+                raise ValueError(f"{identifier}: conflicting typed native named-complex assertions")
+            named_complex_assertions[identifier] = assertion
+    validate_named_complex_graph(
+        [
+            metadata["native_named_complex"]
+            for metadata in data["sources"].values()
+            if metadata.get("kind") == NAMED_COMPLEX_KIND
+        ]
+    )
+    pathway_assertions = {}
+    for metadata in data["sources"].values():
+        if metadata.get("kind") == PATHWAY_KIND:
+            identifier = metadata["native_pathway"]["id"]
+            assertion = json.dumps(metadata["native_pathway"], sort_keys=True), metadata["version"]
+            if identifier in pathway_assertions and pathway_assertions[identifier] != assertion:
+                raise ValueError(f"{identifier}: conflicting typed native pathway assertions")
+            pathway_assertions[identifier] = assertion
     if not isinstance(data["terms"], dict) or not data["terms"]:
         raise ValueError(f"{path}: authority has no terms; verification is unavailable")
     for identifier, term in data["terms"].items():
@@ -265,6 +304,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
+        if identifier in pathway_assertions and source_kind != PATHWAY_KIND:
+            raise ValueError(f"{identifier}: conflicting typed native pathway identity scope")
         if "allowed_categories" in term and source_kind != CHEMICAL_CLASS_KIND:
             raise ValueError(f"{identifier}: category proof requires typed native chemical class")
         if term.get("label_kind") == "source_synonym" and source_kind != ECOCYC_COMPLEX_KIND:
@@ -295,6 +336,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             ELECTRON_TRANSFER_KIND,
             CHEMICAL_CLASS_KIND,
             NAMED_COMPLEX_KIND,
+            PATHWAY_KIND,
             RHEA_POLYMER_KIND,
         }:
             metadata = data["sources"][term["source"]]
@@ -304,6 +346,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 expected_id, expected_term = polymer_term(metadata, term["source"], identifier)
             else:
                 projector = {
+                    PATHWAY_KIND: pathway_term,
                     ELECTRON_TRANSFER_KIND: reaction_term,
                     CHEMICAL_CLASS_KIND: chemical_class_term,
                     NAMED_COMPLEX_KIND: named_complex_term,
@@ -408,6 +451,18 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     f"{where}: ID_NOT_FOUND {identifier!r} in the verified authority snapshot; "
                     "resolve against the source before refreshing the snapshot"
                 )
+                continue
+            if term.get("entity_type") == "native_pathway":
+                if section != "record":
+                    errors.append(
+                        f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
+                        "typed native pathway requires the record node"
+                    )
+                elif _normalize(label) != _normalize(term["label"]):
+                    errors.append(
+                        f"{where}: LABEL_MISMATCH {identifier!r}: {label!r}; "
+                        f"authority label is {term['label']!r}"
+                    )
                 continue
             # Native Reaction identity is not a pathway/protein/chemical
             # authority, even where the namespace permits contextual labels.

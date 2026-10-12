@@ -1,0 +1,798 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML><HEAD>
+<TITLE>MetaCyc nitrate reduction VIII (dissimilatory)</TITLE>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script>
+var $j = jQuery.noConflict();
+</script>
+
+<!-- 
+<link rel="stylesheet" type="text/css" href="/yui/build/assets/skins/sam/skin.css"> 
+<link rel="stylesheet" type="text/css" href="/yui/build/assets/skins/sam/treeview.css">
+<link rel="stylesheet" type="text/css" href="/style.css" >
+
+User web site style sheet customization should use the following file:
+<link rel="stylesheet" type="text/css" href="/userWebsiteCustomization.css">
+
+The previous 4 .css files are combined at web start up time by the Lisp fn publish-combined-static-files generating the following combined.css file. For some
+reason it doesn't work for the yui gallery file to be combined -- the yui loader
+still looks for it as a separate file.
+-->
+<link rel="stylesheet" type="text/css" href="/yui3/build/gallery-datatable-selection/assets/skins/sam/gallery-datatable-selection.css">
+<link rel="stylesheet" type="text/css" href="/combined/combined.css">
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- this has to go early -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/yui/3.17.2/yui/yui-min.js"></script>
+<script type="text/javascript" src="/combined/combined-early.js"></script>
+
+<!-- paley:Jun-15-2017 Comment these out, let them be autoloaded from the cdn:
+<script type="text/javascript" src="/yui3/build/yui-base/yui-base-min.js"></script> 
+<script type="text/javascript" src="/yui3/build/base-build/base-build-min.js"></script> 
+<script type="text/javascript" src="/yui3/build/datatable-base/datatable-base-min.js"></script> 
+<script type="text/javascript" src="/yui3/build/event-custom-base/event-custom-base-min.js"></script> 
+
+These 2 files are not in the cloudflare cdn, so we need to load them from our own site.  They're in the combined-early file
+<script type="text/javascript" src="/yui3/build/gallery-datatable-selection/gallery-datatable-selection.js"></script>
+<script type="text/javascript" src="/yui3/build/gallery-timer/gallery-timer-min.js"></script>  
+
+These are bundled into the combined-early.js file:
+<script type="text/javascript" src="/yui/build/utilities/utilities.js"></script>
+<script TYPE="text/javascript" SRC="/wupub/prototype.js"></script>
+<script TYPE="text/javascript" SRC="/image-map-resizer-master/js/imageMapResizer.min.js"></script>
+-->
+
+<!-- next 3 css for webgraphics -->
+<link rel="stylesheet" type="text/css" href="/yui/build/fonts/fonts-min.css" />
+
+<!-- paley:Sep-10-2018 These are not found, and don't seem to be necessary.
+<link rel="stylesheet" type="text/css" href="/yui/build/button/assets/skins/sam/button.css" />
+<link rel="stylesheet" type="text/css" href="/yui/build/container/assets/skins/sam/container.css" />
+-->
+
+<script type="text/javascript" src="/webgraphics.js"></script>
+
+<script TYPE="text/javascript" >  
+var onMenuBarReady = new YAHOO.util.CustomEvent("onMenuBarReady");
+/* This event fires when we change the current organism using the organism
+ * selector, so that subscribers can update the page accordingly.
+ */
+var organismChangedEvent = new YAHOO.util.CustomEvent("organismChanged");
+
+/* If you update the version number here, make sure you also update it in
+   pathwayTools.js (and the minified file)!!!
+ */
+YAHOO.util.Event.onContentReady("body", function() {
+  if (typeof(ptoolsJsVersion) == 'undefined' || ptoolsJsVersion !== '22.5') {
+      console.log('reloading because of outdated javascript file');
+      window.location.reload(true);
+      }
+  });
+</script>
+
+<!-- Base Pathway Tools JavaScript code -->
+
+<script type="text/javascript" src="/pathwayTools-min.js"></script> 
+
+<script type="text/javascript"> var typeObjectPage = {object:'PWY0-1352',orgid:'META',type:'Compounds',biopax2:false,biopax3:false,tf:false,gene:false} </script>
+
+
+<!--  Text, Cite includes from Preferences -->
+
+
+<!-- End Text, Cite includes from Preferences -->
+
+</HEAD>
+<BODY ID="body" CLASS="yui-skin-sam yui3-skin-sam" ONLOAD="initOnWindowLoad()">
+
+<!--next line is used for determining text size for sizing window, tooltips, buttons, etc billingt:Jul-7-2014 -->
+
+<!-- display: none is necessary or space will be left on the screen for this invisible area -->
+<span id='textSizeTestArea' style='visibility: hidden; display: none'></span>
+
+<!--Fixed Navigation Box-->
+
+<div class="navBox" id="navBox" style="display:none">
+  <div id='navBoxExpanded' class='navBoxExpansion'>
+    <a href="#" onclick='hideNavBox()'><img src='/navbox-hide.png' width='9' height='9'> hide</a>
+  </div>
+  <div id='navBoxCollapsed' class='navBoxExpansion' style="display:none">
+    <a href="#" onclick='showNavBox()'><img src='/navbox-show.png' width='9' height='9'> show operations</a>
+  </div>
+  <div id='navBoxBody'>
+  <br>   
+    <div id='navBoxTitle'>     
+      <div class="navBoxItem"><i><a href="organism-summary" class="dynDBName" ></a></i></div>
+      <div class="navBoxLabel" id='objtypeNavBox'></div>
+      <div class='navBoxItem' id='objnameNavBox'></div>
+    </div>
+    <span class='section1'>OPERATIONS</span>
+    <div id="navBoxOps">
+    </div>
+  </div>
+</div>
+
+<!--End Fixed Navigation Box-->
+
+<!-- The top banner, we are in a body -->
+<!-- We need this div to have position:relative in order for the z-index of the menu stacking to work -->
+<div id="topBannerMenu">
+  <table width="100%" border=0 cellpadding=0 style="border-collapse:collapse">
+  <tr>
+  <td>
+    <div id="ptbanner">
+      <a id="logoLink" class="logo" href="/"></a>
+  
+      <!-- Beginning user temporary message -->
+
+<div id=userTemporaryMsg class=temporaryMsg>
+<!-- you should enter your temporary message here -->
+</div>
+
+<!-- End user temporary message -->
+
+
+  
+      
+      <div class=searchGroupingExternalBox >
+        <div class=searchGroupingInternalBox>
+          <!-- Quick Search -->
+  
+           <form class=searchMenu action='/'
+                 name=substring onSubmit="if (this.elements[1].value != '') {this.action= '/'+orgID()+'/substring-search?type=NIL&amp;object='+this.elements[1].value} else return(false);">
+           <input id="QSType" name=type type=hidden value="NIL">
+           <input id="QSTextBox" class="inputQuickSearch"
+		  name="object" size="47"
+		  placeholder="Enter a gene, protein, metabolite or pathway..."
+	          title="Enter one of the following (all searches conducted only within the selected organism, unless otherwise indicated):
+
+A name or synonym for a compound, gene, protein or pathway.  Spaces, punctuation and case are ignored. E.g. pyruvate, trpA
+
+Any substring of one of the above names, length >= 3. E.g. kinase, pyr
+
+A full or partial EC number. E.g. 1.2.1.4, 1.3.1
+
+A full or partial InChI-key. E.g. CKLJMWTZIZZHCS
+
+An internal id (case-sensitive) for any compound, gene, protein, pathway, reaction or transcription-unit. E.g. CPLX0-3661, HEMN-RXN
+
+An id (case-sensitive) from another database to which this database contains links, e.g. UniProt, KEGG, ChEBI. Note that our set of links is not complete; even if an external id search returns no result the object may still be in our database. E.g. P00561, NP_414543, C00047
+
+
+
+(MetaCyc only) An organism or taxon name, to find pathways curated to that taxon. E.g. Bacillus, Shigella flexneri"
+                  >
+  	   <input type=submit name="quickSearch" class="searchButton" value="Quick Search">
+  	   <input type=submit name="geneSearch" class="searchButton" value="Gene Search" onclick="document.substring.type.value='GENE';" >
+           </form>
+           
+          <!-- End Quick Search -->
+  
+          <!-- Database name and change link -->
+           <div class=searchMenuDatabaseName>Searching&nbsp;<i><span id=currentDatabaseName class="dynDBName banner"></span>&nbsp;&nbsp;</i>
+           <a id=changeField href='javascript:void(0);'
+           onclick="showChooser(false)" title="All searches will be conducted against the currently selected organism database.  To search a different organism, click this link and select a new database before submitting your query.">change&nbsp;organism&nbsp;database</a>
+           </div>
+        </div>
+      </div>
+     <!-- End Database name and change link -->
+    </div>
+  </td>
+  </tr>
+  <!-- The top menu bar -->
+  
+  <tr>
+    <td>
+    
+<!-- The standard top menubar for Pathway Tools -->
+
+<div id="pathwayToolsMenubar" class="yuimenubarnav" > <!-- style="display:none;" -->
+ <div class="bd">
+  <ul class="toolbar">
+
+  <li class="yuimenubaritem"><a class="yuimenubaritemlabel" onclick="1" href="/">Home</a>
+  </li>
+
+  <li class="yuimenubaritem"><a class="yuimenubaritemlabel" onclick="1">Search</a>
+     <div id="search" class="yuimenu">
+
+      <div class="bd">
+        <ul class="first-of-type">
+        <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/gene-search.shtml">Search Genes, Proteins or RNAs</a></li>
+        <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/cpd-search.shtml">Search Compounds</a></li>
+        <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/rxn-search.shtml">Search Reactions</a></li>
+        <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/pwy-search.shtml">Search Pathways</a></li>
+ 
+        <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/gm-search.shtml">Search Growth Media</a></li>
+	</ul>
+	<ul>
+        <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/query.shtml">Advanced Search</a></li>
+	</ul>
+	<ul>
+        <li class="yuimenuitem" id="blastMenuItem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/blast.html">BLAST Search</a></li>
+	</ul>
+ 
+	<ul>
+	<li class="yuimenuitem"><a class="yuimenuitemlabel" href="/full-text-search.shtml">Google Search of this Site</a></li>
+        </ul>            
+      </div>
+      </div>
+  </li>
+
+  <li class="yuimenubaritem"><a class="yuimenubaritemlabel" onclick="1">Genome</a>
+     <div id="genome" class="yuimenu">
+        <div class="bd">
+        <ul class="first-of-type">
+         <li class="yuimenuitem" id="genomeBrowserMenuItem"><a href="/[ORGID]/select-gen-el" class="yuimenuitemlabel orgspecific">Genome&nbsp;Browser</a></li>
+
+         <li class="yuimenuitem"
+         id="genOVMenuItem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/NEW-IMAGE?type=GENOME-OVERVIEW">Genome&nbsp;Overview</a></li>
+         <li class="yuimenuitem" id="regOVMenuItem"><a class="yuimenuitemlabel" href="/overviewsWeb/regOv.shtml" >Regulatory&nbsp;Overview</a></li>
+
+        <li class="yuimenuitem"><a class="yuimenuitemlabel orgspecific"
+        href='/[ORGID]/class-tree?object=Gene-Ontology-Terms'>Browse&nbsp;Gene&nbsp;Ontology</a></li>
+         <li class="yuimenuitem" id="mapSeqCoordMenuItem"><a href="/[ORGID]/select-gen-el?type=MAP-SEQ-COORDS" class="yuimenuitemlabel orgspecific">Map&nbsp;Sequence&nbsp;Coordinates</a></li>
+
+
+
+       </ul>
+       </div>
+     </div>
+  </li>
+
+
+  <li class="yuimenubaritem"><a class="yuimenubaritemlabel" onclick="1">Metabolism</a>
+     <div id="metabolism" class="yuimenu">
+        <div class="bd">
+        <ul class="first-of-type">
+         <li class="yuimenuitem" id="cellOVMenuItem"><a class="yuimenuitemlabel" href="/overviewsWeb/celOv.shtml">Cellular&nbsp;Overview</a></li>
+         <li class="yuimenuitem" id="fbaMenu"><a class="yuimenuitemlabel" href="/fba.shtml">Run Metabolic Model</a></li>
+         <li class="yuimenuitem" id="deadEndsMenuItem"><a class="yuimenuitemlabel" href="/dead-end-form.shtml">Dead-end&nbsp;Metabolites</a></li>
+         <li class="yuimenuitem" id="chokepointsMenuItem"><a class="yuimenuitemlabel" href="/chokepoint-form.shtml">Chokepoint&nbsp;Reactions</a></li>
+
+ 
+         <li class="yuimenuitem" id="metEngMenuItem">
+     	   <a  class="yuimenuitemlabel orgspecific" href="/meteng?organism=[ORGID]">Metabolic Route Search</a>
+	 </li>
+ 
+         <li class="yuimenuitem" id="MetaboliteMenuItem"><a class="yuimenuitemlabel" href="/metabolite-translation-service.shtml">Metabolite&nbsp;Translation&nbsp;Service</a></li>
+         <li class="yuimenuitem" id="pwyCollageMenuItem"><a class="yuimenuitemlabel" href="/pathway-collage-info">Pathway&nbsp;Collages</a></li>
+        <li class="yuimenuitem"><a class="yuimenuitemlabel orgspecific" href='/[ORGID]/class-tree?object=Pathways'>Browse&nbsp;Pathway&nbsp;Ontology</a></li>
+        <li class="yuimenuitem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/class-tree?object=EC-Reactions">Browse&nbsp;Enzyme&nbsp;Commission&nbsp;Ontology</a></li>
+        <li class="yuimenuitem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/class-tree?object=Compounds">Browse&nbsp;Compound&nbsp;Ontology</a></li>
+         <li class="yuimenuitem" id="cellOVPosterMenuItem"><a class="yuimenuitemlabel orgspecific" href="/poster-cellov?orgid=[ORGID]">Generate&nbsp;Metabolic&nbsp;Map&nbsp;Poster</a></li>
+        </ul>
+     </div>
+     </div>
+  </li>
+
+
+  <li class="yuimenubaritem"><a class="yuimenubaritemlabel" onclick="1">Analysis</a>
+     <div id="analysis" class="yuimenu">
+        <div class="bd">
+        <ul class="first-of-type">
+         <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/comp-genomics">Comparative&nbsp;Analysis</a></li>
+ 
+	 <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/PToolsWebsiteHowto.shtml#omicsDataAnalysis">Omics&nbsp;Data&nbsp;Analysis</a></li>
+	 <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/dashboard/dashboard-intro.shtml">Omics&nbsp;Dashboard</a></li>
+         <li class="yuimenuitem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/organism-summary">Summary&nbsp;Statistics</a></li>
+
+         <li class="yuimenuitem"><a onclick="1">Reports</a>
+          <div id="reports" class="yuimenu">
+           <div class="bd">
+             <ul class="first-of-type">
+                <li class="yuimenuitem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/release-notes">History&nbsp;of&nbsp;updates</a></li>
+                <li class="yuimenuitem" id="pwyEvMenuItem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/hierarchical.html">Pathway&nbsp;evidence</a></li>
+                <li class="yuimenuitem" id="pwyHolesMenuItem"><a class="yuimenuitemlabel orgspecific" href="/[ORGID]/missing-rxns.html">Pathway&nbsp;holes</a></li>
+             </ul>
+           </div>
+          </div>
+         </li>
+        </ul>
+     </div>
+     </div>
+  </li>
+
+
+	  
+	 
+
+  <li class="yuimenubaritem"><a class="yuimenubaritemlabel" onclick="1">Help</a>
+     <div id="help" class="yuimenu" style="display:none;">
+        <div class="bd">
+        <ul class="first-of-type">
+         <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/PToolsWebsiteHowto.shtml#SearchHelp">Searching</a></li>
+         <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/PToolsWebsiteHowto.shtml">Website&nbsp;User&nbsp;Guide</a></li>
+         <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/glossary.shtml">Glossary</a></li>
+         <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/PGDBConceptsGuide.shtml">PGDB&nbsp;Concepts&nbsp;Guide</a></li>
+	</ul>
+	<ul>
+         <li class="yuimenuitem"><a class="yuimenuitemlabel" href="/contact.shtml">Contact&nbsp;Us/Support</a></li>
+        </ul>
+     </div>
+     </div>
+  </li>
+
+
+  </ul>
+ </div>
+</div>
+	
+    </td>
+  </tr>
+  
+  </table>
+</div>
+<!-- end topBannerMenu -->
+
+
+	
+
+<!-- Placeholder for popup messages -->
+<div id="msgPopup"></div>
+
+
+<div class="pageContentDynamic">
+
+
+
+
+
+<table class="titleBox" border=0>
+
+<tr>
+
+<td align=LEFT valign=TOP>
+compound
+
+<br><font class='header'>nitrate reduction VIII (dissimilatory)</font></td>
+<td align=RIGHT valign=middle>
+<div id='ltitle'></div></td></tr>
+<tr>
+
+<td align=LEFT valign=TOP>
+<a href="/META/organism-summary?object=META"><i>MetaCyc</i></a></td>
+<td align=RIGHT valign=TOP>
+
+<table class="spacingOnlyTable">
+
+<tr>
+
+<td align=LEFT valign=TOP style="padding-right:0">
+
+<FORM name=form512613 class=ecobuttons action="/">
+<INPUT type=button value="Provide Feedback" onClick="window.open('feedback.html?' + encodeURIComponent(location), 'bugreport', 'toolbar=no,dependent=yes,height=640,width=620,menubar=no,location=no,scrollbars=yes')" >
+
+</FORM>
+</td>
+<td align=LEFT valign=TOP style="padding-right:0">
+
+<div id="mediaBox" style='margin:0px 0px 0px 7px'>
+<a href=javascript:void(0);  title="share via email" onclick="emailFriend();return false"> <img src="/mail2.png" alt="" width="15" height="15" style="background-color:orange;"></a>
+<a href="https://twitter.com/share" title="share on twitter" target="_blank">  <img src="/Twitter_logo_blue2.png" alt="twitter" width="15" height="15"> </a>
+<a href="http://www.facebook.com/share.php?u=<url>"  title="share on facebook"  target="_blank"> <img src= "/f_logo1.png" alt="" width="15" height="15"></a>
+<div class="g-plusone" data-annotation="none" data-size="small">
+</div>
+</div>
+
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0&appId=638548716262275";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/platform.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
+</script> 
+
+<script>
+   function emailFriend(){
+
+   var strrep ,ptitle = document.title;
+
+strrep= ptitle.replace(/"/g,'%22');
+strrep= ptitle.replace(/&/g,'%26');
+
+var mailtourl = "mailto:?subject=" +ptitle+ "&body=" +encodeURIComponent(location.href);
+location.href = mailtourl;
+return false
+}
+
+ </script>
+
+
+</td></tr>
+</table>
+</td></tr>
+</table>
+
+<table class="infoBox2">
+
+<tr>
+
+<td align=LEFT valign=TOP style="max-height: 0; padding: 0; border: 0">
+</td></tr>
+</table>
+<br><div id='Tabs' class='genetabs' style='visibility:hidden'><ul>
+<li><a href='#SUMMARY'>Summary</a></li>
+<li><a href='#ONT'>Ontology</a></li>
+<li><a href='#REFS'>References</a></li>
+<li><a href='#showAll'>Show All</a></li></ul><div><div id='SUMMARY'>Loading...</div><div id='ONT'>Loading...</div><div id='REFS'>Loading...</div><div id='showAll'></div></div></div></div></div>
+<script type='text/javascript'>YUI().use('tabview', 'io-base', 'history', 'stylesheet', function(Y) {
+var history = new Y.HistoryHash();
+var tabviewNode = Y.one('#Tabs');
+var tabs = new Y.TabView({srcNode:tabviewNode}); 
+var scrollY = window.pageYOffset || document.body.scrollTop;
+tabs.render();
+var tabIds = [];
+function loadTab(tabElt) {
+  if (!tabElt.getData('loaded')) {
+    tabElt.setData('loaded', true);
+    var uri = tabElt.getData('uri');
+    if (uri)
+    Y.io(uri, {
+      on: {success: function(id, o) {
+               tabElt.setHTML(o.responseText);
+               window.scrollTo(0,scrollY);
+             },
+           failure: function(id, o) {tabElt.setHTML('Tab load failed.<p>' + o.responseText); tabElt.setData('loaded', false);}
+        }});
+  }
+}tabIds[tabIds.length] = 'SUMMARY';Y.one('#SUMMARY').setData('uri', '/cpd-tab?id=PWY0-1352&orgid=META&tab=SUMMARY');
+Y.one('#SUMMARY').setData('clim-reqd-p', 'null');
+tabIds[tabIds.length] = 'ONT';Y.one('#ONT').setData('uri', '/cpd-tab?id=PWY0-1352&orgid=META&tab=ONT');
+Y.one('#ONT').setData('clim-reqd-p', 'null');
+tabIds[tabIds.length] = 'REFS';Y.one('#REFS').setData('uri', '/cpd-tab?id=PWY0-1352&orgid=META&tab=REFS');
+Y.one('#REFS').setData('clim-reqd-p', 'null');
+tabIds[tabIds.length] = 'showAll';
+function loadAllTabs() {
+  for (var i=0; i<tabIds.length; i++) loadTab(tabviewNode.one('#'+tabIds[i]));
+}
+var showAllSheet = Y.StyleSheet();
+tabs.on('selectionChange', function (e) { 
+  if (e.newVal.get('panelNode').get('id') == 'showAll') {
+    loadAllTabs();
+    showAllSheet.set('.yui3-tab-panel', { display: 'block'});
+  }
+  else showAllSheet.unset('.yui3-tab-panel', 'display');
+});
+function onEnd () {
+  resizeImgMapsOnload(document.getElementById('Tabs'));
+  loadWGscripts ();
+}
+Y.on('io:end', onEnd, Y);
+tabs.on('selectionChange', function(e) {
+  setTimeout(function(){window.dispatchEvent(new Event('resize'))},1000);
+});
+
+function loadWGscripts () {
+  var divs = document.getElementsByClassName('webGraphics');
+  for (var d=0; d < divs.length; d++) {
+     var div = divs[d];
+     var scripts = div.getElementsByTagName('script');
+     for (var s = 0; s < scripts.length; s++) {
+       eval(scripts[s].innerHTML);
+      }
+   }
+ }
+
+var initSelect = 0;
+tabs.before('tab:selectedChange', function () { 
+  scrollY = window.pageYOffset || document.body.scrollTop;});
+tabs.on('selectionChange', function (e) {
+  loadTab(e.newVal.get('panelNode'));
+  var index = e.newVal.get('index');
+  history.replaceValue('tab', (index == 0) ? null : tabIds[index]);
+});
+function selectTabById (tabId) {
+  var index = tabIds.indexOf(tabId);
+  tabs.selectChild((index == -1) ? initSelect : index);
+}
+selectTabById(history.get('tab'));
+loadTab(tabs.get('selection').get('panelNode'));
+tabviewNode.setStyle('visibility','visible');
+Y.on('history:change', function (e) {
+  if (e.src === Y.HistoryHash.SRC_HASH) 
+    if (e.changed.tab) selectTabById(e.changed.tab.newVal);
+    else if (e.removed.tab) tabs.selectChild(initSelect);
+}); 
+tabs.after('selectionChange', function() {
+  setTimeout(function(){
+    window.scrollTo(0,scrollY);}, 500);});
+});
+</script><hr><a href='#' onclick="window.open('feedback.html?' + encodeURIComponent(location), 'bugreport', 'toolbar=no,dependent=yes,height=640,width=620,menubar=no,location=no,scrollbars=yes')">Report Errors or Provide Feedback</a>
+<br><font size=-1>Page generated by <a href="http://pathwaytools.org/" target=_top>Pathway Tools version 22.5</a> (software by SRI International) on Mon Oct 12, 2026.<br>MetaCyc version 22.5.</font><p>
+<!-- end pageContentDynamic -->
+<!-- This is stuff that used to go in the head and now should go towards the end of pages for efficiency -->
+<!-- <script type="text/javascript" src="/yui/build/container/container-min.js"></script>  -->
+<!-- <script type="text/javascript" src="/yui/build/datasource/datasource-min.js"></script> -->
+<!-- <script type="text/javascript" src="/yui/build/autocomplete/autocomplete-min.js"></script> -->
+<!-- <script type="text/javascript" src="/yui/build/menu/menu-min.js"></script>  -->
+<!-- <script type="text/javascript" src="/yui/build/tabview/tabview-min.js"></script>  -->
+<!-- <script type="text/javascript" src="/yui/build/treeview/treeview-min.js"></script> -->
+<!-- Tooltip libraries -->
+<!-- <script type="text/javascript" src="/overLIB/Mini/overlib_mini.js"> -\-></script> -->
+<!-- <script type="text/javascript" src="/overLIB/Mini/overlib_exclusive_mini.js"></script> -->
+<!-- <script type="text/javascript" src="/overLIB/Mini/overlib_positioncap_mini.js"></script> -->
+<!-- <script type="text/javascript" src="/overLIB/Mini/overlib_centerpopup_mini.js"></script> -->
+<!-- <script TYPE="text/javascript" SRC="/wupub/wuwei.js"></script> -->
+<script TYPE="text/javascript" SRC="/combined/combined-1.js"></script> 
+
+<!-- The style and JavaScript for Pathway Tools Server -->
+  <!-- The following file is generated on the fly by the server -->
+  <script type="text/javascript" src="/get-organisms-fast.js"></script>
+  <script type="text/javascript" src="/get-user-data.js"></script>
+  <!-- User web site JavaScript customization should use the following file --> 
+  <script type="text/javascript" src="/userWebsiteCustomization.js"></script> 
+
+<script type="text/javascript">
+
+/* This code needs to be here to avoid the menu and other Yahoo widgets to flicker
+   on the screen. */
+
+
+// Do this as early as possible to minimize flicker:
+YAHOO.util.Event.onAvailable("body", function () {
+    updateBannerClass();
+});
+
+YAHOO.util.Event.onContentReady("pathwayToolsMenubar", function () {
+    /*
+         Instantiate a MenuBar, passing in the id of the HTML element 
+         representing the MenuBar.
+    */
+
+    var oMenuBar = new YAHOO.widget.MenuBar("pathwayToolsMenubar", 
+                                            {autosubmenudisplay: true, 
+                                             shadow: false, 
+                                             hidedelay: 700
+                                             });
+
+    // Add dynamically all the menubar commands and menus here if need be.
+    addContextSpecificToolbarMenus();
+
+    // User sites can define this fn in userWebsiteCustomization.js in 
+    // order to programmatically alter the menus.
+    addSiteSpecificMenuItems();
+
+    onMenuBarReady.fire([]);
+
+    // Render the MenuBar instance
+    oMenuBar.render();
+    $$('.yuimenu').each(Element.show); <!-- re-show menus -->
+});
+
+
+
+
+</script>
+
+
+<!-- Beginning of customizable user footer. 
+     You can use any HTML tags in this page and include a customize
+     footer for your Web site. 
+     Note: format the HTML strictly (for example, close all <p> tags)
+           since a non conforming HTML may affect the entire page.
+     This file must be self contained. 
+-->
+
+
+<!-- Ending of general user footer -->
+
+<div id='orgSelectorDialogCC'></div>
+
+<!-- Multi Organism Chooser Template -->
+
+<div id="multiorgSelectorDialog" style="display:none" class='resizableDialog'>
+  <div class="hd"><b>Specify List of Organism Databases</b></div>
+  <div class="bd" id="multiorgSelectorBody">
+    <form id="multiorgSelectorForm" action='/'>
+      <div id='legend' style="max-width:900px"></div>
+      <table>
+        <tr> 
+          <td style='vertical-align:top'>
+            <h3>Select One or More Databases:</h3>
+            <div id="multiorgSelectorTabs" class="yui-navset" style='min-width:504px'>
+              <ul class="yui-nav">
+                <li class="selected"><a href="#nameTab"><em>By Name</em></a></li>
+                <li><a href="#taxTab"><em>By Taxonomy</em></a></li>
+		
+	        
+              </ul>
+              <div class="yui-content">
+                <div id="multiorgNameTab" class='multiorgselectorTab'>
+                  <table border=0>
+                    <tr>
+                      <td  id="multiorgCentercontent" valign=top style="width: 15px; border-style:solid; border-width:1px; padding-left:3px">
+                        <a href="javascript:alphabetClick('a')">A</a><br>
+                        <a href="javascript:alphabetClick('b')">B</a><br>
+                        <a href="javascript:alphabetClick('c')">C</a><br>
+                        <a href="javascript:alphabetClick('d')">D</a><br>
+                        <a href="javascript:alphabetClick('e')">E</a><br>
+                        <a href="javascript:alphabetClick('f')">F</a><br>
+                        <a href="javascript:alphabetClick('g')">G</a><br>
+                        <a href="javascript:alphabetClick('h')">H</a><br>
+                        <a href="javascript:alphabetClick('i')">I</a><br>
+                        <a href="javascript:alphabetClick('j')">J</a><br>
+                        <a href="javascript:alphabetClick('k')">K</a><br>
+                        <a href="javascript:alphabetClick('l')">L</a><br>
+                        <a href="javascript:alphabetClick('m')">M</a><br>
+                        <a href="javascript:alphabetClick('n')">N</a><br>
+                        <a href="javascript:alphabetClick('o')">O</a><br>
+                        <a href="javascript:alphabetClick('p')">P</a><br>
+                        <a href="javascript:alphabetClick('q')">Q</a><br>
+                        <a href="javascript:alphabetClick('r')">R</a><br>
+                        <a href="javascript:alphabetClick('s')">S</a><br>
+                        <a href="javascript:alphabetClick('t')">T</a><br>
+                        <a href="javascript:alphabetClick('u')">U</a><br>
+                        <a href="javascript:alphabetClick('v')">V</a><br>
+                        <a href="javascript:alphabetClick('w')">W</a><br>
+                        <a href="javascript:alphabetClick('x')">X</a><br>
+                        <a href="javascript:alphabetClick('y')">Y</a><br>
+                        <a href="javascript:alphabetClick('z')">Z</a><br>
+                      </td>
+                      <td style="width: 460px" valign=top>
+                         <div id="multiorgRightcontent">
+                           <div id="multiorgselectorAutoComplete">
+                             <input id="multiorgInput" type="text"> 
+                             <div id="multiorgContainer" style="font-style:italic"></div>
+                           </div>
+                           <div id="multiorgnum"></div>
+                         </div>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <div id="multiorgTaxTab" style="overflow-y:auto" class='multiorgselectorTab'>
+                  <div id="multiorgTaxAutoComplete">
+                    <span style="padding-right:5px">Find in tree:
+                    </span>
+                    <input id="multiorgTaxName" type="text" style="width:360px" />
+                    <div id="multiorgTaxContainer"></div>
+                  </div>
+                  <div id="multiorgTaxTreeContainer" style="min-width:489px;overflow-y:auto;margin-top:12px">
+                    <div id="multiorgSelectorTaxTree" class="ygtv-checkbox"></div>
+                  </div>
+                </div>
+ 
+
+
+
+              </div>
+            </div>
+  <div id="tierKey">
+  <span class="tier1">Tier 1</span> and <span class="tier2">Tier 2</span> databases are displayed with orange and gray backgrounds, respectively.
+  </div>
+          </td>
+          <td>
+
+          </td>
+          <td style='vertical-align:top'>
+            <h3>Current Selection</h3>
+            <span id="multiNumSelected">0</span> databases or taxonomic groups currently selected.
+            <p>
+	    <div id='multiorgSelectionDiv'>
+            <select multiple id="multiorgSelection">
+            </select>
+	    </div>
+          </td>
+        </tr>
+      </table>
+      <p>
+
+    </form>
+  </div>
+</div>
+<!-- End Multi Organism Chooser Template -->
+
+
+<!-- following is new -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BX4ZG9DC05"></script>
+<script> window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date()); gtag('config', 'G-BX4ZG9DC05');
+</script>
+	
+<!-- following is old -->
+	
+<script>
+ (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ ga('create', 'UA-440742-1', 'yeastgenome.org');
+ ga('send', 'pageview');
+
+</script>
+
+
+<script type="text/javascript">
+if (forceOrgID) setOrganism(forceOrgID);
+</script>
+
+
+      <script type="text/javascript">
+
+      function getparm(myparm)
+      //Returns a string which is the value contents of the &myparameter=value& in the URL.
+      {
+      var URL = location.href;
+      var result = URL.match("[?&]" + myparm + "=([^&]*)" );
+      return( result? result[1] : null ) ;
+      }
+
+      function setparm(myparm, newvalue)
+      //Returns a string which is the new URL with &myparameter=value& set properly in all cases. 
+      {
+        var URL = location.href		;
+        var result			;
+        if( URL.search( "[?&]" + myparm + "=([^&]*)" ) > 5 )
+        {   //Parameter there already, replace it
+          var pattern = new RegExp("([?&])" + myparm + "=([^&]*)") ;
+          var replacement = "$1" + myparm + "=" + newvalue ;
+          result = URL.replace( pattern, replacement ) ;
+        }
+        else
+        {    //Parameter not there already.
+          if( URL.search( "[?]" ) > 5 )   //Do we have ANY parms yet?
+          {  //Yes.  Go ahead and simply tack it onto the end, with a &.
+            result = URL + "&" + myparm + "=" + newvalue ;
+          } else {  //New parameter.  Add it with a ? instead.
+            result = URL + "?" + myparm + "=" + newvalue ;
+          }
+        }
+        return(result)			;
+      }
+
+      function setparm3(myparm, newvalue, URL)
+      //Returns a string which is the new URL with &myparameter=value& set properly in all cases. 
+      {
+        var result			;
+        if( URL.search( "[?&]" + myparm + "=([^&]*)" ) > 5 )
+        {   //Parameter there already, replace it
+          var pattern = new RegExp("([?&])" + myparm + "=([^&]*)") ;
+          var replacement = "$1" + myparm + "=" + newvalue ;
+          result = URL.replace( pattern, replacement ) ;
+        }
+        else
+        {    //Parameter not there already.
+          if( URL.search( "[?]" ) > 5 )   //Do we have ANY parms yet?
+          {  //Yes.  Go ahead and simply tack it onto the end, with a &.
+            result = URL + "&" + myparm + "=" + newvalue ;
+          } else {  //New parameter.  Add it with a ? instead.
+            result = URL + "?" + myparm + "=" + newvalue ;
+          }
+        }
+        return(result);
+      }
+
+     function substring_searchify_URL()
+     //Returns current URL with /substring-search?  added at end of address section if needed.
+     {
+         var URL = location.href;
+         if( URL.search( '\/substring-search\?' ) > 0 )
+             return( URL );
+         else
+             URL = URL.replace( /\/[^\/]*\?/, '/substring-search?');
+         //alert( URL );
+         return( URL );
+     }
+      </script>
+</BODY>
+</HTML>

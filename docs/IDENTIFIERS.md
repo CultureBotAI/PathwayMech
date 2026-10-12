@@ -659,3 +659,48 @@ stereochemical letters, punctuation, indices and arrow direction are otherwise
 exact. Formula and charge remain validated source strings rather than evaluated
 expressions. Comparison projections are never emitted aliases. Unsupported
 upstream shapes require a separately reviewed adapter change.
+
+
+## Typed native pathway and nitrate source contexts
+
+`metacyc-pathway-xml` requires one whole META Pathway instance and matching
+request, PGDB, release, direct identity, source hash and envelope. Compound-page
+HTML with the same title cannot establish typed Pathway identity or share its
+selected identity with this mode. Existing legacy HTML records retain their
+existing authority contract. The direct common name and synonyms, parent
+classes, complete reaction list, acyclic ordering, exact layout membership and
+class-marked organism annotations are retained in `native_pathway`. Layout
+primaries are source layout context, not complete biochemical equations.
+Complete source slots preserve comments, credits, species and taxonomic scope.
+The `native_pathway` term is accepted only as the canonical record node; a
+contextual label policy cannot make it a participant, reaction or taxon.
+
+The native electron-transfer annotation reader also retains a three-level
+numeric EC context such as `EC-7.1.1` verbatim. This does not create a selected
+EC identifier, infer a fourth level or extend the existing four-level EC grammar
+to new partial forms with unassigned markers.
+
+Named complexes retain typed GO class references and evidence codes,
+instance publications, optional evidence `with` text, reverse `component-of`
+references, native location references, and the experimentally reported mass
+with its citation. The consumer compares each named complex's complete reconstructed native
+assertion, source kind and release across every owner before term selection.
+Identical duplicates are allowed; differences in coefficients, retained
+annotations or release fail even when an owner has no selected term.
+Forward component cycles among supplied whole assemblies
+fail; reverse context does not create an assembly cycle. Native nested
+composition and coefficients are not flattened or normalized to match a
+protein count, construct, or a different source's oligomerization claim.
+
+Chemical-class profiles additionally recognize these exact parent sets:
+`CPD-11501` plus `ETR-Quinones` (chemical entity); `ETR-Quinols` (chemical entity);
+`FeS-Centers` and `Metal-sulfur-Clusters` (each chemical entity or cofactor).
+Cofactor authorization continues to require whole native activity context.
+The literal charged Compound-class subclass references `4Fe-4S+1`, `4Fe-4S+2`
+and `4Fe-4S+3`, and the cofactor-activity Reaction reference
+`PYRUVATE-DEHYDROGENASE-NADP+-RXN`, use an exact, closed context-only identity
+check. Literal plus signs and resource bytes remain unchanged. Encoded, doubly
+encoded, space-decoded, wrong-type, wrong-class, truncated or extra-query
+variants fail. This does not change carrier, state, selected-ID or request
+syntax. Consumer validation reconstructs all these typed metadata projections
+from complete retained native source slots.

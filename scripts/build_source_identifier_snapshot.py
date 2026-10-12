@@ -8,7 +8,7 @@ metacyc-protein-xml, metacyc-reaction-xml, metacyc-carrier-class-xml,
 ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, rhea-polymer-rdf,
-metacyc-electron-transfer-reaction-xml, metacyc-chemical-class-xml,
+metacyc-electron-transfer-reaction-xml, metacyc-chemical-class-xml, metacyc-pathway-xml,
 ecocyc-named-protein-complex-xml, kegg-module-flatfile,
 kegg-reaction-flatfile, kegg-compound-flatfile, metanetx-chemical-html,
 bigg-universal-metabolite-json, bigg-universal-reaction-json and
@@ -60,11 +60,13 @@ from pathwaymech.biocyc_electron_transfer import (
     reaction_metadata,
     reaction_term,
 )
+from pathwaymech.biocyc_pathway import PATHWAY_KIND, pathway_metadata, pathway_term
 from pathwaymech.ecocyc_complex import ECOCYC_COMPLEX_KIND, complex_metadata, complex_term
 from pathwaymech.ecocyc_named_complex import (
     NAMED_COMPLEX_KIND,
     named_complex_metadata,
     named_complex_term,
+    validate_named_complex_graph,
 )
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_metadata, state_term
 from pathwaymech.pathbank_provenance import (
@@ -2034,6 +2036,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     metacyc_reaction_assertions: dict[str, tuple] = {}
     metacyc_carrier_assertions: dict[str, tuple] = {}
     new_native_assertions: dict[str, tuple] = {}
+    named_assemblies: list[dict] = []
     component_assertions: dict[str, tuple] = {}
     gene_assertions: dict[str, tuple[str, tuple[str, ...], str]] = {}
     bigg_assertions: dict[str, tuple[str, str, str, str]] = {}
@@ -2066,6 +2069,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             ELECTRON_TRANSFER_KIND,
             CHEMICAL_CLASS_KIND,
             NAMED_COMPLEX_KIND,
+            PATHWAY_KIND,
             RHEA_POLYMER_KIND,
         }:
             # Refuse non-regular resolved originals before the common byte read.
@@ -2107,8 +2111,14 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     if "/" not in identifier
                 ],
             )
-        elif entry["kind"] in {ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND, NAMED_COMPLEX_KIND}:
+        elif entry["kind"] in {
+            ELECTRON_TRANSFER_KIND,
+            CHEMICAL_CLASS_KIND,
+            NAMED_COMPLEX_KIND,
+            PATHWAY_KIND,
+        }:
             builder, projector, field = {
+                PATHWAY_KIND: (pathway_metadata, pathway_term, "native_pathway"),
                 ELECTRON_TRANSFER_KIND: (
                     reaction_metadata,
                     reaction_term,
@@ -2139,6 +2149,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 raise ValueError(f"conflicting native identity/context assertions for {identifier}")
             registry[identifier] = assertion
             if entry["kind"] == NAMED_COMPLEX_KIND:
+                named_assemblies.append(metadata["native_named_complex"])
                 ecocyc_versions.add(entry["version"])
                 if len(ecocyc_versions) != 1:
                     raise ValueError("conflicting EcoCyc native PGDB versions")
@@ -2269,7 +2280,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                         f"conflicting MetaCyc reaction identity scope for {identifier}"
                     )
                 if (
-                    kinds.intersection({ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND})
+                    kinds.intersection({ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND, PATHWAY_KIND})
                     and len(kinds) != 1
                 ):
                     raise ValueError(
@@ -2360,8 +2371,14 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 "synonyms": sorted(set(synonyms) - {label}),
                 "source": key,
             }
-            if entry["kind"] in {ELECTRON_TRANSFER_KIND, CHEMICAL_CLASS_KIND, NAMED_COMPLEX_KIND}:
+            if entry["kind"] in {
+                ELECTRON_TRANSFER_KIND,
+                CHEMICAL_CLASS_KIND,
+                NAMED_COMPLEX_KIND,
+                PATHWAY_KIND,
+            }:
                 projector = {
+                    PATHWAY_KIND: pathway_term,
                     ELECTRON_TRANSFER_KIND: reaction_term,
                     CHEMICAL_CLASS_KIND: chemical_class_term,
                     NAMED_COMPLEX_KIND: named_complex_term,
@@ -2391,6 +2408,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             ):
                 terms[identifier]["label_kind"] = "source_context"
             sources[key] = metadata
+    validate_named_complex_graph(named_assemblies)
     for source, metadata in sources.items():
         if metadata.get("kind") == RHEA_POLYMER_KIND:
             metadata["native_polymers"] = {

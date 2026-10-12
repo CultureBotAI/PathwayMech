@@ -1,0 +1,4866 @@
+# Nitrate reduction VIII: inherited full science and independent maintained QA
+
+- Review: 20261012T201951Z-pwy01352-independent-science
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T20:12:39Z
+- Finished UTC: 2026-10-12T20:19:51Z
+- Reviewer: Codex /root/aceto236_design_acceptance_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+Exact accepted nitrate science is preserved in the maintained record. All 48 paragraphs and 100 edges receive individual positive assessments from inherited complete scientific review, checked against current bytes; fresh graph/table/reference, output and whole-tree QA pass with explicit access and visual limits.
+
+## Scope And Provenance
+
+Exact accepted nitrate science is preserved in the maintained record. All 48 paragraphs and 100 edges receive individual positive assessments from inherited complete scientific review, checked against current bytes; fresh graph/table/reference, output and whole-tree QA pass with explicit access and visual limits.
+
+Selection: Exact nitrate local integration on PWY commit5ff01d7c59c61fd94b65b907edd50936193f7f17 including all maintained selected targets and complete physical tree before native review saves. Full actual-tree adversarial integration assessment is included.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 5ff01d7c59c61fd94b65b907edd50936193f7f17.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY0-1352 | data/pathways/nitrate-reduction-viii.yaml | maintained | nitrate reduction VIII (dissimilatory) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Root-executed history-1 | passed | False | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed history-2 | passed | False | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed sssom | passed | False | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed render | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed skills | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed validate | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed tests | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed lint | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed kgx | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Historical DNS failure | failed | False | MetaCyc:PWY0-1352 | Original failure preserved; successful vendored retry has its separate receipt. |
+| Root-executed vendored | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed diff-check | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed site-current | passed | True | MetaCyc:PWY0-1352 | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Fresh complete maintained content/preservation QA | passed | True | MetaCyc:PWY0-1352 | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Adopted portable evidence retrieval | passed | True | MetaCyc:PWY0-1352 | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Full actual-tree audit and native inspection | passed | True | MetaCyc:PWY0-1352 | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Review closures and root execution bindings | passed | True | MetaCyc:PWY0-1352 | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Browser interaction | unavailable | False | MetaCyc:PWY0-1352 | No interactive browser was available in the root preview. Fresh static image view and exact DOM checks are recorded; no keyboard/search/JavaScript test is claimed. |
+
+## Scientific And Domain Assessments
+
+### Complete narrative P01
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Complete NADH→generic menaquinone→nitrate route is supported. Nitrite is the boundary; neither downstream nitrogen chemistry nor Nap, ATP synthesis or transport is added. Native NrfA hexaheme background is explicitly not adopted.
+
+Current paragraph SHA256 b10cb3fb5109f524f17b763cb04abe130b5ce22399849110b7b555bac3aee5e3. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P02
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Both complete native LEFT-TO-RIGHT composites retain all 13 occurrences, scalar protons, vectorial protons, unit nonproton coefficients and unspecified carrier compartments. CCO in/out interpretation is confined to the E. coli inner membrane.
+
+Current paragraph SHA256 5ecef061584ea63636c5dc8925e66f7dbd6e9ff87ee241b6d9390dc40e5f9cd4. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P03
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: All five native constituent events and all 19 sides are retained as decomposition context. Electron tokens do not become invented Compound identities or extra biological route events.
+
+Current paragraph SHA256 9c98c2bd3d39189ea7ea65cff98f92990f6ba126ad1388e65a8e4fdbd99befc0. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P04
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Both full Rhea reactions and their 13 sides agree with whole RDF originals. POLYMER 9537/9539 retain generic n and distinct Rhea versus MetaCyc projection; no fixed MK-8 substitution.
+
+Current paragraph SHA256 b5d374aab4ba199ba991123bfb1b4179dd5f536748e478a1f39b1f2f7dc41189. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P05
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Source whole-chain coupling conventions are reported conditionally. Scalar chemistry and translocation are distinguished; native 4H/NADH versus lower reported 3H/2e and modern relative measurements are not falsely resolved.
+
+Current paragraph SHA256 548cb4cbdc6ee0cc3569c0d4f949ab2132023f0376761329261b30cadebf991a. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P06
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NDH-II alternative, nitrate-versus-fumarate/DMSO growth and NarL expression context are supported by source annotation and indexed primary context. Association is not made into a fabricated native supercomplex.
+
+Current paragraph SHA256 8e7d37ab835be2b897178d93f10127d68f973824b0b51ecb8a9c9d560a2bdeec. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P07
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: 1977 demethylmenaquinone pool and NADH/nitrate-negative observation is preserved without concluding that every native generic-MK species or preparation behaves identically. MK-9 purification evidence is not relabeled MK-8.
+
+Current paragraph SHA256 88f90b0991fa55e64ca7e9e928496aba4d04fc75dd663cce463e2de383f8d645. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P08
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Thermodynamic potential and reverse-direction discussion retain their source and assay conditions; not a claim that this E. coli route is a nitrite-oxidizer pathway.
+
+Current paragraph SHA256 6ab5c84c5d6248662cb43176a946d0f6c705b3c9300efb377e34e2e2231c46fb. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P09
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NDH-I nested assembly is complete: seven membrane polypeptides plus the six-component peripheral complex, 13 polypeptides because C/D is fused; all source component counts are one.
+
+Current paragraph SHA256 5d6ca39acd4951c00c51c7b6142aa9b7aafc4639c946063ca04a7a82cd92e63e. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P10
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: FMN and the complete nine FeS clusters are supported. NuoE/NuoG off-path clusters and N2 electron-transfer role are distinguished; source annotation evidence tiers remain visible.
+
+Current paragraph SHA256 a42bb9384b209edeb82c916b1fbee7ab2d72802ac967e72487e40008c6b3eee7. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P11
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Modern quinone-site architecture and older multiple-site/semiquinone interpretations remain separately attributed; no unsupported experimental resolution is claimed.
+
+Current paragraph SHA256 abca0939a8561890fadf147f56923db3df41ae7dab806db6c0668c6e56959eef. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P12
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Complete nanodisc primary body supports native genomic TwinStrep/TEV-NuoF BL21FS constructs, microaerobic growth and distinct purification. MSP2N2 is the scaffold, not an overexpressed nuo operon.
+
+Current paragraph SHA256 64e0c7b039c307141e29f47dcc90a352f72118455f0d33f4accd2e4c28886bec. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P13
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole 2021 nanodisc results/Methods support separate Q1/DQ and LMNG activities, inhibitor values and DQ detergent supplementation. Unsealed nanodiscs do not establish proton pumping.
+
+Current paragraph SHA256 ad19346a1c898f31341c938e581c123162a8ecf91a91d55d20946930613e8b11. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P14
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Nanodisc resolution/structural-state limits, missing NuoH density and possible resting/uncoupled preparation are accurately distinguished. NuoG Table2 omission is not used to remove N5.
+
+Current paragraph SHA256 b87869f700868c738e607bd57081c5f8fccb10f10616cf361d91921dc9778f70. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P15
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole 2021 quinol-anion paper supports LMNG/DQ/305nm inference, D213G and conditional semiquinone absence. Inhibitor 10mM stock is not mistaken for 10uM final and ~60% activity remains, rather than 60% inhibition.
+
+Current paragraph SHA256 66f10a8bfb7eaff0d1216051b2a18daefa70f642ebc4fc3f5c69b5de3db1f1e5. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P16
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole human-variant paper distinguishes conserved bacterial D213G from the human triple change and unstable V259A from stable D213G. Membrane/purified electron-transfer rates match their own contexts.
+
+Current paragraph SHA256 31873da2e437204f42afcae70814f6c0e889bca32d78b82f8cb9a80c5db3d45d. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P17
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Pre-reduction lag, proteoliposome orientation and relative pumping are supported. ACMA Figure6 versus Methods NADH discrepancy and separate oxonol assay are retained; not an absolute universal H/e value.
+
+Current paragraph SHA256 7984ee61cd5fc6ed765f6f86d3271710a97b88b11b0f7bc9ba7290d3ddd1917b. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P18
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole N1a paper separates Aquifex structural experiments from E. coli G135D/S and V96P/N142M mutations; binding/redox kinetics support conditional interpretation.
+
+Current paragraph SHA256 b2c7e2626d61c96a957f60a65f7299c58a02c66503239944a43838b7ed852a6d. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P19
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Complete tables/figures preserve mutant ROS denominators, NADH concentrations and relative versus absolute values. Peptide-switch mechanism is a proposal with later nanodisc counterinterpretation.
+
+Current paragraph SHA256 15489e30d249776e14641432a1114bdb07a7398d8185331a3ad5313e4478e0c2. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P20
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Native and whole UniProt cofactor/activity contexts support NuoE acidic variants and NuoG NADPH/cluster observations without generalizing them to all wild-type NADH nitrate respiration.
+
+Current paragraph SHA256 0f4897a384cbac36ce77465411c997e532767d8ec52ef488cad9cad8f52a7a0c. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P21
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NuoB acidic/Tyr and C/D crosslink observations remain exact subunit/variant evidence, not unsupported additional route reactions.
+
+Current paragraph SHA256 7e4fb9b9c66a682177a5064abf85e745bbaf09b6f992aa3298befc589d157d41. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P22
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NuoA/H/J membrane topology and specific mutants are source-bound. Historical topology annotations are not silently used to override modern source accounts.
+
+Current paragraph SHA256 28778dda439ebe5271e7a8a0c46fa97afe59c4632ac6731e426e6a0b3ce7b18f. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P23
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NuoK SecYEG/YidC assembly and conditional mutants retain experimental organism/construct scope; they do not add these insertion proteins as mature NDH-I subunits.
+
+Current paragraph SHA256 c44e0d53708b7355faac69ab94f9110524c029f4c1eba0d42f69211bbf96d890. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P24
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NuoI/G cluster and complex stability plus crp/cyaA cellular contexts are retained as mechanistic or regulatory context, not new electron-flow events.
+
+Current paragraph SHA256 90415f37e0fd01e9b64cb51467e9317b349cde3654bea96499926b404ccfb0e5. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P25
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Modern antiporter-like L/M/N transmembrane architecture and older NuoM topology are explicitly separated; source conflicts are not silently normalized.
+
+Current paragraph SHA256 34249b38f37919c631aca494d7bb428b3fba0ed9159f4daa4dc95550ccca0a9a. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P26
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NuoL deletion/fragment effects, loss of NuoM, D563 and V259A observations preserve distinct constructs. MrpA fragment behavior is not attributed to the intact native complex.
+
+Current paragraph SHA256 10aac3b542e9ac1f1c155b7c6a344faeaca492f171a6a994431bccec2394f313. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P27
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole 2016 NuoL paper supports His9-NuoE MC4100 preparations reconstituted into NuoG-N1b/ndh-deficient membranes; residual transport/oxidases and non-equivalent membrane context are acknowledged.
+
+Current paragraph SHA256 cda492e160547fa993b54a9d532720bbf22b4407774b070a9464386e300b9815. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P28
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole tables support Mg10–20mM, Zn2uM WT 24% pumping reduction without WT electron-transfer loss and EIPA15uM remaining activity. Mutant electron-transfer exceptions, M/uM caption typo and D178A/N text conflict remain explicit.
+
+Current paragraph SHA256 9d8b46c81d66c0fdf089a1dc6b3c470926dea620dba4018233cc724de9938885. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P29
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: The 2016 mixed MK/UQ pool and ~2.5-fold menaquinone enrichment do not become pure MK-8 evidence; 54.9% relative coupling is not a calibrated absolute stoichiometry.
+
+Current paragraph SHA256 9b3eea7b19e4cdf4e5fac98055801a5911d43575be4c5e7b8b8c4e25424d2511. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P30
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NuoN/L/M antiporter-family comparisons, K395/K158/HAMrpD variants and simulations are qualified by construct and rich-versus-minimal growth context; not a universal mechanism proof.
+
+Current paragraph SHA256 449ada58386bf9f55b80d954bd89ee118678c4bb4fa0c4f49037fa3239ad70a1. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P31
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: nuo deletion and conditional growth phenotypes are distinct from ndh deletion or physiological preference of NDH-II. Species/strain-specific source contexts are retained.
+
+Current paragraph SHA256 45bb7e5d7ced95f1f840a0758c5c440c66f0813fef4a2903783f9b1988e07682. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P32
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Original has supported finding nitrate-nuoc4-regulatory-entity: nuoC4 conflates the nuo operon with C4 dicarboxylates. The exact successor replaces only that phrase; adjacent lipid/Ca/tellurite/evolution claims and all citations remain unchanged and supported within their source tiers.
+
+Current paragraph SHA256 b70aa40dde418e0bd0fa0610dbf7ee040e3897cc5376eea9c003f390979ebf76. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P33
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole persistence paper plus complete original spreadsheets distinguish native genomic NuoM F356C cellular evidence from S414R purified/reconstituted experiments; no variant conflation.
+
+Current paragraph SHA256 8386f2c356e91f270db4b20a074c0391874d79e8bf6a4ff86fbbfb42d1ce4315. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P34
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole 2022 Methods/results distinguish persistence from resistance, repaired genomic alleles from nulls, and pBAD/His6-NuoF purified complexes from cellular/ISOV assays. Reconstitution21%, accessibleorientation75% and empty-vesicle background remain conditional.
+
+Current paragraph SHA256 4b82d3285075db7083dfd89a013d6c0d6603f525e745a39723e0fd0deaf7d5a2. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P35
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Translation/RpoS/ppGpp and acidification remain study-specific inferences. RpoS is not made sufficient or exclusive; relA/spoT controls, amine naming conflict, modeled structure and engineered encapsulin-SpoT construct are retained.
+
+Current paragraph SHA256 492cfbf18fa7c71f50dd0c4e2f879d1eb1de70dd83390e2cc94de23f974d3611. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P36
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NarI hemes→NarH FeS→NarG Mo/FS0 topology and cytoplasmic catalysis agree with modern source annotation, sequence cofactor objects and bounded primary context.
+
+Current paragraph SHA256 6b1f37c0d0d956a25c938b649d15abb92ba66f6da9bb138348b20171ca178812. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P37
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Modern NarG His50/FS0 evidence and historical negative assignments are explicitly separated; source conflicts are not erased.
+
+Current paragraph SHA256 0ca87cfe2da31236a7fb1f88323f0ea0837f10d180e9917e7f78e017892ceb20. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P38
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Native NarA 2:2:2 component annotation and PDB1Q16 author trimer versus software hexamers are properly distinct. Full bound PDB metadata confirms pVA700, taxon562, unspecified strain, unknown-mutation fields, NarI FME and the specific lipid chirality caveat.
+
+Current paragraph SHA256 37b5e0dca25f05c5b8f8915aba17f2982ce438db31d639d7c5df88119eacce86. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P39
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NarJ/NarW maturation/assembly context is supported, with NarW similarity evidence explicit; neither becomes a mature Nar catalytic subunit.
+
+Current paragraph SHA256 55051d5a5a36338d8427e3a93c2585827dd84adc769ee9cb6f9bb77d1d97e0b9. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P40
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: NRZ native1:1:1, historical1:1:2 and modern dimer-of-trimers annotations remain a disclosed source conflict. Graph coefficients preserve the exact native representation instead of inventing reconciliation.
+
+Current paragraph SHA256 af4c6f767e190bae575f75537e0414e60f1fe56e0c74abb191bfa703b809c83e. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P41
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Fnr and RpoS effects retain direction and oxygen/stationary-phase or residual-activity context; expression regulation is not represented as direct enzyme allostery.
+
+Current paragraph SHA256 d8f3d8c55e2488e404c0ed17bdc43123c1b885e79dd4479737cecd07596f0b2f. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P42
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: All eight native inhibitor links were independently replayed through regulator, regulated enzymatic activity and target complex. Source chemical forms, azide ionic correction, cyanide species, pCMB structure and HOQNO/stigmatellin distinctions are maintained.
+
+Current paragraph SHA256 f7bb262d3603b8bfcfa97a6e76046b512d392e3ca95d234ce17f905696159001. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P43
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Aerobic tellurite hypersensitivity and anaerobic reductase activity remain separate native/primary contexts; no reversal of the selected nitrate route.
+
+Current paragraph SHA256 d81a3e3b883b1d8b7b1cc6cb5772306622fb0475a74d3873677252d9d2f36466. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P44
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: PathBank PW002092 conflates a different enzyme/compartment boundary and is explicitly rejected as canonical donor-route evidence; not an omitted native step.
+
+Current paragraph SHA256 937e1b7855202d7398a4646fc49c19646381ed6f1685bb5f16089a1b90e91da8. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P45
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Access limitations are honest: 27 bounded primary contexts and six complete main scientific bodies, not 259 full papers. Original spreadsheets are separately inspected; inaccessible/unread supplementary PDF and other historical methods are not credited.
+
+Current paragraph SHA256 af79d773b67bd054d301693d081834e210d37f62a9aa2eb52eed9a7c076aca4c. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P46
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Older outward nitrate-site interpretation versus modern cytoplasmic catalysis and conditional H/e measurements remain attributed. Atebrin and mitochondrial model context are not universal E. coli findings.
+
+Current paragraph SHA256 d3a7ce91aac0c931efb6f22f9d90243fc15d336aefc74c947f5861584a27da3f. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P47
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: HOQNO/stigmatellin binding, NarI heme bL/bH and H56R/DeltaGH constructs retain exact source-specific distinctions; generic heme b is not forced to a single oxidation state.
+
+Current paragraph SHA256 d2b7d6ce766871a2b4cc3ded09b27d0b9b4dd774be7ac64c10ca95fc92976f5f. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete narrative P48
+
+evidence: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against exact current paragraph: Whole indexed NRZ purification/stationary-phase contexts support the stated multicopy and deltaNarGHI constructs,230kDa/13Fe/12S and rich/minimal RpoS distinctions without settling native oligomeric conflict.
+
+Current paragraph SHA256 ba907b635bc2abe3eefbac93dcf9ae3fe717efcaeeb111a8bb86d710873ecccb. The original P32 finding is resolved by the exact accepted successor; full source interpretation remains inherited.
+
+### Complete edge e001
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 76178fad44c7807fc0c9a625d1f7d959ce13c32dece9f707a08c9dabdaf46792. Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "produces", "object": "CHEBI:15378"}
+
+### Complete edge e002
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 c76cbad6a3965385cfe072023c8b3174d34c3ee90027ed01cbd1cd29ce97f89c. Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "produces", "object": "MetaCyc:Menaquinols"}
+
+### Complete edge e003
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 0f8244b3e29145113b6da3a99b3b0770f8bd3411dbe8552e0770f0d0bfae6a77. Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "produces", "object": "CHEBI:57540"}
+
+### Complete edge e004
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 9525d4565bea351b945c954e1ffa79f98b58f9c61ce2d2bb9e3d09677781e09b. Triple: {"subject": "MetaCyc:Menaquinones", "predicate": "consumes", "object": "MetaCyc:RXN0-5388"}
+
+### Complete edge e005
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 217213ce353ae53e671340773fb97a6940c8d959b37801c7449750e5637197b7. Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "MetaCyc:RXN0-5388"}
+
+### Complete edge e006
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 4f7850e11c0cb46b05186fa4d7d356e0f8192bf2c03b12814583b520ec27fbef. Triple: {"subject": "CHEBI:57945", "predicate": "consumes", "object": "MetaCyc:RXN0-5388"}
+
+### Complete edge e007
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 460a056d692d64797b2bfc2684a41573bcdbd1f64c02dea51e162c2e009180f3. Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "CHEBI:16301"}
+
+### Complete edge e008
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 987053ad00b8aa3466b85d1657f7e46b3d078b8a38a6eb658105a754db1d0c33. Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "CHEBI:15377"}
+
+### Complete edge e009
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 fbf930bc67d34b4fdb90ec9f6ca36cd3146143b1e23d5ac240393d13b5e33c3c. Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "MetaCyc:Menaquinones"}
+
+### Complete edge e010
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 9448ebb4c42afb9af81830d2f07c633cdb50def12248035aa0953a72d3337803. Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "CHEBI:15378"}
+
+### Complete edge e011
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 7e99c8ac3eb30aafa97b9c786e1e3e21cb21ea8c8566eebd1df6cfbd3ec3a1ef. Triple: {"subject": "CHEBI:17632", "predicate": "consumes", "object": "MetaCyc:RXN0-3501"}
+
+### Complete edge e012
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 38d7c5e1e77ebad82dc54216b7955fc1dcaf0ae8838d10eca8c6d3b608e8224c. Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "MetaCyc:RXN0-3501"}
+
+### Complete edge e013
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All complete native side endpoints, coefficient, direction, compartment and exact Compound mappings replayed source-first; no dropped side.
+
+Whole canonical edge JSON SHA256 5834f67c9affb01a68289e6e6635e3d198f44b905f95bb6265796f31d6983dda. Triple: {"subject": "MetaCyc:Menaquinols", "predicate": "consumes", "object": "MetaCyc:RXN0-3501"}
+
+### Complete edge e014
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 55e6b5c63548c8ac135812b3e7e2b94fdb0697a6ba6aedde5dfe9bc7bc8e5b87. Triple: {"subject": "RHEA-COMP:9537", "predicate": "consumes", "object": "RHEA:29100"}
+
+### Complete edge e015
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 e68ec58a4ac0143692d155dbba629a9e2a7b1090288d1f757f9b6b151dea8276. Triple: {"subject": "CHEBI:57945", "predicate": "consumes", "object": "RHEA:29100"}
+
+### Complete edge e016
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 2d1f05160e0941914f1f1f0a959a88aa944b4dae4ca3eb541ad44ac9232cf8b0. Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "RHEA:29100"}
+
+### Complete edge e017
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 9ba88bf99ff170b4fe5748b530fe7e41e0e18c3d34490b89ba252049ccee2596. Triple: {"subject": "RHEA:29100", "predicate": "produces", "object": "RHEA-COMP:9539"}
+
+### Complete edge e018
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 9596538131a9b589be85802fe5cc97b1bfd883a98af132abd879616160fba09d. Triple: {"subject": "RHEA:29100", "predicate": "produces", "object": "CHEBI:57540"}
+
+### Complete edge e019
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 927891b6eb198b02950e99ef976c4994c104b70102da4becf9d7819bf1a20759. Triple: {"subject": "RHEA:29100", "predicate": "produces", "object": "CHEBI:15378"}
+
+### Complete edge e020
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 469408b8fe26c745aff9a19c05f967cbdd2bc28276ae400b0c592a7dddac238f. Triple: {"subject": "RHEA-COMP:9539", "predicate": "consumes", "object": "RHEA:29136"}
+
+### Complete edge e021
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 b0ce84b6b39ca0b4fbdd5594e760362bae48015f118a85e2a7f681a36b596fd3. Triple: {"subject": "CHEBI:17632", "predicate": "consumes", "object": "RHEA:29136"}
+
+### Complete edge e022
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 403a769a71439414cad386545c996ea09a67285cdb0bedf4401db2a7cd9b47c3. Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "RHEA:29136"}
+
+### Complete edge e023
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 e86d921a59fcb496f2907bc182f8b895c9fc778d3702c402a2eae397074f2ced. Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "RHEA-COMP:9537"}
+
+### Complete edge e024
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 a07e367fd6342ae4fe90226aa92915b2aef479d5febb7304c122be41c07ade25. Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "CHEBI:16301"}
+
+### Complete edge e025
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 1ce394541d1f4fed6ca197bcf23ac5073125b34b60d81fc9b4e046d63d103a71. Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "CHEBI:15377"}
+
+### Complete edge e026
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All full Rhea side resources and duplicate RDF subject fragments replayed. Generic polymer and substrate/product in/out roles preserved.
+
+Whole canonical edge JSON SHA256 591f34a789c8b85f5bcb66827f1d460dee145a2154f52a22fc6cbe66c205a96d. Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "CHEBI:15378"}
+
+### Complete edge e027
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Native and Rhea event membership expresses projections of the same two biological events; does not inflate route event count.
+
+Whole canonical edge JSON SHA256 06abe35da5aaeed6bfda698275462b6c28e19df72cc8c7d4b64dc8ba0dbaa319. Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}
+
+### Complete edge e028
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Native and Rhea event membership expresses projections of the same two biological events; does not inflate route event count.
+
+Whole canonical edge JSON SHA256 dffa6690ed8b051c3ab363bf20dc3e7721b78e3c2a5e075b346d63993e40cd83. Triple: {"subject": "RHEA:29100", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}
+
+### Complete edge e029
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Native and Rhea event membership expresses projections of the same two biological events; does not inflate route event count.
+
+Whole canonical edge JSON SHA256 fa7092314a225f5f736b655ccdff1c1e05132e9ef12ff914e844cff96051c025. Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}
+
+### Complete edge e030
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Native and Rhea event membership expresses projections of the same two biological events; does not inflate route event count.
+
+Whole canonical edge JSON SHA256 e2754cb5c617de9bb5bb7c30b405f0b7a5ad7685f939b6345dd2a542b942c821. Triple: {"subject": "RHEA:29136", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}
+
+### Complete edge e031
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Reduced-carrier supply and oxidized-carrier return are supported causal/material inferences with explicit inference framing; not reversible-reaction claims.
+
+Whole canonical edge JSON SHA256 a80b1d1fc943bd2e24971ea451ca19f94d7590d2f471d7257fd9a3cc95f27cd7. Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "provides_input_for", "object": "MetaCyc:RXN0-3501"}
+
+### Complete edge e032
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Reduced-carrier supply and oxidized-carrier return are supported causal/material inferences with explicit inference framing; not reversible-reaction claims.
+
+Whole canonical edge JSON SHA256 a5da63b7c0f11758276ff2f7221de257947872eb3f98af67a99900c065ac8ddc. Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "provides_input_for", "object": "MetaCyc:RXN0-5388"}
+
+### Complete edge e033
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is explicitly separate.
+
+Whole canonical edge JSON SHA256 c2a3f0a1e2fa50b683362a4dca636edcde06bf21698107952990f34748a97479. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "catalyzes", "object": "MetaCyc:RXN0-5388"}
+
+### Complete edge e034
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is explicitly separate.
+
+Whole canonical edge JSON SHA256 8c09e0ef13da911c010340169b429c0b6c4c2ff62174dba3480a890a0a67760e. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "catalyzes", "object": "RHEA:29100"}
+
+### Complete edge e035
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is explicitly separate.
+
+Whole canonical edge JSON SHA256 38a7fdb495990eb8250c6356ffa38d017905a9c80e1989e9fca2d2b9074c09ff. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "catalyzes", "object": "MetaCyc:RXN0-3501"}
+
+### Complete edge e036
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is explicitly separate.
+
+Whole canonical edge JSON SHA256 7b23eb8694cbfdbd0c2d70b88215910a806804fde2b760f6bc9af5bffaec466b. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "catalyzes", "object": "RHEA:29136"}
+
+### Complete edge e037
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is explicitly separate.
+
+Whole canonical edge JSON SHA256 9a3b032ac8acc59f06017f59ca2b8040f2eff95e4c06519c3cdf78e5c5323ebe. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "catalyzes", "object": "MetaCyc:RXN0-3501"}
+
+### Complete edge e038
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is explicitly separate.
+
+Whole canonical edge JSON SHA256 c2e96b4eba6ab340b6eecac81f28f69bc1379e135253ef62e42eb758ef1ddcab. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "catalyzes", "object": "RHEA:29136"}
+
+### Complete edge e039
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 711c0a19343eca278882589bb4bb8560e0794399255666ae3eb034dfe0e761f5. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "UniProtKB:P0AFC3"}
+
+### Complete edge e040
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 3404e862071d9580c32536bcced52f2e66f33fdc8aa8810c22be17334da6379e. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "UniProtKB:P0AFD4"}
+
+### Complete edge e041
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 8e37f884d8c71fc06dbdfcdc17b4e99c18505c58c9405923a196c5ff2cb4ba9f. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "UniProtKB:P0AFE0"}
+
+### Complete edge e042
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 9edf06ba6d496f582fa4c334e8def35472ba3986ab53489022334a1e30d625c0. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "UniProtKB:P0AFE4"}
+
+### Complete edge e043
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 a55181cf95605968ce8db99664b16a620a34ddc51aa4d729bbcdf7ab546427f4. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "UniProtKB:P33607"}
+
+### Complete edge e044
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 1dd0284ec27bebbc7baa39a12a1797e2c8a58d82fe5252de60e7e4cdac332d3f. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "UniProtKB:P0AFE8"}
+
+### Complete edge e045
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 96bb462cfd2c3fd0dcd3ada7554c2624316aa0cc936869390c25efac19e22518. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "UniProtKB:P0AFF0"}
+
+### Complete edge e046
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 0fd2565e77950c494a4e031e0282f98b41b291153949dfc8ff699a89498ebb8c. Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object": "EcoCyc:CPLX0-3361"}
+
+### Complete edge e047
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 e962ebc1c8bc2a54320ee741fc4a832b210eb6c0d0f108afe1881d5aad763b26. Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P0AFC7"}
+
+### Complete edge e048
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 4ca0047d4c6cb503b4bd0b311f37e788712edc7fb2e509f6caf135a68ee0d914. Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P33599"}
+
+### Complete edge e049
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 c2049e75e2766bd9439809471a5668dca8b6ff648354c5c52bbd6c6dc0d54f95. Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P0AFD1"}
+
+### Complete edge e050
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 c850900a76f564785332c1776a4a74659e03e7e1f5e8df7c890c670f3ca9e3ca. Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P31979"}
+
+### Complete edge e051
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 838f0fac268ce00427fa5f00c4b97086e946710f695246256001be50d2d139df. Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P33602"}
+
+### Complete edge e052
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 e4dcd60dfe18be7322b0a400e0b8ba7569d72921520abd2b6a35a57efc353b42. Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P0AFD6"}
+
+### Complete edge e053
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 61c7cd49b1f70548f81279073c71e972fa2beb715f3788830c31c5941b6f0e16. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_part", "object": "UniProtKB:P09152"}
+
+### Complete edge e054
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 df61bf6160616b870c88a9dc85508dbfb8b567f51931bbdb2221e5026bc71623. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_part", "object": "UniProtKB:P11349"}
+
+### Complete edge e055
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 2dff3fb63ed7374daa43ed796b3aa57d0fb5acc7ea82230e52bf1ed2ccd96e02. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_part", "object": "UniProtKB:P11350"}
+
+### Complete edge e056
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 2e479ead537efea47b7c811c3d17e5d26954a65cb074a9313629b1b94337e014. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_part", "object": "UniProtKB:P19318"}
+
+### Complete edge e057
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 ae6aefa9226055a0148374173d33231fc4a8e81808ef7fdf63683c8ae142e2ec. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_part", "object": "UniProtKB:P19319"}
+
+### Complete edge e058
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All20assemblyedges independently matched whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI preserved.
+
+Whole canonical edge JSON SHA256 43209b947f77ef02592dfabe1adef88a3bc90b99192309d6cfa04aef9b96222e. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_part", "object": "UniProtKB:P0AF32"}
+
+### Complete edge e059
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 d5d52d755902fd4b6b054c8771cc60add43b89bec1aa8778942cdda665f54b94. Triple: {"subject": "UniProtKB:P09152", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e060
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 6a1337187e91b313a8d5254a1b351f0b384d0f905a496869f710e118dd2a7297. Triple: {"subject": "UniProtKB:P09152", "predicate": "has_cofactor", "object": "CHEBI:60539"}
+
+### Complete edge e061
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 c6354f7cb6682efa77d0ac6c84e994e7925acbe573bf5ea8260abc315f84440c. Triple: {"subject": "UniProtKB:P11349", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e062
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 4821e81f5e815fd1f4a5d187dc7f8ffd8d84541601b277b2d9cc44d6ba19048f. Triple: {"subject": "UniProtKB:P11349", "predicate": "has_cofactor", "object": "CHEBI:21137"}
+
+### Complete edge e063
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 6de8f8bd69a97dd0e419f36d02d2a84a8a576c0fedfa88f9ca65786415a76d81. Triple: {"subject": "UniProtKB:P19319", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e064
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 7504caaec5fa9aaa72cb29f67369728c441247c7ae0e14dbed9a80aa567ac88d. Triple: {"subject": "UniProtKB:P19319", "predicate": "has_cofactor", "object": "CHEBI:60539"}
+
+### Complete edge e065
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 da2af07642eece45552668dd333dbc941bc882c0934d250cfab149dc8f5a95f4. Triple: {"subject": "UniProtKB:P19318", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e066
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 eb91f0eadd48e91c3fe34f5118e828b51af712ad7de21c39b8185622aecf37d9. Triple: {"subject": "UniProtKB:P19318", "predicate": "has_cofactor", "object": "CHEBI:21137"}
+
+### Complete edge e067
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 f5ee9476297076bf5192fa107d5d7e8dfaefb04a95cd2e8f690bd39dca0d7663. Triple: {"subject": "UniProtKB:P0AFD1", "predicate": "has_cofactor", "object": "CHEBI:190135"}
+
+### Complete edge e068
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 b72a84ff8d28b2b82c26f956e37e71a8a6da30809fa52076dcc791cf8667f9e3. Triple: {"subject": "UniProtKB:P31979", "predicate": "has_cofactor", "object": "CHEBI:58210"}
+
+### Complete edge e069
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 6c53f637ee8595bded20ce6eb9c2c1eedb6a065947607c7ac1ca59ec3436005d. Triple: {"subject": "UniProtKB:P31979", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e070
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 5ca3a0886f1a272087958f55e671b1c41191278d3792bc21fbc62a6fc97c9210. Triple: {"subject": "UniProtKB:P33602", "predicate": "has_cofactor", "object": "CHEBI:190135"}
+
+### Complete edge e071
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 7f407b2790f2267c2e6c26e41d410199e5fb53206acdd033440fc2a0f5bf3cba. Triple: {"subject": "UniProtKB:P33602", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e072
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 2974b408dcf53d02f0370f68e69a9d230160c46501d459db119146a50ea19e19. Triple: {"subject": "UniProtKB:P0AFD6", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e073
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All15cofactoredges independently replayed exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not relabeled direct assay.
+
+Whole canonical edge JSON SHA256 2b71b21b79a745b2a2dd68c0ce7e28db4a0d0c20a7930a44802a57cc2c6f5f4f. Triple: {"subject": "UniProtKB:P0AFC7", "predicate": "has_cofactor", "object": "CHEBI:49883"}
+
+### Complete edge e074
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry and homology scope retained without single oxidation-state identity or invented oligomer resolution.
+
+Whole canonical edge JSON SHA256 7347173b8c7897452141451f95a1b05663a8d3088e0f9ae024d802215ea6e319. Triple: {"subject": "UniProtKB:P11350", "predicate": "has_cofactor", "object": "MetaCyc:Heme-b"}
+
+### Complete edge e075
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry and homology scope retained without single oxidation-state identity or invented oligomer resolution.
+
+Whole canonical edge JSON SHA256 30c66c31b1fa7253c2911e3d0b84f23283a7f1650d256926a0f980814ffdbb21. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor", "object": "MetaCyc:Heme-b"}
+
+### Complete edge e076
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry and homology scope retained without single oxidation-state identity or invented oligomer resolution.
+
+Whole canonical edge JSON SHA256 068216cb31ac3f47fca29889964251a1cc4cd3ba0f04f2df6b613f624b323ec3. Triple: {"subject": "UniProtKB:P0AF32", "predicate": "has_cofactor", "object": "MetaCyc:Heme-b"}
+
+### Complete edge e077
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry and homology scope retained without single oxidation-state identity or invented oligomer resolution.
+
+Whole canonical edge JSON SHA256 9451f5b44515c5b216f340551067aeabaf520b1529a7cd6be69764e9b586aa8d. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_cofactor", "object": "MetaCyc:Heme-b"}
+
+### Complete edge e078
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole native cofactor classes remain generic; exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific identity unification.
+
+Whole canonical edge JSON SHA256 b6a6a83349d4b19f89c4ea331f91d004a31237452bfbec48f83ed40654edf0ee. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor", "object": "MetaCyc:3FE-4S"}
+
+### Complete edge e079
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole native cofactor classes remain generic; exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific identity unification.
+
+Whole canonical edge JSON SHA256 4196241154cb1c9bff67b2a9cbdf11796d1342fc0024a0da75550a5a6741d736. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor", "object": "MetaCyc:CPD-7"}
+
+### Complete edge e080
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole native cofactor classes remain generic; exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific identity unification.
+
+Whole canonical edge JSON SHA256 2a13e095a62763996d808370bfed430de4168982bd855b4eff48f02bdd2715cb. Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor", "object": "CHEBI:60539"}
+
+### Complete edge e081
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole native cofactor classes remain generic; exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific identity unification.
+
+Whole canonical edge JSON SHA256 fb59d0fde8e04bbe105b381700b82399d27c64a077f9b9e30fa1c8e2612ba4d7. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_cofactor", "object": "MetaCyc:FeS-Centers"}
+
+### Complete edge e082
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole native cofactor classes remain generic; exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific identity unification.
+
+Whole canonical edge JSON SHA256 071121b178e5313c8181dbcc219a127c7f3a1d37026a60b1e31d75e68e3a4ddd. Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_cofactor", "object": "CHEBI:60539"}
+
+### Complete edge e083
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Maturation chaperone function supported; NarW similarity explicitly marked. e083 assertion is a source excerpt truncated at400characters; the complete FUNCTION object was reviewed and supports the claim, with no assertion that the excerpt is the entire source.
+
+Whole canonical edge JSON SHA256 fef1a2969cbecbc0c458e6e15ce50ad4cb635eb22eb3823a928f1cb301fe96c3. Triple: {"subject": "UniProtKB:P0AF26", "predicate": "enables", "object": "EcoCyc:NITRATREDUCTA-CPLX"}
+
+### Complete edge e084
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Maturation chaperone function supported; NarW similarity explicitly marked. e083 assertion is a source excerpt truncated at400characters; the complete FUNCTION object was reviewed and supports the claim, with no assertion that the excerpt is the entire source.
+
+Whole canonical edge JSON SHA256 b58d9d570f9cea0dc89e959ebb77261a7f21900e8cc6b1c410f736128e011110. Triple: {"subject": "UniProtKB:P19317", "predicate": "enables", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}
+
+### Complete edge e085
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Expression/regulatory context supports sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as direct allosteric inhibitors or catalysts.
+
+Whole canonical edge JSON SHA256 25dece5cee72765bf37579c3d636e9cd7dfc15eb2c49a84b49893bef167b9ac1. Triple: {"subject": "UniProtKB:P0AF28", "predicate": "regulates", "object": "EcoCyc:NADH-DHI-CPLX"}
+
+### Complete edge e086
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Expression/regulatory context supports sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as direct allosteric inhibitors or catalysts.
+
+Whole canonical edge JSON SHA256 468bf69c621420c1f8d38e100222cec19018f188f08a25ab1cc59cf7e93f0a71. Triple: {"subject": "UniProtKB:P0AF28", "predicate": "regulates", "object": "EcoCyc:NITRATREDUCTA-CPLX"}
+
+### Complete edge e087
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Expression/regulatory context supports sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as direct allosteric inhibitors or catalysts.
+
+Whole canonical edge JSON SHA256 f61f704df512fe7b0b0559b17a2433270894c3197d37d101f35a5a5907c74409. Triple: {"subject": "UniProtKB:P0A9E5", "predicate": "regulates", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}
+
+### Complete edge e088
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Expression/regulatory context supports sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as direct allosteric inhibitors or catalysts.
+
+Whole canonical edge JSON SHA256 c7bfff097b07d1d0d7e1e2a9a994c66b068938edcdff885fefe65115c2bfe5dd. Triple: {"subject": "UniProtKB:P13445", "predicate": "regulates", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}
+
+### Complete edge e089
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 ee939152144da53176434a457ad60f907ff27426c8cfeaac3cc9b24fa7843b6d. Triple: {"subject": "CHEBI:40910", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}
+
+### Complete edge e090
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 6f87b0fe43c84e0b734081ea5faf8171e09388a39d9358deaf1bf68622941c09. Triple: {"subject": "CHEBI:18407", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}
+
+### Complete edge e091
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 af6592b78ad65c26610067098381cc352617eab154f4ec9eacf6fbd5e501336a. Triple: {"subject": "CHEBI:32155", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}
+
+### Complete edge e092
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 8a77b15f54938c4a0e5f233316ff8974d2c5cda90d57daa3ef1240e3aaa4540c. Triple: {"subject": "CHEBI:28362", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}
+
+### Complete edge e093
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 e54196f01d54322ee8ad2b6a33542e0a93c744a4c779fc7556e1df429c8d8174. Triple: {"subject": "CHEBI:33191", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}
+
+### Complete edge e094
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 01177fd762e355eb38461cd3b970c8deb3c7056bfab0428134fb04adb94eed07. Triple: {"subject": "CHEBI:40910", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}
+
+### Complete edge e095
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 daf2c6c8395130bedfb95debf54cb83b0fc4a64ee28acc79b6fbad88064e26b2. Triple: {"subject": "PubChem:21226146", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}
+
+### Complete edge e096
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: All8inhibitors replayed through exact native Regulation object, mode, regulator and target catalytic activity plus independently adjudicated chemical species.
+
+Whole canonical edge JSON SHA256 6b60ceb02b30a23cc45572a17eac7d53bb3c8bb31411f70d55f52ab3bb26a79d. Triple: {"subject": "CHEBI:28362", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}
+
+### Complete edge e097
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole2016NuoLpaper supports Mg/Zn/EIPA conditional effects. Four endpoint qualifiers are checked with the exact construct and assay context; concentrations and remaining versus lost activity are not swapped.
+
+Whole canonical edge JSON SHA256 7459a4bfc8d837f463ad166aa5567888e530a9d7a15805fe3338bd536421ddc2. Triple: {"subject": "CHEBI:18420", "predicate": "activates", "object": "EcoCyc:NADH-DHI-CPLX"}
+
+### Complete edge e098
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole2016NuoLpaper supports Mg/Zn/EIPA conditional effects. Four endpoint qualifiers are checked with the exact construct and assay context; concentrations and remaining versus lost activity are not swapped.
+
+Whole canonical edge JSON SHA256 b58184965a05d53cfe305aee2f3077f586c27ecaaad3f114c2f992c1704a5122. Triple: {"subject": "CHEBI:29105", "predicate": "inhibits", "object": "EcoCyc:NADH-DHI-CPLX"}
+
+### Complete edge e099
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole2016NuoLpaper supports Mg/Zn/EIPA conditional effects. Four endpoint qualifiers are checked with the exact construct and assay context; concentrations and remaining versus lost activity are not swapped.
+
+Whole canonical edge JSON SHA256 62691cd832fc253fc720cd25d5733b937be97e6301f09cb01a83d6c66139ab6f. Triple: {"subject": "CHEBI:136538", "predicate": "inhibits", "object": "EcoCyc:NADH-DHI-CPLX"}
+
+### Complete edge e100
+
+graph: supported. Targets: MetaCyc:PWY0-1352.
+
+Inherited independent judgment, freshly checked against complete current edge including evidence and qualifiers: Whole2021nanodiscpaper supports piericidin inhibition within taggedBL21FS/MSP2N2/Q1-DQ assay context. No proton-pumping result inferred from nanodisc activity.
+
+Whole canonical edge JSON SHA256 27e247ea52a1a1d68f69302f280b923c738dafa354332e2659fe91ad9e66b775. Triple: {"subject": "CHEBI:138511", "predicate": "inhibits", "object": "EcoCyc:NADH-DHI-CPLX"}
+
+### Complete route and source projections
+
+identity: supported. Targets: MetaCyc:PWY0-1352.
+
+The NADH→generic menaquinone/menaquinol→nitrate route ends at nitrite. Two native composite events/13 sides, five component events/19 sides and two Rhea projections/13 sides remain distinct. Quinone return flow does not imply reaction reversal, fixed MK-8, exclusive flux or an invented supercomplex.
+
+### Assemblies, cofactors and experimental contexts
+
+scope: supported. Targets: MetaCyc:PWY0-1352.
+
+Nested NDH-I contains 13 polypeptides with fused NuoC/D, native NarA 2:2:2 and NarZ 1:1:1 retain conflicting literature/deposition representations. Chaperones remain outside mature catalysts. Tagged constructs, compartments, alternative NDH-II, homology cofactors, expression regulation and conditional inhibitor effects stay explicit.
+
+### Exact corrected regulatory entity
+
+nomenclature: supported. Targets: MetaCyc:PWY0-1352.
+
+Current P32 preserves C4-dicarboxylate-dependent regulation of the nuo operon. Earlier erroneous nuoC4 wording is absent from the accepted current paragraph; original finding and exact successor proof are inherited, not fabricated native previous occurrences.
+
+### Graph and evidence completeness
+
+representation: supported. Targets: MetaCyc:PWY0-1352.
+
+All 100 arrows and table rows, 67 graph nodes, four qualified construct states and 107 references agree with current YAML. The unconnected E. coli taxon remains in the component table. All local anchors resolve and whole description text is retained.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| current-target | data/pathways/nitrate-reduction-viii.yaml | supports | Fresh complete reading of all 2,550 YAML lines. Exact accepted successor retains 48 paragraphs, 100 edges, 64 named identities, four endpoint qualifiers, six mappings and 107 references. |
+| fresh-qa | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/audit.json | supports | Fresh independent complete HTML graph/table/evidence correspondence, baseline owner preservation, actual authority object/order and complete old KGX context/edge preservation; exact SSSOM additions. |
+| portable-evidence | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/portable.stdout | supports | Fresh read-only adopted resolver retrieves all 2,907 whole bodies / 360,050,720 decoded bytes without external temporary original reads or extraction. |
+| full-tree | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/full-tree-check.json | supports | Fresh full hidden/ignored-inclusive actual-tree census: only approved owners, derived outputs, two histories and the exact root evidence map additions. All 800 shared cache identities unchanged. |
+| actual-receipts | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/evidence-bindings.json | supports | Fresh closure of accepted science 340+2 and independent integration preparation 19+2. All root command receipts and original stream hashes verified, including the initial DNS failure and successful exact retry. |
+| static-visual | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/static-visual.json | supports | Fresh view of full static preview raster and equality of actual maintained SVG to preview SVG. Dense junction labels overlap; no browser interaction is claimed. |
+| scientific-review | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[b38f2f789a51496a90c9308a0e936d9a7aa7e316f98a4f0938e0b6f9901269a7] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| paragraph-assessments | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[7ec5e955f518fc2e14ecc121724fcffafc5d43098e19cd5c93261cee4fdd4b66] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| edge-assessments | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[a7fe1383fd555faec83c636057ce440a5a8fa187df8f652058862d87f0b46fd0] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| scientific-dispositions | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[daf9160298b150269df31af7a7269841d2fd62ab0364f3b66bf8559b0f78b3df] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| integration-preparation-review | research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/REPORT.md | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| actual-output-review | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[c8932dccacc84671379cae46ae1087ce81c4d0b19fae530b6b69c95c20444a0d] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| gate-history-1 | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-history-2 | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-sssom | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-render | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-skills | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-validate | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-tests | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-lint | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-kgx | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| historical-vendored-DNS | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Historical DNS failure, superseded by successful exact-command public-read retry. |
+| gate-vendored | research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-diff-check | research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-site-current | research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+
+## Limits And Additional Notes
+
+- Full scientific source interpretation is inherited from the accepted independent review: six complete primary main bodies, two spreadsheets, whole native/UniProt objects and bounded older abstracts. This maintained review freshly reads the full current YAML and inherited judgments; it does not claim a new full-paper reading.
+- Most historical papers have indexed abstracts rather than complete Methods; unavailable/unread supplements and other sources remain explicitly limited. No source-exhaustion claim follows.
+- Static graph junction labels overlap. Exact claims remain in the fully checked evidence table. Static raster was produced earlier by root and freshly viewed here; actual maintained SVG is identical. No interactive browser test is claimed.
+- Scientific e083 assertion is a 400-character source excerpt ending mid-word. Inherited whole-source review supports the claim; complete FUNCTION original remains portable. No claim that the excerpt is the whole source.
+- Technical runtime behavior is inherited from accepted independent implementation and actual-output reviews plus fresh maintained gates, not a fresh line-by-line production adapter audit. This reviewer independently audited actual outputs and integration preservation previously.
+- No maintained record, review, cache, Git state, GitHub issue or publication was changed by this reviewer. Root owns evidence adoption, final native source.inputs inspection, append-only save/check and local commit.
+- All read/test failures remain recorded: stopped overbroad read-only inventory, bounded nonexistent-path probes, one protected unrelated temporary path during an inventory probe, SSSOM-column harness assumption, root-directory manifest convention, and an intermediate draft reference pointing to the earlier portable index instead of the later durable preparation-review owner. Corrected checks pass without changing product bytes.
+- Review interval begins at captured start.json after earlier contextual reading; earlier full YAML/report reads are credited as pre-interval context. Native inspect/verification/drafting use actual times.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261012T201951Z-pwy01352-independent-science
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Nitrate reduction VIII: inherited full science and independent maintained
+  QA'
+started_at: '2026-10-12T20:12:39Z'
+finished_at: '2026-10-12T20:19:51Z'
+reviewer:
+  identity: Codex /root/aceto236_design_acceptance_review
+  kind: agent
+  independence: independent
+  independence_basis: This reviewer did not author nitrate science, runtime, integration
+    payload or root native execution. It previously independently reviewed bounded
+    runtime/output/preparation stages, freshly read the entire maintained YAML and
+    inherited judgments, and independently authored/executed current content/preservation
+    checks and verified actual execution receipts. Source-body interpretations are
+    explicitly inherited.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: Exact accepted nitrate science is preserved in the maintained record. All
+  48 paragraphs and 100 edges receive individual positive assessments from inherited
+  complete scientific review, checked against current bytes; fresh graph/table/reference,
+  output and whole-tree QA pass with explicit access and visual limits.
+source:
+  git_revision: 5ff01d7c59c61fd94b65b907edd50936193f7f17
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 32934d18cc23ca0d26199640888507df3635593024b944e5dd211fde3deb5cc1
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 856d8eb32df1a73ebc9cc28c5d533b992f29649b45063d4e340f1f727a7ce754
+    role: context
+  - path: data/pathways/nitrate-reduction-viii.yaml
+    sha256: 019deb06b1b58ae9c378b209a9e3815b6357685e13e6e3345b8be01aaf13f5de
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: history/infrastructure/nitrate-native-authority/2026-10-12T195840Z-codex-ba6e78.yaml
+    sha256: 93b1c3f65242847b27725932d60f7f15cbc7329414681af5e1dfa4647b42ab4b
+    role: context
+  - path: history/records/nitrate-reduction-viii/2026-10-12T195838Z-codex-78d49e.yaml
+    sha256: ab3161bac76f34bf32b590f2b611f5f5791a25a503ced31377e20a50f158f15d
+    role: context
+  - path: output/kgx/edges.tsv
+    sha256: 46c9979bb9a42f6da0074ad9639206c9410e332978fb4b6d91c82c641c55a1ab
+    role: context
+  - path: output/kgx/nodes.tsv
+    sha256: 7605e187d59a46956db1fa2ebd7c6e0ee4dd96d6ff1061ca24e1e1c372460928
+    role: context
+  - path: output/sssom/source_mappings.sssom.tsv
+    sha256: 44f84f9863f807e8b442d9946298c6b773c71946e2fab0666214e1373963debd
+    role: context
+  - path: pages/browse.html
+    sha256: eff9de2de7ec1dae21ac855a66c8ecd3b1372834cde548403c8897e89e785741
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 46c9979bb9a42f6da0074ad9639206c9410e332978fb4b6d91c82c641c55a1ab
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 537741617b33f3c04c90c73467375ca51d683deafffad5531927c68dc55921ce
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 7605e187d59a46956db1fa2ebd7c6e0ee4dd96d6ff1061ca24e1e1c372460928
+    role: context
+  - path: pages/index.html
+    sha256: 0765ec1b915f327e24b80e5a368b4f00ddf7c076bd13f32cb58bb898a59612f0
+    role: context
+  - path: pages/pathway_index.json
+    sha256: d1e247f893c557502b13669e68c5c93f01a7b64c947960d7383abacff3c98912
+    role: context
+  - path: pages/records/MetaCyc_PWY0-1352.html
+    sha256: f7695e383070cb027439ae8d0d3c7c750a0b1d20ec5c0cd58b82cb26e3b23bbc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/README.md
+    sha256: 6f2bb14fcfe2af878ef64bac0b9337529358061e10499022c2ab00bdaf75b7b6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/archives/evidence-bodies.zip
+    sha256: 740a9622a76ca5d0ae16a815d2c9ca6e1871512c86fb198215a97c89382c9d1a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/archives/integration-preparation.zip
+    sha256: 79d46d7a8d753067d71e5e1e75fe1f2bb464af1c13bc4e5863549bcb6b98a71d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/common.py.gz
+    sha256: f6ee8566a9d4dd32fb21dd1611125a933e3d101e68ff600ea1a5561035d927b2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+    sha256: 310b057146fa5b6c6412029fe03de4e7eb81220d30b3267ba137d1d6b38c9b85
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/external-packet-closures.json.gz
+    sha256: ff9df8001f93ad39dd609d46aa41e5958844acdc67744f5548c71402d386951a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/integration-preparation.json
+    sha256: e79ec8574d3b41213615c0fae7422ac38913c9420c960c1f8bb86e416bb3d0ba
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/local-integration-decision.json
+    sha256: 22d70261d0de0fad3e1f2a652265d4a255da56e8b777f79787d3b1891e0b4fd0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/README.md
+    sha256: dbadb3391c01c193fce4fcde6f119a811de8c7226ed72198048a3f1f1b9cd184
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/adopt-root-evidence.py.gz
+    sha256: 1226d997517ad5e875f3476bd91a3fcc84aed8d806ab28516b226ed554dad3c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/adoption-acceptance.json
+    sha256: 8309e4364fa8652ac2ec7f2dbee164bf83e8d4db729eff0ab48785a40f5abeec
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/completion.json
+    sha256: ed272b522293344d475386e3d7b00057f26980a17582a44510f5b5cc8137e19c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.execution.json
+    sha256: 3e904a21f20fb5889e01b17a29af4d76a6183b5773c69445e6d461ad96418b02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.stdout.gz
+    sha256: 3172986aa4a921abe2c1622aa36d77ccd460ca3eaa266bc53c39b0302c9785fd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.execution.json
+    sha256: 7f004cea3f85307704f799d045c2bcf7d7ec122738c7b53ad6a41faaedb54efd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.stdout.gz
+    sha256: c7fda2031ad4283364d0c1ff56306f8dd1af96d4d26a9282aa4cacaf20d71634
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.execution.json
+    sha256: 2f030bd69f72cff40d0aa0807dbbc0edafdb36d2d944d1b21f64c0cb79ffc7f4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.stdout.gz
+    sha256: 7355fc3c17056965e605f3f0f605c1b281ad6e768072d0d2f968ff056fa8f51e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.execution.json
+    sha256: da2e6d9c7da39c9ee8d0e59e97483f7f11d91ae23dc9994d687d4031d24e9213
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.stdout.gz
+    sha256: 5eda5cd373e972ce1c6343642cd1dfa52e5dc2108cfce92ea819e4e93a2af9a6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom-preservation.json
+    sha256: 2c0d8c8cbafb150c38adb0d861894cddb32c3058145057b36f2f469a419daa00
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.execution.json
+    sha256: ac4cbcb462d60054b2bc2ba4d4e875b0a7c9a1242dc26aec334ec99213bc6849
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.stdout.gz
+    sha256: 51e729ff16a99469dbfd0c14a60604bbfa9967a487d43a093a0dcf951e4800d0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/completion.json
+    sha256: 0a84ace70a17951aeb71ab52ef580259f3f8992463bfffd0cf4173510bb80011
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.execution.json
+    sha256: 626078df413c1199d6ce5f49dec475df923139327baa66a6859c6a060367b184
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.execution.json
+    sha256: d3a3805a03ff91b302d6d883746fd34f69f53b7b073fc8a70c78605614af3de5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.stdout.gz
+    sha256: f24b2bba4fde571dbc53eabd3b48751a96af747cf71ff5fecc1643bb457e781a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.execution.json
+    sha256: bbe8821aca067246df00d0dd0ff91aa4e3fd1bf81ff772af88b1ecb97a542b24
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.stdout.gz
+    sha256: 84eb2f5823f900ef37165db66efb1234f4f1b653ddd847144fe9c2ae287ce18d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/failure.json
+    sha256: 8e01fce5e9da618d221dcdb589e63db136af51ff0466bc636271e4dc3748576d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.execution.json
+    sha256: 76dd491d57a7d2e29aae5352ee2c61413ec17c2089b813e68c324960a755ed14
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.stdout.gz
+    sha256: 586b2ea9b28efbaa0caddec244a210b2cec28dc398210738adcfdecfcefdaf22
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.execution.json
+    sha256: e3bfec030c3e469aed5e93d12ba73c26e3f2d5eddd065b5c09f523e04612999e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.stdout.gz
+    sha256: f3af4d142827f5aad2eb0c72d556d325488a57fb6219aac10afeb51085667d53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.execution.json
+    sha256: 32e8e675e14f5a77f25fd41cdd56c3278a5837b6223e516237c53157e0abbabc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.stdout.gz
+    sha256: 3f2a39d0e6745bc06636532dbc5587af952b3d848b70161a22d32b0818592251
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.execution.json
+    sha256: bd6e783f851c8a7b9518f2660614c1860e2cc1c189dc97cec8528116d1f88205
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.stdout.gz
+    sha256: e20dd937156ac4c725cba915e13701090b494ab8fc1955227a17cee060ceac1a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.execution.json
+    sha256: bc082723fff91c9ac5cb2488e16d325b1f1bfad6d2d78511cdf35407cd9ca770
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.stderr.gz
+    sha256: c4c9af4108a66171fc2bb938ec783626725a3456a2f1daa4bb27f2b474a05f62
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/REPORT.md
+    sha256: 76db04a98e37d26ff43116bf3ef08d1898cb8d148efedb2862b1f4e723a4069a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/audit.json
+    sha256: 3b255ced47f0f5052628b0eaff3d3c1577b1c8fea586e3f33b6fab66e20bc556
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/evidence-bindings.json
+    sha256: b829df96ee71076263cfe99a3a2094b7cbfe6b6a5f2a5bc74967677fee99cf8d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/full-tree-check.json
+    sha256: 95462458ab5f118fc3bed9322891360abdc9e0f9f21744c3430123be9b52a7a2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/package-index.json
+    sha256: b08f96494b04e1eceab9bc2416c3fc0835ce038b8b1abe062fb5b0595b7af825
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/portable.stdout
+    sha256: aef5170284e19477dcc12c83bd0f89d095b6c86364deb1bfd10e9fea3f1553f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/static-visual.json
+    sha256: ea7f30b38f9818f806d58f900e87fb0c2dcc49e7b92d8ef12566c348b66b83bf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/native-stage-runner.py.gz
+    sha256: cf23e2cda4c0d60765b779c99a8a66b9ffad06d0628e876210821bfddd3044b1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/network-resumption-runner.py.gz
+    sha256: 73aa580e916c3800f4199ae17be0af00c38357177f446b79fbc6095bc80913f4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/REPORT.md
+    sha256: d10ade86db6d043d46cbdb1d3e3c1889a8ffa2b39204a84f533ef59e3441ad4c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/artifact-manifest.json
+    sha256: c2a93d3e4fa95654456400987685a92631efcfc44477e181463018ba3417d732
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit-results.json
+    sha256: 644ab00541ca1a0a060ec80e68abd4f8865105d6736cbaa0416a2806e89a06c6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.json
+    sha256: 84acb2a02c39ece5c0ef830f62bad449c4acc78c7efb0626cc186c1c28989bb5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.py.gz
+    sha256: ec19d94c1a7fce1649e6a8e798bc613a38630eeaeba19869b819b33431336559
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.stdout.gz
+    sha256: 9bab73dfd9de863fe56da5402df5ee8598e5fcae6651bdaa2373190f86806599
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/disposition.json
+    sha256: 81a6c050e1a69daf8a204651e83a521fa3f365a39691d0e27d909ca811e28484
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/fixture-accounting.json
+    sha256: 2d3cc5f308618a7f2ba7becfc190c6dc21aca525ca25dded8707057a7d436482
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/fixtures.zip
+    sha256: 326a08ddad7b49b885c500790c0fff76d171fe430a9117a03606d6594d06eb39
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/handoff.json
+    sha256: 545b245573896d24efa0e0ad29ca5adea44ab59f6aa559fd2525dcd393ea9606
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/read-coverage.json
+    sha256: 8fe6b7bb518371f368dec8b17c60ec07defe8fae3dda40d9ed14b62659179558
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/read-diagnostic.json
+    sha256: 565e11dcb48bb5196b0cb91f08e08e3e5b542bd01be790ca439d2b10477aecfc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/reused-guards.json
+    sha256: 76a9d66f27348a10a6210d0673c273b7f004ca4cdf90e975425f26a63d60c428
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/reused-guards.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/reused-guards.stdout.gz
+    sha256: cf347261b54c6fcca865fa615f144e916d1884d4f5eea1134df32fe9ffb9b8bf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/run.py.gz
+    sha256: d4a669762eee106e025d08221cfb643f97dc60f3db4f97274ccf7fe6f369c0b5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/seal_review.py.gz
+    sha256: ee1c22c211b07e7dcbef7ea3a5110945c91c183f551f42857d369ffd4f35b9aa
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/test-rebase.patch
+    sha256: f7c800722c6447b454c90425c36673ef6cc97df30059fb06964c7edfc43bdc02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/test_controls.original.py.gz
+    sha256: 52a329c7553f97787682f14c481e4d41b29013752605cc2767636e555be206dc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/test_controls.py.gz
+    sha256: fa1ded90f20ba85c427959e82da46a1ecd013b0c74751d44232932d8aa3ae8ee
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-adoption/receipt.json
+    sha256: 3ee32ff7b76f530f25e081eab8f8efbd919a1e65e2e0308433b39efd27ea60d7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/REPORT.md
+    sha256: 3517c6951498e43a71d45b4bf94751b8b5dd7c3783fcd580c3f60319d97c82d4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/artifact-manifest.json
+    sha256: 2f1c7df22dbcf3111a01e6553b49750857e6d434d43186ff1e84b6222c69acfb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/check_checkout.py.gz
+    sha256: 8f4a0d7271528299614ccdbe900bd13726ad0d02446aa261ce3b0d2414a76de9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/check_target.py.gz
+    sha256: be18a607aba5af1f0ae19c45e701df834b4f7d99f808f37a80a9c18c2aafe4bf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout-preservation.json
+    sha256: 68a7b8c4729438f2bfaf334c38cfb4554100b33922b6e2dacdb3c05bbde4e6de
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout.execution.json
+    sha256: da9a04382d5aa462a513d9c98cd22eee19ed65d9a69daab8fdc6286f7e0603fc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout.stdout.gz
+    sha256: 8ace2d7906efaf7337e47d6df27a721876f1a0bea57bf26955f4df4d2f753bf1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/handoff.json
+    sha256: 068c0ac957a87d16d706544c9a0af92cba9e453010185dc6fd21ef43ad2bd148
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/inspect_targets.py.gz
+    sha256: 9f7b0deda5181b3e843b4830c65c9446e09cad3765235bdb87771a866d6aa799
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-inspection.execution.json
+    sha256: a9bf075cea9d1aa5aad4d3b7fff31fc8a74cf448128af03087c1cb309ec0106e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-inspection.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-inspection.stdout.gz
+    sha256: 85b009c00c704e037343b3057f0ccb8f77926190f93287c716427c0403dd2af7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-targets.json
+    sha256: 1521abc8657fd920bea115e18f9d17df9fe6ee585c6fac8f888952579f589f8e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target-qa.json.gz
+    sha256: f7073ab9e83b1aef5460ea3bf992c2a4c3d287afefb7619a2cb66db7fa05783f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target.execution.json
+    sha256: 69543d9f72aca9fdbe81e71302efc80ae24dfcc8b31ef3f87477f551d289257a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target.stdout.gz
+    sha256: f46c5eced9a301f20b29c58140da170cd8b7e85bd561c732fc0a4d04d6c1af1d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-inspection.execution.json
+    sha256: 41522abac6c7c39fddbff53861f193809cf40b05eec111a36040c2fd9864e170
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-inspection.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-inspection.stdout.gz
+    sha256: e57239c5558106891c3b824a1724a86c0ab90c618e6abd26263beb5e42d3b09c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-targets.json
+    sha256: b3f54a9ed62209e2c5a4e5d50d87711167282f35d9e1d96230cc15c65a59a8ce
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-storage-map.json
+    sha256: 3983020585478463feef35499a2db12e1be60d32f694a02e35d92019a9285e22
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/assets/pathway-network.css
+    sha256: ffe62865f9ede1d8ae7c361a5576823921c850542cf03d2ca7b3c945d63d7645
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/assets/pathway-network.js
+    sha256: 23b6fc25a1522c945cf61b7c269dadf93a90b8c78c357652e6653a05bcb97eac
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/graph.png
+    sha256: 49e30f937ac52762e4b30cab5bbcfe4ae44e16be3ce6ef98993ea41085567998
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/graph.svg.gz
+    sha256: 4408fcd08392e9d7173e302695b0a6cb36194b3ac747c66cd44d66e149f309f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/preview-scope.json
+    sha256: cbcc261d7d5d62d4f39e4f32580063a6bc4e8255e088fb71a6d757d42eca650a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/qa.json
+    sha256: c73492b2123b4f20eccf05e2eee8eb8e9f2710f6af9ddf126f45b8b9f2a055c0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/records/MetaCyc_PWY0-1352.html
+    sha256: 8f4e4d9cb562db0b3e649e420589ac67958c6fe8f061eec5487442e34b32093f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/style.css
+    sha256: e4516964a76d665e2b4f098764656866bc5f673b72ab67badb1def724fb3e44c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/visual-assessment.json
+    sha256: 9d5b6922fe662ac4712f7acb1a8a18c4ff129673cb60a9f7f15ab6bc9378714c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/verify_portable.py.gz
+    sha256: 2137585fa9232b889a360cee1972677ae203b6c475117335bc115927978ba04c
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: df277b9222b84ed0d225d6a9e2c8933ac210773239d46e26faf77e19e179d923
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+scope:
+  description: Exact accepted nitrate science is preserved in the maintained record.
+    All 48 paragraphs and 100 edges receive individual positive assessments from inherited
+    complete scientific review, checked against current bytes; fresh graph/table/reference,
+    output and whole-tree QA pass with explicit access and visual limits.
+  selection: Exact nitrate local integration on PWY commit5ff01d7c59c61fd94b65b907edd50936193f7f17
+    including all maintained selected targets and complete physical tree before native
+    review saves. Full actual-tree adversarial integration assessment is included.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY0-1352
+  exclusions:
+  - target: Fresh primary-literature and line-by-line adapter review
+    reason: Accepted complete scientific and runtime interpretations are inherited
+      exactly; fresh work is complete maintained integration and output QA.
+  - target: Future native review save and local commit
+    reason: Root-owned later actions require append-only/input checks after these
+      external drafts.
+targets:
+- target_id: MetaCyc:PWY0-1352
+  path: data/pathways/nitrate-reduction-viii.yaml
+  label: nitrate reduction VIII (dissimilatory)
+  kind: maintained
+  ownership_note: This maintained YAML owns scientific claims; pages and KGX are derived.
+    Whole original science is inherited from the accepted independent review and exact
+    corrected successor.
+checks:
+- check_id: gate-history-1
+  name: Root-executed history-1
+  status: passed
+  required: false
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind record --slug nitrate-reduction-viii --target-root data/pathways --event
+    CREATE --outcome changed --summary ''Add the complete evidence-backed nitrate
+    reduction VIII record.'' --details ''Adopted exact accepted MetaCyc:PWY0-1352
+    science: 48 paragraphs, 100 edges, 64 named identities, four endpoint qualifiers
+    and 107 references. Preserve complete event and constituent sides, named assemblies,
+    chemical/polymer scope, constructs, assays, evidence tiers, source conflicts and
+    access limits in research/pathway_additions/2026-10-12-next-235. Actual native
+    outputs independently reviewed and root accepted. Local integration only; fresh
+    maintained gates and saved integrator review remain pending.'' --actor-name codex
+    --agent-tool codex --model gpt-6'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-history-1
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-history-2
+  name: Root-executed history-2
+  status: passed
+  required: false
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind infrastructure --slug nitrate-native-authority --path scripts/build_source_identifier_snapshot.py
+    --event EDIT --outcome changed --summary 'Integrate complete typed nitrate authority
+    contexts and accepted native snapshots.' --details 'Adopted exactly 27 accepted
+    runtime/configuration/documentation/test owners and two actual native snapshots.
+    Typed Pathway and partial EC context, whole named assemblies and conflict registry,
+    four chemical profiles and literal-plus context preserve all old contracts and
+    all 265 UniProt first-owner objects. Polymer additions follow native order 9537,9539,9565,9566.
+    Issue501 receipt correction and actual execution lineage are retained as external
+    evidence. All prior owners and cache identities preserved; no publication. Fresh
+    maintained gates and native saved review remain pending.' --issue 499 --issue
+    500 --issue 501 --actor-name codex --agent-tool codex --model gpt-6
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-history-2
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-sssom
+  name: Root-executed sssom
+  status: passed
+  required: false
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_sssom_main; raise SystemExit(export_sssom_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-sssom
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-render
+  name: Root-executed render
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-render
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-skills
+  name: Root-executed skills
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-skills
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-validate
+  name: Root-executed validate
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-validate
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-tests
+  name: Root-executed tests
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-235-local-gate-tests-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-tests
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-lint
+  name: Root-executed lint
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-lint
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-kgx
+  name: Root-executed kgx
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-kgx
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: historical-vendored-DNS
+  name: Historical DNS failure
+  status: failed
+  required: false
+  summary: Original failure preserved; successful vendored retry has its separate
+    receipt.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - historical-vendored-DNS
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-vendored
+  name: Root-executed vendored
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-vendored
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-diff-check
+  name: Root-executed diff-check
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-diff-check
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-site-current
+  name: Root-executed site-current
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-site-current
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: independent-audit
+  name: Fresh complete maintained content/preservation QA
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fresh-qa
+- check_id: portable-replay
+  name: Adopted portable evidence retrieval
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/portable-check/verify_portable.py
+    --adopted --root /private/tmp/pathwaymech-next-235-local-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - portable-evidence
+- check_id: tree-inspect
+  name: Full actual-tree audit and native inspection
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/inspect_and_check_tree.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - full-tree
+- check_id: bindings
+  name: Review closures and root execution bindings
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/bind_evidence.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - actual-receipts
+- check_id: browser-interaction
+  name: Browser interaction
+  status: unavailable
+  required: false
+  summary: No interactive browser was available in the root preview. Fresh static
+    image view and exact DOM checks are recorded; no keyboard/search/JavaScript test
+    is claimed.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - static-visual
+evidence:
+- evidence_id: current-target
+  kind: record_content
+  reference: data/pathways/nitrate-reduction-viii.yaml
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh complete reading of all 2,550 YAML lines. Exact accepted successor
+    retains 48 paragraphs, 100 edges, 64 named identities, four endpoint qualifiers,
+    six mappings and 107 references.
+  snapshot_sha256: 019deb06b1b58ae9c378b209a9e3815b6357685e13e6e3345b8be01aaf13f5de
+- evidence_id: fresh-qa
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/audit.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh independent complete HTML graph/table/evidence correspondence, baseline
+    owner preservation, actual authority object/order and complete old KGX context/edge
+    preservation; exact SSSOM additions.
+  snapshot_sha256: 3b255ced47f0f5052628b0eaff3d3c1577b1c8fea586e3f33b6fab66e20bc556
+- evidence_id: portable-evidence
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/portable.stdout
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh read-only adopted resolver retrieves all 2,907 whole bodies / 360,050,720
+    decoded bytes without external temporary original reads or extraction.
+  snapshot_sha256: aef5170284e19477dcc12c83bd0f89d095b6c86364deb1bfd10e9fea3f1553f3
+- evidence_id: full-tree
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/full-tree-check.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: 'Fresh full hidden/ignored-inclusive actual-tree census: only approved
+    owners, derived outputs, two histories and the exact root evidence map additions.
+    All 800 shared cache identities unchanged.'
+  snapshot_sha256: 95462458ab5f118fc3bed9322891360abdc9e0f9f21744c3430123be9b52a7a2
+- evidence_id: actual-receipts
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/evidence-bindings.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh closure of accepted science 340+2 and independent integration preparation
+    19+2. All root command receipts and original stream hashes verified, including
+    the initial DNS failure and successful exact retry.
+  snapshot_sha256: b829df96ee71076263cfe99a3a2094b7cbfe6b6a5f2a5bc74967677fee99cf8d
+- evidence_id: static-visual
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/static-visual.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh view of full static preview raster and equality of actual maintained
+    SVG to preview SVG. Dense junction labels overlap; no browser interaction is claimed.
+  snapshot_sha256: ea7f30b38f9818f806d58f900e87fb0c2dcc49e7b92d8ef12566c348b66b83bf
+- evidence_id: scientific-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: b38f2f789a51496a90c9308a0e936d9a7aa7e316f98a4f0938e0b6f9901269a7
+  locator: body_lookup[b38f2f789a51496a90c9308a0e936d9a7aa7e316f98a4f0938e0b6f9901269a7]
+- evidence_id: paragraph-assessments
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: 7ec5e955f518fc2e14ecc121724fcffafc5d43098e19cd5c93261cee4fdd4b66
+  locator: body_lookup[7ec5e955f518fc2e14ecc121724fcffafc5d43098e19cd5c93261cee4fdd4b66]
+- evidence_id: edge-assessments
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: a7fe1383fd555faec83c636057ce440a5a8fa187df8f652058862d87f0b46fd0
+  locator: body_lookup[a7fe1383fd555faec83c636057ce440a5a8fa187df8f652058862d87f0b46fd0]
+- evidence_id: scientific-dispositions
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: daf9160298b150269df31af7a7269841d2fd62ab0364f3b66bf8559b0f78b3df
+  locator: body_lookup[daf9160298b150269df31af7a7269841d2fd62ab0364f3b66bf8559b0f78b3df]
+- evidence_id: integration-preparation-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/REPORT.md
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: d10ade86db6d043d46cbdb1d3e3c1889a8ffa2b39204a84f533ef59e3441ad4c
+- evidence_id: actual-output-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: c8932dccacc84671379cae46ae1087ce81c4d0b19fae530b6b69c95c20444a0d
+  locator: body_lookup[c8932dccacc84671379cae46ae1087ce81c4d0b19fae530b6b69c95c20444a0d]
+- evidence_id: gate-history-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 3e904a21f20fb5889e01b17a29af4d76a6183b5773c69445e6d461ad96418b02
+- evidence_id: gate-history-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 7f004cea3f85307704f799d045c2bcf7d7ec122738c7b53ad6a41faaedb54efd
+- evidence_id: gate-sssom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: ac4cbcb462d60054b2bc2ba4d4e875b0a7c9a1242dc26aec334ec99213bc6849
+- evidence_id: gate-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 2f030bd69f72cff40d0aa0807dbbc0edafdb36d2d944d1b21f64c0cb79ffc7f4
+- evidence_id: gate-skills
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: da2e6d9c7da39c9ee8d0e59e97483f7f11d91ae23dc9994d687d4031d24e9213
+- evidence_id: gate-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: bd6e783f851c8a7b9518f2660614c1860e2cc1c189dc97cec8528116d1f88205
+- evidence_id: gate-tests
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 32e8e675e14f5a77f25fd41cdd56c3278a5837b6223e516237c53157e0abbabc
+- evidence_id: gate-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: e3bfec030c3e469aed5e93d12ba73c26e3f2d5eddd065b5c09f523e04612999e
+- evidence_id: gate-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 76dd491d57a7d2e29aae5352ee2c61413ec17c2089b813e68c324960a755ed14
+- evidence_id: historical-vendored-DNS
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Historical DNS failure, superseded by successful exact-command public-read
+    retry.
+  snapshot_sha256: bc082723fff91c9ac5cb2488e16d325b1f1bfad6d2d78511cdf35407cd9ca770
+- evidence_id: gate-vendored
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: bbe8821aca067246df00d0dd0ff91aa4e3fd1bf81ff772af88b1ecb97a542b24
+- evidence_id: gate-diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 626078df413c1199d6ce5f49dec475df923139327baa66a6859c6a060367b184
+- evidence_id: gate-site-current
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: d3a3805a03ff91b302d6d883746fd34f69f53b7b073fc8a70c78605614af3de5
+assessments:
+- assessment_id: paragraph-P01
+  area: evidence
+  topic: Complete narrative P01
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Complete NADH→generic menaquinone→nitrate route is supported. Nitrite
+    is the boundary; neither downstream nitrogen chemistry nor Nap, ATP synthesis
+    or transport is added. Native NrfA hexaheme background is explicitly not adopted.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 b10cb3fb5109f524f17b763cb04abe130b5ce22399849110b7b555bac3aee5e3.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P02
+  area: evidence
+  topic: Complete narrative P02
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Both complete native LEFT-TO-RIGHT composites retain all 13 occurrences,
+    scalar protons, vectorial protons, unit nonproton coefficients and unspecified
+    carrier compartments. CCO in/out interpretation is confined to the E. coli inner
+    membrane.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 5ecef061584ea63636c5dc8925e66f7dbd6e9ff87ee241b6d9390dc40e5f9cd4.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P03
+  area: evidence
+  topic: Complete narrative P03
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: All five native constituent events and all 19 sides are retained as
+    decomposition context. Electron tokens do not become invented Compound identities
+    or extra biological route events.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 9c98c2bd3d39189ea7ea65cff98f92990f6ba126ad1388e65a8e4fdbd99befc0.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P04
+  area: evidence
+  topic: Complete narrative P04
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Both full Rhea reactions and their 13 sides agree with whole RDF originals.
+    POLYMER 9537/9539 retain generic n and distinct Rhea versus MetaCyc projection;
+    no fixed MK-8 substitution.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 b5d374aab4ba199ba991123bfb1b4179dd5f536748e478a1f39b1f2f7dc41189.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P05
+  area: evidence
+  topic: Complete narrative P05
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Source whole-chain coupling conventions are reported conditionally.
+    Scalar chemistry and translocation are distinguished; native 4H/NADH versus lower
+    reported 3H/2e and modern relative measurements are not falsely resolved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 548cb4cbdc6ee0cc3569c0d4f949ab2132023f0376761329261b30cadebf991a.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P06
+  area: evidence
+  topic: Complete narrative P06
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NDH-II alternative, nitrate-versus-fumarate/DMSO growth and NarL expression
+    context are supported by source annotation and indexed primary context. Association
+    is not made into a fabricated native supercomplex.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 8e7d37ab835be2b897178d93f10127d68f973824b0b51ecb8a9c9d560a2bdeec.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P07
+  area: evidence
+  topic: Complete narrative P07
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: 1977 demethylmenaquinone pool and NADH/nitrate-negative observation
+    is preserved without concluding that every native generic-MK species or preparation
+    behaves identically. MK-9 purification evidence is not relabeled MK-8.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 88f90b0991fa55e64ca7e9e928496aba4d04fc75dd663cce463e2de383f8d645.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P08
+  area: evidence
+  topic: Complete narrative P08
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Thermodynamic potential and reverse-direction discussion retain their
+    source and assay conditions; not a claim that this E. coli route is a nitrite-oxidizer
+    pathway.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 6ab5c84c5d6248662cb43176a946d0f6c705b3c9300efb377e34e2e2231c46fb.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P09
+  area: evidence
+  topic: Complete narrative P09
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NDH-I nested assembly is complete: seven membrane polypeptides plus
+    the six-component peripheral complex, 13 polypeptides because C/D is fused; all
+    source component counts are one.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 5d6ca39acd4951c00c51c7b6142aa9b7aafc4639c946063ca04a7a82cd92e63e.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P10
+  area: evidence
+  topic: Complete narrative P10
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: FMN and the complete nine FeS clusters are supported. NuoE/NuoG off-path
+    clusters and N2 electron-transfer role are distinguished; source annotation evidence
+    tiers remain visible.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 a42bb9384b209edeb82c916b1fbee7ab2d72802ac967e72487e40008c6b3eee7.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P11
+  area: evidence
+  topic: Complete narrative P11
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Modern quinone-site architecture and older multiple-site/semiquinone
+    interpretations remain separately attributed; no unsupported experimental resolution
+    is claimed.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 abca0939a8561890fadf147f56923db3df41ae7dab806db6c0668c6e56959eef.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P12
+  area: evidence
+  topic: Complete narrative P12
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Complete nanodisc primary body supports native genomic TwinStrep/TEV-NuoF
+    BL21FS constructs, microaerobic growth and distinct purification. MSP2N2 is the
+    scaffold, not an overexpressed nuo operon.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 64e0c7b039c307141e29f47dcc90a352f72118455f0d33f4accd2e4c28886bec.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P13
+  area: evidence
+  topic: Complete narrative P13
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole 2021 nanodisc results/Methods support separate Q1/DQ and LMNG
+    activities, inhibitor values and DQ detergent supplementation. Unsealed nanodiscs
+    do not establish proton pumping.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 ad19346a1c898f31341c938e581c123162a8ecf91a91d55d20946930613e8b11.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P14
+  area: evidence
+  topic: Complete narrative P14
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Nanodisc resolution/structural-state limits, missing NuoH density and
+    possible resting/uncoupled preparation are accurately distinguished. NuoG Table2
+    omission is not used to remove N5.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 b87869f700868c738e607bd57081c5f8fccb10f10616cf361d91921dc9778f70.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P15
+  area: evidence
+  topic: Complete narrative P15
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole 2021 quinol-anion paper supports LMNG/DQ/305nm inference, D213G
+    and conditional semiquinone absence. Inhibitor 10mM stock is not mistaken for
+    10uM final and ~60% activity remains, rather than 60% inhibition.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 66f10a8bfb7eaff0d1216051b2a18daefa70f642ebc4fc3f5c69b5de3db1f1e5.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P16
+  area: evidence
+  topic: Complete narrative P16
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole human-variant paper distinguishes conserved bacterial D213G from
+    the human triple change and unstable V259A from stable D213G. Membrane/purified
+    electron-transfer rates match their own contexts.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 31873da2e437204f42afcae70814f6c0e889bca32d78b82f8cb9a80c5db3d45d.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P17
+  area: evidence
+  topic: Complete narrative P17
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Pre-reduction lag, proteoliposome orientation and relative pumping
+    are supported. ACMA Figure6 versus Methods NADH discrepancy and separate oxonol
+    assay are retained; not an absolute universal H/e value.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 7984ee61cd5fc6ed765f6f86d3271710a97b88b11b0f7bc9ba7290d3ddd1917b.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P18
+  area: evidence
+  topic: Complete narrative P18
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole N1a paper separates Aquifex structural experiments from E. coli
+    G135D/S and V96P/N142M mutations; binding/redox kinetics support conditional interpretation.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 b2c7e2626d61c96a957f60a65f7299c58a02c66503239944a43838b7ed852a6d.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P19
+  area: evidence
+  topic: Complete narrative P19
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Complete tables/figures preserve mutant ROS denominators, NADH concentrations
+    and relative versus absolute values. Peptide-switch mechanism is a proposal with
+    later nanodisc counterinterpretation.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 15489e30d249776e14641432a1114bdb07a7398d8185331a3ad5313e4478e0c2.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P20
+  area: evidence
+  topic: Complete narrative P20
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Native and whole UniProt cofactor/activity contexts support NuoE acidic
+    variants and NuoG NADPH/cluster observations without generalizing them to all
+    wild-type NADH nitrate respiration.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 0f4897a384cbac36ce77465411c997e532767d8ec52ef488cad9cad8f52a7a0c.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P21
+  area: evidence
+  topic: Complete narrative P21
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NuoB acidic/Tyr and C/D crosslink observations remain exact subunit/variant
+    evidence, not unsupported additional route reactions.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 7e4fb9b9c66a682177a5064abf85e745bbaf09b6f992aa3298befc589d157d41.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P22
+  area: evidence
+  topic: Complete narrative P22
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NuoA/H/J membrane topology and specific mutants are source-bound. Historical
+    topology annotations are not silently used to override modern source accounts.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 28778dda439ebe5271e7a8a0c46fa97afe59c4632ac6731e426e6a0b3ce7b18f.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P23
+  area: evidence
+  topic: Complete narrative P23
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NuoK SecYEG/YidC assembly and conditional mutants retain experimental
+    organism/construct scope; they do not add these insertion proteins as mature NDH-I
+    subunits.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 c44e0d53708b7355faac69ab94f9110524c029f4c1eba0d42f69211bbf96d890.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P24
+  area: evidence
+  topic: Complete narrative P24
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NuoI/G cluster and complex stability plus crp/cyaA cellular contexts
+    are retained as mechanistic or regulatory context, not new electron-flow events.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 90415f37e0fd01e9b64cb51467e9317b349cde3654bea96499926b404ccfb0e5.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P25
+  area: evidence
+  topic: Complete narrative P25
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Modern antiporter-like L/M/N transmembrane architecture and older NuoM
+    topology are explicitly separated; source conflicts are not silently normalized.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 34249b38f37919c631aca494d7bb428b3fba0ed9159f4daa4dc95550ccca0a9a.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P26
+  area: evidence
+  topic: Complete narrative P26
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NuoL deletion/fragment effects, loss of NuoM, D563 and V259A observations
+    preserve distinct constructs. MrpA fragment behavior is not attributed to the
+    intact native complex.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 10aac3b542e9ac1f1c155b7c6a344faeaca492f171a6a994431bccec2394f313.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P27
+  area: evidence
+  topic: Complete narrative P27
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole 2016 NuoL paper supports His9-NuoE MC4100 preparations reconstituted
+    into NuoG-N1b/ndh-deficient membranes; residual transport/oxidases and non-equivalent
+    membrane context are acknowledged.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 cda492e160547fa993b54a9d532720bbf22b4407774b070a9464386e300b9815.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P28
+  area: evidence
+  topic: Complete narrative P28
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole tables support Mg10–20mM, Zn2uM WT 24% pumping reduction without
+    WT electron-transfer loss and EIPA15uM remaining activity. Mutant electron-transfer
+    exceptions, M/uM caption typo and D178A/N text conflict remain explicit.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 9d8b46c81d66c0fdf089a1dc6b3c470926dea620dba4018233cc724de9938885.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P29
+  area: evidence
+  topic: Complete narrative P29
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: The 2016 mixed MK/UQ pool and ~2.5-fold menaquinone enrichment do not
+    become pure MK-8 evidence; 54.9% relative coupling is not a calibrated absolute
+    stoichiometry.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 9b3eea7b19e4cdf4e5fac98055801a5911d43575be4c5e7b8b8c4e25424d2511.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P30
+  area: evidence
+  topic: Complete narrative P30
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NuoN/L/M antiporter-family comparisons, K395/K158/HAMrpD variants and
+    simulations are qualified by construct and rich-versus-minimal growth context;
+    not a universal mechanism proof.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 449ada58386bf9f55b80d954bd89ee118678c4bb4fa0c4f49037fa3239ad70a1.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P31
+  area: evidence
+  topic: Complete narrative P31
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: nuo deletion and conditional growth phenotypes are distinct from ndh
+    deletion or physiological preference of NDH-II. Species/strain-specific source
+    contexts are retained.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 45bb7e5d7ced95f1f840a0758c5c440c66f0813fef4a2903783f9b1988e07682.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P32
+  area: evidence
+  topic: Complete narrative P32
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Original has supported finding nitrate-nuoc4-regulatory-entity: nuoC4
+    conflates the nuo operon with C4 dicarboxylates. The exact successor replaces
+    only that phrase; adjacent lipid/Ca/tellurite/evolution claims and all citations
+    remain unchanged and supported within their source tiers.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 b70aa40dde418e0bd0fa0610dbf7ee040e3897cc5376eea9c003f390979ebf76.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P33
+  area: evidence
+  topic: Complete narrative P33
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole persistence paper plus complete original spreadsheets distinguish
+    native genomic NuoM F356C cellular evidence from S414R purified/reconstituted
+    experiments; no variant conflation.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 8386f2c356e91f270db4b20a074c0391874d79e8bf6a4ff86fbbfb42d1ce4315.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P34
+  area: evidence
+  topic: Complete narrative P34
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole 2022 Methods/results distinguish persistence from resistance,
+    repaired genomic alleles from nulls, and pBAD/His6-NuoF purified complexes from
+    cellular/ISOV assays. Reconstitution21%, accessibleorientation75% and empty-vesicle
+    background remain conditional.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 4b82d3285075db7083dfd89a013d6c0d6603f525e745a39723e0fd0deaf7d5a2.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P35
+  area: evidence
+  topic: Complete narrative P35
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Translation/RpoS/ppGpp and acidification remain study-specific inferences.
+    RpoS is not made sufficient or exclusive; relA/spoT controls, amine naming conflict,
+    modeled structure and engineered encapsulin-SpoT construct are retained.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 492cfbf18fa7c71f50dd0c4e2f879d1eb1de70dd83390e2cc94de23f974d3611.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P36
+  area: evidence
+  topic: Complete narrative P36
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NarI hemes→NarH FeS→NarG Mo/FS0 topology and cytoplasmic catalysis
+    agree with modern source annotation, sequence cofactor objects and bounded primary
+    context.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 6b1f37c0d0d956a25c938b649d15abb92ba66f6da9bb138348b20171ca178812.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P37
+  area: evidence
+  topic: Complete narrative P37
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Modern NarG His50/FS0 evidence and historical negative assignments
+    are explicitly separated; source conflicts are not erased.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 0ca87cfe2da31236a7fb1f88323f0ea0837f10d180e9917e7f78e017892ceb20.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P38
+  area: evidence
+  topic: Complete narrative P38
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Native NarA 2:2:2 component annotation and PDB1Q16 author trimer versus
+    software hexamers are properly distinct. Full bound PDB metadata confirms pVA700,
+    taxon562, unspecified strain, unknown-mutation fields, NarI FME and the specific
+    lipid chirality caveat.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 37b5e0dca25f05c5b8f8915aba17f2982ce438db31d639d7c5df88119eacce86.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P39
+  area: evidence
+  topic: Complete narrative P39
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NarJ/NarW maturation/assembly context is supported, with NarW similarity
+    evidence explicit; neither becomes a mature Nar catalytic subunit.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 55051d5a5a36338d8427e3a93c2585827dd84adc769ee9cb6f9bb77d1d97e0b9.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P40
+  area: evidence
+  topic: Complete narrative P40
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: NRZ native1:1:1, historical1:1:2 and modern dimer-of-trimers annotations
+    remain a disclosed source conflict. Graph coefficients preserve the exact native
+    representation instead of inventing reconciliation.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 af4c6f767e190bae575f75537e0414e60f1fe56e0c74abb191bfa703b809c83e.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P41
+  area: evidence
+  topic: Complete narrative P41
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Fnr and RpoS effects retain direction and oxygen/stationary-phase or
+    residual-activity context; expression regulation is not represented as direct
+    enzyme allostery.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 d8f3d8c55e2488e404c0ed17bdc43123c1b885e79dd4479737cecd07596f0b2f.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P42
+  area: evidence
+  topic: Complete narrative P42
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: All eight native inhibitor links were independently replayed through
+    regulator, regulated enzymatic activity and target complex. Source chemical forms,
+    azide ionic correction, cyanide species, pCMB structure and HOQNO/stigmatellin
+    distinctions are maintained.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 f7bb262d3603b8bfcfa97a6e76046b512d392e3ca95d234ce17f905696159001.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P43
+  area: evidence
+  topic: Complete narrative P43
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Aerobic tellurite hypersensitivity and anaerobic reductase activity
+    remain separate native/primary contexts; no reversal of the selected nitrate route.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 d81a3e3b883b1d8b7b1cc6cb5772306622fb0475a74d3873677252d9d2f36466.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P44
+  area: evidence
+  topic: Complete narrative P44
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: PathBank PW002092 conflates a different enzyme/compartment boundary
+    and is explicitly rejected as canonical donor-route evidence; not an omitted native
+    step.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 937e1b7855202d7398a4646fc49c19646381ed6f1685bb5f16089a1b90e91da8.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P45
+  area: evidence
+  topic: Complete narrative P45
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Access limitations are honest: 27 bounded primary contexts and six
+    complete main scientific bodies, not 259 full papers. Original spreadsheets are
+    separately inspected; inaccessible/unread supplementary PDF and other historical
+    methods are not credited.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 af79d773b67bd054d301693d081834e210d37f62a9aa2eb52eed9a7c076aca4c.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P46
+  area: evidence
+  topic: Complete narrative P46
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Older outward nitrate-site interpretation versus modern cytoplasmic
+    catalysis and conditional H/e measurements remain attributed. Atebrin and mitochondrial
+    model context are not universal E. coli findings.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 d3a7ce91aac0c931efb6f22f9d90243fc15d336aefc74c947f5861584a27da3f.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P47
+  area: evidence
+  topic: Complete narrative P47
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: HOQNO/stigmatellin binding, NarI heme bL/bH and H56R/DeltaGH constructs
+    retain exact source-specific distinctions; generic heme b is not forced to a single
+    oxidation state.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 d2b7d6ce766871a2b4cc3ded09b27d0b9b4dd774be7ac64c10ca95fc92976f5f.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: paragraph-P48
+  area: evidence
+  topic: Complete narrative P48
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against exact current
+    paragraph: Whole indexed NRZ purification/stationary-phase contexts support the
+    stated multicopy and deltaNarGHI constructs,230kDa/13Fe/12S and rich/minimal RpoS
+    distinctions without settling native oligomeric conflict.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - paragraph-assessments
+  - scientific-review
+  details: Current paragraph SHA256 ba907b635bc2abe3eefbac93dcf9ae3fe717efcaeeb111a8bb86d710873ecccb.
+    The original P32 finding is resolved by the exact accepted successor; full source
+    interpretation remains inherited.
+- assessment_id: edge-e001
+  area: graph
+  topic: Complete edge e001
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 76178fad44c7807fc0c9a625d1f7d959ce13c32dece9f707a08c9dabdaf46792.
+    Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "produces", "object": "CHEBI:15378"}'
+- assessment_id: edge-e002
+  area: graph
+  topic: Complete edge e002
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 c76cbad6a3965385cfe072023c8b3174d34c3ee90027ed01cbd1cd29ce97f89c.
+    Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "produces", "object": "MetaCyc:Menaquinols"}'
+- assessment_id: edge-e003
+  area: graph
+  topic: Complete edge e003
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 0f8244b3e29145113b6da3a99b3b0770f8bd3411dbe8552e0770f0d0bfae6a77.
+    Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "produces", "object": "CHEBI:57540"}'
+- assessment_id: edge-e004
+  area: graph
+  topic: Complete edge e004
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 9525d4565bea351b945c954e1ffa79f98b58f9c61ce2d2bb9e3d09677781e09b.
+    Triple: {"subject": "MetaCyc:Menaquinones", "predicate": "consumes", "object":
+    "MetaCyc:RXN0-5388"}'
+- assessment_id: edge-e005
+  area: graph
+  topic: Complete edge e005
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 217213ce353ae53e671340773fb97a6940c8d959b37801c7449750e5637197b7.
+    Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "MetaCyc:RXN0-5388"}'
+- assessment_id: edge-e006
+  area: graph
+  topic: Complete edge e006
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 4f7850e11c0cb46b05186fa4d7d356e0f8192bf2c03b12814583b520ec27fbef.
+    Triple: {"subject": "CHEBI:57945", "predicate": "consumes", "object": "MetaCyc:RXN0-5388"}'
+- assessment_id: edge-e007
+  area: graph
+  topic: Complete edge e007
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 460a056d692d64797b2bfc2684a41573bcdbd1f64c02dea51e162c2e009180f3.
+    Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "CHEBI:16301"}'
+- assessment_id: edge-e008
+  area: graph
+  topic: Complete edge e008
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 987053ad00b8aa3466b85d1657f7e46b3d078b8a38a6eb658105a754db1d0c33.
+    Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "CHEBI:15377"}'
+- assessment_id: edge-e009
+  area: graph
+  topic: Complete edge e009
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 fbf930bc67d34b4fdb90ec9f6ca36cd3146143b1e23d5ac240393d13b5e33c3c.
+    Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "MetaCyc:Menaquinones"}'
+- assessment_id: edge-e010
+  area: graph
+  topic: Complete edge e010
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 9448ebb4c42afb9af81830d2f07c633cdb50def12248035aa0953a72d3337803.
+    Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "produces", "object": "CHEBI:15378"}'
+- assessment_id: edge-e011
+  area: graph
+  topic: Complete edge e011
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 7e99c8ac3eb30aafa97b9c786e1e3e21cb21ea8c8566eebd1df6cfbd3ec3a1ef.
+    Triple: {"subject": "CHEBI:17632", "predicate": "consumes", "object": "MetaCyc:RXN0-3501"}'
+- assessment_id: edge-e012
+  area: graph
+  topic: Complete edge e012
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 38d7c5e1e77ebad82dc54216b7955fc1dcaf0ae8838d10eca8c6d3b608e8224c.
+    Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "MetaCyc:RXN0-3501"}'
+- assessment_id: edge-e013
+  area: graph
+  topic: Complete edge e013
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All complete native side endpoints, coefficient,
+    direction, compartment and exact Compound mappings replayed source-first; no dropped
+    side.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 5834f67c9affb01a68289e6e6635e3d198f44b905f95bb6265796f31d6983dda.
+    Triple: {"subject": "MetaCyc:Menaquinols", "predicate": "consumes", "object":
+    "MetaCyc:RXN0-3501"}'
+- assessment_id: edge-e014
+  area: graph
+  topic: Complete edge e014
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 55e6b5c63548c8ac135812b3e7e2b94fdb0697a6ba6aedde5dfe9bc7bc8e5b87.
+    Triple: {"subject": "RHEA-COMP:9537", "predicate": "consumes", "object": "RHEA:29100"}'
+- assessment_id: edge-e015
+  area: graph
+  topic: Complete edge e015
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 e68ec58a4ac0143692d155dbba629a9e2a7b1090288d1f757f9b6b151dea8276.
+    Triple: {"subject": "CHEBI:57945", "predicate": "consumes", "object": "RHEA:29100"}'
+- assessment_id: edge-e016
+  area: graph
+  topic: Complete edge e016
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 2d1f05160e0941914f1f1f0a959a88aa944b4dae4ca3eb541ad44ac9232cf8b0.
+    Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "RHEA:29100"}'
+- assessment_id: edge-e017
+  area: graph
+  topic: Complete edge e017
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 9ba88bf99ff170b4fe5748b530fe7e41e0e18c3d34490b89ba252049ccee2596.
+    Triple: {"subject": "RHEA:29100", "predicate": "produces", "object": "RHEA-COMP:9539"}'
+- assessment_id: edge-e018
+  area: graph
+  topic: Complete edge e018
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 9596538131a9b589be85802fe5cc97b1bfd883a98af132abd879616160fba09d.
+    Triple: {"subject": "RHEA:29100", "predicate": "produces", "object": "CHEBI:57540"}'
+- assessment_id: edge-e019
+  area: graph
+  topic: Complete edge e019
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 927891b6eb198b02950e99ef976c4994c104b70102da4becf9d7819bf1a20759.
+    Triple: {"subject": "RHEA:29100", "predicate": "produces", "object": "CHEBI:15378"}'
+- assessment_id: edge-e020
+  area: graph
+  topic: Complete edge e020
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 469408b8fe26c745aff9a19c05f967cbdd2bc28276ae400b0c592a7dddac238f.
+    Triple: {"subject": "RHEA-COMP:9539", "predicate": "consumes", "object": "RHEA:29136"}'
+- assessment_id: edge-e021
+  area: graph
+  topic: Complete edge e021
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 b0ce84b6b39ca0b4fbdd5594e760362bae48015f118a85e2a7f681a36b596fd3.
+    Triple: {"subject": "CHEBI:17632", "predicate": "consumes", "object": "RHEA:29136"}'
+- assessment_id: edge-e022
+  area: graph
+  topic: Complete edge e022
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 403a769a71439414cad386545c996ea09a67285cdb0bedf4401db2a7cd9b47c3.
+    Triple: {"subject": "CHEBI:15378", "predicate": "consumes", "object": "RHEA:29136"}'
+- assessment_id: edge-e023
+  area: graph
+  topic: Complete edge e023
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 e86d921a59fcb496f2907bc182f8b895c9fc778d3702c402a2eae397074f2ced.
+    Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "RHEA-COMP:9537"}'
+- assessment_id: edge-e024
+  area: graph
+  topic: Complete edge e024
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 a07e367fd6342ae4fe90226aa92915b2aef479d5febb7304c122be41c07ade25.
+    Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "CHEBI:16301"}'
+- assessment_id: edge-e025
+  area: graph
+  topic: Complete edge e025
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 1ce394541d1f4fed6ca197bcf23ac5073125b34b60d81fc9b4e046d63d103a71.
+    Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "CHEBI:15377"}'
+- assessment_id: edge-e026
+  area: graph
+  topic: Complete edge e026
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All full Rhea side resources and duplicate
+    RDF subject fragments replayed. Generic polymer and substrate/product in/out roles
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 591f34a789c8b85f5bcb66827f1d460dee145a2154f52a22fc6cbe66c205a96d.
+    Triple: {"subject": "RHEA:29136", "predicate": "produces", "object": "CHEBI:15378"}'
+- assessment_id: edge-e027
+  area: graph
+  topic: Complete edge e027
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Native and Rhea event membership expresses
+    projections of the same two biological events; does not inflate route event count.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 06abe35da5aaeed6bfda698275462b6c28e19df72cc8c7d4b64dc8ba0dbaa319.
+    Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}'
+- assessment_id: edge-e028
+  area: graph
+  topic: Complete edge e028
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Native and Rhea event membership expresses
+    projections of the same two biological events; does not inflate route event count.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 dffa6690ed8b051c3ab363bf20dc3e7721b78e3c2a5e075b346d63993e40cd83.
+    Triple: {"subject": "RHEA:29100", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}'
+- assessment_id: edge-e029
+  area: graph
+  topic: Complete edge e029
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Native and Rhea event membership expresses
+    projections of the same two biological events; does not inflate route event count.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 fa7092314a225f5f736b655ccdff1c1e05132e9ef12ff914e844cff96051c025.
+    Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}'
+- assessment_id: edge-e030
+  area: graph
+  topic: Complete edge e030
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Native and Rhea event membership expresses
+    projections of the same two biological events; does not inflate route event count.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 e2754cb5c617de9bb5bb7c30b405f0b7a5ad7685f939b6345dd2a542b942c821.
+    Triple: {"subject": "RHEA:29136", "predicate": "part_of", "object": "MetaCyc:PWY0-1352"}'
+- assessment_id: edge-e031
+  area: graph
+  topic: Complete edge e031
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Reduced-carrier supply and oxidized-carrier
+    return are supported causal/material inferences with explicit inference framing;
+    not reversible-reaction claims.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 a80b1d1fc943bd2e24971ea451ca19f94d7590d2f471d7257fd9a3cc95f27cd7.
+    Triple: {"subject": "MetaCyc:RXN0-5388", "predicate": "provides_input_for", "object":
+    "MetaCyc:RXN0-3501"}'
+- assessment_id: edge-e032
+  area: graph
+  topic: Complete edge e032
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Reduced-carrier supply and oxidized-carrier
+    return are supported causal/material inferences with explicit inference framing;
+    not reversible-reaction claims.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 a5da63b7c0f11758276ff2f7221de257947872eb3f98af67a99900c065ac8ddc.
+    Triple: {"subject": "MetaCyc:RXN0-3501", "predicate": "provides_input_for", "object":
+    "MetaCyc:RXN0-5388"}'
+- assessment_id: edge-e033
+  area: graph
+  topic: Complete edge e033
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction
+    contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is
+    explicitly separate.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 c2a3f0a1e2fa50b683362a4dca636edcde06bf21698107952990f34748a97479.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "catalyzes", "object":
+    "MetaCyc:RXN0-5388"}'
+- assessment_id: edge-e034
+  area: graph
+  topic: Complete edge e034
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction
+    contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is
+    explicitly separate.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 8c09e0ef13da911c010340169b429c0b6c4c2ff62174dba3480a890a0a67760e.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "catalyzes", "object":
+    "RHEA:29100"}'
+- assessment_id: edge-e035
+  area: graph
+  topic: Complete edge e035
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction
+    contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is
+    explicitly separate.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 38a7fdb495990eb8250c6356ffa38d017905a9c80e1989e9fca2d2b9074c09ff.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "catalyzes", "object":
+    "MetaCyc:RXN0-3501"}'
+- assessment_id: edge-e036
+  area: graph
+  topic: Complete edge e036
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction
+    contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is
+    explicitly separate.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 7b23eb8694cbfdbd0c2d70b88215910a806804fde2b760f6bc9af5bffaec466b.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "catalyzes", "object":
+    "RHEA:29136"}'
+- assessment_id: edge-e037
+  area: graph
+  topic: Complete edge e037
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction
+    contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is
+    explicitly separate.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 9a3b032ac8acc59f06017f59ca2b8040f2eff95e4c06519c3cdf78e5c5323ebe.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "catalyzes", "object":
+    "MetaCyc:RXN0-3501"}'
+- assessment_id: edge-e038
+  area: graph
+  topic: Complete edge e038
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Direct native catalyzes/enzyme/reaction
+    contexts connect exact NDH-I/NarA/NarZ to selected reactions; Rhea mapping is
+    explicitly separate.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 c2e96b4eba6ab340b6eecac81f28f69bc1379e135253ef62e42eb758ef1ddcab.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "catalyzes", "object":
+    "RHEA:29136"}'
+- assessment_id: edge-e039
+  area: graph
+  topic: Complete edge e039
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 711c0a19343eca278882589bb4bb8560e0794399255666ae3eb034dfe0e761f5.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P0AFC3"}'
+- assessment_id: edge-e040
+  area: graph
+  topic: Complete edge e040
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 3404e862071d9580c32536bcced52f2e66f33fdc8aa8810c22be17334da6379e.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P0AFD4"}'
+- assessment_id: edge-e041
+  area: graph
+  topic: Complete edge e041
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 8e37f884d8c71fc06dbdfcdc17b4e99c18505c58c9405923a196c5ff2cb4ba9f.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P0AFE0"}'
+- assessment_id: edge-e042
+  area: graph
+  topic: Complete edge e042
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 9edf06ba6d496f582fa4c334e8def35472ba3986ab53489022334a1e30d625c0.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P0AFE4"}'
+- assessment_id: edge-e043
+  area: graph
+  topic: Complete edge e043
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 a55181cf95605968ce8db99664b16a620a34ddc51aa4d729bbcdf7ab546427f4.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P33607"}'
+- assessment_id: edge-e044
+  area: graph
+  topic: Complete edge e044
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 1dd0284ec27bebbc7baa39a12a1797e2c8a58d82fe5252de60e7e4cdac332d3f.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P0AFE8"}'
+- assessment_id: edge-e045
+  area: graph
+  topic: Complete edge e045
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 96bb462cfd2c3fd0dcd3ada7554c2624316aa0cc936869390c25efac19e22518.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P0AFF0"}'
+- assessment_id: edge-e046
+  area: graph
+  topic: Complete edge e046
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 0fd2565e77950c494a4e031e0282f98b41b291153949dfc8ff699a89498ebb8c.
+    Triple: {"subject": "EcoCyc:NADH-DHI-CPLX", "predicate": "has_part", "object":
+    "EcoCyc:CPLX0-3361"}'
+- assessment_id: edge-e047
+  area: graph
+  topic: Complete edge e047
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 e962ebc1c8bc2a54320ee741fc4a832b210eb6c0d0f108afe1881d5aad763b26.
+    Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P0AFC7"}'
+- assessment_id: edge-e048
+  area: graph
+  topic: Complete edge e048
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 4ca0047d4c6cb503b4bd0b311f37e788712edc7fb2e509f6caf135a68ee0d914.
+    Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P33599"}'
+- assessment_id: edge-e049
+  area: graph
+  topic: Complete edge e049
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 c2049e75e2766bd9439809471a5668dca8b6ff648354c5c52bbd6c6dc0d54f95.
+    Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P0AFD1"}'
+- assessment_id: edge-e050
+  area: graph
+  topic: Complete edge e050
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 c850900a76f564785332c1776a4a74659e03e7e1f5e8df7c890c670f3ca9e3ca.
+    Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P31979"}'
+- assessment_id: edge-e051
+  area: graph
+  topic: Complete edge e051
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 838f0fac268ce00427fa5f00c4b97086e946710f695246256001be50d2d139df.
+    Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P33602"}'
+- assessment_id: edge-e052
+  area: graph
+  topic: Complete edge e052
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 e4dcd60dfe18be7322b0a400e0b8ba7569d72921520abd2b6a35a57efc353b42.
+    Triple: {"subject": "EcoCyc:CPLX0-3361", "predicate": "has_part", "object": "UniProtKB:P0AFD6"}'
+- assessment_id: edge-e053
+  area: graph
+  topic: Complete edge e053
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 61c7cd49b1f70548f81279073c71e972fa2beb715f3788830c31c5941b6f0e16.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P09152"}'
+- assessment_id: edge-e054
+  area: graph
+  topic: Complete edge e054
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 df61bf6160616b870c88a9dc85508dbfb8b567f51931bbdb2221e5026bc71623.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P11349"}'
+- assessment_id: edge-e055
+  area: graph
+  topic: Complete edge e055
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 2dff3fb63ed7374daa43ed796b3aa57d0fb5acc7ea82230e52bf1ed2ccd96e02.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P11350"}'
+- assessment_id: edge-e056
+  area: graph
+  topic: Complete edge e056
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 2e479ead537efea47b7c811c3d17e5d26954a65cb074a9313629b1b94337e014.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P19318"}'
+- assessment_id: edge-e057
+  area: graph
+  topic: Complete edge e057
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 ae6aefa9226055a0148374173d33231fc4a8e81808ef7fdf63683c8ae142e2ec.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P19319"}'
+- assessment_id: edge-e058
+  area: graph
+  topic: Complete edge e058
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All20assemblyedges independently matched
+    whole native components, exact count and correct UniProtK12 chain mapping; nested13-polypeptideNDHI
+    preserved.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 43209b947f77ef02592dfabe1adef88a3bc90b99192309d6cfa04aef9b96222e.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_part", "object":
+    "UniProtKB:P0AF32"}'
+- assessment_id: edge-e059
+  area: graph
+  topic: Complete edge e059
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 d5d52d755902fd4b6b054c8771cc60add43b89bec1aa8778942cdda665f54b94.
+    Triple: {"subject": "UniProtKB:P09152", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e060
+  area: graph
+  topic: Complete edge e060
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 6a1337187e91b313a8d5254a1b351f0b384d0f905a496869f710e118dd2a7297.
+    Triple: {"subject": "UniProtKB:P09152", "predicate": "has_cofactor", "object":
+    "CHEBI:60539"}'
+- assessment_id: edge-e061
+  area: graph
+  topic: Complete edge e061
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 c6354f7cb6682efa77d0ac6c84e994e7925acbe573bf5ea8260abc315f84440c.
+    Triple: {"subject": "UniProtKB:P11349", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e062
+  area: graph
+  topic: Complete edge e062
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 4821e81f5e815fd1f4a5d187dc7f8ffd8d84541601b277b2d9cc44d6ba19048f.
+    Triple: {"subject": "UniProtKB:P11349", "predicate": "has_cofactor", "object":
+    "CHEBI:21137"}'
+- assessment_id: edge-e063
+  area: graph
+  topic: Complete edge e063
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 6de8f8bd69a97dd0e419f36d02d2a84a8a576c0fedfa88f9ca65786415a76d81.
+    Triple: {"subject": "UniProtKB:P19319", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e064
+  area: graph
+  topic: Complete edge e064
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 7504caaec5fa9aaa72cb29f67369728c441247c7ae0e14dbed9a80aa567ac88d.
+    Triple: {"subject": "UniProtKB:P19319", "predicate": "has_cofactor", "object":
+    "CHEBI:60539"}'
+- assessment_id: edge-e065
+  area: graph
+  topic: Complete edge e065
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 da2af07642eece45552668dd333dbc941bc882c0934d250cfab149dc8f5a95f4.
+    Triple: {"subject": "UniProtKB:P19318", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e066
+  area: graph
+  topic: Complete edge e066
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 eb91f0eadd48e91c3fe34f5118e828b51af712ad7de21c39b8185622aecf37d9.
+    Triple: {"subject": "UniProtKB:P19318", "predicate": "has_cofactor", "object":
+    "CHEBI:21137"}'
+- assessment_id: edge-e067
+  area: graph
+  topic: Complete edge e067
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 f5ee9476297076bf5192fa107d5d7e8dfaefb04a95cd2e8f690bd39dca0d7663.
+    Triple: {"subject": "UniProtKB:P0AFD1", "predicate": "has_cofactor", "object":
+    "CHEBI:190135"}'
+- assessment_id: edge-e068
+  area: graph
+  topic: Complete edge e068
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 b72a84ff8d28b2b82c26f956e37e71a8a6da30809fa52076dcc791cf8667f9e3.
+    Triple: {"subject": "UniProtKB:P31979", "predicate": "has_cofactor", "object":
+    "CHEBI:58210"}'
+- assessment_id: edge-e069
+  area: graph
+  topic: Complete edge e069
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 6c53f637ee8595bded20ce6eb9c2c1eedb6a065947607c7ac1ca59ec3436005d.
+    Triple: {"subject": "UniProtKB:P31979", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e070
+  area: graph
+  topic: Complete edge e070
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 5ca3a0886f1a272087958f55e671b1c41191278d3792bc21fbc62a6fc97c9210.
+    Triple: {"subject": "UniProtKB:P33602", "predicate": "has_cofactor", "object":
+    "CHEBI:190135"}'
+- assessment_id: edge-e071
+  area: graph
+  topic: Complete edge e071
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 7f407b2790f2267c2e6c26e41d410199e5fb53206acdd033440fc2a0f5bf3cba.
+    Triple: {"subject": "UniProtKB:P33602", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e072
+  area: graph
+  topic: Complete edge e072
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 2974b408dcf53d02f0370f68e69a9d230160c46501d459db119146a50ea19e19.
+    Triple: {"subject": "UniProtKB:P0AFD6", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e073
+  area: graph
+  topic: Complete edge e073
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All15cofactoredges independently replayed
+    exact UniProt COFACTOR notes, molecule IDs and evidence codes; homology is not
+    relabeled direct assay.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 2b71b21b79a745b2a2dd68c0ce7e28db4a0d0c20a7930a44802a57cc2c6f5f4f.
+    Triple: {"subject": "UniProtKB:P0AFC7", "predicate": "has_cofactor", "object":
+    "CHEBI:49883"}'
+- assessment_id: edge-e074
+  area: graph
+  topic: Complete edge e074
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry
+    and homology scope retained without single oxidation-state identity or invented
+    oligomer resolution.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 7347173b8c7897452141451f95a1b05663a8d3088e0f9ae024d802215ea6e319.
+    Triple: {"subject": "UniProtKB:P11350", "predicate": "has_cofactor", "object":
+    "MetaCyc:Heme-b"}'
+- assessment_id: edge-e075
+  area: graph
+  topic: Complete edge e075
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry
+    and homology scope retained without single oxidation-state identity or invented
+    oligomer resolution.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 30c66c31b1fa7253c2911e3d0b84f23283a7f1650d256926a0f980814ffdbb21.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor",
+    "object": "MetaCyc:Heme-b"}'
+- assessment_id: edge-e076
+  area: graph
+  topic: Complete edge e076
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry
+    and homology scope retained without single oxidation-state identity or invented
+    oligomer resolution.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 068216cb31ac3f47fca29889964251a1cc4cd3ba0f04f2df6b613f624b323ec3.
+    Triple: {"subject": "UniProtKB:P0AF32", "predicate": "has_cofactor", "object":
+    "MetaCyc:Heme-b"}'
+- assessment_id: edge-e077
+  area: graph
+  topic: Complete edge e077
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: NarI/NarV generic heme b stoichiometry
+    and homology scope retained without single oxidation-state identity or invented
+    oligomer resolution.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 9451f5b44515c5b216f340551067aeabaf520b1529a7cd6be69764e9b586aa8d.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_cofactor",
+    "object": "MetaCyc:Heme-b"}'
+- assessment_id: edge-e078
+  area: graph
+  topic: Complete edge e078
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole native cofactor classes remain generic;
+    exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific
+    identity unification.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 b6a6a83349d4b19f89c4ea331f91d004a31237452bfbec48f83ed40654edf0ee.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor",
+    "object": "MetaCyc:3FE-4S"}'
+- assessment_id: edge-e079
+  area: graph
+  topic: Complete edge e079
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole native cofactor classes remain generic;
+    exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific
+    identity unification.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 4196241154cb1c9bff67b2a9cbdf11796d1342fc0024a0da75550a5a6741d736.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor",
+    "object": "MetaCyc:CPD-7"}'
+- assessment_id: edge-e080
+  area: graph
+  topic: Complete edge e080
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole native cofactor classes remain generic;
+    exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific
+    identity unification.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 2a13e095a62763996d808370bfed430de4168982bd855b4eff48f02bdd2715cb.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTA-CPLX", "predicate": "has_cofactor",
+    "object": "CHEBI:60539"}'
+- assessment_id: edge-e081
+  area: graph
+  topic: Complete edge e081
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole native cofactor classes remain generic;
+    exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific
+    identity unification.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 fb59d0fde8e04bbe105b381700b82399d27c64a077f9b9e30fa1c8e2612ba4d7.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_cofactor",
+    "object": "MetaCyc:FeS-Centers"}'
+- assessment_id: edge-e082
+  area: graph
+  topic: Complete edge e082
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole native cofactor classes remain generic;
+    exact Mo-cofactor InChI mapping checked. No arbitrary generic-to-redox-specific
+    identity unification.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 071121b178e5313c8181dbcc219a127c7f3a1d37026a60b1e31d75e68e3a4ddd.
+    Triple: {"subject": "EcoCyc:NITRATREDUCTZ-CPLX", "predicate": "has_cofactor",
+    "object": "CHEBI:60539"}'
+- assessment_id: edge-e083
+  area: graph
+  topic: Complete edge e083
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Maturation chaperone function supported;
+    NarW similarity explicitly marked. e083 assertion is a source excerpt truncated
+    at400characters; the complete FUNCTION object was reviewed and supports the claim,
+    with no assertion that the excerpt is the entire source.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 fef1a2969cbecbc0c458e6e15ce50ad4cb635eb22eb3823a928f1cb301fe96c3.
+    Triple: {"subject": "UniProtKB:P0AF26", "predicate": "enables", "object": "EcoCyc:NITRATREDUCTA-CPLX"}'
+- assessment_id: edge-e084
+  area: graph
+  topic: Complete edge e084
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Maturation chaperone function supported;
+    NarW similarity explicitly marked. e083 assertion is a source excerpt truncated
+    at400characters; the complete FUNCTION object was reviewed and supports the claim,
+    with no assertion that the excerpt is the entire source.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 b58d9d570f9cea0dc89e959ebb77261a7f21900e8cc6b1c410f736128e011110.
+    Triple: {"subject": "UniProtKB:P19317", "predicate": "enables", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}'
+- assessment_id: edge-e085
+  area: graph
+  topic: Complete edge e085
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Expression/regulatory context supports
+    sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as
+    direct allosteric inhibitors or catalysts.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 25dece5cee72765bf37579c3d636e9cd7dfc15eb2c49a84b49893bef167b9ac1.
+    Triple: {"subject": "UniProtKB:P0AF28", "predicate": "regulates", "object": "EcoCyc:NADH-DHI-CPLX"}'
+- assessment_id: edge-e086
+  area: graph
+  topic: Complete edge e086
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Expression/regulatory context supports
+    sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as
+    direct allosteric inhibitors or catalysts.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 468bf69c621420c1f8d38e100222cec19018f188f08a25ab1cc59cf7e93f0a71.
+    Triple: {"subject": "UniProtKB:P0AF28", "predicate": "regulates", "object": "EcoCyc:NITRATREDUCTA-CPLX"}'
+- assessment_id: edge-e087
+  area: graph
+  topic: Complete edge e087
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Expression/regulatory context supports
+    sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as
+    direct allosteric inhibitors or catalysts.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 f61f704df512fe7b0b0559b17a2433270894c3197d37d101f35a5a5907c74409.
+    Triple: {"subject": "UniProtKB:P0A9E5", "predicate": "regulates", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}'
+- assessment_id: edge-e088
+  area: graph
+  topic: Complete edge e088
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Expression/regulatory context supports
+    sign and exact target. Contextual qualifiers prevent treating Fnr/RpoS/NarL as
+    direct allosteric inhibitors or catalysts.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 c7bfff097b07d1d0d7e1e2a9a994c66b068938edcdff885fefe65115c2bfe5dd.
+    Triple: {"subject": "UniProtKB:P13445", "predicate": "regulates", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}'
+- assessment_id: edge-e089
+  area: graph
+  topic: Complete edge e089
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 ee939152144da53176434a457ad60f907ff27426c8cfeaac3cc9b24fa7843b6d.
+    Triple: {"subject": "CHEBI:40910", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}'
+- assessment_id: edge-e090
+  area: graph
+  topic: Complete edge e090
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 6f87b0fe43c84e0b734081ea5faf8171e09388a39d9358deaf1bf68622941c09.
+    Triple: {"subject": "CHEBI:18407", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}'
+- assessment_id: edge-e091
+  area: graph
+  topic: Complete edge e091
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 af6592b78ad65c26610067098381cc352617eab154f4ec9eacf6fbd5e501336a.
+    Triple: {"subject": "CHEBI:32155", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}'
+- assessment_id: edge-e092
+  area: graph
+  topic: Complete edge e092
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 8a77b15f54938c4a0e5f233316ff8974d2c5cda90d57daa3ef1240e3aaa4540c.
+    Triple: {"subject": "CHEBI:28362", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTA-CPLX"}'
+- assessment_id: edge-e093
+  area: graph
+  topic: Complete edge e093
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 e54196f01d54322ee8ad2b6a33542e0a93c744a4c779fc7556e1df429c8d8174.
+    Triple: {"subject": "CHEBI:33191", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}'
+- assessment_id: edge-e094
+  area: graph
+  topic: Complete edge e094
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 01177fd762e355eb38461cd3b970c8deb3c7056bfab0428134fb04adb94eed07.
+    Triple: {"subject": "CHEBI:40910", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}'
+- assessment_id: edge-e095
+  area: graph
+  topic: Complete edge e095
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 daf2c6c8395130bedfb95debf54cb83b0fc4a64ee28acc79b6fbad88064e26b2.
+    Triple: {"subject": "PubChem:21226146", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}'
+- assessment_id: edge-e096
+  area: graph
+  topic: Complete edge e096
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: All8inhibitors replayed through exact
+    native Regulation object, mode, regulator and target catalytic activity plus independently
+    adjudicated chemical species.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 6b60ceb02b30a23cc45572a17eac7d53bb3c8bb31411f70d55f52ab3bb26a79d.
+    Triple: {"subject": "CHEBI:28362", "predicate": "inhibits", "object": "EcoCyc:NITRATREDUCTZ-CPLX"}'
+- assessment_id: edge-e097
+  area: graph
+  topic: Complete edge e097
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole2016NuoLpaper supports Mg/Zn/EIPA
+    conditional effects. Four endpoint qualifiers are checked with the exact construct
+    and assay context; concentrations and remaining versus lost activity are not swapped.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 7459a4bfc8d837f463ad166aa5567888e530a9d7a15805fe3338bd536421ddc2.
+    Triple: {"subject": "CHEBI:18420", "predicate": "activates", "object": "EcoCyc:NADH-DHI-CPLX"}'
+- assessment_id: edge-e098
+  area: graph
+  topic: Complete edge e098
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole2016NuoLpaper supports Mg/Zn/EIPA
+    conditional effects. Four endpoint qualifiers are checked with the exact construct
+    and assay context; concentrations and remaining versus lost activity are not swapped.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 b58184965a05d53cfe305aee2f3077f586c27ecaaad3f114c2f992c1704a5122.
+    Triple: {"subject": "CHEBI:29105", "predicate": "inhibits", "object": "EcoCyc:NADH-DHI-CPLX"}'
+- assessment_id: edge-e099
+  area: graph
+  topic: Complete edge e099
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole2016NuoLpaper supports Mg/Zn/EIPA
+    conditional effects. Four endpoint qualifiers are checked with the exact construct
+    and assay context; concentrations and remaining versus lost activity are not swapped.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 62691cd832fc253fc720cd25d5733b937be97e6301f09cb01a83d6c66139ab6f.
+    Triple: {"subject": "CHEBI:136538", "predicate": "inhibits", "object": "EcoCyc:NADH-DHI-CPLX"}'
+- assessment_id: edge-e100
+  area: graph
+  topic: Complete edge e100
+  outcome: supported
+  summary: 'Inherited independent judgment, freshly checked against complete current
+    edge including evidence and qualifiers: Whole2021nanodiscpaper supports piericidin
+    inhibition within taggedBL21FS/MSP2N2/Q1-DQ assay context. No proton-pumping result
+    inferred from nanodisc activity.'
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - edge-assessments
+  - scientific-review
+  details: 'Whole canonical edge JSON SHA256 27e247ea52a1a1d68f69302f280b923c738dafa354332e2659fe91ad9e66b775.
+    Triple: {"subject": "CHEBI:138511", "predicate": "inhibits", "object": "EcoCyc:NADH-DHI-CPLX"}'
+- assessment_id: route-boundary
+  area: identity
+  topic: Complete route and source projections
+  outcome: supported
+  summary: The NADH→generic menaquinone/menaquinol→nitrate route ends at nitrite.
+    Two native composite events/13 sides, five component events/19 sides and two Rhea
+    projections/13 sides remain distinct. Quinone return flow does not imply reaction
+    reversal, fixed MK-8, exclusive flux or an invented supercomplex.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - scientific-review
+- assessment_id: assembly-scope
+  area: scope
+  topic: Assemblies, cofactors and experimental contexts
+  outcome: supported
+  summary: Nested NDH-I contains 13 polypeptides with fused NuoC/D, native NarA 2:2:2
+    and NarZ 1:1:1 retain conflicting literature/deposition representations. Chaperones
+    remain outside mature catalysts. Tagged constructs, compartments, alternative
+    NDH-II, homology cofactors, expression regulation and conditional inhibitor effects
+    stay explicit.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - scientific-review
+- assessment_id: issue498-preserved
+  area: nomenclature
+  topic: Exact corrected regulatory entity
+  outcome: supported
+  summary: Current P32 preserves C4-dicarboxylate-dependent regulation of the nuo
+    operon. Earlier erroneous nuoC4 wording is absent from the accepted current paragraph;
+    original finding and exact successor proof are inherited, not fabricated native
+    previous occurrences.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - current-target
+  - scientific-dispositions
+- assessment_id: rendered-completeness
+  area: representation
+  topic: Graph and evidence completeness
+  outcome: supported
+  summary: All 100 arrows and table rows, 67 graph nodes, four qualified construct
+    states and 107 references agree with current YAML. The unconnected E. coli taxon
+    remains in the component table. All local anchors resolve and whole description
+    text is retained.
+  target_ids:
+  - MetaCyc:PWY0-1352
+  evidence_ids:
+  - fresh-qa
+  - static-visual
+findings: []
+actions: []
+limitations:
+- 'Full scientific source interpretation is inherited from the accepted independent
+  review: six complete primary main bodies, two spreadsheets, whole native/UniProt
+  objects and bounded older abstracts. This maintained review freshly reads the full
+  current YAML and inherited judgments; it does not claim a new full-paper reading.'
+- Most historical papers have indexed abstracts rather than complete Methods; unavailable/unread
+  supplements and other sources remain explicitly limited. No source-exhaustion claim
+  follows.
+- Static graph junction labels overlap. Exact claims remain in the fully checked evidence
+  table. Static raster was produced earlier by root and freshly viewed here; actual
+  maintained SVG is identical. No interactive browser test is claimed.
+- Scientific e083 assertion is a 400-character source excerpt ending mid-word. Inherited
+  whole-source review supports the claim; complete FUNCTION original remains portable.
+  No claim that the excerpt is the whole source.
+- Technical runtime behavior is inherited from accepted independent implementation
+  and actual-output reviews plus fresh maintained gates, not a fresh line-by-line
+  production adapter audit. This reviewer independently audited actual outputs and
+  integration preservation previously.
+- No maintained record, review, cache, Git state, GitHub issue or publication was
+  changed by this reviewer. Root owns evidence adoption, final native source.inputs
+  inspection, append-only save/check and local commit.
+notes:
+- 'All read/test failures remain recorded: stopped overbroad read-only inventory,
+  bounded nonexistent-path probes, one protected unrelated temporary path during an
+  inventory probe, SSSOM-column harness assumption, root-directory manifest convention,
+  and an intermediate draft reference pointing to the earlier portable index instead
+  of the later durable preparation-review owner. Corrected checks pass without changing
+  product bytes.'
+- Review interval begins at captured start.json after earlier contextual reading;
+  earlier full YAML/report reads are credited as pre-interval context. Native inspect/verification/drafting
+  use actual times.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/490
+- https://github.com/CultureBotAI/PathwayMech/issues/498
+- https://github.com/CultureBotAI/PathwayMech/issues/499
+- https://github.com/CultureBotAI/PathwayMech/issues/500
+- https://github.com/CultureBotAI/PathwayMech/issues/501
+tags:
+- pwy01352
+- nitrate
+- independent-review
+- local-integration
+```

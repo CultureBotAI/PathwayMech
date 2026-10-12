@@ -73,6 +73,43 @@ def ref_node(
     }
 
 
+def charged_context_reference(node: ET.Element, pgdb: str, tag: str, *, is_class: bool) -> dict:
+    """Literal charged frame tokens in two retained META context roles only.
+
+    These are native XML references, not form-encoded requests or selected
+    public identifiers. In particular, never decode a literal '+' as a space.
+    The carrier/request/public-ID contracts deliberately remain unchanged.
+    """
+    require(
+        pgdb == "META" and (tag, is_class) in {("Compound", True), ("Reaction", False)},
+        "unsupported charged context role",
+    )
+    frame = node.get("frameid", "")
+    attrs = {"resource": "getxml?META:" + frame, "orgid": "META", "frameid": frame}
+    if is_class:
+        attrs["class"] = "true"
+    require(
+        frame
+        in (
+            {"4Fe-4S+1", "4Fe-4S+2", "4Fe-4S+3"}
+            if tag == "Compound"
+            else {"PYRUVATE-DEHYDROGENASE-NADP+-RXN"}
+        )
+        and node.tag == tag
+        and node.attrib == attrs
+        and not len(node)
+        and not (node.text or "").strip()
+        and not (node.tail or "").strip(),
+        "invalid charged context reference",
+    )
+    return {
+        "id": "MetaCyc:" + frame,
+        "native_type": tag,
+        "is_class": is_class,
+        "attributes": dict(node.attrib),
+    }
+
+
 def refs(entity: ET.Element, slot: str, pgdb: str, tag: str, *, is_class: bool) -> list[dict]:
     result = []
     for wrapper in entity.findall(slot):
@@ -132,14 +169,108 @@ def context_identity(node: ET.Element, pgdb: str, tag: str) -> None:
         blank(node)
 
 
-def activity(node: ET.Element, pgdb: str) -> None:
+def activity(node: ET.Element, pgdb: str, *, charged_reaction: bool = False) -> None:
     context_identity(node, pgdb, "Enzymatic-Reaction")
     require("resource" not in node.attrib, "cofactor/activity proof requires whole context")
     for slot, tag in [("enzyme", "Protein"), ("reaction", "Reaction")]:
         wrapper = one(node, slot)
         require(not wrapper.attrib and len(wrapper) == 1, "invalid activity " + slot)
         blank(wrapper)
-        ref_node(wrapper[0], pgdb, tag, is_class=wrapper[0].get("class") == "true", local=True)
+        target = wrapper[0]
+        if charged_reaction and tag == "Reaction" and "+" in target.get("frameid", ""):
+            charged_context_reference(target, pgdb, tag, is_class=False)
+        else:
+            ref_node(target, pgdb, tag, is_class=target.get("class") == "true", local=True)
+
+
+def publication_context(node: ET.Element, pgdb: str) -> None:
+    """Closed publication context used by GO and quantitative annotations."""
+    require("class" not in node.attrib, "publication must be an instance")
+    context_identity(node, pgdb, "Publication")
+    if "resource" in node.attrib:
+        return
+    allowed = {"title", "source", "pubmed-id", "author", "year"}
+    require(all(c.tag in allowed for c in node), "unsupported annotation publication slot")
+    for tag in allowed - {"author"}:
+        require(len(node.findall(tag)) <= 1, "duplicate annotation publication slot")
+    require(len(node) > 0, "empty annotation publication")
+    for child in node:
+        datatype = "integer" if child.tag == "year" else "string"
+        require(
+            child.attrib == {"datatype": datatype}
+            and not len(child)
+            and bool((child.text or "").strip())
+            and not (child.tail or "").strip(),
+            "invalid annotation publication value",
+        )
+        if child.tag in {"year", "pubmed-id"}:
+            require(
+                re.fullmatch(r"[0-9]+", child.text or "") is not None,
+                "invalid annotation publication number",
+            )
+
+
+def go_annotation(node: ET.Element, pgdb: str) -> None:
+    blank(node)
+    require(
+        pgdb == "ECOLI"
+        and not node.attrib
+        and all(c.tag in {"GO-Term", "evidence"} for c in node)
+        and bool(node.findall("evidence")),
+        "invalid GO annotation wrapper",
+    )
+    term = one(node, "GO-Term")
+    frame = term.get("frameid", "")
+    require(
+        re.fullmatch(r"GO:[0-9]{7}", frame) is not None
+        and term.attrib
+        == {"resource": "getxml?ECOLI:" + frame, "orgid": pgdb, "frameid": frame, "class": "true"}
+        and not len(term)
+        and not (term.text or "").strip()
+        and not (term.tail or "").strip(),
+        "invalid native GO class reference",
+    )
+    for evidence in node.findall("evidence"):
+        blank(evidence)
+        require(
+            not evidence.attrib
+            and all(c.tag in {"Evidence-Code", "Publication", "with"} for c in evidence),
+            "invalid GO evidence wrapper",
+        )
+        code = one(evidence, "Evidence-Code")
+        if "resource" in code.attrib:
+            ref_node(code, pgdb, "Evidence-Code", is_class=True, local=True)
+        else:
+            code_frame = code.get("frameid", "")
+            require(re.fullmatch(FRAME, code_frame) is not None, "invalid evidence code frame")
+            attributes(code, code_frame, pgdb, "Evidence-Code", True)
+            require(
+                all(c.tag in {"parent", "common-name", "comment"} for c in code)
+                and len(code.findall("comment")) <= 1,
+                "invalid whole evidence code context",
+            )
+            name(one(code, "common-name"), code_frame)
+            for parent in code.findall("parent"):
+                blank(parent)
+                require(not parent.attrib and len(parent) == 1, "invalid evidence parent")
+                ref_node(parent[0], pgdb, "Evidence-Code", is_class=True, local=True)
+            for comment in code.findall("comment"):
+                require(
+                    comment.attrib == {"datatype": "string"}
+                    and not len(comment)
+                    and bool((comment.text or "").strip()),
+                    "invalid evidence code comment",
+                )
+        for publication in evidence.findall("Publication"):
+            publication_context(publication, pgdb)
+        require(len(evidence.findall("with")) <= 1, "duplicate GO evidence with context")
+        for with_node in evidence.findall("with"):
+            require(
+                with_node.attrib == {"datatype": "string"}
+                and not len(with_node)
+                and not (with_node.tail or "").strip(),
+                "invalid GO evidence with context",
+            )
 
 
 def ancillary(entity: ET.Element, allowed: set[str], core: set[str], pgdb: str) -> None:
@@ -164,6 +295,8 @@ def ancillary(entity: ET.Element, allowed: set[str], core: set[str], pgdb: str) 
         "appears-in-right-side-of",
         "in-pathway",
         "enzymatic-reaction",
+        "component-of",
+        "location",
     }
     require(all(len(entity.findall(tag)) <= 1 for tag in singles), "duplicate scalar/context slot")
     xrefs = {}
@@ -190,10 +323,21 @@ def ancillary(entity: ET.Element, allowed: set[str], core: set[str], pgdb: str) 
                     r"-?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?", n.text or ""
                 )
                 is not None
-                and all(c.tag == "evidence" for c in n)
-                and (n.tag == "gibbs-0" or not len(n)),
+                and (
+                    all(c.tag == "evidence" for c in n)
+                    if n.tag == "gibbs-0"
+                    else len(n) <= 1 and all(c.tag == "citation" for c in n)
+                    if n.tag == "molecular-weight-exp"
+                    else not len(n)
+                ),
                 "invalid native quantitative context",
             )
+            if n.tag == "molecular-weight-exp":
+                for citation in n:
+                    blank(citation)
+                    require(not citation.attrib and len(citation) > 0, "invalid mass citation")
+                    for publication in citation:
+                        publication_context(publication, pgdb)
         elif n.tag == "orphan":
             require(
                 not n.attrib and not len(n) and n.text in {"NO", "YES"}, "invalid orphan context"
@@ -206,7 +350,11 @@ def ancillary(entity: ET.Element, allowed: set[str], core: set[str], pgdb: str) 
         elif n.tag == "ec-number":
             require(
                 not n.attrib
-                and re.fullmatch(r"EC-[0-9]+(?:\.(?:[0-9]+|-)){3}", n.text or "") is not None
+                and re.fullmatch(
+                    r"EC-(?:[0-9]+(?:\.(?:[0-9]+|-)){3}|[0-9]+(?:\.[0-9]+){2})",
+                    n.text or "",
+                )
+                is not None
                 and len(n) <= 1
                 and all(
                     c.tag == "official"
@@ -216,6 +364,18 @@ def ancillary(entity: ET.Element, allowed: set[str], core: set[str], pgdb: str) 
                     for c in n
                 ),
                 "invalid EC context",
+            )
+        elif n.tag == "has-go-term":
+            go_annotation(n, pgdb)
+        elif n.tag in {"component-of", "location"}:
+            blank(n)
+            require(not n.attrib and len(n) > 0, "invalid component/location context")
+            tag = "Protein" if n.tag == "component-of" else "cco"
+            values = [ref_node(child, pgdb, tag) for child in n]
+            require(
+                len({v["id"] for v in values}) == len(values)
+                and all(v["attributes"]["frameid"] != entity.get("frameid") for v in values),
+                "duplicate/self component/location context",
             )
         elif n.tag == "cml":
             blank(n)
@@ -275,7 +435,11 @@ def ancillary(entity: ET.Element, allowed: set[str], core: set[str], pgdb: str) 
                 )
             elif n.tag in {"catalyzes", "cofactors-of", "enzymatic-reaction"}:
                 for c in n:
-                    activity(c, pgdb)
+                    activity(
+                        c,
+                        pgdb,
+                        charged_reaction=n.tag == "cofactors-of" and entity.tag == "Compound",
+                    )
             else:
                 tag = {
                     "citation": "Publication",
