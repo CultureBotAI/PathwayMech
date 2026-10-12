@@ -1,0 +1,15 @@
+from pathlib import Path
+import json,hashlib,sqlite3,xml.etree.ElementTree as E,collections
+O=Path(__file__).parent;db=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');rows=[]
+with sqlite3.connect(db.resolve().as_uri()+'?mode=ro&immutable=1',uri=True) as c:
+ for frame in ['FRUCTOSE-6P','HIS','GLUTATHIONE']:
+  p=O/'raw'/('ECOLI-'+frame+'.xml');n=E.parse(p).getroot().find('Compound');mol=n.find('cml/molecule');xref=[x.findtext('dblink-oid') for x in n.findall('dblink') if x.findtext('dblink-db')=='CHEBI' and x.findtext('dblink-relationship')=='unification'];assert len(xref)==1;ident='CHEBI:'+xref[0]
+  native={k:v for k,v in c.execute('SELECT predicate,value FROM statements WHERE subject=? AND predicate IN (\'rdfs:label\',\'chemrof:charge\',\'chemrof:generalized_empirical_formula\',\'chemrof:inchi_string\',\'chemrof:smiles_string\')',(ident,))}
+  assert int(mol.get('formalCharge'))==int(native['chemrof:charge'])
+  sf=mol.find('formula').get('concise').split();formula=dict(zip(sf[::2],map(int,sf[1::2])))
+  import re
+  qformula={a:int(n or 1) for a,n in re.findall(r'([A-Z][a-z]?)(\d*)',native['chemrof:generalized_empirical_formula'])};assert formula==qformula
+  inchi=n.findtext('inchi');same=inchi==native['chemrof:inchi_string']
+  rows.append({'frame':'EcoCyc:'+frame,'original':{'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()},'native_identity':n.attrib,'native_common_name':n.findtext('common-name'),'native_CHEBI_unification':ident,'native_formula':formula,'native_charge':mol.get('formalCharge'),'native_atom_charges':[x.attrib for x in mol.findall('atomArray/atom') if 'formalCharge' in x.attrib],'native_inchi':inchi,'native_cml_smiles':mol.findtext('string[@title="smiles"]'),'SQL_issuing_properties':native,'formula_and_charge_equal':True,'inchi_equal':same,'native_cml_smiles_scope':'The native CML SMILES string is inconsistent/open-chain or generic placeholder in these originals; preserve it as a source discrepancy, do not use it as sole exact-structure evidence. Native xref, explicit atom/charge/formula and InChI comparisons remain separately visible.','assay_limit':'Native reference compound identity does not establish the ionic form/anomer of an unspecified primary assay reagent. Histidine/GSH experimental protection/sensitization remains source-qualified; no direct-binding or universal enzyme effect inferred.'})
+(O/'chemical-identity-bridges.json').write_text(json.dumps({'status':'native reference structures compared; assay form remains qualified','SQL_binding':json.loads((O/'sql-original-binding-continuity.json').read_bytes())['originals'][0],'rows':rows},indent=2,ensure_ascii=False)+'\n')
+print(json.dumps([{'frame':r['frame'],'id':r['native_CHEBI_unification'],'formula_charge_equal':r['formula_and_charge_equal'],'inchi_equal':r['inchi_equal']} for r in rows]))

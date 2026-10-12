@@ -1,0 +1,191 @@
+"""Shared exact-byte guards; no maintained writes occur in this module."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+from datetime import datetime, timezone
+
+if not __debug__:
+    raise RuntimeError('Guarded helpers require assertions; do not optimize Python.')
+
+HERE = Path(__file__).resolve().parent
+ROOT = Path('/private/tmp/pathwaymech-next-230-20261012')
+BASE = '95ed7deec1ea749f3ebe60e170bb4463921b80dc'
+TREE = 'ed3de2cd5112fbbf2319a16dac307b08b62c29b3'
+TARGET_REL = 'data/pathways/sedoheptulose-bisphosphate-bypass.yaml'
+PAGE_REL = 'pages/records/MetaCyc_PWY0-1517.html'
+TARGET_ID = 'MetaCyc:PWY0-1517'
+HISTORICAL_SHA = 'cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101'
+BRIDGE_PATH = os.environ.get('PATHWAYMECH_ATP_FINAL_TARGET_BRIDGE')
+TARGET_SHA = '6ed1607a4c17ffe56a6f5f8f123c44a0ff410c9a9965e11c3cde9ef23a4affe2'
+DOSSIER_REL = 'research/pathway_additions/2026-10-12-next-230'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+PREP = Path('/private/tmp/pathwaymech-next-230-integration-preparation-20261012')
+GATE_NAMES = ['render', 'skills', 'validate', 'tests', 'lint', 'kgx', 'vendored', 'diff-check', 'site-current']
+ENV = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+       'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)}
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+def bind(path):
+    path = Path(path)
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for chunk in iter(lambda: stream.read(8 * 1024 * 1024), b''): digest.update(chunk)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest.hexdigest()}
+
+def verify(item, path=None):
+    current = bind(path or item['path'])
+    assert current['bytes'] == item['bytes'] and current['sha256'] == item['sha256'], current['path']
+    return current
+
+def write(path, data):
+    with Path(path).open('x') as stream:
+        json.dump(data, stream, indent=2, ensure_ascii=False)
+        stream.write('\n')
+
+def external_new(path):
+    path = Path(path).absolute()
+    assert path.parent.is_dir() and path.parent.resolve().is_relative_to(Path('/private/tmp'))
+    assert not path.exists() and not path.is_symlink()
+    assert not path.resolve().is_relative_to(ROOT.resolve())
+    assert not path.resolve().is_relative_to(HERE.resolve())
+    for protected in [PREP, Path('/private/tmp/pathwaymech-curation-authorities'),
+                      Path('/private/tmp/pathwaymech-next-230-canonical-build-20261012'),
+                      Path('/private/tmp/pathwaymech-next-230-author-successor-20261012'),
+                      Path('/private/tmp/pathwaymech-next-230-science-review-20261012'),
+                      Path('/private/tmp/pathwaymech-next-230-science-successor-review-20261012')]:
+        assert not path.resolve().is_relative_to(protected.resolve())
+    return path
+
+def files(root, relative='.', exclude_runtime=True):
+    command = ['rg', '--files', '-uu', '-L']
+    if exclude_runtime: command += ['-g', '!.git', '-g', '!.git/**', '-g', '!.venv', '-g', '!.venv/**']
+    command.append(relative)
+    result = subprocess.run(command, cwd=root, capture_output=True, text=True)
+    assert result.returncode in (0, 1) and not result.stderr, result.stderr
+    rows = sorted(str(Path(p)) for p in result.stdout.splitlines())
+    assert len(rows) == len(set(rows))
+    return rows
+
+def inventory(root, relative='.', exclude_runtime=True):
+    return [{'relative_path': p, **bind(root / p), 'symlink': (root / p).is_symlink()} for p in files(root, relative, exclude_runtime)]
+
+def assert_head(root=ROOT):
+    verify_final_bridge(root)
+    for expression, expected in [('HEAD', BASE), ('HEAD^{tree}', TREE)]:
+        actual = subprocess.check_output(['git', 'rev-parse', expression], cwd=root, text=True).strip()
+        assert actual == expected
+    assert bind(root / TARGET_REL)['sha256'] == TARGET_SHA
+
+def assert_inventory(root, previous, generated):
+    old = {r['relative_path']: r for r in previous}
+    produced = {r['relative_path']: r for r in generated}
+    assert len(old) == len(previous) and len(produced) == len(generated)
+    current = set(files(root))
+    assert current - set(produced) == set(old) - set(produced), 'Unbound maintained input addition/removal'
+    for relative in current:
+        verify(produced.get(relative, old.get(relative)), root / relative)
+
+def assert_history(root, expected):
+    assert set(files(root, 'history')) == {r['relative_path'] for r in expected}, 'History inventory changed'
+    for row in expected:
+        verify(row, root / row['relative_path'])
+
+def verify_gates(path, root=ROOT):
+    """Verify actual four corrective checks and retained nine historical gates."""
+    bridge = verify_final_bridge(root)
+    assert bridge['corrective_gates'] == bind(path)
+    gates = load(path)
+    assert gates['status'] == 'passed' and gates['target'] == bind(root / TARGET_REL)
+    assert [r['name'] for r in gates['receipts']] == ['render', 'corrective-validation', 'kgx', 'site-current']
+    old = load(bridge['historical_gates']['path'])
+    assert old['status'] == 'passed' and old['target_sha256'] == HISTORICAL_SHA and old['base'] == BASE
+    assert [r['name'] for r in old['receipts']] == GATE_NAMES
+    verify(old['inputs'])
+    for stage in (old, gates):
+        for row in stage['receipts']:
+            assert row['exit_code'] == 0 and row['cwd'] == str(root)
+            assert row['started_at'] and row['finished_at'] and row['command']
+            for key in ('stdout', 'stderr'): verify(row[key])
+    inputs = load(bridge['inputs']['path'])
+    assert_inventory(root, inputs['all_maintained_inputs'], [])
+    assert_history(root, inputs['render_history_inputs'])
+    # A derived in-memory view, retaining actual raw commands. No full rerun is inferred.
+    return {**gates, 'inputs': bridge['inputs'], 'render_history_inputs': inputs['render_history_inputs'],
+            'base': BASE, 'target_sha256': TARGET_SHA, 'historical_gates': bridge['historical_gates']}, inputs
+
+
+def verify_support():
+    handoff = load(HERE / 'handoff.json')
+    verify(handoff['manifest'])
+    manifest = load(handoff['manifest']['path'])
+    rows = manifest['artifacts']
+    assert len(rows) == handoff['artifact_count']
+    assert set(files(HERE)) == {row['relative_path'] for row in rows} | {'handoff.json', 'artifact-manifest.json'}
+    for row in rows:
+        verify(row, HERE / row['relative_path'])
+
+
+def verify_final_bridge(root=ROOT):
+    """Require root acceptance of actual corrected bytes and historical build lineage."""
+    import copy
+    import yaml
+    assert BRIDGE_PATH, 'Set PATHWAYMECH_ATP_FINAL_TARGET_BRIDGE to the root accepted final-target envelope'
+    bridge = load(BRIDGE_PATH)
+    assert bridge['status'] == 'accepted' and bridge['reviewer'] == 'Codex /root'
+    for field in ('target', 'historical_target', 'root_metadata_bridge', 'independent_title_assessment', 'corrective_gates', 'historical_gates', 'historical_preservation', 'inputs', 'cache_preservation'):
+        verify(bridge[field])
+    assert bridge['historical_target']['sha256'] == HISTORICAL_SHA
+    assert bridge['target'] == bind(root / TARGET_REL)
+    assert bridge['target']['sha256'] == TARGET_SHA != HISTORICAL_SHA
+    original = yaml.safe_load(Path(bridge['historical_target']['path']).read_bytes())
+    corrected = yaml.safe_load((root / TARGET_REL).read_bytes())
+    expected = copy.deepcopy(original)
+    assert expected['references'][22]['id'] == 'PMID:31464375'
+    before = expected['references'][22]['title']
+    assert before.endswith('Escherichia coli \n')
+    expected['references'][22]['title'] = before.rstrip()
+    assert expected == corrected, 'Final record differs beyond exact accepted bibliography trim'
+    independent = load(bridge['independent_title_assessment']['path'])
+    assert independent['status'] == 'accepted_exact_title_rstrip_proposal'
+    assert independent['historical_target'] == bridge['historical_target']
+    assert independent['all_mechanistic_edges_exact'] and independent['KGX_nodes_exact']
+    gates = load(bridge['corrective_gates']['path'])
+    assert gates['status'] == 'passed' and gates['target'] == bridge['target']
+    proof = load(bridge['root_metadata_bridge']['path'])
+    assert proof['status'] == 'passed' and proof['target'] == bridge['target']
+    assert proof['actual_gates'] == bridge['corrective_gates']
+    assert proof['predecessor_preservation'] == bridge['historical_preservation']
+    cache = load(bridge['cache_preservation']['path'])
+    assert cache['status'] == 'passed'
+    assert_cache_union(cache)
+    return bridge
+
+
+def assert_cache_union(captured=None):
+    """Read-only full old cache plus exact seven adopted whole-original bodies."""
+    cache = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+    baseline_receipt = load('/private/tmp/pathwaymech-next-230-maintained-baseline-20261012/receipt.json')
+    verify(baseline_receipt['baseline']); baseline = load(baseline_receipt['baseline']['path'])
+    copy_plan_path = PREP / 'source-cache-copy-plan.json'; copy_plan = load(copy_plan_path)
+    wanted = {r['relative_path']: r for r in baseline['source_cache_files']}
+    assert copy_plan['new_original_count'] == len(copy_plan['originals']) == 7
+    for row in copy_plan['originals']:
+        assert row['cache_relative_path'] not in wanted
+        wanted[row['cache_relative_path']] = row['original']
+    assert set(files(cache, exclude_runtime=False)) == set(wanted), 'Shared cache differs from exact old plus seven originals'
+    for relative, row in wanted.items(): verify(row, cache / relative)
+    result = {'status': 'passed', 'at': now(), 'baseline': baseline_receipt['baseline'],
+        'copy_plan': bind(copy_plan_path), 'old_count': len(baseline['source_cache_files']), 'new_originals': 7,
+        'current_count': len(wanted), 'hidden_ignored_inventory_complete': True,
+        'bodies': inventory(cache, exclude_runtime=False), 'scope': 'Fresh body and full inventory check; no cache writes or refresh.'}
+    if captured is not None:
+        assert captured['baseline'] == result['baseline'] and captured['copy_plan'] == result['copy_plan']
+        assert captured['bodies'] == result['bodies'], 'Cache changed since final binding'
+    return result

@@ -1,0 +1,32 @@
+"""Verify exact author selection, native proposals and append-only preservation."""
+from pathlib import Path
+import ast,hashlib,json,sys
+import yaml
+O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012');I=Path('/private/tmp/pathwaymech-next-230-author-20261012/selected-identities.json')
+def read(p):return json.loads(Path(p).read_bytes())
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+checks=[]
+def check(name,yes):assert yes,name;checks.append({'name':name,'result':'passed'})
+ledger=read(O/'authority-preservation.json');target=O/'bounded-selection'/Path(ledger['draft']['path']).name
+check('copied actual draft hash exact',sha(target)==ledger['draft']['sha256'])
+check('actual author selection inventory bound',sha(I)=='4837543c226efea06ba27188d937dd10151494ac5cd2c769407287fd1d35aa07')
+i=read(I);expected={x['id'] for x in [i['record']]+i['participants']+i['reactions']+i['taxa']};d=yaml.safe_load(target.read_text());named=[d]+[v for k in ['taxa','participants','reactions','gene_clusters'] for v in d.get(k,[])];actual={x['id'] for x in named};check('all 62 exact graph identities',actual==expected==set(ledger['selected_ids']) and len(actual)==62)
+source=read(O/'incremental-source-build.json');onto=read(O/'incremental-ontology-build.json');allterms={**source['terms'],**onto['terms']}
+check('native outputs cover every selected identifier',set(allterms)==actual and set(source['terms']).isdisjoint(onto['terms']))
+for n in named:check('native label or exact synonym '+n['id'],n['label'] in [allterms[n['id']]['label']]+allterms[n['id']]['synonyms'])
+for name in ['sources.json','ontology.json']:
+ old=read(B/name);new=read(O/'proposals'/name)
+ for section in ['terms','sources']:check('all prior '+name+' '+section+' exactly retained',all(new[section].get(k)==v for k,v in old[section].items()))
+ check(name+' top-level shape retained',set(new)==set(old) and new['version']==old['version'])
+manifest=read(O/'proposals/manifest.json');prior=read(B/'manifest.json');check('all750 prior ordered manifest objects exact',manifest[:len(prior)]==prior and len(prior)==750);check('manifest source keys unique',len({e['key'] for e in manifest})==len(manifest))
+rhea=read(O/'proposals/rhea-updates.json');oldrhea=read(B/'rhea-updates.json');check('all22 prior Rhea selectors exact ordered prefix',rhea['ids'][:len(oldrhea['ids'])]==oldrhea['ids']);check('Rhea original metadata exact', {k:v for k,v in rhea.items() if k!='ids'}=={k:v for k,v in oldrhea.items() if k!='ids'});check('Rhea adds exactly the two selected core directions',set(rhea['ids'])-set(oldrhea['ids'])=={'RHEA:31444','RHEA:30169'})
+for r in read(O/'source-original-bindings.json'):
+ p=Path(r['original']['path']);check('original bytes '+r['entry']['key'],sha(p)==r['entry']['sha256']==r['original']['sha256'] and p.stat().st_size==r['original']['bytes']);check('external cache exact '+r['entry']['key'],sha(r['external_cache'])==r['entry']['sha256'])
+check('native first-source selected objects exact',read(O/'source-order-check.json')['first_native_terms']==source['terms']);check('meaningful bounded original controls passed',read(O/'bounded-checks.json')['status']=='passed' and read(O/'bounded-checks.json')['positive']==11 and read(O/'bounded-checks.json')['negative']==11)
+check('PathBank root reference-only, three exact selected compounds retained','PathBank:SMP0002110' not in source['terms'] and len([x for x in source['terms'] if x.startswith('PathBank:SMP0002110/Compound/')])==3)
+check('two biochemical core events, two pathway interface entries',len([x for x in d['reactions'] if x.get('category')=='molecular_activity'])==2 and len([x for x in d['reactions'] if x.get('category')=='pathway'])==2)
+check('no first-source fresh UniProt metadata override',all(t['source']=='uniprot-ecoli-reviewed-cofactors' for k,t in source['terms'].items() if k.startswith('UniProtKB:')))
+for p in sorted(O.glob('*.py')):ast.parse(p.read_text());check('parse '+p.name,True)
+(O/'final-checks.json').write_text(json.dumps({'status':'passed','checks':checks,'count':len(checks),'exact_draft':ledger['draft'],'selected_inventory':{'path':str(I),'sha256':sha(I),'bytes':I.stat().st_size},'scope':'Authority and exact selector checks only; no full canonical builder, strict scientific review or maintained production gates.'},indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'status':'passed','checks':len(checks),'selected':len(actual)}))

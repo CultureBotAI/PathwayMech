@@ -1,0 +1,63 @@
+"""Capture accepted inputs and replay unchanged native source adapters externally."""
+from pathlib import Path
+import datetime,hashlib,json,shutil,subprocess,sys
+O=Path(__file__).parent
+P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012')
+B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+R=Path('/private/tmp/pathwaymech-next-228-20261012')
+A=Path('/private/tmp/pathwaymech-next-229-root-canonical-review-intake-20261012.json')
+I=Path('/private/tmp/pathwaymech-next-230-root-preflight-intake-20261012.json')
+def bind(p):
+ p=Path(p)
+ with p.open('rb') as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h}
+def save(n,v):
+ q=O/n;q.parent.mkdir(parents=True,exist_ok=True);q.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def read(p):return json.loads(Path(p).read_bytes())
+def verify(row,root=None):
+ p=Path(row['path']);p=root/p if root is not None and not p.is_absolute() else p
+ b=bind(p);assert b['sha256']==row['sha256'] and b['bytes']==row['bytes'],p
+ return b
+assert bind(I)['sha256']=='380add590e05b7f7511441a3f173f707e0259ef5795abb191517af991f4dc1be'
+assert bind(P/'handoff.json')['sha256']=='3f163f78565cfd3023271fe73734b62b0e7c7b4fb60ae7042fd81f738d48722f'
+ph=read(P/'handoff.json');verify(ph['artifact_manifest'],P);pm=read(P/'artifact-manifest.json');assert isinstance(pm,list) and len(pm)==282
+for row in pm:verify(row,P)
+a=read(A)
+assert a['status']=='accepted_actual_original_target_canonical_outputs_pending_scientific_successor_bridge'
+assert a['actual_build_handoff']['sha256']=='1462797155f37ae65a88118d7d85f78916caa04bc29ac860d28ed68c66f8180f'
+verify(a['actual_build_handoff'])
+for row in a['actual_outputs'].values():verify(row)
+bs=read(B/'sources.json');bo=read(B/'ontology.json');bm=read(B/'manifest.json');br=read(B/'rhea-updates.json')
+assert (len(bs['terms']),len(bs['sources']),len(bo['terms']),len(bo['sources']),len(bm),len(br['ids']))==(2454,587,1957,5,750,22)
+head=subprocess.check_output(['git','-C',str(R),'rev-parse','HEAD'],text=True).strip();tree=subprocess.check_output(['git','-C',str(R),'rev-parse','HEAD^{tree}'],text=True).strip()
+assert head=='53d5337e71a82223717146f289bb1309c7a41f5a'
+code=[]
+paths=[*sorted((R/'src').rglob('*.py')),R/'scripts/build_source_identifier_snapshot.py',R/'scripts/build_ontology_identifier_snapshot.py']
+for p in paths:
+ if '__pycache__' in p.parts:continue
+ rel=p.relative_to(R);committed=subprocess.check_output(['git','-C',str(R),'show',head+':'+str(rel)]);assert committed==p.read_bytes(),p
+ prior=B/'runtime'/rel;assert prior.exists() and prior.read_bytes()==committed,rel
+ q=O/'runtime'/rel;q.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,q)
+ code.append({'relative_path':str(rel),'current_committed_original':bind(p),'accepted_EG_runtime':bind(prior),'external_copy':bind(q)})
+sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+probes=[]
+for old in read(P/'derived/native-authority-probes.json')['probes']:
+ p=Path(old['original']['path']);verify(old['original'])
+ if 'archive' in old:
+  kind='pathbank-biopax-zip';url='https://pathbank.org/downloads/pathbank_primary_biopax.zip';version='Frozen PathBank original primary BioPAX archive';ts=list(sb.source_terms(kind,p,url=url,version=version,archive=old['archive'],sha256=old['original']['sha256']))
+ else:
+  kind=old['kind'];url=old['url'];version=old['version'];ts=list(sb.source_terms(kind,p,url=url,version=version))
+ assert [list(x) for x in ts]==old['terms'],old
+ probes.append({'kind':kind,'url':url,'version':version,'original':old['original'],'archive':old.get('archive'),'terms':ts,'status':'original-derived native adapter replay passed'})
+save('native-candidate-probes.json',probes)
+continuity=[]
+for row in read(P/'derived/sql-original-binding-continuity.json')['originals']:
+ q=Path(row['accepted_original']['path']);st=q.stat();assert st.st_size==row['current_stat']['bytes'] and st.st_mtime_ns==row['current_stat']['mtime_ns']
+ assert str(q.resolve())==row['current_resolved_path']
+ continuity.append({**row,'current_stat_rechecked':True})
+save('sql-original-binding-continuity.json',{'originals':continuity,'capture':read(P/'derived/sql-original-binding-continuity.json')['capture'],'limit':'Accepted original hashes plus current exact stat/resolved-path continuity. No fresh whole SQL rehash.'})
+save('candidate-labels.json',{t[0]:t[1] for x in probes for t in x['terms']}|{t['id']:t['label'] for x in read(P/'derived/issuing-sql-identity-ledger.json') for t in x['terms']})
+save('intake.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'preflight':bind(P/'handoff.json'),'preflight_root_acceptance':bind(I),'verified_preflight_artifacts':len(pm),'EG_canonical_root_acceptance':bind(A),'EG_actual_build_handoff':bind(B/'handoff.json'),'EG_actual_outputs':a['actual_outputs'],'EG_counts':{'source_terms':2454,'source_metadata':587,'ontology_terms':1957,'ontology_metadata':5,'manifest_entries':750,'rhea_selectors':22},'observed_MG_code_head':head,'observed_MG_code_tree':tree,'runtime_files':code,'authority_scope':'Actual accepted EG canonical outputs; proposal only, not an assertion of current maintained or merged EG status. Preserve prior native source order.','graph_scope':'Provisional candidate catalog only; final author-selected IDs/draft awaited.','preparation_writes':'This external directory only; no maintained/shared-cache/Git/GitHub/environment/full-builder writes'})
+save('execution-history.json',[{'terminal':'6881e3/1','result':'Read-only inspection attempted nonexistent predecessor prepare.py; actual existing helper filenames then read. No mutation or scientific consequence.'}])
+print(json.dumps({'preflight_verified':len(pm),'runtime_files':len(code),'native_probes':len(probes),'labels':len(read(O/'candidate-labels.json')),'status':'initialized'}))

@@ -1,0 +1,44 @@
+"""Seal the independent preparation-only audit without touching its subject."""
+from pathlib import Path
+import audit
+
+root = Path(__file__).resolve().parent
+checks = audit.load(root / 'checks.json')
+assert checks['status'] == 'passed' and len(checks['checks']) == 13
+assert all(row['status'] == 'passed' for row in checks['checks'])
+science = audit.binding('/private/tmp/pathwaymech-next-230-science-successor-review-20261012/handoff.json')
+assert science['sha256'] == 'beff91359629571fd87c876938eb210283e727e218f5cabfd68759207a828afc'
+audit.write(root / 'assessment.json', {
+    'at': audit.now(), 'reviewer': '/root/atp_build_preparation_audit',
+    'verdict': 'pass_preparation_only', 'blocking_findings': [], 'nonblocking_findings': [],
+    'preparation': audit.binding(audit.PREP / 'handoff.json'),
+    'preparation_manifest': audit.binding(audit.PREP / 'artifact-manifest.json'),
+    'target': audit.binding(audit.PREP / 'captured/target/sedoheptulose-bisphosphate-bypass.yaml'),
+    'checks': audit.binding(root / 'checks.json'),
+    'prior_independent_scientific_handoff_observed_not_reperformed': science,
+    'actual_audit_execution': {'command': [audit.PYTHON, '-B', str(root / 'audit.py')],
+        'cwd': str(audit.ROOT), 'environment_overrides': {'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1'},
+        'started_at': checks['started_at'], 'finished_at': checks['finished_at'], 'exit_code': 0,
+        'terminal_tool_result': 'b052a8/0', 'execution_session': 96017},
+    'full_native_build_executed': False, 'canonical_output_acceptance': False,
+    'scientific_acceptance': False, 'maintained_writes': False,
+    'limitations': ['Four large SQL full hashes remain inherited pins plus current stat checks until native execution rehashes them.',
+        'Prospective EG record requires an eventual actual merged-base bridge.',
+        'Full native output audit, root scientific acceptance and maintained integration remain separate.'],
+})
+rows = [audit.binding(path) for path in sorted(audit.files(root))]
+audit.write(root / 'artifact-manifest.json', {'scope': 'All audit files including hidden, ignored and followed files before sealing.', 'artifacts': rows, 'count': len(rows)})
+audit.write(root / 'handoff.json', {
+    'sealed_at': audit.now(), 'reviewer': '/root/atp_build_preparation_audit',
+    'status': 'completed', 'verdict': 'pass_preparation_only', 'blocking_findings': [],
+    'manifest': audit.binding(root / 'artifact-manifest.json'), 'artifact_count': len(rows),
+    'report': audit.binding(root / 'REVIEW.md'), 'assessment': audit.binding(root / 'assessment.json'),
+    'checks': audit.binding(root / 'checks.json'),
+    'preparation': audit.binding(audit.PREP / 'handoff.json'),
+    'target_sha256': 'cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101',
+    'full_native_build_executed': False, 'canonical_output_acceptance': False,
+    'scientific_acceptance': False, 'maintained_adoption': False,
+    'root_next_step': 'After separate scientific acceptance, execute the sealed native-build preparation once, then independently audit actual outputs and bridge the eventual actual merged baseline.'
+})
+print(audit.binding(root / 'handoff.json'))
+print(audit.binding(root / 'artifact-manifest.json'))

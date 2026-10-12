@@ -1,0 +1,68 @@
+"""Replay every bound edge-evidence selector against whole scientific originals."""
+from pathlib import Path
+import json,hashlib,collections
+from lxml import etree as X
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012')
+def save(n,v):(A/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+hashes={};trees={};jsons={}
+def check(b):
+ p=Path(b['path'])
+ if str(p)not in hashes:
+  with p.open('rb')as f:hashes[str(p)]=hashlib.file_digest(f,'sha256').hexdigest()
+ assert hashes[str(p)]==b['sha256'] and p.stat().st_size==b['bytes'],p
+ return p
+def xml(p):
+ if str(p)not in trees:trees[str(p)]=X.parse(str(p))
+ return trees[str(p)]
+def js(p):
+ if str(p)not in jsons:jsons[str(p)]=json.loads(Path(p).read_text())
+ return jsons[str(p)]
+ledger=js(A/'ledgers/evidence-original-selectors.json');sources=js(A/'ledgers/source-bindings.json')
+for b in sources.values():check(b)
+rhea=js(A/'derived/rhea-core-chemistry.json');rd={r['id']:r for m in rhea['masters']for r in m['directions']}
+types=collections.Counter();rows=[]
+for i,row in enumerate(ledger):
+ p=check(row['binding']);kind=row['selector_type'];s=row['selector'];types[kind]+=1
+ if kind=='xpath':
+  vals=xml(p).xpath(s);assert vals
+  got=[X.tostring(x,encoding='unicode')if isinstance(x,X._Element)else str(x)for x in vals]
+ elif kind in ['uniprot_comment','uniprot_identity']:
+  j=js(p);acc=s['accession']if isinstance(s,dict)else s;entry=next(x for x in j.get('results',[j])if x.get('primaryAccession')==acc)
+  got=[x for x in entry['comments']if x['commentType']==s['comment_type']]if kind=='uniprot_comment'else{k:entry[k]for k in ['genes','organism','sequence']}
+ elif kind=='primary_abstract':got=next(x for x in js(p)['resultList']['result']if x.get('id')==s and x.get('abstractText'))
+ elif kind=='rhea_side':got=next(x for x in rd[s['reaction']]['sides'][s['side']]if x['participant']==s['participant'])
+ else:raise AssertionError(kind)
+ assert got==row['observed'],(i,kind,s)
+ ref=row['evidence']['reference_id'];assert sources[ref]['sha256']==row['binding']['sha256']
+ rows.append(dict(row=i,reference_id=ref,selector_type=kind,original_sha256=hashes[str(p)],exact_replay=True))
+target=A/'draft/sedoheptulose-bisphosphate-bypass.yaml';d=yaml.safe_load(target.read_text())
+used=[]
+for e in d['mechanistic_edges']:
+ for group,evs in [('edge',e['evidence'])]+[(q['endpoint'],q['evidence'])for q in e.get('endpoint_qualifiers',[])]:
+  for ev in evs:
+   matches=[i for i,r in enumerate(ledger)if r['evidence']==ev];assert matches,(e['id'],ev)
+   used.append(dict(edge=e['id'],role=group,ledger_rows=matches))
+refs={r['id']:r for r in d['references']};assert set(refs)==set(sources)
+for id,r in refs.items():assert r['source_sha256']==sources[id]['sha256']
+contexts=js(A/'ledgers/context-assertions.json');cov=js(A/'claim-to-record-coverage.json');constructs=js(P/'derived/construct-context-ledger.json')
+assert len(cov)==61 and all(c['context_keys']for c in cov)
+refuses={e['reference_id']for r in ledger for e in [r['evidence']]}|{r for c in contexts for r in c['references']};assert refuses==set(refs),(set(refs)-refuses,refuses-set(refs))
+claimreplays=[]
+for c in cov:
+ for b in c['preflight']['sources']:
+  p=check(b)
+  if b.get('selected_sha256'):
+   values=xml(p).xpath(b['selector'])
+   raw='\n'.join(X.tostring(v,encoding='unicode')if isinstance(v,X._Element)else str(v)for v in values).encode()
+   assert hashlib.sha256(raw).hexdigest()==b['selected_sha256']
+   claimreplays.append(dict(claim=c['claim'],path=str(p),selector=b['selector'],selected_count=len(values),nonempty=bool(values),selection_digest_replayed=b['selected_sha256']))
+   assert values and len(values)==b['selected_count']
+  else:claimreplays.append(dict(claim=c['claim'],path=str(p),selector=b['selector'],binding_rehashed=True,scope='Structured/PDF selected-content review inherited from sealed preflight; no fabricated XPath replay.'))
+cm=[]
+for c in constructs:
+ matches=[r for r in cov if r['claim']in c['claims']];assert len(matches)==len(c['claims'])
+ cm.append(dict(preflight_key=c['key'],description=c['description'],claims=c['claims'],record_contexts=sorted({x for r in matches for x in r['context_keys']}),edge_ids=sorted({x for r in matches for x in r['edge_ids']}),source_bindings=c['sources'],disposition='Retained through the listed context paragraphs and, where causal edges exist, qualified endpoints. Source-only/no-effect preparations remain prose context.'))
+save('construct-scope-dispositions.json',cm)
+save('original-replay.json',dict(target_sha256=hashlib.sha256(target.read_bytes()).hexdigest(),whole_originals_rehashed=len(hashes),references=len(refs),ledger_rows=len(rows),selector_types=types,rows=rows,actual_edge_and_qualifier_evidence_uses=used,claim_source_checks=claimreplays,construct_contexts_retained=len(cm),limitations='Selector replay establishes source binding and locator accuracy; semantic interpretation is separately assessed by original-specific probes and independent scientific review. Structured workbook/PDF content interpretation inherits the sealed preflight reads, with exact whole-original hashes freshly rebound.'))
+print(len(rows),'original selectors replayed;',len(used),'actual edge/qualifier uses;',len(refs),'references;',len(claimreplays),'claim-source bindings;',len(cm),'construct dispositions')

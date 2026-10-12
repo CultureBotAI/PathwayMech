@@ -1,0 +1,23 @@
+"""Bind accepted prospective EG originals to the actual read-only shared-cache inventory."""
+from pathlib import Path
+import json,hashlib
+O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+def read(p):return json.loads(Path(p).read_bytes())
+def bind(p):
+ with p.open('rb') as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h}
+m=read(B/'manifest.json');cache=read(O/'source-cache-observation.json');observed={x['relative_path']:x for x in cache['files']};unique={}
+for e in m:
+ if e['path'] in unique:assert unique[e['path']]['sha256']==e['sha256']
+ unique[e['path']]=e
+rows=[]
+for name,e in sorted(unique.items()):
+ seen=observed.get(name)
+ if seen:assert seen['sha256']==e['sha256'],name;status='exact actual shared-cache original'
+ else:status='accepted prospective predecessor original not yet present in observed shared cache'
+ # The accepted full EG build owns a whole original for every entry, including
+ # missing future cache objects. Hash each unique path once for the copy bridge.
+ p=B/'originals'/name;b=bind(p);assert b['sha256']==e['sha256']
+ rows.append({'cache_relative_path':name,'expected_sha256':e['sha256'],'accepted_whole_original':b,'observed_cache':seen,'status':status})
+result={'status':'all accepted EG originals verified; actual cache bridge explicitly scoped','base_manifest':bind(B/'manifest.json'),'cache_observation':bind(O/'source-cache-observation.json'),'unique_prior_originals':len(rows),'present_exact':sum(x['observed_cache'] is not None for x in rows),'missing_from_observed_cache':[x['cache_relative_path'] for x in rows if x['observed_cache'] is None],'rows':rows,'scope':'Read-only actual cache inventory versus accepted prospective EG canonical base. Missing originals remain predecessor-adoption obligations, not ATP new original copies or claims of current maintained/cache adoption. Root must establish and freshly verify accepted EG adoption before future ATP integration.'}
+(O/'baseline-cache-bridge.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k] for k in ['unique_prior_originals','present_exact','missing_from_observed_cache']}))

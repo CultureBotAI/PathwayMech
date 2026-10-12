@@ -1,0 +1,97 @@
+"""Original-selected chemistry/assay/identity probes with deliberately wrong controls."""
+from pathlib import Path
+import json,hashlib,sys,copy,zipfile
+from lxml import etree as X
+import yaml
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012');H=Path('/private/tmp/pathwaymech-next-230-authority-preparation-20261012')
+sys.path[:0]=[str(A/'runtime/src'),str(A/'runtime/scripts')]
+import build_source_identifier_snapshot as sb
+positive=[];negative=[];probes=[]
+def eq(a,b):assert a==b,(a,b)
+def ok(name,fn):fn();positive.append(name)
+def bad(name,fn):
+ try:fn()
+ except(AssertionError,ValueError,TypeError):negative.append(name);return
+ raise AssertionError('Wrong-source control passed: '+name)
+def tree(name):return X.parse(str(P/name))
+def text(t,xp):
+ v=t.xpath(xp);assert v,xp
+ return ' '.join(' '.join(''.join(x.itertext()).split())for x in v)
+def source_probe(name,file,xp,needles):
+ t=tree(file);s=text(t,xp)
+ assert all(n in s for n in needles),(name,[n for n in needles if n not in s])
+ probes.append(dict(name=name,path=str(P/file),sha256=hashlib.sha256((P/file).read_bytes()).hexdigest(),xpath=xp,required_source_fragments=needles,selected_text=s));positive.append(name);return s
+d=yaml.safe_load((A/'draft/sedoheptulose-bisphosphate-bypass.yaml').read_text());edges=d['mechanistic_edges'];desc=d['description']
+r=json.loads((A/'derived/rhea-core-chemistry.json').read_text());directions={q['id']:q for m in r['masters']for q in m['directions']}
+def sig(id):return {k:sorted((x['properties']['accession'][0],x['coefficient'])for x in v)for k,v in directions[id]['sides'].items()}
+kin={'substrates':[('CHEBI:30616',1),('CHEBI:57483',1)],'products':[('CHEBI:15378',1),('CHEBI:456216',1),('CHEBI:58335',1)]};ald={'substrates':[('CHEBI:58335',1)],'products':[('CHEBI:16897',1),('CHEBI:57642',1)]}
+ok('Whole original Rhea directions and eight unit sides match selected chemistry',lambda:(eq(sig('RHEA:31444'),kin),eq(sig('RHEA:30169'),ald)))
+for id,sign in [('RHEA:31444',kin),('RHEA:30169',ald)]:
+ for side,pred in [('substrates','consumes'),('products','produces')]:
+  found=sorted((e['subject']if pred=='consumes'else e['object'])for e in edges if e['predicate']==pred and (e['object']if pred=='consumes'else e['subject'])==id);eq(found,sorted(x[0]for x in sign[side]))
+positive.append('Actual record chemical sides equal independently replayed native sides')
+bad('Condensation30168 used as cleavage',lambda:eq(sig('RHEA:30168'),ald))
+bad('Bidirectional30170 used as directional30169',lambda:eq(r['masters'][1]['master']['bidirectionalReaction'],['http://rdf.rhea-db.org/30169']))
+for name,mut in [('missing proton',{'substrates':kin['substrates'],'products':kin['products'][1:]}),('alpha S7P child',{'substrates':[('CHEBI:30616',1),('CHEBI:133984',1)],'products':kin['products']}),('PPi donor',{'substrates':[('CHEBI:33019',1),('CHEBI:57483',1)],'products':kin['products']}),('two protons',{'substrates':kin['substrates'],'products':[('CHEBI:15378',2),*kin['products'][1:]]})]:bad(name,lambda mut=mut:eq(sig('RHEA:31444'),mut))
+for frame,mon,n in [('6PFK-1-CPX','6PFK-1-MONOMER','4'),('FRUCBISALD-CLASSII','FRUCTBISALD-CLASSII-MONOMER','2'),('PC00061','PD00521','4'),('PC00004','PD00257','2')]:
+ t=tree('raw/ECOLI-'+frame+'.xml');eq(t.xpath('/ptools-xml/Protein/component/Protein/@frameid'),[mon]);eq(t.xpath('/ptools-xml/Protein/component/coefficient/text()'),[n]);eq(t.xpath('/ptools-xml/metadata/PGDB/@version'),['27.0'])
+positive.append('Original PfkA4 FbaA2 Cra4 CRP2 chain counts and PGDB27 replay')
+bad('PfkB inserted into native PfkA assembly',lambda:eq(tree('raw/ECOLI-6PFK-1-CPX.xml').xpath('/ptools-xml/Protein/component/Protein/@frameid'),['6PFK-1-MONOMER','6PFK-2-MONOMER']))
+complex_path=P/'raw/ECOLI-6PFK-1-CPX.xml'
+bad('Wrong native frame request',lambda:list(sb.source_terms('ecocyc-protein-xml',complex_path,url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:FRUCBISALD-CLASSII',version='27.0')))
+bad('Software or wrong PGDB version substituted',lambda:list(sb.source_terms('ecocyc-protein-xml',complex_path,url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:6PFK-1-CPX',version='26.0')))
+for gid,gene,tax in [('948412','pfkA','511145'),('947415','fbaA','511145'),('93777982','pfkA','624'),('93779073','fbaA','624')]:
+ p=P/'raw'/('Entrez-'+gid+'-native.xml')
+ if not p.exists():p=P/'raw'/('Entrez-'+gid+'.xml')
+ t=X.parse(str(p));eq(t.findtext('.//Gene-track_geneid'),gid);eq(t.findtext('.//Gene-ref_locus'),gene);eq(t.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()'),[tax])
+ if tax=='624':bad('Off-taxon Gene '+gid+' used for Ecoli',lambda t=t:eq(t.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()'),['511145']))
+positive.append('Two exact target-gene originals and two off-taxon counterexamples replay')
+s=source_probe('2009 five assay groups and standard limitation','root-leads/PMC2758719.xml','/article/body/sec[2]/sec[6]/table-wrap | /article/body/sec[2]/sec[6]/p',['5.13','2.91','1.15','0.79','0.23','0.39','5.27','369.0'])
+t=tree('root-leads/PMC2758719.xml');eq('367.0'in text(t,'/article/body/sec[4]/sec[11]/p[2]'),True)
+bad('No source mass discrepancy',lambda:eq('369.0'in s and '367.0'in text(t,'/article/body/sec[4]/sec[11]/p[2]'),False))
+bad('Methods construct paragraph1 substituted for mass calibration paragraph2',lambda:eq('367.0'in text(t,'/article/body/sec[4]/sec[11]/p[1]'),True))
+for e in edges:
+ for q in e.get('endpoint_qualifiers',[]):
+  if q['description'].startswith('2009 six-His ASKA'):assert '/p[1]'in q['evidence'][0]['source_locator']and'/p[2]'in q['evidence'][0]['source_locator']
+positive.append('Both 2009 construct qualifiers bind tag paragraph1 and assay paragraph2')
+assay20=source_probe('2020 original S7P Ba-salt coupled assay','root-leads/PMC7029132.xml','/article/body/sec[5]/sec[7]/p[2]',['Ba-salt','Carbosynth','55','0.25','ADP','rabbit','5 min'])
+bad('2020 Ba-salt reagent identity absent',lambda:eq('Ba-salt'in assay20,False))
+metals=source_probe('2011 actual metal effects distinguish capacity from occupancy','raw/PMC3225726-bioc.xml','/collection/document/passage[21] | /collection/document/passage[22]',['copper','zinc','cobalt','calcium','0.3','0.2','2.3','3.8'])
+untag=source_probe('2011 pLEM1 nonaffinity preparation','raw/PMC3225726-bioc.xml','/collection/document/passage[50]',['pLEM1','MG1655','70%','EDTA'])
+tag=source_probe('2011 separate His6 site-mutant control','raw/PMC3225726-bioc.xml','/collection/document/passage[51]',['His6','Ni-Sepharose','95%'])
+bad('Tagged control purification used for pLEM1 activity evidence',lambda:eq('pLEM1'in tag,True))
+ni=source_probe('2011 His protection and GSH sensitization under Ni challenge','raw/PMC3225726-bioc.xml','/collection/document/passage[25] | /collection/document/passage[117]',['protected','~20%','70%','enhanced','16 µM','20 nM','100 µM','1 mM'])
+for cid,pred in [('CHEBI:57595','activates'),('CHEBI:57925','inhibits')]:
+ e=next(e for e in edges if e['subject']==cid);eq(e['predicate'],pred);eq(e['object'],'EcoCyc:FRUCBISALD-CLASSII');assert e['endpoint_qualifiers']and'Ni'in e['endpoint_qualifiers'][0]['description']
+ bad('Unqualified '+cid+' universal modifier',lambda e=e:eq(e.get('endpoint_qualifiers',[]),[]))
+positive.append('Record preserves opposite Ni-dependent signs and exact preparation qualification')
+f19=source_probe('2019 functional activation distinguished from negative controls','raw/PMC6706640.xml','/article/body/sec[2]/sec[4]/p',['3‐phosphoglycerate, ATP, and phosphoenolpyruvate had an activating effect','hypoxanthine and IMP had no measurable impact'])
+bad('2019 FbaA ATP inhibition substituted',lambda:eq('3‐phosphoglycerate, ATP, and phosphoenolpyruvate had an inhibitory effect'in f19,True))
+for cid in ['30616','58272','58702']:
+ e=next(e for e in edges if e['subject']=='CHEBI:'+cid and any(v['reference_id']=='PMID:31464375'for v in e['evidence']));eq(e['predicate'],'activates');assert'FBP'in e['endpoint_qualifiers'][0]['description']
+positive.append('Three 2019 actual positive signs retain FBP assay instead of invented SBP response')
+sigma=source_probe('Direct reconstituted transcription is Fig6 and functional paragraph2','raw/PMC2759082.xml','/article/body/sec[2]/sec[6]/p[2] | /article/body/sec[2]/sec[6]/fig[2]',['In vitro transcription','pfkA','pykAP1-P2','Figure 6','RNA-I'])
+mapping=text(tree('raw/PMC2759082.xml'),'/article/body/sec[2]/sec[6]/p[1]');bad('TSS paragraph substituted for functional proof',lambda:eq('In vitro transcription experiments'in mapping,True))
+source_probe('Sigma assay requires RNAP core at1:5','raw/PMC2759082.xml','/article/body/sec[4]/sec[9]/p[3]',['core enzyme','1∶5','reconstituted RNAP holoenzyme'])
+for acc in ['P13445','P00579']:
+ e=next(e for e in edges if e['subject']=='UniProtKB:'+acc and e['object']=='Entrez:948412');assert'RNAP core'in e['endpoint_qualifiers'][0]['description'];assert any('/p[2]'in v['source_locator']and'/fig[2]'in v['source_locator']for v in e['evidence'])
+positive.append('Both sigma endpoints remain reconstituted-system qualifiers with corrected locators')
+# Structural PathBank joins derive from complete frozen member, not author metadata.
+archive=Path('/private/tmp/pathwaymech-pathbank-dbcan-evidence/pathbank/pathbank_primary_biopax.zip')
+eq(hashlib.sha256(archive.read_bytes()).hexdigest(),'b3a9b9557d4147fac0159d178a27c13cc1180729eae9ccb4fb32abebb1656f44')
+with zipfile.ZipFile(archive)as z:
+ names=[n for n in z.namelist()if n=='PW002098.owl'];eq(names,['PW002098.owl']);body=z.read(names[0])
+eq(body,(P/'root-leads/PW002098.owl').read_bytes());t=X.fromstring(body);ns={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+for child,ix,cpd in [('SMP0121065','109963','PW_C000843'),('SMP0121065','109888','PW_C001019'),('SMP0000807','109887','PW_C042631')]:
+ eq(len(t.xpath('//bp:Pathway[@rdf:about=$r]/bp:pathwayComponent[@rdf:resource=$c]',namespaces=ns,r='http://identifiers.org/smpdb/SMP0002110',c='http://identifiers.org/smpdb/'+child)),1)
+ eq(t.xpath('//bp:Pathway[@rdf:about=$c]/bp:pathwayComponent[@rdf:resource=$ix]/@rdf:resource',namespaces=ns,c='http://identifiers.org/smpdb/'+child,ix='#SubPathwayInteractions/'+ix),['#SubPathwayInteractions/'+ix])
+ eq(t.xpath('//bp:Interaction[@rdf:ID=$ix]/bp:participant/@rdf:resource',namespaces=ns,ix='SubPathwayInteractions/'+ix),['#Compound/'+cpd])
+ e=next(e for e in edges if e['subject']=='PathBank:'+child and e['object']=='PathBank:SMP0002110/Compound/'+cpd);eq(e['predicate'],'has_part')
+positive.append('Whole ZIP/member identity and all three unsigned root-child-Interaction-chemical joins')
+formula=t.xpath('//bp:SmallMoleculeReference[@rdf:ID="CompoundReference/PW_C042631"]/bp:chemicalFormula/text()',namespaces=ns);eq(formula,['C3H5Li2O6P'])
+bad('Dilithium compound merged into DHAP dianion',lambda:eq(formula,['C3H5O6P']))
+bad('Source Interface marker promoted to regulatory sign',lambda:eq({e['predicate']for e in edges if e['subject'].startswith('PathBank:')},{'inhibits'}))
+assert 'inconsistent native CML SMILES'in desc and'physiological'in desc and'no authentic'in desc.lower()
+positive.append('Source chemistry discrepancies and standard limitations remain in actual description')
+out=dict(target_sha256=hashlib.sha256((A/'draft/sedoheptulose-bisphosphate-bypass.yaml').read_bytes()).hexdigest(),positive_checks=positive,negative_controls=negative,source_selected_probes=probes,counts={'positive':len(positive),'negative':len(negative)},limits='Bounded original-derived scientific contract, not independent scientific acceptance or full production tests. Native source parser is unchanged. No fabricated original or patched source body.')
+(A/'scientific-contract-checks.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n');print(json.dumps(out['counts']))

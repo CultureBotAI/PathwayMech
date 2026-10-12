@@ -1,0 +1,30 @@
+"""Read selected candidate identities through prior native source order, not a full build."""
+from pathlib import Path
+import hashlib,json,sys
+O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012')
+sys.path[:0]=[str(O/'runtime/scripts'),str(O/'runtime/src')]
+import build_source_identifier_snapshot as sb
+
+def bind(p):
+ with p.open('rb') as f:h=hashlib.file_digest(f,'sha256').hexdigest()
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h}
+def save(n,v):(O/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+base=json.loads((B/'manifest.json').read_bytes());old=json.loads((B/'sources.json').read_bytes());catalog=json.loads((O/'candidate-labels.json').read_bytes());wanted={i for i in catalog if i.partition(':')[0] in sb.SOURCE_NAMESPACES}
+# Every included namespace can be emitted by these source adapters. GO-CAM individual
+# IDs are unconstrained, so every such original is inspected too.
+kinds={'uniprot','metacyc-html','metacyc-protein-xml','metacyc-reaction-xml','ecocyc-protein-xml','ecocyc-rna-xml','ncbi-entrezgene-xml','pathbank-biopax','pathbank-biopax-zip','gocam-tar'}
+first={};hits=[];scanned=[];excluded=[]
+for pos,e in enumerate(base):
+ if e['kind'] not in kinds:
+  excluded.append({'position':pos,'key':e['key'],'kind':e['kind'],'reason':'Native adapter emits only namespaces outside this exact candidate catalog'});continue
+ p=B/'originals'/e['path'];b=bind(p);assert b['sha256']==e['sha256']
+ ts=[t for t in sb.source_terms(e['kind'],p,url=e['url'],version=e['version'],archive=e.get('archive'),sha256=e['sha256']) if t[0] in wanted]
+ scanned.append({'position':pos,'entry':e,'original':b,'selected_hits':len(ts)})
+ for ident,label,syn in ts:
+  term={'label':label,'synonyms':sorted(set(syn)-{label}),'source':e['key']};hits.append({'id':ident,'position':pos,'term':term})
+  if ident not in first:first[ident]=term
+  elif first[ident]['source']==e['key']:first[ident]['synonyms']=sorted(set(first[ident]['synonyms']+[label]+syn)-{first[ident]['label']})
+for ident,t in first.items():
+ if ident in old['terms']:assert old['terms'][ident]==t,(ident,old['terms'][ident],t)
+save('prior-native-precedence.json',{'status':'passed','scope':'Candidate catalog only, not a full source build. Final graph selectors still author-owned.','base_manifest':bind(B/'manifest.json'),'candidate_ids':sorted(wanted),'inspected_originals':scanned,'excluded_by_namespace_contract':excluded,'matches':hits,'first_native_terms':first,'unresolved_by_prior_originals':sorted(wanted-set(first))})
+print(json.dumps({'status':'passed','candidate_ids':len(wanted),'prior_native_resolved':len(first),'scanned_originals':len(scanned),'unresolved':sorted(wanted-set(first))}))

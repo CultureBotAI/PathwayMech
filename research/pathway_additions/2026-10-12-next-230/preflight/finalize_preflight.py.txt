@@ -1,0 +1,102 @@
+from pathlib import Path
+import datetime, hashlib, json, shutil, subprocess, sys
+
+B=Path(__file__).parent
+D=B/'derived'
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):
+    p=Path(p)
+    return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def save(n,x): (B/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+# Bind the accepted whole-SQL hashes and check their unchanged selected originals.
+# Do not repeat the accepted twenty-GB hash pass.
+cap=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/preparation-capture.json')
+sql=[]
+for r in json.loads(cap.read_text())['sql_originals']:
+    p=Path(r['path']);st=p.stat()
+    assert (st.st_size,st.st_mtime_ns)==(r['bytes'],r['mtime_ns']),r
+    sql.append(dict(accepted_original=r,current_resolved_path=str(p.resolve()),current_stat=dict(bytes=st.st_size,mtime_ns=st.st_mtime_ns),status='unchanged size and mtime; hash inherited from accepted canonical original binding'))
+save('derived/sql-original-binding-continuity.json',dict(capture=bind(cap),originals=sql,limit='Stat continuity plus accepted hash binding; not a new whole-database rehash.'))
+
+P=Path('/private/tmp/pathwaymech-next-231-preflight-20261012')
+assert sha(P/'handoff.json')=='2a36ac3c08ef24ec5aa4e5556782de5cd266db7e164100bb40ce2af529d40b0a'
+assert sha(P/'artifact-manifest.json')=='cd513b86f0ed745a1245dd2a4b5453824cee95ae7fef5ff7b6e660a4e7e6f42f'
+save('derived/later-donor-route-boundary.json',dict(
+    status='bounded independent publisher text read; donor-route boundary only',
+    publication=dict(pmid='36286488',doi='10.1128/aem.01258-22',url='https://journals.asm.org/doi/full/10.1128/aem.01258-22'),
+    acquisition='web open and find returned publisher-rendered text; no local original HTML acquired by this reviewer',
+    actual_read_scope=['Abstract and Introduction; Results through initial TAL introduction in prior tool response','Results: Simultaneous expression of ATP-pfk and deletion of PPi-pfk, final paragraph; Table 1; Resequencing analyses; Discussion opening and following PFK interpretation paragraphs in final response'],
+    locators=['Results / Simultaneous expression of ATP-pfk and deletion of PPi-pfk / final paragraph (publisher-rendered lines180–181)','Results / Resequencing analyses / paragraphs1–2 (lines206–208)','Discussion / opening paragraphs (lines211–213)'],
+    assertion='Engineered C. thermocellum LL1660 lost both PPi-pfk and introduced TAL, with loss of the corresponding activities and resequencing confirmation. A duplicated genomic region complicates interpretation. The authors reconsider the proposed C6-to-C5 requirement and leave the alternative route unresolved.',
+    disposition='Limit necessity claims for the separate PPi prospect. This is not a refutation of the E. coli ATP bypass assays, and does not identify an alternative pathway or transfer the engineered clostridial genotype to E. coli.',
+    independently_read=True,full_article_read_by_this_preflight=False,
+    retained_helper_tool_receipt=bind(P/'receipts/2022-publisher-web-rendering.json'),
+    receipt_limit='Tool-returned rendering, not raw publisher HTML; local blocked/CAPTCHA bodies are not evidence.',
+    sealed_next231_handoff=bind(P/'handoff.json'),sealed_next231_manifest=bind(P/'artifact-manifest.json'),
+    next231_scientific_review_status='Separate submitted preflight; no independent whole-packet acceptance asserted here.'))
+
+old=json.loads((D/'native-authority-probes-prior-query-url-context.json').read_text())
+new=json.loads((D/'native-authority-probes.json').read_text())
+deltas=[]
+for a,b in zip(old['probes'],new['probes'],strict=True):
+    aa=dict(a);bb=dict(b);au=aa.pop('url',None);bu=bb.pop('url',None)
+    assert aa==bb
+    if au!=bu:deltas.append(dict(original=a['original'],old_probe_url=au,corrected_actual_request_url=bu))
+assert len(deltas)==2
+save('derived/final-provenance-corrections.json',dict(status='corrected before seal; prior output retained',changes=deltas,scope='The two query-result probe URLs formerly used local filenames. Final probes now bind actual acquisition request URLs by exact original hash. All native parsed terms, originals, statuses and other fields are unchanged.',native_replay_terminal='7245fc/0',parser_guard_relaxation=False))
+
+roots=[]
+for r in json.loads((B/'root-lead-intake.json').read_text())['bindings']:
+    assert sha(r['path'])==r['sha256']==sha(r['copy'])
+    roots.append(r)
+save('derived/root-lead-final-continuity.json',dict(status='all original and copied root lead artifacts unchanged',bindings=roots))
+
+cleanup=[]
+for name in ['swift-module-cache','libreoffice-profile-retry']:
+    p=B/name
+    if p.is_dir():
+        assert p.parent==B
+        cleanup.append(dict(path=str(p),files=sum(x.is_file()for x in p.rglob('*')),purpose='Task-owned transient compiler/isolated conversion profile; original sources and converted workbooks remain sealed separately.'))
+        shutil.rmtree(p)
+save('derived/transient-cleanup.json',dict(removed=cleanup,original_source_removal=False))
+
+# Final real bounded execution with exact argv/exit/output and input script hashes.
+argv=[sys.executable,'-B',str(B/'check_preflight.py')]
+p=subprocess.run(argv,text=True,capture_output=True,check=False)
+save('final-check-execution.json',dict(argv=argv,returncode=p.returncode,stdout=p.stdout,stderr=p.stderr,script=bind(B/'check_preflight.py'),completed_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),environment=dict(PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1'),scope='bounded preflight checks only'))
+assert p.returncode==0,p.stderr
+
+claims=json.loads((D/'claim-dispositions.json').read_text())
+appendix=['# Full claim and authoring-disposition index','', 'Every row below has original bindings and exact XML locators or explicitly descriptive structured-source selectors in `derived/claim-dispositions.json`. This is a research handoff, not a validated record.','']
+for c in claims:
+    appendix += [f"## {c['key']} — {c['scope']}",'',c['assertion'],'', '**Disposition:** '+c['authoring_disposition'],'', '**Bound sources:** '+str(len(c['sources']))+'.','']
+(B/'CLAIM-INDEX.md').write_text('\n'.join(appendix))
+
+save('execution-history.json',dict(
+    status='Observed tool-result inventory, not fabricated shell logs',
+    scientific_runtime=sys.executable,
+    prior_observed_runs=[
+        dict(operation='Initial whole-source projection',terminal='864663/1',outcome='Missing optional Gene-track_status assumed; fixed to preserve omitted source field as absent.'),
+        dict(operation='Whole-source projection after optional-field fix',terminal='f7325f/0',outcome='144 originals, 74 native bodies at that stage.'),
+        dict(operation='Final whole-source projection',terminal='afb161/0',outcome='166 indexed raw/root-lead artifacts; 76 native XML bodies, six full primary XML/BioC article bodies.'),
+        dict(operation='Claim locator development',terminals=['43a552/1','88eb98/1','252f7d/1','8ce042/1'],outcome='Failed exact spelling/substrate selector assertions; corrected selectors from actual source strings, no scientific body edits.'),
+        dict(operation='Claim disposition projection',terminal='b52bd0/0',outcome='60 claims before source-backed FbaA cytosol addition.'),
+        dict(operation='Native authority initial probes',terminal='623e15/0',outcome='Probe script completed, but 12 Gene request-guard failures reported, so not a passing authority result. Actual retmode bodies retained.'),
+        dict(operation='Fresh exact rettype=xml Gene requests',terminal='925208/0',outcome='12 fresh native originals acquired; acquisition-18 receipts bind exact requests and bytes.'),
+        dict(operation='Native authority corrected probe pass',terminal='2df90c/0',outcome='27 probes passed, then43 SQL labels.'),
+        dict(operation='Final claim/authority/control replay with cytosol',terminal='5bc7f6/0',outcome='61 claims,166 source uses,27 probes,44 SQL identities,11 positive and16 negative controls.'),
+        dict(operation='Supplement, construct and final novelty ledgers',terminal='a8de6d/0',outcome='Six workbooks, all sheets; 19 constructs,69 prior research hits,230 exact records.'),
+        dict(operation='Initial bounded negative control',terminal='bd6121/1',outcome='Bidirectional Rhea ID is on master, not directional projection; corrected source selector.'),
+        dict(operation='Corrected bounded negative control pass',terminal='cdc50c/0',outcome='11 positive and16 negative controls passed.'),
+        dict(operation='Final actual UniProt query URL binding replay',terminal='7245fc/0',outcome='27 native probes,44 SQL identities; two query URLs corrected to actual receipt-bound requests.'),
+        dict(operation='Read-only observed baseline HEAD/tree',terminal='4e3554/0',outcome='790a9699d7c1ca9c00536be877fa884af1c57918 / 6fc1d09d2b5f8c4863c9b97827592f14e0e82940.'),
+        dict(operation='Final bounded preflight execution',receipt='final-check-execution.json',outcome='Actual argv/exit/stdout/stderr captured by subprocess, not inferred.')
+    ],
+    acquisition_receipt_pattern='acquisition-*-receipts.json',
+    acquisition_limit='Request receipts contain exact success/error/status/final URL/hash/timing. HTTP200 does not prove a scientific body; format checks reject retained CAPTCHA/error HTML. Some attempts failed with DNS,403,429,500 or timeout and remain visible.',
+    other_runtime='Existing macOS PDFKit/Swift and LibreOffice headless performed PDF projection/rendering and XLS conversion. No packages installed. One helper-script string edit used system python3; scientific parsing/check runs use the pinned environment.',
+    unperformed=['record authoring','native YAML/strict/page/KGX record gates','full canonical source/ontology build','full test suite','maintained adoption','Git or GitHub mutation','independent scientific review','public release/licensing acceptance']))
+
+print(json.dumps(dict(claims=len(claims),sources=sum(len(x['sources'])for x in claims),root_leads=len(roots),provenance_url_corrections=len(deltas),bounded_check_exit=p.returncode,cleanup=len(cleanup))))

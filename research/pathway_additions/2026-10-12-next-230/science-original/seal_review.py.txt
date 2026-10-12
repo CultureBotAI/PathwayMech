@@ -1,0 +1,127 @@
+"""Prepare evidence objects for parent adoption, verify the external packet and seal it."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+from lxml import etree
+
+OUT = Path('/private/tmp/pathwaymech-next-230-science-review-20261012')
+
+def load(name):
+    return json.loads((OUT / name).read_text())
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def binding(path):
+    p = Path(path)
+    return {'path': str(p), 'bytes': p.stat().st_size, 'sha256': sha(p)}
+
+def utc():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+assessment = load('assessment.json')
+replay = load('original-selector-replay.json')
+rhea = load('rhea-independent-chains.json')
+edges = load('edge-assessments.json')
+proofs = load('locator-proofs.json')
+native_evidence = []
+completed_replays = []
+for row in replay:
+    eid = f'original-selector-{row["index"]:03d}'
+    source = row['source']
+    selector = row['selector']
+    joined = None
+    if row['selector_type'] == 'rhea_side':
+        candidates = [r for r in rhea['sides'] if r['reaction'] == selector['reaction'] and r['side'] == selector['side']
+              and any(etree.fromstring(x.encode()).get('{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about') == selector['participant'] for x in r['xml'])]
+        assert len(candidates) == 1, (eid, len(candidates))
+        joined = candidates[0]
+        summary = f"Original RDF {joined['reaction']} {joined['side']} contains coefficient {joined['coefficient']} of {joined['chemical']}; complete side/participant/compound chain independently traversed."
+        status = 'completed_by_independent_full_rdf_traversal'
+    else:
+        assert row.get('selected') or row.get('display'), eid
+        ev = row.get('evidence', {})
+        summary = ev.get('source_assertion') or 'Exact original source object selected and independently inspected; per-edge assessment preserves evidence-role and access limits.'
+        status = 'completed_from_original'
+    kind = 'primary_source' if row['selector_type'] == 'primary_abstract' or any(s in source['path'] for s in ['PMC', 'publisher']) else 'database'
+    native_evidence.append({'evidence_id': eid, 'kind': kind,
+        'reference': source.get('url') or source['path'],
+        'locator': selector if isinstance(selector, str) else json.dumps(selector, sort_keys=True),
+        'accessed_at': assessment['finished_at'], 'support': 'context_only' if not row.get('evidence') and joined is None else 'supports',
+        'summary': summary, 'snapshot_sha256': source['sha256']})
+    completed_replays.append({'index': row['index'], 'evidence_id': eid, 'source': source,
+        'status': status, 'original_replay_artifact': 'original-selector-replay.json',
+        'independent_rhea_chain': joined})
+for proof in proofs:
+    native_evidence.append({'evidence_id': proof['evidence_id'],
+        'kind': 'primary_source' if 'PMC' in proof['source']['path'] else 'database',
+        'reference': proof['source']['path'], 'locator': proof['replacement_locator'],
+        'accessed_at': assessment['finished_at'], 'support': 'supports',
+        'summary': proof['scientific_assessment'], 'snapshot_sha256': proof['source']['sha256']})
+save('native-evidence-draft.json', native_evidence)
+save('completed-selector-assessments.json', completed_replays)
+
+assert len(replay) == len(completed_replays) == 159
+assert len(native_evidence) == 164
+ids = {e['evidence_id'] for e in native_evidence}
+assert len(ids) == len(native_evidence)
+for edge in edges:
+    assert set(edge['native_assessment']['evidence_ids']) <= ids
+for finding in load('findings.json'):
+    assert set(finding['evidence_ids']) <= ids
+assert len(edges) == 67
+assert sum(len(e['endpoint_qualifier_assessments']) for e in edges) == 24
+assert len(load('claim-assessments.json')) == 61
+assert len(load('construct-context-assessments.json')) == 19
+assert len(load('description-context-assessments.json')) == 22
+assert len(load('findings.json')) == 3
+assert sha(assessment['target']['path']) == assessment['target']['sha256']
+for proof in proofs:
+    assert sha(proof['source']['path']) == proof['source']['sha256']
+assert all(r['rejected'] for r in load('bounded-native-checks.json')['negative_controls'])
+save('seal-validation.json', {'checked_at': utc(), 'status': 'passed',
+   'counts': {'edges': 67, 'qualifiers': 24, 'claims': 61, 'construct_contexts': 19, 'description_contexts': 22,
+              'completed_original_selectors': 159, 'native_evidence_draft_objects': 164, 'minor_findings': 3},
+   'checks': ['All evidence IDs referenced by normalized findings and native assessment drafts resolve.',
+              'All eight initially deferred Rhea selectors join exactly one independently traversed original chain.',
+              'Exact reviewed target and all five finding-original bytes remain unchanged.',
+              'All five independent adverse chemistry controls rejected.'],
+   'not_native_validation': 'This is an external packet consistency check, not the governed maintained-review validator, saver or corpus gate.'})
+
+command = ['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(OUT)]
+result = subprocess.run(command, check=True, capture_output=True)
+paths = sorted(Path(x.decode()) for x in result.stdout.split(b'\0') if x)
+entries = []
+for path in paths:
+    if path.name in ['handoff.json', 'artifact-manifest.json'] and path.parent == OUT:
+        continue
+    b = binding(path); b['path'] = str(path.relative_to(OUT)); entries.append(b)
+manifest = {'package': str(OUT),
+    'scope': 'Every regular file found including ignored/hidden/followed paths; excludes only this manifest and handoff to avoid circular hashes.',
+    'inventory_command': command, 'inventory_exit': result.returncode,
+    'inventory_stderr': result.stderr.decode(), 'artifacts': entries}
+save('artifact-manifest.json', manifest)
+handoff = {'package': str(OUT), 'sealed_at': utc(),
+    'reviewer': '/root/atp_science_review', 'independence': 'independent',
+    'target': assessment['target'], 'target_id': assessment['target_id'],
+    'verdict': assessment['verdict'], 'scientific_review_complete': True,
+    'native_maintained_review_saved': False, 'finding_counts': assessment['finding_counts'],
+    'artifact_manifest': binding(OUT / 'artifact-manifest.json'), 'artifact_count': len(entries),
+    'assessment': binding(OUT / 'assessment.json'), 'report': binding(OUT / 'REVIEW.md'),
+    'findings': binding(OUT / 'findings.json'), 'actions': binding(OUT / 'actions.json'),
+    'locator_proofs': binding(OUT / 'locator-proofs.json'), 'per_edge': binding(OUT / 'edge-assessments.json'),
+    'per_claim': binding(OUT / 'claim-assessments.json'), 'construct_contexts': binding(OUT / 'construct-context-assessments.json'),
+    'native_evidence_draft': binding(OUT / 'native-evidence-draft.json'),
+    'author_original_unchanged': load('final-input-recheck.json'),
+    'next_step': 'Root creates actionable issues, fixes the three minor locator defects in a separate successor, preserves Table III advisory and all source scopes, reruns production gates and saves a governed native review against the adopted maintained target. Do not mutate this sealed observation or the original author packet.'}
+save('handoff.json', handoff)
+for entry in entries:
+    assert sha(OUT / entry['path']) == entry['sha256']
+print(json.dumps({'status': 'sealed', 'artifact_count': len(entries),
+                  'handoff': binding(OUT / 'handoff.json'),
+                  'manifest': binding(OUT / 'artifact-manifest.json')}, indent=2))

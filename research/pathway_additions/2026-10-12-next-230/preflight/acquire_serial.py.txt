@@ -1,0 +1,7 @@
+import sys,json,time
+from pathlib import Path
+from acquire import fetch
+p=Path(sys.argv[1]); rows=[]
+for r in json.loads(p.read_text()):
+ rows.append(fetch(r));time.sleep(0.5)
+o=p.with_name(p.stem+'-receipts.json');assert not o.exists();o.write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(dict(total=len(rows),acquired=sum('sha256'in r for r in rows),errors=[r for r in rows if 'error'in r])))

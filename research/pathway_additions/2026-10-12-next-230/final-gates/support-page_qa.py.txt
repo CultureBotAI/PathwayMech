@@ -1,0 +1,174 @@
+"""Read-only exact ATP page/SVG/KGX checks and external static preview."""
+import argparse
+from collections import Counter
+import csv
+from html.parser import HTMLParser
+import io
+import re
+import subprocess
+import sys
+import xml.etree.ElementTree as ET
+import yaml
+from support import *
+
+
+def normalized(value):
+    return ' '.join(value.split())
+
+
+class Parsed(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.ids, self.links, self.text, self.rows = [], [], [], {}
+        self.current_row = None
+    def handle_starttag(self, tag, attrs):
+        values = dict(attrs)
+        if 'id' in values:
+            self.ids.append(values['id'])
+        if values.get('href', '').startswith('#'):
+            self.links.append(values['href'][1:])
+        if tag == 'tr' and values.get('id', '').startswith('mechanism-edge-'):
+            self.current_row = values['id']; self.rows[self.current_row] = []
+    def handle_endtag(self, tag):
+        if tag == 'tr': self.current_row = None
+    def handle_data(self, data):
+        self.text.append(data)
+        if self.current_row: self.rows[self.current_row].append(data)
+
+
+def inspect_page(record, text):
+    parsed = Parsed(); parsed.feed(text)
+    assert len(parsed.ids) == len(set(parsed.ids)), 'Duplicate HTML IDs'
+    assert set(parsed.links) <= set(parsed.ids), 'Unresolved local anchors'
+    matches = re.findall(r'<svg\b[^>]*class="pathway-network-svg".*?</svg>', text, re.S)
+    assert len(matches) == 1
+    svg = ET.fromstring(matches[0])
+    links = list(svg.iter('{http://www.w3.org/2000/svg}a'))
+    edges = [e for e in links if 'graph-edge' in e.get('class', '').split()]
+    nodes = [e for e in links if 'graph-node' in e.get('class', '').split()]
+    native = [(e['subject'], e['predicate'], e['object']) for e in record['mechanistic_edges']]
+    actual = [(e.get('data-subject-id', e.get('data-subject')), e.get('data-predicate'),
+               e.get('data-object-id', e.get('data-object'))) for e in edges]
+    assert actual == native, 'Ordered native graph triples changed'
+    assert [e.get('href') for e in edges] == ['#mechanism-edge-' + str(i + 1) for i in range(len(native))]
+    rendered = {e.get('data-base-node-id', e.get('data-node-id')) for e in nodes}
+    declared = {e['id'] for field in ('participants', 'reactions') for e in record[field]}
+    assert declared <= rendered
+    assert {x for edge in native for x in (edge[0], edge[2])} <= rendered
+    node_map = {e.get('data-node-id'): e for e in nodes}
+    assert len(node_map) == len(nodes), 'Duplicate graph display node IDs'
+    visible = normalized(' '.join(parsed.text)); qualifiers, uses = [], []
+    for number, edge in enumerate(record['mechanistic_edges'], 1):
+        row_text = normalized(' '.join(parsed.rows['mechanism-edge-' + str(number)]))
+        for field in ('subject', 'predicate', 'object', 'description'):
+            if edge.get(field): assert normalized(edge[field]) in row_text, 'Edge-row field missing: ' + field
+        edge_uses = list(edge['evidence'])
+        for qualifier in edge.get('endpoint_qualifiers', []):
+            qualifiers.append(qualifier); edge_uses.extend(qualifier.get('evidence', []))
+            assert normalized(qualifier['description']) in row_text, 'Qualifier absent from its edge row'
+            role = qualifier['endpoint']; display_id = f'qualified-endpoint-{number}-{role}'
+            displayed = node_map[display_id]
+            assert displayed.get('data-base-node-id') == edge[role], 'Qualifier biological endpoint changed'
+            assert displayed.get('href') == f'#mechanism-edge-{number}-qualifier-{role}'
+            graph_detail = normalized(displayed.get('aria-label', '') + ' '.join(displayed.itertext()))
+            assert normalized(qualifier['description']) in graph_detail, 'Full qualifier not accessible in graph'
+            for evidence in qualifier.get('evidence', []):
+                for field in ('reference_id', 'source_assertion', 'quote', 'source_locator'):
+                    if evidence.get(field): assert normalized(evidence[field]) in graph_detail, 'Qualifier graph evidence missing: ' + field
+        uses.extend(edge_uses)
+        for evidence in edge_uses:
+            for field in ('reference_id', 'source_assertion', 'quote', 'source_locator'):
+                if evidence.get(field): assert normalized(evidence[field]) in row_text, 'Evidence missing from owning edge row: ' + field
+    for number, ref in enumerate(record['references'], 1):
+        assert 'reference-' + str(number) in parsed.ids
+        assert ref['id'] in visible
+        for field in ('title', 'url'):
+            if field == 'title' and ref.get(field): assert normalized(ref[field]) in visible
+    return matches[0], {'html_ids': len(parsed.ids), 'fragment_links': len(parsed.links),
+        'display_nodes': len(nodes), 'unique_biological_graph_nodes': len(rendered),
+        'edges': len(edges), 'qualifiers': len(qualifiers), 'evidence_uses': len(uses),
+        'references': len(record['references']), 'native_ordered_triples_match': True,
+        'declared_component_coverage_complete': True, 'all_qualifier_evidence_text_present': True,
+        'all_evidence_in_owning_edge_row': True, 'all_qualifier_display_instances_exact': True}
+
+
+def digest(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+
+
+def parse_tsv(text):
+    reader = csv.DictReader(io.StringIO(text), delimiter='\t'); rows = list(reader)
+    assert all(None not in r for r in rows)
+    result = {r['id']: r for r in rows}; assert len(result) == len(rows)
+    return reader.fieldnames, result
+
+
+def inspect_kgx(record, nodes_text, edges_text, old):
+    sys.path[:0] = [str(ROOT / 'src'), str(ROOT)]
+    from pathwaymech.schema import validate_record
+    from pathwaymech.kgx import render_kgx
+    generated = render_kgx([validate_record(record)])
+    _, target_nodes = parse_tsv(generated['nodes.tsv']); _, target_edges = parse_tsv(generated['edges.tsv'])
+    node_columns, nodes = parse_tsv(nodes_text); edge_columns, edges = parse_tsv(edges_text)
+    assert node_columns == old['node_columns'] and edge_columns == old['edge_columns']
+    assert all(identifier in edges and digest(edges[identifier]) == value for identifier, value in old['edges'].items()), 'Old KGX edges changed'
+    assert {key: value for key, value in edges.items() if key not in old['edges']} == target_edges, 'Target KGX edge cells changed'
+    assert set(nodes) == set(old['nodes']) | set(target_nodes), 'KGX node identity union changed'
+    display_delta, added_contexts = [], 0
+    for identifier, row in nodes.items():
+        prior = old['nodes'].get(identifier)
+        previous = Counter(prior['context_hash_counts']) if prior else Counter()
+        wanted = Counter(digest(c) for c in json.loads(target_nodes.get(identifier, {}).get('source_contexts') or '[]'))
+        current = Counter(digest(c) for c in json.loads(row['source_contexts'] or '[]'))
+        assert current == previous + wanted, 'Context multiplicity changed: ' + identifier
+        added_contexts += sum(wanted.values())
+        if prior:
+            for column, value in prior['display'].items():
+                if row[column] != value: display_delta.append({'id': identifier, 'column': column, 'before': value, 'after': row[column]})
+        else:
+            assert row == target_nodes[identifier], 'New node cells changed'
+    return {'old_edges_exact': len(old['edges']), 'new_edges_exact': len(target_edges),
+        'old_source_contexts_exact': old['source_context_count'], 'new_source_contexts_exact': added_contexts,
+        'new_nodes': len(set(nodes) - set(old['nodes'])), 'all_context_multiplicities_exact': True,
+        'all_target_edge_metadata_evidence_qualifiers_exact': True, 'node_display_delta': display_delta,
+        'display_delta_approval': 'Not issued by QA; requires separate root preservation assessment.'}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for name in ('gates', 'baseline-kgx', 'output'): parser.add_argument('--' + name, required=True, type=Path)
+    args = parser.parse_args()
+    verify_support(); assert_head(); gates, gate_inputs = verify_gates(args.gates)
+    out = external_new(args.output)
+    record = yaml.safe_load((ROOT / TARGET_REL).read_bytes())
+    svg, counts = inspect_page(record, (ROOT / PAGE_REL).read_text())
+    assert (counts['edges'], counts['qualifiers'], counts['references'], counts['evidence_uses']) == (67, 24, 94, 145)
+    baseline_receipt = load('/private/tmp/pathwaymech-next-230-maintained-baseline-20261012/receipt.json')
+    assert baseline_receipt['kgx'] == bind(args.baseline_kgx)
+    kgx = inspect_kgx(record, (ROOT / 'pages/downloads/nodes.tsv').read_text(),
+                      (ROOT / 'pages/downloads/edges.tsv').read_text(), load(args.baseline_kgx))
+    assert not any(line.rstrip() != line for line in (ROOT / PAGE_REL).read_text().splitlines()), 'Page trailing whitespace'
+    css_path = ROOT / 'src/pathwaymech/assets/pathway-network.css'; css = css_path.read_text().split('@media')[0]
+    for name, value in dict(re.findall(r'(--graph-[a-z]+):\s*(#[0-9a-fA-F]+)', css)).items(): css = css.replace('var(' + name + ')', value)
+    styled = svg.replace('>', '><style>' + css + '</style>', 1); ET.fromstring(styled)
+    out.mkdir(); (out / 'original.svg').write_text(svg); (out / 'styled.svg').write_text(styled)
+    (out / 'gates-observation.json').write_bytes(args.gates.read_bytes())
+    write(out / 'kgx-checks.json', kgx)
+    command = ['/usr/local/bin/rsvg-convert', '-b', 'white', '-w', '1600', '-o', str(out / 'overview.png'), str(out / 'styled.svg')]
+    started = now(); result = subprocess.run(command, capture_output=True)
+    (out / 'preview.stdout').write_bytes(result.stdout); (out / 'preview.stderr').write_bytes(result.stderr)
+    receipt = {'status': 'passed' if result.returncode == 0 else 'failed', 'started_at': started,
+        'finished_at': now(), 'target': bind(ROOT / TARGET_REL), 'page': bind(ROOT / PAGE_REL),
+        'css': bind(css_path), 'helper': bind(__file__), 'final_target_bridge': bind(BRIDGE_PATH),
+        'gate_observation': bind(out / 'gates-observation.json'), 'render_receipt': gates['receipts'][0], **counts,
+        'baseline_kgx': bind(args.baseline_kgx), 'kgx_checks': bind(out / 'kgx-checks.json'),
+        'nodes': bind(ROOT / 'pages/downloads/nodes.tsv'), 'kgx_edges': bind(ROOT / 'pages/downloads/edges.tsv'),
+        'command': command, 'exit_code': result.returncode,
+        'stdout': bind(out / 'preview.stdout'), 'stderr': bind(out / 'preview.stderr'),
+        'scope': 'All67 ordered graph triples,24 qualifier display instances with full accessible descriptions/evidence,145 evidence uses in their owning table rows,94 references; full native KGX target cells and all old edge/context multiplicities. Static SVG only; root actual visual observation required separately, browser interactions untested.'}
+    if result.returncode == 0: receipt['overview'] = bind(out / 'overview.png')
+    write(out / 'receipt.json', receipt); result.check_returncode()
+    assert_history(ROOT, gate_inputs['render_history_inputs'])
+    print(json.dumps(receipt, indent=2))
+
+if __name__ == '__main__': main()

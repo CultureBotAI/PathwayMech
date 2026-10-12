@@ -1,0 +1,112 @@
+import gzip
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+import yaml
+from lxml import etree
+
+OUT = Path(__file__).parent
+AUTHOR = Path('/private/tmp/pathwaymech-next-230-author-20261012')
+
+def sha(b):
+    return hashlib.sha256(b).hexdigest()
+
+def save(name, obj):
+    (OUT / name).write_text(json.dumps(obj, indent=2, ensure_ascii=False) + '\n')
+
+def binding(p):
+    p = Path(p)
+    b = p.read_bytes()
+    return {'path': str(p), 'bytes': len(b), 'sha256': sha(b)}
+
+target = AUTHOR / 'draft/sedoheptulose-bisphosphate-bypass.yaml'
+record = yaml.safe_load(target.read_text())
+assert sha(target.read_bytes()) == 'efd1678372f26807bd5a543f029fcd92cdc935faa6ea74990fdeeef05af42a87'
+manifest = json.loads((AUTHOR/'artifact-manifest.json').read_text())
+for a in manifest['artifacts']:
+    b = binding(AUTHOR / a['path'])
+    assert all(b[k] == a[k] for k in ['bytes','sha256']), a
+coverage = json.loads((AUTHOR/'bidirectional-source-coverage.json').read_text())
+refs = {x['reference_id']: x for x in coverage['references']}
+originals = {}
+for r in record['references']:
+    b = refs[r['id']]['binding']
+    if b['path'] not in originals:
+        originals[b['path']] = binding(b['path'])
+    assert originals[b['path']]['sha256'] == b['sha256'] == r['source_sha256']
+    assert originals[b['path']]['bytes'] == b['bytes']
+save('input-bindings.json', {'started_at': datetime.now(timezone.utc).isoformat().replace('+00:00','Z'),
+    'target':binding(target),'author_handoff':binding(AUTHOR/'handoff.json'),
+    'author_manifest':binding(AUTHOR/'artifact-manifest.json'),'author_artifacts_verified':len(manifest['artifacts']),
+    'references':list(refs),'originals':list(originals.values())})
+cache = {}
+def xml(path):
+    if path not in cache:
+        cache[path] = etree.parse(path, etree.XMLParser(resolve_entities=False, no_network=True))
+    return cache[path]
+def jread(path):
+    if path not in cache:
+        cache[path] = json.loads(Path(path).read_text())
+    return cache[path]
+
+ledger = json.loads((AUTHOR/'ledgers/evidence-original-selectors.json').read_text())
+observations = []
+for i,row in enumerate(ledger):
+    typ, sel, path = row['selector_type'], row['selector'],row['binding']['path']
+    if typ == 'xpath':
+        selected = xml(path).xpath(sel)
+        assert selected, (i,sel)
+        rendered = [etree.tostring(v,encoding='unicode') for v in selected]
+        # Keep full original-selected XML. A display projection can omit irrelevant annotations.
+        text = [' '.join(' '.join(v.itertext()).split()) if ''.join(v.itertext()).strip() else etree.tostring(v,encoding='unicode') for v in selected]
+        if row['evidence']['reference_id'].startswith('Entrez:'):
+            g = selected[0]
+            text = [etree.tostring(n,encoding='unicode') for exp in ['./Entrezgene_track-info','./Entrezgene_source','./Entrezgene_gene'] for n in g.xpath(exp)]
+    elif typ == 'primary_abstract':
+        selected = [v for v in jread(path)['resultList']['result'] if v['id']==sel]
+        assert len(selected)==1
+        rendered = selected
+        text = [selected[0].get('title','')+'\n'+selected[0].get('abstractText','')]
+    elif typ.startswith('uniprot'):
+        j = jread(path)
+        entries = j.get('results',[j])
+        accession = sel['accession'] if isinstance(sel,dict) else sel
+        entries = [v for v in entries if v['primaryAccession']==accession]
+        assert len(entries)==1
+        if typ=='uniprot_comment':
+            selected = [v for v in entries[0]['comments'] if v['commentType']==sel['comment_type']]
+        else:
+            selected = [{k:entries[0][k] for k in ['primaryAccession','genes','organism','sequence']}]
+        assert selected
+        rendered = selected
+        text = [json.dumps(v,ensure_ascii=False) for v in selected]
+    else:
+        observations.append({'index':i,'source':row['binding'],'selector_type':typ,'selector':sel,'deferred':'Rhea independently parsed separately'})
+        continue
+    observations.append({'index':i,'source':row['binding'],'selector_type':typ,'selector':sel,'evidence':row['evidence'],'selected':rendered,'display':text})
+save('original-selector-replay.json',observations)
+evidence_map={json.dumps(v['evidence'],sort_keys=True):v['index'] for v in observations if 'evidence' in v}
+edge_obs=[]
+for e in record['mechanistic_edges']:
+    uses=[]
+    for role,evs in [('edge',e['evidence'])]+[(f'qualifier:{q["endpoint"]}',q['evidence']) for q in e.get('endpoint_qualifiers',[])]:
+        for ev in evs:
+            key=json.dumps(ev,sort_keys=True)
+            matches=[i for i,x in enumerate(ledger) if x['evidence']==ev]
+            assert matches,(e['id'],ev)
+            uses.append({'role':role,'selector_indexes':matches})
+    edge_obs.append({'edge_id':e['id'],'identity':[e['subject'],e['predicate'],e['object']],'uses':uses})
+save('edge-evidence-replay.json',edge_obs)
+# Distinct original-selected passages ordered by first use; full content retained above.
+seen=set();blocks=[]
+for row in observations:
+    if 'display' not in row:continue
+    key=(row['source']['path'],json.dumps(row['selector'],sort_keys=True))
+    if key in seen:continue
+    seen.add(key)
+    blocks.append('\n### SELECTOR '+str(row['index'])+' '+row['evidence']['reference_id']+' '+str(row['selector'])+'\n'+'\n'.join(row['display']))
+(OUT/'original-reading.txt').write_text('\n'.join(blocks))
+save('initial-replay-receipt.json', {'author_artifacts':len(manifest['artifacts']),'references':len(refs),'originals':len(originals),'selectors':len(ledger),'independent_non_rhea_selectors':len(observations)-8,'edges':len(edge_obs),'evidence_uses':sum(len(x['uses']) for x in edge_obs),'rhea_sides_pending':8})
+print(json.dumps(json.loads((OUT/'initial-replay-receipt.json').read_text())))

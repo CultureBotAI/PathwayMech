@@ -1,0 +1,11 @@
+# Bounded independent successor reassessment
+
+**All four findings (#450–#453) are resolved in the exact successor target cd59859d.** The independent parsed comparison finds exactly six string changes: five evidence locators and the description repair from an unsupported E4P negative result to “E4P not determined.” The five-locator intermediate is preserved and matches that earlier repair state exactly.
+
+The five current selectors were freshly evaluated against their unchanged original XML. They now bind HisTrap purification, the PB11/PB12/rpoS strain/growth paragraph, and the three native InChI elements. Original Table III headers, cells and footnote were independently rechecked: F6P-experiment E4P is blank/not determined; no-metabolite S7P/SBP/DHAP/E4P are ND while F6P/FBP are blank. The successor description and advisory are correct.
+
+All67 edges,94 references,24 qualifiers,145 evidence uses,61 original claim dispositions,19 construct contexts and22 description contexts remain, apart from the explicit repairs. All154 unaffected source-selector observations are exact; the five changed observations match freshly selected originals. Seven repair-specific negative controls passed. The first review's missed Table III assertion is preserved and explicitly corrected by the immutable additive receipt, rather than retrospectively rewriting that review.
+
+Closed ignored/hidden-inclusive inventories and every listed hash passed for the successor54, original author337, original review89 and additive correction5 artifacts. The actual frozen native collectors independently retain62 named and36 ontology selectors across the authority draft, original and successor. The actual native identifier consumer and schema check pass against byte-identical authority proposals. Sealed KGX/HTML payload inspection preserves all67 edge/evidence/qualifier payloads and displays the corrected description.
+
+This is a bounded independent reassessment, not another full scientific review. Unchanged science and access limitations are inherited through exact preservation of the first review plus its explicit correction. Full canonical builders/audit, maintained adoption, governed native review persistence and GitHub issue closure remain root-owned; no full corpus or canonical build is claimed here.

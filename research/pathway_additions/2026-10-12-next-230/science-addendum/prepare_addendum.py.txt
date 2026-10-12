@@ -1,0 +1,104 @@
+"""Additive correction of a missed source-table interpretation; no prior mutation."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+from lxml import etree
+import yaml
+
+OUT = Path('/private/tmp/pathwaymech-next-230-science-tableIII-addendum-20261012')
+PRIOR = Path('/private/tmp/pathwaymech-next-230-science-review-20261012')
+SOURCE = Path('/private/tmp/pathwaymech-next-230-preflight-20261012/root-leads/PMC2758719.xml')
+TARGET = Path('/private/tmp/pathwaymech-next-230-author-20261012/draft/sedoheptulose-bisphosphate-bypass.yaml')
+NOW = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def binding(path): return {'path': str(path), 'sha256': sha(path), 'bytes': Path(path).stat().st_size}
+def save(name, value): (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+assert sha(SOURCE) == '999403b9a9c2097cbd0e7bc11d626a7e9d405ab714d1c05ee3221e1c8cbe954a'
+assert sha(TARGET) == 'efd1678372f26807bd5a543f029fcd92cdc935faa6ea74990fdeeef05af42a87'
+assert sha(PRIOR / 'handoff.json') == '630923e6eeb13626ecd6aed910c1e5a0c34186af0a86935c10687dd55278fab9'
+assert sha(PRIOR / 'artifact-manifest.json') == '0dd9957c3d5b242ec27af6ace160f56134e3ad9840e054070f31fa79ee74d944'
+prior_manifest = json.loads((PRIOR / 'artifact-manifest.json').read_text())
+for item in prior_manifest['artifacts']:
+    assert sha(PRIOR / item['path']) == item['sha256']
+tree = etree.parse(str(SOURCE))
+base = '/article/body/sec[2]/sec[6]/table-wrap'
+table = tree.xpath(base)[0]
+matrix = []
+for row in tree.xpath(base + '/table/tbody/tr'):
+    for cell in row:
+        text = ''.join(cell.itertext())
+        matrix.append({'xpath': tree.getpath(cell), 'raw_text': text,
+                       'unicode_codepoints': [f'U+{ord(c):04X}' for c in text],
+                       'status': 'not_determined' if text == '\u00a0' else 'not_detected' if text == 'ND' else 'reported_value_or_label'})
+f6p_e4p = tree.xpath(base + '/table/tbody/tr[11]/td[6]')[0]
+assert ''.join(f6p_e4p.itertext()) == '\u00a0'
+for row in [8, 9, 10, 11]:
+    assert ''.join(tree.xpath(base + f'/table/tbody/tr[{row}]/td[7]')[0].itertext()) == 'ND'
+for row in [12, 13]:
+    assert ''.join(tree.xpath(base + f'/table/tbody/tr[{row}]/td[7]')[0].itertext()) == '\u00a0'
+footnote = ''.join(tree.xpath(base + '/table-wrap-foot')[0].itertext())
+assert 'Blank: not determined; ND, not detected.' in footnote
+target = yaml.safe_load(TARGET.read_text())
+old = 'and the F6P comparison yielding FBP/DHAP but no detected E4P.'
+assert old in target['description']
+paragraph = next(p for p in target['description'].split('\n\n') if old in p)
+save('table-proof.json', {'observed_at': NOW, 'independent_read_terminal': 'd271fa/0',
+    'source': binding(SOURCE), 'table_xpath': base,
+    'table_xml': etree.tostring(table, encoding='unicode'),
+    'header': [{'xpath': tree.getpath(n), 'text': ''.join(n.itertext())} for n in tree.xpath(base + '/table/thead/tr/th')],
+    'cells': matrix, 'footnote': footnote,
+    'target': binding(TARGET), 'current_description_paragraph': paragraph,
+    'current_erroneous_phrase': old,
+    'independent_assessment': 'F6P comparison column6 E4P is blank, defined as not determined. It is not an ND/no-detection result. No-metabolite column7 S7P, SBP, DHAP and E4P are all ND; only F6P/FBP are blank among the six detected-metabolite rows.'})
+finding = {'finding_id': 'ATP-SCI-004', 'issue_key': 'atp-sbp-f6p-e4p-not-determined',
+  'category': 'evidence', 'severity': 'minor', 'status': 'open', 'certainty': 'confirmed',
+  'title': 'Do not convert unmeasured F6P-control E4P to a negative detection result',
+  'description': 'The description says the F6P comparison yielded FBP/DHAP but no detected E4P. In Table III, the E4P cell under the F6P preparation is NBSP/blank, and the footnote defines blanks as not determined. The current assertion therefore invents a negative result. This does not change the independently supported SBP cleavage products or any mechanistic edge.',
+  'target_ids': ['MetaCyc:PWY0-1517'], 'field_paths': ['description:2009-direct-assays'],
+  'evidence_ids': ['tableIII-f6p-e4p-cell-and-footnote'],
+  'rule_id': 'review-yaml-record:Evidence Rules; preserve measured versus unmeasured evidence',
+  'native_severity': 'minor localized unsupported negative control statement',
+  'normalization_reason': 'One contextual assay-comparison statement is incorrect, but exact pathway identity, core products, edge signs and assembly identities remain supported. Repair is bounded to the description and associated successor dispositions.',
+  'external_issues': ['https://github.com/CultureBotAI/PathwayMech/issues/453'],
+  'ownership_note': 'Repair a separately sealed successor of the author draft; preserve both the first author packet and the first independent review unchanged.'}
+save('finding.json', finding)
+save('correction-receipt.json', {'at': NOW, 'reviewer': '/root/atp_science_review',
+  'scope': 'Bounded additive source-table correction, not a second full-record scientific review.',
+  'prior_review_handoff': binding(PRIOR / 'handoff.json'),
+  'prior_review_manifest': binding(PRIOR / 'artifact-manifest.json'),
+  'prior_review_artifacts_reverified_unchanged': len(prior_manifest['artifacts']),
+  'root_detection': binding('/private/tmp/pathwaymech-next-230-root-tableIII-finding-20261012.json'),
+  'acknowledgment': 'The first independent review missed the actual YAML assertion that F6P control E4P was not detected. Its Table III advisory also incorrectly/imprecisely implied other no-metabolite product cells were blank after singling out DHAP ND. These interpretations are corrected here, without rewriting that sealed observation.',
+  'corrected_advisory': 'The table has six preparations, the combined S7P test plus five controls. No-metabolite column7 S7P, S1,7P, DHAP and E4P are all ND; F6P and F1,6P are blank/not determined. The YAML five-controls count remains defensible. The separate F6P experiment E4P is blank/not determined and must not be described as ND.',
+  'affected_prior_assessments': ['claim sbp-10', '2009-direct-assays description context', 'ATP-ADV-001', 'Table III prose in REVIEW.md; corresponding summaries must be read with this additive correction'],
+  'unchanged_scope': 'Original three locator findings remain valid. No edge deletion, new reaction, chemical-identity change or full original review reclassification is justified.',
+  'cumulative_open_findings_on_original_target': {'minor': 4, 'major': 0, 'blocker': 0},
+  'acceptance_checks': ['Successor description states E4P was not determined for the F6P comparison, without a negative-detection inference.',
+       'Successor handoff/advisory preserves six preparations and corrects all no-metabolite product cells to ND, while keeping F6P/FBP blank.',
+       'The five independently requested locator repairs and this sixth scalar description repair are the only intended YAML changes; verify exact semantic diff against the sealed original.',
+       'Preserve all67 edges,24 endpoint qualifiers,61 claim dispositions and the original immutable failure/review history.']})
+(OUT / 'ADDENDUM.md').write_text('''# Additive Table III correction
+
+The first independent review missed a real description defect: the F6P experiment's E4P cell is **blank / not determined**, not “not detected.” This is additional minor finding ATP-SCI-004, issue453. The exact primary cell is `/article/body/sec[2]/sec[6]/table-wrap/table/tbody/tr[11]/td[6]`; the footnote defines blank versus ND.
+
+The earlier advisory also mischaracterized the no-metabolite column. Its S7P, SBP, DHAP and E4P cells are **all ND**; F6P and FBP are blank/not determined. Six preparations still means the combined S7P experiment plus five controls, so the YAML five-controls count itself is valid.
+
+This receipt corrects those interpretations and acknowledges the missed finding. All89 files in the earlier sealed review remain unchanged. No second full-record review, maintained-file change or Git mutation is claimed. Exact cell/header/footnote proof and the current erroneous description are in `table-proof.json`; bounded remediation and preserved history are in `correction-receipt.json`.
+''')
+paths = subprocess.run(['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(OUT)], check=True, capture_output=True).stdout.split(b'\0')
+artifacts = []
+for value in sorted(p for p in paths if p):
+    path = Path(value.decode())
+    if path.name in ['artifact-manifest.json', 'handoff.json']: continue
+    item = binding(path); item['path'] = str(path.relative_to(OUT)); artifacts.append(item)
+save('artifact-manifest.json', {'scope': 'Every hidden/ignored/followed regular file excluding only handoff and manifest.', 'artifacts': artifacts})
+save('handoff.json', {'package': str(OUT), 'sealed_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+  'scope': 'Additive correction of missed Table III description defect and earlier advisory cell interpretation.',
+  'artifact_manifest': binding(OUT / 'artifact-manifest.json'), 'artifact_count': len(artifacts),
+  'finding': binding(OUT / 'finding.json'), 'proof': binding(OUT / 'table-proof.json'),
+  'correction': binding(OUT / 'correction-receipt.json'), 'prior_review_unchanged': True})
+print(json.dumps({'handoff': binding(OUT / 'handoff.json'), 'manifest': binding(OUT / 'artifact-manifest.json'), 'artifact_count': len(artifacts)}, indent=2))

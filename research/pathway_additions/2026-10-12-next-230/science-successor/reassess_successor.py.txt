@@ -1,0 +1,333 @@
+"""Independent bounded reassessment; all writes stay in this new review packet."""
+from pathlib import Path
+from datetime import datetime, timezone
+import copy
+import csv
+import hashlib
+import json
+import subprocess
+import sys
+import yaml
+from lxml import etree, html
+
+OUT = Path('/private/tmp/pathwaymech-next-230-science-successor-review-20261012')
+SUCCESSOR = Path('/private/tmp/pathwaymech-next-230-author-successor-20261012')
+AUTHOR = Path('/private/tmp/pathwaymech-next-230-author-20261012')
+REVIEW = Path('/private/tmp/pathwaymech-next-230-science-review-20261012')
+ADDENDUM = Path('/private/tmp/pathwaymech-next-230-science-tableIII-addendum-20261012')
+AUTHORITY = Path('/private/tmp/pathwaymech-next-230-authority-preparation-20261012')
+TARGET = SUCCESSOR / 'draft/sedoheptulose-bisphosphate-bypass.yaml'
+ORIGINAL_TARGET = AUTHOR / 'draft/sedoheptulose-bisphosphate-bypass.yaml'
+STARTED = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+def js(path): return json.loads(Path(path).read_text())
+def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def bind(path):
+    path = Path(path)
+    return {'path': str(path), 'sha256': sha(path), 'bytes': path.stat().st_size}
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+def now(): return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+def verify_packet(path, handoff_sha, manifest_sha, count):
+    assert sha(path / 'handoff.json') == handoff_sha
+    assert sha(path / 'artifact-manifest.json') == manifest_sha
+    manifest = js(path / 'artifact-manifest.json')
+    items = manifest['artifacts']
+    assert len(items) == count
+    inventory = subprocess.run(['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(path)], check=True, capture_output=True)
+    actual = {str(Path(p.decode()).relative_to(path)) for p in inventory.stdout.split(b'\0') if p}
+    expected = {row['path'] for row in items} | {'handoff.json', 'artifact-manifest.json'}
+    assert actual == expected, {'extra': sorted(actual - expected), 'missing': sorted(expected - actual)}
+    for item in items:
+        assert sha(path / item['path']) == item['sha256'], item['path']
+        assert (path / item['path']).stat().st_size == item['bytes'], item['path']
+    return {'package': str(path), 'handoff': bind(path / 'handoff.json'), 'manifest': bind(path / 'artifact-manifest.json'),
+            'artifacts_verified': count, 'closed_inventory_includes_ignored_hidden_followed': True, 'unchanged': True}
+
+packets = [
+ verify_packet(SUCCESSOR, 'c5f71d0e0a0a1386bae94103750fd1f2f5c33946303039b84be6a9956f71b683', 'a1ec2f299f2c4ba839fedba25e71ff0c6d7d20c7c5c09ec258d3958757d40e20', 54),
+ verify_packet(AUTHOR, 'e0bab1fff713920b5774ca14944a6948ac68e1be459ce2afed2ac37d5af42ddd', '554c705ba5af65255333921d246fa72a8b3cefc3d13878b93b0253b968e688ff', 337),
+ verify_packet(REVIEW, '630923e6eeb13626ecd6aed910c1e5a0c34186af0a86935c10687dd55278fab9', '0dd9957c3d5b242ec27af6ace160f56134e3ad9840e054070f31fa79ee74d944', 89),
+ verify_packet(ADDENDUM, 'c6cca60f24ca70d1b40d4b25cbaa9d09ea039fc4d4b7040c0819fc6b39ade5c0', '202899f63bdec29557f8397e2328eb9dc1ab3a2154c93dcc9c79701c317fd7a7', 5),
+]
+save('input-intake.json', {'checked_at': now(), 'packets': packets,
+    'scope': 'All original review, additive correction, original author and final successor packet bytes independently verified with closed inventories. No prior packet was modified.'})
+assert sha(TARGET) == 'cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101'
+assert sha(ORIGINAL_TARGET) == 'efd1678372f26807bd5a543f029fcd92cdc935faa6ea74990fdeeef05af42a87'
+original = yaml.safe_load(ORIGINAL_TARGET.read_text())
+current = yaml.safe_load(TARGET.read_text())
+byid = {e['id']: e for e in current['mechanistic_edges']}
+oldbyid = {e['id']: e for e in original['mechanistic_edges']}
+
+def diff(a, b, path='$'):
+    if type(a) is not type(b): return [{'path': path, 'before': a, 'after': b}]
+    if isinstance(a, dict):
+        assert a.keys() == b.keys(), path
+        return [entry for k in a for entry in diff(a[k], b[k], f'{path}.{k}')]
+    if isinstance(a, list):
+        assert len(a) == len(b), path
+        return [entry for i, (x, y) in enumerate(zip(a, b)) for entry in diff(x, y, f'{path}[{i}]')]
+    return [] if a == b else [{'path': path, 'before': a, 'after': b}]
+
+delta = diff(original, current)
+assert len(delta) == 6 and all(isinstance(x['before'], str) and isinstance(x['after'], str) for x in delta)
+assert sum(x['path'].endswith('.source_locator') for x in delta) == 5
+assert current['description'] == original['description'].replace('but no detected E4P', 'with E4P not determined')
+assert original['description'].count('but no detected E4P') == 1
+expected = copy.deepcopy(original)
+expected_edges = {e['id']: e for e in expected['mechanistic_edges']}
+prior_proofs = js(REVIEW / 'locator-proofs.json')
+for proof in prior_proofs:
+    edge = expected_edges[proof['edge_id']]
+    evidence = edge['endpoint_qualifiers'][0]['evidence'][0] if proof['edge_id'] in ['sbp-018', 'sbp-056'] else edge['evidence'][1]
+    assert evidence['source_locator'] == proof['current_locator']
+    evidence['source_locator'] = proof['replacement_locator']
+mid_path = SUCCESSOR / 'intermediate/five-locator-only.yaml'
+assert sha(mid_path) == 'bf9e76bf7c6ec7d32b2870c21aa8cad482ce5a2a8ff889e852af6a52fdbe8e8a'
+assert yaml.safe_load(mid_path.read_text()) == expected
+expected['description'] = expected['description'].replace('but no detected E4P', 'with E4P not determined')
+assert current == expected
+save('independent-semantic-delta.json', {'original': bind(ORIGINAL_TARGET), 'successor': bind(TARGET),
+   'preserved_five_locator_intermediate': bind(mid_path), 'exact_changes': delta,
+   'all_other_parsed_content_exact': True, 'expected_six_changes_reconstruct_successor': True})
+
+source_proofs = []
+negative = []
+ledger = js(SUCCESSOR / 'ledgers/evidence-original-selectors.json')
+old_ledger = js(AUTHOR / 'ledgers/evidence-original-selectors.json')
+changed_indexes = []
+for p in prior_proofs:
+    source = Path(p['source']['path'])
+    assert sha(source) == p['source']['sha256']
+    tree = etree.parse(str(source))
+    edge_id = p['edge_id']
+    edge = byid[edge_id]
+    ev = edge['endpoint_qualifiers'][0]['evidence'][0] if edge_id in ['sbp-018', 'sbp-056'] else edge['evidence'][1]
+    assert ev['source_locator'] == p['replacement_locator']
+    selected = tree.xpath(ev['source_locator'].removeprefix('XPath '))
+    old_selected = tree.xpath(p['current_locator'].removeprefix('XPath '))
+    if edge_id == 'sbp-018':
+        required = tree.xpath('/article/body/sec[5]/sec[7]/p[1]')
+        assert len(required) == 1 and 'HisTrap' in ''.join(required[0].itertext())
+        interpretation = 'The retained cloning/expression/assay union now includes the actual HisTrap HP purification paragraph. His-affinity preparation is fully located without changing the 55 °C/Ba-S7P/Rosetta scope.'
+    elif edge_id == 'sbp-056':
+        required = tree.xpath('/article/body/sec[4]/sec[1]/p')
+        text = ''.join(''.join(x.itertext()) for x in required)
+        assert all(s in text for s in ['PB12', 'rpoS', 'M9', 'aerobically'])
+        interpretation = 'The actual bacterial-strain/media/growth paragraph now supports the JM101-derived PB11/PB12/rpoS qualifier. Indirect fbaA expression is not converted to purified binding.'
+    else:
+        required = tree.xpath('/ptools-xml/Compound/inchi')
+        assert len(required) == 1 and required[0].text.startswith('InChI=')
+        interpretation = 'The native InChI sibling is now selected alongside name/ChEBI/CML. Formula/charge identity, inconsistent CML SMILES and unstated assay protonation limits remain exact.'
+    assert required and all(n in selected for n in required)
+    assert any(n not in old_selected for n in required)
+    negative.append({'case': f'{edge_id}-old-locator', 'rejected': True,
+       'reason': 'Old selected node set omits the required exact supporting original element.'})
+    observed = [etree.tostring(n, encoding='unicode') for n in selected]
+    matches = [(i, r) for i, r in enumerate(ledger) if r['evidence'] == ev]
+    assert len(matches) == 1
+    index, row = matches[0]
+    assert row['observed'] == observed
+    assert row['binding']['sha256'] == p['source']['sha256']
+    changed_indexes.append(index)
+    source_proofs.append({'edge_id': edge_id, 'source': bind(source), 'current_evidence': ev,
+        'selected_xml': observed, 'selected_text': [' '.join(''.join(n.itertext()).split()) for n in selected],
+        'required_element_xpaths': [tree.getpath(n) for n in required], 'ledger_index': index,
+        'scientific_interpretation': interpretation, 'status': 'resolved'})
+assert len(set(changed_indexes)) == 5
+assert len(old_ledger) == len(ledger) == 159
+for i, (old, new) in enumerate(zip(old_ledger, ledger)):
+    if i not in changed_indexes: assert old == new
+    else:
+        tmp = copy.deepcopy(new)
+        for field in ['evidence', 'selector', 'observed']:
+            tmp[field] = old[field]
+        assert tmp == old
+save('fresh-selector-reassessment.json', {'checks': source_proofs,
+    'changed_ledger_indexes': changed_indexes, 'unchanged_ledger_observations': 154,
+    'all_159_retained': True, 'negative_controls': negative})
+
+table_source = Path('/private/tmp/pathwaymech-next-230-preflight-20261012/root-leads/PMC2758719.xml')
+assert sha(table_source) == '999403b9a9c2097cbd0e7bc11d626a7e9d405ab714d1c05ee3221e1c8cbe954a'
+t = etree.parse(str(table_source)); base = '/article/body/sec[2]/sec[6]/table-wrap'
+footnote = ''.join(t.xpath(base + '/table-wrap-foot')[0].itertext())
+assert 'Blank: not determined; ND, not detected.' in footnote
+assert ''.join(t.xpath(base + '/table/thead/tr/th[6]')[0].itertext()).startswith('PfkA+FbaA')
+assert ''.join(t.xpath(base + '/table/thead/tr/th[7]')[0].itertext()) == 'No metabolite'
+assert 'F6P was used instead of S7P' in footnote
+cells = []
+for row, metabolite in [(8, 'S7P'), (9, 'SBP'), (10, 'DHAP'), (11, 'E4P'), (12, 'F6P'), (13, 'FBP')]:
+    for column, experiment in [(6, 'F6P'), (7, 'No metabolite')]:
+        cell = t.xpath(base + f'/table/tbody/tr[{row}]/td[{column}]')[0]
+        raw = ''.join(cell.itertext())
+        if column == 7: assert raw == ('ND' if row <= 11 else '\u00a0')
+        if row == 11 and column == 6: assert raw == '\u00a0'
+        cells.append({'metabolite': metabolite, 'experiment': experiment, 'xpath': t.getpath(cell),
+            'raw_value': raw, 'interpretation': 'not determined' if raw == '\u00a0' else 'not detected' if raw == 'ND' else 'reported quantitative measurement',
+            'xml': etree.tostring(cell, encoding='unicode')})
+assert 'but no detected E4P' not in current['description'] and 'with E4P not determined' in current['description']
+advisory = js(SUCCESSOR / 'tableIII-successor-disposition.json')
+assert advisory['no_metabolite'] == {'S7P': 'ND', 'S1,7P': 'ND', 'DHAP': 'ND', 'E4P': 'ND', 'F6P': '', 'F1,6P': ''}
+assert advisory['preparations'] == 6 and advisory['F6P_experiment_E4P'] == 'blank = not determined'
+negative.extend([{'case': 'F6P-E4P-blank-as-ND', 'rejected': True, 'reason': 'Original cell is NBSP and footnote states not determined.'},
+                 {'case': 'No-metabolite-E4P-ND-as-blank', 'rejected': True, 'reason': 'Original no-metabolite E4P cell is explicitly ND.'}])
+save('fresh-tableIII-reassessment.json', {'source': bind(table_source), 'footnote': footnote, 'cells': cells,
+    'current_description_paragraph': next(p for p in current['description'].split('\n\n') if 'with E4P not determined' in p),
+    'successor_advisory': advisory, 'status': 'ATP-SCI-004 resolved; additive correction preserved',
+    'history': 'The original review missed the YAML negative-result claim and mischaracterized part of the no-metabolite advisory. The immutable addendum, not retroactive rewriting, corrects that assessment.'})
+
+# Claim, context, source and construct preservation is established by exact
+# comparison, not by claiming a second complete scientific literature review.
+old_claims = js(AUTHOR / 'claim-to-record-coverage.json')
+new_claims = js(SUCCESSOR / 'claim-to-record-coverage.json')
+assert len(old_claims) == len(new_claims) == 61
+for old, new in zip(old_claims, new_claims):
+    tmp = copy.deepcopy(new)
+    if old['claim'] == 'sbp-10':
+        disposition = tmp.pop('successor_authoring_disposition')
+        assert all(s in disposition for s in ['six', 'not determined', 'ND'])
+    assert tmp == old
+old_contexts = js(AUTHOR / 'ledgers/context-assertions.json')
+new_contexts = js(SUCCESSOR / 'ledgers/context-assertions.json')
+assert len(old_contexts) == len(new_contexts) == 22
+for old, new in zip(old_contexts, new_contexts):
+    expected_context = copy.deepcopy(old)
+    if old['key'] == '2009-direct-assays':
+        expected_context['text'] = expected_context['text'].replace('but no detected E4P', 'with E4P not determined')
+    assert new == expected_context
+for name in ['construct-scope-dispositions.json', 'ledgers/source-bindings.json', 'ledgers/edge-claim-links.json']:
+    assert (SUCCESSOR / name).read_bytes() == (AUTHOR / name).read_bytes(), name
+assert len(js(SUCCESSOR / 'construct-scope-dispositions.json')) == 19
+assert current['references'] == original['references'] and len(current['references']) == 94
+assert len(current['mechanistic_edges']) == 67
+assert sum(len(e.get('endpoint_qualifiers', [])) for e in current['mechanistic_edges']) == 24
+uses = []
+for edge in current['mechanistic_edges']:
+    evs = [('edge', ev) for ev in edge['evidence']]
+    for i, qual in enumerate(edge.get('endpoint_qualifiers', [])):
+        evs.extend((f'qualifier-{i}', ev) for ev in qual['evidence'])
+    for role, ev in evs:
+        matches = [i for i, row in enumerate(ledger) if row['evidence'] == ev]
+        assert matches
+        uses.append({'edge_id': edge['id'], 'role': role, 'selector_indexes': matches})
+assert len(uses) == 145
+save('scope-continuity.json', {'successor': bind(TARGET),
+    'exact_preservation': {'edge_count': 67, 'references': 94, 'endpoint_qualifiers': 24, 'evidence_uses': 145,
+        'source_selector_observations': 159, 'claims': 61, 'construct_contexts': 19, 'description_contexts': 22,
+        'negative_results_conflicts_and_access_limits': 'All original parsed assertions/qualifiers and claims preserved except the corrected unmeasured E4P sentence.'},
+    'claim_10_additive_disposition': new_claims[9]['successor_authoring_disposition'], 'evidence_uses': uses,
+    'inheritance_basis': 'Exact unchanged prior content plus original independent review 630923e6 and additive correction c6cca60f. This is bounded successor reassessment, not a fresh full-record review.'})
+
+# Invoke the real frozen native consumers in read-only mode. Never call builders
+# or author helpers whose output directory is the immutable successor packet.
+sys.path[:0] = [str(AUTHOR / 'runtime/src'), str(AUTHOR / 'runtime/scripts')]
+import build_source_identifier_snapshot as native_source
+import build_ontology_identifier_snapshot as native_ontology
+from pathwaymech.identifiers import identifier_errors
+from pathwaymech.schema import validate_record
+source_ids = [native_source.corpus_ids(p) for p in [AUTHOR / 'draft', SUCCESSOR / 'draft', AUTHORITY / 'bounded-selection']]
+assert source_ids[0] == source_ids[1] == source_ids[2] and len(source_ids[0]) == 62
+ontology_ids = [native_ontology.walk_identifiers(d, {'CHEBI', 'GO', 'NCBITaxon', 'RHEA'}) for d in [original, current, yaml.safe_load((AUTHORITY / 'bounded-selection/sedoheptulose-bisphosphate-bypass.yaml').read_text())]]
+assert ontology_ids[0] == ontology_ids[1] == ontology_ids[2] and len(ontology_ids[0]) == 36
+for name in ['sources.json', 'ontology.json']:
+    assert (SUCCESSOR / 'identifier-root/data/identifier_authorities' / name).read_bytes() == (AUTHOR / 'identifier-root/data/identifier_authorities' / name).read_bytes()
+assert sha(SUCCESSOR / 'identifier-root/data/pathways/sedoheptulose-bisphosphate-bypass.yaml') == sha(TARGET)
+assert (SUCCESSOR / 'identifier-root/conf/identifier_policy.yaml').read_bytes() == (AUTHOR / 'runtime/conf/identifier_policy.yaml').read_bytes()
+identifier_result = identifier_errors(SUCCESSOR / 'identifier-root')
+assert identifier_result == [], identifier_result
+validate_record(current)
+save('native-authority-consumer-reassessment.json', {'source_selector_count': 62, 'source_selectors': sorted(source_ids[0]),
+    'ontology_selector_count': 36, 'ontology_selectors': sorted(ontology_ids[0]),
+    'three_drafts': [bind(p) for p in [ORIGINAL_TARGET, TARGET, AUTHORITY / 'bounded-selection/sedoheptulose-bisphosphate-bypass.yaml']],
+    'authority_files_unchanged': [bind(SUCCESSOR / 'identifier-root/data/identifier_authorities' / n) for n in ['sources.json', 'ontology.json']],
+    'native_implementations': [bind(AUTHOR / p) for p in ['runtime/scripts/build_source_identifier_snapshot.py', 'runtime/scripts/build_ontology_identifier_snapshot.py', 'runtime/src/pathwaymech/identifiers.py', 'runtime/src/pathwaymech/schema.py']],
+    'actual_native_identifier_errors': identifier_result, 'actual_native_schema': 'passed',
+    'full_canonical_build': False, 'limitations': 'Read-only native collector/consumer invocation against exact frozen proposals; no source/ontology builder, SQL rehash, authority refresh or full corpus gate.'})
+
+rows = list(csv.DictReader((SUCCESSOR / 'candidate-checks/kgx/edges.tsv').open(), delimiter='\t'))
+page = html.parse(str(SUCCESSOR / 'candidate-checks/pages/records/MetaCyc_PWY0-1517.html'))
+graph_links = page.xpath('//*[local-name()="svg"]//*[local-name()="a" and contains(@class,"graph-edge")]')
+assert len(rows) == len(graph_links) == 67
+for index, edge in enumerate(current['mechanistic_edges'], 1):
+    row = next(r for r in rows if '_' + edge['id'] + '_' in r['id'])
+    assert row['subject'] == edge['subject'] and row['object'] == edge['object']
+    assert json.loads(row['evidence']) == edge['evidence']
+    assert (json.loads(row['endpoint_qualifiers']) if row['endpoint_qualifiers'] else []) == edge.get('endpoint_qualifiers', [])
+    link = next(n for n in graph_links if n.get('href') == f'#mechanism-edge-{index}')
+    assert (link.get('data-subject-id') or link.get('data-subject'), link.get('data-predicate'), link.get('data-object-id') or link.get('data-object')) == (edge['subject'], edge['predicate'], edge['object'])
+    for qual in edge.get('endpoint_qualifiers', []): assert qual['description'] in link.get('aria-label')
+assert 'with E4P not determined' in page.getroot().text_content()
+save('export-inspection.json', {'kgx': bind(SUCCESSOR / 'candidate-checks/kgx/edges.tsv'),
+   'page': bind(SUCCESSOR / 'candidate-checks/pages/records/MetaCyc_PWY0-1517.html'),
+   'edges_verified': 67, 'edge_qualifier_evidence_payloads_exact': True, 'qualifiers': 24,
+   'corrected_description_rendered': True,
+   'scope': 'Independent deterministic inspection of author-generated sealed artifacts; no new rendering, browser interaction or visual-layout claim.'})
+
+findings = js(REVIEW / 'findings.json') + [js(ADDENDUM / 'finding.json')]
+dispositions = []
+for finding, issue in zip(findings, [450, 451, 452, 453]):
+    dispositions.append({'finding_id': finding['finding_id'], 'issue_key': finding['issue_key'],
+       'status': 'resolved', 'severity': finding['severity'], 'target': bind(TARGET),
+       'external_issue': f'https://github.com/CultureBotAI/PathwayMech/issues/{issue}',
+       'prior_finding_source': bind((ADDENDUM / 'finding.json') if issue == 453 else (REVIEW / 'findings.json')),
+       'resolution': 'Exact requested source locator and unchanged claim independently verified against original XML.' if issue != 453 else 'Description now says E4P not determined, matching the original blank cell and footnote; no-metabolite cell advisory is corrected.',
+       'supporting_receipt': 'fresh-selector-reassessment.json' if issue != 453 else 'fresh-tableIII-reassessment.json',
+       'native_review_identity': 'Not invented: prior packets are external assessments, not saved native review IDs.',
+       'issue_closed_by_this_agent': False})
+save('finding-dispositions.json', dispositions)
+
+prior_edge_assessments = js(REVIEW / 'edge-assessments.json')
+edge_rows = []
+for prior in prior_edge_assessments:
+    edge_id = prior['edge_id']
+    changed = next((p for p in source_proofs if p['edge_id'] == edge_id), None)
+    native = copy.deepcopy(prior['native_assessment'])
+    native['outcome'] = 'supported'
+    if changed: native['summary'] = changed['scientific_interpretation']
+    edge_rows.append({'edge_id': edge_id, 'target_sha256': sha(TARGET),
+        'prior_assessment_artifact': bind(REVIEW / 'edge-assessments.json'),
+        'continuity': 'Exact edge identity, predicate, assertions, description and qualifier scope preserved; only requested evidence locator repaired.' if changed else 'Complete parsed edge is exact to the reviewed original.',
+        'independent_new_scope': changed['scientific_interpretation'] if changed else 'Inherited original scientific judgement by exact content preservation; no fresh full-edge literature re-review claimed.',
+        'endpoint_qualifier_count': len(byid[edge_id].get('endpoint_qualifiers', [])),
+        'current_evidence_uses': [u for u in uses if u['edge_id'] == edge_id],
+        'active_finding_ids': [], 'native_assessment_draft': native})
+save('edge-assessment-continuity.json', edge_rows)
+save('negative-controls.json', {'independent_controls': negative, 'count': len(negative),
+   'prior_controls_preserved': [bind(AUTHOR / 'scientific-contract-checks.json'), bind(REVIEW / 'bounded-native-checks.json'), bind(REVIEW / 'prior-probe-disposition.json')],
+   'scope': 'Seven fresh repair-specific controls; earlier scientific controls and failed probes remain immutable inherited history, not relabeled as newly run.'})
+assert len(negative) == 7
+save('execution-observations.json', {'started_at': STARTED, 'finished_at': now(),
+    'read_only_inspection_failure': {'chunk': '941447', 'exit_code': 1, 'cause': 'Inspection requested ledger key original; actual key is binding. Corrected read c5e707/0. No input mutation.'},
+    'environment': {'python': sys.executable, 'dont_write_bytecode': sys.dont_write_bytecode},
+    'author_checks_reviewed_not_claimed_as_ours': bind(SUCCESSOR / 'validation/execution-history.json')})
+
+summary = {'review_id': 'next230-atp-successor-bounded-science-20261012', 'reviewer': '/root/atp_science_review',
+  'independence': 'independent', 'started_at': STARTED, 'finished_at': now(), 'target': bind(TARGET),
+  'completion': 'completed', 'verdict': 'pass_with_limitations', 'all_four_findings_resolved': True,
+  'scope': 'Independent bounded successor reassessment of issues450–453 and exact unchanged-content continuity. Full original science is inherited only through the immutable first review plus explicit TableIII addendum correction.',
+  'verified_counts': {'successor_artifacts': 54, 'original_author_artifacts': 337, 'original_science_artifacts': 89, 'addendum_artifacts': 5,
+     'scalar_delta': 6, 'changed_locators': 5, 'description_repairs': 1, 'edges': 67, 'references': 94, 'qualifiers': 24, 'evidence_uses': 145,
+     'claims': 61, 'construct_contexts': 19, 'description_contexts': 22, 'source_selectors': 62, 'ontology_selectors': 36, 'fresh_negative_controls': 7},
+  'prior_review_lineage': [bind(REVIEW / 'handoff.json'), bind(ADDENDUM / 'handoff.json')],
+  'native_maintained_review_saved': False, 'full_canonical_build': False,
+  'limitations': ['No new whole-record literature review; unchanged scientific conclusions and access limits are inherited by exact byte/parsed-content continuity.',
+    'The original review missed the E4P description defect; that error is explicitly corrected in the immutable addendum and this reassessment, not hidden by overwriting the first review.',
+    'Actual native schema and authority consumers passed against unchanged frozen proposals. Root-owned full canonical builders/audit, maintained adoption and governed native review persistence remain pending.',
+    'No full corpus tests, browser interaction, source refresh, Git/GitHub mutation, shared-cache write or environment installation was performed.'],
+  'recommendation': 'Accept this corrected external candidate scientifically within the retained source limits; root may proceed with its required canonical/adoption/native-review gates.'}
+save('assessment.json', summary)
+(OUT / 'REVIEW.md').write_text('''# Bounded independent successor reassessment
+
+**All four findings (#450–#453) are resolved in the exact successor target cd59859d.** The independent parsed comparison finds exactly six string changes: five evidence locators and the description repair from an unsupported E4P negative result to “E4P not determined.” The five-locator intermediate is preserved and matches that earlier repair state exactly.
+
+The five current selectors were freshly evaluated against their unchanged original XML. They now bind HisTrap purification, the PB11/PB12/rpoS strain/growth paragraph, and the three native InChI elements. Original Table III headers, cells and footnote were independently rechecked: F6P-experiment E4P is blank/not determined; no-metabolite S7P/SBP/DHAP/E4P are ND while F6P/FBP are blank. The successor description and advisory are correct.
+
+All67 edges,94 references,24 qualifiers,145 evidence uses,61 original claim dispositions,19 construct contexts and22 description contexts remain, apart from the explicit repairs. All154 unaffected source-selector observations are exact; the five changed observations match freshly selected originals. Seven repair-specific negative controls passed. The first review's missed Table III assertion is preserved and explicitly corrected by the immutable additive receipt, rather than retrospectively rewriting that review.
+
+Closed ignored/hidden-inclusive inventories and every listed hash passed for the successor54, original author337, original review89 and additive correction5 artifacts. The actual frozen native collectors independently retain62 named and36 ontology selectors across the authority draft, original and successor. The actual native identifier consumer and schema check pass against byte-identical authority proposals. Sealed KGX/HTML payload inspection preserves all67 edge/evidence/qualifier payloads and displays the corrected description.
+
+This is a bounded independent reassessment, not another full scientific review. Unchanged science and access limitations are inherited through exact preservation of the first review plus its explicit correction. Full canonical builders/audit, maintained adoption, governed native review persistence and GitHub issue closure remain root-owned; no full corpus or canonical build is claimed here.
+''')
+print(json.dumps({'status': 'bounded reassessment passed', 'findings_resolved': 4, 'exact_delta': 6,
+    'native_source_selectors': 62, 'ontology_selectors': 36, 'negative_controls': len(negative)}))

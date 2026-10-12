@@ -1,0 +1,48 @@
+from pathlib import Path
+import json,hashlib,subprocess,re,datetime,collections
+import yaml
+B=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-227-20261012')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,v):(B/'derived'/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+pattern=r'PWY0-1517|SMP0002110|RXN0-6541|SEDOBISALDOL-RXN|RHEA:3144[3-6]|RHEA:3016[7-9]|RHEA:30170|19756045|31871051|sedoheptulose.{0,40}bisphosphate.{0,20}bypass|PWY-8178|10\.1038/msb\.2009\.65|10\.1074/jbc\.RA119\.011239|R01843|R01829'
+cmd=['rg','--hidden','--no-ignore','--follow','-l','-i',pattern,str(R),'-g','!.git/**']
+p=subprocess.run(cmd,capture_output=True,text=True);assert p.returncode in [0,1]
+(B/'derived/novelty-search.stderr').write_text(p.stderr)
+hits=[]
+for f in p.stdout.splitlines():
+ q=Path(f);lines=q.read_text(errors='replace').splitlines();matched=[dict(line=i+1,excerpt=v[:1200],line_length=len(v)) for i,v in enumerate(lines) if re.search(pattern,v,re.I)]
+ hits.append(dict(path=f,sha256=sha(q),bytes=q.stat().st_size,matches=matched))
+save('novelty-text-search.json',dict(command=cmd,exit=p.returncode,stderr=p.stderr,captured_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),files=hits,scope='All maintained-root text surfaces including ignored and hidden files with symlink following; .git internals excluded. Excerpts explicitly bounded; exact complete matched file hashes retained.'))
+cmd2=['rg','--files','--hidden','--no-ignore','--follow',str(R/'data/pathways')]
+p2=subprocess.run(cmd2,capture_output=True,text=True);assert p2.returncode==0 and not p2.stderr
+paths=[Path(x) for x in p2.stdout.splitlines() if x.endswith(('.yaml','.yml'))];assert len(paths)==228
+extras=[('/private/tmp/pathwaymech-next-228-science-correction-20261012/draft/mannosylglycerate-degradation.yaml','b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6'),('/private/tmp/pathwaymech-next-229-author-20261012/draft/ethylene-glycol-degradation.yaml','c24808501b16cc9ad53b1d9c52cd503f0eb5d9be55af4c1406ec6ad47803f704')]
+for f,s in extras:assert sha(f)==s;paths.append(Path(f))
+chem=json.loads((B/'derived/rhea-core-chemistry.json').read_text());core={}
+for m in chem['masters']:
+ for d in m['directions']:
+  if d['id'] in ['RHEA:31444','RHEA:30169']:core[d['id']]={k:sorted((x['properties']['accession'][0],x['coefficient']) for x in vs) for k,vs in d['sides'].items()}
+records=[];relevant=[];ids=[]
+for q in paths:
+ d=yaml.safe_load(q.read_text());ids.append(d['id']);nodes={x['id']:x for k in ['participants','reactions'] for x in d.get(k,[])};events=collections.defaultdict(lambda:dict(substrates=[],products=[]))
+ for e in d.get('mechanistic_edges',[]):
+  if e['predicate']=='consumes':events[e['object']]['substrates'].append((e['subject'],e.get('stoichiometry',1)))
+  if e['predicate']=='produces':events[e['subject']]['products'].append((e['object'],e.get('stoichiometry',1)))
+  if e['predicate']=='has_input':events[e['subject']]['substrates'].append((e['object'],e.get('stoichiometry',1)))
+  if e['predicate']=='has_output':events[e['subject']]['products'].append((e['object'],e.get('stoichiometry',1)))
+ def uniq(v):return sorted(set(v))
+ exact=[];reverse=[];family=[]
+ for rid,rs in events.items():
+  sig={k:uniq(v) for k,v in rs.items()}
+  for cr,cs in core.items():
+   if sig==cs:exact.append(dict(reaction=rid,candidate=cr,signature=sig))
+   if dict(substrates=sig['products'],products=sig['substrates'])==cs:reverse.append(dict(reaction=rid,candidate=cr,signature=sig))
+  if any(re.search('sedohept|58335|57483',x+' '+nodes.get(x,{}).get('label',''),re.I) for x,n in sig['substrates']+sig['products']):family.append(dict(reaction=rid,label=nodes.get(rid,{}).get('label'),signature=sig))
+ r=dict(path=str(q),sha256=sha(q),id=d['id'],label=d['label'],exact_candidate_events=exact,reverse_candidate_events=reverse,sedoheptulose_family_events=family)
+ records.append(r)
+ if exact or reverse or family:relevant.append(r)
+assert len(ids)==len(set(ids))==230
+assert not any(r['id'] in ['MetaCyc:PWY0-1517','EcoCyc:PWY0-1517','PathBank:SMP0002110'] for r in records)
+assert not any(len({x['candidate'] for x in r['exact_candidate_events']})==2 for r in records)
+save('novelty-corpus-semantic.json',dict(status='No exact two-event ATP/S7P phosphorylation then SBP cleavage pathway among all 230 bound records; donor/anomer context comparisons require report interpretation.',record_count=230,corpus_inventory_command=cmd2,baseline='228 actual lyxose-inclusive maintained records plus accepted prospective MG and sealed EG, not a merged MG/EG claim',candidate_core=core,relevant_records=relevant,all_records=records,limitations='Exact signature matching preserves chemical identity and source coefficients; contextual anomer/neutral-parent variants additionally selected through named sedoheptulose family screening. Shared reverse condensation or SBP hydrolysis is not an ATP bypass duplicate.'))
+print(json.dumps(dict(text_hit_files=len(hits),records=len(records),relevant=[(r['id'],r['label']) for r in relevant],stderr_bytes=len(p.stderr))))

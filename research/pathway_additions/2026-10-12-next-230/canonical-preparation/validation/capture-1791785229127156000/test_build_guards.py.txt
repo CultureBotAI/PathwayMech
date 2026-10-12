@@ -1,0 +1,98 @@
+"""Bounded guard checks only; never invokes a native builder."""
+
+import copy
+from pathlib import Path
+
+import pytest
+
+import common
+import prepare_and_build as build
+
+
+def test_actual_captured_inputs_and_pinned_commands():
+    capture, old, expected = build.input_check()
+    commands = build.plan(capture)
+    assert len(capture["retention_ids"]) == 4411
+    assert len(capture["source_originals"]) == 756
+    assert len(old["sources"]["terms"]) == 2454
+    assert len(expected["snapshots"]["sources"]["terms"]) == 2474
+    for key in ("source_builder", "ontology_builder"):
+        assert commands[key][:2] == [common.PYTHON, "-B"]
+    assert commands["environment"]["UV_NO_SYNC"] == "1"
+
+
+@pytest.mark.parametrize("mutation", ["target", "record", "code", "retention", "original_map", "receipt"])
+def test_bad_capture_rejected(monkeypatch, mutation):
+    real_load = build.load
+
+    def changed(path):
+        data = real_load(path)
+        if Path(path) == build.HERE / "capture.json":
+            data = copy.deepcopy(data)
+            if mutation == "target":
+                data["target"]["captured"]["sha256"] = "0" * 64
+            elif mutation in ("record", "code"):
+                section = "records" if mutation == "record" else "candidate_code"
+                data[section][0]["captured"]["sha256"] = "0" * 64
+            elif mutation == "retention":
+                data["retention_ids"].pop()
+            elif mutation == "original_map":
+                data["source_originals"].pop()
+            else:
+                next(iter(data["root_receipts"].values()))["sha256"] = "0" * 64
+        return data
+
+    monkeypatch.setattr(build, "load", changed)
+    with pytest.raises(AssertionError):
+        build.input_check()
+
+
+@pytest.mark.parametrize("mutation", ["prior_manifest", "cache_collision", "rhea_order", "prior_term", "prior_metadata"])
+def test_append_only_authorities_reject_changes(mutation):
+    old = common.load(common.HERE / "captured/baseline/manifest.json")
+    new = common.load(common.HERE / "captured/proposals/manifest.json")
+    if mutation == "prior_manifest":
+        new[0]["key"] += "-changed"
+        with pytest.raises(AssertionError):
+            common.validate_manifest(old, new)
+    elif mutation == "cache_collision":
+        new[-1]["path"] = new[0]["path"]
+        new[-1]["sha256"] = "0" * 64
+        with pytest.raises(AssertionError):
+            common.validate_manifest(old, new)
+    elif mutation == "rhea_order":
+        old_rhea = common.load(common.HERE / "captured/baseline/rhea-updates.json")
+        new_rhea = common.load(common.HERE / "captured/proposals/rhea-updates.json")
+        new_rhea["ids"].reverse()
+        with pytest.raises(AssertionError):
+            common.validate_updates(old_rhea, new_rhea)
+    else:
+        old_source = common.load(common.HERE / "captured/baseline/sources.json")
+        new_source = common.load(common.HERE / "captured/proposals/sources.json")
+        section = "terms" if mutation == "prior_term" else "sources"
+        first = next(iter(old_source[section]))
+        new_source[section][first] = {"changed": True}
+        with pytest.raises(AssertionError):
+            common.preserve(old_source, new_source)
+
+
+def test_original_hash_failure_precedes_staging(monkeypatch):
+    capture = common.load(common.HERE / "capture.json")
+    capture["source_originals"][0]["sha256"] = "0" * 64
+    assert not common.OUTPUT.exists()
+    with pytest.raises(AssertionError):
+        build.stage(capture, build.plan(capture))
+    assert not common.OUTPUT.exists()
+    assert build.CREATED_BY_THIS_RUN is False
+
+
+def test_nonfixed_output_rejected(tmp_path):
+    with pytest.raises(AssertionError):
+        common.validate_output(tmp_path / "not-the-fixed-output")
+
+
+def test_changed_SQL_stat_rejected():
+    row = common.load(common.HERE / "capture.json")["sql_originals"][0]
+    row["mtime_ns"] += 1
+    with pytest.raises(AssertionError):
+        common.check_sql_stat(row)

@@ -1,0 +1,15 @@
+from pathlib import Path
+import hashlib,json,shutil
+A=Path(__file__).parent;P=Path('/private/tmp/pathwaymech-next-230-preflight-20261012');R=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/runtime')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+assert sha(P/'handoff.json')=='3f163f78565cfd3023271fe73734b62b0e7c7b4fb60ae7042fd81f738d48722f'
+rows=json.loads((P/'artifact-manifest.json').read_text())
+for r in rows:assert sha(P/r['path'])==r['sha256']
+for n in ['draft','ledgers','validation','candidate-checks','derived']: (A/n).mkdir(exist_ok=True)
+shutil.copytree(R,A/'runtime',dirs_exist_ok=True)
+bindings=[]
+for p in sorted((A/'runtime').rglob('*')):
+ if p.is_file():assert sha(p)==sha(R/p.relative_to(A/'runtime'));bindings.append(dict(path=str(p.relative_to(A)),sha256=sha(p),bytes=p.stat().st_size))
+(A/'runtime-bindings.json').write_text(json.dumps(bindings,indent=2)+'\n')
+(A/'preflight-intake.json').write_text(json.dumps(dict(handoff_sha256=sha(P/'handoff.json'),artifact_manifest_sha256=sha(P/'artifact-manifest.json'),all_artifacts_verified=len(rows),root_acceptance='/private/tmp/pathwaymech-next-230-root-preflight-intake-20261012.json',root_acceptance_sha256=sha('/private/tmp/pathwaymech-next-230-root-preflight-intake-20261012.json'),status='Full accepted scope authoring; no maintained adoption'),indent=2)+'\n')
+print(json.dumps(dict(preflight_artifacts=len(rows),runtime_files=len(bindings))))

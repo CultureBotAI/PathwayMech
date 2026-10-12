@@ -1,0 +1,180 @@
+"""Apply the reviewed one-title correction after original gates and preservation."""
+import copy
+import csv
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+from datetime import datetime, timezone
+
+import yaml
+from lxml import etree, html
+
+ROOT = Path('/private/tmp/pathwaymech-next-230-20261012')
+PREP = Path('/private/tmp/pathwaymech-next-230-integration-preparation-20261012')
+PROPOSAL = Path('/private/tmp/pathwaymech-next-230-whitespace-correction-20261012')
+OUT = Path('/private/tmp/pathwaymech-next-230-whitespace-execution-20261012')
+GATES = Path('/private/tmp/pathwaymech-next-230-whitespace-corrective-gates-20261012')
+PROOF = Path('/private/tmp/pathwaymech-next-230-whitespace-proof-20261012')
+OLD_GATES = Path('/private/tmp/pathwaymech-next-230-maintained-gates-recovery-20261012/execution.json')
+PRESERVATION = Path('/private/tmp/pathwaymech-next-230-preservation-assessment-20261012.json')
+REL = 'data/pathways/sedoheptulose-bisphosphate-bypass.yaml'
+PAGE = 'pages/records/MetaCyc_PWY0-1517.html'
+DOSSIER = 'research/pathway_additions/2026-10-12-next-230/whitespace-correction'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+OLD_SHA = 'cd59859d1dbcbc6c36961822b02daebc519a80a224ba8fa63d3235933b328101'
+NEW_SHA = '6ed1607a4c17ffe56a6f5f8f123c44a0ff410c9a9965e11c3cde9ef23a4affe2'
+sys.path.insert(0, str(PREP))
+from common import inventory, verify_gate_input_scope, verify_render_history
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def bind(path):
+    path = Path(path)
+    data = path.read_bytes()
+    return {'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def load(path):
+    return json.loads(Path(path).read_text())
+
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        stream.write(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+
+def run(name, command, directory):
+    start = now()
+    result = subprocess.run(command, cwd=ROOT, env=ENV, capture_output=True)
+    stdout, stderr = directory / (name + '.stdout'), directory / (name + '.stderr')
+    stdout.write_bytes(result.stdout)
+    stderr.write_bytes(result.stderr)
+    receipt = {'name': name, 'command': command, 'cwd': str(ROOT),
+               'started_at': start, 'finished_at': now(), 'exit_code': result.returncode,
+               'stdout': bind(stdout), 'stderr': bind(stderr)}
+    write(directory / (name + '.json'), receipt)
+    print(name, result.returncode, flush=True)
+    result.check_returncode()
+    return receipt
+
+
+assert __debug__
+assert load(OLD_GATES)['status'] == load(PRESERVATION)['status'] == 'passed'
+assert load(PRESERVATION)['gate_receipt'] == bind(OLD_GATES)
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip() == '95ed7deec1ea749f3ebe60e170bb4463921b80dc'
+assert subprocess.check_output(['git', 'branch', '--show-current'], cwd=ROOT, text=True).strip() == 'feat/pathway-next-230-20261012'
+verify_gate_input_scope(ROOT, load(OLD_GATES), Path('/private/tmp/pathwaymech-next-230-adoption-20261012.json'))
+verify_render_history(ROOT, load(OLD_GATES)['render_history_inputs'])
+assert bind(PROPOSAL / 'proposal.json')['sha256'] == '2c7743e16c4bd817f4b779b871ca4e3d707508fefa2726006ed174abb2b0e268'
+assert bind(ROOT / REL)['sha256'] == OLD_SHA
+replacement = PROPOSAL / Path(REL).name
+assert bind(replacement)['sha256'] == NEW_SHA
+old_doc, new_doc = [yaml.safe_load(path.read_bytes()) for path in (ROOT / REL, replacement)]
+expected = copy.deepcopy(old_doc)
+assert expected['references'][22]['id'] == 'PMID:31464375'
+expected['references'][22]['title'] = expected['references'][22]['title'].rstrip()
+assert expected == new_doc
+for directory in (OUT, GATES, PROOF, ROOT / DOSSIER):
+    assert not directory.exists() and not directory.is_symlink()
+ENV = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1',
+       'PYTHONPATH': str(ROOT / 'src') + os.pathsep + str(ROOT)}
+OUT.mkdir()
+before = inventory(ROOT, exclude_runtime=True)
+write(OUT / 'before-inventory.json', before)
+for name, relative in [('original-page.html', PAGE), ('original-edges.tsv', 'output/kgx/edges.tsv'),
+                       ('original-nodes.tsv', 'output/kgx/nodes.tsv')]:
+    (OUT / name).write_bytes((ROOT / relative).read_bytes())
+(ROOT / REL).write_bytes(replacement.read_bytes())
+command = [PYTHON, '-B', str(ROOT / 'scripts/new_history_record.py'), '--kind', 'record',
+           '--slug', 'sedoheptulose-bisphosphate-bypass', '--target-root', 'data/pathways',
+           '--event', 'EDIT', '--outcome', 'changed', '--sections', 'references',
+           '--summary', 'Trim trailing whitespace from the ATP bypass bibliography title.',
+           '--details', 'Issue460: the actual rendered page exposed trailing whitespace from the source-derived PMID:31464375 title. Applied only rstrip to references[22].title, retaining substantive wording, all identifiers, source hashes, edge and qualifier evidence, and scientific scope. Independent native consumers confirm unchanged 62 source and 36 ontology selectors, exact KGX nodes and only three ATP bibliography metadata cells on sbp-040, sbp-041 and sbp-042 changing. The full native build and original maintained gates remain historical observations of cd59859d target bytes. This real corrective curation event precedes rerendering; current corrective checks, saved review, commit, issue closure and merge remain subsequent work.',
+           '--actor-name', 'codex', '--actor-type', 'ai_agent', '--agent-tool', 'Codex', '--issue', '460']
+history_execution = run('history', command, OUT)
+old_history = {r['relative_path']: r for r in before if r['relative_path'].startswith('history/')}
+history = inventory(ROOT, 'history')
+added = [r for r in history if r['relative_path'] not in old_history]
+assert len(added) == 1 and len(history) == len(old_history) + 1
+for row in old_history.values():
+    assert bind(ROOT / row['relative_path'])['sha256'] == row['sha256']
+write(OUT / 'render-history-inputs.json', history)
+adoption = {'status': 'adopted_history_created_pending_corrective_checks', 'at': now(),
+            'historical_target': load(PROPOSAL / 'proposal.json')['historical_target'],
+            'target': bind(ROOT / REL), 'proposal': bind(PROPOSAL / 'proposal.json'),
+            'history': added[0], 'history_execution': history_execution,
+            'before_inventory': bind(OUT / 'before-inventory.json'),
+            'original_gates': bind(OLD_GATES), 'original_preservation': bind(PRESERVATION)}
+write(OUT / 'adoption.json', adoption)
+GATES.mkdir()
+py = [PYTHON, '-B', '-c']
+checks = [
+    ('render', py + ['from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())']),
+    ('corrective-validation', py + ['from pathlib import Path; import yaml; from pathwaymech.schema import validate_record; from pathwaymech.strict import strict_errors; from pathwaymech.identifiers import identifier_errors; r=Path.cwd(); p=r/"' + REL + '"; validate_record(yaml.safe_load(p.read_text())); errors=strict_errors([p],r)+identifier_errors(r); print("target native/strict and whole-corpus identifiers:",errors); assert not errors']),
+    ('kgx', py + ['from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())']),
+    ('site-current', py + ['from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))']),
+]
+receipts = []
+for name, command in checks:
+    assert inventory(ROOT, 'history') == history
+    receipts.append(run(name, command, GATES))
+    (GATES / 'execution.json').write_text(json.dumps({'status': 'running', 'receipts': receipts}, indent=2) + '\n')
+assert inventory(ROOT, 'history') == history
+(GATES / 'execution.json').write_text(json.dumps({'status': 'passed', 'receipts': receipts,
+    'adoption': bind(OUT / 'adoption.json'), 'target': bind(ROOT / REL),
+    'original_failure': load(OLD_GATES)['original_failure'],
+    'recovery_inputs': load(OLD_GATES)['recovery_inputs'],
+    'history_before_render_and_after_gates_exact': True,
+    'scope': 'Current single-title correction consumers/render/export/site checks; full tests remain historical cd59859d.'}, indent=2) + '\n')
+current = {r['relative_path']: r for r in inventory(ROOT, exclude_runtime=True)}
+previous = {r['relative_path']: r for r in before}
+changed = sorted(p for p, row in previous.items() if current.get(p, {}).get('sha256') != row['sha256'])
+assert changed == sorted([REL, PAGE, 'pages/index.html', 'pages/downloads/edges.tsv',
+                          'pages/downloads/manifest.json', 'output/kgx/edges.tsv']), changed
+assert set(current) - set(previous) == {added[0]['relative_path']}
+assert (OUT / 'original-nodes.tsv').read_bytes() == (ROOT / 'output/kgx/nodes.tsv').read_bytes() == (ROOT / 'pages/downloads/nodes.tsv').read_bytes()
+assert (ROOT / 'output/kgx/edges.tsv').read_bytes() == (ROOT / 'pages/downloads/edges.tsv').read_bytes()
+left, right = [list(csv.DictReader(io.StringIO(path.read_text()), delimiter='\t')) for path in
+               (OUT / 'original-edges.tsv', ROOT / 'output/kgx/edges.tsv')]
+assert len(left) == len(right) == 11536
+metadata_changes = []
+for a, b in zip(left, right, strict=True):
+    if a == b:
+        continue
+    assert {k for k in a if a[k] != b[k]} == {'reference_metadata'}
+    refs = json.loads(a['reference_metadata'])
+    for ref in refs:
+        if ref['id'] == 'PMID:31464375':
+            ref['title'] = ref['title'].rstrip()
+    assert refs == json.loads(b['reference_metadata'])
+    metadata_changes.append(a['id'])
+assert metadata_changes == load('/private/tmp/pathwaymech-next-230-title-trim-independent-20261012/title-trim-assessment.json')['KGX_edge_changes_only_reference_title']
+page = (ROOT / PAGE).read_bytes()
+assert all(line.rstrip() == line for line in page.splitlines())
+old_tree, new_tree = [html.fromstring(raw) for raw in ((OUT / 'original-page.html').read_bytes(), page)]
+left_svg, right_svg = old_tree.xpath('//svg'), new_tree.xpath('//svg')
+assert len(left_svg) == len(right_svg) == 7
+assert all(etree.tostring(a) == etree.tostring(b) for a, b in zip(left_svg, right_svg, strict=True))
+assert len(new_tree.xpath('//*[@id]')) == len({e.attrib['id'] for e in new_tree.xpath('//*[@id]')})
+assert 'Trim trailing whitespace from the ATP bypass bibliography title.' in new_tree.text_content()
+PROOF.mkdir()
+proof = {'status': 'passed', 'at': now(), 'target': bind(ROOT / REL),
+         'historical_target': adoption['historical_target'], 'proposal': bind(PROPOSAL / 'proposal.json'),
+         'independent_title_assessment': bind('/private/tmp/pathwaymech-next-230-title-trim-independent-20261012/handoff.json'),
+         'actual_gates': bind(GATES / 'execution.json'), 'predecessor_preservation': bind(PRESERVATION),
+         'before_inventory': bind(OUT / 'before-inventory.json'), 'changed_paths': changed,
+         'all_other_before_files_exact': True, 'all_other_yaml_objects_exact': True,
+         'new_edge_metadata_cells_only': metadata_changes, 'all_11536_edge_rows_other_cells_exact': True,
+         'nodes_and_source_contexts_byte_equal': True, 'old230_record_pages_unchanged': True,
+         'old_reviews_and_history_unchanged': True, 'full_render_history_inputs_exact': True,
+         'seven_svg_elements_byte_equal_after_DOM_parse': True, 'page': bind(ROOT / PAGE),
+         'scope': 'Exactly one bibliography title trimmed and one real pre-render EDIT; full original gates/preservation retained with original target scope. No new biological claim or canonical rebuild.'}
+write(PROOF / 'proof.json', proof)
+print(json.dumps({'proof': bind(PROOF / 'proof.json'), 'target': bind(ROOT / REL)}, indent=2))

@@ -1,0 +1,98 @@
+from pathlib import Path
+import json,hashlib,collections,re,subprocess
+import yaml,openpyxl
+from lxml import etree as E
+B=Path(__file__).parent;D=B/'derived'
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+def save(n,x):(D/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+# All sheets preserved in derived conversion, no original workbook changed.
+workbooks=[]
+for p in sorted(list((D/'xls-conversion').glob('*.xlsx'))+list((B/'raw').glob('PMID31464375*.xlsx'))):
+ original=B/'raw'/p.name.replace('.xlsx','.xls') if p.parent.name=='xls-conversion' else p
+ wb=openpyxl.load_workbook(p,read_only=True,data_only=True);fs=openpyxl.load_workbook(p,read_only=True,data_only=False)
+ sheets=[]
+ for s in wb:
+  cells=[dict(cell=c.coordinate,value=c.value)for row in s for c in row if c.value is not None];formulas=[dict(cell=c.coordinate,formula=c.value)for row in fs[s.title]for c in row if c.data_type=='f']
+  sheets.append(dict(name=s.title,max_row=s.max_row,max_column=s.max_column,nonempty_cells=len(cells),cell_values_sha256=hashlib.sha256(json.dumps(cells,sort_keys=True,default=str).encode()).hexdigest(),formula_count=len(formulas)))
+ workbooks.append(dict(original=bind(original),readable=bind(p),conversion='LibreOffice existing native binary, separate profile, original XLS unchanged; conversion runtime6000b0/session77891→2072bc/0' if p!=original else 'native XLSX',sheets=sheets))
+ wb.close();fs.close()
+save('supplement-workbook-provenance.json',workbooks)
+# Source-selected numerical values are retained as exact cells, without inferred missing coefficients.
+sel=[]
+p=next((D/'xls-conversion').glob('*MOESM4*'));w=openpyxl.load_workbook(p,read_only=True,data_only=True)['S3']
+for n in [2637,2829,4305,4306,4307,4326,4345,4346,4365]:sel.append(dict(original=bind(B/'raw'/p.name.replace('.xlsx','.xls')),converted=bind(p),sheet='S3',row=n,cells=[dict(cell=c.coordinate,value=c.value)for c in w[n] if c.value is not None]))
+p=next((D/'xls-conversion').glob('*MOESM5*'));w=openpyxl.load_workbook(p,read_only=True,data_only=True).worksheets[0]
+for row in w:
+ if any(isinstance(c.value,str)and re.search(r'S17P|sedo|F6|F7|F_6|F_7',c.value,re.I)for c in row):sel.append(dict(original=bind(B/'raw'/p.name.replace('.xlsx','.xls')),converted=bind(p),sheet=w.title,row=row[0].row,cells=[dict(cell=c.coordinate,value=c.value)for c in row if c.value is not None]))
+save('supplement-selected-cells.json',sel)
+# Corrected semantic presence comparison; initial script output retained explicitly as superseded coefficient-bearing screening.
+old=json.loads((D/'novelty-corpus-semantic.json').read_text());rows=[];related=[]
+succ=Path('/private/tmp/pathwaymech-next-229-science-correction-20261012/draft/ethylene-glycol-degradation.yaml')
+for r in old['all_records']:
+ p=Path(r['path']);assert bind(p)['sha256']==r['sha256'];obj=yaml.safe_load(p.read_text())
+ if obj['id']=='MetaCyc:PWY0-1280':
+  s=yaml.safe_load(succ.read_text());assert all(obj[k]==s[k]for k in ['id','label','participants','reactions','references'])
+  assert [(e['id'],e['subject'],e['predicate'],e['object'])for e in obj['mechanistic_edges']]==[(e['id'],e['subject'],e['predicate'],e['object'])for e in s['mechanistic_edges']]
+  p=succ;obj=s
+ nodes={x['id']:x for k in ['participants','reactions']for x in obj.get(k,[])};events=collections.defaultdict(lambda:dict(inputs=set(),outputs=set()))
+ for e in obj.get('mechanistic_edges',[]):
+  if e['predicate']=='consumes':events[e['object']]['inputs'].add(e['subject'])
+  if e['predicate']=='produces':events[e['subject']]['outputs'].add(e['object'])
+  if e['predicate']=='has_input':events[e['subject']]['inputs'].add(e['object'])
+  if e['predicate']=='has_output':events[e['subject']]['outputs'].add(e['object'])
+ def norm(i):
+  # Deliberately permissive for semantic duplicate candidate selection, never a curated identity substitution.
+  label=nodes.get(i,{}).get('label','').lower()
+  if ('sedohept' in label and ('bisphosph' in label or '1,7' in label))or i=='CHEBI:58335':return 'SBP family'
+  if ('sedohept' in label and '7-phosph' in label)or i in ['CHEBI:57483','CHEBI:15721','CHEBI:133984']:return 'S7P family'
+  if i in ['CHEBI:30616','CHEBI:15422']or label in ['atp','atp(4-)']:return 'ATP family'
+  if i in ['CHEBI:456216','CHEBI:32990','CHEBI:16761']or label in ['adp','adp(3-)']:return 'ADP family'
+  if i in ['CHEBI:57642']or 'glycerone phosphate'in label or 'dihydroxyacetone phosphate'in label:return 'DHAP family'
+  if i=='CHEBI:16897'or('erythrose'in label and'4-phosph'in label):return 'E4P family'
+  return i
+ out=[]
+ for rid,ss in events.items():
+  a={norm(x)for x in ss['inputs']};b={norm(x)for x in ss['outputs']}
+  if any(x.endswith('family')for x in a|b if isinstance(x,str)):
+   out.append(dict(event=rid,label=nodes.get(rid,{}).get('label'),inputs=sorted(ss['inputs']),outputs=sorted(ss['outputs']),permissive_inputs=sorted(a),permissive_outputs=sorted(b),potential_ATP_S7P_event={'S7P family','ATP family'}<=a and 'SBP family'in b,potential_SBP_cleavage='SBP family'in a and {'E4P family','DHAP family'}<=b))
+ rr=dict(**bind(p),id=obj['id'],related_events=out);rows.append(rr)
+ if any(any('S7P'in z or'SBP'in z for z in e['permissive_inputs']+e['permissive_outputs'])for e in out):related.append(rr)
+assert len(rows)==230 and not any(e['potential_ATP_S7P_event']for r in rows for e in r['related_events'])
+head=subprocess.run(['git','-C','/private/tmp/pathwaymech-next-227-20261012','rev-parse','HEAD','HEAD^{tree}'],capture_output=True,text=True,env={'PATH':'/usr/bin:/bin','GIT_OPTIONAL_LOCKS':'0'},check=True).stdout.splitlines()
+save('novelty-final-semantic.json',dict(status='No ATP-dependent S7P-phosphorylation event, including permissive acid/anomer/charge candidate screening, in all230 records; full two-event pathway therefore absent in this exact corpus.',baseline_head=head[0],baseline_tree=head[1],records=rows,related_sedoheptulose_records=related,corpus_scope='228 actual merged lyxose-inclusive records; MG prospective b73c407; EG scientifically accepted successor8e52. MG/EG not asserted merged by this capture.',initial_screen_correction='Initial novelty.py used e.get(stoichiometry,1) despite no universal coefficient field. Its numeric1 values were screening placeholders, not proven coefficients. This successor uses presence sets only; exact candidate coefficients come solely from Rhea RDF. The ADP-heptose aggregate reaction is not unit-coefficient proof.',prospective_next231='Native PWY-8178 includes six events, PPi/Pi donor distinct; source-defined comparison only because neither next230 nor next231 has an authored target.'))
+hits=json.loads((D/'novelty-text-search.json').read_text());dis=[]
+for x in hits['files']:
+ path=x['path'];data=Path(path).read_text(errors='replace');assert bind(path)['sha256']==x['sha256'] or '/pages/'in path or '/output/'in path or '/research/'in path
+ if 'pathbank-screening.tsv'in path:reason='Earlier catalogue retains PW002098/SMP0002110 as multi-pathway source requiring review and semantic dedup; not a curated pathway or rejection.'
+ elif any(y in path for y in ['riboneogenesis','calvin']):reason='Related reverse SBP condensation/hydrolysis and its accepted curation evidence. Mechanistic comparison retained; no ATP kinase event.'
+ elif '/data/pathways/'in path:reason='Exact pathway record considered in all230 semantic comparison.'
+ elif '/pages/'in path or'/output/'in path:reason='Generated representation of pre-existing records; does not add a separate maintained definition.'
+ elif 'ontology.json'in path or'authority'in path or'selected-identifiers'in path or'identifiers'in path:reason='Authority identity inventory or snapshot retention; term/reference presence is not a pathway definition.'
+ else:reason='Historical source/record inventory, prior search or review context. Matching source/reaction mentions retained; not a complete ATP-dependent pathway definition.'
+ dis.append(dict(path=path,search_sha256=x['sha256'],current_binding=bind(path),matched_lines=x['matches'],disposition=reason,reading_scope='Whole file machine-search with hidden/ignored/followed enumeration; all matching contexts and relevant direct record/research assessments inspected. Not claiming human full-read of every generated TSV or large inventory.'))
+save('prior-research-dispositions.json',dict(search=bind(D/'novelty-text-search.json'),ignored_hidden_followed=True,files=dis,semantic_report=bind(D/'novelty-final-semantic.json')))
+# A full component / cofactor / location projection separates scientific annotation from exact identity.
+ident=json.loads((D/'protein-original-identities.json').read_text());save('protein-state-and-assembly-contexts.json',[dict(id=x['id'],original={k:x[k]for k in ['path','sha256','bytes','selector']},length=x['length'],reference_taxon=x['organism']['taxonId'],gene_names=x['genes'],context_comments=[c for c in x['comments']if c['commentType']in ['SUBUNIT','SUBCELLULAR LOCATION','COFACTOR','PTM','ACTIVITY REGULATION']],disposition='Exact reference annotations retained. Transcript-deletion evidence does not identify a purified active protein state; context-only global annotations do not justify extra causal edges.')for x in ident])
+constructs=[
+('2009-physiology',['sbp-08','sbp-12','sbp-14','sbp-17'],'BW25113 talA:tet/talB:Cm; triple/quadruple deletions separate. 37C MOPS, carbon concentrations differ by experiment; original supplement table retained.'),
+('2009-aska-pfka',['sbp-09','sbp-10'],'Six-His ASKA PfkA. ReferenceP0A796 not proof of sequenced assay clone or expression-host identity. 2uM enzyme,5mM S7P/F6P,2mM ATP,37C1h.'),
+('2009-aska-fbaa',['sbp-09','sbp-10'],'Six-His ASKA FbaA; no isolated monomer catalysis or pure untagged WT claim. No-enzyme/PfkA-only/FbaA-only/both/F6P controls distinct.'),
+('2009-lactococcus',['sbp-16'],'L. lactis entire pfk ORF in pTRC99A; E. coli talAB pfkA host,IPTG1mM; donor strain/accession not supplied, no physiological donor-pathway proof.'),
+('2020-talab',['sbp-18','sbp-19','sbp-20'],'BW25113-derived independent deletion via pKD46/pCP20; pKD3/pKD4 inconsistency explicit; M9.4%xylose,37C. Metabolite extract is reference, not authentic commercial SBP.'),
+('2020-pfka',['sbp-20','sbp-21','sbp-22','sbp-23'],'BW25113_3916 pET-28b(+),DH5alpha cloning/Rosetta expression,His-affinity;0.2mM IPTG,3–4h37C. Kinetics55C,Mg5mM,ATP2mM,ADP0.25mM; MM versusHill preserved.'),
+('2020-auxiliary',['sbp-22'],'Rabbit muscle aldolase plus G3PDH/NADH assay coupling; not bacterial FbaA preparation; traceTPI hypothesis, no addedTPI.'),
+('2011-fbaa-untagged',['sbp-29','sbp-32','sbp-33','sbp-34'],'MG1655 pLEM1/pWKS30 FbaA ≥70% pure; as-purified and chemically Zn-loaded states separate, loading2.3Zn/monomer not universal occupancy.'),
+('2011-fbaa-tagged',['sbp-32','sbp-34'],'pLEM5/pET28b BL21(DE3) His-WT/mutants ≥95% pure; D144A,E174A,C177A,E181A assays; paper methionine-removed numbering not automatically reference coordinates.'),
+('2011-ni-growth',['sbp-35'],'MG1655 and rcnA/gshA genetic comparisons; nickel response carbon dependent; Cu2 inhibition not asserted physiological because cytoplasmic Cu is mainly Cu1.'),
+('2019-aska',['sbp-40','sbp-41','sbp-43'],'ASKA His-tag enzymes,purity>90%,IPTG0.1mM16h37C,HisTALON. NMR15uM monomer equivalent/200uM metabolites298K; FbaA activity~1uM,FBP1mM30C. Binding and signed effects distinct.'),
+('1993-zinc',['sbp-29'],'pKfda older abstract:2Zn/dimer and His108/111; no body access claimed, preserve older numbering/occupancy.'),
+('1995-adduct',['sbp-38'],'Purification2-mercaptoethanol causes Cys36 adduct; omission yields expected mass; no significant activity effect. Different experiment from1988phosphate labeling.'),
+('cra-his6',['sbp-45','sbp-46'],'1994/1996 six-His FruR/Cra assembly or DNA-binding preparations; referenceP0ACP1/PC00061 separate. Abstract/native scope, no invented body methods.'),
+('2018-cra',['sbp-47'],'Thermal-shift,MST andEMSA described in primary abstract; full PDF download403 and partial web cache only, no detailed construct/stoichiometry claim.'),
+('2009-rnap',['sbp-52','sbp-53'],'pET28b+ His-RpoS/RpoD ER2566 plus commercial RNAP core,1:5 core:sigma reconstitution; pSR promoter templates. Not isolated-sigma catalysis.'),
+('2009-pts-rpos',['sbp-52','sbp-53','sbp-54'],'JM101,PB11 ΔptsH ptsI crr,adaptedPB12 plusrpoS deletion derivatives; glucose2g/L M9,37C aerobic steadylog. Top10 reporter constructs distinct.'),
+('2016-csra51',['sbp-55'],'Hypomorphic csrA51 versusisogenicWT,M9glucose; restoration by PfkA. Nativeannotation/primaryabstract only; no directRNA-binding assay inferred.'),
+('2011-respiratory-ko',['sbp-56'],'BW25113 cyoA/cydB/fnr/fur Keio mutants; continuousD0.2h−1,37C,pH7,DO35–40%,C/N1.68vs8.42,semiquantitativeRT-PCR independentlytriplicate,dnaAcontrol; no directTF occupancy measured.')]
+cc=json.loads((D/'claim-dispositions.json').read_text());by={x['key']:x for x in cc};save('construct-context-ledger.json',[dict(key=k,claims=cs,description=s,sources=[z for c in cs for z in by[c]['sources']])for k,cs,s in constructs])
+save('visual-read-scope.json',dict(reader='macOS PDFKit native extraction and rendered page inspection; no OCR claim',visually_inspected=[str(D/x)for x in ['PMID19756045-supplement-visual.json.page-12.png','PMID19756045-supplement-visual.json.page-15.png','PMID19756045-supplement-visual.json.page-16.png','PMID31464375-appendix-visual.json.page-11.png','PMID31464375-appendix-visual.json.page-14.png','WUR-thesis-selected-visual.json.page-137.png','WUR-thesis-selected-visual.json.page-140.png']],reader_artifact='2009 PDF extraction lost Roman I in classII/PfkBII. Visual page15 restores original designation; not a scientific source conflict.',thesis_original=bind('/private/tmp/pathwaymech-next-231-preflight-20261012/raw/WUR-510683.pdf'),thesis_scope='Chapter6 supplement PDF137–141 text inspected,137/140 visuals independently inspected; DOI10.18174/510683 separate from journal supplement bytes.'))
+print(json.dumps(dict(workbooks=len(workbooks),prior_hits=len(dis),corpus=len(rows),constructs=len(constructs))))

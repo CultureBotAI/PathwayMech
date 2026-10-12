@@ -1,0 +1,28 @@
+"""Read-only ignored/hidden/followed cache inventory for the proposed copy plan."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+
+O = Path(__file__).parent
+C = Path('/private/tmp/pathwaymech-curation-authorities/sources')
+command = ['rg', '--files', '--no-ignore', '--hidden', '--follow', '-0', str(C)]
+before = subprocess.run(command, check=True, capture_output=True)
+paths = sorted(Path(p.decode()) for p in before.stdout.split(b'\0') if p)
+rows = []
+for path in paths:
+    with path.open('rb') as stream:
+        digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+    rows.append({'path': str(path), 'resolved_path': str(path.resolve()),
+                 'relative_path': str(path.relative_to(C)), 'symlink': path.is_symlink(),
+                 'bytes': path.stat().st_size, 'sha256': digest})
+after = subprocess.run(command, check=True, capture_output=True)
+assert sorted(before.stdout.split(b'\0')) == sorted(after.stdout.split(b'\0'))
+result = {'at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          'command': command, 'returncode': before.returncode, 'stderr': before.stderr.decode(),
+          'scope': 'Actual shared cache observed read-only during ATP next230 authority preparation. This observation does not establish a maintained or merged EG baseline. No writes performed. Root must refresh before any later append-only copy.',
+          'inventory_names_stable_during_hashing': True, 'files': rows,
+          'file_count': len(rows), 'total_bytes': sum(r['bytes'] for r in rows)}
+(O / 'source-cache-observation.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'files': len(rows), 'bytes': result['total_bytes'], 'shared_cache_writes': False}))

@@ -1,0 +1,179 @@
+"""Independent read-only audit of sealed ATP native-build preparation."""
+import datetime
+import difflib
+import hashlib
+import importlib
+import importlib.util
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import traceback
+
+import yaml
+
+AUDIT = Path(__file__).resolve().parent
+PREP = Path('/private/tmp/pathwaymech-next-230-canonical-preparation-20261012')
+BUILD = Path('/private/tmp/pathwaymech-next-230-canonical-build-20261012')
+ROOT = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+checks = []
+
+def now():
+    return datetime.datetime.now(datetime.UTC).isoformat().replace('+00:00', 'Z')
+
+def load(path):
+    return json.loads(Path(path).read_bytes())
+
+def binding(path):
+    path = Path(path)
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''):
+            digest.update(block)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': digest.hexdigest()}
+
+def write(path, value):
+    with Path(path).open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+def files(path):
+    return {Path(p) for p in subprocess.check_output(['rg', '--files', '-uu', '-L', str(path)], text=True).splitlines()}
+
+def verify(row):
+    actual = binding(row['path'])
+    assert actual['sha256'] == row['sha256'], row['path']
+    assert actual['bytes'] == row.get('bytes', actual['bytes']), row['path']
+    return actual
+
+def passed(name, detail):
+    checks.append({'name': name, 'status': 'passed', 'detail': detail})
+
+def rejected(name, function):
+    try:
+        function()
+    except AssertionError as error:
+        passed(name, {'rejected': True, 'error': str(error)})
+    else:
+        raise AssertionError('Unexpected acceptance: ' + name)
+
+def main():
+    started = now()
+    verify({'path': str(PREP / 'handoff.json'), 'sha256': '69149b1c19a6114319c1b10cad87cbeb474a02e79b94a99a69d0919904a4a159'})
+    handoff = load(PREP / 'handoff.json')
+    verify(handoff['manifest'])
+    assert handoff['manifest']['sha256'] == '3d1518e2e4794fb191c63c6251d98f866ad19f4e8105d3cb347e978c18dc320c'
+    rows = load(handoff['manifest']['path'])['artifacts']
+    assert len(rows) == 1000 and len({r['path'] for r in rows}) == 1000
+    for row in rows:
+        assert Path(row['path']).is_relative_to(PREP)
+        verify(row)
+    before = {Path(r['path']): r for r in rows}
+    assert files(PREP) == set(before) | {PREP / 'handoff.json', PREP / 'artifact-manifest.json'}
+    passed('closed_seal', {'artifacts': 1000, 'hidden_ignored_followed': True})
+    capture = load(PREP / 'capture.json')
+    assert capture['observed_head'] == 'ed6337d0adbcee81f962c80391e12c0dcc084908'
+    for row in capture['records']:
+        if row['role'] == 'actual_merged_MG_main_record':
+            committed = subprocess.check_output(['git', '-C', str(ROOT), 'show', capture['observed_head'] + ':data/pathways/' + row['relative_path']])
+            assert committed == Path(row['captured']['path']).read_bytes()
+        else:
+            assert row['relative_path'] == 'ethylene-glycol-degradation.yaml'
+            assert row['captured']['sha256'] == 'c247d9c205fc14ac5bb0d1e6de57c54d06aca5a484eb99b9e8e694c9d6f2e6de'
+    assert len([r for r in capture['records'] if r['relative_path'].endswith('.yaml')]) == 230
+    for row in capture['candidate_code']:
+        committed = subprocess.check_output(['git', '-C', str(ROOT), 'show', capture['observed_head'] + ':' + row['relative_path']])
+        assert committed == Path(row['captured']['path']).read_bytes(), row['relative_path']
+    passed('frozen_corpus_and_native_runtime', {'main_records': 229, 'prospective_EG_records': 1, 'runtime_committed_files': 222, 'actual_EG_merge_not_claimed': True})
+    diff = ''
+    for name in ('common.py', 'capture_inputs.py', 'prepare_and_build.py', 'test_build_guards.py', 'seal_preparation.py'):
+        diff += ''.join(difflib.unified_diff((PREP / 'inspected-predecessor' / name).read_text().splitlines(keepends=True), (PREP / name).read_text().splitlines(keepends=True), fromfile='accepted-EG/' + name, tofile='ATP/' + name))
+    assert diff == (PREP / 'exact-helper-adaptation.diff').read_text()
+    passed('helper_adaptation_diff', 'Recomputed all five complete helper diffs; exact match.')
+    sys.path.insert(0, str(PREP))
+    import common
+    import prepare_and_build as build
+    assert Path(common.__file__).resolve() == PREP / 'common.py'
+    assert Path(build.__file__).resolve() == PREP / 'prepare_and_build.py'
+    observed_capture, old, expected = build.input_check()
+    assert observed_capture == capture
+    assert build.plan(capture) == load(PREP / 'root-build-commands.json')
+    passed('actual_input_check_and_commands', 'Direct helper input_check passed against sealed files, current inherited SQL stats and root receipt hashes.')
+    all_originals = [verify(row) for row in capture['source_originals']]
+    passed('source_originals', {'freshly_hashed': len(all_originals), 'total_bytes': sum(row['bytes'] for row in all_originals), 'SQL_full_hashes_not_recomputed': True})
+    for row in capture['sql_originals']:
+        assert old['ontology']['sources'][row['source_key']]['sha256'] == row['sha256']
+        common.check_sql_stat(row)
+    passed('SQL_pins', 'Four accepted EG native full hashes equal old metadata; current size/mtime checked. Native read_source unconditionally streams each full database in actual build; no shortcut patched or invoked.')
+    import capture_inputs
+    modules = capture_inputs.native_collectors()
+    for name, module in list(sys.modules.items()):
+        if name == 'pathwaymech' or name.startswith('pathwaymech.'):
+            assert Path(module.__file__).resolve().is_relative_to(PREP / 'captured/code/src/pathwaymech'), (name, module.__file__)
+    bridge = load(PREP / 'collector-bridge.json')
+    for kind in ('ATP', 'EG'):
+        for row in bridge[kind]['inputs']:
+            verify(row)
+            assert capture_inputs.selections(Path(row['path']), modules) == bridge[kind]['same_selections']
+    assert len(bridge['ATP']['same_selections']['source_collector']) == 62
+    assert len(bridge['ATP']['same_selections']['ontology_collector']) == 36
+    passed('native_target_and_EG_selector_bridges', {'ATP_named_ids': 62, 'ATP_ontology_ids': 36, 'ATP_versions_replayed': 3, 'EG_versions_replayed': 2, 'native_module_paths_exact': True})
+    selector_dir = AUDIT / 'retention-probe'
+    selector_dir.mkdir()
+    retention = capture['retention_ids']
+    selector = {'id': retention[0], 'participants': [{'id': value} for value in retention[1:]]}
+    (selector_dir / 'selector.yaml').write_text(yaml.safe_dump(selector, sort_keys=False))
+    retained_named = modules['source'].corpus_ids(selector_dir)
+    assert retained_named == set(retention)
+    named = retained_named | modules['source'].corpus_ids(PREP / 'captured/corpus') | modules['source'].corpus_ids(PREP / 'captured/target')
+    required = {value for value in named if value.partition(':')[0] in modules['source'].SOURCE_NAMESPACES}
+    ontology_selected = set()
+    for path in list((PREP / 'captured/corpus').rglob('*.yaml')) + list((PREP / 'captured/target').rglob('*.yaml')) + [selector_dir / 'selector.yaml']:
+        ontology_selected |= modules['ontology'].walk_identifiers(yaml.safe_load(path.read_text()), {'CHEBI', 'GO', 'NCBITaxon', 'RHEA'})
+    assert required == set(expected['snapshots']['sources']['terms'])
+    assert ontology_selected == set(expected['snapshots']['ontology']['terms'])
+    assert set(old['sources']['terms']) <= required and set(old['ontology']['terms']) <= ontology_selected
+    write(AUDIT / 'native-selector-replay.json', {'source_required': sorted(required), 'ontology_selected': sorted(ontology_selected), 'retention_ids': retention})
+    passed('full_legacy_and_current_selection', {'retention_ids': 4411, 'source_required': len(required), 'ontology_selected': len(ontology_selected), 'all_prior_ids_retained': True, 'proposal_keys_equal_actual_native_selection': True})
+    for kind in old:
+        common.preserve(old[kind], expected['snapshots'][kind])
+    passed('old_authority_objects', {'source_terms': 2454, 'source_metadata': 587, 'ontology_terms': 1957, 'ontology_metadata': 5, 'all_objects_equal': True, 'manifest_prefix_entries': 750, 'Rhea_prefix_entries': 22})
+    original_output = common.OUTPUT
+    fixture = AUDIT / 'existing-output-fixture'
+    fixture.mkdir()
+    try:
+        common.OUTPUT = fixture
+        rejected('existing_output_directory_rejected', lambda: common.validate_output(fixture))
+        dangling = AUDIT / 'dangling-output-fixture'
+        dangling.symlink_to(AUDIT / 'does-not-exist')
+        common.OUTPUT = dangling
+        rejected('dangling_output_symlink_rejected', lambda: common.validate_output(dangling))
+        dangling.unlink()
+    finally:
+        common.OUTPUT = original_output
+    env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'UV_NO_SYNC': '1', 'PYTHONNOUSERSITE': '1', 'PYTHONPATH': str(PREP / 'captured/code/src') + ':' + str(PREP / 'captured/code')}
+    for label, args, expected_exit in [('inert', ['--check-inputs'], 0), ('conflicting_modes', ['--execute', '--check-inputs'], 1)]:
+        command = [PYTHON, '-B', str(PREP / 'prepare_and_build.py'), *args]
+        began = now()
+        result = subprocess.run(command, cwd=AUDIT, env=env, capture_output=True)
+        (AUDIT / (label + '.stdout')).write_bytes(result.stdout)
+        (AUDIT / (label + '.stderr')).write_bytes(result.stderr)
+        assert result.returncode == expected_exit
+        assert not BUILD.exists() and not BUILD.is_symlink()
+        write(AUDIT / (label + '-execution.json'), {'command': command, 'cwd': str(AUDIT), 'environment_overrides': {key: env[key] for key in ('PYTHONDONTWRITEBYTECODE', 'UV_NO_SYNC', 'PYTHONNOUSERSITE', 'PYTHONPATH')}, 'started_at': began, 'finished_at': now(), 'exit_code': result.returncode, 'stdout': binding(AUDIT / (label + '.stdout')), 'stderr': binding(AUDIT / (label + '.stderr'))})
+    passed('inert_and_conflicting_modes', 'Fresh check-inputs exits 0; execute plus check-inputs rejects before staging; fixed output remains absent.')
+    for row in rows:
+        verify(row)
+    assert files(PREP) == set(before) | {PREP / 'handoff.json', PREP / 'artifact-manifest.json'}
+    passed('sealed_preparation_unchanged', 'Every artifact and hidden/ignored/followed file remains exactly equal after audit.')
+    write(AUDIT / 'checks.json', {'started_at': started, 'finished_at': now(), 'checks': checks, 'status': 'passed', 'full_builder_execution': False, 'maintained_writes': False})
+    print(json.dumps({'status': 'passed', 'checks': len(checks), 'full_build_executed': False}))
+
+if __name__ == '__main__':
+    try:
+        main()
+    except Exception:
+        write(AUDIT / ('failure-' + datetime.datetime.now(datetime.UTC).strftime('%H%M%S') + '.json'), {'at': now(), 'completed_checks': checks, 'traceback': traceback.format_exc()})
+        raise

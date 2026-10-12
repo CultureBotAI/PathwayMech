@@ -1,0 +1,225 @@
+"""Freeze external ATP build inputs; no native build, adoption or shared-cache writes."""
+
+import importlib.util
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import yaml
+
+from common import (
+    AUTHOR, AUTHORITY, EG_WORKTREE, HERE, PRIOR, TARGET_SHA, WORKTREE,
+    bind, check, check_sql_stat, inventory, load, now, preserve,
+    validate_manifest, validate_updates, write,
+)
+
+PACKETS = {
+    "atp_author": (Path("/private/tmp/pathwaymech-next-230-author-20261012"), "e0bab1fff713920b5774ca14944a6948ac68e1be459ce2afed2ac37d5af42ddd"),
+    "atp_successor": (AUTHOR, "c5f71d0e0a0a1386bae94103750fd1f2f5c33946303039b84be6a9956f71b683"),
+    "atp_authority": (AUTHORITY, "3001abcd793a2394b88d44e8f9dc73b769f4a2d21451e4802aae8b1ac4a588c5"),
+    "eg_build": (PRIOR, "1462797155f37ae65a88118d7d85f78916caa04bc29ac860d28ed68c66f8180f"),
+    "eg_audit": (Path("/private/tmp/pathwaymech-next-229-canonical-review-20261012"), "a86c9d94e98d3c0932aa3eb30d778dc28ee87a2f25b8773738ad9f1412f3e1db"),
+}
+RECEIPTS = {
+    "atp_original_author": ("/private/tmp/pathwaymech-next-230-root-author-intake-20261012.json", "01cc0acf4aa3190c50eea95b5c9722a201d001084f515df1345410525f460e1a"),
+    "atp_authority": ("/private/tmp/pathwaymech-next-230-root-authority-proposal-assessment-20261012.json", "b73769004fc2056ac012f459c0914b2f0084acf1722fc1642943b862b377b034"),
+    "eg_canonical": ("/private/tmp/pathwaymech-next-229-root-canonical-review-intake-20261012.json", "c7f1064cf7e937955a23b0128118d742c36a4861a07036bcf12ae808fc3cf749"),
+}
+EG_SHA = "c247d9c205fc14ac5bb0d1e6de57c54d06aca5a484eb99b9e8e694c9d6f2e6de"
+MAIN_HEAD = "ed6337d0adbcee81f962c80391e12c0dcc084908"
+
+
+def copy_binding(source, destination):
+    before = bind(source)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    assert not destination.exists()
+    shutil.copyfile(source, destination)
+    after = bind(destination)
+    assert (before["bytes"], before["sha256"]) == (after["bytes"], after["sha256"])
+    return {"original": before, "captured": after}
+
+
+def verify_packet(name, directory, digest):
+    handoff = check({"path": str(directory / "handoff.json"), "sha256": digest})
+    data = load(handoff["path"])
+    manifest = check(data.get("manifest") or data["artifact_manifest"])
+    rows = load(manifest["path"])["artifacts"]
+    paths = set()
+    for row in rows:
+        path = Path(row.get("path") or row["relative_path"])
+        if not path.is_absolute():
+            assert ".." not in path.parts
+            path = directory / path
+        assert path.is_relative_to(directory), path
+        assert path not in paths, path
+        check({**row, "path": str(path)})
+        paths.add(path)
+    observed = set(inventory(directory))
+    allowed = {directory / "handoff.json", Path(manifest["path"])}
+    original_links = set()
+    if name == "eg_build":
+        intake = load(directory / "execution-intake.json")
+        for row in intake["source_originals_freshly_hashed"]:
+            path = directory / "originals" / row["cache_relative_path"]
+            assert path.is_symlink() and path.resolve() == Path(row["path"]).resolve()
+            check({**row, "path": str(path)})
+            original_links.add(path)
+    assert observed == paths | allowed | original_links, {
+        "extra": sorted(str(p) for p in observed - paths - allowed - original_links),
+        "missing": sorted(str(p) for p in paths - observed),
+    }
+    return {"name": name, "handoff": handoff, "manifest": manifest,
+            "artifacts_verified": len(rows), "exact_original_symlinks_verified": len(original_links),
+            "closed_hidden_ignored_followed_inventory": True}
+
+
+def native_collectors():
+    sys.path.insert(0, str(HERE / "captured/code/src"))
+    modules = {}
+    for kind in ("source", "ontology"):
+        path = HERE / "captured/code/scripts" / ("build_" + kind + "_identifier_snapshot.py")
+        spec = importlib.util.spec_from_file_location("atp_capture_" + kind, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        modules[kind] = module
+    return modules
+
+
+def selections(path, modules):
+    # corpus_ids accepts a directory. Each compared packet directory holds one target YAML.
+    assert list(path.parent.glob("*.yaml")) == [path]
+    data = yaml.safe_load(path.read_text())
+    return {"source_collector": sorted(modules["source"].corpus_ids(path.parent)),
+            "ontology_collector": sorted(modules["ontology"].walk_identifiers(data, {"GO", "CHEBI", "NCBITaxon", "RHEA"}))}
+
+
+def main():
+    assert not (HERE / "capture.json").exists()
+    packages = [verify_packet(name, directory, digest) for name, (directory, digest) in PACKETS.items()]
+    root_receipts = {name: check({"path": path, "sha256": digest}) for name, (path, digest) in RECEIPTS.items()}
+    prior_capture = load(PRIOR / "preparation-capture.json")
+    head, tree = subprocess.check_output(["git", "-C", str(WORKTREE), "rev-parse", "HEAD", "HEAD^{tree}"], text=True).splitlines()
+    assert head == MAIN_HEAD
+    old_rows = {r["relative_path"]: r for r in prior_capture["records"]}
+    actual_paths = inventory(WORKTREE / "data/pathways")
+    assert {str(p.relative_to(WORKTREE / "data/pathways")) for p in actual_paths} == set(old_rows)
+    records = []
+    for source in actual_paths:
+        rel = str(source.relative_to(WORKTREE / "data/pathways"))
+        assert bind(source)["sha256"] == old_rows[rel]["captured"]["sha256"]
+        committed = subprocess.check_output(["git", "-C", str(WORKTREE), "show", head + ":data/pathways/" + rel])
+        assert source.read_bytes() == committed
+        records.append({"relative_path": rel, "role": "actual_merged_MG_main_record", **copy_binding(source, HERE / "captured/corpus" / rel)})
+    assert sum(r["relative_path"].endswith(".yaml") for r in records) == 229
+    eg_target = EG_WORKTREE / "data/pathways/ethylene-glycol-degradation.yaml"
+    assert bind(eg_target)["sha256"] == EG_SHA
+    records.append({"relative_path": eg_target.name, "role": "actual_EG_integration_branch_unmerged_record", **copy_binding(eg_target, HERE / "captured/corpus" / eg_target.name)})
+    eg_paths = inventory(EG_WORKTREE / "data/pathways")
+    assert {str(p.relative_to(EG_WORKTREE / "data/pathways")) for p in eg_paths} == {r["relative_path"] for r in records}
+    for row in records:
+        assert bind(EG_WORKTREE / "data/pathways" / row["relative_path"])["sha256"] == row["captured"]["sha256"]
+    eg_head, eg_tree = subprocess.check_output(["git", "-C", str(EG_WORKTREE), "rev-parse", "HEAD", "HEAD^{tree}"], text=True).splitlines()
+    baseline = []
+    proposals = {}
+    maintained_names = {"sources.json": "data/identifier_authorities/sources.json", "ontology.json": "data/identifier_authorities/ontology.json", "manifest.json": "conf/identifier_sources.json", "rhea-updates.json": "conf/rhea_identifier_updates.json"}
+    for name, rel in maintained_names.items():
+        assert (PRIOR / name).read_bytes() == (EG_WORKTREE / rel).read_bytes()
+        baseline.append({"relative_path": name, **copy_binding(PRIOR / name, HERE / "captured/baseline" / name)})
+        proposals[name] = copy_binding(AUTHORITY / "proposals" / name, HERE / "captured/proposals" / name)
+    baseline_data = {name: load(PRIOR / (name + ".json")) for name in ("sources", "ontology")}
+    snapshots = {name: load(AUTHORITY / "proposals" / (name + ".json")) for name in baseline_data}
+    for name in baseline_data:
+        preserve(baseline_data[name], snapshots[name])
+    manifest = load(AUTHORITY / "proposals/manifest.json")
+    hashes = validate_manifest(load(PRIOR / "manifest.json"), manifest)
+    updates = load(AUTHORITY / "proposals/rhea-updates.json")
+    validate_updates(load(PRIOR / "rhea-updates.json"), updates)
+    hashes[updates["path"]] = updates["sha256"]
+    cache_root = Path("/private/tmp/pathwaymech-curation-authorities/sources")
+    original_map = {}
+    for row in load(PRIOR / "execution-intake.json")["source_originals_freshly_hashed"]:
+        key = row["cache_relative_path"]
+        original_map[key] = {**row, "path": str(cache_root / key)}
+    for row in load(AUTHORITY / "source-cache-copy-plan.json")["entries"]:
+        key = str(Path(row["destination"]).relative_to(cache_root))
+        binding = row["original"]
+        if key in original_map:
+            assert original_map[key]["sha256"] == binding["sha256"]
+        else:
+            original_map[key] = {"cache_relative_path": key, **binding}
+    assert set(original_map) == set(hashes)
+    originals = []
+    for key, digest in sorted(hashes.items()):
+        actual = check(original_map[key])
+        assert actual["sha256"] == digest
+        originals.append({"cache_relative_path": key, **actual, "resolved_path": str(Path(actual["path"]).resolve()),
+                          "mtime_ns": Path(actual["path"]).stat().st_mtime_ns,
+                          "hash_scope": "fresh preparation hash; repeat at root execution before staging"})
+    assert len(originals) == 756
+    code = []
+    expected_code_paths = {r["relative_path"] for r in prior_capture["candidate_code"]}
+    runtime_inventory = {str(path.relative_to(WORKTREE)): path for part in ("conf", "docs", "scripts", "src", "tests") for path in inventory(WORKTREE / part)}
+    runtime_inventory.update({name: WORKTREE / name for name in ("CLAUDE.md", "pyproject.toml", "uv.lock")})
+    excluded_bytecode = []
+    for rel in sorted(set(runtime_inventory) - expected_code_paths):
+        assert "__pycache__" in Path(rel).parts and Path(rel).suffix == ".pyc", rel
+        excluded_bytecode.append(bind(runtime_inventory[rel]))
+    assert expected_code_paths <= set(runtime_inventory)
+    for row in prior_capture["candidate_code"]:
+        rel = row["relative_path"]
+        source = WORKTREE / rel
+        if rel not in {"conf/identifier_sources.json", "conf/rhea_identifier_updates.json"}:
+            assert source.read_bytes() == (PRIOR / "runtime" / rel).read_bytes(), rel
+        code.append({"relative_path": rel, "role": "actual_merged_main_runtime", **copy_binding(source, HERE / "captured/code" / rel)})
+    assert len(code) == 222
+    target = copy_binding(AUTHOR / "draft/sedoheptulose-bisphosphate-bypass.yaml", HERE / "captured/target/sedoheptulose-bisphosphate-bypass.yaml")
+    assert target["captured"]["sha256"] == TARGET_SHA
+    modules = native_collectors()
+    atp_paths = [AUTHORITY / "bounded-selection/sedoheptulose-bisphosphate-bypass.yaml", PACKETS["atp_author"][0] / "draft/sedoheptulose-bisphosphate-bypass.yaml", Path(target["captured"]["path"])]
+    atp_selected = [selections(path, modules) for path in atp_paths]
+    assert atp_selected[0] == atp_selected[1] == atp_selected[2]
+    assert len(atp_selected[0]["source_collector"]) == 62 and len(atp_selected[0]["ontology_collector"]) == 36
+    # EG full build corpus also includes many old YAML records; isolate only its target for a native collector bridge.
+    eg_historical = HERE / "captured/bridge-eg-historical/ethylene-glycol-degradation.yaml"
+    copy_binding(PRIOR / "corpus/ethylene-glycol-degradation.yaml", eg_historical)
+    eg_current = HERE / "captured/bridge-eg-current/ethylene-glycol-degradation.yaml"
+    copy_binding(eg_target, eg_current)
+    eg_selected = [selections(path, modules) for path in (eg_historical, eg_current)]
+    assert eg_selected[0] == eg_selected[1]
+    write(HERE / "collector-bridge.json", {"at": now(), "native_code": {kind: bind(HERE / "captured/code/scripts" / ("build_" + kind + "_identifier_snapshot.py")) for kind in modules},
+          "ATP": {"inputs": [bind(p) for p in atp_paths], "same_selections": atp_selected[0]},
+          "EG": {"inputs": [bind(p) for p in (eg_historical, eg_current)], "same_selections": eg_selected[0]},
+          "scientific_acceptance": False, "scope": "Actual unchanged native selector equality only; no scientific or canonical acceptance."})
+    sql = prior_capture["sql_originals"]
+    for row in sql:
+        check_sql_stat(row)
+        assert baseline_data["ontology"]["sources"][row["source_key"]]["sha256"] == row["sha256"]
+    retention = sorted(set(baseline_data["sources"]["terms"]) | set(baseline_data["ontology"]["terms"]))
+    assert len(retention) == 4411
+    assert subprocess.check_output(["git", "-C", str(WORKTREE), "rev-parse", "HEAD"], text=True).strip() == head
+    capture = {
+        "at": now(), "scope": "Prospective 230-record baseline: 229 actual merged main records at ed6337d0adbcee81f962c80391e12c0dcc084908 plus current exact EG integration-branch record c247d9c205fc14ac5bb0d1e6de57c54d06aca5a484eb99b9e8e694c9d6f2e6de. All 230 are byte-equal to the observed EG integration corpus. EG is not claimed merged; later actual merge requires a separate exact bridge.",
+        "observed_head": head, "observed_tree": tree, "observed_EG_branch_head": eg_head, "observed_EG_branch_tree": eg_tree,
+        "historical_EG_capture": bind(PRIOR / "preparation-capture.json"),
+        "historical_EG_scope_preserved": prior_capture["scope"],
+        "records": records, "target": target, "baseline": baseline,
+        "candidate_code": code, "code_scope": "222 actual merged main runtime files. Unchanged versus accepted EG native runtime except two main historical authority configs; native commands explicitly consume external ATP manifest and Rhea selectors. Full hidden/ignored/followed runtime inventory also bound; only listed generated __pycache__ bytecode excluded from execution.",
+        "excluded_runtime_bytecode": excluded_bytecode,
+        "proposals": proposals, "packages": packages, "root_receipts": root_receipts,
+        "collector_bridge": bind(HERE / "collector-bridge.json"),
+        "source_originals": originals, "sql_originals": sql,
+        "sql_hash_scope": "Accepted EG native full hashes inherited with current size/mtime checks. No preparation full SQL rehash; the root-owned native ontology builder performs and records each full hash.",
+        "retention_ids": retention, "new_manifest_entries": 8, "new_original_paths": 7,
+        "inventory": "rg --files --no-ignore --hidden --follow",
+        "prior_records": 230, "prospective_records_with_ATP": 231,
+        "full_build_executed": False, "scientific_acceptance": False,
+        "maintained_or_shared_cache_writes": False,
+    }
+    write(HERE / "expected-native-comparison.json", {"snapshots": snapshots, "scope": "Comparison only; native original builders derive outputs independently and preserve first-source ordering.", "expected_counts": {"source_terms":2474,"source_metadata":595,"ontology_terms":1963,"ontology_metadata":5}})
+    write(HERE / "capture.json", capture)
+    print({"records": 230, "code_files": len(code), "originals": len(originals), "retention_ids": len(retention), "packages": len(packages), "artifacts_verified": sum(p["artifacts_verified"] for p in packages), "full_build": False})
+
+
+if __name__ == "__main__":
+    main()

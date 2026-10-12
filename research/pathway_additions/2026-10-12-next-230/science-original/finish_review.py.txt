@@ -1,0 +1,455 @@
+"""Assemble the independent assessment; never edits the reviewed author packet."""
+from pathlib import Path
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+import yaml
+from lxml import etree
+
+OUT = Path('/private/tmp/pathwaymech-next-230-science-review-20261012')
+AUTHOR = Path('/private/tmp/pathwaymech-next-230-author-20261012')
+PREFLIGHT = Path('/private/tmp/pathwaymech-next-230-preflight-20261012')
+TARGET = AUTHOR / 'draft/sedoheptulose-bisphosphate-bypass.yaml'
+TARGET_SHA = 'efd1678372f26807bd5a543f029fcd92cdc935faa6ea74990fdeeef05af42a87'
+TARGET_ID = 'MetaCyc:PWY0-1517'
+
+def load(path):
+    return json.loads(Path(path).read_text())
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as f:
+        for block in iter(lambda: f.read(8 * 1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+def binding(path):
+    path = Path(path)
+    return {'path': str(path), 'sha256': sha(path), 'bytes': path.stat().st_size}
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+def utc():
+    return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+
+assert sha(TARGET) == TARGET_SHA
+record = yaml.safe_load(TARGET.read_text())
+edges = {e['id']: e for e in record['mechanistic_edges']}
+claims = load(AUTHOR / 'claim-to-record-coverage.json')
+source_replays = load(OUT / 'original-selector-replay.json')
+edge_replays = {e['edge_id']: e for e in load(OUT / 'edge-evidence-replay.json')}
+claim_replays = load(OUT / 'claim-source-replay.json')
+links = load(AUTHOR / 'ledgers/edge-claim-links.json')
+
+# These notes are the reviewer's scientific judgements after inspecting original
+# selected passages, full relevant sections, original workbook cells and PDF views.
+# They are not a programmatic inference from a successful selector replay.
+edge_notes = {
+1: 'The native PWY0-1517 reaction-list explicitly includes RXN0-6541; its ATP event maps to directional RHEA:31444. No PPi event is substituted.',
+2: 'The second native event SEDOBISALDOL-RXN is the SBP cleavage represented by RHEA:30169; bidirectional 30170 and condensation 30168 are distinguished.',
+3: 'The full original Rhea left-side chain contains one CHEBI:57483 generic S7P, not the alpha-pyranose child CHEBI:133984.',
+4: 'The full original Rhea left side consumes one ATP(4-), CHEBI:30616. Donor identity is ATP, not PPi.',
+5: 'The full original Rhea right side produces one SBP(4-), CHEBI:58335. The biochemical product is not silently replaced by a neutral PathBank drawing.',
+6: 'The full original Rhea right side produces one ADP(3-), CHEBI:456216, preserving the selected issuing identity.',
+7: 'The full original Rhea right side includes exactly one proton, CHEBI:15378. Omitting or doubling this side fails the independent chemistry check.',
+8: 'RHEA:30169 consumes one SBP(4-); the complete original participant-side traversal establishes the cleavage orientation.',
+9: 'The cleavage produces one E4P(2-), CHEBI:16897. This is not the neutral source-specific PathBank interface compound.',
+10: 'The cleavage produces one glycerone phosphate(2-), CHEBI:57642. Primary 2009 products and structured Rhea support DHAP despite GAP wording in other source fields.',
+11: 'Native reaction ordering and the shared SBP intermediate support the sequential connection. An auxiliary TPI event is neither necessary nor supported as a third core event.',
+12: 'The native catalytic annotation connects the PfkA homotetramer to RXN0-6541. Primary assay evidence is separately qualified rather than converting a reference monomer into the measured preparation.',
+13: 'The native class-II FbaA assembly is attached to SBP cleavage; exact source-native assembly and direct product evidence support this annotation.',
+14: 'Native component metadata establishes four P0A796-equivalent PfkA chains. The frozen PathBank PfkA/PfkB mixture is retained as a conflict and not adopted as an assembly.',
+15: 'Native component metadata establishes two P0AB71-equivalent FbaA chains. Homodimer annotation does not imply an isolated-chain catalytic assay.',
+16: 'The 2009 PfkA-only S7P experiment supports S7P kinase capacity with the six-His ASKA construct, 2 µM enzyme, 5 mM substrate, 2 mM ATP, 37 °C and one hour. SBP identification/calibration limits remain explicit.',
+17: 'The 2009 combined PfkA/FbaA S7P experiment detects E4P and DHAP with the source-qualified ASKA preparation. Table III has six preparations: the combined experiment and five controls, including the no-metabolite condition; blanks are not zero and ND is not a concentration.',
+18: 'The 2020 apparent S7P Km/kcat and 55 °C coupled assay support a distinct pET-28b/Rosetta PfkA capacity experiment. The qualifier correctly distinguishes Ba-S7P and auxiliary rabbit enzymes, but its locator omits the HisTrap purification paragraph: minor finding ATP-SCI-001.',
+19: 'PfkA cytoplasm is explicitly supported by UniProt SUBCELLULAR LOCATION evidence. Homotetramer SUBUNIT text is not used to infer localization.',
+20: 'FbaA cytosol is supported by native CCI-CYTOSOL-GN and the UniProt GO:0005829 IDA:EcoCyc annotation. These are annotation roles, not a new localization experiment by this reviewer.',
+21: 'Mg2+ is a PfkA cofactor in native/UniProt annotation and is explicitly present in the 2020 coupled assay; it is not inserted as a net-consumed substrate.',
+22: 'Zn cofactor capacity is supported. Two Zn per subunit annotation, older two-per-dimer abstract and preparation-specific 2011 loading are preserved as distinct statements rather than forced into a single occupancy.',
+23: 'Co is a source-annotated alternative FbaA metalloprotein cofactor. The record preserves older annotation scope and separates it from adding Co to the 2011 preparation.',
+24: 'Fe2+ alternative cofactor is a bounded native annotation, not an independently inspected full primary kinetic series or direct SBP assay.',
+25: 'Mn2+ alternative cofactor is retained with its annotation scope; it does not contradict the explicitly retained absence of stimulation on adding Mn to the particular 2011 holoenzyme preparation.',
+26: 'PEP inhibition refers to canonical F6P-PfkA activity in the native regulation object. The record does not transfer the sign to measured S7P turnover.',
+27: 'ADP activation is tied to the exact native canonical PFK regulation. ADP as effector context is distinct from ADP as a core chemical product.',
+28: 'GDP activation is an exact native canonical PFK statement with F6P scope, not a claim of GDP-driven bypass phosphorylation.',
+29: 'Ammonium activation is qualified as native canonical FbaA annotation attributed to the cited personal communication, not upgraded to inspected direct SBP kinetics.',
+30: 'K+ activation has the same source-qualified canonical FbaA provenance; it is not a new pathway stoichiometric participant.',
+31: 'Native Ni inhibition of canonical FbaA is supported as annotation and independently corroborated under the separately represented 2011 preparation conditions.',
+32: 'EDTA inhibition is supported by native annotation and the primary purification/chelation experiment; the assay context does not establish a physiological intracellular EDTA exposure.',
+33: 'Cu2+ strongly inhibits the assayed 2011 FbaA preparation. The retained qualifier and description avoid converting this in-vitro ionic form into a universal physiological copper mechanism.',
+34: 'Low added Zn slightly activates the assayed canonical FBP cleavage. The dose-qualified sign is retained separately from the high-Zn negative effect and cofactor capacity.',
+35: 'Higher added Zn slightly inhibits the same assay preparation. Keeping a separate dose-qualified edge avoids a false single monotonic Zn effect.',
+36: 'The small Co-dependent activation is supported for the 2011 assayed preparation and is distinct from alternative-metal cofactor capacity.',
+37: 'The 2011 Ni effect is a canonical FBP assay with explicit untagged pLEM1/His-tagged control distinctions, metal-site tests and numbering limitations; it is not a directly measured SBP kinetic effect.',
+38: 'Histidine protects activity relative to Ni challenge, rather than universally activating untreated FbaA. The Ni/His/protein concentrations and untagged preparation are correct. The identity locator needs its actual InChI sibling element: ATP-SCI-003.',
+39: 'Reduced glutathione enhances Ni-dependent inhibition under the stated challenge, without proof of direct GSH binding to FbaA or a unique Ni-delivery mechanism. The native identity locator omits its InChI sibling element: ATP-SCI-003.',
+40: 'The 2019 His-ASKA canonical FBP activity experiment supports ATP activation at 5 mM modifier, 1 mM FBP and 30 °C. Binding-only observations and old no-effect results remain separate; no direct SBP effect is claimed.',
+41: 'The 2019 3PG effect is activation under the specified 5 mM assay condition. Prior inhibition/no-effect statements and the above-physiological concentration caveat are preserved.',
+42: 'The 2019 PEP effect is activation of canonical FBP cleavage under the stated condition. Its sign differs legitimately from PEP inhibition of canonical PfkA; binding alone was not used to assign this sign.',
+43: 'Exact Cra PC00061 component metadata identifies four PD00521/P0ACP1 chains. The six-His FruR experimental assembly evidence remains construct-qualified.',
+44: 'Exact native CRP PC00004 metadata specifies two PD00257/P0ACJ8 chains. No monomeric autonomous regulator is inferred.',
+45: 'Native CPLX-127 includes the Cra assembly PC00061. Its identity is a ligand-bound assembly annotation, not a newly measured fixed stoichiometry.',
+46: 'Native CPLX-127 identifies beta-D-fructofuranose 1-phosphate, CHEBI:138881; no absent ligand coefficient is invented. The generic F1P experimental reagent is separately CHEBI:58674.',
+47: 'Native CPLX0-226 contains the CRP dimer PC00004; the assembly is the cAMP-associated regulatory subject.',
+48: 'The native cAMP effector identity CHEBI:58165 is supported in CPLX0-226, with no unprovided cAMP coefficient.',
+49: 'Native Cra binding/promoter joins and the 1996 primary abstract support pfkA repression. Shared BS785 is not counted twice across transcript units; His6-FruR source scope and exact MG1655 gene endpoint are retained.',
+50: 'Cra repression concerns the epd-pgk-fbaA transcription unit through epd promoters/BS264. This does not claim a proven independent fbaA promoter or direct bypass flux inhibition.',
+51: 'The 2018 primary abstract supports F1P-reduced Cra DNA binding with FBP negative results. The unspecified assay anomer and inaccessible full methods are properly qualified; no FBP inhibitory edge is added.',
+52: 'cAMP-CRP-associated positive fbaA expression is appropriately indirect: the primary abstract reports little effect of the CRP-site deletion versus substantial crp/cya deletion effects on epd P0.',
+53: 'The 1998 abstract identifies ptsG-encoded IICBGlc in positive epd P0 regulation. PtsG is not substituted by crr/IIA, and the graph does not invent S7P transport.',
+54: 'The actual functional paragraph/Figure 6 and methods support reconstituted RNAP core plus His-RpoS transcription of the first pfkA promoter. The endpoint qualifier prevents interpreting sigma alone as polymerase.',
+55: 'The corresponding reconstituted core plus His-RpoD supports pfkA promoter transcription. The source promoter typo is preserved as a discrepancy, not used to replace the tested promoter identity.',
+56: 'RpoS-associated fbaA expression in JM101-derived PTS-deficient backgrounds is supported as condition-dependent/possibly indirect. The qualifier cites reporter/TSS text instead of the available strain/growth paragraph: ATP-SCI-002.',
+57: 'csrA51 is a hypomorph, and the native annotation/primary abstract support a positive PfkA expression context and partial rescue. A new direct RNA-binding site or a complete deletion is not asserted.',
+58: 'cyoA deletion increases pfkA transcript in the stated aerobic BW25113 continuous-culture conditions. The negative relationship is a conditional genetic expression inference, not direct binding or oxidase catalysis on pathway metabolites.',
+59: 'cydB deletion has the source-reported pfkA transcript direction under the retained carbon/nitrogen-limited conditions. Exact CydB identity and the indirect nature of the inference are preserved.',
+60: 'fnr deletion-associated pfkA transcript increase is restricted to the aerobic study; it is not evidence of active anaerobic FNR binding at pfkA in that culture.',
+61: 'fur deletion-associated pfkA transcript increase is a conditional expression inference. The exact Fur reference protein and gene identity are retained without inventing a direct promoter interaction.',
+62: 'The native positive F6P-PfkA relation is cooperative canonical substrate response rather than proof that F6P activates S7P turnover. The native formula/charge identity is correct but its InChI element is omitted from the stated locator: ATP-SCI-003.',
+63: 'The exact PathBank PPP child is an opaque interface included in the root pathway. It is not expanded into extra core reactions or treated as an equivalent complete PPP model.',
+64: 'The exact glycolysis/PDH child is the second opaque interface. The two internal chemical events remain the complete core; this structural relation is unsigned.',
+65: 'The native root-child-Interaction-chemical chain connects the source-specific S7P object to the PPP interface. The neutral source object is not equated to the Rhea anion.',
+66: 'The exact source E4P object is a PPP interface connection; native compound identity/charge are retained separately from curated Rhea chemistry.',
+67: 'The glycolysis/PDH interface joins the exact source DHAP dilithium compound C3H5Li2O6P. This structural evidence supports neither transporter activity nor equivalence to CHEBI:57642.',
+}
+assert set(edge_notes) == set(range(1, 68))
+
+claim_notes = {
+1: 'Full native reaction-list and layout show two events. Taxonomic annotations do not establish universal wild-type flux.',
+2: 'Independently traversed the full original Rhea RDF for both directional reactions and all eight chemical sides; five adverse chemical mutations were rejected.',
+3: 'Original native compound links distinguish generic S7P from the alpha-pyranose child and preserve the exact SBP identity.',
+4: 'Inspected the exact original frozen BioPAX member and source chemical objects. Neutral and dilithium forms remain source-specific, not silent ChEBI equivalences.',
+5: 'Native assemblies and component coefficients support PfkA4 and FbaA2; reference-chain identities are separate from assayed protein preparations.',
+6: 'Original mixed PfkA/PfkB listing is a preserved source conflict. No evidence supports adding PfkB to the native homotetramer or assigning it bypass activity.',
+7: 'Fresh original Entrez identity/taxon checks confirm MG1655 b3916/948412 and b2925/947415; off-taxon alternate GeneIDs remain excluded.',
+8: 'Primary genetics supports a conditional xylose phenotype in talAB and its pfkA derivative. Negative alternative-gene tests retain their data-not-shown limitations.',
+9: 'Original Methods paragraph 1 supplies the ASKA tags and paragraph 2 the assay/calibration. Final qualifier unions correctly retain both, unlike the preserved author failed probe.',
+10: 'The primary Table III supports the products and controls. Author wording "all five preparations" is inaccurate: six preparations comprise the combined S7P test plus five controls. YAML "five separate controls" is defensible. Explicitly preserve both-enzyme/no-metabolite control (DHAP ND; other blank cells not determined).',
+11: 'The primary body explicitly lacks a true SBP standard and uses F1,6BP calibration; Results 369 versus Methods 367 is a real unresolved source inconsistency.',
+12: 'Fresh workbook-reader row inspection verifies S7P ratios 45.6690154794848 (xylose) and 101.630779170763 (gluconate), with assay/strain column distinctions.',
+13: 'Fresh workbook-reader rows verify fbaA 1.18 and pfkA 1.241. "No notable" is retained without converting the data to exact unity or proof of no regulation.',
+14: 'Fresh full MOESM5 rows distinguish WT 0.004/0.005 from talAB 29.923/29.181 with uptake 100. These are relative fitted model values, not direct enzyme flux measurements.',
+15: 'The MFA GAP/G3P output wording differs from direct chemistry. The record correctly preserves the discrepancy and declines to invent a TPI core event.',
+16: 'Original supplement page 12 visually confirms IPTG-dependent pTRC99A heterologous complementation. This does not establish a complete native L. lactis pathway.',
+17: 'Supplement pages 15/16 visually preserve gene/strain details and separate carbon concentrations; the experimental cohorts are not collapsed.',
+18: 'Full primary 2020 results separate WT and reconstructed BW25113 talAB growth and trace WT SBP. Metabolite detection is not a quantitative WT bypass-flux measurement.',
+19: 'Original Orbitrap results distinguish the 368.99 target, diagnostic fragments and 368.804 blank; the talAB extract reference is not a commercial standard.',
+20: 'Original cloning, expression and purification text supports Rosetta/pET-28b and HisTrap. The edge qualifier needs one missing purification locator (ATP-SCI-001); pKD3/pKD4 source inconsistency is retained.',
+21: 'Reported apparent Km/kcat values and 55 °C conditions are correctly distinguished from physiological flux. The source efficiency arithmetic inconsistency is retained rather than silently corrected.',
+22: 'Primary coupled assay supplies Mg, ATP, ADP, Ba-S7P and rabbit detection enzymes; no added TPI. Detection context is not core pathway chemistry.',
+23: 'Visually inspected thesis pages 137/140: flat no-enzyme control and both MM/Hill fits. S7P Km 2.48918 differs from Hill K1/2 1.24179, n 1.60314; dAbs/min Vmax is not kcat.',
+24: 'Native PPi route has six events and a different donor; separating it from the ATP two-event record is scientifically necessary.',
+25: 'Primary negative S7P assay for the clostridial ATP/GTP PFK remains excluded from E. coli catalytic claims. NH4 dependence/relief-valve interpretation is organism/enzyme-specific and partly hypothetical.',
+26: 'Native/UniProt cofactor, assembly and localization comments were inspected by type, not inferred from a generic accession match.',
+27: 'Exact native regulation objects support the canonical F6P signs. InChI locator repair on the F6P identity (ATP-SCI-003) does not change that canonical scope.',
+28: 'Broad canonical-PFK annotation is retained as context. Its >90% activity share, reversibility and detailed allostery do not establish a bypass flux percentage or an assayed reverse S7P route.',
+29: 'Read the primary older abstract and 2011 body: annotated Zn capacity, older per-dimer wording and measured preparation occupancy are not interchangeable.',
+30: 'Native alternative-metal annotations do not establish that adding each metal activates an already loaded enzyme; the 2011 Mn no-effect result remains visible.',
+31: 'The personal-communication provenance of K/NH4 and the earlier Crookes enzyme context are retained; native regulation is not relabeled as inspected primary SBP kinetics.',
+32: 'Primary 2011 methods distinguish ≥70% untagged pLEM1 from ≥95% His-pLEM5 constructs, and source N-terminal-Met removal controls residue numbering.',
+33: 'Primary metal effects, dose signs and no-effect ions are preserved with canonical FBP substrate. Site classes and mutational evidence are not conflated with a direct SBP assay.',
+34: 'Primary Figure 7 and text support His protection/GSH sensitization specifically during Ni challenge. The chemical InChI locator omission is minor (ATP-SCI-003), not evidence of wrong biological sign.',
+35: 'Ni growth effects and recovery without new protein synthesis are primary observations. The record correctly leaves active/passive repair unresolved and avoids a bypass-flux conclusion.',
+36: 'The UniProt free-text GAP wording conflicts with its own structured reaction and the primary products; the record records the conflict and uses DHAP for chemistry.',
+37: 'Primary abstract/native scope supports catalytic-intermediate and Cd-structure context. A substitution crystal does not establish physiological Cd cofactor activity.',
+38: '1988 phosphate-associated labeling, 1995 mercaptoethanol adduct and 2022 phosphoproteome annotations concern distinct preparations/evidence roles and remain separate.',
+39: 'Synthetic-inhibitor context is bounded to class-II canonical activity; no ungrounded exact synthetic-compound node or physiological inhibitor role is added.',
+40: 'Fresh EV2 workbook rows confirm all eleven FbaA and six PfkA interactions and threshold scope. NMR binding alone is not a signed functional effect.',
+41: 'Primary activity text plus appendix visual confirms ATP/3PG/PEP activation and hypoxanthine/IMP negatives. Concentrations, ASKA purification and physiological-range limits remain explicit.',
+42: 'The conflicting older inhibition/no-effect and new activation statements are retained with source access limits. Similarity or an appendix generic caption is not used to reverse the measured sign.',
+43: 'Original methods/workbook-reader and Figure S13 inspection preserve same-mass DHAP/GAP, mixture-specific standards, triplicate activity and quadruplicate calibration.',
+44: '2016 versus 2019 NMR binding differences remain methodological context; no signed PfkA effect is inferred from an overlap or absence.',
+45: 'Native promoter/transcription-unit joins support Cra repression and shared binding-site deduplication; the primary His-FruR abstract supports bounded regulatory evidence.',
+46: 'Original Cra4 assembly and CPLX-127 ligand membership distinguish beta-native F1P from generic assay F1P; an unprovided ligand count is not invented.',
+47: 'The 2018 primary abstract supports F1P impairment and FBP negative findings. Full methods remain inaccessible; the old 2009 FBP model is retained as conflict rather than a positive graph edge.',
+48: 'The source-specific Asn50 cleavage observation does not redefine all earlier Cra preparations or justify a new canonical truncated protein.',
+49: 'The 1998 primary abstract makes the indirectness important: CRP-site deletion differs from crp/cya deletion. The graph remains an expression relation to the operon member.',
+50: 'Native CRP2 and cAMP-complex component joins are exact, with no invented cAMP stoichiometry.',
+51: 'The primary abstract specifies ptsG/IICBGlc, not crr/IIA. The record retains regulatory context without adding a bypass-sugar transport event.',
+52: 'Full 2009 text distinguishes direct reconstituted pfkA transcription from indirect fbaA expression and failure to find a local promoter under tested conditions.',
+53: 'His-sigma/ER2566/core 1:5 and JM101-derived PTS/rpoS strains are separate. sbp-056 needs the available strains/growth selector (ATP-SCI-002); source MG1665 and pykA/pfkA typos remain explicit.',
+54: 'Primary abstract/full-source statements support cotranscription/RNA processing and condition-bounded promoter search. No universal promoter absence or invented RNaseE signed enzyme relation is inferred.',
+55: 'Primary abstract/native evidence supports the csrA51 hypomorphic expression phenotype, not a new direct RNA occupancy site or complete deletion.',
+56: 'Inspected retained original publisher sections and exact issuing identities for all four deletions. Aerobic C/N conditions and semiquantitative RT-PCR remain limits on the negative expression inference.',
+57: 'The acid-response observation is explicitly native-source-qualified, with aerobic/microaerobic scope. It is not converted into an unmeasured PhoB binding edge.',
+58: 'Exact original root-child-interaction-chemical chains support two opaque interfaces with S7P/E4P/DHAP directions in context; salt identity and unsigned structural roles are preserved.',
+59: 'The neighboring condensation/hydrolysis, transaldolase, heptose and six-event PPi pathways have different event sets. Parent-owned corpus novelty checks are inherited, not repeated or claimed as independent exhaustive search.',
+60: 'Broader engineering, predicted NAD kinase, mutant and RNA-related enzyme contexts remain annotations/exclusions. No extra core event or unsupported physical channeling complex is introduced.',
+61: 'Native cytosol and UniProt GO location evidence have the correct evidence role and are not inferred from SUBUNIT wording.',
+}
+assert set(claim_notes) == set(range(1, 62))
+
+proofs = []
+findings = []
+actions = []
+
+def locator_proof(edge_id, evidence, source_path, replacement, detail):
+    tree = etree.parse(str(source_path))
+    old = evidence['source_locator'].removeprefix('XPath ')
+    new = replacement.removeprefix('XPath ')
+    old_nodes, new_nodes = tree.xpath(old), tree.xpath(new)
+    assert old_nodes and new_nodes
+    row = {'evidence_id': f'proof-{edge_id}', 'edge_id': edge_id,
+           'source': binding(source_path), 'current_assertion': evidence['source_assertion'],
+           'current_locator': evidence['source_locator'], 'replacement_locator': replacement,
+           'current_selected_xml': [etree.tostring(n, encoding='unicode') for n in old_nodes],
+           'replacement_selected_xml': [etree.tostring(n, encoding='unicode') for n in new_nodes],
+           'current_selected_text': [' '.join(''.join(n.itertext()).split()) for n in old_nodes],
+           'replacement_selected_text': [' '.join(''.join(n.itertext()).split()) for n in new_nodes],
+           'scientific_assessment': detail}
+    proofs.append(row)
+    return row
+
+e = edges['sbp-018']['endpoint_qualifiers'][0]['evidence'][0]
+locator_proof('sbp-018', e, PREFLIGHT / 'root-leads/PMC7029132.xml',
+              e['source_locator'] + ' | /article/body/sec[5]/sec[7]/p[1]',
+              'The existing union includes cloning, Rosetta expression and assay conditions. HisTrap HP affinity purification with imidazole gradient is in sec[7]/p[1], which is omitted. The source supports the retained construct claim.')
+e = edges['sbp-056']['endpoint_qualifiers'][0]['evidence'][0]
+locator_proof('sbp-056', e, PREFLIGHT / 'raw/PMC2759082.xml',
+              'XPath /article/body/sec[4]/sec[1]/p',
+              'Existing sec[4]/sec[2] is reporter DNA construction and the table is promoter/TSS metadata. Bacterial strains, PB11/PB12/rpoS derivatives, aerobic M9 glucose growth and sampling are actually in sec[4]/sec[1]/p.')
+for edge_id, frame in [('sbp-038', 'HIS'), ('sbp-039', 'GLUTATHIONE'), ('sbp-062', 'FRUCTOSE-6P')]:
+    e = edges[edge_id]['evidence'][1]
+    locator_proof(edge_id, e, AUTHOR / f'raw/ECOLI-{frame}.xml',
+                  e['source_locator'] + ' | /ptools-xml/Compound/inchi',
+                  'The selected name, ChEBI link and CML include formula/charge but not the sibling inchi element explicitly claimed as support. Adding the original inchi element repairs traceability; the inconsistent CML SMILES and assay protonation limitations must remain.')
+save('locator-proofs.json', proofs)
+
+def finding(number, key, title, description, affected, fields, evidence_ids, remediation):
+    fid = f'ATP-SCI-{number:03d}'
+    findings.append({'finding_id': fid, 'issue_key': key, 'category': 'provenance',
+       'severity': 'minor', 'status': 'open', 'certainty': 'confirmed', 'title': title,
+       'description': description, 'target_ids': [TARGET_ID], 'field_paths': fields,
+       'evidence_ids': evidence_ids, 'rule_id': 'review-yaml-record:Evidence Rules; CAUSAL_GRAPHS edge-local evidence',
+       'native_severity': 'minor non-blocking provenance gap',
+       'normalization_reason': 'The retained original source supports the scientific claim; the defect is the narrower selected locator, not wrong biological identity, sign, or scope.',
+       'ownership_note': 'Root-owned successor of the external author draft; do not mutate the sealed original. On adoption the maintained owner is data/pathways/sedoheptulose-bisphosphate-bypass.yaml.',
+       'tags': ['edge-evidence', 'source-locator'],
+       'affected_edge_ids': affected, 'current_target_sha256': TARGET_SHA})
+    actions.append({'action_id': f'fix-{fid}', 'description': remediation,
+       'finding_ids': [fid], 'target_ids': [TARGET_ID],
+       'acceptance_checks': ['Re-evaluate the exact replacement XPath against the same hash-bound original and inspect the selected passage.',
+          'Preserve the current scientific assertion, qualifier scope, all 67 edges, 24 endpoint qualifiers and all 61 claim dispositions.',
+          'Rebind the successor target/evidence ledger and run root-owned native schema, identifier, renderer/KGX and governed review checks before adoption.'],
+       'owner_path': 'data/pathways/sedoheptulose-bisphosphate-bypass.yaml', 'external_owner': str(TARGET)})
+
+finding(1, 'atp-sbp-2020-histrap-locator', 'Bind the actual 2020 His-affinity purification paragraph',
+ 'sbp-018 states that its selected primary methods identify His-affinity preparation, but the union selects cloning/expression and the next assay paragraph, omitting sec[5]/sec[7]/p[1] that describes HisTrap HP purification. The original paragraph is present and supports the retained preparation.',
+ ['sbp-018'], ["mechanistic_edges[id=sbp-018].endpoint_qualifiers[0].evidence[0].source_locator"], ['proof-sbp-018'],
+ 'Append /article/body/sec[5]/sec[7]/p[1] to the existing sbp-018 qualifier union in a separately sealed successor; retain the original cloning/expression/assay paths.')
+finding(2, 'atp-sbp-rpos-strain-growth-locator', 'Bind the actual PB11/PB12 strain and growth methods',
+ 'sbp-056 qualifier asserts JM101/PB11/PB12 and rpoS derivative growth context, while its locator resolves reporter construction and promoter/TSS metadata. The available Bacterial strains, media and growth conditions paragraph in sec[4]/sec[1] supports the retained context.',
+ ['sbp-056'], ["mechanistic_edges[id=sbp-056].endpoint_qualifiers[0].evidence[0].source_locator"], ['proof-sbp-056'],
+ 'Replace the sbp-056 qualifier locator with XPath /article/body/sec[4]/sec[1]/p, or union that paragraph if the existing reporter context is deliberately retained. Do not change the supported indirect expression claim.')
+finding(3, 'atp-sbp-native-inchi-locators', 'Include native InChI elements in three chemical identity selectors',
+ 'sbp-038, sbp-039 and sbp-062 source assertions explicitly cite native InChI support, but their XPath unions select only name, ChEBI link and CML. In all three exact originals the inchi element is a sibling of cml and is absent from the selected set. The actual inchi values are present; adding them fixes traceability without changing chemical identity.',
+ ['sbp-038', 'sbp-039', 'sbp-062'], [f"mechanistic_edges[id={e}].evidence[1].source_locator" for e in ['sbp-038', 'sbp-039', 'sbp-062']],
+ ['proof-sbp-038', 'proof-sbp-039', 'proof-sbp-062'],
+ 'Append /ptools-xml/Compound/inchi to each of the three native compound evidence unions. Preserve inconsistent CML SMILES warnings, exact native formula/charge identities and unmeasured assay protonation limitations.')
+save('findings.json', findings)
+save('actions.json', actions)
+
+edge_assessments = []
+for edge_id, edge in edges.items():
+    n = int(edge_id.split('-')[1])
+    finding_ids = [f['finding_id'] for f in findings if edge_id in f['affected_edge_ids']]
+    uses = edge_replays[edge_id]['uses']
+    evidence_ids = sorted({f'original-selector-{i:03d}' for u in uses for i in u['selector_indexes']})
+    quals = []
+    for i, qualifier in enumerate(edge.get('endpoint_qualifiers', [])):
+        quals.append({'qualifier_index': i, 'qualifier': qualifier,
+             'scientific_claim_supported': True,
+             'locator_status': 'minor_repair_required' if edge_id in ['sbp-018', 'sbp-056'] else 'supported',
+             'assessment': edge_notes[n], 'finding_ids': finding_ids if edge_id in ['sbp-018', 'sbp-056'] else []})
+    edge_assessments.append({'edge_id': edge_id, 'identity': [edge['subject'], edge['predicate'], edge['object']],
+        'target_sha256': TARGET_SHA, 'scientific_claim_supported': True,
+        'locator_status': 'minor_repair_required' if finding_ids else 'supported',
+        'source_to_graph': edge_notes[n],
+        'graph_to_source': 'The exact predicate, endpoints, description and endpoint qualifiers were checked against their selected source objects and adjacent original passages; evidence-role limits in the scientific assessment apply.',
+        'evidence_uses': uses, 'endpoint_qualifier_assessments': quals, 'claim_ids': links[edge_id], 'finding_ids': finding_ids,
+        'native_assessment': {'assessment_id': f'edge-{edge_id}', 'area': 'evidence', 'topic': f'{edge_id}: {edge["subject"]} {edge["predicate"]} {edge["object"]}',
+             'outcome': 'concern' if finding_ids else 'supported', 'summary': edge_notes[n],
+             'target_ids': [TARGET_ID], 'evidence_ids': evidence_ids,
+             'dimensions': [{'name': 'edge-path', 'value': f'mechanistic_edges[id={edge_id}]', 'definition': 'Exact reviewed edge in the hash-bound draft.', 'evidence_ids': []},
+                            {'name': 'qualifier-count', 'value': str(len(quals)), 'definition': 'All endpoint qualifiers were assessed without flattening experimental context.', 'evidence_ids': evidence_ids}]}})
+assert len(edge_assessments) == 67
+assert sum(len(e['endpoint_qualifier_assessments']) for e in edge_assessments) == 24
+save('edge-assessments.json', edge_assessments)
+
+claim_assessments = []
+for claim in claims:
+    cid = claim['claim']; n = int(cid.split('-')[1])
+    indices = [i for i, use in enumerate(claim_replays) if use['claim'] == cid]
+    claim_assessments.append({'claim_id': cid, 'original_disposition_preserved': claim,
+         'independent_assessment': claim_notes[n], 'scientific_disposition': 'supported_with_retained_limits',
+         'claim_source_replay_indexes': indices, 'context_keys': claim['context_keys'],
+         'finding_ids': sorted({f['finding_id'] for f in findings if set(f['affected_edge_ids']) & set(claim['edge_ids'])}),
+         'advisory': 'ATP-ADV-001' if n == 10 else None})
+assert len(claim_assessments) == 61
+assert sum(len(c['claim_source_replay_indexes']) for c in claim_assessments) == 166
+save('claim-assessments.json', claim_assessments)
+
+constructs = load(PREFLIGHT / 'derived/construct-context-ledger.json')
+construct_rows = []
+for row in constructs:
+    construct_rows.append({'context_key': row['key'], 'original_context_preserved': row,
+       'assessment': 'Retained as a distinct preparation/strain context; do not transfer its assay, host, tag, allele or purity to a reference sequence or another experiment.',
+       'claim_assessments': row['claims'],
+       'specific_scientific_assessments': [claim_notes[int(c.split('-')[1])] for c in row['claims']],
+       'scientific_claim_supported': True,
+       'locator_followup': ['ATP-SCI-001'] if row['key'] == '2020-pfka' else ['ATP-SCI-002'] if row['key'] == '2009-pts-rpos' else []})
+assert len(construct_rows) == 19
+save('construct-context-assessments.json', construct_rows)
+
+contexts = load(AUTHOR / 'ledgers/context-assertions.json')
+save('description-context-assessments.json', [{'context_key': row['key'], 'original_context_preserved': row,
+     'independent_assessment': [claim_notes[int(c.split('-')[1])] for c in row['claims']],
+     'disposition': 'retain_with_source_conflicts_negative_results_and_access_limits'} for row in contexts])
+
+table_source = PREFLIGHT / 'root-leads/PMC2758719.xml'
+table_tree = etree.parse(str(table_source))
+table_nodes = table_tree.xpath('/article/body/sec[2]/sec[6]/table-wrap')
+assert table_nodes
+save('advisories.json', [{'advisory_id': 'ATP-ADV-001', 'severity': 'informational',
+    'scope': 'author handoff/claim-disposition prose, not a YAML five-controls defect',
+    'claim_id': 'sbp-10', 'author_wording': 'Keep all five Table III preparations and uncertainty in SBP quantification.',
+    'assessment': claim_notes[10], 'source': binding(table_source), 'locator': '/article/body/sec[2]/sec[6]/table-wrap',
+    'selected_xml': [etree.tostring(n, encoding='unicode') for n in table_nodes],
+    'bounded_followup': 'Correct the preparation count in a successor handoff/claim disposition to six preparations (combined S7P test plus five controls). Preserve the original sealed packet and explicitly retain the no-metabolite control; do not change supported YAML five-controls wording merely to match the inaccurate author count.'}])
+
+visual_specs = [
+ ('WUR-thesis-selected-visual.json', 137, 'Figure S1 no-enzyme time-course control is visually flat for S7P and zero for SBP; n at least 2. It supports assay control, not spontaneous bacterial pathway activity.'),
+ ('WUR-thesis-selected-visual.json', 140, 'Printed page 138 Figure S4 includes both F6P/S7P Michaelis–Menten and Hill fits. S7P MM Km2.489181822 and Vmax0.717467989 dAbs/min differ from Hill K1/2 1.24179394, n1.603138135, Vmax0.48943044. These are not interchangeable with kcat.'),
+ ('PMID19756045-supplement-visual.json', 12, 'Supplementary complementation growth curves distinguish WT, talAB, triple mutant and L. lactis pfk pTRC99A complementation; 0.2% xylose and 1mM IPTG support only the heterologous experiment.'),
+ ('PMID19756045-supplement-visual.json', 15, 'Supplemental Table I preserves gene identities and experimental context rather than an inferred gene/organism identity from pathway naming.'),
+ ('PMID19756045-supplement-visual.json', 16, 'Tables V/VI preserve BW25113 talA:tet/talB:Cm strain genotypes and separate growth-screen/metabolomics carbon-source concentrations.'),
+ ('PMID31464375-appendix-visual.json', 11, 'Figure S10 distinguishes ATP within expected physiological concentration from 3PG/PEP above the comparison range; hypoxanthine/IMP negative controls are retained.'),
+ ('PMID31464375-appendix-visual.json', 13, 'Figure S12 shows the PfkA/FbaA purification gels used for assay context; it does not establish an untagged physiological assembly experiment.'),
+ ('PMID31464375-appendix-visual.json', 14, 'Figure S13 shows raw activity and separate mixture calibrations. Its generic inhibitors wording does not override the actual FbaA activation results.'),
+]
+visual_rows = []
+for reader_name, page, note in visual_specs:
+    reader = PREFLIGHT / 'derived' / reader_name
+    data = load(reader); original = Path(data['original'])
+    if not original.is_absolute(): original = PREFLIGHT / original
+    image = PREFLIGHT / 'derived' / f'{reader_name}.page-{page}.png'
+    visual_rows.append({'original_pdf': binding(original), 'bound_preflight_reader': binding(reader),
+       'viewed_image': binding(image), 'page_1based': page, 'observation': note,
+       'review_method': 'Independent visual inspection via view_image of an existing original-bound render, plus fresh hash verification; no fresh PDF renderer was available or installed.'})
+save('visual-observations.json', visual_rows)
+
+imod = load(OUT / 'imodulondb/attempt2/context.json')
+save('imodulondb/disposition.json', {'dataset': 'e_coli/precise_mg1655', 'query_count': len(imod['queries']),
+     'summaries_inspected': len(imod['summaries']), 'pfkA_key': 'e_coli/precise_mg1655/gene/b3916',
+     'fbaA_key': 'e_coli/precise_mg1655/gene/b2925',
+     'useful_module_context': 'e_coli/precise_mg1655/component/10 (ArcA-2): cyoA/b0432 candidate in module, weight 0.216040833; computational expression context only.',
+     'disposition': 'No causal edge addition or sign change is justified. Gene search hits are not module membership. Broad regulator substring hits were not substituted for exact genes. No-hit results are not biological absence.',
+     'client': binding(OUT / 'imodulondb/imodulondb.py'),
+     'execution': 'Canonical byte-identical source client copied from the earlier pinned packet and executed using existing pinned Python without install/sync. Initial sandbox DNS failure preserved under attempt1; authorized network attempt2 succeeded.',
+     'runner_scope': 'No installed console on PATH; the known project search did not establish system-wide absence. The direct client fallback is explicit and not described as a console invocation.'})
+
+prior_paths = [AUTHOR / 'scientific-contract-checks.json', AUTHOR / 'check_scientific_contract.py',
+ AUTHOR / 'validation/07-check_scientific_contract.stderr.txt', AUTHOR / 'validation/09-check_scientific_contract.stderr.txt',
+ AUTHOR / 'validation/18-check_scientific_contract.stderr.txt',
+ PREFLIGHT / 'derived/native-authority-probes-initial-url-guard-failures.json',
+ PREFLIGHT / 'derived/native-authority-probes.json', PREFLIGHT / 'handoff.json']
+save('prior-probe-disposition.json', {'bindings': [binding(p) for p in prior_paths],
+    'author_positive_checks': 19, 'author_negative_controls': 21,
+    'assessment': 'The author deterministic checks test useful bounded chemistry, identity and evidence invariants, but 19 positive probes are not independent evidence for all 67 edges, 24 qualifiers, 61 claims or 19 preparation contexts. This review separately reads and assesses those scopes. The three locator defects demonstrate the limit of treating successful counts/replays as complete semantic coverage.',
+    'prior_failure': 'Author 07-check_scientific_contract failed because the mass-calibration assertion was tested against Methods paragraph1 instead of paragraph2. The original failed stderr remains hash-bound; later passes do not erase that failure.',
+    'preflight_failures': 'Initial native request-URL guard failures remain preserved in their exact preflight artifact. Later corrected retrieval/probe receipts are separate. No failed preflight or author receipt is relabeled as successful independent science.',
+    'reviewer_failures': [
+      {'chunk': 'd3c2f5', 'exit_code': 1, 'detail': 'Initial independent RDF helper overwrote repeated descriptions for the same RDF subject. Preserved initial script and failure receipt; corrected merge of properties passed in 8c985c/0.'},
+      {'chunk': 'dd1bdb', 'exit_code': 1, 'detail': 'Initial iModulonDB sandbox DNS failure is preserved under attempt1; approved network attempt2 succeeded in e2a7e6/0.'},
+      {'chunk': 'a843d6', 'exit_code': 1, 'detail': 'Read-only inspection mistakenly requested absent causal_graph container; actual native key is mechanistic_edges. Corrected inspection 718806/0. No target change.'},
+    ]})
+
+manifest = load(AUTHOR / 'artifact-manifest.json')
+for item in manifest['artifacts']:
+    path = AUTHOR / item['path']
+    assert path.stat().st_size == item['bytes'] and sha(path) == item['sha256'], str(path)
+save('final-input-recheck.json', {'checked_at': utc(), 'target': binding(TARGET),
+    'author_handoff': binding(AUTHOR / 'handoff.json'), 'author_manifest': binding(AUTHOR / 'artifact-manifest.json'),
+    'author_artifacts_reverified': len(manifest['artifacts']), 'all_unchanged': True})
+
+limitations = [
+ 'This is a completed independent scientific assessment of the exact external draft, not a saved native maintained-record review. Root explicitly owns adoption, the governed native saver and all Git/GitHub mutations.',
+ 'Full canonical source/ontology builders and corpus validate/test/lint, rendering/browser interaction and native review-check were not run by this subagent. Root runs production gates separately. The bounded native validate_record call is a schema check, not a invented replacement for repository gates.',
+ 'Older primary studies and Cra2018 include primary-abstract/native-annotation limits. The inaccessible Cra PDF and journal supplement are not claimed as read; the independently inspected thesis is a separate source, not declared byte-identical to the supplement.',
+ 'Six supplemental workbook originals/readers were hash-verified and cells independently read. The 2009 XLS-to-XLSX conversions were inherited original-bound readers, not newly rerun conversions. Native 2019 XLSX originals were directly read.',
+ 'Eight PDF page images were independently visually inspected with original/reader/image hashes. Images were previously rendered; no fresh PDF rendering or whole-page visual inspection of every page is claimed.',
+ 'Full Rhea RDF chemistry was independently reparsed. Whole SQL source/ontology rebuilding and rehashing is root-owned; authority preparation/root acceptance and exact native scientific originals provide provenance here. Database annotation is not upgraded to primary experimental proof.',
+ 'The frozen PathBank member and exact interface/chemical objects were independently inspected. Whole-ZIP issuance/continuity relies on the accepted authority packet and parent checks; this review does not fabricate an additional independent ZIP fetch.',
+ 'The parent-authority/author packets supply corpus novelty and previous source-continuity evidence. This review compares biological boundaries but does not claim an independent exhaustive scan of all earlier records or source exhaustion.',
+ 'iModulonDB is computational expression context only and does not independently prove catalysis, a regulatory sign, reaction membership or absence from biology.',
+]
+assessment = {'review_id': 'next230-atp-independent-science-20261012', 'kind': 'record',
+ 'repository': 'CultureBotAI/PathwayMech', 'completion': 'completed', 'verdict': 'needs_curation',
+ 'native_verdict': 'External scientific assessment complete; three minor locator repairs required before native adoption.',
+ 'scientific_review': True, 'native_maintained_review_saved': False,
+ 'started_at': load(OUT / 'input-bindings.json')['started_at'], 'finished_at': utc(),
+ 'reviewer': {'identity': '/root/atp_science_review', 'kind': 'agent', 'independence': 'independent',
+   'independence_basis': 'Separate reviewer from author/authority agents; no target, author packet, cache, maintained record, Git or GitHub mutations. Original sources were read independently rather than treating author deterministic probes as scientific evidence.'},
+ 'skill': '.claude/skills/review-yaml-record/SKILL.md (external-draft scope expressly authorized by parent; native persistence deferred)',
+ 'git_base_at_finish': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+ 'target': binding(TARGET), 'target_id': TARGET_ID,
+ 'coverage': {'record_read': 'entire', 'author_handoff_read': 'entire including all61dispositions',
+    'edges': 67, 'endpoint_qualifiers': 24, 'references': 94, 'distinct_reference_originals': 73,
+    'source_selector_uses': 159, 'edge_qualifier_evidence_uses': 145,
+    'claims': 61, 'claim_source_uses': 166, 'distinct_claim_source_paths': 70,
+    'construct_contexts': 19, 'description_contexts': 22, 'core_reactions': 2,
+    'full_chemical_sides': 8, 'opaque_pathway_interfaces': 2, 'visual_pages': 8,
+    'issuing_MG1655_gene_identities_freshly_checked': 8, 'author_artifacts_freshly_reverified': 337},
+ 'finding_counts': {'blocker': 0, 'major': 0, 'minor': 3, 'informational_author_prose_advisories': 1},
+ 'finding_ids': [f['finding_id'] for f in findings],
+ 'summary': 'The exact two-event ATP-dependent E. coli bypass is scientifically supported with the preserved experimental, regulatory, chemical-identity and source-access limits. Three minor evidence-locator defects affect five edges and two qualifiers; actual retained source bodies support those claims. No biological claim removal, new core reaction or authority identity change is warranted by this review.',
+ 'independent_evidence_artifacts': ['original-selector-replay.json', 'edge-evidence-replay.json', 'rhea-independent-chains.json', 'gene-independent-identities.json', 'native-core-independent.json', 'bounded-native-checks.json', 'workbook-independent-read.json', 'visual-observations.json', 'claim-source-replay.json', 'locator-proofs.json', 'imodulondb/attempt2/context.json'],
+ 'assessment_artifacts': ['edge-assessments.json', 'claim-assessments.json', 'construct-context-assessments.json', 'description-context-assessments.json', 'findings.json', 'actions.json', 'advisories.json', 'prior-probe-disposition.json'],
+ 'limitations': limitations,
+ 'original_selector_replay_completion': 'Initial replay deferred eight Rhea selectors. Subsequent full-RDF independent traversal in rhea-independent-chains.json and bounded-native-checks.json completes those eight; initial receipt remains unchanged.',
+ 'authority_scope': 'All62 target named labels were checked against accepted authority proposal exact labels; all36 ontology selectors remain parent-accepted. Exact native scientific identities/source objects were inspected. This is not a claim of rerunning root full canonical builders.'}
+save('assessment.json', assessment)
+
+report = f'''# Independent ATP sedoheptulose-bisphosphate bypass scientific review
+
+Verdict: **needs curation for three minor evidence-locator defects**. No blocker or major biological defect was found in the reviewed scope. The exact external draft is `{TARGET}` (SHA256 `{TARGET_SHA}`). This is a completed external scientific assessment, not a maintained native review or permission to skip root production gates.
+
+The record preserves the two ATP-dependent core events, all eight chemical sides, 67 edges, 24 endpoint qualifiers, 94 references, all 61 claim dispositions, 19 preparation/strain contexts and two opaque PathBank interfaces. The review read the complete record and author handoff, independently inspected original selected passages and adjacent primary sections, and checked each edge and qualifier in both directions. Exact per-edge assessments and evidence-index bindings are in `edge-assessments.json`; all claims, including exclusions, conflicts and negative results, are retained in `claim-assessments.json`.
+
+## Required bounded repairs
+
+1. **ATP-SCI-001 — sbp-018:** append `/article/body/sec[5]/sec[7]/p[1]` to the 2020 construct qualifier locator. This is the actual HisTrap purification paragraph. Existing cloning, Rosetta expression and coupled-assay selectors remain useful.
+2. **ATP-SCI-002 — sbp-056:** bind `/article/body/sec[4]/sec[1]/p` for JM101/PB11/PB12/rpoS strains and aerobic M9 growth. The current selector instead points to reporter construction and promoter/TSS metadata.
+3. **ATP-SCI-003 — sbp-038/039/062:** append `/ptools-xml/Compound/inchi` to the three native compound identity unions. Their assertions explicitly invoke InChI, which is a sibling of CML and absent from the current selected set.
+
+The underlying scientific claims are supported by retained originals. Each finding includes exact current assertion, old and replacement selectors, complete selected XML/text, original source SHA256 and bounded acceptance checks in `findings.json`, `actions.json` and `locator-proofs.json`. Repairs belong to a separately sealed successor; the original author packet is unchanged.
+
+## Scientific distinctions retained
+
+Rhea31444 and cleavage30169 have exact native chemical sides and direction; 30168 condensation, 30170 bidirectionality, PPi route events, alpha-S7P and PathBank neutral/salt compounds are not collapsed. PfkA4 and FbaA2 assemblies have the exact reference chains; the mixed PathBank PfkA/PfkB listing is a preserved conflict. Gene/taxon joins preserve MG1655 reference identity separately from BW25113 assays and reject the off-taxon alternate GeneIDs.
+
+The 2009 and 2020 talAB mutant physiology, trace or small fitted WT observations, six-His ASKA versus Rosetta/pET-28b preparations, no authentic SBP standard, 369/367 source mass discrepancy and 2020 Orbitrap controls remain distinct. Thesis Michaelis–Menten Km is not the Hill K1/2, and dAbs/min is not kcat. Auxiliary rabbit enzymes and trace-TPI hypothesis do not add a third core event.
+
+Canonical F6P/FBP regulation is not upgraded to measured S7P/SBP regulation. The 2011 metal results retain untagged and tagged preparations, dose-dependent Zn signs, alternative metal cofactor versus added-metal effects, Ni-conditioned His protection/GSH sensitization and source numbering. The 2019 NMR binder sets, functional ATP/3PG/PEP activation, IMP/hypoxanthine negatives, mixture-specific calibration and older contrary statements remain separate.
+
+Cra/CsrA/CRP/RpoS/RpoD and aerobic deletion contrasts retain their exact source evidence and indirectness. Reconstituted sigma assays require RNAP core; operon regulation is not a proven immediate fbaA promoter. No transporter or direct binding claim is inferred from an interface or expression contrast.
+
+## Table III advisory
+
+Author prose saying “all five preparations” is inaccurate. The table has **six preparations: the combined S7P experiment plus five controls**. The YAML phrase “five separate controls” is defensible and is not a finding. The both-enzyme/no-metabolite control has DHAP ND; other blank cells are not measured zero. `advisories.json` preserves the exact source table and a successor-prose correction; no biology should be removed.
+
+## Verification and limits
+
+Fresh checks rehashed all337 author artifacts, all94 reference bindings/73distinct source paths and all166 claim-source uses. All159 source selectors and145 actual edge/qualifier evidence uses are accounted for; eight initially deferred Rhea selectors were subsequently completed by independent traversal of the whole original RDF. The native schema call, eight full chemical sides, eight exact MG1655 gene identities and five adverse chemistry controls passed. Deterministic counts are not described as scientific proof.
+
+Six supplemental workbook originals/readers were hash-verified and independently read; eight original-bound PDF page images were independently viewed. Existing 2009 XLS conversions and PDF renders were inherited, explicitly not rerun. The direct canonical iModulonDB client queried13terms and inspected34modules in e_coli/precise_mg1655. Gene matches and ArcA-2/cyoA membership add computational context only, not causal proof or negative biological evidence.
+
+The author's19positive/21negative probes remain author checks. Their initial failed mass-locator probe is preserved, as are preflight URL guard failures and this reviewer's corrected RDF-reader and network attempts. `prior-probe-disposition.json` records their scope. The final recheck confirms every sealed author artifact remains unchanged.
+
+'''
+report += '\n'.join('- ' + x for x in limitations) + '\n'
+(OUT / 'REVIEW.md').write_text(report)
+print(json.dumps({'status': 'assessment-written', 'findings': 3, 'edges': 67, 'claims': 61, 'constructs': 19, 'author_artifacts_unchanged': len(manifest['artifacts'])}))

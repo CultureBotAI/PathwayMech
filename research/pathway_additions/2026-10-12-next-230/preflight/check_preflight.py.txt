@@ -1,0 +1,62 @@
+from pathlib import Path
+import json,hashlib,copy,sys,zipfile,datetime
+from lxml import etree as E
+B=Path(__file__).parent;D=B/'derived';R=Path('/private/tmp/pathwaymech-next-229-canonical-build-20261012/runtime')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')];import build_source_identifier_snapshot as sb
+checks=[];neg=[]
+def ok(name,fn):fn();checks.append(name)
+def bad(name,fn):
+ try:fn()
+ except (AssertionError,ValueError,TypeError):neg.append(name);return
+ raise AssertionError('negative unexpectedly passed: '+name)
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def eq(a,b):assert a==b,(a,b)
+claims=json.loads((D/'claim-dispositions.json').read_text())
+for c in claims:
+ for s in c['sources']:
+  eq(sha(s['path']),s['sha256'])
+  if 'selected_sha256'in s:
+   t=E.parse(s['path']);xs=t.xpath(s['selector']);eq(len(xs),s['selected_count']);eq(hashlib.sha256('\n'.join(E.tostring(x,encoding='unicode')if hasattr(x,'tag')else str(x)for x in xs).encode()).hexdigest(),s['selected_sha256'])
+checks.append('All61 claim source uses exact whole-file bindings; every XML locator and selected-element digest replayed')
+r=json.loads((D/'rhea-core-chemistry.json').read_text());directions={x['id']:x for m in r['masters']for x in m['directions']}
+def signature(rid):return {k:sorted((x['properties']['accession'][0],x['coefficient'])for x in v)for k,v in directions[rid]['sides'].items()}
+kin={'substrates':[('CHEBI:30616',1),('CHEBI:57483',1)],'products':[('CHEBI:15378',1),('CHEBI:456216',1),('CHEBI:58335',1)]};ald={'substrates':[('CHEBI:58335',1)],'products':[('CHEBI:16897',1),('CHEBI:57642',1)]}
+ok('Exact directional Rhea side/participant/containsN projected chemistry including proton',lambda:(eq(signature('RHEA:31444'),kin),eq(signature('RHEA:30169'),ald)))
+bad('Reverse30168 rejected as cleavage',lambda:eq(signature('RHEA:30168'),ald))
+bad('Bidirectional30170 rejected as directional30169',lambda:eq(r['masters'][1]['master']['bidirectionalReaction'][0],'http://rdf.rhea-db.org/30169'))
+for name,mut in [('proton omission',{'substrates':kin['substrates'],'products':[x for x in kin['products']if x[0]!='CHEBI:15378']}),('alphaS7P substitution',{'substrates':[('CHEBI:30616',1),('CHEBI:133984',1)],'products':kin['products']}),('PPi donor substitution',{'substrates':[('CHEBI:33019',1),('CHEBI:57483',1)],'products':kin['products']}),('proton coefficient2',{'substrates':kin['substrates'],'products':[('CHEBI:15378',2),('CHEBI:456216',1),('CHEBI:58335',1)]})]:bad(name,lambda mut=mut:eq(signature('RHEA:31444'),mut))
+# Parse unchanged native originals directly, including metadata version and exact component coefficient.
+def tree(f):return E.parse(str(B/'raw'/f))
+for f,frame,mon,n in [('ECOLI-6PFK-1-CPX.xml','6PFK-1-CPX','6PFK-1-MONOMER','4'),('ECOLI-FRUCBISALD-CLASSII.xml','FRUCBISALD-CLASSII','FRUCTBISALD-CLASSII-MONOMER','2')]:
+ t=tree(f);x=t.xpath('/ptools-xml/Protein[@frameid=$f]',f=frame)[0];eq(x.xpath('./component/Protein/@frameid'),[mon]);eq(x.xpath('./component/coefficient/text()'),[n]);eq(t.xpath('/ptools-xml/metadata/PGDB/@version'),['27.0'])
+checks.append('Native PGDB27 and exact PfkA4/FbaA2 assemblies independently parsed')
+bad('PfkB incorrectly inserted into PfkA native homotetramer',lambda:eq(tree('ECOLI-6PFK-1-CPX.xml').xpath('/ptools-xml/Protein/component/Protein/@frameid'),['6PFK-1-MONOMER','6PFK-2-MONOMER']))
+# Native request/type guards with real originals. No patched files or parser relaxation.
+p=B/'raw/ECOLI-6PFK-1-CPX.xml'
+bad('Wrong frame request with actual PfkA complex original',lambda:list(sb.source_terms('ecocyc-protein-xml',p,url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:FRUCBISALD-CLASSII',version='27.0')))
+bad('Wrong declared PGDB version',lambda:list(sb.source_terms('ecocyc-protein-xml',p,url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=ECOLI:6PFK-1-CPX',version='26.0')))
+for gid,gene,taxon in [('948412','pfkA','511145'),('947415','fbaA','511145'),('93777982','pfkA','624'),('93779073','fbaA','624')]:
+ p=B/'raw'/('Entrez-'+gid+'-native.xml');p=p if p.exists()else B/'raw'/('Entrez-'+gid+'.xml');t=E.parse(str(p));eq(t.findtext('.//Gene-track_geneid'),gid);eq(t.findtext('.//Gene-ref_locus'),gene);eq(t.xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()'),[taxon])
+checks.append('Correct reference genes and both misleading Shigella crossrefs independently verified')
+for gid in ['93777982','93779073']:bad('Off-taxon '+gid+' rejected for Ecoli reference',lambda gid=gid:eq(tree('Entrez-'+gid+'.xml').xpath('//Org-ref_db/Dbtag[Dbtag_db="taxon"]/Dbtag_tag/Object-id/Object-id_id/text()'),['511145']))
+p=B/'raw/Entrez-948412-native.xml'
+bad('Retmode-only request rejected by retained exact Gene contract',lambda:sb._ncbi_gene_record(p,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=948412&retmode=xml'))
+# Whole frozen PathBank member and exact interface chains.
+bp={'bp':'http://www.biopax.org/release/biopax-level3.owl#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'};t=E.parse(str(B/'root-leads/PW002098.owl'));root=t.xpath('//bp:Pathway[@rdf:about="http://identifiers.org/smpdb/SMP0002110"]',namespaces=bp);eq(len(root),1)
+for child,ix,cpd in [('SMP0121065','109963','PW_C000843'),('SMP0121065','109888','PW_C001019'),('SMP0000807','109887','PW_C042631')]:
+ eq(len(t.xpath('//bp:Pathway[@rdf:about=$id]/bp:pathwayComponent[@rdf:resource=$ix]',namespaces=bp,id='http://identifiers.org/smpdb/'+child,ix='#SubPathwayInteractions/'+ix)),1)
+ eq(t.xpath('//bp:Interaction[@rdf:ID=$ix]/bp:participant/@rdf:resource',namespaces=bp,ix='SubPathwayInteractions/'+ix),['#Compound/'+cpd])
+checks.append('All three native root-child-Interaction-chemical interface joins replayed')
+eq(t.xpath('//bp:SmallMoleculeReference[@rdf:ID="CompoundReference/PW_C042631"]/bp:chemicalFormula/text()',namespaces=bp),['C3H5Li2O6P'])
+bad('Frozen dilithium salt treated as Rhea DHAP dianion',lambda:eq(t.xpath('//bp:SmallMoleculeReference[@rdf:ID="CompoundReference/PW_C042631"]/bp:chemicalFormula/text()',namespaces=bp),['C3H5O6P']))
+checks.append('Frozen PathBank PfkB admixture and chemical charge/salt conflicts retained in original projection')
+# Direct primary selected facts; negative source-use controls.
+p=E.parse(str(B/'root-leads/PMC2758719.xml'));txt=' '.join(''.join(p.getroot().itertext()).split());assert '369.0'in txt and '367.0'in txt;checks.append('2009 mass inconsistency and distinct no-enzyme controls retained')
+p=E.parse(str(B/'raw/PMC6706640.xml'));sent=[ ' '.join(''.join(x.itertext()).split())for x in p.xpath('//body//p') if 'had an activating effect'in ''.join(x.itertext())];eq(len(sent),1);assert all(v in sent[0]for v in ['3‐phosphoglycerate','ATP','phosphoenolpyruvate','hypoxanthine','IMP']);checks.append('2019 functional modifiers distinguished from NMR-only binding and two no-effect controls')
+bad('2019 ATP inhibitory role substituted for measured activation',lambda:eq('activating effect' in sent[0],False))
+for f in ['PMC2758719-msb200965-s1.pdf','PMC7029132-supp_RA119.011239_156101_2_supp_447520_q2tbz1.pdf']:bad('Captcha HTML rejected as PDF '+f,lambda f=f:eq((B/'raw'/f).read_bytes()[:5],b'%PDF-'))
+checks.append('Valid PDF/XLS/XLSX originals separated from HTTP200 captcha/error bodies')
+probes=json.loads((D/'native-authority-probes.json').read_text());assert all(not x['status'].startswith('unresolved')for x in probes['probes']);checks.append('All27 selected native authority probes pass unchanged accepted adapters')
+nov=json.loads((D/'novelty-final-semantic.json').read_text());eq(len(nov['records']),230);assert not any(e['potential_ATP_S7P_event']for x in nov['records']for e in x['related_events']);checks.append('All230 bound records lack ATP+S7P→SBP even permissive family presence comparison')
+out=dict(status='bounded_preflight_checks_passed',completed_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),positive_checks=checks,negative_controls=neg,counts=dict(positive=len(checks),negative=len(neg),claims=len(claims),source_uses=sum(len(x['sources'])for x in claims)),limits=['Not a record validation, whole-corpus canonical build, full test suite or scientific independent review.','Rhea chemistry inherits the freshly acquired full original RDF projection and its prior replay; no redundant full SQL hash performed.','Generic family normalization is solely an inclusive novelty screen, never an identity rewrite.'])
+(D/'bounded-checks.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out['counts']))

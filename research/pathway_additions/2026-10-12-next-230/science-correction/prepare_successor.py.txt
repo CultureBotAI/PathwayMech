@@ -1,0 +1,51 @@
+"""Immutable-parent, original-derived five-locator intermediate."""
+from pathlib import Path
+import json,hashlib,copy,shutil,datetime
+from lxml import etree as X
+import yaml
+S=Path(__file__).parent;O=Path('/private/tmp/pathwaymech-next-230-author-20261012');R=Path('/private/tmp/pathwaymech-next-230-science-review-20261012')
+def sha(p):
+ with Path(p).open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def bind(p):p=Path(p);return dict(path=str(p),bytes=p.stat().st_size,sha256=sha(p))
+def js(p):return json.loads(Path(p).read_text())
+def save(n,v):p=S/n;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+assert sha(O/'handoff.json')=='e0bab1fff713920b5774ca14944a6948ac68e1be459ce2afed2ac37d5af42ddd'
+assert sha(R/'handoff.json')=='630923e6eeb13626ecd6aed910c1e5a0c34186af0a86935c10687dd55278fab9'
+intake=[]
+for root in [O,R]:
+ manifest=js(root/'artifact-manifest.json')
+ for row in manifest['artifacts']:
+  p=root/row['path'];assert sha(p)==row['sha256']and p.stat().st_size==row['bytes'],p
+ intake.append(dict(handoff=bind(root/'handoff.json'),manifest=bind(root/'artifact-manifest.json'),artifacts_verified=len(manifest['artifacts'])))
+issue=Path('/private/tmp/pathwaymech-next-230-issue-creation-20261012.json');issues=js(issue)
+for item in issues['issues']:assert sha(item['body']['path'])==item['body']['sha256']and item['exit_code']==0
+save('intake.json',dict(inputs=intake,issue_creation=bind(issue),root_intake=bind('/private/tmp/pathwaymech-next-230-root-science-intake-20261012.json'),scope='All original author/review artifacts verified. Original author337 and science89 packets remain read-only. This is author correction, not independent successor review.'))
+for directory in ['intermediate','draft','ledgers','validation']:(S/directory).mkdir(exist_ok=True)
+oldpath=O/'draft/sedoheptulose-bisphosphate-bypass.yaml';old=yaml.safe_load(oldpath.read_text());d=copy.deepcopy(old)
+ledger=js(O/'ledgers/evidence-original-selectors.json');original_ledger=copy.deepcopy(ledger);proofs=[]
+for proof in js(R/'locator-proofs.json'):
+ eid=proof['edge_id'];e=next(e for e in d['mechanistic_edges']if e['id']==eid)
+ ev=e['endpoint_qualifiers'][0]['evidence'][0]if eid in ['sbp-018','sbp-056']else e['evidence'][1]
+ assert ev['source_locator']==proof['current_locator']and ev['source_assertion']==proof['current_assertion']
+ before=copy.deepcopy(ev);p=Path(proof['source']['path']);assert sha(p)==proof['source']['sha256'];tree=X.parse(str(p))
+ def selection(loc):return [X.tostring(x,encoding='unicode')for x in tree.xpath(loc.removeprefix('XPath '))]
+ oldsel=selection(proof['current_locator']);newsel=selection(proof['replacement_locator']);assert oldsel==proof['current_selected_xml']and newsel==proof['replacement_selected_xml']
+ rows=[i for i,row in enumerate(ledger)if row['evidence']==before];assert len(rows)==1,(eid,rows)
+ ev['source_locator']=proof['replacement_locator'];i=rows[0];ledger[i]['evidence']=copy.deepcopy(ev);ledger[i]['selector']=ev['source_locator'].removeprefix('XPath ');ledger[i]['observed']=newsel
+ proofs.append(dict(edge=eid,review_evidence_id=proof['evidence_id'],original=proof['source'],before_evidence=before,after_evidence=copy.deepcopy(ev),ledger_index=i,before_observation=original_ledger[i],after_observation=ledger[i],old_and_new_selectors_replayed_exact=True))
+assert len(proofs)==5
+path=S/'intermediate/five-locator-only.yaml';assert not path.exists();path.write_text(yaml.safe_dump(d,sort_keys=False,allow_unicode=True,width=110))
+save('intermediate/five-locator-ledger.json',ledger);save('changed-selector-proofs.json',proofs)
+def diff(a,b,path='$'):
+ if isinstance(a,dict):
+  assert isinstance(b,dict)and a.keys()==b.keys()
+  return sum([diff(a[k],b[k],path+'.'+k)for k in a],[])
+ if isinstance(a,list):
+  assert isinstance(b,list)and len(a)==len(b)
+  return sum([diff(x,y,path+f'[{i}]')for i,(x,y)in enumerate(zip(a,b))],[])
+ return []if a==b else[dict(path=path,before=a,after=b)]
+delta=diff(old,d);assert len(delta)==5 and all(x['path'].endswith('.source_locator')for x in delta)
+save('intermediate/five-locator-delta.json',dict(before=bind(oldpath),after=bind(path),exact_changes=delta,scope='Original requested five-locator-only correction, preserved before any additional TableIII issue correction.'))
+for name in ['source-bindings.json','context-assertions.json','edge-claim-links.json']:shutil.copyfile(O/'ledgers'/name,S/'ledgers'/name)
+for name in ['claim-to-record-coverage.json','construct-scope-dispositions.json']:shutil.copyfile(O/name,S/name)
+print(json.dumps(dict(intermediate=bind(path),original_author_artifacts=337,independent_review_artifacts=89,changes=len(delta),status='Five-locator intermediate only; final seal waits TableIII reconciliation.')))

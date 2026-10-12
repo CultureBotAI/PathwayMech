@@ -1,0 +1,9 @@
+from pathlib import Path
+import os,sys,json,subprocess,datetime,hashlib
+S=Path(__file__).parent;PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';out=S/'validation';out.mkdir(exist_ok=True)
+env=os.environ.copy();env.update(PYTHONDONTWRITEBYTECODE='1',UV_NO_SYNC='1');hp=out/'execution-history.json';history=json.loads(hp.read_text())if hp.exists()else[]
+for name in sys.argv[1:]:
+ p=S/name;assert p.is_file()and p.parent==S;argv=[PY,'-B',str(p)];start=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(argv,cwd=S,env=env,text=True,capture_output=True);n=len(history)+1
+ stdout=out/f'{n:02d}-{p.stem}.stdout.txt';stderr=out/f'{n:02d}-{p.stem}.stderr.txt';stdout.write_text(r.stdout);stderr.write_text(r.stderr)
+ history.append(dict(argv=argv,cwd=str(S),environment_overrides={'PYTHONDONTWRITEBYTECODE':'1','UV_NO_SYNC':'1'},start_utc=start,end_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=r.returncode,script_sha256=hashlib.sha256(p.read_bytes()).hexdigest(),stdout=str(stdout),stderr=str(stderr)));hp.write_text(json.dumps(history,indent=2)+'\n');print(name,r.returncode,r.stdout.strip())
+ if r.returncode:print(r.stderr);sys.exit(r.returncode)
