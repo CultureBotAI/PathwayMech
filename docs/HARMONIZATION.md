@@ -34,6 +34,19 @@ chemical accession to a final ChEBI CURIE, draft records retain a
 match predicate, and the source pathway and element context needed for SSSOM
 export.
 
+The SSSOM `curie_map` declares every prefix used in mapping identifiers,
+predicates and justifications; export rejects an undeclared prefix before
+replacing the output. `EcoCyc` uses its native `https://ecocyc.org/gene?id=`
+frame endpoint. `MetaCyc` uses the generic
+`https://metacyc.org/META/NEW-IMAGE?object=` frame endpoint, because these
+mappings include protein monomers as well as compounds.
+In this export, `PathBank` expands into
+`https://w3id.org/culturebotai/pathwaymech/pathbank/`, preserving the complete
+`SMP.../<native-local-id>` scope. This is a PathwayMech export namespace, not
+an assertion that a scoped BioPAX instance is a registered PathBank pathway
+accession or a promise that the URI has a live web resolver. The original
+CURIE, source pathway and source element remain unchanged in each mapping.
+
 Rhea TSV ingestion extracts RHEA reaction IDs, ChEBI participants, EC numbers,
 GO molecular functions, and KEGG or MetaCyc reaction crosswalks for importers
 that need an open biochemical reaction normalization layer.

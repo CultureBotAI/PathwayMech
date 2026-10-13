@@ -1,0 +1,157 @@
+"""Read-only checkout verification; writes only an optional external report."""
+from __future__ import annotations
+
+import argparse
+import csv
+import hashlib
+import io
+import json
+import re
+import subprocess
+from pathlib import Path
+
+import yaml
+from lxml import html
+
+BASE = '70903536191206d2586cd23e46f7d70c32fef92e'
+ACETO = 'data/pathways/acetoacetate-degradation.yaml'
+PAGE = 'pages/records/MetaCyc_ACETOACETATE-DEG-PWY.html'
+RECORD_ID = 'MetaCyc:ACETOACETATE-DEG-PWY'
+TARGET = 'RHEA:21038'
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--root', type=Path, required=True)
+    parser.add_argument('--report', type=Path)
+    args = parser.parse_args()
+    root = args.root.resolve()
+    if args.report and args.report.resolve().is_relative_to(root):
+        raise ValueError('Report must be outside checkout')
+    checks = {}
+    def require(condition, label, detail=None):
+        checks[label] = {'passed': bool(condition), 'detail': detail}
+        if not condition:
+            raise AssertionError(label + ': ' + str(detail))
+    def git(*arguments):
+        return subprocess.check_output(['git', '-C', str(root), *arguments])
+    def old(path):
+        return git('show', BASE + ':' + path)
+    def current(path):
+        return (root / path).read_bytes()
+    def rows(data):
+        return list(csv.DictReader(io.StringIO(data.decode()), delimiter='\t'))
+    paths = git('ls-tree', '-r', '--name-only', BASE, '--', 'data/pathways').decode().splitlines()
+    paths = [p for p in paths if p.endswith('.yaml')]
+    physical = {str(p.relative_to(root)) for p in (root / 'data/pathways').rglob('*.yaml')}
+    require(physical == set(paths), 'all_record_paths_preserved_including_ignored_files')
+    changed = git('diff', '--name-only', BASE, '--', 'data/pathways').decode().splitlines()
+    require(changed == [ACETO], 'sole_record_delta', changed)
+    before = yaml.safe_load(old(ACETO)); after = yaml.safe_load(current(ACETO))
+    reaction = next(r for r in before['reactions'] if r['id'] == TARGET)
+    require(reaction['direction'] == 'left_to_right', 'baseline_direction')
+    reaction['direction'] = 'right_to_left'
+    require(before == after, 'sole_yaml_scalar_changed')
+    require(current('output/kgx/edges.tsv') == old('output/kgx/edges.tsv'),
+            'all_12125_kgx_edges_byte_exact')
+    before_nodes, after_nodes = rows(old('output/kgx/nodes.tsv')), rows(current('output/kgx/nodes.tsv'))
+    require([r['id'] for r in before_nodes] == [r['id'] for r in after_nodes], 'node_identity_order_exact')
+    changed_nodes = [(a, b) for a, b in zip(before_nodes, after_nodes) if a != b]
+    require(len(changed_nodes) == 1 and changed_nodes[0][0]['id'] == TARGET,
+            'sole_changed_kgx_node', [a['id'] for a, _ in changed_nodes])
+    expected, actual = changed_nodes[0]
+    require(expected['direction'] == '' and actual['direction'] == 'right_to_left',
+            'restored_global_rhea_direction')
+    contexts = json.loads(expected['source_contexts'])
+    matched = [c for c in contexts if c['record_id'] == RECORD_ID]
+    require(len(matched) == 1 and matched[0]['direction'] == 'left_to_right', 'one_aceto_node_context')
+    matched[0]['direction'] = 'right_to_left'
+    contexts.sort(key=lambda c: json.dumps(c, sort_keys=True))
+    expected['direction'] = 'right_to_left'
+    expected['source_contexts'] = json.dumps(contexts, ensure_ascii=False, sort_keys=True)
+    require(expected == actual, 'all_other_node_fields_and_contexts_exact')
+    for name in ('nodes.tsv', 'edges.tsv'):
+        require(current('pages/downloads/' + name) == current('output/kgx/' + name),
+                name + '_download_matches_output')
+    manifest = json.loads(current('pages/downloads/manifest.json'))
+    prior_manifest = json.loads(old('pages/downloads/manifest.json'))
+    for name, metadata in manifest['files'].items():
+        data = current('pages/downloads/' + name)
+        require(metadata['sha256'] == hashlib.sha256(data).hexdigest(), name + '_manifest_hash')
+        require(metadata['rows'] == len(rows(data)), name + '_manifest_count')
+    version = hashlib.sha256(current('output/kgx/nodes.tsv') + current('output/kgx/edges.tsv')).hexdigest()
+    require(manifest['version'] == 'sha256:' + version, 'manifest_graph_version')
+    prior_manifest['version'] = manifest['version']
+    prior_manifest['files']['nodes.tsv']['sha256'] = manifest['files']['nodes.tsv']['sha256']
+    require(prior_manifest == manifest, 'all_other_manifest_fields_exact')
+    old_version = json.loads(old('pages/downloads/manifest.json'))['version'].removeprefix('sha256:')
+    require(old('pages/index.html').replace(old_version.encode(), version.encode()) == current('pages/index.html'),
+            'homepage_only_version_changed')
+    def data_lines(data):
+        return b'\n'.join(line for line in data.splitlines() if not line.startswith(b'#'))
+    sssom = current('output/sssom/source_mappings.sssom.tsv')
+    require(data_lines(old('output/sssom/source_mappings.sssom.tsv')) == data_lines(sssom),
+            'all_sssom_data_bytes_exact')
+    require(len(rows(data_lines(sssom))) == 70, 'sssom_70_rows')
+    # Normalize only the target direction and dependent SVG identifier references.
+    old_page = old(PAGE).decode(); new_page = current(PAGE).decode()
+    old_uids = set(re.findall(r'pathway-graph-[0-9a-f]{16}', old_page))
+    new_uids = set(re.findall(r'pathway-graph-[0-9a-f]{16}', new_page))
+    require(len(old_uids) == len(new_uids) == 1, 'single_svg_digest_each_page')
+    old_uid, new_uid = next(iter(old_uids)), next(iter(new_uids))
+    prior = html.fromstring(old_page.replace(old_uid, 'pathway-graph-DIGEST'))
+    final = html.fromstring(new_page.replace(new_uid, 'pathway-graph-DIGEST'))
+    node = prior.xpath('//a[@data-node-id="RHEA:21038"]')
+    require(len(node) == 1, 'single_rhea_graph_node')
+    node[0].set('aria-label', node[0].get('aria-label').replace('direction: left_to_right', 'direction: right_to_left'))
+    title = node[0].find('title')
+    title.text = title.text.replace('direction: left_to_right', 'direction: right_to_left')
+    table_rows = prior.xpath('//tr[starts-with(@id, "component-") and td/code/text()="RHEA:21038"]')
+    require(len(table_rows) == 1, 'single_rhea_component_row')
+    cell = table_rows[0].findall('td')[2]
+    require(cell.text == 'left to right', 'baseline_component_direction')
+    cell.text = 'right to left'
+    old_history = prior.xpath('//section[@aria-labelledby="history-title"]')[0]
+    new_history = final.xpath('//section[@aria-labelledby="history-title"]')[0]
+    serialize = lambda e: html.tostring(e, encoding='unicode', with_tail=False)
+    old_entries = old_history.xpath('./ul/li'); new_entries = new_history.xpath('./ul/li')
+    old_serials = [serialize(e) for e in old_entries]
+    retained = [serialize(e) for e in new_entries if serialize(e) in old_serials]
+    require(retained == old_serials, 'all_prior_page_history_entries_exact')
+    additions = [e for e in new_entries if serialize(e) not in old_serials]
+    new_sources = []
+    normalize = lambda t: ' '.join(t.split())
+    for entry in additions:
+        links = entry.xpath('./a/@href')
+        require(len(links) == 1 and '/blob/main/history/' in links[0], 'new_history_has_source_link')
+        source = links[0].split('/blob/main/', 1)[1]
+        source_path = (root / source).resolve()
+        require(source_path.is_relative_to(root / 'history'), 'new_history_link_inside_history')
+        payload = yaml.safe_load(source_path.read_text())
+        text = normalize(entry.text_content())
+        require(payload['target']['path'] == ACETO, 'new_history_target_matches_record')
+        for actor in payload['session'].get('actors', []):
+            require(actor.get('name', actor['type']) in text, 'new_history_actor_matches')
+        require(str(payload['session']['timestamp']) in text, 'new_history_timestamp_matches')
+        for event in payload['events']:
+            require(normalize(event['summary']) in text and normalize(event.get('details', '')) in text,
+                    'new_history_event_matches_source')
+        new_sources.append(source)
+    require(len(new_sources) == 1, 'one_new_record_history_entry', new_sources)
+    old_history.getparent().remove(old_history); new_history.getparent().remove(new_history)
+    require(serialize(prior) == serialize(final),
+            'page_only_direction_digest_and_new_history_changed', {'old_digest': old_uid, 'new_digest': new_uid})
+    expected_changes = {ACETO, 'output/kgx/nodes.tsv', 'output/sssom/source_mappings.sssom.tsv',
+                        'pages/downloads/nodes.tsv', 'pages/downloads/manifest.json', 'pages/index.html', PAGE}
+    actual_changes = set(git('diff', '--name-only', BASE, '--', 'data/pathways', 'output', 'pages').decode().splitlines())
+    require(actual_changes == expected_changes, 'complete_artifact_delta_accounted', sorted(actual_changes))
+    result = {'base': BASE, 'root': str(root), 'passed': True, 'checks': checks,
+              'artifact_sha256': {p: hashlib.sha256(current(p)).hexdigest() for p in sorted(expected_changes)}}
+    if args.report:
+        args.report.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({'passed': True, 'checks': len(checks), 'report': str(args.report),
+                      'new_history_sources': new_sources}))
+
+
+if __name__ == '__main__':
+    main()

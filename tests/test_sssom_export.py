@@ -101,8 +101,11 @@ def test_write_sssom_uses_yaml_safe_curie_map_for_all_source_prefixes(
                         [
                             ("CAS", "98-92-0"),
                             ("ChemSpider", "555"),
+                            ("EcoCyc", "3-KETOBUTYRATE"),
                             ("HMDB", "HMDB0000223"),
                             ("KEGG", "C00197"),
+                            ("MetaCyc", "MONOMER-17874"),
+                            ("PathBank", "SMP0002123/Compound/PW_C000414"),
                             ("PubChem", "647"),
                             ("UniProt", "P12345"),
                         ],
@@ -123,9 +126,12 @@ def test_write_sssom_uses_yaml_safe_curie_map_for_all_source_prefixes(
         "CAS": "https://identifiers.org/cas:",
         "CHEBI": "http://purl.obolibrary.org/obo/CHEBI_",
         "ChemSpider": "https://identifiers.org/chemspider:",
+        "EcoCyc": "https://ecocyc.org/gene?id=",
         "HMDB": "https://identifiers.org/hmdb:",
         "infores": "https://w3id.org/biolink/vocab/",
         "KEGG": "https://identifiers.org/kegg.compound:",
+        "MetaCyc": "https://metacyc.org/META/NEW-IMAGE?object=",
+        "PathBank": "https://w3id.org/culturebotai/pathwaymech/pathbank/",
         "PubChem": "https://identifiers.org/pubchem.compound:",
         "semapv": "https://w3id.org/semapv/vocab/",
         "skos": "http://www.w3.org/2004/02/skos/core#",
@@ -149,6 +155,55 @@ def test_committed_sssom_output_is_current(tmp_path: Path) -> None:
     assert Path("output/sssom/source_mappings.sssom.tsv").read_text(
         encoding="utf-8"
     ) == expected.read_text(encoding="utf-8")
+
+    parsed = parse_sssom_table(expected)
+    row_count = len(parsed.df)
+    parsed.clean_prefix_map()
+    assert len(parsed.df) == row_count
+    for field in ("subject_id", "object_id", "predicate_id", "mapping_justification"):
+        assert all(parsed.converter.expand(value) for value in parsed.df[field])
+
+
+@pytest.mark.parametrize(
+    ("identifier", "uri"),
+    [
+        ("EcoCyc:3-KETOBUTYRATE", "https://ecocyc.org/gene?id=3-KETOBUTYRATE"),
+        (
+            "MetaCyc:MONOMER-17874",
+            "https://metacyc.org/META/NEW-IMAGE?object=MONOMER-17874",
+        ),
+        (
+            "PathBank:SMP0002123/Compound/PW_C000414",
+            "https://w3id.org/culturebotai/pathwaymech/pathbank/"
+            "SMP0002123/Compound/PW_C000414",
+        ),
+    ],
+)
+def test_sssom_expands_native_frame_and_scoped_instance_ids(
+    tmp_path: Path, identifier: str, uri: str,
+) -> None:
+    mapping = dict(record().source_mappings[0], subject_id=identifier)
+    path = write_sssom([record([mapping])], tmp_path / "mappings.tsv")
+
+    parsed = parse_sssom_table(path)
+    parsed.clean_prefix_map()
+    assert parsed.converter.expand(identifier) == uri
+
+
+@pytest.mark.parametrize(
+    "field", ["subject_id", "object_id", "predicate_id", "mapping_justification"],
+)
+def test_sssom_rejects_undeclared_prefix_before_replacing_output(
+    tmp_path: Path, field: str,
+) -> None:
+    mapping = dict(record().source_mappings[0], **{field: "UnknownPrefix:123"})
+    output = tmp_path / "mappings.tsv"
+    output.write_text("previous valid export\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match=rf"{field} prefix .* not declared"):
+        write_sssom([record([mapping])], output)
+
+    assert output.read_text(encoding="utf-8") == "previous valid export\n"
 
 
 def test_sssom_rejects_label_only_subjects() -> None:

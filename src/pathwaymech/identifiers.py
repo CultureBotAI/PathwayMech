@@ -125,6 +125,62 @@ def _load_policy(path: Path, root: Path) -> dict[str, Any]:
     return cfg
 
 
+def _native_assertion_kinds(
+    sources: dict[str, Any], reaction_requests: dict[str, str]
+) -> dict[str, str]:
+    """Bind every retained native identity before selected terms choose an owner.
+
+    Compare the same projections as the producer, including state counterparts
+    and all retained Polymer members. Aceto companion/provenance compatibility
+    remains with its specialized validator rather than a reduced projection.
+    """
+    fields = {
+        CARRIER_CLASS_KIND: "native_carrier_class",
+        ECOCYC_STATE_KIND: "native_protein_state",
+        ECOCYC_COMPLEX_KIND: "native_complex",
+        ELECTRON_TRANSFER_KIND: "native_electron_transfer",
+        CHEMICAL_CLASS_KIND: "native_chemical_class",
+        NAMED_COMPLEX_KIND: "native_named_complex",
+        PATHWAY_KIND: "native_pathway",
+        PROTEIN_CARRIER_REACTION_KIND: "native_protein_carrier_reaction",
+    }
+    assertions = {}
+    claims = []
+
+    def add(identifier: str, kind: str, native: Any, version: str | None, source: str) -> None:
+        assertion = kind, json.dumps(native, sort_keys=True), version
+        if identifier in assertions and assertions[identifier] != assertion:
+            description = {
+                NAMED_COMPLEX_KIND: "named-complex",
+                PATHWAY_KIND: "pathway",
+            }.get(kind, "identity/context")
+            raise ValueError(f"{identifier}: conflicting typed native {description} assertions")
+        assertions[identifier] = assertion
+        claims.append((identifier, source))
+
+    for source, metadata in sources.items():
+        kind = metadata.get("kind")
+        if kind in fields:
+            field = fields[kind]
+            observations = [metadata]
+            if kind == ECOCYC_STATE_KIND:
+                observations.append(metadata["counterpart"])
+            for observation in observations:
+                native = observation[field]
+                add(native["id"], kind, native, observation["version"], source)
+        elif kind == RHEA_POLYMER_KIND:
+            for identifier, native in metadata["native_polymers"].items():
+                # The producer compares complete Polymer facts across releases.
+                add(identifier, kind, native, None, source)
+        elif source in reaction_requests:
+            # This older profile retains its identity, not its complete XML.
+            add(reaction_requests[source], kind, None, None, source)
+    # Include companion identities in the existing aceto scope guard too; a
+    # counterpart can conflict even if its owning state's term is not selected.
+    validate_aceto_assertions(sources, claims)
+    return {identifier: assertion[0] for identifier, assertion in assertions.items()}
+
+
 def _load_authority(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     _keys(data, {"version", "sources", "terms"}, set(), str(path))
@@ -284,24 +340,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
     carrier_reaction_ids = validate_carrier_reaction_assertions(data["sources"])
     context_projections = validate_context_assertions(data["sources"])
     context_ids = {ident for projection in context_projections.values() for ident in projection}
-    # Every source above has already reconstructed its complete native object.
-    # Check all owners before reading terms: an unselected owner can still
-    # contradict coefficients, retained evidence, or release identity.
-    named_complex_assertions = {}
-    for metadata in data["sources"].values():
-        if metadata.get("kind") == NAMED_COMPLEX_KIND:
-            identifier = metadata["native_named_complex"]["id"]
-            assertion = (
-                metadata["kind"],
-                json.dumps(metadata["native_named_complex"], sort_keys=True),
-                metadata["version"],
-            )
-            if (
-                identifier in named_complex_assertions
-                and named_complex_assertions[identifier] != assertion
-            ):
-                raise ValueError(f"{identifier}: conflicting typed native named-complex assertions")
-            named_complex_assertions[identifier] = assertion
+    native_kinds = _native_assertion_kinds(data["sources"], native_reaction_requests)
     validate_named_complex_graph(
         [
             metadata["native_named_complex"]
@@ -309,14 +348,6 @@ def _load_authority(path: Path) -> dict[str, Any]:
             if metadata.get("kind") == NAMED_COMPLEX_KIND
         ]
     )
-    pathway_assertions = {}
-    for metadata in data["sources"].values():
-        if metadata.get("kind") == PATHWAY_KIND:
-            identifier = metadata["native_pathway"]["id"]
-            assertion = json.dumps(metadata["native_pathway"], sort_keys=True), metadata["version"]
-            if identifier in pathway_assertions and pathway_assertions[identifier] != assertion:
-                raise ValueError(f"{identifier}: conflicting typed native pathway assertions")
-            pathway_assertions[identifier] = assertion
     if not isinstance(data["terms"], dict) or not data["terms"]:
         raise ValueError(f"{path}: authority has no terms; verification is unavailable")
     for identifier, term in data["terms"].items():
@@ -357,8 +388,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 raise ValueError("PathBank context term differs from its complete native owner")
         if identifier in carrier_reaction_ids and source_kind != PROTEIN_CARRIER_REACTION_KIND:
             raise ValueError(f"{identifier}: protein-carrier reaction requires whole typed scope")
-        if identifier in pathway_assertions and source_kind not in {PATHWAY_KIND, SGD_KIND}:
-            raise ValueError(f"{identifier}: conflicting typed native pathway identity scope")
+        native_kind = native_kinds.get(identifier)
+        compatible_kinds = {native_kind, SGD_KIND} if native_kind == PATHWAY_KIND else {native_kind}
+        if native_kind is not None and source_kind not in compatible_kinds:
+            raise ValueError(f"{identifier}: conflicting typed native identity scope")
         if "allowed_categories" in term and source_kind not in {CHEMICAL_CLASS_KIND, RESIDUE_KIND}:
             raise ValueError(f"{identifier}: category proof requires typed native chemical class")
         if term.get("label_kind") == "source_synonym" and source_kind != ECOCYC_COMPLEX_KIND:

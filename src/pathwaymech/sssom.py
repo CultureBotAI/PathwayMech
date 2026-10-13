@@ -14,15 +14,22 @@ CURIE_MAP = (
     ("CAS", "https://identifiers.org/cas:"),
     ("CHEBI", "http://purl.obolibrary.org/obo/CHEBI_"),
     ("ChemSpider", "https://identifiers.org/chemspider:"),
+    ("EcoCyc", "https://ecocyc.org/gene?id="),
     ("HMDB", "https://identifiers.org/hmdb:"),
     ("infores", "https://w3id.org/biolink/vocab/"),
     ("KEGG", "https://identifiers.org/kegg.compound:"),
+    # The generic frame endpoint includes compounds and protein monomers alike.
+    ("MetaCyc", "https://metacyc.org/META/NEW-IMAGE?object="),
+    # Repository-scoped BioPAX instances are not registered PathBank accessions.
+    # This identifies their exported scope; it does not promise a live resolver.
+    ("PathBank", "https://w3id.org/culturebotai/pathwaymech/pathbank/"),
     ("PubChem", "https://identifiers.org/pubchem.compound:"),
     ("semapv", "https://w3id.org/semapv/vocab/"),
     ("skos", "http://www.w3.org/2004/02/skos/core#"),
     ("UniProt", "https://identifiers.org/uniprot:"),
     ("UniProtKB", "http://purl.uniprot.org/uniprot/"),
 )
+_CURIE_PREFIXES = frozenset(prefix for prefix, _ in CURIE_MAP)
 SSSOM_COLUMNS = (
     "subject_id",
     "subject_label",
@@ -82,6 +89,7 @@ def sssom_rows(records: list[PathwayRecord]) -> list[SssomRow]:
 
 
 def write_sssom(records: list[PathwayRecord], output_path: Path) -> Path:
+    rows = sssom_rows(records)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8", newline="") as stream:
         for line in SSSOM_HEADER:
@@ -93,7 +101,7 @@ def write_sssom(records: list[PathwayRecord], output_path: Path) -> Path:
             lineterminator="\n",
         )
         writer.writeheader()
-        for row in sssom_rows(records):
+        for row in rows:
             writer.writerow(
                 {column: _cell(asdict(row).get(column)) for column in SSSOM_COLUMNS}
             )
@@ -112,6 +120,8 @@ def _validate_row(row: SssomRow) -> None:
         prefix, local = value.split(":", 1)
         if not prefix or not local or any(character.isspace() for character in value):
             raise ValueError(f"{field} must be a CURIE, not {value!r}")
+        if prefix not in _CURIE_PREFIXES:
+            raise ValueError(f"{field} prefix {prefix!r} is not declared in the SSSOM curie_map")
 
 
 def _cell(value: Any) -> str:

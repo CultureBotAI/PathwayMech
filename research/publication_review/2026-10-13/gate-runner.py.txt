@@ -1,0 +1,13 @@
+import datetime, json, os, pathlib, subprocess, sys, time
+root=pathlib.Path('/private/tmp/pathwaymech-next-243-local-20261012')
+log=root/'research/publication_review/2026-10-13/gates'
+name=sys.argv[1]; cmd=sys.argv[2:]
+log.mkdir(parents=True,exist_ok=True)
+assert not (log/(name+'.json')).exists()
+env=dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1', UV_NO_SYNC='1', PYTHONPATH=str(root/'src')+':'+str(root), RECORD_REVIEW_BASE='e1c66917e753105c4bf5b7b026193fcefa2b000f')
+start=datetime.datetime.now(datetime.timezone.utc).isoformat(); t=time.monotonic()
+with (log/(name+'.stdout')).open('wb') as out, (log/(name+'.stderr')).open('wb') as err:
+ r=subprocess.run(cmd,cwd=root,env=env,stdout=out,stderr=err)
+data=dict(command=cmd,started_at=start,finished_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=r.returncode,elapsed_seconds=time.monotonic()-t)
+(log/(name+'.json')).write_text(json.dumps(data,indent=2)+'\n')
+print(json.dumps(data)); print((log/(name+'.stdout')).read_text()[-1800:]); print((log/(name+'.stderr')).read_text()[-1500:]); sys.exit(r.returncode)
