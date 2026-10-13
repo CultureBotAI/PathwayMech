@@ -1,0 +1,821 @@
+{
+  "schema_version": "1.0.0",
+  "review_id": "20261013T004524Z-baesr243-technical",
+  "kind": "repository",
+  "repository": "CultureBotAI/PathwayMech",
+  "title": "Technical review of BaeSR source-authority integration",
+  "started_at": "2026-10-13T00:45:01Z",
+  "finished_at": "2026-10-13T00:45:24Z",
+  "reviewer": {
+    "identity": "Codex /root/deoxy237_science_review",
+    "kind": "agent",
+    "independence": "independent",
+    "independence_basis": "Authored the accepted 240 baseline and independently audited 243 canonical preparation. Did not author the 243 scientific record, authority design, canonical execution, maintained integration or native gates. Distinct Aceto actual-output audit and root scientific reading are inherited. Separate maintained SCI belongs to Adapter. This review judges the 243 source-only delta and whole maintained preservation, not a new independent review of the authored 240 baseline."
+  },
+  "skill": ".claude/skills/review-yaml-record/SKILL.md",
+  "completion": "completed",
+  "verdict": "pass_with_limitations",
+  "scientific_review": false,
+  "summary": "Two source-authority owners pass current maintained review. Runtime and ontology are unchanged; complete prior payloads, accepted graph ordering, mappings and cache are preserved. Actual native gates pass with inherited scientific and static-preview limitations.",
+  "source": {
+    "git_revision": "63bc0ba99c63e4d4cdbdf70b8fb3f6f8417eeacf",
+    "state": "working_tree",
+    "inputs": [
+      {
+        "path": ".claude/skills/review-yaml-record/SKILL.md",
+        "sha256": "6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f",
+        "role": "context"
+      },
+      {
+        "path": "conf/identifier_policy.yaml",
+        "sha256": "f2991a22f16f0d14d83226c6ac261bc779b253b2547fae9724474d8596b411c7",
+        "role": "context"
+      },
+      {
+        "path": "conf/identifier_sources.json",
+        "sha256": "066b504bc00b8fd3b2bb15d9833524277dccf2ce4961c70e00d68dfbd324aed3",
+        "role": "target"
+      },
+      {
+        "path": "conf/rhea_identifier_updates.json",
+        "sha256": "5c6a356a56a4b4df882ac2898587576216895a07fc2b455082da136ebd91a49d",
+        "role": "context"
+      },
+      {
+        "path": "data/identifier_authorities/ontology.json",
+        "sha256": "f155aeff12118e7aa7176c58f32ea231ad61fa25cd43a1c90aa6ff6f383ef9e2",
+        "role": "context"
+      },
+      {
+        "path": "data/identifier_authorities/sources.json",
+        "sha256": "aa22a12f65bfe5a0d24123fbac324cd19c0258230c7fc51f1bbea841984d4fa1",
+        "role": "target"
+      },
+      {
+        "path": "data/pathways/baesr-two-component-signal-transduction.yaml",
+        "sha256": "1cf9262a0df376a19517b3f55ccaac67dacc8af8ce58bd8a1b2046e93a951824",
+        "role": "context"
+      },
+      {
+        "path": "docs/record-review-profile.md",
+        "sha256": "f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819",
+        "role": "context"
+      },
+      {
+        "path": "docs/record-reviews.md",
+        "sha256": "452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b",
+        "role": "context"
+      },
+      {
+        "path": "output/kgx/edges.tsv",
+        "sha256": "a90aef8cc289bff2e4db8f3a59d56270c2ce140c98e733ea5d5a4ea893ab1f7f",
+        "role": "context"
+      },
+      {
+        "path": "output/kgx/nodes.tsv",
+        "sha256": "e96a38b15a7f99eb5c72bb3767e857e2be70ceb0846a54244dac43aa6b9809c6",
+        "role": "context"
+      },
+      {
+        "path": "output/sssom/source_mappings.sssom.tsv",
+        "sha256": "1b9bb94dc0bcf221c93709ae37a77df90e69cce6472a78a51e0cd0a99154afc7",
+        "role": "context"
+      },
+      {
+        "path": "pages/records/PathBank_SMP0002123.html",
+        "sha256": "2446e297bd0a16414cfc277e2af26e83db140105e8152a1444ba1d9fcde4f440",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/README.md",
+        "sha256": "6907c68c9b19a722a50643e6165649285bada478eb8a0089cef4e94ed74c10ec",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/archives/evidence-bodies.zip.part-001",
+        "sha256": "26a883af6b5bbaaaec92f67e9bb4ce02c3ac233ea8b8dd6d4a724ea9492288eb",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/archives/integration-preparation.zip",
+        "sha256": "67dc2cab6c5e6354a7f63c88901f0aba5c777303ee803a5854cea011ae5002f5",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/common.py.gz",
+        "sha256": "f96739937ce6752a391bf6e786683fd31329eeb64d0bfb1a6c8664ef7dca0da1",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/evidence-index.json.gz",
+        "sha256": "b8dcb5a661b55a2a01083b9af138fd8a55c3dda8bb24ad16e95bb29f9d78dc65",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/external-packet-closures.json.gz",
+        "sha256": "7e70d161fc9e5a61d768414c858e49a35af28fc59a359096d196928a2d340e59",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/integration-preparation.json",
+        "sha256": "afe74da5ea9d16c72f638d6b4c03f5e0692adc04809fca33626bb4eeafd93912",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/local-integration-decision.json",
+        "sha256": "d2cb33390d4a7810d6761b067471b0463b993d038c252a2b87ad057347cc3884",
+        "role": "context"
+      },
+      {
+        "path": "research/pathway_additions/2026-10-12-next-243/verify_portable.py.gz",
+        "sha256": "039e18aa6cd8de2df6244c19ebb6847130827f4d8f072cf24b8e52c670206eaa",
+        "role": "context"
+      },
+      {
+        "path": "schema/record_review.yaml",
+        "sha256": "229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb",
+        "role": "context"
+      },
+      {
+        "path": "scripts/build_ontology_identifier_snapshot.py",
+        "sha256": "fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81",
+        "role": "context"
+      },
+      {
+        "path": "src/pathwaymech/schema.py",
+        "sha256": "bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8",
+        "role": "context"
+      }
+    ]
+  },
+  "scope": {
+    "description": "Two source manifest/snapshot owners after completed record 243 gates, with complete maintained context.",
+    "selection": "Both nonrecord primary owners from clean committed 240 baseline 63bc0ba99c63e4d4cdbdf70b8fb3f6f8417eeacf; no sampling.",
+    "coverage": "full",
+    "population_size": 2,
+    "reviewed_target_ids": [
+      "owner-1",
+      "owner-2"
+    ],
+    "exclusions": [
+      {
+        "target": "New primary scientific judgment",
+        "reason": "Separate independent maintained SCI."
+      },
+      {
+        "target": "Publication and browser interaction",
+        "reason": "Outside this local technical review."
+      }
+    ]
+  },
+  "targets": [
+    {
+      "target_id": "owner-1",
+      "path": "conf/identifier_sources.json",
+      "label": "conf/identifier_sources.json",
+      "kind": "maintained",
+      "ownership_note": "Exact adopted source manifest or native source-authority snapshot; product runtime and ontology are unchanged. Generated snapshots require rebuilding from maintained configuration and adapters."
+    },
+    {
+      "target_id": "owner-2",
+      "path": "data/identifier_authorities/sources.json",
+      "label": "data/identifier_authorities/sources.json",
+      "kind": "maintained",
+      "ownership_note": "Exact adopted source manifest or native source-authority snapshot; product runtime and ontology are unchanged. Generated snapshots require rebuilding from maintained configuration and adapters."
+    }
+  ],
+  "checks": [
+    {
+      "check_id": "native-history-1",
+      "name": "Actual native history-1",
+      "status": "passed",
+      "required": false,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py --kind record --slug baesr-two-component-signal-transduction --target-root data/pathways --event CREATE --outcome changed --summary 'Add evidence-backed E. coli BaeSR signal transduction.' --details 'Exact accepted PathBank:SMP0002123: 13 paragraphs, 15 edges, 8 qualifiers, 12 IDs, 18 references, 4 mappings. Preserve complete native states, two phosphorylation events, six formal sides and two interpreted donor sides, construct/sequence/site/chemical/access limitations. Whole originals, receipts and prior failed attempts retained in research/pathway_additions/2026-10-12-next-243. Maintained gates and native reviews pending.' --actor-name codex --agent-tool codex --model gpt-6",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-history-1"
+      ]
+    },
+    {
+      "check_id": "native-history-2",
+      "name": "Actual native history-2",
+      "status": "passed",
+      "required": false,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py --kind infrastructure --slug baesr243-native-authority --path conf/identifier_sources.json --event EDIT --outcome changed --summary 'Add BaeSR ordinary PathBank identity authority and source snapshot.' --details 'Manifest 892-row prefix retained with one append, source 2694 terms/712 owners; all old authority objects and first owners exact. Runtime code and ontology unchanged. Old KGX edge payloads/order and contexts retained; six contexts added and exact accepted ATP/ADP node encounter permutation. Histories precede SSSOM/render; maintained gates/native reviews pending.' --actor-name codex --agent-tool codex --model gpt-6",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-history-2"
+      ]
+    },
+    {
+      "check_id": "native-sssom",
+      "name": "Actual native sssom",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from pathwaymech.cli import export_sssom_main; raise SystemExit(export_sssom_main())'",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-sssom"
+      ]
+    },
+    {
+      "check_id": "native-render",
+      "name": "Actual native render",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-render"
+      ]
+    },
+    {
+      "check_id": "native-skills",
+      "name": "Actual native skills",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-skills"
+      ]
+    },
+    {
+      "check_id": "native-validate",
+      "name": "Actual native validate",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-validate"
+      ]
+    },
+    {
+      "check_id": "native-tests",
+      "name": "Actual native tests",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-243-local-gate-tests-20261012",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-tests"
+      ]
+    },
+    {
+      "check_id": "native-lint",
+      "name": "Actual native lint",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff check --no-cache .",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-lint"
+      ]
+    },
+    {
+      "check_id": "native-kgx",
+      "name": "Actual native kgx",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-kgx"
+      ]
+    },
+    {
+      "check_id": "native-vendored",
+      "name": "Actual native vendored",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "bash scripts/check_vendored_sync.sh",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-vendored"
+      ]
+    },
+    {
+      "check_id": "native-diff-check",
+      "name": "Actual native diff-check",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "git diff --check",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-diff-check"
+      ]
+    },
+    {
+      "check_id": "native-site-current",
+      "name": "Actual native site-current",
+      "status": "passed",
+      "required": true,
+      "summary": "Actual recorded process exited 0; scientific interpretation is separately reviewed.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main([\"--check\"]))'",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "native-site-current"
+      ]
+    },
+    {
+      "check_id": "independent-target",
+      "name": "Independent maintained target QA",
+      "status": "passed",
+      "required": true,
+      "summary": "Whole maintained check passed after all native gates.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-243-independent-maintained-tech-20261012/check_target.py",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "independent-target"
+      ]
+    },
+    {
+      "check_id": "independent-checkout",
+      "name": "Independent maintained checkout QA",
+      "status": "passed",
+      "required": true,
+      "summary": "Whole maintained check passed after all native gates.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "command": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-243-independent-maintained-tech-20261012/check_checkout.py",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "evidence_ids": [
+        "independent-checkout"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "native-history-1",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/history-and-generation/history-1.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "61f0a3d5cc7fa0851b6165fe84ab713887006e601e6b924f6ea81e4e888b7e98"
+    },
+    {
+      "evidence_id": "native-history-2",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/history-and-generation/history-2.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "83cac1e13ad4099806a540562eea680ce98325320b866b2aa3cde22e613e863d"
+    },
+    {
+      "evidence_id": "native-sssom",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/history-and-generation/sssom.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "0c650ee9fb7d3dc5d7ec97058434d6510b037cfab727460d05d7606dac0779b2"
+    },
+    {
+      "evidence_id": "native-render",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/history-and-generation/render.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "b3af417cc226ebb7556fbf08577d2e74f2148117b13824fa1dfe73573834003e"
+    },
+    {
+      "evidence_id": "native-skills",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/history-and-generation/skills.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "3361284edb5808b1719d09e3261f2b22bb05da1be77de61b63517535b9ad0ae9"
+    },
+    {
+      "evidence_id": "native-validate",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "9dc9b518ce37d31e23047ca737443f8281f228fb74bfc7ca493dbb8308be231b"
+    },
+    {
+      "evidence_id": "native-tests",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "6ddf943cc4462f34f5ed1509d1c3750f62faac89ed877a1acf42e9cdf395892a"
+    },
+    {
+      "evidence_id": "native-lint",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "557a452124f6fda677efb6eff1d959aff9bf53fda4abb0e4fb06b636f42e36bd"
+    },
+    {
+      "evidence_id": "native-kgx",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "5c0e76cd2dc22d91323e5de6a0d86483f42e531343d6acf840f279d43d80023c"
+    },
+    {
+      "evidence_id": "native-vendored",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/vendored-gate/vendored.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "fa82b46a641ca1fa0435353c9dc640ad161c1fbd75c127c7ad6a70eb864a05e7"
+    },
+    {
+      "evidence_id": "native-diff-check",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/final-gates/diff-check.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "677a89dbe4d15cdbc6209e68acfcd7f262177a08893962e33bb7765e43c6134b"
+    },
+    {
+      "evidence_id": "native-site-current",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-qa/actual-native/final-gates/site-current.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Actual native command and complete original streams verified. Executed by root; this reviewer did not repeat it.",
+      "snapshot_sha256": "696729c51f9e2bc05babb0f6e72fe45ef6e6188bde687a990106c1706f8449eb"
+    },
+    {
+      "evidence_id": "independent-target",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/target.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "This reviewer executed complete current target/render/export or physical checkout/cache checks after native gates completed.",
+      "snapshot_sha256": "f8ea6203c2e6597d4cb38b5a800f3ae9fe0dfe2a15b724091eaeaabee0e151b6"
+    },
+    {
+      "evidence_id": "independent-checkout",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/checkout.execution.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "This reviewer executed complete current target/render/export or physical checkout/cache checks after native gates completed.",
+      "snapshot_sha256": "8d64fa03c97feded60088ca34f5f682f1f194ed2035d3b9d96d8cd53f3614e87"
+    },
+    {
+      "evidence_id": "target-helper-correction",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/target-helper-correction.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Initial external target QA failed on an append-only context assumption. Exact helper, receipt, streams and partial checks are retained; the bounded corrected check requires whole canonical KGX equality, every old context as an exact ordered subsequence and precisely the accepted target contexts/multiplicity. Checkout and all native gates passed first attempt and were not repeated.",
+      "snapshot_sha256": "c1eb26f369f4d5824aef4678e6e4ca0e281c00a9b919559f7e7e59f8f3109c81"
+    },
+    {
+      "evidence_id": "native-packet",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/native-execution-intake.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Fresh no-follow complete closure of 81 native artifacts plus two seals, including hidden/ignored paths and every complete phase stream.",
+      "snapshot_sha256": "cd57c1b3b182bdee105dff7ab1357ac72fdd50dccca18f0cb5fde2e69449e581"
+    },
+    {
+      "evidence_id": "canonical",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/canonical-acceptance.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Root accepted one native source builder and byte-exact inherited ontology; all prior objects/order, first owners and six exact added graph contexts survive.",
+      "snapshot_sha256": "5e97f64c23ccb7d12a1fd198b49d2325fa937bd1b41a25d454507197aafe1f13"
+    },
+    {
+      "evidence_id": "prior-actual-audit",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/prior-actual-review-handoff.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Distinct Aceto independent audit checked all 1922 actual artifacts plus two seals, all 242 scientific records, complete source objects/order and KGX. That accepted audit is inherited; I audited earlier canonical preparation, not this actual execution.",
+      "snapshot_sha256": "5a04bf72613deb8a9a5377d8363c59a98b8d82c3aa946dd97641c12c20b75d03"
+    },
+    {
+      "evidence_id": "integration",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/integration-acceptance.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Root accepted the exact three primary owners and 12 complete planned destinations with guarded native stages. The preparer whole 2421-body portable replay is inherited.",
+      "snapshot_sha256": "c25d3612b3e9060c3d7f89fca186a3ebb1f3d277d3e35779d71b980ffbd57c33"
+    },
+    {
+      "evidence_id": "integration-compatibility",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/integration-compatibility-review/handoff.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Complete distinct 14-file compatibility review is retained with both seals, original Rhea-role assertion failure, exact failed/successor helpers and full streams. Its accepted mechanics appraisal is inherited, not repeated.",
+      "snapshot_sha256": "82588756797985d1ef80e2632251d06173a622d4b61d9b896c2bd8bc96490b8b"
+    },
+    {
+      "evidence_id": "sealer-template",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/native-sealer-template-review.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "This reviewer read the whole bounded native sealer template and exact predecessor diff; receipt-origin/stream/closure controls remain unchanged. Static template review is distinct from root actual native execution and final runner binding.",
+      "snapshot_sha256": "b9272b7c3faab74bb9447763094c0f3447d1b68d680dba5704bdcd4f4fdd1884"
+    },
+    {
+      "evidence_id": "post-package-retention",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/post-package-evidence-retention.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Whole post-package compatibility and template-review bodies are retained with exact original paths, sizes, hashes and modes. These reviews postdate the scientific portable package and are retained separately here.",
+      "snapshot_sha256": "664e54426e595211789d296a0af3b73f7922d161d08bef9bfb7861b6c6cb7bc6"
+    },
+    {
+      "evidence_id": "target-results",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/target-qa.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Whole accepted YAML, 15 arrows, 18 display nodes, eight qualifiers, 12 identities, 18 references and all 31 evidence occurrences match. Current graph equals accepted outputs and the root-viewed static preview; mappings retain 66 old plus four new rows.",
+      "snapshot_sha256": "e2acd56843664486d7623f2a794d32fa88ab66cb8c4433190c7e019eb242eb4d"
+    },
+    {
+      "evidence_id": "checkout-results",
+      "kind": "validation",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/checkout-preservation.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Complete physical inventory includes hidden/ignored paths. All 241 old records/pages, 126 review pairs, 410 histories and 800 cache entries remain exact outside the accepted scope.",
+      "snapshot_sha256": "4d4f5cb80b8c64237ee2f15323ddbc0b32ecb2f8b68dad6944d8315f960c8dfa"
+    },
+    {
+      "evidence_id": "visual",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/visual-assessment.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Original preview assessment by Nitrate; root independently viewed this same whole raster as documented in the root scientific review. Current whole SVG/CSS/JS equality binds it. No personal new visual or browser assessment is claimed here.",
+      "snapshot_sha256": "6575db3eb58877e29e2c69f25d53bfc14916d548a352d0bcd00a4092f8e6b84f"
+    },
+    {
+      "evidence_id": "science-scope",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/scientific-scope-acceptance.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Exact accepted corrected scientific target and complete source-state/sequence/taxon/chemical/GO limitations are inherited. Separate maintained SCI judgment belongs to Adapter.",
+      "snapshot_sha256": "1319e3a8652b956269884618c035b4b0a5e0ef49319ee562d13edbe9c31789c2"
+    },
+    {
+      "evidence_id": "root-preview-reading",
+      "kind": "prior_review",
+      "reference": "research/pathway_additions/2026-10-12-next-243/native-integration/independent-tech-review/root-scientific-review-handoff.json",
+      "accessed_at": "2026-10-13T00:45:24Z",
+      "support": "supports",
+      "summary": "Root scientific review explicitly documents personal full static-raster reading, including disconnected phosphate and overlap/truncation/blank-space limitations.",
+      "snapshot_sha256": "d4d646bcbb46d5e591818e2e86b2c7538b3299e236a88f32b9d52d6c34646c6b"
+    }
+  ],
+  "assessments": [
+    {
+      "assessment_id": "owner-1",
+      "area": "ownership",
+      "topic": "conf/identifier_sources.json",
+      "outcome": "supported",
+      "summary": "The whole maintained source manifest or source-authority snapshot equals the exact accepted actual output. One ordinary PathBank source entry adds six selected terms; product runtime and ontology remain unchanged. Identity/name projection does not assert typed biochemical context.",
+      "target_ids": [
+        "owner-1"
+      ],
+      "evidence_ids": [
+        "canonical",
+        "prior-actual-audit",
+        "independent-target",
+        "integration"
+      ]
+    },
+    {
+      "assessment_id": "owner-2",
+      "area": "ownership",
+      "topic": "data/identifier_authorities/sources.json",
+      "outcome": "supported",
+      "summary": "The whole maintained source manifest or source-authority snapshot equals the exact accepted actual output. One ordinary PathBank source entry adds six selected terms; product runtime and ontology remain unchanged. Identity/name projection does not assert typed biochemical context.",
+      "target_ids": [
+        "owner-2"
+      ],
+      "evidence_ids": [
+        "canonical",
+        "prior-actual-audit",
+        "independent-target",
+        "integration"
+      ]
+    },
+    {
+      "assessment_id": "prior-preservation",
+      "area": "provenance",
+      "topic": "Whole authority and checkout preservation",
+      "outcome": "supported",
+      "summary": "The 893-row manifest retains all 892 prior rows. All 2688 old source terms/711 owners and their nested encounter order survive in 2694 terms/712 owners. Ontology remains 2016 terms/five owners with exact old bytes. All 241 old scientific records/pages, 126 review pairs and 410 histories remain exact; two new histories precede SSSOM/render.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "evidence_ids": [
+        "canonical",
+        "prior-actual-audit",
+        "checkout-results",
+        "native-history-1",
+        "native-history-2"
+      ]
+    },
+    {
+      "assessment_id": "graph-exports",
+      "area": "graph",
+      "topic": "Whole graph, exact contexts and encounter order",
+      "outcome": "supported",
+      "summary": "All 15 arrows, 18 display nodes, eight qualifiers, 18 references and 12 identities resolve. Whole current KGX equals accepted 4363 nodes/12125 edges. Every prior edge payload and relative order and every prior node aggregate/context survives. Six exact target contexts are inserted at the accepted positions, preserving every prior context in exact relative order and whole payload. The complete old-node vector equals the accepted ATP/ADP encounter permutation; removing those two IDs preserves all other relative order. Phosphate remains unconnected.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "evidence_ids": [
+        "canonical",
+        "prior-actual-audit",
+        "target-results",
+        "target-helper-correction",
+        "visual"
+      ]
+    },
+    {
+      "assessment_id": "mapping-export",
+      "area": "representation",
+      "topic": "Complete source mappings",
+      "outcome": "supported",
+      "summary": "Native SSSOM preserves its complete header and all 66 old rows, cells, multiplicity and relative order, adding four exact mappings for 70 total.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "evidence_ids": [
+        "native-sssom",
+        "target-results"
+      ]
+    },
+    {
+      "assessment_id": "native-gates",
+      "area": "schema",
+      "topic": "Fresh maintained validation",
+      "outcome": "supported",
+      "summary": "All nine native gates passed for 242 records: 4773 tests passed, 3 skipped and 3 warnings retained. Root executed those commands; this reviewer verified exact receipts and streams without repeating passing broad gates.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "evidence_ids": [
+        "native-packet",
+        "native-validate",
+        "native-tests",
+        "native-lint",
+        "native-kgx",
+        "native-vendored",
+        "native-diff-check",
+        "native-site-current"
+      ]
+    },
+    {
+      "assessment_id": "portable-evidence",
+      "area": "completeness",
+      "topic": "Whole source and review provenance",
+      "outcome": "supported",
+      "summary": "Accepted preparation retains 2421 whole portable bodies. Its complete replay is inherited; maintained dossier/index bodies and all 18 reference-hash bindings are fresh. Ordinary source identity/name support remains separate from scientific assembly, donor-state, site, phosphate and strain interpretation.",
+      "target_ids": [
+        "owner-1",
+        "owner-2"
+      ],
+      "evidence_ids": [
+        "integration",
+        "integration-compatibility",
+        "sealer-template",
+        "post-package-retention",
+        "canonical",
+        "science-scope",
+        "independent-target",
+        "checkout-results"
+      ]
+    }
+  ],
+  "findings": [],
+  "actions": [],
+  "limitations": [
+    "One external target-QA attempt failed because its helper required new contexts to append. The exact failed helper/streams/partial report are retained. A narrow helper correction passed; no product, accepted native output or native gate was changed. Complete checkout passed once and was not repeated.",
+    "Prior distinct actual-output audit, accepted scientific reading and integration portable replay are inherited. Fresh scope is maintained record/page/export/owner preservation, full physical inventory/cache and native receipt/stream currentness. No paper reread or broad test rerun.",
+    "Only one source builder ran for the accepted canonical output. Ontology was reused byte exactly. Historical SQL descriptors retain obsolete rehash prose; no new SQL hash/query or ontology builder is claimed.",
+    "The root personally viewed static light preview is inherited after exact whole current SVG/CSS/JS equality. Dense convergence, long return paths, overlapping/truncated labels and tall blank canvas remain. No personal new visual, interactive, responsive, keyboard, dark or print check.",
+    "Actual regression retains 3 skips and 3 warnings with 4773 passes.",
+    "Evidence references name concrete proposed dossier destinations. Exact-byte adoption and current input inspection/validation are required before native save; this external proposal itself is not saved."
+  ],
+  "notes": [
+    "Every native input hash was rechecked after actual gates and fresh maintained QA, before this proposal.",
+    "The technical review uses the native repository review contract and does not claim the separate full scientific skill workflow.",
+    "No maintained product edit, review save, public action or licensing clearance was performed."
+  ],
+  "links": [],
+  "tags": [
+    "baesr",
+    "pathbank",
+    "technical-review",
+    "local-only"
+  ]
+}

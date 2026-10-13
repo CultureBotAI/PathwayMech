@@ -1,0 +1,13 @@
+--- initial/check_target.py
++++ corrected/check_target.py
+@@ -113,7 +113,9 @@
+  for nid,old in oldmap.items():
+   new=newmap[nid]
+   check('old node aggregate preserved '+nid,{k:v for k,v in old.items() if k!='source_contexts'}=={k:v for k,v in new.items() if k!='source_contexts'})
+-  check('old contexts and exact target additions '+nid,json.loads(new['source_contexts'])==json.loads(old['source_contexts'])+additions.get(nid,[]))
++  old_contexts=json.loads(old['source_contexts']); new_contexts=json.loads(new['source_contexts'])
++  check('old context relative order and whole payload '+nid,[c for c in new_contexts if c.get('record_id')!=rid]==old_contexts)
++  check('exact target contexts and multiplicity '+nid,[c for c in new_contexts if c.get('record_id')==rid]==additions.get(nid,[]))
+  oldedge_ids={e['id'] for e in oldedges}
+  check('all prior edge payloads and relative order exact',[r for r in erows if r['id'] in oldedge_ids]==oldedges)
+  runtime=json.loads((prep/'runtime-owner-map.json').read_bytes())
