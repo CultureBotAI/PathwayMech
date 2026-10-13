@@ -1,0 +1,119 @@
+--- 239/original-runner.py
++++ 239/network-resumption.py
+@@ -18,7 +18,9 @@
+ EXPECTED_SEMANTIC = '395a5a6413b93fedbda1f0e7b483ec222f354756d844449551d65c0950ba27e2'
+ EXPECTED_APPROVAL = "cad2d88ea48fe6681d92a1e3c428313cbd5bc61625cdb4f97c97141a3c72daef"
+ EXPECTED_BASELINE = 'cfd07ba5082e32d0c6461e9a82bb6ef140fdddd1fa30c6625aacefc7f9d58dab'
+-PHASES = ("history-and-generation", "remaining-offline-gates", "vendored-gate", "final-gates")
++PHASES = ("network-resumption",)
++ORIGINAL_RUNNER = Path("/private/tmp/pathwaymech-next-239-root-run-native-20261012.py")
++ORIGINAL_RUNNER_SHA = "4062c883278e7c2e525c6aedf374ec6e0e289ad7db3ded6a405697fa5466516a"
+ 
+ 
+ def pin(path):
+@@ -127,41 +129,45 @@
+     assert pin(ROOT / "data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml")["sha256"] == (
+         "60750cb046b847a5d52458cff6eab771be2a9200755c259cfe8d87c4808e95fa"
+     )
+-    history_before = check_histories(406 if phase == "history-and-generation" else 408)
++    history_before = check_histories(408)
+     env = {**os.environ, **stages["environment"]}
+-    if phase == "history-and-generation":
+-        commands = [
+-            {"name": "history-" + str(i + 1), "argv": argv}
+-            for i, argv in enumerate(stages["history_commands"])
+-        ]
+-        commands += stages["before_first_render_after_history"]
+-        commands += stages["nine_fresh_gates"][:2]
+-    elif phase in ("remaining-offline-gates", "vendored-gate", "final-gates"):
+-        previous = {
+-            "remaining-offline-gates": "history-and-generation",
+-            "vendored-gate": "remaining-offline-gates",
+-            "final-gates": "vendored-gate",
+-        }[phase]
+-        prior = json.loads((OUT / previous / "completion.json").read_bytes())
+-        assert prior["status"] == "phase_passed"
+-        assert prior["runner"] == runner_at_start
+-        assert prior["adoption"] == adoption_at_start
+-        assert prior["stage_plan"] == pin(PREP / "stages.json")
+-        assert pin(Path(prior["phase_start"]["path"])) == prior["phase_start"]
+-        for receipt in prior["receipts"]:
+-            assert receipt["exit_code"] == 0 and receipt["runner_at_start"] == runner_at_start
+-            assert pin(Path(receipt["stdout"]["path"])) == receipt["stdout"]
+-            assert pin(Path(receipt["stderr"]["path"])) == receipt["stderr"]
+-        for origin in prior["receipt_origins"]:
+-            assert pin(Path(origin["path"])) == origin
+-        span = {
+-            "remaining-offline-gates": slice(2, 6),
+-            "vendored-gate": slice(6, 7),
+-            "final-gates": slice(7, None),
+-        }[phase]
+-        commands = stages["nine_fresh_gates"][span]
+-    else:
+-        raise ValueError("Unknown explicit phase")
++    original = pin(ORIGINAL_RUNNER)
++    assert original["sha256"] == ORIGINAL_RUNNER_SHA
++    previous_path = OUT / "remaining-offline-gates/completion.json"
++    prior = json.loads(previous_path.read_bytes())
++    assert prior["status"] == "phase_passed" and prior["runner"] == original
++    assert prior["adoption"] == adoption_at_start
++    assert prior["stage_plan"] == pin(PREP / "stages.json")
++    assert [(r["name"], r["exit_code"]) for r in prior["receipts"]] == [
++        ("validate", 0), ("tests", 0), ("lint", 0), ("kgx", 0)]
++    failed_path = OUT / "vendored-gate/failure.json"
++    failed = json.loads(failed_path.read_bytes())
++    assert failed["status"] == "phase_failed"
++    assert [(r["name"], r["exit_code"]) for r in failed["receipts"]] == [("vendored", 1)]
++    assert "nodename nor servname provided" in (
++        OUT / "vendored-gate/vendored.stderr").read_text()
++    retained_origins = [pin(previous_path), pin(failed_path), original]
++    for group, phase_folder in [(prior, "remaining-offline-gates"), (failed, "vendored-gate")]:
++        phase_path = OUT / phase_folder / "phase-start.json"
++        phase_pin = pin(phase_path)
++        phase_state = json.loads(phase_path.read_bytes())
++        assert phase_state["runner"] == original and phase_state["adoption"] == adoption_at_start
++        assert phase_state["stage_plan"] == pin(PREP / "stages.json")
++        assert (OUT / phase_folder / "runner-at-start.py").read_bytes() == ORIGINAL_RUNNER.read_bytes()
++        retained_origins.extend([phase_pin, pin(OUT / phase_folder / "runner-at-start.py")])
++        for receipt in group["receipts"]:
++            assert receipt["runner_at_start"] == original and receipt["phase_start"] == phase_pin
++            receipt_path = OUT / phase_folder / (receipt["name"] + ".execution.json")
++            assert json.loads(receipt_path.read_bytes()) == receipt
++            origin = pin(receipt_path)
++            if "receipt_origins" in group:
++                assert origin in group["receipt_origins"]
++            retained_origins.append(origin)
++            for stream in ("stdout", "stderr"):
++                assert pin(Path(receipt[stream]["path"])) == receipt[stream]
++                retained_origins.append(receipt[stream])
++    commands = stages["nine_fresh_gates"][6:]
++    assert [r["name"] for r in commands] == ["vendored", "diff-check", "site-current"]
+     OUT.mkdir(exist_ok=True)
+     folder = OUT / phase
+     folder.mkdir(exist_ok=False)
+@@ -176,6 +182,7 @@
+         "stage_plan": pin(PREP / "stages.json"),
+         "plan": pin(PREP / "plan.json"),
+         "commands": commands,
++        "retained_prior_origins": retained_origins,
+         "record_count": len(records),
+         "history_before_phase": history_before,
+         "cwd": str(ROOT),
+@@ -238,6 +245,8 @@
+             write(folder / "sssom-preservation.json", {"actual": pin(path), **result})
+     assert pin(Path(__file__)) == runner_at_start
+     check_histories(408)
++    for origin in retained_origins:
++        assert pin(Path(origin["path"])) == origin
+     assert pin(adoption) == adoption_at_start
+     assert pin(approval) == state["approval"]
+     assert pin(PREP / "stages.json")["sha256"] == EXPECTED_STAGE
+@@ -258,6 +267,8 @@
+             "runner": runner_at_start,
+             "phase_start": phase_origin,
+             "receipt_origins": receipt_origins,
++            "retained_prior_origins": retained_origins,
++            "prior_failure": pin(failed_path),
+             "finished_at": datetime.datetime.now(datetime.UTC).isoformat(),
+         },
+     )

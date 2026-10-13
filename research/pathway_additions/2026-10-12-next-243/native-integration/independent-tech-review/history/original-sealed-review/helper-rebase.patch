@@ -1,0 +1,425 @@
+--- 240/check_target.py
++++ 243/check_target.py
+@@ -3,9 +3,9 @@
+ from collections import Counter,defaultdict
+ from lxml import html
+ import yaml
+-ROOT=Path('/private/tmp/pathwaymech-next-240-local-20261012'); OUT=Path(__file__).parent
+-P='data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml'
+-PAGE='pages/records/PathBank_SMP0002097.html'; BASE='5eb77a4b8039e98d9b53a61d09af52fa9f5b3d7a'
++ROOT=Path('/private/tmp/pathwaymech-next-243-local-20261012'); OUT=Path(__file__).parent
++P='data/pathways/baesr-two-component-signal-transduction.yaml'
++PAGE='pages/records/PathBank_SMP0002123.html'; BASE='63bc0ba99c63e4d4cdbdf70b8fb3f6f8417eeacf'
+ checks=[]
+ def check(name, condition, detail=None):
+  checks.append({'name':name,'passed':bool(condition),'detail':detail})
+@@ -20,30 +20,30 @@
+ def tsv(b):return list(csv.DictReader(io.StringIO('\n'.join(line for line in b.decode().splitlines() if not line.startswith('#'))),delimiter='\t'))
+ def main():
+  d=yaml.safe_load((ROOT/P).read_bytes()); rid=d['id']; refs={x['id']:x for x in d['references']}
+- check('exact accepted scientific draft',sha((ROOT/P).read_bytes())=='0adef1da2d818af7c62d7e3952b2115585b47b8f132ec189cde2b435d2721680')
+- accepted=Path('/private/tmp/pathwaymech-next-240-scope-successor-20261012/draft/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml')
++ check('exact accepted scientific draft',sha((ROOT/P).read_bytes())=='1cf9262a0df376a19517b3f55ccaac67dacc8af8ce58bd8a1b2046e93a951824')
++ accepted=Path('/private/tmp/pathwaymech-next-243-editorial-successor-20261012/draft/baesr-two-component-signal-transduction.yaml')
+  check('complete maintained YAML equals accepted scoped scientific draft',accepted.read_bytes()==(ROOT/P).read_bytes())
+- pars=d['description'].split('\n\n');check('18 complete paragraphs',len(pars)==18)
+- check('58 complete edges',len(d['mechanistic_edges'])==58)
+- check('four qualified endpoints',sum(len(e.get('endpoint_qualifiers',[])) for e in d['mechanistic_edges'])==4)
++ pars=d['description'].split('\n\n');check('13 complete paragraphs',len(pars)==13)
++ check('15 complete edges',len(d['mechanistic_edges'])==15)
++ check('eight qualified endpoints',sum(len(e.get('endpoint_qualifiers',[])) for e in d['mechanistic_edges'])==8)
+  check('four complete source mappings',len(d['source_mappings'])==4)
+- check('100 edge and qualifier evidence occurrences',sum(len(e['evidence'])+sum(len(q['evidence']) for q in e.get('endpoint_qualifiers',[])) for e in d['mechanistic_edges'])==100)
+- idx=json.loads(gzip.decompress((ROOT/'research/pathway_additions/2026-10-12-next-240/evidence-index.json.gz').read_bytes()))
++ check('31 edge and qualifier evidence occurrences',sum(len(e['evidence'])+sum(len(q['evidence']) for q in e.get('endpoint_qualifiers',[])) for e in d['mechanistic_edges'])==31)
++ idx=json.loads(gzip.decompress((ROOT/'research/pathway_additions/2026-10-12-next-243/evidence-index.json.gz').read_bytes()))
+  for ref in refs.values():check('reference portable binding '+ref['id'],ref['source_sha256'] in idx['body_lookup'])
+- prep=Path('/private/tmp/pathwaymech-next-240-local-integration-preparation-20261012')
++ prep=Path('/private/tmp/pathwaymech-next-243-local-integration-preparation-20261012')
+  baseline=json.loads((prep/'baseline-files.json').read_bytes());counts=Counter()
+  for row in baseline:
+   rel=row['path']; group=next((g for g in ('data/pathways/','pages/records/','history/','reviews/structured/') if rel.startswith(g)),None)
+   if group and row['type']=='regular':
+    check('baseline preserved '+rel,pin(ROOT/rel)['sha256']==row['sha256']);counts[group]+=1
+- check('240 old records',sum(r['path'].startswith('data/pathways/') and r['path'].endswith('.yaml') for r in baseline)==240)
+- check('240 old pages',counts['pages/records/']==240)
+- check('124 old review pairs',counts['reviews/structured/']==248)
++ check('241 old records',sum(r['path'].startswith('data/pathways/') and r['path'].endswith('.yaml') for r in baseline)==241)
++ check('241 old pages',counts['pages/records/']==241)
++ check('126 old review pairs',counts['reviews/structured/']==252)
+  # Every graph arrow, table row, node, reference, qualifier and local anchor.
+  dom=html.fromstring((ROOT/PAGE).read_bytes()); ids=dom.xpath('//*[@id]/@id');check('unique HTML ids',len(ids)==len(set(ids)))
+  for href in dom.xpath('//*[@href]/@href'):
+   if href.startswith('#'):check('local HTML link '+href,href[1:] in ids)
+- graph=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]');check('58 graph arrows',len(graph)==58)
++ graph=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]');check('15 graph arrows',len(graph)==15)
+  alltext=text(dom)
+  for i,(edge,arrow) in enumerate(zip(d['mechanistic_edges'],graph),1):
+   anchor=f'mechanism-edge-{i}'; row=dom.get_element_by_id(anchor); cells=row.findall('td');check(anchor+' shape',len(cells)==4)
+@@ -67,9 +67,9 @@
+    check(anchor+' evidence target',li.find('a').get('href')=='#reference-'+str(list(refs).index(ev['reference_id'])+1))
+    for k in ('quote','source_assertion','source_locator'):
+     if k in ev:check(anchor+' '+k,ev[k] in text(li))
+- nodes=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]');check('44 graph nodes:40 non-taxon identities plus4 qualified endpoints',len(nodes)==44)
++ nodes=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]');check('18 graph nodes:10 non-taxon identities plus8 qualified endpoints',len(nodes)==18)
+  named=[{'id':rid,'label':d['label']}]+[n for c in ('taxa','participants','reactions') for n in d[c]]
+- check('43 named identities',len(named)==43)
++ check('12 named identities',len(named)==12)
+  for n in named:
+   if n['id'] in {v['id'] for v in d['taxa']}:
+    check('unconnected taxon retained in component table',n['id'] in alltext);continue
+@@ -80,18 +80,18 @@
+   check('reference issuing URL '+ref['id'],ref['url'] in li.xpath('.//a/@href'))
+  check('whole description rendered',d['description'] in alltext)
+ 
+- preview=html.fromstring(Path('/private/tmp/pathwaymech-next-240-scoped-graph-preview-20261012/records/PathBank_SMP0002097.html').read_bytes())
++ preview=html.fromstring(Path('/private/tmp/pathwaymech-next-243-graph-preview-20261012/records/PathBank_SMP0002123.html').read_bytes())
+  actual_svg=dom.xpath('//svg[@class="pathway-network-svg"]')[0]
+  prior_svg=preview.xpath('//svg[@class="pathway-network-svg"]')[0]
+  check('actual graph equals statically inspected preview',html.tostring(actual_svg)==html.tostring(prior_svg))
+  for asset in ('style.css','assets/pathway-network.css','assets/pathway-network.js'):
+-  check('current graph asset equals root-viewed scoped preview '+asset,(ROOT/'pages'/asset).read_bytes()==(Path('/private/tmp/pathwaymech-next-240-scoped-graph-preview-20261012')/asset).read_bytes())
++  check('current graph asset equals root-viewed scoped preview '+asset,(ROOT/'pages'/asset).read_bytes()==(Path('/private/tmp/pathwaymech-next-243-graph-preview-20261012')/asset).read_bytes())
+  for link in dom.xpath('//link/@href|//script/@src'):
+   check('local stylesheet/script resolves '+link,(ROOT/PAGE).parent.joinpath(link).is_file())
+ 
+- histories=list((ROOT/'history/records/spermidine-biosynthesis-and-metabolism-escherichia-coli').glob('*.yaml'))
++ histories=list((ROOT/'history/records/baesr-two-component-signal-transduction').glob('*.yaml'))
+  check('actual curation history rendered',len(histories)==1 and all(event['summary'] in alltext for event in yaml.safe_load(histories[0].read_bytes())['events']))
+- actual_build=Path('/private/tmp/pathwaymech-next-240-canonical-build-20261012')
++ actual_build=Path('/private/tmp/pathwaymech-next-243-canonical-build-20261012')
+  for n in ['sources.json','ontology.json']:
+   check('actual authority body '+n,(ROOT/'data/identifier_authorities'/n).read_bytes()==(actual_build/n).read_bytes())
+  for n in ['nodes.tsv','edges.tsv']:
+@@ -100,13 +100,36 @@
+  for row in json.loads((prep/'plan.json').read_bytes())['changes']:
+   check('exact adopted owner '+row['destination'],pin(ROOT/row['destination'])['sha256']==row['payload']['sha256'])
+  erows=tsv((ROOT/'pages/downloads/edges.tsv').read_bytes());nrows=tsv((ROOT/'pages/downloads/nodes.tsv').read_bytes())
+- check('actual KGX counts',len(nrows)==4357 and len(erows)==12110)
++ check('actual KGX counts',len(nrows)==4363 and len(erows)==12125)
++ # Exact accepted ordering and all old contexts are checked against the maintained baseline.
++ oldnodes=tsv(gitbody('output/kgx/nodes.tsv')); oldedges=tsv(gitbody('output/kgx/edges.tsv'))
++ oldmap={r['id']:r for r in oldnodes}; newmap={r['id']:r for r in nrows}
++ order=json.loads(Path('/private/tmp/pathwaymech-next-243-canonical-preparation-20261012/graph-order-permutation.json').read_bytes())
++ check('whole old node vector equals accepted baseline',[r['id'] for r in oldnodes]==order['old_4357_node_ids_in_actual_order'])
++ check('exact ATP ADP encounter permutation',[r['id'] for r in nrows if r['id'] in oldmap]==order['expected_existing_node_ids_in_native_order'])
++ accepted_output=json.loads(Path('/private/tmp/pathwaymech-next-243-root-canonical-output-acceptance-20261012.json').read_bytes())
++ additions={r['id']:r['contexts'] for r in accepted_output['shared_context_additions']}
++ check('six exact context additions',len(additions)==6)
++ for nid,old in oldmap.items():
++  new=newmap[nid]
++  check('old node aggregate preserved '+nid,{k:v for k,v in old.items() if k!='source_contexts'}=={k:v for k,v in new.items() if k!='source_contexts'})
++  check('old contexts and exact target additions '+nid,json.loads(new['source_contexts'])==json.loads(old['source_contexts'])+additions.get(nid,[]))
++ oldedge_ids={e['id'] for e in oldedges}
++ check('all prior edge payloads and relative order exact',[r for r in erows if r['id'] in oldedge_ids]==oldedges)
++ runtime=json.loads((prep/'runtime-owner-map.json').read_bytes())
++ check('280 runtime owners reconciled',len(runtime['runtime'])==280)
++ for row in runtime['runtime']:
++  rel=row['relative_path'];check('effective runtime owner '+rel,pin(ROOT/rel)['sha256']==row['effective_integration']['sha256'])
++  if rel!='conf/identifier_sources.json':check('unchanged baseline runtime '+rel,pin(ROOT/rel)['sha256']==row['before']['sha256'])
++ check('whole ontology unchanged from baseline',(ROOT/'data/identifier_authorities/ontology.json').read_bytes()==gitbody('data/identifier_authorities/ontology.json'))
++ marker='PathBank:SMP0002123/Compound/PW_C001104'
++ check('native phosphate marker remains unconnected',all(marker not in (e['subject'],e['object']) for e in d['mechanistic_edges']))
+  oldbody=gitbody('output/sssom/source_mappings.sssom.tsv');newbody=(ROOT/'output/sssom/source_mappings.sssom.tsv').read_bytes()
+  semantic=json.loads((prep/'semantic-preservation.json').read_bytes())['SSSOM'];oldrows=tsv(oldbody);newrows=tsv(newbody)
+  headers=lambda b:[line for line in b.decode().splitlines() if line.startswith('#')]+[next(line for line in b.decode().splitlines() if not line.startswith('#'))]
+  check('SSSOM exact header lines',headers(oldbody)==headers(newbody))
+  oldset=Counter(j(r) for r in oldrows);added=Counter(j(r) for r in semantic['expected_added_rows'])
+- check('SSSOM62old4new66total',len(oldrows)==62 and sum(added.values())==4 and len(newrows)==66)
++ check('SSSOM66old4new70total',len(oldrows)==66 and sum(added.values())==4 and len(newrows)==70)
+  check('SSSOM all cells and multiplicities',Counter(j(r) for r in newrows)==oldset+added)
+  check('SSSOM prior row relative order',[r for r in newrows if j(r) in oldset]==oldrows)
+ 
+--- 240/check_checkout.py
++++ 243/check_checkout.py
+@@ -1,7 +1,7 @@
+ """Verify complete physical preservation after native gates, before review adoption."""
+ import sys,json,datetime,hashlib
+ from pathlib import Path
+-prep=Path('/private/tmp/pathwaymech-next-240-local-integration-preparation-20261012')
++prep=Path('/private/tmp/pathwaymech-next-243-local-integration-preparation-20261012')
+ sys.path.insert(0,str(prep))
+ import common as c
+ root=c.ROOT
+@@ -26,7 +26,7 @@
+ # c.inventory omits the root itself; preserve that existing representation.
+ assert set(dirs)==expected_dirs,(sorted(set(dirs)-expected_dirs),sorted(expected_dirs-set(dirs)))
+ c.cache_check()
+-receipts=Path('/private/tmp/pathwaymech-next-240-local-native-execution-20261012')
++receipts=Path('/private/tmp/pathwaymech-next-243-local-native-execution-20261012')
+ phases=['history-and-generation','remaining-offline-gates','vendored-gate','final-gates']
+ completions=[c.load(receipts/phase/'completion.json') for phase in phases]
+ assert all(x['status']=='phase_passed' for x in completions)
+@@ -43,6 +43,16 @@
+ for r in all_receipts:
+  c.verify(r['stdout']);c.verify(r['stderr'])
+ for a,b in zip(all_receipts,all_receipts[1:]):assert a['finished_at']<=b['started_at']
++# Require complete immutable native evidence before final maintained review.
++handoff=c.load(receipts/'handoff.json');c.verify(handoff['manifest'],receipts/'artifact-manifest.json')
++manifest=c.load(receipts/'artifact-manifest.json');rows=manifest.get('artifacts',manifest.get('files'));declared=set()
++for row in rows:
++ rel=row.get('relative_path') or str(Path(row['path']).relative_to(receipts));c.relative(rel);assert rel not in declared;declared.add(rel);c.verify(row,receipts/rel)
++actual,native_dirs=c.inventory(receipts);assert all(r['type']=='regular' for r in actual)
++assert {r['path'] for r in actual}==declared|{'handoff.json','artifact-manifest.json'}
++assert set(native_dirs)==set(manifest['directories'])-{'.'}
++intake={'status':'whole_native_packet_and_all_phase_streams_verified','handoff':c.pin(receipts/'handoff.json'),'manifest':c.pin(receipts/'artifact-manifest.json'),'artifacts':len(rows),'seals':2,'descendant_directories':len(native_dirs),'hidden_ignored_included':True,'directory_aliases_followed':False}
++with (out/'native-execution-intake.json').open('x') as f:json.dump(intake,f,indent=2);f.write('\n')
+ value={'status':'complete_checkout_preservation_after_native_gates_passed','at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline_files':len(before),'current_files':len(by),'baseline_directories':len(old_dirs),'current_directories':len(dirs),'whole_old_owners_preserved_outside_exact_plan':True,'hidden_and_ignored_included':True,'git_metadata_excluded':True,'cache_entries_unchanged':800,'new_histories':[by[p] for p in sorted(new_histories)],'history_completed_before_first_render':True,'adopted_owners':len(changes),'allowed_generated_paths':sorted(generated)}
+ with (out/'checkout-preservation.json').open('x') as f:json.dump(value,f,indent=2);f.write('\n')
+ print(json.dumps({k:v for k,v in value.items() if k not in ['new_histories','allowed_generated_paths']}))
+--- 240/run_qa.py
++++ 243/run_qa.py
+@@ -2,7 +2,7 @@
+ from pathlib import Path
+ import datetime,hashlib,json,os,subprocess,sys,time
+ P=Path(__file__).parent
+-ROOT=Path('/private/tmp/pathwaymech-next-240-local-20261012')
++ROOT=Path('/private/tmp/pathwaymech-next-243-local-20261012')
+ name=sys.argv[1]
+ assert name in ('target','checkout')
+ script=P/('check_target.py' if name=='target' else 'check_checkout.py')
+--- 240/inspect_technical.py
++++ 243/inspect_technical.py
+@@ -1,4 +1,4 @@
+-"""Capture current native review inputs only after all 240 gates complete."""
++"""Capture current native review inputs only after all 243 gates complete."""
+ import datetime
+ import hashlib
+ import json
+@@ -8,9 +8,9 @@
+ from pathlib import Path
+ 
+ H = Path(__file__).parent
+-R = Path('/private/tmp/pathwaymech-next-240-local-20261012')
+-P = Path('/private/tmp/pathwaymech-next-240-local-integration-preparation-20261012')
+-N = Path('/private/tmp/pathwaymech-next-240-local-native-execution-20261012')
++R = Path('/private/tmp/pathwaymech-next-243-local-20261012')
++P = Path('/private/tmp/pathwaymech-next-243-local-integration-preparation-20261012')
++N = Path('/private/tmp/pathwaymech-next-243-local-native-execution-20261012')
+ PY = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ 
+ 
+@@ -29,11 +29,11 @@
+ plan = json.loads((P / 'plan.json').read_bytes())
+ paths = [r['destination'] for r in plan['changes']
+          if not r['destination'].startswith(('data/pathways/', 'research/'))]
+-assert len(paths) == 8
++assert set(paths) == {'conf/identifier_sources.json','data/identifier_authorities/sources.json'}
+ targets = [
+     {'target_id': 'owner-' + str(i), 'path': path, 'label': path,
+      'kind': 'maintained',
+-     'ownership_note': 'Exact adopted source configuration, reviewed runtime/fixture/test, or native authority snapshot. Generated snapshots require rebuilding from maintained configuration and adapters.'}
++     'ownership_note': 'Exact adopted source manifest or native source-authority snapshot; product runtime and ontology are unchanged. Generated snapshots require rebuilding from maintained configuration and adapters.'}
+     for i, path in enumerate(paths, 1)
+ ]
+ with (H / 'technical-targets.json').open('x') as f:
+@@ -45,7 +45,7 @@
+     '.claude/skills/review-yaml-record/SKILL.md', 'src/pathwaymech/schema.py',
+     'scripts/build_ontology_identifier_snapshot.py', 'conf/identifier_policy.yaml',
+     'conf/rhea_identifier_updates.json', 'data/identifier_authorities/ontology.json',
+-    'pages/records/PathBank_SMP0002097.html',
++    'pages/records/PathBank_SMP0002123.html',
+     'output/sssom/source_mappings.sssom.tsv', 'output/kgx/nodes.tsv', 'output/kgx/edges.tsv',
+ ]
+ inputs = list(dict.fromkeys(inputs))
+--- 240/write_technical_proposal.py
++++ 243/write_technical_proposal.py
+@@ -1,4 +1,4 @@
+-"""Independent technical judgments after current maintained checks; no native save."""
++"""Write 243 TECH only after real maintained QA, native gates and inspection."""
+ import datetime
+ import hashlib
+ import json
+@@ -8,9 +8,10 @@
+ from pathlib import Path
+ 
+ H = Path(__file__).parent
+-R = Path('/private/tmp/pathwaymech-next-240-local-20261012')
+-N = Path('/private/tmp/pathwaymech-next-240-local-native-execution-20261012')
+-PREFIX = 'research/pathway_additions/2026-10-12-next-240/native-integration/'
++R = Path('/private/tmp/pathwaymech-next-243-local-20261012')
++N = Path('/private/tmp/pathwaymech-next-243-local-native-execution-20261012')
++P = Path('/private/tmp/pathwaymech-next-243-local-integration-preparation-20261012')
++PREFIX = 'research/pathway_additions/2026-10-12-next-243/native-integration/'
+ LOCAL = PREFIX + 'independent-tech-review/'
+ 
+ 
+@@ -30,22 +31,38 @@
+ assert inspection['status'] == 'inspection_only'
+ for row in inspection['source']['inputs']:
+     assert pin(R / row['path'])['sha256'] == row['sha256'], row['path']
++for name in ('target.execution.json', 'checkout.execution.json', 'technical-inspect.execution.json'):
++    assert load(H / name)['exit_code'] == 0
++intake = load(H / 'native-execution-intake.json')
++assert intake['status'] == 'whole_native_packet_and_all_phase_streams_verified'
++assert pin(N / 'handoff.json') == intake['handoff']
++assert pin(N / 'artifact-manifest.json') == intake['manifest']
++packaging = load(P / 'packaging-summary.json')
++plan = load(P / 'plan.json')
++retention = load(H / 'post-package-evidence-retention.json')
++assert retention['status'] == 'post_package_review_evidence_retained_whole_exact'
++for row in retention['file_mappings']:
++    assert pin(row['original']['path']) == row['original']
++    assert pin(row['retained']['path']) == row['retained']
++assert len(retention['file_mappings']) == 14
++for key in ('original', 'retained'):
++    assert pin(retention['sealer_template_review'][key]['path']) == retention['sealer_template_review'][key]
+ 
+ for source, dest in [
+-    ('/private/tmp/pathwaymech-next-240-root-canonical-output-acceptance-20261012.json', 'canonical-acceptance.json'),
+-    ('/private/tmp/pathwaymech-next-240-root-integration-acceptance-20261012.json', 'integration-acceptance.json'),
+-    ('/private/tmp/pathwaymech-next-240-root-implementation-acceptance-20261012.json', 'implementation-acceptance.json'),
+-    ('/private/tmp/pathwaymech-next-240-root-order-acceptance-20261012.json', 'order-acceptance.json'),
+-    ('/private/tmp/pathwaymech-next-240-root-scoped-preview-acceptance-20261012.json', 'preview-acceptance.json'),
+-    ('/private/tmp/pathwaymech-next-240-canonical-output-independent-review-20261012/handoff.json', 'prior-actual-review-handoff.json'),
++    ('/private/tmp/pathwaymech-next-243-root-canonical-output-acceptance-20261012.json', 'canonical-acceptance.json'),
++    ('/private/tmp/pathwaymech-next-243-root-integration-acceptance-20261012.json', 'integration-acceptance.json'),
++    ('/private/tmp/pathwaymech-next-243-root-scientific-scope-acceptance-20261012.json', 'scientific-scope-acceptance.json'),
++    ('/private/tmp/pathwaymech-next-243-canonical-output-independent-review-20261012/handoff.json', 'prior-actual-review-handoff.json'),
++    ('/private/tmp/pathwaymech-next-243-root-scientific-review-20261012/handoff.json', 'root-scientific-review-handoff.json'),
++    ('/private/tmp/pathwaymech-next-243-graph-preview-20261012/visual-assessment.json', 'visual-assessment.json'),
+ ]:
+     assert not (H / dest).exists()
+     shutil.copyfile(source, H / dest)
+ 
+ target_ids = [t['target_id'] for t in inspection['targets']]
+-assert len(target_ids) == 8
+-evidence = []
+-checks = []
++assert len(target_ids) == 2
++assert {t['path'] for t in inspection['targets']} == {'conf/identifier_sources.json', 'data/identifier_authorities/sources.json'}
++evidence, checks = [], []
+ 
+ 
+ def ev(eid, path, reference, summary, kind='validation'):
+@@ -79,23 +96,25 @@
+     receipt = load(H / (name + '.execution.json'))
+     assert receipt['exit_code'] == 0
+     ev('independent-' + name, H / (name + '.execution.json'), LOCAL + name + '.execution.json',
+-       'This independent reviewer executed complete current target/render/export or physical checkout/cache checks after native gates completed.')
++       'This reviewer executed complete current target/render/export or physical checkout/cache checks after native gates completed.')
+     checks.append({'check_id': 'independent-' + name, 'name': 'Independent maintained ' + name + ' QA',
+                    'status': 'passed', 'required': True, 'summary': 'Whole maintained check passed after all native gates.',
+                    'target_ids': target_ids, 'command': shlex.join(receipt['argv']),
+                    'exit_code': 0, 'expected_exit_code': 0, 'evidence_ids': ['independent-' + name]})
+ 
+ for eid, name, summary, kind in [
+-    ('native-packet', 'native-execution-intake.json', 'Fresh ignored-inclusive no-follow closure of the exact sealed81-artifact native gate packet plus two seals; every complete receipt and stream remains byte bound.', 'validation'),
+-    ('canonical', 'canonical-acceptance.json', 'Root accepted whole native source/ontology outputs and independent old-object/order/KGX preservation review.', 'prior_review'),
+-    ('prior-actual-audit', 'prior-actual-review-handoff.json', 'This reviewer previously audited all 1921 actual artifacts plus two seals, whole scientific corpus, complete source objects/order, all selectors and complete KGX. That unchanged audit is inherited explicitly.', 'prior_review'),
+-    ('integration', 'integration-acceptance.json', 'Root accepted exact 18 destinations, nine primary owners, complete guards/native stages and hidden/ignored baseline/cache. The preparer 2761-body portable replay is inherited.', 'prior_review'),
+-    ('implementation', 'implementation-acceptance.json', 'The incomplete child PathWhiz/interface reference context finding is resolved; this reviewer previously ran 191 focused tests and 34 independent controls. That exact reviewed implementation contract is inherited.', 'prior_review'),
+-    ('ordering', 'order-acceptance.json', 'Root independently reproduced the old context-owner order defect and fixed deterministic serialization across five hash seeds. The only production correction is explicit metadata field order; prior identities, values and validation remain unchanged.', 'prior_review'),
+-    ('target-results', 'target-qa.json', 'Complete maintained scoped YAML, 58 arrows, 44 display nodes, four qualifiers, 43 identities, 42 references and rendered evidence checked. Authorities and whole exports equal accepted native bodies; SSSOM retains 62 old plus four new rows.', 'validation'),
+-    ('checkout-results', 'checkout-preservation.json', 'Ignored-inclusive complete physical owners/cache checked. All 240 old records/pages, 124 review pairs and 408 histories remain exact; only declared owners/generated files and two histories change.', 'validation'),
+-    ('visual', 'visual-assessment.json', 'Whole maintained SVG/CSS/JS equal the root-viewed scoped preview; root static visual appraisal is inherited explicitly, with dense junctions, truncated labels and blank canvas limitations.', 'validation'),
+-    ('preview', 'preview-acceptance.json', 'Root personally viewed the complete corrected-target static light graph; no browser interaction, responsive, dark or print acceptance.', 'prior_review'),
++    ('native-packet', 'native-execution-intake.json', f'Fresh no-follow complete closure of {intake["artifacts"]} native artifacts plus two seals, including hidden/ignored paths and every complete phase stream.', 'validation'),
++    ('canonical', 'canonical-acceptance.json', 'Root accepted one native source builder and byte-exact inherited ontology; all prior objects/order, first owners and six exact added graph contexts survive.', 'prior_review'),
++    ('prior-actual-audit', 'prior-actual-review-handoff.json', 'Distinct Aceto independent audit checked all 1922 actual artifacts plus two seals, all 242 scientific records, complete source objects/order and KGX. That accepted audit is inherited; I audited earlier canonical preparation, not this actual execution.', 'prior_review'),
++    ('integration', 'integration-acceptance.json', f'Root accepted the exact three primary owners and {len(plan["changes"])} complete planned destinations with guarded native stages. The preparer whole {packaging["unique_bodies"]}-body portable replay is inherited.', 'prior_review'),
++    ('integration-compatibility', 'integration-compatibility-review/handoff.json', 'Complete distinct 14-file compatibility review is retained with both seals, original Rhea-role assertion failure, exact failed/successor helpers and full streams. Its accepted mechanics appraisal is inherited, not repeated.', 'prior_review'),
++    ('sealer-template', 'native-sealer-template-review.json', 'This reviewer read the whole bounded native sealer template and exact predecessor diff; receipt-origin/stream/closure controls remain unchanged. Static template review is distinct from root actual native execution and final runner binding.', 'prior_review'),
++    ('post-package-retention', 'post-package-evidence-retention.json', 'Whole post-package compatibility and template-review bodies are retained with exact original paths, sizes, hashes and modes. These reviews postdate the scientific portable package and are retained separately here.', 'validation'),
++    ('target-results', 'target-qa.json', 'Whole accepted YAML, 15 arrows, 18 display nodes, eight qualifiers, 12 identities, 18 references and all 31 evidence occurrences match. Current graph equals accepted outputs and the root-viewed static preview; mappings retain 66 old plus four new rows.', 'validation'),
++    ('checkout-results', 'checkout-preservation.json', 'Complete physical inventory includes hidden/ignored paths. All 241 old records/pages, 126 review pairs, 410 histories and 800 cache entries remain exact outside the accepted scope.', 'validation'),
++    ('visual', 'visual-assessment.json', 'Original preview assessment by Nitrate; root independently viewed this same whole raster as documented in the root scientific review. Current whole SVG/CSS/JS equality binds it. No personal new visual or browser assessment is claimed here.', 'prior_review'),
++    ('science-scope', 'scientific-scope-acceptance.json', 'Exact accepted corrected scientific target and complete source-state/sequence/taxon/chemical/GO limitations are inherited. Separate maintained SCI judgment belongs to Adapter.', 'prior_review'),
++    ('root-preview-reading', 'root-scientific-review-handoff.json', 'Root scientific review explicitly documents personal full static-raster reading, including disconnected phosphate and overlap/truncation/blank-space limitations.', 'prior_review'),
+ ]:
+     ev(eid, H / name, LOCAL + name, summary, kind)
+ 
+@@ -109,54 +128,54 @@
+ 
+ for target in inspection['targets']:
+     assess(target['target_id'], 'ownership', target['path'],
+-           'Whole maintained owner equals the accepted deterministic runtime/configuration/native-output payload. The complete context contract and producer/consumer changes were independently reviewed upstream; current maintained integration and the actual full regression are verified here. Generated snapshot changes must be rebuilt from maintained configuration and adapters.',
+-           [target['target_id']], ['canonical', 'implementation', 'ordering', 'independent-target', 'integration'])
++           'The whole maintained source manifest or source-authority snapshot equals the exact accepted actual output. One ordinary PathBank source entry adds six selected terms; product runtime and ontology remain unchanged. Identity/name projection does not assert typed biochemical context.',
++           [target['target_id']], ['canonical', 'prior-actual-audit', 'independent-target', 'integration'])
+ assess('prior-preservation', 'provenance', 'Whole authority and checkout preservation',
+-       'All prior authority objects, nested order and first owners survive. The 892-entry manifest preserves all 887 old rows; ontology and Rhea are unchanged. All 240 old records/pages, 124 review pairs and 408 histories remain exact. Two actual histories precede SSSOM and first rendering.',
+-       target_ids, ['prior-actual-audit', 'checkout-results', 'native-history-1', 'native-history-2'])
+-assess('graph-exports', 'graph', 'Whole graph and current page',
+-       'All 58 edges, 44 display nodes, four qualifiers, 42 references and 43 identities resolve. Current KGX has 4357 nodes/12110 edges and preserves all 12052 old edges plus prior node payloads/order. Only six shared nodes gain exact target contexts; no aggregate field or category-union changes.',
++       'The 893-row manifest retains all 892 prior rows. All 2688 old source terms/711 owners and their nested encounter order survive in 2694 terms/712 owners. Ontology remains 2016 terms/five owners with exact old bytes. All 241 old scientific records/pages, 126 review pairs and 410 histories remain exact; two new histories precede SSSOM/render.',
++       target_ids, ['canonical', 'prior-actual-audit', 'checkout-results', 'native-history-1', 'native-history-2'])
++assess('graph-exports', 'graph', 'Whole graph, exact contexts and encounter order',
++       'All 15 arrows, 18 display nodes, eight qualifiers, 18 references and 12 identities resolve. Whole current KGX equals accepted 4363 nodes/12125 edges. Every prior edge payload and relative order and every prior node aggregate/context survives. Six exact target contexts are appended. The complete old-node vector equals the accepted ATP/ADP encounter permutation; removing those two IDs preserves all other relative order. Phosphate remains unconnected.',
+        target_ids, ['canonical', 'prior-actual-audit', 'target-results', 'visual'])
+ assess('mapping-export', 'representation', 'Complete source mappings',
+-       'Native SSSOM preserves complete header and 62 old rows, every cell, multiplicity and relative order; it adds four exact target mappings for 66 total, following native subject sorting.',
++       'Native SSSOM preserves its complete header and all 66 old rows, cells, multiplicity and relative order, adding four exact mappings for 70 total.',
+        target_ids, ['native-sssom', 'target-results'])
+ assess('native-gates', 'schema', 'Fresh maintained validation',
+-       f'All nine native gates passed for 241 records: {passed} tests passed, {skipped} skipped and {warnings} warnings retained. Render, skills, validation, lint, KGX, vendored, diff and site-current evidence is complete. Native execution was by the integration agent; this reviewer verified receipts and streams rather than rerunning passing broad gates.',
++       f'All nine native gates passed for 242 records: {passed} tests passed, {skipped} skipped and {warnings} warnings retained. The integration agent executed those commands; this reviewer verified exact receipts and streams without repeating passing broad gates.',
+        target_ids, ['native-packet', 'native-validate', 'native-tests', 'native-lint', 'native-kgx', 'native-vendored', 'native-diff-check', 'native-site-current'])
+-assess('portable-evidence', 'completeness', 'Whole evidence provenance',
+-       'Accepted preparation retains 2761 whole bodies, 1844 reused and 917 new, across 14 current packets; 891 authority originals and all 92 acquisition attempts/66 received scientific bodies are retained. All 42 reference hashes resolve. The preparer complete portable replay is inherited; the maintained index and payload bytes are freshly bound. Both resolved local technical findings and original failures remain available.',
+-       target_ids, ['integration', 'implementation', 'ordering', 'independent-target', 'checkout-results'])
++assess('portable-evidence', 'completeness', 'Whole source and review provenance',
++       f'Accepted preparation retains {packaging["unique_bodies"]} whole portable bodies. Its complete replay is inherited; maintained dossier/index bodies and all 18 reference-hash bindings are fresh. Ordinary source identity/name support remains separate from scientific assembly, donor-state, site, phosphate and strain interpretation.',
++       target_ids, ['integration', 'integration-compatibility', 'sealer-template', 'post-package-retention', 'canonical', 'science-scope', 'independent-target', 'checkout-results'])
+ 
+ started = datetime.datetime.fromisoformat(load(H / 'technical-inspect.execution.json')['started_at']).astimezone(datetime.UTC).strftime('%Y-%m-%dT%H:%M:%SZ')
+ value = {
+-    'schema_version': '1.0.0', 'review_id': now.strftime('%Y%m%dT%H%M%SZ') + '-pathbank240-technical',
++    'schema_version': '1.0.0', 'review_id': now.strftime('%Y%m%dT%H%M%SZ') + '-baesr243-technical',
+     'kind': 'repository', 'repository': 'CultureBotAI/PathwayMech',
+-    'title': 'Technical review of E. coli spermidine PathBank context integration',
++    'title': 'Technical review of BaeSR source-authority integration',
+     'started_at': started, 'finished_at': finished,
+-    'reviewer': {'identity': 'Codex /root/adapter_continue', 'kind': 'agent', 'independence': 'independent',
+-                 'independence_basis': 'This reviewer did not author the scientific record, production adapter, canonical preparation/execution, maintained adoption or native gate execution. The reviewer previously independently audited the complete context implementation and actual canonical outputs, and authored only external review helpers/artifacts. The later ordering correction is inherited from distinct root independent review. Independent SCI review belongs to a separate agent.'},
++    'reviewer': {'identity': 'Codex /root/deoxy237_science_review', 'kind': 'agent', 'independence': 'independent',
++                 'independence_basis': 'Authored the accepted 240 baseline and independently audited 243 canonical preparation. Did not author the 243 scientific record, authority design, canonical execution, maintained integration or native gates. Distinct Aceto actual-output audit and root scientific reading are inherited. Separate maintained SCI belongs to Adapter. This review judges the 243 source-only delta and whole maintained preservation, not a new independent review of the authored 240 baseline.'},
+     'skill': '.claude/skills/review-yaml-record/SKILL.md', 'completion': 'completed',
+     'verdict': 'pass_with_limitations', 'scientific_review': False,
+-    'summary': 'Eight exact technical owners pass current maintained integration review. All old objects/files/cache, complete mappings and current graph are preserved; actual native gates pass. Both resolved local context findings, inherited science and static layout limits remain explicit.',
++    'summary': 'Two source-authority owners pass current maintained review. Runtime and ontology are unchanged; complete prior payloads, accepted graph ordering, mappings and cache are preserved. Actual native gates pass with inherited scientific and static-preview limitations.',
+     'source': inspection['source'],
+-    'scope': {'description': 'Eight runtime/configuration/fixture/test/authority owners after completed record 240 gates, with complete maintained context.',
+-              'selection': 'All eight nonrecord primary owners from committed 239 baseline 5eb77a4b8039e98d9b53a61d09af52fa9f5b3d7a; no sampling.',
+-              'coverage': 'full', 'population_size': 8, 'reviewed_target_ids': target_ids,
+-              'exclusions': [{'target': 'New primary scientific judgment', 'reason': 'Separate independent maintained scientific review.'},
+-                             {'target': 'Publication and browser interaction', 'reason': 'Not performed or authorized within this local technical review.'}]},
++    'scope': {'description': 'Two source manifest/snapshot owners after completed record 243 gates, with complete maintained context.',
++              'selection': 'Both nonrecord primary owners from clean committed 240 baseline 63bc0ba99c63e4d4cdbdf70b8fb3f6f8417eeacf; no sampling.',
++              'coverage': 'full', 'population_size': 2, 'reviewed_target_ids': target_ids,
++              'exclusions': [{'target': 'New primary scientific judgment', 'reason': 'Separate independent maintained SCI.'},
++                             {'target': 'Publication and browser interaction', 'reason': 'Outside this local technical review.'}]},
+     'targets': inspection['targets'], 'checks': checks, 'evidence': evidence,
+     'assessments': assessments, 'findings': [], 'actions': [],
+     'limitations': [
+-        'Prior complete implementation adversarial tests, actual canonical audit and accepted preparation portable replay are inherited explicitly; current maintained page, exports, owners, full physical inventory/cache and native gate receipt/streams are freshly checked.',
+-        'The root personally viewed static light scoped preview is inherited only after whole current SVG/CSS/JS equality. This reviewer claims no new visual or browser interaction test. Dense junctions, label truncation and blank canvas remain; responsive, keyboard, dark and print behavior are untested.',
++        'Prior distinct actual-output audit, accepted scientific reading and integration portable replay are inherited. Fresh scope is maintained record/page/export/owner preservation, full physical inventory/cache and native receipt/stream currentness. No paper reread or broad test rerun.',
++        'Only one source builder ran for the accepted canonical output. Ontology was reused byte exactly. Historical SQL descriptors retain obsolete rehash prose; no new SQL hash/query or ontology builder is claimed.',
++        'The root personally viewed static light preview is inherited after exact whole current SVG/CSS/JS equality. Dense convergence, long return paths, overlapping/truncated labels and tall blank canvas remain. No personal new visual, interactive, responsive, keyboard, dark or print check.',
+         f'Actual regression retains {skipped} skips and {warnings} warnings with {passed} passes.',
+-        'Evidence references name planned concrete dossier destinations. Native save requires exact-byte evidence adoption and a current-input recheck; this external proposal is not a saved native review.',
++        'Evidence references name concrete proposed dossier destinations. Exact-byte adoption and current input inspection/validation are required before native save; this external proposal itself is not saved.',
+     ],
+-    'notes': ['Native inspection followed completed gates and independent maintained QA; every captured current input hash was rechecked before this proposal.',
+-              'The technical review uses the native repository review schema/serialization contract; it does not claim the separate full scientific skill workflow.',
+-              'Original local findings pathbank240-incomplete-interface-context and pathbank240-context-owner-order remain distinct from their accepted successor dispositions; no GitHub issue is claimed.',
+-              'No SQL full hashes, broad test suites or native builders were repeated by this reviewer; no maintained product edit, native save, public action or licensing clearance occurred.'],
+-    'links': [], 'tags': ['spermidine', 'pathbank-context', 'technical-review', 'local-only'],
++    'notes': ['Every native input hash was rechecked after actual gates and fresh maintained QA, before this proposal.',
++              'The technical review uses the native repository review contract and does not claim the separate full scientific skill workflow.',
++              'No maintained product edit, review save, public action or licensing clearance was performed.'],
++    'links': [], 'tags': ['baesr', 'pathbank', 'technical-review', 'local-only'],
+ }
+ with (H / 'technical-proposal.json').open('x') as f:
+     json.dump(value, f, indent=2, ensure_ascii=False)
+--- 240/validate_technical.py
++++ 243/validate_technical.py
+@@ -1,6 +1,6 @@
+ import datetime,hashlib,json,os,subprocess,time
+ from pathlib import Path
+-H=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-240-local-20261012')
++H=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-243-local-20261012')
+ def pin(p):
+  b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+ cmd=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','--repo-root',str(R),'validate',str(H/'technical-proposal.json')]

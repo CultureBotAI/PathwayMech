@@ -1,0 +1,1792 @@
+# Technical review of deoxyadenosine I maintained authority integration
+
+- Review: 20261012T223136Z-deoxy238-technical
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T22:29:42Z
+- Finished UTC: 2026-10-12T22:31:36Z
+- Reviewer: Codex /root (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+Three exact maintained technical owners pass current integration review. Complete old objects/files/cache, source mappings, current rendered graph and actual native gates are preserved. Scientific interpretation remains separately reviewed; static layout and source-access limits remain explicit.
+
+## Scope And Provenance
+
+The exact source manifest and two native authority snapshots after completed238gates, with complete maintained integration context.
+
+Selection: Three primary technical owners at237baseline5d3198b18a4a0f82175a65df48dd8a63664cd32d. No sampling.
+Coverage: full; 3 reviewed / 3 in the declared population.
+Source: working_tree at Git base 5d3198b18a4a0f82175a65df48dd8a63664cd32d.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| owner-1 | conf/identifier_sources.json | maintained | conf/identifier_sources.json |
+| owner-2 | data/identifier_authorities/ontology.json | maintained | data/identifier_authorities/ontology.json |
+| owner-3 | data/identifier_authorities/sources.json | maintained | data/identifier_authorities/sources.json |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Actual native history-1 | passed | False | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native history-2 | passed | False | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native sssom | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native render | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native skills | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native validate | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native tests | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native lint | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native kgx | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native vendored | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native diff-check | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Actual native site-current | passed | True | owner-1, owner-2, owner-3 | Actual recorded process exited0; execution evidence does not substitute for scientific interpretation. |
+| Root maintained target QA | passed | True | owner-1, owner-2, owner-3 | Whole current target/graph/export or physical checkout/cache preservation passed after gates. |
+| Root maintained checkout QA | passed | True | owner-1, owner-2, owner-3 | Whole current target/graph/export or physical checkout/cache preservation passed after gates. |
+| Premature root target diagnostic | failed | False | owner-1, owner-2, owner-3 | Ran before CLI KGX completed and rejected old nodes.tsv. Retained unchanged and superseded by exact-helper root-target pass after gates. |
+
+## Scientific And Domain Assessments
+
+### conf/identifier_sources.json
+
+ownership: supported. Targets: owner-1.
+
+The current whole primary owner equals the accepted actual native output or manifest. No source adapter, runtime policy or old authority owner was edited. Future changes must remain in maintained source configuration/builders.
+
+### data/identifier_authorities/ontology.json
+
+ownership: supported. Targets: owner-2.
+
+The current whole primary owner equals the accepted actual native output or manifest. No source adapter, runtime policy or old authority owner was edited. Future changes must remain in maintained source configuration/builders.
+
+### data/identifier_authorities/sources.json
+
+ownership: supported. Targets: owner-3.
+
+The current whole primary owner equals the accepted actual native output or manifest. No source adapter, runtime policy or old authority owner was edited. Future changes must remain in maintained source configuration/builders.
+
+### Whole source authority and physical checkout preservation
+
+provenance: supported. Targets: owner-1, owner-2, owner-3.
+
+All prior nested authority objects/order and869 manifest entries survive;874rows/873original paths are adopted. Old238records/pages,120review pairs and404histories remain byte-exact;two native histories precede SSSOM and render.
+
+### Complete current page and graph exports
+
+graph: supported. Targets: owner-1, owner-2, owner-3.
+
+All21edges and23display nodes with5qualifiers,42references and20identities resolve in current page; whole downloads/CLI KGX equal accepted4303nodes/12008edges. Fourteen shared contexts are appended without aggregate label/category/direction changes; all11987old edges and full old contexts preserved.
+
+### Source mappings
+
+representation: supported. Targets: owner-1, owner-2, owner-3.
+
+Native SSSOM preserves exact header and32old complete rows/multiplicity/relative order; adds exactly10whole accepted target mappings for42total. New mappings use native subject sorting; no unintended order convention is imposed.
+
+### Actual maintained validation
+
+schema: supported. Targets: owner-1, owner-2, owner-3.
+
+All nine gates and12commands passed first attempt:239records validated,4273tests passed/3skipped/3dependency warnings,lint/KGX/vendored/diff/site-current passed. Required source/scientific interpretation is kept separate from this technical verdict.
+
+### Whole evidence provenance
+
+completeness: supported. Targets: owner-1, owner-2, owner-3.
+
+Complete2135decoded bodies and original provenance views remain in the accepted portable evidence archive/index. Current adopted owners are byte-exact and shared800-entry cache unchanged. This technical check inherits prior full-source scientific assessments and does not assert access to previously unread supplements.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| native-history-1 | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-1.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-history-2 | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-2.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-sssom | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/sssom.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-render | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/render.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-skills | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/skills.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-validate | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-tests | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-lint | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-kgx | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-vendored | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/vendored.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-diff-check | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/diff-check.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| native-site-current | research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/site-current.execution.json | supports | Actual first successful native command, both original streams and phase-origin binding freshly verified; executed by integration agent, not rerun by root. |
+| root-target | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target.execution.json | supports | Root personally executed the exact unchanged helper after all native phases completed; original streams and whole result are retained. |
+| root-checkout | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout.execution.json | supports | Root personally executed the exact unchanged helper after all native phases completed; original streams and whole result are retained. |
+| early-diagnostic | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/target.execution.json | supports | Initial root check correctly stopped at prior CLI nodes before KGX completed. Same helper passed after completed gates; this timing error is retained, not a product defect. |
+| canonical | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/canonical-acceptance.json | supports | Exact full native authorities and whole old object/order preservation independently accepted before maintained adoption; inherited scientific/source interpretation. |
+| integration | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/integration-audit.json | supports | Root complete preparation audit:13owners,270runtime,2135portable bodies,869old manifest prefix,whole old authority/graph contexts and expected mappings. Earlier row-list ordering assumption was corrected to full-row multiset while preserving old relative order. |
+| target-results | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target-qa.json | supports | Fresh current record/DOM/table/evidence/qualifier/reference and old-page/review preservation; current snapshots and both KGX exports exactly equal accepted native bodies;32old+10new mapping rows. |
+| checkout-results | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout-preservation.json | supports | 12507baseline files to12520 current files,2007to2011directories,all old owners outside exact plan preserved,800cache identities/bodies unchanged. |
+| visual | research/pathway_additions/2026-10-12-next-238/native-integration/root-review/visual-assessment.json | supports | Root personally viewed full light raster; whole current SVG and CSS/JS match. Dense junctions, truncated long qualified labels, small whole-image text and tall layout limits retained. |
+
+## Limits And Additional Notes
+
+- Scientific/source interpretation and actual full-build acceptance are inherited; current owners and whole preservation are freshly checked. This is not a second independent scientific verdict.
+- Only a static light graph was personally viewed. Dense junctions and truncated qualified labels remain; no interactive, responsive, keyboard, dark-mode or print claim.
+- Three skips and three existing dependency warnings are retained from actual4273-test pass.
+- An early root diagnostic ran before KGX completed; its failure is retained and same-helper after-gates pass resolves the timing issue.
+- Evidence references name concrete planned durable dossier destinations. Native save must wait for guarded exact-byte evidence adoption and recheck the captured27inputs; this file is a proposal until saved through the native serializer.
+- Native inspection followed completed gates. Earlier exploratory/preparation checks are inherited context; this assessment freshly rechecked all27native input hashes and current three owners after inspection.
+- No public push, PR, merge, branch deletion, issue closure or licensing clearance is implied.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261012T223136Z-deoxy238-technical
+kind: repository
+repository: CultureBotAI/PathwayMech
+title: Technical review of deoxyadenosine I maintained authority integration
+started_at: '2026-10-12T22:29:42Z'
+finished_at: '2026-10-12T22:31:36Z'
+reviewer:
+  identity: Codex /root
+  kind: agent
+  independence: independent
+  independence_basis: Root did not author the record, canonical preparation or maintained
+    integration/adoption. Root authored review/check helpers and previously accepted
+    upstream evidence; that review work is disclosed, and independently authored source/output/preparation
+    reviews remain explicit. This verdict independently assesses current integration,
+    not fresh primary science.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: Three exact maintained technical owners pass current integration review.
+  Complete old objects/files/cache, source mappings, current rendered graph and actual
+  native gates are preserved. Scientific interpretation remains separately reviewed;
+  static layout and source-access limits remain explicit.
+source:
+  git_revision: 5d3198b18a4a0f82175a65df48dd8a63664cd32d
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: f2991a22f16f0d14d83226c6ac261bc779b253b2547fae9724474d8596b411c7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 7ab7ecea3fcfd71633e45da9fba8e1bb2ba301f40b93d4d2d3c519e48b3285c5
+    role: target
+  - path: conf/rhea_identifier_updates.json
+    sha256: 5c6a356a56a4b4df882ac2898587576216895a07fc2b455082da136ebd91a49d
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 85d4225fed65885628c273ec07bc93f6d32fb313dacc7b04199dc13238255cc0
+    role: target
+  - path: data/identifier_authorities/sources.json
+    sha256: 5d08b898e8fb4e097694c0aee7d191aaffb7d5df478ab50bfc9c54c3858233e1
+    role: target
+  - path: data/pathways/5-prime-deoxyadenosine-degradation-i.yaml
+    sha256: c8ae12061fd62a5ff8c6861b6665e3ac6938b0fe611b9e3d8d6a1e11f33199a5
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: output/kgx/edges.tsv
+    sha256: 38e6ac4dcf2dc8bff02e89b9a4dbb0a844ab480678922a7668f4a336f555e41e
+    role: context
+  - path: output/kgx/nodes.tsv
+    sha256: 9c46f0e991b4b26ba26fa43786ff8ab4b07263b39b8f6086de3d3de47337bb06
+    role: context
+  - path: output/sssom/source_mappings.sssom.tsv
+    sha256: 968d8173efbbc9c3abf287526cad5588f365be2b8939f9cc56348efecdf655b4
+    role: context
+  - path: pages/records/MetaCyc_PWY-8130.html
+    sha256: 8b1dda5d27fed18dd12a6a164418a9e41976c39bf5ba9d4d14b03e844dca9ea8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/README.md
+    sha256: 1d68ed93047a82821108275f1217792431e24af06fdba17d1f8a83128ba960f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/archives/evidence-bodies.zip.part-001
+    sha256: 671255ab13c714eef57825ae192068355c2610a440d83b2972b533dfefe4ed4c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/archives/integration-preparation.zip
+    sha256: ac8125056673da3a0285f73f9da657c8f9ab738d10d60cfffb7fcdf81058ae07
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/common.py.gz
+    sha256: 1e62748eeaae734dc8cc9b2d2e11a6e2fdebd5d134dce9506de53caaf8bf5ee4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/evidence-index.json.gz
+    sha256: 9b791b4955fe8e78a7ba5947f98304904f05aab5f4ab4f4b4d4c39362ca934f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/external-packet-closures.json.gz
+    sha256: 9da6a26c53471cd76f61011af0b4281c53204699962820d6dbc339987fccc6b4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/integration-preparation.json
+    sha256: 233012780b14ec33dbac6ea89ae9de568a6b154f5d9c31bff937b936cb10a767
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/local-integration-decision.json
+    sha256: b02a622c6820c1da5ab15d8fb5be9d33ff23cbc4b510fa000fc91469c409bc02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/README.md
+    sha256: d68d558a5a3e30e37d6e6ef5a9bd97135c17a7a8c756f01efdf14e5bdac9851c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/evidence-lint-preflight.zip
+    sha256: 0ae23d16028168372e280f4f401fae7e1cdaee1b772648bf2bb36f2684dedbe7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/finalization-plan.zip
+    sha256: e8900c3dc0884094d38ad547c15f45e996e0137a64deb278b471380a20bbad28
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/REPORT-initial.md
+    sha256: d95bb7edd3ac3d552c5eaae691d51c74217d5a570f524e4eb462309c26c5a177
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/REPORT.md
+    sha256: 4280ccc86f0b01604be9ab98d67a8c29e43df574b502a5f400d20f909dc43dc6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-finalization-tools.json
+    sha256: db06b15aca5fcd7bfe449bb59f10e788807e8a39bc6cb011120b167227ddea4c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/REPORT.md
+    sha256: 6d03658fca7e96210f0c12732848446f7bbc6c19bd2dac116e07e21f6cec9d72
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/actual-tool-provenance.json
+    sha256: 5c69304924b92c664bc1bdc1626f1cfa8f043d03e049d1694202c92344741b63
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/artifact-manifest.json
+    sha256: 15e471d4288233064e849d422ae05e1195eef35e524a8a38b37260ca7a283da2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/execution-summary.json
+    sha256: da605bfe8ff3a9d8df4dc4659c52634415a7b16147f0515db6b0e68cf1c09f99
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/completion.json
+    sha256: e0d1ee0580078777d0a4d094e57faca53233ffb51c6dda70700ce4e55d73e42b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/diff-check.execution.json
+    sha256: 7cd98f35d592a32865508823c8f4fe563c44c08343182b24a7b981ed2ce47343
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/diff-check.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/diff-check.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/phase-start.json
+    sha256: 29648273e8cfff1b824233a58b3561fe348c29905a6ce6a48457c2b9e9835b45
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/runner-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/site-current.execution.json
+    sha256: 8563df338447cd6c295654d5d7e4add67e9066a710b89928b2dcf582c7da1714
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/site-current.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/site-current.stdout
+    sha256: d95827982cc1a02313cd5344a0e387d364eee24f484c7dece14baaa81c547c77
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/handoff.json
+    sha256: 8fb12b32116623085696f23943a74599bb0d50f269a91edc0a19d394cad7c2d8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/completion.json
+    sha256: 86d371367bccd81016c56928d81c52cd5c500b9664433dfbe24a23ce72c2bd5f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/histories-before-generation.json
+    sha256: 89568635492b7f2f33f8814a0834407e3c232e76a83a0ec99a496c07a30ee419
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-1.execution.json
+    sha256: 6d556cb57be2f956a8a3c27fc00e581e98c86ce02f1d80d29bd9936f31fa7950
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-1.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-1.stdout
+    sha256: b23305d4290bb2eb417a14c071240603df1c9461de55a1c263f5485d686d4c04
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-2.execution.json
+    sha256: 6033b747e4ad8335b50dc2a375801745a28aaebc6109c4a965b05a202d00bf05
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-2.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-2.stdout
+    sha256: 11976928d2ad033b80ac5e19436c2d33509fad9d975f0ef3fcc58ad6fd4fddef
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/phase-start.json
+    sha256: 083e3ed9bf89b7ef742984b3f0504c00c8359587344ade5eb8bc41787f371e7a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/render.execution.json
+    sha256: d49e74e8a1dd311051df91c25f83795f087544707458c38f706f441eb58b8a95
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/render.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/render.stdout
+    sha256: bf78f01f1ae913d4297a316e0d33005dd317195e92cc2505340340fc434d8ded
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/runner-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/skills.execution.json
+    sha256: e90682f101c12c4d0b0cf5f3355745167e9e3e84a6548ad89445354962d00538
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/skills.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/skills.stdout
+    sha256: aa2d3652343b880d16a176d45deb7b4907fb11f43e31f1840d7724658478a527
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/sssom-preservation.json
+    sha256: 308734b05156848a82f5afdfecb91aab80f213782883ed7935710c7cc1df890e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/sssom.execution.json
+    sha256: 362e25f1a870d401ae80b9d210ba226a5c4932ac32a590a3068c4a3a56dd321e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/sssom.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/sssom.stdout
+    sha256: be8fd17d693bd18009cb826d313dd717a7cc620785a45aaab577cc10d6cf379e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/input-receipts/adoption.json
+    sha256: c301d3c2d5b13b0727b3028c3df7a2f4bc94e6d251c79be88964fc4cf1358ebf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/input-receipts/root-acceptance.json
+    sha256: 8f68f29ba2c435582fb49f2151e8e5ecdedb0f119841235f3675c236c34343f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/input-receipts/root-native-execution-acceptance.json
+    sha256: 7c008974a4f9588abe326c80031c78797b42a8a4cf0e81b2073894fe56da2a83
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/input-receipts/runner-preparation-handoff.json
+    sha256: b73557f8f82bf11c4d20a770d72d7c1205006664c597df43fba1eca3200e4d66
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/input-receipts/stages.json
+    sha256: 1093ec2642bdaa1ddf3d1162d75607dd6c36ae4d129d2eb91f5bf91f7140f4b7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/capture-wrapper.py.gz
+    sha256: 9676a01f36e541de79a86b94ff62ba689fa236a648f22f91351c82624d0a6058
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/final-gates/execution.json
+    sha256: 93f3758569d16eca632a73d74e08839b37a452e06d47d56886f26b6525dfb5a2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/final-gates/helper-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/final-gates/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/final-gates/stdout
+    sha256: d80264434bafee780cdcc94aa9120c0677e34dec05acb7a3bee3ab65746c3376
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/execution.json
+    sha256: e7009a2f15ce66b6dd0c564fa21b9c4f6f0e3bc983c15f96e9b4a729713b67dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/helper-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/history-and-generation/stdout
+    sha256: 70995138c38a64a5891f852665e83959d4ba22ff0f5371d7dadc1c93b901ca06
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/execution.json
+    sha256: 7da7763a75f2fd6d66d667fde2bb430dc7bb2dad24586e028e307b43282427ed
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/helper-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/remaining-offline-gates/stdout
+    sha256: c55f29a18cf9c43bb964452ddd6fd6de0211f04fca57cbf001599fc373865831
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/execution.json
+    sha256: 453517ee61554487ccf72a43da084f5fefc2aff861362a3d2a90ae60e9397298
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/helper-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/outer-tool-streams/vendored-gate/stdout
+    sha256: b009ad568561d1f94772dca24c43e9483044c23deb03c406bc2bdfe330645034
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/completion.json
+    sha256: 0d9f697b088373db7bdd2650816c3505197c7591050d4fb56b3ce3eacc4683d4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.execution.json
+    sha256: bcab0e513b4daccdbda07d87fc0b49745d7bf151c757a52852341ac6f2039c34
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.stdout
+    sha256: 98c652cefd84a297436b0dea91bb6d3ddd63de814349a552b2bbdd2be9ac8a1b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.execution.json
+    sha256: ac3fbc4563246f25cc3aae77871c6e00844272b0e746fa7025d9cf5a920aa168
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.stdout
+    sha256: 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/phase-start.json
+    sha256: 4f71326dad2d70739bb85aaf4b5e6e08cbd00f0f3f091f67358fb6e4f1c199a4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/runner-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.execution.json
+    sha256: 90751acd658c8a27e5fe20b46fa69f9dacb99a183a27c0b8f5c27e209fdc6a04
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.stdout
+    sha256: 14c773b65fe99504d3842aaeb3e38e682fbdf6a482353a8ba18c2739340f4ff0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.execution.json
+    sha256: b822f9cf5c0bda8d2c9ba96a53bde300b28cfcf7198c8ec9608eca7e77aed68b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.stdout
+    sha256: f6af84ccedc121d314e444e624ea16d17034f630c616b9bf665ae24cf1186d10
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/sealing-helper.py.gz
+    sha256: 5249ce55fbc23c95b97d6c7914ab3e659eedb54d2ad2e2c8d7416db338f221f9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/completion.json
+    sha256: ecd7460cef233b194f6a2bde92c3a6463950068465d60ce59afc3ef578943525
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/phase-start.json
+    sha256: babcca321228409110fa43b8596fba0d81092064b1e5f7a6a2fad0bc034f241a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/runner-at-start.py.gz
+    sha256: 59498b81ffe8bfe6781b6fe0ab95241430f86178480072f9b788fca5dc5a833f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/vendored.execution.json
+    sha256: 918e622ac1a8742d9113b025d7426435ccbc177428e4d5e075a2b64373faa7a2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/vendored.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/vendored.stdout
+    sha256: 3b073aa29da7dc3996edbe18c83d0d6593ba6d03238b663efc40286be4cf428e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/add_search_scope-execution.json
+    sha256: 42df85eabc4d80fb46918003478c9fadc8b904ca810084c2450c709b2eceb983
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/add_search_scope.py.gz
+    sha256: 429ef29d793ff86c18228cb92d93a9b43590046314b409cd476ff54ed2c28d9b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/add_search_scope.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/add_search_scope.stdout
+    sha256: 1282a7261b2f31d8d7a6d37f0d3eaed036d07d1200c929174a694f5bebb26a80
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/alias-serialization-correction.json
+    sha256: 815cba8bf59875e0c61a79b5f5eb3ba7c88e0942c27bd76bbff0ce6dd9f868fb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/align_review_id-execution.json
+    sha256: 4309c00d783a2d59ed68e958712206a50922d0eb6d85a5ffef89d01a6181df4b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/align_review_id.py.gz
+    sha256: 11414e07525ed1868c470dc337c39c2e2d40d83ed02b88da58db137780e727cb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/align_review_id.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/align_review_id.stdout
+    sha256: 60acf2d2ddd142d4446fabedb8ef0ac41e1dfb8aacb5ba0914bb0f24965acff3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/artifact-manifest.json
+    sha256: 3714fd26d5e0b4030820f914a0dbbb62640cc03d2deda4f754929d45a5ae8d2e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit-execution.json
+    sha256: 36aa6a1454e62451f09f3c9f376856d2c3ed481ad5fb428642de0d9fc4530295
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit-lineage.json
+    sha256: 781169f8ffc42b0960706ebe72e01972eb669d96da778b137e9736e6b0345397
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit-results.json
+    sha256: aed5425468c2c55938ae7d8a6cdafda730d027ca0c6dc2bf757c2b2ce39e8d3b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit.py.gz
+    sha256: 0508218f6d2f0c17853e7a03b2b8090b594b5ad93809895e36b27b240eecb591
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit.stdout
+    sha256: 2587b69cc25c382d8ce3a39611cdda0a4886bbdd1ba56e727cc67343a4f9e797
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit_gate_bindings-execution.json
+    sha256: c73573b2c377f7df1379f67d10854981df8e5c910f7408faffec281072586326
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit_gate_bindings.py.gz
+    sha256: 9571fbb6bfbe1a38e64036f421fa43d4b8990efa9fbc9b08570183d517b73d59
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit_gate_bindings.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/audit_gate_bindings.stdout
+    sha256: 1f95e83cad3e42d0cb0c182348e01689b5c7e53019a7d68be00213a3a0659b09
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/browser-availability.json
+    sha256: f25633fc3458947afc9775f23e5c564a569ffbf684dad6aa6f38e7206554dc1a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/build-proposal-execution.json
+    sha256: 827d43c59674f51e9c1b197a5351427c0f5ae0644d957f9ef3225ed49d4b64eb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/build-proposal.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/build-proposal.stdout
+    sha256: e2ae72d39e92741898e1cd846a43cfac1dfbb41cb7f08fc5d088f8b1eb9a30a1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/build_proposal.py.gz
+    sha256: a66daba13e9456e4974eea3d36f833708dbbef1cf353dff4b9853e7d81c17108
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/close_root_qa-execution.json
+    sha256: 397787ca22ccd535cbb9e094fe7dfb42b02b900bb32067c40b33575be4394531
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/close_root_qa.py.gz
+    sha256: 0123c1e45f535eed2cf07996257cb8ee39ee698564ed7c024650c18a867703ca
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/close_root_qa.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/close_root_qa.stdout
+    sha256: 05534f5a5b11f3eed87a566b5274b1d06dbb61a47078456e13289acde23f082e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/complete_scope_assessments-execution.json
+    sha256: 75c8fd39ab035e641014890bd803ebbad3dcd3b956153e610e039ca33ba936bd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/complete_scope_assessments.py.gz
+    sha256: ae2c2c152699b925af3f0966a29705b5009e6ebf83868d2cdc66b628cca604a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/complete_scope_assessments.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/complete_scope_assessments.stdout
+    sha256: d06fd98fbf5942d84ff2e0b112bc9dfa2c912fb48c9579dba19f5bbd15c33707
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/completed-review-aliasfree.yaml
+    sha256: b1240176c27f26b24b8f2db4c21ed096bbf2c3cdb2e09d7576bc38a2bc547fef
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/completed-review-final.yaml
+    sha256: 5f7a5a2cdb47ca2249ea04d9994aba62227f37253a64cfb291f0034793c6030e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/completed-review-ready.yaml
+    sha256: 5c72a35a2d37f5a22361370c20ccee470aaa26bc5b5c29402db96908d50d657a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/completed-review.yaml
+    sha256: 2e991f4a37f8ed45907ea6a4cb76cd03cf55a68da8953fbbd71993cd4e018830
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/copy_native_evidence-execution.json
+    sha256: 0674631fc0b10e510859fc1c391f18532e09da58ef0aad5dc09d16790a5cf910
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/copy_native_evidence.py.gz
+    sha256: f6a33b27bf59422256e1c8233836ef8c705ed684a86b774f1173a2605bac248e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/copy_native_evidence.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/copy_native_evidence.stdout
+    sha256: 1002f585690c0e07911e14c0649b21c6578e7861e057d7d923ebb633de83c8f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom-audit-correction.json
+    sha256: 86cff615821bea51e5634c54d3da99050c69a176dc91cb16f5d8f67141a5d0ca
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom-audit-correction.patch
+    sha256: 5a9fd8a7fd2a5c84460fcef7d8c02f7760289e488029ffb52ed4db72895a86d3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom-audit-second-correction.json
+    sha256: 816a1dfcc86e94c665a2d26b181394f3eac18a02c8d8c6fd08b78ab708351f93
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom-audit-second-correction.patch
+    sha256: 4484aab9f72dce47bf7b4f6e3de9f7390414a70657d6a6abc9fbbc424bf0db42
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom-audit.json
+    sha256: f7378d6e626c0ec4d994a499cfe5ebbef5e3ae7669326801446e7d38a9de7bc3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit-execution.json
+    sha256: 0e16a273ff54d0c8efe07fb9b45bd869986ee080086c252c7b481bf502726f7e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit.py.gz
+    sha256: 0b01b043eb39c23ff6dff6aa52ff44665683083d2bacfccb73a538e6f16e417f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit.stderr
+    sha256: 1ec318a1ef33568e1af59bb47a36efc4254c30a93460383e6ab00cd24b1322dd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_corrected-execution.json
+    sha256: 9e4a28f6a761ea58a384f82e525583015ffb45bcfc257a1adf06b7e2f8f5da06
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_corrected.py.gz
+    sha256: b9eed3a27389f0538e576d42a93460a7d3dfa52c1d65db8d33e9a8b0af48205f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_corrected.stderr
+    sha256: f16aca4f5e72754bf04992ed9920ae50ddae456cc576bf225c790cd5dee4dbe5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_corrected.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_final-execution.json
+    sha256: ebbb5fcd3975f34a5281a8d75579aa04ac0393e5e486aaf08ca3727edf807d75
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_final.py.gz
+    sha256: fce1c7b0c1ed2ecab2be0a3c2c8171077fd94f35039f59a7a2856e383934fed6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_final.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/dom_audit_final.stdout
+    sha256: c31bd22f364b1de17fd847c5fd44723c7cb67aa6d7b795ca96157a34752ab201
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/durable-adoption-instructions.json
+    sha256: 4a8a2d2789b7e7d678c0c5aefd23c11c30bb32a7ccd675a2c3bf8dabba177317
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/edge-appraisals.json
+    sha256: 310cc93a059da99eaf474ce49232534d1ebc4c0d6c9028db46abd06504e91449
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/evidence-resolution.json
+    sha256: 10cc315bde538608c5d01f5760a88efceb05e0178d57caacf7972c1192472f4d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports-after-gates-lineage.patch
+    sha256: d3d05f7ada649daf2e0af6b41871a6ca1c8a2d4c9b6a16940b18685a6bb2669f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports-currentness.json
+    sha256: af0c6b46745d88d16ae8f439506b3b76329429bab8a658a14b05fb53cf9b15dc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness-execution.json
+    sha256: 35fc22a849bba4a57f356b4e490fb2c0a773713064d88636ab266a624ee77830
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness.py.gz
+    sha256: d33ebc81b6298f03a206f26785e2ed6d47851d5830d290e23f2a71ca99071a27
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness.stderr
+    sha256: 818cbcff6723c530cdbe1dcbf21da5cebd856ffc3bc258531b32f28398bfaa40
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness_after_gates-execution.json
+    sha256: 981ba7a214f9c68d4ea70bbb0aa5c478a06beb1034a02ef73a8e35cdec7876cd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness_after_gates.py.gz
+    sha256: 9f69108c0ce1e42f43b3b53b8738022c0375d92f056ce807d8eb31e975273aa3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness_after_gates.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/exports_currentness_after_gates.stdout
+    sha256: d5f20e75844bc9a12c8491814e1c342d05d79bbf7ffdb82368db6fce853d7904
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/final-proposal-bindings.json
+    sha256: c84ff04c42c20e037c6fc7854687c66d2dcef324a9fe896eae55a9342c9aff2d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/finalize_and_seal.py.gz
+    sha256: 8e0d885baaa684959520bb52c71b5cd165292f60b9799d77e8c1020b687440a7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/handoff.json
+    sha256: 6f678058f9dbe4ddb15a9b6ad540b916f08f99cc2854f779dcada0b48707519c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/identity-appraisals.json
+    sha256: eee85efa6f05d966db196f28b50403ee798191961d84a272e6a7053868298659
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/identity-checks.json
+    sha256: e62f5d683d5a4c29969f7e5b1d8eb8ac7155fd0d85832b90f457332f0898a756
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/inspect-after-gates-execution.json
+    sha256: 9f1be13f59ef401256dfe4ea0abf343a78378bf30828a44423469d7d8a31b5e3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/inspect-after-gates-lineage.patch
+    sha256: 7f9b180988676abf9b52487f013bf678eab3ef58dc5b4c977933f7c0fbb2faa1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/inspect-execution.json
+    sha256: 494be52176c4f2baa0900eb747e0dd149407613396d81107fef676231683c893
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/inspect_after_gates.py.gz
+    sha256: 1c738aa7e6b513db5797310b481882c9cf49e1a3e80f6ff2226b79fa197475e7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/inspect_inputs.py.gz
+    sha256: 31f6a5ee72e848e31ab1d0c8b9d284487f5ff3d9cd7b9624495a105196181b20
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/maintained-graph-light.png
+    sha256: 1e2d64a3db4c2a4d4c2a0c511393e65dfa7f7133d82f791d3555670fba930ea8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/maintained-graph-light.svg
+    sha256: 61e26cdf956075799b2da29011ccdcfd2e53cfe937a2bd3b71c772f7eed41275
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/maintained-graph-original.svg
+    sha256: e36940fe89d476f0591b4861e25792641a84d17f5ed3bb53b6238bb768a4de65
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/mapping-checks.json
+    sha256: 94b15851037a833aea4f160876b71d212c7cf0541caafc8cfc2f0a4b87f226a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-evidence-copy-bindings.json
+    sha256: 49c4fffe21f6d04f9dae16390bbedc19d0b3d3709060a02d37df48162e6d9738
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-gate-bindings.json
+    sha256: 3102d665178a44c6059d5b2a09369d1b73aa85cf077a5eb9bffd08f3d659ad26
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-inspection-after-gates.json
+    sha256: 6f6451749fe23d0dce443363f3301d87ae1207ec5c6dd4d4081e9ec1a25db615
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-inspection-after-gates.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-inspection.json
+    sha256: 67a74cda43b470f8fdb6c3310571e0b6dafda4ef1a050711209e5b365619a1a9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-inspection.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-slot-checks.json
+    sha256: 61a26299653019e0e9c7396974fec31764c7ff44fa678f8fc6b0501e65b79c3f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-aliasfree-execution.json
+    sha256: 5f2109148535dfac2562329f1dbc9433b657bd8289e941ce8dcda533f44f789a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-aliasfree.stderr
+    sha256: 3c7e67c4c4c88de1a166d7eeee24a05e6b27068c39c47270c8e0d3517ac53414
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-aliasfree.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-execution.json
+    sha256: 48d0f68f1ae610a482f141eb5bdc19317ebe1514e3990b3f7097d1ac11216860
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-final-execution.json
+    sha256: 348a7735a8cd5246ca66dcf9da208b20e8244aa7debbc6e0ede308b522c241c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-final.stderr
+    sha256: 19997282bfbb005939aa092ff923f08856afc3e9538584ace85b6b7500b67017
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-final.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-ready-execution.json
+    sha256: df876ba3cd7837512ae1c318064d727cb17da857d47f58ced9259a12a3ea459e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-ready.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate-ready.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate.stderr
+    sha256: 9754fbee2c8d2e0dd5f2db7cea93dfda03c23dd6e71a1d9c6d83c082b95130e5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validate.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validation-aliasfree-lineage.patch
+    sha256: df96770c87f6e781d64e20a602701811f3fa83511d572c95cbf602b4e678bc83
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validation-final-lineage.patch
+    sha256: b085e71b8e51f3b13d03f446ac0cb24b4801238502349ab5d92baf47cd78c87a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/native-validation-ready-lineage.patch
+    sha256: 4683ea6784e0b90d3449c2cdedcf30843f0dd672a21dc30569d06fb4ff999580
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/paragraph-appraisals.json
+    sha256: cdd1b715bdc77c88deffb896e50a492006e9c761fe653c4da90d62a1760fae81
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/prepare_evidence.py.gz
+    sha256: c4c0eb92b07cb0c8aff07c75417e97ee8e8f233abf320dffc122208fdb407bb1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/prior-native-inventory.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/prior-native-inventory.stdout
+    sha256: 20b198914b179478f97b12de28d31c76aa4a6455b366889ecc846ff13edbf3c4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/prior-native-reviews.json
+    sha256: 61144abbcee36d1631fbd8a827099b18c22805f997e065636f6a8d40587a9459
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/prior-review-files.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/prior-review-files.stdout
+    sha256: c5ad93b655c019c6ba5efedb5a35fb3be4da5bef3dc3498bb2b18967792d7db0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/proposal-bindings.json
+    sha256: 121df143325221a8feab97168c724e875e3e0207df40d80d0a383af101a9809e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/raster-execution.json
+    sha256: fa5c267b0f8106a53126714e4fbff0615d1730e7256423de852b11e5ec6253d3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/raster.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/raster.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reaction-checks.json
+    sha256: d5837a8f2e5ab86bdd1564385642354bc78cf1db3983e6c144eef0fc9e8847f2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/read-coverage.json
+    sha256: df2959bd647651a8ea9a073e9f970356b4fce383cf9a76099e94d12c66d9b76c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-144504.reading.json
+    sha256: cdb638391e8eca2e437192403206f60ca58ae180650ba941b3697495c8f503c5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-15343.reading.json
+    sha256: 8a2422b99d9c9619c0c721fcd17c3d2361fc2348efd11eedbd8310375a9cefe2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-16708.reading.json
+    sha256: e2d233e80088ce09452b08a86be4020083c3290f829de8b80bccea0e8e7be86d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-17319.reading.json
+    sha256: c99e5e18fcb825d0d0b8afbb26f99f75ebd586302f9198f9e93dedf99ec6641f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-43474.reading.json
+    sha256: 26458a9c6a8a7d5ada7083e8e405f1259ec00ba479bb6872e8fe1d48786016e7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-48828.reading.json
+    sha256: 3e2290cfb6622bf1013999443b58d174d0987be7125886e5671220d7ebc819c5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-49786.reading.json
+    sha256: 6dc84d72d6f907ce5c58cef3ad1cb4d0ef4991242c75b648af88166f7a0cbb29
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-57642.reading.json
+    sha256: e9dc6dce678df37d92afaa945cfdaa3462d93b7fa47b38e11478291a5d3398d9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/CHEBI-58749.reading.json
+    sha256: 2bc35b19fa72bd0aa84488636672136d310e389ae77b9cd895e1c4c7b197152e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-ACETALD.xml
+    sha256: a0fab525af028860285de4d7c22a14197d9e4d4e331967a8fa04cdf525bc7838
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-ADENINE.xml
+    sha256: 5fa028374451381c386f70d214534b5e804c0a59ab3f2e05a4ea73c4c41bf5b4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-CH33ADO.xml
+    sha256: c449c16d7ddd1563c9ece70c27cc3e1ef878386225ef1549f1cef35652f9d8a9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-COplus2.xml
+    sha256: 44aff56c065ed0c7f7dcba66cdbe26e179aee571e1c147aa0f10540e9a78d919
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-CPD-15199.xml
+    sha256: 2fde32f6cb90c5576a7ec089e77ec89263ae2c24c832f55885b8e7bb95fd5b23
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-CPD-23219.xml
+    sha256: 8bb66f6979a3a66a2d4317399dcf1b7429680a963b9131aa1e13eedd2b862b8c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-CPLX-8604.xml
+    sha256: a39d726bc863900fe22781eaa8bddad96535548e597fa1f303896112e31989b4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-CPLX-8605.xml
+    sha256: 51ef456a226e96aaf9b0b7d2d77dac72d2647a0e2fc09835b157b708f4e336d7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-DIHYDROXY-ACETONE-PHOSPHATE.xml
+    sha256: 82ab21acef2d3dfb697349eb4d6917149b03e44940aaf62f65d6990f4cae97e2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-ENZRXN-29274.xml
+    sha256: a8fb0e281848fcf825522a9994a8dd9a887eab5a7db1d7b323527820c42000e5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-ENZRXN-29275.xml
+    sha256: 0e70bd56280fd27fcca4af33e778dc51a02d940519931583a3ba3a4c5841dacb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-ENZRXN-29276.xml
+    sha256: 880dc2713794b73514eb148d7a808b059db0fcc5fab9f69d3e768f4d1ac7f4bd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-G-15512.xml
+    sha256: 6e74e2cc594c7cc65e8b08f4a3434c59012f538a7d4d61f7479ca8e94a9d720d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-G-15516.xml
+    sha256: 48b3c6b9a2380fe18f522675046c7908895cec99b608716defa95b5c75105ca7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-G-80668.xml
+    sha256: 964741dbae46f0363ab2787939317fb2459c3e78e35cf39faaa2ac8cff682094
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-MONOMER-17870.xml
+    sha256: f86ac7a68f50348e831caded823954513cabf7e3ae84b3152ef99ad691a304ce
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-MONOMER-17874.xml
+    sha256: ff226a771e4d3301da25f7201cc2d98208ddc8312dfe748ef35af084a8a3b3cb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-MONOMER-21152.xml
+    sha256: de98593f6e4a6a1a13d270291e5fc55a087b64397da6a32705bb8ae417260ac5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-PWY-8130.xml
+    sha256: 9684ee99fbbad26d772d08132a0663e1cc84cd837e7f2bfd3ffe9437bc4e61f5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-Pi.xml
+    sha256: 8a0a103beff1f56b17d54c910854f8ab134cec4725b4ea6583bc6ae6f818e6b9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-RXN-14304.xml
+    sha256: 10e2ed3016aa213e35cdc4431ce611833adb19ad3220792277f2ad9b5a1593d4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-RXN-21315.xml
+    sha256: ed90b9d7539cbca372f96aa9eebc3a2d9464871672c90fe8fb0be102f4cdbd84
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/META-RXN-21316.xml
+    sha256: d971769c37b37f8068b01197b8f9b6ab81b7c503c21d9b17bbfb4988e710d76e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/NCBITaxon-1085.xml
+    sha256: 99dd29408ae9745f19eb66387ad81ade7e959034c7c8b06ea3164e4338712b53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/NCBITaxon-269796.xml
+    sha256: e4c5142b695722b7d0151f5e6c293ccbf9e277babf478293934da01e4b631587
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/PMC3475740-BioC.passages.txt
+    sha256: c614ac97c3990e8fe8974fbc59dfb9dae8f788c56040d8d97092a2d938971aa1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/PMC7237333-BioC.passages.txt
+    sha256: 823d9c6c5a9eaa276d3daf6f1fe67c0fc89d3a70fd2d396ee612ad7c09406252
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/UniProt-Q2RXH9.reading.json
+    sha256: f59c548c31d7e0117755f2d6a57425aac994680d99e255ea19b32fbafbca529c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/UniProt-Q2RXI0.reading.json
+    sha256: bf44d052e85079b74eab97b1b230b06c9797c890c7b373ca7d268ac759a26652
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reading/UniProt-Q2RXI1.reading.json
+    sha256: 2ae33a5e607556ac240b274d74545083c2800b487ec7a70d84537410fa902a7e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/reference-appraisals.json
+    sha256: 5dceb2a79699a24201a08bd0bd8d02c5f64b5f7285a667e1371779e1d44cb0f8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/review-id-correction.json
+    sha256: 6ff1273c2578776ee8ffb8cfe5a1815dc2387948ca14299059f1dae911610125
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/root-qa-binding.json
+    sha256: c9ae1621a81f8956cf7e629f14d45cd0dda27cd47953f6f5143f78a01ade550a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/run_proposal.py.gz
+    sha256: 74d35703a7289cd0d84f388532b481887658552eb4057fc347fbc3751d99f779
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/run_step.py.gz
+    sha256: b7c3b888f822db193360282d6ec9d9d949954a3fb15ab47ec3e87ea5a7ebb936
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/search-scope-correction.json
+    sha256: 6a40aec848e4a78c96559539f1fca86bbbf4c3ec756063b2e2d31e2500ac5bb2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/serialize_aliasfree-execution.json
+    sha256: 012729fba5fed0715e6c6c64d583b5dd9d5359499e3545710a5c4c2b4c7a08b2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/serialize_aliasfree.py.gz
+    sha256: 666c6efbabac6d4d26ca57b902c1d73f08c6a73d93922681619f8dbe90c66927
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/serialize_aliasfree.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/serialize_aliasfree.stdout
+    sha256: 4beaf66d56e5dedd8d9bfd12bc61aa30e5b26ae5cdd69fe1c3f3bbc6441739d5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/validate_proposal.py.gz
+    sha256: c0160c6ecc762e2fffa2582ed093ac818f389d031ccc9285d4a04f30f81d6e93
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/validate_proposal_aliasfree.py.gz
+    sha256: bd1dc801d129bbf59555361041b031e5f7e7e1940dd9daf58dfbbfac004aec5a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/validate_proposal_final.py.gz
+    sha256: 7dc34aa956d38f05fbca7462547fef0d834c031bde0825709ab51390edc610b9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/validate_proposal_ready.py.gz
+    sha256: ed791d94c1fb106dbfcb6f955ed6e6c85aa9dfb143756439c25cd8f5dae15718
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/visual-assessment.json
+    sha256: 407aee3a81ab68ee7f0a505f04282e44ed48d560a5e5b1522bc5d7f38e802239
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/whole-source-closure.json
+    sha256: a3a16247ceba48d4e5f5ce38a03ea649cc5ec00c8abca588469885fc343e10be
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/write_assessment-execution.json
+    sha256: d29c14174fe39f172de10968f974d4b3c637caa770928533d30452029ca8ba20
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/write_assessment.py.gz
+    sha256: 88592e3c81545bb17a5e034c09aa01278c4d8508a97ee51db43e3010ab1520b9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/write_assessment.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/write_assessment.stdout
+    sha256: 766b3c3100106ee6a5b487fdb19d522ebd0e3c889b16f91410cf187060d38feb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/maintained-review-acceptance.json
+    sha256: 34328d4d725b30706154ffb75f9401a4bb4c972b819fc063dd9b9753f25e6e3a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/REPORT.md
+    sha256: c4296d0b40bedf4f157a7a7a8b3b71c796465965e27756fa3e814680138051b5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/actual-root-tools.json
+    sha256: 2d7f319805e9e67fa077a99553f855311832989e2a774e76f01c2db0bfd346e6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/check_checkout.py.gz
+    sha256: 5082ab7a5658c53dd3b61f6e66b22bc5acd9f1341e07d27887959ed50d148070
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/check_target.py.gz
+    sha256: 28b26f3054bafe26e593296bb5900226f6c9c10a10e7c77add37743b2b555f3f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout-preservation.json
+    sha256: fe9bc13894c7c954553692cea070ddc689c6b33c66aa24309099a812c01342db
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout.execution.json
+    sha256: 121618694b8eebb67aa4ed776cef6ba9c054065eb5b5269325f08c2ce88222f8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout.stdout
+    sha256: 366a2c5acd8f2acb086205106842d3a0c357257a958fc80c2ada87247ece2604
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/run_qa.py.gz
+    sha256: b7086e0890b6194dd0b1376b65e432368590bc06da0ec3ff9e3a707d67e536cc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target-qa.json
+    sha256: 4c815adcdf533999033e7ad4c28fc973bf0f0dde1f726515b2528ef6f3f9f113
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target.execution.json
+    sha256: 9407c07327aec3f817e585fa02604c92f73575f511dfe217db85af09f4a66f1d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target.stdout
+    sha256: a73e1ab22194be6b88f28f5749dfa3766a72d2b7f9aaa7de57ce9b965177bc06
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/artifact-manifest.json
+    sha256: 3ed2a617d045b559e7722b16f532d18e2323df1e28548638c9f1a07cfd20af2e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/canonical-acceptance.json
+    sha256: a3c44b644e540faf713849b91126141a4fd540df113a0adf8cdae039896031b2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/check-rebase.patch
+    sha256: 1ae426536380c86b6dd3dec2ee9ee17727c102a68aca029563f47eb065227962
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/check_checkout.py.gz
+    sha256: 5082ab7a5658c53dd3b61f6e66b22bc5acd9f1341e07d27887959ed50d148070
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/check_target.py.gz
+    sha256: 28b26f3054bafe26e593296bb5900226f6c9c10a10e7c77add37743b2b555f3f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/handoff.json
+    sha256: 83661b4c0b6deca94b171a824f3f723a2a666f8609e44550edd6c108015e4c89
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/inspect_technical.py.gz
+    sha256: 7772e164d6356a9372e2cb33b50e0115d6bc462d1ddb9a893b86a99a2f50ef88
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/integration-acceptance.json
+    sha256: 8f68f29ba2c435582fb49f2151e8e5ecdedb0f119841235f3675c236c34343f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/integration-audit.json
+    sha256: e470234fcd073b5cd45cb43baf88f2d30fb2abce7fcdd6750d442215e4e6b067
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/native-execution-intake.json
+    sha256: 72e24315e7b90eb965f13fc2613c138b465959438080cf0f56681343ef662da6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/premature-phase-correction.json
+    sha256: 4c73d5467eeb7278924edf450c050d7bc17de0c000ab827cce9314b4333a8255
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/run_qa.py.gz
+    sha256: b7086e0890b6194dd0b1376b65e432368590bc06da0ec3ff9e3a707d67e536cc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/seal.py.gz
+    sha256: 1d645d7f68d0069bd5fcb12e8a907528fe488b42840b1294a5a2627bed2647b5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/target-qa-failed.json
+    sha256: 41e84d3c26f479e5ea7dea7546baf0a9e6cadf1757a250d431c6724fd43e3277
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/target.execution.json
+    sha256: 2731b641ec896f19506b39bf74bed728b437af90b6fcdaed0b3ba22ea0bd8485
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/target.stderr
+    sha256: a09007acf1775d269fd078fa16c1d29738f8189315fd23f4ae72b9351344e5f2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/target.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-inspect.execution.json
+    sha256: 720a2c678253964da33089e037b3d1319382f36ff80c8ceaad961d3f0281aa5f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-inspect.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-inspect.stdout
+    sha256: 6d0ef2732e84df79c652357f1dacaa52ae491785ef8470c10c5ba1ece794ae39
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-proposal.json
+    sha256: 844e69cd61d0af2ace36439e47e45ccbae2ded9fd85cde7e02f2c4b39ea2851d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-targets.json
+    sha256: 7ba2aa6b3ed87bfa494786ffe8dfe1618bd8119df85406abe9c695b157092ce5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-validate.execution.json
+    sha256: d2ed6c4c392babfaa1fd04fb5b4b2a54a19c166e7634e872c9dfe7ee4a2dca6b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-validate.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/technical-validate.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/validate_technical.py.gz
+    sha256: 11fcdc0172d01844dc9bcc19109c102d52339471a31dc47142ea286a4621207c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/visual-assessment.json
+    sha256: 4ba67581303fd4c82090aded94abedcb7e1949461ed3dec78bd8a073147f7f8c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/write_technical_proposal.py.gz
+    sha256: 8c12baa996edd48edc4bbd5984dd29b0d7b2365aa190303761da0fa94c8e85c9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/root-storage-map.json
+    sha256: e1c51292dae0728e53eefb01e56f22e8da006b6de6d3371dfde686f7f448c3b6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/storage-acceptance.json
+    sha256: 07035b7863cd109238eeb0feb3c90be3cc68a69d05fe119202f4913d73bfeac9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/storage-ledger.json
+    sha256: bcd87ad0bddd6249b31454bcf9720118242a82bb939010d3e072363039908c0f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/native-integration/storage-preparation.zip
+    sha256: 8616b347840b981e76465d29eec3db5764dc9c506e4d88d9cd51caf34f39fc1e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-238/verify_portable.py.gz
+    sha256: 039e18aa6cd8de2df6244c19ebb6847130827f4d8f072cf24b8e52c670206eaa
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 32f38f1ca6efe24577a1f19d2fa1c8938fa97c48249644962ac099c7b4215683
+    role: context
+  - path: src/pathwaymech/identifiers.py
+    sha256: f8a213287282cae24710ec843d6ea50d6148b841f38b4d3e4d177efa6a4191a0
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+scope:
+  description: The exact source manifest and two native authority snapshots after
+    completed238gates, with complete maintained integration context.
+  selection: Three primary technical owners at237baseline5d3198b18a4a0f82175a65df48dd8a63664cd32d.
+    No sampling.
+  coverage: full
+  population_size: 3
+  reviewed_target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  exclusions:
+  - target: New primary scientific judgment
+    reason: Owned by the separate maintained scientific reviewer.
+  - target: Public release and full browser interaction
+    reason: Not performed; publication remains unapproved and browser interaction
+      unavailable.
+targets:
+- target_id: owner-1
+  path: conf/identifier_sources.json
+  label: conf/identifier_sources.json
+  kind: maintained
+  ownership_note: Exact adopted source manifest or native authority snapshot. Future
+    corrections belong to the manifest/source adapter or authority builder; generated
+    snapshots must be rebuilt, not hand-patched.
+- target_id: owner-2
+  path: data/identifier_authorities/ontology.json
+  label: data/identifier_authorities/ontology.json
+  kind: maintained
+  ownership_note: Exact adopted source manifest or native authority snapshot. Future
+    corrections belong to the manifest/source adapter or authority builder; generated
+    snapshots must be rebuilt, not hand-patched.
+- target_id: owner-3
+  path: data/identifier_authorities/sources.json
+  label: data/identifier_authorities/sources.json
+  kind: maintained
+  ownership_note: Exact adopted source manifest or native authority snapshot. Future
+    corrections belong to the manifest/source adapter or authority builder; generated
+    snapshots must be rebuilt, not hand-patched.
+checks:
+- check_id: native-history-1
+  name: Actual native history-1
+  status: passed
+  required: false
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind record --slug 5-prime-deoxyadenosine-degradation-i --target-root data/pathways
+    --event CREATE --outcome changed --summary ''Add the complete evidence-backed
+    5-prime-deoxyadenosine degradation I record.'' --details ''Adopted exact accepted
+    MetaCyc:PWY-8130: 10 paragraphs, 21 edges, five endpoint qualifiers, 20 named
+    identities, 42 references and ten source mappings. Complete three-event route,
+    nine chemical-side occurrences, six kinetic slots, nested MtnP assembly and conflicting
+    dimer label, shared Ald2 contexts, construct/taxon/metal evidence and source access
+    limits retained in research/pathway_additions/2026-10-12-next-238. Actual native
+    outputs independently reviewed. Fresh maintained gates and native saved review
+    remain pending.'' --actor-name codex --agent-tool codex --model gpt-6'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-history-1
+- check_id: native-history-2
+  name: Actual native history-2
+  status: passed
+  required: false
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind infrastructure --slug deoxy238-native-authority --path conf/identifier_sources.json
+    --event EDIT --outcome changed --summary 'Integrate complete PWY-8130 authority
+    sources and accepted native snapshots.' --details 'Adopted exact 874-row manifest
+    retaining all 869 prior entries and two actual native snapshots. Existing 270-file
+    runtime and Rhea updates remain unchanged; whole old authority objects/order and
+    first owners preserved. No aggregate graph label, category or direction changes;
+    all old contexts remain exact. Local integration only; histories precede generation,
+    and maintained gates/native review remain pending.' --actor-name codex --agent-tool
+    codex --model gpt-6
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-history-2
+- check_id: native-sssom
+  name: Actual native sssom
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_sssom_main; raise SystemExit(export_sssom_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-sssom
+- check_id: native-render
+  name: Actual native render
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-render
+- check_id: native-skills
+  name: Actual native skills
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-skills
+- check_id: native-validate
+  name: Actual native validate
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-validate
+- check_id: native-tests
+  name: Actual native tests
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-238-local-gate-tests-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-tests
+- check_id: native-lint
+  name: Actual native lint
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-lint
+- check_id: native-kgx
+  name: Actual native kgx
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-kgx
+- check_id: native-vendored
+  name: Actual native vendored
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-vendored
+- check_id: native-diff-check
+  name: Actual native diff-check
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-diff-check
+- check_id: native-site-current
+  name: Actual native site-current
+  status: passed
+  required: true
+  summary: Actual recorded process exited0; execution evidence does not substitute
+    for scientific interpretation.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - native-site-current
+- check_id: root-target
+  name: Root maintained target QA
+  status: passed
+  required: true
+  summary: Whole current target/graph/export or physical checkout/cache preservation
+    passed after gates.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-238-root-maintained-qa-20261012/after-gates/check_target.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-target
+- check_id: root-checkout
+  name: Root maintained checkout QA
+  status: passed
+  required: true
+  summary: Whole current target/graph/export or physical checkout/cache preservation
+    passed after gates.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-238-root-maintained-qa-20261012/after-gates/check_checkout.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-checkout
+- check_id: early-diagnostic
+  name: Premature root target diagnostic
+  status: failed
+  required: false
+  summary: Ran before CLI KGX completed and rejected old nodes.tsv. Retained unchanged
+    and superseded by exact-helper root-target pass after gates.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-238-root-maintained-qa-20261012/check_target.py
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - early-diagnostic
+  - root-target
+evidence:
+- evidence_id: native-history-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-1.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: 6d556cb57be2f956a8a3c27fc00e581e98c86ce02f1d80d29bd9936f31fa7950
+- evidence_id: native-history-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/history-2.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: 6033b747e4ad8335b50dc2a375801745a28aaebc6109c4a965b05a202d00bf05
+- evidence_id: native-sssom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/sssom.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: 362e25f1a870d401ae80b9d210ba226a5c4932ac32a590a3068c4a3a56dd321e
+- evidence_id: native-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/render.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: d49e74e8a1dd311051df91c25f83795f087544707458c38f706f441eb58b8a95
+- evidence_id: native-skills
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/history-and-generation/skills.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: e90682f101c12c4d0b0cf5f3355745167e9e3e84a6548ad89445354962d00538
+- evidence_id: native-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/validate.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: b822f9cf5c0bda8d2c9ba96a53bde300b28cfcf7198c8ec9608eca7e77aed68b
+- evidence_id: native-tests
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/tests.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: 90751acd658c8a27e5fe20b46fa69f9dacb99a183a27c0b8f5c27e209fdc6a04
+- evidence_id: native-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/lint.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: ac3fbc4563246f25cc3aae77871c6e00844272b0e746fa7025d9cf5a920aa168
+- evidence_id: native-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/remaining-offline-gates/kgx.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: bcab0e513b4daccdbda07d87fc0b49745d7bf151c757a52852341ac6f2039c34
+- evidence_id: native-vendored
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/vendored-gate/vendored.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: 918e622ac1a8742d9113b025d7426435ccbc177428e4d5e075a2b64373faa7a2
+- evidence_id: native-diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/diff-check.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: 7cd98f35d592a32865508823c8f4fe563c44c08343182b24a7b981ed2ce47343
+- evidence_id: native-site-current
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/independent-qa/actual-native/final-gates/site-current.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Actual first successful native command, both original streams and phase-origin
+    binding freshly verified; executed by integration agent, not rerun by root.
+  snapshot_sha256: 8563df338447cd6c295654d5d7e4add67e9066a710b89928b2dcf582c7da1714
+- evidence_id: root-target
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Root personally executed the exact unchanged helper after all native phases
+    completed; original streams and whole result are retained.
+  snapshot_sha256: 9407c07327aec3f817e585fa02604c92f73575f511dfe217db85af09f4a66f1d
+- evidence_id: root-checkout
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Root personally executed the exact unchanged helper after all native phases
+    completed; original streams and whole result are retained.
+  snapshot_sha256: 121618694b8eebb67aa4ed776cef6ba9c054065eb5b5269325f08c2ce88222f8
+- evidence_id: early-diagnostic
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/target.execution.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Initial root check correctly stopped at prior CLI nodes before KGX completed.
+    Same helper passed after completed gates; this timing error is retained, not a
+    product defect.
+  snapshot_sha256: 2731b641ec896f19506b39bf74bed728b437af90b6fcdaed0b3ba22ea0bd8485
+- evidence_id: canonical
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/canonical-acceptance.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Exact full native authorities and whole old object/order preservation independently
+    accepted before maintained adoption; inherited scientific/source interpretation.
+  snapshot_sha256: a3c44b644e540faf713849b91126141a4fd540df113a0adf8cdae039896031b2
+- evidence_id: integration
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/integration-audit.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Root complete preparation audit:13owners,270runtime,2135portable bodies,869old
+    manifest prefix,whole old authority/graph contexts and expected mappings. Earlier
+    row-list ordering assumption was corrected to full-row multiset while preserving
+    old relative order.
+  snapshot_sha256: e470234fcd073b5cd45cb43baf88f2d30fb2abce7fcdd6750d442215e4e6b067
+- evidence_id: target-results
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/target-qa.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Fresh current record/DOM/table/evidence/qualifier/reference and old-page/review
+    preservation; current snapshots and both KGX exports exactly equal accepted native
+    bodies;32old+10new mapping rows.
+  snapshot_sha256: 4c815adcdf533999033e7ad4c28fc973bf0f0dde1f726515b2528ef6f3f9f113
+- evidence_id: checkout-results
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/after-gates/checkout-preservation.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: 12507baseline files to12520 current files,2007to2011directories,all old
+    owners outside exact plan preserved,800cache identities/bodies unchanged.
+  snapshot_sha256: fe9bc13894c7c954553692cea070ddc689c6b33c66aa24309099a812c01342db
+- evidence_id: visual
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-238/native-integration/root-review/visual-assessment.json
+  accessed_at: '2026-10-12T22:31:36Z'
+  support: supports
+  summary: Root personally viewed full light raster; whole current SVG and CSS/JS
+    match. Dense junctions, truncated long qualified labels, small whole-image text
+    and tall layout limits retained.
+  snapshot_sha256: 4ba67581303fd4c82090aded94abedcb7e1949461ed3dec78bd8a073147f7f8c
+assessments:
+- assessment_id: owner-1
+  area: ownership
+  topic: conf/identifier_sources.json
+  outcome: supported
+  summary: The current whole primary owner equals the accepted actual native output
+    or manifest. No source adapter, runtime policy or old authority owner was edited.
+    Future changes must remain in maintained source configuration/builders.
+  target_ids:
+  - owner-1
+  evidence_ids:
+  - canonical
+  - root-target
+  - integration
+- assessment_id: owner-2
+  area: ownership
+  topic: data/identifier_authorities/ontology.json
+  outcome: supported
+  summary: The current whole primary owner equals the accepted actual native output
+    or manifest. No source adapter, runtime policy or old authority owner was edited.
+    Future changes must remain in maintained source configuration/builders.
+  target_ids:
+  - owner-2
+  evidence_ids:
+  - canonical
+  - root-target
+  - integration
+- assessment_id: owner-3
+  area: ownership
+  topic: data/identifier_authorities/sources.json
+  outcome: supported
+  summary: The current whole primary owner equals the accepted actual native output
+    or manifest. No source adapter, runtime policy or old authority owner was edited.
+    Future changes must remain in maintained source configuration/builders.
+  target_ids:
+  - owner-3
+  evidence_ids:
+  - canonical
+  - root-target
+  - integration
+- assessment_id: prior-preservation
+  area: provenance
+  topic: Whole source authority and physical checkout preservation
+  outcome: supported
+  summary: All prior nested authority objects/order and869 manifest entries survive;874rows/873original
+    paths are adopted. Old238records/pages,120review pairs and404histories remain
+    byte-exact;two native histories precede SSSOM and render.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  evidence_ids:
+  - canonical
+  - checkout-results
+  - native-history-1
+  - native-history-2
+- assessment_id: graph-exports
+  area: graph
+  topic: Complete current page and graph exports
+  outcome: supported
+  summary: All21edges and23display nodes with5qualifiers,42references and20identities
+    resolve in current page; whole downloads/CLI KGX equal accepted4303nodes/12008edges.
+    Fourteen shared contexts are appended without aggregate label/category/direction
+    changes; all11987old edges and full old contexts preserved.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  evidence_ids:
+  - target-results
+  - canonical
+  - visual
+- assessment_id: mapping-export
+  area: representation
+  topic: Source mappings
+  outcome: supported
+  summary: Native SSSOM preserves exact header and32old complete rows/multiplicity/relative
+    order; adds exactly10whole accepted target mappings for42total. New mappings use
+    native subject sorting; no unintended order convention is imposed.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  evidence_ids:
+  - native-sssom
+  - target-results
+- assessment_id: native-gates
+  area: schema
+  topic: Actual maintained validation
+  outcome: supported
+  summary: All nine gates and12commands passed first attempt:239records validated,4273tests
+    passed/3skipped/3dependency warnings,lint/KGX/vendored/diff/site-current passed.
+    Required source/scientific interpretation is kept separate from this technical
+    verdict.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  evidence_ids:
+  - native-validate
+  - native-tests
+  - native-lint
+  - native-kgx
+  - native-vendored
+  - native-diff-check
+  - native-site-current
+- assessment_id: portable-evidence
+  area: completeness
+  topic: Whole evidence provenance
+  outcome: supported
+  summary: Complete2135decoded bodies and original provenance views remain in the
+    accepted portable evidence archive/index. Current adopted owners are byte-exact
+    and shared800-entry cache unchanged. This technical check inherits prior full-source
+    scientific assessments and does not assert access to previously unread supplements.
+  target_ids:
+  - owner-1
+  - owner-2
+  - owner-3
+  evidence_ids:
+  - integration
+  - root-target
+  - checkout-results
+findings: []
+actions: []
+limitations:
+- Scientific/source interpretation and actual full-build acceptance are inherited;
+  current owners and whole preservation are freshly checked. This is not a second
+  independent scientific verdict.
+- Only a static light graph was personally viewed. Dense junctions and truncated qualified
+  labels remain; no interactive, responsive, keyboard, dark-mode or print claim.
+- Three skips and three existing dependency warnings are retained from actual4273-test
+  pass.
+- An early root diagnostic ran before KGX completed; its failure is retained and same-helper
+  after-gates pass resolves the timing issue.
+- Evidence references name concrete planned durable dossier destinations. Native save
+  must wait for guarded exact-byte evidence adoption and recheck the captured27inputs;
+  this file is a proposal until saved through the native serializer.
+notes:
+- Native inspection followed completed gates. Earlier exploratory/preparation checks
+  are inherited context; this assessment freshly rechecked all27native input hashes
+  and current three owners after inspection.
+- No public push, PR, merge, branch deletion, issue closure or licensing clearance
+  is implied.
+links: []
+tags:
+- deoxyadenosine
+- technical-review
+- local-only
+```

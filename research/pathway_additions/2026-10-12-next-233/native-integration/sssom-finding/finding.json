@@ -1,0 +1,45 @@
+{
+  "at": "2026-10-12T13:46:38.505280Z",
+  "stable_key": "thio-integration-stale-sssom-export",
+  "severity": "minor",
+  "initial_full_tests": {
+    "path": "/private/tmp/pathwaymech-next-233-maintained-gates-20261012/tests.execution.json",
+    "bytes": 1545,
+    "sha256": "e4d480eeb4a487d11a1175dc559f5bf1ea0dc4ac6715f8d69f7ea9fa797d9194"
+  },
+  "result": {
+    "passed": 3209,
+    "failed": 1,
+    "skipped": 3,
+    "failure": "tests/test_sssom_export.py::test_committed_sssom_output_is_current"
+  },
+  "before": {
+    "path": "/private/tmp/pathwaymech-next-233-20261012/output/sssom/source_mappings.sssom.tsv",
+    "bytes": 2716,
+    "sha256": "abe1141e527d2ebd62a89ddce7f1558647ffcb4d4b71db7ef882d6e1897aed70"
+  },
+  "expected_actual_test_generated": {
+    "path": "/private/tmp/pathwaymech-next-233-maintained-gates-20261012/pytest-temp/test_committed_sssom_output_is0/source_mappings.sssom.tsv",
+    "bytes": 3486,
+    "sha256": "7c8d5177481a6a74c9936deb68459b781f274a40e6a2093c29f87fe365c71bce"
+  },
+  "retained_before": {
+    "path": "/private/tmp/pathwaymech-next-233-sssom-export-finding-20261012/before.sssom.tsv",
+    "bytes": 2716,
+    "sha256": "abe1141e527d2ebd62a89ddce7f1558647ffcb4d4b71db7ef882d6e1897aed70"
+  },
+  "retained_expected": {
+    "path": "/private/tmp/pathwaymech-next-233-sssom-export-finding-20261012/expected.sssom.tsv",
+    "bytes": 3486,
+    "sha256": "7c8d5177481a6a74c9936deb68459b781f274a40e6a2093c29f87fe365c71bce"
+  },
+  "old_rows_order_exact": true,
+  "new_rows": [
+    "MetaCyc:NADP\tNADP+\tskos:exactMatch\tCHEBI:58349\tNADP(3-)\tsemapv:UnspecifiedMatching\t1.0\t\"source_pathway_id=MetaCyc:THIOREDOX-PWY; source_element_id=/ptools-xml/Compound[@frameid=\"\"NADP\"\"]/dblink[dblink-db=\"\"CHEBI\"\" and dblink-relationship=\"\"unification\"\"]\"",
+    "MetaCyc:NADPH\tNADPH\tskos:exactMatch\tCHEBI:57783\tNADPH(4-)\tsemapv:UnspecifiedMatching\t1.0\t\"source_pathway_id=MetaCyc:THIOREDOX-PWY; source_element_id=/ptools-xml/Compound[@frameid=\"\"NADPH\"\"]/dblink[dblink-db=\"\"CHEBI\"\" and dblink-relationship=\"\"unification\"\"]\"",
+    "MetaCyc:PROTON\tH+\tskos:exactMatch\tCHEBI:15378\thydron\tsemapv:UnspecifiedMatching\t1.0\t\"source_pathway_id=MetaCyc:THIOREDOX-PWY; source_element_id=/ptools-xml/Compound[@frameid=\"\"PROTON\"\"]/dblink[dblink-db=\"\"CHEBI\"\" and dblink-relationship=\"\"unification\"\"]\""
+  ],
+  "cause": "Integration plan omitted native SSSOM export and its generated artifact; scientific source_mappings are already present in accepted THIO YAML.",
+  "correction": "Run native export_sssom_main, preserve old rows and exact three new mappings, then actual full maintained suite and remaining gates.",
+  "deduplication": "251issuequeue plus494495 checked; #203/#223 closed general export work, no sameTHIOintegrationfinding."
+}

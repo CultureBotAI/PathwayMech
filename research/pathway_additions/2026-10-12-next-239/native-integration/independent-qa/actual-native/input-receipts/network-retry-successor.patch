@@ -1,0 +1,40 @@
+--- 239/network-resumption.py
++++ 239/network-resumption-successor.py
+@@ -18,7 +18,7 @@
+ EXPECTED_SEMANTIC = '395a5a6413b93fedbda1f0e7b483ec222f354756d844449551d65c0950ba27e2'
+ EXPECTED_APPROVAL = "cad2d88ea48fe6681d92a1e3c428313cbd5bc61625cdb4f97c97141a3c72daef"
+ EXPECTED_BASELINE = 'cfd07ba5082e32d0c6461e9a82bb6ef140fdddd1fa30c6625aacefc7f9d58dab'
+-PHASES = ("network-resumption",)
++PHASES = ("network-resumption-successor",)
+ ORIGINAL_RUNNER = Path("/private/tmp/pathwaymech-next-239-root-run-native-20261012.py")
+ ORIGINAL_RUNNER_SHA = "4062c883278e7c2e525c6aedf374ec6e0e289ad7db3ded6a405697fa5466516a"
+ 
+@@ -166,6 +166,20 @@
+             for stream in ("stdout", "stderr"):
+                 assert pin(Path(receipt[stream]["path"])) == receipt[stream]
+                 retained_origins.append(receipt[stream])
++    second_folder = OUT / "network-resumption"
++    second_failure = json.loads((second_folder / "failure.json").read_bytes())
++    assert [(r["name"], r["exit_code"]) for r in second_failure["receipts"]] == [("vendored", 1)]
++    assert "Broken pipe" in (second_folder / "vendored.stderr").read_text()
++    assert pin(Path("/private/tmp/pathwaymech-next-239-resume-gates-20261012.py"))["sha256"] == (
++        "86dfb406af8b18a2e55c90da2293676e87addf2ad095e5e2ad98e923dfe72d29")
++    for name in ("phase-start.json", "runner-at-start.py", "failure.json", "vendored.execution.json", "vendored.stdout", "vendored.stderr"):
++        retained_origins.append(pin(second_folder / name))
++    second_receipt = second_failure["receipts"][0]
++    assert json.loads((second_folder / "vendored.execution.json").read_bytes()) == second_receipt
++    assert pin(Path(second_receipt["phase_start"]["path"])) == second_receipt["phase_start"]
++    assert second_receipt["runner_at_start"]["sha256"] == "86dfb406af8b18a2e55c90da2293676e87addf2ad095e5e2ad98e923dfe72d29"
++    for stream in ("stdout", "stderr"):
++        assert pin(Path(second_receipt[stream]["path"])) == second_receipt[stream]
+     commands = stages["nine_fresh_gates"][6:]
+     assert [r["name"] for r in commands] == ["vendored", "diff-check", "site-current"]
+     OUT.mkdir(exist_ok=True)
+@@ -269,6 +283,7 @@
+             "receipt_origins": receipt_origins,
+             "retained_prior_origins": retained_origins,
+             "prior_failure": pin(failed_path),
++            "prior_network_failure": pin(second_folder / "failure.json"),
+             "finished_at": datetime.datetime.now(datetime.UTC).isoformat(),
+         },
+     )

@@ -1,0 +1,296 @@
+--- /private/tmp/pathwaymech-next-236-root-run-native-20261012.py
++++ /private/tmp/pathwaymech-next-237-root-run-native-20261012.py
+@@ -1,4 +1,5 @@
+ """Execute the inspected native local integration stages and retain actual receipts."""
++
+ import datetime
+ import hashlib
+ import json
+@@ -8,90 +9,230 @@
+ import time
+ from pathlib import Path
+ 
+-PREP = Path('/private/tmp/pathwaymech-next-236-local-integration-preparation-20261012')
+-ROOT = Path('/private/tmp/pathwaymech-next-236-local-20261012')
+-OUT = Path('/private/tmp/pathwaymech-next-236-local-native-execution-20261012')
+-EXPECTED_STAGE = '561fbde469236458a8f94963ed0032975e4806f8dc1bfd1d8dfd8cf5a548c899'
++PREP = Path("/private/tmp/pathwaymech-next-237-local-integration-preparation-20261012")
++ROOT = Path("/private/tmp/pathwaymech-next-237-local-20261012")
++OUT = Path("/private/tmp/pathwaymech-next-237-local-native-execution-20261012")
++EXPECTED_STAGE = "f259f742fcea751783b4861ad765b5c4c5bfc112d692d73d945523bfcf3f2912"
++EXPECTED_HANDOFF = "9772c496a933fc83efe5f86bd0f4f5798cad621ed4486bf967716d87d995fbbe"
++EXPECTED_PLAN = "d0533d80d771bf7080b86f495f340b9e0cda6ee6b24d1593a0721f81a58de4be"
++EXPECTED_SEMANTIC = "c8e9bcf8e0aaa8038c296a2079aa274222374133414f2e6129296ee601d037db"
++PHASES = ("history-and-generation", "remaining-offline-gates", "vendored-gate", "final-gates")
+ 
+ 
+ def pin(path):
++    assert not path.is_symlink() and path.is_file(), path
+     body = path.read_bytes()
+-    return {'path': str(path), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}
++    return {"path": str(path), "bytes": len(body), "sha256": hashlib.sha256(body).hexdigest()}
+ 
+ 
+ def write(path, value):
+-    with path.open('x') as stream:
++    with path.open("x") as stream:
+         json.dump(value, stream, indent=2)
+-        stream.write('\n')
++        stream.write("\n")
+ 
+ 
+ def main():
+-    assert pin(PREP / 'stages.json')['sha256'] == EXPECTED_STAGE
+-    stages = json.loads((PREP / 'stages.json').read_bytes())
+-    adoption = Path('/private/tmp/pathwaymech-next-236-local-adoption-root-20261012/receipt.json')
++    assert len(sys.argv) == 2 and sys.argv[1] in PHASES
++    phase = sys.argv[1]
++    runner_at_start = pin(Path(__file__))
++    runner_body = Path(__file__).read_bytes()
++    assert hashlib.sha256(runner_body).hexdigest() == runner_at_start["sha256"]
++    assert pin(PREP / "stages.json")["sha256"] == EXPECTED_STAGE
++    assert pin(PREP / "handoff.json")["sha256"] == EXPECTED_HANDOFF
++    assert pin(PREP / "plan.json")["sha256"] == EXPECTED_PLAN
++    assert pin(PREP / "semantic-preservation.json")["sha256"] == EXPECTED_SEMANTIC
++    stages = json.loads((PREP / "stages.json").read_bytes())
++    plan = json.loads((PREP / "plan.json").read_bytes())
++    adoption = Path("/private/tmp/pathwaymech-next-237-local-adoption-20261012/receipt.json")
++    adoption_at_start = pin(adoption)
+     state = json.loads(adoption.read_bytes())
+-    assert state['status'] == 'local_adoption_complete_no_history_gates_or_publication'
+-    assert state['target'] == str(ROOT) and state['publication_performed'] is False
+-    assert len(state['changes']) == 34
+-    assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip() == '9bd87745d842b0602d027f3d15d26bbc178474a6'
+-    phase = sys.argv[1]
++    assert state["status"] == "local_adoption_complete_no_history_gates_or_publication"
++    assert state["target"] == str(ROOT) and state["publication_performed"] is False
++    assert len(state["changes"]) == 13
++    assert state["changes"] == [row["destination"] for row in plan["changes"]]
++    assert state["handoff"] == pin(PREP / "handoff.json")
++    approval = Path(state["approval"]["path"])
++    assert pin(approval) == state["approval"]
++    accepted = json.loads(approval.read_bytes())
++    assert accepted["status"] == "accepted_exact_deoxy237_local_integration_for_adoption"
++    assert state["approval"]["sha256"] == (
++        "f877a70c6e3eb855a49edab84e20e0a1dee4ae502da1470ddb268f5a77cbc129"
++    )
++    assert accepted["handoff"] == pin(PREP / "handoff.json")
++    assert accepted["target"] == str(ROOT)
++    assert accepted["commit"] == state["baseline_commit"]
++    assert accepted["tree"] == state["baseline_tree"]
++    assert accepted["publication_authorized"] is False and accepted["local_only"] is True
++    assert (
++        subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
++        == "290bd9781e43e473d88b9fd7c17f6f61da45092e"
++    )
++    env = {**os.environ, **stages["environment"]}
++    if phase == "history-and-generation":
++        commands = [
++            {"name": "history-" + str(i + 1), "argv": argv}
++            for i, argv in enumerate(stages["history_commands"])
++        ]
++        commands += stages["before_first_render_after_history"]
++        commands += stages["nine_fresh_gates"][:2]
++    elif phase in ("remaining-offline-gates", "vendored-gate", "final-gates"):
++        previous = {
++            "remaining-offline-gates": "history-and-generation",
++            "vendored-gate": "remaining-offline-gates",
++            "final-gates": "vendored-gate",
++        }[phase]
++        prior = json.loads((OUT / previous / "completion.json").read_bytes())
++        assert prior["status"] == "phase_passed"
++        assert prior["runner"] == runner_at_start
++        assert prior["adoption"] == adoption_at_start
++        assert prior["stage_plan"] == pin(PREP / "stages.json")
++        assert pin(Path(prior["phase_start"]["path"])) == prior["phase_start"]
++        for receipt in prior["receipts"]:
++            assert receipt["exit_code"] == 0 and receipt["runner_at_start"] == runner_at_start
++            assert pin(Path(receipt["stdout"]["path"])) == receipt["stdout"]
++            assert pin(Path(receipt["stderr"]["path"])) == receipt["stderr"]
++        for origin in prior["receipt_origins"]:
++            assert pin(Path(origin["path"])) == origin
++        span = {
++            "remaining-offline-gates": slice(2, 6),
++            "vendored-gate": slice(6, 7),
++            "final-gates": slice(7, None),
++        }[phase]
++        commands = stages["nine_fresh_gates"][span]
++    else:
++        raise ValueError("Unknown explicit phase")
+     OUT.mkdir(exist_ok=True)
+     folder = OUT / phase
+     folder.mkdir(exist_ok=False)
+-    env = {**os.environ, **stages['environment']}
+-    if phase == 'history-and-generation':
+-        commands = [{'name': 'history-' + str(i + 1), 'argv': argv} for i, argv in enumerate(stages['history_commands'])]
+-        commands += stages['before_first_render_after_history']
+-        commands += stages['nine_fresh_gates'][:2]
+-    elif phase in ('remaining-offline-gates', 'vendored-gate', 'final-gates'):
+-        previous = {'remaining-offline-gates': 'history-and-generation',
+-                    'vendored-gate': 'remaining-offline-gates', 'final-gates': 'vendored-gate'}[phase]
+-        prior = json.loads((OUT / previous / 'completion.json').read_bytes())
+-        assert prior['status'] == 'phase_passed'
+-        span = {'remaining-offline-gates': slice(2, 6), 'vendored-gate': slice(6, 7),
+-                'final-gates': slice(7, None)}[phase]
+-        commands = stages['nine_fresh_gates'][span]
+-    else:
+-        raise ValueError('Unknown explicit phase')
++    with (folder / "runner-at-start.py").open("xb") as stream:
++        stream.write(runner_body)
++    phase_start = {
++        "phase": phase,
++        "started_at": datetime.datetime.now(datetime.UTC).isoformat(),
++        "runner": runner_at_start,
++        "retained_runner": pin(folder / "runner-at-start.py"),
++        "adoption": adoption_at_start,
++        "stage_plan": pin(PREP / "stages.json"),
++        "plan": pin(PREP / "plan.json"),
++        "commands": commands,
++        "cwd": str(ROOT),
++        "environment": stages["environment"],
++    }
++    write(folder / "phase-start.json", phase_start)
++    phase_origin = pin(folder / "phase-start.json")
+     receipts = []
++    receipt_origins = []
+     for item in commands:
+-        name, argv = item['name'], item['argv']
+-        start = datetime.datetime.now(datetime.timezone.utc).isoformat()
++        name, argv = item["name"], item["argv"]
++        assert pin(Path(__file__)) == runner_at_start
++        start = datetime.datetime.now(datetime.UTC).isoformat()
+         clock = time.monotonic()
+-        with (folder / (name + '.stdout')).open('xb') as stdout, (folder / (name + '.stderr')).open('xb') as stderr:
+-            proc = subprocess.run(argv, cwd=ROOT, env=env, stdout=stdout, stderr=stderr, check=False)
+-        receipt = {'name': name, 'argv': argv, 'cwd': str(ROOT), 'environment': stages['environment'],
+-                   'started_at': start, 'finished_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+-                   'seconds': time.monotonic() - clock, 'exit_code': proc.returncode,
+-                   'stdout': pin(folder / (name + '.stdout')), 'stderr': pin(folder / (name + '.stderr'))}
+-        write(folder / (name + '.execution.json'), receipt)
++        with (
++            (folder / (name + ".stdout")).open("xb") as stdout,
++            (folder / (name + ".stderr")).open("xb") as stderr,
++        ):
++            proc = subprocess.run(
++                argv, cwd=ROOT, env=env, stdout=stdout, stderr=stderr, check=False
++            )
++        receipt = {
++            "name": name,
++            "argv": argv,
++            "cwd": str(ROOT),
++            "environment": stages["environment"],
++            "started_at": start,
++            "finished_at": datetime.datetime.now(datetime.UTC).isoformat(),
++            "seconds": time.monotonic() - clock,
++            "exit_code": proc.returncode,
++            "stdout": pin(folder / (name + ".stdout")),
++            "stderr": pin(folder / (name + ".stderr")),
++            "runner_at_start": runner_at_start,
++            "phase_start": phase_origin,
++        }
++        write(folder / (name + ".execution.json"), receipt)
++        receipt_origins.append(pin(folder / (name + ".execution.json")))
+         receipts.append(receipt)
+-        print(json.dumps({'name': name, 'exit_code': proc.returncode, 'seconds': receipt['seconds']}), flush=True)
++        print(
++            json.dumps({"name": name, "exit_code": proc.returncode, "seconds": receipt["seconds"]}),
++            flush=True,
++        )
+         if proc.returncode:
+-            write(folder / 'failure.json', {'status': 'phase_failed', 'receipts': receipts, 'remaining_not_run': True})
++            write(
++                folder / "failure.json",
++                {"status": "phase_failed", "receipts": receipts, "remaining_not_run": True},
++            )
+             raise SystemExit(proc.returncode)
+-        if name == 'sssom':
++        if name == "sssom":
+             import csv
+             from collections import Counter
+-            semantic = json.loads((PREP / 'semantic-preservation.json').read_bytes())['SSSOM']
+-            actual = (ROOT / 'output/sssom/source_mappings.sssom.tsv').read_text().splitlines()
+-            old_body = subprocess.check_output(['git', 'show', 'HEAD:output/sssom/source_mappings.sssom.tsv'], cwd=ROOT)
+-            assert hashlib.sha256(old_body).hexdigest() == semantic['before']['sha256']
++
++            semantic = json.loads((PREP / "semantic-preservation.json").read_bytes())["SSSOM"]
++            actual = (ROOT / "output/sssom/source_mappings.sssom.tsv").read_text().splitlines()
++            old_body = subprocess.check_output(
++                ["git", "show", "HEAD:output/sssom/source_mappings.sssom.tsv"], cwd=ROOT
++            )
++            assert hashlib.sha256(old_body).hexdigest() == semantic["before"]["sha256"]
+             old_lines = old_body.decode().splitlines()
+-            assert [line for line in actual if line.startswith('#')] == semantic['exact_header_lines']
++            assert [line for line in actual if line.startswith("#")] == semantic[
++                "exact_header_lines"
++            ]
++
+             def rows(lines):
+-                reader = csv.DictReader([line for line in lines if not line.startswith('#')], delimiter='\t')
++                reader = csv.DictReader(
++                    [line for line in lines if not line.startswith("#")], delimiter="\t"
++                )
+                 result = list(reader)
+-                return reader.fieldnames, Counter(tuple(row[k] for k in reader.fieldnames) for row in result)
++                return reader.fieldnames, Counter(
++                    tuple(row[k] for k in reader.fieldnames) for row in result
++                )
++
+             keys, before = rows(old_lines)
+             new_keys, after = rows(actual)
+-            expected = Counter(tuple(row[k] for k in keys) for row in semantic['expected_added_rows'])
++            expected = Counter(
++                tuple(row[k] for k in keys) for row in semantic["expected_added_rows"]
++            )
+             assert keys == new_keys and after == before + expected
+-            assert sum(before.values()) == 27 and sum(expected.values()) == 5 and sum(after.values()) == 32
+-            write(folder / 'sssom-preservation.json', {'actual': pin(ROOT / 'output/sssom/source_mappings.sssom.tsv'), 'old_rows':27, 'added_rows':5, 'total_rows':32, 'all_headers_cells_multiplicities_exact':True})
+-    write(folder / 'completion.json', {'status': 'phase_passed', 'phase': phase, 'receipts': receipts,
+-                                      'adoption': pin(adoption), 'stage_plan': pin(PREP / 'stages.json'), 'runner': pin(Path(__file__))})
+-
+-
+-if __name__ == '__main__':
++            assert (
++                sum(before.values()) == 32
++                and sum(expected.values()) == 0
++                and sum(after.values()) == 32
++            )
++            assert (ROOT / "output/sssom/source_mappings.sssom.tsv").read_bytes() == old_body
++            write(
++                folder / "sssom-preservation.json",
++                {
++                    "actual": pin(ROOT / "output/sssom/source_mappings.sssom.tsv"),
++                    "old_rows": 32,
++                    "added_rows": 0,
++                    "total_rows": 32,
++                    "all_headers_cells_multiplicities_exact": True,
++                    "whole_bytes_and_row_order_exact": True,
++                },
++            )
++    assert pin(Path(__file__)) == runner_at_start
++    assert pin(adoption) == adoption_at_start
++    assert pin(approval) == state["approval"]
++    assert pin(PREP / "stages.json")["sha256"] == EXPECTED_STAGE
++    assert pin(folder / "phase-start.json") == phase_origin
++    assert (folder / "runner-at-start.py").read_bytes() == runner_body
++    for receipt, origin in zip(receipts, receipt_origins, strict=True):
++        assert pin(Path(origin["path"])) == origin
++        assert pin(Path(receipt["stdout"]["path"])) == receipt["stdout"]
++        assert pin(Path(receipt["stderr"]["path"])) == receipt["stderr"]
++    write(
++        folder / "completion.json",
++        {
++            "status": "phase_passed",
++            "phase": phase,
++            "receipts": receipts,
++            "adoption": adoption_at_start,
++            "stage_plan": pin(PREP / "stages.json"),
++            "runner": runner_at_start,
++            "phase_start": phase_origin,
++            "receipt_origins": receipt_origins,
++            "finished_at": datetime.datetime.now(datetime.UTC).isoformat(),
++        },
++    )
++
++
++if __name__ == "__main__":
+     main()

@@ -1,0 +1,28 @@
+--- 236-save-native-reviews.py
++++ 237-save-native-reviews.py
+@@ -1,18 +1,22 @@
+ import datetime,hashlib,json,os,subprocess,time
+ from pathlib import Path
+ import yaml
+-ROOT=Path('/private/tmp/pathwaymech-next-236-local-20261012');DRAFT=Path('/private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012');FINAL=Path('/private/tmp/pathwaymech-next-236-root-native-finalized-20261012');OUT=Path('/private/tmp/pathwaymech-next-236-native-review-save-20261012');OUT.mkdir()
++ROOT=Path('/private/tmp/pathwaymech-next-237-local-20261012');DRAFT=Path('/private/tmp/pathwaymech-next-237-maintained-independent-qa-20261012');FINAL=Path('/private/tmp/pathwaymech-next-237-root-native-finalized-20261012');OUT=Path('/private/tmp/pathwaymech-next-237-native-review-save-20261012');OUT.mkdir()
+ PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ ENV={'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(ROOT/'src')+':'+str(ROOT)}
+ def pin(p):
+  b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
++acceptance=Path('/private/tmp/pathwaymech-next-237-root-maintained-review-acceptance-20261012.json')
++assert pin(acceptance)['sha256']=='9e2abdb29ebbe5bcc2acfda09ad09bdea441b4f35a09dcf801b3ce806dc3130e'
++for row in json.loads(acceptance.read_bytes())['native_drafts']:assert pin(Path(row['path']))['sha256']==row['sha256']
++assert json.loads((FINAL/'completion.json').read_bytes())['status']=='fresh_native_inputs_extended_and_validated'
+ commands=[]
+ for kind in ['scientific','technical']:
+  before=yaml.safe_load((DRAFT/(kind+'-review.yaml')).read_bytes());after=yaml.safe_load((FINAL/(kind+'-review.yaml')).read_bytes())
+  assert {k:v for k,v in before.items() if k!='source'}=={k:v for k,v in after.items() if k!='source'}
+- assert after['source']['git_revision']=='9bd87745d842b0602d027f3d15d26bbc178474a6'
++ assert after['source']['git_revision']=='290bd9781e43e473d88b9fd7c17f6f61da45092e'
+  commands.append((kind+'-save',[PY,'-B','scripts/record_review.py','save','--content',str(FINAL/(kind+'-review.yaml'))]))
+-commands += [('review-check',[PY,'-B','scripts/record_review.py','check','--base','9bd87745d842b0602d027f3d15d26bbc178474a6']),('lint',[PY,'-B','-m','ruff','check','--no-cache','.']),('diff-check',['git','diff','--check'])]
++commands += [('review-check',[PY,'-B','scripts/record_review.py','check','--require-reviews','--base','290bd9781e43e473d88b9fd7c17f6f61da45092e']),('lint',[PY,'-B','-m','ruff','check','--no-cache','.']),('diff-check',['git','diff','--check'])]
+ results=[]
+ for name,argv in commands:
+  v={'name':name,'argv':argv,'cwd':str(ROOT),'environment':ENV,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'helper':pin(Path(__file__))};t=time.monotonic()

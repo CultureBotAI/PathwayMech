@@ -1,0 +1,13 @@
+# Independent review of issue #504 correction
+
+Reviewed `src/pathwaymech/identifiers.py` and `tests/test_typed_authority_consumer_integrity.py` in `/private/tmp/pathwaymech-next-243-local-20261012`, against HEAD `70903536191206d2586cd23e46f7d70c32fef92e`. Read-only; no runtime/test edits.
+
+**No actionable defect found in the correction.**
+
+The new registry runs after each retained typed object is shape/semantics validated and before term selection. Its BioCyc signatures match the relevant producer projections (complete native object plus release); state counterparts and every retained Polymer member are included even when unselected. Polymer facts intentionally retain the producer's cross-release compatibility. Registering source kind together with the complete projection catches cross-kind identities; selected terms must then retain that kind and still pass the existing exact projector checks.
+
+Compared this logic with producer branches in `scripts/build_source_identifier_snapshot.py` (native projections, state counterpart registry and Polymer identity comparison), `validate_aceto_assertions`, `validate_carrier_reaction_assertions`, `validate_context_assertions`, and state-metadata validation. The aceto guard still owns its stricter original-provenance and companion compatibility semantics; passing all newly inventoried claims closes the counterpart collision path without replacing that validation. Existing pathway/SGD compatibility is retained. The registry itself neither mutates metadata nor changes selected first-owner output.
+
+Fresh focused verification: `PYTHONPATH=src /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/.venv/bin/python -m pytest -q tests/test_typed_authority_consumer_integrity.py` — **87 passed in 3.22 s**. This includes producer/consumer parity, both source orders, selected and unselected owners, changed and identical duplicate projections, counterparty state claims, unselected Polymer members, release conflicts, kind collisions, aceto companion compatibility and exact checked-in authority preservation. The implementer's separate 2,148-test affected-suite result was read from its handoff but was not rerun or relabeled as this reviewer's execution.
+
+Limits: this is a bounded correction review, not a fresh review of every adapter or a proof that arbitrary original bytes agree with retained snapshots. Older reduced reaction metadata carries identity rather than complete original facts; hashing and full raw-source reconstruction remain producer responsibilities. No full-corpus suite, authority builder, SQL rehash or external publication was run.

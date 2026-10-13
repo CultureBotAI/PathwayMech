@@ -1,0 +1,591 @@
+id: PathBank:SMP0002123
+label: BaeSR Two-Component Signal Transduction System
+description: 'This record covers the two-event BaeSR signal-transduction boundary in PathBank SMP0002123/PathWhiz
+  PW002111: ATP-dependent BaeS autophosphorylation, followed by BaeR phosphorylation/activation. All six
+  formal native reaction sides are represented. The second source equation omits the phosphorylated BaeS
+  donor and dephosphorylated BaeS product; two additional graph edges explicitly identify those states
+  as a literature-supported phosphotransfer interpretation, not native equation slots or separately measured
+  stoichiometry. No phosphatase return reaction, direct ligand-binding step or extra regulon pathway is
+  invented.
+
+
+  The native pathway is assigned to species-level Escherichia coli (taxon 562), while the selected PWML
+  complexes 4106, 4107, 12056 and 12057 and its BaeR protein 20851 have K-12 species 25 (taxon 83333).
+  PWML BaeS 7583 retains generic E. coli species 3. Current P30847 and P69228 are K-12 reference chains.
+  These identities do not relabel every historical mutant or expression host as MG1655, or demonstrate
+  the pathway in every E. coli strain. Additional organisms in the global PWML biological-state dictionaries
+  are preserved as source context and not added to the selected route.
+
+
+  Four distinct native state assertions are preserved using separately qualified protein endpoints, without
+  declaring a physiological assembly solely because PWML calls its drawing a ProteinComplex. PWML 4106
+  is the nominal unmodified BaeS state with one chain; 4107 is labelled BaeS-Phis250, with one chain and
+  modification 6 linking protein 7583 to compound 1104. Unmodified BaeR 12056 and activated BaeR 12057
+  each contain protein 20851 with a nil component coefficient; 12057 also lists phosphate 1104 in a cofactor
+  slot with a nil coefficient. Those nil values remain unspecified. The source supplies neither a physiological
+  oligomer number nor proof of a noncovalent phosphate cofactor.
+
+
+  BioPAX flattens PWML 4106 to Protein 7583, and both BaeR states 12056/12057 to the same Protein 20851_Cytoplasm.
+  It represents 4107 as BaeS plus phosphate with component coefficients 1 and reciprocal intramolecular
+  BindingFeatures, and also attaches the same modification feature to the base BaeS reactant. These encoding
+  artifacts are retained in evidence and the full native ledger rather than interpreted as an already
+  phosphorylated input, a free-phosphate assembly, or absence of a distinct activated BaeR state. Native
+  state IDs are carried in qualifiers and evidence; chains use their verified UniProt identities.
+
+
+  The native ATP and ADP structures are neutral stereochemical forms matching current CHEBI:15422 and
+  CHEBI:16761, including their complete InChIKeys. This does not specify assay protonation. Native phosphate
+  1104 is more problematic: the archived BioPAX draws a phosphate trianion (O4P), whereas current BioPAX/PWML
+  draws neutral phosphoric acid (H3O4P), yet retains CHEBI:18367 and PubChem 1061 cross-references to
+  the trianion. Current CHEBI:26078 matches the neutral drawing. The retained native Phosphate participant
+  records the conflicting source marker and remains isolated: no free-acid/free-Pi consumption, noncovalent-cofactor
+  edge or chemical equivalence to a protein-bound phosphoryl group is asserted.
+
+
+  Nagasawa et al. (1993) cloned the complete baeS and baeR coding sequences into pSU11S and pSU11R under
+  lac control in pUC19 and expressed them in the DZ225 envZ-deletion derivative. BaeS was enriched in
+  membranes washed with 4 M urea; BaeR was enriched in a cytosolic fraction by 45%-saturation ammonium
+  sulfate precipitation. Figure 8A/C shows ATP-dependent BaeS radiolabeling and a BaeR-mobility band after
+  combining those fractions, with vector controls. These are enriched fractions, not a purified BaeS/BaeR
+  pair. The truncated original pSN25 construct belongs to BasS, not BaeS. The separate weak OmpR cross-phosphorylation
+  experiment does not add OmpR to this core route.
+
+
+  The 1993 phosphorylation mixture used 0.05 mM gamma-32P ATP and 50 mM KCl; the Results specify 5 mM
+  CaCl2 and the Methods refer to TEDG buffer and prior procedures. This is an assay condition, not proof
+  of a unique physiological calcium cofactor, an independently measured ATP affinity, or a complete cellular
+  flux. Cognate phosphotransfer was inferred from the fraction experiment and is supported by reviewed
+  BaeS/BaeR phosphorylation annotation. The 1993 study did not establish a natural sensed ligand and explicitly
+  deferred deletion-mutant physiology.
+
+
+  The historical BaeS sequence discrepancy is resolved without claiming sequence equivalence: D14054.1/BAA03140.1
+  encodes 466 residues, with historical residues 414–420 VPATVPA replacing current P30847 residues 414–421
+  GSRNRASG. The complete sequences agree before and after that interval, and UniProt explicitly records
+  the conflict. D14054.1 BaeR translation BAA03141.1 is 240 residues and agrees with current P69228, although
+  this reference comparison does not independently resequence an assayed plasmid. The 1993 paper prints
+  BaeS coding endpoints 274–1671 and BaeR 1671–2390; the retained sequence record includes stop codons
+  at 274–1674 and 1671–2393, respectively. Historical assay qualifications remain attached to catalytic
+  edges.
+
+
+  H250 in BaeS and D61 in BaeR are conserved candidate phosphoacceptors in the 1993 sequence comparison;
+  current UniProt modified-residue annotations use PROSITE/ECO:0000255. The pathway therefore separates
+  demonstrated phosphorylation from predicted residue assignment. The native BaeS-Phis250 name is preserved
+  with that qualification. Current UniProt cites PMID 15522865 for BaeS autophosphorylation and BaeR phosphorylation;
+  publisher whole-text attempts during this curation returned 403, and no full 2005 Methods or exact purified
+  construct is claimed read. Those statements are attributed to the reviewed annotation rather than presented
+  as freshly inspected 2005 experiments.
+
+
+  BaeS membrane localization and BaeR cytoplasmic localization are consistent with the 1993 fractionation
+  and the native states. The graph uses the verified current cellular-component terms for the reported
+  compartments; current UniProt assigns BaeS to the cell inner membrane with experimental annotation and
+  BaeR to cytoplasm with curator-inference evidence. The global PWML inner-membrane vocabulary and its
+  source cross-reference are retained separately. Activity-dependent exclusivity and transport across
+  the membrane are not inferred from localization. Specifically, native GO:0070258 is the active inner
+  membrane pellicle complex term for an apicomplexan structure, not a bacterial inner membrane. GO:0005886
+  includes bacterial inner membrane as a narrow synonym; this curated location is not an exact mapping
+  of the erroneous native GO assertion.
+
+
+  Downstream context is bounded to the inspected 2002 and 2011 studies. Baranova and Nikaido demonstrate
+  BaeR binding to the mdtA/yegM promoter and conditional expression/resistance in specific constructs
+  and a hypersusceptible delta-acrAB host. The original pTrcBaeR replaces eight C-terminal residues with
+  17 vector residues; an intact pBAD control and a distinct C-terminal Val-Asp-His6 purification preparation
+  are separate. Overexpression acts without BaeS, and the promoter-binding preparation was thought largely
+  unphosphorylated; these results do not make phosphorylation universally obligatory for DNA binding.
+  MdtD was not required for the reported resistance phenotype. Native ZraPSR/yicO/ygcL text and other
+  regulon annotations are not automatically promoted to direct core edges.
+
+
+  The 2011 reporter and mutant experiments show condition-dependent responses to flavonoids, tungstate,
+  zinc and high indole concentrations. The complete image Table 2 differentiates inducing and noninducing
+  flavonoid structures; the tested doses, reporters and strain backgrounds remain specific. Induction
+  and the proposed MdtABC-efflux explanation do not demonstrate direct binding of those compounds to BaeS.
+  The study did not find a BaeSR requirement for indole-mediated biofilm reduction under its conditions.
+  These environmental and phenotype observations provide context, not extra chemical reactions or universal
+  physiological triggers.
+
+
+  Evidence comprises the complete 1993 primary PDF, complete 2002 and 2011 article texts and all ten associated
+  image bodies, the whole current and archived native exports, whole reviewed protein records, and exact
+  current chemical, taxon and historical-sequence originals. The malformed PWML drawing-only option prefix
+  remains in the original; only a reversible separately bound reading copy has an artificial namespace.
+  Source qualifications are retained in the record and ledgers.'
+pathway_type: two-component-phosphotransfer-signaling
+taxa:
+- id: NCBITaxon:562
+  label: Escherichia coli
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+participants:
+- id: CHEBI:15422
+  label: ATP
+  category: small_molecule
+- id: CHEBI:16761
+  label: ADP
+  category: small_molecule
+- id: PathBank:SMP0002123/Compound/PW_C001104
+  label: Phosphate
+  category: small_molecule
+- id: UniProtKB:P30847
+  label: Signal transduction histidine-protein kinase BaeS
+  category: protein
+- id: UniProtKB:P69228
+  label: Transcriptional regulatory protein BaeR
+  category: protein
+- id: GO:0005886
+  label: plasma membrane
+  category: cellular_component
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: PathBank:SMP0002123/Reactions/6144
+  label: Reaction6144
+  category: molecular_activity
+  direction: left_to_right
+- id: PathBank:SMP0002123/Reactions/179009
+  label: Reaction179009
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: e01
+  subject: UniProtKB:P30847
+  predicate: consumes
+  object: PathBank:SMP0002123/Reactions/6144
+  description: Native formal reaction side; coefficient 1. Protein states remain endpoint-specific, with
+    drawing coefficients distinguished from physiological assembly size.
+  evidence:
+  - reference_id: PathBank:PW002111
+    source_assertion: Native reaction 6144 has ProteinComplex 4106 on its left side with formal stoichiometric
+      coefficient 1.
+    source_locator: //pathway-visualization/reactions/reaction[id='6144']/reaction-left-elements/reaction-left-element[element-id='4106']
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: 'PWML ProteinComplex 4106: nominal unmodified BaeS state, one chain in the drawing. This
+      is a state qualification of the reference protein, not a physiological oligomer assertion; the historical
+      assay sequence is separately qualified.'
+    evidence:
+    - reference_id: PathBank:PW002111
+      source_assertion: ProteinComplex 4106 is BaeS, contains protein 7583 with coefficient 1, and differs
+        from phosphorylated-state 4107.
+      source_locator: //pathway-visualization/protein-complexes/protein-complex[id='4106']
+- id: e02
+  subject: CHEBI:15422
+  predicate: consumes
+  object: PathBank:SMP0002123/Reactions/6144
+  description: Native formal reaction side; coefficient 1. Protein states remain endpoint-specific, with
+    drawing coefficients distinguished from physiological assembly size.
+  evidence:
+  - reference_id: PathBank:PW002111
+    source_assertion: Native reaction 6144 has Compound 414 on its left side with formal stoichiometric
+      coefficient 1.
+    source_locator: //pathway-visualization/reactions/reaction[id='6144']/reaction-left-elements/reaction-left-element[element-id='414']
+- id: e03
+  subject: PathBank:SMP0002123/Reactions/6144
+  predicate: produces
+  object: UniProtKB:P30847
+  description: Native formal reaction side; coefficient 1. Protein states remain endpoint-specific, with
+    drawing coefficients distinguished from physiological assembly size.
+  evidence:
+  - reference_id: PathBank:PW002111
+    source_assertion: Native reaction 6144 has ProteinComplex 4107 on its right side with formal stoichiometric
+      coefficient 1.
+    source_locator: //pathway-visualization/reactions/reaction[id='6144']/reaction-right-elements/reaction-right-element[element-id='4107']
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: molecular_state
+    description: 'PWML ProteinComplex 4107, BaeS-Phis250: phosphorylated BaeS interpretation. Native one-chain/modification
+      6 representation is schematic; H250 is predicted, not site-proved by the 1993 fraction assay. No
+      free-Pi assembly is asserted.'
+    evidence:
+    - reference_id: PathBank:PW002111
+      source_assertion: ProteinComplex 4107 contains one protein 7583 and modification 6 linked to compound
+        1104; its native label specifies Phis250.
+      source_locator: //pathway-visualization/protein-complexes/protein-complex[id='4107']
+- id: e04
+  subject: PathBank:SMP0002123/Reactions/6144
+  predicate: produces
+  object: CHEBI:16761
+  description: Native formal reaction side; coefficient 1. Protein states remain endpoint-specific, with
+    drawing coefficients distinguished from physiological assembly size.
+  evidence:
+  - reference_id: PathBank:PW002111
+    source_assertion: Native reaction 6144 has Compound 1034 on its right side with formal stoichiometric
+      coefficient 1.
+    source_locator: //pathway-visualization/reactions/reaction[id='6144']/reaction-right-elements/reaction-right-element[element-id='1034']
+- id: e05
+  subject: UniProtKB:P69228
+  predicate: consumes
+  object: PathBank:SMP0002123/Reactions/179009
+  description: Native formal reaction side; coefficient 1. Protein states remain endpoint-specific, with
+    drawing coefficients distinguished from physiological assembly size.
+  evidence:
+  - reference_id: PathBank:PW002111
+    source_assertion: Native reaction 179009 has ProteinComplex 12056 on its left side with formal stoichiometric
+      coefficient 1.
+    source_locator: //pathway-visualization/reactions/reaction[id='179009']/reaction-left-elements/reaction-left-element[element-id='12056']
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: 'PWML ProteinComplex 12056: BaeR before the native activation event. Its protein 20851
+      component coefficient is nil; no oligomer number is inferred. BioPAX flattens this state and 12057
+      to Protein 20851_Cytoplasm.'
+    evidence:
+    - reference_id: PathBank:PW002111
+      source_assertion: ProteinComplex 12056 contains protein 20851 with an unspecified component coefficient
+        and is the native left state for reaction 179009.
+      source_locator: //pathway-visualization/protein-complexes/protein-complex[id='12056']
+- id: e06
+  subject: PathBank:SMP0002123/Reactions/179009
+  predicate: produces
+  object: UniProtKB:P69228
+  description: Native formal reaction side; coefficient 1. Protein states remain endpoint-specific, with
+    drawing coefficients distinguished from physiological assembly size.
+  evidence:
+  - reference_id: PathBank:PW002111
+    source_assertion: Native reaction 179009 has ProteinComplex 12057 on its right side with formal stoichiometric
+      coefficient 1.
+    source_locator: //pathway-visualization/reactions/reaction[id='179009']/reaction-right-elements/reaction-right-element[element-id='12057']
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: molecular_state
+    description: 'PWML ProteinComplex 12057: activated/phosphorylated BaeR interpretation. Native protein
+      20851 and phosphate 1104 cofactor coefficients are nil. The cofactor slot is not proof of noncovalent
+      Pi binding; D61 remains a predicted acceptor.'
+    evidence:
+    - reference_id: PathBank:PW002111
+      source_assertion: ProteinComplex 12057 is named activated BaeR; protein 20851 and phosphate 1104
+        cofactor slots have unspecified coefficients.
+      source_locator: //pathway-visualization/protein-complexes/protein-complex[id='12057']
+- id: e07
+  subject: UniProtKB:P30847
+  predicate: consumes
+  object: PathBank:SMP0002123/Reactions/179009
+  description: 'Literature-supported donor-state interpretation: phosphorylated BaeS supplies the transferred
+    phosphoryl group. This side is absent from native reaction 179009; it is not a measured native coefficient
+    or a direct donor-loss quantification.'
+  evidence:
+  - reference_id: PMID:8282725
+    source_assertion: BaeS-enriched membranes plus BaeR-enriched cytosol and labelled ATP produced a BaeR-mobility
+      band; the authors interpret this as cognate phosphotransfer. Donor-state bookkeeping is interpretation,
+      not a separately measured balanced equation.
+    source_locator: PDF:7
+  - reference_id: UniProtKB:P69228
+    source_assertion: Reviewed PTM annotation says BaeR is phosphorylated by BaeS, citing PMID 15522865;
+      the cited 2005 full paper was not obtained.
+    source_locator: $.comments[3]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: 'PWML ProteinComplex 4107, BaeS-Phis250: phosphorylated BaeS interpretation. Native one-chain/modification
+      6 representation is schematic; H250 is predicted, not site-proved by the 1993 fraction assay. No
+      free-Pi assembly is asserted.'
+    evidence:
+    - reference_id: PathBank:PW002111
+      source_assertion: ProteinComplex 4107 contains one protein 7583 and modification 6 linked to compound
+        1104; its native label specifies Phis250.
+      source_locator: //pathway-visualization/protein-complexes/protein-complex[id='4107']
+- id: e08
+  subject: PathBank:SMP0002123/Reactions/179009
+  predicate: produces
+  object: UniProtKB:P30847
+  description: 'Literature-supported complementary donor-state interpretation: BaeS after donating the
+    phosphoryl group. This side is absent from the native equation and not independently quantified in
+    the 1993 fraction assay.'
+  evidence:
+  - reference_id: PMID:8282725
+    source_assertion: BaeS-enriched membranes plus BaeR-enriched cytosol and labelled ATP produced a BaeR-mobility
+      band; the authors interpret this as cognate phosphotransfer. Donor-state bookkeeping is interpretation,
+      not a separately measured balanced equation.
+    source_locator: PDF:7
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: molecular_state
+    description: 'PWML ProteinComplex 4106: nominal unmodified BaeS state, one chain in the drawing. This
+      is a state qualification of the reference protein, not a physiological oligomer assertion; the historical
+      assay sequence is separately qualified.'
+    evidence:
+    - reference_id: PathBank:PW002111
+      source_assertion: ProteinComplex 4106 is BaeS, contains protein 7583 with coefficient 1, and differs
+        from phosphorylated-state 4107.
+      source_locator: //pathway-visualization/protein-complexes/protein-complex[id='4106']
+- id: e09
+  subject: UniProtKB:P30847
+  predicate: catalyzes
+  object: PathBank:SMP0002123/Reactions/6144
+  description: ATP-dependent BaeS phosphorylation was observed in the enriched historical membrane preparation;
+    H250 is a conserved predicted site rather than a directly identified phosphopeptide.
+  evidence:
+  - reference_id: PMID:8282725
+    source_assertion: BaeS-enriched urea-treated membranes became radiolabelled with gamma-32P ATP in
+      the reported in-vitro assay.
+    source_locator: PDF:7
+  - reference_id: UniProtKB:P30847
+    source_assertion: Reviewed catalytic annotation is ATP plus protein histidine yielding ADP plus phosphohistidine.
+    source_locator: $.comments[1]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 1993 pSU11S full-length baeS coding region under lac control in pUC19, expressed in DZ225
+      delta-envZ; 4 M urea-washed membrane fraction, not purified BaeS. Historical BAA03140.1 is 466 residues
+      and differs from current P30847 at the 414–421 region.
+    evidence:
+    - reference_id: PMID:8282725
+      source_assertion: The full coding sequence was expressed in DZ225; urea-treated membranes were enriched
+        for BaeS and assayed with labelled ATP.
+      source_locator: PDF:7
+    - reference_id: NCBIProtein:BAA03140.1
+      source_assertion: The historical complete BaeS sequence has 466 residues; its difference from current
+        P30847 is explicitly retained.
+      source_locator: /GBSet/GBSeq/GBSeq_sequence
+- id: e10
+  subject: UniProtKB:P30847
+  predicate: catalyzes
+  object: PathBank:SMP0002123/Reactions/179009
+  description: Cognate-kinase interpretation for BaeR phosphorylation in the historical fraction experiment,
+    with current reviewed PTM support. The paired BaeR preparation was an ammonium-sulfate-enriched pSU11R
+    cytosolic fraction, not a purified pair.
+  evidence:
+  - reference_id: PMID:8282725
+    source_assertion: BaeS-enriched membranes plus BaeR-enriched cytosol and labelled ATP produced a BaeR-mobility
+      band; the authors interpret this as cognate phosphotransfer. Donor-state bookkeeping is interpretation,
+      not a separately measured balanced equation.
+    source_locator: PDF:7
+  - reference_id: UniProtKB:P69228
+    source_assertion: Reviewed PTM annotation assigns phosphorylation of BaeR to BaeS; its primary citation
+      is PMID 15522865.
+    source_locator: $.comments[3]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 1993 pSU11S full-length baeS coding region under lac control in pUC19, expressed in DZ225
+      delta-envZ; 4 M urea-washed membrane fraction, not purified BaeS. Historical BAA03140.1 is 466 residues
+      and differs from current P30847 at the 414–421 region.
+    evidence:
+    - reference_id: PMID:8282725
+      source_assertion: The full coding sequence was expressed in DZ225; urea-treated membranes were enriched
+        for BaeS and assayed with labelled ATP.
+      source_locator: PDF:7
+    - reference_id: NCBIProtein:BAA03140.1
+      source_assertion: The historical complete BaeS sequence has 466 residues; its difference from current
+        P30847 is explicitly retained.
+      source_locator: /GBSet/GBSeq/GBSeq_sequence
+- id: e11
+  subject: PathBank:SMP0002123/Reactions/6144
+  predicate: provides_input_for
+  object: PathBank:SMP0002123/Reactions/179009
+  description: Phosphorylated BaeS links the two core events under the phosphotransfer interpretation.
+    Native pathwayOrder list position is not treated as measured temporal ordering.
+  evidence:
+  - reference_id: PMID:8282725
+    source_assertion: BaeS-enriched membranes plus BaeR-enriched cytosol and labelled ATP produced a BaeR-mobility
+      band; the authors interpret this as cognate phosphotransfer. Donor-state bookkeeping is interpretation,
+      not a separately measured balanced equation.
+    source_locator: PDF:7
+  - reference_id: UniProtKB:P30847
+    source_assertion: Reviewed functional annotation states that BaeS activates BaeR by phosphorylation.
+    source_locator: $.comments[0]
+- id: e12
+  subject: PathBank:SMP0002123/Reactions/6144
+  predicate: part_of
+  object: PathBank:SMP0002123
+  description: The whole native BaeSR pathway explicitly includes this reaction.
+  evidence:
+  - reference_id: PathBank:SMP0002123
+    source_assertion: Pathway SMP0002123 has reaction 6144 as an explicit pathway component.
+    source_locator: /rdf:RDF/bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002123']/bp:pathwayComponent[@rdf:resource='#Reactions/6144']
+- id: e13
+  subject: PathBank:SMP0002123/Reactions/179009
+  predicate: part_of
+  object: PathBank:SMP0002123
+  description: The whole native BaeSR pathway explicitly includes this reaction.
+  evidence:
+  - reference_id: PathBank:SMP0002123
+    source_assertion: Pathway SMP0002123 has reaction 179009 as an explicit pathway component.
+    source_locator: /rdf:RDF/bp:Pathway[@rdf:about='http://identifiers.org/smpdb/SMP0002123']/bp:pathwayComponent[@rdf:resource='#Reactions/179009']
+- id: e14
+  subject: UniProtKB:P30847
+  predicate: located_in
+  object: GO:0005886
+  description: BaeS is assigned to the cell inner membrane by reviewed annotation; the 1993 fractionation
+    supports membrane association, not exclusive activity-dependent location.
+  evidence:
+  - reference_id: UniProtKB:P30847
+    source_assertion: Reviewed location is cell inner membrane, multipass membrane protein, with experimental
+      annotation citing PMID 15919996.
+    source_locator: $.comments[2]
+  - reference_id: PMID:8282725
+    source_assertion: Overproduced BaeS was identified mainly in the membrane fraction.
+    source_locator: PDF:7
+- id: e15
+  subject: UniProtKB:P69228
+  predicate: located_in
+  object: GO:0005737
+  description: BaeR cytoplasmic location is a native/reviewed assignment, with current UniProt curator-inference
+    evidence and historical cytosolic-fraction recovery.
+  evidence:
+  - reference_id: UniProtKB:P69228
+    source_assertion: Reviewed cytoplasmic location carries ECO:0000305 curator-inference evidence.
+    source_locator: $.comments[2]
+  - reference_id: PathBank:SMP0002123
+    source_assertion: Native BaeR protein points to the Cytoplasm cellular-location object.
+    source_locator: /rdf:RDF/bp:Protein[@rdf:ID='Protein/20851_Cytoplasm']/bp:cellularLocation
+source_mappings:
+- subject_id: UniProt:P30847
+  subject_label: Signal transduction histidine-protein kinase BaeS
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P30847
+  object_label: Signal transduction histidine-protein kinase BaeS
+  mapping_justification: semapv:ManualMappingCuration
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002123
+  source_element_id: ProteinReference/7583
+- subject_id: UniProt:P69228
+  subject_label: Transcriptional regulatory protein BaeR
+  predicate_id: skos:exactMatch
+  object_id: UniProtKB:P69228
+  object_label: Transcriptional regulatory protein BaeR
+  mapping_justification: semapv:ManualMappingCuration
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002123
+  source_element_id: ProteinReference/20851
+- subject_id: PathBank:SMP0002123/Compound/PW_C000414
+  subject_label: Adenosine triphosphate
+  predicate_id: skos:exactMatch
+  object_id: CHEBI:15422
+  object_label: ATP
+  mapping_justification: semapv:ManualMappingCuration
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002123
+  source_element_id: CompoundReference/PW_C000414
+- subject_id: PathBank:SMP0002123/Compound/PW_C001034
+  subject_label: Adenosine diphosphate
+  predicate_id: skos:exactMatch
+  object_id: CHEBI:16761
+  object_label: ADP
+  mapping_justification: semapv:ManualMappingCuration
+  confidence: '1.0'
+  source_pathway_id: PathBank:SMP0002123
+  source_element_id: CompoundReference/PW_C001034
+references:
+- id: PathBank:SMP0002123
+  title: 'BaeSR Two-Component Signal Transduction System: current complete BioPAX'
+  source_version: Whole current issuing BioPAX acquired 2026-10-12, 57 top-level objects, two reactions.
+    Protein-state flattening, reused modification feature and source chemical conflict retained.
+  source_sha256: 633e3a1c803cb4868ac25fc70baa5ecf6abe73f59932802d89169c260487ee4a
+  url: https://pathbank.org/view/SMP0002123/download?type=owl_markup
+- id: PathBank:PW002111
+  title: PathWhiz PW002111 complete PWML for PathBank SMP0002123
+  source_version: Whole current PWML acquired 2026-10-12. Raw undeclared drawing option prefix preserved.
+    XPath reading uses only a separately bound reversible namespace insertion; derivative is not issuer
+    authority.
+  source_sha256: b70860163c38612dcd0f8de0f7d69bc99e6acce7f7307effa87c28ff3fafc0b8
+  url: https://pathbank.org/view/SMP0002123/download?type=pwml_markup
+- id: UniProtKB:P30847
+  title: Signal transduction histidine-protein kinase BaeS
+  source_version: Whole reviewed UniProt JSON; entry 194, sequence 2, annotation updated 2026-09-02. Reference
+    identity, source evidence codes and construct distinctions retained.
+  source_sha256: 8186fa48b26e92e1ffdc3b2b550867acfa80e7016542cba4ad701512e7d79dd5
+  url: https://rest.uniprot.org/uniprotkb/P30847.json
+- id: UniProtKB:P69228
+  title: Transcriptional regulatory protein BaeR
+  source_version: Whole reviewed UniProt JSON; entry 149, sequence 1, annotation updated 2026-09-02. Reference
+    identity, source evidence codes and construct distinctions retained.
+  source_sha256: 0c94ec83ca9196f930896e6e5122bd8577e28e682e9172f6badfc6ae2c7adb5d
+  url: https://rest.uniprot.org/uniprotkb/P69228.json
+- id: CHEBI:15422
+  title: ATP
+  source_version: Complete released ChEBI issuing JSON acquired 2026-10-12; structure, charge, stereochemistry
+    and secondary IDs inspected. Free species is not a protein-bound phosphoryl group.
+  source_sha256: f173846fda64be1d87a0cd9d660e307bde3abd970c6d113d5bf810c1455a8167
+  url: https://www.ebi.ac.uk/chebi/backend/api/public/compound/15422/
+- id: CHEBI:16761
+  title: ADP
+  source_version: Complete released ChEBI issuing JSON acquired 2026-10-12; structure, charge, stereochemistry
+    and secondary IDs inspected. Free species is not a protein-bound phosphoryl group.
+  source_sha256: 7c068acc0ce95538a614cf4c1e4182e67bf4ced89fae4a63a1238283a083e37f
+  url: https://www.ebi.ac.uk/chebi/backend/api/public/compound/16761/
+- id: CHEBI:18367
+  title: phosphate(3−)
+  source_version: Complete released ChEBI issuing JSON acquired 2026-10-12; structure, charge, stereochemistry
+    and secondary IDs inspected. Free species is not a protein-bound phosphoryl group.
+  source_sha256: fa140dfb03a613c8756606e742227a60f405a0e26ed843302c9357b83fd12140
+  url: https://www.ebi.ac.uk/chebi/backend/api/public/compound/18367/
+- id: CHEBI:26078
+  title: phosphoric acid
+  source_version: Complete released ChEBI issuing JSON acquired 2026-10-12; structure, charge, stereochemistry
+    and secondary IDs inspected. Free species is not a protein-bound phosphoryl group.
+  source_sha256: 71b5eb8996e2b9b895d3afa5db780f7c14e11f021b5417168c4ca3cf3bd14eed
+  url: https://www.ebi.ac.uk/chebi/backend/api/public/compound/26078/
+- id: PubChem:1061
+  title: 'Phosphate: whole PubChem compound record'
+  source_version: Whole CID1061 record acquired 2026-10-12; charge−3 and complete InChI distinguish the
+    native current neutral-acid drawing.
+  source_sha256: 80fc46548cc2434f615632808592f5059fc8fae0ddd2f363b108ed66683c3a15
+  url: https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/1061/JSON
+- id: NCBITaxon:562
+  title: Escherichia coli
+  source_version: Complete two-taxon NCBI XML acquired 2026-10-12; exact selected TaxId subject distinguished
+    from lineage entries.
+  source_sha256: 2dcdda2c3c37e57995c411bcff0d43d00866db7e45dccd218778c2e678506e3f
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=562,83333&retmode=xml
+- id: NCBITaxon:83333
+  title: Escherichia coli K-12
+  source_version: Complete two-taxon NCBI XML acquired 2026-10-12; exact selected TaxId subject distinguished
+    from lineage entries.
+  source_sha256: 2dcdda2c3c37e57995c411bcff0d43d00866db7e45dccd218778c2e678506e3f
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id=562,83333&retmode=xml
+- id: NCBIProtein:BAA03140.1
+  title: Historical BaeS BAA03140.1,466 residues
+  source_version: Whole versioned protein record and D14054.1 coding provenance. Not identical to current
+    467-residue P30847.
+  source_sha256: d8ff7167957054cdde9174e10000beadc33dde38afba03356c0493f056a56906
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=BAA03140.1&rettype=gb&retmode=xml
+- id: NCBIProtein:BAA03141.1
+  title: Historical BaeR translation BAA03141.1 within complete D14054.1
+  source_version: Whole 2495-base D14054.1 record, including both complete CDSs. Reference digest binds
+    this complete nucleotide original containing BAA03141.1, not a fabricated protein-only original.
+  source_sha256: e9d89355911807466d88bfc03f3821210436c2c330fe57ef93be4139dd9d6eda
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=D14054.1&rettype=gb&retmode=xml
+- id: PMID:8282725
+  title: Novel members of the two-component signal transduction genes in Escherichia coli
+  source_version: Complete official 1993 PDF, all 8 pages freshly read during this author/preflight session;
+    Figures 6–8 personally inspected. Full-length expression in enriched fractions, not a purified BaeS/BaeR
+    pair.
+  source_sha256: be5f9f122608f073d1886a353f4d4e076e53bf822ed96b60ebaf0639eccc1961
+  url: https://www.jstage.jst.go.jp/article/biochemistry1922/114/3/114_3_350/_pdf
+- id: PMID:12107134
+  title: The baeSR two-component regulatory system activates transcription of the yegMNOB (mdtABCD) transporter
+    gene cluster in Escherichia coli and increases its resistance to novobiocin and deoxycholate
+  source_version: Complete 2002 PMC article text, tables, captions, bibliography read; all 5 original
+    figure bodies acquired and personally inspected during authoring. Altered, His-tagged and intact BaeR
+    preparations distinguished.
+  source_sha256: e593dc419f8ce8e979debd992e4c4fa1a50b98885eb76f209020ba98afaaa6ae
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC135214/
+- id: PMID:21515766
+  title: Characterization of the induction and cellular role of the BaeSR two-component envelope stress
+    response of Escherichia coli
+  source_version: Complete 2011 PMC article text, tables, captions, bibliography read; all 4 figure bodies
+    and image Table 2 acquired and personally inspected. Induction is not proof of direct sensor ligand
+    binding.
+  source_sha256: 09e0a242c506f9154513edd3192af8828a6917dc85cec97389cff50797772936
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC3133272/
+- id: GO:0005886
+  title: plasma membrane
+  source_version: Whole QuickGO three-term issuing response acquired 2026-10-12; exact selected active
+    subject identified independently of the native erroneous GO:0070258 inner membrane pellicle complex
+    cross-reference.
+  source_sha256: 94b45141e871c915b2a4ae1b6062c90632bbe718d130932be3d0cbee2e9ca93b
+  url: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0070258%2CGO%3A0005886%2CGO%3A0005737
+- id: GO:0005737
+  title: cytoplasm
+  source_version: Whole QuickGO three-term issuing response acquired 2026-10-12; exact selected active
+    subject identified independently of the native erroneous GO:0070258 inner membrane pellicle complex
+    cross-reference.
+  source_sha256: 94b45141e871c915b2a4ae1b6062c90632bbe718d130932be3d0cbee2e9ca93b
+  url: https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0070258%2CGO%3A0005886%2CGO%3A0005737

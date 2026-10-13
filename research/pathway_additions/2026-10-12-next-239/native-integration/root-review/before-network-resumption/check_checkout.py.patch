@@ -1,0 +1,28 @@
+--- 
++++ 
+@@ -29,17 +29,19 @@
+ receipts=Path('/private/tmp/pathwaymech-next-239-local-native-execution-20261012')
+ history=c.load(receipts/'history-and-generation/completion.json')
+ remaining=c.load(receipts/'remaining-offline-gates/completion.json')
+-network=c.load(receipts/'vendored-gate/completion.json')
+-final=c.load(receipts/'final-gates/completion.json')
+-assert all(x['status']=='phase_passed' for x in [history,remaining,network,final])
++network=c.load(receipts/'network-resumption-successor/completion.json')
++assert all(x['status']=='phase_passed' for x in [history,remaining,network])
+ assert [r['name'] for r in remaining['receipts']]==['validate','tests','lint','kgx']
+-assert [r['name'] for r in network['receipts']]==['vendored']
+-assert [r['name'] for r in final['receipts']]==['diff-check','site-current']
++assert [r['name'] for r in network['receipts']]==['vendored','diff-check','site-current']
++for failed in ['vendored-gate','network-resumption']:
++ r=c.load(receipts/failed/'vendored.execution.json')
++ assert r['exit_code'] != 0
++ c.verify(r['stdout']);c.verify(r['stderr'])
+ hr=[r for r in history['receipts'] if r['name'].startswith('history-')]
+ render=next(r for r in history['receipts'] if r['name']=='render')
+ sssom=next(r for r in history['receipts'] if r['name']=='sssom')
+ assert len(hr)==2 and all(r['exit_code']==0 and r['finished_at']<sssom['started_at']<render['started_at'] for r in hr)
+-all_receipts=history['receipts']+remaining['receipts']+network['receipts']+final['receipts']
++all_receipts=history['receipts']+remaining['receipts']+network['receipts']
+ assert all(r['exit_code']==0 for r in all_receipts)
+ for r in all_receipts:
+  c.verify(r['stdout']);c.verify(r['stderr'])

@@ -1,0 +1,11 @@
+--- 
++++ 
+@@ -19,7 +19,7 @@
+     return {'path': str(p), 'bytes': len(b), 'sha256': hashlib.sha256(b).hexdigest()}
+ 
+ 
+-for phase in ('history-and-generation', 'remaining-offline-gates', 'vendored-gate', 'final-gates'):
++for phase in ('history-and-generation', 'remaining-offline-gates', 'network-resumption-successor'):
+     result = json.loads((N / phase / 'completion.json').read_bytes())
+     assert result['status'] == 'phase_passed'
+     assert all(row['exit_code'] == 0 for row in result['receipts'])

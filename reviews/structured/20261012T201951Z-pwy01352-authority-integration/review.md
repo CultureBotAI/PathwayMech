@@ -1,0 +1,2910 @@
+# Nitrate authority integration: independent actual-tree and preservation review
+
+- Review: 20261012T201951Z-pwy01352-authority-integration
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T20:12:39Z
+- Finished UTC: 2026-10-12T20:19:51Z
+- Reviewer: Codex /root/aceto236_design_acceptance_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+All 29 technical target owners match accepted runtime/configuration/source fixtures and native authority outputs. Independent maintained preservation, complete rendered evidence, portable retrieval and actual-tree checks pass; all nine root native gates pass with original failures preserved.
+
+## Scope And Provenance
+
+All 29 technical target owners match accepted runtime/configuration/source fixtures and native authority outputs. Independent maintained preservation, complete rendered evidence, portable retrieval and actual-tree checks pass; all nine root native gates pass with original failures preserved.
+
+Selection: Exact nitrate local integration on PWY commit5ff01d7c59c61fd94b65b907edd50936193f7f17 including all maintained selected targets and complete physical tree before native review saves. Full actual-tree adversarial integration assessment is included.
+Coverage: full; 29 reviewed / 29 in the declared population.
+Source: working_tree at Git base 5ff01d7c59c61fd94b65b907edd50936193f7f17.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| conf/identifier_sources.json | conf/identifier_sources.json | maintained | conf/identifier_sources.json |
+| conf/rhea_identifier_updates.json | conf/rhea_identifier_updates.json | maintained | conf/rhea_identifier_updates.json |
+| data/identifier_authorities/ontology.json | data/identifier_authorities/ontology.json | maintained | data/identifier_authorities/ontology.json |
+| data/identifier_authorities/sources.json | data/identifier_authorities/sources.json | maintained | data/identifier_authorities/sources.json |
+| docs/IDENTIFIERS.md | docs/IDENTIFIERS.md | maintained | docs/IDENTIFIERS.md |
+| scripts/build_source_identifier_snapshot.py | scripts/build_source_identifier_snapshot.py | maintained | scripts/build_source_identifier_snapshot.py |
+| src/pathwaymech/biocyc_chemical_class.py | src/pathwaymech/biocyc_chemical_class.py | maintained | src/pathwaymech/biocyc_chemical_class.py |
+| src/pathwaymech/biocyc_native_context.py | src/pathwaymech/biocyc_native_context.py | maintained | src/pathwaymech/biocyc_native_context.py |
+| src/pathwaymech/biocyc_pathway.py | src/pathwaymech/biocyc_pathway.py | maintained | src/pathwaymech/biocyc_pathway.py |
+| src/pathwaymech/ecocyc_named_complex.py | src/pathwaymech/ecocyc_named_complex.py | maintained | src/pathwaymech/ecocyc_named_complex.py |
+| src/pathwaymech/identifiers.py | src/pathwaymech/identifiers.py | maintained | src/pathwaymech/identifiers.py |
+| tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml | tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml | maintained | tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml |
+| tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml | tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml | maintained | tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml |
+| tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml | tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml | maintained | tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml |
+| tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml | tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml | maintained | tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml |
+| tests/fixtures/nitrate_authority/META-3FE-4S-author.xml | tests/fixtures/nitrate_authority/META-3FE-4S-author.xml | maintained | tests/fixtures/nitrate_authority/META-3FE-4S-author.xml |
+| tests/fixtures/nitrate_authority/META-CPD-7-author.xml | tests/fixtures/nitrate_authority/META-CPD-7-author.xml | maintained | tests/fixtures/nitrate_authority/META-CPD-7-author.xml |
+| tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml | tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml | maintained | tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml |
+| tests/fixtures/nitrate_authority/META-Heme-b-author.xml | tests/fixtures/nitrate_authority/META-Heme-b-author.xml | maintained | tests/fixtures/nitrate_authority/META-Heme-b-author.xml |
+| tests/fixtures/nitrate_authority/META-Menaquinols.xml | tests/fixtures/nitrate_authority/META-Menaquinols.xml | maintained | tests/fixtures/nitrate_authority/META-Menaquinols.xml |
+| tests/fixtures/nitrate_authority/META-Menaquinones.xml | tests/fixtures/nitrate_authority/META-Menaquinones.xml | maintained | tests/fixtures/nitrate_authority/META-Menaquinones.xml |
+| tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml | tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml | maintained | tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml |
+| tests/fixtures/nitrate_authority/META-RXN0-3501.xml | tests/fixtures/nitrate_authority/META-RXN0-3501.xml | maintained | tests/fixtures/nitrate_authority/META-RXN0-3501.xml |
+| tests/fixtures/nitrate_authority/META-RXN0-5388.xml | tests/fixtures/nitrate_authority/META-RXN0-5388.xml | maintained | tests/fixtures/nitrate_authority/META-RXN0-5388.xml |
+| tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html | tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html | maintained | tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html |
+| tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json | tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json | maintained | tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json |
+| tests/fixtures/nitrate_authority/manifest.json | tests/fixtures/nitrate_authority/manifest.json | maintained | tests/fixtures/nitrate_authority/manifest.json |
+| tests/test_named_complex_consumer_conflicts.py | tests/test_named_complex_consumer_conflicts.py | maintained | tests/test_named_complex_consumer_conflicts.py |
+| tests/test_nitrate_native_authority.py | tests/test_nitrate_native_authority.py | maintained | tests/test_nitrate_native_authority.py |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Root-executed history-1 | passed | False | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed history-2 | passed | False | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed sssom | passed | False | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed render | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed skills | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed validate | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed tests | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed lint | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed kgx | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Historical DNS failure | failed | False | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Original failure preserved; successful vendored retry has its separate receipt. |
+| Root-executed vendored | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed diff-check | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Root-executed site-current | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Actual root execution passed; receipt and full stdout/stderr identities verified. |
+| Fresh complete maintained content/preservation QA | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Adopted portable evidence retrieval | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Full actual-tree audit and native inspection | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Review closures and root execution bindings | passed | True | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | Independent read-only execution completed successfully; exact scripts and streams retained. |
+| Browser interaction | unavailable | False | conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py | No interactive browser was available in the root preview. Fresh static image view and exact DOM checks are recorded; no keyboard/search/JavaScript test is claimed. |
+
+## Scientific And Domain Assessments
+
+### conf/identifier_sources.json
+
+ownership: supported. Targets: conf/identifier_sources.json.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 f9856d8ada47f989d71f4fd7140412aee062dbc135eb65b22fbf0508c97a645e.
+
+### conf/rhea_identifier_updates.json
+
+ownership: supported. Targets: conf/rhea_identifier_updates.json.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 5c6a356a56a4b4df882ac2898587576216895a07fc2b455082da136ebd91a49d.
+
+### data/identifier_authorities/ontology.json
+
+ownership: supported. Targets: data/identifier_authorities/ontology.json.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 32934d18cc23ca0d26199640888507df3635593024b944e5dd211fde3deb5cc1.
+
+### data/identifier_authorities/sources.json
+
+ownership: supported. Targets: data/identifier_authorities/sources.json.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 856d8eb32df1a73ebc9cc28c5d533b992f29649b45063d4e340f1f727a7ce754.
+
+### docs/IDENTIFIERS.md
+
+ownership: supported. Targets: docs/IDENTIFIERS.md.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 2c0ec4fa5433e526092c18931296286ccd254218c53df4883119338eda87733d.
+
+### scripts/build_source_identifier_snapshot.py
+
+ownership: supported. Targets: scripts/build_source_identifier_snapshot.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 5c7f626a68edf3f7573b583c18b78af09ab9465d3b93bbb6d3c5399cdc7126a4.
+
+### src/pathwaymech/biocyc_chemical_class.py
+
+ownership: supported. Targets: src/pathwaymech/biocyc_chemical_class.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 49b95ad1029cc2064afe87e9853bc7e2cfc7243aeeee574d15981e5e8e45649f.
+
+### src/pathwaymech/biocyc_native_context.py
+
+ownership: supported. Targets: src/pathwaymech/biocyc_native_context.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 25bdc7a4bccc796df1763e17ecb11289e12c2503b4ccb94f5713a4fb2fa06e65.
+
+### src/pathwaymech/biocyc_pathway.py
+
+ownership: supported. Targets: src/pathwaymech/biocyc_pathway.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 61895a6cca39316f8f3573fd51bb762791076a9a0cc7876e7c9b4e6372f9f98e.
+
+### src/pathwaymech/ecocyc_named_complex.py
+
+ownership: supported. Targets: src/pathwaymech/ecocyc_named_complex.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 5d94c7833527ff70c629b14736fd74750e92171f12e509c3cd69c04e88880574.
+
+### src/pathwaymech/identifiers.py
+
+ownership: supported. Targets: src/pathwaymech/identifiers.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 6f4f45e7f7170559da48e7e9f7a4cb854b988c10a6192722d6ba21d1819163c3.
+
+### tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 5310771f2079b9dd304e8b1f8150038b9b9091e7b9b5f022c39ae249800f5734.
+
+### tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 67c828b9054abc26c90344b97ebf69fe7003e34f7b0228444d31892ef0ff029b.
+
+### tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 b0515279d39256322819c3894014095fc612845df874be1d7c9a738ca486c3c9.
+
+### tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 729e2f31beaa7bb87a89ac631e95e0ae22f3130ed02d46894a7f445ad6971038.
+
+### tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-3FE-4S-author.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 f5cc203e373cf6e213d5ef560bec198cd8254ffa6fc59ea44ccaec2e15abc65b.
+
+### tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-CPD-7-author.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 b6ca32e6a37bcb2da163246463e07cf748cd1f5a63e62838fb37312a9b45f177.
+
+### tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 c157320e8026b6bc4249c1dcf8b4d9145fb0bca5d8141024cf2639810073213b.
+
+### tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-Heme-b-author.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 3e8d0c874c8f85fade0cf886c09b7465641163c43327e271763a198e46e33c22.
+
+### tests/fixtures/nitrate_authority/META-Menaquinols.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-Menaquinols.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 4c186dc9483d06a99af5e5ad71f69bcb3c49980a5d1749422ec18fa9b341a642.
+
+### tests/fixtures/nitrate_authority/META-Menaquinones.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-Menaquinones.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 1e020709fa4e499aa027ce3dd2ca0e600aed376c03c1de91e312fab4c6f4dee1.
+
+### tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 5351366079460ad3b43b18b55e1e157e8be74aa59bac77556961c8b4af2a74e3.
+
+### tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-RXN0-3501.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 e4af46a1698544bbb3d5836158d32b3957b1dd9d99d213b898b2df52c9e08cea.
+
+### tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/META-RXN0-5388.xml.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 2f8a8ac0a865ad9d65d357a9250a768920b10a22ef02d25698d65d7bdec8c4d6.
+
+### tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 b9d703fc64600983259df1095b89ea6b27f44aff0e1e5a1b554e70ac378031fb.
+
+### tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 3b77a855182ca329f7c1c23186630aebb915269ee55a00b9f7fc2a9fb958bb3d.
+
+### tests/fixtures/nitrate_authority/manifest.json
+
+ownership: supported. Targets: tests/fixtures/nitrate_authority/manifest.json.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 bb1b11420fb25d33cb570a659e2b10f1c3f9739e3aff8ce107e51cbd6c5ff619.
+
+### tests/test_named_complex_consumer_conflicts.py
+
+ownership: supported. Targets: tests/test_named_complex_consumer_conflicts.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 6757fa7cce818aec9a2f95afc387a3905f899f81b7fbb19c5026dcea1d94d4ae.
+
+### tests/test_nitrate_native_authority.py
+
+ownership: supported. Targets: tests/test_nitrate_native_authority.py.
+
+Exact adopted owner matches the accepted 30-primary/9-dossier plan and actual accepted native runtime/output. Complete scientific source and adapter interpretation remain inherited; fresh maintained full-suite gates and output checks cover current integration.
+
+Current SHA256 a5bf964b0d772a14f8ab6a6d5fe2bab2203758c65171ae545f95ca2f9ad31602.
+
+### Whole authority preservation and first owners
+
+grounding: supported. Targets: conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py.
+
+Source snapshot has 2,603 terms/667 owners; ontology has 2,004 terms/five owners. Every old object and nested/outer relative order remains exact except approved polymer9537/9539 map additions. All previous UniProt objects/first owners remain exact; 831 manifest rows are an ordered prefix of844.
+
+### Complete prior corpus and history
+
+provenance: supported. Targets: conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py.
+
+All 235 old records/pages, 398 old history YAMLs and 114 structured review pairs remain byte-identical. Fresh complete physical census includes hidden/ignored files and only the exact planned/generated/history/root-evidence additions; all 800 cache identities unchanged.
+
+### Whole KGX and six SSSOM mappings
+
+representation: supported. Targets: conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py.
+
+Both maintained KGX surfaces equal accepted actual native outputs: 4,260 nodes/11,903 edges. All 11,803 old edge payloads/order and 7,877 whole old node contexts/order/multiplicity remain exact. Only approved HCN aggregate category union changes. All 21 prior SSSOM rows/order remain with six exact new rows.
+
+### Whole source retrieval and durable gate evidence
+
+provenance: supported. Targets: conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py.
+
+Fresh resolver retrieves all 2,907 whole bodies from six archives and repository owners, retaining literal aliases as inert metadata. All 100 root-evidence map entries exactly decode to their originals. Full SQL and excluded reproducible fixture scope remain external/inherited.
+
+### Actual gates and history order
+
+consistency: supported. Targets: conf/identifier_sources.json, conf/rhea_identifier_updates.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_chemical_class.py, src/pathwaymech/biocyc_native_context.py, src/pathwaymech/biocyc_pathway.py, src/pathwaymech/ecocyc_named_complex.py, src/pathwaymech/identifiers.py, tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml, tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml, tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml, tests/fixtures/nitrate_authority/META-3FE-4S-author.xml, tests/fixtures/nitrate_authority/META-CPD-7-author.xml, tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml, tests/fixtures/nitrate_authority/META-Heme-b-author.xml, tests/fixtures/nitrate_authority/META-Menaquinols.xml, tests/fixtures/nitrate_authority/META-Menaquinones.xml, tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml, tests/fixtures/nitrate_authority/META-RXN0-3501.xml, tests/fixtures/nitrate_authority/META-RXN0-5388.xml, tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html, tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json, tests/fixtures/nitrate_authority/manifest.json, tests/test_named_complex_consumer_conflicts.py, tests/test_nitrate_native_authority.py.
+
+Both native histories precede SSSOM and first rendering. Nine gates pass, including 3,977 tests with three skips/three dependency warnings. Initial sandbox-DNS failure and successful exact-command retry remain separate actual receipts.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| current-target | data/pathways/nitrate-reduction-viii.yaml | supports | Fresh complete reading of all 2,550 YAML lines. Exact accepted successor retains 48 paragraphs, 100 edges, 64 named identities, four endpoint qualifiers, six mappings and 107 references. |
+| fresh-qa | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/audit.json | supports | Fresh independent complete HTML graph/table/evidence correspondence, baseline owner preservation, actual authority object/order and complete old KGX context/edge preservation; exact SSSOM additions. |
+| portable-evidence | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/portable.stdout | supports | Fresh read-only adopted resolver retrieves all 2,907 whole bodies / 360,050,720 decoded bytes without external temporary original reads or extraction. |
+| full-tree | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/full-tree-check.json | supports | Fresh full hidden/ignored-inclusive actual-tree census: only approved owners, derived outputs, two histories and the exact root evidence map additions. All 800 shared cache identities unchanged. |
+| actual-receipts | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/evidence-bindings.json | supports | Fresh closure of accepted science 340+2 and independent integration preparation 19+2. All root command receipts and original stream hashes verified, including the initial DNS failure and successful exact retry. |
+| static-visual | research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/static-visual.json | supports | Fresh view of full static preview raster and equality of actual maintained SVG to preview SVG. Dense junction labels overlap; no browser interaction is claimed. |
+| scientific-review | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[b38f2f789a51496a90c9308a0e936d9a7aa7e316f98a4f0938e0b6f9901269a7] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| paragraph-assessments | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[7ec5e955f518fc2e14ecc121724fcffafc5d43098e19cd5c93261cee4fdd4b66] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| edge-assessments | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[a7fe1383fd555faec83c636057ce440a5a8fa187df8f652058862d87f0b46fd0] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| scientific-dispositions | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[daf9160298b150269df31af7a7269841d2fd62ab0364f3b66bf8559b0f78b3df] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| integration-preparation-review | research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/REPORT.md | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| actual-output-review | research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz; body_lookup[c8932dccacc84671379cae46ae1087ce81c4d0b19fae530b6b69c95c20444a0d] | supports | Complete earlier scientific or bounded technical interpretation is inherited explicitly. Current review reads its report/dispositions and binds the unchanged maintained objects; it does not freshly reread primary papers. |
+| gate-history-1 | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-history-2 | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-sssom | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-render | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-skills | research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-validate | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-tests | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-lint | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-kgx | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| historical-vendored-DNS | research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Historical DNS failure, superseded by successful exact-command public-read retry. |
+| gate-vendored | research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-diff-check | research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+| gate-site-current | research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.execution.json | supports | Actual root command receipt and complete original streams independently rehashed. Root executed exit 0; this reviewer did not rerun the native gate. |
+
+## Limits And Additional Notes
+
+- Full scientific source interpretation is inherited from the accepted independent review: six complete primary main bodies, two spreadsheets, whole native/UniProt objects and bounded older abstracts. This maintained review freshly reads the full current YAML and inherited judgments; it does not claim a new full-paper reading.
+- Most historical papers have indexed abstracts rather than complete Methods; unavailable/unread supplements and other sources remain explicitly limited. No source-exhaustion claim follows.
+- Static graph junction labels overlap. Exact claims remain in the fully checked evidence table. Static raster was produced earlier by root and freshly viewed here; actual maintained SVG is identical. No interactive browser test is claimed.
+- Scientific e083 assertion is a 400-character source excerpt ending mid-word. Inherited whole-source review supports the claim; complete FUNCTION original remains portable. No claim that the excerpt is the whole source.
+- Technical runtime behavior is inherited from accepted independent implementation and actual-output reviews plus fresh maintained gates, not a fresh line-by-line production adapter audit. This reviewer independently audited actual outputs and integration preservation previously.
+- No maintained record, review, cache, Git state, GitHub issue or publication was changed by this reviewer. Root owns evidence adoption, final native source.inputs inspection, append-only save/check and local commit.
+- All read/test failures remain recorded: stopped overbroad read-only inventory, bounded nonexistent-path probes, one protected unrelated temporary path during an inventory probe, SSSOM-column harness assumption, root-directory manifest convention, and an intermediate draft reference pointing to the earlier portable index instead of the later durable preparation-review owner. Corrected checks pass without changing product bytes.
+- Review interval begins at captured start.json after earlier contextual reading; earlier full YAML/report reads are credited as pre-interval context. Native inspect/verification/drafting use actual times.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261012T201951Z-pwy01352-authority-integration
+kind: repository
+repository: CultureBotAI/PathwayMech
+title: 'Nitrate authority integration: independent actual-tree and preservation review'
+started_at: '2026-10-12T20:12:39Z'
+finished_at: '2026-10-12T20:19:51Z'
+reviewer:
+  identity: Codex /root/aceto236_design_acceptance_review
+  kind: agent
+  independence: independent
+  independence_basis: This reviewer did not author nitrate science, runtime, integration
+    payload or root native execution. It previously independently reviewed bounded
+    runtime/output/preparation stages, freshly read the entire maintained YAML and
+    inherited judgments, and independently authored/executed current content/preservation
+    checks and verified actual execution receipts. Source-body interpretations are
+    explicitly inherited.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: All 29 technical target owners match accepted runtime/configuration/source
+  fixtures and native authority outputs. Independent maintained preservation, complete
+  rendered evidence, portable retrieval and actual-tree checks pass; all nine root
+  native gates pass with original failures preserved.
+source:
+  git_revision: 5ff01d7c59c61fd94b65b907edd50936193f7f17
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: f9856d8ada47f989d71f4fd7140412aee062dbc135eb65b22fbf0508c97a645e
+    role: target
+  - path: conf/rhea_identifier_updates.json
+    sha256: 5c6a356a56a4b4df882ac2898587576216895a07fc2b455082da136ebd91a49d
+    role: target
+  - path: data/identifier_authorities/ontology.json
+    sha256: 32934d18cc23ca0d26199640888507df3635593024b944e5dd211fde3deb5cc1
+    role: target
+  - path: data/identifier_authorities/sources.json
+    sha256: 856d8eb32df1a73ebc9cc28c5d533b992f29649b45063d4e340f1f727a7ce754
+    role: target
+  - path: data/pathways/nitrate-reduction-viii.yaml
+    sha256: 019deb06b1b58ae9c378b209a9e3815b6357685e13e6e3345b8be01aaf13f5de
+    role: context
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 3af37b2e92b0103da74bc462bedda1021c6bd262d3da13c030eb47344d08b61f
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 2c0ec4fa5433e526092c18931296286ccd254218c53df4883119338eda87733d
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: history/infrastructure/nitrate-native-authority/2026-10-12T195840Z-codex-ba6e78.yaml
+    sha256: 93b1c3f65242847b27725932d60f7f15cbc7329414681af5e1dfa4647b42ab4b
+    role: context
+  - path: history/records/nitrate-reduction-viii/2026-10-12T195838Z-codex-78d49e.yaml
+    sha256: ab3161bac76f34bf32b590f2b611f5f5791a25a503ced31377e20a50f158f15d
+    role: context
+  - path: output/kgx/edges.tsv
+    sha256: 46c9979bb9a42f6da0074ad9639206c9410e332978fb4b6d91c82c641c55a1ab
+    role: context
+  - path: output/kgx/nodes.tsv
+    sha256: 7605e187d59a46956db1fa2ebd7c6e0ee4dd96d6ff1061ca24e1e1c372460928
+    role: context
+  - path: output/sssom/source_mappings.sssom.tsv
+    sha256: 44f84f9863f807e8b442d9946298c6b773c71946e2fab0666214e1373963debd
+    role: context
+  - path: pages/browse.html
+    sha256: eff9de2de7ec1dae21ac855a66c8ecd3b1372834cde548403c8897e89e785741
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 46c9979bb9a42f6da0074ad9639206c9410e332978fb4b6d91c82c641c55a1ab
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 537741617b33f3c04c90c73467375ca51d683deafffad5531927c68dc55921ce
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 7605e187d59a46956db1fa2ebd7c6e0ee4dd96d6ff1061ca24e1e1c372460928
+    role: context
+  - path: pages/index.html
+    sha256: 0765ec1b915f327e24b80e5a368b4f00ddf7c076bd13f32cb58bb898a59612f0
+    role: context
+  - path: pages/pathway_index.json
+    sha256: d1e247f893c557502b13669e68c5c93f01a7b64c947960d7383abacff3c98912
+    role: context
+  - path: pages/records/MetaCyc_PWY0-1352.html
+    sha256: f7695e383070cb027439ae8d0d3c7c750a0b1d20ec5c0cd58b82cb26e3b23bbc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/README.md
+    sha256: 6f2bb14fcfe2af878ef64bac0b9337529358061e10499022c2ab00bdaf75b7b6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/archives/evidence-bodies.zip
+    sha256: 740a9622a76ca5d0ae16a815d2c9ca6e1871512c86fb198215a97c89382c9d1a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/archives/integration-preparation.zip
+    sha256: 79d46d7a8d753067d71e5e1e75fe1f2bb464af1c13bc4e5863549bcb6b98a71d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/common.py.gz
+    sha256: f6ee8566a9d4dd32fb21dd1611125a933e3d101e68ff600ea1a5561035d927b2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+    sha256: 310b057146fa5b6c6412029fe03de4e7eb81220d30b3267ba137d1d6b38c9b85
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/external-packet-closures.json.gz
+    sha256: ff9df8001f93ad39dd609d46aa41e5958844acdc67744f5548c71402d386951a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/integration-preparation.json
+    sha256: e79ec8574d3b41213615c0fae7422ac38913c9420c960c1f8bb86e416bb3d0ba
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/local-integration-decision.json
+    sha256: 22d70261d0de0fad3e1f2a652265d4a255da56e8b777f79787d3b1891e0b4fd0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/README.md
+    sha256: dbadb3391c01c193fce4fcde6f119a811de8c7226ed72198048a3f1f1b9cd184
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/adopt-root-evidence.py.gz
+    sha256: 1226d997517ad5e875f3476bd91a3fcc84aed8d806ab28516b226ed554dad3c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/adoption-acceptance.json
+    sha256: 8309e4364fa8652ac2ec7f2dbee164bf83e8d4db729eff0ab48785a40f5abeec
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/completion.json
+    sha256: ed272b522293344d475386e3d7b00057f26980a17582a44510f5b5cc8137e19c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.execution.json
+    sha256: 3e904a21f20fb5889e01b17a29af4d76a6183b5773c69445e6d461ad96418b02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.stdout.gz
+    sha256: 3172986aa4a921abe2c1622aa36d77ccd460ca3eaa266bc53c39b0302c9785fd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.execution.json
+    sha256: 7f004cea3f85307704f799d045c2bcf7d7ec122738c7b53ad6a41faaedb54efd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.stdout.gz
+    sha256: c7fda2031ad4283364d0c1ff56306f8dd1af96d4d26a9282aa4cacaf20d71634
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.execution.json
+    sha256: 2f030bd69f72cff40d0aa0807dbbc0edafdb36d2d944d1b21f64c0cb79ffc7f4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.stdout.gz
+    sha256: 7355fc3c17056965e605f3f0f605c1b281ad6e768072d0d2f968ff056fa8f51e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.execution.json
+    sha256: da2e6d9c7da39c9ee8d0e59e97483f7f11d91ae23dc9994d687d4031d24e9213
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.stdout.gz
+    sha256: 5eda5cd373e972ce1c6343642cd1dfa52e5dc2108cfce92ea819e4e93a2af9a6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom-preservation.json
+    sha256: 2c0d8c8cbafb150c38adb0d861894cddb32c3058145057b36f2f469a419daa00
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.execution.json
+    sha256: ac4cbcb462d60054b2bc2ba4d4e875b0a7c9a1242dc26aec334ec99213bc6849
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.stdout.gz
+    sha256: 51e729ff16a99469dbfd0c14a60604bbfa9967a487d43a093a0dcf951e4800d0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/completion.json
+    sha256: 0a84ace70a17951aeb71ab52ef580259f3f8992463bfffd0cf4173510bb80011
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.execution.json
+    sha256: 626078df413c1199d6ce5f49dec475df923139327baa66a6859c6a060367b184
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.execution.json
+    sha256: d3a3805a03ff91b302d6d883746fd34f69f53b7b073fc8a70c78605614af3de5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.stdout.gz
+    sha256: f24b2bba4fde571dbc53eabd3b48751a96af747cf71ff5fecc1643bb457e781a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.execution.json
+    sha256: bbe8821aca067246df00d0dd0ff91aa4e3fd1bf81ff772af88b1ecb97a542b24
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.stdout.gz
+    sha256: 84eb2f5823f900ef37165db66efb1234f4f1b653ddd847144fe9c2ae287ce18d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/failure.json
+    sha256: 8e01fce5e9da618d221dcdb589e63db136af51ff0466bc636271e4dc3748576d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.execution.json
+    sha256: 76dd491d57a7d2e29aae5352ee2c61413ec17c2089b813e68c324960a755ed14
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.stdout.gz
+    sha256: 586b2ea9b28efbaa0caddec244a210b2cec28dc398210738adcfdecfcefdaf22
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.execution.json
+    sha256: e3bfec030c3e469aed5e93d12ba73c26e3f2d5eddd065b5c09f523e04612999e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.stdout.gz
+    sha256: f3af4d142827f5aad2eb0c72d556d325488a57fb6219aac10afeb51085667d53
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.execution.json
+    sha256: 32e8e675e14f5a77f25fd41cdd56c3278a5837b6223e516237c53157e0abbabc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.stdout.gz
+    sha256: 3f2a39d0e6745bc06636532dbc5587af952b3d848b70161a22d32b0818592251
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.execution.json
+    sha256: bd6e783f851c8a7b9518f2660614c1860e2cc1c189dc97cec8528116d1f88205
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.stdout.gz
+    sha256: e20dd937156ac4c725cba915e13701090b494ab8fc1955227a17cee060ceac1a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.execution.json
+    sha256: bc082723fff91c9ac5cb2488e16d325b1f1bfad6d2d78511cdf35407cd9ca770
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.stderr.gz
+    sha256: c4c9af4108a66171fc2bb938ec783626725a3456a2f1daa4bb27f2b474a05f62
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.stdout.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/REPORT.md
+    sha256: 76db04a98e37d26ff43116bf3ef08d1898cb8d148efedb2862b1f4e723a4069a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/audit.json
+    sha256: 3b255ced47f0f5052628b0eaff3d3c1577b1c8fea586e3f33b6fab66e20bc556
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/evidence-bindings.json
+    sha256: b829df96ee71076263cfe99a3a2094b7cbfe6b6a5f2a5bc74967677fee99cf8d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/full-tree-check.json
+    sha256: 95462458ab5f118fc3bed9322891360abdc9e0f9f21744c3430123be9b52a7a2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/package-index.json
+    sha256: b08f96494b04e1eceab9bc2416c3fc0835ce038b8b1abe062fb5b0595b7af825
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/portable.stdout
+    sha256: aef5170284e19477dcc12c83bd0f89d095b6c86364deb1bfd10e9fea3f1553f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/static-visual.json
+    sha256: ea7f30b38f9818f806d58f900e87fb0c2dcc49e7b92d8ef12566c348b66b83bf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/native-stage-runner.py.gz
+    sha256: cf23e2cda4c0d60765b779c99a8a66b9ffad06d0628e876210821bfddd3044b1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/network-resumption-runner.py.gz
+    sha256: 73aa580e916c3800f4199ae17be0af00c38357177f446b79fbc6095bc80913f4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/REPORT.md
+    sha256: d10ade86db6d043d46cbdb1d3e3c1889a8ffa2b39204a84f533ef59e3441ad4c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/artifact-manifest.json
+    sha256: c2a93d3e4fa95654456400987685a92631efcfc44477e181463018ba3417d732
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit-results.json
+    sha256: 644ab00541ca1a0a060ec80e68abd4f8865105d6736cbaa0416a2806e89a06c6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.json
+    sha256: 84acb2a02c39ece5c0ef830f62bad449c4acc78c7efb0626cc186c1c28989bb5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.py.gz
+    sha256: ec19d94c1a7fce1649e6a8e798bc613a38630eeaeba19869b819b33431336559
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/audit.stdout.gz
+    sha256: 9bab73dfd9de863fe56da5402df5ee8598e5fcae6651bdaa2373190f86806599
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/disposition.json
+    sha256: 81a6c050e1a69daf8a204651e83a521fa3f365a39691d0e27d909ca811e28484
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/fixture-accounting.json
+    sha256: 2d3cc5f308618a7f2ba7becfc190c6dc21aca525ca25dded8707057a7d436482
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/fixtures.zip
+    sha256: 326a08ddad7b49b885c500790c0fff76d171fe430a9117a03606d6594d06eb39
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/handoff.json
+    sha256: 545b245573896d24efa0e0ad29ca5adea44ab59f6aa559fd2525dcd393ea9606
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/read-coverage.json
+    sha256: 8fe6b7bb518371f368dec8b17c60ec07defe8fae3dda40d9ed14b62659179558
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/read-diagnostic.json
+    sha256: 565e11dcb48bb5196b0cb91f08e08e3e5b542bd01be790ca439d2b10477aecfc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/reused-guards.json
+    sha256: 76a9d66f27348a10a6210d0673c273b7f004ca4cdf90e975425f26a63d60c428
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/reused-guards.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/reused-guards.stdout.gz
+    sha256: cf347261b54c6fcca865fa615f144e916d1884d4f5eea1134df32fe9ffb9b8bf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/run.py.gz
+    sha256: d4a669762eee106e025d08221cfb643f97dc60f3db4f97274ccf7fe6f369c0b5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/seal_review.py.gz
+    sha256: ee1c22c211b07e7dcbef7ea3a5110945c91c183f551f42857d369ffd4f35b9aa
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/test-rebase.patch
+    sha256: f7c800722c6447b454c90425c36673ef6cc97df30059fb06964c7edfc43bdc02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/test_controls.original.py.gz
+    sha256: 52a329c7553f97787682f14c481e4d41b29013752605cc2767636e555be206dc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/test_controls.py.gz
+    sha256: fa1ded90f20ba85c427959e82da46a1ecd013b0c74751d44232932d8aa3ae8ee
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-adoption/receipt.json
+    sha256: 3ee32ff7b76f530f25e081eab8f8efbd919a1e65e2e0308433b39efd27ea60d7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/REPORT.md
+    sha256: 3517c6951498e43a71d45b4bf94751b8b5dd7c3783fcd580c3f60319d97c82d4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/artifact-manifest.json
+    sha256: 2f1c7df22dbcf3111a01e6553b49750857e6d434d43186ff1e84b6222c69acfb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/check_checkout.py.gz
+    sha256: 8f4a0d7271528299614ccdbe900bd13726ad0d02446aa261ce3b0d2414a76de9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/check_target.py.gz
+    sha256: be18a607aba5af1f0ae19c45e701df834b4f7d99f808f37a80a9c18c2aafe4bf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout-preservation.json
+    sha256: 68a7b8c4729438f2bfaf334c38cfb4554100b33922b6e2dacdb3c05bbde4e6de
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout.execution.json
+    sha256: da9a04382d5aa462a513d9c98cd22eee19ed65d9a69daab8fdc6286f7e0603fc
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/checkout.stdout.gz
+    sha256: 8ace2d7906efaf7337e47d6df27a721876f1a0bea57bf26955f4df4d2f753bf1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/handoff.json
+    sha256: 068c0ac957a87d16d706544c9a0af92cba9e453010185dc6fd21ef43ad2bd148
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/inspect_targets.py.gz
+    sha256: 9f7b0deda5181b3e843b4830c65c9446e09cad3765235bdb87771a866d6aa799
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-inspection.execution.json
+    sha256: a9bf075cea9d1aa5aad4d3b7fff31fc8a74cf448128af03087c1cb309ec0106e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-inspection.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-inspection.stdout.gz
+    sha256: 85b009c00c704e037343b3057f0ccb8f77926190f93287c716427c0403dd2af7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/scientific-targets.json
+    sha256: 1521abc8657fd920bea115e18f9d17df9fe6ee585c6fac8f888952579f589f8e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target-qa.json.gz
+    sha256: f7073ab9e83b1aef5460ea3bf992c2a4c3d287afefb7619a2cb66db7fa05783f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target.execution.json
+    sha256: 69543d9f72aca9fdbe81e71302efc80ae24dfcc8b31ef3f87477f551d289257a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/target.stdout.gz
+    sha256: f46c5eced9a301f20b29c58140da170cd8b7e85bd561c732fc0a4d04d6c1af1d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-inspection.execution.json
+    sha256: 41522abac6c7c39fddbff53861f193809cf40b05eec111a36040c2fd9864e170
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-inspection.stderr.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-inspection.stdout.gz
+    sha256: e57239c5558106891c3b824a1724a86c0ab90c618e6abd26263beb5e42d3b09c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-review/technical-targets.json
+    sha256: b3f54a9ed62209e2c5a4e5d50d87711167282f35d9e1d96230cc15c65a59a8ce
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/root-storage-map.json
+    sha256: 3983020585478463feef35499a2db12e1be60d32f694a02e35d92019a9285e22
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/assets/pathway-network.css
+    sha256: ffe62865f9ede1d8ae7c361a5576823921c850542cf03d2ca7b3c945d63d7645
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/assets/pathway-network.js
+    sha256: 23b6fc25a1522c945cf61b7c269dadf93a90b8c78c357652e6653a05bcb97eac
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/graph.png
+    sha256: 49e30f937ac52762e4b30cab5bbcfe4ae44e16be3ce6ef98993ea41085567998
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/graph.svg.gz
+    sha256: 4408fcd08392e9d7173e302695b0a6cb36194b3ac747c66cd44d66e149f309f3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/preview-scope.json
+    sha256: cbcc261d7d5d62d4f39e4f32580063a6bc4e8255e088fb71a6d757d42eca650a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/qa.json
+    sha256: c73492b2123b4f20eccf05e2eee8eb8e9f2710f6af9ddf126f45b8b9f2a055c0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/records/MetaCyc_PWY0-1352.html
+    sha256: 8f4e4d9cb562db0b3e649e420589ac67958c6fe8f061eec5487442e34b32093f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/style.css
+    sha256: e4516964a76d665e2b4f098764656866bc5f673b72ab67badb1def724fb3e44c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/native-integration/visual/visual-assessment.json
+    sha256: 9d5b6922fe662ac4712f7acb1a8a18c4ff129673cb60a9f7f15ab6bc9378714c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-235/verify_portable.py.gz
+    sha256: 2137585fa9232b889a360cee1972677ae203b6c475117335bc115927978ba04c
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 5c7f626a68edf3f7573b583c18b78af09ab9465d3b93bbb6d3c5399cdc7126a4
+    role: target
+  - path: src/pathwaymech/biocyc_chemical_class.py
+    sha256: 49b95ad1029cc2064afe87e9853bc7e2cfc7243aeeee574d15981e5e8e45649f
+    role: target
+  - path: src/pathwaymech/biocyc_native_context.py
+    sha256: 25bdc7a4bccc796df1763e17ecb11289e12c2503b4ccb94f5713a4fb2fa06e65
+    role: target
+  - path: src/pathwaymech/biocyc_pathway.py
+    sha256: 61895a6cca39316f8f3573fd51bb762791076a9a0cc7876e7c9b4e6372f9f98e
+    role: target
+  - path: src/pathwaymech/ecocyc_named_complex.py
+    sha256: 5d94c7833527ff70c629b14736fd74750e92171f12e509c3cd69c04e88880574
+    role: target
+  - path: src/pathwaymech/graph_view.py
+    sha256: df277b9222b84ed0d225d6a9e2c8933ac210773239d46e26faf77e19e179d923
+    role: context
+  - path: src/pathwaymech/identifiers.py
+    sha256: 6f4f45e7f7170559da48e7e9f7a4cb854b988c10a6192722d6ba21d1819163c3
+    role: target
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+  - path: tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+    sha256: 5310771f2079b9dd304e8b1f8150038b9b9091e7b9b5f022c39ae249800f5734
+    role: target
+  - path: tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+    sha256: 67c828b9054abc26c90344b97ebf69fe7003e34f7b0228444d31892ef0ff029b
+    role: target
+  - path: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+    sha256: b0515279d39256322819c3894014095fc612845df874be1d7c9a738ca486c3c9
+    role: target
+  - path: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+    sha256: 729e2f31beaa7bb87a89ac631e95e0ae22f3130ed02d46894a7f445ad6971038
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+    sha256: f5cc203e373cf6e213d5ef560bec198cd8254ffa6fc59ea44ccaec2e15abc65b
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+    sha256: b6ca32e6a37bcb2da163246463e07cf748cd1f5a63e62838fb37312a9b45f177
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+    sha256: c157320e8026b6bc4249c1dcf8b4d9145fb0bca5d8141024cf2639810073213b
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+    sha256: 3e8d0c874c8f85fade0cf886c09b7465641163c43327e271763a198e46e33c22
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-Menaquinols.xml
+    sha256: 4c186dc9483d06a99af5e5ad71f69bcb3c49980a5d1749422ec18fa9b341a642
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-Menaquinones.xml
+    sha256: 1e020709fa4e499aa027ce3dd2ca0e600aed376c03c1de91e312fab4c6f4dee1
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+    sha256: 5351366079460ad3b43b18b55e1e157e8be74aa59bac77556961c8b4af2a74e3
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+    sha256: e4af46a1698544bbb3d5836158d32b3957b1dd9d99d213b898b2df52c9e08cea
+    role: target
+  - path: tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+    sha256: 2f8a8ac0a865ad9d65d357a9250a768920b10a22ef02d25698d65d7bdec8c4d6
+    role: target
+  - path: tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+    sha256: b9d703fc64600983259df1095b89ea6b27f44aff0e1e5a1b554e70ac378031fb
+    role: target
+  - path: tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+    sha256: 3b77a855182ca329f7c1c23186630aebb915269ee55a00b9f7fc2a9fb958bb3d
+    role: target
+  - path: tests/fixtures/nitrate_authority/manifest.json
+    sha256: bb1b11420fb25d33cb570a659e2b10f1c3f9739e3aff8ce107e51cbd6c5ff619
+    role: target
+  - path: tests/test_named_complex_consumer_conflicts.py
+    sha256: 6757fa7cce818aec9a2f95afc387a3905f899f81b7fbb19c5026dcea1d94d4ae
+    role: target
+  - path: tests/test_nitrate_native_authority.py
+    sha256: a5bf964b0d772a14f8ab6a6d5fe2bab2203758c65171ae545f95ca2f9ad31602
+    role: target
+scope:
+  description: All 29 technical target owners match accepted runtime/configuration/source
+    fixtures and native authority outputs. Independent maintained preservation, complete
+    rendered evidence, portable retrieval and actual-tree checks pass; all nine root
+    native gates pass with original failures preserved.
+  selection: Exact nitrate local integration on PWY commit5ff01d7c59c61fd94b65b907edd50936193f7f17
+    including all maintained selected targets and complete physical tree before native
+    review saves. Full actual-tree adversarial integration assessment is included.
+  coverage: full
+  population_size: 29
+  reviewed_target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  exclusions:
+  - target: Fresh primary-literature and line-by-line adapter review
+    reason: Accepted complete scientific and runtime interpretations are inherited
+      exactly; fresh work is complete maintained integration and output QA.
+  - target: Future native review save and local commit
+    reason: Root-owned later actions require append-only/input checks after these
+      external drafts.
+targets:
+- target_id: conf/identifier_sources.json
+  path: conf/identifier_sources.json
+  label: conf/identifier_sources.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: conf/rhea_identifier_updates.json
+  path: conf/rhea_identifier_updates.json
+  label: conf/rhea_identifier_updates.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: data/identifier_authorities/ontology.json
+  path: data/identifier_authorities/ontology.json
+  label: data/identifier_authorities/ontology.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: data/identifier_authorities/sources.json
+  path: data/identifier_authorities/sources.json
+  label: data/identifier_authorities/sources.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: docs/IDENTIFIERS.md
+  path: docs/IDENTIFIERS.md
+  label: docs/IDENTIFIERS.md
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: scripts/build_source_identifier_snapshot.py
+  path: scripts/build_source_identifier_snapshot.py
+  label: scripts/build_source_identifier_snapshot.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: src/pathwaymech/biocyc_chemical_class.py
+  path: src/pathwaymech/biocyc_chemical_class.py
+  label: src/pathwaymech/biocyc_chemical_class.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: src/pathwaymech/biocyc_native_context.py
+  path: src/pathwaymech/biocyc_native_context.py
+  label: src/pathwaymech/biocyc_native_context.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: src/pathwaymech/biocyc_pathway.py
+  path: src/pathwaymech/biocyc_pathway.py
+  label: src/pathwaymech/biocyc_pathway.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: src/pathwaymech/ecocyc_named_complex.py
+  path: src/pathwaymech/ecocyc_named_complex.py
+  label: src/pathwaymech/ecocyc_named_complex.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: src/pathwaymech/identifiers.py
+  path: src/pathwaymech/identifiers.py
+  label: src/pathwaymech/identifiers.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  path: tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  label: tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  path: tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  label: tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  path: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  label: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  path: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  label: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  path: tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  label: tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  path: tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  label: tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  path: tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  label: tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  path: tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  label: tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  path: tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  label: tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  path: tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  label: tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  path: tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  label: tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  path: tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  label: tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  path: tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  label: tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  path: tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  label: tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  path: tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  label: tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/nitrate_authority/manifest.json
+  path: tests/fixtures/nitrate_authority/manifest.json
+  label: tests/fixtures/nitrate_authority/manifest.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/test_named_complex_consumer_conflicts.py
+  path: tests/test_named_complex_consumer_conflicts.py
+  label: tests/test_named_complex_consumer_conflicts.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/test_nitrate_native_authority.py
+  path: tests/test_nitrate_native_authority.py
+  label: tests/test_nitrate_native_authority.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+checks:
+- check_id: gate-history-1
+  name: Root-executed history-1
+  status: passed
+  required: false
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind record --slug nitrate-reduction-viii --target-root data/pathways --event
+    CREATE --outcome changed --summary ''Add the complete evidence-backed nitrate
+    reduction VIII record.'' --details ''Adopted exact accepted MetaCyc:PWY0-1352
+    science: 48 paragraphs, 100 edges, 64 named identities, four endpoint qualifiers
+    and 107 references. Preserve complete event and constituent sides, named assemblies,
+    chemical/polymer scope, constructs, assays, evidence tiers, source conflicts and
+    access limits in research/pathway_additions/2026-10-12-next-235. Actual native
+    outputs independently reviewed and root accepted. Local integration only; fresh
+    maintained gates and saved integrator review remain pending.'' --actor-name codex
+    --agent-tool codex --model gpt-6'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-history-1
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-history-2
+  name: Root-executed history-2
+  status: passed
+  required: false
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind infrastructure --slug nitrate-native-authority --path scripts/build_source_identifier_snapshot.py
+    --event EDIT --outcome changed --summary 'Integrate complete typed nitrate authority
+    contexts and accepted native snapshots.' --details 'Adopted exactly 27 accepted
+    runtime/configuration/documentation/test owners and two actual native snapshots.
+    Typed Pathway and partial EC context, whole named assemblies and conflict registry,
+    four chemical profiles and literal-plus context preserve all old contracts and
+    all 265 UniProt first-owner objects. Polymer additions follow native order 9537,9539,9565,9566.
+    Issue501 receipt correction and actual execution lineage are retained as external
+    evidence. All prior owners and cache identities preserved; no publication. Fresh
+    maintained gates and native saved review remain pending.' --issue 499 --issue
+    500 --issue 501 --actor-name codex --agent-tool codex --model gpt-6
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-history-2
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-sssom
+  name: Root-executed sssom
+  status: passed
+  required: false
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_sssom_main; raise SystemExit(export_sssom_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-sssom
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-render
+  name: Root-executed render
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-render
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-skills
+  name: Root-executed skills
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-skills
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-validate
+  name: Root-executed validate
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-validate
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-tests
+  name: Root-executed tests
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-235-local-gate-tests-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-tests
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-lint
+  name: Root-executed lint
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-lint
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-kgx
+  name: Root-executed kgx
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-kgx
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: historical-vendored-DNS
+  name: Historical DNS failure
+  status: failed
+  required: false
+  summary: Original failure preserved; successful vendored retry has its separate
+    receipt.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - historical-vendored-DNS
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-vendored
+  name: Root-executed vendored
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-vendored
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-diff-check
+  name: Root-executed diff-check
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-diff-check
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: gate-site-current
+  name: Root-executed site-current
+  status: passed
+  required: true
+  summary: Actual root execution passed; receipt and full stdout/stderr identities
+    verified.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - gate-site-current
+  scope_note: Inherited actual maintained execution, not represented as a second execution
+    by this reviewer.
+- check_id: independent-audit
+  name: Fresh complete maintained content/preservation QA
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fresh-qa
+- check_id: portable-replay
+  name: Adopted portable evidence retrieval
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/portable-check/verify_portable.py
+    --adopted --root /private/tmp/pathwaymech-next-235-local-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - portable-evidence
+- check_id: tree-inspect
+  name: Full actual-tree audit and native inspection
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/inspect_and_check_tree.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - full-tree
+- check_id: bindings
+  name: Review closures and root execution bindings
+  status: passed
+  required: true
+  summary: Independent read-only execution completed successfully; exact scripts and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/bind_evidence.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - actual-receipts
+- check_id: browser-interaction
+  name: Browser interaction
+  status: unavailable
+  required: false
+  summary: No interactive browser was available in the root preview. Fresh static
+    image view and exact DOM checks are recorded; no keyboard/search/JavaScript test
+    is claimed.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  evidence_ids:
+  - static-visual
+evidence:
+- evidence_id: current-target
+  kind: record_content
+  reference: data/pathways/nitrate-reduction-viii.yaml
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh complete reading of all 2,550 YAML lines. Exact accepted successor
+    retains 48 paragraphs, 100 edges, 64 named identities, four endpoint qualifiers,
+    six mappings and 107 references.
+  snapshot_sha256: 019deb06b1b58ae9c378b209a9e3815b6357685e13e6e3345b8be01aaf13f5de
+- evidence_id: fresh-qa
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/audit.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh independent complete HTML graph/table/evidence correspondence, baseline
+    owner preservation, actual authority object/order and complete old KGX context/edge
+    preservation; exact SSSOM additions.
+  snapshot_sha256: 3b255ced47f0f5052628b0eaff3d3c1577b1c8fea586e3f33b6fab66e20bc556
+- evidence_id: portable-evidence
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/portable.stdout
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh read-only adopted resolver retrieves all 2,907 whole bodies / 360,050,720
+    decoded bytes without external temporary original reads or extraction.
+  snapshot_sha256: aef5170284e19477dcc12c83bd0f89d095b6c86364deb1bfd10e9fea3f1553f3
+- evidence_id: full-tree
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/full-tree-check.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: 'Fresh full hidden/ignored-inclusive actual-tree census: only approved
+    owners, derived outputs, two histories and the exact root evidence map additions.
+    All 800 shared cache identities unchanged.'
+  snapshot_sha256: 95462458ab5f118fc3bed9322891360abdc9e0f9f21744c3430123be9b52a7a2
+- evidence_id: actual-receipts
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/evidence-bindings.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh closure of accepted science 340+2 and independent integration preparation
+    19+2. All root command receipts and original stream hashes verified, including
+    the initial DNS failure and successful exact retry.
+  snapshot_sha256: b829df96ee71076263cfe99a3a2094b7cbfe6b6a5f2a5bc74967677fee99cf8d
+- evidence_id: static-visual
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/independent-qa/static-visual.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Fresh view of full static preview raster and equality of actual maintained
+    SVG to preview SVG. Dense junction labels overlap; no browser interaction is claimed.
+  snapshot_sha256: ea7f30b38f9818f806d58f900e87fb0c2dcc49e7b92d8ef12566c348b66b83bf
+- evidence_id: scientific-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: b38f2f789a51496a90c9308a0e936d9a7aa7e316f98a4f0938e0b6f9901269a7
+  locator: body_lookup[b38f2f789a51496a90c9308a0e936d9a7aa7e316f98a4f0938e0b6f9901269a7]
+- evidence_id: paragraph-assessments
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: 7ec5e955f518fc2e14ecc121724fcffafc5d43098e19cd5c93261cee4fdd4b66
+  locator: body_lookup[7ec5e955f518fc2e14ecc121724fcffafc5d43098e19cd5c93261cee4fdd4b66]
+- evidence_id: edge-assessments
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: a7fe1383fd555faec83c636057ce440a5a8fa187df8f652058862d87f0b46fd0
+  locator: body_lookup[a7fe1383fd555faec83c636057ce440a5a8fa187df8f652058862d87f0b46fd0]
+- evidence_id: scientific-dispositions
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: daf9160298b150269df31af7a7269841d2fd62ab0364f3b66bf8559b0f78b3df
+  locator: body_lookup[daf9160298b150269df31af7a7269841d2fd62ab0364f3b66bf8559b0f78b3df]
+- evidence_id: integration-preparation-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/preparation-independent-review/REPORT.md
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: d10ade86db6d043d46cbdb1d3e3c1889a8ffa2b39204a84f533ef59e3441ad4c
+- evidence_id: actual-output-review
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-235/evidence-index.json.gz
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Complete earlier scientific or bounded technical interpretation is inherited
+    explicitly. Current review reads its report/dispositions and binds the unchanged
+    maintained objects; it does not freshly reread primary papers.
+  snapshot_sha256: c8932dccacc84671379cae46ae1087ce81c4d0b19fae530b6b69c95c20444a0d
+  locator: body_lookup[c8932dccacc84671379cae46ae1087ce81c4d0b19fae530b6b69c95c20444a0d]
+- evidence_id: gate-history-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-1.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 3e904a21f20fb5889e01b17a29af4d76a6183b5773c69445e6d461ad96418b02
+- evidence_id: gate-history-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/history-2.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 7f004cea3f85307704f799d045c2bcf7d7ec122738c7b53ad6a41faaedb54efd
+- evidence_id: gate-sssom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/sssom.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: ac4cbcb462d60054b2bc2ba4d4e875b0a7c9a1242dc26aec334ec99213bc6849
+- evidence_id: gate-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/render.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 2f030bd69f72cff40d0aa0807dbbc0edafdb36d2d944d1b21f64c0cb79ffc7f4
+- evidence_id: gate-skills
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/history-and-generation/skills.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: da2e6d9c7da39c9ee8d0e59e97483f7f11d91ae23dc9994d687d4031d24e9213
+- evidence_id: gate-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/validate.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: bd6e783f851c8a7b9518f2660614c1860e2cc1c189dc97cec8528116d1f88205
+- evidence_id: gate-tests
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/tests.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 32e8e675e14f5a77f25fd41cdd56c3278a5837b6223e516237c53157e0abbabc
+- evidence_id: gate-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/lint.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: e3bfec030c3e469aed5e93d12ba73c26e3f2d5eddd065b5c09f523e04612999e
+- evidence_id: gate-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/kgx.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 76dd491d57a7d2e29aae5352ee2c61413ec17c2089b813e68c324960a755ed14
+- evidence_id: historical-vendored-DNS
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/remaining-gates/vendored.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Historical DNS failure, superseded by successful exact-command public-read
+    retry.
+  snapshot_sha256: bc082723fff91c9ac5cb2488e16d325b1f1bfad6d2d78511cdf35407cd9ca770
+- evidence_id: gate-vendored
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/vendored.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: bbe8821aca067246df00d0dd0ff91aa4e3fd1bf81ff772af88b1ecb97a542b24
+- evidence_id: gate-diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/diff-check.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: 626078df413c1199d6ce5f49dec475df923139327baa66a6859c6a060367b184
+- evidence_id: gate-site-current
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-235/native-integration/gates/network-resumption/site-current.execution.json
+  accessed_at: '2026-10-12T20:19:51Z'
+  support: supports
+  summary: Actual root command receipt and complete original streams independently
+    rehashed. Root executed exit 0; this reviewer did not rerun the native gate.
+  snapshot_sha256: d3a3805a03ff91b302d6d883746fd34f69f53b7b073fc8a70c78605614af3de5
+assessments:
+- assessment_id: owner-1
+  area: ownership
+  topic: conf/identifier_sources.json
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - conf/identifier_sources.json
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 f9856d8ada47f989d71f4fd7140412aee062dbc135eb65b22fbf0508c97a645e.
+- assessment_id: owner-2
+  area: ownership
+  topic: conf/rhea_identifier_updates.json
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - conf/rhea_identifier_updates.json
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 5c6a356a56a4b4df882ac2898587576216895a07fc2b455082da136ebd91a49d.
+- assessment_id: owner-3
+  area: ownership
+  topic: data/identifier_authorities/ontology.json
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - data/identifier_authorities/ontology.json
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 32934d18cc23ca0d26199640888507df3635593024b944e5dd211fde3deb5cc1.
+- assessment_id: owner-4
+  area: ownership
+  topic: data/identifier_authorities/sources.json
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - data/identifier_authorities/sources.json
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 856d8eb32df1a73ebc9cc28c5d533b992f29649b45063d4e340f1f727a7ce754.
+- assessment_id: owner-5
+  area: ownership
+  topic: docs/IDENTIFIERS.md
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - docs/IDENTIFIERS.md
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 2c0ec4fa5433e526092c18931296286ccd254218c53df4883119338eda87733d.
+- assessment_id: owner-6
+  area: ownership
+  topic: scripts/build_source_identifier_snapshot.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - scripts/build_source_identifier_snapshot.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 5c7f626a68edf3f7573b583c18b78af09ab9465d3b93bbb6d3c5399cdc7126a4.
+- assessment_id: owner-7
+  area: ownership
+  topic: src/pathwaymech/biocyc_chemical_class.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - src/pathwaymech/biocyc_chemical_class.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 49b95ad1029cc2064afe87e9853bc7e2cfc7243aeeee574d15981e5e8e45649f.
+- assessment_id: owner-8
+  area: ownership
+  topic: src/pathwaymech/biocyc_native_context.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - src/pathwaymech/biocyc_native_context.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 25bdc7a4bccc796df1763e17ecb11289e12c2503b4ccb94f5713a4fb2fa06e65.
+- assessment_id: owner-9
+  area: ownership
+  topic: src/pathwaymech/biocyc_pathway.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - src/pathwaymech/biocyc_pathway.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 61895a6cca39316f8f3573fd51bb762791076a9a0cc7876e7c9b4e6372f9f98e.
+- assessment_id: owner-10
+  area: ownership
+  topic: src/pathwaymech/ecocyc_named_complex.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - src/pathwaymech/ecocyc_named_complex.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 5d94c7833527ff70c629b14736fd74750e92171f12e509c3cd69c04e88880574.
+- assessment_id: owner-11
+  area: ownership
+  topic: src/pathwaymech/identifiers.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - src/pathwaymech/identifiers.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 6f4f45e7f7170559da48e7e9f7a4cb854b988c10a6192722d6ba21d1819163c3.
+- assessment_id: owner-12
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 5310771f2079b9dd304e8b1f8150038b9b9091e7b9b5f022c39ae249800f5734.
+- assessment_id: owner-13
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 67c828b9054abc26c90344b97ebf69fe7003e34f7b0228444d31892ef0ff029b.
+- assessment_id: owner-14
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 b0515279d39256322819c3894014095fc612845df874be1d7c9a738ca486c3c9.
+- assessment_id: owner-15
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 729e2f31beaa7bb87a89ac631e95e0ae22f3130ed02d46894a7f445ad6971038.
+- assessment_id: owner-16
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 f5cc203e373cf6e213d5ef560bec198cd8254ffa6fc59ea44ccaec2e15abc65b.
+- assessment_id: owner-17
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 b6ca32e6a37bcb2da163246463e07cf748cd1f5a63e62838fb37312a9b45f177.
+- assessment_id: owner-18
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 c157320e8026b6bc4249c1dcf8b4d9145fb0bca5d8141024cf2639810073213b.
+- assessment_id: owner-19
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 3e8d0c874c8f85fade0cf886c09b7465641163c43327e271763a198e46e33c22.
+- assessment_id: owner-20
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 4c186dc9483d06a99af5e5ad71f69bcb3c49980a5d1749422ec18fa9b341a642.
+- assessment_id: owner-21
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 1e020709fa4e499aa027ce3dd2ca0e600aed376c03c1de91e312fab4c6f4dee1.
+- assessment_id: owner-22
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 5351366079460ad3b43b18b55e1e157e8be74aa59bac77556961c8b4af2a74e3.
+- assessment_id: owner-23
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 e4af46a1698544bbb3d5836158d32b3957b1dd9d99d213b898b2df52c9e08cea.
+- assessment_id: owner-24
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 2f8a8ac0a865ad9d65d357a9250a768920b10a22ef02d25698d65d7bdec8c4d6.
+- assessment_id: owner-25
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 b9d703fc64600983259df1095b89ea6b27f44aff0e1e5a1b554e70ac378031fb.
+- assessment_id: owner-26
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 3b77a855182ca329f7c1c23186630aebb915269ee55a00b9f7fc2a9fb958bb3d.
+- assessment_id: owner-27
+  area: ownership
+  topic: tests/fixtures/nitrate_authority/manifest.json
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/fixtures/nitrate_authority/manifest.json
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 bb1b11420fb25d33cb570a659e2b10f1c3f9739e3aff8ce107e51cbd6c5ff619.
+- assessment_id: owner-28
+  area: ownership
+  topic: tests/test_named_complex_consumer_conflicts.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/test_named_complex_consumer_conflicts.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 6757fa7cce818aec9a2f95afc387a3905f899f81b7fbb19c5026dcea1d94d4ae.
+- assessment_id: owner-29
+  area: ownership
+  topic: tests/test_nitrate_native_authority.py
+  outcome: supported
+  summary: Exact adopted owner matches the accepted 30-primary/9-dossier plan and
+    actual accepted native runtime/output. Complete scientific source and adapter
+    interpretation remain inherited; fresh maintained full-suite gates and output
+    checks cover current integration.
+  target_ids:
+  - tests/test_nitrate_native_authority.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+  - integration-preparation-review
+  - actual-output-review
+  details: Current SHA256 a5bf964b0d772a14f8ab6a6d5fe2bab2203758c65171ae545f95ca2f9ad31602.
+- assessment_id: authorities
+  area: grounding
+  topic: Whole authority preservation and first owners
+  outcome: supported
+  summary: Source snapshot has 2,603 terms/667 owners; ontology has 2,004 terms/five
+    owners. Every old object and nested/outer relative order remains exact except
+    approved polymer9537/9539 map additions. All previous UniProt objects/first owners
+    remain exact; 831 manifest rows are an ordered prefix of844.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  evidence_ids:
+  - fresh-qa
+  - actual-output-review
+- assessment_id: old-corpus
+  area: provenance
+  topic: Complete prior corpus and history
+  outcome: supported
+  summary: All 235 old records/pages, 398 old history YAMLs and 114 structured review
+    pairs remain byte-identical. Fresh complete physical census includes hidden/ignored
+    files and only the exact planned/generated/history/root-evidence additions; all
+    800 cache identities unchanged.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  evidence_ids:
+  - fresh-qa
+  - full-tree
+- assessment_id: graph-exports
+  area: representation
+  topic: Whole KGX and six SSSOM mappings
+  outcome: supported
+  summary: 'Both maintained KGX surfaces equal accepted actual native outputs: 4,260
+    nodes/11,903 edges. All 11,803 old edge payloads/order and 7,877 whole old node
+    contexts/order/multiplicity remain exact. Only approved HCN aggregate category
+    union changes. All 21 prior SSSOM rows/order remain with six exact new rows.'
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  evidence_ids:
+  - fresh-qa
+  - actual-output-review
+- assessment_id: portable-evidence
+  area: provenance
+  topic: Whole source retrieval and durable gate evidence
+  outcome: supported
+  summary: Fresh resolver retrieves all 2,907 whole bodies from six archives and repository
+    owners, retaining literal aliases as inert metadata. All 100 root-evidence map
+    entries exactly decode to their originals. Full SQL and excluded reproducible
+    fixture scope remain external/inherited.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  evidence_ids:
+  - portable-evidence
+  - full-tree
+- assessment_id: gates-and-histories
+  area: consistency
+  topic: Actual gates and history order
+  outcome: supported
+  summary: Both native histories precede SSSOM and first rendering. Nine gates pass,
+    including 3,977 tests with three skips/three dependency warnings. Initial sandbox-DNS
+    failure and successful exact-command retry remain separate actual receipts.
+  target_ids:
+  - conf/identifier_sources.json
+  - conf/rhea_identifier_updates.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_chemical_class.py
+  - src/pathwaymech/biocyc_native_context.py
+  - src/pathwaymech/biocyc_pathway.py
+  - src/pathwaymech/ecocyc_named_complex.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+  - tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+  - tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+  - tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+  - tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+  - tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinols.xml
+  - tests/fixtures/nitrate_authority/META-Menaquinones.xml
+  - tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+  - tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+  - tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+  - tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+  - tests/fixtures/nitrate_authority/manifest.json
+  - tests/test_named_complex_consumer_conflicts.py
+  - tests/test_nitrate_native_authority.py
+  evidence_ids:
+  - actual-receipts
+findings: []
+actions: []
+limitations:
+- 'Full scientific source interpretation is inherited from the accepted independent
+  review: six complete primary main bodies, two spreadsheets, whole native/UniProt
+  objects and bounded older abstracts. This maintained review freshly reads the full
+  current YAML and inherited judgments; it does not claim a new full-paper reading.'
+- Most historical papers have indexed abstracts rather than complete Methods; unavailable/unread
+  supplements and other sources remain explicitly limited. No source-exhaustion claim
+  follows.
+- Static graph junction labels overlap. Exact claims remain in the fully checked evidence
+  table. Static raster was produced earlier by root and freshly viewed here; actual
+  maintained SVG is identical. No interactive browser test is claimed.
+- Scientific e083 assertion is a 400-character source excerpt ending mid-word. Inherited
+  whole-source review supports the claim; complete FUNCTION original remains portable.
+  No claim that the excerpt is the whole source.
+- Technical runtime behavior is inherited from accepted independent implementation
+  and actual-output reviews plus fresh maintained gates, not a fresh line-by-line
+  production adapter audit. This reviewer independently audited actual outputs and
+  integration preservation previously.
+- No maintained record, review, cache, Git state, GitHub issue or publication was
+  changed by this reviewer. Root owns evidence adoption, final native source.inputs
+  inspection, append-only save/check and local commit.
+notes:
+- 'All read/test failures remain recorded: stopped overbroad read-only inventory,
+  bounded nonexistent-path probes, one protected unrelated temporary path during an
+  inventory probe, SSSOM-column harness assumption, root-directory manifest convention,
+  and an intermediate draft reference pointing to the earlier portable index instead
+  of the later durable preparation-review owner. Corrected checks pass without changing
+  product bytes.'
+- Review interval begins at captured start.json after earlier contextual reading;
+  earlier full YAML/report reads are credited as pre-interval context. Native inspect/verification/drafting
+  use actual times.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/490
+- https://github.com/CultureBotAI/PathwayMech/issues/498
+- https://github.com/CultureBotAI/PathwayMech/issues/499
+- https://github.com/CultureBotAI/PathwayMech/issues/500
+- https://github.com/CultureBotAI/PathwayMech/issues/501
+tags:
+- pwy01352
+- nitrate
+- independent-review
+- local-integration
+```

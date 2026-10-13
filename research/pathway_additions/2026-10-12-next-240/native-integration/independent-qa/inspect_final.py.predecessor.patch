@@ -1,0 +1,77 @@
+--- /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/inspect_final.py
++++ /private/tmp/pathwaymech-next-240-maintained-science-review-20261012/inspect_final.py
+@@ -1,50 +1,54 @@
+-"""Bind completed native phases; capture the planned read-only native inspection."""
++"""Rebase the 239 inspector: require final sealed 240 native evidence, then inspect once."""
+ import datetime, hashlib, json, os, shutil, stat, subprocess
+ from pathlib import Path
+ H=Path(__file__).resolve().parent
+-N=Path('/private/tmp/pathwaymech-next-239-local-native-execution-20261012')
++N=Path('/private/tmp/pathwaymech-next-240-local-native-execution-20261012')
+ def pin(p):
+- b=p.read_bytes(); return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
++ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+ def check(x):
+- p=Path(x['path']); y=pin(p); assert (y['bytes'],y['sha256'])==(x['bytes'],x['sha256']),str(p); return y
+-def dump(p,x):p.write_text(json.dumps(x,indent=2)+'\n')
+-assert pin(N/'handoff.json')['sha256']=='ece82f35077cb4a317c0960ca437ac3069f84a8414490087b50658a4d27c5f43'
+-assert pin(N/'artifact-manifest.json')['sha256']=='07ba4d437d3e80a887c87de3e3e5aa37e24549fe177620b8932ba9ba2eff7727'
+-m=json.loads((N/'artifact-manifest.json').read_text()); files=[]; dirs=[]
++ p=Path(x['path']);y=pin(p);assert (y['bytes'],y['sha256'])==(x['bytes'],x['sha256']),str(p);return y
++def dump(n,x):(H/n).write_text(json.dumps(x,indent=2)+'\n')
++bind=json.loads((H/'final-native-binding.json').read_text())
++for k in ['handoff','manifest']:check(bind[k])
++assert Path(bind['handoff']['path'])==N/'handoff.json'
++assert Path(bind['manifest']['path'])==N/'artifact-manifest.json'
++m=json.loads((N/'artifact-manifest.json').read_text());files=[];dirs=[]
+ for root,ds,fs in os.walk(N,followlinks=False):
+  for name in ds:
+-  p=Path(root)/name;assert stat.S_ISDIR(p.lstat().st_mode); dirs.append(str(p.relative_to(N)))
++  p=Path(root)/name;assert stat.S_ISDIR(p.lstat().st_mode);dirs.append(str(p.relative_to(N)))
+  for name in fs:
+   p=Path(root)/name;assert stat.S_ISREG(p.lstat().st_mode);files.append(str(p.relative_to(N)))
+ assert set(files)=={x['relative_path'] for x in m['files']}|{'artifact-manifest.json','handoff.json'}
+-assert sorted(dirs)==sorted(m['directories']);assert len(m['files'])==92
++assert sorted(dirs)==sorted(m['directories']);assert len(m['files'])==bind['artifacts']
+ for x in m['files']:check(x)
+-s=json.loads((N/'execution-summary.json').read_text()); receipts=[];origins=[]
++s=json.loads((N/'execution-summary.json').read_text());receipts=[];origins=[]
+ for bound in s['completions']:
+  check(bound);c=json.loads(Path(bound['path']).read_text());assert c['status']=='phase_passed'
+  for x in c.get('receipt_origins',[]):origins.append(check(x))
+  for x in c['receipts']:
+   assert x['exit_code']==0
+-  p=Path(bound['path']).parent/(x['name']+'.execution.json'); assert json.loads(p.read_text())==x
++  p=Path(bound['path']).parent/(x['name']+'.execution.json');assert json.loads(p.read_text())==x
+   for key in ['stdout','stderr','runner_at_start','phase_start']:
+    if key in x:check(x[key])
+   receipts.append({'receipt':pin(p),'content':x})
+-assert len(receipts)==12
++assert len(receipts)==bind['successful_commands']
++assert len({x['content']['name'] for x in receipts})==len(receipts)
+ failures=[]
+-for phase in ['vendored-gate','network-resumption']:
+- p=N/phase/'failure.json';f=json.loads(p.read_text());assert f['status']=='phase_failed'
++for rel in sorted(x for x in files if x.endswith('/failure.json')):
++ p=N/rel;f=json.loads(p.read_text());assert f['status']=='phase_failed'
+  for x in f['receipts']:
+-  assert x['exit_code']!=0
+   for key in ['stdout','stderr']:check(x[key])
++ assert any(x['exit_code']!=0 for x in f['receipts'])
+  failures.append({'receipt':pin(p),'content':f})
++assert len(failures)==bind['failed_phases']
+ for x in s['outputs']:check(x)
+ copyrows=[];D=H/'actual-native';D.mkdir(exist_ok=False)
+ for name in sorted(files):
+  src=N/name;dst=D/name;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst);a=pin(src);b=pin(dst);assert a['sha256']==b['sha256'];copyrows.append({'source':a,'destination':b})
+-dump(H/'actual-native-copy.json',{'files':copyrows,'directories':sorted(dirs),'content':'Exact whole bytes, original receipt paths and seals unchanged','successful_commands':receipts,'historical_failures':failures,'receipt_origin_bindings':origins})
++dump('actual-native-copy.json',{'files':copyrows,'directories':sorted(dirs),'content':'Exact whole bytes, original receipt paths and seals unchanged','successful_commands':receipts,'historical_failures':failures,'receipt_origin_bindings':origins})
+ plan=json.loads((H/'planned-native-commands.json').read_text());out=H/'native-inspection.json';err=H/'native-inspection.stderr'
+-r={'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'argv':plan['inspect'],'cwd':plan['cwd'],'environment':plan['environment'],'helper':pin(Path(__file__)),'original_plan':pin(H/'planned-native-commands.json'),'argv_changed':False,'completed_gate_packet':pin(N/'handoff.json'),'final_phase':pin(N/'network-resumption-successor/completion.json')}
++r={'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'argv':plan['inspect'],'cwd':plan['cwd'],'environment':plan['environment'],'helper':pin(Path(__file__)),'original_plan':pin(H/'planned-native-commands.json'),'argv_changed':False,'completed_gate_packet':pin(N/'handoff.json'),'completed_summary':pin(N/'execution-summary.json')}
+ with out.open('wb') as o,err.open('wb') as e:
+  p=subprocess.run(r['argv'],cwd=r['cwd'],env=os.environ|r['environment'],stdout=o,stderr=e,check=False)
+-r.update(finished_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=p.returncode,stdout=pin(out),stderr=pin(err));dump(H/'native-inspection.execution.json',r);assert p.returncode==0
+-inspection=json.loads(out.read_text()); print('PASS: native original 92+2 closure, exact copy, 12 successful commands and 2 preserved failed attempts; fresh native inputs',len(inspection['source']['inputs']))
++r.update(finished_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=p.returncode,stdout=pin(out),stderr=pin(err));dump('native-inspection.execution.json',r);assert p.returncode==0
++inspection=json.loads(out.read_text());print('PASS: exact whole native closure/copy, commands',len(receipts),'failed phases',len(failures),'fresh native inputs',len(inspection['source']['inputs']))

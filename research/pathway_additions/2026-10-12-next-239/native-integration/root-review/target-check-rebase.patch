@@ -1,0 +1,107 @@
+--- accepted238/check_target.py
++++ prepared239/check_target.py
+@@ -3,9 +3,9 @@
+ from collections import Counter,defaultdict
+ from lxml import html
+ import yaml
+-ROOT=Path('/private/tmp/pathwaymech-next-238-local-20261012'); OUT=Path(__file__).parent
+-P='data/pathways/5-prime-deoxyadenosine-degradation-i.yaml'
+-PAGE='pages/records/MetaCyc_PWY-8130.html'; BASE='5d3198b18a4a0f82175a65df48dd8a63664cd32d'
++ROOT=Path('/private/tmp/pathwaymech-next-239-local-20261012'); OUT=Path(__file__).parent
++P='data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml'
++PAGE='pages/records/MetaCyc_PWY-8132.html'; BASE='12bc8c721fa8b8d824bcb8cea8b0bfa0ffbc0449'
+ checks=[]
+ def check(name, condition, detail=None):
+  checks.append({'name':name,'passed':bool(condition),'detail':detail})
+@@ -20,32 +20,32 @@
+ def tsv(b):return list(csv.DictReader(io.StringIO('\n'.join(line for line in b.decode().splitlines() if not line.startswith('#'))),delimiter='\t'))
+ def main():
+  d=yaml.safe_load((ROOT/P).read_bytes()); rid=d['id']; refs={x['id']:x for x in d['references']}
+- check('exact accepted scientific draft',sha((ROOT/P).read_bytes())=='c8ae12061fd62a5ff8c6861b6665e3ac6938b0fe611b9e3d8d6a1e11f33199a5')
+- science=Path('/private/tmp/pathwaymech-next-238-science-review-20261012')
+- review=json.loads((science/'review.json').read_bytes())
+- author=Path('/private/tmp/pathwaymech-next-238-author-20261012/draft/5-prime-deoxyadenosine-degradation-i.yaml')
++ check('exact accepted scientific draft',sha((ROOT/P).read_bytes())=='60750cb046b847a5d52458cff6eab771be2a9200755c259cfe8d87c4808e95fa')
++ science=Path('/private/tmp/pathwaymech-next-239-science-review-20261012')
++ review={'paragraphs':json.loads((science/'paragraph-appraisal.json').read_bytes()),'edges':json.loads((science/'edge-appraisal.json').read_bytes())}
++ author=Path('/private/tmp/pathwaymech-next-239-author-20261012/draft/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml')
+  check('complete maintained YAML equals accepted scientific author',author.read_bytes()==(ROOT/P).read_bytes())
+- pars=d['description'].split('\n\n');check('paragraph count',len(pars)==len(review['paragraphs'])==10)
+- for p,a in zip(pars,review['paragraphs']):check('inherited full paragraph '+str(a['paragraph']),sha(p.encode())==a['text_sha256'])
+- check('edge count',len(review['edges'])==len(d['mechanistic_edges'])==21)
++ pars=d['description'].split('\n\n');check('paragraph count',len(pars)==len(review['paragraphs'])==21)
++ for p,a in zip(pars,review['paragraphs']):check('inherited full paragraph '+str(a['paragraph_1based']),sha(p.encode())==a['paragraph_sha256'])
++ check('edge count',len(review['edges'])==len(d['mechanistic_edges'])==44)
+  for e,a in zip(d['mechanistic_edges'],review['edges']):
+-  check('inherited edge disposition '+e['id'],all(e[k]==a[k] for k in ('id','subject','predicate','object')))
+- idx=json.loads(gzip.decompress((ROOT/'research/pathway_additions/2026-10-12-next-238/evidence-index.json.gz').read_bytes()))
++  check('inherited edge disposition '+e['id'],e['id']==a['edge_id'] and all(e[k]==a[k] for k in ('subject','predicate','object')))
++ idx=json.loads(gzip.decompress((ROOT/'research/pathway_additions/2026-10-12-next-239/evidence-index.json.gz').read_bytes()))
+  for ref in refs.values():check('reference portable binding '+ref['id'],ref['source_sha256'] in idx['body_lookup'])
+- prep=Path('/private/tmp/pathwaymech-next-238-local-integration-preparation-20261012')
++ prep=Path('/private/tmp/pathwaymech-next-239-local-integration-preparation-20261012')
+  baseline=json.loads((prep/'baseline-files.json').read_bytes());counts=Counter()
+  for row in baseline:
+   rel=row['path']; group=next((g for g in ('data/pathways/','pages/records/','history/','reviews/structured/') if rel.startswith(g)),None)
+   if group and row['type']=='regular':
+    check('baseline preserved '+rel,pin(ROOT/rel)['sha256']==row['sha256']);counts[group]+=1
+- check('238 old records',sum(r['path'].startswith('data/pathways/') and r['path'].endswith('.yaml') for r in baseline)==238)
+- check('238 old pages',counts['pages/records/']==238)
+- check('120 old review pairs',counts['reviews/structured/']==240)
++ check('239 old records',sum(r['path'].startswith('data/pathways/') and r['path'].endswith('.yaml') for r in baseline)==239)
++ check('239 old pages',counts['pages/records/']==239)
++ check('122 old review pairs',counts['reviews/structured/']==244)
+  # Every graph arrow, table row, node, reference, qualifier and local anchor.
+  dom=html.fromstring((ROOT/PAGE).read_bytes()); ids=dom.xpath('//*[@id]/@id');check('unique HTML ids',len(ids)==len(set(ids)))
+  for href in dom.xpath('//*[@href]/@href'):
+   if href.startswith('#'):check('local HTML link '+href,href[1:] in ids)
+- graph=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]');check('21 graph arrows',len(graph)==21)
++ graph=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]');check('44 graph arrows',len(graph)==44)
+  alltext=text(dom)
+  for i,(edge,arrow) in enumerate(zip(d['mechanistic_edges'],graph),1):
+   anchor=f'mechanism-edge-{i}'; row=dom.get_element_by_id(anchor); cells=row.findall('td');check(anchor+' shape',len(cells)==4)
+@@ -66,9 +66,9 @@
+    check(anchor+' evidence target',li.find('a').get('href')=='#reference-'+str(list(refs).index(ev['reference_id'])+1))
+    for k in ('quote','source_assertion','source_locator'):
+     if k in ev:check(anchor+' '+k,ev[k] in text(li))
+- nodes=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]');check('23 graph nodes:18 non-taxon identities plus5 qualified endpoints',len(nodes)==23)
++ nodes=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]');check('42 graph nodes:35 non-taxon identities plus7 qualified endpoints',len(nodes)==42)
+  named=[{'id':rid,'label':d['label']}]+[n for c in ('taxa','participants','reactions') for n in d[c]]
+- check('20 named identities',len(named)==20)
++ check('38 named identities',len(named)==38)
+  for n in named:
+   if n['id'] in {v['id'] for v in d['taxa']}:
+    check('unconnected taxon retained in component table',n['id'] in alltext);continue
+@@ -79,12 +79,13 @@
+   check('reference issuing URL '+ref['id'],ref['url'] in li.xpath('.//a/@href'))
+  check('whole description rendered',d['description'] in alltext)
+ 
+- preview=html.fromstring(Path('/private/tmp/pathwaymech-next-238-graph-preview-20261012/records/MetaCyc_PWY-8130.html').read_bytes())
++ preview=html.fromstring(Path('/private/tmp/pathwaymech-next-239-graph-preview-20261012/records/MetaCyc_PWY-8132.html').read_bytes())
+  actual_svg=dom.xpath('//svg[@class="pathway-network-svg"]')[0]
+  prior_svg=preview.xpath('//svg[@class="pathway-network-svg"]')[0]
+  check('actual graph equals statically inspected preview',html.tostring(actual_svg)==html.tostring(prior_svg))
+- check('actual curation history rendered','Add the complete evidence-backed 5-prime-deoxyadenosine degradation I record.' in alltext)
+- actual_build=Path('/private/tmp/pathwaymech-next-238-canonical-build-20261012')
++ histories=list((ROOT/'history/records/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii').glob('*.yaml'))
++ check('actual curation history rendered',len(histories)==1 and yaml.safe_load(histories[0].read_bytes())['summary'] in alltext)
++ actual_build=Path('/private/tmp/pathwaymech-next-239-canonical-build-20261012')
+  for n in ['sources.json','ontology.json']:
+   check('actual authority body '+n,(ROOT/'data/identifier_authorities'/n).read_bytes()==(actual_build/n).read_bytes())
+  for n in ['nodes.tsv','edges.tsv']:
+@@ -93,13 +94,13 @@
+  for row in json.loads((prep/'plan.json').read_bytes())['changes']:
+   check('exact adopted owner '+row['destination'],pin(ROOT/row['destination'])['sha256']==row['payload']['sha256'])
+  erows=tsv((ROOT/'pages/downloads/edges.tsv').read_bytes());nrows=tsv((ROOT/'pages/downloads/nodes.tsv').read_bytes())
+- check('actual KGX counts',len(nrows)==4303 and len(erows)==12008)
++ check('actual KGX counts',len(nrows)==4320 and len(erows)==12052)
+  oldbody=gitbody('output/sssom/source_mappings.sssom.tsv');newbody=(ROOT/'output/sssom/source_mappings.sssom.tsv').read_bytes()
+  semantic=json.loads((prep/'semantic-preservation.json').read_bytes())['SSSOM'];oldrows=tsv(oldbody);newrows=tsv(newbody)
+  headers=lambda b:[line for line in b.decode().splitlines() if line.startswith('#')]+[next(line for line in b.decode().splitlines() if not line.startswith('#'))]
+  check('SSSOM exact header lines',headers(oldbody)==headers(newbody))
+  oldset=Counter(j(r) for r in oldrows);added=Counter(j(r) for r in semantic['expected_added_rows'])
+- check('SSSOM32old10new42total',len(oldrows)==32 and sum(added.values())==10 and len(newrows)==42)
++ check('SSSOM42old20new62total',len(oldrows)==42 and sum(added.values())==20 and len(newrows)==62)
+  check('SSSOM all cells and multiplicities',Counter(j(r) for r in newrows)==oldset+added)
+  check('SSSOM prior row relative order',[r for r in newrows if j(r) in oldset]==oldrows)
+ 

@@ -1,0 +1,108 @@
+/* Generated alongside the record pages; source lives in src/pathwaymech/assets. */
+.pathway-network {
+  --graph-paper: #ffffff;
+  --graph-ink: #182a3d;
+  --graph-border: #cbd5e1;
+  --graph-edge: #52677f;
+  --graph-context: #6b7280;
+  --graph-focus: #b45309;
+  margin: 2rem 0;
+  padding: 1.25rem;
+  border: 1px solid var(--graph-border);
+  border-radius: 14px;
+  background: var(--graph-paper);
+  color: var(--graph-ink);
+}
+.pathway-network h2 { margin: 0 0 .4rem; }
+.pathway-network p { margin: .6rem 0; }
+.graph-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 1rem 0; }
+.graph-tools[hidden], .pathway-network [hidden] { display: none; }
+.graph-tools button, .graph-tools select {
+  font: inherit;
+  color: var(--graph-ink);
+  background: var(--graph-paper);
+  border: 1px solid var(--graph-border);
+  border-radius: 6px;
+  padding: .45rem .65rem;
+}
+.graph-tools button { cursor: pointer; }
+.graph-tools select { max-width: 100%; flex: 1 1 14rem; min-width: 0; }
+.graph-tools label { margin-left: .3rem; }
+.graph-tools button:hover { border-color: var(--graph-focus); }
+.graph-tools :focus-visible, .graph-viewport:focus-visible {
+  outline: 3px solid var(--graph-focus); outline-offset: 3px;
+}
+.graph-viewport {
+  overflow: auto;
+  max-height: 65vh;
+  min-height: 12rem;
+  width: 100%;
+  border: 1px solid var(--graph-border);
+  border-radius: 8px;
+  background: var(--graph-paper);
+  overscroll-behavior: contain;
+}
+.pathway-network-svg {
+  display: block; width: 100%; height: auto; max-width: none;
+  font: 13px system-ui, sans-serif;
+}
+.pathway-network-svg marker path { fill: var(--graph-edge); }
+.graph-native-size:checked ~ .graph-viewport .pathway-network-svg {
+  width: auto; height: auto;
+}
+.graph-status { font-size: .9rem; }
+.graph-legend { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .85rem; margin: .8rem 0; padding: 0; list-style: none; }
+.graph-legend li { display: inline-flex; align-items: center; gap: .35rem; }
+.graph-legend svg { flex: 0 0 30px; }
+.graph-node-shape { stroke-width: 1.6; }
+.graph-node text { fill: var(--graph-ink); }
+.graph-node .graph-node-type { font-size: 10px; font-weight: 650; letter-spacing: .04em; }
+.graph-node[data-kind="reaction"] .graph-node-shape { fill: #e0edff; stroke: #2563eb; }
+.graph-node[data-kind="chemical"] .graph-node-shape { fill: #e4f5ed; stroke: #15803d; }
+.graph-node[data-kind="protein"] .graph-node-shape { fill: #f1e7fb; stroke: #7e22ce; }
+.graph-node[data-kind="context"] .graph-node-shape,
+.graph-node[data-kind="taxon"] .graph-node-shape { fill: #fff1d6; stroke: #a16207; }
+.graph-node[data-kind="participant"] .graph-node-shape,
+.graph-node[data-kind="pathway"] .graph-node-shape { fill: #f1f5f9; stroke: #64748b; }
+.graph-edge path { stroke: var(--graph-edge); stroke-width: 1.5; fill: none; }
+.graph-edge-context path { stroke: var(--graph-context); stroke-dasharray: 5 4; }
+.graph-edge text {
+  fill: var(--graph-ink); font-size: 11px;
+  paint-order: stroke; stroke: var(--graph-paper); stroke-width: 4px; stroke-linejoin: round;
+}
+.graph-edge:focus-visible path, .graph-edge:hover path, .graph-connected path {
+  stroke: var(--graph-focus); stroke-width: 3;
+}
+.graph-node:focus-visible, .graph-edge:focus-visible { outline: none; }
+.graph-muted { opacity: .22; }
+.graph-muted:hover, .graph-muted:focus-visible { opacity: 1; }
+tr[id^="mechanism-edge-"]:target, tr[id^="component-"]:target {
+  outline: 3px solid var(--link); outline-offset: -3px;
+  scroll-margin-top: 1rem;
+}
+@media (max-width: 600px) {
+  .pathway-network { padding: .75rem; }
+  .graph-tools label { flex-basis: 100%; margin-left: 0; }
+  .graph-viewport { max-height: 60vh; }
+}
+@media (prefers-color-scheme: dark) {
+  .pathway-network {
+    --graph-paper: #162236; --graph-ink: #edf2f8; --graph-border: #52657f;
+    --graph-edge: #b1c0d4; --graph-context: #a4adbd; --graph-focus: #fbbf24;
+  }
+  .graph-node[data-kind="reaction"] .graph-node-shape { fill: #1e3a66; stroke: #93b9ff; }
+  .graph-node[data-kind="chemical"] .graph-node-shape { fill: #134333; stroke: #74dba5; }
+  .graph-node[data-kind="protein"] .graph-node-shape { fill: #422465; stroke: #d0a2f5; }
+  .graph-node[data-kind="context"] .graph-node-shape,
+  .graph-node[data-kind="taxon"] .graph-node-shape { fill: #483916; stroke: #efcf84; }
+  .graph-node[data-kind="participant"] .graph-node-shape,
+  .graph-node[data-kind="pathway"] .graph-node-shape { fill: #28364a; stroke: #b2c1d5; }
+}
+.graph-node:focus-visible .graph-node-shape, .graph-node:hover .graph-node-shape,
+.graph-node.graph-selected .graph-node-shape { stroke: var(--graph-focus); stroke-width: 3; }
+@media print {
+  .graph-tools, .graph-native-size, label[for="graph-native-size"] { display: none; }
+  .graph-viewport { overflow: visible; max-height: none; }
+  .pathway-network-svg { width: 100% !important; height: auto !important; }
+  .graph-muted { opacity: 1; }
+}

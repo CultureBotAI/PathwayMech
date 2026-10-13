@@ -1,0 +1,2446 @@
+# Aceto authority integration: independent maintained preservation review
+
+- Review: 20261012T210222Z-aceto236-technical
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-12T20:55:27Z
+- Finished UTC: 2026-10-12T21:02:22Z
+- Reviewer: Codex /root/deoxy237_science_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+All 23 technical primary owners match accepted implementation and actual authority outputs. Fresh complete maintained content/tree/receipt checks pass, with exact old-object/context preservation and inherited implementation interpretation.
+
+## Scope And Provenance
+
+All 23 technical primary owners match accepted implementation and actual authority outputs. Fresh complete maintained content/tree/receipt checks pass, with exact old-object/context preservation and inherited implementation interpretation.
+
+Selection: Exact aceto local integration on baseline9bd87745d842b0602d027f3d15d26bbc178474a6 before subsequent evidence adoption and native review save.
+Coverage: full; 23 reviewed / 23 in the declared population.
+Source: working_tree at Git base 9bd87745d842b0602d027f3d15d26bbc178474a6.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| conf/identifier_sources.json | conf/identifier_sources.json | maintained | conf/identifier_sources.json |
+| data/identifier_authorities/ontology.json | data/identifier_authorities/ontology.json | maintained | data/identifier_authorities/ontology.json |
+| data/identifier_authorities/sources.json | data/identifier_authorities/sources.json | maintained | data/identifier_authorities/sources.json |
+| docs/IDENTIFIERS.md | docs/IDENTIFIERS.md | maintained | docs/IDENTIFIERS.md |
+| scripts/build_source_identifier_snapshot.py | scripts/build_source_identifier_snapshot.py | maintained | scripts/build_source_identifier_snapshot.py |
+| src/pathwaymech/biocyc_aceto.py | src/pathwaymech/biocyc_aceto.py | maintained | src/pathwaymech/biocyc_aceto.py |
+| src/pathwaymech/identifiers.py | src/pathwaymech/identifiers.py | maintained | src/pathwaymech/identifiers.py |
+| tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml | tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml | maintained | tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml |
+| tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml | tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml | maintained | tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml |
+| tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml | tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml | maintained | tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml |
+| tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml | tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml | maintained | tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml |
+| tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml | tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml | maintained | tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml |
+| tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml | tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml | maintained | tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml |
+| tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml | tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml | maintained | tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml |
+| tests/fixtures/aceto_authority/META-PROT-CYS.xml | tests/fixtures/aceto_authority/META-PROT-CYS.xml | maintained | tests/fixtures/aceto_authority/META-PROT-CYS.xml |
+| tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml | tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml | maintained | tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml |
+| tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml | tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml | maintained | tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml |
+| tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml | tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml | maintained | tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml |
+| tests/fixtures/aceto_authority/META-RXN-20154.xml | tests/fixtures/aceto_authority/META-RXN-20154.xml | maintained | tests/fixtures/aceto_authority/META-RXN-20154.xml |
+| tests/fixtures/aceto_authority/META-RXN-20155.xml | tests/fixtures/aceto_authority/META-RXN-20155.xml | maintained | tests/fixtures/aceto_authority/META-RXN-20155.xml |
+| tests/fixtures/aceto_authority/manifest.json | tests/fixtures/aceto_authority/manifest.json | maintained | tests/fixtures/aceto_authority/manifest.json |
+| tests/test_aceto_authority.py | tests/test_aceto_authority.py | maintained | tests/test_aceto_authority.py |
+| tests/test_aceto_legacy_cycles.py | tests/test_aceto_legacy_cycles.py | maintained | tests/test_aceto_legacy_cycles.py |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Root-executed history-1 | passed | False | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed history-2 | passed | False | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed sssom | passed | False | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed render | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed skills | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed validate | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed tests | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed lint | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed kgx | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed vendored | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed diff-check | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Root-executed site-current | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact planned command and pinned environment passed; original receipt and streams retained. |
+| Fresh independent check_target | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact read-only helper, output and actual stream receipt retained. |
+| Fresh independent check_checkout | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact read-only helper, output and actual stream receipt retained. |
+| Fresh independent verify-bindings | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Exact read-only helper, output and actual stream receipt retained. |
+| Actual graph static visual inspection | passed | True | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | Actual maintained SVG raster freshly rendered and personally viewed; full DOM/evidence comparison also passes. |
+| Interactive browser checks | unavailable | False | conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py | No keyboard, JavaScript interaction, responsive or dark-theme behavior was tested. Static light raster and complete DOM correspondence were checked. |
+
+## Scientific And Domain Assessments
+
+### conf/identifier_sources.json
+
+ownership: supported. Targets: conf/identifier_sources.json.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 e73b00dc06ae8b2cca49b678a746b3f06318ff37eda3762b241ac00aa0cd51d3
+
+### data/identifier_authorities/ontology.json
+
+ownership: supported. Targets: data/identifier_authorities/ontology.json.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 5c2d6b2e7741bcd722bd6f5e37c3bda82becb9b2f447842e9e0a518fbf2bb9f7
+
+### data/identifier_authorities/sources.json
+
+ownership: supported. Targets: data/identifier_authorities/sources.json.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 54f408f0fd1e10cbfa98280018b72d887b0b0ab16a1afbf0b070ffba1a31c2b5
+
+### docs/IDENTIFIERS.md
+
+ownership: supported. Targets: docs/IDENTIFIERS.md.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 fab518104c425e113810e32b133ba87adf08f2a19dcdc7c9da825ce47711657b
+
+### scripts/build_source_identifier_snapshot.py
+
+ownership: supported. Targets: scripts/build_source_identifier_snapshot.py.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 32f38f1ca6efe24577a1f19d2fa1c8938fa97c48249644962ac099c7b4215683
+
+### src/pathwaymech/biocyc_aceto.py
+
+ownership: supported. Targets: src/pathwaymech/biocyc_aceto.py.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 fa0f56b342d74fc4393cced1a1c9a431447844c1faf825870d35fd6ff12741d4
+
+### src/pathwaymech/identifiers.py
+
+ownership: supported. Targets: src/pathwaymech/identifiers.py.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 f8a213287282cae24710ec843d6ea50d6148b841f38b4d3e4d177efa6a4191a0
+
+### tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 a8be76266158e819323a01e09a6ce75399374a6c5ff4747578f59bce07ca71a2
+
+### tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 c8cda5e46b5311dd6a6c6cb3081b4c17b5c75acde8c1441be78cd084a62fe4db
+
+### tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 8345189925e11b115d2ef5b86c2f15cb5a834bc4ea8f130b4bca8cfb5804d5da
+
+### tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 7da958fcb8fcd0b09cab614088180a4e8e2cf0263e094182270412164916ff01
+
+### tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 62054dfb3841d56dd6c71c1d9825b69d031891b99f1c1eed0657be0eec8a5056
+
+### tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 76625cba082196770f6cb849c4ead8054807f99a72cd7506d46b6bdbcd93c6c8
+
+### tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 44ce0b519041cb00e66866479b3c1cc754f4dad3dc4c93aaadd61dc43e6048f3
+
+### tests/fixtures/aceto_authority/META-PROT-CYS.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-PROT-CYS.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 21d7b54af702e0ef2b12f253daefb1d36b79b66ce89a8b9b878dd9f4f50c7b03
+
+### tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 fdda1ae4a543c27786daf026a4810c2d086983ba6a3f6fa0e43991f554368e88
+
+### tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 d45ba586387f298192f3a15b743c621bb3cb8bbbce51478fdb821912255d0aec
+
+### tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 8570089e0f5216f849ece19e44a97a33ecc44c8f0db4ad1f1f916574d72a46ed
+
+### tests/fixtures/aceto_authority/META-RXN-20154.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-RXN-20154.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 d4ff2fc70c68d90271c5d1549b75796a3bac0285a789a7ebf38c3d40c755641b
+
+### tests/fixtures/aceto_authority/META-RXN-20155.xml
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/META-RXN-20155.xml.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 e33c0de11d7b3826d36a76462a12f00837d485d568dfd4f65a1dc5e1061080b1
+
+### tests/fixtures/aceto_authority/manifest.json
+
+ownership: supported. Targets: tests/fixtures/aceto_authority/manifest.json.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 249b791c45a72d77d1bf5e6bafe4253c4ab0dcd8e3f156390278d836cdea7afa
+
+### tests/test_aceto_authority.py
+
+ownership: supported. Targets: tests/test_aceto_authority.py.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 68bef87aed97cf42f42cb3bd673bcbefebf319b4ab273547dc8867cd90c03b20
+
+### tests/test_aceto_legacy_cycles.py
+
+ownership: supported. Targets: tests/test_aceto_legacy_cycles.py.
+
+Exact current owner matches the independently accepted local-integration payload and actual runtime/output bodies. The current full native gates pass; production semantics are inherited from their separate accepted review.
+
+Current SHA256 2515bc7692f6978a18e11c5d7a15b19c39b9f69dc2dfe88ae6a5d43668fcd101
+
+### Actual native authority bodies and effective configuration
+
+grounding: supported. Targets: conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py.
+
+Sources have 2,619 terms/678 owners and ontology 2,005 terms/five owners. Exact current files equal accepted native output. All prior objects/order and first-owner provenance remain preserved without exception. The 855-row actual manifest retains the complete prior 844-row prefix; retained 831-row runtime configuration is not substituted.
+
+### Whole old tree and history preservation
+
+provenance: supported. Targets: conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py.
+
+All 236 prior records/pages, 116 review pairs and 400 history records remain exact. Current hidden/ignored census permits only 34 planned owners, 10 generated owners and two new histories. All 800 cache identities remain unchanged.
+
+### Whole graph contexts and mappings
+
+representation: supported. Targets: conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py.
+
+Both current KGX surfaces equal accepted native 4,277 nodes/11,949 edges. All 11,903 old edge rows and 7,941 old node contexts retain payload/order/multiplicity. RHEA:21038 aggregate direction clears due to retained conflicting traversal contexts; old KEGG:M00374/PWY-5789 right-to-left contexts do not reverse. SSSOM preserves 27 old rows plus five exact new rows.
+
+### Whole accepted original evidence and receipt closure
+
+provenance: supported. Targets: conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py.
+
+All 34 adopted owner bytes, including the ten-owner portable dossier, match the independently replayed preparation. Earlier fresh preparation replay covered 2,353 bodies/341,141,661 decoded bytes, with 5,260 explicitly excluded synthetic fixtures inherited. Current reference hashes resolve and all actual receipt/stream bodies are freshly checked. No primary-body or full SQL reread is claimed.
+
+### Actual root execution and chronological history
+
+consistency: supported. Targets: conf/identifier_sources.json, data/identifier_authorities/ontology.json, data/identifier_authorities/sources.json, docs/IDENTIFIERS.md, scripts/build_source_identifier_snapshot.py, src/pathwaymech/biocyc_aceto.py, src/pathwaymech/identifiers.py, tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml, tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml, tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml, tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml, tests/fixtures/aceto_authority/META-PROT-CYS.xml, tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml, tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml, tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml, tests/fixtures/aceto_authority/META-RXN-20154.xml, tests/fixtures/aceto_authority/META-RXN-20155.xml, tests/fixtures/aceto_authority/manifest.json, tests/test_aceto_authority.py, tests/test_aceto_legacy_cycles.py.
+
+Both native histories precede SSSOM and first render. All nine required gates passed using exact approved commands and pinned environment across four chronological phases. Complete actual stdout/stderr receipts are retained.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| current-target | data/pathways/acetoacetate-degradation.yaml | supports | Fresh complete reading of all 1,368 YAML lines. Exact accepted target has 29 paragraphs, 46 edges, 25 identities, one construct qualifier, 66 references and five mappings. |
+| fresh-target-qa | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/target-qa.json | supports | Fresh complete graph/table/qualifier/reference and old scientific-owner comparison using exact reviewed root-prepared helper. |
+| fresh-tree-qa | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/checkout-preservation.json | supports | Fresh hidden/ignored-inclusive complete physical tree and all 800 shared-cache identities, before evidence adoption or native review saves. |
+| exact-bindings | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/exact-bindings.json | supports | Exact twelve native command receipts, streams, planned argv/environment and inspection source hashes verified after all four phases passed. |
+| static-visual | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-assessment.json | supports | Fresh static light raster extracted from the actual maintained SVG and personally viewed. Dense junction labels overlap; long construct label truncates. |
+| inherited-science | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/REPORT.md | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-claims | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-scientific-assessments.json | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-identities-references | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-identity-reference-assessments.json | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-native-output | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/REPORT.md | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| inherited-integration-preparation | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/REPORT.md | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| accepted-runtime | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-implementation-acceptance-20261012.json | supports | Exact accepted earlier interpretation is inherited and its complete report/dispositions read. Primary-source and production-runtime review are not represented as newly executed here. |
+| root-history-1 | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-history-2 | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-sssom | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-render | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-skills | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-validate | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-tests | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-lint | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-kgx | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-vendored | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-diff-check | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+| root-site-current | research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.execution.json | supports | Actual root execution passed; complete receipt and stdout/stderr hashes independently verified. No repeated native gate by this reviewer. |
+
+## Limits And Additional Notes
+
+- Full scientific source interpretation is inherited from the accepted independent review. This review freshly reads the entire current YAML and all 29 paragraph, 46 edge, 25 identity and 66 reference dispositions and compares exact current claims; it does not reread primary papers.
+- Inherited source depth remains three complete main papers (1975 thiolases, 2007 AtoC, 2022 YdiF), ten indexed abstracts and five metadata-only papers. Not all supplements or cited papers were read. No source-exhaustion or new whole-paper claim follows.
+- Distinct wild-type B, constitutive mutant, K-12/MG1655, BL21 recombinant and O157:H7 ortholog contexts remain scoped. Exact supplement-only YdiF cloning details and unavailable historical assay contexts are not newly verified.
+- Actual maintained static light SVG was freshly rasterized and viewed. Dense shared-junction labels overlap and the long construct node label truncates; the complete qualification and evidence remain in the checked tables. No browser interaction/responsive/dark-theme result is claimed.
+- Production implementation, whole-source authority semantics and the issue502 cycle correction are inherited from accepted independent runtime/output reviews; current gates and exact output identity verify integration. This is not another line-by-line adapter review or full SQL rehash.
+- The reviewer authored earlier external canonical preparation, but did not author this scientific record, production adapters, local-integration preparation or root maintained execution. Current independence is scoped to the latter maintained integration and inherited scientific adjudication; earlier self-authored planning is not independently certified here.
+- No maintained record, native review, cache, Git state or GitHub object was changed by this reviewer. Root owns exact evidence adoption, guarded final native inspection, append-only save/check and any later local commit.
+- The complete current YAML and all inherited paragraph/edge/identity/reference dispositions were read. Scientific access tiers describe the earlier source reviewers, not fresh primary-paper work here.
+- The captured interval starts with the first retained current-page raster execution; earlier contextual helper/report reads precede it.
+- Root-prepared exact deterministic checkers were reused after complete inspection. The independent reviewer separately inspected current scientific wording, inherited dispositions, the actual raster and exact native command/input bindings.
+- External drafts are schema validation inputs only. No native structured predecessor occurrence or issue closure is fabricated.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261012T210222Z-aceto236-technical
+kind: repository
+repository: CultureBotAI/PathwayMech
+title: 'Aceto authority integration: independent maintained preservation review'
+started_at: '2026-10-12T20:55:27Z'
+finished_at: '2026-10-12T21:02:22Z'
+reviewer:
+  identity: Codex /root/deoxy237_science_review
+  kind: agent
+  independence: independent
+  independence_basis: The reviewer authored earlier external canonical preparation,
+    but did not author this scientific record, production adapters, local-integration
+    preparation or root maintained execution. Current independence is scoped to the
+    latter maintained integration and inherited scientific adjudication; earlier self-authored
+    planning is not independently certified here.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: All 23 technical primary owners match accepted implementation and actual
+  authority outputs. Fresh complete maintained content/tree/receipt checks pass, with
+  exact old-object/context preservation and inherited implementation interpretation.
+source:
+  git_revision: 9bd87745d842b0602d027f3d15d26bbc178474a6
+  state: working_tree
+  inputs:
+  - path: conf/identifier_sources.json
+    sha256: e73b00dc06ae8b2cca49b678a746b3f06318ff37eda3762b241ac00aa0cd51d3
+    role: target
+  - path: data/identifier_authorities/ontology.json
+    sha256: 5c2d6b2e7741bcd722bd6f5e37c3bda82becb9b2f447842e9e0a518fbf2bb9f7
+    role: target
+  - path: data/identifier_authorities/sources.json
+    sha256: 54f408f0fd1e10cbfa98280018b72d887b0b0ab16a1afbf0b070ffba1a31c2b5
+    role: target
+  - path: docs/IDENTIFIERS.md
+    sha256: fab518104c425e113810e32b133ba87adf08f2a19dcdc7c9da825ce47711657b
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: pages/records/MetaCyc_ACETOACETATE-DEG-PWY.html
+    sha256: a68090f9a5385612ffdbaad8e964097d6c3be71236525db8d480361974457c21
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/REPORT.md
+    sha256: 17edd23f437b5ecf20a00e5d3239fb24f465703bd186a34eed5fc197c5bd9d7e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-graph.png
+    sha256: 527100828b73d5b6db4542a44cb2e38ac45a7fe2637176ea78e784f86c49ba6f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-graph.svg
+    sha256: b37adf9cc09a334cf49255246ae25d9ba7770cfc62ea3851c98e3dcb16c84b51
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/completion.json
+    sha256: fbb4b897fbf0a32cab5b5befdfdb3036e73ad4ea981ee445fc3167c467bcc513
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.execution.json
+    sha256: fe79a73ccbdcac94309c24c2376ab7caf7ce1f6978aecc3e9b4779ae5edeafc2
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.execution.json
+    sha256: 3a5c6e8b5aeba8f0c06e902fa00a3e735a3693d6dc2daea8a12143239c946587
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.stdout
+    sha256: dd5d3d3e1a950501ae252a20ec423c0cd01afb63c7df9b0d624f3cccbe039b73
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/completion.json
+    sha256: eceba9ba68eccac4ea420d2679ca5bfbe7192f84af680216f186b80440c6699a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.execution.json
+    sha256: 7a4ca1eeceec90df98c5a38a19f2f57f05c00b3fbd2a1df912e4e028d5658e9f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.stdout
+    sha256: fd50e6c0395bdd032aeb7bc79170bf6fa7b3d712ed3a08316a9ca32e988fcc72
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.execution.json
+    sha256: ebca171386301fcdb60b23e746bd461a8ecd3ac8c02f5b1a3004199695a9a629
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.stdout
+    sha256: ecf38161f1e84d371dd91f06553f8792c1d6c5f58a68ddb5dd84149c506a8026
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.execution.json
+    sha256: 0ffd9565cc557271a3c5e2cafb0e41ea78fce45c0ff706296c0fedcbe4c87a8f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.stdout
+    sha256: 82518afcfc2ed6121737ecf07daeb9de1056da1f0287852a17f6fe3dc14d5672
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.execution.json
+    sha256: f85e45beff40ebad7b4bce3f6a66cf5d69ba09abb43f32910418bbad52e16c42
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.stdout
+    sha256: aa2d3652343b880d16a176d45deb7b4907fb11f43e31f1840d7724658478a527
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom-preservation.json
+    sha256: fe01ec6379765aa1c90e9aba79ae377da502b13f716d8ffa745202948b7c3948
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.execution.json
+    sha256: ae18d1ee22b79ae48e0862c54bd192218179ebad6430dcf0ecb1b9db03a2259f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.stdout
+    sha256: 41bb3e5a8cd07527efa1eacefe72245c7419fc5e182b12bc2cbc00ce3b45d87c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/completion.json
+    sha256: b718f62a75812c323f3b521c1e75890938b0d5cfc01a0b81df26109297611929
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.execution.json
+    sha256: 421b89fdeec1169f62f98a7f1ba652e3dc2627b1b68f4dd16286271859f7f5a3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.stdout
+    sha256: c953d92cf707c93cd840b980422e505c27452fb764a3482dc6b33624d8309e3c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.execution.json
+    sha256: 16253e9455d7815790b53a697ab3f4e7ebfbb9f0663b677dca48086f7e19adad
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.stdout
+    sha256: 82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.execution.json
+    sha256: d125660ce7a09867541e28e900d54eb0bedc4e9a9046ea999f172c71e7b386d1
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.stdout
+    sha256: e01704f52bf4c72ea9fe71ebe107e5ad9f659af928c9bc2b2f16b74a62e0e29e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.execution.json
+    sha256: 1c514c1a962d75b204e7c8a2ab3c2fd713d019d91b19c989b846160ca903119c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.stdout
+    sha256: 9b24245bd98c68219f21131d738ae78454a4ec426e27ef95a2d9e28cb2a35454
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/completion.json
+    sha256: eb2842f860fd5046edacfda44a2e5dba6b1a9aea2cf1660f0aac899e62afd3c8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.execution.json
+    sha256: 37254e1eee89f9d130cefa8a64e194490832b4fac247f6d087d5c881b1c0f9d7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.stdout
+    sha256: 3b073aa29da7dc3996edbe18c83d0d6593ba6d03238b663efc40286be4cf428e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-235-local-20261012/output/sssom/source_mappings.sssom.tsv
+    sha256: 44f84f9863f807e8b442d9946298c6b773c71946e2fab0666214e1373963debd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-20261012/output/sssom/source_mappings.sssom.tsv
+    sha256: b459494b450a7936081024fc359e9909a8d731eba9c230aad09f456b68504d64
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-adoption-root-20261012/receipt.json
+    sha256: bcb676b0174af60dddba9f5ade43c4d8cadcd978a8d4d145a31dd9c620c85810
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-integration-preparation-20261012/handoff.json
+    sha256: 7455f6b4e0f57ca519e8ed5c8eb134f190d61e34ad1da1abece467d1bca5288d
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-integration-preparation-20261012/semantic-preservation.json
+    sha256: dbc92688499bf943f736fe08d202094a11fe29e30cf3898294565e0d718cba62
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-local-integration-preparation-20261012/stages.json
+    sha256: 561fbde469236458a8f94963ed0032975e4806f8dc1bfd1d8dfd8cf5a548c899
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-local-adoption-acceptance-20261012.json
+    sha256: a5ccb6ad762b249d6a0c74549d262482c2b890b0b406b41f64e197adcad511b3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-inspection.execution.json
+    sha256: 606ace4cadaa9b2058bf4d8680e432cc8bf72b721b569c0f2661d539d67f37f9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-inspection.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-inspection.stdout
+    sha256: f8c67894d09057f370aec19d354d4005d8a15c31eb903b8dcc69c9851a0b0c8c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/scientific-targets.json
+    sha256: bc9d3ddb2936b0fbf37283d104514f21fa6a6677ba96cbcf1204a8d927a9c424
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-inspection.execution.json
+    sha256: eaf24a0f3552b0cebc476db451474f296aa3feea7bd012429e506a4315761b3c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-inspection.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-inspection.stdout
+    sha256: a44262317cd68f6d52e7b6aedd2b272b855bfd345c3bedb16d1266bd6ad63ffd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-maintained-qa-20261012/technical-targets.json
+    sha256: cb627660ad12e520c602f124b9f73eff085a7398775af9522f4844148d321c50
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-inputs/pathwaymech-next-236-root-run-native-20261012.py.gz
+    sha256: f0146ae0f00fc0317e93038988ad41e3e39931bca8b4a87a6c1cf8866f49ea06
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble-reviews.execution.json
+    sha256: 0c9e5374b010854767fa48875911bd265b385ff13e4f179a3724b8cf4d36b820
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble-reviews.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble-reviews.stdout
+    sha256: 60a10adfeb48b18fc5d1158fa4508d10e628e91268cb2d13a6d20d2d7272aafb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/assemble_reviews.py.gz
+    sha256: b05dd40f328264fe1a09332e2fc269ff6827d8a5ba093f77102dd8fcb23be874
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.execution.json
+    sha256: b50120dd53c4a3ee96d7612eed7b35f9b3e0babef0e1db0593f93bd3dbb870c0
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.py.gz
+    sha256: ca7de65cb84578221862a4c8840409a07ef8b6422aab4362685b461c8d39626b
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_checkout.stdout
+    sha256: f1b0e5f59b56541476f1cb4f8eff1511651451facb3f0a7535c52f0409be95b8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.execution.json
+    sha256: c1ebb2994ba3e600cc54c67bca42a665c4eb4392bf2dfac4c7c2117ba4dccf02
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.py.gz
+    sha256: 185f9b4eb9e0ea67953ebef6620da25ca8ee7634f6737b8d59bbfc18ad458e33
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/check_target.stdout
+    sha256: 61547af81af0661ad7eb562d5e0604488fa4d786ed794a9ccfb7ad203931f454
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/checkout-preservation.json
+    sha256: c506b8818f1b69c9a59a8defac38339e5b9c97ecb427db5c1dceeb9be0031444
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/draft-summary.json
+    sha256: 60a10adfeb48b18fc5d1158fa4508d10e628e91268cb2d13a6d20d2d7272aafb
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/durable-evidence-bindings.json
+    sha256: ca28e2d91fd93aef3c329da2bc5dcd8ff31b92da16f6c3dfc54291f1e82dcf08
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/evidence-copy-bindings.json
+    sha256: 1ebaa149e4ceaea0e83c899805e99dd559e9175a3cb06a2eb3be5c28e93d65de
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/exact-bindings.json
+    sha256: fc13ab79fdd3668f0e387dcc812b47db157db26d2c0f2ff75b5f442818d59bf9
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/final-draft-check.json
+    sha256: 5364149ab84411bc99721e641f239f9135b930925c5b12679053ab5d1faf46e7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/final-execution.json
+    sha256: 0cbb4b39abce9a725e92ae1320c2337c9026ae4a83df9bdbb9b166df02d8a700
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/final-intake.json
+    sha256: f1ce215d94458f6e086c8546b2da09b4a4da371d0e8af2cbe26bf8ad0ce1f62e
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finalize_native_inputs.py.gz
+    sha256: 5647a597105ac92d49016d9e210f68aaf8baa9fb82800126fb9a23714b653349
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finalizer-lineage.json
+    sha256: c2c4d3eb9404c91bb5c20d260cd7e9a32ca7792eb8db62a3660944bf85031d7c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finalizer-lineage.patch
+    sha256: a625556f555093b62fd3fb4db5fd8a8af0157799a57d946357705735d8819502
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finish-helper-inputs.json
+    sha256: 6cfee5b312c264ae776b37546f332822f13588c47f11d5ba03b3f0ad583b609c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/finish_qa.py.gz
+    sha256: 6a01603f1e5af9919599ecd5dc0fcb68eb4b0241285b2d95845a23dc26f99cc7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/REPORT.md
+    sha256: 71ed724ff38144ea9a623f189eb7e1cf4275de6b8b0b4212b2640e239d049ebf
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/handoff.json
+    sha256: 5dce545eeb45da3c7fd85039a67d4aa75c60c63126ca165347774b013df068d5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/REPORT.md
+    sha256: a867feb636923d88e980f9c586ab3b3e381e57205a85c06ed047c1760dc731fe
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/handoff.json
+    sha256: 3064c922ccf935aa1f7146380fc232d768ac5edada26221f6fa27fbee2c45f23
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/REPORT.md
+    sha256: 5586730d763641d43083f5d04fa6445cc668614793b875b80e51d0e470a2a112
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/handoff.json
+    sha256: 9737a969dfcb9ff19dbaf1ed59c3f10a75726a094c860400c48cc9b044ac2854
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-identity-reference-assessments.json
+    sha256: 10f94e414b888aba1537a6a62fb855a22328db33b20eb1098626aaedbe427146
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-scientific-assessments.json
+    sha256: 113d86c8c93b4166512247bb5ed9173abe72f5fcebe79f7ef3c9c031bf107508
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-canonical-output-acceptance-20261012.json
+    sha256: 94be6e5df1c8fee0b2dfd2e31a74eea213d2903c84835a518124ca79ef567ec7
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-implementation-acceptance-20261012.json
+    sha256: e804a67f3980c689e4118e67510e5bf6d61640230129145ad02f5941c86c7213
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/light-static-graph.svg
+    sha256: 392a0438ee828999ae18b1ea496b656e1ae6687cd08235657a215d1ada8246e4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/package-execution.json
+    sha256: bcd64663c8f8ce8e8e29ec2e104a9bfdfa8c7643d2bb99a1ee02f4e2ed0c53e5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/package-index.json
+    sha256: 2a003c4fc112c843205a3503abaaf0c0c85bd92b58f2e5861db1fd4e3fa305a8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/package.py.gz
+    sha256: 44b223b6aa23051ade42435b77239616d33eb2b9f6d3f5a5ed81f0c319de5af3
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/qa-and-drafts-completed.json
+    sha256: c6e04579f1b6bff45c8b6d78ad48a1c05ad9c3bde2a7c73b693e0b13a0eadca6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/rasterize_actual.execution.json
+    sha256: 34a447ad0bca88fa37e30e13241f51a0ae1a559dd01095e56bbda2ff50412275
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/rasterize_actual.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/rasterize_actual.stdout
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/read-coverage.json
+    sha256: 569fc65cd1898e7791dff660ef67fbc43dee2659bd079eecd6f61a1899c769b4
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/run_qa.py.gz
+    sha256: 173c44802f4f3f9b52896bed598b3d2c0fa398db66c8e6464ef95e097548a6c5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-inspect.execution.json
+    sha256: 88efc9e52f97cfbc99235a34620d2748f7e43d9aae3a5bb6c8416b10b2737881
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-inspect.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-inspect.stdout
+    sha256: f8c67894d09057f370aec19d354d4005d8a15c31eb903b8dcc69c9851a0b0c8c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-review.yaml
+    sha256: 13c312f9b614e6d96fad5dd9e8ffe61e309a9a9753f59e10b43e9b393dbfde6c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-validate.execution.json
+    sha256: d7065070e08132d5d385a99a4a7eaf1deb62e855f54ecd8f2862ba03d07a4a44
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-validate.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/scientific-validate.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/target-qa.json
+    sha256: 23b8599c27c5ea1b6eacf8c4b9b84bf52f5c7df801c9a02cd61304d2136b9bd5
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-inspect.execution.json
+    sha256: b4119e60f1c09824761f09ed08783eb4cb62d519cf14ec5e427e6942c9f05173
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-inspect.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-inspect.stdout
+    sha256: a44262317cd68f6d52e7b6aedd2b272b855bfd345c3bedb16d1266bd6ad63ffd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-review.yaml
+    sha256: 0029e15d8dc713bb793791a86c93e3560b79508f93945166d46385cbd2b1a81f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-validate.execution.json
+    sha256: c6e43dc3d1ddc5f341263ae0350c8f2524e56b077f0738f8299f4713af0088bd
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-validate.stderr
+    sha256: e2cf5a8ee56373cb7afeb23be8ac2a30d67f13afa55bb51424877fc908e2a25f
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/technical-validate.stdout
+    sha256: b42ee0197bdb886694684431f9da0d2fba4020263ed572ff756b9eaf0b042ba6
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify-bindings.execution.json
+    sha256: 1e565371e511e23ce6a86eaffaba200d21735d0f8207de4a332437acaae4964a
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify-bindings.stderr
+    sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify-bindings.stdout
+    sha256: cf0e25e4741db0abbcb281be8e2237d1574a1cf602ed6a957611cabd938ad17c
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/verify_bindings.py.gz
+    sha256: dc37804da95a1a40d10adc18d0c70ec0c9f96694f88a30252c083cf8c7e36dc8
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-assessment.json
+    sha256: 332680b8c6f0dbb0248de47e0d4fab32b110a34507c2d119ac611327d39ddcac
+    role: context
+  - path: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-inputs.json
+    sha256: d42ca3d2cca7e54582aeb761502b6c4e6a72ed5b94921286115141a19e504b36
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 32f38f1ca6efe24577a1f19d2fa1c8938fa97c48249644962ac099c7b4215683
+    role: target
+  - path: src/pathwaymech/biocyc_aceto.py
+    sha256: fa0f56b342d74fc4393cced1a1c9a431447844c1faf825870d35fd6ff12741d4
+    role: target
+  - path: src/pathwaymech/identifiers.py
+    sha256: f8a213287282cae24710ec843d6ea50d6148b841f38b4d3e4d177efa6a4191a0
+    role: target
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+  - path: tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+    sha256: a8be76266158e819323a01e09a6ce75399374a6c5ff4747578f59bce07ca71a2
+    role: target
+  - path: tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+    sha256: c8cda5e46b5311dd6a6c6cb3081b4c17b5c75acde8c1441be78cd084a62fe4db
+    role: target
+  - path: tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+    sha256: 8345189925e11b115d2ef5b86c2f15cb5a834bc4ea8f130b4bca8cfb5804d5da
+    role: target
+  - path: tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+    sha256: 7da958fcb8fcd0b09cab614088180a4e8e2cf0263e094182270412164916ff01
+    role: target
+  - path: tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+    sha256: 62054dfb3841d56dd6c71c1d9825b69d031891b99f1c1eed0657be0eec8a5056
+    role: target
+  - path: tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+    sha256: 76625cba082196770f6cb849c4ead8054807f99a72cd7506d46b6bdbcd93c6c8
+    role: target
+  - path: tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+    sha256: 44ce0b519041cb00e66866479b3c1cc754f4dad3dc4c93aaadd61dc43e6048f3
+    role: target
+  - path: tests/fixtures/aceto_authority/META-PROT-CYS.xml
+    sha256: 21d7b54af702e0ef2b12f253daefb1d36b79b66ce89a8b9b878dd9f4f50c7b03
+    role: target
+  - path: tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+    sha256: fdda1ae4a543c27786daf026a4810c2d086983ba6a3f6fa0e43991f554368e88
+    role: target
+  - path: tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+    sha256: d45ba586387f298192f3a15b743c621bb3cb8bbbce51478fdb821912255d0aec
+    role: target
+  - path: tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+    sha256: 8570089e0f5216f849ece19e44a97a33ecc44c8f0db4ad1f1f916574d72a46ed
+    role: target
+  - path: tests/fixtures/aceto_authority/META-RXN-20154.xml
+    sha256: d4ff2fc70c68d90271c5d1549b75796a3bac0285a789a7ebf38c3d40c755641b
+    role: target
+  - path: tests/fixtures/aceto_authority/META-RXN-20155.xml
+    sha256: e33c0de11d7b3826d36a76462a12f00837d485d568dfd4f65a1dc5e1061080b1
+    role: target
+  - path: tests/fixtures/aceto_authority/manifest.json
+    sha256: 249b791c45a72d77d1bf5e6bafe4253c4ab0dcd8e3f156390278d836cdea7afa
+    role: target
+  - path: tests/test_aceto_authority.py
+    sha256: 68bef87aed97cf42f42cb3bd673bcbefebf319b4ab273547dc8867cd90c03b20
+    role: target
+  - path: tests/test_aceto_legacy_cycles.py
+    sha256: 2515bc7692f6978a18e11c5d7a15b19c39b9f69dc2dfe88ae6a5d43668fcd101
+    role: target
+scope:
+  description: All 23 technical primary owners match accepted implementation and actual
+    authority outputs. Fresh complete maintained content/tree/receipt checks pass,
+    with exact old-object/context preservation and inherited implementation interpretation.
+  selection: Exact aceto local integration on baseline9bd87745d842b0602d027f3d15d26bbc178474a6
+    before subsequent evidence adoption and native review save.
+  coverage: full
+  population_size: 23
+  reviewed_target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  exclusions:
+  - target: Fresh primary-paper and production-runtime audit
+    reason: Accepted full scientific and runtime interpretations are inherited and
+      exactly bound; current work assesses complete maintained content and integration.
+  - target: Native review save and publication
+    reason: Later root-owned actions require guarded evidence adoption and current-input/append-only
+      checks.
+targets:
+- target_id: conf/identifier_sources.json
+  path: conf/identifier_sources.json
+  label: conf/identifier_sources.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: data/identifier_authorities/ontology.json
+  path: data/identifier_authorities/ontology.json
+  label: data/identifier_authorities/ontology.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: data/identifier_authorities/sources.json
+  path: data/identifier_authorities/sources.json
+  label: data/identifier_authorities/sources.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: docs/IDENTIFIERS.md
+  path: docs/IDENTIFIERS.md
+  label: docs/IDENTIFIERS.md
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: scripts/build_source_identifier_snapshot.py
+  path: scripts/build_source_identifier_snapshot.py
+  label: scripts/build_source_identifier_snapshot.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: src/pathwaymech/biocyc_aceto.py
+  path: src/pathwaymech/biocyc_aceto.py
+  label: src/pathwaymech/biocyc_aceto.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: src/pathwaymech/identifiers.py
+  path: src/pathwaymech/identifiers.py
+  label: src/pathwaymech/identifiers.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  path: tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  label: tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  path: tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  label: tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  path: tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  label: tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  path: tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  label: tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  path: tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  label: tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  path: tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  label: tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  path: tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  label: tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  path: tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  label: tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  path: tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  label: tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  path: tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  label: tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  path: tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  label: tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-RXN-20154.xml
+  path: tests/fixtures/aceto_authority/META-RXN-20154.xml
+  label: tests/fixtures/aceto_authority/META-RXN-20154.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/META-RXN-20155.xml
+  path: tests/fixtures/aceto_authority/META-RXN-20155.xml
+  label: tests/fixtures/aceto_authority/META-RXN-20155.xml
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/fixtures/aceto_authority/manifest.json
+  path: tests/fixtures/aceto_authority/manifest.json
+  label: tests/fixtures/aceto_authority/manifest.json
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/test_aceto_authority.py
+  path: tests/test_aceto_authority.py
+  label: tests/test_aceto_authority.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+- target_id: tests/test_aceto_legacy_cycles.py
+  path: tests/test_aceto_legacy_cycles.py
+  label: tests/test_aceto_legacy_cycles.py
+  kind: maintained
+  ownership_note: Maintained authority, runtime, configuration, documentation or test
+    owner adopted byte-for-byte from accepted actual output and independently reviewed
+    runtime.
+checks:
+- check_id: root-history-1
+  name: Root-executed history-1
+  status: passed
+  required: false
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind record --slug acetoacetate-degradation --target-root data/pathways --event
+    CREATE --outcome changed --summary ''Add the complete evidence-backed acetoacetate
+    degradation record.'' --details ''Adopted exact accepted MetaCyc:ACETOACETATE-DEG-PWY
+    science: 29 paragraphs, 46 edges, 25 named identities, one construct qualifier,
+    66 references and five mappings. Whole native pathways/reactions, nested Ato assemblies,
+    generic protein-residue classes, mechanism/assay/source limits and rejected alternative
+    equation preserved in research/pathway_additions/2026-10-12-next-236. Actual native
+    outputs independently reviewed and accepted. Fresh maintained gates and saved
+    native review remain pending.'' --actor-name codex --agent-tool codex --model
+    gpt-6'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-history-1
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-history-2
+  name: Root-executed history-2
+  status: passed
+  required: false
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/new_history_record.py
+    --kind infrastructure --slug aceto-native-authority --path scripts/build_source_identifier_snapshot.py
+    --event EDIT --outcome changed --summary 'Integrate complete aceto authority contexts
+    and accepted native snapshots.' --details 'Adopted 20 accepted runtime/documentation/test
+    deltas and exact explicit 855-row manifest with two native snapshots. Keep nitrate
+    Rhea updates unchanged; complete old objects/order and all 265 UniProt originals/first
+    owners remain exact. Accepted issue 502 guard rejects mixed-profile cycles while
+    preserving legacy-only behavior. RHEA21038 aggregate direction clears only because
+    retained old and new source contexts disagree; no old context reverses. Local
+    integration only; history precedes generation and native review/gates remain pending.'
+    --issue 502 --actor-name codex --agent-tool codex --model gpt-6
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-history-2
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-sssom
+  name: Root-executed sssom
+  status: passed
+  required: false
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_sssom_main; raise SystemExit(export_sssom_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-sssom
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-render
+  name: Root-executed render
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-render
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-skills
+  name: Root-executed skills
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/validate_claude_skills.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-skills
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-validate
+  name: Root-executed validate
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import run_qc_main; raise SystemExit(run_qc_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-validate
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-tests
+  name: Root-executed tests
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m pytest
+    -q -p no:cacheprovider --basetemp /private/tmp/pathwaymech-next-236-local-gate-tests-20261012
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-tests
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-lint
+  name: Root-executed lint
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -m ruff
+    check --no-cache .
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-lint
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-kgx
+  name: Root-executed kgx
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import export_kgx_main; raise SystemExit(export_kgx_main())'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-kgx
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-vendored
+  name: Root-executed vendored
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: bash scripts/check_vendored_sync.sh
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-vendored
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-diff-check
+  name: Root-executed diff-check
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-diff-check
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: root-site-current
+  name: Root-executed site-current
+  status: passed
+  required: true
+  summary: Exact planned command and pinned environment passed; original receipt and
+    streams retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B -c 'from
+    pathwaymech.cli import render_pages_main; raise SystemExit(render_pages_main(["--check"]))'
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - root-site-current
+  scope_note: Actual root execution, not a second execution by this reviewer.
+- check_id: check_target
+  name: Fresh independent check_target
+  status: passed
+  required: true
+  summary: Exact read-only helper, output and actual stream receipt retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012/check_target.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fresh-target-qa
+- check_id: check_checkout
+  name: Fresh independent check_checkout
+  status: passed
+  required: true
+  summary: Exact read-only helper, output and actual stream receipt retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012/check_checkout.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fresh-tree-qa
+- check_id: verify-bindings
+  name: Fresh independent verify-bindings
+  status: passed
+  required: true
+  summary: Exact read-only helper, output and actual stream receipt retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012/verify_bindings.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - exact-bindings
+- check_id: static-raster
+  name: Actual graph static visual inspection
+  status: passed
+  required: true
+  summary: Actual maintained SVG raster freshly rendered and personally viewed; full
+    DOM/evidence comparison also passes.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - static-visual
+  - fresh-target-qa
+- check_id: browser-interaction
+  name: Interactive browser checks
+  status: unavailable
+  required: false
+  summary: No keyboard, JavaScript interaction, responsive or dark-theme behavior
+    was tested. Static light raster and complete DOM correspondence were checked.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - static-visual
+evidence:
+- evidence_id: current-target
+  kind: record_content
+  reference: data/pathways/acetoacetate-degradation.yaml
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh complete reading of all 1,368 YAML lines. Exact accepted target has
+    29 paragraphs, 46 edges, 25 identities, one construct qualifier, 66 references
+    and five mappings.
+  snapshot_sha256: c3e00916088b02b418c83e033ac1773bafc7aac036bc28eda30829e776e6779c
+- evidence_id: fresh-target-qa
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/target-qa.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh complete graph/table/qualifier/reference and old scientific-owner
+    comparison using exact reviewed root-prepared helper.
+  snapshot_sha256: 23b8599c27c5ea1b6eacf8c4b9b84bf52f5c7df801c9a02cd61304d2136b9bd5
+- evidence_id: fresh-tree-qa
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/checkout-preservation.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh hidden/ignored-inclusive complete physical tree and all 800 shared-cache
+    identities, before evidence adoption or native review saves.
+  snapshot_sha256: c506b8818f1b69c9a59a8defac38339e5b9c97ecb427db5c1dceeb9be0031444
+- evidence_id: exact-bindings
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/exact-bindings.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact twelve native command receipts, streams, planned argv/environment
+    and inspection source hashes verified after all four phases passed.
+  snapshot_sha256: fc13ab79fdd3668f0e387dcc812b47db157db26d2c0f2ff75b5f442818d59bf9
+- evidence_id: static-visual
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/visual-assessment.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Fresh static light raster extracted from the actual maintained SVG and
+    personally viewed. Dense junction labels overlap; long construct label truncates.
+  snapshot_sha256: 332680b8c6f0dbb0248de47e0d4fab32b110a34507c2d119ac611327d39ddcac
+- evidence_id: inherited-science
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/REPORT.md
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 5586730d763641d43083f5d04fa6445cc668614793b875b80e51d0e470a2a112
+- evidence_id: inherited-claims
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-scientific-assessments.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 113d86c8c93b4166512247bb5ed9173abe72f5fcebe79f7ef3c9c031bf107508
+- evidence_id: inherited-identities-references
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-science-review-20261012/successor-identity-reference-assessments.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 10f94e414b888aba1537a6a62fb855a22328db33b20eb1098626aaedbe427146
+- evidence_id: inherited-native-output
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-canonical-output-independent-review-20261012/REPORT.md
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: 71ed724ff38144ea9a623f189eb7e1cf4275de6b8b0b4212b2640e239d049ebf
+- evidence_id: inherited-integration-preparation
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/pathwaymech-next-236-local-integration-independent-review-20261012/REPORT.md
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: a867feb636923d88e980f9c586ab3b3e381e57205a85c06ed047c1760dc731fe
+- evidence_id: accepted-runtime
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/inherited/tmp/pathwaymech-next-236-root-implementation-acceptance-20261012.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Exact accepted earlier interpretation is inherited and its complete report/dispositions
+    read. Primary-source and production-runtime review are not represented as newly
+    executed here.
+  snapshot_sha256: e804a67f3980c689e4118e67510e5bf6d61640230129145ad02f5941c86c7213
+- evidence_id: root-history-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-1.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 7a4ca1eeceec90df98c5a38a19f2f57f05c00b3fbd2a1df912e4e028d5658e9f
+- evidence_id: root-history-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/history-2.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: ebca171386301fcdb60b23e746bd461a8ecd3ac8c02f5b1a3004199695a9a629
+- evidence_id: root-sssom
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/sssom.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: ae18d1ee22b79ae48e0862c54bd192218179ebad6430dcf0ecb1b9db03a2259f
+- evidence_id: root-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/render.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 0ffd9565cc557271a3c5e2cafb0e41ea78fce45c0ff706296c0fedcbe4c87a8f
+- evidence_id: root-skills
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/history-and-generation/skills.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: f85e45beff40ebad7b4bce3f6a66cf5d69ba09abb43f32910418bbad52e16c42
+- evidence_id: root-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/validate.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 1c514c1a962d75b204e7c8a2ab3c2fd713d019d91b19c989b846160ca903119c
+- evidence_id: root-tests
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/tests.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: d125660ce7a09867541e28e900d54eb0bedc4e9a9046ea999f172c71e7b386d1
+- evidence_id: root-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/lint.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 16253e9455d7815790b53a697ab3f4e7ebfbb9f0663b677dca48086f7e19adad
+- evidence_id: root-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/remaining-offline-gates/kgx.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 421b89fdeec1169f62f98a7f1ba652e3dc2627b1b68f4dd16286271859f7f5a3
+- evidence_id: root-vendored
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/vendored-gate/vendored.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 37254e1eee89f9d130cefa8a64e194490832b4fac247f6d087d5c881b1c0f9d7
+- evidence_id: root-diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/diff-check.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: fe79a73ccbdcac94309c24c2376ab7caf7ce1f6978aecc3e9b4779ae5edeafc2
+- evidence_id: root-site-current
+  kind: validation
+  reference: research/pathway_additions/2026-10-12-next-236/native-integration/independent-qa/actual-root-execution/final-gates/site-current.execution.json
+  accessed_at: '2026-10-12T21:02:18Z'
+  support: supports
+  summary: Actual root execution passed; complete receipt and stdout/stderr hashes
+    independently verified. No repeated native gate by this reviewer.
+  snapshot_sha256: 3a5c6e8b5aeba8f0c06e902fa00a3e735a3693d6dc2daea8a12143239c946587
+assessments:
+- assessment_id: owner-1
+  area: ownership
+  topic: conf/identifier_sources.json
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - conf/identifier_sources.json
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 e73b00dc06ae8b2cca49b678a746b3f06318ff37eda3762b241ac00aa0cd51d3
+- assessment_id: owner-2
+  area: ownership
+  topic: data/identifier_authorities/ontology.json
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - data/identifier_authorities/ontology.json
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 5c2d6b2e7741bcd722bd6f5e37c3bda82becb9b2f447842e9e0a518fbf2bb9f7
+- assessment_id: owner-3
+  area: ownership
+  topic: data/identifier_authorities/sources.json
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - data/identifier_authorities/sources.json
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 54f408f0fd1e10cbfa98280018b72d887b0b0ab16a1afbf0b070ffba1a31c2b5
+- assessment_id: owner-4
+  area: ownership
+  topic: docs/IDENTIFIERS.md
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - docs/IDENTIFIERS.md
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 fab518104c425e113810e32b133ba87adf08f2a19dcdc7c9da825ce47711657b
+- assessment_id: owner-5
+  area: ownership
+  topic: scripts/build_source_identifier_snapshot.py
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - scripts/build_source_identifier_snapshot.py
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 32f38f1ca6efe24577a1f19d2fa1c8938fa97c48249644962ac099c7b4215683
+- assessment_id: owner-6
+  area: ownership
+  topic: src/pathwaymech/biocyc_aceto.py
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - src/pathwaymech/biocyc_aceto.py
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 fa0f56b342d74fc4393cced1a1c9a431447844c1faf825870d35fd6ff12741d4
+- assessment_id: owner-7
+  area: ownership
+  topic: src/pathwaymech/identifiers.py
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - src/pathwaymech/identifiers.py
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 f8a213287282cae24710ec843d6ea50d6148b841f38b4d3e4d177efa6a4191a0
+- assessment_id: owner-8
+  area: ownership
+  topic: tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 a8be76266158e819323a01e09a6ce75399374a6c5ff4747578f59bce07ca71a2
+- assessment_id: owner-9
+  area: ownership
+  topic: tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 c8cda5e46b5311dd6a6c6cb3081b4c17b5c75acde8c1441be78cd084a62fe4db
+- assessment_id: owner-10
+  area: ownership
+  topic: tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 8345189925e11b115d2ef5b86c2f15cb5a834bc4ea8f130b4bca8cfb5804d5da
+- assessment_id: owner-11
+  area: ownership
+  topic: tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 7da958fcb8fcd0b09cab614088180a4e8e2cf0263e094182270412164916ff01
+- assessment_id: owner-12
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 62054dfb3841d56dd6c71c1d9825b69d031891b99f1c1eed0657be0eec8a5056
+- assessment_id: owner-13
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 76625cba082196770f6cb849c4ead8054807f99a72cd7506d46b6bdbcd93c6c8
+- assessment_id: owner-14
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 44ce0b519041cb00e66866479b3c1cc754f4dad3dc4c93aaadd61dc43e6048f3
+- assessment_id: owner-15
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 21d7b54af702e0ef2b12f253daefb1d36b79b66ce89a8b9b878dd9f4f50c7b03
+- assessment_id: owner-16
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 fdda1ae4a543c27786daf026a4810c2d086983ba6a3f6fa0e43991f554368e88
+- assessment_id: owner-17
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 d45ba586387f298192f3a15b743c621bb3cb8bbbce51478fdb821912255d0aec
+- assessment_id: owner-18
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 8570089e0f5216f849ece19e44a97a33ecc44c8f0db4ad1f1f916574d72a46ed
+- assessment_id: owner-19
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-RXN-20154.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 d4ff2fc70c68d90271c5d1549b75796a3bac0285a789a7ebf38c3d40c755641b
+- assessment_id: owner-20
+  area: ownership
+  topic: tests/fixtures/aceto_authority/META-RXN-20155.xml
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 e33c0de11d7b3826d36a76462a12f00837d485d568dfd4f65a1dc5e1061080b1
+- assessment_id: owner-21
+  area: ownership
+  topic: tests/fixtures/aceto_authority/manifest.json
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/fixtures/aceto_authority/manifest.json
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 249b791c45a72d77d1bf5e6bafe4253c4ab0dcd8e3f156390278d836cdea7afa
+- assessment_id: owner-22
+  area: ownership
+  topic: tests/test_aceto_authority.py
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/test_aceto_authority.py
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 68bef87aed97cf42f42cb3bd673bcbefebf319b4ab273547dc8867cd90c03b20
+- assessment_id: owner-23
+  area: ownership
+  topic: tests/test_aceto_legacy_cycles.py
+  outcome: supported
+  summary: Exact current owner matches the independently accepted local-integration
+    payload and actual runtime/output bodies. The current full native gates pass;
+    production semantics are inherited from their separate accepted review.
+  target_ids:
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - accepted-runtime
+  details: Current SHA256 2515bc7692f6978a18e11c5d7a15b19c39b9f69dc2dfe88ae6a5d43668fcd101
+- assessment_id: authority-and-config
+  area: grounding
+  topic: Actual native authority bodies and effective configuration
+  outcome: supported
+  summary: Sources have 2,619 terms/678 owners and ontology 2,005 terms/five owners.
+    Exact current files equal accepted native output. All prior objects/order and
+    first-owner provenance remain preserved without exception. The 855-row actual
+    manifest retains the complete prior 844-row prefix; retained 831-row runtime configuration
+    is not substituted.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - fresh-target-qa
+  - inherited-native-output
+  - inherited-integration-preparation
+- assessment_id: prior-corpus
+  area: provenance
+  topic: Whole old tree and history preservation
+  outcome: supported
+  summary: All 236 prior records/pages, 116 review pairs and 400 history records remain
+    exact. Current hidden/ignored census permits only 34 planned owners, 10 generated
+    owners and two new histories. All 800 cache identities remain unchanged.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - fresh-tree-qa
+  - fresh-target-qa
+- assessment_id: kgx-and-sssom
+  area: representation
+  topic: Whole graph contexts and mappings
+  outcome: supported
+  summary: Both current KGX surfaces equal accepted native 4,277 nodes/11,949 edges.
+    All 11,903 old edge rows and 7,941 old node contexts retain payload/order/multiplicity.
+    RHEA:21038 aggregate direction clears due to retained conflicting traversal contexts;
+    old KEGG:M00374/PWY-5789 right-to-left contexts do not reverse. SSSOM preserves
+    27 old rows plus five exact new rows.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - fresh-target-qa
+  - inherited-integration-preparation
+  - inherited-native-output
+  - exact-bindings
+- assessment_id: portable-evidence
+  area: provenance
+  topic: Whole accepted original evidence and receipt closure
+  outcome: supported
+  summary: All 34 adopted owner bytes, including the ten-owner portable dossier, match
+    the independently replayed preparation. Earlier fresh preparation replay covered
+    2,353 bodies/341,141,661 decoded bytes, with 5,260 explicitly excluded synthetic
+    fixtures inherited. Current reference hashes resolve and all actual receipt/stream
+    bodies are freshly checked. No primary-body or full SQL reread is claimed.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - fresh-target-qa
+  - fresh-tree-qa
+  - inherited-integration-preparation
+  - exact-bindings
+- assessment_id: gates-and-histories
+  area: consistency
+  topic: Actual root execution and chronological history
+  outcome: supported
+  summary: Both native histories precede SSSOM and first render. All nine required
+    gates passed using exact approved commands and pinned environment across four
+    chronological phases. Complete actual stdout/stderr receipts are retained.
+  target_ids:
+  - conf/identifier_sources.json
+  - data/identifier_authorities/ontology.json
+  - data/identifier_authorities/sources.json
+  - docs/IDENTIFIERS.md
+  - scripts/build_source_identifier_snapshot.py
+  - src/pathwaymech/biocyc_aceto.py
+  - src/pathwaymech/identifiers.py
+  - tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+  - tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+  - tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+  - tests/fixtures/aceto_authority/META-PROT-CYS.xml
+  - tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+  - tests/fixtures/aceto_authority/META-RXN-20154.xml
+  - tests/fixtures/aceto_authority/META-RXN-20155.xml
+  - tests/fixtures/aceto_authority/manifest.json
+  - tests/test_aceto_authority.py
+  - tests/test_aceto_legacy_cycles.py
+  evidence_ids:
+  - exact-bindings
+findings: []
+actions: []
+limitations:
+- Full scientific source interpretation is inherited from the accepted independent
+  review. This review freshly reads the entire current YAML and all 29 paragraph,
+  46 edge, 25 identity and 66 reference dispositions and compares exact current claims;
+  it does not reread primary papers.
+- Inherited source depth remains three complete main papers (1975 thiolases, 2007
+  AtoC, 2022 YdiF), ten indexed abstracts and five metadata-only papers. Not all supplements
+  or cited papers were read. No source-exhaustion or new whole-paper claim follows.
+- Distinct wild-type B, constitutive mutant, K-12/MG1655, BL21 recombinant and O157:H7
+  ortholog contexts remain scoped. Exact supplement-only YdiF cloning details and
+  unavailable historical assay contexts are not newly verified.
+- Actual maintained static light SVG was freshly rasterized and viewed. Dense shared-junction
+  labels overlap and the long construct node label truncates; the complete qualification
+  and evidence remain in the checked tables. No browser interaction/responsive/dark-theme
+  result is claimed.
+- Production implementation, whole-source authority semantics and the issue502 cycle
+  correction are inherited from accepted independent runtime/output reviews; current
+  gates and exact output identity verify integration. This is not another line-by-line
+  adapter review or full SQL rehash.
+- The reviewer authored earlier external canonical preparation, but did not author
+  this scientific record, production adapters, local-integration preparation or root
+  maintained execution. Current independence is scoped to the latter maintained integration
+  and inherited scientific adjudication; earlier self-authored planning is not independently
+  certified here.
+- No maintained record, native review, cache, Git state or GitHub object was changed
+  by this reviewer. Root owns exact evidence adoption, guarded final native inspection,
+  append-only save/check and any later local commit.
+notes:
+- The complete current YAML and all inherited paragraph/edge/identity/reference dispositions
+  were read. Scientific access tiers describe the earlier source reviewers, not fresh
+  primary-paper work here.
+- The captured interval starts with the first retained current-page raster execution;
+  earlier contextual helper/report reads precede it.
+- Root-prepared exact deterministic checkers were reused after complete inspection.
+  The independent reviewer separately inspected current scientific wording, inherited
+  dispositions, the actual raster and exact native command/input bindings.
+- External drafts are schema validation inputs only. No native structured predecessor
+  occurrence or issue closure is fabricated.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/502
+tags:
+- acetoacetate
+- local-integration
+- independent-maintained-qa
+```

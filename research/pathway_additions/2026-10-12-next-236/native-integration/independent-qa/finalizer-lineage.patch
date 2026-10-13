@@ -1,0 +1,115 @@
+--- /private/tmp/pathwaymech-next-235-maintained-independent-qa-20261012/finalize_native_inputs.py
++++ /private/tmp/pathwaymech-next-236-maintained-independent-qa-20261012/finalize_native_inputs.py
+@@ -1,47 +1,73 @@
+-"""After exact evidence adoption, extend native input attestations without altering judgments.
++"""After root adopts the exact copy plan, extend native inputs without changing judgments.
+ 
+-This helper does not save a maintained review. It verifies every originally inspected
+-input, hashes each newly adopted evidence file against the sealed copy plan, and uses
+-the native inspect and validate CLI. Finished times, identity, assessments, findings,
+-checks and all other review contents remain unchanged.
++Reuses the accepted 235 finalizer contract. No native review is saved here.
++Every adopted payload becomes an explicit native input; no external target paths.
+ """
+-import argparse,hashlib,json,os,subprocess,yaml
+-from pathlib import Path
++import argparse, datetime, hashlib, json, os, stat, subprocess
++from pathlib import Path, PurePosixPath
++import yaml
++
+ class NoAliasDumper(yaml.SafeDumper):
+- def ignore_aliases(self,data):return True
+-def dump_yaml(data,**kwargs):return yaml.dump(data,Dumper=NoAliasDumper,**kwargs)
++    def ignore_aliases(self, data): return True
+ 
+-p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--draft-directory',type=Path,required=True);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+-R=a.root;D=a.draft_directory;O=a.output
+-if O.exists():raise SystemExit('New output directory required')
+-plan=json.loads((D/'copy-plan.json').read_text());sha=lambda b:hashlib.sha256(b).hexdigest()
++def sha(b): return hashlib.sha256(b).hexdigest()
++def now(): return datetime.datetime.now(datetime.timezone.utc).isoformat()
++def write(p, value):
++    with p.open('x') as f: json.dump(value, f, indent=2); f.write('\n')
++
++p=argparse.ArgumentParser()
++p.add_argument('--root',type=Path,required=True)
++p.add_argument('--draft-directory',type=Path,required=True)
++p.add_argument('--output',type=Path,required=True)
++a=p.parse_args(); R=a.root; D=a.draft_directory; O=a.output
++if O.exists(): raise SystemExit('New output directory required')
++plan=json.loads((D/'copy-plan.json').read_bytes())
++extra=[]
+ for row in plan['files']:
+- path=R/row['repository_path'];b=path.read_bytes()
+- if (len(b),sha(b))!=(row['bytes'],row['sha256']):raise SystemExit('Adopted evidence mismatch: '+str(path))
+-core=['audit.json','evidence-bindings.json','portable.stdout','full-tree-check.json','static-visual.json','REPORT.md','package-index.json']
+-extra=[plan['durable_root']+'/'+x for x in core]
+-extra += [row['repository_path'] for row in plan['root_evidence']]
+-# Gate/visual bodies were reviewed before the packet seal; each is separately bound here.
+-for row in plan['root_evidence']:
+- b=(R/row['repository_path']).read_bytes()
+- if (len(b),sha(b))!=(row['bytes'],row['sha256']):raise SystemExit('Root evidence mismatch')
+-py='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python';env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(R/'src')+':'+str(R)}
++    rel=PurePosixPath(row['repository_path'])
++    assert not rel.is_absolute() and '..' not in rel.parts
++    assert str(rel).startswith(plan['durable_root']+'/')
++    path=R/str(rel)
++    for parent in [path,*path.parents]:
++        if parent==R: break
++        assert not parent.is_symlink(), parent
++    assert stat.S_ISREG(path.lstat().st_mode)
++    b=path.read_bytes()
++    assert (len(b),sha(b))==(row['bytes'],row['sha256']),path
++    extra.append(str(rel))
++py='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
++env={**os.environ,'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(R/'src')+':'+str(R)}
+ O.mkdir()
++def execute(name,argv):
++    start=now(); r=subprocess.run(argv,cwd=R,env=env,capture_output=True)
++    stdout=O/(name+'.stdout'); stderr=O/(name+'.stderr')
++    stdout.write_bytes(r.stdout); stderr.write_bytes(r.stderr)
++    write(O/(name+'.execution.json'),{'argv':argv,'cwd':str(R),'started_at':start,'finished_at':now(),'exit_code':r.returncode,'stdout_sha256':sha(r.stdout),'stderr_sha256':sha(r.stderr),'helper_sha256':sha(Path(__file__).read_bytes())})
++    if r.returncode: raise SystemExit(r.returncode)
++    return r
++
++results=[]
+ for kind in ('scientific','technical'):
+- doc=yaml.safe_load((D/(kind+'-review.yaml')).read_bytes());head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R).decode().strip()
+- if doc['source']['git_revision']!=head:raise SystemExit('Git base changed; independent reassessment needed')
+- for item in doc['source']['inputs']:
+-  if sha((R/item['path']).read_bytes())!=item['sha256']:raise SystemExit('Original reviewed input changed')
+- targetfile=O/(kind+'-targets.yaml');targetfile.write_text(dump_yaml({'targets':doc['targets']},sort_keys=False))
+- args=[py,'-B','scripts/record_review.py','inspect','--targets',str(targetfile)]
+- for name in sorted({x['path'] for x in doc['source']['inputs']}|set(extra)):args+=['--input',name]
+- r=subprocess.run(args,cwd=R,env=env,capture_output=True);(O/(kind+'-inspect.stdout')).write_bytes(r.stdout);(O/(kind+'-inspect.stderr')).write_bytes(r.stderr)
+- if r.returncode:raise SystemExit(r.returncode)
+- native=json.loads(r.stdout)
+- # Preserved existing input roles are supplied by the same native target specification.
+- old={x['path']:x for x in doc['source']['inputs']};new={x['path']:x for x in native['source']['inputs']};assert all(new[k]==v for k,v in old.items())
+- doc['source']=native['source'];output=O/(kind+'-review.yaml');output.write_text(dump_yaml(doc,sort_keys=False,allow_unicode=True,width=100))
+- r=subprocess.run([py,'-B','scripts/record_review.py','validate',str(output)],cwd=R,env=env,capture_output=True);(O/(kind+'-validate.stdout')).write_bytes(r.stdout);(O/(kind+'-validate.stderr')).write_bytes(r.stderr)
+- if r.returncode:raise SystemExit(r.returncode)
+- print(str(output))
++    original=yaml.safe_load((D/(kind+'-review.yaml')).read_bytes())
++    head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=R).decode().strip()
++    assert original['source']['git_revision']==head,'Git base changed; independent reassessment needed'
++    for item in original['source']['inputs']:
++        assert sha((R/item['path']).read_bytes())==item['sha256'],'Original reviewed input changed'
++    targetfile=O/(kind+'-targets.yaml')
++    targetfile.write_text(yaml.dump({'targets':original['targets']},Dumper=NoAliasDumper,sort_keys=False))
++    argv=[py,'-B','scripts/record_review.py','inspect','--targets',str(targetfile)]
++    for name in sorted({x['path'] for x in original['source']['inputs']}|set(extra)):
++        argv+=['--input',name]
++    native=json.loads(execute(kind+'-inspect',argv).stdout)
++    old={x['path']:x for x in original['source']['inputs']}
++    new={x['path']:x for x in native['source']['inputs']}
++    assert all(new[k]==v for k,v in old.items())
++    assert native['targets']==original['targets']
++    doc=dict(original); doc['source']=native['source']
++    assert {k:v for k,v in doc.items() if k!='source'}=={k:v for k,v in original.items() if k!='source'}
++    output=O/(kind+'-review.yaml')
++    output.write_text(yaml.dump(doc,Dumper=NoAliasDumper,sort_keys=False,allow_unicode=True,width=100))
++    execute(kind+'-validate',[py,'-B','scripts/record_review.py','validate',str(output)])
++    results.append({'kind':kind,'output':str(output),'sha256':sha(output.read_bytes()),'all_judgments_and_times_unchanged':True,'inputs':len(doc['source']['inputs'])})
++write(O/'completion.json',{'status':'fresh_native_inputs_extended_and_validated','results':results,'native_save_performed':False,'finished_at':now()})
+ print('Fresh native inspect/validation complete; saving remains a separate root action.')

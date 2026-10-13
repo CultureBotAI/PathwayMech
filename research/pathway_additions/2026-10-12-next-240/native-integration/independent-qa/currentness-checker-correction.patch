@@ -1,0 +1,13 @@
+--- initial prepare_science.py
++++ corrected prepare_science.py
+@@ -122,8 +122,8 @@
+ locators=load(S/'locator-checks.json');observed=[]
+ for edge in d['mechanistic_edges']:
+  for ev in edge.get('evidence',[]):observed.append({'edge':edge['id'],'scope':'edge',**{k:ev[k] for k in ['reference_id','source_locator','source_assertion']}})
+- for q in edge.get('endpoint_qualifiers',[]):
+-  for ev in q.get('evidence',[]):observed.append({'edge':edge['id'],'scope':'qualifier',**{k:ev[k] for k in ['reference_id','source_locator','source_assertion']}})
++ for qi,q in enumerate(edge.get('endpoint_qualifiers',[]),1):
++  for ev in q.get('evidence',[]):observed.append({'edge':edge['id'],'scope':'qualifier-'+str(qi),**{k:ev[k] for k in ['reference_id','source_locator','source_assertion']}})
+ assert len(observed)==len(locators)==100
+ for a,b in zip(observed,locators,strict=True):assert all(b[k]==v for k,v in a.items())
+ write('locator-currentness.json',{'count':100,'every_current_locator_assertion_scope_exact':True,'whole_originals_rebound':True,'earlier_full_resolutions':locators,'reading_limit':'Earlier exact matched-object replay is inherited; unchanged current descriptors and whole original bytes were freshly compared. This is not a new paper reading.'})

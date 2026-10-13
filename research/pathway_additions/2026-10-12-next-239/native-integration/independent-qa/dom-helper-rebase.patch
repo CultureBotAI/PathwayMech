@@ -1,0 +1,45 @@
+--- /private/tmp/pathwaymech-next-238-maintained-science-review-20261012/dom_audit_final.py
++++ review_dom.py
+@@ -5,23 +5,24 @@
+ from lxml import etree,html
+ import yaml
+ H=Path(__file__).resolve().parent
+-R=Path('/private/tmp/pathwaymech-next-238-local-20261012')
+-T=R/'data/pathways/5-prime-deoxyadenosine-degradation-i.yaml'
+-PAGE=R/'pages/records/MetaCyc_PWY-8130.html'
++R=Path('/private/tmp/pathwaymech-next-239-local-20261012')
++T=R/'data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml'
++PAGE=R/'pages/records/MetaCyc_PWY-8132.html'
+ def bind(p):
+  b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+ def norm(s):return ' '.join(s.split())
+ inputs=[T,PAGE,*[R/'pages/assets'/n for n in ('pathway-network.css','pathway-network.js')],R/'src/pathwaymech/graph_view.py',R/'src/pathwaymech/cli.py']
+ initial=[bind(p) for p in inputs]
+ d=yaml.safe_load(T.read_bytes());page=PAGE.read_text();dom=html.fromstring(page)
+-assert initial[0]['sha256']=='c8ae12061fd62a5ff8c6861b6665e3ac6938b0fe611b9e3d8d6a1e11f33199a5'
++assert initial[0]['sha256']=='60750cb046b847a5d52458cff6eab771be2a9200755c259cfe8d87c4808e95fa'
++assert (initial[1]['bytes'],initial[1]['sha256'])==(233253,'6d0a265d554401b25b7c9af11939a8c033a251a8347e3a0a99928bc518d2680c')
+ ids=dom.xpath('//*[@id]/@id');assert len(ids)==len(set(ids))
+ local=dom.xpath('//*[@href]/@href');local=[s[1:] for s in local if s.startswith('#')]
+ assert all(s in ids for s in local)
+ node=dom.xpath('//a[contains(concat(" ",@class," ")," graph-node ")]')
+ edge=dom.xpath('//a[contains(concat(" ",@class," ")," graph-edge ")]')
+-assert len(node)==23 and len(edge)==len(d['mechanistic_edges'])==21
+-assert len(dom.xpath('//*[@data-qualified="true"]'))==5
++assert len(node)==42 and len(edge)==len(d['mechanistic_edges'])==44
++assert len(dom.xpath('//*[@data-qualified="true"]'))==7
+ base={x.get('data-base-node-id',x.get('data-node-id')) for x in node}
+ assert base=={d['id'],*[n['id'] for n in d['participants']],*[n['id'] for n in d['reactions']]}
+ alltext=norm(dom.text_content());paragraphs=d['description'].split('\n\n')
+@@ -75,8 +76,8 @@
+ receipt={'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'argv':argv,'exit_code':proc.returncode,'renderer':bind(Path(argv[0])),'svg':bind(H/'maintained-graph-light.svg'),'stdout':bind(H/'raster.stdout'),'stderr':bind(H/'raster.stderr')}
+ (H/'raster-execution.json').write_text(json.dumps(receipt,indent=2)+'\n');assert proc.returncode==0
+ assert initial==[bind(p) for p in inputs]
+-old=Path('/private/tmp/pathwaymech-next-238-graph-preview-20261012/records/MetaCyc_PWY-8130.html')
++old=Path('/private/tmp/pathwaymech-next-239-graph-preview-20261012/records/MetaCyc_PWY-8132.html')
+ oldsvg=re.search(r'<svg\b[^>]*class="pathway-network-svg"[^>]*>.*?</svg>',old.read_text(),re.S).group()
+ assert svg==oldsvg
+-result={'status':'pass','inputs_before_and_after':initial,'helper':bind(Path(__file__)),'paragraphs':len(paragraphs),'named_ids':20,'component_rows':19,'visual_nodes':len(node),'edges':rows,'qualified_instances':5,'references':42,'all_local_anchor_targets_resolve':len(local),'whole_qualifier_and_evidence_payloads_present':True,'old_static_preview_svg_byte_exact':bind(old),'raster_receipt':bind(H/'raster-execution.json'),'raster':bind(H/'maintained-graph-light.png'),'limits':['Static light SVG raster only; media queries excluded. No interactive browser, responsive or dark-mode claim.','No full site build or maintained input mutation.']}
+-(H/'dom-audit.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS: 10 paragraphs, 20 identities, 23 visual nodes, 21 complete edges, 5 qualifiers, 42 references; static raster produced')
++result={'status':'pass','inputs_before_and_after':initial,'helper':bind(Path(__file__)),'paragraphs':len(paragraphs),'named_ids':38,'component_rows':37,'visual_nodes':len(node),'edges':rows,'qualified_instances':7,'references':93,'all_local_anchor_targets_resolve':len(local),'whole_qualifier_and_evidence_payloads_present':True,'old_static_preview_svg_byte_exact':bind(old),'raster_receipt':bind(H/'raster-execution.json'),'raster':bind(H/'maintained-graph-light.png'),'limits':['Static light SVG raster only; media queries excluded. No interactive browser, responsive or dark-mode claim.','No full site build or maintained input mutation.']}
++(H/'dom-audit.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS: 21 paragraphs, 38 identities, 42 visual nodes, 44 complete edges, 7 qualifiers, 93 references; static raster produced')

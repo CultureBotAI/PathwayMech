@@ -1,0 +1,11 @@
+# Actual local 5-prime-deoxyadenosine degradation II integration evidence
+
+The exact accepted PWY-8131 provider-successor record and complete native authority outputs are integrated on local baseline 290bd9781e43e473d88b9fd7c17f6f61da45092e. Two native histories preceded SSSOM/render. All nine gates passed, including 4,273 tests with three skips and three dependency warnings. Four phases retain twelve successful commands and all actual streams; no native DNS failure or retry occurred.
+
+Root and independent maintained QA passed. The actual graph has 46 nodes and 38 arrows, preserving all 12 paragraphs, 15 qualifiers, 35 named identities and 31 references. All source/ontology and KGX bodies match accepted outputs. Whole old objects/order/contexts remain intact; only the CHEBI:57642 aggregate label gains a Unicode minus. SSSOM retains its exact 7,574 bytes and 32 rows. The unchanged 270-file runtime consumes the effective 869-row manifest.
+
+The hidden/ignored physical census preserves 237 old record/page bodies, 118 old review pairs, 402 histories and all 800 cache identities. Current corpus 238 records; actual integration census 12,132 files/1,963 directories. Current whole-source science is inherited explicitly; unavailable SI/figures, unrendered EMF, construct/strain/metal limits persist. Static dense labels, truncation and blank space remain; no browser/mobile/dark/print interaction claim.
+
+The root-storage-map and independent copy plan preserve whole original bodies through identity or lossless gzip. The two peer draft metadata failures and corrected evidence-linked historical provider assessment remain intact; no native predecessor or GitHub closure is invented. Root's 080d22 helper KeyError is retained as an explicitly reconstructed verbatim tool transcript plus both exact helper bodies; it was a reader assumption about the derived index, not a packet defect.
+
+Native input extension, two saves and append-only checking follow under finalization; they are not claimed complete by this earlier evidence adoption. The root acceptance and exact binding receipt authorize only local finalization. No push, PR, merge, branch deletion, issue closure or licensing clearance is asserted.

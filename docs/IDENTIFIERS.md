@@ -111,8 +111,8 @@ contextual slot. It cannot satisfy canonical-label verification even if the
 strings happen to match. This records the evidence boundary for native IDs
 whose independently available source supplies membership but no canonical name.
 
-The `metacyc-reaction-xml` source kind supports the bounded case of a genuinely
-unnamed native small-molecule reaction. It accepts only an exact HTTPS request
+The `metacyc-reaction-xml` source kind supports bounded unnamed native
+small-molecule and whole-carrier protein-modification reactions. It accepts only an exact HTTPS request
 `https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:<frame>` and one original
 full META `Reaction` with matching metadata query, PGDB version, species
 `MetaCyc`, and identity attributes. The root software-version field must also
@@ -122,13 +122,19 @@ HTTP-with-port-443 base/service are supported. Alternate requests, ports,
 duplicate metadata/entities, top-level reaction class instances, HTML, DTDs and entities fail.
 Original declared XML encoding and bytes are retained unchanged.
 
-This adapter requires both native `Chemical-Reactions` and
-`Small-Molecule-Reactions` parents, a native reaction direction, and nonempty
-left/right sides containing exact empty META Compound references. Explicit
-coefficient/compartment slots and participant objects other than exact Compound
-references remain unsupported. The optional literal Compound `class="true"`
-marker is retained; other class values or placements fail rather than being
-silently normalized. A direct `common-name` slot of any shape also fails: named
+The original small-molecule mode requires exactly both native
+`Chemical-Reactions` and `Small-Molecule-Reactions` parents and exact empty META
+Compound side references. A separate mode requires exactly one
+`Protein-Modification-Reactions` parent, with at least one direct whole
+`Protein class="true"` on each side; its other direct sides may be Compound
+references. Neither unions of the parent modes nor arbitrary Protein instances
+are supported. Both modes retain native direction and nonempty left/right
+sides. Explicit coefficients/compartments remain unsupported; omitted native
+coefficients remain omitted in the source assertion. The optional literal
+Compound `class="true"` marker is retained. Other markers, unresolved/cross-PGDB
+references, duplicate frames per side, or malformed wrappers fail. New-mode
+conflict signatures retain XML participant type as well as frame/class marker;
+old-mode signatures are unchanged. A direct `common-name` slot of any shape also fails: named
 reaction support is not an implicit fallback. Nested evidence/curator names,
 equations and curated labels never supply a canonical reaction name.
 
@@ -525,3 +531,218 @@ attributes, class markers on side wrappers and duplicate side frames fail.
 The class marker is retained in same-frame conflict comparisons, so a class
 reference cannot silently overwrite an unmarked assertion. This does not alter
 the unnamed frame-token authority label or establish chemical/anomer identity.
+
+
+## Native carrier classes and protein state instances
+
+`metacyc-carrier-class-xml` owns explicitly typed, directly named META classes.
+It accepts a whole Protein class with direct `Thioredoxin` parent, optionally
+also `Modified-Proteins`, and the corresponding single native modified/unmodified
+state link. It separately accepts a Compound class with the exact direct parent
+`Hydride-Acceptors`. Both cases require literal top-level `class="true"`, one full
+native object, exact HTTPS issuing request/query/PGDB/release identity and safe
+direct common-name/synonym slots. There is no nested-name or xref fallback.
+
+The source contains closed `native_carrier_class` metadata with native type,
+class marker, parents, names and the explicit Protein state link. Terms have
+`entity_type: protein_class` or `chemical_class` and source-native names.
+The loader permits only `participants/category: protein` or
+`participants/category: chemical_entity`, respectively, and checks canonical or
+authorized synonym names before any contextual-label exemption. Generic electron
+carrier classes do not establish exact homogeneous client chemicals, formulas,
+charges, sequence identities or reactive-part/whole-protein equivalences.
+
+`ecocyc-protein-state-xml` is separate from the named-protein and complex adapters.
+It supports exact ECOLI thioredoxin state **instances**, with the native
+`Red-Thioredoxin` parent or `Modified-Proteins` plus `Ox-Thioredoxin` parents.
+It retains direct source names, a single state link and a direct gene reference.
+The source entry requires `counterpart_source`, a separate whole original with
+closed `path`, `url`, `version`, `sha256` and `license` provenance. Both objects
+must carry the exact ECOLI species/strain/taxon and same release, reciprocal state
+links, opposite states and matching native gene identities. Each original is
+hashed independently; counterpart assertions participate in conflict checks
+even if only the other member is selected by the corpus.
+
+The state source includes closed `native_protein_state` and `counterpart`
+metadata. Its term has `entity_type: protein_state`, restricted to
+`participants/category: protein` with source-native canonical/synonym names.
+A reduced state whose direct common-name is `thioredoxin 1` keeps that name;
+state assertions do not authorize rewriting it or identifying an engineered
+mutant/construct. All selected state counterparts must remain explicit originals
+in source inventories, copy plans and archives; a top-level-path-only collector
+is insufficient. This is independent of the accepted complex adapter's separate
+`class_source` requirement, which remains unchanged.
+
+Class/state conflicts, issuing identity mismatches and malformed originals fail
+before corpus filtering. Typed identities cannot be overwritten by legacy
+untyped sources or used as pathways, reactions, small molecules or complexes to
+bypass placement checks. Whole Rhea components 10698/10700 remain whole generic
+protein redox states; ChEBI reactive parts do not replace those proteins. Native
+Protein and Compound class references preserve both events of a carrier cycle,
+including the generic-client reaction when it lacks an exact Rhea mapping.
+
+## Native electron transfer, named complexes and chemical classes
+
+Four explicit source kinds support complete electron-transfer route identities.
+Their manifest entries have closed `key`, `kind`, `path`, `url`, `version`,
+`license` and `sha256` fields. Original paths must resolve to regular files;
+whole original bytes, issuing request identity and native release are checked
+before corpus filtering. Existing source precedence remains unchanged.
+
+`metacyc-electron-transfer-reaction-xml` accepts an unnamed full META Reaction
+instance with exactly `Electron-Transfer-Reactions` and
+`Small-Molecule-Reactions` parents. It retains direction, every ordered Compound
+side, explicit coefficient versus implicit one, and exact optional native
+CCO-IN/CCO-OUT compartment references. Composite reaction lists and their
+ordering must be complete, member-consistent and acyclic. The term keeps the
+frame token, `entity_type: reaction` and `label_kind: source_context`. Only
+`reactions/category: molecular_activity` can use the existing contextual-label
+rule. Opposite-side hydrons remain separate entries; native compartments do not
+automatically assert a taxon's anatomy. Constituent half-event originals are
+scientific evidence, including literal electrons, rather than invented CURIEs.
+The existing `metacyc-reaction-xml` reader retains its own contract.
+
+`ecocyc-named-protein-complex-xml` requires one directly named ECOLI Protein
+instance with the sole `Protein-Complexes` parent and complete explicit Protein
+components and positive integer coefficients. A one-component complex requires
+at least two copies. Its canonical name and direct synonyms are retained in
+`native_named_complex`; the term is `protein_complex`, with a canonical label.
+Only `participants/category: complex` is allowed. The namespace's normal label
+policy governs real synonyms; contextual labels cannot bypass placement or name
+checks. This mode shares whole ECOLI conflict and release guards with proteins,
+states and unnamed complexes without changing their accepted parsers. Native
+reference composition does not identify a purified or engineered construct.
+
+`metacyc-chemical-class-xml` requires a whole directly named META Compound with
+explicit `class="true"`. Exact structural parent sets determine the profile:
+`ETR-Quinones`; `ETR-Quinols` plus `Methoxybenzenes`; `Cofactors`, `Hemes` and
+`Organometallics`; `Organometallics`; or `Glycerolipids`. These profiles allow
+`chemical_entity`, with `cofactor` additionally allowed for the two cofactor
+profiles and `lipid` for glycerolipids. Cofactor profiles require complete native
+activity annotations. Direct parent, subclass and instance lists remain ordered,
+distinct and class/instance-consistent. `native_chemical_class` metadata derives
+the new `native_chemical_class` term type and allowed participant categories.
+This does not broaden the existing carrier-class mode or equate a class drawing,
+xref, heme stereoisomer or mixed lipid preparation with an exact chemical species.
+
+All three XML modes preserve complete ordered source slots, native attributes and
+ancillary context. The closed slot grammar checks direct structures and xrefs;
+scientific comments and embedded activity context remain source assertions rather
+than aliases or independently verified biological claims. Consumer validation
+reconstructs the typed projection from the retained safe XML subtrees and checks
+all projected fields. Incompatible native facts or cross-kind assertions fail
+in either manifest order, including when the identifier is not selected.
+
+## Whole Rhea Polymer components
+
+`rhea-polymer-rdf` reads the whole pinned gzip at the issuing Rhea RDF URL. It
+uses `RHEA-COMP` for complete Polymer objects while retaining their native
+`POLYMER` accessions; it introduces no new prefix or exact-chain-length claim.
+The existing `rhea-components-rdf-gz` GenericPolypeptide reader remains separate.
+Whole subjects aggregate all original RDF fragments before selection. Conflicting
+ID, accession, type, name, index or underlying-ChEBI assertions fail. Compatible
+split descriptions and exact repeated triples retain every original fragment.
+
+Closed `native_polymers` metadata retains plain and HTML names, formula, charge,
+variable index, underlying ChEBI resource and complete original fragments for
+emitted terms. The required index grammar is `n` or `n` plus/minus a positive
+integer. The exact native plain name is canonical, with no manufactured aliases.
+Terms have `entity_type: rhea_polymer` and are restricted to
+`participants/category: polymer` under the existing canonical label policy.
+
+HTML/plain comparison validates balanced lowercase `i`, `small`, `sub` and `sup`
+without attributes. Only alpha, beta, gamma, omega, right/bidirectional arrows and
+Unicode minus receive explicit comparison-only typography substitutions. Subscript
+text is preserved; positive integer or minus superscripts become parenthesized
+text. Numeric references must decode to permitted safe characters. Case, spacing,
+stereochemical letters, punctuation, indices and arrow direction are otherwise
+exact. Formula and charge remain validated source strings rather than evaluated
+expressions. Comparison projections are never emitted aliases. Unsupported
+upstream shapes require a separately reviewed adapter change.
+
+
+## Typed native pathway and nitrate source contexts
+
+`metacyc-pathway-xml` requires one whole META Pathway instance and matching
+request, PGDB, release, direct identity, source hash and envelope. Compound-page
+HTML with the same title cannot establish typed Pathway identity or share its
+selected identity with this mode. Existing legacy HTML records retain their
+existing authority contract. The direct common name and synonyms, parent
+classes, complete reaction list, acyclic ordering, exact layout membership and
+class-marked organism annotations are retained in `native_pathway`. Layout
+primaries are source layout context, not complete biochemical equations.
+Complete source slots preserve comments, credits, species and taxonomic scope.
+The `native_pathway` term is accepted only as the canonical record node; a
+contextual label policy cannot make it a participant, reaction or taxon.
+
+The native electron-transfer annotation reader also retains a three-level
+numeric EC context such as `EC-7.1.1` verbatim. This does not create a selected
+EC identifier, infer a fourth level or extend the existing four-level EC grammar
+to new partial forms with unassigned markers.
+
+Named complexes retain typed GO class references and evidence codes,
+instance publications, optional evidence `with` text, reverse `component-of`
+references, native location references, and the experimentally reported mass
+with its citation. The consumer compares each named complex's complete reconstructed native
+assertion, source kind and release across every owner before term selection.
+Identical duplicates are allowed; differences in coefficients, retained
+annotations or release fail even when an owner has no selected term.
+Forward component cycles among supplied whole assemblies
+fail; reverse context does not create an assembly cycle. Native nested
+composition and coefficients are not flattened or normalized to match a
+protein count, construct, or a different source's oligomerization claim.
+
+Chemical-class profiles additionally recognize these exact parent sets:
+`CPD-11501` plus `ETR-Quinones` (chemical entity); `ETR-Quinols` (chemical entity);
+`FeS-Centers` and `Metal-sulfur-Clusters` (each chemical entity or cofactor).
+Cofactor authorization continues to require whole native activity context.
+The literal charged Compound-class subclass references `4Fe-4S+1`, `4Fe-4S+2`
+and `4Fe-4S+3`, and the cofactor-activity Reaction reference
+`PYRUVATE-DEHYDROGENASE-NADP+-RXN`, use an exact, closed context-only identity
+check. Literal plus signs and resource bytes remain unchanged. Encoded, doubly
+encoded, space-decoded, wrong-type, wrong-class, truncated or extra-query
+variants fail. This does not change carrier, state, selected-ID or request
+syntax. Consumer validation reconstructs all these typed metadata projections
+from complete retained native source slots.
+
+The aceto authority profiles retain complete native envelopes and direct source
+slots under `native_aceto`; their consumer reconstructs and validates those
+objects before checking selected terms. The producer hashes complete original
+responses. Offline reconstruction verifies internal coherence, not upstream
+reacquisition or cryptographic authentication of XML through its serialization.
+
+- `metacyc-sgd-pathway-xml` admits the exact SGD HTTPS META request and observed
+  22.5 envelope. It retains whole experimental evidence and pathway interfaces,
+  including native reverse layouts, without treating layout primaries as full
+  equations or linked pathways as selected nodes.
+- `ecocyc-nested-complex-xml` admits an unnamed two-child assembly with explicit
+  coefficient-one children. Its ordered `component_sources` descriptors bind
+  complete, named, same-release homomers with distinct leaves and reciprocal
+  parent references. Native experimental mass and activity context remain
+  attached to the original assembly; the display is the derived unnamed label.
+- `metacyc-acyl-transfer-composite-xml` admits the reversible two-constituent
+  composite profile without inventing reaction ordering. Ordered
+  `constituent_sources` preserve the whole constituent equations and Reaction
+  backlinks. Signed identity/type/class/coefficient cancellation must reproduce
+  the native composite. Source direction remains separate from pathway traversal.
+- `metacyc-protein-residue-class-xml` admits the two explicit protein-bound
+  residue profiles with a whole reciprocal `parent_source`. Mixed Compound and
+  Protein class context remains typed. Complete CML is checked as serialization,
+  with generic protein/R endpoints and unspecified formulas retained, not as a
+  newly reconciled exact molecule. Selected placement is `chemical_entity` only.
+
+Each companion descriptor has exactly `path`, `url`, `version`, `license`, and
+`sha256`. Original paths are relative to the supplied cache, without traversal;
+explicitly staged links retain the established regular-file/hash contract.
+Companion fields are rejected on unrelated kinds. Complete companion assertions
+and matching URL/version/digest are compared with separate source owners before
+corpus selection, including unselected owners and both source orders. Forward
+assembly cycles are checked separately from reciprocal parent context. Existing
+ordinary-reaction owners supply typed identity plus matching original provenance;
+they cannot replace the composite's complete constituent proof.
+
+The four profiles preserve earlier modes, source owners, and selection rules.
+Rhea labels remain selected from the pinned production SQL release; newer RDF
+reaction evidence is separate. A valid PubChem property original supplies its
+label, and existing first UniProt owners remain authoritative. Native source
+licensing remains attached; no public-release clearance follows from parsing.

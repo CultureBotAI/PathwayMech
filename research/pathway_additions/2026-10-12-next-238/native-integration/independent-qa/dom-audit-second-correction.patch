@@ -1,0 +1,12 @@
+--- dom_audit_corrected.py
++++ dom_audit_final.py
+@@ -58,7 +58,8 @@
+ for i,ref in enumerate(d['references'],1):
+  s=norm(dom.get_element_by_id(f'reference-{i}').text_content())
+  assert ref['id'] in s
+- for k in ['title','citation','source_version','source_sha256']:
++ if ref.get('url'):assert ref['url'] in dom.get_element_by_id(f'reference-{i}').xpath('.//a/@href')
++ for k in ['title','citation','source_version']:
+   if ref.get(k):assert norm(str(ref[k])) in s
+ assert len(dom.xpath('//blockquote'))==sum('quote' in e for edge in d['mechanistic_edges'] for e in edge['evidence'])+sum('quote' in ev for edge in d['mechanistic_edges'] for q in edge.get('endpoint_qualifiers',[]) for ev in q['evidence'])
+ svg=re.search(r'<svg\b[^>]*class="pathway-network-svg"[^>]*>.*?</svg>',page,re.S).group()
