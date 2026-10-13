@@ -54,6 +54,12 @@ from pathwaymech.ecocyc_named_complex import (
     validate_named_complex_metadata,
 )
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_term, validate_state_metadata
+from pathwaymech.pathbank_context import (
+    PATHBANK_CONTEXT_KIND,
+    context_term,
+    validate_context_assertions,
+    validate_context_metadata,
+)
 from pathwaymech.pathbank_provenance import PATHBANK_ARCHIVE_KIND, validate_pathbank_archive
 from pathwaymech.rhea_polymer import RHEA_POLYMER_KIND, polymer_term, validate_polymer_metadata
 from pathwaymech.schema import ALLOWED_CURIE_PREFIXES
@@ -143,6 +149,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_named_complex",
                 "native_aceto",
                 "native_pathway",
+                "native_pathbank_context",
                 "native_polymers",
                 "native_carrier_class",
                 "native_protein_state",
@@ -164,6 +171,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_named_complex",
                 "native_aceto",
                 "native_pathway",
+                "native_pathbank_context",
                 "native_polymers",
                 "native_carrier_class",
                 "native_protein_state",
@@ -179,6 +187,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if "kind" in metadata and metadata["kind"] not in ACETO_KINDS | {
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
+            PATHBANK_CONTEXT_KIND,
             ECOCYC_COMPLEX_KIND,
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
@@ -190,6 +199,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
             RHEA_POLYMER_KIND,
         }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
+        if metadata.get("kind") == PATHBANK_CONTEXT_KIND:
+            validate_context_metadata(metadata)
+        elif "native_pathbank_context" in metadata:
+            raise ValueError("PathBank context metadata requires its typed source kind")
         if metadata.get("kind") == PATHBANK_ARCHIVE_KIND:
             if set(metadata) != {
                 "url",
@@ -269,6 +282,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
     validate_aceto_assertions(data["sources"], [])
     carrier_reaction_ids = validate_carrier_reaction_assertions(data["sources"])
+    context_projections = validate_context_assertions(data["sources"])
+    context_ids = {ident for projection in context_projections.values() for ident in projection}
     # Every source above has already reconstructed its complete native object.
     # Check all owners before reading terms: an unselected owner can still
     # contradict coefficients, retained evidence, or release identity.
@@ -334,6 +349,12 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
+        if identifier in context_ids and source_kind != PATHBANK_CONTEXT_KIND:
+            raise ValueError("PathBank context requires its complete typed owner")
+        if source_kind == PATHBANK_CONTEXT_KIND:
+            expected = context_term(identifier, context_projections[term["source"]], term["source"])
+            if term != expected:
+                raise ValueError("PathBank context term differs from its complete native owner")
         if identifier in carrier_reaction_ids and source_kind != PROTEIN_CARRIER_REACTION_KIND:
             raise ValueError(f"{identifier}: protein-carrier reaction requires whole typed scope")
         if identifier in pathway_assertions and source_kind not in {PATHWAY_KIND, SGD_KIND}:

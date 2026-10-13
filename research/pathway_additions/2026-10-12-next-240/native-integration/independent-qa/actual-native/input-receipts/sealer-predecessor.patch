@@ -1,0 +1,160 @@
+--- /private/tmp/pathwaymech-next-239-seal-native-execution-20261012.py
++++ /private/tmp/pathwaymech-next-240-seal-native-execution-20261012.py
+@@ -6,13 +6,12 @@
+ import re
+ from pathlib import Path
+ 
+-OUT = Path('/private/tmp/pathwaymech-next-239-local-native-execution-20261012')
+-ROOT = Path('/private/tmp/pathwaymech-next-239-local-20261012')
+-PREP = Path('/private/tmp/pathwaymech-next-239-local-integration-preparation-20261012')
+-RUNNER = Path('/private/tmp/pathwaymech-next-239-root-run-native-20261012.py')
+-PHASES = ('history-and-generation', 'remaining-offline-gates', 'network-resumption-successor')
+-RETRY = Path('/private/tmp/pathwaymech-next-239-resume-gates-successor-20261012.py')
+-FIRST_RETRY = Path('/private/tmp/pathwaymech-next-239-resume-gates-20261012.py')
++OUT = Path('/private/tmp/pathwaymech-next-240-local-native-execution-20261012')
++ROOT = Path('/private/tmp/pathwaymech-next-240-local-20261012')
++PREP = Path('/private/tmp/pathwaymech-next-240-local-integration-preparation-20261012')
++RUNNER = Path('/private/tmp/pathwaymech-next-240-root-run-native-20261012.py')
++PHASES = ('history-and-generation', 'remaining-offline-gates', 'vendored-gate', 'final-gates')
++OUTER_NAMES = dict(zip(PHASES, ('generation', 'offline', 'vendored', 'final'), strict=True))
+ 
+ def pin(p):
+     assert p.is_file() and not p.is_symlink(), p
+@@ -25,15 +24,14 @@
+         s.write('\n')
+ 
+ def main():
+-    assert pin(RUNNER)['sha256'] == '4062c883278e7c2e525c6aedf374ec6e0e289ad7db3ded6a405697fa5466516a'
+-    assert pin(RETRY)['sha256'] == '929ce00e2145f3a767b7c8b8767a4f7a30315e085ecded06286c2c2bd7b7f214'
+-    assert pin(FIRST_RETRY)['sha256'] == '86dfb406af8b18a2e55c90da2293676e87addf2ad095e5e2ad98e923dfe72d29'
++    assert pin(RUNNER)['sha256'] == '26ab44c6f3b7f94e89a8678676ea734a9af77272b0f784d3ea46828e62a777d7'
++    assert not any(p.name == 'failure.json' for p in OUT.rglob('*')), 'Unexpected failure requires retained successor handling before sealing'
+     summary = []
+     all_receipts = []
+     completion_pins = []
+     for phase in PHASES:
+         folder = OUT / phase
+-        phase_runner = RETRY if phase == 'network-resumption-successor' else RUNNER
++        phase_runner = RUNNER
+         completion = json.loads((folder / 'completion.json').read_bytes())
+         assert completion['status'] == 'phase_passed' and completion['phase'] == phase
+         assert completion['runner'] == pin(phase_runner)
+@@ -61,50 +59,26 @@
+     sssom = json.loads((OUT / 'history-and-generation/sssom-preservation.json').read_bytes())
+     assert sssom['old_row_relative_order_exact'] is True
+     assert sssom['actual'] == pin(ROOT / 'output/sssom/source_mappings.sssom.tsv')
+-    assert (sssom['old_rows'], sssom['added_rows'], sssom['total_rows']) == (42, 20, 62)
++    assert (sssom['old_rows'], sssom['added_rows'], sssom['total_rows']) == (62, 4, 66)
+     tests_body = (OUT / 'remaining-offline-gates/tests.stdout').read_text()
+     test_summaries = [line for line in tests_body.splitlines() if re.search(r'\d+ passed', line)]
+     assert len(test_summaries) == 1 and 'failed' not in test_summaries[0]
+     histories_receipt = json.loads((OUT / 'history-and-generation/histories-before-generation.json').read_bytes())
+-    assert histories_receipt['old_histories'] == 406 and histories_receipt['total_histories'] == 408
++    assert histories_receipt['old_histories'] == 408 and histories_receipt['total_histories'] == 410
+     assert histories_receipt['old_whole_history_bytes_exact'] is True
+     assert sorted(histories_receipt['new_histories'], key=lambda r:r['path']) == sorted(histories,key=lambda r:r['path'])
+-    failed_folder = OUT / 'vendored-gate'
+-    failure = json.loads((failed_folder / 'failure.json').read_bytes())
+-    assert [(r['name'], r['exit_code']) for r in failure['receipts']] == [('vendored', 1)]
+-    assert 'nodename nor servname provided' in (failed_folder / 'vendored.stderr').read_text()
+-    for receipt in failure['receipts']:
+-        assert receipt['runner_at_start'] == pin(RUNNER)
+-        assert json.loads((failed_folder / (receipt['name'] + '.execution.json')).read_bytes()) == receipt
+-        assert pin(Path(receipt['phase_start']['path'])) == receipt['phase_start']
+-        for stream in ('stdout', 'stderr'):
+-            assert pin(Path(receipt[stream]['path'])) == receipt[stream]
+-    resumed = json.loads((OUT / 'network-resumption-successor/completion.json').read_bytes())
+-    assert resumed['prior_failure'] == pin(failed_folder / 'failure.json')
+-    second_failed = OUT / 'network-resumption'
+-    second_failure = json.loads((second_failed / 'failure.json').read_bytes())
+-    assert [(r['name'], r['exit_code']) for r in second_failure['receipts']] == [('vendored', 1)]
+-    assert 'Broken pipe' in (second_failed / 'vendored.stderr').read_text()
+-    assert resumed['prior_network_failure'] == pin(second_failed / 'failure.json')
+-    for receipt in second_failure['receipts']:
+-        assert receipt['runner_at_start'] == pin(FIRST_RETRY)
+-        assert json.loads((second_failed / (receipt['name'] + '.execution.json')).read_bytes()) == receipt
+-        assert pin(Path(receipt['phase_start']['path'])) == receipt['phase_start']
+-        for stream in ('stdout', 'stderr'):
+-            assert pin(Path(receipt[stream]['path'])) == receipt[stream]
+-    for origin in resumed['retained_prior_origins']:
+-        assert pin(Path(origin['path'])) == origin
+     wrappers = OUT / 'outer-tool-streams'
+     wrappers.mkdir()
+     wrapper_bindings = []
+-    for phase in (*PHASES[:2], 'vendored-gate', 'network-resumption', 'network-resumption-successor'):
+-        phase_runner = RETRY if phase == 'network-resumption-successor' else RUNNER
+-        if phase == 'network-resumption': phase_runner = FIRST_RETRY
+-        source_root = Path('/private/tmp/pathwaymech-next-239-native-phase-execution-20261012') / phase
++    for phase in (*PHASES, 'adoption'):
++        phase_runner = PREP / 'adopt.py' if phase == 'adoption' else RUNNER
++        source_root = (Path('/private/tmp/pathwaymech-next-240-local-adoption-execution-20261012') if phase == 'adoption' else Path('/private/tmp/pathwaymech-next-240-native-' + OUTER_NAMES[phase] + '-execution-20261012'))
+         invocation = json.loads((source_root / 'execution.json').read_bytes())
+-        assert invocation['exit_code'] == (1 if phase in ('vendored-gate', 'network-resumption') else 0)
++        assert invocation['exit_code'] == 0
+         assert invocation['helper_at_start'] == pin(phase_runner)
+-        assert invocation['argv'] == ['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', '-B', str(phase_runner), phase]
++        expected_argv = ['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', '-B', str(phase_runner)]
++        expected_argv += ['--execute', '--root-acceptance', '/private/tmp/pathwaymech-next-240-root-integration-acceptance-20261012.json', '--output', '/private/tmp/pathwaymech-next-240-local-adoption-20261012'] if phase == 'adoption' else [phase]
++        assert invocation['argv'] == expected_argv
+         assert (source_root / 'helper-at-start.py').read_bytes() == phase_runner.read_bytes()
+         assert pin(Path(invocation['runner']['path'])) == invocation['runner']
+         for stream in ['stdout','stderr']:
+@@ -116,45 +90,43 @@
+             destination = destination_root / name
+             destination.write_bytes(source.read_bytes())
+             wrapper_bindings.append({'source':pin(source),'retained':pin(destination)})
+-    wrapper = Path('/private/tmp/pathwaymech-next-239-run-local-step-20261012.py')
++    wrapper = PREP / 'native-capture-wrapper.py'
+     (wrappers / 'capture-wrapper.py').write_bytes(wrapper.read_bytes())
+-    provenance_source = Path('/private/tmp/pathwaymech-next-239-native-tool-provenance-20261012.json')
++    provenance_source = Path('/private/tmp/pathwaymech-next-240-native-tool-provenance-20261012.json')
+     provenance = json.loads(provenance_source.read_bytes())
+-    assert len(provenance['phase_invocations']) == 5
+-    assert [x['exit_code'] for x in provenance['phase_invocations']] == [0, 0, 1, 1, 0]
++    assert len(provenance['phase_invocations']) == 4
++    assert [x['exit_code'] for x in provenance['phase_invocations']] == [0, 0, 0, 0]
+     (OUT / 'actual-tool-provenance.json').write_bytes(provenance_source.read_bytes())
+     (OUT / 'sealing-helper.py').write_bytes(Path(__file__).read_bytes())
+     copied = OUT / 'input-receipts'
+     copied.mkdir()
+     bindings = []
+     for name, source in [
+-        ('runner-lineage.json', Path('/private/tmp/pathwaymech-next-239-native-runner-preparation-20261012/lineage.json')),
+-        ('root-acceptance.json', Path('/private/tmp/pathwaymech-next-239-root-integration-acceptance-20261012.json')),
+-        ('adoption.json', Path('/private/tmp/pathwaymech-next-239-local-adoption-20261012/receipt.json')),
++        ('runner-binding.json', Path('/private/tmp/pathwaymech-next-240-root-native-runner-binding-20261012.json')),
++        ('root-acceptance.json', Path('/private/tmp/pathwaymech-next-240-root-integration-acceptance-20261012.json')),
++        ('adoption.json', Path('/private/tmp/pathwaymech-next-240-local-adoption-20261012/receipt.json')),
+         ('stages.json', PREP / 'stages.json'),
+-        ('network-resumption-successor.py', RETRY),
+-        ('network-resumption.py', FIRST_RETRY),
+-        ('network-retry-successor.patch', Path('/private/tmp/pathwaymech-next-239-native-runner-preparation-20261012/network-retry-successor.patch')),
+-        ('network-resumption.patch', Path('/private/tmp/pathwaymech-next-239-native-runner-preparation-20261012/network-resumption.patch')),
++        ('sealer-lineage.json', Path('/private/tmp/pathwaymech-next-240-native-sealer-lineage-20261012.json')),
++        ('sealer-predecessor.patch', Path('/private/tmp/pathwaymech-next-240-native-sealer-predecessor-20261012.patch')),
+     ]:
+         destination = copied / name
+         destination.write_bytes(source.read_bytes())
+         bindings.append({'source': pin(source), 'retained': pin(destination)})
+     result = {
+-        'status': 'all_nine_native_gates_passed_after_recorded_fetch_retries',
++        'status': 'all_nine_native_gates_passed_without_failed_attempts',
+         'sealed_at': datetime.datetime.now(datetime.UTC).isoformat(),
+-        'runner': pin(RUNNER), 'resumption_runner': pin(RETRY), 'retained_DNS_failure': pin(failed_folder / 'failure.json'), 'retained_network_failure': pin(second_failed / 'failure.json'), 'completions': completion_pins, 'commands': summary,
++        'runner': pin(RUNNER), 'failed_attempts': [], 'completions': completion_pins, 'commands': summary,
+         'tests_summary': test_summaries[0], 'histories': histories, 'SSSOM': sssom,
+         'input_bindings': bindings, 'outer_wrapper_bindings': wrapper_bindings,
+         'histories_before_generation': histories_receipt,
+-        'outputs': [pin(ROOT / relative) for relative in ['data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml', 'pages/records/MetaCyc_PWY-8132.html', 'output/kgx/nodes.tsv', 'output/kgx/edges.tsv']],
++        'outputs': [pin(ROOT / relative) for relative in ['data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml', 'pages/records/PathBank_SMP0002097.html', 'output/kgx/nodes.tsv', 'output/kgx/edges.tsv']],
+         'fresh_command_receipts_and_streams_exact': True,
+         'history_before_SSSOM_and_render': True,
+         'native_review_save_performed': False, 'git_commit_performed': False,
+         'publication_performed': False, 'whole_checkout_QA_pending_separate_owner': True,
+     }
+     write(OUT / 'execution-summary.json', result)
+-    lines = ['The exact authorized 239 native stages completed in three successful phases after separate retained sandbox DNS and network broken-pipe failures. Only the read-only vendored fetch was retried twice with network permission; tests and all other gates ran once. All nine gates and both history commands ultimately passed. The two histories were created before SSSOM and rendering; the SSSOM output retains all 42 prior rows, exact cells/header/multiplicity and relative order and adds the 20 accepted mappings (62 total rows). Its whole bytes change as expected.', '', test_summaries[0], '', 'Actual commands, start/end times, durations, helper bodies and stdout/stderr are retained. Fresh final evidence checks compare every execution receipt to its first-created origin hash and every stream to its recorded bytes. The exact acceptance/adoption/stages and runner preparation are bound, and outer tool invocation provenance is recorded separately. No gate is rerun by this seal.', '', 'This is execution evidence, not an independent maintained scientific or technical review. Whole checkout/cache and complete target interpretation belong to the separate actual maintained QA. No native review was authored or saved, no commit was created, and no public action occurred in this stage. Scientific evidence coverage remains inherited from the accepted scientific and actual-output reviews; no fresh whole-primary-paper reading is claimed here.', '', 'See actual-tool-provenance.json for any execution or inspection limitations and original failures. Native source and evidence bytes were not normalized. The runner reuses the accepted 238 phase orchestration with only exact pins, paths, role and concrete counts rebased. Its seven isolated mapping controls are inherited, not newly executed. Root authorized the exact histories and nine gates in the single integration acceptance. Separate integration-preparation packaging and formatting diagnostics remain retained in that earlier packet.', '']
++    lines = ['The exact authorized 240 native stages completed in four successful phases. All nine gates and both history commands passed; no failed native attempts were observed in the completed packet. The two histories were created before SSSOM and rendering; the SSSOM output retains all62 prior rows, exact cells/header/multiplicity and relative order and adds the4 accepted mappings (66total rows). Its whole bytes change as expected.', '', test_summaries[0], '', 'Actual commands, start/end times, durations, helper bodies and stdout/stderr are retained. Fresh final evidence checks compare every execution receipt to its first-created origin hash and every stream to its recorded bytes. Exact acceptance/adoption/stages and runner binding are included. The four phase outer captures and the preceding adoption capture are preserved; actual tool handles are separately attributed to root in actual-tool-provenance.json. No gate is rerun by this seal.', '', 'This is execution evidence, not an independent maintained scientific or technical review. Root executes the native pipeline and this final sealer. Aceto rebased the earlier239 evidence-packaging helper without performing or authoring these native commands. Adapter owns independent TECH and whole checkout/cache/page/export QA; Aceto owns separate maintained SCI judgments with explicit inherited Nitrate source reading. No native review was authored or saved, no commit was created, and no public action occurred in this stage.', '', 'The sealing helper reuses239 origin/stream/full-packet checks with concrete240 paths, four successful phases, actual outer capture directories and expected counts. Historical239 failed fetch/retry handling is removed because it is not an observed240 event; unexpected240 failure.json would stop this helper. Scientific source/evidence bytes were not normalized. Root authorized exact adoption, histories and native gates in the integration acceptance. Earlier preparation diagnostics remain retained in their own packets.', '']
+     (OUT / 'REPORT.md').write_text('\n'.join(lines))
+     rows = []
+     directories = []

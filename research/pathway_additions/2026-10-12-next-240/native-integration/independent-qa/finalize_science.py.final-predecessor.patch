@@ -1,0 +1,173 @@
+--- /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/finalize_science.py
++++ /private/tmp/pathwaymech-next-240-maintained-science-review-20261012/finalize_science.py
+@@ -1,100 +1,98 @@
+-"""Serialize the current scientific judgment; no native save or maintained writes."""
++"""Bounded 239 native SCI serialization rebase; external proposal only, never save."""
+ import datetime,hashlib,json,os,shlex,stat
+ from pathlib import Path
+ import yaml
+ H=Path(__file__).resolve().parent
+-R=Path('/private/tmp/pathwaymech-next-239-local-20261012')
+-Q=Path('/private/tmp/pathwaymech-next-239-root-maintained-qa-20261012')
+-PREFIX='research/pathway_additions/2026-10-12-next-239/native-integration/independent-qa/'
+-ROOTPREFIX='research/pathway_additions/2026-10-12-next-239/native-integration/root-review/'
+-ID='MetaCyc:PWY-8132'
++R=Path('/private/tmp/pathwaymech-next-240-local-20261012')
++Q=Path('/private/tmp/pathwaymech-next-240-independent-maintained-tech-20261012')
++N=Path('/private/tmp/pathwaymech-next-240-local-native-execution-20261012')
++PREFIX='research/pathway_additions/2026-10-12-next-240/native-integration/independent-qa/'
++QPREFIX='research/pathway_additions/2026-10-12-next-240/native-integration/independent-tech-review/'
++ID='PathBank:SMP0002097'
+ def read(p):return json.loads(p.read_text())
+ def pin(p):
+  b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+-def dump(name,x):(H/name).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
++def dump(n,x):(H/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+ def check(x):
+- p=Path(x['path']);y=pin(p);assert y['sha256']==x['sha256'];assert y['bytes']==x['bytes'];return y
++ p=Path(x['path']);y=pin(p);assert (y['sha256'],y['bytes'])==(x['sha256'],x['bytes']),str(p);return y
+ now=datetime.datetime.now(datetime.timezone.utc);stamp=now.strftime('%Y-%m-%dT%H:%M:%SZ')
+-assert pin(Q/'handoff.json')['sha256']=='4bd0a92ab07c7fbbb38d7968aafc6253c3b51bfa6191e1fc6229225e97eab69a'
+-assert pin(Q/'artifact-manifest.json')['sha256']=='bb6740d11d3bdfb8b0789ed12732f6823203db5e42af71df9641ccd28e12307d'
+-m=read(Q/'artifact-manifest.json');f=[];dirs=[]
++b=read(H/'final-shared-QA-binding.json')
++for key in ['handoff','manifest']:check(b[key])
++assert Path(b['handoff']['path'])==Q/'handoff.json'
++m=read(Q/'artifact-manifest.json');rows=m.get('artifacts',m.get('files'));assert rows is not None
++files=[];dirs=[]
+ for base,ds,fs in os.walk(Q,followlinks=False):
+  for n in ds:
+   p=Path(base)/n;assert stat.S_ISDIR(p.lstat().st_mode);dirs.append(str(p.relative_to(Q)))
+  for n in fs:
+-  p=Path(base)/n;assert stat.S_ISREG(p.lstat().st_mode);f.append(str(p.relative_to(Q)))
+-assert set(f)=={str(Path(x['path']).relative_to(Q)) for x in m['artifacts']}|{'artifact-manifest.json','handoff.json'}
++  p=Path(base)/n;assert stat.S_ISREG(p.lstat().st_mode);files.append(str(p.relative_to(Q)))
++assert set(files)=={str(Path(x['path']).relative_to(Q)) for x in rows}|{'artifact-manifest.json','handoff.json'}
+ assert sorted(dirs)==sorted(x for x in m['directories'] if x!='.')
+-for x in m['artifacts']:check(x)
+-dump('root-QA-binding.json',{'handoff':pin(Q/'handoff.json'),'manifest':pin(Q/'artifact-manifest.json'),'whole_closed_rows':len(m['artifacts']),'whole_current_report':(Q/'REPORT.md').read_text(),'technical_independence':'Separate root technical judgments; this scientific reviewer authored the adapter after the earlier independent scientific review.'})
+-inspection=read(H/'native-inspection.json')
+-current=[]
++for x in rows:check(x)
++for x in b['read_evidence']:check(x)
++dump('shared-QA-currentness.json',{'at':stamp,'handoff':pin(Q/'handoff.json'),'manifest':pin(Q/'artifact-manifest.json'),'complete_artifacts':len(rows),'whole_report':(Q/'REPORT.md').read_text(),'reviewed_results':b['read_evidence'],'attribution':'Fresh structural and technical QA performed by Adapter; this independent SCI reviewer reads and binds those exact results. No personal interactive browser or pixel review is claimed.'})
++inspection=read(H/'native-inspection.json');current=[]
+ for x in inspection['source']['inputs']:
+  p=R/x['path'];assert pin(p)['sha256']==x['sha256'];current.append(pin(p))
++assert pin(R/inspection['targets'][0]['path'])['sha256']=='0adef1da2d818af7c62d7e3952b2115585b47b8f132ec189cde2b435d2721680'
+ sources=read(H/'whole-source-closure.json')
+ for x in sources['originals']:check(x['original'])
++for x in sources['native_originals']:check(x['original'])
+ for x in sources['unique_receipts']:check(x['original'])
+ for x in sources['maintained_portable_owners']:check(x)
+-dump('final-current-bindings.json',{'at':stamp,'native_inputs':current,'whole_originals':98,'unique_receipts':96,'portable_owners_unchanged':sources['maintained_portable_owners'],'unchanged_decoding_basis':pin(H/'whole-source-closure.json'),'no_new_source_interpretation':True})
+-visual={'at':stamp,'reviewer':'/root/nitrate235_finish','image':pin(H/'maintained-graph-light.png'),'original_svg':pin(H/'maintained-graph-original.svg'),'dom':pin(H/'dom-audit.json'),'personally_viewed_entire_static_image':True,'image_tool':'functions.exec/view_image full image, following maintained DOM raster check','CUA_actual_result':{'apps':[],'browsers':[]},'assessment':'All five reaction nodes, nested assembly, generic ferredoxin states and seven separately qualified nodes are visible. Dense convergence and crossing long paths limit readability; long qualifier labels are truncated, while complete DOM descriptions and evidence are checked. Large blank lower/right canvas remains. No missing whole node or edge was observed in this static image.','limits':['Static light rendering only; no interactive browser was available.','No dark, responsive, keyboard, hover or print validation.','Small full-image text, long path crossings, dense labels and truncated node labels remain renderer limits, not evidence omissions.']}
+-dump('visual-assessment.json',visual)
+-coverage=read(H/'read-coverage.json');coverage.update(stage='completed maintained scientific review; exact same-day full reading inherited',final_at=stamp,final_native_inputs=41,DOM={'paragraphs':21,'visual_nodes':42,'edges':44,'qualifiers':7,'references':93},exports={'named_ids':38,'edges':44,'mappings':20},visual=pin(H/'visual-assessment.json'))
+-dump('read-coverage-final.json',coverage)
+-# Earlier unsealed preparation artifacts keep their original temporal assertions.
+-for source,out in [('REPORT.md','REPORT-preparation.md')]:
+- assert not (H/out).exists();(H/out).write_bytes((H/source).read_bytes())
+-paragraphs=read(H/'paragraph-appraisals.json');edges=read(H/'edge-appraisals.json');checks=[];evidence=[];assessments=[]
+-def ev(eid,kind,path,summary,prefix=PREFIX,search=None):
+- p=Path(path) if Path(path).is_absolute() else H/path
+- ref=prefix+str(p.relative_to(H)) if p.is_relative_to(H) else (ROOTPREFIX+str(p.relative_to(Q)) if p.is_relative_to(Q) else str(p.relative_to(R)))
++search=read(H/'prior-native-review-search.json');assert search['exact_target_matches']==[]
++for x in search['yaml_files']:assert pin(R/x['path'])['sha256']==x['sha256']
++dump('final-current-bindings.json',{'at':stamp,'native_inputs':current,'whole_scientific_originals':66,'native_original_entries':3,'unique_receipts':66,'portable_owners_unchanged':sources['maintained_portable_owners'],'decoded_basis':pin(H/'whole-source-closure.json'),'all_prior_native_reviews_still_exact':len(search['yaml_files']),'source_interpretation':'Accepted prior Nitrate paper/native reading inherited; fresh whole record and original-byte reconciliation only.'})
++judgment=read(H/'scientific-judgment.json');paras=read(H/'paragraph-appraisals.json');edges=read(H/'edge-appraisals.json');quals=read(H/'qualifier-appraisals.json')
++checks=[];evidence=[];assessments=[]
++def ev(eid,kind,p,summary,search_scope=None):
++ p=Path(p) if Path(p).is_absolute() else H/p
++ if p.is_relative_to(H):ref=PREFIX+str(p.relative_to(H))
++ elif p.is_relative_to(Q):ref=QPREFIX+str(p.relative_to(Q))
++ else:ref=str(p.relative_to(R))
+  v={'evidence_id':eid,'kind':kind,'reference':ref,'accessed_at':stamp,'support':'supports','summary':summary,'snapshot_sha256':pin(p)['sha256']}
+- if search:v['search_scope']=search
++ if search_scope:v['search_scope']=search_scope
+  evidence.append(v)
+-ev('current-record','record_content',R/inspection['targets'][0]['path'],'Current complete record exactly equals the accepted scientific draft.')
+-for eid,kind,path,summary in [
+- ('paragraphs','primary_source','paragraph-appraisals.json','All 21 paragraph appraisals, exact current text and earlier evidence locators.'),
+- ('edges','primary_source','edge-appraisals.json','All 44 whole edge objects, qualifiers and scientific rationales; pending wording in this original preparatory ledger is superseded by final DOM/export receipts.'),
+- ('identities','database','identity-appraisals.json','All 38 exact identities and full original identity judgments.'),
+- ('references','primary_source','reference-appraisals.json','All 93 reference-to-whole-source bindings.'),
+- ('source-closure','database','whole-source-closure.json','All 98 complete original bodies and 96 receipts equal the retained originals and maintained decoded archive bodies.'),
+- ('read-coverage','prior_review','read-coverage-final.json','Same-day earlier complete primary/native reading is inherited; current rereading and technical authorship are explicitly separate.'),
+- ('dom','validation','dom-audit.json','Complete current page and graph payload comparison, all local anchor targets.'),
+- ('visual','validation','visual-assessment.json','Personally viewed complete current static image with explicit browser and layout limits.'),
+- ('exports','validation','exports-currentness.json','All 38 whole target node contexts, 44 edge rows,20 mappings and authority identities pass.'),
+- ('currentness','validation','final-current-bindings.json','Fresh all41 native inputs,98 originals,96 receipts and decoded-body owners still exact.'),
+- ('native-copy','validation','actual-native-copy.json','Exact94 native files including original seals, receipts, failed attempts and original streams.'),
+- ('root-binding','prior_review','root-QA-binding.json','Fresh44+2 root packet closure; root independently owns technical and whole-checkout assessment.')]:ev(eid,kind,path,summary)
+-ev('root-QA','prior_review',Q/'REPORT.md','Separate root whole target/checkouts/cache preservation and TECH assessment; no independent certification of this reviewer’s adapter code is claimed.')
+-ev('prior-search','search','exports-currentness.json','No prior exact target native review was found in the complete current structured-review inventory.',search='rg --files --no-ignore --hidden across the current maintained reviews/structured tree; every YAML body checked for exact target_id MetaCyc:PWY-8132 or exact target path. Literal symlinks were recorded without traversal. External earlier science review is separately bound; other-target text references are not predecessors.')
+-for p in paragraphs:
+- assessments.append({'assessment_id':'paragraph-'+str(p['paragraph_1based']),'area':'evidence','topic':'Whole narrative paragraph '+str(p['paragraph_1based']),'outcome':'supported','summary':p['reviewer_rationale'],'target_ids':[ID],'evidence_ids':['current-record','paragraphs','source-closure','read-coverage'],'details':'Exact current paragraph SHA256 '+p['paragraph_sha256']+'; same complete source bodies as earlier independent science reading.'})
++ev('current-record','record_content',R/inspection['targets'][0]['path'],'Exact complete maintained scientific owner; all accepted scoped draft bytes unchanged.')
++for eid,kind,p,summary in [
++ ('paragraphs','prior_review','paragraph-appraisals.json','All18 whole current paragraphs, earlier independent rationale and fresh current reassessment.'),
++ ('edges','prior_review','edge-appraisals.json','All58 complete current edges and exact accepted old-to-scoped transformations with earlier independent rationale.'),
++ ('qualifiers','prior_review','qualifier-appraisals.json','All4 complete endpoint qualifiers and inherited scientific rationale.'),
++ ('identities','prior_review','identity-appraisals.json','All43 current identities and exact prior native identity judgments, with accepted document scope.'),
++ ('references','primary_source','reference-appraisals.json','All42 exact reference objects and whole original/receipt bindings.'),
++ ('mappings','validation','mapping-appraisals.json','All4 source mapping rows exact; literal native RDF identifiers preserved.'),
++ ('scope-currentness','validation','locator-currentness.json','All100 evidence locator/reference/assertion strings match prior accepted evidence; indexed qualifier scope preserved. Earlier matched-node replay is inherited.'),
++ ('source-closure','database','whole-source-closure.json','All66 scientific whole originals/66 receipts and3 native entries match current decoded portable representations.'),
++ ('accepted-reading','prior_review','accepted-reading.json','Original science and scope successor reports/read coverage, exact roots and whole acceptance receipts; inherited scientific reading explicitly attributed.'),
++ ('currentness','validation','final-current-bindings.json','Every original native input, scientific source/receipt and portable owner remains exact at final serialization.'),
++ ('shared-closure','validation','shared-QA-currentness.json','Fresh complete Adapter packet closure and exact read results; separate ownership of technical and structural checks.'),
++ ('native-copy','validation','actual-native-copy.json','Exact whole native execution packet, including original seals, receipt origins and all failed attempts if present.'),
++ ('scientific-judgment','prior_review','scientific-judgment.json','Independent current scientific judgment and precise inherited-reading limits; original then-pending stage wording remains historical.')]:ev(eid,kind,p,summary)
++ev('shared-QA','prior_review',Q/'REPORT.md','Adapter fresh page/graph/export/physical/cache assessment; root visual reading remains inherited as stated in that report.')
++ev('prior-search','search','prior-native-review-search.json','No exact target predecessor native review in the complete current structured YAML inventory.',search['scope'])
++for p in paras:
++ assessments.append({'assessment_id':'paragraph-'+str(p['ordinal']),'area':'evidence','topic':'Whole narrative paragraph '+str(p['ordinal']),'outcome':'supported','summary':p['earlier_appraisal']['rationale']+' '+p['current_reassessment'],'target_ids':[ID],'evidence_ids':['current-record','paragraphs','source-closure','accepted-reading'],'details':'Whole exact current paragraph SHA256 '+p['current_sha256']+'. Earlier reviewer Nitrate supplied the inherited source reading; this reviewer confirms its current application.'})
+ for e in edges:
+- assessments.append({'assessment_id':'edge-'+str(e['ordinal']),'area':'graph','topic':e['edge_id'],'outcome':'supported','summary':e['reviewer_rationale'],'target_ids':[ID],'evidence_ids':['current-record','edges','source-closure','dom','exports'],'details':'Exact whole edge SHA256 '+e['edge_sha256']+'; full qualifier/evidence content remains in record, page and export.'})
+-for aid,area,topic,summary,eids in [
+- ('identity','identity','Complete issuer identities and native membership','All38 selected identities retain exact source scope,14 defined full-InChI structures, six chain identities, five reactions, native taxon boundaries and full nested Mar composition. Generic ferredoxin Protein classes remain generic redox carriers; neither a defined small molecule nor a proven physiological donor is implied.',['identities','source-closure','exports']),
+- ('kinetics','quantity','Assay conditions and source artifacts','Native kinetic misfiling, 2020 efficiency arithmetic, alternative Co/Ni Ald2 states, Oah automatic PLP annotation, missing older SI and native-versus-tagged heterologous constructs remain explicitly qualified. No coefficient or ATP budget is inferred from the Mar schematic.',['paragraphs','edges','read-coverage']),
+- ('source-scope','scope','All source boundaries retained','Native reversible MtnA and written RXN21319 right-to-left axis remain explicit. The unassigned aldehyde reductase, proposed physiological donor, inferred carbide/channels and separate engineered 2025 host construct are not upgraded to established native mechanisms.',['paragraphs','edges','source-closure']),
+- ('representation','representation','Current graph, page and exports','All21 paragraphs,44 complete edges,7 qualifiers,93 references,42 visual nodes and38 identities match the maintained record. Whole target KGX contexts/edges and20 SSSOM mappings pass.',['dom','exports','visual']),
+- ('role','ownership','Scientific independence and subsequent technical authorship','This reviewer did not author the scientific draft. After its earlier independent scientific review, the reviewer authored authority design, adapter correction and canonical preparation. This SCI judgment concerns unchanged science; root and separate peers own independent technical review.',['read-coverage','root-QA']),
+- ('source-preservation','provenance','Whole-source and execution evidence','All98 original bodies and96 receipts are unchanged; all94 original native execution files are copied exactly including original seals and both failed public fetches.12 commands and nine gates ultimately passed; no failing attempt is relabeled as passing.',['source-closure','currentness','native-copy']),
+- ('regulation','scope','Regulatory interpretation remains bounded','SalR genetic dependence remains regulatory context; no direct promoter occupancy, obligatory physical interaction or expanded regulon is inferred. This review adds no regulatory edges or new iModulon interpretation.',['paragraphs','edges','read-coverage'])]:
+- assessments.append({'assessment_id':aid,'area':area,'topic':topic,'outcome':'supported','summary':summary,'target_ids':[ID],'evidence_ids':eids})
+-# Current bounded executions, including two retained corrected preparation failures.
+-for step in ['prepare-science','prepare-science-corrected','prepare-science-lineage','serialize-scientific','final-native-inspect','maintained-dom','maintained-exports']:
+- p=H/'executions'/step/'completion.json';r=read(p);eid='execution-'+step;ev(eid,'validation',p,'Actual bounded helper receipt with exact original helper and streams; preparatory failures remain resolved history.')
+- checks.append({'check_id':eid,'name':step,'status':'passed' if r['exit_code']==0 else 'failed','required':r['exit_code']==0,'summary':'Actual bounded scientific/currentness check.' if r['exit_code']==0 else 'Retained preparatory guard or manifest-shape error, corrected in the successful successor; scientific originals unchanged.','target_ids':[ID],'command':shlex.join(r['command']),'exit_code':r['exit_code'],'expected_exit_code':0,'evidence_ids':[eid]})
++ assessments.append({'assessment_id':'edge-'+str(e['ordinal']),'area':'graph','topic':e['edge_id'],'outcome':'supported','summary':e['earlier_appraisal']['rationale']+' '+e['current_reassessment'],'target_ids':[ID],'evidence_ids':['current-record','edges','source-closure','scope-currentness','shared-QA'],'details':'Complete current edge SHA256 '+e['current_sha256']+'; exact qualifier/evidence objects preserved. Shared structural QA separately binds maintained generated representation.'})
++for i,q in enumerate(quals,1):
++ assessments.append({'assessment_id':'qualifier-'+str(i),'area':'graph','topic':q['edge']+' complete endpoint qualifier','outcome':'supported','summary':q['rationale'],'target_ids':[ID],'evidence_ids':['qualifiers','edges','source-closure','accepted-reading'],'details':'Whole qualifier SHA256 '+q['whole_qualifier_sha256']+'. Accepted qualifier text and complete source evidence unchanged.'})
++for v in judgment['summaries']:
++ assessments.append(v|{'outcome':'supported','target_ids':[ID]})
++for step in ['maintained-science-currentness','maintained-science-currentness-corrected','final-native-inspect']:
++ p=H/'executions'/step/'completion.json';r=read(p);eid='execution-'+step;ev(eid,'validation',p,'Actual bounded helper receipt with exact original helper and streams; corrected qualifier-scope assumption is preserved as history.')
++ checks.append({'check_id':eid,'name':step,'status':'passed' if r['exit_code']==0 else 'failed','required':r['exit_code']==0,'summary':'Bounded currentness or final native inspection passed.' if r['exit_code']==0 else 'Historical helper-only qualifier versus qualifier-1 mismatch; corrected successor passed with all sources unchanged.','target_ids':[ID],'command':shlex.join(r['command']),'exit_code':r['exit_code'],'expected_exit_code':0,'evidence_ids':[eid]})
+ copy=read(H/'actual-native-copy.json')
+ for row in copy['successful_commands']:
+- r=row['content'];rel=str(Path(row['receipt']['path']).relative_to(Path('/private/tmp/pathwaymech-next-239-local-native-execution-20261012')));eid='native-'+r['name'];ev(eid,'validation',H/'actual-native'/rel,'Inherited actual native execution by root/Aceto; original receipt and streams verified, not rerun by this reviewer.')
+- checks.append({'check_id':eid,'name':r['name'],'status':'passed','required':True,'summary':'Actual authorized native command passed; original receipt and whole streams verified.','target_ids':[ID],'command':shlex.join(r['argv']),'exit_code':0,'expected_exit_code':0,'evidence_ids':[eid]})
+-for phase in ['vendored-gate','network-resumption']:
+- p=H/'actual-native'/phase/'failure.json';r=read(p)['receipts'][0];eid='failed-'+phase;ev(eid,'validation',p,'Original read-only vendored fetch failure, superseded by passing network-resumption-successor.')
+- checks.append({'check_id':eid,'name':phase+' historical vendored attempt','status':'failed','required':False,'summary':'Preserved DNS or Broken pipe attempt; later read-only vendored retry passed.','target_ids':[ID],'command':shlex.join(r['argv']),'exit_code':r['exit_code'],'expected_exit_code':0,'evidence_ids':[eid]})
+-limits=['The earlier same-day complete primary/native science reading is inherited, not repeated or relabeled as a fresh whole-paper read. Exact whole originals and current narrative/edge judgments were reconciled now.','2012 SI, some 2018 supplemental images and external Science spreadsheet/database materials remained unavailable;2017 SI extended gene inventory pages19–29 were retained but not fully manually read. No raw cryo-EM,EPR,transcriptomics or whole figure-pixel reanalysis is claimed.','Static light image only: no browser was available. Dense crossings, small full-image text, truncated labels and tall blank canvas remain. Whole DOM retains full qualifier/evidence text.','Subsequent authority-design/adapter/preparation authorship prevents this reviewer from independently certifying those technical changes. Root and separate peer technical assessments remain separately attributed.','Both failed public fetches and two preparatory guard errors are retained with the successful successor receipts. No public release or licensing clearance is asserted.']
+-review={'schema_version':'1.0.0','review_id':now.strftime('%Y%m%dT%H%M%SZ')+'-mar239-scientific','kind':'record','repository':'CultureBotAI/PathwayMech','title':'S-methyl-5-thio-alpha-D-ribose1-phosphate degradationIII: maintained scientific review','started_at':'2026-10-12T23:13:16Z','finished_at':stamp,'reviewer':{'identity':'Codex /root/nitrate235_finish','kind':'agent','independence':'independent','independence_basis':'Aceto authored the scientific draft/preflight. This reviewer independently reviewed the complete science earlier the same day and now reconciles the identical maintained record and sources. Subsequent authority design, adapter/successor implementation and canonical preparation were authored by this reviewer; those technical changes are independently assessed by root and peers, not certified by this SCI review.'},'skill':'.claude/skills/review-yaml-record/SKILL.md','completion':'completed','verdict':'pass_with_limitations','scientific_review':True,'summary':'The exact maintained five-event pathway retains all accepted scientific judgments and qualifications.21 paragraphs,44 whole edges,7 qualifiers,38 identities,93 references and20 mappings pass fresh maintained page/export/source checks. All nine native gates ultimately pass; prior source-reading, technical-role and static visual limits are explicit.','source':inspection['source'],'scope':{'description':'One exact maintained PWY8132 record; all material source contexts, narrative/edge judgments and current generated representation.','selection':'Exact root-assigned accepted scientific target; no sampling.','coverage':'full','population_size':1,'reviewed_target_ids':[ID]},'targets':[{'target_id':ID,'path':inspection['targets'][0]['path'],'label':inspection['targets'][0]['label'],'kind':'maintained','ownership_note':'Maintained YAML is the scientific owner; no target or generated representation was edited.'}],'checks':checks,'evidence':evidence,'assessments':assessments,'findings':[],'actions':[],'limitations':limits,'notes':['Proposed durable evidence paths name the exact independent-qa and root-review destinations. Native save is not performed. Later source extension must preserve these original native inputs and original judgments/timestamps.','Preparation reports retain their then-pending states; final DOM,export,phase-origin and native inspection records supersede those temporal statements. planned-native-commands.json remains unmodified and the exact planned inspection argv was used.'],'tags':['scientific-review','maintained-record','mar239','source-scope']}
++ r=row['content'];rel=str(Path(row['receipt']['path']).relative_to(N));eid='native-'+r['name'];ev(eid,'validation',H/'actual-native'/rel,'Root actual native execution, independently rebound with whole original helper/origin/streams; no broad gate rerun by this SCI reviewer.')
++ checks.append({'check_id':eid,'name':r['name'],'status':'passed','required':True,'summary':'Actual authorized native command passed.','target_ids':[ID],'command':shlex.join(r['argv']),'exit_code':0,'expected_exit_code':0,'evidence_ids':[eid]})
++for i,row in enumerate(copy['historical_failures'],1):
++ rel=str(Path(row['receipt']['path']).relative_to(N));p=H/'actual-native'/rel;r=next(x for x in row['content']['receipts'] if x['exit_code']!=0);eid='native-failed-attempt-'+str(i);ev(eid,'validation',p,'Original failed native attempt retained unchanged; final successful phase is separately bound.')
++ checks.append({'check_id':eid,'name':'historical native attempt '+str(i),'status':'failed','required':False,'summary':'Original failed attempt remains failed; later actual passing command supersedes it.','target_ids':[ID],'command':shlex.join(r['argv']),'exit_code':r['exit_code'],'expected_exit_code':0,'evidence_ids':[eid]})
++limits=list(judgment['limitations']);limits[3]=b['visual_attribution']
++start=datetime.datetime.fromisoformat(read(H/'native-inspection.execution.json')['started_at']).strftime('%Y-%m-%dT%H:%M:%SZ')
++review={'schema_version':'1.0.0','review_id':now.strftime('%Y%m%dT%H%M%SZ')+'-spermidine240-scientific','kind':'record','repository':'CultureBotAI/PathwayMech','title':'Spermidine Biosynthesis and Metabolism: maintained scientific review','started_at':start,'finished_at':stamp,'reviewer':{'identity':'Codex /root/aceto236_design_acceptance_review','kind':'agent','independence':'independent','independence_basis':judgment['role']},'skill':'.claude/skills/review-yaml-record/SKILL.md','completion':'completed','verdict':'pass_with_limitations','scientific_review':True,'summary':'The exact maintained complete current PathBank map preserves all accepted scientific meaning and qualifications:18 paragraphs,58 whole edges,4 qualifiers,43 identities,42 references and4 mappings. Fresh whole-source/current-record checks pass; complete earlier Nitrate primary/native reading is transparently inherited. Separate Adapter page/graph/export/checkout QA and root actual native gates pass. No actionable scientific defect found.','source':inspection['source'],'scope':{'description':'One whole exact maintained SMP0002097 record, all scientific narrative/edges/identities and source boundaries; generated representation checked by separately attributed Adapter QA.','selection':'Exact root-assigned accepted scoped scientific target; no sampling.','coverage':'full','population_size':1,'reviewed_target_ids':[ID]},'targets':[{'target_id':ID,'path':inspection['targets'][0]['path'],'label':inspection['targets'][0]['label'],'kind':'maintained','ownership_note':'Scientific maintained YAML owner; this reviewer made no maintained edits.'}],'checks':checks,'evidence':evidence,'assessments':assessments,'findings':[],'actions':[],'limitations':limits,'notes':['Original proposal inputs and every judgment/timestamp must remain unchanged during later authorized durable evidence adoption, apart from an explicit native source-input extension. No native save performed here.','Preparatory reports and JSON retain their earlier pending-state assertions. Final native and shared QA bindings establish current completion without rewriting historical records.','Earlier external scope correction is resolved and explicitly inherited; no nonexistent native predecessor review is asserted. No public release or licensing clearance is claimed.'],'tags':['scientific-review','maintained-record','spermidine240','source-scope']}
+ class NoAliasDumper(yaml.SafeDumper):
+  def ignore_aliases(self,data):return True
+ (H/'completed-review.yaml').write_text(yaml.dump(review,Dumper=NoAliasDumper,sort_keys=False,allow_unicode=True,width=110))
+-dump('final-review-summary.json',{'status':'scientific_proposal_ready_for_native_validation','proposal':pin(H/'completed-review.yaml'),'assessments':len(assessments),'checks':len(checks),'evidence':len(evidence),'native_inputs':len(current),'actual_native_copy_files':len(copy['files']),'root_QA':pin(Q/'handoff.json'),'limitations':limits,'native_save_performed':False})
+-dump('incidental-read-failures.json',[{'tool':'15ab14','exit_code':1,'failure':'System python3 lacked PyYAML during a read-only template inspection. Reissued with pinned v195 interpreter; no install or mutation.'},{'tool':'2c9129','exit_code':1,'failure':'Read-only template listing used nonexistent evidence key id instead of evidence_id; corrected in049280. No review check, product or source mutation.'}])
+-print('PASS proposal:',len(assessments),'assessments',len(checks),'checks',len(evidence),'evidence; all41 inputs/98 originals/96 receipts still exact; root44+2 closure passed')
++dump('final-review-summary.json',{'status':'scientific_proposal_ready_for_native_validation','proposal':pin(H/'completed-review.yaml'),'assessments':len(assessments),'checks':len(checks),'evidence':len(evidence),'native_inputs':len(current),'actual_native_copy_files':len(copy['files']),'shared_QA':pin(Q/'handoff.json'),'limitations':limits,'native_save_performed':False})
++print('PASS: proposal',len(assessments),'assessments',len(checks),'checks',len(evidence),'evidence',len(current),'native inputs; all sources unchanged and shared QA packet closed')

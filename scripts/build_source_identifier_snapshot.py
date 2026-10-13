@@ -3,7 +3,8 @@
 
 The JSON manifest is a list of objects with key, kind, path, url, version,
 license and sha256. Paths are relative to --cache-dir; supported kinds are enzyme,
-gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zip, metacyc-html,
+gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zip,
+pathbank-context-biopax, metacyc-html,
 metacyc-protein-xml, metacyc-reaction-xml, metacyc-carrier-class-xml,
 ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
@@ -35,7 +36,7 @@ from html.entities import name2codepoint
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qsl, unquote, urldefrag, urljoin, urlsplit
+from urllib.parse import parse_qsl, unquote, urlsplit
 from xml.etree import ElementTree
 from xml.parsers import expat
 
@@ -83,9 +84,17 @@ from pathwaymech.ecocyc_named_complex import (
     validate_named_complex_graph,
 )
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_metadata, state_term
+from pathwaymech.pathbank_context import (
+    PATHBANK_CONTEXT_KIND,
+    context_metadata,
+    context_term,
+    context_terms,
+    pathbank_body_roots,
+    pathbank_terms,
+    validate_context_assertions,
+)
 from pathwaymech.pathbank_provenance import (
     PATHBANK_ARCHIVE_KIND,
-    PATHBANK_ARCHIVE_URL,
     validate_pathbank_archive,
 )
 from pathwaymech.rhea_polymer import RHEA_POLYMER_KIND, polymer_metadata, polymer_term
@@ -268,360 +277,6 @@ def biopax_terms(root: ElementTree.Element) -> Iterator[tuple[str, str, list[str
             key = xref.get(rdf + "resource", "").removeprefix("#")
             if key in xrefs:
                 yield xrefs[key], labels[0], labels[1:]
-
-
-def _pathbank_request(url: str) -> str | None:
-    """Only a native per-pathway request can select a multi-Pathway export."""
-    parsed = urlsplit(url)
-    if not (parsed.path.startswith("/view/") or parsed.path.endswith("/download")):
-        return None  # Legacy archive artifacts still require a single Pathway.
-    request = re.fullmatch(r"/view/(SMP[0-9]+)/download", parsed.path)
-    if (
-        parsed.scheme != "https"
-        or parsed.netloc != "pathbank.org"
-        or parsed.fragment
-        or any(char.isspace() for char in url)
-        or not request
-        or parse_qsl(parsed.query, keep_blank_values=True, strict_parsing=True)
-        != [("type", "owl_markup")]
-    ):
-        raise ValueError("PathBank selection requires an exact official BioPAX download URL")
-    return request[1]
-
-
-def pathbank_terms(
-    root: ElementTree.Element,
-    *,
-    url: str = "",
-    archive_root: str | None = None,
-) -> Iterator[tuple[str, str, list[str]]]:
-    """Read one native pathway and its declared local graph objects, not xref labels.
-
-    SMPDB unification assertions establish the PathBank accession; a PathWhiz
-    filename is never an accession authority. Local objects assert source-graph
-    existence only, not membership, catalysis or an external chemical identity.
-    """
-    bp = "{http://www.biopax.org/release/biopax-level3.owl#}"
-    rdf = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
-    base = root.get("{http://www.w3.org/XML/1998/namespace}base", "")
-    if any(
-        "{http://www.w3.org/XML/1998/namespace}base" in node.attrib
-        for node in root.iter()
-        if node is not root
-    ):
-        raise ValueError("PathBank authority does not support nested XML base overrides")
-
-    def subject(node: ElementTree.Element) -> str:
-        native_id = node.get(rdf + "ID")
-        if native_id is not None and node.get(rdf + "about") is not None:
-            raise ValueError("PathBank RDF subject cannot declare both ID and about")
-        value = "#" + native_id if native_id else node.get(rdf + "about", "")
-        return urljoin(base, value) if value else ""
-
-    def labels(node: ElementTree.Element) -> list[str]:
-        return [
-            item.text.strip()
-            for name in ("displayName", "standardName", "name")
-            for item in node.findall(bp + name)
-            if item.text and item.text.strip()
-        ]
-
-    index: dict[str, ElementTree.Element] = {}
-    for node in root:
-        uri = subject(node)
-        if uri:
-            if uri in index:
-                raise ValueError(f"PathBank source has duplicate RDF subject: {uri}")
-            index[uri] = node
-
-    def native_accession(pathway: ElementTree.Element) -> str:
-        accessions = set()
-        for link in pathway.findall(bp + "xref"):
-            xref = index.get(urljoin(base, link.get(rdf + "resource", "")))
-            if xref is None or xref.tag != bp + "UnificationXref":
-                continue
-            databases = {(item.text or "").strip().casefold() for item in xref.findall(bp + "db")}
-            if "smpdb" not in databases:
-                continue
-            if databases != {"smpdb"}:
-                raise ValueError("PathBank SMPDB unification xref has conflicting databases")
-            values = {(item.text or "").strip() for item in xref.findall(bp + "id")}
-            if not values or any(not re.fullmatch(r"SMP[0-9]+", value) for value in values):
-                raise ValueError("PathBank pathway has an invalid native SMPDB accession")
-            accessions.update(values)
-        if len(accessions) != 1:
-            raise ValueError(
-                "PathBank pathway requires one unambiguous SMPDB unification accession"
-            )
-        accession = next(iter(accessions))
-        about = pathway.get(rdf + "about", "")
-        if about.startswith(("http://identifiers.org/smpdb/", "https://identifiers.org/smpdb/")):
-            if not re.fullmatch(r"https?://identifiers\.org/smpdb/" + accession, about):
-                raise ValueError("PathBank pathway URI and SMPDB xref must agree")
-        return accession
-
-    pathways = root.findall(bp + "Pathway")
-    child_terms: list[tuple[str, str, list[str]]] = []
-    if archive_root is None:
-        requested = _pathbank_request(url)
-    else:
-        if (
-            url != PATHBANK_ARCHIVE_URL
-            or not isinstance(archive_root, str)
-            or not re.fullmatch(r"SMP[0-9]+", archive_root)
-        ):
-            raise ValueError("PathBank archive selection requires exact archive/root provenance")
-        requested = archive_root
-    if requested is None:
-        if len(pathways) != 1:
-            raise ValueError("PathBank authority requires exactly one native Pathway")
-        pathway = pathways[0]
-        accession = native_accession(pathway)
-    else:
-        by_accession: dict[str, ElementTree.Element] = {}
-        for candidate in pathways:
-            accession = native_accession(candidate)
-            if not re.fullmatch(
-                r"https?://identifiers\.org/smpdb/" + accession,
-                candidate.get(rdf + "about", ""),
-            ):
-                raise ValueError("PathBank selected export requires matching native pathway URIs")
-            if accession in by_accession:
-                raise ValueError("PathBank source repeats a native pathway accession")
-            by_accession[accession] = candidate
-        if requested not in by_accession:
-            raise ValueError("PathBank request and native pathway accessions disagree")
-        pathway, accession = by_accession[requested], requested
-
-        def resolve(link: ElementTree.Element) -> ElementTree.Element:
-            uri = urljoin(base, link.get(rdf + "resource", ""))
-            if uri not in index:
-                raise ValueError(f"PathBank source has an unresolved pathway link: {uri}")
-            return index[uri]
-
-        def processes(node: ElementTree.Element) -> list[ElementTree.Element]:
-            result = [resolve(link) for link in node.findall(bp + "pathwayComponent")]
-            for link in node.findall(bp + "pathwayOrder"):
-                step = resolve(link)
-                if step.tag not in {bp + "PathwayStep", bp + "BiochemicalPathwayStep"}:
-                    raise ValueError("PathBank pathwayOrder must identify a native pathway step")
-                result.extend(
-                    resolve(link)
-                    for tag in ("stepProcess", "stepConversion")
-                    for link in step.findall(bp + tag)
-                )
-            return result
-
-        primary = processes(pathway)
-        expanded = list(primary)
-        for node in primary:
-            if node.tag == bp + "Catalysis":
-                expanded.extend(resolve(link) for link in node.findall(bp + "controlled"))
-        if "SubPathway" in labels(pathway) or not any(
-            node.tag in {bp + "BiochemicalReaction", bp + "Transport"} for node in expanded
-        ):
-            raise ValueError(
-                "PathBank requested source must contain the primary pathway definition"
-            )
-        attached = {subject(node) for node in primary if node.tag == bp + "Pathway"}
-
-        def local_object(node: ElementTree.Element) -> str:
-            uri = subject(node)
-            document, fragment = urldefrag(uri)
-            if (
-                set(node.attrib) not in ({rdf + "ID"}, {rdf + "about"})
-                or document != urldefrag(base)[0]
-                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", fragment)
-                or any(part in {".", "..", ""} for part in fragment.split("/"))
-            ):
-                raise ValueError("PathBank interface bridge requires exact local RDF objects")
-            return uri
-
-        def literal(node: ElementTree.Element, tag: str, count: int) -> list[str]:
-            values = node.findall(bp + tag)
-            if len(values) != count or any(
-                len(value)
-                or not (value.text or "").strip()
-                or value.attrib
-                not in ({}, {rdf + "datatype": "http://www.w3.org/2001/XMLSchema#string"})
-                for value in values
-            ):
-                raise ValueError("PathBank interface bridge has unsupported literal fields")
-            return [value.text.strip() for value in values]
-
-        def pointer(link: ElementTree.Element) -> ElementTree.Element:
-            if (
-                set(link.attrib) != {rdf + "resource"}
-                or len(link)
-                or (link.text or "").strip()
-                or not link.get(rdf + "resource", "")
-            ):
-                raise ValueError("PathBank interface bridge requires exact resource pointers")
-            return resolve(link)
-
-        def bridge_child(node: ElementTree.Element) -> ElementTree.Element:
-            # This closed issuing format identifies an opaque adjacent Pathway.
-            # Its marker names do not establish an inhibition edge or mechanism.
-            local_object(node)
-            if node.tag != bp + "Interaction" or any(
-                item.tag not in {bp + "displayName", bp + "name", bp + "participant"}
-                for item in node
-            ):
-                raise ValueError("PathBank interface bridge requires a native Interaction")
-            literal(node, "displayName", 1)
-            names = literal(node, "name", 2)
-            if len(set(names)) != 2 or names.count("InhibitorySubPathwayControl") != 1:
-                raise ValueError("PathBank interface bridge has an unsupported source marker")
-            direct = [
-                link for link in pathway.findall(bp + "pathwayComponent") if resolve(link) is node
-            ]
-            ordered = []
-            for link in pathway.findall(bp + "pathwayOrder"):
-                step = resolve(link)
-                links = [
-                    item
-                    for item in step
-                    if item.tag
-                    in {
-                        bp + "stepProcess",
-                        bp + "stepConversion",
-                    }
-                    and resolve(item) is node
-                ]
-                if not links:
-                    continue
-                pointer(link)
-                local_object(step)
-                if (
-                    step.tag != bp + "PathwayStep"
-                    or len(step) != 1
-                    or (step[0].tag != bp + "stepProcess" or pointer(step[0]) is not node)
-                ):
-                    raise ValueError("PathBank interface bridge requires an exact PathwayStep")
-                ordered.append(step)
-            if not (direct or ordered) or len(direct) > 1 or len(ordered) > 1:
-                raise ValueError("PathBank interface bridge must be owned by the primary pathway")
-            for link in direct:
-                pointer(link)
-            links = node.findall(bp + "participant")
-            if len(links) != 2:
-                raise ValueError("PathBank interface bridge requires exactly two participants")
-            targets = [pointer(link) for link in links]
-            children = [item for item in targets if item.tag == bp + "Pathway"]
-            compounds = [item for item in targets if item.tag == bp + "SmallMolecule"]
-            if len(children) != 1 or len(compounds) != 1 or children[0] is pathway:
-                raise ValueError("PathBank interface bridge requires one compound and one child")
-            compound = compounds[0]
-            local_object(compound)
-            if any(
-                item.tag not in {bp + "displayName", bp + "name", bp + "entityReference"}
-                for item in compound
-            ):
-                raise ValueError("PathBank interface compound has unsupported fields")
-            literal(compound, "displayName", 1)
-            if literal(compound, "name", 1) != ["SubPathwayInhibitor"]:
-                raise ValueError("PathBank interface compound has an unsupported source marker")
-            references = compound.findall(bp + "entityReference")
-            if len(references) != 1 or pointer(references[0]).tag != bp + "SmallMoleculeReference":
-                raise ValueError("PathBank interface compound requires its native reference")
-            local_object(pointer(references[0]))
-            child = children[0]
-            if (
-                set(child.attrib) != {rdf + "about"}
-                or any(
-                    item.tag not in {bp + "displayName", bp + "name", bp + "xref"} for item in child
-                )
-                or literal(child, "name", 1) != ["InhibitorySubPathway"]
-            ):
-                raise ValueError("PathBank interface bridge requires an empty native child stub")
-            literal(child, "displayName", 1)
-            xrefs = [pointer(link) for link in child.findall(bp + "xref")]
-            if not xrefs or len({subject(item) for item in xrefs}) != len(xrefs):
-                raise ValueError("PathBank interface child requires unique native xrefs")
-            for xref in xrefs:
-                if xref.tag != bp + "UnificationXref":
-                    raise ValueError("PathBank interface child requires native unification xrefs")
-                literal(xref, "db", 1)
-                literal(xref, "id", 1)
-            return child
-
-        bridged: set[str] = set()
-        seen_bridges: set[str] = set()
-        for node in primary:
-            if "InhibitorySubPathwayControl" not in labels(node):
-                continue
-            uri = subject(node)
-            if uri in seen_bridges:
-                continue  # The direct and ordered paths may name the same object.
-            seen_bridges.add(uri)
-            child_uri = subject(bridge_child(node))
-            if child_uri in bridged:
-                raise ValueError("PathBank interface child has duplicate primary-owned bridges")
-            bridged.add(child_uri)
-        for other in pathways:
-            if other is pathway:
-                continue
-            members = processes(other)
-            direct_stub = (
-                subject(other) in attached
-                and "SubPathway" in labels(other)
-                and members
-                and all(node.tag == bp + "Interaction" for node in members)
-            )
-            if not direct_stub and subject(other) not in bridged:
-                raise ValueError(
-                    "PathBank additional pathways must be attached native interface stubs"
-                )
-            display_names = other.findall(bp + "displayName")
-            if (
-                len(display_names) != 1
-                or len(display_names[0])
-                or not (display_names[0].text or "").strip()
-            ):
-                raise ValueError("PathBank attached pathway requires one direct displayName")
-            child_name = display_names[0].text.strip()
-            if child_name.casefold() in {"subpathway", "inhibitorysubpathway"}:
-                raise ValueError("PathBank attached pathway requires a biological displayName")
-            # The issuing source names this exact attached pathway. Its generic
-            # SubPathway marker is not a synonym, and its interface is not an
-            # independently retrieved or expanded biochemical definition.
-            child_terms.append(("PathBank:" + native_accession(other), child_name, []))
-    names = labels(pathway)
-    if not names:
-        raise ValueError("PathBank pathway lacks a native label")
-    identifier = "PathBank:" + accession
-    yield identifier, names[0], names[1:]
-    yield from child_terms
-
-    graph_types = {
-        bp + kind
-        for kind in (
-            "BiochemicalReaction",
-            "Transport",
-            "Complex",
-            "PhysicalEntity",
-            "SmallMolecule",
-            "Protein",
-            "Dna",
-            "Rna",
-            "DnaRegion",
-            "RnaRegion",
-        )
-    }
-    for node in root:
-        if node.tag not in graph_types:
-            continue
-        uri = subject(node)
-        document, native = urldefrag(uri)
-        if (
-            not native
-            or document != urldefrag(base)[0]
-            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._~/-]*", native)
-            or any(part in {".", "..", ""} for part in native.split("/"))
-        ):
-            raise ValueError(f"PathBank graph object lacks an unambiguous local identity: {uri}")
-        names = labels(node) or [native]
-        yield identifier + "/" + native, names[0], names[1:]
 
 
 def _pathbank_archive_terms(
@@ -1993,6 +1648,8 @@ def source_terms(
         yield from gpml_terms(ElementTree.parse(path).getroot())
     elif kind == "biopax":
         yield from biopax_terms(ElementTree.parse(path).getroot())
+    elif kind == PATHBANK_CONTEXT_KIND:
+        yield from context_terms(path.read_bytes(), url or "")
     elif kind == "pathbank-biopax":
         yield from pathbank_terms(ElementTree.parse(path).getroot(), url=url or "")
     elif kind == "rhea-components-rdf-gz":
@@ -2074,6 +1731,22 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for index, entry in enumerate(entries)
     }
     carrier_reaction_ids = validate_carrier_reaction_assertions(carrier_sources)
+    context_sources = {
+        index: context_metadata(entry, cache_dir)
+        if entry["kind"] == PATHBANK_CONTEXT_KIND
+        else {
+            name: entry[name]
+            for name in ("url", "kind", "archive", "native_pathbank_context")
+            if name in entry
+        }
+        for index, entry in enumerate(entries)
+    }
+    context_projections = validate_context_assertions(context_sources)
+    context_ids = {ident for projection in context_projections.values() for ident in projection}
+    context_roots = {
+        next(iter(projection)).removeprefix("PathBank:")
+        for projection in context_projections.values()
+    }
     for entry_index, entry in enumerate(entries):
         for native_kind, companion_field in COMPANION_FIELDS.items():
             if companion_field in entry and entry["kind"] != native_kind:
@@ -2113,7 +1786,13 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             raise ValueError(f"source {key} bytes do not match manifest sha256")
         if "archive" in entry and entry["kind"] != PATHBANK_ARCHIVE_KIND:
             raise ValueError("PathBank archive provenance requires the typed ZIP source kind")
-        if entry["kind"] == PATHBANK_ARCHIVE_KIND:
+        if context_roots and entry["kind"] in {"biopax", "pathbank-biopax"}:
+            if pathbank_body_roots(path) & context_roots:
+                raise ValueError("PathBank context rejects an untyped native body identity")
+        if entry["kind"] == PATHBANK_CONTEXT_KIND:
+            metadata = context_sources[entry_index]
+            parsed_terms = context_projections[entry_index].values()
+        elif entry["kind"] == PATHBANK_ARCHIVE_KIND:
             if entry.keys() != {
                 "key",
                 "kind",
@@ -2310,6 +1989,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             )
         all_aceto_sources[key] = metadata
         for identifier, label, synonyms in parsed_terms:
+            if identifier in context_ids and entry["kind"] != PATHBANK_CONTEXT_KIND:
+                raise ValueError("PathBank context rejects a competing parsed native identity")
             # Body-derived identity is authoritative even when its request URL
             # has no frame identifier. Check every claim before corpus selection.
             if (
@@ -2376,7 +2057,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     raise ValueError(f"conflicting PubChem native names for {identifier}")
                 pubchem_assertions[identifier] = label
             if (
-                entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND}
+                entry["kind"] in {"pathbank-biopax", PATHBANK_ARCHIVE_KIND, PATHBANK_CONTEXT_KIND}
                 and "/" not in identifier
             ):
                 if identifier in pathbank_assertions and pathbank_assertions[identifier] != label:
@@ -2441,6 +2122,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     NAMED_COMPLEX_KIND: named_complex_term,
                 }[entry["kind"]]
                 terms[identifier] = projector(metadata, key)[1]
+            if entry["kind"] == PATHBANK_CONTEXT_KIND:
+                terms[identifier] = context_term(identifier, context_projections[entry_index], key)
             if entry["kind"] in ACETO_KINDS:
                 terms[identifier] = aceto_term(metadata, key)[1]
             if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND:

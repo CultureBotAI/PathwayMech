@@ -1,0 +1,204 @@
+--- /private/tmp/pathwaymech-next-239-maintained-science-review-20261012/prepare_science.py
++++ /private/tmp/pathwaymech-next-240-maintained-science-review-20261012/prepare_science.py
+@@ -1,50 +1,46 @@
+-"""Prepare inherited scientific appraisals; final native inspection waits for gates."""
+-import datetime
+-import gzip
+-import hashlib
+-import io
+-import json
+-import os
++"""Reconcile accepted240 science to maintained whole bodies; final inspect waits gates."""
++import datetime,gzip,hashlib,io,json,os,stat,zipfile
+ from pathlib import Path
+-import stat
+-import zipfile
+ import yaml
+-
+ H=Path(__file__).resolve().parent
+-R=Path('/private/tmp/pathwaymech-next-239-local-20261012')
+-A=Path('/private/tmp/pathwaymech-next-239-author-20261012')
+-S=Path('/private/tmp/pathwaymech-next-239-science-review-20261012')
+-D='research/pathway_additions/2026-10-12-next-239'
+-TARGET='data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml'
++R=Path('/private/tmp/pathwaymech-next-240-local-20261012')
++A=Path('/private/tmp/pathwaymech-next-240-author-20261012')
++S=Path('/private/tmp/pathwaymech-next-240-science-review-20261012')
++U=Path('/private/tmp/pathwaymech-next-240-scope-successor-20261012')
++V=Path('/private/tmp/pathwaymech-next-240-scope-successor-independent-review-20261012')
++D='research/pathway_additions/2026-10-12-next-240'
++TARGET='data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml'
+ PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ def pin(p):
+-    p=Path(p);assert stat.S_ISREG(p.lstat().st_mode),p
+-    b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+-def load(p):return json.loads(Path(p).read_text())
++ p=Path(p)
++ for q in [p,*p.parents]:assert not q.is_symlink(),q
++ assert stat.S_ISREG(p.lstat().st_mode),p
++ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
++def load(p):return json.loads(Path(p).read_bytes())
+ def write(name,x):(H/name).write_text(json.dumps(x,ensure_ascii=False,indent=2)+'\n')
+ def check(x):
+-    a=pin(x['path']);assert all(a[k]==x[k] for k in ['bytes','sha256']),x;return a
+-at=datetime.datetime.now(datetime.timezone.utc).isoformat()
+-target=pin(R/TARGET);assert target['sha256']=='60750cb046b847a5d52458cff6eab771be2a9200755c259cfe8d87c4808e95fa'
+-assert target['bytes']==107271 and (R/TARGET).read_bytes()==(A/'draft'/Path(TARGET).name).read_bytes()
+-d=yaml.safe_load((R/TARGET).read_bytes())
+-root=Path('/private/tmp/pathwaymech-next-239-root-scientific-acceptance-20261012.json')
+-assert pin(root)['sha256']=='46fcc97d3a76138cb791d458bea2a00d0a5855c98f328480da2623bfa209dd09'
+-accepted=load(root);closed=[]
+-for name,base in [('author',A),('independent_review',S)]:
+-    check(accepted[name]['handoff']);check(accepted[name]['manifest'])
+-    manifest=load(base/'artifact-manifest.json');files=set();dirs=set()
+-    for x in manifest['artifacts']:
+-        q=base/x['relative_path'];assert x.get('file_type','regular')=='regular';check({'path':str(q),**{k:x[k] for k in ['bytes','sha256']}})
+-    for b,ds,fs in os.walk(base,followlinks=False):
+-        for n in ds:assert not (Path(b)/n).is_symlink();dirs.add(str((Path(b)/n).relative_to(base)))
+-        for n in fs:files.add(str((Path(b)/n).relative_to(base)))
+-    assert files=={x['relative_path'] for x in manifest['artifacts']}|{'handoff.json','artifact-manifest.json'}
+-    # The author manifest explicitly includes its root '.', whereas the reviewer
+-    # manifest lists only descendants. Both inventories retain exact descendants.
+-    assert dirs==set(manifest['directories'])-{'.'}
+-    closed.append({'kind':name,'handoff':pin(base/'handoff.json'),'manifest':pin(base/'artifact-manifest.json'),'artifacts':len(manifest['artifacts']),'seals':2})
+-
++ a=pin(x['path']);assert all(a[k]==x[k] for k in ['bytes','sha256']),x;return a
++def digest(x):return hashlib.sha256(json.dumps(x,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
++def close(base,expected):
++ assert pin(base/'handoff.json')['sha256']==expected
++ hand=load(base/'handoff.json');check(hand['manifest']);m=load(base/'artifact-manifest.json');rows=m['artifacts'];files=set();dirs=set()
++ for row in rows:check({'path':str(base/row['relative_path']),'bytes':row['bytes'],'sha256':row['sha256']})
++ for parent,ds,fs in os.walk(base,followlinks=False):
++  for name in ds:
++   p=Path(parent)/name;assert stat.S_ISDIR(p.lstat().st_mode);dirs.add(p.relative_to(base).as_posix())
++  for name in fs:
++   p=Path(parent)/name;assert stat.S_ISREG(p.lstat().st_mode);files.add(p.relative_to(base).as_posix())
++ assert files=={r['relative_path'] for r in rows}|{'handoff.json','artifact-manifest.json'}
++ assert dirs==set(m['directories'])-{'.'}
++ return {'root':str(base),'handoff':pin(base/'handoff.json'),'manifest':pin(base/'artifact-manifest.json'),'artifacts':len(rows),'directories':len(dirs),'complete_hidden_ignored_no_follow_closure':True}
++at=datetime.datetime.now(datetime.timezone.utc).isoformat();target=pin(R/TARGET)
++assert (target['sha256'],target['bytes'])==('0adef1da2d818af7c62d7e3952b2115585b47b8f132ec189cde2b435d2721680',79673)
++assert (R/TARGET).read_bytes()==(U/'draft'/Path(TARGET).name).read_bytes()
++d=yaml.safe_load((R/TARGET).read_bytes());old=yaml.safe_load((A/'draft'/Path(TARGET).name).read_bytes())
++root_science=Path('/private/tmp/pathwaymech-next-240-root-scientific-acceptance-20261012.json');root_scope=Path('/private/tmp/pathwaymech-next-240-root-scope-successor-acceptance-20261012.json')
++assert pin(root_science)['sha256']=='2253ac092d1e3b69ba56d9a2596676b777c99e393cb49268203238a0311fbbf4'
++assert pin(root_scope)['sha256']=='d58c4cdf9339c3345317846a0397b30eea38d29fbabf9142130cad23ceeca728'
++closed=[close(A,'a2f1867810bd8e00984d49b1490f4df7c47b950938feb66832e18d3a8448bffc'),close(S,'410a0fe2625f40a0781a540b98dcc1244c644063926c7e1e0cc52835b993e18d'),close(U,'342893d4c650f2391d8c107c8738ffe37b56f74e095abfaead974b7f2aebc364'),close(V,'eee8072c8e56d75695cb51c69aff0fc254fe9b7efcf227f98f9a89d642123dda')]
+ # Retrieve only exact scientific bodies/receipts from maintained portable owners.
+ index_path=R/D/'evidence-index.json.gz';index_pin=pin(index_path)
+ index=json.loads(gzip.decompress(index_path.read_bytes()));assert index['format']=='lossless-content-addressed-evidence-v1'
+@@ -75,52 +71,69 @@
+         z,archive_sha=archives[rel];assert archive_sha==loc['archive_sha256'];body=z.read(loc['member'])
+     assert (len(body),hashlib.sha256(body).hexdigest())==(loc['bytes'],sha)
+     return body,loc
+-sources=load(A/'source-bindings.json')['sources'];originals=[];receipts={}
+-portable_science={x['portable_body']['sha256'] for x in index['original_groups']['whole_scientific_originals']}
+-for row in sources:
+-    original=check(row['original']);body,loc=retrieve(original['sha256'])
+-    assert body==Path(original['path']).read_bytes() and original['sha256'] in portable_science
+-    source_receipts=([row['receipt']] if row.get('receipt') else [])+[x['receipt'] for x in row.get('receipt_lineage',[])]
+-    if row.get('archive_parent'):
+-        parent=row['archive_parent'];check(parent['original'])
+-        parent_body,_=retrieve(parent['original']['sha256'])
+-        with zipfile.ZipFile(io.BytesIO(parent_body)) as z:assert z.read(row['archive_member'])==body
+-        source_receipts.append(parent['receipt'])
+-    receipt_bindings=[]
+-    for receipt in source_receipts:
+-        rb=check(receipt);receipt_body,receipt_loc=retrieve(rb['sha256'])
+-        assert receipt_body==Path(rb['path']).read_bytes()
+-        receipts[rb['path']]={'original':rb,'portable_location':receipt_loc}
+-        receipt_bindings.append(receipts[rb['path']])
+-    originals.append({'original':original,'portable_location':loc,'receipts':receipt_bindings,'source_context':row})
+-assert len(originals)==98 and len(receipts)==96
+-reference_ledger=load(A/'reference-ledger.json');assert len(reference_ledger)==93
+-assert [r['reference'] for r in reference_ledger]==d['references']
+-for row in reference_ledger:
+-    b,loc=retrieve(row['reference']['source_sha256']);assert len(b)==row['complete_original']['bytes']
+-for bound in owners.values():check(bound)
+-write('whole-source-closure.json',{'at':at,'status':'whole_originals_and_receipts_unchanged','originals':originals,'unique_receipts':list(receipts.values()),'source_count':98,'receipt_count':96,'reference_count':93,'portable_index':index_pin,'maintained_portable_owners':list(owners.values()),'new_full_paper_reading':False,'reading_basis':'Inherited exact earlier independent full scientific reading; whole bodies are newly byte-compared to those originals and maintained portable representations.'})
+-paras=load(S/'paragraph-appraisal.json');text=d['description'].split('\n\n');assert len(paras)==len(text)==21
+-for p,t in zip(paras,text,strict=True):
+-    assert hashlib.sha256(t.encode()).hexdigest()==p['paragraph_sha256']
+-    p['current_text']=t;p['current_reassessment']='Earlier complete scientific judgment applies to unchanged whole paragraph and exact unchanged whole source bodies; no new scientific scope added during maintained adoption.'
+-write('paragraph-appraisals.json',paras)
+-edges=load(S/'edge-appraisal.json');assert len(edges)==len(d['mechanistic_edges'])==44
+-for p,e in zip(edges,d['mechanistic_edges'],strict=True):
+-    assert hashlib.sha256(json.dumps(e,ensure_ascii=False,sort_keys=True).encode()).hexdigest()==p['edge_sha256']
+-    p['current_edge']=e;p['current_reassessment']='Exact whole edge, evidence and qualifiers match the earlier independently assessed scientific object. Final maintained DOM/export equivalence remains pending.'
+-write('edge-appraisals.json',edges)
+-identity=load(S/'replayed-author-checks/identity-ledger.json');assert len(identity['nodes'])==38
+-write('identity-appraisals.json',{'earlier_reviewed_whole_ledger':pin(S/'replayed-author-checks/identity-ledger.json'),'identities':identity,'current_scope':'All current target IDs/labels/categories remain byte-identical to the reviewed record; whole issuing originals are freshly bound. Authority implementation technical acceptance is separate.'})
+-write('reference-appraisals.json',reference_ledger)
+-write('read-coverage.json',{'stage':'provisional scientific preparation; final native inspect and gate/DOM/export assessment pending','at':at,'earlier_complete_review':pin(S/'read-coverage.json'),'earlier_report':pin(S/'REPORT.md'),'prior_review_full_reading':load(S/'read-coverage.json'),'fresh_now':['Complete current narrative and all21 prior appraisals reread; all44 endpoint/predicate/qualifier appraisals checked against exact whole current edges.','Complete current target compared byte-for-byte with accepted107271-byte draft.','All98 whole source bodies and96 acquisition receipts rehashed and compared to maintained portable decoded originals.','All84+2 author and46+2 independent review artifacts freshly closed, including hidden/ignored files and no alias traversal.'],'not_repeated':['Unchanged full papers, scientific native-frame interpretations and original figure readings are inherited from this agent’s earlier full scientific review; no fictitious fresh rereading.','Authority builders, runtime implementation acceptance, whole-corpus gates and cache/history preservation are separate root/peer technical evidence.'],'prior_role':'Independent of239 scientific draft/preflight authorship. Authored earlier independent scientific review, then authority design, adapter/accepted preselection successor and canonical preparation. This review cannot independently certify those self-authored technical changes; root/other reviewer owns TECH.'})
++
++originals=[];receipts={};native=[]
++for row in index['original_groups']['whole_scientific_originals']:
++ original=check(row['original_metadata']);body,loc=retrieve(original['sha256']);assert body==Path(original['path']).read_bytes()
++ context=row['source_context'];acq=context.get('acquisition');receipt=[]
++ if acq is not None:
++  rb=check(acq['receipt']);data,location=retrieve(rb['sha256']);assert data==Path(rb['path']).read_bytes()
++  receipts[rb['path']]={'original':rb,'portable_location':location};receipt.append(receipts[rb['path']])
++ originals.append({'original':original,'portable_location':loc,'receipts':receipt,'source_context':context})
++assert len(originals)==66
++for row in index['original_groups']['scientific_native_originals']:
++ original=check(row['original_metadata']);body,loc=retrieve(original['sha256']);assert body==Path(original['path']).read_bytes();native.append({'original':original,'portable_location':loc,'source_context':row['source_context']})
++assert len(native)==3
++references=load(A/'reference-ledger.json');assert len(references)==42 and [r['reference'] for r in references]==d['references']
++for row in references:
++ original=check(row['complete_original']);b,_=retrieve(original['sha256']);assert b==Path(original['path']).read_bytes()
++ for receipt in row['acquisition_receipts']:
++  rb=check(receipt);data,loc=retrieve(rb['sha256']);assert data==Path(rb['path']).read_bytes();receipts[rb['path']]={'original':rb,'portable_location':loc}
++for p in owners.values():check(p)
++write('whole-source-closure.json',{'at':at,'status':'complete_originals_and_receipts_equal_maintained_portable_owners','originals':originals,'native_originals':native,'unique_receipts':list(receipts.values()),'source_count':len(originals),'native_original_count':len(native),'receipt_count':len(receipts),'reference_count':42,'portable_index':index_pin,'maintained_portable_owners':list(owners.values()),'primary_reading':'Inherited accepted earlier independent scientific reading; this run only freshly checks whole content/currentness, not paper interpretation.'})
++transform=load(V/'identity-and-semantic-checks.json');forward={r['old']:r['new'] for r in transform['native_identity_map']};inverse={v:k for k,v in forward.items()};assert len(forward)==32
++restored=json.loads(json.dumps(d))
++for group in ['taxa','participants','reactions']:
++ for n in restored[group]:n['id']=inverse.get(n['id'],n['id'])
++for e in restored['mechanistic_edges']:
++ for key in ['subject','object']:e[key]=inverse.get(e[key],e[key])
++assert restored==old
++paragraphs=load(S/'paragraph-appraisals.json');assert len(paragraphs)==18
++for prior,text in zip(paragraphs,d['description'].split('\n\n'),strict=True):
++ assert prior['text']==text and prior['text_sha256']==hashlib.sha256(text.encode()).hexdigest()
++write('paragraph-appraisals.json',[{'ordinal':r['paragraph'],'current_text':r['text'],'current_sha256':r['text_sha256'],'earlier_appraisal':r,'current_reassessment':'Whole current paragraph remains identical to the accepted scientific text, including its evidence limitations. Historical authoring-stage process wording is not a current technical status claim.'} for r in paragraphs])
++edges=load(S/'edge-appraisals.json');after={r['id']:r for r in transform['whole_edges']};assert len(edges)==len(d['mechanistic_edges'])==58
++out=[]
++for n,(prior,current,before) in enumerate(zip(edges,d['mechanistic_edges'],old['mechanistic_edges'],strict=True),1):
++ assert prior['edge_id']==current['id']==before['id'] and digest(before)==prior['whole_edge_sha256']==after[current['id']]['before_sha256']
++ assert digest(current)==after[current['id']]['after_sha256']
++ out.append({'ordinal':n,'edge_id':current['id'],'current_edge':current,'current_sha256':digest(current),'earlier_appraisal':prior,'scope_successor':after[current['id']],'current_reassessment':'All endpoint changes are the accepted document-scoping correction; complete non-endpoint meaning/evidence/qualifiers is preserved. Scientific interpretation inherits the accepted prior independent assessment.'})
++write('edge-appraisals.json',out)
++qualifiers=load(S/'qualifier-appraisals.json');current_qual=[(e['id'],q) for e in d['mechanistic_edges'] for q in e.get('endpoint_qualifiers',[])];assert len(qualifiers)==len(current_qual)==4
++for prior,(eid,q) in zip(qualifiers,current_qual,strict=True):assert prior['edge']==eid and prior['complete_qualifier']==q and prior['whole_qualifier_sha256']==digest(q)
++write('qualifier-appraisals.json',qualifiers)
++identities=load(S/'identity-appraisals.json');nodes=[{'id':d['id'],'label':d['label']},*d['taxa'],*d['participants'],*d['reactions']];assert len(identities)==len(nodes)==43
++out=[]
++for prior,node in zip(identities,nodes,strict=True):
++ assert forward.get(prior['id'],prior['id'])==node['id'] and prior['label']==node['label'];out.append({'current_node':node,'earlier_appraisal':prior,'current_reassessment':'Exact accepted scoped identity; label and scientific meaning unchanged. Technical snapshot acceptance is separately attributed.'})
++write('identity-appraisals.json',out);write('reference-appraisals.json',references)
++assert d['source_mappings']==old['source_mappings'] and len(d['source_mappings'])==4
++write('mapping-appraisals.json',{'whole_current_rows':d['source_mappings'],'prior_mapping_replay':pin(V/'mapping-replay.json'),'interpretation':'Four chain namespace normalizations only; native RDF source-element keys remain literal and are not PathBank CURIE declarations.'})
++locators=load(S/'locator-checks.json');observed=[]
++for edge in d['mechanistic_edges']:
++ for ev in edge.get('evidence',[]):observed.append({'edge':edge['id'],'scope':'edge',**{k:ev[k] for k in ['reference_id','source_locator','source_assertion']}})
++ for qi,q in enumerate(edge.get('endpoint_qualifiers',[]),1):
++  for ev in q.get('evidence',[]):observed.append({'edge':edge['id'],'scope':'qualifier-'+str(qi),**{k:ev[k] for k in ['reference_id','source_locator','source_assertion']}})
++assert len(observed)==len(locators)==100
++for a,b in zip(observed,locators,strict=True):assert all(b[k]==v for k,v in a.items())
++write('locator-currentness.json',{'count':100,'every_current_locator_assertion_scope_exact':True,'whole_originals_rebound':True,'earlier_full_resolutions':locators,'reading_limit':'Earlier exact matched-object replay is inherited; unchanged current descriptors and whole original bytes were freshly compared. This is not a new paper reading.'})
++write('accepted-reading.json',{'prior_science_closure':closed,'science_acceptance':pin(root_science),'scope_acceptance':pin(root_scope),'prior_report':(S/'REPORT.md').read_text(),'scope_report':(V/'REPORT.md').read_text(),'prior_read_coverage':load(S/'read-coverage.json'),'reviewer_role':load(H/'prereading.json')['prior_role']})
+ contracts=['.claude/skills/review-yaml-record/SKILL.md','.claude/skills/add-pathway/SKILL.md','docs/record-reviews.md','docs/record-review-profile.md','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','CLAUDE.md','justfile','schema/record_review.yaml','scripts/record_review.py','src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml']
+ spec={'targets':[{'target_id':d['id'],'path':TARGET,'label':d['label'],'record_class':'PathwayRecord','kind':'maintained','owner_paths':[{'repository':'CultureBotAI/PathwayMech','path':TARGET,'role':'maintained scientific record'}]}]}
+ (H/'targets.yaml').write_text(yaml.safe_dump(spec,sort_keys=False,allow_unicode=True))
+-inputs=list(dict.fromkeys(['pages/records/MetaCyc_PWY-8132.html','pages/assets/pathway-network.css','pages/assets/pathway-network.js','src/pathwaymech/graph_view.py','src/pathwaymech/cli.py','conf/identifier_policy.yaml','conf/identifier_sources.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','output/kgx/nodes.tsv','output/kgx/edges.tsv','output/sssom/source_mappings.sssom.tsv']+contracts+[str(Path(p).relative_to(R)) for p in owners]))
+-prefix=[PY,'-B',str(R/'scripts/record_review.py'),'--repo-root',str(R),'--schema',str(R/'schema/record_review.yaml')]
+-argv=prefix+['inspect','--targets',str(H/'targets.yaml')]
++inputs=list(dict.fromkeys(['pages/records/PathBank_SMP0002097.html','pages/assets/pathway-network.css','pages/assets/pathway-network.js','src/pathwaymech/graph_view.py','src/pathwaymech/cli.py','conf/identifier_policy.yaml','conf/identifier_sources.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','output/kgx/nodes.tsv','output/kgx/edges.tsv','output/sssom/source_mappings.sssom.tsv']+contracts+[str(Path(p).relative_to(R)) for p in owners]))
++prefix=[PY,'-B',str(R/'scripts/record_review.py'),'--repo-root',str(R),'--schema',str(R/'schema/record_review.yaml')];argv=prefix+['inspect','--targets',str(H/'targets.yaml')]
+ for p in inputs:argv+=['--input',p]
+-write('planned-native-commands.json',{'status':'NOT_EXECUTED_PENDING_ALL_GATES','cwd':str(R),'environment':{'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(R/'src')+':'+str(R)},'inspect':argv,'validate':prefix+['validate',str(H/'completed-review.yaml')],'save_interface_only':prefix+['save','--content',str(H/'completed-review.yaml')],'save_status':'Not authorized by this task and not executed. Root coordinates final maintained evidence adoption and native save.','final_generated_inputs_bound':False})
+-write('preparation-results.json',{'status':'scientific_preparation_complete_final_native_phase_pending','at':at,'target_at_preparation':target,'root_science_acceptance':pin(root),'earlier_packets_closed':closed,'source_bodies':len(originals),'receipts':len(receipts),'paragraphs':len(paras),'edges':len(edges),'named_ids':38,'references':len(reference_ledger),'qualifiers':7,'mappings':20,'contracts':[pin(R/p) for p in contracts],'native_inspect_run':False,'gates_asserted_complete':False,'maintained_mutations':False,'actual_reading_limits':'Earlier full primary/native reading retained transparently; final DOM/static/current exports/gate origins remain to assess after exact completion notice.','initial_lookup_failure':'b71520/1 attempted guessed earlier whole-source-closure.json; actual full closure is within input-bindings.json and original-preservation.json, discovered by ignored/hidden-inclusive inventory. No absence claim was made.','truncated_helper_read':'Overlong238 helper/appraisal output was not treated as full fresh reading; complete prior239 rationales were recovered in bounded narrative/edge calls.'})
+-print(json.dumps(load(H/'preparation-results.json'),indent=2))
++write('planned-native-commands.json',{'status':'NOT_EXECUTED_PENDING_ALL_GATES','cwd':str(R),'environment':{'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','UV_NO_SYNC':'1','PYTHONPATH':str(R/'src')+':'+str(R)},'inspect':argv,'validate':prefix+['validate',str(H/'completed-review.yaml')],'save_status':'Not authorized to this reviewer; root handles final adoption/save.','final_generated_inputs_bound':False})
++write('preparation-results.json',{'status':'complete_maintained_scientific_currentness_pending_final_native_gates_and_inspect','at':at,'target':target,'paragraphs':18,'edges':58,'qualifiers':4,'identities':43,'references':42,'mappings':4,'locators':100,'whole_scientific_originals':66,'whole_native_originals':3,'receipt_count':len(receipts),'portable_owners':len(owners),'packets':closed,'contract_pins':[pin(R/p) for p in contracts],'maintained_writes':False,'new_primary_paper_reading':False})
++print(json.dumps(load(H/'preparation-results.json')))
