@@ -1,0 +1,625 @@
+id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+label: catechol degradation to β-ketoadipate
+description: The native four-reaction ortho-cleavage module converts catechol to 3-oxoadipate through
+  cis,cis-muconate, (S)-muconolactone and 3-oxoadipate enol-lactone. This boundary ends before CoA transfer
+  and thiolysis in the downstream 3-oxoadipate degradation module. The selected Pseudomonas putida scope
+  follows the native species annotation; it does not assert occurrence in every strain. Native catalyst
+  frames preserve historical assembly annotations; deleted CatA and discordant PcaD sequence cross-references
+  are not propagated as modern protein identities.
+pathway_type: aromatic-compound-catabolism
+taxa:
+- id: NCBITaxon:303
+  label: Pseudomonas putida
+participants:
+- id: CHEBI:18135
+  label: catechol
+  category: small_molecule
+- id: CHEBI:15379
+  label: O2
+  category: small_molecule
+- id: CHEBI:32379
+  label: cis,cis-muconate
+  category: small_molecule
+- id: CHEBI:15378
+  label: H(+)
+  category: small_molecule
+- id: CHEBI:58736
+  label: (S)-muconolactone
+  category: small_molecule
+- id: CHEBI:58425
+  label: (4,5-dihydro-5-oxofuran-2-yl)-acetate
+  category: small_molecule
+- id: CHEBI:15377
+  label: H2O
+  category: small_molecule
+- id: CHEBI:15775
+  label: 3-oxoadipate
+  category: small_molecule
+- id: MetaCyc:CPLX-2842
+  label: catechol 1,2-dioxygenase
+  category: complex
+- id: MetaCyc:MONOMER-3422
+  label: subunit of catechol 1,2-dioxygenase
+  category: protein
+- id: MetaCyc:CPLX-2843
+  label: muconate cycloisomerase
+  category: complex
+- id: MetaCyc:MONOMER-3423
+  label: muconate lactonizing enzyme subunit
+  category: protein
+- id: MetaCyc:CPLX-2844
+  label: muconolactone isomerase
+  category: complex
+- id: MetaCyc:MONOMER-3424
+  label: muconolactone isomerase subunit
+  category: protein
+- id: MetaCyc:CPLX-2761
+  label: β-ketoadipate enol-lactone hydrolase
+  category: complex
+- id: MetaCyc:MONOMER-3221
+  label: subunit of 3-oxoadipate enol-lactone hydrolase
+  category: protein
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:29034
+  label: iron(3+)
+  category: cofactor
+reactions:
+- id: RHEA:23853
+  label: catechol + O2 => cis,cis-muconate + 2 H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:30033
+  label: cis,cis-muconate + H(+) => (S)-muconolactone
+  category: molecular_activity
+  direction: right_to_left
+- id: RHEA:12349
+  label: (S)-muconolactone => (4,5-dihydro-5-oxofuran-2-yl)-acetate
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:10185
+  label: (4,5-dihydro-5-oxofuran-2-yl)-acetate + H2O => 3-oxoadipate + H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:PWY-2361
+  label: 3-oxoadipate degradation
+  category: pathway
+mechanistic_edges:
+- id: cat-001
+  subject: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  predicate: has_part
+  object: RHEA:23853
+  description: Native core membership; the exact directional Rhea equation was checked against the native
+    structures, charge, coefficients and selected pathway traversal.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native reaction-list contains CATECHOL-12-DIOXYGENASE-RXN.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="CATECHOL-12-DIOXYGENASE-RXN"]
+  - reference_id: MetaCyc:CATECHOL-12-DIOXYGENASE-RXN
+    source_assertion: The native reaction has a RHEA unification cross-reference to 23853; its complete
+      sides and direction specify the selected reaction.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-002
+  subject: CHEBI:18135
+  predicate: consumes
+  object: RHEA:23853
+  description: Complete formal substrates side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:23853
+    source_assertion: RHEA:23853 places CHEBI:18135 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/23853/rh:substrates
+      -> http://rdf.rhea-db.org/23852_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_23852_compound_2779/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2779/rh:chebi'
+- id: cat-003
+  subject: CHEBI:15379
+  predicate: consumes
+  object: RHEA:23853
+  description: Complete formal substrates side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:23853
+    source_assertion: RHEA:23853 places CHEBI:15379 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/23853/rh:substrates
+      -> http://rdf.rhea-db.org/23852_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_23852_compound_1198/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1198/rh:chebi'
+- id: cat-004
+  subject: RHEA:23853
+  predicate: produces
+  object: CHEBI:32379
+  description: Complete formal products side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:23853
+    source_assertion: RHEA:23853 places CHEBI:32379 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/23853/rh:products
+      -> http://rdf.rhea-db.org/23852_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_23852_compound_3685/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3685/rh:chebi'
+- id: cat-005
+  subject: RHEA:23853
+  predicate: produces
+  object: CHEBI:15378
+  description: Complete formal products side; coefficient 2.
+  evidence:
+  - reference_id: RHEA:23853
+    source_assertion: RHEA:23853 places CHEBI:15378 on its products side with coefficient 2.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/23853/rh:products
+      -> http://rdf.rhea-db.org/23852_R/rh:contains2 -> http://rdf.rhea-db.org/Participant_23852_compound_3249/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3249/rh:chebi'
+- id: cat-006
+  subject: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  predicate: has_part
+  object: RHEA:30033
+  description: Native core membership; the exact directional Rhea equation was checked against the native
+    structures, charge, coefficients and selected pathway traversal.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native reaction-list contains MUCONATE-CYCLOISOMERASE-RXN.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="MUCONATE-CYCLOISOMERASE-RXN"]
+  - reference_id: MetaCyc:MUCONATE-CYCLOISOMERASE-RXN
+    source_assertion: The native reaction has a RHEA unification cross-reference to 30033; its complete
+      sides and direction specify the selected reaction.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-007
+  subject: CHEBI:32379
+  predicate: consumes
+  object: RHEA:30033
+  description: Complete formal substrates side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:30033
+    source_assertion: RHEA:30033 places CHEBI:32379 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/30033/rh:substrates
+      -> http://rdf.rhea-db.org/30031_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_30031_compound_3685/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3685/rh:chebi'
+- id: cat-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: RHEA:30033
+  description: Complete formal substrates side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:30033
+    source_assertion: RHEA:30033 places CHEBI:15378 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/30033/rh:substrates
+      -> http://rdf.rhea-db.org/30031_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_30031_compound_3249/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3249/rh:chebi'
+- id: cat-009
+  subject: RHEA:30033
+  predicate: produces
+  object: CHEBI:58736
+  description: Complete formal products side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:30033
+    source_assertion: RHEA:30033 places CHEBI:58736 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/30033/rh:products
+      -> http://rdf.rhea-db.org/30031_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_30031_compound_5261/rh:compound
+      -> http://rdf.rhea-db.org/Compound_5261/rh:chebi'
+- id: cat-010
+  subject: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  predicate: has_part
+  object: RHEA:12349
+  description: Native core membership; the exact directional Rhea equation was checked against the native
+    structures, charge, coefficients and selected pathway traversal.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native reaction-list contains MUCONOLACTONE-DELTA-ISOMERASE-RXN.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="MUCONOLACTONE-DELTA-ISOMERASE-RXN"]
+  - reference_id: MetaCyc:MUCONOLACTONE-DELTA-ISOMERASE-RXN
+    source_assertion: The native reaction has a RHEA unification cross-reference to 12349; its complete
+      sides and direction specify the selected reaction.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-011
+  subject: CHEBI:58736
+  predicate: consumes
+  object: RHEA:12349
+  description: Complete formal substrates side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:12349
+    source_assertion: RHEA:12349 places CHEBI:58736 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/12349/rh:substrates
+      -> http://rdf.rhea-db.org/12348_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_12348_compound_5261/rh:compound
+      -> http://rdf.rhea-db.org/Compound_5261/rh:chebi'
+- id: cat-012
+  subject: RHEA:12349
+  predicate: produces
+  object: CHEBI:58425
+  description: Complete formal products side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:12349
+    source_assertion: RHEA:12349 places CHEBI:58425 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/12349/rh:products
+      -> http://rdf.rhea-db.org/12348_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_12348_compound_2258/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2258/rh:chebi'
+- id: cat-013
+  subject: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  predicate: has_part
+  object: RHEA:10185
+  description: Native core membership; the exact directional Rhea equation was checked against the native
+    structures, charge, coefficients and selected pathway traversal.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native reaction-list contains 3-OXOADIPATE-ENOL-LACTONASE-RXN.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="3-OXOADIPATE-ENOL-LACTONASE-RXN"]
+  - reference_id: MetaCyc:3-OXOADIPATE-ENOL-LACTONASE-RXN
+    source_assertion: The native reaction has a RHEA unification cross-reference to 10185; its complete
+      sides and direction specify the selected reaction.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-014
+  subject: CHEBI:58425
+  predicate: consumes
+  object: RHEA:10185
+  description: Complete formal substrates side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:10185
+    source_assertion: RHEA:10185 places CHEBI:58425 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/10185/rh:substrates
+      -> http://rdf.rhea-db.org/10184_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_10184_compound_2258/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2258/rh:chebi'
+- id: cat-015
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:10185
+  description: Complete formal substrates side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:10185
+    source_assertion: RHEA:10185 places CHEBI:15377 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/10185/rh:substrates
+      -> http://rdf.rhea-db.org/10184_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_10184_compound_1283/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1283/rh:chebi'
+- id: cat-016
+  subject: RHEA:10185
+  predicate: produces
+  object: CHEBI:15775
+  description: Complete formal products side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:10185
+    source_assertion: RHEA:10185 places CHEBI:15775 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/10185/rh:products
+      -> http://rdf.rhea-db.org/10184_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_10184_compound_1219/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1219/rh:chebi'
+- id: cat-017
+  subject: RHEA:10185
+  predicate: produces
+  object: CHEBI:15378
+  description: Complete formal products side; coefficient 1.
+  evidence:
+  - reference_id: RHEA:10185
+    source_assertion: RHEA:10185 places CHEBI:15378 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/10185/rh:products
+      -> http://rdf.rhea-db.org/10184_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_10184_compound_3249/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3249/rh:chebi'
+- id: cat-018
+  subject: RHEA:23853
+  predicate: provides_input_for
+  object: RHEA:30033
+  description: The common chemical product feeds the next native core transformation; this is material
+    transfer, not a regulatory relation.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native ordering lists CATECHOL-12-DIOXYGENASE-RXN as a predecessor of MUCONATE-CYCLOISOMERASE-RXN;
+      the pathway layouts share the intermediate.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="MUCONATE-CYCLOISOMERASE-RXN"]/predecessor-reactions;
+      reaction-layout
+- id: cat-019
+  subject: RHEA:30033
+  predicate: provides_input_for
+  object: RHEA:12349
+  description: The common chemical product feeds the next native core transformation; this is material
+    transfer, not a regulatory relation.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native ordering lists MUCONATE-CYCLOISOMERASE-RXN as a predecessor of MUCONOLACTONE-DELTA-ISOMERASE-RXN;
+      the pathway layouts share the intermediate.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="MUCONOLACTONE-DELTA-ISOMERASE-RXN"]/predecessor-reactions;
+      reaction-layout
+- id: cat-020
+  subject: RHEA:12349
+  predicate: provides_input_for
+  object: RHEA:10185
+  description: The common chemical product feeds the next native core transformation; this is material
+    transfer, not a regulatory relation.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native ordering lists MUCONOLACTONE-DELTA-ISOMERASE-RXN as a predecessor of
+      3-OXOADIPATE-ENOL-LACTONASE-RXN; the pathway layouts share the intermediate.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="3-OXOADIPATE-ENOL-LACTONASE-RXN"]/predecessor-reactions;
+      reaction-layout
+- id: cat-021
+  subject: MetaCyc:CPLX-2842
+  predicate: catalyzes
+  object: RHEA:23853
+  description: The native P. putida enzyme assignment is retained at its native frame scope. Database-curated
+    assay attribution does not establish identity with a particular modern strain or sequence.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3585
+    source_assertion: 'The activity links enzyme CPLX-2842 to CATECHOL-12-DIOXYGENASE-RXN. Native evidence:
+      EV-EXP-IDA-PURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  - reference_id: MetaCyc:CATECHOL-12-DIOXYGENASE-RXN
+    source_assertion: The native reaction cross-references RHEA:23853; complete structures, formal charges,
+      sides and coefficients agree with the selected directional equation.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-022
+  subject: MetaCyc:CPLX-2842
+  predicate: has_part
+  object: MetaCyc:MONOMER-3422
+  description: Native assembly annotation, 2 subunits. This is a database-scoped assembly assertion, not
+    proof of exact contemporary sequence or strain identity.
+  evidence:
+  - reference_id: MetaCyc:CPLX-2842
+    source_assertion: The complex has component MONOMER-3422 with integer coefficient 2 and species TAX-303.
+    source_locator: /ptools-xml/Protein/component; species/Organism[@frameid="TAX-303"]
+- id: cat-023
+  subject: MetaCyc:CPLX-2843
+  predicate: catalyzes
+  object: RHEA:30033
+  description: The native P. putida enzyme assignment is retained at its native frame scope. Database-curated
+    assay attribution does not establish identity with a particular modern strain or sequence.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3586
+    source_assertion: 'The activity links enzyme CPLX-2843 to MUCONATE-CYCLOISOMERASE-RXN. Native evidence:
+      EV-EXP-IDA-PURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  - reference_id: MetaCyc:MUCONATE-CYCLOISOMERASE-RXN
+    source_assertion: The native reaction cross-references RHEA:30033; complete structures, formal charges,
+      sides and coefficients agree with the selected directional equation.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-024
+  subject: MetaCyc:CPLX-2843
+  predicate: has_part
+  object: MetaCyc:MONOMER-3423
+  description: Native assembly annotation, 8 subunits. This is a database-scoped assembly assertion, not
+    proof of exact contemporary sequence or strain identity.
+  evidence:
+  - reference_id: MetaCyc:CPLX-2843
+    source_assertion: The complex has component MONOMER-3423 with integer coefficient 8 and species TAX-303.
+    source_locator: /ptools-xml/Protein/component; species/Organism[@frameid="TAX-303"]
+- id: cat-025
+  subject: MetaCyc:CPLX-2844
+  predicate: catalyzes
+  object: RHEA:12349
+  description: The native P. putida enzyme assignment is retained at its native frame scope. Database-curated
+    assay attribution does not establish identity with a particular modern strain or sequence.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3587
+    source_assertion: 'The activity links enzyme CPLX-2844 to MUCONOLACTONE-DELTA-ISOMERASE-RXN. Native
+      evidence: EV-EXP-IDA-PURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  - reference_id: MetaCyc:MUCONOLACTONE-DELTA-ISOMERASE-RXN
+    source_assertion: The native reaction cross-references RHEA:12349; complete structures, formal charges,
+      sides and coefficients agree with the selected directional equation.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-026
+  subject: MetaCyc:CPLX-2844
+  predicate: has_part
+  object: MetaCyc:MONOMER-3424
+  description: Native assembly annotation, 10 subunits. This is a database-scoped assembly assertion,
+    not proof of exact contemporary sequence or strain identity.
+  evidence:
+  - reference_id: MetaCyc:CPLX-2844
+    source_assertion: The complex has component MONOMER-3424 with integer coefficient 10 and species TAX-303.
+    source_locator: /ptools-xml/Protein/component; species/Organism[@frameid="TAX-303"]
+- id: cat-027
+  subject: MetaCyc:CPLX-2761
+  predicate: catalyzes
+  object: RHEA:10185
+  description: The native P. putida enzyme assignment is retained at its native frame scope. Database-curated
+    assay attribution does not establish identity with a particular modern strain or sequence.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3368
+    source_assertion: 'The activity links enzyme CPLX-2761 to 3-OXOADIPATE-ENOL-LACTONASE-RXN. Native
+      evidence: EV-EXP-IDA-PURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  - reference_id: MetaCyc:3-OXOADIPATE-ENOL-LACTONASE-RXN
+    source_assertion: The native reaction cross-references RHEA:10185; complete structures, formal charges,
+      sides and coefficients agree with the selected directional equation.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+- id: cat-028
+  subject: MetaCyc:CPLX-2761
+  predicate: has_part
+  object: MetaCyc:MONOMER-3221
+  description: 'Historical inferred trimer from the P. putida PRS2260 preparation (derivative of PRS2178):
+    apparent native mass 30–33 kDa and apparent subunits 11 kDa after 8 M urea. This is the 1980 interpretation
+    retained by the native frame, not a modern structure determination or evidence for three 263-residue
+    Q88N36 proteins. Original figure pixels and complete miniprint were unavailable.'
+  evidence:
+  - reference_id: MetaCyc:CPLX-2761
+    source_assertion: The complex has component MONOMER-3221 with integer coefficient 3 and species TAX-303.
+    source_locator: /ptools-xml/Protein/component; species/Organism[@frameid="TAX-303"]
+  - reference_id: PMID:7391022
+    quote: a trimer formed by the association of identical subunits.
+    source_locator: 'Journal p. 6336, Discussion subsection: Pseudomonas beta-Ketoadipate Enol-Lactone
+      Hydrolase Appears To Be a Trimer Composed of Identical Subunits; preparation p. 6339 and mass discussion
+      p. 6340.'
+- id: cat-029
+  subject: MetaCyc:CPLX-2843
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Native muconate cycloisomerase annotation identifies a manganese ion near the active site
+    in each subunit. This is a bound catalytic cofactor, not a consumed pathway substrate.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3586
+    source_assertion: The native cofactor slot names MN+2 and cites PMID:3999146.
+    source_locator: /ptools-xml/Enzymatic-Reaction/cofactor
+  - reference_id: MetaCyc:CPLX-2843
+    source_assertion: The complex comment states that each subunit contains an Mn2+ ion near its active
+      site, citing PMID:3612800.
+    source_locator: /ptools-xml/Protein/comment, paragraph beginning "Based on crystal structure"
+- id: cat-030
+  subject: RHEA:10185
+  predicate: provides_input_for
+  object: MetaCyc:PWY-2361
+  description: The final core product, 3-oxoadipate, enters the separate downstream degradation module.
+    Its CoA-transfer and thiolysis reactions are outside this record boundary.
+  evidence:
+  - reference_id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+    source_assertion: The native pathway-link connects 3-KETO-ADIPATE with downstream PWY-2361.
+    source_locator: /ptools-xml/Pathway/pathway-link[Compound/@frameid="3-KETO-ADIPATE"]/link-target/Pathway
+  - reference_id: MetaCyc:PWY-2361
+    source_assertion: The downstream pathway includes 3-OXOADIPATE-COA-TRANSFERASE-RXN followed by RXN-3641;
+      its first layout consumes 3-KETO-ADIPATE.
+    source_locator: /ptools-xml/Pathway/reaction-list; reaction-ordering; reaction-layout
+- id: cat-031
+  subject: CHEBI:15775
+  predicate: regulates
+  object: MetaCyc:CPLX-2761
+  description: Native source reports induction of the P. putida hydrolase by 3-oxoadipate. This expression-level
+    response does not assert direct ligand binding, catalytic activation, an identified regulatory gene
+    or equivalence with a modern KT2440 sequence.
+  evidence:
+  - reference_id: MetaCyc:CPLX-2761
+    source_assertion: The first comment paragraph states that the P. putida enzyme is induced by 3-oxoadipate,
+      citing PMID:5916393 and PMID:8905091.
+    source_locator: /ptools-xml/Protein/comment, first paragraph, clause "which is induced by"
+- id: cat-032
+  subject: MetaCyc:CPLX-2842
+  predicate: has_cofactor
+  object: CHEBI:29034
+  description: The C-1 structural model assigns a bound Fe(III) cofactor coordinated by two tyrosine and
+    two histidine residues. The assignment applies to this modeled holoenzyme; it is not a new redox assay
+    or a sequence-equivalence claim for the native generic component. Iron is not consumed by the core
+    reaction.
+  evidence:
+  - reference_id: DOI:10.2210/pdb2azq/pdb
+    source_assertion: The natural-source C-1 model names component FE as FE (III) ION and records four
+      metal contacts to two TYR and two HIS residues; its FE atom has occupancy 1.00.
+    source_locator: _entity_src_nat; _chem_comp[id=FE]; _struct_conn[conn_type_id=metalc]; _atom_site[label_comp_id=FE]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Natural Pseudomonas putida (synonym P. arvilla) C-1 catechol 1,2-dioxygenase holoenzyme
+      modeled in PDB 2AZQ. The native frame discusses C-1 isozyme variants; no exact sequence equivalence
+      with MONOMER-3422 or deleted Q9AEQ0 is asserted.
+    evidence:
+    - reference_id: DOI:10.2210/pdb2azq/pdb
+      source_assertion: The natural source is Pseudomonas putida, taxonomy 303, strain C-1; biological
+        assembly 1 is dimeric and the model includes FE.
+      source_locator: _entity_src_nat; _pdbx_struct_assembly[id=1]; _atom_site[label_comp_id=FE]
+    - reference_id: MetaCyc:CPLX-2842
+      source_assertion: The complex comment explicitly discusses the three C-1 catechol 1,2-dioxygenase
+        isozyme assemblies alpha-alpha, alpha-beta and beta-beta.
+      source_locator: /ptools-xml/Protein/comment, paragraph beginning "Some strains possess"
+references:
+- id: MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY
+  title: 'MetaCyc CATECHOL-ORTHO-CLEAVAGE-PWY: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CATECHOL-ORTHO-CLEAVAGE-PWY
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: e7a1503436c76755aee3134ae6554cc9a3b5d45fa23a99775c7f58f47c632cca
+- id: MetaCyc:CATECHOL-12-DIOXYGENASE-RXN
+  title: 'MetaCyc CATECHOL-12-DIOXYGENASE-RXN: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CATECHOL-12-DIOXYGENASE-RXN
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 2f165e3aadc1a8e0753970890a7785b41814c9bee15edc43b4a6574e779c5425
+- id: RHEA:23853
+  title: 'Rhea 23853: exact directional equation and complete sides'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; digest binds the complete original RDF gzip; locators aggregate descriptions
+    by exact subject URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:MUCONATE-CYCLOISOMERASE-RXN
+  title: 'MetaCyc MUCONATE-CYCLOISOMERASE-RXN: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MUCONATE-CYCLOISOMERASE-RXN
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 9cb3379a2f32529e122911fd50dbd953e43d738f22e77f52ecebabc7946d3f6e
+- id: RHEA:30033
+  title: 'Rhea 30033: exact directional equation and complete sides'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; digest binds the complete original RDF gzip; locators aggregate descriptions
+    by exact subject URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:MUCONOLACTONE-DELTA-ISOMERASE-RXN
+  title: 'MetaCyc MUCONOLACTONE-DELTA-ISOMERASE-RXN: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MUCONOLACTONE-DELTA-ISOMERASE-RXN
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 9a82fb5795aa6b125c9f010d7c0f53afd817806c441f2b267cadac0e4832b8fd
+- id: RHEA:12349
+  title: 'Rhea 12349: exact directional equation and complete sides'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; digest binds the complete original RDF gzip; locators aggregate descriptions
+    by exact subject URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:3-OXOADIPATE-ENOL-LACTONASE-RXN
+  title: 'MetaCyc 3-OXOADIPATE-ENOL-LACTONASE-RXN: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-OXOADIPATE-ENOL-LACTONASE-RXN
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 7a438bdff84971939300f99d5202a19abccaee11ea2a909a931ccd9edfc902be
+- id: RHEA:10185
+  title: 'Rhea 10185: exact directional equation and complete sides'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; digest binds the complete original RDF gzip; locators aggregate descriptions
+    by exact subject URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:CPLX-2842
+  title: 'MetaCyc CPLX-2842: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2842
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 10266ec11dd56a6b92b81f78ef9d99eb3f466d238c347490ef646367fcb88fed
+- id: MetaCyc:MONOMER-3422
+  title: 'MetaCyc MONOMER-3422: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-3422
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 7a9b4f96dfbdde7aca4804cfc4616498dd5215f2e4f2bfffd3882714592f9606
+- id: MetaCyc:ENZRXN-3585
+  title: 'MetaCyc ENZRXN-3585: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3585
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: bf2d43641c69280d7528475ab153d33c4f74d1f25171c4d86399fe6897d15584
+- id: MetaCyc:CPLX-2843
+  title: 'MetaCyc CPLX-2843: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2843
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: d7ab0006a44f174b9abdb0b9a8f632b16302586b6b026d7e2a8861c2b5cf85b4
+- id: MetaCyc:MONOMER-3423
+  title: 'MetaCyc MONOMER-3423: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-3423
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 5e9543094878af4e6cd11849bb054c49322f4c8e677e7b3a0f210186f948bad3
+- id: MetaCyc:ENZRXN-3586
+  title: 'MetaCyc ENZRXN-3586: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3586
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 6349ac5c749afa1d3d9097c44e7cfb93eb7574932dce592324ebcde36cf5fe5f
+- id: MetaCyc:CPLX-2844
+  title: 'MetaCyc CPLX-2844: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2844
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 25981066267b1f0b31008eb48809d3607b0cea7715f86fa2fbf4bc11f2bd9501
+- id: MetaCyc:MONOMER-3424
+  title: 'MetaCyc MONOMER-3424: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-3424
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: f2d99e1dfc3b96089634e33205296fe0cfff9aad4b03acab9fac4638ba40c11d
+- id: MetaCyc:ENZRXN-3587
+  title: 'MetaCyc ENZRXN-3587: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3587
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 268b24fefa088b42cb97d541ac936de89828852a109f015f27b77209dbb8aa64
+- id: MetaCyc:CPLX-2761
+  title: 'MetaCyc CPLX-2761: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2761
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 47b3c6b84e9dffb235b17eb4a47da3f67d90d2f1d73216e44c6ad386651094ef
+- id: MetaCyc:MONOMER-3221
+  title: 'MetaCyc MONOMER-3221: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-3221
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: bef54b62a37d74247a167bdb3b83c699bb5bf0be60a575b24d224c4f294f9e71
+- id: MetaCyc:ENZRXN-3368
+  title: 'MetaCyc ENZRXN-3368: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3368
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 2cf63a0a9049c1f3867869116c0026e0cca4e5151346ed5c426350751d111274
+- id: MetaCyc:PWY-2361
+  title: 'MetaCyc PWY-2361: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-2361
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 7e8795224de295517ebd98df074c96a5063c856892968dbbe6b7a2431437bd58
+- id: PMID:7391022
+  title: Repetitions in the NH2-terminal amino acid sequence of beta-ketoadipate enol-lactone hydrolase
+    from Pseudomonas putida.
+  url: https://www.researchgate.net/publication/15808123_Repetitions_in_the_NH2-terminal_amino_acid_sequence_of_b-ketoadipate_enol-lactone_hydrolase_from_Pseudomonas_putida
+  source_version: 'Substantive rendered primary text: discussion pp. 6335–6337, preparation p. 6339 and
+    mass estimation p. 6340. Original PDF and figure pixels unavailable; no original PDF digest asserted.'
+- id: DOI:10.2210/pdb2azq/pdb
+  title: 'PDB 2AZQ: Crystal Structure of Catechol 1,2-Dioxygenase from Pseudomonas arvilla C-1'
+  url: https://files.rcsb.org/download/2AZQ.cif
+  source_version: Complete issuing PDB mmCIF retrieved 2026-10-14; natural C-1 source, taxon 303; model
+    and component assignments, not a spectroscopic oxidation-state measurement.
+  source_sha256: 70af6472fde390809bea8d1144a153289f902a413ca9000df4e0efd4dd530766
