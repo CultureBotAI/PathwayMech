@@ -1,0 +1,86 @@
+{
+  "time_utc": "2026-10-14T11:17:29.320052+00:00",
+  "role": "Author implementation support, not independent review",
+  "issue": "https://github.com/CultureBotAI/PathwayMech/issues/526",
+  "scope": "Narrow contextual labels for verified native reaction authorities in GO records. No pathway YAML or authority snapshot edits. No GitHub mutation.",
+  "design": "Optional authority_entity_types list supports only reaction and is matched against the verified snapshot term entity_type. Rules omitting it retain their original scope. Existing native-reaction placement checks still require reactions/category molecular_activity before contextual matching.",
+  "files": {
+    "conf/identifier_policy.yaml": "f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7",
+    "src/pathwaymech/identifiers.py": "0dacaccb225fc4268c6a51326257787261782ad2f2c2bcbd1fff2d5f80ca4ce2",
+    "tests/test_identifiers.py": "642e537e9e31b8c8094a18820c646412537b4c1e8f079877d4b7be1d5a438096",
+    "docs/IDENTIFIERS.md": "8d5952337f447b5f384e58eb41ca120a6cacf8686f921696b0b645fd8d013083"
+  },
+  "reproduction": {
+    "command": [
+      "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_identifiers.py",
+      "-k",
+      "go_native_reaction_policy"
+    ],
+    "exit_code": 1,
+    "result": "2 failed, 6 passed, 67 deselected; wrong canonical interface label and recategorized interface were incorrectly accepted before fix.",
+    "log": "before.log",
+    "log_sha256": "d4c5f9005e7aec33cce17f245387b90e239f120357483489ea93087d2cce2d33"
+  },
+  "verification": [
+    {
+      "name": "focused identifier and native-reaction tests",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_identifiers.py",
+        "tests/test_metacyc_reaction_authority.py"
+      ],
+      "exit_code": 0,
+      "result": "289 passed in 3.22s",
+      "log": "focused-tests.log",
+      "log_sha256": "9cafb015d606549bdadb1c289947917f5021988ac0ea99ad4fa71c96b510d31f"
+    },
+    {
+      "name": "scoped lint",
+      "command": [
+        "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+        "-B",
+        "-m",
+        "ruff",
+        "check",
+        "src/pathwaymech/identifiers.py",
+        "tests/test_identifiers.py"
+      ],
+      "exit_code": 0,
+      "result": "All checks passed; tool output observed."
+    },
+    {
+      "name": "diff whitespace check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "result": "No output; tool exit observed."
+    },
+    {
+      "name": "actual full-corpus identifier gate",
+      "entrypoint": "pathwaymech.identifiers.identifier_errors(Path(\".\"))",
+      "exit_code": 0,
+      "result": "identifier_errors 0",
+      "result_receipt": "identifier-gate-result.json",
+      "receipt_sha256": "a326a5932f7f81004fd19099daa9b0b60df6eb8770c256504c0c20e8da7c7f91"
+    }
+  ],
+  "governed_script_unchanged": {
+    "path": "scripts/validate_id_label_correspondence.py",
+    "sha256": "b5ff41bb52d24f5d7819fb12769e216440f75ec3fb3df3e3cb2c5082fffb40e0",
+    "matches_HEAD_bytes": true
+  },
+  "full_suite_run_by_this_agent": false,
+  "independent_acceptance": "Root requested integration reviewer to inspect and rerun independently. No independent acceptance claim made here."
+}

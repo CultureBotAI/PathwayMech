@@ -241,6 +241,88 @@ def test_contextual_waiver_cannot_escape_its_declared_scope(corpus, outside_scop
     assert identifier_errors(corpus["root"])
 
 
+@pytest.mark.parametrize("case,expected_error", [
+    ("verified", None),
+    ("missing_id", "ID_NOT_FOUND"),
+    ("missing_category", "ENTITY_TYPE_MISMATCH"),
+    ("pathway_category", "ENTITY_TYPE_MISMATCH"),
+    ("participant_section", "ENTITY_TYPE_MISMATCH"),
+    ("wrong_interface_label", "LABEL_MISMATCH"),
+    ("recategorized_interface", "LABEL_MISMATCH"),
+    ("other_record_prefix", "LABEL_AUTHORITY_UNAVAILABLE"),
+])
+def test_go_native_reaction_policy_requires_independent_reaction_identity(
+    corpus, case, expected_error,
+):
+    """A reaction waiver must not waive a downstream pathway's canonical name."""
+    policy_path = Path(__file__).resolve().parents[1] / "conf/identifier_policy.yaml"
+    policy = yaml.safe_load(policy_path.read_text())
+    corpus["config"]["contextual_labels"] = [
+        rule for rule in policy["contextual_labels"]
+        if rule["namespace"] == "MetaCyc" and rule["record_prefixes"] == ["GO"]
+    ]
+    corpus["config"]["namespaces"]["MetaCyc"] = {
+        "snapshot": "data/identifier_authorities/test.json", "policy": "canonical",
+    }
+    corpus["snapshot"]["sources"]["native_reaction_fixture"] = {
+        "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:5.5.1.2-RXN",
+        "version": "27.0", "sha256": "b" * 64, "license": "Synthetic fixture",
+        "kind": "metacyc-reaction-xml",
+    }
+    corpus["snapshot"]["terms"].update({
+        "MetaCyc:5.5.1.2-RXN": {
+            "label": "5.5.1.2-RXN", "synonyms": [], "source": "native_reaction_fixture",
+            "label_kind": "source_context", "entity_type": "reaction",
+        },
+        "MetaCyc:PWY-2361": {
+            "label": "3-oxoadipate degradation", "synonyms": [], "source": "fixture",
+        },
+    })
+    reaction = {
+        "id": "MetaCyc:5.5.1.2-RXN", "label": "3-carboxymuconate cycloisomerization",
+        "category": "molecular_activity",
+    }
+    interface = {
+        "id": "MetaCyc:PWY-2361", "label": "3-oxoadipate degradation", "category": "pathway",
+    }
+    corpus["record"]["reactions"] = [reaction, interface]
+    if case == "missing_id":
+        reaction["id"] = "MetaCyc:RXN-NOT-IN-AUTHORITY"
+    elif case == "missing_category":
+        del reaction["category"]
+    elif case == "pathway_category":
+        reaction["category"] = "pathway"
+    elif case == "participant_section":
+        corpus["record"]["participants"].append(corpus["record"]["reactions"].pop(0))
+    elif case in {"wrong_interface_label", "recategorized_interface"}:
+        interface["label"] = "Unrelated pathway"
+        if case == "recategorized_interface":
+            interface["category"] = "molecular_activity"
+    elif case == "other_record_prefix":
+        corpus["record"].update(id="gomodel:example", label="source pathway")
+    _write_record(corpus)
+    _write_config(corpus)
+    _write_snapshot(corpus)
+
+    errors = identifier_errors(corpus["root"])
+    if expected_error is None:
+        assert errors == []
+    else:
+        assert len(errors) == 1, errors
+        assert expected_error in errors[0]
+
+
+@pytest.mark.parametrize("selector", [None, [], "reaction", ["pathway"], [True], {}])
+def test_invalid_authority_entity_type_selectors_fail_closed(corpus, selector):
+    _contextual_reaction(corpus)
+    corpus["config"]["contextual_labels"][0]["authority_entity_types"] = selector
+    _write_config(corpus)
+
+    errors = identifier_errors(corpus["root"])
+    assert len(errors) == 1
+    assert "identifier policy unavailable or invalid" in errors[0]
+
+
 def test_unknown_namespace_fails_instead_of_being_skipped(corpus):
     corpus["record"]["participants"][0]["id"] = "CHBEI:15377"
     _write_record(corpus)

@@ -34,6 +34,15 @@ does not cover a newly introduced GO record. Read the policy file for the exact
 scope; adding a broader rule requires a semantic justification, not merely a
 list of current failures.
 
+A contextual rule may additionally set `authority_entity_types: [reaction]`.
+This selector matches the verified authority term, not the record's category;
+`reaction` is its only supported value. The native-reaction placement check
+still requires `reactions` with `category: molecular_activity`. GO records can
+therefore describe an independently verified native reaction without extending
+the waiver to a pathway interface in the same collection, even if that
+interface is incorrectly recategorized. Rules without this optional selector
+keep their previous scope. Empty, malformed, or unsupported selectors fail.
+
 Schema-supported prefixes without a configured authority remain unsupported by
 this gate and fail explicitly. Adding an importer or new prefix therefore
 requires authority evidence as well as schema support. Local activity or

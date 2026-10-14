@@ -109,7 +109,10 @@ def _load_policy(path: Path, root: Path) -> dict[str, Any]:
     if not isinstance(cfg["contextual_labels"], list):
         raise ValueError("contextual_labels must be a list")
     for rule in cfg["contextual_labels"]:
-        _keys(rule, {"namespace", "sections", "record_prefixes", "reason"}, set(), "label rule")
+        _keys(
+            rule, {"namespace", "sections", "record_prefixes", "reason"},
+            {"authority_entity_types"}, "label rule",
+        )
         if rule["namespace"] not in namespaces:
             raise ValueError(f"label rule: unconfigured namespace {rule['namespace']!r}")
         for key, allowed in [("sections", SECTIONS), ("record_prefixes", namespaces.keys())]:
@@ -122,6 +125,14 @@ def _load_policy(path: Path, root: Path) -> dict[str, Any]:
                 raise ValueError(f"label rule: invalid or empty {key}")
         if not _text(rule["reason"]):
             raise ValueError("label rule: a contextual label needs a documented reason")
+        if "authority_entity_types" in rule:
+            types = rule["authority_entity_types"]
+            if (
+                not isinstance(types, list)
+                or not types
+                or any(not isinstance(value, str) or value != "reaction" for value in types)
+            ):
+                raise ValueError("label rule: invalid or empty authority_entity_types")
     return cfg
 
 
@@ -647,6 +658,10 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                 rule["namespace"] == prefix
                 and section in rule["sections"]
                 and record_prefix in rule["record_prefixes"]
+                and (
+                    "authority_entity_types" not in rule
+                    or term.get("entity_type") in rule["authority_entity_types"]
+                )
                 for rule in cfg["contextual_labels"]
             )
             if contextual:
