@@ -1,0 +1,17 @@
+from pathlib import Path
+import datetime,hashlib,json,xml.etree.ElementTree as ET
+import yaml
+R=Path('/private/tmp/pathwaymech-next-255-20261014');D=Path(__file__).resolve().parent
+P=R/'data/pathways/quinate-degradation-i.yaml';d=yaml.safe_load(P.read_text());out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':hashlib.sha256(P.read_bytes()).hexdigest(),'bindings':[]}
+for ref in d['references']:
+ i=ref['id'];prefix,name=i.split(':',1);candidates=[]
+ if prefix=='MetaCyc':candidates=[Path('/private/tmp/pathwaymech-next-255-native/originals')/f'META-{name}.xml',Path('/private/tmp/pathwaymech-next-255-chemistry/originals-meta27')/f'META-{name}.xml']
+ elif prefix=='UniProtKB':candidates=[Path('/private/tmp/pathwaymech-next-255-native/originals')/f'UniProtKB-{name}.json']
+ elif prefix=='RHEA':candidates=[Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz')]
+ elif prefix=='PMID' and 'source_sha256' in ref:candidates=[Path('/private/tmp/pathwaymech-next-255-primary/originals')/f'{name}.pdf']
+ if 'source_sha256' not in ref:out['bindings'].append({'reference':i,'hash_bound':False,'note':'URL-linked paper reference, no artifact digest asserted'});continue
+ matches=[p for p in candidates if p.is_file() and hashlib.sha256(p.read_bytes()).hexdigest()==ref['source_sha256']];assert matches,(i,candidates)
+ if prefix=='MetaCyc':
+  x=ET.parse(matches[0]).getroot();assert x.attrib['ptools-version']=='27.0';assert x.find('metadata/query').text=='META:'+name;top=[n for n in x if n.tag!='metadata'];assert len(top)==1 and top[0].attrib['frameid']==name and top[0].attrib['detail']=='full'
+ out['bindings'].append({'reference':i,'source_sha256':ref['source_sha256'],'actual_original':str(matches[0]),'url':ref['url'],'hash_bound':True})
+out['hash_bound_references']=sum(x['hash_bound'] for x in out['bindings']);out['reference_total']=len(out['bindings']);(D/'reference-bindings-audit.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({k:v for k,v in out.items() if k!='bindings'},indent=2))

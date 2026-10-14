@@ -1,0 +1,36 @@
+from acquire import *
+from collections import Counter
+
+pathway=frame('QUINATEDEG-PWY')
+reaction_ids={e.get('frameid') for e in pathway.findall('./reaction-list/Reaction')}
+assert reaction_ids=={'1.1.99.25-RXN','3-DEHYDROQUINATE-DEHYDRATASE-RXN','DHSHIKIMATE-DEHYDRO-RXN'}
+activity_ids={a.get('frameid') for r in reaction_ids for a in frame(r).findall('./enzymatic-reaction/Enzymatic-Reaction')}
+proteins={p.get('frameid') for a in activity_ids for p in frame(a).findall('./enzyme/Protein')}
+direct_proteins=set(proteins)
+while True:
+    children={p.get('frameid') for fid in proteins for p in frame(fid).findall('./component/Protein')}
+    missing=children-proteins
+    if not missing:break
+    proteins.update(missing)
+extra_activities={a.get('frameid') for p in proteins for a in frame(p).findall('./catalyzes/Enzymatic-Reaction')}-activity_ids
+all_activities=activity_ids|extra_activities
+regulations={r.get('frameid') for a in all_activities|proteins for r in frame(a).findall('./regulated-by/Regulation')}
+all_objects=proteins|all_activities|regulations
+coverage=json.loads((ROOT/'biological-coverage.json').read_text())
+assert len(coverage['objects'])==len({r['frameid'] for r in coverage['objects']})
+assert {r['frameid'] for r in coverage['objects']}==all_objects
+for row in coverage['objects']:
+    assert row['sha256']==hashlib.sha256(Path(row['source_path']).read_bytes()).hexdigest()
+    assert frame(row['frameid']).tag==row['kind']
+    assert row['decision'] in {'retain_with_scope','exclude'}
+    assert row['rationale']
+for a in all_activities:
+    ps={p.get('frameid') for p in frame(a).findall('./enzyme/Protein')}
+    assert ps<=proteins
+    for p in ps:assert a in {x.get('frameid') for x in frame(p).findall('./catalyzes/Enzymatic-Reaction')}
+for p in proteins-direct_proteins:
+    parents={x.get('frameid') for x in frame(p).findall('./component-of/Protein')}
+    assert any(p in {x.get('frameid') for x in frame(q).findall('./component/Protein')} for q in parents)
+report={'status':'pass; mechanical source closure and bindings only, not independent scientific review','reactions':sorted(reaction_ids),'seed_activities':len(activity_ids),'seed_proteins':len(direct_proteins),'recursive_subunits':len(proteins-direct_proteins),'extra_activities':len(extra_activities),'regulations':len(regulations),'biological_objects':len(all_objects),'counts':dict(Counter(r['kind'] for r in coverage['objects'])),'checks':['exact native pathway three-reaction boundary','all direct reaction enzyme activities','all direct enzymes and recursive complex components','all auxiliary activities of inspected proteins','all direct regulations of proteins and activities','source-to-ledger object set equality','unique disposition for every object','all raw source hashes','native object tags','activity enzyme reciprocal join','complex component reciprocal join'],'coverage_sha256':hashlib.sha256((ROOT/'biological-coverage.json').read_bytes()).hexdigest()}
+(ROOT/'biological-coverage-replay.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report,indent=2))

@@ -1,0 +1,48 @@
+from pathlib import Path
+import json,re,hashlib
+B=Path('/private/tmp/pathwaymech-next-255-primary')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+fields={'description','source_assertion','label','title','source_version','claim','tested_material','graph_scope','read_bounds','bounds','scope','additional_fact','role'}
+def readable(s):
+ s=re.sub(r'\bPMID(?=\d)', 'PMID: ',s)
+ s=re.sub(r'([a-z])(?=\d)',r'\1 ',s)
+ s=re.sub(r'(\d)(?=(?:kDa|kb|aa|mM|µM|nM|M|nm|g)\b)',r'\1 ',s)
+ s=re.sub(r'\b(\d+)mer\b',r'\1-subunit assembly',s)
+ s=s.replace('typeI','type I').replace('typeII','type II').replace('PQQ/Ca','PQQ/Ca').replace('pBSK versuspBKS','pBSK versus pBKS').replace('calledpBSK','called pBSK').replace('inTable1','in Table 1').replace('inTable 1','in Table 1').replace('versusWT','versus WT')
+ return s
+def walk(x):
+ if isinstance(x,list):return [walk(v) for v in x]
+ if isinstance(x,dict):return {k:readable(v) if k in fields and isinstance(v,str) else walk(v) for k,v in x.items()}
+ return x
+files=['biological-graph-extension.json','claims-and-dispositions.json','constructs-ledger.json','reading-ledger.json','graph-dispositions.json']
+for fn in files:
+ p=B/fn;d=walk(json.loads(p.read_text()));p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+g=json.loads((B/'biological-graph-extension.json').read_text())
+corpora={}
+for pmid in ['14586099','18540103']:
+ d=json.loads((B/'text'/f'{pmid}.json').read_text())
+ corpora['PMID:'+pmid]=' '.join(p['text'] for p in d['pages'])
+corpora['PMID:7592351']='\n'.join(p.read_text() for p in (B/'text').glob('7592351-web*txt'))
+corpora['PMID:7592351']=re.sub(r'(?m)^L\d+: ?', '',corpora['PMID:7592351'])
+meta=json.loads((B/'originals/epmc-primary.json').read_text())
+corpora['PMID:15598527']=next(x['abstractText'] for x in meta['resultList']['result'] if x['id']=='15598527')
+norm=lambda s:re.sub(r'\s+',' ',s).strip()
+checks=[]
+for e in g['mechanistic_edges']:
+ evs=e['evidence']+sum([q['evidence'] for q in e.get('endpoint_qualifiers',[])],[])
+ for ev in evs:
+  if 'quote' in ev:
+   checks.append({'edge':e['id'],'reference_id':ev['reference_id'],'quote_sha256':hashlib.sha256(ev['quote'].encode()).hexdigest(),'quote_word_count':len(ev['quote'].split()),'literal_match_after_whitespace_normalization':norm(ev['quote']) in norm(corpora[ev['reference_id']])})
+assert all(x['literal_match_after_whitespace_normalization'] for x in checks),checks
+(B/'quote-replay.json').write_text(json.dumps({'method':'Literal substring after whitespace normalization only; no synonym replacement or paraphrase. 7592351 uses retained author-rendered text, not unavailable original PDF bytes.','checks':checks},indent=2)+'\n')
+refs={r['id'] for r in g['references']}
+for e in g['mechanistic_edges']:
+ for ev in e['evidence']+sum([q['evidence'] for q in e.get('endpoint_qualifiers',[])],[]):
+  assert ev['reference_id'] in refs,ev
+  assert len(ev.get('quote',ev.get('source_assertion','')))<=400
+ for q in e.get('endpoint_qualifiers',[]):assert len(q['description'])<=400
+index=[]
+for fn in files+['acquisition-manifest.json','quote-budget.json','quote-replay.json']:
+ p=B/fn;index.append({'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size})
+(B/'package-index.json').write_text(json.dumps({'status':'stable author-support handoff; not independent scientific approval','candidate':'MetaCyc:QUINATEDEG-PWY','artifacts':index},indent=2)+'\n')
+print(json.dumps({'quote_checks':len(checks),'all_literal':True,'graph_edges':len(g['mechanistic_edges']),'stable_files':len(index)}))

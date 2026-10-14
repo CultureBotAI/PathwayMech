@@ -1,0 +1,17 @@
+from pathlib import Path
+import concurrent.futures,datetime,hashlib,json,urllib.request
+B=Path(__file__).parent;O=B/'originals';O.mkdir(exist_ok=True)
+frames=['QUINATE','DEHYDROQUINATE','3-DEHYDRO-SHIKIMATE','3-4-DIHYDROXYBENZOATE','Quinones','Reduced-Quinones','WATER','PQQ']
+def fetch(frame):
+ url='https://pathway.yeastgenome.org/getxml?META:'+frame
+ row={'frame':frame,'requested_url':url,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech evidence curation'}),timeout=90) as response:
+   body=response.read();row.update(status=response.status,final_url=response.url,headers=dict(response.headers))
+  path=O/('META-'+frame+'.xml');assert not path.exists();path.write_bytes(body)
+  row.update(path=str(path),bytes=len(body),sha256=hashlib.sha256(body).hexdigest())
+ except Exception as error:row['error']=repr(error)
+ return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool: rows=list(pool.map(fetch,frames))
+(B/'compound-acquisition.json').write_text(json.dumps(rows,indent=2)+'\n')
+print(json.dumps([{k:r[k] for k in ['frame','status','bytes','error'] if k in r} for r in rows],indent=2))

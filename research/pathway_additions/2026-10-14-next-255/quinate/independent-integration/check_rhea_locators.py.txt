@@ -1,0 +1,22 @@
+from pathlib import Path
+import datetime,gzip,hashlib,json,re,xml.etree.ElementTree as ET
+import yaml
+R=Path('/private/tmp/pathwaymech-next-255-20261014');D=Path(__file__).resolve().parent
+p=R/'data/pathways/quinate-degradation-i.yaml';record=yaml.safe_load(p.read_text());claims=[]
+for e in record['mechanistic_edges']:
+ for v in e['evidence']:
+  if v['reference_id'].startswith('RHEA:'):
+   left,rel,right=v['source_locator'].split(';')[0].split();claims.append({'edge':e['id'],'subject':left,'predicate':rel,'object':right,'coefficient':int(re.search(r'coefficient ([0-9]+)',v['source_assertion']).group(1))})
+wanted={c['subject'] for c in claims};original=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz');subjects={};depth=0
+with gzip.open(original,'rb') as f:
+ for event,element in ET.iterparse(f,events=('start','end')):
+  if event=='start':depth+=1;continue
+  if depth==2:
+   ident=element.get('{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about')
+   if ident in wanted:subjects.setdefault(ident,[]).extend((x.tag,x.get('{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource')) for x in element)
+   element.clear()
+  depth-=1
+for c in claims:
+ predicate='{http://rdf.rhea-db.org/}'+c['predicate'].split(':',1)[1];assert (predicate,c['object']) in subjects[c['subject']];assert c['predicate']=='rh:contains'+str(c['coefficient'])
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'actual_original_path':str(original),'source_sha256':hashlib.sha256(original.read_bytes()).hexdigest(),'all_six_coefficient_specific_locators_exist_in_complete_original_rdf':True,'claims':claims}
+(D/'rhea-locator-audit.json').write_text(json.dumps(result,indent=2)+'\n');print(len(claims),'original RDF locators verified')

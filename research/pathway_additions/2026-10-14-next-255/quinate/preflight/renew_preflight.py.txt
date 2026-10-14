@@ -1,0 +1,99 @@
+from pathlib import Path
+import json,hashlib,datetime,subprocess,xml.etree.ElementTree as ET,re,collections
+import yaml
+B=Path(__file__).parent
+R=Path('/private/tmp/pathwaymech-next-255-20261014')
+MAIN=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+BASE='bfa3f5ed0e843472c0fd173ce91df2a90dd4ddb2'
+CANDIDATES=['MetaCyc:QUINATEDEG-PWY','MetaCyc:SHIKIMATEDEG-PWY','MetaCyc:PWY-6416','MetaCyc:PWY-6419','GO:0019631','GO:0019633']
+def shab(b):return hashlib.sha256(b).hexdigest()
+def sha(p):return shab(Path(p).read_bytes())
+def save(n,x):(B/n).write_text(json.dumps(x,indent=2)+'\n')
+def git(*a):return subprocess.check_output(['git',*a],cwd=R)
+# Enumerate authoritative baseline from Git, then compare both live copies.
+entries=git('ls-tree','-r','-z',BASE,'--','data/pathways').split(b'\0')
+records=[]
+for row in entries:
+ if not row:continue
+ meta,name=row.split(b'\t'); rel=name.decode(); mode,typ,oid=meta.decode().split()
+ if not rel.endswith('.yaml'):continue
+ assert typ=='blob'
+ data=git('cat-file','blob',oid);doc=yaml.safe_load(data)
+ compared={str(root):((root/rel).exists() and (root/rel).read_bytes()==data) for root in [MAIN,R]}
+ assert all(compared.values()),(rel,compared)
+ records.append({'path':rel,'id':doc['id'],'label':doc['label'],'git_blob_oid':oid,'sha256':shab(data),'bytes':len(data),'live_roots_equal_git_blob':compared,'nested_pathway_nodes':[{'field':f,'id':n['id'],'label':n.get('label'),'category':n.get('category')} for f in ['taxa','participants','reactions'] for n in doc.get(f,[]) if n.get('category')=='pathway' or n.get('id') in CANDIDATES]})
+assert len(records)==251,len(records)
+save('baseline-record-bindings.json',{'base':BASE,'count':len(records),'membership_from':'git ls-tree -r -z BASE -- data/pathways and git cat-file blob OID; both live roots byte-compared','records':records})
+patterns={}
+def add(value,origin):
+ value=str(value).strip()
+ if value and '\n' not in value:patterns.setdefault(value,set()).add(origin)
+# Actual source-derived identifiers; pathway/biological entity IDs kept exact.
+inputs=[]
+sources=list(sorted(Path('/private/tmp/pathwaymech-next-255-native/originals').glob('*.xml')))
+sources += [Path('/private/tmp/pathwaymech-next-251-preflight-20261014/originals/META-SHIKIMATEDEG-PWY.xml')]
+sources += list(sorted((B/'originals').glob('META-*.xml')))
+for p in sources:
+ raw=p.read_bytes();root=ET.fromstring(raw); obj=next((e for e in root if e.tag!='metadata'),None)
+ if obj is None:continue
+ inputs.append({'path':str(p),'sha256':shab(raw),'bytes':len(raw),'top_level_kind':obj.tag,'frame':obj.get('frameid')})
+ for tag in ['common-name','synonym']:
+  for el in obj.findall(tag):
+   text=''.join(el.itertext());text=re.sub('<[^>]*>','',text)
+   if len(text)>=5:add(text,p.name+'/'+tag)
+ for el in obj.iter():
+  frame=el.get('frameid')
+  if frame and el.tag in {'Pathway','Reaction','Protein','Enzymatic-Reaction','Gene','Compound'}:
+
+   if len(frame)>=5:add(frame,p.name+'/'+el.tag+'@frameid')
+   add('MetaCyc:'+frame,p.name+'/'+el.tag+'@frameid')
+  if el.tag=='pubmed-id' and el.text:
+   add(el.text,p.name+'/pubmed-id');add('PMID:'+el.text,p.name+'/pubmed-id')
+  if el.tag=='dblink':
+   db=el.findtext('dblink-db'); acc=el.findtext('dblink-oid')
+   prefixes={'RHEA':'RHEA','LIGAND-RXN':'KEGG','UNIPROT':'UniProtKB','CHEBI':'CHEBI','NCBI-TAXONOMY-DB':'NCBITaxon','EC':'EC','METANETX-RXN':'MetaNetX'}
+   if db in prefixes and acc:
+    add(prefixes[db]+':'+acc,p.name+'/dblink:'+db)
+    if db!='NCBI-TAXONOMY-DB' and len(acc)>=5:add(acc,p.name+'/dblink:'+db)
+ for text in [e.text or '' for e in obj.iter()]:
+  for pmid in re.findall(r'/pubmed/(\d+)',text):add(pmid,p.name+'/narrative PMID');add('PMID:'+pmid,p.name+'/narrative PMID')
+  for frame in re.findall(r'(?:object|id)=([A-Za-z][A-Za-z0-9_.-]+)',text):
+   if not frame.startswith('TAX-') and len(frame)>=5:add(frame,p.name+'/narrative frame');add('MetaCyc:'+frame,p.name+'/narrative frame')
+# Pinned GO source matches and direct authoritative reaction identifiers.
+go=json.loads((B/'go-boundary-evidence.json').read_text())
+for gid in ['GO:0019631','GO:0019633']:
+ add(gid,'go.db')
+ for st in go[gid]['outgoing']:
+  if st['predicate'] in ['rdfs:label','oio:hasExactSynonym','oio:hasDbXref']:add(st['value'],'go.db:'+gid+'/'+st['predicate'])
+for value in CANDIDATES+['EC:1.1.5.8','EC:1.1.99.25','EC:4.2.1.10','EC:4.2.1.118','quiA','quiB','quiC','qsuD','qsuC','qsuB','QsuR']:
+ add(value,'inspected source frames / enzyme names; search term only')
+# If source workers supply supplemental exact identifiers, retain explicit provenance.
+extra=B/'supplemental-patterns.json'
+if extra.exists():
+ for row in json.loads(extra.read_text()):add(row['pattern'],row['source'])
+patterns=dict(sorted(patterns.items()))
+pf=B/'patterns.txt';pf.write_text('\n'.join(patterns)+'\n')
+save('pattern-sources.json',{'source_inputs':inputs,'go_source':go['source'],'patterns':{k:sorted(v) for k,v in patterns.items()}})
+reports=[]
+for i,r in enumerate([MAIN,R]):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(pf),'.','-g','!.git','-g','!.git/**','-g','!.venv','-g','!.venv/**']
+ stats={x:{'lines':0,'paths':set()} for x in patterns};out=B/f'root-{i}-matches.jsonl';err=B/f'root-{i}-stderr.txt'
+ start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ with out.open('w') as dest,err.open('w') as e:
+  proc=subprocess.Popen(cmd,cwd=r,stdout=subprocess.PIPE,stderr=e,text=True)
+  for line in proc.stdout:
+   item=json.loads(line)
+   if item['type']!='match':continue
+   d=item['data'];txt=d['lines'].get('text','').lower();path=d['path'].get('text','');hits=[]
+   for term in patterns:
+    if term.lower() in txt:stats[term]['lines']+=1;stats[term]['paths'].add(path);hits.append(term)
+   dest.write(json.dumps({'path':path,'line_number':d['line_number'],'patterns':hits})+'\n')
+  code=proc.wait()
+ assert code in (0,1),(code,err.read_text())
+ counts={k:{'lines':v['lines'],'files':len(v['paths'])} for k,v in stats.items()}
+ save(f'root-{i}-complete-counts.json',{'counts':{k:{'lines':v['lines'],'paths':sorted(v['paths'])} for k,v in stats.items()}})
+ reports.append({'root':str(r),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=r,text=True).strip(),'started_utc':start,'command':cmd,'exit_code':code,'per_pattern_counts':counts,'full_match_projection':{'path':str(out),'sha256':sha(out),'bytes':out.stat().st_size},'complete_counts':{'path':str(B/f'root-{i}-complete-counts.json'),'sha256':sha(B/f'root-{i}-complete-counts.json')},'stderr':err.read_text()})
+exact={c:{'top_level':[x['path'] for x in records if x['id']==c],'nested':[{'path':x['path'],'node':n} for x in records for n in x['nested_pathway_nodes'] if n['id']==c]} for c in CANDIDATES}
+report={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline_commit':BASE,'candidate':'MetaCyc:QUINATEDEG-PWY','continuing_candidates':CANDIDATES[1:4],'baseline_record_count':len(records),'exact_candidate_membership':exact,'patterns_per_root':len(patterns),'patterns_file':{'path':str(pf),'sha256':sha(pf)},'pattern_sources':{'path':str(B/'pattern-sources.json'),'sha256':sha(B/'pattern-sources.json')},'roots':reports,'bounds':{'ignored_and_hidden_included':True,'exclusions':['.git/**','.venv/**'],'binary':'rg default binary detection; no claim of binary payload absence','symlinks':'Directory symlinks not followed','archives':'Current text scan does not decode compressed archives.','other_worktrees':'Current main and active255 worktree only; no exhaustive claim about external caches or other worktrees','source_exhaustion_claim':False},'role':'Author preflight; not independent scientific approval.'}
+save('dedup-compact.json',report)
+print(json.dumps({'records':len(records),'patterns':len(patterns),'source_files':len(inputs),'exact_membership':exact,'roots':len(reports)}))

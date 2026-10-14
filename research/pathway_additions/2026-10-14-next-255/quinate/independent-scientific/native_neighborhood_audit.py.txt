@@ -1,0 +1,62 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E
+from datetime import datetime,timezone
+N=Path('/private/tmp/pathwaymech-next-255-native/originals'); O=Path('/private/tmp/pathwaymech-next-255-science-review')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+cache={}
+def obj(i):
+ if i not in cache:
+  p=N/f'META-{i}.xml';x=E.parse(p).getroot()[1];assert x.get('frameid')==i;cache[i]=(p,x)
+ return cache[i][1]
+def links(i,xp):return {x.get('frameid') for x in obj(i).findall(xp)}
+rxns=links('QUINATEDEG-PWY','reaction-list/Reaction')
+activities=set().union(*(links(i,'enzymatic-reaction/Enzymatic-Reaction') for i in rxns))
+proteins=set().union(*(links(i,'enzyme/Protein') for i in activities))
+direct_proteins=set(proteins)
+while True:
+ children=set().union(*(links(i,'component/Protein') for i in proteins))
+ if children<=proteins:break
+ proteins|=children
+allacts=activities|set().union(*(links(i,'catalyzes/Enzymatic-Reaction') for i in proteins))
+regs=set().union(*(links(i,'regulated-by/Regulation') for i in allacts))
+observed=allacts|proteins|regs
+assert (len(activities),len(direct_proteins),len(proteins-direct_proteins),len(allacts-activities),len(regs))==(16,16,5,7,7)
+assert len(observed)==51
+retained={
+ 'MONOMER-0':'Native IFO3244 complex, source and primary suggest twelve subunits. Broad membrane association retained; exact periplasmic topology remains inferred.',
+ 'MONOMER-15328':'Native IFO3244 subunit; short N-terminal comparison to 621H is insufficient for whole-protein identity. No isolated-subunit catalysis asserted.',
+ 'MONOMER-1':'Native IFO3244 partially purified cytoplasmic DHS-dehydrating fraction, not an identified complete sequence.',
+ 'MONOMER-67':'Native IFO3244 holo-QDH preparation; PQQ supported by inspected abstract. SDS bands may be proteolysis, not an established heteromer.',
+ 'MONOMER-28':'ADP1 QuiA native/genetic support and current Q59086 identity. SA1/AC3 and LMD79.41 purified biochemical scopes not transferred.',
+ 'MONOMER-33':'ADP1 catabolic QuiB; current 272-aa Q59087 differs from the older 290-aa recombinant annotation. Native activity supports function; no leader/topology transfer.',
+ 'MONOMER-37':'ADP1 QuiC DHS catalysis, with pZR564 recombinant crude-extract qualifier. Native protein prose DHQ/unit error is not copied.'}
+for a in activities:
+ p=next(iter(links(a,'enzyme/Protein')))
+ if p in retained:retained[a]=retained[p]
+exclude_groups=[
+ (['AROD-CPLX','AROD-MONOMER','3-DEHYDROQUINATE-DEHYDRATASE-ENZRXN']+[f'REG0-{n}' for n in range(11780,11786)],'E. coli aromatic-biosynthesis AroD and its direct inhibitors; sharing DHQ chemistry does not establish membership of the native quinate-catabolic route.'),
+ (['AT3G06350-MONOMER','ENZRXN-18401','ENZRXN-18400','ENZRXN-18699'],'Plant biosynthetic bifunctional enzyme and auxiliary NADP/gallic-acid chemistry, outside this bacterial native boundary.'),
+ (['CPLX-1121','AROCBACSU-MONOMER','ENZRXN-1442'],'B. subtilis chorismate-biosynthesis AroC; its complex/subunit context is outside the defined quinate-catabolic route.'),
+ (['CPLX-7874','MONOMER-14940','ENZRXN-16693','REG-12762'],'B. anthracis AsbF petrobactin synthesis and its Zn inhibition, not pathway-specific catabolic evidence.'),
+ (['CPLX-7980','MONOMER-15327','ENZRXN-17378'],'A. methanolica dual-use DHQase is an alternate-route lead; its shared downstream chemistry does not establish PQQ-initiated route membership.'),
+ (['MONOMER-14591','ENZRXN-16059'],'M. maripaludis aromatic-amino-acid biosynthesis; genetic/extract evidence does not assign this organism to the target catabolic pathway.'),
+ (['MONOMER-15329','ENZRXN-17379'],'N. crassa qa-4 context belongs to the NAD-dependent fungal route; metal requirements cannot transfer to the PQQ variant.'),
+ (['MONOMER-15334','ENZRXN-17385','MONOMER-15335','ENZRXN-17386'],'C. glutamicum qsuB/qsuC are alternate NAD-route leads with genetic/inferred activity scopes, not purified evidence for the PQQ variant.'),
+ (['YDR127W-MONOMER','ENZRXN3O-1026','ENZRXN3O-13','ENZRXN3O-16','ENZRXN3O-5','ENZRXN3O-8'],'Yeast ARO1 pentafunctional biosynthetic enzyme and its four auxiliary activities; complementation concerns aromatic biosynthesis.'),
+ (['ENZRXN-11861'],'QuiA shikimate-PQQ auxiliary activity is outside the exact quinate three-step boundary; its SA1/AC3-derived numerical substrate specificity is not transferred to ADP1.')]
+excluded={i:why for ids,why in exclude_groups for i in ids}
+assert set(retained)|set(excluded)==observed and not set(retained)&set(excluded)
+assert len(retained)==13 and len(excluded)==38
+rows=[]
+for i in sorted(observed):
+ x=obj(i);p=cache[i][0]
+ row={'source_object':i,'kind':x.tag,'source_path':str(p),'source_sha256':sha(p),'source_locator':f'/ptools-xml/{x.tag}[@frameid="{i}"]','reviewer_disposition':'retain_with_scope' if i in retained else 'exclude','reviewer_rationale':retained.get(i,excluded.get(i)),'explicit_links':{}}
+ for slot,typ in [('enzyme','Protein'),('reaction','Reaction'),('catalyzes','Enzymatic-Reaction'),('component','Protein'),('regulated-by','Regulation'),('species','Organism')]:
+  z=sorted(links(i,slot+'/'+typ))
+  if z:row['explicit_links'][slot]=z
+ rows.append(row)
+author=json.loads((N.parent/'biological-coverage.json').read_text())
+assert {r['frameid'] for r in author['objects']}==observed
+assert all(('retain_with_scope' if r['frameid'] in retained else 'exclude')==r['decision'] for r in author['objects'])
+result={'reviewer':'codex independent next255_science_review','completed_at':datetime.now(timezone.utc).isoformat(),'method':'Independently derive complete bounded biological neighborhood from original native slots, compare author denominator, and assign source-read reviewer dispositions. Original scientific comments and linked primary material were read separately; this traversal is not a substitute for reading.','counts':{'native_pathway_reactions':3,'direct_activities':16,'direct_enzymes':16,'additional_recursive_subunits':5,'additional_activities':7,'direct_regulations':7,'total_objects':51,'retained_with_scope':13,'excluded':38},'author_object_set_and_disposition_match':True,'rows':rows,'scope_limits':['Bounded native reaction/enzyme/component/other-activity/regulation neighborhood, not all biological knowledge or all pathway variants.','Four gene and two native localization originals, chemical identities, primary papers and UniProt are assessed separately.','Exclusion of a source object is not a conclusion that the underlying biology or other pathway variant is false.']}
+(O/'native-neighborhood-audit.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result['counts']))

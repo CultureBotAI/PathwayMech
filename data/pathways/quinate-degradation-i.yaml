@@ -1,0 +1,762 @@
+id: MetaCyc:QUINATEDEG-PWY
+label: quinate degradation I
+description: The three-step MetaCyc 27.0 quinate degradation I definition converts L-quinate through 3-dehydroquinate
+  and 3-dehydroshikimate to protocatechuate. The initial oxidation retains the source-defined quinone/quinol
+  classes; PQQ is an enzyme cofactor, not a net reaction substrate. The shared dehydroquinate dehydration
+  is reversible although the pathway selects catabolic forward flux. Enzyme evidence is qualified by organism,
+  preparation and construct; the record does not assert a purified three-enzyme reconstitution in one
+  strain.
+pathway_type: aromatic-compound-catabolism
+taxa:
+- id: NCBITaxon:62977
+  label: Acinetobacter baylyi ADP1
+- id: NCBITaxon:442
+  label: Gluconobacter oxydans
+participants:
+- id: CHEBI:29751
+  label: (-)-quinate
+  category: small_molecule
+- id: CHEBI:32364
+  label: 3-dehydroquinate
+  category: small_molecule
+- id: CHEBI:16630
+  label: 3-dehydroshikimate
+  category: small_molecule
+- id: CHEBI:36241
+  label: 3,4-dihydroxybenzoate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: MetaCyc:Quinones
+  label: a quinone
+  category: chemical_entity
+- id: MetaCyc:Reduced-Quinones
+  label: a quinol
+  category: chemical_entity
+- id: MetaCyc:MONOMER-0
+  label: periplasmic dehydroquinate dehydratase
+  category: complex
+- id: MetaCyc:MONOMER-1
+  label: dehydroshikimate dehydratase
+  category: protein
+- id: UniProtKB:Q59086
+  label: Quinate/shikimate dehydrogenase (quinone)
+  category: protein
+- id: UniProtKB:Q59087
+  label: Catabolic 3-dehydroquinate dehydratase
+  category: protein
+- id: UniProtKB:Q43922
+  label: 3-dehydroshikimate dehydratase
+  category: protein
+- id: MetaCyc:MONOMER-67
+  label: quinate dehydrogenase
+  category: protein
+- id: MetaCyc:MONOMER-15328
+  label: periplasmic dehydroquinate dehydratase
+  category: protein
+- id: CHEBI:58442
+  label: pyrroloquinoline quinone(3-)
+  category: cofactor
+- id: GO:0016020
+  label: membrane
+  category: cellular_component
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: MetaCyc:1.1.99.25-RXN
+  label: quinate oxidation with a quinone
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:21099
+  label: 3-dehydroquinate <=> 3-dehydroshikimate + H2O
+  category: molecular_activity
+  direction: reversible
+- id: RHEA:24849
+  label: 3-dehydroshikimate => 3,4-dihydroxybenzoate + H2O
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: quinate-001
+  subject: MetaCyc:QUINATEDEG-PWY
+  predicate: part_of
+  object: NCBITaxon:62977
+  description: Native pathway species context; individual enzyme evidence retains its strain and preparation
+    scope.
+  evidence:
+  - reference_id: MetaCyc:QUINATEDEG-PWY
+    source_assertion: The pathway species slot lists TAX-62977; native pathway evidence includes mutant-phenotype
+      and direct-assay annotations.
+    source_locator: /ptools-xml/Pathway[@frameid="QUINATEDEG-PWY"]/species/Organism[@frameid="TAX-62977"]
+- id: quinate-002
+  subject: MetaCyc:QUINATEDEG-PWY
+  predicate: part_of
+  object: NCBITaxon:442
+  description: Native pathway species context; individual enzyme evidence retains its strain and preparation
+    scope.
+  evidence:
+  - reference_id: MetaCyc:QUINATEDEG-PWY
+    source_assertion: The pathway species slot lists TAX-442; native pathway evidence includes mutant-phenotype
+      and direct-assay annotations.
+    source_locator: /ptools-xml/Pathway[@frameid="QUINATEDEG-PWY"]/species/Organism[@frameid="TAX-442"]
+- id: quinate-003
+  subject: MetaCyc:1.1.99.25-RXN
+  predicate: part_of
+  object: MetaCyc:QUINATEDEG-PWY
+  description: One of the three explicit native pathway members; the native reaction direction is preserved.
+  evidence:
+  - reference_id: MetaCyc:QUINATEDEG-PWY
+    source_assertion: The reaction-list includes 1.1.99.25-RXN and the selected pathway layout is L2R.
+    source_locator: /ptools-xml/Pathway[@frameid="QUINATEDEG-PWY"]/reaction-list|reaction-layout[Reaction/@frameid="1.1.99.25-RXN"]
+- id: quinate-004
+  subject: CHEBI:29751
+  predicate: consumes
+  object: MetaCyc:1.1.99.25-RXN
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:1.1.99.25-RXN
+    source_assertion: The native left side contains QUINATE. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="1.1.99.25-RXN"]/left/Compound[@frameid="QUINATE"]
+  - reference_id: MetaCyc:QUINATE
+    source_assertion: The native compound links CHEBI:29751; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="QUINATE"] /dblink[dblink-db="CHEBI"]|inchi
+- id: quinate-005
+  subject: MetaCyc:Quinones
+  predicate: consumes
+  object: MetaCyc:1.1.99.25-RXN
+  description: Selected catabolic pathway orientation. Native generic quinone class; this does not establish
+    specificity for every class member or a measured physiological quinone.
+  evidence:
+  - reference_id: MetaCyc:1.1.99.25-RXN
+    source_assertion: The native left side contains Quinones. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="1.1.99.25-RXN"]/left/Compound[@frameid="Quinones"]
+- id: quinate-006
+  subject: MetaCyc:1.1.99.25-RXN
+  predicate: produces
+  object: CHEBI:32364
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:1.1.99.25-RXN
+    source_assertion: The native right side contains DEHYDROQUINATE. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="1.1.99.25-RXN"]/right/Compound[@frameid="DEHYDROQUINATE"]
+  - reference_id: MetaCyc:DEHYDROQUINATE
+    source_assertion: The native compound links CHEBI:32364; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="DEHYDROQUINATE"] /dblink[dblink-db="CHEBI"]|inchi
+- id: quinate-007
+  subject: MetaCyc:1.1.99.25-RXN
+  predicate: produces
+  object: MetaCyc:Reduced-Quinones
+  description: Selected catabolic pathway orientation. Native generic quinone class; this does not establish
+    specificity for every class member or a measured physiological quinone.
+  evidence:
+  - reference_id: MetaCyc:1.1.99.25-RXN
+    source_assertion: The native right side contains Reduced-Quinones. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="1.1.99.25-RXN"]/right/Compound[@frameid="Reduced-Quinones"]
+- id: quinate-008
+  subject: RHEA:21099
+  predicate: part_of
+  object: MetaCyc:QUINATEDEG-PWY
+  description: One of the three explicit native pathway members; the native reaction direction is preserved.
+  evidence:
+  - reference_id: MetaCyc:QUINATEDEG-PWY
+    source_assertion: The reaction-list includes 3-DEHYDROQUINATE-DEHYDRATASE-RXN and the selected pathway
+      layout is L2R.
+    source_locator: /ptools-xml/Pathway[@frameid="QUINATEDEG-PWY"]/reaction-list|reaction-layout[Reaction/@frameid="3-DEHYDROQUINATE-DEHYDRATASE-RXN"]
+- id: quinate-009
+  subject: CHEBI:32364
+  predicate: consumes
+  object: RHEA:21099
+  description: Selected catabolic pathway orientation. The reaction itself is reversible; this edge does
+    not restrict reverse chemistry.
+  evidence:
+  - reference_id: MetaCyc:3-DEHYDROQUINATE-DEHYDRATASE-RXN
+    source_assertion: The native left side contains DEHYDROQUINATE. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="3-DEHYDROQUINATE-DEHYDRATASE-RXN"]/left/Compound[@frameid="DEHYDROQUINATE"]
+  - reference_id: MetaCyc:DEHYDROQUINATE
+    source_assertion: The native compound links CHEBI:32364; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="DEHYDROQUINATE"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:21099
+    source_assertion: RHEA:21099 left side contains CHEBI:32364 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/21096_L rh:contains1 http://rdf.rhea-db.org/Participant_21096_compound_1486;
+      http://rdf.rhea-db.org/Participant_21096_compound_1486 rh:compound http://rdf.rhea-db.org/Compound_1486
+- id: quinate-010
+  subject: RHEA:21099
+  predicate: produces
+  object: CHEBI:15377
+  description: Selected catabolic pathway orientation. The reaction itself is reversible; this edge does
+    not restrict reverse chemistry.
+  evidence:
+  - reference_id: MetaCyc:3-DEHYDROQUINATE-DEHYDRATASE-RXN
+    source_assertion: The native right side contains WATER. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="3-DEHYDROQUINATE-DEHYDRATASE-RXN"]/right/Compound[@frameid="WATER"]
+  - reference_id: MetaCyc:WATER
+    source_assertion: The native compound links CHEBI:15377; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="WATER"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:21099
+    source_assertion: RHEA:21099 right side contains CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/21096_R rh:contains1 http://rdf.rhea-db.org/Participant_21096_compound_1283;
+      http://rdf.rhea-db.org/Participant_21096_compound_1283 rh:compound http://rdf.rhea-db.org/Compound_1283
+- id: quinate-011
+  subject: RHEA:21099
+  predicate: produces
+  object: CHEBI:16630
+  description: Selected catabolic pathway orientation. The reaction itself is reversible; this edge does
+    not restrict reverse chemistry.
+  evidence:
+  - reference_id: MetaCyc:3-DEHYDROQUINATE-DEHYDRATASE-RXN
+    source_assertion: The native right side contains 3-DEHYDRO-SHIKIMATE. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="3-DEHYDROQUINATE-DEHYDRATASE-RXN"]/right/Compound[@frameid="3-DEHYDRO-SHIKIMATE"]
+  - reference_id: MetaCyc:3-DEHYDRO-SHIKIMATE
+    source_assertion: The native compound links CHEBI:16630; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="3-DEHYDRO-SHIKIMATE"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:21099
+    source_assertion: RHEA:21099 right side contains CHEBI:16630 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/21096_R rh:contains1 http://rdf.rhea-db.org/Participant_21096_compound_3489;
+      http://rdf.rhea-db.org/Participant_21096_compound_3489 rh:compound http://rdf.rhea-db.org/Compound_3489
+- id: quinate-012
+  subject: RHEA:24849
+  predicate: part_of
+  object: MetaCyc:QUINATEDEG-PWY
+  description: One of the three explicit native pathway members; the native reaction direction is preserved.
+  evidence:
+  - reference_id: MetaCyc:QUINATEDEG-PWY
+    source_assertion: The reaction-list includes DHSHIKIMATE-DEHYDRO-RXN and the selected pathway layout
+      is L2R.
+    source_locator: /ptools-xml/Pathway[@frameid="QUINATEDEG-PWY"]/reaction-list|reaction-layout[Reaction/@frameid="DHSHIKIMATE-DEHYDRO-RXN"]
+- id: quinate-013
+  subject: CHEBI:16630
+  predicate: consumes
+  object: RHEA:24849
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+    source_assertion: The native left side contains 3-DEHYDRO-SHIKIMATE. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/left/Compound[@frameid="3-DEHYDRO-SHIKIMATE"]
+  - reference_id: MetaCyc:3-DEHYDRO-SHIKIMATE
+    source_assertion: The native compound links CHEBI:16630; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="3-DEHYDRO-SHIKIMATE"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:24849
+    source_assertion: RHEA:24849 left side contains CHEBI:16630 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24848_L rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_3489;
+      http://rdf.rhea-db.org/Participant_24848_compound_3489 rh:compound http://rdf.rhea-db.org/Compound_3489
+- id: quinate-014
+  subject: RHEA:24849
+  predicate: produces
+  object: CHEBI:36241
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+    source_assertion: The native right side contains 3-4-DIHYDROXYBENZOATE. No explicit coefficient is
+      supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/right/Compound[@frameid="3-4-DIHYDROXYBENZOATE"]
+  - reference_id: MetaCyc:3-4-DIHYDROXYBENZOATE
+    source_assertion: The native compound links CHEBI:36241; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="3-4-DIHYDROXYBENZOATE"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:24849
+    source_assertion: RHEA:24849 right side contains CHEBI:36241 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24848_R rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_3099;
+      http://rdf.rhea-db.org/Participant_24848_compound_3099 rh:compound http://rdf.rhea-db.org/Compound_3099
+- id: quinate-015
+  subject: RHEA:24849
+  predicate: produces
+  object: CHEBI:15377
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+    source_assertion: The native right side contains WATER. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/right/Compound[@frameid="WATER"]
+  - reference_id: MetaCyc:WATER
+    source_assertion: The native compound links CHEBI:15377; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="WATER"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:24849
+    source_assertion: RHEA:24849 right side contains CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24848_R rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_1283;
+      http://rdf.rhea-db.org/Participant_24848_compound_1283 rh:compound http://rdf.rhea-db.org/Compound_1283
+- id: quinate-016
+  subject: RHEA:21099
+  predicate: precedes
+  object: RHEA:24849
+  description: Native pathway reaction ordering selects forward catabolic progression.
+  evidence:
+  - reference_id: MetaCyc:QUINATEDEG-PWY
+    source_assertion: 3-DEHYDROQUINATE-DEHYDRATASE-RXN is a predecessor of DHSHIKIMATE-DEHYDRO-RXN.
+    source_locator: /ptools-xml/Pathway[@frameid="QUINATEDEG-PWY"]/reaction-ordering[Reaction/@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/predecessor-reactions
+- id: quinate-017
+  subject: MetaCyc:1.1.99.25-RXN
+  predicate: precedes
+  object: RHEA:21099
+  description: Native pathway reaction ordering selects forward catabolic progression.
+  evidence:
+  - reference_id: MetaCyc:QUINATEDEG-PWY
+    source_assertion: 1.1.99.25-RXN is a predecessor of 3-DEHYDROQUINATE-DEHYDRATASE-RXN.
+    source_locator: /ptools-xml/Pathway[@frameid="QUINATEDEG-PWY"]/reaction-ordering[Reaction/@frameid="3-DEHYDROQUINATE-DEHYDRATASE-RXN"]/predecessor-reactions
+- id: quinate-018
+  subject: MetaCyc:MONOMER-0
+  predicate: catalyzes
+  object: RHEA:21099
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-02
+    source_assertion: 'ENZRXN-02 explicitly joins enzyme MONOMER-0 to reaction 3-DEHYDROQUINATE-DEHYDRATASE-RXN;
+      native evidence: EV-EXP-IDA-PURIFIED-PROTEIN-NH.'
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-02"]/enzyme|reaction|evidence
+  description: 'Native IFO3244 pDQD catalyzes DHQ dehydration. PMID: 18540103 measures a 191 kDa native
+    mass and 16 kDa SDS subunit, suggesting 12 subunits; the source molecular-weight field 189 kDa is
+    not copied. Exact 621H sequence identity is not assumed.'
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 detergent-purified pDQD assembly. Estimated 191 kDa and 16 kDa subunit
+      support a proposed 12-subunit assembly; no engineered construct. N-terminal comparison does not
+      establish whole-sequence identity to 621H.
+    evidence:
+    - reference_id: PMID:18540103
+      quote: pDQD was highly purified
+- id: quinate-019
+  subject: UniProtKB:Q59086
+  predicate: catalyzes
+  object: MetaCyc:1.1.99.25-RXN
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-29
+    source_assertion: 'ENZRXN-29 explicitly joins enzyme MONOMER-28 to reaction 1.1.99.25-RXN; native
+      evidence: EV-EXP-IDA-PURIFIED-PROTEIN, EV-EXP-IDA-UNPURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-29"]/enzyme|reaction|evidence
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  description: 'Native ADP1 QuiA activity is supported by genetic and cell-extract results in PMID: 8002591.
+    The source groups this as quinone-dependent oxidation; this does not establish use of every quinone
+    or transfer purified Acinetobacter SA1/AC3 measurements to ADP1.'
+- id: quinate-020
+  subject: MetaCyc:MONOMER-1
+  predicate: catalyzes
+  object: RHEA:24849
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3
+    source_assertion: 'ENZRXN-3 explicitly joins enzyme MONOMER-1 to reaction DHSHIKIMATE-DEHYDRO-RXN;
+      native evidence: EV-EXP-IDA-PART-PURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3"]/enzyme|reaction|evidence
+  description: Native IFO3244 DHS-dehydratase activity was separated from DQD and detected with a coupled
+    qualitative protocatechuate assay. No gene, sequence or purified homogeneous protein identity is claimed.
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 partially purified cytoplasmic enzyme fraction; DHS-dehydratase activity
+      eluted separately from DQD on DEAE-Sephadex A-50. Exact protein sequence, termini and oligomeric
+      state are unresolved.
+    evidence:
+    - reference_id: PMID:14586099
+      quote: DSA dehydratase was separated from DQD
+- id: quinate-021
+  subject: UniProtKB:Q59087
+  predicate: catalyzes
+  object: RHEA:21099
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-35
+    source_assertion: 'ENZRXN-35 explicitly joins enzyme MONOMER-33 to reaction 3-DEHYDROQUINATE-DEHYDRATASE-RXN;
+      native evidence: EV-EXP-IDA-UNPURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-35"]/enzyme|reaction|evidence
+  - reference_id: MetaCyc:MONOMER-33
+    source_assertion: The native protein MONOMER-33 carries a UniProt cross-reference to Q59087.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-33"]/dblink[dblink-db="UNIPROT"]
+  description: 'Native ADP1 induced thermolabile QuiB activity and deletion phenotypes support catabolic
+    DHQ dehydration (PMID: 7592351). The old recombinant 290-aa annotation and proposed leader localization
+    are not assumed identical to the corrected 272-aa canonical sequence.'
+- id: quinate-022
+  subject: UniProtKB:Q43922
+  predicate: catalyzes
+  object: RHEA:24849
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-38
+    source_assertion: 'ENZRXN-38 explicitly joins enzyme MONOMER-37 to reaction DHSHIKIMATE-DEHYDRO-RXN;
+      native evidence: EV-EXP-IDA-UNPURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-38"]/enzyme|reaction|evidence
+  - reference_id: MetaCyc:MONOMER-37
+    source_assertion: The native protein MONOMER-37 carries a UniProt cross-reference to Q43922.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-37"]/dblink[dblink-db="UNIPROT"]
+  description: DHS dehydration is supported by cloned quiC activity and native genetic phenotypes. The
+    native protein comment incorrectly labels the assay as DHQ dehydration; no numeric activity is copied.
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: ADP1 genomic quiC expressed in E. coli DH5α(pZR564), a 2.0 kb HindIII insert; crude-extract
+      assay. No protein tag reported or expressed termini measured. Text/Table 1 disagree on pBSK versus
+      pBKS vector label.
+    evidence:
+    - reference_id: PMID:7592351
+      quote: pZR564 contains the open reading frame
+- id: quinate-023
+  subject: MetaCyc:MONOMER-67
+  predicate: catalyzes
+  object: MetaCyc:1.1.99.25-RXN
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-68
+    source_assertion: 'ENZRXN-68 explicitly joins enzyme MONOMER-67 to reaction 1.1.99.25-RXN; native
+      evidence: EV-EXP-IDA-PURIFIED-PROTEIN.'
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-68"]/enzyme|reaction|evidence
+  description: The native source assigns IFO3244 QDH to the generic quinone oxidation reaction. The inspected
+    primary abstract supports purified holo-QDH; the full-body acceptor panel remains unread, so universal
+    quinone specificity is not asserted.
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 membrane holo-QDH preparation; SDS bands approximately 65 and 21 kDa may
+      reflect proteolysis of one polypeptide. Exact cleavage and whole-protein sequence are unresolved.
+    evidence:
+    - reference_id: PMID:15598527
+      quote: could be the result of proteolysis of single polypeptide
+- id: quinate-024
+  subject: MetaCyc:MONOMER-0
+  predicate: part_of
+  object: NCBITaxon:442
+  evidence:
+  - reference_id: MetaCyc:MONOMER-0
+    source_assertion: The native MONOMER-0 species slot identifies TAX-442; this is source protein context,
+      not proof of full pathway reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-0"]/species
+  description: Source protein taxon context; assays and preparations remain strain-qualified on catalytic
+    edges. This is not a claim that every isolate of the species expresses the full pathway.
+- id: quinate-025
+  subject: MetaCyc:MONOMER-1
+  predicate: part_of
+  object: NCBITaxon:442
+  evidence:
+  - reference_id: MetaCyc:MONOMER-1
+    source_assertion: The native MONOMER-1 species slot identifies TAX-442; this is source protein context,
+      not proof of full pathway reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-1"]/species
+  description: Source protein taxon context; assays and preparations remain strain-qualified on catalytic
+    edges. This is not a claim that every isolate of the species expresses the full pathway.
+- id: quinate-026
+  subject: UniProtKB:Q59086
+  predicate: part_of
+  object: NCBITaxon:62977
+  evidence:
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native MONOMER-28 species slot identifies TAX-62977; this is source protein
+      context, not proof of full pathway reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/species
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  description: Source protein taxon context; assays and preparations remain strain-qualified on catalytic
+    edges. This is not a claim that every isolate of the species expresses the full pathway.
+- id: quinate-027
+  subject: UniProtKB:Q59087
+  predicate: part_of
+  object: NCBITaxon:62977
+  evidence:
+  - reference_id: MetaCyc:MONOMER-33
+    source_assertion: The native MONOMER-33 species slot identifies TAX-62977; this is source protein
+      context, not proof of full pathway reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-33"]/species
+  - reference_id: MetaCyc:MONOMER-33
+    source_assertion: The native protein MONOMER-33 carries a UniProt cross-reference to Q59087.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-33"]/dblink[dblink-db="UNIPROT"]
+  description: Source protein taxon context; assays and preparations remain strain-qualified on catalytic
+    edges. This is not a claim that every isolate of the species expresses the full pathway.
+- id: quinate-028
+  subject: UniProtKB:Q43922
+  predicate: part_of
+  object: NCBITaxon:62977
+  evidence:
+  - reference_id: MetaCyc:MONOMER-37
+    source_assertion: The native MONOMER-37 species slot identifies TAX-62977; this is source protein
+      context, not proof of full pathway reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-37"]/species
+  - reference_id: MetaCyc:MONOMER-37
+    source_assertion: The native protein MONOMER-37 carries a UniProt cross-reference to Q43922.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-37"]/dblink[dblink-db="UNIPROT"]
+  description: Source protein taxon context; assays and preparations remain strain-qualified on catalytic
+    edges. This is not a claim that every isolate of the species expresses the full pathway.
+- id: quinate-029
+  subject: MetaCyc:MONOMER-67
+  predicate: part_of
+  object: NCBITaxon:442
+  evidence:
+  - reference_id: MetaCyc:MONOMER-67
+    source_assertion: The native MONOMER-67 species slot identifies TAX-442; this is source protein context,
+      not proof of full pathway reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-67"]/species
+  description: Source protein taxon context; assays and preparations remain strain-qualified on catalytic
+    edges. This is not a claim that every isolate of the species expresses the full pathway.
+- id: quinate-030
+  subject: MetaCyc:MONOMER-15328
+  predicate: part_of
+  object: NCBITaxon:442
+  evidence:
+  - reference_id: MetaCyc:MONOMER-15328
+    source_assertion: The native MONOMER-15328 species slot identifies TAX-442; this is source protein
+      context, not proof of full pathway reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-15328"]/species
+  description: Source protein taxon context; assays and preparations remain strain-qualified on catalytic
+    edges. This is not a claim that every isolate of the species expresses the full pathway.
+- id: quinate-031
+  subject: UniProtKB:Q59086
+  predicate: located_in
+  object: GO:0016020
+  evidence:
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein has location CCO-MEMBRANE and cellular-component annotation GO:0016020.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/location|has-go-term
+  - reference_id: UniProtKB:Q59086
+    source_assertion: Q59086 SUBCELLULAR LOCATION annotates cell membrane and multi-pass membrane protein
+      with ECO:0000305.
+    source_locator: $.comments[5].subcellularLocations[0]
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  description: 'Broad membrane annotation; independently curated UniProt location is ECO:0000305, not
+    direct ADP1 topology measurement. Predicted transmembrane regions in PMID: 8002591 are sequence-based.'
+- id: quinate-032
+  subject: MetaCyc:MONOMER-67
+  predicate: located_in
+  object: GO:0016020
+  evidence:
+  - reference_id: MetaCyc:MONOMER-67
+    source_assertion: The native protein has location CCO-MEMBRANE and cellular-component annotation GO:0016020.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-67"]/location|has-go-term
+  description: 'Native source and inspected PMID: 15598527 abstract describe membrane-bound IFO3244 QDH.
+    This broad location does not establish exact membrane orientation or an obligate respiratory assembly.'
+- id: quinate-033
+  subject: MetaCyc:MONOMER-0
+  predicate: located_in
+  object: GO:0016020
+  evidence:
+  - reference_id: PMID:18540103
+    quote: typical membrane-bound enzyme
+  description: 'General membrane association is supported by fractionation and detergent solubilization.
+    The precise periplasmic/plasma-membrane-side topology in the native source is not promoted: PMID:
+    18540103 explicitly lacked RSO/ISO topology tests.'
+- id: quinate-034
+  subject: MetaCyc:MONOMER-0
+  predicate: has_part
+  object: MetaCyc:MONOMER-15328
+  evidence:
+  - reference_id: MetaCyc:MONOMER-0
+    source_assertion: The native protein-complex object MONOMER-0 contains 12 copies of MONOMER-15328;
+      membership does not independently assert catalysis by an isolated subunit.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-0"]/parent|component
+  description: The native source encodes 12 identical subunits; the primary mass comparison supports a
+    suggested homododecamer, not an independently solved assembly. Membership does not assign catalytic
+    activity to isolated subunits.
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: molecular_state
+    description: Native IFO3244 approximately 16 kDa pDQD subunit. Figure 2C and prose differ at one N-terminal
+      residue; the comparison uses 621H GOX0437. Exact full sequence and cleavage boundaries remain unresolved.
+    evidence:
+    - reference_id: MetaCyc:MONOMER-0
+      source_assertion: The native MONOMER-0 complex lists MONOMER-15328 with coefficient 12 and describes
+        the complex as a homododecamer.
+      source_locator: /ptools-xml/Protein[@frameid="MONOMER-0"]/component|comment
+    - reference_id: PMID:18540103
+      quote: N-terminal amino acid sequences
+- id: quinate-035
+  subject: UniProtKB:Q59086
+  predicate: has_cofactor
+  object: CHEBI:58442
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-29
+    source_assertion: ENZRXN-29 associates the QuiA native enzyme MONOMER-28 with PQQ as a cofactor.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-29"]/enzyme|cofactor
+  - reference_id: UniProtKB:Q59086
+    source_assertion: Q59086 COFACTOR comment identifies pyrroloquinoline quinone with ChEBI:58442.
+    source_locator: $.comments[3].cofactors[0]
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  description: PQQ is a prosthetic cofactor, distinct from the net electron-accepting quinone. This ADP1
+    assertion is a native/current UniProt annotation; Acinetobacter SA1/AC3 or LMD79.41 biochemical results
+    are not transferred as direct ADP1 tests.
+- id: quinate-036
+  subject: MetaCyc:MONOMER-1
+  predicate: located_in
+  object: GO:0005737
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3
+    source_assertion: The native activity comment reports partial purification of Gluconobacter oxydans
+      dehydroshikimate dehydratase from the cytoplasmic fraction.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3"]/comment
+  description: 'Recovery in the cytoplasmic fraction is reported in the native source and inspected PMID:
+    14586099 methods. Fractionation supports this context without asserting exclusive localization of
+    all enzyme molecules.'
+- id: quinate-037
+  subject: MetaCyc:MONOMER-67
+  predicate: has_cofactor
+  object: CHEBI:58442
+  description: PQQ is bound as a prosthetic group; it is not consumed as the quinone electron acceptor.
+    The full 2004 body remains unread.
+  evidence:
+  - reference_id: PMID:15598527
+    quote: containing pyrroloquinoline quinone (PQQ) as the prosthetic group
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 purified holo-QDH preparation; exact proteolytic cleavage state is unresolved.
+    evidence:
+    - reference_id: MetaCyc:MONOMER-67
+      source_assertion: The native QDH protein comment describes a purified holoenzyme with 65/21 kDa
+        SDS bands suggested to arise by proteolysis.
+      source_locator: /ptools-xml/Protein[@frameid="MONOMER-67"]/comment
+references:
+- id: MetaCyc:QUINATEDEG-PWY
+  title: MetaCyc native object QUINATEDEG-PWY
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:QUINATEDEG-PWY
+  source_version: MetaCyc 27.0
+  source_sha256: 51d1f25faf0545dfdf14baf69f8f3647ab33ed564ef4e6117146c06f98e5153b
+- id: MetaCyc:Quinones
+  title: MetaCyc native object Quinones
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:Quinones
+  source_version: MetaCyc 27.0
+  source_sha256: df6ff7e4fbd2b0699369f2fb5e57f08881d97a83037cd6e44f00bef784ba5bc2
+- id: MetaCyc:Reduced-Quinones
+  title: MetaCyc native object Reduced-Quinones
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:Reduced-Quinones
+  source_version: MetaCyc 27.0
+  source_sha256: 79e85269833944d6fc63116e11f52f6e863159cafd03dc11094c26cfe326a4bf
+- id: MetaCyc:1.1.99.25-RXN
+  title: MetaCyc native object 1.1.99.25-RXN
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:1.1.99.25-RXN
+  source_version: MetaCyc 27.0
+  source_sha256: b0d434e4a3ea533e8cf499f7c051c7497887bc6f631bdba5f09f1954eee9cc54
+- id: MetaCyc:QUINATE
+  title: MetaCyc native object QUINATE
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:QUINATE
+  source_version: MetaCyc 27.0
+  source_sha256: 47e19551f48efb4b534b33a3a234cd24b154fce0a0f37b7599591bab7e803c79
+- id: MetaCyc:DEHYDROQUINATE
+  title: MetaCyc native object DEHYDROQUINATE
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:DEHYDROQUINATE
+  source_version: MetaCyc 27.0
+  source_sha256: 9c8633343d938e90b55e933fb846d58df98fd78dcaed0490e38e48b01635f146
+- id: MetaCyc:3-DEHYDROQUINATE-DEHYDRATASE-RXN
+  title: MetaCyc native object 3-DEHYDROQUINATE-DEHYDRATASE-RXN
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-DEHYDROQUINATE-DEHYDRATASE-RXN
+  source_version: MetaCyc 27.0
+  source_sha256: e1be947ffb281946c34000c848392cf50b0ddc4a579ede04e7e849ae5aa0dc7b
+- id: RHEA:21099
+  title: Rhea equation RHEA:21099
+  url: https://www.rhea-db.org/rhea/21099
+  source_version: Rhea 142
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:WATER
+  title: MetaCyc native object WATER
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:WATER
+  source_version: MetaCyc 27.0
+  source_sha256: 29201d5730308535e65744b47f9f6e0eb3ef9ffdcdd2eb442888a34da8a8c366
+- id: MetaCyc:3-DEHYDRO-SHIKIMATE
+  title: MetaCyc native object 3-DEHYDRO-SHIKIMATE
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-DEHYDRO-SHIKIMATE
+  source_version: MetaCyc 27.0
+  source_sha256: d0f5d73eb794f9644dfd8822b74c02eec042e5d494ee24a599b97babb6770c61
+- id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+  title: MetaCyc native object DHSHIKIMATE-DEHYDRO-RXN
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:DHSHIKIMATE-DEHYDRO-RXN
+  source_version: MetaCyc 27.0
+  source_sha256: 9817702da07b7b4df130381752e639afe1184490dc844d8558c16da4d21613b7
+- id: RHEA:24849
+  title: Rhea equation RHEA:24849
+  url: https://www.rhea-db.org/rhea/24849
+  source_version: Rhea 142
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:3-4-DIHYDROXYBENZOATE
+  title: MetaCyc native object 3-4-DIHYDROXYBENZOATE
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-4-DIHYDROXYBENZOATE
+  source_version: MetaCyc 27.0
+  source_sha256: cd2b2dad4c5e768eaa5979a44d6e65f0a7ed47318f2d3e49b1139413ac5ed632
+- id: MetaCyc:ENZRXN-02
+  title: MetaCyc 27 native ENZRXN-02 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-02
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 28ba4e4dddaae54977135feabe7a5419e65652baa200435421f45202d1c82ac5
+- id: MetaCyc:ENZRXN-29
+  title: MetaCyc 27 native ENZRXN-29 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-29
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: bd5f647194943beb5600befe5411704de7a0f1bb168d8496c025599127c2dec1
+- id: MetaCyc:ENZRXN-3
+  title: MetaCyc 27 native ENZRXN-3 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 6b747b4c778fc515291ca384595388ad0630ace8a41bdd59f0dee4fcfdc33a7c
+- id: MetaCyc:ENZRXN-35
+  title: MetaCyc 27 native ENZRXN-35 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-35
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: ef20e8a9f4f27c7b9d61395ecee474c573e9ecf9919537220c00ea2b9ba206ba
+- id: MetaCyc:ENZRXN-38
+  title: MetaCyc 27 native ENZRXN-38 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-38
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 31ffaf53b76ff73d1bb89e4d1c7f179536fca810a467ac734e2a7612ec944fee
+- id: MetaCyc:ENZRXN-68
+  title: MetaCyc 27 native ENZRXN-68 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-68
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: a5aa7e49b6d284ee5b96d8e3aff26c454a9afae33cf8bd9d97c3dab19b0b2c42
+- id: MetaCyc:MONOMER-0
+  title: MetaCyc 27 native MONOMER-0 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-0
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 598a1a72b4c2b000ee692ef2937826b8ac1d03a70ef82045a604e35a8aa6dc8f
+- id: MetaCyc:MONOMER-1
+  title: MetaCyc 27 native MONOMER-1 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-1
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 7bf77b4fdb81ac4c306cebbca6600c88449bc33dd60fd9ba80e47eb860717231
+- id: MetaCyc:MONOMER-28
+  title: MetaCyc 27 native MONOMER-28 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-28
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 3769731fddd69bb5d4d3bf832fbb4e3868a73abc8608d148ed6c66efadc6d0c8
+- id: MetaCyc:MONOMER-33
+  title: MetaCyc 27 native MONOMER-33 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-33
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: c03021f6102a8c395ece4cd04dca10322ade42c94ebcba805e2830914e49cceb
+- id: MetaCyc:MONOMER-37
+  title: MetaCyc 27 native MONOMER-37 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-37
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: aa051b12ab812ae7cb68673b48fa86208532fb4af96c8cf89d44a1b1bb8d496b
+- id: MetaCyc:MONOMER-67
+  title: MetaCyc 27 native MONOMER-67 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-67
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 7b52bfa1ae93fe802ecc6661d052a76dad719f95b10e4c007c8021d7be1369de
+- id: MetaCyc:MONOMER-15328
+  title: MetaCyc 27 native MONOMER-15328 XML
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-15328
+  source_version: MetaCyc 27.0; retrieved 2026-10-14
+  source_sha256: 935c289896eb975de4032f9735bfb4971d5902d2aa9021c0e03da107de2b4daa
+- id: UniProtKB:Q59086
+  title: UniProtKB Q59086, ADP1 QuiA
+  url: https://rest.uniprot.org/uniprotkb/Q59086.json
+  source_version: retrieved 2026-10-14; sequenceVersion 1
+  source_sha256: 25d86e8505af8ac4923f508fa03b7fd2aadfeaf1dd1dea924faeec64c532eafe
+- id: PMID:7592351
+  title: Unusual ancestry of dehydratases associated with quinate catabolism in Acinetobacter calcoaceticus
+  url: https://www.researchgate.net/publication/15607491_Unusual_ancestry_of_dehydratases_associated_with_quinate_catabolism_in_Acinetobacter_calcoaceticus
+- id: PMID:15598527
+  title: 'Quinate oxidation in Gluconobacter oxydans IFO3244: purification and characterization of quinoprotein
+    quinate dehydrogenase'
+  url: https://pubmed.ncbi.nlm.nih.gov/15598527/
+- id: PMID:18540103
+  title: A novel 3-dehydroquinate dehydratase catalyzing extracellular formation of 3-dehydroshikimate
+    by oxidative fermentation of Gluconobacter oxydans IFO3244
+  url: https://www.jstage.jst.go.jp/article/bbb/72/6/72_70778/_pdf
+  source_sha256: b5dd24d357efdd77f5977528a0056085f069bfdfc927cf4a602abae1c905ca76
+- id: PMID:14586099
+  title: 3-Dehydroquinate production by oxidative fermentation and further conversion of 3-dehydroquinate
+    to the intermediates in the shikimate pathway
+  url: https://www.jstage.jst.go.jp/article/bbb/67/10/67_10_2124/_pdf
+  source_sha256: fe0a94a47666acfe3a85aed78521589dd0e251b352f3dbfb8bba93df76351f6c
