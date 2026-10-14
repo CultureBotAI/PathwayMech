@@ -1,0 +1,36 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,subprocess
+B=Path(__file__).parent
+def sha(d):return hashlib.sha256(d).hexdigest()
+def bind(p):
+ p=Path(p);d=p.read_bytes();return dict(path=str(p),sha256=sha(d),bytes=len(d))
+def save(n,o):(B/n).write_text(json.dumps(o,indent=2)+'\n')
+base=json.loads((B/'baseline-record-bindings.json').read_text());compact=[]
+for r in base['records']:
+ row={k:v for k,v in r.items() if k!='named_nodes'};row['named_node_count']=len(r['named_nodes']);row['candidate_named_nodes']=[n for n in r['named_nodes'] if n['id'] in ['MetaCyc:PWY-6419','GO:0019633']];compact.append(row)
+save('baseline-record-bindings-compact.json',dict(baseline_commit=base['baseline_commit'],count=base['count'],method='git ls-tree -r -z baseline -- data/pathways; read every actual Git blob, parse all named fields, byte-compare with both roots',records=compact,complete_external_node_inventory=bind(B/'baseline-record-bindings.json')))
+initial=json.loads((B/'dedup-compact.json').read_text());supp=json.loads((B/'go-source-supplement/search.json').read_text());first=set((B/'patterns.txt').read_text().splitlines());second=set((B/'go-source-supplement/patterns.txt').read_text().splitlines());assert not first&second
+save('search-union.json',dict(baseline_commit=base['baseline_commit'],candidate='MetaCyc:PWY-6419',baseline_records=254,patterns_per_root=[len(first),len(second)],distinct_fixed_strings=len(first|second),casefold_distinct_strings=len({p.casefold() for p in first|second}),passes=[bind(B/'dedup-compact.json'),bind(B/'go-source-supplement/search.json')],ignored_and_hidden_included=True,scope='Two current repository roots, two completed passes per root. No provider holdings or source exhaustion claim. Exact membership is from all254 baseline Git blobs, not generic substring counts.'))
+# The supplemental hits were checked against their whole context; no new whole-pathway candidate emerges.
+reasons={
+'M00022':'DRAM chorismate biosynthesis module rows and their ingestion/research projections; anabolic boundary.',
+'M00039':'DRAM monolignol biosynthesis module rows and their ingestion/research projections; anabolic plant boundary.',
+'RHEA:17737':'Biosynthetic shikimate reaction family in chorismate record, its generated page, validation/review/history and prior search inventories; not NAD-dependent shikimate catabolism.',
+'RHEA:17739':'Reverse NADPH-dependent biosynthetic shikimate reaction in chorismate record and provenance; whole equation differs from NAD-dependent17742.'}
+save('go-source-supplement/dispositions.json',dict(pattern_dispositions={p:reasons.get(p,'No matches in either completed ignored/hidden-inclusive repository scan; this is bounded local text absence only.') for p in second},ignored_main_sources=['reports/local_source_ingestion/2026-10-08-dram-seed/dram/module_step_form.tsv','reports/local_source_ingestion/2026-10-08-dram-seed/dram/ingested-native.tsv'],scope='Exact GO synonyms/crosswalk spellings and related anabolic source-module/reaction identifiers. No novel candidate equivalence asserted.'))
+# Relevant narrowed candidate IDs are not synthesized for namespaces lacking inspected accessions.
+a=json.loads((B/'namespace-search-coverage.json').read_text());a['supplemental_terms']=sorted(second);save('namespace-search-coverage.json',a)
+# Ensure baseline paths are still exact before handing off. No requirement that parent has not begun unrelated work.
+checks=[]
+for root in [Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),Path('/private/tmp/pathwaymech-next-258-20261014')]:
+ unchanged=all(sha((root/r['path']).read_bytes())==r['sha256'] for r in base['records']);assert unchanged
+ checks.append(dict(root=str(root),head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),all_254_baseline_record_bytes_unchanged=unchanged))
+save('handoff-state.json',dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),roots=checks,author_only=True,maintained_files_changed_by_this_agent=False,production_changes=False,corpus_gates_run=False))
+# The compact retention list intentionally excludes complete originals, duplicated baseline snapshots and full search match/path logs.
+include=['HANDOFF.md','baseline-record-bindings-compact.json','baseline-authority-bindings.json','pattern-sources.json','patterns.txt','dedup-compact.json','search-union.json','native-identity-facts.json','go-boundary-evidence.json','related-record-dispositions.json','namespace-search-coverage.json','prior-research-dispositions.json','ignored-source-dispositions.json','acquisition-html.json','acquisition-html-sandbox-failure.json','pathway-xml-parser-trial.json','pathway-xml-parser-trial-invalid-path.json','html-parser-trial.json','handoff-state.json','go-source-supplement/patterns.txt','go-source-supplement/pattern-sources.json','go-source-supplement/search.json','go-source-supplement/dispositions.json']
+helpers=['prepare.py','scan.py','assess_identity.py','finish_dispositions.py','acquire_html.py','trial_pathway_parser.py','trial_html_parser.py','supplement.py','seal.py']
+for f in helpers:
+ p=B/f;lines=p.read_text().splitlines();assert all(line==line.rstrip() for line in lines),f
+rows=[dict(**bind(B/name),retain_as=name) for name in include]+[dict(**bind(B/name),retain_as=name+'.txt') for name in helpers]
+save('artifact-manifest.json',dict(status='frozen_author_preflight',created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),files=rows,external_only=[bind(p) for p in sorted(B.rglob('*')) if p.is_file() and p.relative_to(B).as_posix() not in include+helpers+['artifact-manifest.json']],instructions='Copy only listed files to retained preflight dossier, byte-identically using retain_as. Do not copy originals, complete baseline snapshots, or full match/path-count logs. Root owns retention receipt and any later supplemental identity searches.'))
+print(json.dumps(dict(retained_files=len(rows),retained_bytes=sum(r['bytes'] for r in rows),pattern_union=len(first|second),baseline_records=254)))

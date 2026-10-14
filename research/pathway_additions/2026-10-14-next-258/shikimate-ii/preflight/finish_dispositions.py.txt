@@ -1,0 +1,61 @@
+from pathlib import Path
+import collections,hashlib,json,re,subprocess
+B=Path(__file__).parent;R=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+def sha(d):return hashlib.sha256(d).hexdigest()
+def bind(p):
+ p=Path(p);d=p.read_bytes();return dict(path=str(p),sha256=sha(d),bytes=len(d))
+def save(n,o):(B/n).write_text(json.dumps(o,indent=2)+'\n')
+matched=json.loads((B/'root-0-matched-files.json').read_text())
+focus={'PWY-6419','shikimate degradation II','RXN-20484','RXN-11174','R06847','1.1.1.282','GO:0052734','23929881','25406451','10.1007/s00253-012-4659-y','10.1515/hsz-2013-0170','10.1099/mic.0.083733-0','cgR_2523','cgR_2524'}
+exact={'PWY-6419','shikimate degradation II'}
+records=[]
+for name,row in matched.items():
+ hits=set(row['patterns'])&focus
+ if not hits:continue
+ p=R/name;text=p.read_text();lines=text.splitlines();locs=[i for i,line in enumerate(lines,1) if any(k.lower() in line.lower() for k in hits)]
+ if '/preflight/' in name:
+  if p.name in ['HANDOFF.md','CANDIDATES.md','continuing-queue.json']:
+   reason='Prior author preflight explicitly queues the separate NAD-dependent shikimate II variant for later review. Its historical baseline is not reused as current absence proof; it is not a rejection.';kind='interpreted continuing lead'
+  elif p.name in ['prior-research-dispositions.json','boundary-assessment.json']:
+   reason='Prior boundary/mention assessment preserves the separate candidate and broad GO mapping. Prior I-route or quinate-route exclusions are scope decisions, not rejection of PWY-6419.';kind='prior boundary assessment'
+  else:
+   reason='Search vocabulary, acquisition/original binding, helper or reproduction inventory includes candidate strings. This is provenance, not maintained whole-pathway coverage or scientific rejection.';kind='reproduction artifact'
+ elif p.name in ['curation.md','final-acceptance.md','README.md']:
+  reason='Curation/acceptance of the neighboring I-route or quinate II record explicitly keeps shikimate II in the continuation queue. Shared components and publications do not collapse pathway boundaries.';kind='interpreted prior narrative'
+ elif p.name in ['native-coverage.json','native-fact-dispositions-compact.json','HANDOFF.md']:
+  reason='The quinate II native closure excludes RXN-20484/ENZRXN-17383 only as an alternative shikimate substrate boundary. This is affirmative support for reviewing a separate shikimate II record, not a scientific rejection.';kind='interpreted native scope exclusion'
+ elif name.endswith('/reports/causal_graph_review/metacyc-review.json') or name.endswith('reports/causal_graph_review/metacyc-review.json'):
+  reason='Legacy chorismate audit places RXN-11174 and EC1.1.1.282 beside NADPH-dependent reverse shikimate chemistry (RHEA:17739 / master17737, with source type19259). This is an anabolic/shared-crosswalk context, not the NAD-dependent two-step catabolic pathway. Molecular sides control equivalence.';kind='interpreted legacy review'
+ elif p.name in ['rhea-original-projection.json','protein-identity-candidates.json','supplemental-biological-context.json','independent-identities.json']:
+  reason='Inspected structured Rhea/UniProt identity context cites PMID23929881 or shared enzyme EC/reaction identifiers. Citation/identity context is a primary-reading lead, not proof that its paper was read or a maintained PWY-6419 record.';kind='issuing-identity or reaction context'
+ else:
+  reason='Acquisition, original-source projection, manifest or helper binds the separately identified RXN-20484/PWY-6419 source. No top-level maintained pathway or rejection is asserted by this artifact.';kind='source provenance'
+ records.append(dict(**bind(p),relative_path=name,patterns=sorted(hits),exact_candidate_mention=bool(hits&exact),matching_lines=locs,classification=kind,disposition=reason))
+save('prior-research-dispositions.json',dict(scope='All main-root matched files containing any focused candidate/defining-reaction/new-paper key are inventoried. Narrative and scope exclusions were read; repetitive reproduction artifacts are classified as provenance. Whole-root scan includes ignored and hidden files.',focused_keys=sorted(focus),matched_files=records,exact_candidate_file_count=sum(x['exact_candidate_mention'] for x in records),conclusion='Existing research queues PWY-6419 as a separate follow-up; no maintained duplicate or scientific rejection of this exact route is established.'))
+proc=subprocess.run(['git','check-ignore','--stdin'],cwd=R,input='\n'.join(matched)+'\n',text=True,capture_output=True);assert proc.returncode in [0,1]
+ignored=[]
+for name in proc.stdout.splitlines():
+ p=R/name;text=p.read_text();patterns=matched[name]['patterns'];details={}
+ if name.endswith('module_step_form.tsv') or '/dram/ingested-native.tsv' in name:
+  selected=[(i,l) for i,l in enumerate(text.splitlines(),1) if re.search(r'quinate|shikimate|R03084|K17744|POLZ1|POLZ2',l,re.I)]
+  reason='Shikimate/quinate rows are M00022 chorismate biosynthesis or M00039 monolignol biosynthesis. Numeric17744 matches KO K17744 in M00114 plant ascorbate biosynthesis; LZ1/LZ2 are POLZ1/POLZ2 polymerase names. The ingested table repeats original rows, not a maintained catabolic record.'
+  details=dict(matching_rows=[dict(line=i,text=l) for i,l in selected],parsed_original=name.endswith('module_step_form.tsv'))
+ elif name.endswith('subsystem_select.body'):
+  reason='SEED selector lists Quinate degradation, Shikimate kinase containing cluster and the protocatechuate branch, but has no pathway-role/organism graph here. The selector remains a reusable-source lead.'
+  details['labels']=[x for x in ['Quinate degradation','Shikimate kinase containing cluster','Protocatechuate branch of beta-ketoadipate pathway'] if x in text]
+ elif name.endswith('/seed/pegs.json'):
+  parsed=json.loads(text);assert list(parsed)==['Alanine biosynthesis'];keys=[k for k in parsed['Alanine biosynthesis'] if any(x in k for x in ['17741','17743','21099'])]
+  reason='The entire response is Alanine biosynthesis; numeric reaction fragments match unrelated genome IDs, not Rhea assertions.';details=dict(subsystems=list(parsed),matched_genome_ids=keys)
+ elif '/dbcan/ingested-native.tsv' in name:
+  reason='Shared C. glutamicum taxon occurs in beta-glucoside/cellobiose PUL support rows; GH7/GH12/GH29 are CAZyme families rather than Amycolatopsis strain names. These are not shikimate II graphs.'
+ elif name.endswith('LaRosa2019.html'):
+  reason='quiC appears inside Quick links, and N. crassa in glycoside-hydrolase context; common genes/water/numeric fragments do not identify shikimate II.'
+ elif '/pathbank/' in name:
+  reason='PathBank:SMP0000983/PW000967 is the glyoxylate-cycle canary; shared water/proton matches do not identify the candidate pathway.'
+ elif '.pytest_cache/' in name:
+  reason='Generated pytest node names include common water/cofactor identities; they are not biological pathway records.'
+ else:
+  reason='Generic gene/water terminology or commit-string fragments in reusable-source software/API metadata; not candidate pathway identity or a scientific rejection.'
+ ignored.append(dict(**bind(p),patterns=patterns,disposition=reason,details=details))
+save('ignored-source-dispositions.json',dict(command=['git','check-ignore','--stdin'],exit_code=proc.returncode,matched_ignored_files=ignored,scope='All 17 main-root ignored matched files are classified; all bytes were read and meaningful source rows/objects interpreted. Compressed archives remain outside text-search bounds.'))
+print(json.dumps(dict(focused_files=len(records),exact_candidate_files=sum(x['exact_candidate_mention'] for x in records),ignored_files=len(ignored))))

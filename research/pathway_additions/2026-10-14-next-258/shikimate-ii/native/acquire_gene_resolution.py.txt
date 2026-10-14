@@ -1,0 +1,16 @@
+from acquire_identities import request
+from acquire import *
+import urllib.parse,time
+rows=[]
+queries={'all-four-loci':'(cgR_0492[All Fields] OR cgR_0495[All Fields] OR cgR_2523[All Fields] OR cgR_2524[All Fields])', 'strain-shi':'Corynebacterium glutamicum R[Organism] AND (shiA[Gene Name] OR shiR[Gene Name])','strain-qsu':'Corynebacterium glutamicum R[Organism] AND (qsuA[Gene Name] OR qsuD[Gene Name])'}
+for n,q in queries.items():
+ rows.append(request('NCBI-gene-resolution-'+n,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?'+urllib.parse.urlencode({'db':'gene','term':q,'retmode':'json','retmax':100})));time.sleep(.5)
+for id in ['WP_011897860.1','WP_003863076.1','WP_003860437.1']:
+ url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?'+urllib.parse.urlencode({'db':'protein','id':id,'rettype':'gb','retmode':'xml'});row={'id':id,'url':url,'retrieved_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(url,timeout=60) as r:b=r.read();row.update(status=r.status,final_url=r.url)
+  ET.fromstring(b);p=ORIG/('NCBIProtein-'+id+'.xml');p.write_bytes(b);row.update(path=str(p),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b))
+ except Exception as e:row['error']=str(e)
+ rows.append(row);time.sleep(.5)
+(ROOT/'acquisition-gene-resolution.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows: print(r.get('name',r.get('id')),r.get('bytes',r.get('error')))

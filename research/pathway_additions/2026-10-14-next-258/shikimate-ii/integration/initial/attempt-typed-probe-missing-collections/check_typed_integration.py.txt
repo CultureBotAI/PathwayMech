@@ -1,0 +1,31 @@
+from pathlib import Path
+import copy, datetime, hashlib, json, sys
+import yaml
+R=Path('/private/tmp/pathwaymech-next-258-20261014'); O=Path(__file__).parent; T=O/'typed-probe'
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.identifiers import identifier_errors
+for d in ['data/pathways','data/identifier_authorities','conf']:(T/d).mkdir(parents=True,exist_ok=True)
+source=json.loads((R/'data/identifier_authorities/sources.json').read_text())
+ids={'MetaCyc:PWY-6419','KEGG:cgt:cgR_0492','KEGG:cgt:cgR_0495','KEGG:cgt:cgR_2523'}
+terms={k:source['terms'][k] for k in sorted(ids)};owners={v['source'] for v in terms.values()}
+snapshot={'version':source['version'],'terms':terms,'sources':{k:source['sources'][k] for k in sorted(owners)}}
+(T/'data/identifier_authorities/selected.json').write_text(json.dumps(snapshot,indent=2)+'\n')
+policy={'version':1,'namespaces':{p:{'snapshot':'data/identifier_authorities/selected.json','policy':'canonical'} for p in ['MetaCyc','KEGG']},'contextual_labels':[]}
+record={'id':'MetaCyc:PWY-6419','label':terms['MetaCyc:PWY-6419']['label'],'participants':[{'id':i,'label':terms[i]['label'],'category':'gene'} for i in sorted(ids) if i.startswith('KEGG:')]}
+cases=[]
+def run(name,r,p,expected):
+    (T/'conf/identifier_policy.yaml').write_text(yaml.safe_dump(p));(T/'data/pathways/probe.yaml').write_text(yaml.safe_dump(r))
+    errors=identifier_errors(T);ok=(not errors) if expected=='accept' else any(expected in e for e in errors)
+    cases.append({'name':name,'expected':expected,'errors':errors,'passed':ok})
+run('three real native gene loci',record,policy,'accept')
+for index in range(3):
+    r=copy.deepcopy(record);r['participants'][index]['label']='curated gene alias'
+    run('reject alias '+r['participants'][index]['id'],r,policy,'LABEL_MISMATCH')
+    p=copy.deepcopy(policy);p['contextual_labels']=[{'namespace':'KEGG','sections':['participants'],'record_prefixes':['MetaCyc'],'reason':'Adversarial test rule; never maintained.'}]
+    run('reject alias despite contextual rule '+r['participants'][index]['id'],r,p,'LABEL_MISMATCH')
+    r=copy.deepcopy(record);r['participants'][index]['category']='protein'
+    run('reject protein recategorization '+r['participants'][index]['id'],r,policy,'ENTITY_TYPE_MISMATCH')
+    r=copy.deepcopy(record);node=r['participants'].pop(index);r['reactions']=[node]
+    run('reject reaction placement '+node['id'],r,policy,'ENTITY_TYPE_MISMATCH')
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Actual selected whole KEGG owners and three native gene terms, isolated file-based consumer probe; no maintained files edited. Canonical labels and category/section are checked before adversarial contextual-label exemptions.','snapshot_sha256':hashlib.sha256((T/'data/identifier_authorities/selected.json').read_bytes()).hexdigest(),'cases':cases,'all_pass':all(c['passed'] for c in cases)}
+(O/'typed-integration-results.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2));assert result['all_pass']

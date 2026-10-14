@@ -1,0 +1,71 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,re,subprocess,xml.etree.ElementTree as ET
+import yaml
+B=Path(__file__).parent
+P=Path('/private/tmp/pathwaymech-next-257-preflight')
+MAIN=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+WORK=Path('/private/tmp/pathwaymech-next-258-20261014')
+BASE='495de27ec09f99367d1cdd5c457a5e54a93c9a0b'
+def sha(x):return hashlib.sha256(x).hexdigest()
+def bind(path):
+ p=Path(path);d=p.read_bytes();return dict(path=str(p),sha256=sha(d),bytes=len(d))
+def save(name,obj):(B/name).write_text(json.dumps(obj,indent=2)+'\n')
+def git(*args):return subprocess.check_output(['git',*args],cwd=MAIN)
+records=[]
+for row in git('ls-tree','-r','-z',BASE,'--','data/pathways').split(b'\0'):
+ if not row:continue
+ meta,name=row.split(b'\t');mode,typ,oid=meta.decode().split();rel=name.decode()
+ if not rel.endswith('.yaml'):continue
+ data=git('cat-file','blob',oid);doc=yaml.safe_load(data)
+ equal={str(root):(root/rel).read_bytes()==data for root in [MAIN,WORK]};assert all(equal.values())
+ records.append(dict(path=rel,id=doc['id'],label=doc['label'],git_blob_oid=oid,sha256=sha(data),bytes=len(data),live_roots_equal_git_blob=equal,named_nodes=[{'field':field,**node} for field in ['taxa','participants','reactions'] for node in doc.get(field,[])]))
+assert len(records)==254
+save('baseline-record-bindings.json',dict(baseline_commit=BASE,count=len(records),records=records))
+authorities=[]
+for rel in ['data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','conf/identifier_sources.json']:
+ data=git('show',BASE+':'+rel)
+ assert all((root/rel).read_bytes()==data for root in [MAIN,WORK])
+ name='baseline-'+Path(rel).name;(B/name).write_bytes(data);doc=json.loads(data)
+ row=dict(path=rel,baseline_commit=BASE,git_blob_oid=git('rev-parse',BASE+':'+rel).decode().strip(),sha256=sha(data),bytes=len(data),snapshot=bind(B/name))
+ if isinstance(doc,dict):
+  row.update(term_count=len(doc['terms']),owner_count=len(doc['sources']),terms={k:sha(json.dumps(v,sort_keys=True,separators=(',',':')).encode()) for k,v in doc['terms'].items()},owners={k:sha(json.dumps(v,sort_keys=True,separators=(',',':')).encode()) for k,v in doc['sources'].items()})
+ else:row['entries']=len(doc)
+ authorities.append(row)
+save('baseline-authority-bindings.json',authorities)
+patterns=collections.defaultdict(set)
+def add(v,source):
+ v=str(v).strip()
+ if v and '\n' not in v:patterns[v].add(source)
+old=json.loads((P/'pattern-sources.json').read_text())
+for k,v in old['patterns'].items():patterns[k].update(v)
+pattern_owners=[bind(P/'pattern-sources.json')]
+for file in sorted(P.rglob('supplemental-patterns.json')):
+ for k,v in json.loads(file.read_text()).items():patterns[k].update(v)
+ pattern_owners.append(bind(file))
+# Reverify exact originals from all inherited search-input manifests; no old absence result is reused.
+originals={}
+for file in [P/'search-inputs.json',P/'primary-search-inputs.json',*sorted(P.rglob('supplemental-source-bindings.json'))]:
+ for row in json.loads(file.read_text()):
+  p=Path(row['path']);d=p.read_bytes();assert sha(d)==row['sha256'],str(p)
+  originals[str(p)]=dict(path=str(p),sha256=sha(d),bytes=len(d),binding_owner=str(file),binding_owner_sha256=sha(file.read_bytes()))
+new={
+ 'next258 whole Rhea family and linked native/KEGG/EC/GO source leads':['RHEA:17741','RHEA:17742','RHEA:17743','RHEA:17744','17741','17742','17743','17744','MetaCyc:RXN-20484','RXN-20484','MetaCyc:RXN-11174','RXN-11174','KEGG:R06847','R06847','EC:1.1.1.282','1.1.1.282','GO:0052734','shikimate 3-dehydrogenase (NAD+) activity'],
+ 'parent and handoff primary reading leads, awaiting current primary dispositions':['PMID:23929881','23929881','DOI:10.1515/hsz-2013-0170','10.1515/hsz-2013-0170','DOI:10.1007/s00253-012-4659-y','10.1007/s00253-012-4659-y'],
+ 'exact candidate native route and broad GO lexical synonyms':['MetaCyc:PWY-6419','PWY-6419','shikimate degradation II','NAD-dependent shikimate degradation','shikimate breakdown','shikimate catabolism','shikimate degradation','shikimate catabolic process','shikimic acid degradation','shikimic acid catabolism'],
+}
+for source,values in new.items():
+ for v in values:add(v,source)
+# Newly focused GO molecular-function synonyms are search leads, not pathway identity.
+go=json.loads((P/'go-boundary-evidence.json').read_text())
+for row in go['lexical_matches']:
+ if row['subject'] in ['GO:0052734','GO:0019633','GO:0019632','GO:0015533','GO:0015530','GO:0015733']:
+  add(row['subject'],str(P/'go-boundary-evidence.json')+'/lexical_matches');add(row['value'],str(P/'go-boundary-evidence.json')+'/lexical_matches')
+# Current maintained quinate II supplies final reviewed identity/evidence vocabulary, not route duplication.
+qd=yaml.safe_load((WORK/'data/pathways/quinate-degradation-ii.yaml').read_text())
+for field in ['taxa','participants','reactions','references']:
+ for row in qd[field]:
+  for key in ['id','label']:
+   if row.get(key):add(row[key],'baseline quinate-degradation-ii.yaml/'+field+'/'+key)
+patterns=dict(sorted(patterns.items()));(B/'patterns.txt').write_text('\n'.join(patterns)+'\n')
+save('pattern-sources.json',dict(patterns={k:sorted(v) for k,v in patterns.items()},inherited_pattern_owners=pattern_owners,rehash_verified_sources=list(originals.values()),new_source_leads=new))
+print(json.dumps(dict(records=len(records),patterns=len(patterns),originals=len(originals),baseline_authority_terms=sum(x.get('term_count',0) for x in authorities))))

@@ -1,0 +1,32 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib,shutil,yaml
+R=Path('/private/tmp/pathwaymech-next-258-20261014');B=Path('/private/tmp/pathwaymech-next-258-science');P='research/pathway_additions/2026-10-14-next-258/shikimate-ii';G=R/P/'validation/final';D=R/P/'science/final/acceptance'
+assert not D.exists(),'Refuse to overwrite final acceptance artifacts';D.mkdir()
+def digest(raw):return hashlib.sha256(raw).hexdigest()
+def sha(p):return digest(p.read_bytes())
+review=yaml.safe_load((B/'final-review-content.yaml').read_text());assert review['completion']=='partial';assert review['findings'][0]['status']=='open'
+(D/'partial-review-checkpoint.yaml.txt').write_bytes((B/'final-review-content.yaml').read_bytes());(D/'accept_final_gates.py.txt').write_bytes(Path(__file__).read_bytes())
+rows=json.loads((G/'receipts.json').read_text());expected=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check']];assert [x['command']for x in rows]==expected and all(x['exit_code']==0 for x in rows)
+retention=json.loads((G/'retention.json').read_text());retained=[];logs=[]
+for x in retention['files']:
+ p=R/x['repository_path'];raw=p.read_bytes();assert len(raw)==x['bytes'] and digest(raw)==x['sha256'];assert raw==Path(x['original_path']).read_bytes()
+ if p.name.endswith('.log.json'):
+  w=json.loads(raw);recovered=w['text'].encode(w['encoding']);assert len(recovered)==w['bytes'] and digest(recovered)==w['sha256'];assert recovered==Path(w['original_path']).read_bytes();logs.append({'wrapper_path':x['repository_path'],'original_sha256':w['sha256'],'bytes':len(recovered)})
+ retained.append(x['repository_path'])
+assert len(retained)==11 and len(logs)==6
+for x in rows:
+ assert sha(Path(x['log_path']))==x['log_sha256'];w=json.loads((G/(Path(x['log_path']).name+'.json')).read_text());assert w['sha256']==x['log_sha256']
+assert '5118 passed, 3 skipped, 7 warnings in 861.89s' in Path(rows[2]['log_path']).read_text()
+assert '22 governed artifacts match the pinned claw revision' in Path(rows[4]['log_path']).read_text()
+assert Path(rows[5]['log_path']).read_bytes()==b''
+core=json.loads((G/'tested-core-input-hashes.json').read_text());preservation=json.loads((G/'final-input-preservation.json').read_text());assert len(core)==preservation['tested_core_files']==1248;assert preservation['changed_after_checks']==[]
+for p,h in core.items():assert sha(R/p)==h,p
+for x in review['source']['inputs']:assert sha(R/x['path'])==x['sha256'],x['path']
+audit=json.loads((R/P/'science/final/audit.json').read_text());target=R/'data/pathways/shikimate-degradation-ii.yaml';assert sha(target)==audit['final_record_sha256']==preservation['final_record_sha256']=='a0f96cded480818165c794e5e954e96b2fa7f11e46910ad6574b6233480d13c1';assert sha(R/audit['generated_page']['path'])==audit['generated_page']['sha256']
+initial_review=R/'reviews/structured/20261014T205746Z-shikimate-ii-initial-independent-scientific-review/review.yaml';assert sha(initial_review)==audit['saved_initial_review_sha256']
+result=dict(verified_at=datetime.now(timezone.utc).isoformat(),effective_command_count=6,effective_exit_codes=[x['exit_code']for x in rows],canonical_receipts_sha256=sha(G/'receipts.json'),canonical_retention_sha256=sha(G/'retention.json'),retained_files_rehashed=len(retained),retained_file_paths=retained,lossless_raw_log_bindings=logs,test_result='5118 passed, 3 skipped, 7 warnings in 861.89s',tested_core_files_rehashed=len(core),scoped_successor_inputs_rehashed=len(review['source']['inputs']),final_record_sha256=sha(target),final_generated_page_sha256=sha(R/audit['generated_page']['path']),saved_initial_review_sha256=sha(initial_review),core_and_scoped_audit_inputs_unchanged=True,acceptance='Actual final gate receipts and preserved scientific audit support the explicit resolved F1 successor; no gate was waived or rerun by this reviewer.')
+(D/'verification.json').write_text(json.dumps(result,indent=2)+'\n')
+manifest=[{'path':str(p.relative_to(R)),'bytes':p.stat().st_size,'sha256':sha(p)}for p in sorted(D.iterdir())if p.is_file()]
+(D/'artifact-manifest.json').write_text(json.dumps({'created_at':datetime.now(timezone.utc).isoformat(),'files':manifest},indent=2)+'\n')
+print(json.dumps({k:result[k]for k in ['retained_files_rehashed','tested_core_files_rehashed','scoped_successor_inputs_rehashed','final_record_sha256','final_generated_page_sha256']},indent=2))

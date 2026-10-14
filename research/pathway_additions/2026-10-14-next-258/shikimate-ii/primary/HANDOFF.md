@@ -1,0 +1,11 @@
+# Next258 primary handoff: PWY-6419
+
+Read-only research is frozen in `package/package-index.json`; no maintained repository/worktree files were modified. The 2013 primary lead (PMID23929881, DOI10.1515/hsz-2013-0170) was read beyond its abstract through its Results, Discussion and Methods using preserved web-tool transcripts of the institutional PDF and author-uploaded full article. Direct PDF downloads returned HTML challenges, and publisher responses were empty. No original PDF bytes, visual table review, or supplementary-file review is claimed. All complete returned responses and failed payloads remain under `originals/`.
+
+The study supports NAD-dependent oxidation of shikimate by ATCC13032 cgl0424/QsuD, while quinate has about tenfold greater apparent catalytic efficiency. It does not add whole-strain shikimate growth evidence or transfer the enzyme assay to strainR. The first native reaction remains RXN-20484/RHEA17742; the formal shikimate route bypasses DHQ/QsuC.
+
+The protein was cloned into pNHIS-QSDH and produced in E.coliBL21. The Methods report AcTEV removal of its N-terminal His tag with mass-spectrometry verification to check an activity effect; individual kinetic-table rows do not specify cleavage state. Crystal descriptions explicitly discuss a disordered tag/cleavage-site/spacer extension. Preserve recombinant origin and this distinction.
+
+Critical limitations: 2013 NADP nondetection is condition-specific and differs from the 2008/native low-residual-activity annotation. Paper/ternary titles call the cofactor NADH while deposited coordinates encode CCD NAD with oxidized aromatic chemistry; the independent structure package retains this discrepancy. Crystallization cobalt/calcium are not demonstrated catalytic cofactors. The structural specificity model is not a mutagenesis experiment. Numeric Table1 projection has readable DESY-extracted text but awaits visual checking; its Methods NAD concentration range appears inconsistent and must not be silently corrected.
+
+`scientific-findings.json`, `reading-ledger.json`, `kinetic-table-projection.json`, `evidence-options.json`, and `reuse-verification.json` provide compact scoped handoffs. `structure/package-index.json` binds21verified RCSB artifacts for3JYO/3JYP/3JYQ. A cited Kubota2013 paper (DOI10.1007/s00253-012-4659-y) is recorded as an unread continuing lead.

@@ -1,0 +1,52 @@
+"""Validate and save two actual completed independent initial review bundles."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+
+import yaml
+
+R = Path('/private/tmp/pathwaymech-next-258-20261014')
+B = Path(__file__).parent
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           PYTHONPATH=str(R / 'src') + ':' + str(R))
+contents = {
+    'scientific': Path('/private/tmp/pathwaymech-next-258-science/initial-review-content.yaml'),
+    'integration': Path('/private/tmp/pathwaymech-next-258-integration/initial-review.yaml'),
+}
+assert not (B / 'saved-initial-review-paths.json').exists()
+receipts = []
+saved = {}
+
+
+def run(arguments):
+    command = [PYTHON, '-B', 'scripts/record_review.py', *arguments]
+    result = subprocess.run(command, cwd=R, env=ENV, capture_output=True, text=True)
+    receipts.append(dict(command=command, observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                         exit_code=result.returncode, stdout=result.stdout, stderr=result.stderr))
+    (B / 'initial-review-save-receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    assert result.returncode == 0, result.stdout + result.stderr
+    print(result.stdout, end='', flush=True)
+
+
+for kind, path in contents.items():
+    content = yaml.safe_load(path.read_text())
+    assert content['completion'] == 'completed'
+    assert content['scientific_review'] == (kind == 'scientific')
+    assert len(content['findings']) == (1 if kind == 'scientific' else 2)
+    assert all(item['status'] == 'open' for item in content['findings'])
+    for item in content['source']['inputs']:
+        assert hashlib.sha256((R / item['path']).read_bytes()).hexdigest() == item['sha256'], item['path']
+    destination = Path('reviews/structured') / content['review_id'] / 'review.yaml'
+    assert not (R / destination).exists(), destination
+    run(['validate', str(path)])
+    run(['save', '--content', str(path)])
+    assert (R / destination).is_file(), destination
+    assert yaml.safe_load((R / destination).read_text())['review_id'] == content['review_id']
+    saved[kind] = str(destination)
+run(['check'])
+(B / 'saved-initial-review-paths.json').write_text(json.dumps(saved, indent=2) + '\n')
+print(json.dumps(saved))

@@ -1,0 +1,58 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,subprocess,yaml
+B=Path(__file__).parent;ROOT=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech');BASE='495de27ec09f99367d1cdd5c457a5e54a93c9a0b'
+def save(n,o):(B/n).write_text(json.dumps(o,indent=2)+'\n')
+def sha(b):return hashlib.sha256(b).hexdigest()
+patterns=(B/'patterns.txt').read_text().splitlines();a=json.loads((B/'root-0-matched-files.json').read_text());c=json.loads((B/'root-1-matched-files.json').read_text());by={r['path']:i for i,r in enumerate(a)}
+# Groups are based on reading each matching context and related record/identity objects,
+# not on the path name alone. Their enumerated membership makes coverage auditable.
+groups={
+ 'ignored_dependency_false_positive':dict(indices=list(range(10)),meaning='Installed dependency text: two distribution checksum substrings, authors Eran Shir/N. Moshiri/shireenrao/shirou, shirt-related identifiers, Albanian morphology, and the SHIA top-level domain. No biological ShiA/ShiR entry or pathway source.'),
+ 'maintained_downstream_record':dict(indices=[10],meaning='Complete maintained GO:0019618 record uses the MetaCyc ortho-cleavage source for its four formal reactions from protocatechuate to 3-oxoadipate. Same downstream process; use the established GO identity when connecting the new shikimate route, with source-backed scope mapping.'),
+ 'generated_downstream_projections':dict(indices=[11,12],meaning='KGX edge export and rendered page derived from maintained GO:0019618; source references repeat the native pathway frame. They are projections of existing downstream coverage, not separate pathway owners.'),
+ 'unrelated_prior_text_false_positive':dict(indices=[13,14,15,16],meaning='Matches are author surname Yoshitsugu Shiro; literal ShiR in an encoded gzip/base64 snapshot; Shirakihara88 citation in phosphofructokinase evidence; Miyashiro T citation in a signaling paper. None denotes the Corynebacterium ShiR regulator. Encoded snapshot contents are not decoded by this text search.'),
+ 'prior_downstream_boundary_search':dict(indices=[17,18,19,29,30,33,34,35,36,37,40,41,42,46,47,48,49,69,70,71,73,74],meaning='Earlier GO/native boundary and preflight inventories identify the known downstream ortho-cleavage process or contain literal search inputs and result counts. They document prior mentions and reuse; they are not independent new record owners.'),
+ 'prior_downstream_curation_provenance':dict(indices=[20,21,22,23,24,25,26,27,28,31,32,78,79,80,81],meaning='Next250 source manifests, native pathway projection, complete chemistry closure, curated account, reference bindings and scientific/integration reviews underpin GO:0019618. The native exact label is protocatechuate degradation II (ortho-cleavage pathway), with four native members. Initial and successor review files concern the existing downstream record.'),
+ 'neighbor_route_interface_exclusions':dict(indices=[38,39,43,44,45,51,52,63],meaning='Quinate I/II and shikimate I curation retain the downstream frame as a separate pathway outside their formal route boundary. These are consistent interface/scope mentions, not evidence that shikimate II is already maintained.'),
+ 'prior_qsu_identity_and_source_context':dict(indices=[50,53,54,55,56,57,58,59,60,61,62,64],meaning='Next257 retained R cgR_0492/QsuA and cgR_0495/QsuD identity searches and source receipts. Exact QsuA protein is BAF53459.1; retired Entrez genes were not promoted. PMID23929881 occurs as a Rhea citation and in the ATCC13032 Q9X5C9 UniProt annotation, not as a previously maintained primary reference or an R-strain direct assay. Identity searches do not establish live KEGG gene authority or transport experimentally.'),
+ 'prior_qsu_search_inputs':dict(indices=[65,66,67,68,72,75,76],meaning='Next257 search vocabulary and receipts already contain qsu locus strings and PMID23929881/DOI10.1515/hsz-2013-0170. Search terms and external source bindings establish prior awareness only; they do not show curation or full-paper reading.'),
+ 'prior_ecoli_shia_comparator':dict(indices=[77],meaning='Earlier primary disposition identifies 2009 QsuA transport as inference from 40% identity to E.coli ShiA. This is a different organism and protein than experimentally characterized C.glutamicum R cgR_2523/ShiA.'),
+ 'current_task_test_fixture':dict(indices=[],meaning='New untracked tests/test_kegg_gene_authority.py in next258 task worktree uses ShiA in adversarial wrong-label/alias tests. This is this task\'s adapter work, not baseline scientific coverage. No code review is performed in this search task.')
+}
+indexgroup={}
+for k,v in groups.items():
+ for i in v['indices']:
+  assert i not in indexgroup,i
+  indexgroup[i]=k
+assert set(indexgroup)==set(range(len(a)))
+rows=[]
+for rootno,rs in enumerate([a,c]):
+ for r in rs:
+  group=indexgroup[by[r['path']]] if r['path']in by else 'current_task_test_fixture'
+  assert r['path']in by or r['path']=='tests/test_kegg_gene_authority.py'
+  rows.append(dict(root_index=rootno,path=r['path'],sha256=r['sha256'],bytes=r['bytes'],ignored=r['ignored'],ignore_rule=r['ignore_rule'],baseline_present=r['baseline_present'],baseline_identical=r['baseline_identical'],patterns=r['patterns'],matching_lines=[m['line_number']for m in r['matches']],classification=group,disposition=groups[group]['meaning']))
+save('file-dispositions.json',rows)
+save('group-semantics.json',{k:dict(meaning=v['meaning'],main_file_indices=v['indices'],root_file_counts=dict(collections.Counter(str(x['root_index'])for x in rows if x['classification']==k)))for k,v in groups.items()})
+paths=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'data/pathways'],cwd=ROOT,text=True).splitlines();paths=[p for p in paths if p.endswith(('.yaml','.yml'))]
+records=[];semantic=[]
+for path in paths:
+ blob=subprocess.check_output(['git','show',f'{BASE}:{path}'],cwd=ROOT);d=yaml.safe_load(blob)
+ nodes=[dict(field='top_level',id=d['id'],label=d['label'])]+[dict(field=field,**n)for field in ['taxa','participants','reactions']for n in d.get(field,[])]
+ refs=d.get('references',[])
+ matches=[]
+ for n in nodes:
+  for k in ['id','label']:
+   value=str(n.get(k,''))
+   for p in patterns+['GO:0019618']:
+    if value.casefold()==p.casefold():matches.append(dict(kind='named_node',field=n['field'],slot=k,value=value,pattern=p))
+ for r in refs:
+  for p in patterns:
+   if r['id'].casefold()==p.casefold():matches.append(dict(kind='reference_only',id=r['id'],pattern=p))
+ records.append(dict(path=path,id=d['id'],label=d['label'],sha256=sha(blob),bytes=len(blob)))
+ if matches:semantic.append(dict(path=path,id=d['id'],label=d['label'],matches=matches))
+assert len(records)==254
+save('baseline-membership-audit.json',dict(commit=BASE,count=len(records),semantics='Exact equality over top-level id/label and taxa/participants/reactions named-node id/label, and separate exact reference-id equality. This complements text substring search; it does not claim untracked records absent.',records=records,matched_records=semantic))
+# Dedicated complete downstream record projection keeps record identity separate from native-source references.
+d=yaml.safe_load((ROOT/'data/pathways/protocatechuate-ortho-cleavage.yaml').read_text())
+save('downstream-boundary.json',dict(path='data/pathways/protocatechuate-ortho-cleavage.yaml',id=d['id'],label=d['label'],description=d['description'],taxa=d['taxa'],formal_members=[e['object']for e in d['mechanistic_edges']if e['subject']==d['id']and e['predicate']=='has_part'],native_reference=next(r for r in d['references']if r['id']=='MetaCyc:PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY'),go_reference=next(r for r in d['references']if r['id']==d['id']),scope_evidence=[x for x in d['mechanistic_edges'][0]['evidence']if x['reference_id']==d['id']],disposition='Reuse GO:0019618 as downstream process identity after root evidence review. Do not copy Pseudomonas machinery into the Corynebacterium route or add the four downstream reactions as PWY-6419 formal members.'))
+print(json.dumps({'classified_file_instances':len(rows),'unique_main_files':len(a),'task_files':len(c),'groups':len(groups),'baseline_records':len(records),'semantic_matches':semantic},indent=2))

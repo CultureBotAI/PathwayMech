@@ -1,0 +1,8 @@
+from pathlib import Path
+import hashlib,json,re
+from scripts.build_source_identifier_snapshot import source_terms
+B=Path(__file__).parent;p=B/'originals/META-PWY-6419.html';d=p.read_bytes();acq=json.loads((B/'acquisition-html.json').read_text());assert hashlib.sha256(d).hexdigest()==acq['sha256']
+terms=list(source_terms('metacyc-html',p,url=acq['url'],version='27.0'));assert terms==[('MetaCyc:PWY-6419','shikimate degradation II',[])]
+text=d.decode('utf-8',errors='surrogateescape');v=re.findall(r'MetaCyc[^\n<]{0,100}27\.0|27\.0[^\n<]{0,100}',text)
+row=dict(status='accepted',strategy='metacyc-html',parsed_terms=terms,original=dict(path=str(p),sha256=acq['sha256'],bytes=len(d),url=acq['url']),native_title=re.search(r'<TITLE>(.*?)</TITLE>',text,re.S).group(1),native_identity=re.search(r"typeObjectPage\s*=\s*\{object:'[^']+',orgid:'[^']+'",text).group(0),version_context=v,parser=dict(path='/private/tmp/pathwaymech-next-258-20261014/scripts/build_source_identifier_snapshot.py',sha256=hashlib.sha256(Path('/private/tmp/pathwaymech-next-258-20261014/scripts/build_source_identifier_snapshot.py').read_bytes()).hexdigest()),scope='Existing unmodified legacy native HTML identity/title strategy; whole XML remains biological evidence, unsupported typed-XML strategy not relaxed.')
+(B/'html-parser-trial.json').write_text(json.dumps(row,indent=2)+'\n');print(json.dumps(row))

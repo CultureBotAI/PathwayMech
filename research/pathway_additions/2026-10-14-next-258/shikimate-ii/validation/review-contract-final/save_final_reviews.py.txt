@@ -1,0 +1,81 @@
+"""Save the actual completed independent successors and check immutable lineage."""
+from pathlib import Path
+import argparse
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import time
+
+import yaml
+
+R = Path('/private/tmp/pathwaymech-next-258-20261014')
+B = Path(__file__).parent
+BASE = '495de27ec09f99367d1cdd5c457a5e54a93c9a0b'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           PYTHONPATH=str(R / 'src') + ':' + str(R))
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--scientific', type=Path, required=True)
+parser.add_argument('--integration', type=Path, required=True)
+args = parser.parse_args()
+assert not (B / 'final-review-save-receipts.json').exists(), 'Inspect any earlier attempt before retrying'
+assert not (B / 'saved-final-review-paths.json').exists()
+initial_paths = json.loads((B / 'saved-initial-review-paths.json').read_text())
+receipts, saved = [], {}
+
+
+def sha(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+
+def run(arguments, name):
+    command = [PYTHON, '-B', 'scripts/record_review.py', *arguments]
+    log = B / (name + '.log')
+    assert not log.exists()
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    tick = time.monotonic()
+    with log.open('w') as f:
+        result = subprocess.run(command, cwd=R, env=ENV, stdout=f, stderr=subprocess.STDOUT)
+    receipt = dict(command=command, cwd=str(R), started_utc=started,
+                   elapsed_seconds=round(time.monotonic() - tick, 2), exit_code=result.returncode,
+                   log_path=str(log), log_sha256=sha(log))
+    receipts.append(receipt)
+    (B / 'final-review-save-receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    print(json.dumps(receipt), flush=True)
+    assert result.returncode == 0, log.read_text()
+    return receipt
+
+
+# Check both documents and predecessor identity before the first save.
+for kind in ('scientific', 'integration'):
+    path = getattr(args, kind)
+    doc = yaml.safe_load(path.read_text())
+    prior = yaml.safe_load((R / initial_paths[kind]).read_text())
+    assert doc['completion'] == 'completed' and doc['verdict'] in {'pass', 'pass_with_limitations'}
+    assert doc['scientific_review'] is (kind == 'scientific')
+    assert doc['reviewer']['independence'] == 'independent'
+    current = {f['issue_key']: f for f in doc['findings']}
+    for finding in prior['findings']:
+        successor = current[finding['issue_key']]
+        assert successor['status'] in {'resolved', 'rejected'} and successor['disposition_reason']
+        expected = dict(repository=prior['repository'], review_id=prior['review_id'], finding_id=finding['finding_id'])
+        assert expected in successor['previous_occurrences']
+    for item in doc['source']['inputs']:
+        assert sha(R / item['path']) == item['sha256'], item['path']
+    destination = Path('reviews/structured') / doc['review_id'] / 'review.yaml'
+    assert not (R / destination).exists(), destination
+    saved[kind] = str(destination)
+
+for kind in ('scientific', 'integration'):
+    path = getattr(args, kind)
+    run(['validate', str(path)], 'final-' + kind + '-validate')
+    run(['save', '--content', str(path)], 'final-' + kind + '-save')
+    destination = R / saved[kind]
+    assert destination.is_file() and destination.with_suffix('.md').is_file()
+
+receipt = run(['check', '--base', BASE], 'review-contract-final')
+(B / 'review-contract-final-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+(B / 'saved-final-review-paths.json').write_text(json.dumps(saved, indent=2) + '\n')
+print(json.dumps(saved), flush=True)

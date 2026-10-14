@@ -1,0 +1,295 @@
+#!/usr/bin/env python3
+"""Independent, read-only provenance audit; no author verification code is executed."""
+from pathlib import Path
+from collections import Counter
+from datetime import datetime, timezone
+import hashlib
+import json
+import subprocess
+import ast
+import base64
+
+BASE = Path('/private/tmp/pathwaymech-next-258-20261014/research/pathway_additions/2026-10-14-next-258/shikimate-ii')
+OUT = Path('/private/tmp/pathwaymech-next-258-integration/initial/retention')
+GROUPS = ['preflight', 'native', 'primary', 'adapter', 'supplemental-search']
+EXTRA_GROUPS = ['authorities', 'assembly', 'authoring-commands']
+START = datetime.now(timezone.utc).isoformat()
+inputs, checks, defects, inventories = {}, [], [], []
+
+def raw(path):
+    path = Path(path)
+    value = path.read_bytes()
+    inputs[str(path)] = {'path': str(path), 'bytes': len(value), 'sha256': hashlib.sha256(value).hexdigest()}
+    return value
+
+def read(path):
+    return json.loads(raw(path))
+
+def report(kind, ok, **detail):
+    row = {'kind': kind, 'ok': bool(ok), **detail}
+    checks.append(row)
+    if not ok:
+        defects.append(row)
+    return ok
+
+def binding(entry, context, base=None):
+    candidate = entry.get('path', entry.get('file'))
+    path = Path(candidate)
+    if not path.is_absolute():
+        path = Path(base) / path
+    try:
+        raw(path)
+        actual = inputs[str(path)]
+        ok = actual['sha256'] == entry['sha256'] and ('bytes' not in entry or actual['bytes'] == entry['bytes'])
+        report('hash_and_size', ok, context=context, path=str(path), declared=entry, actual=actual)
+    except OSError as exc:
+        report('hash_and_size', False, context=context, path=str(path), error=repr(exc))
+    return str(path)
+
+def inventory(root):
+    root = Path(root)
+    command = ['rg', '--files', '--no-ignore', '--hidden', str(root)]
+    result = subprocess.run(command, capture_output=True, text=True)
+    paths = sorted(result.stdout.splitlines())
+    inventories.append({'root': str(root), 'command': command, 'exit_code': result.returncode,
+                        'stderr': result.stderr, 'paths': paths,
+                        'limits': 'Includes hidden and ignored files; does not follow directory symlinks or inspect archive members.'})
+    report('inventory', result.returncode == 0, root=str(root), file_count=len(paths), stderr=result.stderr)
+    return set(paths)
+
+roots = [BASE/g for g in GROUPS] + [
+    Path('/private/tmp/pathwaymech-next-258-preflight/fresh'),
+    Path('/private/tmp/pathwaymech-next-258-native'),
+    Path('/private/tmp/pathwaymech-next-258-primary'),
+    Path('/private/tmp/pathwaymech-next-258-kegg-gene'),
+]
+inventoried = {str(root): inventory(root) for root in roots}
+group_results = []
+retained_by_path = {}
+for group in GROUPS:
+    manifest_path = BASE/group/'retention-manifest.json'
+    manifest = read(manifest_path)
+    original_to_mapping = {}
+    retained_paths = []
+    for index, mapping in enumerate(manifest['mappings']):
+        ctx = f'{group}:mappings[{index}]'
+        orig = binding(mapping['original'], ctx+':original')
+        retained = binding(mapping['retained'], ctx+':retained')
+        original_to_mapping[orig] = mapping
+        retained_by_path[retained] = mapping
+        retained_paths.append(retained)
+        report('mapping_destination', str(BASE/group/mapping['requested_retained_path']) == retained,
+               context=ctx, requested=mapping['requested_retained_path'], retained=retained)
+        encoding = mapping.get('encoding')
+        if encoding == 'identity':
+            report('byte_identity', raw(orig) == raw(retained), context=ctx,
+                   original=orig, retained=retained, encoding=encoding)
+        else:
+            report('unsupported_wrapper', False, context=ctx, encoding=encoding)
+    report('unique_original_mappings', len(original_to_mapping) == len(manifest['mappings']), group=group)
+    report('unique_retained_mappings', len(set(retained_paths)) == len(retained_paths), group=group)
+    external_paths = set()
+    external_entries = []
+    for index, wrapped in enumerate(manifest['external_only']):
+        entry = wrapped.get('original_manifest_external_only', wrapped)
+        external_entries.append(entry)
+        if isinstance(entry, dict):
+            external_paths.add(binding(entry, f'{group}:external_only[{index}]'))
+        else:
+            # The native package explicitly excludes directories; no directory hash is claimed.
+            root = Path(manifest['original_package_manifests'][0]['path']).parent
+            prefix = str(root/entry).rstrip('/')+'/'
+            matches = sorted(p for p in inventoried[str(root)] if p.startswith(prefix))
+            checks.append({'kind': 'external_directory_boundary', 'ok': True, 'group': group,
+                           'declared': entry, 'prefix': prefix, 'inventoried_file_count': len(matches),
+                           'note': 'No whole-directory hash was declared; per-original bindings checked separately.'})
+    package_accounting = []
+    for index, declared in enumerate(manifest['original_package_manifests']):
+        original_manifest = binding(declared, f'{group}:original_package_manifests[{index}]')
+        package = read(original_manifest)
+        report('package_manifest_retained', original_manifest in original_to_mapping,
+               group=group, path=original_manifest)
+        original_parent = Path(original_manifest).parent
+        for slot in ['files', 'retained_artifacts']:
+            for position, entry in enumerate(package.get(slot, [])):
+                path = binding(entry, f'{group}:{original_manifest}:{slot}[{position}]', original_parent)
+                disposition = 'retained' if path in original_to_mapping else 'external_only' if path in external_paths else 'unaccounted'
+                report('original_package_artifact_accounting', disposition != 'unaccounted', group=group,
+                       manifest=original_manifest, slot=slot, index=position, path=path, disposition=disposition)
+                package_accounting.append({'path': path, 'disposition': disposition})
+        for entry in package.get('external_only', []):
+            report('original_external_boundary_preserved', entry in external_entries,
+                   group=group, manifest=original_manifest, entry=entry)
+        for position, entry in enumerate(package.get('author_inputs', [])):
+            binding(entry, f'{group}:original_author_input[{position}]', original_parent)
+    actual_retained = inventoried[str(BASE/group)]
+    generated_metadata = {str(manifest_path)}
+    if group == 'preflight':
+        generated_metadata |= {str(BASE/group/name) for name in ['retention-union.json', 'retention-verification.json']}
+    unlisted = sorted(actual_retained - set(retained_paths) - generated_metadata)
+    report('retained_inventory_accounted', not unlisted, group=group, unlisted=unlisted)
+    group_results.append({'group': group, 'mappings': len(manifest['mappings']),
+                          'encoding_counts': dict(Counter(m['encoding'] for m in manifest['mappings'])),
+                          'declared_external_entries': len(manifest['external_only']),
+                          'explicit_external_files': len(external_paths), 'package_artifacts': package_accounting})
+
+# The aggregate receipts are generated metadata, not original artifacts missing mappings.
+union = read(BASE/'preflight/retention-union.json')
+verification = read(BASE/'preflight/retention-verification.json')
+binding(verification['retention_union'], 'author_aggregate_receipt_binding')
+for group in union['groups']:
+    binding(group['manifest'], 'author_aggregate_group_binding:'+group['package'])
+    actual_manifest = read(group['manifest']['path'])
+    report('author_aggregate_group_counts', group['mapped_files'] == len(actual_manifest['mappings'])
+           and group['original_bytes'] == sum(m['original']['bytes'] for m in actual_manifest['mappings'])
+           and group['retained_bytes'] == sum(m['retained']['bytes'] for m in actual_manifest['mappings'])
+           and group['base64_wrappers'] == 0, group=group['package'])
+report('author_aggregate_inventory_count', verification['total_files_in_owned_directories_including_this_receipt'] ==
+       sum(len(inventoried[str(BASE/g)]) for g in GROUPS),
+       actual=sum(len(inventoried[str(BASE/g)]) for g in GROUPS))
+
+# Later author groups use a different retention schema. Parse the author's explicit
+# selection list as data, without executing their code, and independently inventory
+# assembly's selected suffixes, including ignored and hidden paths.
+extra_roots = {'authorities': Path('/private/tmp/pathwaymech-next-258-authorities'),
+               'assembly': Path('/private/tmp/pathwaymech-next-258-chemistry'),
+               'authoring-commands': Path('/private/tmp/pathwaymech-next-258-ci')}
+for group in EXTRA_GROUPS:
+    inventoried[str(BASE/group)] = inventory(BASE/group)
+    inventoried[str(extra_roots[group])] = inventory(extra_roots[group])
+tree = ast.parse(raw(extra_roots['authorities']/'retain_root.py'))
+authority_names = next(ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
+                       and any(isinstance(t, ast.Name) and t.id == 'authority_names' for t in n.targets))
+for group in EXTRA_GROUPS:
+    manifest_path = BASE/group/'retention.json'
+    manifest = read(manifest_path)
+    retained_paths, original_paths = set(), set()
+    for index, mapping in enumerate(manifest['files']):
+        context = f'{group}:files[{index}]'
+        original = binding(mapping['original'], context+':original')
+        retained = binding(mapping['retained'], context+':retained')
+        original_paths.add(original)
+        retained_paths.add(retained)
+        retained_by_path[retained] = mapping
+        report('mapping_repository_path', str(Path('/private/tmp/pathwaymech-next-258-20261014')/mapping['repository_path']) == retained,
+               context=context, repository_path=mapping['repository_path'])
+        if mapping['encoding'] == 'byte-identical':
+            recovered = raw(retained)
+        elif mapping['encoding'] == 'base64':
+            wrapper = read(retained)
+            report('wrapper_original_binding', wrapper.get('original') == mapping['original'], context=context)
+            report('wrapper_encoding', wrapper.get('encoding') == 'base64', context=context)
+            recovered = base64.b64decode(wrapper['data'], validate=True)
+        else:
+            report('unsupported_wrapper', False, context=context, encoding=mapping['encoding'])
+            continue
+        report('byte_identity', raw(original) == recovered, context=context, original=original,
+               retained=retained, encoding=mapping['encoding'], recovered_bytes=len(recovered),
+               recovered_sha256=hashlib.sha256(recovered).hexdigest())
+    report('unique_original_mappings', len(original_paths) == len(manifest['files']), group=group)
+    report('unique_retained_mappings', len(retained_paths) == len(manifest['files']), group=group)
+    unlisted = sorted(inventoried[str(BASE/group)] - retained_paths - {str(manifest_path)})
+    report('retained_inventory_accounted', not unlisted, group=group, unlisted=unlisted)
+    if group == 'authorities':
+        selected = {str(extra_roots[group]/name) for name in authority_names}
+        basis = 'Explicit authority_names assignment parsed from retained retain_root.py, without execution.'
+    elif group == 'assembly':
+        selected = {p for p in inventoried[str(extra_roots[group])] if Path(p).suffix in {'.py', '.json', '.txt'}
+                    and '__pycache__' not in Path(p).parts}
+        basis = 'Independent hidden/ignored-inclusive inventory with the documented selected suffixes and __pycache__ exclusion.'
+    else:
+        selected = {str(extra_roots[group]/name) for name in ['write_history.py', 'history-write-receipts.json', 'history-initial-recipe-failure.json']}
+        basis = 'Three explicit authoring command artifacts in retained retain_root.py.'
+    report('additional_selection_accounted', selected == original_paths, group=group, basis=basis,
+           omitted=sorted(selected-original_paths), unexpected=sorted(original_paths-selected))
+    group_results.append({'group': group, 'mappings': len(manifest['files']),
+                          'encoding_counts': dict(Counter(m['encoding'] for m in manifest['files'])),
+                          'selection_basis': basis})
+
+# Raw sources remain external by policy. Verify their compact retained bindings instead
+# of treating a deliberate omission of source payloads as a defect.
+raw_ledgers = ['native/original-bindings.json', 'primary/author/package/original-bindings.json',
+               'primary/package/original-bindings.json', 'primary/structure/acquisition-manifest.json']
+raw_results = []
+for rel in raw_ledgers:
+    rows = read(BASE/rel)
+    paths = []
+    for index, row in enumerate(rows):
+        paths.append(binding(row, f'raw_ledger:{rel}[{index}]'))
+    raw_results.append({'ledger': rel, 'entries': len(rows), 'unique_paths': len(set(paths))})
+report('author_raw_count', read(BASE/'primary/author/package/package-index.json')['original_count'] == len(read(BASE/'primary/author/package/original-bindings.json')))
+structure = read(BASE/'primary/structure/package-index.json')
+structure_paths = inventoried['/private/tmp/pathwaymech-next-258-primary']
+actual_structure_raw = {p for p in structure_paths if p.startswith(structure['raw_artifacts_location'].rstrip('/')+'/')}
+listed_structure_raw = {row['path'] for row in read(BASE/'primary/structure/acquisition-manifest.json')}
+report('structure_original_count_and_coverage', structure['raw_artifact_count'] == len(actual_structure_raw) == len(listed_structure_raw)
+       and actual_structure_raw == listed_structure_raw, declared=structure['raw_artifact_count'],
+       actual=len(actual_structure_raw), unlisted=sorted(actual_structure_raw-listed_structure_raw),
+       listed_but_unavailable=sorted(listed_structure_raw-actual_structure_raw))
+
+# Read the actual failure receipts and their payloads; this is preservation verification,
+# not a rerun of source acquisition, the parser, or biological interpretation.
+failure_evidence = []
+for rel in ['preflight/acquisition-html-sandbox-failure.json', 'preflight/pathway-xml-parser-trial.json',
+            'preflight/pathway-xml-parser-trial-invalid-path.json', 'native/acquisition-new-native.json',
+            'native/identity-check-attempt-1.json',
+            'authorities/attempt-build-before-preparation-ready/receipt.json',
+            'authoring-commands/history-initial-recipe-failure.json']:
+    value = read(BASE/rel)
+    failure_evidence.append({'receipt': rel, 'value': value, 'original_binding': retained_by_path[str(BASE/rel)]['original']})
+    text = json.dumps(value)
+    report('failure_receipt_preserved', any(t in text for t in ['URLError', 'rejected', 'AssertionError', 'FileNotFoundError', 'exit_code']), receipt=rel)
+for rel in ['primary/package/acquisition-manifest.json', 'primary/author/package/acquisition-manifest.json']:
+    for index, receipt in enumerate(read(BASE/rel)):
+        invalid = str(receipt.get('validity', '')).startswith('invalid')
+        failed = 'error' in receipt
+        if not (invalid or failed):
+            continue
+        summary = {'receipt': rel, 'index': index, 'value': receipt}
+        path = receipt.get('path', receipt.get('file'))
+        if 'sha256' in receipt:
+            binding(receipt, f'failed_payload:{rel}[{index}]')
+            payload = raw(path)
+            summary['payload_starts_pdf'] = payload.startswith(b'%PDF-')
+            summary['payload_empty'] = not payload
+            if receipt.get('starts_pdf') is False:
+                report('failed_payload_not_mislabelled_pdf', not payload.startswith(b'%PDF-'), receipt=rel, index=index, path=path)
+        else:
+            available = path in inventoried['/private/tmp/pathwaymech-next-258-primary']
+            summary['payload_listed_in_ignored_inclusive_inventory'] = available
+            report('incomplete_read_is_exception_only', 'IncompleteRead' in receipt.get('error', '') and not available,
+                   receipt=rel, index=index, path=path)
+        failure_evidence.append(summary)
+
+report('mapping_total', sum(g['mappings'] for g in group_results) == 187,
+       actual=sum(g['mappings'] for g in group_results), expected=187)
+raw(BASE/'README.md')
+raw(BASE/'identifier-inventory.json')
+for rel in ['CLAUDE.md', 'docs/record-reviews.md', 'docs/record-review-profile.md']:
+    raw(Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')/rel)
+raw(Path(__file__))
+for path, before in list(inputs.items()):
+    data = Path(path).read_bytes()
+    report('input_stability', len(data) == before['bytes'] and hashlib.sha256(data).hexdigest() == before['sha256'], path=path)
+result = {'started_utc': START, 'finished_utc': datetime.now(timezone.utc).isoformat(),
+          'scope': 'Independent provenance and retention audit of eight frozen author groups (134 original plus 53 additional mappings). No scientific claim review or parser/acquisition rerun.',
+          'reviewer': '/root/next258_integration/retention; newly authored audit, no author verification code executed',
+          'groups': group_results, 'raw_binding_ledgers': raw_results,
+          'failure_evidence': failure_evidence, 'checks': checks, 'defects': defects,
+          'check_count': len(checks), 'input_count': len(inputs),
+          'limitations': [
+              'Filesystem inventories include hidden and ignored files, but not symlink directory targets or archive members.',
+              'Original-manifest artifact accounting is exhaustive for their files/retained_artifacts lists and declared external boundaries; it does not assert that the author captured every potentially relevant external source.',
+              'Unhashed native __pycache__/ directory is a declared exclusion, not a source artifact requiring byte retention.',
+              'External source paths are presently readable /private/tmp locations; durability outside this audit is not established.',
+              'The 53 later mappings and declared selection policies were audited; authority rebuild, preservation semantics and authority raw-cache validation are assigned to the parent reviewer and not duplicated here.',
+              'No experimental interpretation, quotes, identity assertions, parser correctness, source completeness, or full repository gates assessed.'
+          ]}
+OUT.mkdir(parents=True, exist_ok=True)
+for name, value in [('results.json', result), ('input-hashes.json', sorted(inputs.values(), key=lambda x:x['path'])),
+                    ('inventories.json', inventories)]:
+    (OUT/name).write_text(json.dumps(value, indent=2)+'\n')
+print(json.dumps({'groups': [{k:v for k,v in g.items() if k != 'package_artifacts'} for g in group_results],
+                  'raw_ledgers': raw_results, 'checks': len(checks), 'inputs': len(inputs),
+                  'defects': defects}, indent=2))
+raise SystemExit(bool(defects))

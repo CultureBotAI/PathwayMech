@@ -1,0 +1,34 @@
+from pathlib import Path
+import json,hashlib
+ROOT=Path(__file__).resolve().parent
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def fields(p):
+    out={};key=None
+    for line in Path(p).read_text().splitlines():
+        if line[:12].strip():key=line[:12].strip()
+        out.setdefault(key,[]).append(line[12:].strip())
+    return out
+receipts=[]
+for n in ['acquisition-transport.json','acquisition-transport-individual.json','acquisition-genome-interface.json']:
+    receipts+=json.loads((ROOT/n).read_text())
+fresh=json.loads(Path('/private/tmp/pathwaymech-next-258-preflight/fresh/acquisition-html.json').read_text());receipts.append(fresh)
+lookup={r['path']:r for r in receipts if r.get('path')}
+gp=ROOT/'originals'/'KEGG-genome-T00501.txt';g=fields(gp)
+assert g['ENTRY'][0].split()==['T00501','Complete','Genome']
+assert g['ORG_CODE']==['cgt'] and g['NAME']==['Corynebacterium glutamicum R'] and g['TAXONOMY']==['TAX:340322']
+assert g['CHROMOSOME']==['Circular (GB:AP009044)']
+agreements=[];candidates=[]
+for locus in ['cgR_0492','cgR_0495','cgR_2523','cgR_2524']:
+    p=ROOT/'originals'/f'KEGG-cgt-{locus}.txt';f=fields(p);r=lookup[str(p)]
+    assert f['ENTRY'][0].split()==[locus,'CDS','T00501'] and f['ORGANISM']==['cgt  '+g['NAME'][0]]
+    assert digest(p)==r['sha256'];row={'gene':'KEGG:cgt:'+locus,'genome':'T00501','native_gene_entry':f['ENTRY'][0],'native_gene_organism':f['ORGANISM'][0],'native_genome_org_code':g['ORG_CODE'][0],'native_genome_name':g['NAME'][0],'native_genome_taxonomy':g['TAXONOMY'][0],'agreement':True}
+    agreements.append(row)
+    candidates.append({'identifier':'KEGG:cgt:'+locus,'kind':'kegg-gene','adapter_status':'new strict adapter required; root owns implementation and exact accepted kind','path':str(p),'url':r['url'],'version':'KEGG complete CDS entry retrieved 2026-10-14','sha256':r['sha256'],'retrieved_at':r['retrieved_at'],'status':'context_only' if locus=='cgR_2524' else 'candidate','canonical_native_locus':locus,'native_name_annotation':f['NAME'][0],'supporting_genome_source':lookup[str(gp)],'note':'Preserve native locus as gene identity; NAME is function annotation. Only select connected named graph nodes. Sequence and native genome/organism independently reconciled.'})
+for a in ['A4QH18','A4QH19']:
+    p=ROOT/'originals'/f'UniProt-{a}.json';r=lookup[str(p)];u=json.loads(p.read_text());assert digest(p)==r['sha256']
+    candidates.append({'identifier':'UniProtKB:'+a,'kind':'uniprot','path':str(p),'url':r['url'],'version':f"Complete UniProt JSON retrieved 2026-10-14; entry version {u['entryAudit']['entryVersion']}; sequence version {u['entryAudit']['sequenceVersion']}",'sha256':r['sha256'],'retrieved_at':r['retrieved_at'],'status':'candidate'})
+for fid,p in [('PWY-6419',Path(fresh['path'])),('PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY',ROOT/'originals'/'META-PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY.html')]:
+    r=lookup[str(p)];assert digest(p)==r['sha256'];candidates.append({'identifier':'MetaCyc:'+fid,'kind':'metacyc-html','path':str(p),'url':r['url'],'version':'MetaCyc 27.0 complete canonical pathway HTML retrieved 2026-10-14','sha256':r['sha256'],'retrieved_at':r.get('retrieved_at',r.get('finished_utc')),'status':'candidate','note':'Use canonical existing pathway HTML parser; native XML is additional reviewed evidence, not an invented authority response.'})
+(ROOT/'authority-candidates.json').write_text(json.dumps(candidates,indent=2)+'\n')
+(ROOT/'genome-gene-consistency.json').write_text(json.dumps({'genome_source':lookup[str(gp)],'genome_fields':g,'four_gene_agreements':agreements,'sequence_checks':'transport-gene-identity-reconciliation.json','status':'pass'},indent=2)+'\n')
+print(len(candidates),'authority candidates;',len(agreements),'verified gene/genome agreements')

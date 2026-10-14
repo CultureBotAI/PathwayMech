@@ -1,0 +1,47 @@
+from pathlib import Path
+import json, hashlib, xml.etree.ElementTree as ET
+ROOT=Path(__file__).resolve().parent
+OLD=Path('/private/tmp/pathwaymech-next-257-native/originals')
+bases='TCAG';amino='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+code={a+b+c:amino[i] for i,(a,b,c) in enumerate((a,b,c) for a in bases for b in bases for c in bases)}
+ids={'cgR_0492':('BAF53459.1',None),'cgR_0495':('BAF53462.1','A4QB65'),'cgR_2523':('BAF55534.1','A4QH18'),'cgR_2524':('BAF55535.1','A4QH19')}
+rows=[]
+for locus,(protein,up) in ids.items():
+    kp=ROOT/'originals'/f'KEGG-cgt-{locus}.txt';fields={};key=None
+    for line in kp.read_text().splitlines():
+        if line[:12].strip():key=line[:12].strip()
+        fields.setdefault(key,[]).append(line[12:].strip())
+    assert fields['ENTRY'][0].split()[:2]==[locus,'CDS']
+    assert fields['ORGANISM']==['cgt  Corynebacterium glutamicum R']
+    aa=''.join(fields['AASEQ'][1:]).upper();nt=''.join(fields['NTSEQ'][1:]).upper()
+    assert len(aa)==int(fields['AASEQ'][0]) and len(nt)==int(fields['NTSEQ'][0])
+    translated=''.join(code[nt[i:i+3]] for i in range(0,len(nt),3))
+    pp=ROOT/'originals'/f'NCBIProtein-{protein}.xml'
+    if not pp.exists():pp=OLD/pp.name
+    pe=ET.parse(pp).getroot();assert pe.findtext('.//GBSeq_accession-version')==protein
+    assert pe.findtext('.//GBSeq_sequence').upper()==aa
+    quals={q.findtext('GBQualifier_name'):q.findtext('GBQualifier_value') for q in pe.findall('.//GBFeature[GBFeature_key="CDS"]//GBQualifier')}
+    assert quals['transl_table']=='11'
+    assert nt[:3] in {'ATG','GTG','TTG'}, nt[:3]
+    translated='M'+translated[1:]
+    assert translated==aa+'*'
+    assert quals['locus_tag']==locus
+    assert pe.findtext('.//GBSeq_organism')=='Corynebacterium glutamicum R'
+    out={'gene_candidate':'KEGG:cgt:'+locus,'kegg_record_type':'CDS','kegg_name':fields['NAME'][0],'kegg_position':fields['POSITION'][0],'issuing_protein':'NCBIProtein:'+protein,'native_coded_by':quals['coded_by'],'protein_length':len(aa),'coding_length':len(nt),'translation_table':11,'native_start_codon':nt[:3],'initiator_methionine_rule_applied':True,'kegg_translation_matches':True,'ncbi_protein_exact_sequence':True,'sources':[]}
+    paths=[kp,pp]
+    if up:
+        upath=ROOT/'originals'/f'UniProt-{up}.json'
+        if not upath.exists():upath=OLD/upath.name
+        u=json.loads(upath.read_text());assert u['primaryAccession']==up and u['sequence']['value']==aa and u['organism']['taxonId']==340322
+        assert locus in [n['value'] for g in u['genes'] for n in g.get('orderedLocusNames',[])]
+        out.update(uniprot_id='UniProtKB:'+up,uniprot_exact_sequence=True);paths.append(upath)
+    for p in paths:out['sources'].append({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size})
+    rows.append(out)
+genes=[]
+gp=ROOT/'originals'/'NCBI-gene-four-loci.xml'
+for e in ET.parse(gp).getroot():
+    status=e.find('.//Gene-track_status');assert status.get('value')=='discontinued'
+    successor=e.find('.//Gene-track_current-id');assert successor is None
+    genes.append({'locus':e.findtext('.//Gene-ref_locus-tag'),'entrez_id':e.findtext('.//Gene-track_geneid'),'status':status.get('value'),'successor_slot_present':False})
+(ROOT/'transport-gene-identity-reconciliation.json').write_text(json.dumps({'status':'verified issuing KEGG CDS identities; current authority adapter support is a separate root implementation question','rows':rows,'rejected_discontinued_entrez':genes,'entrez_source':{'path':str(gp),'sha256':hashlib.sha256(gp.read_bytes()).hexdigest()},'limitation':'Protein or CDS identity does not independently prove native transcript regulation or the identity of an experimental modified construct; primary evidence supplies those claims. KEGG labels remain hypothetical protein rather than invented gene symbols.'},indent=2)+'\n')
+print('Four exact KEGG CDS/protein identities and translations; three exact UniProt sequences; four discontinued Entrez identities')

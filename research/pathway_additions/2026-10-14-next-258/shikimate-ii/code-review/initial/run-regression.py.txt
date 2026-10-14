@@ -1,0 +1,9 @@
+from pathlib import Path
+import datetime,hashlib,json,os,subprocess
+B=Path(__file__).parent;ROOT=Path('/private/tmp/pathwaymech-next-258-20261014');PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+cmd=[PY,'-B','-m','pytest','tests/test_kegg_gene_authority.py','tests/test_kegg_identifier_authority.py','tests/test_identifiers.py','tests/test_source_identifier_snapshot.py','tests/test_typed_authority_consumer_integrity.py','tests/test_identifier_snapshot_builders.py','-q']
+env=dict(os.environ,PYTHONPATH=str(ROOT/'src')+':'+str(ROOT))
+start=datetime.datetime.now(datetime.timezone.utc).isoformat();log=B/'regression.log.txt'
+with log.open('w')as f:r=subprocess.run(cmd,cwd=ROOT,env=env,stdout=f,stderr=subprocess.STDOUT)
+out=dict(command=cmd,cwd=str(ROOT),started_utc=start,finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),exit_code=r.returncode,log=dict(path=str(log),bytes=log.stat().st_size,sha256=hashlib.sha256(log.read_bytes()).hexdigest()))
+(B/'regression-receipt.json').write_text(json.dumps(out,indent=2)+'\n');print(log.read_text());assert r.returncode==0

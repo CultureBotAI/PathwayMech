@@ -1,0 +1,427 @@
+{
+  "id": "MetaCyc:PWY-6419",
+  "label": "shikimate degradation II",
+  "description": "The MetaCyc shikimate degradation II pathway oxidizes shikimate with NAD+ to 3-dehydroshikimate and dehydrates it to protocatechuate in two reactions. This route is distinct from PQQ-dependent shikimate degradation I and the three-step quinate degradation II route. Strain R growth, uptake and gene-expression evidence is distinguished from ATCC 13032 QsuD and ATCC 13869 QsuB enzyme assays. Native database taxon associations do not establish shikimate uptake or growth in every strain.",
+  "pathway_type": "aromatic-compound-catabolism",
+  "taxa": [
+    {
+      "id": "NCBITaxon:1718",
+      "label": "Corynebacterium glutamicum"
+    },
+    {
+      "id": "NCBITaxon:340322",
+      "label": "Corynebacterium glutamicum R"
+    }
+  ],
+  "participants": [
+    {
+      "id": "CHEBI:36208",
+      "label": "shikimate",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:16630",
+      "label": "3-dehydroshikimate",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:36241",
+      "label": "3,4-dihydroxybenzoate",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:15377",
+      "label": "water",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:15378",
+      "label": "hydron",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:57540",
+      "label": "NAD(1-)",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:57945",
+      "label": "NADH(2-)",
+      "category": "small_molecule"
+    }
+  ],
+  "reactions": [
+    {
+      "id": "RHEA:17742",
+      "label": "shikimate + NAD(+) => 3-dehydroshikimate + NADH + H(+)",
+      "category": "molecular_activity",
+      "direction": "left_to_right"
+    },
+    {
+      "id": "RHEA:24849",
+      "label": "3-dehydroshikimate => 3,4-dihydroxybenzoate + H2O",
+      "category": "molecular_activity",
+      "direction": "left_to_right"
+    }
+  ],
+  "mechanistic_edges": [
+    {
+      "id": "shikimate-ii-001",
+      "subject": "MetaCyc:PWY-6419",
+      "predicate": "part_of",
+      "object": "NCBITaxon:1718",
+      "description": "Native database organism context. Strain R physiological evidence and other strain-specific enzyme assays remain separately scoped.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:PWY-6419",
+          "source_assertion": "The native species slot lists TAX-1718. This organism association does not assert growth on shikimate in every strain.",
+          "source_locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/species/Organism[@frameid=\"TAX-1718\"]"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-002",
+      "subject": "MetaCyc:PWY-6419",
+      "predicate": "part_of",
+      "object": "NCBITaxon:340322",
+      "description": "Native database organism context. Strain R physiological evidence and other strain-specific enzyme assays remain separately scoped.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:PWY-6419",
+          "source_assertion": "The native species slot lists TAX-340322. This organism association does not assert growth on shikimate in every strain.",
+          "source_locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/species/Organism[@frameid=\"TAX-340322\"]"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-003",
+      "subject": "RHEA:17742",
+      "predicate": "part_of",
+      "object": "MetaCyc:PWY-6419",
+      "description": "One of the two formal pathway reactions; the complete molecular equation agrees with the selected Rhea direction.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:PWY-6419",
+          "source_assertion": "The native reaction-list includes RXN-20484 and its pathway layout is L2R.",
+          "source_locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/reaction-list; /reaction-layout[Reaction/@frameid=\"RXN-20484\"]"
+        },
+        {
+          "reference_id": "MetaCyc:RXN-20484",
+          "source_assertion": "The native reaction direction is PHYSIOL-LEFT-TO-RIGHT.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"RXN-20484\"]/reaction-direction"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-004",
+      "subject": "CHEBI:36208",
+      "predicate": "consumes",
+      "object": "RHEA:17742",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:RXN-20484",
+          "source_assertion": "The native left side contains SHIKIMATE; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"RXN-20484\"]/left/Compound[@frameid=\"SHIKIMATE\"]"
+        },
+        {
+          "reference_id": "MetaCyc:SHIKIMATE",
+          "source_assertion": "The native compound links CHEBI:36208; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"SHIKIMATE\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:17742",
+          "source_assertion": "RHEA:17742 left side contains CHEBI:36208 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/17741_L rh:contains1 http://rdf.rhea-db.org/Participant_17741_compound_3258; http://rdf.rhea-db.org/Participant_17741_compound_3258 rh:compound http://rdf.rhea-db.org/Compound_3258"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-005",
+      "subject": "CHEBI:57540",
+      "predicate": "consumes",
+      "object": "RHEA:17742",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:RXN-20484",
+          "source_assertion": "The native left side contains NAD; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"RXN-20484\"]/left/Compound[@frameid=\"NAD\"]"
+        },
+        {
+          "reference_id": "MetaCyc:NAD",
+          "source_assertion": "The native compound links CHEBI:57540; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"NAD\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:17742",
+          "source_assertion": "RHEA:17742 left side contains CHEBI:57540 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/17741_L rh:contains1 http://rdf.rhea-db.org/Participant_17741_compound_3484; http://rdf.rhea-db.org/Participant_17741_compound_3484 rh:compound http://rdf.rhea-db.org/Compound_3484"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-006",
+      "subject": "RHEA:17742",
+      "predicate": "produces",
+      "object": "CHEBI:16630",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:RXN-20484",
+          "source_assertion": "The native right side contains 3-DEHYDRO-SHIKIMATE; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"RXN-20484\"]/right/Compound[@frameid=\"3-DEHYDRO-SHIKIMATE\"]"
+        },
+        {
+          "reference_id": "MetaCyc:3-DEHYDRO-SHIKIMATE",
+          "source_assertion": "The native compound links CHEBI:16630; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"3-DEHYDRO-SHIKIMATE\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:17742",
+          "source_assertion": "RHEA:17742 right side contains CHEBI:16630 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/17741_R rh:contains1 http://rdf.rhea-db.org/Participant_17741_compound_3489; http://rdf.rhea-db.org/Participant_17741_compound_3489 rh:compound http://rdf.rhea-db.org/Compound_3489"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-007",
+      "subject": "RHEA:17742",
+      "predicate": "produces",
+      "object": "CHEBI:57945",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:RXN-20484",
+          "source_assertion": "The native right side contains NADH; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"RXN-20484\"]/right/Compound[@frameid=\"NADH\"]"
+        },
+        {
+          "reference_id": "MetaCyc:NADH",
+          "source_assertion": "The native compound links CHEBI:57945; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"NADH\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:17742",
+          "source_assertion": "RHEA:17742 right side contains CHEBI:57945 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/17741_R rh:contains1 http://rdf.rhea-db.org/Participant_17741_compound_1650; http://rdf.rhea-db.org/Participant_17741_compound_1650 rh:compound http://rdf.rhea-db.org/Compound_1650"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-008",
+      "subject": "RHEA:17742",
+      "predicate": "produces",
+      "object": "CHEBI:15378",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:RXN-20484",
+          "source_assertion": "The native right side contains PROTON; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"RXN-20484\"]/right/Compound[@frameid=\"PROTON\"]"
+        },
+        {
+          "reference_id": "MetaCyc:PROTON",
+          "source_assertion": "The native compound links CHEBI:15378; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"PROTON\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:17742",
+          "source_assertion": "RHEA:17742 right side contains CHEBI:15378 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/17741_R rh:contains1 http://rdf.rhea-db.org/Participant_17741_compound_3249; http://rdf.rhea-db.org/Participant_17741_compound_3249 rh:compound http://rdf.rhea-db.org/Compound_3249"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-009",
+      "subject": "RHEA:24849",
+      "predicate": "part_of",
+      "object": "MetaCyc:PWY-6419",
+      "description": "One of the two formal pathway reactions; the complete molecular equation agrees with the selected Rhea direction.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:PWY-6419",
+          "source_assertion": "The native reaction-list includes DHSHIKIMATE-DEHYDRO-RXN and its pathway layout is L2R.",
+          "source_locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/reaction-list; /reaction-layout[Reaction/@frameid=\"DHSHIKIMATE-DEHYDRO-RXN\"]"
+        },
+        {
+          "reference_id": "MetaCyc:DHSHIKIMATE-DEHYDRO-RXN",
+          "source_assertion": "The native reaction direction is LEFT-TO-RIGHT.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"DHSHIKIMATE-DEHYDRO-RXN\"]/reaction-direction"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-010",
+      "subject": "CHEBI:16630",
+      "predicate": "consumes",
+      "object": "RHEA:24849",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:DHSHIKIMATE-DEHYDRO-RXN",
+          "source_assertion": "The native left side contains 3-DEHYDRO-SHIKIMATE; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"DHSHIKIMATE-DEHYDRO-RXN\"]/left/Compound[@frameid=\"3-DEHYDRO-SHIKIMATE\"]"
+        },
+        {
+          "reference_id": "MetaCyc:3-DEHYDRO-SHIKIMATE",
+          "source_assertion": "The native compound links CHEBI:16630; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"3-DEHYDRO-SHIKIMATE\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:24849",
+          "source_assertion": "RHEA:24849 left side contains CHEBI:16630 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/24848_L rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_3489; http://rdf.rhea-db.org/Participant_24848_compound_3489 rh:compound http://rdf.rhea-db.org/Compound_3489"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-011",
+      "subject": "RHEA:24849",
+      "predicate": "produces",
+      "object": "CHEBI:36241",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:DHSHIKIMATE-DEHYDRO-RXN",
+          "source_assertion": "The native right side contains 3-4-DIHYDROXYBENZOATE; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"DHSHIKIMATE-DEHYDRO-RXN\"]/right/Compound[@frameid=\"3-4-DIHYDROXYBENZOATE\"]"
+        },
+        {
+          "reference_id": "MetaCyc:3-4-DIHYDROXYBENZOATE",
+          "source_assertion": "The native compound links CHEBI:36241; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"3-4-DIHYDROXYBENZOATE\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:24849",
+          "source_assertion": "RHEA:24849 right side contains CHEBI:36241 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/24848_R rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_3099; http://rdf.rhea-db.org/Participant_24848_compound_3099 rh:compound http://rdf.rhea-db.org/Compound_3099"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-012",
+      "subject": "RHEA:24849",
+      "predicate": "produces",
+      "object": "CHEBI:15377",
+      "description": "Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:DHSHIKIMATE-DEHYDRO-RXN",
+          "source_assertion": "The native right side contains WATER; no explicit coefficient is supplied.",
+          "source_locator": "/ptools-xml/Reaction[@frameid=\"DHSHIKIMATE-DEHYDRO-RXN\"]/right/Compound[@frameid=\"WATER\"]"
+        },
+        {
+          "reference_id": "MetaCyc:WATER",
+          "source_assertion": "The native compound links CHEBI:15377; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.",
+          "source_locator": "/ptools-xml/Compound[@frameid=\"WATER\"]/dblink[dblink-db=\"CHEBI\"]; /inchi; /inchi-key"
+        },
+        {
+          "reference_id": "RHEA:24849",
+          "source_assertion": "RHEA:24849 right side contains CHEBI:15377 with coefficient 1.",
+          "source_locator": "http://rdf.rhea-db.org/24848_R rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_1283; http://rdf.rhea-db.org/Participant_24848_compound_1283 rh:compound http://rdf.rhea-db.org/Compound_1283"
+        }
+      ]
+    },
+    {
+      "id": "shikimate-ii-013",
+      "subject": "RHEA:17742",
+      "predicate": "precedes",
+      "object": "RHEA:24849",
+      "description": "Native ordering connects oxidation to the terminal dehydration.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:PWY-6419",
+          "source_assertion": "RXN-20484 is a predecessor of DHSHIKIMATE-DEHYDRO-RXN.",
+          "source_locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/reaction-ordering[Reaction/@frameid=\"DHSHIKIMATE-DEHYDRO-RXN\"]/predecessor-reactions"
+        }
+      ]
+    }
+  ],
+  "references": [
+    {
+      "id": "MetaCyc:PWY-6419",
+      "title": "MetaCyc native object PWY-6419",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-6419",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "671e3c5409aebd47324304d3f72e80ede9f764729a5147e48910d7121dbdd027"
+    },
+    {
+      "id": "MetaCyc:SHIKIMATE",
+      "title": "MetaCyc native object SHIKIMATE",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:SHIKIMATE",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "cc27f3ac05001f2c20140a842f33d1801af9ca7514df37150a975ade9812b204"
+    },
+    {
+      "id": "MetaCyc:3-DEHYDRO-SHIKIMATE",
+      "title": "MetaCyc native object 3-DEHYDRO-SHIKIMATE",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-DEHYDRO-SHIKIMATE",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "d0f5d73eb794f9644dfd8822b74c02eec042e5d494ee24a599b97babb6770c61"
+    },
+    {
+      "id": "MetaCyc:3-4-DIHYDROXYBENZOATE",
+      "title": "MetaCyc native object 3-4-DIHYDROXYBENZOATE",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-4-DIHYDROXYBENZOATE",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "cd2b2dad4c5e768eaa5979a44d6e65f0a7ed47318f2d3e49b1139413ac5ed632"
+    },
+    {
+      "id": "MetaCyc:WATER",
+      "title": "MetaCyc native object WATER",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:WATER",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "29201d5730308535e65744b47f9f6e0eb3ef9ffdcdd2eb442888a34da8a8c366"
+    },
+    {
+      "id": "MetaCyc:PROTON",
+      "title": "MetaCyc native object PROTON",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PROTON",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "22115ac465b8f70fb4d34d11e93120cafb805cbc00c2391f21a5a27f1563602f"
+    },
+    {
+      "id": "MetaCyc:NAD",
+      "title": "MetaCyc native object NAD",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:NAD",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "69d2ce90addd206c2c17bdd2ebdbc59fb730db4e65e8a65dcadf9c96f9e842f8"
+    },
+    {
+      "id": "MetaCyc:NADH",
+      "title": "MetaCyc native object NADH",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:NADH",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "961aa680583bf429d5fdc9dc7ce6686108c4c1760d699c968a8b767cc39ba1a4"
+    },
+    {
+      "id": "MetaCyc:RXN-20484",
+      "title": "MetaCyc native object RXN-20484",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN-20484",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "f671a70cf7ef772c7588cabc8f40e2e5f35c0ef09dcfd624559901b17f52e0af"
+    },
+    {
+      "id": "RHEA:17742",
+      "title": "Rhea equation RHEA:17742",
+      "url": "https://www.rhea-db.org/rhea/17742",
+      "source_version": "Rhea 142 RDF; canonical label from pinned Rhea 139",
+      "source_sha256": "8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf"
+    },
+    {
+      "id": "MetaCyc:DHSHIKIMATE-DEHYDRO-RXN",
+      "title": "MetaCyc native object DHSHIKIMATE-DEHYDRO-RXN",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:DHSHIKIMATE-DEHYDRO-RXN",
+      "source_version": "MetaCyc 27.0",
+      "source_sha256": "9817702da07b7b4df130381752e639afe1184490dc844d8558c16da4d21613b7"
+    },
+    {
+      "id": "RHEA:24849",
+      "title": "Rhea equation RHEA:24849",
+      "url": "https://www.rhea-db.org/rhea/24849",
+      "source_version": "Rhea 142 RDF; canonical label from pinned Rhea 139",
+      "source_sha256": "8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf"
+    }
+  ]
+}

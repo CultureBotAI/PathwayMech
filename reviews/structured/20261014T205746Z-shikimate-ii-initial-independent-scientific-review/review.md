@@ -1,0 +1,964 @@
+# Initial independent scientific review of shikimate degradation II
+
+- Review: 20261014T205746Z-shikimate-ii-initial-independent-scientific-review
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T20:18:12Z
+- Finished UTC: 2026-10-14T20:57:46Z
+- Reviewer: Codex /root/next258_science (independent)
+- Completion: completed
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+One confirmed major representation finding: the exact downstream ortho-cleavage interface is declared biological_process rather than pathway. Independent review supports the two formal reactions, molecular identity/charge/direction, source closure, strain and construct separation, regulatory gene targets, ShiA uptake scope and quotation fidelity. All six effective whole-corpus gates passed against the unchanged exact initial target. The first vendored-check attempt failed at DNS retrieval; that failure is retained and the same command passed on a scoped network retry, without a waiver.
+
+## Scope And Provenance
+
+One maintained initial shikimate-II record, all32 edges,24 participants, three declared reaction/process nodes and31 references. Independent review against frozen actual native, primary and issuing-authority originals.
+
+Selection: Exact named target MetaCyc:PWY-6419 at data/pathways/shikimate-degradation-ii.yaml; no sampling.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 495de27ec09f99367d1cdd5c457a5e54a93c9a0b.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6419 | data/pathways/shikimate-degradation-ii.yaml | maintained | shikimate degradation II |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Shared exact input inspection | passed | True | MetaCyc:PWY-6419 | Shared inspect succeeded for the exact maintained target and53 retained guidance/source/gate inputs. Every inspected hash was independently rechecked after the gates; the target remains identical to the original inspected YAML. |
+| Independent source and evidence replay | passed | True | MetaCyc:PWY-6419 | Original native slots, Rhea sides, seven chemical structures/charges, exact strain sequences, assay constructs, quotes and downstream scope independently replayed. Scientific assessment also inspected the original primary Methods/Results and relevant figures. |
+| iModulonDB applicability fallback | not_applicable | False | MetaCyc:PWY-6419 | Official provider index has no named Corynebacterium dataset; local runner was unavailable on PATH and broader local search was permission-limited. No target-specific expression claim is made. |
+| Historical vendored-check DNS failure | failed | False | MetaCyc:PWY-6419 | The first actual attempt exited1 because raw.githubusercontent.com could not be resolved. Its complete original receipt and lossless log are retained. The same required command later passed with network access; no command, input or policy waiver changed. |
+| just render-pages | passed | True | MetaCyc:PWY-6419 | Root-owned exact-input whole-corpus run exited0. Independent review verified retained receipt bytes, lossless log binding, all1247 tested core files and all53 inspected inputs. |
+| just validate | passed | True | MetaCyc:PWY-6419 | Root-owned exact-input whole-corpus run exited0. Independent review verified retained receipt bytes, lossless log binding, all1247 tested core files and all53 inspected inputs. |
+| just test | passed | True | MetaCyc:PWY-6419 | Root-owned exact-input whole-corpus run exited0. Independent review verified retained receipt bytes, lossless log binding, all1247 tested core files and all53 inspected inputs. Pytest reports5118 passed,3 skipped and7 warnings. |
+| just lint | passed | True | MetaCyc:PWY-6419 | Root-owned exact-input whole-corpus run exited0. Independent review verified retained receipt bytes, lossless log binding, all1247 tested core files and all53 inspected inputs. |
+| just vendored-check | passed | True | MetaCyc:PWY-6419 | Root-owned exact-input whole-corpus run exited0. Independent review verified retained receipt bytes, lossless log binding, all1247 tested core files and all53 inspected inputs. This is the successful scoped retry of the same command after the separately retained DNS failure;22 governed artifacts match the pinned revision. |
+| git diff --check | passed | True | MetaCyc:PWY-6419 | Root-owned exact-input whole-corpus run exited0. Independent review verified retained receipt bytes, lossless log binding, all1247 tested core files and all53 inspected inputs. |
+
+## Scientific And Domain Assessments
+
+### Exact two-step NAD-dependent shikimate-II route
+
+identity: supported. Targets: MetaCyc:PWY-6419.
+
+The maintained pathway identity, two formal reactions, selected catabolic orientation and downstream interface chemistry are supported. DHQ/QsuC is bypassed; PQQ shikimate-I, quinate-II, petrobactin and unrelated fungal/shared-terminal-activity taxa are correctly excluded.
+
+### Complete molecular sides and canonical charge
+
+grounding: supported. Targets: MetaCyc:PWY-6419.
+
+All seven core molecular identities and both complete reaction equations were independently checked against actual issuing sources; no chemical identity, charge, coefficient or direction mismatch was found.
+
+### R versus ATCC13032 versus ATCC13869
+
+scope: supported. Targets: MetaCyc:PWY-6419.
+
+The draft avoids transfer of purified enzyme assays to strain R and avoids whole-route growth assertions for enzyme-only strains. Two native whole-pathway organism associations remain source-scoped. The old fungal qutB and wrong-strain qsuD narrative pointers are explicitly rejected.
+
+### Experimental proteins and regulatory gene endpoints
+
+evidence: supported. Targets: MetaCyc:PWY-6419.
+
+QsuD, QsuR and full-length QsuB assays retain construct qualifications on the correct endpoint. QsuR and ShiR regulate gene endpoints. ShiA uptake is distinct from inferred QsuA transport; no direct substrate-ligand or H+ stoichiometry inference is promoted.
+
+### Native object, slot and narrative closure
+
+completeness: supported. Targets: MetaCyc:PWY-6419.
+
+All53 frozen native objects and853 direct slots replay. All six attached formal-reaction enzyme activities and the27 pathway/included-enzyme narrative claims plus8 transport annotations have defensible route-specific dispositions. Completeness is bounded to this frozen source corpus.
+
+### Source identity, quotation fidelity and quote budget
+
+provenance: supported. Targets: MetaCyc:PWY-6419.
+
+All351 original-binding entries match;23 quotations replay and every primary source stays within25 quoted words including repetitions. Database statements remain structured assertions and are not relabelled as paper quotations.
+
+### Identified pathway rendered as generic process
+
+representation: concern. Targets: MetaCyc:PWY-6419.
+
+The exact downstream pathway is scientifically grounded, but category biological_process violates the required pathway-interface representation and changes record-local rendering/export.
+
+### Structured expression-context applicability
+
+evidence: not_applicable. Targets: MetaCyc:PWY-6419.
+
+The bounded official dataset index names no covered Corynebacterium strain. Expression-module context is therefore not added; no biological absence conclusion follows.
+
+## Findings
+
+### F1: Declare the identified ortho-cleavage interface as a pathway
+
+major / open / confirmed; issue key: shikimate-ii-downstream-pathway-category.
+
+GO:0019618 is independently established as the exact protocatechuate-to-beta-ketoadipate ortho-cleavage pathway, but reactions declares category biological_process. docs/CAUSAL_GRAPHS.md explicitly requires category pathway for an identified downstream pathway interface. Actual record-local replay returns biolink:BiologicalProcess and graph kind reaction rather than pathway. The route boundary and provides_input_for edge are supported; only the node category requires correction.
+
+## Recommended Actions And Acceptance Checks
+
+### A1
+
+Change only GO:0019618 category to pathway, keep its exact identity and supplies-input interface, then regenerate the page and verify pathway node typing in graph and KGX output.
+
+- Maintained reactions[id=GO:0019618].category equals pathway.
+- Record-local graph kind is pathway and single-record KGX node category is biolink:Pathway; edge shikimate-ii-018 remains provides_input_for.
+- Only RHEA:17742 and RHEA:24849 remain formal members of MetaCyc:PWY-6419.
+- Run documented render-pages/validate/test/lint and git diff --check; preserve unchanged chemical and primary evidence assertions.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| record | data/pathways/shikimate-degradation-ii.yaml; reactions[id=GO:0019618].category; mechanistic_edges[id=shikimate-ii-018] | supports | Complete maintained 32-edge, 24-participant, three-node reactions collection read and parsed; semantic identity to the initial assembled JSON independently confirmed. |
+| local-rule | docs/CAUSAL_GRAPHS.md; Components and relations; identified child/downstream pathway paragraph | supports | The local contract requires category pathway for identified downstream pathway interfaces in reactions, using an independently established exact identity. |
+| native | research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/native-coverage.json; 53 complete native XML objects; 853 direct slots; six enzymatic activities attached to RXN-20484 and DHSHIKIMATE-DEHYDRO-RXN; native/original-bindings.json locates originals | supports | All 53 complete source XML objects were reopened. Direct slots were independently serialized and matched to all 853 ledger entries. Biological comments, identities, formal reaction membership, directions, six activities, enzyme/gene/component references and exclusion boundaries were independently assessed, not inferred from the author handoff. |
+| chemistry | research/pathway_additions/2026-10-14-next-258/shikimate-ii/assembly/chemical-identity-and-reaction-audit.json; Independent original-source replay: science/independent-replay/rhea-original-replay.json and identity-quote-replay.json; Rhea 142 complete RDF plus ChEBI SQL | supports | Original Rhea RDF was reparsed independently of the author projection. All molecular sides of RHEA:17742 and RHEA:24849 match the graph with unit coefficients and balanced atoms/charge. Seven native compounds match issuing ChEBI InChI, InChIKey and CML charge. Generic NAD(P) RXN-11174 was correctly excluded. |
+| growth-regulation | https://pmc.ncbi.nlm.nih.gov/articles/PMC2687277/; PMID19376919 complete preserved HTML; Methods strain/plasmids, Results and Figures 1,2,4,5 independently inspected | supports | Strain R is explicit. qsuD disruption suppresses shikimate growth, complementation restores it, and qsuR perturbation controls qsuA/qsuB/qsuD transcript levels. The measured targets are genes. QsuA transport and R QsuB catalysis were only inferred in this paper. |
+| qsur | https://doi.org/10.1111/mmi.12560; PMID24674055 preserved primary Methods/Results/Discussion web transcripts, DNase footprint and reporter sections | supports | Chorismate-dependent footprint shortening and genetic experiments support a direct QsuR effector. N-terminal His6-QsuR/pCRF206/pColdI in E. coli BL21 is explicit. qsuA promoter binding is distinct from activating a protein enzyme. The draft retains the tested construct and does not claim shikimate or quinate as direct ligands. |
+| qsud | https://doi.org/10.1515/hsz-2013-0170; PMID23929881 complete preserved primary Methods/Results/Discussion transcripts; Methods lines1492-1531 and Results lines568-630 | supports | ATCC13032 cgl0424 cloned into pNHIS and expressed in BL21 supports NAD-linked shikimate oxidation. AcTEV tag cleavage was checked by mass spectrometry, but per-assay cleavage state is not resolved. The 2013 NADP nondetection is condition-specific and is preserved as differing from the older native residual-activity annotation. No disputed numerical Table1 value is promoted. |
+| kubota | https://doi.org/10.1007/s00253-012-4659-y; PMID23306642 primary abstract and complete six-page supplementary PDF; FigS1b caption/page S2 and plot/page S4 independently viewed | supports | The inspected supplementary shikimate experiment supports the separate R-strain qsuD disruption/complementation claim in 50mM shikimate BT medium. AroE kinetics in later supplementary figures are not reassigned to QsuD. |
+| qsub | https://doi.org/10.1371/journal.pone.0231560; PMID32822353 full XML Methods/Results/Discussion; Figures5-7; primer supplement and product-HPLC supplement visually inspected | supports | ATCC13869/2256 full-length QsuB catalyzes DHS-to-PCA. Co, Mg and Mn support in vitro activity in the 10mM metal screen; high substrate and product inhibit the full-length preparation. P3/P4 primer placement independently matched the issuing 618-aa CDS and the reverse-complement P4 tail encodes six histidines. R QsuB is not the assayed protein. Mixed product inhibition is retained without conflicting numerical inhibitor ranges. |
+| transport | https://pubmed.ncbi.nlm.nih.gov/25406451/; Primary abstract independently opened live; preserved EuropePMC abstract and full current UniProt A4QH18/A4QH19 objects | supports | ShiA/cgR_2523 supports R-strain shikimate uptake and growth and is distinct from qsuA/cgR_0492. ShiR/cgR_2524 controls shiA transcription. The abstract does not establish direct shikimate ligand binding or proton stoichiometry. Separate UniProt membrane annotation and its experimental/inferred evidence codes were verified. |
+| downstream | research/pathway_additions/2026-10-14-next-258/shikimate-ii/assembly/downstream-go-identity.json; Original GO SQL stanza GO:0019618 reopened; definition, exact synonym, MetaCyc xref and input/output restrictions; complete native PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY XML | supports | GO:0019618 exactly denotes protocatechuate to beta-ketoadipate via ortho cleavage. The native downstream object contains four formal reactions terminating in 3-KETO-ADIPATE. The source therefore supports a pathway interface rather than another formal shikimate-II reaction. |
+| identity | research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/original-bindings.json; Issuing NCBI BAF53458.1/BAF53460.1/ANU32720.1 and four KEGG R CDS objects; current UniProt; RCSB 2NLO entity1 | supports | Four R gene CDS translations independently equal exact NCBI sequences; the QsuD, ShiA and ShiR sequences also equal issuing UniProt proteins. Bacterial GTG initiator methionine was handled explicitly. Q9X5C9 is ATCC13032 and 2NLO has the exact 19-residue extension plus the complete 283-aa native sequence. QsuR and R QsuB loci/strain are explicit. ANU32720.1 is ATCC13869. |
+| integrity | research/pathway_additions/2026-10-14-next-258/shikimate-ii/primary/author/package/original-bindings.json; 351 bound-original entries (267 native plus84 primary) independently rehashed and copied; 23 edge/qualifier quote occurrences replayed | supports | All 351 source-binding entries match byte length and SHA256. All 23 quotation occurrences match inspected source text after only markup/line-label/whitespace normalization. Per-paper total words, counting repeated qualifier quotes: 23929881=9;19376919=18;23306642=6;24674055=13;32822353=21;25406451=17. |
+| render-effect | src/pathwaymech/kgx.py and src/pathwaymech/graph_view.py; kgx_nodes([validated_record]) and _declared_nodes(record,{}) for GO:0019618; science/independent-replay/downstream-representation-replay.json | refutes | Actual initial record-local replay yields KGX biolink:BiologicalProcess and renderer kind reaction/type biological process, demonstrating loss of the identified pathway category. This statement is scoped to single-record output, not merged-corpus precedence. |
+| imodulon | https://raw.githubusercontent.com/SBRG/modulytics/master/index.html; Complete 575-line official provider index, inspected2026-10-14T20:24:05Z; comments excluded from active-link enumeration | context_only | The inspected official index has 16 active dataset links across11 organisms and does not name C. glutamicum R, ATCC13032 or ATCC13869. Live imodulondb.org returned no web-tool text. Installed CLI not found on current PATH; broader ignored-inclusive runner search was incomplete due unrelated permission denied directories. This is bounded applicability, not biological negative evidence. |
+| biosensor-boundary | https://doi.org/10.1093/jimb/kuae024; Complete preserved Biosensor2024.xml; ATCC13032 Methods/Results/Discussion on response to extracellular shikimate | context_only | ATCC13032 biosensor nonresponse to extracellular shikimate does not negate purified QsuD catalysis. It supports retaining the distinction between R-strain uptake/whole-route growth and ATCC enzyme evidence; no negative mechanism edge is justified. |
+| initial-gates | research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/receipts.json; All six effective commands; lossless log wrappers; retention.json; final-input-preservation.json; tested-core-input-hashes.json; science/initial/gate-provenance-verification.json | supports | All six effective commands exit0. The independent reviewer rehashed16 retained gate artifacts against originals, recovered all7 log wrappers including the historical failure, rehashed all1247 tested core files and all53 shared-inspect inputs, and confirmed exact initial YAML preservation. |
+| initial-gates-failure | research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/failed-attempts.json; initial-attempt-receipts.json; just-vendored-check.log.json; resume_after_fetch_failure.py.txt; successful network-retry log and effective receipts | context_only | The initial vendored-check attempt failed to resolve the public canonical artifact host. The historical receipt/log remain unchanged. The root retried only that command with network access and ran the remaining whitespace gate, with all core inputs unchanged. This was a completed successful retry, not a waiver or evidence of a vendored mismatch. |
+
+## Limits And Additional Notes
+
+- The main text of PMID23306642 and PMID25406451 was unavailable; their accepted claims remain within inspected primary abstracts and, for Kubota2013, the complete inspected supplement.
+- PMID23929881 was inspected through preserved full primary web transcripts; original PDF/visual Table1 was unavailable, so numerical Table1 kinetics and per-assay tag cleavage state are not certified.
+- Native 2008 QsuD annotations remain structured database evidence; the 2NLO sequence establishes its structural sample extension, not every kinetic-preparation cleavage state.
+- The QsuB primer/issuing-CDS reconstruction establishes C-terminal His6 placement but no separately deposited complete assay-clone sequence was inspected.
+- Native coverage is complete for the53 frozen complete objects/853 direct slots and specified narrative ledger, not all external sources.
+- Source package snapshots were preserved under /private/tmp/pathwaymech-next-258-science/initial; all351 bound-original entries were rehashed and copied before scientific assessment.
+- The reviewer used the PDF skill read-only to inspect supplied supplement page renderings. No author input, maintained record, GitHub issue or publication was changed by this reviewer.
+- A separate implementation/integration reviewer handles two reference-presentation findings in https://github.com/CultureBotAI/PathwayMech/issues/550; they are not additional independent scientific findings in this review.
+- The historical DNS failure is explicit in the checks and evidence. Effective gate success includes the actual successful same-command retry; all original failure evidence remains retained.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T205746Z-shikimate-ii-initial-independent-scientific-review
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Initial independent scientific review of shikimate degradation II
+started_at: '2026-10-14T20:18:12Z'
+finished_at: '2026-10-14T20:57:46Z'
+reviewer:
+  identity: Codex /root/next258_science
+  kind: agent
+  model: GPT-6
+  independence: independent
+  independence_basis: This reviewer did not author the maintained YAML, native/primary
+    packages, chemistry assembly or identifier adapter. Exact initial author inputs
+    were copied and frozen before independent source replay; maintained YAML was separately
+    inspected and read.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: needs_curation
+scientific_review: true
+summary: 'One confirmed major representation finding: the exact downstream ortho-cleavage
+  interface is declared biological_process rather than pathway. Independent review
+  supports the two formal reactions, molecular identity/charge/direction, source closure,
+  strain and construct separation, regulatory gene targets, ShiA uptake scope and
+  quotation fidelity. All six effective whole-corpus gates passed against the unchanged
+  exact initial target. The first vendored-check attempt failed at DNS retrieval;
+  that failure is retained and the same command passed on a scoped network retry,
+  without a waiver.'
+source:
+  git_revision: 495de27ec09f99367d1cdd5c457a5e54a93c9a0b
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: data/pathways/shikimate-degradation-ii.yaml
+    sha256: 3c3e9665a0c3cab33572fd12fc419bbbb46d0e8d3232da046e7aaaaf75290303
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/assembly/downstream-go-identity.json
+    sha256: 65c1f1a4fd8d07b3d78aecdcc6ee8f6c615222d45fb505ce181d09561db48b8d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/narrative-claims.json
+    sha256: 1fc33b70a6647d09c103f2c8ce00ab2ff6ee8024783693288c5206ff0f80f42f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/native-coverage.json
+    sha256: cd0e1ba7c0dbca7cae22fc87f8e712bb806b3a77c42b38cc05cb97bcf16a3ce6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/native-fact-dispositions-compact.json
+    sha256: 81f0d4f294e2d80415faad739b2792b477bbf0965cb271dbfc247dcc5a7df014
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/original-bindings.json
+    sha256: 98bcf15abafe68cc9a24fff007d89123dcefc40b23bcaeed12fdb128efbcdf37
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/primary/author/package/original-bindings.json
+    sha256: e50573ab3abe3929c8c2cda62033ba9add1690aa3261d2d0caf942f9432daf43
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/primary/author/package/package-index.json
+    sha256: d4da48bc00dd7f9b5ab95bb199b6eeb775236936fae11f92fbacb8386f16e02f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/README.md
+    sha256: 32693a4c84b4c99d1239f30e22d83785ffb7967a96f6e997939b36b7d8167353
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/downstream-representation-replay.json
+    sha256: 44d9ce9e7b679999fc328555a1d5556a64a5e4e7a2221de04488eb7f78be93c4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/go-qsuD-replay.json
+    sha256: d31059c0204c424d757ababb82a7e6be57726709ac95d93eb1952935874847ba
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/identity-quote-replay.json
+    sha256: 62a3908414c66e6410a30aa4119070498b09780b0efa8bd5c76360a0f04a37c7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/imodulondb-applicability.json
+    sha256: 5bab7e4b5125bb8ea7b1d70bfd69bb5cdc4e216c6fc34d9f8b15abfe9f9fbcfd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/imodulondb-official-index-web-transcript.txt.raw.json
+    sha256: 9c34886624d60d5746107aabae7e1e18713fe9b4cccdc5454a8b84388da7ba85
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/native-slot-replay.json
+    sha256: 5941f04039b100bf8c2111ec1edda14257ca3d2fc69f7fa9bf376fb20fd79628
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/qsub-figures-visual-replay.json
+    sha256: a3e62798b192e0ddac270b33f9eff3974b1eacfa64588d9ddd5dc338c1f4a1c5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/replay_identity_quotes.py.txt
+    sha256: e305e5b1ec6547779729ea123c8755f9b089833c762fc5e5e451c92543358350
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/rhea-original-replay.json
+    sha256: b7589cca0408f385074c3fcfbf79f4bb01e6505007160c89ca56cf253acbf6c6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/bound-originals-replay.json
+    sha256: d0e366e4d33b77ebf7d2f73ae929f44c096b98258efc553d0daf857cae023c50
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/external-artifact-manifest.json
+    sha256: 06f488eab2e96ef5863809a6acb97ac189c7573fa74c207c9a526d106c7b2f3e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/inspect-with-context.json
+    sha256: 455b473783749cb035965c4f448965788b5738de2f993a78c3b10ce3f86519b8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/inspect.json
+    sha256: 913f58969bb438f8f81f56f092b46f8a99cb11e7d72b3e694706c54731c2f4d7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/retention-manifest.json
+    sha256: 3d528cc8c52b7a714eb7bfa9d51fbc0fa27c6d2823945b9d9de3959fb0cf4160
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/shikimate-degradation-ii.yaml.txt
+    sha256: 3c3e9665a0c3cab33572fd12fc419bbbb46d0e8d3232da046e7aaaaf75290303
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/snapshot-manifest.json
+    sha256: b8a3fd862837ea4c8bd515b661204f4ed6b8338f0fb0fedef926f6757bac5671
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/targets.yaml.txt
+    sha256: fa0105e97495ebc4a3c0df101f9334463840fbe78beec5eef95c5db9f908eab4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/environment.json
+    sha256: e737891d875e2165af3709c583bb30c5cd1b920b4c919173d85c3905eedc6349
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/failed-attempts.json
+    sha256: 26304443888d32c44bcb133f01b76d29455a78614ef4107259b33e1fc5a94fee
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/final-input-preservation.json
+    sha256: 9e65703a9a8eca09c0b6c83a6f5cd72acf2157124e219b2d21057fc188463bd8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/git-diff-check.log.json
+    sha256: abd85a4bdac87f1685fab06231e738ae771dca8a4fb489605678aa21f3680c40
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/initial-attempt-receipts.json
+    sha256: 6147d32892e5763cdcc7183aa703c1aa0ee094411bfb51e7a4b6b4d63d138d8a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-lint.log.json
+    sha256: d09696fe24e852805c00a035d0f1055926c6da1c117273a4b19156415c8dd0f4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-render-pages.log.json
+    sha256: 7a548079737e3a44729963c4bcc21819a91b2ad9d0ad5ecf34631015db167ebb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-test.log.json
+    sha256: acc14883cdf9b63ea507f34babf6eac8beae1ea1165a5365cea5ea41b4a8dfd2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-validate.log.json
+    sha256: e41b4d8c5209468ce86923566168c607d55c651bc8c7b12561bc01ad1da4be34
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-vendored-check-network-retry.log.json
+    sha256: ccdd3c8f5f64bc97bc7a06d2f051fcedf77234d2401bea727c141e35fd8cb3d3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-vendored-check.log.json
+    sha256: a5994b8deaf7e0865adf8c1976d8a2adfbb6a8ba2a9bcb1fb59cb94dd9a0d0bd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/receipts.json
+    sha256: 258c0c52ce96a287f08a7e2d8f9e2d806e9c45ffaa90613639b82ac768caa081
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/resume_after_fetch_failure.py.txt
+    sha256: 93ea65564aa088b8a5104ed4558074163f24661a6495feee8e9bd3f7b71c778a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/resumed-attempt-receipts.json
+    sha256: 258c0c52ce96a287f08a7e2d8f9e2d806e9c45ffaa90613639b82ac768caa081
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/retention.json
+    sha256: 97367294f96b9b6370c137c39d12ab67890b8701229a389126f0cc4273c67c9b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/run_checks.py.txt
+    sha256: 978b443ac337845582dfbda7eac047e9769a2dce8a58c05c3764465a3ab5f015
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/tested-core-input-hashes.json
+    sha256: f869a06bcc032b7370b4c4364f6852e61234a99c72fb796a6b96c5af91d4eee2
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 45bbedd4459f21d4189e3eeb35504ff71ba664e975f4cdde7250a61e9ae3215b
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+scope:
+  description: One maintained initial shikimate-II record, all32 edges,24 participants,
+    three declared reaction/process nodes and31 references. Independent review against
+    frozen actual native, primary and issuing-authority originals.
+  selection: Exact named target MetaCyc:PWY-6419 at data/pathways/shikimate-degradation-ii.yaml;
+    no sampling.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6419
+  exclusions:
+  - target: KEGG CDS authority adapter implementation
+    reason: Handled by a separate independent implementation reviewer; biological
+      gene identities were independently replayed here.
+  - target: Entire external literature and all possible pathway organisms
+    reason: No source exhaustion or global taxonomic coverage claim; coverage is bounded
+      to the inspected source package and named primary leads.
+targets:
+- target_id: MetaCyc:PWY-6419
+  path: data/pathways/shikimate-degradation-ii.yaml
+  label: shikimate degradation II
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/shikimate-degradation-ii.yaml
+    role: maintained scientific pathway record
+checks:
+- check_id: inspect
+  name: Shared exact input inspection
+  status: passed
+  required: true
+  summary: Shared inspect succeeded for the exact maintained target and53 retained
+    guidance/source/gate inputs. Every inspected hash was independently rechecked
+    after the gates; the target remains identical to the original inspected YAML.
+  target_ids:
+  - MetaCyc:PWY-6419
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/.venv/bin/python
+    scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-258-science/initial/targets.yaml
+    --input .claude/skills/add-pathway/SKILL.md --input .claude/skills/review-yaml-record/SKILL.md
+    --input CLAUDE.md --input docs/CAUSAL_GRAPHS.md --input docs/CURATION.md --input
+    docs/HARMONIZATION.md --input docs/record-review-profile.md --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/assembly/downstream-go-identity.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/narrative-claims.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/native-coverage.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/native-fact-dispositions-compact.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/original-bindings.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/primary/author/package/original-bindings.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/primary/author/package/package-index.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/README.md
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/downstream-representation-replay.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/go-qsuD-replay.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/identity-quote-replay.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/imodulondb-applicability.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/imodulondb-official-index-web-transcript.txt.raw.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/native-slot-replay.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/qsub-figures-visual-replay.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/replay_identity_quotes.py.txt
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/independent-replay/rhea-original-replay.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/bound-originals-replay.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/external-artifact-manifest.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/inspect-with-context.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/inspect.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/retention-manifest.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/shikimate-degradation-ii.yaml.txt
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/snapshot-manifest.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/initial/targets.yaml.txt
+    --input src/pathwaymech/graph_view.py --input src/pathwaymech/kgx.py --input src/pathwaymech/schema.py
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/environment.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/failed-attempts.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/final-input-preservation.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/git-diff-check.log.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/initial-attempt-receipts.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-lint.log.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-render-pages.log.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-test.log.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-validate.log.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-vendored-check-network-retry.log.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/just-vendored-check.log.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/receipts.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/resume_after_fetch_failure.py.txt
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/resumed-attempt-receipts.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/retention.json
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/run_checks.py.txt
+    --input research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/tested-core-input-hashes.json
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: scientific-replay
+  name: Independent source and evidence replay
+  status: passed
+  required: true
+  summary: Original native slots, Rhea sides, seven chemical structures/charges, exact
+    strain sequences, assay constructs, quotes and downstream scope independently
+    replayed. Scientific assessment also inspected the original primary Methods/Results
+    and relevant figures.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - native
+  - chemistry
+  - identity
+  - integrity
+  - downstream
+- check_id: imodulon
+  name: iModulonDB applicability fallback
+  status: not_applicable
+  required: false
+  summary: Official provider index has no named Corynebacterium dataset; local runner
+    was unavailable on PATH and broader local search was permission-limited. No target-specific
+    expression claim is made.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - imodulon
+- check_id: vendored-check-initial-dns-attempt
+  name: Historical vendored-check DNS failure
+  status: failed
+  required: false
+  summary: The first actual attempt exited1 because raw.githubusercontent.com could
+    not be resolved. Its complete original receipt and lossless log are retained.
+    The same required command later passed with network access; no command, input
+    or policy waiver changed.
+  scope_note: Historical failed attempt only. The accepted required gate result is
+    the separate passed vendored-check entry.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - initial-gates-failure
+  command: just vendored-check
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: render-pages
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Root-owned exact-input whole-corpus run exited0. Independent review verified
+    retained receipt bytes, lossless log binding, all1247 tested core files and all53
+    inspected inputs.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - initial-gates
+  command: just render-pages
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: validate
+  name: just validate
+  status: passed
+  required: true
+  summary: Root-owned exact-input whole-corpus run exited0. Independent review verified
+    retained receipt bytes, lossless log binding, all1247 tested core files and all53
+    inspected inputs.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - initial-gates
+  command: just validate
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: test
+  name: just test
+  status: passed
+  required: true
+  summary: Root-owned exact-input whole-corpus run exited0. Independent review verified
+    retained receipt bytes, lossless log binding, all1247 tested core files and all53
+    inspected inputs. Pytest reports5118 passed,3 skipped and7 warnings.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - initial-gates
+  command: just test
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: lint
+  name: just lint
+  status: passed
+  required: true
+  summary: Root-owned exact-input whole-corpus run exited0. Independent review verified
+    retained receipt bytes, lossless log binding, all1247 tested core files and all53
+    inspected inputs.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - initial-gates
+  command: just lint
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: vendored-check
+  name: just vendored-check
+  status: passed
+  required: true
+  summary: Root-owned exact-input whole-corpus run exited0. Independent review verified
+    retained receipt bytes, lossless log binding, all1247 tested core files and all53
+    inspected inputs. This is the successful scoped retry of the same command after
+    the separately retained DNS failure;22 governed artifacts match the pinned revision.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - initial-gates
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: diff
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Root-owned exact-input whole-corpus run exited0. Independent review verified
+    retained receipt bytes, lossless log binding, all1247 tested core files and all53
+    inspected inputs.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - initial-gates
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+evidence:
+- evidence_id: record
+  kind: record_content
+  reference: data/pathways/shikimate-degradation-ii.yaml
+  locator: reactions[id=GO:0019618].category; mechanistic_edges[id=shikimate-ii-018]
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: Complete maintained 32-edge, 24-participant, three-node reactions collection
+    read and parsed; semantic identity to the initial assembled JSON independently
+    confirmed.
+  snapshot_sha256: 3c3e9665a0c3cab33572fd12fc419bbbb46d0e8d3232da046e7aaaaf75290303
+- evidence_id: local-rule
+  kind: record_content
+  reference: docs/CAUSAL_GRAPHS.md
+  locator: Components and relations; identified child/downstream pathway paragraph
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: The local contract requires category pathway for identified downstream
+    pathway interfaces in reactions, using an independently established exact identity.
+- evidence_id: native
+  kind: database
+  reference: research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/native-coverage.json
+  locator: 53 complete native XML objects; 853 direct slots; six enzymatic activities
+    attached to RXN-20484 and DHSHIKIMATE-DEHYDRO-RXN; native/original-bindings.json
+    locates originals
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: All 53 complete source XML objects were reopened. Direct slots were independently
+    serialized and matched to all 853 ledger entries. Biological comments, identities,
+    formal reaction membership, directions, six activities, enzyme/gene/component
+    references and exclusion boundaries were independently assessed, not inferred
+    from the author handoff.
+- evidence_id: chemistry
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-258/shikimate-ii/assembly/chemical-identity-and-reaction-audit.json
+  locator: 'Independent original-source replay: science/independent-replay/rhea-original-replay.json
+    and identity-quote-replay.json; Rhea 142 complete RDF plus ChEBI SQL'
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: Original Rhea RDF was reparsed independently of the author projection.
+    All molecular sides of RHEA:17742 and RHEA:24849 match the graph with unit coefficients
+    and balanced atoms/charge. Seven native compounds match issuing ChEBI InChI, InChIKey
+    and CML charge. Generic NAD(P) RXN-11174 was correctly excluded.
+- evidence_id: growth-regulation
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2687277/
+  locator: PMID19376919 complete preserved HTML; Methods strain/plasmids, Results
+    and Figures 1,2,4,5 independently inspected
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: Strain R is explicit. qsuD disruption suppresses shikimate growth, complementation
+    restores it, and qsuR perturbation controls qsuA/qsuB/qsuD transcript levels.
+    The measured targets are genes. QsuA transport and R QsuB catalysis were only
+    inferred in this paper.
+  snapshot_sha256: 99a56b043c25416f9b6d31ca3410c32c8dd75d1441997c49ba9fbb050958d2b6
+- evidence_id: qsur
+  kind: primary_source
+  reference: https://doi.org/10.1111/mmi.12560
+  locator: PMID24674055 preserved primary Methods/Results/Discussion web transcripts,
+    DNase footprint and reporter sections
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: Chorismate-dependent footprint shortening and genetic experiments support
+    a direct QsuR effector. N-terminal His6-QsuR/pCRF206/pColdI in E. coli BL21 is
+    explicit. qsuA promoter binding is distinct from activating a protein enzyme.
+    The draft retains the tested construct and does not claim shikimate or quinate
+    as direct ligands.
+  snapshot_sha256: fe060a764fbc3f9398ba5cd9f10a2da198cb98d258f74f0d10d7516081abda4a
+- evidence_id: qsud
+  kind: primary_source
+  reference: https://doi.org/10.1515/hsz-2013-0170
+  locator: PMID23929881 complete preserved primary Methods/Results/Discussion transcripts;
+    Methods lines1492-1531 and Results lines568-630
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: ATCC13032 cgl0424 cloned into pNHIS and expressed in BL21 supports NAD-linked
+    shikimate oxidation. AcTEV tag cleavage was checked by mass spectrometry, but
+    per-assay cleavage state is not resolved. The 2013 NADP nondetection is condition-specific
+    and is preserved as differing from the older native residual-activity annotation.
+    No disputed numerical Table1 value is promoted.
+  snapshot_sha256: d538863ebe6bc23faea944c81201c4d9b3234954e96923bd3661aa57bf50d522
+- evidence_id: kubota
+  kind: primary_source
+  reference: https://doi.org/10.1007/s00253-012-4659-y
+  locator: PMID23306642 primary abstract and complete six-page supplementary PDF;
+    FigS1b caption/page S2 and plot/page S4 independently viewed
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: The inspected supplementary shikimate experiment supports the separate
+    R-strain qsuD disruption/complementation claim in 50mM shikimate BT medium. AroE
+    kinetics in later supplementary figures are not reassigned to QsuD.
+  snapshot_sha256: bb44900754ee429a3656d1c14f412f3ab4c04f2bb73f12c3ed18e7ca918a9898
+- evidence_id: qsub
+  kind: primary_source
+  reference: https://doi.org/10.1371/journal.pone.0231560
+  locator: PMID32822353 full XML Methods/Results/Discussion; Figures5-7; primer supplement
+    and product-HPLC supplement visually inspected
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: ATCC13869/2256 full-length QsuB catalyzes DHS-to-PCA. Co, Mg and Mn support
+    in vitro activity in the 10mM metal screen; high substrate and product inhibit
+    the full-length preparation. P3/P4 primer placement independently matched the
+    issuing 618-aa CDS and the reverse-complement P4 tail encodes six histidines.
+    R QsuB is not the assayed protein. Mixed product inhibition is retained without
+    conflicting numerical inhibitor ranges.
+  snapshot_sha256: e849838f31ba41586ccc3306f06f5041a5a01a5450e081c6a13a075e28ad9487
+- evidence_id: transport
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/25406451/
+  locator: Primary abstract independently opened live; preserved EuropePMC abstract
+    and full current UniProt A4QH18/A4QH19 objects
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: ShiA/cgR_2523 supports R-strain shikimate uptake and growth and is distinct
+    from qsuA/cgR_0492. ShiR/cgR_2524 controls shiA transcription. The abstract does
+    not establish direct shikimate ligand binding or proton stoichiometry. Separate
+    UniProt membrane annotation and its experimental/inferred evidence codes were
+    verified.
+  snapshot_sha256: 4f36d715ac59d260bb12443da2c43dfdb3fb9bd1c048b53747780c643e01b4ab
+- evidence_id: downstream
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-258/shikimate-ii/assembly/downstream-go-identity.json
+  locator: Original GO SQL stanza GO:0019618 reopened; definition, exact synonym,
+    MetaCyc xref and input/output restrictions; complete native PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY
+    XML
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: GO:0019618 exactly denotes protocatechuate to beta-ketoadipate via ortho
+    cleavage. The native downstream object contains four formal reactions terminating
+    in 3-KETO-ADIPATE. The source therefore supports a pathway interface rather than
+    another formal shikimate-II reaction.
+- evidence_id: identity
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-258/shikimate-ii/native/original-bindings.json
+  locator: Issuing NCBI BAF53458.1/BAF53460.1/ANU32720.1 and four KEGG R CDS objects;
+    current UniProt; RCSB 2NLO entity1
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: Four R gene CDS translations independently equal exact NCBI sequences;
+    the QsuD, ShiA and ShiR sequences also equal issuing UniProt proteins. Bacterial
+    GTG initiator methionine was handled explicitly. Q9X5C9 is ATCC13032 and 2NLO
+    has the exact 19-residue extension plus the complete 283-aa native sequence. QsuR
+    and R QsuB loci/strain are explicit. ANU32720.1 is ATCC13869.
+- evidence_id: integrity
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-258/shikimate-ii/primary/author/package/original-bindings.json
+  locator: 351 bound-original entries (267 native plus84 primary) independently rehashed
+    and copied; 23 edge/qualifier quote occurrences replayed
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: supports
+  summary: 'All 351 source-binding entries match byte length and SHA256. All 23 quotation
+    occurrences match inspected source text after only markup/line-label/whitespace
+    normalization. Per-paper total words, counting repeated qualifier quotes: 23929881=9;19376919=18;23306642=6;24674055=13;32822353=21;25406451=17.'
+- evidence_id: render-effect
+  kind: validation
+  reference: src/pathwaymech/kgx.py and src/pathwaymech/graph_view.py
+  locator: kgx_nodes([validated_record]) and _declared_nodes(record,{}) for GO:0019618;
+    science/independent-replay/downstream-representation-replay.json
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: refutes
+  summary: Actual initial record-local replay yields KGX biolink:BiologicalProcess
+    and renderer kind reaction/type biological process, demonstrating loss of the
+    identified pathway category. This statement is scoped to single-record output,
+    not merged-corpus precedence.
+- evidence_id: imodulon
+  kind: database
+  reference: https://raw.githubusercontent.com/SBRG/modulytics/master/index.html
+  locator: Complete 575-line official provider index, inspected2026-10-14T20:24:05Z;
+    comments excluded from active-link enumeration
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: context_only
+  summary: The inspected official index has 16 active dataset links across11 organisms
+    and does not name C. glutamicum R, ATCC13032 or ATCC13869. Live imodulondb.org
+    returned no web-tool text. Installed CLI not found on current PATH; broader ignored-inclusive
+    runner search was incomplete due unrelated permission denied directories. This
+    is bounded applicability, not biological negative evidence.
+  snapshot_sha256: 9ac716304de10ab9ca7ec927a003f47d5c1b2a47e60b3ae7f7d07b9c3b35c2e5
+- evidence_id: biosensor-boundary
+  kind: primary_source
+  reference: https://doi.org/10.1093/jimb/kuae024
+  locator: Complete preserved Biosensor2024.xml; ATCC13032 Methods/Results/Discussion
+    on response to extracellular shikimate
+  accessed_at: '2026-10-14T20:38:09Z'
+  support: context_only
+  summary: ATCC13032 biosensor nonresponse to extracellular shikimate does not negate
+    purified QsuD catalysis. It supports retaining the distinction between R-strain
+    uptake/whole-route growth and ATCC enzyme evidence; no negative mechanism edge
+    is justified.
+- evidence_id: initial-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/receipts.json
+  locator: All six effective commands; lossless log wrappers; retention.json; final-input-preservation.json;
+    tested-core-input-hashes.json; science/initial/gate-provenance-verification.json
+  accessed_at: '2026-10-14T20:57:46Z'
+  support: supports
+  snapshot_sha256: 258c0c52ce96a287f08a7e2d8f9e2d806e9c45ffaa90613639b82ac768caa081
+  summary: All six effective commands exit0. The independent reviewer rehashed16 retained
+    gate artifacts against originals, recovered all7 log wrappers including the historical
+    failure, rehashed all1247 tested core files and all53 shared-inspect inputs, and
+    confirmed exact initial YAML preservation.
+- evidence_id: initial-gates-failure
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-258/shikimate-ii/validation/initial/failed-attempts.json
+  locator: initial-attempt-receipts.json; just-vendored-check.log.json; resume_after_fetch_failure.py.txt;
+    successful network-retry log and effective receipts
+  accessed_at: '2026-10-14T20:57:46Z'
+  support: context_only
+  snapshot_sha256: 26304443888d32c44bcb133f01b76d29455a78614ef4107259b33e1fc5a94fee
+  summary: The initial vendored-check attempt failed to resolve the public canonical
+    artifact host. The historical receipt/log remain unchanged. The root retried only
+    that command with network access and ran the remaining whitespace gate, with all
+    core inputs unchanged. This was a completed successful retry, not a waiver or
+    evidence of a vendored mismatch.
+assessments:
+- assessment_id: route
+  area: identity
+  topic: Exact two-step NAD-dependent shikimate-II route
+  outcome: supported
+  summary: The maintained pathway identity, two formal reactions, selected catabolic
+    orientation and downstream interface chemistry are supported. DHQ/QsuC is bypassed;
+    PQQ shikimate-I, quinate-II, petrobactin and unrelated fungal/shared-terminal-activity
+    taxa are correctly excluded.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - native
+  - chemistry
+  - downstream
+- assessment_id: chemicals
+  area: grounding
+  topic: Complete molecular sides and canonical charge
+  outcome: supported
+  summary: All seven core molecular identities and both complete reaction equations
+    were independently checked against actual issuing sources; no chemical identity,
+    charge, coefficient or direction mismatch was found.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - chemistry
+- assessment_id: strains
+  area: scope
+  topic: R versus ATCC13032 versus ATCC13869
+  outcome: supported
+  summary: The draft avoids transfer of purified enzyme assays to strain R and avoids
+    whole-route growth assertions for enzyme-only strains. Two native whole-pathway
+    organism associations remain source-scoped. The old fungal qutB and wrong-strain
+    qsuD narrative pointers are explicitly rejected.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - identity
+  - native
+  - growth-regulation
+  - biosensor-boundary
+- assessment_id: constructs
+  area: evidence
+  topic: Experimental proteins and regulatory gene endpoints
+  outcome: supported
+  summary: QsuD, QsuR and full-length QsuB assays retain construct qualifications
+    on the correct endpoint. QsuR and ShiR regulate gene endpoints. ShiA uptake is
+    distinct from inferred QsuA transport; no direct substrate-ligand or H+ stoichiometry
+    inference is promoted.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - qsud
+  - qsur
+  - qsub
+  - transport
+  - identity
+  - kubota
+- assessment_id: native-coverage
+  area: completeness
+  topic: Native object, slot and narrative closure
+  outcome: supported
+  summary: All53 frozen native objects and853 direct slots replay. All six attached
+    formal-reaction enzyme activities and the27 pathway/included-enzyme narrative
+    claims plus8 transport annotations have defensible route-specific dispositions.
+    Completeness is bounded to this frozen source corpus.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - native
+  - growth-regulation
+  - transport
+- assessment_id: evidence-fidelity
+  area: provenance
+  topic: Source identity, quotation fidelity and quote budget
+  outcome: supported
+  summary: All351 original-binding entries match;23 quotations replay and every primary
+    source stays within25 quoted words including repetitions. Database statements
+    remain structured assertions and are not relabelled as paper quotations.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - integrity
+- assessment_id: downstream-category
+  area: representation
+  topic: Identified pathway rendered as generic process
+  outcome: concern
+  summary: The exact downstream pathway is scientifically grounded, but category biological_process
+    violates the required pathway-interface representation and changes record-local
+    rendering/export.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - record
+  - local-rule
+  - downstream
+  - render-effect
+- assessment_id: imodulon-applicability
+  area: evidence
+  topic: Structured expression-context applicability
+  outcome: not_applicable
+  summary: The bounded official dataset index names no covered Corynebacterium strain.
+    Expression-module context is therefore not added; no biological absence conclusion
+    follows.
+  target_ids:
+  - MetaCyc:PWY-6419
+  evidence_ids:
+  - imodulon
+findings:
+- finding_id: F1
+  issue_key: shikimate-ii-downstream-pathway-category
+  category: representation
+  severity: major
+  status: open
+  certainty: confirmed
+  title: Declare the identified ortho-cleavage interface as a pathway
+  description: GO:0019618 is independently established as the exact protocatechuate-to-beta-ketoadipate
+    ortho-cleavage pathway, but reactions declares category biological_process. docs/CAUSAL_GRAPHS.md
+    explicitly requires category pathway for an identified downstream pathway interface.
+    Actual record-local replay returns biolink:BiologicalProcess and graph kind reaction
+    rather than pathway. The route boundary and provides_input_for edge are supported;
+    only the node category requires correction.
+  target_ids:
+  - MetaCyc:PWY-6419
+  field_paths:
+  - reactions[id=GO:0019618].category
+  - mechanistic_edges[id=shikimate-ii-018]
+  evidence_ids:
+  - record
+  - local-rule
+  - downstream
+  - render-effect
+  rule_id: 'docs/CAUSAL_GRAPHS.md: identified child and downstream pathway interfaces'
+  native_severity: major
+  normalization_reason: Missing required pathway representation materially changes
+    the node type exposed by the graph and single-record export, while exact pathway
+    identity and chemistry remain sound.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/shikimate-degradation-ii.yaml
+    role: maintained scientific pathway record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/549
+actions:
+- action_id: A1
+  description: Change only GO:0019618 category to pathway, keep its exact identity
+    and supplies-input interface, then regenerate the page and verify pathway node
+    typing in graph and KGX output.
+  finding_ids:
+  - F1
+  target_ids:
+  - MetaCyc:PWY-6419
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/shikimate-degradation-ii.yaml
+    role: maintained scientific pathway record
+  acceptance_checks:
+  - Maintained reactions[id=GO:0019618].category equals pathway.
+  - Record-local graph kind is pathway and single-record KGX node category is biolink:Pathway;
+    edge shikimate-ii-018 remains provides_input_for.
+  - Only RHEA:17742 and RHEA:24849 remain formal members of MetaCyc:PWY-6419.
+  - Run documented render-pages/validate/test/lint and git diff --check; preserve
+    unchanged chemical and primary evidence assertions.
+  generator: just render-pages
+limitations:
+- The main text of PMID23306642 and PMID25406451 was unavailable; their accepted claims
+  remain within inspected primary abstracts and, for Kubota2013, the complete inspected
+  supplement.
+- PMID23929881 was inspected through preserved full primary web transcripts; original
+  PDF/visual Table1 was unavailable, so numerical Table1 kinetics and per-assay tag
+  cleavage state are not certified.
+- Native 2008 QsuD annotations remain structured database evidence; the 2NLO sequence
+  establishes its structural sample extension, not every kinetic-preparation cleavage
+  state.
+- The QsuB primer/issuing-CDS reconstruction establishes C-terminal His6 placement
+  but no separately deposited complete assay-clone sequence was inspected.
+- Native coverage is complete for the53 frozen complete objects/853 direct slots and
+  specified narrative ledger, not all external sources.
+notes:
+- Source package snapshots were preserved under /private/tmp/pathwaymech-next-258-science/initial;
+  all351 bound-original entries were rehashed and copied before scientific assessment.
+- The reviewer used the PDF skill read-only to inspect supplied supplement page renderings.
+  No author input, maintained record, GitHub issue or publication was changed by this
+  reviewer.
+- A separate implementation/integration reviewer handles two reference-presentation
+  findings in https://github.com/CultureBotAI/PathwayMech/issues/550; they are not
+  additional independent scientific findings in this review.
+- The historical DNS failure is explicit in the checks and evidence. Effective gate
+  success includes the actual successful same-command retry; all original failure
+  evidence remains retained.
+```

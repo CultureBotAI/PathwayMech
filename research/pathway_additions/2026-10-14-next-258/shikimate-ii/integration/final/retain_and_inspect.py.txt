@@ -1,0 +1,26 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess,yaml
+R=Path('/private/tmp/pathwaymech-next-258-20261014');O=Path(__file__).parent
+D=R/'research/pathway_additions/2026-10-14-next-258/shikimate-ii/integration/final';D.mkdir(exist_ok=False)
+files=['initial-record.yaml','initial-record-binding.json','audit_final.py','audit.json','check_graph_exports.py','graph-export-results.json','attempt-manifest-shape/audit_final.py.txt','attempt-manifest-shape/failure.json','retain_and_inspect.py']
+rows=[]
+for name in files:
+ p=O/name;raw=p.read_bytes();targetname=name+('.txt' if p.suffix in ['.py','.yaml'] else '');q=D/targetname;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(raw)
+ rows.append(dict(original_path=str(p),retained_path=str(q.relative_to(R)),encoding='identity',bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest()))
+retention=dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),scope='Independent integration successor checkpoint before final gates; all mappings are exact bytes and earlier failed reviewer helper remains explicit.',files=rows)
+(D/'retention.json').write_text(json.dumps(retention,indent=2)+'\n')
+prior=yaml.safe_load((R/'reviews/structured/20261014T205748Z-shikimate-ii-integration-initial/review.yaml').read_text())
+inputs=[x['path'] for x in prior['source']['inputs']]
+for root in [D,D.parent.parent/'corrections',D.parent.parent/'science/final']:
+ inputs += [str(p.relative_to(R)) for p in sorted(root.rglob('*')) if p.is_file()]
+inputs+=['reviews/structured/20261014T205748Z-shikimate-ii-integration-initial/review.yaml','reviews/structured/20261014T205748Z-shikimate-ii-integration-initial/review.md','history/records/shikimate-degradation-ii/2026-10-14T210258Z-codex-44bba7.yaml']
+inputs=list(dict.fromkeys(inputs));(O/'review-input-paths.json').write_text(json.dumps(inputs,indent=2)+'\n')
+cmd=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','inspect','--targets',str(O.parent/'targets.yaml')]
+for name in inputs:cmd+=['--input',name]
+started=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(cmd,cwd=R,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+(O/'inspect.json').write_text(r.stdout);(O/'inspect-command.json').write_text(json.dumps(dict(started_utc=started,command=cmd,cwd=str(R),exit_code=r.returncode,stderr=r.stderr),indent=2)+'\n');assert r.returncode==0,r.stderr
+extra=[]
+for name in ['inspect.json','inspect-command.json']:
+ p=O/name;raw=p.read_bytes();q=D/name;q.write_bytes(raw);extra.append(dict(original_path=str(p),retained_path=str(q.relative_to(R)),encoding='identity',bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest()))
+(D/'inspection-retention.json').write_text(json.dumps(dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),files=extra),indent=2)+'\n')
+print(json.dumps(dict(retained_artifacts=len(rows),inspected_inputs=len(json.loads(r.stdout)['source']['inputs']),inspection_artifacts=len(extra)),indent=2))

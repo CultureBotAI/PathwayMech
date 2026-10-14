@@ -1,0 +1,22 @@
+from acquire import *
+import urllib.parse
+QUERIES={
+ 'ncrassa-qa':'(organism_id:5141) AND (gene:qa*)',
+ 'anidulans-qut':'(organism_id:162425) AND (gene:qut*)',
+ 'cglutamicum-qsu':'(organism_id:1718) AND (gene:qsu*)',
+}
+def request(name,url):
+ p=ORIG/(name+'.json');row={'name':name,'url':url,'retrieved_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech/1.0'}),timeout=60) as r:
+   b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+  json.loads(b);p.write_bytes(b);row.update(path=str(p),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b))
+ except Exception as e:row['error']=str(e)
+ return row
+if __name__=='__main__':
+ ids=['Q9X5C9','P25415','P07046','P46380','A4QB63','A4QB64']
+ items=[('UniProt-'+a,'https://rest.uniprot.org/uniprotkb/'+a+'.json') for a in ids]
+ items += [('UniProt-search-'+n,'https://rest.uniprot.org/uniprotkb/search?'+urllib.parse.urlencode({'query':q,'format':'json','size':500})) for n,q in QUERIES.items()]
+ with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:rows=list(ex.map(lambda a:request(*a),items))
+ (ROOT/'acquisition-identities.json').write_text(json.dumps(rows,indent=2)+'\n')
+ for r in rows: print(r['name'],r.get('bytes',r.get('error')))

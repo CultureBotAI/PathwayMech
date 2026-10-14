@@ -1,0 +1,63 @@
+from pathlib import Path
+import base64,datetime,hashlib,json,re,subprocess
+R=Path('/private/tmp/pathwaymech-next-258-20261014');O=Path(__file__).parent
+P=R/'research/pathway_additions/2026-10-14-next-258/shikimate-ii';G=P/'validation/final';A=P/'integration/final/acceptance'
+assert not A.exists();A.mkdir()
+bindings={}
+def sha(raw):return hashlib.sha256(raw).hexdigest()
+def raw(p):
+ p=Path(p);b=p.read_bytes();bindings[str(p)]={'sha256':sha(b),'bytes':len(b)};return b
+def obj(p):return json.loads(raw(p))
+retention=obj(G/'retention.json')
+for row in retention['files']:
+ a=raw(row['original_path']);b=raw(R/row['repository_path']);assert a==b and sha(b)==row['sha256'] and len(b)==row['bytes']
+receipts=obj(G/'receipts.json');expected=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check']]
+assert [x['command'] for x in receipts]==expected
+logs=[]
+for row in receipts:
+ assert row['exit_code']==0 and row['cwd']==str(R)
+ w=obj(G/(Path(row['log_path']).name+'.json'));b=w['text'].encode('utf-8') if w['encoding']=='utf-8' else base64.b64decode(w['data'],validate=True)
+ assert b==raw(row['log_path']) and sha(b)==w['sha256']==row['log_sha256'] and len(b)==w['bytes']
+ text=b.decode('utf-8');summary=[s.strip() for s in text.splitlines() if re.search(r'\b\d+ passed\b|All checks passed|validated|record\(s\).*valid|governed artifacts match',s)]
+ logs.append(dict(command=row['command'],exit_code=0,elapsed_seconds=row['elapsed_seconds'],bytes=len(b),log_sha256=sha(b),summary='; '.join(summary[-6:]) or 'Exact original log and retained wrapper agree; exit code 0.'))
+assert '5118 passed, 3 skipped, 7 warnings in 861.89s' in raw(receipts[2]['log_path']).decode()
+assert '22 governed artifacts match the pinned claw revision' in raw(receipts[4]['log_path']).decode()
+assert raw(receipts[5]['log_path'])==b''
+core=obj(G/'tested-core-input-hashes.json');preserved=obj(G/'final-input-preservation.json');assert len(core)==preserved['tested_core_files']==1248 and preserved['changed_after_checks']==[]
+for path,digest in core.items():assert sha(raw(R/path))==digest,path
+assert sha(raw(R/'data/pathways/shikimate-degradation-ii.yaml'))==preserved['final_record_sha256']=='a0f96cded480818165c794e5e954e96b2fa7f11e46910ad6574b6233480d13c1'
+inspection=obj(O/'inspect.json')
+for row in inspection['source']['inputs']:assert sha(raw(R/row['path']))==row['sha256'],row['path']
+# Verify the supplemental science acceptance package as provenance only.
+S=P/'science/final/acceptance';sm=obj(S/'artifact-manifest.json')
+for row in sm['files']:
+ b=raw(R/row['path']);assert sha(b)==row['sha256'] and len(b)==row['bytes']
+assert raw(S/'accept_final_gates.py.txt')==raw('/private/tmp/pathwaymech-next-258-science/accept_final_gates.py')
+si=obj(S/'inspect.json')
+for row in si['source']['inputs']:assert sha(raw(R/row['path']))==row['sha256'],row['path']
+science_files=sorted(str(p.relative_to(R)) for p in S.rglob('*') if p.is_file())
+assert {Path(x).name for x in science_files}=={'artifact-manifest.json','partial-review-checkpoint.yaml.txt','inspect.json','verification.json','inspect-command.json','accept_final_gates.py.txt'}
+for p in science_files:raw(R/p)
+sv=obj(S/'verification.json');assert sv['canonical_receipts_sha256']==sha(raw(G/'receipts.json')) and sv['tested_core_files_rehashed']==1248 and sv['core_and_scoped_audit_inputs_unchanged']
+# Verify earlier retention records and initial failures remain immutable.
+for manifest in [P/'integration/final/retention.json',P/'integration/final/inspection-retention.json']:
+ for row in obj(manifest)['files']:
+  a=raw(row['original_path']);b=raw(R/row['retained_path']);assert a==b and sha(b)==row['sha256'] and len(b)==row['bytes']
+result=dict(verified_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),scope='Root executed all six final gates. This reviewer independently verifies exact raw/retained logs, input preservation and supplemental science artifact integrity. No tests/builders are rerun; no scientific interpretation is reassessed.',retained_gate_artifacts=len(retention['files']),lossless_log_count=len(logs),tested_core_files_verified=len(core),prior_successor_inputs_unchanged=len(inspection['source']['inputs']),science_acceptance_manifest_files=len(sm['files']),science_acceptance_inspected_inputs_verified=len(si['source']['inputs']),science_acceptance_inventory_includes_hidden_ignored=True,science_acceptance_files=science_files,final_record_sha256=preserved['final_record_sha256'],gates=logs,input_bindings=bindings,issues=[])
+(O/'gate-acceptance.json').write_text(json.dumps(result,indent=2)+'\n')
+rows=[]
+for name in ['accept_final_gates.py','gate-acceptance.json','final-review-partial.yaml']:
+ p=O/name;b=raw(p);q=A/(name+'.txt' if p.suffix in ['.py','.yaml'] else name);q.write_bytes(b);rows.append(dict(original_path=str(p),retained_path=str(q.relative_to(R)),encoding='identity',sha256=sha(b),bytes=len(b)))
+(A/'retention.json').write_text(json.dumps(dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),files=rows),indent=2)+'\n')
+inputs=[x['path'] for x in inspection['source']['inputs']]
+for directory in [P/'integration/final',G,S]:inputs += [str(p.relative_to(R)) for p in sorted(directory.rglob('*')) if p.is_file()]
+inputs=list(dict.fromkeys(inputs));(O/'accepted-review-input-paths.json').write_text(json.dumps(inputs,indent=2)+'\n')
+command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','inspect','--targets',str(O.parent/'targets.yaml')]
+for path in inputs:command+=['--input',path]
+started=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(command,cwd=R,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+(O/'accepted-inspect.json').write_text(r.stdout);(O/'accepted-inspect-command.json').write_text(json.dumps(dict(started_utc=started,command=command,cwd=str(R),exit_code=r.returncode,stderr=r.stderr),indent=2)+'\n');assert r.returncode==0,r.stderr
+extra=[]
+for name in ['accepted-inspect.json','accepted-inspect-command.json']:
+ p=O/name;b=p.read_bytes();q=A/name;q.write_bytes(b);extra.append(dict(original_path=str(p),retained_path=str(q.relative_to(R)),encoding='identity',sha256=sha(b),bytes=len(b)))
+(A/'inspection-retention.json').write_text(json.dumps(dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),files=extra),indent=2)+'\n')
+print(json.dumps({k:v for k,v in result.items() if k not in ['input_bindings','science_acceptance_files']},indent=2))

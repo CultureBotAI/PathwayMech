@@ -1,0 +1,128 @@
+"""Assemble the source-bounded shikimate II core; no maintained writes."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import sqlite3
+import xml.etree.ElementTree as ET
+
+B = Path(__file__).parent
+N = Path('/private/tmp/pathwaymech-next-258-native')
+P = Path('/private/tmp/pathwaymech-next-257-preflight/originals/META-PWY-6419.xml')
+audit = json.loads((B / 'chemical-identity-and-reaction-audit.json').read_text())
+pid = 'MetaCyc:PWY-6419'
+record = dict(
+    id=pid, label='shikimate degradation II',
+    description=('The MetaCyc shikimate degradation II pathway oxidizes shikimate with NAD+ '
+                 'to 3-dehydroshikimate and dehydrates it to protocatechuate in two reactions. '
+                 'This route is distinct from PQQ-dependent shikimate degradation I and '
+                 'the three-step quinate degradation II route. Strain R growth, uptake and '
+                 'gene-expression evidence is distinguished from ATCC 13032 QsuD and '
+                 'ATCC 13869 QsuB enzyme assays. Native database taxon associations do not '
+                 'establish shikimate uptake or growth in every strain.'),
+    pathway_type='aromatic-compound-catabolism', taxa=[], participants=[], reactions=[],
+    mechanistic_edges=[], references=[])
+
+
+def label(database, identifier):
+    with sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/' + database + '.db?mode=ro', uri=True) as db:
+        rows = db.execute("select value from statements where subject=? and predicate='rdfs:label'", (identifier,)).fetchall()
+        assert len(rows) == 1, (identifier, rows)
+        return rows[0][0]
+
+
+def ref(identifier, path, title=None, url=None, version='MetaCyc 27.0'):
+    item = dict(id=identifier, title=title or 'MetaCyc native object ' + identifier.split(':', 1)[1],
+                url=url or 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:' + identifier.split(':', 1)[1],
+                source_version=version, source_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    previous = next((r for r in record['references'] if r['id'] == identifier), None)
+    if previous is None:
+        record['references'].append(item)
+    else:
+        assert previous == item
+
+
+def evidence(identifier, assertion, locator):
+    assert len(assertion) <= 400
+    return dict(reference_id=identifier, source_assertion=assertion, source_locator=locator)
+
+
+def edge(subject, predicate, obj, description, items):
+    record['mechanistic_edges'].append(dict(id='pending', subject=subject, predicate=predicate,
+        object=obj, description=description, evidence=items))
+
+
+assert hashlib.sha256(P.read_bytes()).hexdigest() == '671e3c5409aebd47324304d3f72e80ede9f764729a5147e48910d7121dbdd027'
+pathway = ET.parse(P).getroot().find('Pathway')
+assert pathway is not None and pathway.get('frameid') == 'PWY-6419'
+ref(pid, P)
+taxa = [o.get('frameid').removeprefix('TAX-') for o in pathway.findall('species/Organism')]
+assert set(taxa) == {'1718', '340322'}
+for number in taxa:
+    identifier = 'NCBITaxon:' + number
+    record['taxa'].append(dict(id=identifier, label=label('ncbitaxon', identifier)))
+    edge(pid, 'part_of', identifier,
+         'Native database organism context. Strain R physiological evidence and other strain-specific enzyme assays remain separately scoped.',
+         [evidence(pid, 'The native species slot lists TAX-' + number + '. This organism association does not assert growth on shikimate in every strain.',
+                   '/ptools-xml/Pathway[@frameid="PWY-6419"]/species/Organism[@frameid="TAX-' + number + '"]')])
+
+mapping = {row['native_id'].split(':', 1)[1]: row for row in audit['concrete_mappings']}
+for frame in ['SHIKIMATE', '3-DEHYDRO-SHIKIMATE', '3-4-DIHYDROXYBENZOATE', 'WATER', 'PROTON', 'NAD', 'NADH']:
+    row = mapping[frame]
+    record['participants'].append(dict(id=row['selected_id'], label=row['pinned']['rdfs:label'], category='small_molecule'))
+    ref(row['native_id'], Path(row['native_source']['path']))
+
+rxmapping = {row['native_frame']: row['selected'] for row in audit['reactions']}
+assert {x.get('frameid') for x in pathway.findall('reaction-list/Reaction')} == set(rxmapping)
+for row in audit['reactions']:
+    frame = row['native_frame']
+    identifier = row['selected']
+    native_id = 'MetaCyc:' + frame
+    ref(native_id, Path(row['native_source']['path']))
+    ref(identifier, Path(audit['rhea_original']['path']), 'Rhea equation ' + identifier,
+        'https://www.rhea-db.org/rhea/' + identifier.split(':')[1], 'Rhea 142 RDF; canonical label from pinned Rhea 139')
+    record['reactions'].append(dict(id=identifier, label=label('rhea', identifier), category='molecular_activity', direction='left_to_right'))
+    edge(identifier, 'part_of', pid, 'One of the two formal pathway reactions; the complete molecular equation agrees with the selected Rhea direction.',
+         [evidence(pid, 'The native reaction-list includes ' + frame + ' and its pathway layout is L2R.',
+                   '/ptools-xml/Pathway[@frameid="PWY-6419"]/reaction-list; /reaction-layout[Reaction/@frameid="' + frame + '"]'),
+          evidence(native_id, 'The native reaction direction is ' + row['native_direction'] + '.',
+                   '/ptools-xml/Reaction[@frameid="' + frame + '"]/reaction-direction')])
+    for side, predicate in [('left', 'consumes'), ('right', 'produces')]:
+        for compound in row['native_sides'][side]:
+            source_frame = compound['frame']
+            molecule = mapping[source_frame]
+            chemical = molecule['selected_id']
+            rhea = next(x for x in row[side] if x['id'] == chemical)
+            assert compound['interpreted_coefficient'] == rhea['coefficient'] == 1
+            items = [
+                evidence(native_id, 'The native ' + side + ' side contains ' + source_frame + '; no explicit coefficient is supplied.',
+                         '/ptools-xml/Reaction[@frameid="' + frame + '"]/' + side + '/Compound[@frameid="' + source_frame + '"]'),
+                evidence('MetaCyc:' + source_frame, 'The native compound links ' + chemical + '; its complete InChI, InChIKey and charge agree with the selected ChEBI identity.',
+                         '/ptools-xml/Compound[@frameid="' + source_frame + '"]/dblink[dblink-db="CHEBI"]; /inchi; /inchi-key'),
+                evidence(identifier, identifier + ' ' + side + ' side contains ' + chemical + ' with coefficient 1.', '; '.join(rhea['locator']))]
+            edge(chemical if predicate == 'consumes' else identifier, predicate,
+                 identifier if predicate == 'consumes' else chemical,
+                 'Selected catabolic orientation; complete reaction sides and atom/charge balance were compared.', items)
+
+orders = []
+for ordering in pathway.findall('reaction-ordering'):
+    successor = ordering.find('Reaction').get('frameid')
+    for predecessor in ordering.findall('predecessor-reactions/Reaction'):
+        previous = predecessor.get('frameid')
+        orders.append([previous, successor])
+        edge(rxmapping[previous], 'precedes', rxmapping[successor], 'Native ordering connects oxidation to the terminal dehydration.',
+             [evidence(pid, previous + ' is a predecessor of ' + successor + '.',
+                       '/ptools-xml/Pathway[@frameid="PWY-6419"]/reaction-ordering[Reaction/@frameid="' + successor + '"]/predecessor-reactions')])
+assert orders == [['RXN-20484', 'DHSHIKIMATE-DEHYDRO-RXN']]
+for index, item in enumerate(record['mechanistic_edges'], 1):
+    item['id'] = 'shikimate-ii-' + str(index).zfill(3)
+(B / 'core-record.json').write_text(json.dumps(record, indent=2) + '\n')
+(B / 'core-coverage.json').write_text(json.dumps(dict(
+    observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), scope='Author assembly; not independent review.',
+    native_members=list(rxmapping), selected_reactions=list(rxmapping.values()), native_predecessors=orders,
+    all_native_sides_retained=True, selected_species=[n['id'] for n in record['taxa']],
+    boundaries=['PQQ route is distinct.', 'Quinate oxidation and DHQ dehydration are outside this two-step route.',
+                'Broad taxonomic-range annotations are not universal organism occurrence claims.',
+                'RXN-11174 has broader NAD(P) classes and is not an exact replacement for the NAD-specific member.'],
+    record_sha256=hashlib.sha256((B / 'core-record.json').read_bytes()).hexdigest()), indent=2) + '\n')
+print(json.dumps({'core_edges': len(record['mechanistic_edges']), 'reactions': len(record['reactions'])}))

@@ -1,0 +1,15 @@
+from pathlib import Path
+import datetime,hashlib,json
+B=Path(__file__).parent
+sources=[]
+for p in [Path('/private/tmp/pathwaymech-next-258-native/originals')/n for n in ['KEGG-cgt-cgR_0492.txt','KEGG-cgt-cgR_0495.txt','KEGG-cgt-cgR_2523.txt','UniProt-A4QH18.json','UniProt-A4QH19.json','META-PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY.xml']]+[Path('/private/tmp/pathwaymech-next-258-primary/author/package/record-references.json'),Path('/private/tmp/pathwaymech-next-258-preflight/fresh/HANDOFF.md')]:
+ b=p.read_bytes();sources.append(dict(path=str(p),bytes=len(b),sha256=hashlib.sha256(b).hexdigest()))
+(B/'pattern-source-bindings.json').write_text(json.dumps(sources,indent=2)+'\n')
+assert len(json.loads((B/'file-dispositions.json').read_text()))==155
+assert json.loads((B/'baseline-membership-audit.json').read_text())['count']==254
+files=[]
+for p in sorted(B.iterdir()):
+ if not p.is_file()or p.name=='artifact-manifest.json':continue
+ b=p.read_bytes();files.append(dict(file=p.name,bytes=len(b),sha256=hashlib.sha256(b).hexdigest(),retain='external original match context'if p.name.endswith('jsonl')or p.name.endswith('matched-files.json')else'compact audit or reproduction helper'))
+(B/'artifact-manifest.json').write_text(json.dumps(dict(frozen_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),role='author supplemental prior-mention search',files=files,original_author_package_unchanged=True),indent=2)+'\n')
+print(json.dumps({'files':len(files),'bytes':sum(x['bytes']for x in files)}))

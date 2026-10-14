@@ -1,0 +1,50 @@
+from pathlib import Path
+from datetime import datetime,timezone
+from dataclasses import asdict
+from html.parser import HTMLParser
+import hashlib,json,copy,yaml,sys
+R=Path('/private/tmp/pathwaymech-next-258-20261014');B=Path('/private/tmp/pathwaymech-next-258-science');D=R/'research/pathway_additions/2026-10-14-next-258/shikimate-ii/science/final';D.mkdir(exist_ok=False);(B/'final').mkdir(exist_ok=True)
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.schema import validate_record
+from pathwaymech.kgx import kgx_nodes
+from pathwaymech.graph_view import _declared_nodes
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+initial_path=B/'initial/shikimate-degradation-ii.yaml';final_path=R/'data/pathways/shikimate-degradation-ii.yaml';initial=yaml.safe_load(initial_path.read_text());final=yaml.safe_load(final_path.read_text());expected='a0f96cded480818165c794e5e954e96b2fa7f11e46910ad6574b6233480d13c1';assert sha(final_path)==expected
+changes=[]
+def compare(a,b,p=''):
+ assert type(a)==type(b),(p,type(a),type(b))
+ if isinstance(a,dict):
+  assert list(a)==list(b),p
+  for k in a:compare(a[k],b[k],p+'.'+k if p else k)
+ elif isinstance(a,list):
+  assert len(a)==len(b),p
+  for i,(x,y) in enumerate(zip(a,b)):compare(x,y,p+f'[{i}]')
+ elif a!=b:changes.append(dict(path=p,before=a,after=b))
+compare(initial,final)
+allowed={'reactions[2].category',*[f'references[{i}].source_version' for i in [24,25,26,27,29,30]]};assert {x['path']for x in changes}==allowed and len(changes)==7
+assert final['reactions'][2]['category']=='pathway' and final['reactions'][2]['id']=='GO:0019618'
+assert initial['mechanistic_edges']==final['mechanistic_edges']
+assert all(a['source_sha256']==b['source_sha256'] and a['url']==b['url'] for a,b in zip(initial['references'],final['references']))
+old_audit=json.loads(initial['references'][30]['source_version']);readable=final['references'][30]['source_version'];expected_readable=f"Entry version {old_audit['entryVersion']}; sequence version {old_audit['sequenceVersion']}. First public date: {old_audit['firstPublicDate']}; last annotation update: {old_audit['lastAnnotationUpdateDate']}; last sequence update: {old_audit['lastSequenceUpdateDate']}.";assert readable==expected_readable
+assert 'Original article PDF and visual Table 1 unavailable.' in final['references'][27]['source_version'];assert 'primary abstract inspected' in final['references'][29]['source_version'] and 'returned HTTP 403' in final['references'][29]['source_version'];assert 'main article full text unavailable' in final['references'][28]['source_version']
+record=validate_record(final);kgx=asdict(next(x for x in kgx_nodes([record])if x.id=='GO:0019618'));node=_declared_nodes(record,{})['GO:0019618'];assert kgx['category']=='biolink:Pathway' and kgx['source_category']=='pathway';assert node['kind']==node['type_label']=='pathway'
+formal=[x['subject']for x in final['mechanistic_edges']if x['predicate']=='part_of' and x['object']=='MetaCyc:PWY-6419'];assert formal==['RHEA:17742','RHEA:24849']
+interface=next(x for x in final['mechanistic_edges']if x['id']=='shikimate-ii-018');assert(interface['subject'],interface['predicate'],interface['object'])==('RHEA:24849','provides_input_for','GO:0019618')
+class Parser(HTMLParser):
+ def __init__(self):super().__init__();self.nodes=[];self.edges=[]
+ def handle_starttag(self,tag,attrs):
+  a=dict(attrs)
+  if a.get('data-node-id')=='GO:0019618':self.nodes.append(a)
+  if a.get('data-object')=='GO:0019618':self.edges.append(a)
+page=R/'pages/records/MetaCyc_PWY-6419.html';html=page.read_text();parser=Parser();parser.feed(html);assert len(parser.nodes)==1 and parser.nodes[0]['data-kind']=='pathway';assert len(parser.edges)==1 and parser.edges[0]['data-predicate']=='provides_input_for';assert 'Entry version 99; sequence version 1.' in html and 'returned HTTP 403' in html;assert '2026-10-14T21:02:58Z' in html
+review_path=R/'reviews/structured/20261014T205746Z-shikimate-ii-initial-independent-scientific-review/review.yaml';review=yaml.safe_load(review_path.read_text());unchanged=[]
+for x in review['source']['inputs']:
+ if x['role']=='target':continue
+ assert sha(R/x['path'])==x['sha256'],x['path'];unchanged.append(x)
+render=json.loads(Path('/private/tmp/pathwaymech-next-258-checks-final/receipts.json').read_text())[0];assert render['command']==['just','render-pages'] and render['exit_code']==0;assert sha(Path(render['log_path']))==render['log_sha256']
+result=dict(observed_at=datetime.now(timezone.utc).isoformat(),initial_record_sha256=sha(initial_path),final_record_sha256=sha(final_path),saved_initial_review_sha256=sha(review_path),changed_scalar_count=7,changes=changes,all_other_structural_content_unchanged=True,all32_mechanistic_edges_and_qualifiers_unchanged=True,all31_source_hashes_and_urls_unchanged=True,uniprot_audit_values_preserved=old_audit,access_limits_preserved=True,prior_scientific_input_hashes_rechecked=len(unchanged),unchanged_prior_inputs=unchanged,formal_members=formal,interface=interface,single_record_kgx=kgx,record_local_graph=node,generated_page={'path':str(page.relative_to(R)),'sha256':sha(page),'node':parser.nodes[0],'interface_edge':parser.edges[0],'correction_history_present':True},actual_final_render_receipt=render,scope='Complete actual final YAML read and parsed; full structural comparison against exact independently reviewed initial snapshot. Unchanged original-source scientific evidence is reused by verified identity, not newly reread or claimed as exhaustive. Full final gate approval remains pending.')
+for base in [B/'final',D]:
+ (base/'audit.json').write_text(json.dumps(result,indent=2)+'\n');(base/'shikimate-degradation-ii.yaml.txt').write_bytes(final_path.read_bytes())
+(D/'replay_final.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'changed_fields':len(changes),'prior_inputs_rehashed':len(unchanged),'kgx':kgx['category'],'graph':node['kind'],'page_sha256':sha(page),'artifact':str(D/'audit.json')},indent=2))
