@@ -1,0 +1,113 @@
+from pathlib import Path
+from html.parser import HTMLParser
+import base64,datetime,hashlib,json,re,subprocess,yaml
+R=Path('/private/tmp/pathwaymech-next-258-20261014');O=Path(__file__).parent
+D=R/'research/pathway_additions/2026-10-14-next-258/shikimate-ii'
+BASE='495de27ec09f99367d1cdd5c457a5e54a93c9a0b'
+bindings={};checks=[]
+def sha(b):return hashlib.sha256(b).hexdigest()
+def raw(p):
+ p=Path(p);b=p.read_bytes();bindings[str(p)]={'sha256':sha(b),'bytes':len(b)};return b
+def obj(p):return json.loads(raw(p))
+def ck(ok,description):
+ checks.append({'description':description,'passed':bool(ok)})
+ assert ok,description
+def git(path):return subprocess.check_output(['git','show',BASE+':'+path],cwd=R)
+oldraw=raw(O/'initial-record.yaml');newraw=raw(R/'data/pathways/shikimate-degradation-ii.yaml')
+ck(sha(oldraw)=='3c3e9665a0c3cab33572fd12fc419bbbb46d0e8d3232da046e7aaaaf75290303','Exact independent initial YAML')
+ck(sha(newraw)=='a0f96cded480818165c794e5e954e96b2fa7f11e46910ad6574b6233480d13c1','Exact intended final YAML')
+old=yaml.safe_load(oldraw);new=yaml.safe_load(newraw);changes=[]
+def diff(a,b,path=''):
+ ck(type(a)==type(b),'same type '+path)
+ if isinstance(a,dict):
+  ck(list(a)==list(b),'same keys and order '+path)
+  for k in a:diff(a[k],b[k],path+'.'+k if path else k)
+ elif isinstance(a,list):
+  ck(len(a)==len(b),'same list length '+path)
+  for i,(x,y) in enumerate(zip(a,b)):diff(x,y,path+f'[{i}]')
+ elif a!=b:changes.append({'path':path,'before':a,'after':b})
+diff(old,new)
+expected={'reactions[2].category',*[f'references[{i}].source_version' for i in [24,25,26,27,29,30]]}
+ck(len(changes)==7 and {x['path'] for x in changes}==expected,'Exactly seven expected scalar changes')
+ck(old['mechanistic_edges']==new['mechanistic_edges'],'All mechanistic edges/evidence/qualifiers unchanged')
+ck(all(a['source_sha256']==b['source_sha256'] and a['url']==b['url'] for a,b in zip(old['references'],new['references'])),'All 31 source hashes and URLs unchanged')
+audit=json.loads(old['references'][30]['source_version'])
+readable=f"Entry version {audit['entryVersion']}; sequence version {audit['sequenceVersion']}. First public date: {audit['firstPublicDate']}; last annotation update: {audit['lastAnnotationUpdateDate']}; last sequence update: {audit['lastSequenceUpdateDate']}."
+ck(new['references'][30]['source_version']==readable,'All five original UniProt audit values preserved in readable wording')
+ck('Original article PDF and visual Table 1 unavailable.' in new['references'][27]['source_version'],'Original PDF/visual table limitation preserved')
+ck('primary abstract inspected' in new['references'][29]['source_version'] and 'returned HTTP 403' in new['references'][29]['source_version'],'Abstract-only access and HTTP 403 preserved')
+ck(old['references'][28]==new['references'][28],'Other main-article access limitation unchanged')
+class Text(HTMLParser):
+ def __init__(self):super().__init__();self.text=[]
+ def handle_data(self,data):self.text.append(data)
+html=raw(R/'pages/records/MetaCyc_PWY-6419.html').decode();rendered=[]
+for i in [24,25,26,27,29,30]:
+ match=re.search(r'<li id="reference-'+str(i+1)+r'">(.*?)</li>',html,re.S);ck(match is not None,'Reference anchor '+str(i+1))
+ p=Text();p.feed(match.group(1));text=''.join(p.text)
+ ck(new['references'][i]['source_version'] in text,'Rendered exact corrected reference '+str(i+1))
+ ck(not any(token in text for token in ['retrieved2026','Table1','returned403','"entryVersion"']),'Old display defect absent in inspected reference '+str(i+1))
+ rendered.append({'anchor':'reference-'+str(i+1),'reference_id':new['references'][i]['id'],'visible_text':text})
+prior=yaml.safe_load(raw(R/'reviews/structured/20261014T205748Z-shikimate-ii-integration-initial/review.yaml'))
+allow_changed={'data/pathways/shikimate-degradation-ii.yaml','pages/records/MetaCyc_PWY-6419.html','pages/downloads/nodes.tsv','pages/downloads/edges.tsv'}
+prior_unchanged=[]
+for item in prior['source']['inputs']:
+ if item['path'] in allow_changed:continue
+ ck(sha(raw(R/item['path']))==item['sha256'],'Prior inspected context unchanged '+item['path']);prior_unchanged.append(item)
+baseline=json.loads(git('conf/identifier_sources.json'));current=obj(R/'conf/identifier_sources.json')
+ck(current['sources'][:len(baseline['sources'])]==baseline['sources'],'1041-entry manifest prefix preserved')
+ck(len(baseline['sources'])==1041 and len(current['sources'])==1047,'Exactly six source entries added')
+all_added=[];authority_counts={}
+for name in ['sources','ontology']:
+ oldauth=json.loads(git(f'data/identifier_authorities/{name}.json'));newauth=obj(R/f'data/identifier_authorities/{name}.json')
+ for section in ['terms','sources']:
+  ck(all(k in newauth[section] and newauth[section][k]==v for k,v in oldauth[section].items()),'All baseline '+name+' '+section+' objects preserved')
+ added=sorted(set(newauth['terms'])-set(oldauth['terms']));all_added+=added
+ authority_counts[name]={'old_terms':len(oldauth['terms']),'new_terms':len(newauth['terms']),'old_owners':len(oldauth['sources']),'new_owners':len(newauth['sources']),'added_terms':added}
+ck(set(all_added)=={'KEGG:cgt:cgR_0492','KEGG:cgt:cgR_0495','KEGG:cgt:cgR_2523','MetaCyc:PWY-6419','RHEA:17742','UniProtKB:A4QH18','UniProtKB:A4QH19'},'Exactly planned seven authority IDs')
+paths=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'data/pathways'],cwd=R,text=True).splitlines();paths=[p for p in paths if p.endswith('.yaml')]
+ck(len(paths)==254,'Baseline contains 254 pathway YAMLs')
+for path in paths:ck(raw(R/path)==git(path),'Baseline YAML exact '+path)
+initialbaseline=obj(D/'integration/initial/baseline-audit-results.json')
+for path in initialbaseline['governed_schema_policy_paths']:ck(raw(R/path)==git(path),'Governed/schema/policy exact '+path)
+# Current byte-identical snapshots and all five implementation inputs preserve the
+# independent full-build and 432/60/13 regression evidence; do not rerun them.
+code=obj(D/'integration/initial/code-review-verification.json')
+# Initial review input rehash above includes the exact code, test and doc files.
+for package in ['integration','code-review']:
+ mapping=obj(D/package/'initial/retention.json')
+ for row in mapping['mappings']:
+  a=raw(row['original']['path']);b=raw(row['retained']['path'])
+  ck(sha(a)==row['original']['sha256'] and len(a)==row['original']['bytes'],'Original frozen artifact '+row['original']['path'])
+  ck(sha(b)==row['retained']['sha256'] and len(b)==row['retained']['bytes'],'Retained frozen artifact '+row['retained']['path'])
+  if row['encoding']=='identity':recovered=b
+  else:
+   w=json.loads(b);recovered=base64.b64decode(w['data'],validate=True) if 'data' in w else w['text'].encode()
+  ck(recovered==a,'Exact frozen artifact recovery '+row['retained']['path'])
+correction_map=obj(D/'corrections/retention.json')
+for row in correction_map['files']:
+ a=raw(row['original_path']);b=raw(R/row['repository_path']);ck(a==b and sha(b)==row['sha256'] and len(b)==row['bytes'],'Exact correction artifact '+row['repository_path'])
+fix=obj(D/'corrections/review-fix-receipt.json')
+ck(fix['initial_record_sha256']==sha(oldraw) and fix['final_record_sha256']==sha(newraw),'Correction receipts bind both actual versions')
+for observed,reported in zip(changes,fix['changed_fields']):ck(observed['before']==reported['before'] and observed['after']==reported['after'],'Correction receipt exact old/new value '+observed['path'])
+history='history/records/shikimate-degradation-ii/2026-10-14T210258Z-codex-44bba7.yaml';raw(R/history)
+science=D/'science/final';se=Path('/private/tmp/pathwaymech-next-258-science')
+sm=obj(science/'artifact-manifest.json')
+for row in sm['files']:
+ b=raw(R/row['path']);ck(sha(b)==row['sha256'] and len(b)==row['bytes'],'Scientific final manifest '+row['path'])
+science_pairs=[(se/'final/audit.json',science/'audit.json'),(se/'final/shikimate-degradation-ii.yaml.txt',science/'shikimate-degradation-ii.yaml.txt'),(se/'final/inspect.json',science/'inspect.json'),(se/'final/inspect-command.json',science/'inspect-command.json'),(se/'replay_final.py',science/'replay_final.py.txt')]
+for a,b in science_pairs:ck(raw(a)==raw(b),'Scientific final exact retained artifact '+str(b))
+science_inspect=obj(science/'inspect.json')
+for item in science_inspect['source']['inputs']:ck(sha(raw(R/item['path']))==item['sha256'],'Scientific final inspected input exact '+item['path'])
+for path in sorted(science.rglob('*')):
+ if path.is_file():raw(path)
+ck({p.name for p in science.rglob('*') if p.is_file()}=={'audit.json','replay_final.py.txt','artifact-manifest.json','shikimate-degradation-ii.yaml.txt','inspect.json','inspect-command.json'},'Complete hidden/ignored-inclusive current scientific final inventory')
+# Bind every initially audited scientific artifact without comparing its old target
+# binding to the corrected maintained target.
+initial_science=obj(D/'integration/initial/science-retention-audit.json')
+science_initial=[]
+for path,descriptor in initial_science['input_bindings'].items():
+ if '/shikimate-ii/science/' in path:
+  ck(sha(raw(path))==descriptor['sha256'],'Initial scientific retained artifact unchanged '+path);science_initial.append(path)
+result={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Independent integration/provenance successor checkpoint. Required final full-corpus gates pending; no scientific category disposition or broader issue retirement. Recursive filesystem inventories include hidden/ignored files.','baseline_commit':BASE,'initial_record_sha256':sha(oldraw),'final_record_sha256':sha(newraw),'scalar_changes':changes,'rendered_reference_rows':rendered,'uniprot_five_audit_values':audit,'baseline_yaml_count':len(paths),'authority_counts':authority_counts,'manifest_prefix_count':1041,'prior_inspected_contexts_unchanged':len(prior_unchanged),'initial_science_retained_artifacts_unchanged':len(science_initial),'correction_mappings_verified':len(correction_map['files']),'science_final_pairs_verified':len(science_pairs),'science_final_inspected_inputs_verified':len(science_inspect['source']['inputs']),'checks_count':len(checks),'issues':[],'input_bindings':bindings,'checks':checks}
+(O/'audit.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({k:v for k,v in result.items() if k not in ['checks','input_bindings','rendered_reference_rows','scalar_changes']},indent=2))

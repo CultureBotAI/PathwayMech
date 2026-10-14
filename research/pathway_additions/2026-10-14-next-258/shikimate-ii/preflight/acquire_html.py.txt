@@ -1,0 +1,10 @@
+from pathlib import Path
+import datetime,hashlib,json,urllib.request,traceback
+B=Path(__file__).parent;O=B/'originals';O.mkdir(exist_ok=True)
+u='https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?type=PATHWAY&object=PWY-6419'
+receipt={'url':u,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+try:
+ with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech evidence curation/1.0'}),timeout=45) as r:
+  d=r.read();p=O/'META-PWY-6419.html';p.write_bytes(d);receipt.update(status=r.status,final_url=r.url,headers={k:v for k,v in r.headers.items() if k.lower() != "set-cookie"},omitted_response_headers=["set-cookie"],path=str(p),sha256=hashlib.sha256(d).hexdigest(),bytes=len(d))
+except Exception as e:receipt.update(error_type=type(e).__name__,error=str(e))
+receipt['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(B/'acquisition-html.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt))

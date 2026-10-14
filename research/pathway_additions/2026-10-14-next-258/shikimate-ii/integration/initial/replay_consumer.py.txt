@@ -1,0 +1,12 @@
+from pathlib import Path
+import datetime,hashlib,json,sys
+R=Path('/private/tmp/pathwaymech-next-258-20261014');O=Path(__file__).parent
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.identifiers import _load_authority
+results=[]
+for key in ['source_builder','ontology_builder']:
+    path=O/(key+'-reproduced.json');receipt=json.loads((O/(key+'-replay-receipt.json')).read_text());digest=hashlib.sha256(path.read_bytes()).hexdigest()
+    assert receipt['exit_code']==0 and receipt['byte_identical_to_author_union'] and receipt['output']['sha256']==digest
+    terms=_load_authority(path);data=json.loads(path.read_text());assert terms==data['terms']
+    results.append({'path':str(path),'sha256':digest,'terms':len(terms),'sources':len(data['sources']),'canonical_consumer_accepts':True})
+(O/'consumer-replay-results.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'checks':results},indent=2)+'\n');print(json.dumps(results,indent=2))

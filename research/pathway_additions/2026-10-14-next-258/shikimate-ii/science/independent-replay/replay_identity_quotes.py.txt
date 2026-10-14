@@ -1,0 +1,53 @@
+from pathlib import Path
+import json,xml.etree.ElementTree as E,sqlite3,re,collections,hashlib,html
+BASE=Path('/private/tmp/pathwaymech-next-258-science/initial');RAW=BASE/'bound-originals';OUT=BASE.parent/'independent-replay'
+def source(name):return next(RAW.rglob(name))
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+draft=json.load(open(BASE/'pathwaymech-next-258-chemistry/assembled-record.json'))
+# Original chemical structure strings and original CML charge against the issuing ChEBI SQL source.
+con=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+chem=[]
+for frame,ident in [('SHIKIMATE','36208'),('3-DEHYDRO-SHIKIMATE','16630'),('3-4-DIHYDROXYBENZOATE','36241'),('WATER','15377'),('PROTON','15378'),('NAD','57540'),('NADH','57945')]:
+ p=source('META-'+frame+'.xml');n=E.parse(p).getroot().find('Compound');rows=dict((pred,value or obj) for pred,obj,value in con.execute('select predicate,object,value from statements where subject=?',('CHEBI:'+ident,)))
+ checks={'inchi':n.findtext('inchi')==rows['chemrof:inchi_string'],'inchikey':n.findtext('inchi-key').removeprefix('InChIKey=')==rows['chemrof:inchi_key_string'],'charge':n.find('cml/molecule').get('formalCharge')==rows['chemrof:charge'],'direct_xref':ident in [x.findtext('dblink-oid') for x in n.findall('dblink') if x.findtext('dblink-db')=='CHEBI']}
+ assert all(checks.values()),(frame,checks)
+ chem.append({'frameid':frame,'chebi':'CHEBI:'+ident,'native_sha256':sha(p),'checks':checks,'formula':rows['chemrof:generalized_empirical_formula'],'charge':rows['chemrof:charge']})
+# Independent strain-locus/protein identity and translations, including bacterial initiator methionine.
+bases='TCAG';aa='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG';codons={a+b+c:d for (a,b,c),d in zip(((a,b,c) for a in bases for b in bases for c in bases),aa)}
+def translate(s):return ''.join(codons[s[i:i+3]] for i in range(0,len(s),3))
+def ncbi(name):
+ n=E.parse(source('NCBIProtein-'+name+'.xml')).getroot().find('GBSeq')
+ return n.findtext('GBSeq_sequence').upper(),n
+identity=[]
+for locus,protein,uni in [('cgR_0492','BAF53459.1',None),('cgR_0495','BAF53462.1','A4QB65'),('cgR_2523','BAF55534.1','A4QH18'),('cgR_2524','BAF55535.1','A4QH19')]:
+ p=source('KEGG-cgt-'+locus+'.txt');text=p.read_text();dna=re.search(r'NTSEQ[^\n]*\n(.*?)(?=\n[^ ]|\Z)',text,re.S)[1];dna=re.sub(r'\s','',dna).upper();kegg_aa=re.search(r'AASEQ[^\n]*\n(.*?)(?=\n[^ ]|\Z)',text,re.S)[1];kegg_aa=re.sub(r'\s','',kegg_aa).upper();actual,n=ncbi(protein);trans=translate(dna).rstrip('*');trans='M'+trans[1:];assert actual==kegg_aa==trans
+ if uni:assert json.load(open(source('UniProt-'+uni+'.json')))['sequence']['value']==actual
+ identity.append({'locus':locus,'protein':protein,'uniprot':uni,'length':len(actual),'start_codon':dna[:3],'protein_cds_exact':True,'issuing_organism':n.findtext('GBSeq_organism')})
+# QsuB original coding sequence and original reverse-primer suffix, transcribed from visually inspected table.
+qsuB,n=ncbi('ANU32720.1');fasta=source('CP016335.1-540163-542019.fasta');dna=''.join(fasta.read_text().splitlines()[1:]).upper();assert translate(dna).rstrip('*')==qsuB
+p3='TTTTGTTTAACTTTAAGAAGGAGATATACATATGCGTACATCCATTGCCACTGT';p4='GTGGTGGTGGTGGTGGTGGTTTGGGATTCCCCGCTCG';comp=str.maketrans('ACGT','TGCA');rev=lambda x:x.translate(comp)[::-1]
+assert p3.endswith(dna[:23]);assert rev(p4[18:])==dna[-(len(p4[18:])+3):-3]
+# Full coding sequence lacking stop plus six histidines; no claim for vector linker sequence.
+qsuB_check={'accession':'ANU32720.1','length':len(qsuB),'dna_exact':True,'P3_start_match':True,'P4_gene_tail_match':True,'P4_tail_reverse_complement':rev(p4[:18]),'P4_tag_translation':translate(rev(p4[:18])),'visual_table_label':'S2 Table; article XML links this artifact as S1 Table','direct_assay_construct':'C-terminal His6 full-length QsuB'}
+# Rhea-derived molecular identities already directly re-extracted; compare graph complete sides.
+rhea=json.load(open(OUT/'rhea-original-replay.json'));graph_sides=[]
+for rxn in rhea['reactions']:
+ got={'substrates':sorted(e['subject'] for e in draft['mechanistic_edges'] if e['predicate']=='consumes' and e['object']==rxn['id']), 'products':sorted(e['object'] for e in draft['mechanistic_edges'] if e['predicate']=='produces' and e['subject']==rxn['id'])}
+ want={k:sorted(x['id'] for x in v) for k,v in rxn['sides'].items()};assert got==want;graph_sides.append({'reaction':rxn['id'],'sides_match':True,'balanced':rxn['balanced']})
+# Quote fidelity independently normalized only HTML/XML markup, source line labels, and whitespace.
+def norm(s):return re.sub(r'\s+',' ',html.unescape(s)).strip()
+def jtext(name):
+ val=json.load(open(source(name)));s=val if isinstance(val,str) else json.dumps(val,ensure_ascii=False);return norm(re.sub(r'(?m)^L\d+:\s*','',s))
+sources={'PMID:19376919':norm(re.sub('<[^>]+>',' ',source('PMC2687277.html').read_text())), 'PMID:24674055':jtext('PMID-24674055-web-transcript.json')+' '+jtext('PMID-24674055-web-methods.json'), 'PMID:32822353':norm(''.join(E.parse(source('QsuB-2020.xml')).getroot().itertext())), 'PMID:23929881':jtext('web-rg-methods-find.json'), 'PMID:23306642':jtext('PMID23306642-epmc.json'),'PMID:25406451':jtext('PMID25406451-epmc.json')}
+quotes=[];counts=collections.Counter()
+for e in draft['mechanistic_edges']:
+ for loc,evs in [('evidence',e['evidence'])]+[(f'endpoint_qualifiers[{i}].evidence',q['evidence']) for i,q in enumerate(e.get('endpoint_qualifiers',[]))]:
+  for v in evs:
+   if 'quote' not in v:continue
+   q=norm(v['quote']);ref=v['reference_id'];found=q in sources[ref]
+   counts[ref]+=len(q.split());quotes.append({'edge':e['id'],'location':loc,'reference_id':ref,'quote':v['quote'],'found':found})
+assert all(q['found'] for q in quotes),[q for q in quotes if not q['found']]
+assert max(counts.values())<=25
+result={'chemical_identity':chem,'protein_gene_identities':identity,'qsuB_construct':qsuB_check,'graph_sides':graph_sides,'quote_replay':quotes,'quote_word_counts_including_repetition':dict(counts),'all_passed':True}
+(OUT/'identity-quote-replay.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'chemicals':len(chem),'loci':len(identity),'qsuB':qsuB_check,'quotes':len(quotes),'budget':dict(counts),'all_passed':True},indent=2))

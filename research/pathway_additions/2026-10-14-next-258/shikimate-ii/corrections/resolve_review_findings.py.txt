@@ -1,0 +1,73 @@
+"""Apply three verified findings after their initial observations are saved."""
+from pathlib import Path
+import copy
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+
+import yaml
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-258-20261014')
+target = R / 'data/pathways/shikimate-degradation-ii.yaml'
+expected = '3c3e9665a0c3cab33572fd12fc419bbbb46d0e8d3232da046e7aaaaf75290303'
+assert hashlib.sha256(target.read_bytes()).hexdigest() == expected
+saved = json.loads((B / 'saved-initial-review-paths.json').read_text())
+assert set(saved) == {'scientific', 'integration'}
+reviews = []
+for path in saved.values():
+    review = yaml.safe_load((R / path).read_text())
+    assert any(item['path'] == str(target.relative_to(R)) and item['sha256'] == expected
+               for item in review['source']['inputs'])
+    assert review['findings'] and all(item['status'] == 'open' for item in review['findings'])
+    reviews.append(review)
+assert sum(len(review['findings']) for review in reviews) == 3
+before = yaml.safe_load(target.read_text())
+record = copy.deepcopy(before)
+node = next(item for item in record['reactions'] if item['id'] == 'GO:0019618')
+assert node['category'] == 'biological_process'
+node['category'] = 'pathway'
+updates = {
+    'PMID:19376919': 'Full text inspected; retrieved 2026-10-14. Hash binds the PMC primary abstract and scan-index HTML; scan pages are separately hash-bound in the source manifest.',
+    'PMID:24674055': 'Full-text web transcript inspected; retrieved 2026-10-14.',
+    'PMID:32822353': 'Full text inspected; retrieved 2026-10-14.',
+    'PMID:23929881': '2013 article; full Results, Discussion, Methods and Table 1 text inspected through preserved DESY and author-uploaded web transcripts. Original article PDF and visual Table 1 unavailable. Hash binds the complete returned Methods transcript; other transcripts are linked in the source manifest.',
+    'PMID:25406451': '2015 primary abstract inspected; the public publisher full-text endpoint returned HTTP 403. Hash binds the EuropePMC core primary abstract. UniProt annotations are cited separately as structured evidence.',
+    'UniProtKB:A4QH19': 'Entry version 99; sequence version 1. First public date: 2022-10-12; last annotation update: 2026-09-02; last sequence update: 2007-05-15.',
+}
+changed_fields = [dict(path='reactions[id=GO:0019618].category', before='biological_process', after='pathway', issue=549)]
+for reference in record['references']:
+    if reference['id'] in updates:
+        changed_fields.append(dict(path='references[id=' + reference['id'] + '].source_version',
+                                   before=reference['source_version'], after=updates[reference['id']], issue=550))
+        reference['source_version'] = updates[reference['id']]
+assert len(changed_fields) == 7
+replay = copy.deepcopy(record)
+next(item for item in replay['reactions'] if item['id'] == 'GO:0019618')['category'] = 'biological_process'
+old_references = {item['id']: item for item in before['references']}
+for reference in replay['references']:
+    reference['source_version'] = old_references[reference['id']]['source_version']
+assert replay == before, 'Unexpected change outside the three independently reviewed findings'
+target.write_text(yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=95))
+receipt = dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    initial_record_sha256=expected, final_record_sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
+    initial_reviews=[review['review_id'] for review in reviews], issues=[549, 550], changed_fields=changed_fields,
+    other_fields_unchanged=True, edge_evidence_and_source_hashes_unchanged=True,
+    status='Corrections applied; independent successor reviews and final repository gates pending.')
+(B / 'review-fix-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+environment = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1', PYTHONPATH=str(R / 'src') + ':' + str(R))
+command = ['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', '-B', 'scripts/new_history_record.py',
+    '--kind', 'record', '--slug', 'shikimate-degradation-ii', '--target-root', 'data/pathways',
+    '--event', 'EDIT', '--outcome', 'changed', '--actor-name', 'codex', '--model', 'gpt-6', '--agent-tool', 'codex',
+    '--summary', 'Correct downstream pathway typing and source-version presentation',
+    '--issue', 'https://github.com/CultureBotAI/PathwayMech/issues/549',
+    '--issue', 'https://github.com/CultureBotAI/PathwayMech/issues/550',
+    '--details', 'Applied three independently reviewed findings from ' + ', '.join(receipt['initial_reviews']) +
+    '. GO:0019618 now has the explicit downstream pathway category. Six source-version descriptions now use readable prose while retaining the same dates, versions, access limits and source hashes. All mechanistic edges, evidence, other nodes and authority snapshots are unchanged. Generated pages and exports will be rebuilt and final gates and successor dispositions follow this correction.']
+result = subprocess.run(command, cwd=R, env=environment, capture_output=True, text=True)
+(B / 'correction-history-receipt.json').write_text(json.dumps(dict(command=command, exit_code=result.returncode,
+    stdout=result.stdout, stderr=result.stderr), indent=2) + '\n')
+assert result.returncode == 0, result.stderr
+print(json.dumps(receipt))

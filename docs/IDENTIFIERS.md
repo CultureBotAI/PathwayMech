@@ -372,7 +372,7 @@ across source inputs fail even for IDs outside the selected corpus. Matching
 duplicate assertions retain the first source's provenance. Module reaction and
 compound lists, KGML display names, filenames and curated labels are not
 authorities for separately issued entries. Other KEGG entry classes remain
-unsupported. These rules follow the native
+unsupported by these three profiles. These rules follow the native
 [API](https://www.kegg.jp/kegg/rest/keggapi.html) and
 [entry format](https://www.kegg.jp/kegg/docs/dbentry.html).
 
@@ -385,6 +385,32 @@ reaction direction or chemical equivalence. In particular, generic carrier
 entries need explicit participant categories and evidence; a KEGG Compound
 entry does not necessarily describe a small molecule. KEGG `Rxxxxx` reaction
 nodes export as BiochemicalReaction unless an explicit category overrides it.
+
+`kegg-gene-flatfile` is a separate, typed complete-CDS profile. It requires one
+exact official HTTPS `/get/<organism>:<locus>` request. The ENTRY locus, CDS type,
+native genome identifier and ORGANISM code are checked and retained; the locus
+and organism must match the request. The canonical gene label is the exact
+ENTRY locus. NAME remains functional annotation in the source metadata and
+does not become a gene symbol, protein label or accepted synonym.
+
+The complete UTF-8 flatfile is retained in `native_gene`, alongside all ordered
+fields, the native genome/organism scope, position, amino-acid sequence and
+nucleotide sequence. One terminated object, unique required fields, fixed field
+columns, declared sequence counts and alphabets, a simple forward or complement
+genomic span, complete-CDS length relationship and terminal stop are required.
+The span must equal the nucleotide length. This profile does not validate the
+translation or independently resolve the genome-ID/organism-code crosswalk;
+those are separately grounded scientific identity checks. It does not accept
+joined, partial or ambiguous sequences by guessing missing source context.
+
+The consumer rehashes and reparses the entire retained original and requires
+its derived projection to agree exactly, including every field and sequence.
+Conflicting whole originals or versions fail across all supplied owners before
+corpus selection. A gene request or KEGG organism:locus identity cannot be
+laundered through another source kind. Typed gene terms are accepted only in
+`participants` with `category: gene`, under the existing canonical label policy;
+contextual labels cannot supply a curated gene alias. This support establishes
+issuing identity, not expression, transport, regulation or assay-construct scope.
 
 The gate does not download or silently refresh authority data. A term absent
 from the selected snapshot fails with `ID_NOT_FOUND`; this means it is

@@ -1,0 +1,86 @@
+from pathlib import Path
+import datetime, hashlib, json, os, subprocess, time
+import yaml
+
+R=Path('/private/tmp/pathwaymech-next-258-20261014')
+A=Path('/private/tmp/pathwaymech-next-258-authorities')
+O=Path(__file__).parent
+BASE='495de27ec09f99367d1cdd5c457a5e54a93c9a0b'
+started=datetime.datetime.now(datetime.timezone.utc).isoformat()
+clock=time.monotonic()
+inputs={}; issues=[]
+def digest(raw): return hashlib.sha256(raw).hexdigest()
+def read(p):
+    p=Path(p); raw=p.read_bytes(); inputs[str(p)]={'sha256':digest(raw),'bytes':len(raw)}; return raw
+def obj(p): return json.loads(read(p))
+def file_hash(p):
+    p=Path(p); h=hashlib.sha256()
+    with p.open('rb') as f:
+        for b in iter(lambda:f.read(4*1024*1024),b''): h.update(b)
+    inputs[str(p)]={'sha256':h.hexdigest(),'bytes':p.stat().st_size}; return h.hexdigest()
+def check(ok, scope, details=None):
+    if not ok: issues.append({'scope':scope,'details':details})
+def git(*args): return subprocess.check_output(['git',*args],cwd=R)
+def save(name,x): (O/name).write_text(json.dumps(x,indent=2)+'\n')
+
+paths=git('ls-tree','-r','--name-only',BASE,'data/pathways').decode().splitlines()
+paths=[p for p in paths if p.endswith('.yaml')]
+records=[]
+for p in paths:
+    raw=git('show',BASE+':'+p)
+    b=read(R/p); staged=read(A/'records'/Path(p).name)
+    check(raw==b==staged,'baseline record equality',p)
+    records.append({'git_path':p,'git_blob':git('rev-parse',BASE+':'+p).decode().strip(),'sha256':digest(raw),'bytes':len(raw),'working_and_staged_exact':raw==b==staged})
+save('baseline-record-comparison.json',records)
+baseline={}
+for p,n in [('data/identifier_authorities/sources.json','sources.json'),('data/identifier_authorities/ontology.json','ontology.json'),('conf/identifier_sources.json','identifier_sources.json'),('conf/rhea_identifier_updates.json','rhea_identifier_updates.json')]:
+    raw=git('show',BASE+':'+p); staged=read(A/'baseline'/n)
+    check(raw==staged,'baseline authority equality',p)
+    baseline[n]=json.loads(raw)
+terms={}; owners={}
+for n in ['sources.json','ontology.json']:
+    s=baseline[n]
+    for k,v in s['terms'].items():
+        check(k not in terms,'duplicate baseline term',k); terms[k]=v
+    owners.update({n+':'+k:v for k,v in s['sources'].items()})
+retained=obj(A/'retained-authority-identifiers.json')
+planned=obj(A/'planned-identifiers.json')
+check(set(retained)==set(terms),'retained identifiers exact')
+assembled=json.loads(read('/private/tmp/pathwaymech-next-258-chemistry/assembled-record.json'))
+derived={assembled['id']}|{v['id'] for s in ['taxa','participants','reactions'] for v in assembled.get(s,[])}
+check(set(planned)==derived,'planned identifiers from assembled record')
+selector=yaml.safe_load(read(A/'records/planned-authority-selection.yaml'))
+check(set(selector)=={'id','participants'} and all(set(n)=={'id'} for n in selector['participants']),'selector supplies IDs only')
+check({p['id'] for p in selector['participants']}==set(terms)|derived,'selector exact union')
+manifest=obj(A/'identifier_sources.json'); additions=obj(A/'proposed-source-additions.json')
+check(manifest[:len(baseline['identifier_sources.json'])]==baseline['identifier_sources.json'],'manifest prefix exact')
+check(manifest[len(baseline['identifier_sources.json']):]==additions,'manifest suffix exact')
+check(len(set(v['key'] for v in manifest))==len(manifest),'manifest keys unique')
+descriptors=[]; memo={}
+def walk(x,at):
+    if isinstance(x,dict):
+        if 'path' in x and 'sha256' in x:
+            p=A/'originals'/x['path']
+            if str(p) not in memo: memo[str(p)]=file_hash(p)
+            check(memo[str(p)]==x['sha256'],'original bytes digest',at)
+            descriptors.append({'pointer':at,'path':str(p),'resolved':str(p.resolve()),'sha256':memo[str(p)],'expected_sha256':x['sha256'],'bytes':p.stat().st_size})
+        for k,v in x.items(): walk(v,at+'/'+k)
+    elif isinstance(x,list):
+        for i,v in enumerate(x):walk(v,at+'/'+str(i))
+walk(manifest,'manifest');walk(baseline['rhea_identifier_updates.json'],'rhea_updates')
+save('complete-original-cache-check.json',descriptors)
+
+governed=['scripts/.vendored_canon_ref','schema/record_review.yaml','scripts/record_review.py','conf/identifier_policy.yaml','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/schema.py','conf/record_review.yaml']
+claude=read(R/'CLAUDE.md').decode()
+import re
+governed+=re.findall(r'`([^`]+)`',claude.split('These 18 files')[1].split('Never edit one here.')[0])
+governed=[p for p in governed if (R/p).is_file()]
+for p in governed: check(read(R/p)==git('show',BASE+':'+p),'governed/schema/policy drift',p)
+tracked=git('diff','--name-only',BASE).decode().splitlines()
+untracked=subprocess.check_output(['git','ls-files','--others','--exclude-standard'],cwd=R,text=True).splitlines()
+for p in ['scripts/build_source_identifier_snapshot.py','src/pathwaymech/identifiers.py','src/pathwaymech/kegg_gene.py','tests/test_kegg_gene_authority.py','docs/IDENTIFIERS.md','docs/record-reviews.md','docs/record-review-profile.md']:
+    read(R/p)
+save('input-bindings.json',inputs)
+result={'baseline_commit':BASE,'started_utc':started,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'elapsed_seconds':time.monotonic()-clock,'baseline_records':len(records),'baseline_terms':len(terms),'baseline_source_owners':len(owners),'baseline_manifest_entries':len(baseline['identifier_sources.json']),'union_manifest_entries':len(manifest),'planned_ids':len(planned),'new_ids':sorted(derived-set(terms)),'descriptor_count':len(descriptors),'distinct_original_paths':len(memo),'all_descriptors_verified':not [v for v in issues if v['scope']=='original bytes digest'],'governed_schema_policy_paths':sorted(set(governed)),'changed_tracked_files':tracked,'untracked_files':untracked,'issues':issues,'scope_note':'Git tracked baseline plus complete filesystem paths from manifests, symlinks resolved. Original cache digest verification includes every recursively described companion source. Repository untracked inventory is informational, not an ignored-inclusive absence search.'}
+save('baseline-audit-results.json',result)
+print(json.dumps({k:v for k,v in result.items() if k not in ['untracked_files','governed_schema_policy_paths']},indent=2))

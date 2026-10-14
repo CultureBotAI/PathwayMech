@@ -1,0 +1,88 @@
+"""Retain compact author assembly and authority reproduction artifacts exactly."""
+from pathlib import Path
+import ast
+import base64
+import datetime
+import hashlib
+import json
+
+B = Path(__file__).parent
+C = Path('/private/tmp/pathwaymech-next-258-chemistry')
+CI = Path('/private/tmp/pathwaymech-next-258-ci')
+R = Path('/private/tmp/pathwaymech-next-258-20261014')
+D = R / 'research/pathway_additions/2026-10-14-next-258/shikimate-ii'
+
+
+def bind(path):
+    data = path.read_bytes()
+    return dict(path=str(path), sha256=hashlib.sha256(data).hexdigest(), bytes=len(data))
+
+
+def retain(root, names, destination):
+    destination.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for name in names:
+        source = root / name
+        data = source.read_bytes()
+        if source.suffix == '.py':
+            ast.parse(data)
+        if source.suffix == '.json':
+            json.loads(data)
+        rel = name + '.txt' if source.suffix == '.py' else name
+        text = data.decode('utf-8')
+        wrapper = any(line != line.rstrip() for line in text.splitlines())
+        if wrapper:
+            rel += '.bytes.json'
+            output = (json.dumps(dict(original=bind(source), encoding='base64', data=base64.b64encode(data).decode()), indent=2) + '\n').encode()
+        else:
+            output = data
+        target = destination / rel
+        target.parent.mkdir(parents=True, exist_ok=True)
+        assert not target.exists() or target.read_bytes() == output, str(target)
+        target.write_bytes(output)
+        rows.append(dict(original=bind(source), retained=bind(target),
+                         repository_path=str(target.relative_to(R)), encoding='base64' if wrapper else 'byte-identical'))
+    manifest = dict(retained_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        scope='Author evidence and reproduction; independent review is separate.', files=rows)
+    target = destination / 'retention.json'
+    assert not target.exists()
+    target.write_text(json.dumps(manifest, indent=2) + '\n')
+    return rows
+
+
+promotion = json.loads((B / 'preservation-and-promotion.json').read_text())
+assert promotion['baseline_authority_terms'] == 4947
+assert promotion['final_authority_terms'] == 4954
+assert promotion['manifest']['baseline_entries'] == 1041
+assert promotion['manifest']['final_entries'] == 1047
+for name in ['sources', 'ontology']:
+    assert bind(R / 'data/identifier_authorities' / (name + '.json'))['sha256'] == promotion['snapshots'][name]['after_sha256']
+assert bind(R / 'conf/identifier_sources.json')['sha256'] == promotion['manifest']['sha256']
+commands = json.loads((B / 'canonical-build-commands.json').read_text())
+snapshots = dict(baseline_commit=promotion['baseline_commit'],
+    baseline=[bind(B / 'baseline' / name) for name in ['identifier_sources.json', 'rhea_identifier_updates.json', 'sources.json', 'ontology.json']],
+    promoted=[bind(R / rel) for rel in ['conf/identifier_sources.json', 'data/identifier_authorities/sources.json', 'data/identifier_authorities/ontology.json']],
+    selector=bind(B / 'records/planned-authority-selection.yaml'),
+    original_cache=str(B / 'originals'), runtime_sha256=commands['runtime_sha256'],
+    scope='Complete originals, baseline snapshots and full generated union copies stay external; exact maintained outputs are bound.')
+(B / 'snapshot-bindings.json').write_text(json.dumps(snapshots, indent=2) + '\n')
+authority_names = ['prepare_baseline.py', 'prepare_union.py', 'run_builds.py', 'promote.py', 'retain_root.py',
+    'baseline-record-bindings.json', 'baseline-original-cache-verification.json', 'retained-authority-identifiers.json',
+    'authority-candidates.json', 'candidate-kind-resolution.json', 'planned-identifiers.json', 'proposed-source-additions.json',
+    'new-source-original-bindings.json', 'selected-identity-previews.json', 'canonical-build-commands.json',
+    'source_builder-receipt.json', 'ontology_builder-receipt.json', 'source_builder.log.json', 'ontology_builder.log.json',
+    'preservation-and-promotion.json', 'final-original-bindings.json', 'planned-authority-labels.json', 'snapshot-bindings.json',
+    'promotion-execution.json', 'preparation-execution.json',
+    'attempt-build-before-preparation-ready/receipt.json', 'attempt-build-before-preparation-ready/run_builds.py.txt']
+assembly_names = sorted(str(p.relative_to(C)) for p in C.rglob('*') if p.is_file()
+    and p.suffix in {'.py', '.json', '.txt'} and '__pycache__' not in p.parts)
+a = retain(B, authority_names, D / 'authorities')
+c = retain(C, assembly_names, D / 'assembly')
+h = retain(CI, ['write_history.py', 'history-write-receipts.json', 'history-initial-recipe-failure.json'], D / 'authoring-commands')
+record = json.loads((C / 'assembled-record.json').read_text())
+ids = dict(pathway=record['id'], named_ids=sorted({record['id']} | {n['id'] for k in ['taxa', 'participants', 'reactions'] for n in record[k]}),
+    reference_ids=sorted({item['id'] for item in record['references']}),
+    new_authority_ids=promotion['exact_planned_new_terms'], source_additions=json.loads((B / 'proposed-source-additions.json').read_text()),
+    scope='All identifiers in the assembled record and selected authority additions; further native source identifiers are retained in native/source-projection-compact.json.')
+(D / 'identifier-inventory.json').write_text(json.dumps(ids, indent=2) + '\n')
+print(json.dumps(dict(authority_files=len(a), assembly_files=len(c), authoring_files=len(h))))

@@ -1,0 +1,19 @@
+from pathlib import Path
+import hashlib,json
+import yaml
+from pathwaymech.identifiers import _load_authority
+from pathwaymech.kegg_gene import GENE_KIND,gene_metadata
+from scripts.build_source_identifier_snapshot import build_snapshot
+B=Path(__file__).parent;N=Path('/private/tmp/pathwaymech-next-258-native');R=Path('/private/tmp/pathwaymech-next-258-20261014');C=B/'replay';C.mkdir(exist_ok=True);selectors=C/'selectors';selectors.mkdir(exist_ok=True)
+def bind(p):
+ d=p.read_bytes();return dict(path=str(p),sha256=hashlib.sha256(d).hexdigest(),bytes=len(d))
+proof=json.loads((N/'transport-gene-identity-reconciliation.json').read_text());entries=[];nodes=[];rows=[]
+for row in proof['rows']:
+ source=next(x for x in row['sources'] if Path(x['path']).name.startswith('KEGG-'));p=Path(source['path']);assert bind(p)['sha256']==source['sha256'];identifier=row['gene_candidate'];locus=identifier.rsplit(':',1)[-1]
+ e=dict(key='native-'+locus,kind=GENE_KIND,path=str(p.relative_to('/private/tmp')),url='https://rest.kegg.jp/get/'+identifier.removeprefix('KEGG:'),version='KEGG REST CDS snapshot retrieved 2026-10-14; native entry release not supplied',license='KEGG terms; public redistribution not assessed',sha256=source['sha256']);entries.append(e)
+ meta=gene_metadata(e,Path('/private/tmp'));native=meta['native_gene'];assert native['aaseq']['length']==row['protein_length'] and native['ntseq']['length']==row['coding_length']
+ nodes.append(dict(id=identifier,label=locus,category='gene'));rows.append(dict(id=identifier,source=bind(p),gene_label=locus,genome_id=native['genome_id'],organism_code=native['organism_code'],position=native['position'],aaseq_length=native['aaseq']['length'],ntseq_length=native['ntseq']['length'],original_text_exact=native['original_text'].encode()==p.read_bytes(),parsed_fields=len(native['fields'])))
+record={'id':'GO:0019618','label':'Synthetic selector only; no biological pathway assertion','taxa':[],'participants':nodes,'reactions':[]};(selectors/'selector.yaml').write_text(yaml.safe_dump(record,sort_keys=False));manifest=C/'manifest.json';manifest.write_text(json.dumps(entries,indent=2)+'\n')
+snapshot=build_snapshot(manifest,selectors,Path('/private/tmp'));out=C/'authority.json';out.write_text(json.dumps(snapshot,indent=2)+'\n');loaded=_load_authority(out);assert set(loaded)=={r['id'] for r in rows}
+report=dict(status='pass',scope='Author real-source integration replay, not independent review or maintained authority promotion',row_count=len(rows),rows=rows,source_proof=bind(N/'transport-gene-identity-reconciliation.json'),canonical_builder=bind(R/'scripts/build_source_identifier_snapshot.py'),native_parser=bind(R/'src/pathwaymech/kegg_gene.py'),consumer=bind(R/'src/pathwaymech/identifiers.py'),manifest=bind(manifest),snapshot=bind(out),all_typed_terms=[dict(id=k,**v) for k,v in loaded.items()],limits='Scientific NCBI/KEGG translation and genomic joins are separately bound in the native proof; adapter establishes whole issuing CDS identity and shape only.')
+(B/'real-source-replay.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(dict(status='pass',rows=len(rows),genes=[x['id'] for x in rows])))

@@ -1,0 +1,11 @@
+from pathlib import Path
+import hashlib,json,traceback
+from pathwaymech.biocyc_pathway import pathway_metadata,pathway_term
+B=Path(__file__).parent
+P=Path('/private/tmp/pathwaymech-next-257-preflight/originals/META-PWY-6419.xml')
+entry=dict(key='meta258-MetaCyc-PWY-6419',kind='metacyc-pathway-xml',path=str(P.relative_to('/private/tmp')),url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-6419',version='27.0',license='MetaCyc terms; local curation review',sha256=hashlib.sha256(P.read_bytes()).hexdigest())
+try:
+ metadata=pathway_metadata(entry,Path('/private/tmp'));term=pathway_term(metadata,entry['key']);result=dict(status='accepted',metadata=metadata,term=term)
+except Exception as e:result=dict(status='rejected',error_type=type(e).__name__,message=str(e),traceback=traceback.format_exc())
+result.update(entry=entry,parser_path='/private/tmp/pathwaymech-next-258-20261014/src/pathwaymech/biocyc_pathway.py',parser_sha256=hashlib.sha256(Path('/private/tmp/pathwaymech-next-258-20261014/src/pathwaymech/biocyc_pathway.py').read_bytes()).hexdigest(),scope='unchanged current production parser trial on complete original; no synthetic source or parser change')
+(B/'pathway-xml-parser-trial.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k] for k in ['status','message'] if k in result}))

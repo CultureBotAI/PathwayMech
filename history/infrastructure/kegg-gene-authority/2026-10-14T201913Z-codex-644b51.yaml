@@ -1,0 +1,24 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/kegg_gene.py
+  slug: kegg-gene-authority
+session:
+  id: 2026-10-14T201913Z-codex-644b51
+  timestamp: '2026-10-14T20:19:13Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+events:
+- type: CREATE
+  outcome: changed
+  summary: Validate complete KEGG CDS authority records for gene endpoints
+  details: Added a strict kegg-gene-flatfile profile that binds an official exact request
+    to a complete native CDS object, preserves the whole original and derived identity fields,
+    verifies the original hash again in the consumer, rejects incompatible owners before selection,
+    and requires gene placement with canonical native locus labels. Existing KEGG module,
+    reaction and compound profiles remain covered by regression tests. Author verification
+    passed 432 relevant tests and all four real issuing originals; independent code review
+    and corpus gates follow.

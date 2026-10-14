@@ -1,0 +1,84 @@
+from pathlib import Path
+import hashlib, json, html, re, xml.etree.ElementTree as ET
+from collections import Counter
+
+ROOT=Path(__file__).resolve().parent
+OLD=Path('/private/tmp/pathwaymech-next-257-native')
+CHEM=Path('/private/tmp/pathwaymech-next-257-chemistry')
+PREFLIGHT=Path('/private/tmp/pathwaymech-next-257-preflight')
+def digest(b): return hashlib.sha256(b).hexdigest()
+def clean(s): return html.unescape(re.sub('<[^>]*>','',s or '')).strip()
+def slot(e):
+    # Complete recursive semantic projection, including frame attributes and nested content.
+    return {'tag':e.tag,'attributes':dict(e.attrib),'text':e.text or '', 'tail':e.tail or '', 'children':[slot(c) for c in e]}
+def path(fid):
+    candidates=[ROOT/'originals'/f'META-{fid}.xml',OLD/'originals'/f'META-{fid}.xml',CHEM/'originals'/f'META-{fid}.xml',PREFLIGHT/'originals'/f'META-{fid}.xml']
+    return next(p for p in candidates if p.exists())
+def frame(fid):return next(e for e in ET.parse(path(fid)).getroot() if e.get('frameid')==fid)
+scopes={}
+def group(ids, disposition, reason, targets=()):
+    for fid in ids.split():scopes[fid]=(disposition,reason,list(targets))
+group('PWY-6419','include_pathway','Two formal NAD-dependent steps; organism, direction, evidence and narrative claims are separately dispositioned below.',['core-membership','core-ordering','taxon-context','regulatory-extension'])
+group('RXN-20484 DHSHIKIMATE-DEHYDRO-RXN','include_core','Exact formal reaction sides and physiological L2R are retained; shared activity lists do not imply membership of every organism.',['core-membership','core-chemical-edges','core-ordering'])
+group('ENZRXN-17383 CPLX-7981 MONOMER-15330 G-11733','include_qualified','ATCC13032 QsuD homodimer and NAD-dependent shikimate activity; native evidence mixes purified ATCC13032 protein with R-strain genetics, which remain separate. G-11733/Cgl0424 is not the R-strain qsuD gene.',['native258-qsuD-composition','native258-qsuD-catalysis'])
+group('ENZRXN-17385 MONOMER-15334 G-11737','include_inference','R QsuB/cgR_0493 role inferred from operon, similarity and induction in 2009; no purified R-protein assay. Deleted UniProt A4QB63 is not selected; exact issuing BAF53460.1 establishes protein identity.',['native258-qsuB-enables','primary-qsuR-regulation'])
+group('ENZRXN-17379 MONOMER-15329 G-11732','exclude_neighbor_quinate_fungal','N. crassa Qa4 is a purified quinate-route enzyme; a shared DHS reaction does not establish a complete NAD-dependent shikimate II route. Its divalent-metal, stability and kinetic facts remain bounded to that excluded enzyme.')
+group('ENZRXN-16693 CPLX-7874 MONOMER-14940 G-11390 REG-12762','exclude_neighbor_petrobactin','B. anthracis AsbF belongs petrobactin precursor biosynthesis; dimeric assembly, Mn preference and zinc inhibition are not shikimate-II pathway mechanisms.')
+group('ENZRXN-3 MONOMER-1','exclude_alternative_pqq','G. oxydans partially purified cytoplasmic DHS dehydratase is PQQ-route context; shared terminal chemistry does not demonstrate NAD-route occurrence.')
+group('ENZRXN-38 MONOMER-37 G-36','exclude_alternative_pqq','A. baylyi QuiC belongs PQQ-dependent quinate/shikimate route I. No NAD-II membership or extra taxon is inherited. Native MONOMER-37 narrative says DHQ dehydratase despite its DHS activity label; neither is copied into this route.')
+group('G-11736 MONOMER-15333 ENZRXN-17384 QUINATE-5-DEHYDROGENASE-RXN','exclude_wrong_gene_and_neighbor','PWY-6419 incorrectly names fungal qutB/G-11736 as the bacterial operon second enzyme. The verified chain points to A. nidulans QutB, not R qsuB. Its known quinate/shikimate activity does not establish whole-route membership here.')
+group('MONOMER-15335 G-11738 ENZRXN-17386 3-DEHYDROQUINATE-DEHYDRATASE-RXN','context_qsuC_operon','R qsuC is a co-induced operon gene and valid regulatory context. DHQ dehydration is bypassed by this two-step shikimate route and is not added as a formal step. Inferred QsuC catalysis is excluded.',['primary-qsuR-regulation'])
+group('ENZRXN-17380 RXN-20483 QUINATE DEHYDROQUINATE PWY-6416','exclude_alternative_substrate','QsuD quinate activity and the distinct quinate-II pathway are neighboring substrate context. Their extra DHQ intermediate and pathway-specific fungal/Amycolatopsis taxa are not shikimate-II members.')
+group('RXN-11174 ENZRXN0-3081 CPLX0-7462 EG11234-MONOMER EG11234 ENZRXN0-6289 NAD-P-OR-NOP NADH-P-OR-NOP','exclude_broad_coenzyme_boundary','RXN-11174 uses generic NAD(P) classes despite a RHEA17742 unification link. It is not an exact molecular equivalent of NAD-specific RXN-20484/RHEA17742. E. coli YdiB activity/structure and broad coenzyme scope do not prove shikimate-II pathway membership.')
+group('SHIKIMATE NAD NADH PROTON 3-DEHYDRO-SHIKIMATE 3-4-DIHYDROXYBENZOATE WATER','include_chemical_identity','Native molecular identity and formal sides retained; exact ChEBI structure, charge and stoichiometric reconciliation belongs root chemistry audit. Global reverse indexes do not expand the named pathway.',['core-chemical-edges'])
+group('PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY','include_downstream_interface','Named downstream pathway consumes the terminal protocatechuate; retain only pathway interface, not its four internal reactions, organisms, regulators or unrelated substrate branches.',['downstream-interface'])
+group('SHIKIMATEDEG-PWY','exclude_alternative_pqq','Distinct PQQ-dependent shikimate degradation I; shared substrate/product and terminal dehydration do not collapse the two pathway identities.')
+objects=[];facts=[];projections=[];reasons={}
+for fid,(disp,why,targets) in sorted(scopes.items()):
+    p=path(fid);e=frame(fid);raw=p.read_bytes();seen=Counter();slots={};omitted=[]
+    row={'frameid':fid,'kind':e.tag,'path':str(p),'sha256':digest(raw),'bytes':len(raw),'disposition':disp,'reason':why,'candidate_edges_or_context':targets,'native_label':clean(e.findtext('common-name'))}
+    objects.append(row)
+    for c in e:
+        seen[c.tag]+=1;loc=f'/ptools-xml/{e.tag}[@frameid="{fid}"]/{c.tag}[{seen[c.tag]}]';fdisp,note,ftargets=disp,why,targets
+        if c.tag in {'credits','history','creation-date','molecular-weight-exp','molecular-weight-seq','pi','gibbs-0','orphan','ph-opt'}:
+            fdisp,note,ftargets='context_metadata','Administrative, measured protein property or computational context; not an additional supported causal relationship.',[]
+        elif e.tag=='Compound' and c.tag in {'appears-in-left-side-of','appears-in-right-side-of','component-of','cofactors-of','regulates'}:
+            fdisp,note,ftargets='exclude_global_reverse_index','Complete source-wide reverse index is bound externally; unrelated memberships do not extend PWY-6419.',[]
+        elif c.tag=='dblink':
+            fdisp,note,ftargets='identity_candidate','Native cross-reference is a candidate; issuing identity and exact molecular scope must be independently verified. RXN-11174/RHEA17742 generic-versus-specific discrepancy is not propagated.',[]
+        elif c.tag=='taxonomic-range':
+            fdisp,note,ftargets='exclude_universal_taxon_inference','Broad native taxonomic range is not a demonstrated phenotype for every member; only independently scoped organism contexts are retained.',[]
+        elif fid=='PWY-6419' and c.tag=='comment':
+            fdisp,note,ftargets='split_narrative_dispositions','See narrative-claims.json for individual scope, qutB source-error, induction, transporter and regulation dispositions.', ['narrative-claims.json']
+        elif fid=='ENZRXN-17383' and c.tag=='evidence':
+            codes=[x.get('frameid') for x in c.findall('./Evidence-Code')]
+            if 'EV-EXP-IMP-REACTION-BLOCKED' in codes:
+                fdisp,note,ftargets='include_separate_R_genetics','PMID19376919 concerns R QsuD; it must not be an unqualified direct assay of ATCC13032 CPLX-7981.',['primary-R-qsuD-enables']
+        elif fid=='ENZRXN-17383' and c.tag=='km':
+            fdisp,note,ftargets='include_scoped_kinetic_context','Native shikimate Km is 46600 micromolar (46.6 mM), curated assay context from PMID18566515 rather than an independent kinetic measurement by the curator. No new graph relation needed.',['native258-qsuD-catalysis-description']
+        elif fid=='MONOMER-15334' and c.tag=='comment':
+            fdisp,note,ftargets='split_QsuB_inference','Operon membership, N-terminal 25% similarity and induction support a qualified inferred role; C-terminal 25% HPPD similarity does not establish dioxygenase activity.',['native258-qsuB-enables']
+        proj=slot(c);enc=json.dumps(proj,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+        fact={'frameid':fid,'locator':loc,'slot':c.tag,'disposition':fdisp,'reason':note,'candidate_edges_or_context':ftargets,'projection_sha256':digest(enc),'serialized_slot_sha256':digest(ET.tostring(c,encoding='utf-8'))}
+        facts.append(fact)
+        if c.tag in {'credits','history','creation-date'} or (e.tag=='Compound' and c.tag in {'appears-in-left-side-of','appears-in-right-side-of','component-of','cofactors-of','regulates'}):
+            omitted.append({'locator':loc,'projection_sha256':fact['projection_sha256']})
+        else:slots.setdefault(c.tag,[]).append(proj)
+    projections.append({**row,'slots':slots,'omitted_slots':omitted})
+closure=[]
+for row in objects:
+    e=frame(row['frameid'])
+    if e.tag not in {'Protein','Gene'}:continue
+    for tag in (['component','component-of','gene'] if e.tag=='Protein' else ['product']):
+        for x in e.findall('./'+tag+'/*'):
+            target=x.get('frameid')
+            if target:closure.append({'source':row['frameid'],'relation':tag,'target':target,'retrieved':target in scopes,'source_path':str(path(target)) if target in scopes else None})
+assert all(x['retrieved'] for x in closure),[x for x in closure if not x['retrieved']]
+formal=[x.get('frameid') for x in frame('PWY-6419').findall('./reaction-list/Reaction')]
+directactivities=[x.get('frameid') for rid in formal for x in frame(rid).findall('./enzymatic-reaction/Enzymatic-Reaction')]
+assert len(directactivities)==6 and all(x in scopes for x in directactivities)
+ledger={'pathway':'MetaCyc:PWY-6419','version':'27.0','formal_reactions':formal,'direct_formal_activity_ids':directactivities,'native_objects':len(objects),'native_slot_facts':len(facts),'objects':objects,'protein_gene_reference_closure':closure,'scope':'Complete direct slots for focused pathway, all six formal reaction activities and protein/gene/component closure; explicit selected narrative, alternative-substrate, generic-coenzyme, PQQ and downstream boundaries. Boundary reaction activity lists are not recursively imported wholesale.','limitation':'No claim of every pathway source or publication exhausted; supplemental primary transporter/regulation/assay facts require separate primary ledger.'}
+(ROOT/'native-coverage.json').write_text(json.dumps(ledger,indent=2)+'\n')
+(ROOT/'native-fact-dispositions-compact.json').write_text(json.dumps({'format':'Every direct XML slot, fully recursive semantic projection and serialized slot hash; raw original path and hash in native-coverage.json permit complete reconstruction.','facts':len(facts),'rows':facts},indent=2)+'\n')
+(ROOT/'source-projection-compact.json').write_text(json.dumps(projections,indent=2)+'\n')
+print(len(objects),'objects',len(facts),'slots',len(closure),'closed protein/gene references',len(directactivities),'formal activities')

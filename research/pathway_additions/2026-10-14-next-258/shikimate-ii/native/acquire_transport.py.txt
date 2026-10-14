@@ -1,0 +1,18 @@
+from acquire_identities import request
+from acquire import *
+import time,urllib.parse
+queries={'r-shi':'(organism_id:340322) AND (gene_exact:cgR_2523 OR gene_exact:cgR_2524)','r-qsuA':'(organism_id:340322) AND gene_exact:cgR_0492'}
+rows=[]
+for name,q in queries.items():
+ rows.append(request('UniProt-search-'+name,'https://rest.uniprot.org/uniprotkb/search?'+urllib.parse.urlencode({'query':q,'format':'json','size':500})))
+for tag in ['cgR_2523','cgR_2524']:
+ rows.append(request('NCBI-protein-search-'+tag,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?'+urllib.parse.urlencode({'db':'protein','term':tag+'[All Fields] AND Corynebacterium glutamicum R[Organism]','retmode':'json','retmax':100})));time.sleep(.5)
+for tag in ['cgR_0492','cgR_0495','cgR_2523','cgR_2524']:
+ url='https://rest.kegg.jp/get/cgt:'+tag;p=ORIG/('KEGG-cgt-'+tag+'.txt');row={'name':'KEGG:cgt:'+tag,'url':url,'retrieved_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(url,timeout=60) as r:b=r.read();row.update(status=r.status,final_url=r.url)
+  assert b.startswith(b'ENTRY');p.write_bytes(b);row.update(path=str(p),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b))
+ except Exception as e:row['error']=str(e)
+ rows.append(row)
+(ROOT/'acquisition-transport.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows: print(r['name'],r.get('bytes',r.get('error')))

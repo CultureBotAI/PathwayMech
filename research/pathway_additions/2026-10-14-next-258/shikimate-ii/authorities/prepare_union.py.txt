@@ -1,0 +1,134 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+import sys
+
+import yaml
+
+B = Path(__file__).resolve().parent
+R = Path('/private/tmp/pathwaymech-next-258-20261014')
+N = Path('/private/tmp/pathwaymech-next-258-native')
+ASSEMBLED = Path('/private/tmp/pathwaymech-next-258-chemistry/assembled-record.json')
+BASE = '495de27ec09f99367d1cdd5c457a5e54a93c9a0b'
+PY = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ONTOLOGY_PREFIXES = {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'}
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def save(name, value):
+    (B / name).write_text(json.dumps(value, indent=2) + '\n')
+
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=R)
+
+
+assert git('rev-parse', 'HEAD').decode().strip() == BASE
+assert ASSEMBLED.is_file(), 'Wait for the author-frozen assembled record before preparing the union.'
+assert not (B / 'canonical-build-commands.json').exists(), 'Preserve the prior attempt before preparing another union.'
+for rel, name in [('conf/identifier_sources.json', 'identifier_sources.json'), ('conf/rhea_identifier_updates.json', 'rhea_identifier_updates.json'), ('data/identifier_authorities/sources.json', 'sources.json'), ('data/identifier_authorities/ontology.json', 'ontology.json')]:
+    expected = git('show', BASE + ':' + rel)
+    assert (R / rel).read_bytes() == (B / 'baseline' / name).read_bytes() == expected, rel
+bindings = json.loads((B / 'baseline-record-bindings.json').read_text())
+assert len(bindings) == 254
+for row in bindings:
+    assert sha(Path(row['path'])) == row['sha256']
+    assert Path(row['path']).read_bytes() == git('show', BASE + ':' + row['git_path'])
+retained = set(json.loads((B / 'retained-authority-identifiers.json').read_text()))
+assert len(retained) == 4947
+baseline_terms = {}
+for name in ['sources', 'ontology']:
+    for ident, term in json.loads((B / 'baseline' / (name + '.json')).read_text())['terms'].items():
+        assert ident not in baseline_terms
+        baseline_terms[ident] = term
+assert retained == set(baseline_terms)
+
+record = json.loads(ASSEMBLED.read_text())
+assert record['id'] == 'MetaCyc:PWY-6419'
+planned = {record['id']} | {node['id'] for field in ['taxa', 'participants', 'reactions'] for node in record.get(field, [])}
+new_ids = planned - retained
+candidate_sources = [B / 'authority-candidates.json']
+candidates = {}
+for source in candidate_sources:
+    for candidate in json.loads(source.read_text()):
+        ident = candidate['identifier']
+        if ident in candidates:
+            assert candidates[ident]['candidate'] == candidate, (ident, 'conflicting candidate descriptors')
+        candidates[ident] = {'candidate': candidate, 'owner': str(source), 'owner_sha256': sha(source)}
+missing = [ident for ident in sorted(new_ids) if ident.split(':', 1)[0] not in ONTOLOGY_PREFIXES and ident not in candidates]
+assert not missing, ('Selected new identifiers lack independent candidate originals', missing)
+
+builder_paths = ['build_source_identifier_snapshot.py', 'build_ontology_identifier_snapshot.py']
+for name in ['build_ontology_identifier_snapshot.py']:
+    assert (R / 'scripts' / name).read_bytes() == git('show', BASE + ':scripts/' + name), (name, 'canonical builder changed')
+sys.path.insert(0, str(R / 'scripts'))
+from build_source_identifier_snapshot import source_terms
+
+old = json.loads((B / 'baseline/identifier_sources.json').read_text())
+assert len(old) == 1041
+adds, source_bindings, previews = [], [], []
+staged = {}
+for ident in sorted(new_ids):
+    prefix = ident.split(':', 1)[0]
+    if prefix in ONTOLOGY_PREFIXES:
+        continue
+    row = candidates[ident]
+    candidate = row['candidate']
+    assert candidate['status'] != 'context_only', (ident, 'author must explicitly resolve context-only scientific selection')
+    if candidate['status'] == 'pending_primary_sequence_join':
+        assert ident == 'NCBIProtein:ANU32720.1'
+        proof = N / 'QsuB-ATCC13869-primer-check.json'
+        proof_data = json.loads(proof.read_text())
+        assert proof_data['candidate'] == ident and proof_data['translation_exact'] is True
+        assert len(proof_data['primer_checks']) == 3
+        row = dict(row, scoped_construct_support={'path': str(proof), 'sha256': sha(proof), 'scope': 'Native CDS and primer-end consistency only; retained interpretation limits remain. Identity extraction is independent of biological assay equivalence.'})
+    source = Path(candidate['path'])
+    assert sha(source) == candidate['sha256'], str(source)
+    terms = list(source_terms(candidate['kind'], source, url=candidate['url'], version=candidate['version']))
+    found = [term for term in terms if term[0] == ident]
+    assert len(found) == 1, (ident, terms)
+    if ident == 'MetaCyc:PWY-6419':
+        assert candidate['kind'] == 'metacyc-html'
+    if ident in {'MetaCyc:CPLX-7980', 'MetaCyc:CPLX-7981'}:
+        assert candidate['kind'] == 'metacyc-protein-xml'
+    rel = 'meta258/' + source.name
+    if rel in staged:
+        assert staged[rel] == str(source), ('cache basename collision', rel)
+    staged[rel] = str(source)
+    license_text = {'uniprot': 'CC-BY-4.0', 'ncbi-protein-xml': 'NCBI data usage policies; source attribution retained', 'ncbi-entrezgene-xml': 'NCBI Gene public data; source-specific restrictions retained by NCBI', 'kegg-gene-flatfile': 'KEGG database use terms; redistribution not assessed'}.get(candidate['kind'], 'BioCyc license; redistribution not assessed')
+    entry = {'key': 'meta258-' + ident.replace(':', '-'), 'kind': candidate['kind'], 'path': rel, 'url': candidate['url'], 'version': candidate['version'], 'license': license_text, 'sha256': candidate['sha256']}
+    adds.append(entry)
+    source_bindings.append({'identifier': ident, 'entry': entry, 'original': str(source), **row})
+    previews.append({'identifier': ident, 'term': found[0], 'scope': 'Issuing authority existence and name only; no curated record label supplies authority.'})
+assert len({entry['key'] for entry in old + adds}) == len(old + adds)
+assert all(row['identifier'] in new_ids for row in source_bindings)
+
+selector = B / 'records/planned-authority-selection.yaml'
+assert not selector.exists()
+selector.write_text(yaml.safe_dump({'id': record['id'], 'participants': [{'id': ident} for ident in sorted(retained | planned)]}, sort_keys=False))
+for rel, source in staged.items():
+    target = B / 'originals' / rel
+    target.parent.mkdir(exist_ok=True)
+    assert not target.exists() and not target.is_symlink()
+    target.symlink_to(source)
+save('planned-identifiers.json', sorted(planned))
+save('proposed-source-additions.json', adds)
+save('identifier_sources.json', old + adds)
+save('new-source-original-bindings.json', source_bindings)
+save('selected-identity-previews.json', previews)
+commands = {'cwd': str(R), 'baseline_commit': BASE, 'created_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'environment': {'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONNOUSERSITE': '1', 'PYTHONPATH': str(R / 'src') + ':' + str(R)}, 'source_builder': [PY, '-B', 'scripts/build_source_identifier_snapshot.py', '--manifest', str(B / 'identifier_sources.json'), '--cache-dir', str(B / 'originals'), '--records', str(B / 'records'), '--output', str(B / 'sources.union.json')], 'ontology_builder': [PY, '-B', 'scripts/build_ontology_identifier_snapshot.py'], 'builder_sha256': {name: sha(R / 'scripts' / name) for name in builder_paths}, 'selection': {'scope': f'All 254 baseline records copied from exact Git blobs plus an ID-only selector preserving all {len(retained)} previous authority terms and {len(planned)} planned named IDs. Selector supplies no labels or scientific claims.', 'selector_file': 'records/planned-authority-selection.yaml', 'selector_sha256': sha(selector), 'reconstruct_from': ['retained-authority-identifiers.json', 'planned-identifiers.json']}, 'assembled_record': {'path': str(ASSEMBLED), 'sha256': sha(ASSEMBLED)}, 'candidate_source_bindings': [{'path': str(path), 'sha256': sha(path)} for path in candidate_sources], 'manifest_sha256': sha(B / 'identifier_sources.json'), 'old_original_cache': '/private/tmp/pathwaymech-next-257-authorities/originals', 'staging_helper': {'path': str(Path(__file__).resolve()), 'sha256': sha(Path(__file__))}}
+for prefix, name in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+    commands['ontology_builder'] += ['--source', prefix + '=/private/tmp/pathwaymech-curation-authorities/' + name + '.db']
+commands['ontology_builder'] += ['--rhea-updates', str(B / 'baseline/rhea_identifier_updates.json'), '--cache-dir', str(B / 'originals'), '--corpus', str(B / 'records')]
+for ident in ['GO:0008150', 'GO:0006096', 'GO:0005975']:
+    commands['ontology_builder'] += ['--include-id', ident]
+commands['ontology_builder'] += ['--output', str(B / 'ontology.union.json')]
+commands['runtime_sha256'] = {name: sha(R / name) for name in ['scripts/build_source_identifier_snapshot.py', 'src/pathwaymech/kegg_gene.py', 'src/pathwaymech/identifiers.py']}
+commands['intentional_builder_change'] = 'Strict kegg-gene-flatfile support, with full native payload verification; prior source types preserved and independently regression-tested.'
+save('canonical-build-commands.json', commands)
+print(json.dumps({'planned': len(planned), 'new_identifiers': sorted(new_ids), 'new_source_entries': len(adds)}))

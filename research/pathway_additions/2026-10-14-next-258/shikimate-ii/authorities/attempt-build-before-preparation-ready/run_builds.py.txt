@@ -1,0 +1,43 @@
+from pathlib import Path
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import time
+
+B = Path(__file__).resolve().parent
+commands = json.loads((B / 'canonical-build-commands.json').read_text())
+environment = dict(os.environ, **commands['environment'])
+record = commands['assembled_record']
+assert hashlib.sha256(Path(record['path']).read_bytes()).hexdigest() == record['sha256']
+assert hashlib.sha256((B / 'identifier_sources.json').read_bytes()).hexdigest() == commands['manifest_sha256']
+for name, digest in commands['builder_sha256'].items():
+    assert hashlib.sha256((Path(commands['cwd']) / 'scripts' / name).read_bytes()).hexdigest() == digest
+
+
+for name, digest in commands.get('runtime_sha256', {}).items():
+    assert hashlib.sha256((Path(commands['cwd']) / name).read_bytes()).hexdigest() == digest
+
+
+def run(key):
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    clock = time.monotonic()
+    log = B / (key + '.log')
+    receipt = B / (key + '-receipt.json')
+    assert not receipt.exists(), f'Preserve prior attempt before rerunning {key}'
+    with log.open('w') as destination:
+        process = subprocess.run(commands[key], cwd=commands['cwd'], env=environment, stdout=destination, stderr=subprocess.STDOUT)
+    result = {'command': commands[key], 'cwd': commands['cwd'], 'environment': commands['environment'], 'started_utc': started, 'elapsed_seconds': round(time.monotonic() - clock, 2), 'exit_code': process.returncode, 'log_path': str(log), 'log_sha256': hashlib.sha256(log.read_bytes()).hexdigest()}
+    receipt.write_text(json.dumps(result, indent=2) + '\n')
+    (B / (key + '.log.json')).write_text(json.dumps({'path': str(log), 'sha256': result['log_sha256'], 'encoding': 'utf-8', 'contents': log.read_text()}, indent=2) + '\n')
+    print(json.dumps(result), flush=True)
+    if process.returncode:
+        print(log.read_text()[-10000:], flush=True)
+    return process.returncode
+
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+    codes = list(pool.map(run, ['source_builder', 'ontology_builder']))
+raise SystemExit(max(codes))

@@ -54,6 +54,13 @@ from pathwaymech.ecocyc_named_complex import (
     validate_named_complex_metadata,
 )
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_term, validate_state_metadata
+from pathwaymech.kegg_gene import (
+    GENE_KIND,
+    gene_term,
+    is_gene_id,
+    validate_gene_assertions,
+    validate_gene_metadata,
+)
 from pathwaymech.pathbank_context import (
     PATHBANK_CONTEXT_KIND,
     context_term,
@@ -216,6 +223,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_named_complex",
                 "native_aceto",
                 "native_pathway",
+                "native_gene",
                 "native_pathbank_context",
                 "native_polymers",
                 "native_carrier_class",
@@ -238,6 +246,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_named_complex",
                 "native_aceto",
                 "native_pathway",
+                "native_gene",
                 "native_pathbank_context",
                 "native_polymers",
                 "native_carrier_class",
@@ -264,6 +273,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             NAMED_COMPLEX_KIND,
             PATHWAY_KIND,
             RHEA_POLYMER_KIND,
+            GENE_KIND,
         }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
         if metadata.get("kind") == PATHBANK_CONTEXT_KIND:
@@ -311,6 +321,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             (NAMED_COMPLEX_KIND, "native_named_complex", validate_named_complex_metadata),
             (PATHWAY_KIND, "native_pathway", validate_pathway_metadata),
             (RHEA_POLYMER_KIND, "native_polymers", validate_polymer_metadata),
+            (GENE_KIND, "native_gene", validate_gene_metadata),
         ]:
             if metadata.get("kind") == native_kind:
                 validator(metadata)
@@ -348,6 +359,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             # and their agreement with the request remain the builder's remit.
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
     validate_aceto_assertions(data["sources"], [])
+    validate_gene_assertions(data["sources"])
     carrier_reaction_ids = validate_carrier_reaction_assertions(data["sources"])
     context_projections = validate_context_assertions(data["sources"])
     context_ids = {ident for projection in context_projections.values() for ident in projection}
@@ -391,6 +403,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
+        if is_gene_id(identifier) and source_kind != GENE_KIND:
+            raise ValueError("KEGG gene identity requires its complete typed source")
         if identifier in context_ids and source_kind != PATHBANK_CONTEXT_KIND:
             raise ValueError("PathBank context requires its complete typed owner")
         if source_kind == PATHBANK_CONTEXT_KIND:
@@ -440,6 +454,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             NAMED_COMPLEX_KIND,
             PATHWAY_KIND,
             RHEA_POLYMER_KIND,
+            GENE_KIND,
         }:
             metadata = data["sources"][term["source"]]
             if source_kind == RHEA_POLYMER_KIND:
@@ -453,6 +468,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                     ELECTRON_TRANSFER_KIND: reaction_term,
                     CHEMICAL_CLASS_KIND: chemical_class_term,
                     NAMED_COMPLEX_KIND: named_complex_term,
+                    GENE_KIND: gene_term,
                 }[source_kind]
                 expected_id, expected_term = projector(metadata, term["source"])
             if identifier != expected_id or json.dumps(term, sort_keys=True) != json.dumps(
@@ -568,6 +584,18 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     errors.append(
                         f"{where}: LABEL_MISMATCH {identifier!r}: {label!r}; "
                         f"authority label is {term['label']!r}"
+                    )
+                continue
+            if term.get("entity_type") == "native_gene":
+                if section != "participants" or node.get("category") != "gene":
+                    errors.append(
+                        f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
+                        "typed native gene requires participants/category gene"
+                    )
+                elif _normalize(label) != _normalize(term["label"]):
+                    errors.append(
+                        f"{where}: LABEL_MISMATCH {identifier!r}: {label!r}; "
+                        f"authority locus is {term['label']!r}"
                     )
                 continue
             # Native Reaction identity is not a pathway/protein/chemical

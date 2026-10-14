@@ -1,0 +1,38 @@
+from pathlib import Path
+import concurrent.futures, datetime, hashlib, json, os, subprocess, time, sys
+
+R=Path('/private/tmp/pathwaymech-next-258-20261014'); A=Path('/private/tmp/pathwaymech-next-258-authorities'); O=Path(__file__).parent
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,x): (O/n).write_text(json.dumps(x,indent=2)+'\n')
+c=json.loads((A/'canonical-build-commands.json').read_text())
+assert all(sha(R/p)==v for p,v in c['runtime_sha256'].items())
+assert all(json.loads((A/(k+'-receipt.json')).read_text())['exit_code']==0 for k in ['source_builder','ontology_builder'])
+assert sha(A/'identifier_sources.json')==c['manifest_sha256']
+bound={str(A/'canonical-build-commands.json'):sha(A/'canonical-build-commands.json')}
+for p,v in c['runtime_sha256'].items():bound[str(R/p)]=v
+for key in ['source_builder','ontology_builder']:
+    bound[str(A/(key+'-receipt.json'))]=sha(A/(key+'-receipt.json'))
+save('replay-input-bindings.json',bound)
+def run(key):
+    command=list(c[key]); output=O/(key+'-reproduced.json')
+    assert not output.exists()
+    command[command.index('--output')+1]=str(output)
+    start=datetime.datetime.now(datetime.timezone.utc).isoformat(); clock=time.monotonic()
+    log=O/(key+'-replay.log')
+    with log.open('w') as f:
+        p=subprocess.run(command,cwd=R,env=dict(os.environ,**c['environment']),stdout=f,stderr=subprocess.STDOUT)
+    reference=A/('sources.union.json' if key=='source_builder' else 'ontology.union.json')
+    result={'command':command,'cwd':str(R),'environment':c['environment'],'started_utc':start,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'elapsed_seconds':time.monotonic()-clock,'exit_code':p.returncode,'log':{'path':str(log),'sha256':sha(log)},'reference':{'path':str(reference),'sha256':sha(reference)},'output':{'path':str(output),'sha256':sha(output)} if output.exists() else None,'byte_identical_to_author_union':output.exists() and output.read_bytes()==reference.read_bytes()}
+    save(key+'-replay-receipt.json',result);print(json.dumps(result),flush=True);return result
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+    results=list(pool.map(run,['source_builder','ontology_builder']))
+assert all(sha(R/p)==v for p,v in c['runtime_sha256'].items())
+assert all(r['exit_code']==0 and r['byte_identical_to_author_union'] for r in results)
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.identifiers import _load_authority
+checks=[]
+for key in ['source_builder','ontology_builder']:
+    p=O/(key+'-reproduced.json'); loaded=_load_authority(p)
+    checks.append({'path':str(p),'sha256':sha(p),'terms':len(loaded['terms']),'sources':len(loaded['sources']),'canonical_consumer_accepts':True})
+save('consumer-replay-results.json',checks)
+print(json.dumps(checks,indent=2))

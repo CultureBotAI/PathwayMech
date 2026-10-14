@@ -1,0 +1,51 @@
+from pathlib import Path
+import datetime, hashlib, json, subprocess
+import yaml
+R=Path('/private/tmp/pathwaymech-next-258-20261014'); A=Path('/private/tmp/pathwaymech-next-258-authorities'); O=Path(__file__).parent
+BASE='495de27ec09f99367d1cdd5c457a5e54a93c9a0b'
+bindings={};issues=[]
+def read(p):
+    p=Path(p); b=p.read_bytes();bindings[str(p)]={'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)};return b
+def obj(p):return json.loads(read(p))
+def check(ok,scope,detail=None):
+    if not ok:issues.append({'scope':scope,'detail':detail})
+def save(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+oldterms={};newterms={};report={}
+for name in ['sources','ontology']:
+    old=json.loads(subprocess.check_output(['git','show',BASE+':data/identifier_authorities/'+name+'.json'],cwd=R));new=obj(A/(name+'.union.json'))
+    check(old['version']==new['version'],'version preserved',name)
+    for section in ['terms','sources']:
+        differences=[k for k,v in old[section].items() if k not in new[section] or new[section][k]!=v]
+        check(not differences,'baseline objects preserved',{'snapshot':name,'section':section,'differences':differences})
+    report[name]={'baseline_terms':len(old['terms']),'union_terms':len(new['terms']),'baseline_owners':len(old['sources']),'union_owners':len(new['sources']),'new_terms':sorted(set(new['terms'])-set(old['terms'])),'new_owners':sorted(set(new['sources'])-set(old['sources'])),'promoted_bytes_equal':read(R/'data/identifier_authorities'/f'{name}.json')==read(A/(name+'.union.json'))}
+    oldterms.update(old['terms']);newterms.update(new['terms'])
+planned=set(obj(A/'planned-identifiers.json'))
+check(set(newterms)-set(oldterms)==planned-set(oldterms),'exact planned identifier additions')
+manifest=obj(A/'identifier_sources.json')
+check(read(R/'conf/identifier_sources.json')==read(A/'identifier_sources.json'),'promoted manifest byte equality')
+sources=obj(A/'sources.union.json');ontology=obj(A/'ontology.union.json')
+newbindings=obj(A/'new-source-original-bindings.json')
+source_bindings=[]
+for row in newbindings:
+    ident=row['identifier'];entry=row['entry'];original=read(row['original']);selected=sources['terms'][ident];source=sources['sources'][selected['source']]
+    check(hashlib.sha256(original).hexdigest()==entry['sha256'],'new source original digest',ident)
+    check(selected['source']==entry['key'],'selected owner equals planned entry',ident)
+    check(all(source[k]==entry[k] for k in ['url','version','license','sha256']),'source metadata agrees with original manifest',ident)
+    if entry['kind']=='kegg-gene-flatfile':
+        check(source['native_gene']['original_text'].encode()==original,'whole original embedded exact',ident)
+        check(selected['label']==source['native_gene']['locus'] and selected['synonyms']==[] and selected['entity_type']=='native_gene','typed canonical gene term',ident)
+    source_bindings.append({'id':ident,'source_key':selected['source'],'source_kind':entry['kind'],'label':selected['label'],'sha256':entry['sha256'],'url':entry['url']})
+record=yaml.safe_load(read(R/'data/pathways/shikimate-degradation-ii.yaml'));assembled=obj('/private/tmp/pathwaymech-next-258-chemistry/assembled-record.json')
+check(record==assembled,'assembled JSON equals maintained YAML')
+check({record['id']}|{n['id'] for section in ['taxa','participants','reactions'] for n in record[section]}==planned,'maintained record exact selected identifier set')
+typed=[n for n in record['participants'] if n['id'].startswith('KEGG:')]
+check(all(n['category']=='gene' and n['label']==newterms[n['id']]['label'] for n in typed),'selected typed genes placement and labels')
+refids=[n['id'] for n in record['references']]
+check(len(refids)==len(set(refids)),'references unique')
+nodes={record['id']}|{n['id'] for section in ['taxa','participants','reactions'] for n in record[section]}
+for edge in record['mechanistic_edges']:
+    check(edge['subject'] in nodes and edge['object'] in nodes,'edge endpoint declaration',edge['id'])
+    check(all(e['reference_id'] in refids for e in edge['evidence']),'edge reference binding',edge['id'])
+save('union-audit-input-bindings.json',bindings)
+save('union-audit-results.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline_commit':BASE,'snapshots':report,'new_source_bindings':source_bindings,'maintained_record':{'id':record['id'],'edges':len(record['mechanistic_edges']),'named_ids':len(planned),'references':len(refids),'equals_assembled':record==assembled},'issues':issues})
+print(json.dumps({'snapshots':report,'issues':issues},indent=2))

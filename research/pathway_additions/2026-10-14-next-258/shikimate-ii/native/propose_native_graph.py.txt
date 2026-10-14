@@ -1,0 +1,54 @@
+from build_coverage import ROOT, OLD, frame, path, digest
+import json
+
+refs={};edges=[]
+qp=OLD/'originals'/'UniProt-Q9X5C9.json';qj=json.loads(qp.read_text())
+refs['UniProtKB:Q9X5C9']={'id':'UniProtKB:Q9X5C9','title':'UniProt Q9X5C9, ATCC 13032 QsuD','url':'https://rest.uniprot.org/uniprotkb/Q9X5C9.json','source_version':f"entry version {qj['entryAudit']['entryVersion']}; last annotation update {qj['entryAudit']['lastAnnotationUpdateDate']}",'source_sha256':digest(qp.read_bytes())}
+def native(fid):
+    rid='MetaCyc:'+fid;p=path(fid)
+    refs[rid]={'id':rid,'title':'MetaCyc '+fid+' complete native object','url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+fid,'source_version':'27.0','source_sha256':digest(p.read_bytes())}
+    return rid
+def ev(fid,s,loc):
+    assert len(s)<=400
+    return {'reference_id':native(fid),'source_assertion':s,'source_locator':loc}
+def edge(id,s,p,o,d,e,q=None):
+    row={'proposal_id':id,'subject':s,'predicate':p,'object':o,'description':d,'evidence':e}
+    if q:row['endpoint_qualifiers']=q
+    edges.append(row)
+edge('native258-qsuD-composition','UniProtKB:Q9X5C9','part_of','MetaCyc:CPLX-7981','The native QsuD complex contains two identical ATCC 13032 subunits; composition is not independent catalytic attribution to the monomer.',[
+    ev('CPLX-7981','CPLX-7981 contains two copies of MONOMER-15330.','/ptools-xml/Protein[@frameid="CPLX-7981"]/component'),
+    ev('MONOMER-15330','MONOMER-15330 has a UNIPROT unification link to Q9X5C9, belongs to CPLX-7981 and links gene G-11733.','/ptools-xml/Protein[@frameid="MONOMER-15330"]/dblink[dblink-db="UNIPROT"]; /component-of; /gene'),
+    ev('G-11733','G-11733 qsuD has accession-1 Cgl0424 and product MONOMER-15330; this is distinct from the R-strain locus cgR_0495.','/ptools-xml/Gene[@frameid="G-11733"]/accession-1; /product'),
+    {'reference_id':'UniProtKB:Q9X5C9','source_assertion':'The issuing Q9X5C9 record identifies Corynebacterium glutamicum ATCC 13032, NCBITaxon196627, and locus Cgl0424.','source_locator':'$.organism; $.genes[].orderedLocusNames'}])
+rid='DOI:10.2210/pdb2nlo/pdb';sp=OLD/'originals'/'RCSB-polymer_entity-2NLO-1.json'
+refs[rid]={'id':rid,'title':'PDB 2NLO polymer entity 1, ATCC 13032 QsuD structural sample','url':'https://data.rcsb.org/rest/v1/core/polymer_entity/2NLO/1','source_version':'RCSB JSON retrieved 2026-10-14','source_sha256':digest(sp.read_bytes())}
+sev={'reference_id':rid,'source_assertion':'2NLO entity 1 is an N-tagged wild-type Cgl0424 sample from ATCC 13032, expressed in BL21(DE3) from pETNHis. Its sequence is exactly the 19-residue extension MSGHHHHHHGSEQLYFQGA plus the complete 283-residue Q9X5C9.','source_locator':'$.entity_poly.pdbx_seq_one_letter_code_can; $.entity_src_gen[0]; prior QsuD-construct-identity.json exact sequence replay'}
+qev=ev('ENZRXN-17383','ENZRXN-17383 assigns CPLX-7981 to RXN-20484 with EV-EXP-IDA-PURIFIED-PROTEIN-HH and PMID18566515. Its separate PMID19376919 mutant evidence concerns strain R and is not merged into this purified ATCC 13032 claim.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-17383"]/enzyme; /reaction; /evidence[1]; /evidence[2]')
+qual={'endpoint':'subject','kind':'experimental_construct','description':'Recombinant ATCC 13032 QsuD homodimer preparation. The associated 2NLO structural sample has a 19-residue N-terminal extension containing His6; cleavage state across all kinetic preparations was not independently verified.','evidence':[qev,sev]}
+edge('native258-qsuD-catalysis','MetaCyc:CPLX-7981','catalyzes','RHEA:17742','QsuD catalyzes NAD-dependent shikimate oxidation. Native substrate Km is 46.6 mM. The curated complex comment reports NAD preference and >300-fold lower turnover with NADP; preference is not complete absence of NADP activity. The root chemistry audit verifies exact RXN-20484/RHEA:17742 molecular equivalence.',[
+    qev,
+    ev('RXN-20484','RXN-20484 consumes shikimate and NAD, producing 3-dehydroshikimate, NADH and a proton. Its native direction is PHYSIOL-LEFT-TO-RIGHT and PWY-6419 is its named pathway.','/ptools-xml/Reaction[@frameid="RXN-20484"]/left; /right; /reaction-direction; /in-pathway'),
+    ev('ENZRXN-17383','The native shikimate Km entry is 46600 micromolar, citing PMID18566515. This value is a curated native annotation rather than a new measurement.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-17383"]/km'),
+    ev('CPLX-7981','The native complex comment describes a homodimer, lower Km for quinate than shikimate, >3-fold greater catalytic efficiency for quinate, and >300-fold lower turnover with NADP than NAD.','/ptools-xml/Protein[@frameid="CPLX-7981"]/comment')],[qual])
+edge('native258-qsuB-enables','NCBIProtein:BAF53460.1','enables','RHEA:24849','The R-strain QsuB role is inferred from operon membership, sequence similarity and induction in the 2009 evidence. No purified R-QsuB assay is claimed; the ATCC 13869 QsuB assay is a different protein/strain context.',[
+    ev('MONOMER-15334','The qsuB product in strain R was uncharacterized: operon context, N-terminal 25% identity to fungal DHS dehydratases and induction support an inferred role. C-terminal HPPD similarity does not establish dioxygenase activity.','/ptools-xml/Protein[@frameid="MONOMER-15334"]/comment; /gene; /species'),
+    ev('ENZRXN-17385','ENZRXN-17385 links MONOMER-15334 to DHSHIKIMATE-DEHYDRO-RXN with EV-EXP-IGI and PMID19376919.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-17385"]/enzyme; /reaction; /evidence'),
+    ev('G-11737','G-11737 is qsuB, accession-1 cgR_0493, with product MONOMER-15334. This correct R-strain locus replaces the PWY-6419 narrative error linking fungal qutB/G-11736.','/ptools-xml/Gene[@frameid="G-11737"]/accession-1; /product; /common-name')])
+up=ROOT/'originals'/'UniProt-A4QH18.json';u=json.loads(up.read_text());ver=u['entryAudit']
+rid='UniProtKB:A4QH18';refs[rid]={'id':rid,'title':'UniProt A4QH18, strain R shikimate transporter ShiA','url':'https://rest.uniprot.org/uniprotkb/A4QH18.json','source_version':f"entry version {ver['entryVersion']}; last annotation update {ver['lastAnnotationUpdateDate']}",'source_sha256':digest(up.read_bytes())}
+edge('native258-shiA-membrane','UniProtKB:A4QH18','located_in','GO:0005886','Issuing UniProt places the R-strain ShiA protein at the cell membrane; the separate multipass topology prediction remains an inference, not an independently demonstrated topology. This is location of the transporter rather than location of the full catabolic pathway.',[
+    {'reference_id':rid,'source_assertion':'A4QH18 SUBCELLULAR LOCATION identifies cell membrane with ECO:0000269/PMID25406451; its GO cross-reference is GO:0005886, plasma membrane. Multipass topology has ECO:0000255.','source_locator':'$.comments[commentType="SUBCELLULAR LOCATION"]; $.uniProtKBCrossReferences[database="GO",id="GO:0005886"]'}])
+edge('downstream-interface','RHEA:24849','provides_input_for','MetaCyc:PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY','The terminal dehydration supplies protocatechuate to the explicitly linked downstream ortho-cleavage pathway. This interface does not add the downstream reactions as formal shikimate-II members or assert whole-route activity in every downstream-pathway organism.',[
+    ev('PWY-6419','PWY-6419 links its terminal protocatechuate product to PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY. The pathway comment identifies protocatechuate as the two-step route endpoint and a substrate for downstream mineralization.','/ptools-xml/Pathway[@frameid="PWY-6419"]/pathway-link; /comment'),
+    ev('PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY','The downstream pathway begins with PROTOCATECHUATE-34-DIOXYGENASE-RXN consuming 3-4-DIHYDROXYBENZOATE; its common name is protocatechuate degradation II (ortho-cleavage pathway).','/ptools-xml/Pathway[@frameid="PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY"]/reaction-layout[Reaction/@frameid="PROTOCATECHUATE-34-DIOXYGENASE-RXN"]/left-primaries; /common-name')])
+for e in edges:
+    for v in e['evidence']+sum([q['evidence'] for q in e.get('endpoint_qualifiers',[])],[]):assert len(v.get('source_assertion',''))<=400
+out={'status':'source-backed proposals; root owns final authority selection, chemistry mappings and primary-proposal integration','references':list(refs.values()),'edges':edges,'nodes':[
+ {'id':'MetaCyc:CPLX-7981','label':'quinate/shikimate dehydrogenase','category':'complex'},
+ {'id':'UniProtKB:Q9X5C9','label':'Quinate/shikimate dehydrogenase (NAD(+))','category':'protein'},
+ {'id':'NCBIProtein:BAF53460.1','label':'hypothetical protein cgR_0493 [Corynebacterium glutamicum R]','category':'protein'},
+ {'id':'UniProtKB:A4QH18','label':'Shikimate transporter','category':'protein'},
+ {'id':'GO:0005886','label':'plasma membrane','category':'cellular_component'}],
+ 'reactions':[{'id':'MetaCyc:PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY','label':'protocatechuate degradation II (ortho-cleavage pathway)','category':'pathway'}],
+ 'explicit_boundaries':['QsuD native G-11733 is ATCC 13032, not the R gene transcription target.','R QsuB is a qualified inferred assignment, not the ATCC 13869 purified assay.','ShiA/R and QsuR/A/B/D transcriptional mechanisms are supplied by primary proposals with exact gene endpoints.','UniProt formal H+-symport RHEA28973 is ECO0000305 curator inference; not copied as an experimentally measured proton stoichiometry.','ShiR promoter binding in UniProt is structured experimental annotation; primary abstract does not identify binding construct, so no unqualified direct binding edge proposed from abstract alone.']}
+(ROOT/'native-graph-proposal.json').write_text(json.dumps(out,indent=2)+'\n');print(len(edges),'edges',len(refs),'references')

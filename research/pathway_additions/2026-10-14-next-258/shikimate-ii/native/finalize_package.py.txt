@@ -1,0 +1,44 @@
+from pathlib import Path
+import hashlib,json,xml.etree.ElementTree as ET
+from collections import Counter
+ROOT=Path(__file__).resolve().parent
+def digest(b):return hashlib.sha256(b).hexdigest()
+def bind(p):p=Path(p);return {'path':str(p),'sha256':digest(p.read_bytes()),'bytes':p.stat().st_size}
+old=json.loads((ROOT/'source-reuse-verification.json').read_text())
+existing={r['path'] for r in old}
+pre=json.loads(Path('/private/tmp/pathwaymech-next-258-preflight/source-reuse-verification.json').read_text())
+for r in pre['descriptors']:
+    d=r['original']
+    if d['path'] in existing:continue
+    p=Path(d['path']);assert digest(p.read_bytes())==d['sha256'];old.append({**d,'verified_sha256':d['sha256'],'binding_owner':r['binding_owner']});existing.add(d['path'])
+for r in old:assert digest(Path(r['path']).read_bytes())==r['sha256']
+(ROOT/'source-reuse-verification.json').write_text(json.dumps(old,indent=2)+'\n')
+bindings={r['path']:{k:r[k] for k in ['path','sha256','bytes']} for r in old}
+for p in sorted((ROOT/'originals').iterdir()):
+    if p.is_file():bindings[str(p)]=bind(p)
+for r in json.loads((ROOT/'authority-candidates.json').read_text()):
+    p=Path(r['path']);assert digest(p.read_bytes())==r['sha256'];bindings[str(p)]=bind(p)
+(ROOT/'original-bindings.json').write_text(json.dumps(list(bindings.values()),indent=2)+'\n')
+ledger=json.loads((ROOT/'native-coverage.json').read_text());facts=json.loads((ROOT/'native-fact-dispositions-compact.json').read_text())['rows']
+observed=[]
+def slot(e):return {'tag':e.tag,'attributes':dict(e.attrib),'text':e.text or '', 'tail':e.tail or '', 'children':[slot(c) for c in e]}
+for r in ledger['objects']:
+    p=Path(r['path']);assert bind(p)['sha256']==r['sha256'];e=next(x for x in ET.parse(p).getroot() if x.get('frameid')==r['frameid']);counts=Counter()
+    assert str(p) in bindings and bindings[str(p)]['sha256']==r['sha256']
+    for c in e:
+        counts[c.tag]+=1;loc=f'/ptools-xml/{e.tag}[@frameid="{r["frameid"]}"]/{c.tag}[{counts[c.tag]}]'
+        observed.append((r['frameid'],loc,digest(json.dumps(slot(c),sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()),digest(ET.tostring(c,encoding='utf-8'))))
+expected=[(r['frameid'],r['locator'],r['projection_sha256'],r['serialized_slot_sha256']) for r in facts]
+assert observed==expected and len(expected)==ledger['native_slot_facts']
+assert all(r['retrieved'] for r in ledger['protein_gene_reference_closure'])
+proposal=json.loads((ROOT/'native-graph-proposal.json').read_text())
+assert len(proposal['edges'])==5
+for ref in proposal['references']:
+    assert any(d['sha256']==ref['source_sha256'] for d in bindings.values())
+receipts={'status':'pass','native_objects':len(ledger['objects']),'complete_native_slots_replayed':len(observed),'protein_gene_references_closed':len(ledger['protein_gene_reference_closure']),'formal_activities':len(ledger['direct_formal_activity_ids']),'proposals':len(proposal['edges']),'reference_hashes_bound':len(proposal['references']),'revalidated_reuse_descriptors':len(old),'bound_raw_original_paths':len(bindings),'methods':'Independent traversal of every source object/direct slot, exact recursive semantic SHA256 and serialized XML slot SHA256, bijective ordered comparison to saved fact ledger; all originals and local reference source hashes bound. This is an author replay, not independent adversarial review.'}
+(ROOT/'helper-checks.json').write_text(json.dumps(receipts,indent=2)+'\n')
+retained=[]
+for p in sorted(ROOT.iterdir()):
+    if p.is_file() and p.name!='artifact-manifest.json':retained.append(bind(p))
+(ROOT/'artifact-manifest.json').write_text(json.dumps({'retained_artifacts':retained,'external_only':['originals/','__pycache__/'],'retention_note':'Retain compact JSON/Markdown packages and helper source text; do not copy complete raw originals into the repository. Preserve exact raw paths/hashes and acquisition/failure receipts. Rename helper .py to .py.txt only with byte-identical binding.'},indent=2)+'\n')
+print(json.dumps(receipts,indent=2))

@@ -1,0 +1,63 @@
+from pathlib import Path
+from html.parser import HTMLParser
+import csv, hashlib, json, sys, datetime
+import yaml
+R=Path('/private/tmp/pathwaymech-next-258-20261014'); O=Path(__file__).parent
+record=yaml.safe_load((R/'data/pathways/shikimate-degradation-ii.yaml').read_text()); rid=record['id']
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.kgx import LOCAL_PREDICATE_CURIES
+class Parser(HTMLParser):
+    def __init__(self): super().__init__();self.edges=[];self.nodes=[];self.ids=set()
+    def handle_starttag(self,tag,attrs):
+        a=dict(attrs)
+        if 'id' in a:self.ids.add(a['id'])
+        if tag=='a' and 'graph-edge' in a.get('class','').split():self.edges.append(a)
+        if tag=='a' and 'graph-node' in a.get('class','').split():self.nodes.append(a)
+p=Parser();page=R/'pages/records/MetaCyc_PWY-6419.html';p.feed(page.read_text())
+issues=[]
+def check(ok,where,detail=None):
+    if not ok:issues.append({'where':where,'detail':detail})
+check(len(p.edges)==len(record['mechanistic_edges']),'SVG edge count')
+for i,(raw,svg) in enumerate(zip(record['mechanistic_edges'],p.edges),1):
+    check(svg['data-predicate']==raw['predicate'],'SVG predicate',raw['id'])
+    for role in ['subject','object']:
+        check(svg.get('data-'+role+'-id',svg['data-'+role])==raw[role],'SVG endpoint',raw['id']+':'+role)
+    check(svg['href']=='#mechanism-edge-'+str(i) and svg['href'][1:] in p.ids,'SVG evidence anchor',raw['id'])
+    for q in raw.get('endpoint_qualifiers',[]):
+        check(q['description'] in svg['aria-label'],'SVG qualifier scope',raw['id'])
+        check('mechanism-edge-'+str(i)+'-qualifier-'+q['endpoint'] in p.ids,'SVG qualifier anchor',raw['id'])
+edgefile=R/'pages/downloads/edges.tsv';nodefile=R/'pages/downloads/nodes.tsv'
+with edgefile.open() as f:rows=[row for row in csv.DictReader(f,delimiter='\t') if row['id'].startswith('pathwaymech:MetaCyc_PWY-6419_shikimate-ii-')]
+check(len(rows)==len(record['mechanistic_edges']),'KGX edge count')
+refs={r['id']:r for r in record['references']}
+for edge in record['mechanistic_edges']:
+    matches=[r for r in rows if r['id'].startswith('pathwaymech:MetaCyc_PWY-6419_'+edge['id']+'_')]
+    check(len(matches)==1,'KGX exact edge',edge['id'])
+    if len(matches)!=1:continue
+    row=matches[0]
+    for role in ['subject','object']:check(row[role]==edge[role],'KGX endpoint',edge['id']+':'+role)
+    check(row['predicate']==LOCAL_PREDICATE_CURIES[edge['predicate']],'KGX predicate',edge['id'])
+    check(row['description']==edge.get('description',''),'KGX description',edge['id'])
+    check(json.loads(row['evidence'])==edge['evidence'],'KGX complete evidence',edge['id'])
+    qualifiers=edge.get('endpoint_qualifiers',[])
+    check(json.loads(row['endpoint_qualifiers']) if row['endpoint_qualifiers'] else []==qualifiers,'KGX endpoint qualifiers',edge['id'])
+    # Avoid truth-value precedence when qualified endpoints are present.
+    check((json.loads(row['endpoint_qualifiers']) if row['endpoint_qualifiers'] else [])==qualifiers,'KGX complete endpoint qualifier payload',edge['id'])
+    cited={e['reference_id'] for e in edge['evidence']}|{e['reference_id'] for q in qualifiers for e in q['evidence']}
+    check(row['source_records'].split('|')==sorted(cited),'KGX source records',edge['id'])
+    check(json.loads(row['reference_metadata'])==[refs[i] for i in sorted(cited)],'KGX complete reference metadata',edge['id'])
+expected={rid:{'record_id':rid,'collection':'pathway','label':record['label']}}
+for section in ['taxa','participants','reactions']:
+    for n in record[section]:expected[n['id']]={'record_id':rid,'collection':section,**n}
+matched={}
+with nodefile.open() as f:
+    for row in csv.DictReader(f,delimiter='\t'):
+        if row['id'] not in expected:continue
+        contexts=json.loads(row['source_contexts']);selected=[c for c in contexts if c['record_id']==rid]
+        check(selected==[expected[row['id']]],'KGX exact local node context',row['id']);matched[row['id']]=row
+check(set(matched)==set(expected),'KGX complete node coverage')
+for n in record['participants']:
+    if n['id'].startswith('KEGG:'):check('biolink:Gene' in matched[n['id']]['category'].split('|'),'KGX typed gene category',n['id'])
+bindings={str(v):{'sha256':hashlib.sha256(v.read_bytes()).hexdigest(),'bytes':v.stat().st_size} for v in [page,nodefile,edgefile,R/'data/pathways/shikimate-degradation-ii.yaml',R/'src/pathwaymech/kgx.py',R/'src/pathwaymech/graph_view.py']}
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_id':rid,'svg_edges':len(p.edges),'svg_nodes':len(p.nodes),'kgx_edges':len(rows),'kgx_local_node_contexts':len(matched),'qualified_endpoints':sum(len(e.get('endpoint_qualifiers',[])) for e in record['mechanistic_edges']),'scope':'Exact payload and anchor fidelity only; this check does not certify biological representation choices. The initial downstream GO category is owned by the separate scientific review.','input_bindings':bindings,'issues':issues}
+(O/'graph-export-results.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2));assert not issues

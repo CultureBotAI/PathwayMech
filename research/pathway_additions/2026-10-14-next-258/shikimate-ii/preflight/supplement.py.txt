@@ -1,0 +1,23 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess
+B=Path(__file__).parent;D=B/'go-source-supplement';D.mkdir(exist_ok=True)
+roots=[Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),Path('/private/tmp/pathwaymech-next-258-20261014')]
+old=set((B/'patterns.txt').read_text().splitlines());go=json.loads((B/'go-boundary-evidence.json').read_text());patterns={}
+for gid,term in go['terms'].items():
+ for row in term['outgoing']:
+  if row['predicate'] in ['rdfs:label','oio:hasExactSynonym','oio:hasRelatedSynonym','oio:hasNarrowSynonym','oio:hasBroadSynonym','oio:hasDbXref'] and row['value'] not in old:patterns[row['value']]=str(B/'go-boundary-evidence.json')+'/'+gid+'/'+row['predicate']
+for p in ['KEGG:M00022','M00022','KEGG:M00039','M00039','RHEA:17737','RHEA:17739','RHEA:19259']:
+ if p not in old:patterns[p]='Fresh ignored DRAM or legacy chorismate review: related anabolic boundary, not candidate equivalence'
+patterns=dict(sorted(patterns.items()));(D/'patterns.txt').write_text('\n'.join(patterns)+'\n');(D/'pattern-sources.json').write_text(json.dumps(patterns,indent=2)+'\n');reports=[]
+for i,root in enumerate(roots):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(D/'patterns.txt'),'.','-g','!.git','-g','!.git/**','-g','!.venv','-g','!.venv/**'];stats={p:dict(lines=0,paths=set()) for p in patterns};path=D/f'root-{i}-matches.jsonl';started=datetime.datetime.now(datetime.timezone.utc).isoformat();proc=subprocess.Popen(cmd,cwd=root,text=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+ with path.open('w') as dest:
+  for line in proc.stdout:
+   item=json.loads(line)
+   if item['type']!='match':continue
+   d=item['data'];s=d['lines'].get('text','').lower();name=d['path']['text'];hits=[p for p in patterns if p.lower() in s]
+   for p in hits:stats[p]['lines']+=1;stats[p]['paths'].add(name)
+   dest.write(json.dumps(dict(path=name,line=d['line_number'],patterns=hits))+'\n')
+ err=proc.stderr.read();code=proc.wait();assert code in [0,1],err
+ reports.append(dict(root=str(root),started_utc=started,finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),command=cmd,exit_code=code,stderr=err,counts={p:dict(lines=v['lines'],paths=sorted(v['paths'])) for p,v in stats.items()},matches=dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest(),bytes=path.stat().st_size)))
+(D/'search.json').write_text(json.dumps(dict(patterns_per_root=len(patterns),reports=reports,ignored_and_hidden_included=True),indent=2)+'\n');print(json.dumps(dict(patterns=len(patterns),counts=[{p:dict(lines=v['lines'],files=len(v['paths'])) for p,v in r['counts'].items()} for r in reports])))

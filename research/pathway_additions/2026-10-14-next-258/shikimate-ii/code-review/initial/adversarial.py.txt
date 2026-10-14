@@ -1,0 +1,73 @@
+from pathlib import Path
+import copy,datetime,hashlib,importlib.util,json,subprocess,sys,tempfile
+ROOT=Path('/private/tmp/pathwaymech-next-258-20261014');OUT=Path(__file__).parent
+sys.path[:0]=[str(ROOT/'src'),str(ROOT)]
+from pathwaymech.kegg_gene import project,gene_metadata,validate_gene_metadata,validate_gene_assertions
+from pathwaymech.identifiers import _load_authority,identifier_errors
+from scripts import build_source_identifier_snapshot as builder
+spec=importlib.util.spec_from_file_location('author_fixtures',ROOT/'tests/test_kegg_gene_authority.py');fixture=importlib.util.module_from_spec(spec);spec.loader.exec_module(fixture)
+FILES=['src/pathwaymech/kegg_gene.py','src/pathwaymech/identifiers.py','scripts/build_source_identifier_snapshot.py','tests/test_kegg_gene_authority.py','docs/IDENTIFIERS.md']
+def digest(p):
+ b=p.read_bytes();return dict(path=str(p),bytes=len(b),sha256=hashlib.sha256(b).hexdigest())
+inputs=[digest(ROOT/f)for f in FILES];(OUT/'input-bindings.json').write_text(json.dumps(inputs,indent=2)+'\n')
+(OUT/'reviewed.diff').write_bytes(subprocess.check_output(['git','diff','--',*FILES],cwd=ROOT))
+results=[]
+def case(name,fn,accept=False):
+ try:
+  value=fn();actual=True;error=None
+ except Exception as e:actual=False;error=type(e).__name__+': '+str(e)
+ results.append(dict(name=name,expected_accept=accept,actual_accept=actual,pass_=accept==actual,error=error))
+ return actual
+BODY=fixture.BODY;URL=fixture.URL
+# Explore both parenthesis positions independently; only exact forward and complement syntax should pass.
+positions=['100..108','complement(100..108)','complement100..108)','complement(100..108','complement100..108','(100..108)','100..108)','(100..108','complement((100..108))','complement(100..108))','complement(100..108)extra','join(100..108)','100..108\u00a0']
+for value in positions:
+ case('position:'+value,lambda value=value:project(BODY.replace('100..108',value).encode(),URL),value in ['100..108','complement(100..108)'])
+for value in ['https://rest.kegg.jp/get/cgt:test_locus%00','https://rest.kegg.jp/get/cgt:test_locus;other','https://REST.KEGG.JP/get/cgt:test_locus','https://rest.kegg.jp/get/cgt:test_locus?','https://rest.kegg.jp/get/cgt:test_locus#','https://rest.kegg.jp/get/cgt:test_locus%2f','https://rest.kegg.jp/get/cgt%3Atest_locus']:
+ case('request:'+value,lambda value=value:project(BODY.encode(),value))
+# Independent raw/projection mutations, including booleans/float equality and extra nested structures.
+with tempfile.TemporaryDirectory(prefix='review-258-')as td:
+ p=Path(td);meta=fixture.metadata(p)
+ for key,value in [('sha256','A'*64),('version',True),('license',' '),('url',URL+'?x'),('extra','x')]:
+  x=copy.deepcopy(meta);x[key]=value;case('metadata:'+key,lambda x=x:validate_gene_metadata(x))
+ for path,value in [(('position','start'),100.0),(('aaseq','length'),2.0),(('ntseq','sequence'),'ATGAAATAA'),(('name_annotation',),['hypothetical protein']),(('fields',),list(reversed(meta['native_gene']['fields']))),(('new',),True)]:
+  x=copy.deepcopy(meta);target=x['native_gene']
+  for k in path[:-1]:target=target[k]
+  target[path[-1]]=value;case('derived:'+'.'.join(path),lambda x=x:validate_gene_metadata(x))
+ # Attack the builder and independently loaded consumer with malformed original and a correct digest.
+ malformed=BODY.replace('100..108','complement100..108)')
+ mdir=p/'malformed';mdir.mkdir();manifest,records,entries,record,recordpath=fixture.fixture(mdir)
+ entries[0]=fixture.entry(mdir,malformed);manifest.write_text(json.dumps(entries))
+ accepted=case('malformed-position:builder',lambda:builder.build_snapshot(manifest,records,mdir))
+ if accepted:
+  snap=builder.build_snapshot(manifest,records,mdir);sp=mdir/'snapshot.json';sp.write_text(json.dumps(snap));case('malformed-position:consumer',lambda:_load_authority(sp))
+  (OUT/'malformed-position-original.txt').write_text(malformed)
+  (OUT/'malformed-position-snapshot.json').write_text(json.dumps(snap,indent=2)+'\n')
+ # A physically complete owner must fail conflicts even with no selected gene terms.
+ for selected in [True,False]:
+  for reverse in [True,False]:
+   for change in ['name','locus-genome','extra-field','raw-newline','version']:
+    d=p/f'conflict-{selected}-{reverse}-{change}';d.mkdir();man,recs,ents,rec,rp=fixture.fixture(d)
+    changed={'name':BODY.replace('hypothetical','different'),'locus-genome':BODY.replace('T00501','T00502'),'extra-field':BODY.replace('DBLINKS','COMMENT'),'raw-newline':BODY[:-1]}.get(change,BODY)
+    ents.append(fixture.entry(d,changed,key='second',version='different'if change=='version'else ents[0]['version']))
+    if reverse:ents.reverse()
+    man.write_text(json.dumps(ents))
+    if not selected:rec['participants']=[];rp.write_text(fixture.yaml.safe_dump(rec))
+    case(f'conflict:{selected}:{reverse}:{change}',lambda man=man,recs=recs,d=d:builder.build_snapshot(man,recs,d))
+ # Consumer typed-owner changes without changing term identity.
+ d=p/'consumer';d.mkdir();man,recs,ents,rec,rp=fixture.fixture(d);snap=builder.build_snapshot(man,recs,d)
+ for problem in ['untyped-source','term-extra','term-delete-labelkind','term-gene-protein','request-remove-kind','unreferenced-conflict']:
+  x=copy.deepcopy(snap)
+  if problem=='untyped-source':x['terms'][fixture.IDENTIFIER]['source']='module';x['terms'][fixture.IDENTIFIER].pop('entity_type');x['terms'][fixture.IDENTIFIER].pop('label_kind')
+  elif problem=='term-extra':x['terms'][fixture.IDENTIFIER]['allowed_categories']=['gene']
+  elif problem=='term-delete-labelkind':x['terms'][fixture.IDENTIFIER].pop('label_kind')
+  elif problem=='term-gene-protein':x['terms'][fixture.IDENTIFIER]['entity_type']='protein'
+  elif problem=='request-remove-kind':x['sources']['gene']={k:v for k,v in x['sources']['gene'].items()if k not in ['kind','native_gene']}
+  else:x['sources']['unused']=gene_metadata(fixture.entry(d,BODY.replace('T00501','T00502'),key='unused'),d)
+  sp=d/(problem+'.json');sp.write_text(json.dumps(x));case('consumer:'+problem,lambda sp=sp:_load_authority(sp))
+ # Explicitly declared scientific limits are tested as limits, not failures.
+ for name,body in [('translation',BODY.replace('atgaaataa','atgcgataa')),('genome-crosswalk',BODY.replace('T00501','T99999'))]:
+  case('documented-limit:'+name,lambda body=body:project(body.encode(),URL),True)
+output=dict(started_inputs=inputs,results=results,case_count=len(results),unexpected_acceptances=[r['name']for r in results if not r['pass_']],documented_limits=['Translation and independent genome/organism crosswalk are outside this profile; raw assertions remain retained for scientific audit.'],finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),input_unchanged=inputs==[digest(ROOT/f)for f in FILES])
+(OUT/'adversarial-results.json').write_text(json.dumps(output,indent=2)+'\n')
+print(json.dumps({k:output[k]for k in ['case_count','unexpected_acceptances','input_unchanged']},indent=2))

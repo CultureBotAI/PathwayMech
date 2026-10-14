@@ -1,0 +1,85 @@
+{
+  "cwd": "/private/tmp/pathwaymech-next-258-20261014",
+  "baseline_commit": "495de27ec09f99367d1cdd5c457a5e54a93c9a0b",
+  "created_utc": "2026-10-14T20:16:04.930418+00:00",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONPATH": "/private/tmp/pathwaymech-next-258-20261014/src:/private/tmp/pathwaymech-next-258-20261014"
+  },
+  "source_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_source_identifier_snapshot.py",
+    "--manifest",
+    "/private/tmp/pathwaymech-next-258-authorities/identifier_sources.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-258-authorities/originals",
+    "--records",
+    "/private/tmp/pathwaymech-next-258-authorities/records",
+    "--output",
+    "/private/tmp/pathwaymech-next-258-authorities/sources.union.json"
+  ],
+  "ontology_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_ontology_identifier_snapshot.py",
+    "--source",
+    "GO=/private/tmp/pathwaymech-curation-authorities/go.db",
+    "--source",
+    "CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db",
+    "--source",
+    "NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+    "--source",
+    "RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db",
+    "--rhea-updates",
+    "/private/tmp/pathwaymech-next-258-authorities/baseline/rhea_identifier_updates.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-258-authorities/originals",
+    "--corpus",
+    "/private/tmp/pathwaymech-next-258-authorities/records",
+    "--include-id",
+    "GO:0008150",
+    "--include-id",
+    "GO:0006096",
+    "--include-id",
+    "GO:0005975",
+    "--output",
+    "/private/tmp/pathwaymech-next-258-authorities/ontology.union.json"
+  ],
+  "builder_sha256": {
+    "build_source_identifier_snapshot.py": "5b9d72448d9c6b798f4a054a5119c3cc8f000c693c4b26cf6d01e29100e959dd",
+    "build_ontology_identifier_snapshot.py": "fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81"
+  },
+  "selection": {
+    "scope": "All 254 baseline records copied from exact Git blobs plus an ID-only selector preserving all 4947 previous authority terms and 30 planned named IDs. Selector supplies no labels or scientific claims.",
+    "selector_file": "records/planned-authority-selection.yaml",
+    "selector_sha256": "44a88b2f0141893b19b1c300fd565cbf4ae35e286c4c60af7eb2cfa34941acdd",
+    "reconstruct_from": [
+      "retained-authority-identifiers.json",
+      "planned-identifiers.json"
+    ]
+  },
+  "assembled_record": {
+    "path": "/private/tmp/pathwaymech-next-258-chemistry/assembled-record.json",
+    "sha256": "389a5dc0d34b3179a3266b494dfe5acea263d4ad15ef085cd01094e392ebc397"
+  },
+  "candidate_source_bindings": [
+    {
+      "path": "/private/tmp/pathwaymech-next-258-authorities/authority-candidates.json",
+      "sha256": "a7445569c0654701b167fcf58cfe255318f08221dfd68869025bd1bfade0a6c7"
+    }
+  ],
+  "manifest_sha256": "37a280d8bcdfbdb79485b14c69ecbe8c8238d89e6be494143c402105ea97e877",
+  "old_original_cache": "/private/tmp/pathwaymech-next-257-authorities/originals",
+  "staging_helper": {
+    "path": "/private/tmp/pathwaymech-next-258-authorities/prepare_union.py",
+    "sha256": "d9b2db79ed359d1036ff6bc61f19ba6acda457d95a441492a9f88b3ca624cf0f"
+  },
+  "runtime_sha256": {
+    "scripts/build_source_identifier_snapshot.py": "5b9d72448d9c6b798f4a054a5119c3cc8f000c693c4b26cf6d01e29100e959dd",
+    "src/pathwaymech/kegg_gene.py": "cd55029144f0ed438ca026a607423956d21dae5ccc28b34b13523f68e6d1ec1d",
+    "src/pathwaymech/identifiers.py": "d1a014fa77c4f1affd82ce999f98334493e0363dd250fd546f34e5fa26253165"
+  },
+  "intentional_builder_change": "Strict kegg-gene-flatfile support, with full native payload verification; prior source types preserved and independently regression-tested."
+}

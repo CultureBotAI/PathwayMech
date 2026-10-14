@@ -1,0 +1,16 @@
+from acquire_identities import request
+from acquire import *
+import time
+rows=[]
+for a in ['A4QH18','A4QH19']:
+ rows.append(request('UniProt-'+a,'https://rest.uniprot.org/uniprotkb/'+a+'.json'))
+for a in ['BAF55534.1','BAF55535.1','BAF53462.1']:
+ url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id='+a+'&rettype=gb&retmode=xml';row={'id':'NCBIProtein:'+a,'url':url,'retrieved_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(url,timeout=60) as r:b=r.read();row.update(status=r.status,final_url=r.url)
+  e=ET.fromstring(b);assert e.findtext('.//GBSeq_accession-version')==a;p=ORIG/('NCBIProtein-'+a+'.xml');p.write_bytes(b);row.update(path=str(p),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b))
+ except Exception as e:row['error']=str(e)
+ rows.append(row);time.sleep(.5)
+(ROOT/'acquisition-transport-individual.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows:print(r.get('name',r.get('id')),r.get('bytes',r.get('error')))
+batch(['ENZRXN0-3081'],'boundary-activity')

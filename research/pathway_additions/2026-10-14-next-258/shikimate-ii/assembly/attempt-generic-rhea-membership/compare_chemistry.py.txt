@@ -1,0 +1,140 @@
+from pathlib import Path
+import collections
+import datetime
+import hashlib
+import json
+import re
+import sqlite3
+import xml.etree.ElementTree as E
+
+from rdkit import Chem, rdBase
+from rdkit.Chem import rdMolDescriptors
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-258-20261014')
+A = Path('/private/tmp/pathwaymech-curation-authorities')
+OLD = Path('/private/tmp/pathwaymech-next-257-chemistry')
+N = Path('/private/tmp/pathwaymech-next-257-native/originals')
+NEW = Path('/private/tmp/pathwaymech-next-258-native')
+
+def sha(path):
+    h = hashlib.sha256()
+    with path.open('rb') as stream:
+        while block := stream.read(1024 * 1024):
+            h.update(block)
+    return h.hexdigest()
+
+def bind(path):
+    return dict(path=str(path), bytes=path.stat().st_size, sha256=sha(path))
+
+authority = json.loads((R / 'data/identifier_authorities/ontology.json').read_text())
+chebi_source = bind(A / 'chebi.db')
+assert chebi_source['sha256'] == authority['sources']['chebi-255']['sha256']
+db = sqlite3.connect('file:' + str(A / 'chebi.db') + '?mode=ro', uri=True)
+def term(identifier):
+    keys = {'rdfs:label', 'chemrof:inchi_string', 'chemrof:inchi_key_string',
+            'chemrof:charge', 'chemrof:generalized_empirical_formula', 'chemrof:smiles_string'}
+    return {key: value or obj for key, obj, value in db.execute(
+        'select predicate,object,value from statements where subject=?', (identifier,)) if key in keys}
+
+old_descriptors = {x['frame']: x for x in json.loads((OLD / 'native-compound-acquisition.json').read_text())}
+new_descriptors = {x['frameid']: x for x in json.loads((NEW / 'acquisition-new-native-escalated.json').read_text())}
+mapping = {'SHIKIMATE': '36208', '3-DEHYDRO-SHIKIMATE': '16630',
+           '3-4-DIHYDROXYBENZOATE': '36241', 'WATER': '15377',
+           'PROTON': '15378', 'NAD': '57540', 'NADH': '57945'}
+chemical_rows = []
+for frame, number in mapping.items():
+    source = NEW / 'originals' / ('META-' + frame + '.xml') if frame == 'SHIKIMATE' else OLD / 'originals' / ('META-' + frame + '.xml')
+    descriptor = new_descriptors[frame] if frame == 'SHIKIMATE' else old_descriptors[frame]
+    assert sha(source) == descriptor['sha256']
+    doc = E.parse(source).getroot()
+    native = doc.find('Compound')
+    assert native.get('frameid') == frame and native.get('detail') == 'full'
+    assert doc.find('metadata/PGDB').get('version') == '27.0'
+    identifier = 'CHEBI:' + number
+    pinned = term(identifier)
+    inchi = native.findtext('inchi')
+    mol = Chem.MolFromInchi(inchi)
+    assert mol is not None
+    checks = dict(direct_chebi_xref=number in [x.findtext('dblink-oid') for x in native.findall('dblink') if x.findtext('dblink-db') == 'CHEBI'],
+                  exact_inchi=inchi == pinned['chemrof:inchi_string'],
+                  exact_inchi_key=native.findtext('inchi-key').removeprefix('InChIKey=') == pinned['chemrof:inchi_key_string'],
+                  charge=Chem.GetFormalCharge(mol) == int(pinned['chemrof:charge']))
+    assert all(checks.values()), (frame, checks)
+    chemical_rows.append(dict(native_id='MetaCyc:' + frame, selected_id=identifier,
+                              native_source=bind(source), pinned=pinned, checks=checks,
+                              interpreted=dict(formula=rdMolDescriptors.CalcMolFormula(mol),
+                                               charge=Chem.GetFormalCharge(mol),
+                                               isomeric_smiles=Chem.MolToSmiles(mol, isomericSmiles=True))))
+
+rhea = json.loads((B / 'rhea-original-projection.json').read_text())
+downloads = json.loads((A / 'rhea-downloads.json').read_text())
+for descriptor in [rhea['original'], rhea['directions_original']]:
+    assert sha(Path(descriptor['path'])) == descriptor['sha256']
+    assert any(x['sha256'] == descriptor['sha256'] for x in downloads)
+nodes = rhea['nodes']; NS = 'http://rdf.rhea-db.org/'
+def side(uri):
+    result = []
+    for key, values in nodes[uri].items():
+        if key.startswith('contains'):
+            assert re.fullmatch(r'contains[1-9][0-9]*', key), (uri, key)
+            for participant in values:
+                compound_uri = nodes[participant]['compound'][0]
+                compound = nodes[compound_uri]
+                result.append(dict(id=compound['accession'][0], coefficient=int(key[8:]),
+                                   formula=compound['formula'][0], charge=int(compound['charge'][0]),
+                                   locator=[uri + ' rh:' + key + ' ' + participant,
+                                            participant + ' rh:compound ' + compound_uri]))
+    assert result
+    return result
+
+def totals(items):
+    counter = collections.Counter()
+    for item in items:
+        atoms = re.findall(r'([A-Z][a-z]*)([0-9]*)', item['formula'])
+        assert ''.join(a + n for a, n in atoms) == item['formula']
+        for atom, count in atoms:
+            counter[atom] += int(count or 1) * item['coefficient']
+        counter['charge'] += item['charge'] * item['coefficient']
+    return dict(counter)
+
+reactions = []
+for frame, master, selected in [('RXN-20484', '17741', '17742'), ('DHSHIKIMATE-DEHYDRO-RXN', '24848', '24849')]:
+    source = N / ('META-' + frame + '.xml')
+    native = E.parse(source).getroot().find('Reaction')
+    assert native.get('frameid') == frame and native.get('detail') == 'full'
+    native_sides = {name: [dict(frame=x.find('Compound').get('frameid'),
+                               explicit_coefficient=x.findtext('coefficient'),
+                               interpreted_coefficient=int(x.findtext('coefficient') or 1)) for x in native.findall(name)] for name in ['left', 'right']}
+    selected_node = nodes[NS + selected]
+    assert selected_node['substrates'] == [NS + master + '_L'] and selected_node['products'] == [NS + master + '_R']
+    left, right = side(NS + master + '_L'), side(NS + master + '_R')
+    assert totals(left) == totals(right)
+    for key, items in [('left', left), ('right', right)]:
+        assert collections.Counter({'CHEBI:' + mapping[x['frame']]: x['interpreted_coefficient'] for x in native_sides[key]}) == collections.Counter({x['id']: x['coefficient'] for x in items})
+    assert native.findtext('reaction-direction') == 'PHYSIOL-LEFT-TO-RIGHT'
+    reactions.append(dict(native_frame=frame, native_source=bind(source), native_sides=native_sides,
+                          native_direction=native.findtext('reaction-direction'),
+                          native_ec=[x.text for x in native.findall('ec-number')],
+                          selected='RHEA:' + selected, family=rhea['directions'][master],
+                          left=left, right=right, atom_charge_totals=totals(left),
+                          whole_sides_equal=True, balanced=True,
+                          decision='Complete molecular sides and direction agree. Pathway membership and enzyme specificity require their own source evidence.'))
+
+boundary_source = Path(new_descriptors['RXN-11174']['path'])
+assert sha(boundary_source) == new_descriptors['RXN-11174']['sha256']
+boundary = E.parse(boundary_source).getroot().find('Reaction')
+boundary_sides = {name: [x.find('Compound').get('frameid') for x in boundary.findall(name)] for name in ['left', 'right']}
+assert 'NAD-P-OR-NOP' in boundary_sides['left'] and 'NADH-P-OR-NOP' in boundary_sides['right']
+result = dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              scope='Author-side complete core chemical comparison; not independent scientific approval.',
+              software=dict(rdkit=rdBase.rdkitVersion), chebi_version='255', chebi_original=chebi_source,
+              rhea_evidence_version='142', rhea_original=rhea['original'],
+              concrete_mappings=chemical_rows, reactions=reactions,
+              excluded_crossref=dict(native_source=bind(boundary_source), native_sides=boundary_sides,
+                                     reason='RXN-11174 has NAD(P) classes and is not an exact whole-reaction equivalent of RXN-20484/RHEA:17742 despite its Rhea dblink.'),
+              limits=['Pinned Rhea 139 supplies selected canonical labels; Rhea 142 RDF supplies independently downloaded detailed molecular evidence.',
+                      'A whole-equation match does not equate native EC1.1.1.24 with Rhea EC1.1.1.282 enzyme scope.',
+                      'No broad NAD(P) classes are silently narrowed to NAD-specific molecules.'])
+(B / 'chemical-identity-and-reaction-audit.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(dict(concrete_structures=len(chemical_rows), exact_reactions=len(reactions), excluded_broad_reaction='MetaCyc:RXN-11174')))

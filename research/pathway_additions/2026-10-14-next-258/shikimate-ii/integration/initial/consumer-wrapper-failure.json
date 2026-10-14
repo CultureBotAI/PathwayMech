@@ -1,0 +1,8 @@
+{
+  "exit_code": 1,
+  "recorded_utc": "2026-10-14T20:27:23Z",
+  "error": "KeyError: terms in replay_authorities.py summary after source/ontology builders had both succeeded and produced byte-identical snapshots",
+  "cause": "Reviewer mistakenly treated _load_authority return value as whole snapshot; the function returns only the terms mapping. Source snapshot validation itself completed before count formatting failed.",
+  "correction": "Preserve original helper and output receipts. Run replay_consumer.py separately against the already-generated unchanged snapshot bytes; do not rerun builders.",
+  "scope": "Reviewer harness summary failure, not a canonical builder or consumer defect. No raw terminal transcript is claimed in this receipt."
+}

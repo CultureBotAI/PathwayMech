@@ -1,0 +1,130 @@
+from pathlib import Path
+import base64
+import datetime
+import hashlib
+import json
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-258-20261014')
+DEST = ROOT / 'research/pathway_additions/2026-10-14-next-258/shikimate-ii'
+EXTERNAL = Path('/private/tmp/pathwaymech-next-258-retention')
+GROUPS = {name: {'files': [], 'excluded': [], 'input_manifests': []} for name in (
+    'preflight', 'native', 'primary', 'adapter', 'supplemental-search')}
+
+
+def binding(path):
+    raw = Path(path).read_bytes()
+    return {'path': str(path), 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}
+
+
+def item(group, original, retained, expected=None, reason='listed compact source-package artifact'):
+    original = Path(original)
+    current = binding(original)
+    if expected:
+        assert current['sha256'] == expected['sha256'], (original, 'hash drift')
+        assert current['bytes'] == expected['bytes'], (original, 'size drift')
+    assert not Path(retained).is_absolute() and '..' not in Path(retained).parts
+    if original.suffix == '.py' and not retained.endswith('.py.txt'):
+        retained += '.txt'
+    GROUPS[group]['files'].append({
+        'original': current, 'requested_retained_path': retained, 'reason': reason,
+    })
+
+
+def manifest(group, path, key='files', prefix='', mode='path'):
+    path = Path(path)
+    data = json.loads(path.read_text())
+    GROUPS[group]['input_manifests'].append(binding(path))
+    item(group, path, prefix + path.name, reason='byte-identical original package manifest')
+    for row in data[key]:
+        source = Path(row['path']) if mode == 'path' else path.parent / row['file']
+        relative = row.get('retain_as', source.relative_to(path.parent).as_posix())
+        if group == 'adapter' and relative == 'replay/authority.json':
+            actual = binding(source)
+            assert actual['sha256'] == row['sha256'] and actual['bytes'] == row['bytes']
+            GROUPS[group]['excluded'].append({**actual, 'reason': 'Generated authority snapshot remains external by root instruction.'})
+        elif group == 'supplemental-search' and row.get('retain') == 'external original match context':
+            actual = binding(source)
+            assert actual['sha256'] == row['sha256'] and actual['bytes'] == row['bytes']
+            GROUPS[group]['excluded'].append({**actual, 'reason': row['retain']})
+        else:
+            item(group, source, prefix + relative, row)
+    for row in data.get('external_only', []):
+        GROUPS[group]['excluded'].append({'original_manifest_external_only': row, 'reason': 'External-only boundary preserved from source manifest.'})
+
+
+manifest('preflight', '/private/tmp/pathwaymech-next-258-preflight/fresh/artifact-manifest.json')
+manifest('native', '/private/tmp/pathwaymech-next-258-native/artifact-manifest.json', key='retained_artifacts')
+manifest('adapter', '/private/tmp/pathwaymech-next-258-kegg-gene/artifact-manifest.json')
+manifest('supplemental-search', '/private/tmp/pathwaymech-next-258-primary/supplemental-search/artifact-manifest.json', mode='file')
+primary = Path('/private/tmp/pathwaymech-next-258-primary')
+manifest('primary', primary / 'author/package/package-index.json', prefix='author/package/', mode='file')
+manifest('primary', primary / 'package/package-index.json', prefix='package/', mode='file')
+manifest('primary', primary / 'structure/package-index.json', prefix='structure/')
+item('primary', primary / 'author/HANDOFF.md', 'author/HANDOFF.md', reason='Frozen current author handoff')
+item('primary', primary / 'HANDOFF.md', 'HANDOFF.md', reason='Frozen earlier author research handoff; historical scope limitations preserved')
+item('preflight', __file__, 'retention-builder.py.txt', reason='Reproducible exact-byte retention helper; author packaging only')
+
+date = datetime.datetime.now(datetime.timezone.utc).isoformat()
+summary = {'created_utc': date, 'role': 'Author evidence retention; not independent review',
+           'scope': 'Frozen preflight, native, primary, adapter and supplemental-search packages',
+           'worktree': str(ROOT), 'groups': []}
+for name, group in GROUPS.items():
+    directory = DEST / name
+    directory.mkdir(parents=True, exist_ok=True)
+    occupied = set()
+    mappings = []
+    for entry in group['files']:
+        source = Path(entry['original']['path'])
+        raw = source.read_bytes()
+        assert binding(source) == entry['original']
+        check = subprocess.run(['git', 'diff', '--no-index', '--check', '--', '/dev/null', str(source)],
+                               cwd=ROOT, capture_output=True, text=True)
+        assert check.returncode in (0, 1, 2, 3) and not check.stderr, (source, check.returncode, check.stdout, check.stderr)
+        whitespace_error = bool(check.stdout.strip())
+        relative = entry['requested_retained_path']
+        encoding = 'identity'
+        if whitespace_error:
+            relative += '.bytes.json'
+            encoding = 'base64'
+            output = json.dumps({
+                'encoding': encoding, 'original_path': str(source),
+                'original_sha256': entry['original']['sha256'], 'original_bytes': len(raw),
+                'reason': 'Preserve original bytes with whitespace errors without altering their contents.',
+                'payload_base64': base64.b64encode(raw).decode('ascii'),
+            }, indent=2).encode() + b'\n'
+        else:
+            output = raw
+        path = directory / relative
+        assert path not in occupied
+        occupied.add(path)
+        if path.exists():
+            assert path.read_bytes() == output, (path, 'refuse overwrite of a different retained file')
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(output)
+        row = {**entry, 'retained': binding(path), 'encoding': encoding}
+        if whitespace_error:
+            row['original_whitespace_check'] = {'exit_code': check.returncode, 'stdout': check.stdout, 'stderr': check.stderr}
+        stored = path.read_bytes()
+        recovered = base64.b64decode(json.loads(stored)['payload_base64'], validate=True) if encoding == 'base64' else stored
+        assert recovered == raw and hashlib.sha256(recovered).hexdigest() == entry['original']['sha256']
+        mappings.append(row)
+    output_manifest = directory / 'retention-manifest.json'
+    payload = {'created_utc': date, 'role': summary['role'], 'package': name,
+               'original_package_manifests': group['input_manifests'], 'mappings': mappings,
+               'external_only': group['excluded'], 'verification': {'all_recovered_bytes_equal_originals': True,
+                'mapped_files': len(mappings), 'original_bytes': sum(row['original']['bytes'] for row in mappings),
+                'retained_bytes': sum(row['retained']['bytes'] for row in mappings),
+                'base64_wrappers': sum(row['encoding'] == 'base64' for row in mappings)}}
+    output_manifest.write_text(json.dumps(payload, indent=2) + '\n')
+    summary['groups'].append({'package': name, 'manifest': binding(output_manifest), **payload['verification']})
+    print(json.dumps(summary['groups'][-1]), flush=True)
+summary['total_mapped_files'] = sum(row['mapped_files'] for row in summary['groups'])
+summary['total_original_bytes'] = sum(row['original_bytes'] for row in summary['groups'])
+summary['total_retained_bytes'] = sum(row['retained_bytes'] for row in summary['groups'])
+summary['total_base64_wrappers'] = sum(row['base64_wrappers'] for row in summary['groups'])
+summary['excluded_boundary'] = 'No raw downloaded originals, generated authority snapshots, complete baseline record copies or independent review records were retained here.'
+(DEST / 'preflight/retention-union.json').write_text(json.dumps(summary, indent=2) + '\n')
+(EXTERNAL / 'retention-union.json').write_text(json.dumps(summary, indent=2) + '\n')
+print(json.dumps({'status': 'pass', 'summary': str(DEST / 'preflight/retention-union.json'), 'files': summary['total_mapped_files'], 'wrappers': summary['total_base64_wrappers']}), flush=True)

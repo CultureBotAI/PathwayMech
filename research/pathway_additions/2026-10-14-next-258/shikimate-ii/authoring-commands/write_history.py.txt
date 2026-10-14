@@ -1,0 +1,32 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-258-20261014')
+PY = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+environment = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+    PYTHONPATH=str(R / 'src') + ':' + str(R))
+items = [
+    ['--kind', 'record', '--slug', 'shikimate-degradation-ii', '--target-root', 'data/pathways',
+     '--event', 'CREATE', '--outcome', 'changed',
+     '--summary', 'Add the NAD-dependent shikimate degradation II mechanism',
+     '--details', 'Created MetaCyc:PWY-6419 with two formal reactions, exact chemical mappings, strain-specific enzyme and regulatory evidence, and the existing GO:0019618 downstream interface. The author evidence dossier retains complete source bindings, duplicate checks including ignored and hidden files, construct limitations, native annotation corrections and all selected identifiers. Full repository gates and independent scientific review follow this initial curation event; this event does not claim completed review or source exhaustion.'],
+    ['--kind', 'infrastructure', '--slug', 'kegg-gene-authority', '--path', 'src/pathwaymech/kegg_gene.py',
+     '--event', 'CREATE', '--outcome', 'changed',
+     '--summary', 'Validate complete KEGG CDS authority records for gene endpoints',
+     '--details', 'Added a strict kegg-gene-flatfile profile that binds an official exact request to a complete native CDS object, preserves the whole original and derived identity fields, verifies the original hash again in the consumer, rejects incompatible owners before selection, and requires gene placement with canonical native locus labels. Existing KEGG module, reaction and compound profiles remain covered by regression tests. Author verification passed 432 relevant tests and all four real issuing originals; independent code review and corpus gates follow.']]
+receipts = []
+for index, arguments in enumerate(items):
+    command = [PY, '-B', 'scripts/new_history_record.py'] + arguments + ['--actor-name', 'codex', '--model', 'gpt-6', '--agent-tool', 'codex']
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    result = subprocess.run(command, cwd=R, env=environment, capture_output=True, text=True)
+    receipt = dict(command=command, cwd=str(R), started_utc=started, exit_code=result.returncode,
+                   stdout=result.stdout, stderr=result.stderr)
+    receipts.append(receipt)
+    (B / 'history-write-receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    print(json.dumps(receipt), flush=True)
+    assert result.returncode == 0

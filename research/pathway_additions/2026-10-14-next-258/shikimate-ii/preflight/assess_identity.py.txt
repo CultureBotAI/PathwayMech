@@ -1,0 +1,71 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,re,sqlite3,subprocess,xml.etree.ElementTree as E
+import yaml
+B=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-258-20261014');P=Path('/private/tmp/pathwaymech-next-257-preflight');N=Path('/private/tmp/pathwaymech-next-257-native/originals')
+def sha(d):return hashlib.sha256(d).hexdigest()
+def bind(p):
+ p=Path(p);d=p.read_bytes();return dict(path=str(p),sha256=sha(d),bytes=len(d))
+def save(n,o):(B/n).write_text(json.dumps(o,indent=2)+'\n')
+def obj(p):return next(x for x in E.fromstring(Path(p).read_bytes()) if x.tag!='metadata')
+def projection(e):return dict(tag=e.tag,attributes=dict(e.attrib),text=(e.text or '').strip(),children=[projection(x) for x in e])
+def refs(e):return [dict(tag=x.tag,frame=x.get('frameid')) for x in e.iter() if x.get('frameid')]
+path=P/'originals/META-PWY-6419.xml';q=obj(path);assert q.get('frameid')=='PWY-6419' and q.get('detail')=='full'
+expected=json.loads((P/'verified-reused-boundaries.json').read_text());match=[x for x in expected if x['path']==str(path)];assert len(match)==1 and bind(path)['sha256']==match[0]['sha256']
+slot_notes={
+'parent':('identity_context','Shikimate-Degradation is the broad native parent; selected instance remains PWY-6419.'),
+'credits':('provenance','Native creation and curator metadata; not biological mechanism.'),
+'comment':('split_narrative','Nine narrative facts are separately dispositioned below. Incorrect fungal G-11736/qutB operon link is excluded.'),
+'pathway-link':('downstream_context','Protocatechuate ortho cleavage is a downstream interface, not a third formal member.'),
+'evidence':('direct_native_support','Native EV-EXP-IDA with PMID19376919 supports source pathway annotation; primary R-strain scope must be preserved.'),
+ 'taxonomic-range':('broad_range_context','Bacillota and Actinomycetota ranges are database scope, not experimental occurrence in every member.'),
+'reaction-ordering':('include_core','DHSHIKIMATE-DEHYDRO-RXN follows RXN-20484.'),
+'species':('scoped_occurrence','C. glutamicum species and strain R are separate native context assertions; preserve the distinct taxon rank.'),
+'reaction-layout':('include_core','Both formal members are traversed L2R; layout primaries do not replace complete biochemical sides.'),
+'common-name':('canonical_identity','Exact canonical candidate label is shikimate degradation II.'),
+'reaction-list':('include_core','Exactly two members: RXN-20484 and DHSHIKIMATE-DEHYDRO-RXN.')}
+slots=[];count=collections.Counter()
+for child in q:
+ count[child.tag]+=1;status,reason=slot_notes[child.tag];raw=json.dumps(projection(child),sort_keys=True,separators=(',',':')).encode()
+ slots.append(dict(locator=f'Pathway[@frameid="PWY-6419"]/{child.tag}[{count[child.tag]}]',tag=child.tag,disposition=status,reason=reason,projection_sha256=sha(raw),native_refs=refs(child)))
+narrative=[
+ ('biosynthetic_background','Biosynthetic shikimate and ARO-PWY references are background, not catabolic route members.'),
+ ('two_step_route','Shikimate is transformed to protocatechuate through the exact two listed reactions.'),
+ ('cofactor_subtype','This native subtype uses NAD-dependent oxidation; the PQQ-dependent I route is distinct.'),
+ ('taxonomic_generalization','Do not promote the source Gram-positive/negative generalization into universal organism edges.'),
+ ('growth','PMID19376919 source-reported C. glutamicum shikimate growth is prioritized for full primary R-strain interpretation.'),
+ ('dual_substrate_QsuD','QsuD may oxidize either quinate or shikimate; only shikimate oxidation is formal PWY-6419 membership.'),
+ ('second_enzyme','Native reaction/activity/protein/gene chain identifies R-strain qsuB/G-11737, with experimental assignment limits.'),
+ ('wrong_gene_link','The native comment incorrectly links G-11736/qutB as a C. glutamicum enzyme gene. That issuing object is fungal Aspergillus nidulans QutB; exclude this link rather than silently import it.'),
+ ('regulation_and_transport','qsu operon induction and QsuR regulation require primary interpretation; 2009 QsuA transporter assignment is inferred and distinct from later experimentally tested cgR_2523 ShiA.')]
+chain=[]
+for f in ['RXN-20484','ENZRXN-17383','CPLX-7981','MONOMER-15330','G-11733','DHSHIKIMATE-DEHYDRO-RXN','ENZRXN-17385','MONOMER-15334','G-11737','G-11736','MONOMER-15333']:
+ p=N/f'META-{f}.xml';o=obj(p);keep=['common-name','gene','enzyme','reaction','left','right','component','component-of','product','reaction-direction','ec-number','dblink','species','synonym','evidence','citation'];chain.append(dict(source=bind(p),identity=dict(o.attrib),projection=[projection(c) for c in o if c.tag in keep],omitted_direct_slots=[c.tag for c in o if c.tag not in keep]))
+assert [x.get('frameid') for x in q.find('reaction-list')]==['RXN-20484','DHSHIKIMATE-DEHYDRO-RXN']
+save('native-identity-facts.json',dict(candidate='MetaCyc:PWY-6419',source=bind(path),complete_direct_slot_count=len(q),direct_slots=slots,narrative_facts=[dict(key=k,disposition=v) for k,v in narrative],identity_chain=chain,scope='Fresh original-byte reparse for identity and route boundaries; root native/primary ledgers own complete scientific mechanism coverage.'))
+# Re-run exact outgoing/incoming queries against the original pinned SQL and rehash it.
+gop=Path('/private/tmp/pathwaymech-curation-authorities/go.db');g=bind(gop);assert g['sha256']=='018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd'
+con=sqlite3.connect('file:'+str(gop)+'?mode=ro',uri=True);con.row_factory=sqlite3.Row
+sql='SELECT subject,predicate,object,value FROM statements WHERE subject=? ORDER BY predicate,object,value';incoming='SELECT subject,predicate,object,value FROM statements WHERE object=? ORDER BY subject,predicate'
+go={i:dict(outgoing=[dict(x) for x in con.execute(sql,(i,))],incoming=[dict(x) for x in con.execute(incoming,(i,))]) for i in ['GO:0019633','GO:0052734']};con.close()
+save('go-boundary-evidence.json',dict(source=g,queries=dict(outgoing=sql,incoming=incoming),terms=go,interpretation='GO:0019633 is broader and narrow-matches both shikimate variants; GO:0052734 is molecular function, not a two-step pathway identity.'))
+# Read every closest maintained whole record, retain exact boundary projection and per-record reason.
+reasons={
+'chorismate-biosynthesis-i.yaml':'Anabolic route from phosphoenolpyruvate/erythrose4P to chorismate; its NADPH-dependent shikimate formation is not NAD-dependent catabolism to protocatechuate.',
+'quinate-degradation-i.yaml':'PQQ-dependent three-member quinate route: different initial substrate and cofactor.',
+'quinate-degradation-ii.yaml':'NAD(P)-class three-member quinate route: different initial substrate and formal DHQ-dehydration member. Shared QsuD/QsuB and regulator references do not duplicate the two-member shikimate boundary.',
+'shikimate-degradation-i.yaml':'Same shikimate/PCA endpoints but PQQ-dependent initial oxidation; distinct source-native subtype.',
+'protocatechuate-ortho-cleavage.yaml':'Downstream ring-cleavage pathway begins at PCA; not the shikimate-to-PCA upstream module.',
+'protocatechuate-meta-cleavage.yaml':'Alternative downstream PCA ring cleavage, not upstream shikimate degradation.',
+'protocatechuate-para-cleavage.yaml':'Alternative downstream PCA ring cleavage, not upstream shikimate degradation.'}
+related=[]
+for f,reason in reasons.items():
+ p=R/'data/pathways'/f;d=yaml.safe_load(p.read_text());related.append(dict(source=bind(p),id=d['id'],label=d['label'],description=d['description'],reactions=d['reactions'],taxa=d['taxa'],edge_count=len(d['mechanistic_edges']),references=[x['id'] for x in d['references']],disposition=reason))
+save('related-record-dispositions.json',related)
+# No minted crosswalk fills a namespace with no candidate accession in inspected native/Rhea/GO assertions.
+patterns=json.loads((B/'pattern-sources.json').read_text())['patterns'];prefixes=['GO','gomodel','WikiPathways','MetaCyc','EcoCyc','KEGG','RHEA','MIBiG','Reactome','PathBank','PMN','ModelSEED','BiGG','BV-BRC','VEuPathDB']
+coverage=[]
+for prefix in prefixes:
+ ids=sorted(k for k in patterns if k.startswith(prefix+':'))
+ coverage.append(dict(namespace=prefix,source_derived_or_related_search_identifiers=ids,disposition='Search all listed exact candidate/related identifiers and labels across both whole roots; accession matches are leads, not asserted equivalence.' if ids else 'Inspected native/Rhea/GO objects and inherited source-derived vocabulary supply no exact candidate accession in this namespace. Whole-root label/synonym/reaction/evidence searches still cover its local artifacts; do not invent or claim a provider-wide absence.'))
+save('namespace-search-coverage.json',dict(namespaces=coverage,no_bare_prefix_absence_test=True,no_upstream_exhaustion_claim=True))
+print(json.dumps(dict(native_slots=len(q),identity_objects=len(chain),closest_records=len(related),go_terms=list(go))))

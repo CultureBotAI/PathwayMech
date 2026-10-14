@@ -1,0 +1,39 @@
+from pathlib import Path
+import datetime,hashlib,json
+R=Path('/private/tmp/pathwaymech-next-258-20261014'); S=R/'research/pathway_additions/2026-10-14-next-258/shikimate-ii/science'; E=Path('/private/tmp/pathwaymech-next-258-science'); O=Path('/private/tmp/pathwaymech-next-258-integration/science-retention-audit');O.mkdir(exist_ok=True)
+bindings={};checks=0;issues=[]
+def sha(b):return hashlib.sha256(b).hexdigest()
+def raw(p):
+    p=Path(p);b=p.read_bytes();bindings[str(p)]={'sha256':sha(b),'bytes':len(b)};return b
+def obj(p):return json.loads(raw(p))
+def ck(ok,what):
+    global checks
+    checks+=1
+    if not ok:issues.append(what)
+m=obj(S/'initial/retention-manifest.json'); mapped=[];wrappers=[]
+for row in m['mappings']:
+    original=Path(row['original']['path']);retained=R/row['retained']['path'];a=raw(original);b=raw(retained)
+    ck(sha(a)==row['original']['sha256'] and len(a)==row['original']['bytes'],'original descriptor '+str(original))
+    ck(sha(b)==row['retained']['sha256'] and len(b)==row['retained']['bytes'],'retained descriptor '+str(retained))
+    if row['encoding']=='identity': recovered=b
+    else:
+        ck(row['encoding']=='utf-8-json-text','wrapper encoding '+str(retained));w=json.loads(b);recovered=w['text'].encode('utf-8');wrappers.append(str(retained));ck(w['sha256']==sha(a) and w['bytes']==len(a),'wrapper embedded binding '+str(retained))
+    ck(recovered==a and sha(recovered)==row['recovered_original_sha256'],'exact recovery '+str(retained));mapped.append(str(retained))
+extra=obj(S/'initial/retained-inspection-binding.json')
+for row in extra['mappings']:
+    a=raw(row['original_path']);p=R/row['retained_path'];b=raw(p)
+    ck(a==b and sha(b)==row['sha256'] and len(b)==row['bytes'],'inspection exact mapping '+str(p));mapped.append(str(p))
+artifact=obj(S/'initial/external-artifact-manifest.json');originals={r['original']['path'] for r in m['mappings']}
+for row in artifact:
+    p=E/row['path'];b=raw(p);ck(sha(b)==row['sha256'] and len(b)==row['bytes'],'external manifest '+str(p));ck(str(p) in originals,'manifest artifact mapped '+str(p))
+inventory=sorted(str(p) for p in S.rglob('*') if p.is_file())
+metadata={str(S/'README.md'),str(S/'initial/retention-manifest.json'),str(S/'initial/retained-inspection-binding.json')}
+ck(set(inventory)==set(mapped)|metadata,'complete science package inventory versus mappings plus README/retention metadata')
+for p in inventory:raw(p)
+inspection=obj(S/'initial/inspect-retained.json')
+for item in inspection['source']['inputs']:
+    b=raw(R/item['path']);ck(sha(b)==item['sha256'],'retained shared inspection input '+item['path'])
+ck(raw(S/'initial/shikimate-degradation-ii.yaml.txt')==raw(R/'data/pathways/shikimate-degradation-ii.yaml'),'science initial target equals maintained initial bytes')
+raw(Path(__file__))
+result={'verified_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Independent science-artifact provenance only. No scientific judgment and no rerun of the science reviewer’s source interpretations. pathlib recursive filesystem inventory includes hidden and ignored files.','mapped_artifacts':len(mapped),'wrapper_count':len(wrappers),'wrapper_paths':wrappers,'external_manifest_artifacts':len(artifact),'shared_inspection_inputs_verified':len(inspection['source']['inputs']),'inventory_files':len(inventory),'checks':checks,'issues':issues,'input_bindings':bindings}
+(O/'results.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='input_bindings'},indent=2));assert not issues

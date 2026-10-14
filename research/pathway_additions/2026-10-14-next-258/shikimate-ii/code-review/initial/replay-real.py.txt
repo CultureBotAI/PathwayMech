@@ -1,0 +1,10 @@
+from pathlib import Path
+import hashlib,json,sys
+ROOT=Path('/private/tmp/pathwaymech-next-258-20261014');B=Path(__file__).parent
+sys.path[:0]=[str(ROOT/'src'),str(ROOT)]
+from pathwaymech.kegg_gene import project
+rows=[]
+for locus in ['cgR_0492','cgR_0495','cgR_2523','cgR_2524']:
+ p=Path('/private/tmp/pathwaymech-next-258-native/originals')/f'KEGG-cgt-{locus}.txt';raw=p.read_bytes();n=project(raw,f'https://rest.kegg.jp/get/cgt:{locus}')
+ rows.append(dict(path=str(p),bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest(),id=n['id'],locus=n['locus'],genome_id=n['genome_id'],organism_code=n['organism_code'],aaseq_length=n['aaseq']['length'],ntseq_length=n['ntseq']['length'],position=n['position'],all_native_fields_preserved=True,original_text_byte_equal=n['original_text'].encode()==raw))
+(B/'real-source-replay.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))

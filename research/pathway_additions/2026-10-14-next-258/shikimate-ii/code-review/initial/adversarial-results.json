@@ -1,0 +1,458 @@
+{
+  "started_inputs": [
+    {
+      "path": "/private/tmp/pathwaymech-next-258-20261014/src/pathwaymech/kegg_gene.py",
+      "bytes": 9360,
+      "sha256": "cd55029144f0ed438ca026a607423956d21dae5ccc28b34b13523f68e6d1ec1d"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-258-20261014/src/pathwaymech/identifiers.py",
+      "bytes": 33808,
+      "sha256": "d1a014fa77c4f1affd82ce999f98334493e0363dd250fd546f34e5fa26253165"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-258-20261014/scripts/build_source_identifier_snapshot.py",
+      "bytes": 103780,
+      "sha256": "5b9d72448d9c6b798f4a054a5119c3cc8f000c693c4b26cf6d01e29100e959dd"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-258-20261014/tests/test_kegg_gene_authority.py",
+      "bytes": 19569,
+      "sha256": "b9def406bb9b54215b0fcd8acce06907449e4e660450e76bd5c9cb3902025a04"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-258-20261014/docs/IDENTIFIERS.md",
+      "bytes": 52742,
+      "sha256": "bef68ac2a8e6f5c08d563b6d969ff040e1099a170dd568c4e436a20c4034b25d"
+    }
+  ],
+  "results": [
+    {
+      "name": "position:100..108",
+      "expected_accept": true,
+      "actual_accept": true,
+      "pass_": true,
+      "error": null
+    },
+    {
+      "name": "position:complement(100..108)",
+      "expected_accept": true,
+      "actual_accept": true,
+      "pass_": true,
+      "error": null
+    },
+    {
+      "name": "position:complement100..108)",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:complement(100..108",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:complement100..108",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:(100..108)",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:100..108)",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:(100..108",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:complement((100..108))",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:complement(100..108))",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:complement(100..108)extra",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:join(100..108)",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "position:100..108\u00a0",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "request:https://rest.kegg.jp/get/cgt:test_locus%00",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "request:https://rest.kegg.jp/get/cgt:test_locus;other",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "request:https://REST.KEGG.JP/get/cgt:test_locus",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "request:https://rest.kegg.jp/get/cgt:test_locus?",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "request:https://rest.kegg.jp/get/cgt:test_locus#",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "request:https://rest.kegg.jp/get/cgt:test_locus%2f",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "request:https://rest.kegg.jp/get/cgt%3Atest_locus",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "metadata:sha256",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: invalid original hash"
+    },
+    {
+      "name": "metadata:version",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: empty source provenance"
+    },
+    {
+      "name": "metadata:license",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: empty source provenance"
+    },
+    {
+      "name": "metadata:url",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one exact official HTTPS organism:locus get request"
+    },
+    {
+      "name": "metadata:extra",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: incomplete typed provenance"
+    },
+    {
+      "name": "derived:position.start",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: metadata differs from complete original projection"
+    },
+    {
+      "name": "derived:aaseq.length",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: metadata differs from complete original projection"
+    },
+    {
+      "name": "derived:ntseq.sequence",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: metadata differs from complete original projection"
+    },
+    {
+      "name": "derived:name_annotation",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: metadata differs from complete original projection"
+    },
+    {
+      "name": "derived:fields",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: metadata differs from complete original projection"
+    },
+    {
+      "name": "derived:new",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: metadata differs from complete original projection"
+    },
+    {
+      "name": "malformed-position:builder",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: requires one complete forward or complement genomic span"
+    },
+    {
+      "name": "conflict:True:True:name",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:True:locus-genome",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:True:extra-field",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:True:raw-newline",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:True:version",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:False:name",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:False:locus-genome",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:False:extra-field",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:False:raw-newline",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:True:False:version",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:True:name",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:True:locus-genome",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:True:extra-field",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:True:raw-newline",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:True:version",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:False:name",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:False:locus-genome",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:False:extra-field",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:False:raw-newline",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "conflict:False:False:version",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "consumer:untyped-source",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene identity requires its complete typed source"
+    },
+    {
+      "name": "consumer:term-extra",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG:cgt:test_locus: category proof requires typed native chemical class"
+    },
+    {
+      "name": "consumer:term-delete-labelkind",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG:cgt:test_locus: invalid typed native authority projection"
+    },
+    {
+      "name": "consumer:term-gene-protein",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG:cgt:test_locus: invalid typed native authority projection"
+    },
+    {
+      "name": "consumer:request-remove-kind",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: gene request requires the typed gene source kind"
+    },
+    {
+      "name": "consumer:unreferenced-conflict",
+      "expected_accept": false,
+      "actual_accept": false,
+      "pass_": true,
+      "error": "ValueError: KEGG gene: conflicting whole gene identity/context assertions"
+    },
+    {
+      "name": "documented-limit:translation",
+      "expected_accept": true,
+      "actual_accept": true,
+      "pass_": true,
+      "error": null
+    },
+    {
+      "name": "documented-limit:genome-crosswalk",
+      "expected_accept": true,
+      "actual_accept": true,
+      "pass_": true,
+      "error": null
+    }
+  ],
+  "case_count": 60,
+  "unexpected_acceptances": [],
+  "documented_limits": [
+    "Translation and independent genome/organism crosswalk are outside this profile; raw assertions remain retained for scientific audit."
+  ],
+  "finished_utc": "2026-10-14T20:18:07.914514+00:00",
+  "input_unchanged": true
+}

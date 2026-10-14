@@ -1,0 +1,54 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,subprocess
+B=Path(__file__).parent
+ROOTS=[Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),Path('/private/tmp/pathwaymech-next-258-20261014')]
+def sha(d):return hashlib.sha256(d).hexdigest()
+def save(n,o):(B/n).write_text(json.dumps(o,indent=2)+'\n')
+patterns=(B/'patterns.txt').read_text().splitlines();lower=collections.defaultdict(list)
+for p in patterns:lower[p.lower()].append(p)
+# Aho-Corasick matches every fixed string, including nested and overlapping strings.
+trans=[{}];failure=[0];out=[[]]
+for p in lower:
+ state=0
+ for c in p:
+  if c not in trans[state]:trans[state][c]=len(trans);trans.append({});failure.append(0);out.append([])
+  state=trans[state][c]
+ out[state].append(p)
+queue=collections.deque(trans[0].values())
+while queue:
+ r=queue.popleft()
+ for c,s in trans[r].items():
+  queue.append(s);f=failure[r]
+  while f and c not in trans[f]:f=failure[f]
+  failure[s]=trans[f].get(c,0);out[s].extend(out[failure[s]])
+def matches(text):
+ hits=set();state=0
+ for c in text.lower():
+  while state and c not in trans[state]:state=failure[state]
+  state=trans[state].get(c,0);hits.update(out[state])
+ return sorted(p for h in hits for p in lower[h])
+reports=[]
+for i,root in enumerate(ROOTS):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(B/'patterns.txt'),'.','-g','!.git','-g','!.git/**','-g','!.venv','-g','!.venv/**']
+ started=datetime.datetime.now(datetime.timezone.utc).isoformat();stats={p:dict(lines=0,paths=set()) for p in patterns};pathstats=collections.defaultdict(lambda:dict(patterns=set(),lines=[]))
+ path=B/f'root-{i}-matches.jsonl';error=B/f'root-{i}-stderr.txt';total=0
+ with path.open('w') as dest,error.open('w') as err:
+  proc=subprocess.Popen(cmd,cwd=root,text=True,stdout=subprocess.PIPE,stderr=err)
+  for line in proc.stdout:
+   item=json.loads(line)
+   if item['type']!='match':continue
+   d=item['data'];text=d['lines'].get('text','');name=d['path'].get('text','');hits=matches(text)
+   for p in hits:stats[p]['lines']+=1;stats[p]['paths'].add(name)
+   pathstats[name]['patterns'].update(hits);pathstats[name]['lines'].append(d['line_number'])
+   dest.write(json.dumps(dict(path=name,line_number=d['line_number'],patterns=hits))+'\n');total+=1
+  code=proc.wait()
+ assert code in [0,1],(code,error.read_text())
+ counts={p:dict(lines=v['lines'],paths=sorted(v['paths'])) for p,v in stats.items()}
+ save(f'root-{i}-complete-counts.json',counts)
+ save(f'root-{i}-matched-files.json',{p:dict(patterns=sorted(v['patterns']),matching_lines=v['lines']) for p,v in sorted(pathstats.items())})
+ report=dict(root=str(root),head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),started_utc=started,finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),command=cmd,exit_code=code,matched_lines=total,matched_files=len(pathstats),patterns=len(patterns),per_pattern_counts={p:dict(lines=v['lines'],files=len(v['paths'])) for p,v in stats.items()},match_projection=dict(path=str(path),sha256=sha(path.read_bytes()),bytes=path.stat().st_size),stderr=error.read_text())
+ reports.append(report);save('search-progress.json',reports);print(json.dumps(dict(root=i,matched_files=len(pathstats),matched_lines=total,exit_code=code)),flush=True)
+record_doc=json.loads((B/'baseline-record-bindings.json').read_text());ids=['MetaCyc:PWY-6419','GO:0019633','MetaCyc:PWY-6416','MetaCyc:SHIKIMATEDEG-PWY','MetaCyc:QUINATEDEG-PWY']
+membership={x:dict(top_level=[r['path'] for r in record_doc['records'] if r['id']==x],nested=[dict(path=r['path'],node=n) for r in record_doc['records'] for n in r['named_nodes'] if n['id']==x]) for x in ids}
+save('dedup-compact.json',dict(baseline_commit=record_doc['baseline_commit'],candidate='MetaCyc:PWY-6419',baseline_record_count=record_doc['count'],exact_candidate_membership=membership,patterns_per_root=len(patterns),roots=reports,bounds=dict(ignored_and_hidden_included=True,exclusions=['.git/**','.venv/**'],binary='ripgrep default binary detection; no binary payload absence claim',symlinks='Directory symlinks not followed',archives='Compressed archives not decoded',other_worktrees='Only current main and active258 worktree scanned; external caches and other worktrees not exhaustively searched',source_exhaustion_claim=False),role='author preflight, not independent scientific approval'))
+print(json.dumps(membership),flush=True)

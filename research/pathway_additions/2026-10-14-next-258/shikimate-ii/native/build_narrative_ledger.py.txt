@@ -1,0 +1,51 @@
+from build_coverage import ROOT, OLD, path, frame, digest, clean
+import json
+claims=[]
+def claim(fid,key,statement,disposition,reason,targets=(),locator='comment'):
+    claims.append({'source':fid,'claim_key':key,'locator':f'/ptools-xml/{frame(fid).tag}[@frameid="{fid}"]/{locator}','native_claim':statement,'disposition':disposition,'reason':reason,'candidate_edges_or_context':list(targets)})
+fid='PWY-6419'
+claim(fid,'background-biosynthesis','Shikimate is a common biosynthetic precursor in microorganisms, higher plants and animals; linked ARO-PWY.','background_only','Background sentence does not establish shikimate biosynthesis by animals or add a biosynthetic module. Named route remains microbial catabolism.')
+claim(fid,'background-environment','Shikimate is abundant in the biosphere and occurs in decaying plant matter.','background_only','Environmental context, not an additional pathway edge.')
+claim(fid,'carbon-energy','Several microorganisms use shikimate as carbon and energy source.','include_scoped','Whole-route R-strain growth is verified by PMID19376919; avoid universal Gram-positive phenotype.',['primary-shikimate-growth'])
+claim(fid,'two-reactions','Two enzymatic reactions convert shikimate to protocatechuate.','include_core','Exact two formal members and complete molecular sides retained.',['core-membership','core-chemical-edges'])
+claim(fid,'mineralization','Protocatechuate is a central intermediate toward mineralization, linked to ortho cleavage.','include_interface','Only the explicitly identified downstream pathway interface is added; no internal mineralization reactions imported.',['downstream-interface'])
+claim(fid,'alternative-coenzymes','Gram-positive bacteria use NAD while Gram-negative bacteria use PQQ for initial oxidation; shikimate I is PQQ.','include_route_distinction_not_universal_taxa','Preserve NAD/PQQ route distinction; broad organism generalization is not a universally demonstrated phenotype.',['record-description'])
+claim(fid,'cglutamicum-growth','C. glutamicum grows with shikimate as sole carbon source, PMID19376919.','include_scoped','The primary experiment is strain R, distinct from purified ATCC13032 enzyme.',['primary-shikimate-growth'])
+claim(fid,'dual-substrate','C. glutamicum produces QsuD capable of using quinate or shikimate with NAD.','include_shikimate_and_boundary','Shikimate oxidation is formal member; quinate activity is neighboring substrate context, not an extra formal step.',['native258-qsuD-catalysis','primary-R-qsuD-enables'])
+claim(fid,'DHS-terminal','DHS formed is dehydrated by MONOMER-15334 to protocatechuate.','include_inference','R QsuB functional assignment inferred in 2009; native ENZRXN evidence is IGI, not purified assay.',['native258-qsuB-enables'])
+claim(fid,'qsuD-wrong-strain-link','The pathway narrative links qsuD/G-11733 with the R operon description.','resolve_strain_scope','G-11733 accession Cgl0424 belongs Q9X5C9/ATCC13032; R qsuD is cgR_0495/A4QB65/KEGG:cgt:cgR_0495. Do not link R regulation to G-11733.',['primary-qsuR-qsuD'])
+claim(fid,'qutB-wrong-gene','The pathway narrative names qutB/G-11736 as the second enzyme gene in the bacterial operon.','source_error_resolved','Retrieved G-11736 product MONOMER-15333 is fungal A. nidulans QutB. Correct bacterial second step is ENZRXN-17385 → MONOMER-15334 → G-11737/qsuB/cgR_0493, matching PMID19376919.',['native258-qsuB-enables','primary-qsuR-qsuB'])
+claim(fid,'qsuA-transporter','qsuA is described as a quinate transporter in the operon.','retain_inference_context','2009 assignment is homology based; 2015 directly demonstrates distinct ShiA/cgR_2523 shikimate uptake. No direct QsuA shikimate transport edge.',['primary-qsuR-qsuA'])
+claim(fid,'qsuC-dehydratase','qsuC encodes dehydroquinate dehydratase.','exclude_catalytic_step','QsuC is operon/co-induction context; DHQ dehydration is bypassed in the two-step shikimate route.')
+claim(fid,'qsu-operon','qsuD, second enzyme, qsuA and qsuC are in one operon.','include_corrected_operon_context','Retain R qsuABCD identity and primary expression scope; do not inherit wrong qutB or ATCC13032 gene pointer.',['primary-qsuR-regulation'])
+claim(fid,'induction','qsu gene expression is induced during growth with quinate or shikimate.','include_expression_scope','Growth-condition induction is not direct substrate binding to QsuR.',['primary-qsuR-regulation'])
+claim(fid,'QsuR','LysR-type QsuR regulates qsu gene expression.','include_regulation','Primary 2009 expression and 2014 chorismate-effector evidence retain experimental construct and R-lineage distinctions.',['primary-qsuR-regulation','primary-chorismate-QsuR'])
+for key,s,disp,why,target in [
+ ('growth-genetics','qsuD disruption suppresses quinate/shikimate growth but not glucose growth.','include_separate_R_genetics','2009 R genotype is not purified ATCC13032 complex evidence.',['primary-R-qsuD-enables']),
+ ('induction','qsuD and operon genes induced during growth with either substrate.','include_R_regulation','Exact R regulatory gene endpoints supplied by primary agent.',['primary-qsuR-regulation']),
+ ('recombinant','Gene cloned in E. coli, purified and crystallized at 1.6 Angstrom.','include_qualified','2008 ATCC13032 construct, not native unmodified R protein.',['native258-qsuD-catalysis']),
+ ('assembly','Protein forms a homodimer in solution.','include_composition','Component coefficient two preserved separately from catalysis.',['native258-qsuD-composition']),
+ ('substrate-preference','Quinate has lower Km and >3-fold greater catalytic efficiency than shikimate.','include_scoped_comparison','Curated comment reports the assay comparison; quinate remains a neighboring substrate.',['native258-qsuD-catalysis']),
+ ('coenzyme-preference','NADP turnover is >300-fold lower than NAD turnover.','include_preference','Nonzero relative activity is not absolute NADP exclusion.',['native258-qsuD-catalysis'])]:claim('CPLX-7981',key,s,disp,why,target)
+for key,s,disp,why in [
+ ('uncharacterized','R QsuB product has not been characterized.','retain_source_date_scope','Statement describes 2009 R evidence; later ATCC13869 assay does not directly characterize the R sequence.'),
+ ('operon','qsuB is in an operon with quinate/shikimate degradation genes.','include_inference','Supports inferred R catalytic role, not direct purified assay.'),
+ ('N-domain','N-terminal half has 25% identity to fungal DHS dehydratases.','include_inference','Domain similarity supports qualified inference, not exact domain boundaries or native active site.'),
+ ('induction','qsuB expression induced during quinate or shikimate growth.','include_regulation','Primary promoter/expression evidence supplies edge.'),
+ ('C-domain','C-terminal half has 25% identity to 4-hydroxyphenylpyruvate dioxygenase.','exclude_function_by_similarity','No HPPD catalytic or product edge inferred from this similarity.')]:claim('MONOMER-15334',key,s,disp,why,['native258-qsuB-enables'])
+bindings=[]
+for fid in sorted(set(r['source'] for r in claims)):
+    p=path(fid);bindings.append({'frameid':fid,'path':str(p),'sha256':digest(p.read_bytes())})
+supp=[]
+for acc in ['A4QH18','A4QH19']:
+    p=ROOT/'originals'/f'UniProt-{acc}.json';u=json.loads(p.read_text())
+    for idx,c in enumerate(u.get('comments',[])):
+        kind=c['commentType']
+        if kind=='CATALYTIC ACTIVITY':disp,why='exclude_as_measured_stoichiometry','RHEA28973 H+-symport is ECO0000305 curator inference; primary available abstract establishes uptake, not direct proton stoichiometry. Native annotation is retained for future mechanistic review.'
+        elif kind=='SUBCELLULAR LOCATION':disp,why='include_membrane','Cell membrane supported by EXP annotation; multipass is separate ECO0000255 inference; proposed located_in GO0005886.'
+        elif acc=='A4QH19' and kind=='FUNCTION':disp,why='split_regulation_binding','Primary abstract supports ShiR-dependent shiA transcription. Curated UniProt also asserts promoter binding, but construct details are not established by that abstract; retain as structured-source annotation with binding claim pending primary construct resolution.'
+        elif kind in {'FUNCTION','INDUCTION','DISRUPTION PHENOTYPE'}:disp,why='include_primary_scoped','Primary PMID25406451 supports distinct ShiA uptake/growth and ShiR-mediated gene regulation. Quinate induction does not mean ShiA transports quinate; unaffected alternative substrates do not show inhibition.'
+        else:disp,why='context_inference','Protein family and topology inferences do not add catalysis or direct binding.'
+        supp.append({'source':'UniProtKB:'+acc,'path':str(p),'sha256':digest(p.read_bytes()),'locator':f'$.comments[{idx}]','native_annotation':c,'disposition':disp,'reason':why})
+(ROOT/'narrative-claims.json').write_text(json.dumps({'pathway':'MetaCyc:PWY-6419','claims':claims,'source_bindings':bindings,'supplemental_transport_annotations':supp,'note':'The direct-slot ledger covers every slot for 53 native objects. This companion splits the biologically important pathway and included enzyme comment claims; excluded neighboring enzyme details remain explicitly disposed at their full native slots.'},indent=2)+'\n')
+print(len(claims),'narrative claims;',len(supp),'transport annotations')

@@ -1,0 +1,542 @@
+{
+  "pathway": "MetaCyc:PWY-6419",
+  "claims": [
+    {
+      "source": "PWY-6419",
+      "claim_key": "background-biosynthesis",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "Shikimate is a common biosynthetic precursor in microorganisms, higher plants and animals; linked ARO-PWY.",
+      "disposition": "background_only",
+      "reason": "Background sentence does not establish shikimate biosynthesis by animals or add a biosynthetic module. Named route remains microbial catabolism.",
+      "candidate_edges_or_context": []
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "background-environment",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "Shikimate is abundant in the biosphere and occurs in decaying plant matter.",
+      "disposition": "background_only",
+      "reason": "Environmental context, not an additional pathway edge.",
+      "candidate_edges_or_context": []
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "carbon-energy",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "Several microorganisms use shikimate as carbon and energy source.",
+      "disposition": "include_scoped",
+      "reason": "Whole-route R-strain growth is verified by PMID19376919; avoid universal Gram-positive phenotype.",
+      "candidate_edges_or_context": [
+        "primary-shikimate-growth"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "two-reactions",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "Two enzymatic reactions convert shikimate to protocatechuate.",
+      "disposition": "include_core",
+      "reason": "Exact two formal members and complete molecular sides retained.",
+      "candidate_edges_or_context": [
+        "core-membership",
+        "core-chemical-edges"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "mineralization",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "Protocatechuate is a central intermediate toward mineralization, linked to ortho cleavage.",
+      "disposition": "include_interface",
+      "reason": "Only the explicitly identified downstream pathway interface is added; no internal mineralization reactions imported.",
+      "candidate_edges_or_context": [
+        "downstream-interface"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "alternative-coenzymes",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "Gram-positive bacteria use NAD while Gram-negative bacteria use PQQ for initial oxidation; shikimate I is PQQ.",
+      "disposition": "include_route_distinction_not_universal_taxa",
+      "reason": "Preserve NAD/PQQ route distinction; broad organism generalization is not a universally demonstrated phenotype.",
+      "candidate_edges_or_context": [
+        "record-description"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "cglutamicum-growth",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "C. glutamicum grows with shikimate as sole carbon source, PMID19376919.",
+      "disposition": "include_scoped",
+      "reason": "The primary experiment is strain R, distinct from purified ATCC13032 enzyme.",
+      "candidate_edges_or_context": [
+        "primary-shikimate-growth"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "dual-substrate",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "C. glutamicum produces QsuD capable of using quinate or shikimate with NAD.",
+      "disposition": "include_shikimate_and_boundary",
+      "reason": "Shikimate oxidation is formal member; quinate activity is neighboring substrate context, not an extra formal step.",
+      "candidate_edges_or_context": [
+        "native258-qsuD-catalysis",
+        "primary-R-qsuD-enables"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "DHS-terminal",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "DHS formed is dehydrated by MONOMER-15334 to protocatechuate.",
+      "disposition": "include_inference",
+      "reason": "R QsuB functional assignment inferred in 2009; native ENZRXN evidence is IGI, not purified assay.",
+      "candidate_edges_or_context": [
+        "native258-qsuB-enables"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "qsuD-wrong-strain-link",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "The pathway narrative links qsuD/G-11733 with the R operon description.",
+      "disposition": "resolve_strain_scope",
+      "reason": "G-11733 accession Cgl0424 belongs Q9X5C9/ATCC13032; R qsuD is cgR_0495/A4QB65/KEGG:cgt:cgR_0495. Do not link R regulation to G-11733.",
+      "candidate_edges_or_context": [
+        "primary-qsuR-qsuD"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "qutB-wrong-gene",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "The pathway narrative names qutB/G-11736 as the second enzyme gene in the bacterial operon.",
+      "disposition": "source_error_resolved",
+      "reason": "Retrieved G-11736 product MONOMER-15333 is fungal A. nidulans QutB. Correct bacterial second step is ENZRXN-17385 \u2192 MONOMER-15334 \u2192 G-11737/qsuB/cgR_0493, matching PMID19376919.",
+      "candidate_edges_or_context": [
+        "native258-qsuB-enables",
+        "primary-qsuR-qsuB"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "qsuA-transporter",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "qsuA is described as a quinate transporter in the operon.",
+      "disposition": "retain_inference_context",
+      "reason": "2009 assignment is homology based; 2015 directly demonstrates distinct ShiA/cgR_2523 shikimate uptake. No direct QsuA shikimate transport edge.",
+      "candidate_edges_or_context": [
+        "primary-qsuR-qsuA"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "qsuC-dehydratase",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "qsuC encodes dehydroquinate dehydratase.",
+      "disposition": "exclude_catalytic_step",
+      "reason": "QsuC is operon/co-induction context; DHQ dehydration is bypassed in the two-step shikimate route.",
+      "candidate_edges_or_context": []
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "qsu-operon",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "qsuD, second enzyme, qsuA and qsuC are in one operon.",
+      "disposition": "include_corrected_operon_context",
+      "reason": "Retain R qsuABCD identity and primary expression scope; do not inherit wrong qutB or ATCC13032 gene pointer.",
+      "candidate_edges_or_context": [
+        "primary-qsuR-regulation"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "induction",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "qsu gene expression is induced during growth with quinate or shikimate.",
+      "disposition": "include_expression_scope",
+      "reason": "Growth-condition induction is not direct substrate binding to QsuR.",
+      "candidate_edges_or_context": [
+        "primary-qsuR-regulation"
+      ]
+    },
+    {
+      "source": "PWY-6419",
+      "claim_key": "QsuR",
+      "locator": "/ptools-xml/Pathway[@frameid=\"PWY-6419\"]/comment",
+      "native_claim": "LysR-type QsuR regulates qsu gene expression.",
+      "disposition": "include_regulation",
+      "reason": "Primary 2009 expression and 2014 chorismate-effector evidence retain experimental construct and R-lineage distinctions.",
+      "candidate_edges_or_context": [
+        "primary-qsuR-regulation",
+        "primary-chorismate-QsuR"
+      ]
+    },
+    {
+      "source": "CPLX-7981",
+      "claim_key": "growth-genetics",
+      "locator": "/ptools-xml/Protein[@frameid=\"CPLX-7981\"]/comment",
+      "native_claim": "qsuD disruption suppresses quinate/shikimate growth but not glucose growth.",
+      "disposition": "include_separate_R_genetics",
+      "reason": "2009 R genotype is not purified ATCC13032 complex evidence.",
+      "candidate_edges_or_context": [
+        "primary-R-qsuD-enables"
+      ]
+    },
+    {
+      "source": "CPLX-7981",
+      "claim_key": "induction",
+      "locator": "/ptools-xml/Protein[@frameid=\"CPLX-7981\"]/comment",
+      "native_claim": "qsuD and operon genes induced during growth with either substrate.",
+      "disposition": "include_R_regulation",
+      "reason": "Exact R regulatory gene endpoints supplied by primary agent.",
+      "candidate_edges_or_context": [
+        "primary-qsuR-regulation"
+      ]
+    },
+    {
+      "source": "CPLX-7981",
+      "claim_key": "recombinant",
+      "locator": "/ptools-xml/Protein[@frameid=\"CPLX-7981\"]/comment",
+      "native_claim": "Gene cloned in E. coli, purified and crystallized at 1.6 Angstrom.",
+      "disposition": "include_qualified",
+      "reason": "2008 ATCC13032 construct, not native unmodified R protein.",
+      "candidate_edges_or_context": [
+        "native258-qsuD-catalysis"
+      ]
+    },
+    {
+      "source": "CPLX-7981",
+      "claim_key": "assembly",
+      "locator": "/ptools-xml/Protein[@frameid=\"CPLX-7981\"]/comment",
+      "native_claim": "Protein forms a homodimer in solution.",
+      "disposition": "include_composition",
+      "reason": "Component coefficient two preserved separately from catalysis.",
+      "candidate_edges_or_context": [
+        "native258-qsuD-composition"
+      ]
+    },
+    {
+      "source": "CPLX-7981",
+      "claim_key": "substrate-preference",
+      "locator": "/ptools-xml/Protein[@frameid=\"CPLX-7981\"]/comment",
+      "native_claim": "Quinate has lower Km and >3-fold greater catalytic efficiency than shikimate.",
+      "disposition": "include_scoped_comparison",
+      "reason": "Curated comment reports the assay comparison; quinate remains a neighboring substrate.",
+      "candidate_edges_or_context": [
+        "native258-qsuD-catalysis"
+      ]
+    },
+    {
+      "source": "CPLX-7981",
+      "claim_key": "coenzyme-preference",
+      "locator": "/ptools-xml/Protein[@frameid=\"CPLX-7981\"]/comment",
+      "native_claim": "NADP turnover is >300-fold lower than NAD turnover.",
+      "disposition": "include_preference",
+      "reason": "Nonzero relative activity is not absolute NADP exclusion.",
+      "candidate_edges_or_context": [
+        "native258-qsuD-catalysis"
+      ]
+    },
+    {
+      "source": "MONOMER-15334",
+      "claim_key": "uncharacterized",
+      "locator": "/ptools-xml/Protein[@frameid=\"MONOMER-15334\"]/comment",
+      "native_claim": "R QsuB product has not been characterized.",
+      "disposition": "retain_source_date_scope",
+      "reason": "Statement describes 2009 R evidence; later ATCC13869 assay does not directly characterize the R sequence.",
+      "candidate_edges_or_context": [
+        "native258-qsuB-enables"
+      ]
+    },
+    {
+      "source": "MONOMER-15334",
+      "claim_key": "operon",
+      "locator": "/ptools-xml/Protein[@frameid=\"MONOMER-15334\"]/comment",
+      "native_claim": "qsuB is in an operon with quinate/shikimate degradation genes.",
+      "disposition": "include_inference",
+      "reason": "Supports inferred R catalytic role, not direct purified assay.",
+      "candidate_edges_or_context": [
+        "native258-qsuB-enables"
+      ]
+    },
+    {
+      "source": "MONOMER-15334",
+      "claim_key": "N-domain",
+      "locator": "/ptools-xml/Protein[@frameid=\"MONOMER-15334\"]/comment",
+      "native_claim": "N-terminal half has 25% identity to fungal DHS dehydratases.",
+      "disposition": "include_inference",
+      "reason": "Domain similarity supports qualified inference, not exact domain boundaries or native active site.",
+      "candidate_edges_or_context": [
+        "native258-qsuB-enables"
+      ]
+    },
+    {
+      "source": "MONOMER-15334",
+      "claim_key": "induction",
+      "locator": "/ptools-xml/Protein[@frameid=\"MONOMER-15334\"]/comment",
+      "native_claim": "qsuB expression induced during quinate or shikimate growth.",
+      "disposition": "include_regulation",
+      "reason": "Primary promoter/expression evidence supplies edge.",
+      "candidate_edges_or_context": [
+        "native258-qsuB-enables"
+      ]
+    },
+    {
+      "source": "MONOMER-15334",
+      "claim_key": "C-domain",
+      "locator": "/ptools-xml/Protein[@frameid=\"MONOMER-15334\"]/comment",
+      "native_claim": "C-terminal half has 25% identity to 4-hydroxyphenylpyruvate dioxygenase.",
+      "disposition": "exclude_function_by_similarity",
+      "reason": "No HPPD catalytic or product edge inferred from this similarity.",
+      "candidate_edges_or_context": [
+        "native258-qsuB-enables"
+      ]
+    }
+  ],
+  "source_bindings": [
+    {
+      "frameid": "CPLX-7981",
+      "path": "/private/tmp/pathwaymech-next-257-native/originals/META-CPLX-7981.xml",
+      "sha256": "49d3e4c3a8e369c04126358d5f7e486da873b1282c6aab080435cb41f407aadd"
+    },
+    {
+      "frameid": "MONOMER-15334",
+      "path": "/private/tmp/pathwaymech-next-257-native/originals/META-MONOMER-15334.xml",
+      "sha256": "eb1c7fa2ede814cfc58eda267e572d260ef70159a9104565347e1375a632e068"
+    },
+    {
+      "frameid": "PWY-6419",
+      "path": "/private/tmp/pathwaymech-next-257-preflight/originals/META-PWY-6419.xml",
+      "sha256": "671e3c5409aebd47324304d3f72e80ede9f764729a5147e48910d7121dbdd027"
+    }
+  ],
+  "supplemental_transport_annotations": [
+    {
+      "source": "UniProtKB:A4QH18",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH18.json",
+      "sha256": "7dee3bd29a5e803b1ba644d6b9273b3ba1a9a199b29738c884bbe5ff213c461f",
+      "locator": "$.comments[0]",
+      "native_annotation": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "25406451"
+              }
+            ],
+            "value": "Involved in the uptake of shikimate, an intermediate in the aromatic amino acid biosynthetic pathway"
+          }
+        ],
+        "commentType": "FUNCTION"
+      },
+      "disposition": "include_primary_scoped",
+      "reason": "Primary PMID25406451 supports distinct ShiA uptake/growth and ShiR-mediated gene regulation. Quinate induction does not mean ShiA transports quinate; unaffected alternative substrates do not show inhibition."
+    },
+    {
+      "source": "UniProtKB:A4QH18",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH18.json",
+      "sha256": "7dee3bd29a5e803b1ba644d6b9273b3ba1a9a199b29738c884bbe5ff213c461f",
+      "locator": "$.comments[1]",
+      "native_annotation": {
+        "commentType": "CATALYTIC ACTIVITY",
+        "reaction": {
+          "name": "shikimate(in) + H(+)(in) = shikimate(out) + H(+)(out)",
+          "reactionCrossReferences": [
+            {
+              "database": "Rhea",
+              "id": "RHEA:28971"
+            },
+            {
+              "database": "ChEBI",
+              "id": "CHEBI:15378"
+            },
+            {
+              "database": "ChEBI",
+              "id": "CHEBI:36208"
+            }
+          ],
+          "evidences": [
+            {
+              "evidenceCode": "ECO:0000305",
+              "source": "PubMed",
+              "id": "25406451"
+            }
+          ]
+        },
+        "physiologicalReactions": [
+          {
+            "directionType": "right-to-left",
+            "reactionCrossReference": {
+              "database": "Rhea",
+              "id": "RHEA:28973"
+            },
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000305",
+                "source": "PubMed",
+                "id": "25406451"
+              }
+            ]
+          }
+        ]
+      },
+      "disposition": "exclude_as_measured_stoichiometry",
+      "reason": "RHEA28973 H+-symport is ECO0000305 curator inference; primary available abstract establishes uptake, not direct proton stoichiometry. Native annotation is retained for future mechanistic review."
+    },
+    {
+      "source": "UniProtKB:A4QH18",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH18.json",
+      "sha256": "7dee3bd29a5e803b1ba644d6b9273b3ba1a9a199b29738c884bbe5ff213c461f",
+      "locator": "$.comments[2]",
+      "native_annotation": {
+        "commentType": "SUBCELLULAR LOCATION",
+        "subcellularLocations": [
+          {
+            "location": {
+              "evidences": [
+                {
+                  "evidenceCode": "ECO:0000269",
+                  "source": "PubMed",
+                  "id": "25406451"
+                }
+              ],
+              "value": "Cell membrane",
+              "id": "SL-0039"
+            },
+            "topology": {
+              "evidences": [
+                {
+                  "evidenceCode": "ECO:0000255"
+                }
+              ],
+              "value": "Multi-pass membrane protein",
+              "id": "SL-9909"
+            }
+          }
+        ]
+      },
+      "disposition": "include_membrane",
+      "reason": "Cell membrane supported by EXP annotation; multipass is separate ECO0000255 inference; proposed located_in GO0005886."
+    },
+    {
+      "source": "UniProtKB:A4QH18",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH18.json",
+      "sha256": "7dee3bd29a5e803b1ba644d6b9273b3ba1a9a199b29738c884bbe5ff213c461f",
+      "locator": "$.comments[3]",
+      "native_annotation": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "25406451"
+              }
+            ],
+            "value": "Is likely expressed constitutively at low levels (PubMed:25406451). Expression is induced by shikimate, via the HTH-type transcriptional regulator ShiR (PubMed:25406451). Quinate, a precursor of shikimate, also induces expression, but other organic acids such as protocatechuate, 4-hydroxybenzoate, vanillate or benzoate have no effect on the induction (PubMed:25406451)"
+          }
+        ],
+        "commentType": "INDUCTION"
+      },
+      "disposition": "include_primary_scoped",
+      "reason": "Primary PMID25406451 supports distinct ShiA uptake/growth and ShiR-mediated gene regulation. Quinate induction does not mean ShiA transports quinate; unaffected alternative substrates do not show inhibition."
+    },
+    {
+      "source": "UniProtKB:A4QH18",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH18.json",
+      "sha256": "7dee3bd29a5e803b1ba644d6b9273b3ba1a9a199b29738c884bbe5ff213c461f",
+      "locator": "$.comments[4]",
+      "native_annotation": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "25406451"
+              }
+            ],
+            "value": "Deletion mutant loses the ability to grow on shikimate as well as to consume extracellular shikimate (PubMed:25406451). Deletion does not affect growth on quinate, protocatechuate, 4-hydroxybenzoate, vanillate and benzoate (PubMed:25406451)"
+          }
+        ],
+        "commentType": "DISRUPTION PHENOTYPE"
+      },
+      "disposition": "include_primary_scoped",
+      "reason": "Primary PMID25406451 supports distinct ShiA uptake/growth and ShiR-mediated gene regulation. Quinate induction does not mean ShiA transports quinate; unaffected alternative substrates do not show inhibition."
+    },
+    {
+      "source": "UniProtKB:A4QH18",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH18.json",
+      "sha256": "7dee3bd29a5e803b1ba644d6b9273b3ba1a9a199b29738c884bbe5ff213c461f",
+      "locator": "$.comments[5]",
+      "native_annotation": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000305",
+                "source": "PubMed",
+                "id": "25406451"
+              }
+            ],
+            "value": "Belongs to the major facilitator superfamily. Metabolite:H+ Symporter (MHS) family (TC 2.A.1.6) family"
+          }
+        ],
+        "commentType": "SIMILARITY"
+      },
+      "disposition": "context_inference",
+      "reason": "Protein family and topology inferences do not add catalysis or direct binding."
+    },
+    {
+      "source": "UniProtKB:A4QH19",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH19.json",
+      "sha256": "bc78528bd76b338656e440638c9cfd2c44c48ce5117fddd9b4fdf0ff68736560",
+      "locator": "$.comments[0]",
+      "native_annotation": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "25406451"
+              }
+            ],
+            "value": "Activates expression of the shikimate transporter ShiA in the presence of shikimate (PubMed:25406451). Binds to the shiA promoter region (PubMed:25406451)"
+          }
+        ],
+        "commentType": "FUNCTION"
+      },
+      "disposition": "split_regulation_binding",
+      "reason": "Primary abstract supports ShiR-dependent shiA transcription. Curated UniProt also asserts promoter binding, but construct details are not established by that abstract; retain as structured-source annotation with binding claim pending primary construct resolution."
+    },
+    {
+      "source": "UniProtKB:A4QH19",
+      "path": "/private/tmp/pathwaymech-next-258-native/originals/UniProt-A4QH19.json",
+      "sha256": "bc78528bd76b338656e440638c9cfd2c44c48ce5117fddd9b4fdf0ff68736560",
+      "locator": "$.comments[1]",
+      "native_annotation": {
+        "texts": [
+          {
+            "evidences": [
+              {
+                "evidenceCode": "ECO:0000305"
+              }
+            ],
+            "value": "Belongs to the LysR transcriptional regulatory family"
+          }
+        ],
+        "commentType": "SIMILARITY"
+      },
+      "disposition": "context_inference",
+      "reason": "Protein family and topology inferences do not add catalysis or direct binding."
+    }
+  ],
+  "note": "The direct-slot ledger covers every slot for 53 native objects. This companion splits the biologically important pathway and included enzyme comment claims; excluded neighboring enzyme details remain explicitly disposed at their full native slots."
+}
