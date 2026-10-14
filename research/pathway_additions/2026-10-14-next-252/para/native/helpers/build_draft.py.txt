@@ -1,0 +1,41 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,html,re
+D=Path(__file__).parent;O=D/'originals';chem=json.loads((D/'chemical-identity-closure.json').read_text())['chemicals'];rc=json.loads((D/'reaction-identity-closure.json').read_text());parent='MetaCyc:PWY-6336';edges=[];refs={}
+def clean(s):return html.unescape(re.sub('<[^>]*>','',s))
+def ref(id,p,title=None):
+ refs[id]={'id':id,'title':title or id+' complete native source object','url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+id.replace('MetaCyc:','META%3A'),'source_version':'MetaCyc 27.0; complete native XML object','source_sha256':hashlib.sha256(Path(p).read_bytes()).hexdigest()}
+def ev(id,a,loc):
+ assert len(a)<=400,(len(a),a)
+ return {'reference_id':id,'source_assertion':a,'source_locator':loc}
+def edge(s,p,o,d,e):edges.append({'id':'pca23-'+str(len(edges)+1).zfill(2),'subject':s,'predicate':p,'object':o,'description':d,'evidence':e})
+ref(parent,rc['pathway_source']['path'],'MetaCyc protocatechuate degradation III definition')
+used={x['native_frame']for r in rc['reactions']for s in r['selected_sides'].values()for x in s}
+parts=[{'id':chem[f]['recommended_id'],'label':chem[f].get('pinned',{}).get('rdfs:label',clean(chem[f]['native_label'])),'category':'small_molecule'}for f in sorted(used)];rx=[]
+for r in rc['reactions']:
+ nid=r['native_id'];id=r['recommended_id'];ref(nid,r['source']['path']);rx.append({'id':id,'label':r.get('rhea_label',nid.split(':')[1]),'category':'molecular_activity','direction':'left_to_right'})
+ if id.startswith('RHEA:'):refs[id]={'id':id,'title':id+' complete directional equation and participant sides','url':'https://www.rhea-db.org/rhea/'+id.split(':')[1],'source_version':'Rhea142; digest binds complete RDF gzip; aggregate descriptions by URI','source_sha256':rc['rhea_original']['sha256']}
+ ed=[ev(parent,'The complete native pathway lists '+nid+' as a member and selects L2R flux.',r['pathway_membership_locator']+'; '+r['pathway_layout_locator'])]
+ if id!=nid:
+  ed.append(ev(id,'The complete issuing reaction sides exactly match the native substrates, products, coefficients and selected flux.','Aggregate rdf:Description rdf:about=http://rdf.rhea-db.org/'+id.split(':')[1]))
+ desc='Member of the five-step protocatechuate 2,3-cleavage route.'
+ if nid=='MetaCyc:RXN-8529':desc+=' Native reaction is REVERSIBLE; this graph selects its degradative flux. Native Rhea32214 xref has different stereoisomers; the exact equation is RHEA33432.'
+ if nid=='MetaCyc:RXN-10883':desc+=' Native spontaneous=true allows uncatalyzed background; this does not negate experimentally accelerated PraH catalysis.'
+ edge(id,'part_of',parent,desc,ed)
+ for side in ['substrates','products']:
+  for item in r['selected_sides'][side]:
+   f=item['native_frame'];cid=item['id'];num=item['coefficient'];key='left'if side=='substrates'else'right'
+   evidence=[ev(nid,'The complete native reaction '+key+' side contains '+f+' with coefficient '+str(num)+'.',item['source_locator'])]
+   if id.startswith('RHEA:'):
+    rp=next(x for x in r['rhea_sides'][side]if x['id']==cid);evidence.insert(0,ev(id,id+' places '+cid+' on its '+side+' side with coefficient '+str(num)+'.','Aggregate rdf:Description: '+' -> '.join(rp['traversal'])))
+   desc='Coefficient '+str(num)+' in the selected pathway flux.'
+   if f=='CPD-14966':desc+=' Explicit member/layout Z,Z source frame retained; narrative hyperlink CPD-11842 is the distinct E,Z stereoisomer.'
+   if nid=='MetaCyc:4.1.1.77-RXN' and side=='products'and f=='CPD-14447':desc+=' The immediate Z-enol is retained. RHEA24261 instead produces the keto tautomer CHEBI11641; it is not an exact replacement.'
+   edge(cid,'consumes',id,desc,evidence)if side=='substrates'else edge(id,'produces',cid,desc,evidence)
+for i,j in enumerate(rc['material_joins']):
+ a=rc['reactions'][i];b=rc['reactions'][i+1];edge(j['from'],'provides_input_for',j['to'],'Direct transfer through the same exact intermediate '+j['id']+'.',[ev(a['native_id'],'The native reaction produces '+j['native_frame']+'.',"/ptools-xml/Reaction/right[Compound/@frameid='"+j['native_frame']+"']"),ev(b['native_id'],'The next native reaction consumes the same '+j['native_frame']+'.',"/ptools-xml/Reaction/left[Compound/@frameid='"+j['native_frame']+"']")])
+# An interface to the identified child pathway, without importing its individual steps.
+p='MetaCyc:PWY-5162';f='2-OXOPENT-4-ENOATE-HYDRATASE-RXN';n=E.parse(O/('META-'+f+'.xml')).getroot().find('Reaction');assert 'CPD-14447'in[x.find('Compound').get('frameid')for x in n.findall('right')]
+ref(p,O/'META-PWY-5162.xml','MetaCyc 2-hydroxypenta-2,4-dienoate degradation definition');ref('MetaCyc:'+f,O/('META-'+f+'.xml'));rx.append({'id':p,'label':'2-hydroxypenta-2,4-dienoate degradation','category':'pathway'})
+edge('MetaCyc:4.1.1.77-RXN','provides_input_for',p,'The terminal Z-enol supplies the separately identified downstream pathway. Its first reaction is selected R2L and consumes this exact enol; downstream reactions are outside the five-step record boundary.',[ev(parent,'The native pathway links terminal CPD-14447 to PWY-5162.',"/ptools-xml/Pathway/pathway-link[Compound/@frameid='CPD-14447']/link-target/Pathway[@frameid='PWY-5162']"),ev(p,'PWY-5162 selects R2L flux through 2-OXOPENT-4-ENOATE-HYDRATASE-RXN, using right-primary CPD-14447.',"/ptools-xml/Pathway/reaction-layout[Reaction/@frameid='2-OXOPENT-4-ENOATE-HYDRATASE-RXN']"),ev('MetaCyc:'+f,'The complete written right side contains CPD-14447 and WATER; R2L consumes the exact Z-enol.',"/ptools-xml/Reaction/right")])
+out={'author_support_only':True,'participants':parts,'reactions':rx,'mechanistic_edges':edges,'references':list(refs.values()),'integration_notes':['Native XML sides and current ChEBI structures prove the complete chemical graph; primary paper evidence is separate.','All five native reactions represented. No equal identity inferred from a native xref alone.','Native reaction IDs lack common-name, so use canonical frame labels; enzyme function is explained in edge text.','Source-selected protonation is an explicit graph normalization, not assay pH measurement.','PWY5162 interface requires root new authority; no downstream reaction nodes added.']}
+(D/'draft-chemistry.json').write_text(json.dumps(out,indent=2)+'\n');print(len(parts),'participants',len(rx),'reaction/pathway nodes',len(edges),'edges',len(refs),'references')

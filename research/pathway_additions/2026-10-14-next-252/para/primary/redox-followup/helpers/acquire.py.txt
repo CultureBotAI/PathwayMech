@@ -1,0 +1,15 @@
+from pathlib import Path
+from urllib.request import Request,urlopen
+from concurrent.futures import ThreadPoolExecutor
+import json,hashlib,datetime
+root=Path(__file__).parent
+urls={f'ChEBI-{x}.json':f'https://www.ebi.ac.uk/chebi/backend/api/public/compound/{x}/' for x in ['16240','5020','30060','38290','22651']}
+urls.update({'PMID8392511-pubmed.xml':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=8392511&retmode=xml','META-HYDROGEN-PEROXIDE.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AHYDROGEN-PEROXIDE','META-FERRICYANIDE.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AFERRICYANIDE','META-ASCORBATE.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AASCORBATE'})
+def get(kv):
+ k,u=kv;r={'file':k,'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urlopen(Request(u,headers={'User-Agent':'PathwayMech scientific curation'}),timeout=45) as x:b=x.read();r.update(status=x.status,final_url=x.url,content_type=x.headers.get('Content-Type'))
+  (root/'originals'/k).write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest())
+ except Exception as e:r['error']=str(e)
+ return r
+rows=list(ThreadPoolExecutor(4).map(get,urls.items()));(root/'acquisition-manifest.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))

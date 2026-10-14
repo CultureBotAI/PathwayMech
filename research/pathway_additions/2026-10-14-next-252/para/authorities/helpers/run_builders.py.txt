@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,subprocess,os,datetime,hashlib,time,concurrent.futures
+b=Path(__file__).parent;c=json.loads((b/'canonical-build-commands.json').read_text());env=dict(os.environ,**c['environment']);env['PYTHONNOUSERSITE']='1'
+def run(key):
+ p=b/(key+'.log');start=datetime.datetime.now(datetime.timezone.utc).isoformat();clock=time.monotonic()
+ with p.open('w') as stream:r=subprocess.run(c[key],cwd=c['cwd'],env=env,stdout=stream,stderr=subprocess.STDOUT)
+ result={'command':c[key],'cwd':c['cwd'],'started_utc':start,'elapsed_seconds':round(time.monotonic()-clock,2),'exit_code':r.returncode,'log_path':str(p),'log_sha256':hashlib.sha256(p.read_bytes()).hexdigest()};(b/(key+'-receipt.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result),flush=True)
+ if r.returncode:print(p.read_text()[-5000:],flush=True)
+ return r.returncode
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as p:results=list(p.map(run,['source_builder','ontology_builder']))
+assert not any(results),results
+old={};new={};oldowners={};newowners={}
+for name in ['sources','ontology']:
+ a=json.loads((b/'baseline'/f'{name}.json').read_text());z=json.loads((b/f'{name}.union.json').read_text());assert all(z['terms'].get(k)==v for k,v in a['terms'].items()),name;assert all(z['sources'].get(k)==v for k,v in a['sources'].items()),name;old.update(a['terms']);new.update(z['terms']);oldowners.update(a['sources']);newowners.update(z['sources'])
+manifest=json.loads((b/'identifier_sources.json').read_text());prefix=json.loads((b/'baseline/identifier_sources.json').read_text());assert manifest[:len(prefix)]==prefix
+r={'all_old_terms_preserved':True,'all_old_source_owners_preserved':True,'complete_manifest_prefix_preserved':True,'old_terms':len(old),'new_terms':len(new),'old_owners':len(oldowners),'new_owners':len(newowners),'new_ids':sorted(new.keys()-old.keys()),'maintained_writes':False}
+(b/'union-preservation.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r),flush=True)

@@ -1,0 +1,35 @@
+from pathlib import Path
+import copy, hashlib, json, os, shutil, subprocess
+import yaml
+
+root = Path('/private/tmp/pathwaymech-next-252-20261014')
+out = Path(__file__).parent
+path = root/'data/pathways/protocatechuate-para-cleavage.yaml'
+sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+assert sha(path) == '58741a8412e62e9d75b98169b8729ed3550fac3a3db57449944649b6bc699044'
+before = yaml.safe_load(path.read_text())
+record = copy.deepcopy(before)
+payload = json.loads(Path('/private/tmp/pathwaymech-next-252-primary/redox-followup/proposed-redox-payload.json').read_text())
+record['participants'].extend(payload['participants'])
+record['references'].extend(payload['references'])
+for i, edge in enumerate(payload['mechanistic_edges'], 43):
+    edge['id'] = f'para-{i:03d}'
+    record['mechanistic_edges'].append(edge)
+class Dumper(yaml.SafeDumper):
+    def ignore_aliases(self, data): return True
+path.write_text(yaml.dump(record, Dumper=Dumper, sort_keys=False, allow_unicode=True, width=100))
+after = yaml.safe_load(path.read_text())
+assert after['mechanistic_edges'][:42] == before['mechanistic_edges']
+assert after['participants'][:22] == before['participants']
+assert after['references'][:29] == before['references']
+ontology = Path('/private/tmp/pathwaymech-next-252-authorities/redox/ontology.union.json')
+assert sha(ontology) == 'e34fb12d74f08d86ec6c240206eceea1eb1faff05749438734e4bb3fc7290029'
+shutil.copyfile(ontology, root/'data/identifier_authorities/ontology.json')
+receipt = {'issue':'https://github.com/CultureBotAI/PathwayMech/issues/531', 'record_sha256':sha(path), 'ontology_sha256':sha(ontology), 'preserved_initial_edges':42, 'preserved_initial_participants':22, 'preserved_initial_references':29, 'participants':len(after['participants']), 'edges':len(after['mechanistic_edges']), 'references':len(after['references']), 'endpoint_qualifiers':sum(len(e.get('endpoint_qualifiers',[])) for e in after['mechanistic_edges']), 'new_edge_ids':[e['id'] for e in after['mechanistic_edges'][42:]]}
+(out/'redox-application-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps(receipt))
+command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/new_history_record.py','--kind','record','--slug','protocatechuate-para-cleavage','--target-root','data/pathways','--event','EDIT','--outcome','changed','--actor-name','codex','--actor-type','ai_agent','--model','gpt-6','--agent-tool','codex','--summary','Resolve native dioxygenase redox coverage finding from independent review','--details','Address issue #531 and stable review key protocatechuate-para-native-redox-coverage. Add hydrogen peroxide and potassium ferricyanide inactivation of historical native CPLX-7915, plus ascorbate recovery of two explicitly inactive enzyme states, based on the inspected PMID:8392511 abstract. Preserve unspecified ascorbate stereochemistry and unavailable protocol details. Add three participants, four edges, two object-state qualifiers and one primary reference, preserving all prior entries. Canonical ontology extraction adds CHEBI:22651 and CHEBI:30060 while preserving all 4833 preceding terms and all source owners. Initial scientific finding remains immutable; independent reassessment and full gates are pending at this edit observation.']
+result=subprocess.run(command,cwd=root,env=dict(os.environ,PYTHONPATH=f'{root}/src',PYTHONDONTWRITEBYTECODE='1'),capture_output=True,text=True)
+(out/'redox-history-receipt.json').write_text(json.dumps({'command':command,'exit_code':result.returncode,'stdout':result.stdout,'stderr':result.stderr},indent=2)+'\n')
+print(result.stdout, result.stderr)
+raise SystemExit(result.returncode)

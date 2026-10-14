@@ -1,0 +1,64 @@
+from pathlib import Path
+import hashlib, json, shutil, datetime
+
+W = Path('/private/tmp/pathwaymech-next-252-20261014')
+D = W / 'research/pathway_additions/2026-10-14-next-252/para'
+E = Path('/private/tmp/pathwaymech-next-252-primary/dossier-successor-packaging')
+E.mkdir(exist_ok=True)
+NOW = datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p, data):
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(data, indent=2) + '\n')
+mutable = {'curation.md', 'reproduction.md', 'identifiers.json', 'reference-bindings.json'}
+initial = []
+for p in sorted(D.rglob('*')):
+    if p.is_file():
+        rel = p.relative_to(D).as_posix()
+        initial.append({'path': rel, 'sha256': sha(p), 'bytes': p.stat().st_size, 'authorized_mutation': rel in mutable})
+        if rel in mutable:
+            shutil.copyfile(p, E / ('initial-' + rel))
+write(E / 'initial-dossier-files.json', {'created_utc': NOW, 'files': initial})
+
+def retain(area, src, items, role, provenance=None):
+    dest = D / area
+    dest.mkdir(parents=True, exist_ok=True)
+    retained = []
+    for name, outname in items:
+        original = src / name
+        target = dest / outname
+        target.parent.mkdir(parents=True, exist_ok=True)
+        assert not target.exists(), str(target)
+        shutil.copyfile(original, target)
+        assert original.read_bytes() == target.read_bytes()
+        retained.append({'external_path': str(original), 'maintained_path': target.relative_to(W).as_posix(), 'sha256': sha(target), 'bytes': target.stat().st_size, 'unchanged_bytes': True, 'kind': 'helper_source_artifact' if outname.endswith('.py.txt') else 'compact_evidence'})
+    obj = {'created_utc': NOW, 'area': area, 'role': role, 'retained': retained}
+    if provenance:
+        obj['provenance'] = provenance
+    write(dest / 'retention.json', obj)
+    return len(retained)
+
+primary_names = ['HANDOFF.md', 'acquisition-manifest.json', 'chemical-identity-projection.json', 'primary-reference-projection.json', 'proposed-redox-payload.json', 'structure-checks.json', 'payload-validation.json']
+primary = retain('primary/redox-followup', Path('/private/tmp/pathwaymech-next-252-primary/redox-followup'), [(n,n) for n in primary_names] + [(n, 'helpers/' + n + '.txt') for n in ['acquire.py', 'build_payload.py', 'check_structures.py']], 'Successor author remediation support for issue #531; not independent scientific review. Earlier primary evidence is preserved unchanged.')
+correction_names = ['canonical-build-command.json', 'ontology-builder-receipt.json', 'ontology-builder.log', 'planned-identifiers.json', 'preservation.json']
+authority = retain('authorities/redox-followup', Path('/private/tmp/pathwaymech-next-252-authorities/redox'), [(n,n) for n in correction_names], 'Successor ontology-only correction for issue #531; initial output bindings remain unchanged.')
+# Append exact helpers and application receipts from their respective author directories.
+authority_folder = D / 'authorities/redox-followup'
+authority_retention = json.loads((authority_folder/'retention.json').read_text())
+for src, outname in [
+    (Path('/private/tmp/pathwaymech-next-252-authorities/prepare_redox_union.py'), 'helpers/prepare_redox_union.py.txt'),
+    (Path('/private/tmp/pathwaymech-next-252-author/apply_redox.py'), 'helpers/apply_redox.py.txt'),
+    (Path('/private/tmp/pathwaymech-next-252-author/redox-application-receipt.json'), 'redox-application-receipt.json'),
+    (Path('/private/tmp/pathwaymech-next-252-author/redox-history-receipt.json'), 'redox-history-receipt.json')]:
+    target = authority_folder / outname
+    target.parent.mkdir(parents=True, exist_ok=True)
+    assert not target.exists()
+    shutil.copyfile(src,target)
+    authority_retention['retained'].append({'external_path': str(src), 'maintained_path': target.relative_to(W).as_posix(), 'sha256': sha(target), 'bytes': target.stat().st_size, 'unchanged_bytes': True, 'kind': 'helper_source_artifact' if outname.endswith('.py.txt') else 'compact_evidence'})
+write(authority_folder/'retention.json', authority_retention)
+authority += 4
+review_names = ['original-scientific-audit.json', 'edge-native-source-check.json', 'reference-audit.json', 'lineage-all-worktrees.json', 'imodulondb-independent.json', 'redox-original-source-audit.json', 'nadp-issuing-authority.json', 'source-coverage-assessment.json', 'successor-change-assessment.json']
+review = retain('independent-review-evidence', Path('/private/tmp/pathwaymech-next-252-science-review'), [(n,n) for n in review_names], 'Independent scientific reviewer receipts, retained unchanged by the author-support agent; not author verdicts and not a substitute for the immutable structured review.', {'reviewer_agent': '/root/next252_scientific_review', 'packaging_agent': '/root/next252_primary', 'finalized_names_confirmed_by_reviewer': True, 'initial_structured_review': 'reviews/structured/20261014T131508Z-next252-para-science-initial', 'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/531'})
+assert sha(D/'independent-review-evidence/original-scientific-audit.json') == 'ff8f8891c642bb3df75068229b7c1abeafbcfcf05023320718ad456314eaf2a5'
+(D/'independent-review-evidence/README.md').write_text('''# Independent scientific review evidence\n\nThese nine compact receipts were finalized by `/root/next252_scientific_review`\nand copied without changes by `/root/next252_primary`. Their external paths, byte\nlengths and SHA-256 digests are bound in `retention.json`. They are independent\nreviewer outputs, separate from the surrounding author research dossier. The\ninitial immutable finding remains in\n`reviews/structured/20261014T131508Z-next252-para-science-initial`; the redox\nremediation is tracked by issue #531. The receipts preserve the stage and exact\nsource/target scope reported by their reviewer. They do not by themselves replace\nthe final structured review or establish the outcome of later integration gates.\n\nRaw source downloads and reviewer scripts remain in the external review cache.\n''')
+print(json.dumps({'initial_files':len(initial), 'retained_primary':primary, 'retained_authority_correction':authority, 'retained_independent_reviewer':review}, indent=2))

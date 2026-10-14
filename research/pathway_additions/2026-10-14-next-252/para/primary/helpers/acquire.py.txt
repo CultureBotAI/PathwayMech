@@ -1,0 +1,17 @@
+import pathlib, urllib.request,json,hashlib,concurrent.futures,datetime
+from html.parser import HTMLParser
+root=pathlib.Path('/private/tmp/pathwaymech-next-252-primary');out=root/'originals'
+class P(HTMLParser):
+ def __init__(self):super().__init__();self.img=[]
+ def handle_starttag(self,t,a):
+  d=dict(a)
+  if t=='img' and 'blobs' in d.get('src',''):self.img.append(d['src'])
+p=P();p.feed((out/'PMC2795304.html').read_text())
+urls={f'figure-{i+1}.jpg':u for i,u in enumerate(p.img)}
+urls.update({'PMC2795304.pdf':'https://pmc.ncbi.nlm.nih.gov/articles/PMC2795304/pdf/0840-09.pdf','supplements.zip':'https://pmc.ncbi.nlm.nih.gov/articles/instance/2795304/bin/supp_191_21_6758__Supplemental_Materials.zip','supplement-index.html':'https://pmc.ncbi.nlm.nih.gov/articles/instance/2795304/bin/supp_191_21_6758__index.html'})
+def get(kv):
+ k,u=kv
+ try:
+  b=urllib.request.urlopen(u,timeout=60).read();(out/k).write_bytes(b);return {'file':k,'url':u,'size':len(b),'sha256':hashlib.sha256(b).hexdigest(),'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ except Exception as e:return {'file':k,'url':u,'error':str(e)}
+res=list(concurrent.futures.ThreadPoolExecutor(4).map(get,urls.items()));print(json.dumps(res,indent=2));(root/'figures-supplement-acquisition.json').write_text(json.dumps(res,indent=2))

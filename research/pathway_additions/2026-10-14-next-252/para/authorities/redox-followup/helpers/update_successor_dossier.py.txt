@@ -1,0 +1,118 @@
+from pathlib import Path
+import hashlib, json, datetime
+import yaml
+W = Path('/private/tmp/pathwaymech-next-252-20261014')
+D = W/'research/pathway_additions/2026-10-14-next-252/para'
+E = Path('/private/tmp/pathwaymech-next-252-primary/dossier-successor-packaging')
+NOW = datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(p,d): p.write_text(json.dumps(d,indent=2)+'\n')
+record_path = W/'data/pathways/protocatechuate-para-cleavage.yaml'
+assert sha(record_path)=='2a5e42e39a4e8eadb77eabf6f95896ecc7f001bafba04dec6eb74e7251169d89'
+r=yaml.safe_load(record_path.read_text())
+nodes=sorted({r['id']}|{x['id'] for group in ['taxa','participants','reactions'] for x in r[group]})
+refs=[x['id'] for x in r['references']]
+counts={'participants':len(r['participants']),'mechanistic_edges':len(r['mechanistic_edges']),'endpoint_qualifiers':sum(len(x.get('endpoint_qualifiers',[])) for x in r['mechanistic_edges']),'named_nodes':len(nodes),'references':len(refs)}
+assert counts=={'participants':25,'mechanistic_edges':46,'endpoint_qualifiers':9,'named_nodes':33,'references':30},counts
+write(D/'identifiers.json',{'nodes':nodes,'references':refs})
+bindings=json.loads((D/'reference-bindings.json').read_text())
+original_bindings=json.loads((E/'initial-reference-bindings.json').read_text())
+assert bindings==original_bindings and len(bindings)==29
+ref=r['references'][-1]
+raw=Path('/private/tmp/pathwaymech-next-252-primary/redox-followup/originals/PMID8392511-pubmed.xml')
+assert sha(raw)==ref['source_sha256']
+bindings.append({'reference_id':ref['id'],'record_url':ref['url'],'source_sha256':ref['source_sha256'],'original_path':str(raw),'original_url':ref['url'],'bytes':raw.stat().st_size,'digest_scope':'Complete retrieved PubMed XML record. The entire primary abstract was inspected; this digest does not imply full-article or supplementary-protocol access.'})
+assert [b['reference_id'] for b in bindings]==refs
+write(D/'reference-bindings.json',bindings)
+curation=(D/'curation.md').read_text()
+curation=curation.replace('The native complex model, iron cofactor and two in-vitro inhibitor assertions\nretain their actual source and historical scope. EDTA and nitrilotriacetate are\nnot physiological regulators. PraB accepts NAD and lower-activity NADP in vitro;','The native complex model, iron cofactor and four in-vitro inhibitor assertions\nretain their actual sources and historical scope. EDTA and nitrilotriacetate are\nsupported by native structured source annotations. The PMID:8392511 abstract\nreports hydrogen peroxide and potassium ferricyanide inactivation and subsequent\nascorbate recovery. Two recovery edges qualify the native-complex object as a\ndistinct previously inactivated state, one for each oxidant. These assertions do\nnot establish physiological regulation, baseline activation, damaged residues,\nmetal-state occupancy or treatment-specific doses and recovery protocols. The\nhistorical preparation remains distinct from the complete 2009 sequence.\n\nThe oxidants are CHEBI:16240 and the exact potassium salt CHEBI:30060. The\nunspecified ascorbate stereochemistry is preserved with the chemical-entity class\nCHEBI:22651. Issuing and pinned chemical identities, counterions, composition and\ncharge were inspected; no single exact structure is invented for that class.\nThe successor retains 22 quoted words from the primary abstract, including all\nrepeated qualifier evidence. These four edges and two molecular-state qualifiers\naddress issue #531 without rewriting the original author evidence or independent\nfinding. PraB accepts NAD and lower-activity NADP in vitro;')
+curation=curation.replace('| PMID:8392511 abstract and native source annotations | Historical native dioxygenase assembly and iron | Full article unavailable; inhibitor details cite inspected native objects, not invented paper quotations |','| PMID:8392511 abstract and native source annotations | Historical native dioxygenase assembly and iron; primary abstract supports two oxidant inactivations and ascorbate recovery | Full article unavailable; EDTA/nitrilotriacetate use inspected native objects, while redox edges cite the exact primary abstract with two restricted inactive-state qualifiers |')
+curation=curation.replace('## Proposed record updates','## Maintained record and successor evidence')
+curation=curation.replace('It contains 22 participants, five molecular activities, one downstream pathway\ninterface, one native taxon, 42 edges and 29 references. Seven protein endpoints\nare qualified. identifiers.json enumerates every named node and reference ID;','It contains 25 participants, five molecular activities, one downstream pathway\ninterface, one native taxon, 46 edges and 30 references. Nine endpoints are\nqualified: seven experimental constructs and two inactive molecular states.\nidentifiers.json enumerates all 33 named nodes and every reference ID;')
+curation=curation.replace('The canonical unchanged builders produce 4,833 terms and 784 source owners, with\nthe complete 948-entry manifest prefix preserved before 12 additions. The remaining\ngates and independent scientific/integration reviews must be read from their actual\nreceipts; this author report does not assert their completion or approval.','The canonical unchanged builders produce 4,835 combined authority terms\n(2,059 ontology terms and 2,776 source terms) and 784 source owners. The complete\n948-entry manifest prefix remains preserved before 12 additions. The ontology-only\nredox correction adds CHEBI:22651 and CHEBI:30060 while preserving all 4,833\npre-correction terms, source owners and the complete 960-entry manifest.\n\n`primary/redox-followup/` retains the successor author projections and exact\nhelpers; `authorities/redox-followup/` retains the canonical correction and\napplication receipts. Its `final-output-owner-bindings.json` binds the final\nrecord and authority owners separately from the preserved initial binding.\n`independent-review-evidence/` retains nine unchanged compact receipts from the\nindependent scientific reviewer, with explicit reviewer provenance and hashes.\nThe remaining gates and independent scientific/integration reviews must be read\nfrom their actual receipts; this author report does not assert their completion\nor approval.')
+assert '22 participants' not in curation and '42 edges' not in curation
+(D/'curation.md').write_text(curation)
+(D/'reproduction.md').write_text('''# Reproduction and evidence boundaries
+
+Base commit: `099b4fc58fc8c04006f3879f111f3da3eeabb767`.
+The maintained owner is `data/pathways/protocatechuate-para-cleavage.yaml`.
+
+The preflight, native and primary manifests retain exact artifact identities and
+reading limits. Full source XML, JSON, RDF, SQL, articles and figures remain in
+external caches. Restore and hash-check those declared bytes before replay.
+Reference digests are explained individually in `reference-bindings.json`.
+
+`authorities/canonical-build-commands.json` records the unchanged initial
+canonical builders, selected IDs, baseline bindings and external cache paths.
+The initial selector contains all prior authority IDs plus the 30 named nodes of
+the initial record; it supplies no labels. Independent extraction supplies names
+and existence. Initial evidence and `authorities/output-owner-bindings.json`
+remain unchanged and describe their original stage.
+
+The ontology-only successor is bound by
+`authorities/redox-followup/canonical-build-command.json`. Its selector preserves
+all 4,833 preceding terms and covers all 33 final named nodes. The same canonical
+builder adds CHEBI:22651 and CHEBI:30060, giving 4,835 combined terms: 2,059
+ontology terms and 2,776 source terms. The source snapshot, all 784 source owners
+and the complete 960-entry manifest remain unchanged by that correction.
+`authorities/redox-followup/final-output-owner-bindings.json` explicitly binds
+the final record, authority snapshots, identifier manifest and correction history.
+The initial output binding is preserved, not rewritten as though it were final.
+
+`primary/redox-followup/` retains the exact final author payload, primary abstract
+metadata, chemical projections, structural checks and validation receipt for issue
+#531. The final JSON payload is the applied input. Its original authoring helper
+is retained as a source artifact; final prose edits are bound by the payload digest
+and are not claimed to be regenerated byte-for-byte by that helper. The separate
+application helper and receipt bind the actual maintained output and confirm that
+all 42 initial edges, 22 participants and 29 references were preserved.
+
+Any retained `.py.txt` helper is an exact source artifact, not executable project
+code. Copy it to an external scratch directory with the original filename and
+restore its declared inputs to replay. Retention mappings bind original and
+maintained bytes. Replay the ontology correction against the declared
+pre-correction authority state, and replay application against its asserted
+initial record digest; the helpers intentionally guard those inputs.
+Native chemical checking used RDKit 2024.03.5; the successor redox checks used
+RDKit 2025.03.6. Both used isolated runtimes without changing project dependencies.
+These are author calculations, not biological experiments or an independent
+scientific review. Raw full sources were not copied into this dossier.
+
+Nine finalized reviewer receipts are retained unchanged in
+`independent-review-evidence/`, with reviewer and packaging provenance in its
+retention manifest. They preserve the reviewer's reported stage and scope; the
+initial immutable structured finding remains separate. Their presence does not
+replace a final independent review or an integration-gate receipt.
+
+Required final gates are `just render-pages`, `just validate`, `just test`,
+`just lint`, `just vendored-check` and `git diff --check`. Actual result receipts
+are retained separately. Check all 46 graph edges and nine endpoint qualifiers,
+30 reference bindings, 33 named nodes and per-record KGX contexts, in addition to
+schema validity. No gate success is implied merely by listing a command.
+Immutable independent reviews and explicit successor dispositions are saved
+separately.
+''')
+
+owner_specs=[
+('data/pathways/protocatechuate-para-cleavage.yaml',None,'final pathway record after issue #531 application'),
+('data/identifier_authorities/ontology.json','/private/tmp/pathwaymech-next-252-authorities/redox/ontology.union.json','final ontology-only extension'),
+('data/identifier_authorities/sources.json','/private/tmp/pathwaymech-next-252-authorities/sources.union.json','unchanged initial source output'),
+('conf/identifier_sources.json','/private/tmp/pathwaymech-next-252-authorities/identifier_sources.json','unchanged initial source manifest'),
+('history/records/protocatechuate-para-cleavage/2026-10-14T132231Z-codex-3c759e.yaml',None,'application correction history')]
+owner_bindings=[]
+for path,external,role in owner_specs:
+    p=W/path
+    b={'maintained_owner':path,'sha256':sha(p),'bytes':p.stat().st_size,'role':role}
+    if external:
+        assert p.read_bytes()==Path(external).read_bytes()
+        b['external_path']=external
+        b['external_bytes_identical']=True
+    owner_bindings.append(b)
+assert owner_bindings[1]['sha256']=='e34fb12d74f08d86ec6c240206eceea1eb1faff05749438734e4bb3fc7290029'
+ont=json.loads((W/'data/identifier_authorities/ontology.json').read_text())
+sources=json.loads((W/'data/identifier_authorities/sources.json').read_text())
+assert len(set(ont['terms'])|set(sources['terms']))==4835
+counts.update({'combined_authority_terms':4835,'ontology_terms':len(ont['terms']),'source_terms':len(sources['terms']),'authority_sources':len(ont['sources'])+len(sources['sources']),'manifest_entries':len(json.loads((W/'conf/identifier_sources.json').read_text()))})
+write(D/'authorities/redox-followup/final-output-owner-bindings.json',{'created_utc':NOW,'phase':'Applied issue #531 successor; distinct from original author outputs','issue':'https://github.com/CultureBotAI/PathwayMech/issues/531','record_counts':counts,'preserved_initial_binding':{'path':'research/pathway_additions/2026-10-14-next-252/para/authorities/output-owner-bindings.json','sha256':sha(D/'authorities/output-owner-bindings.json')},'outputs':owner_bindings,'role':'Author output identity binding only; not a scientific verdict or gate result'})
+
+print(json.dumps(counts,indent=2))

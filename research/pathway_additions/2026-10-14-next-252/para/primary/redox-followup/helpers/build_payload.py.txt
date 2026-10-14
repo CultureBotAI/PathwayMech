@@ -1,0 +1,44 @@
+from pathlib import Path
+import json,sqlite3,hashlib,xml.etree.ElementTree as E,datetime,shutil
+root=Path(__file__).parent;o=root/'originals';source_path=o/'PMID8392511-pubmed.xml';pub=E.parse(source_path)
+article=pub.find('.//Article');abstract=' '.join(' '.join(pub.find('.//Abstract').itertext()).split());loc='PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence beginning The enzyme was inactivated'
+source_id='PMID:8392511'
+chem_source=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+props=['rdfs:label','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:smiles_string','IAO:0000115']
+rows=[]
+for x in ['16240','30060','22651','5020','38290']:
+ p=o/f'ChEBI-{x}.json';j=json.loads(p.read_text());pinned={k:v or obj for k,obj,v in chem_source.execute('select predicate,object,value from statements where subject=?',('CHEBI:'+x,))if k in props}
+ check={'primary_id_equal':j['chebi_accession']=='CHEBI:'+x,'label_equal':pinned['rdfs:label']==j['ascii_name']}
+ if j['default_structure']:
+  check.update(full_inchi_equal=pinned['chemrof:inchi_string']==j['default_structure']['standard_inchi'],inchi_key_equal=pinned['chemrof:inchi_key_string']==j['default_structure']['standard_inchi_key'],smiles_equal=pinned['chemrof:smiles_string']==j['default_structure']['smiles'],formula_equal=pinned['chemrof:generalized_empirical_formula']==j['chemical_data']['formula'],charge_equal=int(pinned['chemrof:charge'])==j['chemical_data']['charge'])
+ else:check['both_sources_do_not_resolve_one_stereochemical_structure']='chemrof:inchi_string'not in pinned
+ assert all(check.values()),(x,check)
+ rows.append({'id':j['chebi_accession'],'label':j['ascii_name'],'selected_for_graph':x in ['16240','30060','22651'],'category':'chemical_entity'if x=='22651'else'small_molecule','issuing_url':f'https://www.ebi.ac.uk/chebi/backend/api/public/compound/{x}/','source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'pinned':pinned,'current_structure':j['default_structure'],'chemical_data':j['chemical_data'],'checks':check,'ontology_relations':j.get('ontology_relations')})
+(root/'chemical-identity-projection.json').write_text(json.dumps({'pinned_source':{'id':'chebi-255','path':'/private/tmp/pathwaymech-curation-authorities/chebi.db','version':'255','sha256':'26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f','sha256_scope':'uncompressed_semantic_sql_database','url':'http://purl.obolibrary.org/obo/chebi/255/chebi.owl'},'identities':rows,'decisions':[{'id':'CHEBI:30060','decision':'The paper explicitly names K3FE(CN)6, so use the potassium salt. CHEBI:5020 is the ferricyanide anion and is not silently substituted for the stated neutral salt reagent. No role for free cyanide is asserted.'},{'id':'CHEBI:22651','decision':'Abstract specifies ascorbate without stereochemistry. Use the generic ChEBI chemical entity; neither source resolves one structure for this class. CHEBI:38290 is its narrower L-enantiomer child and is not asserted.'},{'id':'CHEBI:16240','decision':'H2O2 is the exact neutral hydrogen peroxide species; do not substitute hydroperoxide anion or oxygen.'}]},indent=2)+'\n')
+# Existing native object links the historical purified preparation to the issuing complex ID.
+native_original=Path('/private/tmp/pathwaymech-next-252-native/originals/META-CPLX-7915.xml')
+shutil.copyfile(native_original,o/'META-CPLX-7915.xml')
+reference={'id':source_id,'title':''.join(article.find('ArticleTitle').itertext()),'url':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=8392511&retmode=xml','source_version':'PubMed record retrieved2026-10-14; abstract inspected, full article not retrieved','source_sha256':hashlib.sha256(source_path.read_bytes()).hexdigest()}
+ref_projection={'reference':reference,'pmid':pub.findtext('.//PMID'),'doi':pub.findtext(".//ArticleId[@IdType='doi']"),'journal':article.findtext('./Journal/Title'),'volume':article.findtext('./Journal/JournalIssue/Volume'),'issue':article.findtext('./Journal/JournalIssue/Issue'),'year':article.findtext('./Journal/JournalIssue/PubDate/Year'),'pages':article.findtext('./Pagination/StartPage')or article.findtext('./Pagination/MedlinePgn'),'source_locator':loc,'reading_scope':'Entire primary abstract; existing EPMC and NCBI JATS abstract versions also inspected. No full-article redox protocol, supplement, doses or reagent-specific time course claimed.'}
+(root/'primary-reference-projection.json').write_text(json.dumps(ref_projection,indent=2)+'\n')
+def ev(q):
+ assert q in abstract,q
+ return {'reference_id':source_id,'quote':q,'source_locator':loc}
+native_ev={'reference_id':'MetaCyc:CPLX-7915','source_assertion':'The native complex annotation describes purification from JJ-1b and a later native homotetramer characterization citing PMID8392511; this maps the historical preparation to CPLX-7915 without proving its complete2009 protein sequence.','source_locator':'/ptools-xml/Protein[@frameid="CPLX-7915"]/comment'}
+edges=[]
+for slug,cid,label,formula in [('hydrogen-peroxide','CHEBI:16240','hydrogen peroxide','H2O2'),('potassium-ferricyanide','CHEBI:30060','potassium ferricyanide','K3FE(CN)6')]:
+ edges.append({'id':'redox-inhibits-'+slug,'subject':cid,'predicate':'inhibits','object':'MetaCyc:CPLX-7915','description':f'The1993 abstract reports in-vitro inactivation of purified native JJ1b protocatechuate2,3-dioxygenase by {label} among Fe2+-oxidizing reagents. This is an assay perturbation of the historical native preparation, not physiological regulation or a2009 recombinant-sequence claim. No dose or exact damaged-site occupancy is asserted.','evidence':[ev('enzyme was inactivated'),ev(formula),native_ev]})
+ state=f'Historical purified native JJ1b2,3-PCD after inactivation by {label}, as described among the oxidizing treatments in the1993 abstract. This qualifier restricts the recovery claim to inactive enzyme; the source does not resolve damage sites, metal-state occupancy, dose or a separate treatment-specific recovery protocol.'
+ edges.append({'id':'redox-reactivates-after-'+slug,'subject':'CHEBI:22651','predicate':'activates','object':'MetaCyc:CPLX-7915','description':f'Ascorbate restores activity to the historical purified native enzyme after oxidative inactivation, including the reported {label} treatment. The abstract attributes recovery to reduction of the iron. This edge claims recovery of the qualified inactive preparation, not stimulation of untreated enzyme; stereochemistry of the ascorbate reagent is not specified.','evidence':[ev('full activity was restored'),ev('by ascorbate'),native_ev],'endpoint_qualifiers':[{'endpoint':'object','kind':'molecular_state','description':state,'evidence':[ev('inactivated'),native_ev]}]})
+for e in edges:
+ for q in e.get('endpoint_qualifiers',[]):assert len(q['description'])<=400,len(q['description'])
+ for v in e['evidence']:
+  assert len(v.get('quote',v.get('source_assertion','')))<=400
+quotes=[]
+for e in edges:
+ quotes.extend(x['quote']for x in e['evidence']if x['reference_id']==source_id and'quote'in x)
+ for q in e.get('endpoint_qualifiers',[]):quotes.extend(x['quote']for x in q['evidence']if x['reference_id']==source_id and'quote'in x)
+assert sum(len(x.split())for x in quotes)==22
+payload={'issue':'https://github.com/CultureBotAI/PathwayMech/issues/531','role':'Successor author-support proposal; not independent review and no maintained edits.','participants':[{'id':r['id'],'label':r['label'],'category':r['category']}for r in rows if r['selected_for_graph']],'references':[reference],'mechanistic_edges':edges,'quote_accounting':{'reference':source_id,'total_words':22,'strings_per_occurrence':quotes,'qualifier_quotes_counted':True},'scope_notes':['The same primary sentence identifies H2O2 and K3FE(CN)6 as inactivating oxidants and then reports restoration by ascorbate. Two qualified states retain the named treatments without asserting separate measured recovery kinetics or protocol details.','No baseline activation, physiological control, damage-site assignment, metal occupancy or sequence identity to2009 C4TP01 is inferred.','The inspected native CPLX and ENZRXN objects ground the historical-preparation mapping, but do not encode these redox perturbations or molecular states. Therefore the actual redox/state evidence is verbatim primary prose, not a structured-source paraphrase.']}
+(root/'proposed-redox-payload.json').write_text(json.dumps(payload,indent=2)+'\n')
+print({'participants':payload['participants'],'edges':len(edges),'direct_quote_words':22,'state_description_lengths':[len(e['endpoint_qualifiers'][0]['description'])for e in edges if'endpoint_qualifiers'in e]})

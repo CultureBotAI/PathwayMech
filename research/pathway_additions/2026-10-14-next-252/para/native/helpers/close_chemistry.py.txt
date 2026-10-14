@@ -1,0 +1,48 @@
+from pathlib import Path
+import json,hashlib,datetime,sqlite3,xml.etree.ElementTree as E,re
+from collections import Counter
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+D=Path(__file__).parent;O=D/'originals';R=Path('/private/tmp/pathwaymech-next-252-20261014');A=Path('/private/tmp/pathwaymech-curation-authorities')
+cs=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True);rs=sqlite3.connect('file:'+str(A/'rhea.db')+'?mode=ro',uri=True)
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def props(db,id):return {p:o or v for p,o,v in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(id,))}
+def molinfo(m):
+ if m is None:return {'parsed':False}
+ return {'parsed':True,'inchi':Chem.MolToInchi(m),'inchi_key':Chem.MolToInchiKey(m),'isomeric_smiles':Chem.MolToSmiles(m,isomericSmiles=True),'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),'heavy_atom_count':m.GetNumHeavyAtoms(),'rings':[len(x) for x in m.GetRingInfo().AtomRings()],'chiral_centers':[list(x) for x in Chem.FindMolChiralCenters(m,includeUnassigned=True)],'double_bond_stereo':[str(b.GetStereo()) for b in m.GetBonds() if b.GetBondType()==Chem.BondType.DOUBLE]}
+def achiral(m):
+ m=Chem.RemoveHs(Chem.Mol(m));Chem.RemoveStereochemistry(m);return Chem.MolToSmiles(m)
+def cml_graph(c):
+ mol=c.find('cml/molecule');rw=Chem.RWMol();idx={}
+ for a in mol.findall('atomArray/atom'):
+  atom=Chem.Atom(a.get('elementType').capitalize());atom.SetFormalCharge(int(a.get('formalCharge','0')));idx[a.get('id')]=rw.AddAtom(atom)
+ for b in mol.findall('bondArray/bond'):
+  a,z=b.get('atomRefs').split();rw.AddBond(idx[a],idx[z],{1:Chem.BondType.SINGLE,2:Chem.BondType.DOUBLE,3:Chem.BondType.TRIPLE}[int(b.get('order'))])
+ m=rw.GetMol();Chem.SanitizeMol(m);return m
+fm={'3-4-DIHYDROXYBENZOATE':'36241','OXYGEN-MOLECULE':'15379','PROTON':'15378','CPD-14966':None,'CPD-11842':None,'HYDROXYMUCONATE-SALD':'71198','CARBON-DIOXIDE':'16526','WATER':'15377','NAD':'57540','NADH':'57945','CPD-13339':'28080','CPD-8742':'64908','CPD-14447':'67152','FE+2':'29033','EDTA':'64755','CPD-10188':'25548'}
+chem={};issues=[]
+for frame,chid in fm.items():
+ p=O/('META-'+frame+'.xml');n=E.parse(p).getroot().find('Compound');m=n.find('cml/molecule');f=m.find('formula').get('concise').split();formula=''.join(a.capitalize()+(b if b!='1' else '')for a,b in zip(f[::2],f[1::2]));charge=int(m.get('formalCharge'));ni=n.findtext('inchi');nk=n.findtext('inchi-key').removeprefix('InChIKey=');nsm=n.findtext("cml/molecule/string[@title='smiles']");cg=cml_graph(n);nm=Chem.MolFromInchi(ni);ns=Chem.MolFromSmiles(nsm)
+ row={'native_id':'MetaCyc:'+frame,'native_label':n.findtext('common-name'),'recommended_id':'CHEBI:'+chid if chid else 'MetaCyc:'+frame,'native_full_inchi':ni,'native_inchi_key':nk,'formula':formula,'charge':charge,'native_source':bind(p),'native_xrefs':[{'db':x.findtext('dblink-db'),'id':x.findtext('dblink-oid')}for x in n.findall('dblink')],'representations':{'native_full_inchi':molinfo(nm),'native_smiles':nsm,'native_smiles_interpretation':molinfo(ns),'native_cml_graph_interpretation':molinfo(cg)},'scope':'Source-normalized chemical identity, not a measurement of protonation in the assay. Native CML compares full element/charge/bond connectivity without stereo; full InChI and current issuing SMILES close stereo.'}
+ if chid:
+  ch=props(cs,'CHEBI:'+chid);lp=O/('ChEBI-'+chid+'.json');live=json.loads(lp.read_text());pm=Chem.MolFromSmiles(ch['chemrof:smiles_string']);lm=Chem.MolFromSmiles(live['default_structure']['smiles'])
+  tests={'pinned_full_inchi_equal':ni==ch['chemrof:inchi_string'],'pinned_inchi_key_equal':nk==ch['chemrof:inchi_key_string'],'pinned_formula_equal':formula==ch['chemrof:generalized_empirical_formula'],'pinned_charge_equal':charge==int(ch['chemrof:charge']),'live_full_inchi_equal':ni==live['default_structure']['standard_inchi'],'live_inchi_key_equal':nk==live['default_structure']['standard_inchi_key'],'live_formula_equal':formula==live['chemical_data']['formula'],'live_charge_equal':charge==live['chemical_data']['charge'],'live_smiles_interpreted_inchi_equal':Chem.MolToInchi(lm)==ni,'native_cml_connectivity_equal_pinned':achiral(cg)==achiral(pm),'native_cml_connectivity_equal_live':achiral(cg)==achiral(lm)}
+  row.update(pinned=ch,live_source=bind(lp),live_identity={'id':live['chebi_accession'],'ascii_name':live['ascii_name'],'chemical_data':live['chemical_data'],'default_structure':live['default_structure']},checks=tests);row['representations'].update(pinned_smiles_interpretation=molinfo(pm),live_smiles_interpretation=molinfo(lm))
+  if not all(tests.values()):issues.append({'frame':frame,'checks':tests})
+ else:
+  exact=cs.execute("select subject from statements where predicate='chemrof:inchi_string' and value=?",(ni,)).fetchall()
+  row.update(pinned_chebi_exact_inchi_matches=[x[0]for x in exact],checks={'full_native_inchi_roundtrip':Chem.MolToInchi(nm)==ni,'full_native_inchi_key_roundtrip':Chem.MolToInchiKey(nm)==nk,'native_cml_connectivity_equal_native_smiles':achiral(cg)==achiral(ns),'native_smiles_full_inchi_equal':Chem.MolToInchi(ns)==ni,'native_charge_equal_inchi':charge==Chem.GetFormalCharge(nm)})
+  assert not exact
+  if not all(row['checks'].values()):issues.append({'frame':frame,'checks':row['checks']})
+ chem[frame]=row
+ print(frame,chid,'checks',row['checks'])
+out={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Author-support exact chemical identity; not independent review.','software':{'rdkit':rdBase.rdkitVersion},'chemicals':chem,'issues':issues,'native_stereo_discrepancy':{'actual_member_compound':'MetaCyc:CPD-14966','actual_stereo':'2Z,4Z','narrative_compound':'MetaCyc:CPD-11842','narrative_stereo':'2E,4Z','identity_same':chem['CPD-14966']['native_full_inchi']==chem['CPD-11842']['native_full_inchi'],'disposition':'Retain the explicit native member/layout and Fig1-defined Z,Z product; narrative hyperlink is a source conflict, not exact synonym.'}}
+reps=[]
+for f,row in chem.items():
+ r=row['representations']
+ if not r['native_smiles_interpretation'].get('parsed'):reps.append({'native_frame':f,'field':'native SMILES','issue':'Source contains generic R placeholder and is not parseable as exact structure.','resolution':'Full native CML atom/bond graph matches pinned/current ChEBI connectivity; full native/pinned/live InChI and live issuing SMILES independently establish exact stereochemistry.'})
+ if r.get('pinned_smiles_interpretation',{}).get('inchi')not in [None,row['native_full_inchi']]:reps.append({'native_frame':f,'field':'pinned ChEBI255 SMILES','issue':'Interpreted pinned SMILES lacks part or all defined double-bond stereo.','resolution':'Use full pinned InChI and current issuing ChEBI InChI/SMILES, both exactly equal native chemical identity; do not rely on pinned SMILES alone.'})
+ if f in ['CPD-14966','CPD-11842']:reps.append({'native_frame':f,'field':'molecule reconstructed from standard InChI','issue':'RDKit reconstruction places the second negative charge on enolic oxygen and proton on a carboxyl group. Standard InChI is invariant to this proton placement; it cannot independently establish exact local protonation.','resolution':'Explicit native SMILES and CML element/charge/bond graphs agree on the two carboxylates with neutral enol OH. Native SMILES interpreted full InChI exactly matches the source stereo layers. Retain this source-defined ionization and use full SMILES+CML for structure.'})
+out['representation_limitations']=reps
+(D/'chemical-identity-closure.json').write_text(json.dumps(out,indent=2)+'\n')
+assert not issues,issues

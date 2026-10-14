@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,shutil,datetime,subprocess
+BASE=Path('/private/tmp/pathwaymech-next-252-authorities');BASE.mkdir(exist_ok=True)
+REPO=Path('/private/tmp/pathwaymech-next-252-20261014');PRIOR=Path('/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/originals')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(n,x):(BASE/n).write_text(json.dumps(x,indent=2)+'\n')
+head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip();assert head=='099b4fc58fc8c04006f3879f111f3da3eeabb767'
+baseline=BASE/'baseline';baseline.mkdir()
+for n in ['conf/identifier_sources.json','conf/rhea_identifier_updates.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json']:
+ shutil.copyfile(REPO/n,baseline/Path(n).name)
+old=json.loads((baseline/'identifier_sources.json').read_text());retained=set()
+for kind in ['sources','ontology']:retained.update(json.loads((baseline/f'{kind}.json').read_text())['terms'])
+record_bindings=[]
+for src in sorted((REPO/'data/pathways').rglob('*.yaml')):
+ dst=BASE/'records'/src.relative_to(REPO/'data/pathways');dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst);record_bindings.append({'path':str(src.relative_to(REPO)),'sha256':sha(dst)})
+assert len(record_bindings)==249
+save('retained-authority-identifiers.json',sorted(retained));save('corpus-input-bindings.json',record_bindings)
+objects=[]
+def find_paths(v):
+ if isinstance(v,dict):
+  if 'path' in v:objects.append(v)
+  for sub in v.values():
+   if isinstance(sub,(dict,list)):find_paths(sub)
+ elif isinstance(v,list):
+  for sub in v:find_paths(sub)
+find_paths(old);find_paths(json.loads((baseline/'rhea_identifier_updates.json').read_text()))
+observed={};bindings=[]
+for e in objects:
+ rel=e['path'];src=PRIOR/rel;assert src.is_file(),src
+ if rel not in observed:
+  dst=BASE/'originals'/rel;dst.parent.mkdir(parents=True,exist_ok=True);dst.symlink_to(src);observed[rel]=sha(dst);bindings.append({'relative_path':rel,'original':str(src.resolve()),'sha256':observed[rel],'bytes':src.stat().st_size})
+ assert observed[rel]==e['sha256'],(rel,observed[rel],e['sha256'])
+save('baseline-original-bindings.json',bindings)
+save('baseline-preparation.json',{'head':head,'time_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline_manifest_entries':len(old),'retained_authority_terms':len(retained),'baseline_records':len(record_bindings),'source_reference_objects':len(objects),'unique_source_paths':len(bindings),'all_originals_hash_verified':True,'maintained_writes':False})
+print((BASE/'baseline-preparation.json').read_text())
