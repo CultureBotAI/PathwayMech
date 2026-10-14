@@ -1,0 +1,17 @@
+from pathlib import Path
+import datetime, hashlib, json, shutil, subprocess
+R=Path('/private/tmp/pathwaymech-next-253-20261014')
+S=Path('/private/tmp/pathwaymech-next-253-integration-review')
+key='next253-history-actor-provenance'
+raw=subprocess.check_output(['git','worktree','list','--porcelain'],cwd=R,text=True)
+worktrees=[Path(s.removeprefix('worktree ')) for s in raw.splitlines() if s.startswith('worktree ')]
+roots=[p/q for p in worktrees for q in ['reviews/structured','reports/yaml_record_review','reports/yaml_category_review'] if (p/q).is_dir()]
+cmd=['rg','--no-ignore','--hidden','--follow','-l','-F',key,*map(str,roots)]
+p=subprocess.run(cmd,text=True,capture_output=True)
+assert p.returncode in (0,1),p.stderr
+matches=[]
+for n in p.stdout.splitlines():
+ f=Path(n);matches.append({'path':n,'sha256':hashlib.sha256(f.read_bytes()).hexdigest()})
+receipt={'timestamp':datetime.datetime.now(datetime.UTC).isoformat(),'key':key,'worktree_count':len(worktrees),'existing_review_roots':list(map(str,roots)),'command':cmd,'exit_code':p.returncode,'stderr':p.stderr,'matches':matches,'scope_limits':['Only available registered local worktrees; remote-only/deleted/unregistered repositories excluded.','Hidden and ignored files included, symlinks followed; authoritative exact predecessor read in full.'],'aggregator_on_path':shutil.which('kg-microbe-reviews')}
+(S/'lineage-search.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps({k:v for k,v in receipt.items() if k not in ['command','existing_review_roots']},indent=2))

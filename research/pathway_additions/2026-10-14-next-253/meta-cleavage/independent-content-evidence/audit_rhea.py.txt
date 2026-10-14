@@ -1,0 +1,30 @@
+import gzip,json,hashlib,datetime,xml.etree.ElementTree as E
+from pathlib import Path
+from collections import Counter
+p=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz');rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';rh='http://rdf.rhea-db.org/'
+nodes={}
+with gzip.open(p,'rb') as f:
+ for event,x in E.iterparse(f,events=['end']):
+  if x.tag!=rdf+'Description':continue
+  uri=x.get(rdf+'about'); props=nodes.setdefault(uri,{})
+  for y in x:
+   key=y.tag.split('}',1)[-1];v=y.get(rdf+'resource') or y.text
+   if v not in props.setdefault(key,[]):props[key].append(v)
+  x.clear()
+closure=json.loads(Path('/private/tmp/pathwaymech-next-253-native/reaction-identity-closure.json').read_text());out=[]
+for r in closure['reactions']:
+ if not r['exact_chemical_equation_id'].startswith('RHEA:'):continue
+ uri=rh+r['exact_chemical_equation_id'].split(':')[1];n=nodes[uri];sides={}
+ assert n['status']==[rh+'Approved']
+ for side in ['substrates','products']:
+  totals=Counter(); sn=nodes[n[side][0]]
+  for key,values in sn.items():
+   if not key.startswith('contains') or key=='contains':continue
+   coeff=int(key[8:])
+   for participant in values:
+    compound=nodes[nodes[participant]['compound'][0]];chebi=compound['chebi'][0].split('/')[-1].replace('CHEBI_','CHEBI:');totals[chebi]+=coeff
+  expected=Counter({y['id']:y['coefficient'] for y in r['selected_sides'][side]});assert totals==expected,(uri,side,totals,expected);sides[side]=dict(totals)
+ out.append({'id':r['exact_chemical_equation_id'],'native_id':r['native_id'],'approved':True,'exact_sides':sides})
+assert nodes[rh+'10889']['status']==[rh+'Obsolete']
+result={'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Independent streaming XML traversal of pinned Rhea142 original, approved statuses and exact stoichiometric ChEBI identities of seven selected directional reactions; obsolete native cross-reference status. Does not establish enzyme substrate specificity or current release completeness.','source':{'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()},'reactions':out,'obsolete_native_xref':{'id':'RHEA:10889','status':nodes[rh+'10889']['status']}}
+o=Path('/private/tmp/pathwaymech-next-253-science-review/rhea-audit.json');o.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'output':str(o),'exact_matches':len(out),'assertions':'passed'}))

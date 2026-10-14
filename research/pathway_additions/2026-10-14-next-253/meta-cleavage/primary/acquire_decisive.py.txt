@@ -1,0 +1,10 @@
+exec(open('/private/tmp/pathwaymech-next-253-primary/acquire.py').read().split("pmids=")[0])
+import re
+jobs=[('Hogancamp2019-thesis.pdf','https://oaktrust.library.tamu.edu/bitstreams/4debd50c-d6c5-49b7-b712-d21ea08e3971/download')]
+s=(O/'PMC221622.html').read_text()
+jobs += [(f'PMC221622-page-{i}.png',url) for i,url in enumerate(re.findall('<img class="graphic" src="([^"]+)',s),1)]
+jobs += [(f'PMID{x}-europe.json',f'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:{x}%20AND%20SRC:MED&format=json&resultType=core') for x in ['30207699','31339729','26867578','11073908','11092855','15650824']]
+jobs += [(f'UniProt-{x}.json',f'https://rest.uniprot.org/uniprotkb/{x}.json') for x in ['Q0KJL4','Q9KWL3']]
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex: results=list(ex.map(get,jobs))
+(P/'acquisition-decisive-manifest.json').write_text(json.dumps(results,indent=2)+'\n')
+for r in results: print(r['name'],r.get('status',r.get('error')),r.get('bytes'))

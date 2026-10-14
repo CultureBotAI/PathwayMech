@@ -1,0 +1,40 @@
+from pathlib import Path
+import json,hashlib,datetime,xml.etree.ElementTree as E,re,sqlite3
+from collections import Counter
+D=Path(__file__).parent;O=D/'originals';A=Path('/private/tmp/pathwaymech-curation-authorities')
+c=json.loads((D/'chemical-identity-closure.json').read_text());chem=c['chemicals'];rdf=json.loads((D/'rhea-original-projection.json').read_text());nodes=rdf['nodes'];rh='http://rdf.rhea-db.org/';cs=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True);rs=sqlite3.connect('file:'+str(A/'rhea.db')+'?mode=ro',uri=True)
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def props(db,id):return {p:o or v for p,o,v in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(id,))}
+def sides(rid):
+ n=nodes[rh+rid];out={}
+ for side in ['substrates','products']:
+  su=n[side][0];out[side]=[]
+  for pred,vals in nodes[su].items():
+   if not re.fullmatch('contains[0-9]+',pred):continue
+   for pu in vals:
+    cu=nodes[pu]['compound'][0];cp=nodes[cu];out[side].append({'id':cp['accession'][0],'coefficient':int(pred[8:]),'formula':cp['formula'][0],'charge':int(cp['charge'][0]),'traversal':[rh+rid+' rh:'+side+' '+su,su+' rh:'+pred+' '+pu,pu+' rh:compound '+cu,cu+' rh:chebi '+cp['chebi'][0]]})
+ return out
+pp=O/'META-P184-PWY.xml';pf=E.parse(pp).getroot().find('Pathway');plan=[('PROTOCATECHUATE-45-DIOXYGENASE-RXN','24045'),('R107-RXN',None),('1.2.1.45-RXN','29588'),('RXN-2462','10645'),('RXN-9983','28932'),('RXN-2463','17403'),('RXN-2464','28936'),('OXALODECARB-RXN','15642')];rxns=[];net=Counter()
+for frame,rid in plan:
+ p=O/('META-'+frame+'.xml');n=E.parse(p).getroot().find('Reaction');lay=next(x for x in pf.findall('reaction-layout')if x.find('Reaction').get('frameid')==frame);direction=lay.findtext('direction');selected={};totals={}
+ orientation=[('substrates','left'),('products','right')]if direction=='L2R'else [('substrates','right'),('products','left')]
+ for side,k in orientation:
+  selected[side]=[];total=Counter({'charge':0})
+  for x in n.findall(k):
+   f=x.find('Compound').get('frameid');num=int(x.findtext('coefficient','1'));ch=chem[f];loc="/ptools-xml/Reaction[@frameid='"+frame+"']/"+k+"[Compound/@frameid='"+f+"']"
+   selected[side].append({'native_frame':f,'id':ch['recommended_id'],'coefficient':num,'source_locator':loc,'coefficient_source':loc+'/coefficient'if num!=1 else 'one native occurrence; no non-unit coefficient'})
+   total['charge']+=ch['charge']*num;net[ch['recommended_id']]+=num*(1 if side=='products'else -1)
+   for a,b in re.findall(r'([A-Z][a-z]?)([0-9]*)',ch['formula']):total[a]+=int(b or 1)*num
+  totals[side]=dict(total)
+ assert totals['substrates']==totals['products'],(frame,totals)
+ row={'native_id':'MetaCyc:'+frame,'exact_chemical_equation_id':'RHEA:'+rid if rid else 'MetaCyc:'+frame,'selected_pathway_direction_relative_native':direction,'native_direction':n.findtext('reaction-direction'),'native_spontaneous':n.findtext('spontaneous'),'source':bind(p),'native_xrefs':[{'db':x.findtext('dblink-db'),'id':x.findtext('dblink-oid')}for x in n.findall('dblink')],'selected_sides':selected,'verified_element_charge_totals':totals,'balanced':True,'pathway_membership_locator':"/ptools-xml/Pathway/reaction-list/Reaction[@frameid='"+frame+"']",'pathway_layout_locator':"/ptools-xml/Pathway/reaction-layout[Reaction/@frameid='"+frame+"']"}
+ if rid:
+  ss=sides(rid);assert all(sorted((x['id'],x['coefficient'])for x in selected[k])==sorted((x['id'],x['coefficient'])for x in ss[k])for k in ss)
+  for k in ss:
+   for x in ss[k]:
+    ch=props(cs,x['id']);assert x['formula']==ch['chemrof:generalized_empirical_formula'] and x['charge']==int(ch['chemrof:charge'])
+  label=props(rs,'RHEA:'+rid).get('rdfs:label');assert label==nodes[rh+rid]['label'][0]
+  row.update(rhea_sides=ss,rhea_equation=nodes[rh+rid]['equation'][0],rhea_label=label,exact_rhea_mapping=True)
+ rxns.append(row)
+out={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Author-support complete eight-member native chemistry. Chemical equality and balance do not establish biological route or enzyme substrate specificity. No independent review verdict.','pathway_source':bind(pp),'pathway_members':[x.get('frameid')for x in pf.findall('reaction-list/Reaction')],'reactions':rxns,'net_stoichiometry':{k:v for k,v in net.items()if v},'net_scope':'Calculated sum of selected native member equations only; not a biological validation or an extra elementary reaction.','all_native_members_and_sides_closed':True,'obsolete_xref':{'native_id':'MetaCyc:1.2.1.45-RXN','obsolete':'RHEA:10889','original':nodes[rh+'10889'],'replacement_exact_forward':'RHEA:29588'},'stereo_disposition':{'native_enol':'MetaCyc:CPD-12849','exact_chebi':'CHEBI:58142','distinct_prose_link':'MetaCyc:CPD-185','distinct_chebi':'CHEBI:57732','native_enol_full_inchi':chem['CPD-12849']['native_full_inchi'],'prose_link_full_inchi':chem['CPD-185']['native_full_inchi'],'same_structure':chem['CPD-12849']['native_full_inchi']==chem['CPD-185']['native_full_inchi'],'rhea28932_and17403_use_exact_native_chebi':True,'historical_rhea_name_cis_cis_is_not_proof_of_wrong_structure':True},'rhea_original':rdf['original']}
+(D/'reaction-identity-closure.json').write_text(json.dumps(out,indent=2)+'\n');print('Eight complete equations balanced; seven exact forward Rhea equations; native R107 cyclization retained.')

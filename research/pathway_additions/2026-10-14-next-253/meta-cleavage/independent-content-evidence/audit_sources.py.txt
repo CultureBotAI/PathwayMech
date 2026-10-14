@@ -1,0 +1,42 @@
+from pathlib import Path
+import json, hashlib, datetime, re
+import xml.etree.ElementTree as ET
+from collections import Counter
+root=Path('/private/tmp/pathwaymech-next-253-native')
+originals=root/'originals'
+closure=json.loads((root/'reaction-identity-closure.json').read_text())
+results=[];sources=[]
+def binding(p):
+ data=p.read_bytes();return {'path':str(p),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
+def xml(frame,tag):
+ p=originals/f'META-{frame}.xml';sources.append(binding(p));return ET.parse(p).getroot().find(tag)
+path=xml('P184-PWY','Pathway')
+members=[e.attrib['frameid'] for e in path.findall('./reaction-list/Reaction')]
+assert len(members)==8 and set(members)=={x['native_id'].split(':',1)[1] for x in closure['reactions']}
+chemical={}
+for r in closure['reactions']:
+ frame=r['native_id'].split(':',1)[1];x=xml(frame,'Reaction')
+ layout=[y for y in path.findall('reaction-layout') if y.find('Reaction').attrib['frameid']==frame][0].findtext('direction')
+ assert layout==r['selected_pathway_direction_relative_native']
+ side_map={'substrates':'left','products':'right'} if layout=='L2R' else {'substrates':'right','products':'left'}
+ sums={}
+ for selection, native_side in side_map.items():
+  native_ids=[y.find('Compound').attrib['frameid'] for y in x.findall(native_side)]
+  assert native_ids==[y['native_frame'] for y in r['selected_sides'][selection]]
+  total=Counter()
+  for y in r['selected_sides'][selection]:
+   n=y['native_frame'];c=xml(n,'Compound');p=originals/f"ChEBI-{y['id'].split(':')[1]}.json";sources.append(binding(p));d=json.loads(p.read_text())
+   assert y['id']==d['chebi_accession']
+   assert c.findtext('inchi')==d['default_structure']['standard_inchi']
+   assert c.findtext('inchi-key').removeprefix('InChIKey=')==d['default_structure']['standard_inchi_key']
+   native_formula=c.find('.//{*}formula').attrib['concise'].split();native_formula={native_formula[i]:int(native_formula[i+1]) for i in range(0,len(native_formula),2)}
+   atoms={a:int(b or 1) for a,b in re.findall(r'([A-Z][a-z]?)([0-9]*)',d['chemical_data']['formula'])}
+   assert native_formula==atoms
+   coefficient=y['coefficient'];total.update({a:coefficient*b for a,b in atoms.items()});total['charge']+=coefficient*d['chemical_data']['charge']
+   chemical[n]={'chebi':y['id'],'inchi':c.findtext('inchi'),'formula':atoms,'charge':d['chemical_data']['charge']}
+  sums[selection]=dict(total)
+ assert sums['substrates']==sums['products']
+ results.append({'native_frame':frame,'pathway_layout':layout,'native_spontaneous':x.findtext('spontaneous'),'equal_atom_charge_totals':sums})
+compar=xml('CPD-185','Compound');p=originals/'ChEBI-57732.json';sources.append(binding(p));d=json.loads(p.read_text());assert compar.findtext('inchi')==d['default_structure']['standard_inchi'];assert compar.findtext('inchi')!=chemical['CPD-12849']['inchi']
+result={'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Independent raw XML boundary, reaction sides, exact native/current ChEBI InChI/InChIKey/formula and atom-charge arithmetic audit. Does not re-run RDKit, pinned SQL or complete Rhea RDF audit. No enzyme specificity inference.','native_members':members,'reaction_checks':results,'chemical_count':len(chemical),'chemical_checks':chemical,'distinct_enol_comparator':{'native_frame':'CPD-185','chebi':'CHEBI:57732','inchi':compar.findtext('inchi'),'differs_from_CPD12849':True},'sources':sorted({x['path']:x for x in sources}.values(),key=lambda x:x['path'])}
+out=Path('/private/tmp/pathwaymech-next-253-science-review/raw-source-audit.json');out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'output':str(out),'reactions':len(results),'chemicals':len(chemical),'assertions':'passed'}))

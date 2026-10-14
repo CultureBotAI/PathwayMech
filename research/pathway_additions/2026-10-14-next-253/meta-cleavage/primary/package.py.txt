@@ -1,0 +1,151 @@
+from pathlib import Path
+import json,hashlib,datetime,re
+P=Path('/private/tmp/pathwaymech-next-253-primary');O=P/'originals'
+def h(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(n,d):(P/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+entries=[]
+for f in sorted(P.glob('acquisition*-manifest.json')):
+ for x in json.loads(f.read_text()):
+  x=dict(x);x['acquisition_manifest']=f.name
+  if 'path'in x:
+   q=Path(x['path']);x['bytes_verified']=q.stat().st_size==x['bytes'];x['sha256_verified']=h(q)==x['sha256']
+   b=q.read_bytes();x['artifact_kind']='binary' if b.startswith((b'%PDF',b'\x89PNG',b'\xff\xd8')) else ('json' if q.suffix=='.json' else 'markup_or_text')
+   if b'Checking your browser' in b or b'Recaptcha' in b or b'recaptcha' in b[:22000]:x['access_classification']='browser_challenge_not_article'
+   elif len(b)==0:x['access_classification']='empty_response_not_article'
+   elif b'The publisher of this article does not allow downloading' in b:x['access_classification']='metadata_abstract_only_full_xml_unavailable'
+   elif q.name.endswith('bioc.xml'):x['access_classification']='non_xml_error_response_not_article'
+   else:x['access_classification']='retrieved_requires_read_scope_below'
+  else:x['access_classification']='request_failed'
+  if 'path' in x and not x.get('sha256_verified',False):
+   x['retention_status']='earlier acquisition bytes unavailable: a later retrieval reused this filename'
+   x['observed_current_sha256']=h(Path(x['path']))
+   x['eligible_as_retained_original']=False
+  elif 'path' in x:
+   x['retention_status']='exact acquired bytes retained'
+   x['eligible_as_retained_original']=True
+  entries.append(x)
+save('original-bindings.json',{'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'artifacts':entries,'raw_storage':'External scratch only; full source text, scans, figures and challenge responses are not proposed for repository retention.'})
+ledger=[]
+def row(id,read,disposition,claims,files):
+ ledger.append({'reference_id':id,'read_scope':read,'disposition':disposition,'findings':claims,'originals':[{'path':str(O/f),'sha256':h(O/f)} for f in files if (O/f).exists()]})
+row('PMID:7142106','All nine original scan pages 1154–1162 visually read, including Figures1–5, Tables1–2, methods, discussion and references.','historical_route_evidence_with_explicit_isomer_uncertainty',[
+ 'Native Pseudomonas testosteroni PDC hydrolase was purified from 4-hydroxybenzoate-grown cells; Figure1 proposes hemiacetal oxidation and explicitly says its three open-chain isomeric forms were not individually characterized.',
+ 'Hydrolase interconversion is reversible and pH-dependent. At 1mM, Zn2+, Cu2+, Mn2+ and Co2+ inhibit; Mg2+ and EDTA neither activate nor inhibit. EDTA stabilizes diluted enzyme.',
+ '0.1mM DTNB abolishes measured hydrolase activity; 5mM reduced glutathione present during DTNB incubation preserves activity. This is protection under treatment, not demonstrated recovery of pre-inactivated enzyme.',
+ 'P.putida PDC metabolizes PDC through downstream activities but uses ortho cleavage for protocatechuate. P.putida TMC lacks PDC hydrolase; neither supports assigning the entire P184 route to P.putida generally.',
+ 'Figures4–5 include alternative gallic/3-O-methylgallic reactions. They are contextual branches and do not establish the exact modern enol stereochemistry of the protocatechuate route.'
+],['PMC221622.html']+[f'PMC221622-page-{i}.png'for i in range(1,10)])
+row('PMID:26867578','Full main article HTML, all five tables and all nine figure rasters read. Six inline mathematical equation rasters not independently viewed; no quantitative equation reconstruction claimed.','strain_specific_downstream_support_not_whole_pathway_identity',[
+ 'Experiments compare KT2440 GalB with Comamonas sp.E6 PmdE/LigJ (BAI50711.1), not directly SYK6 LigJ. Both use GalD-generated (2E,4E)-CHM and yield (−)-CHA; Figure9 S-CHA is a modeled assignment explicitly lacking absolute-configuration measurement.',
+ 'GalD retained its His6 tag because of an internal thrombin site. Codon-optimized PmdE carried an N-terminal His6 tag removed with thrombin; residual cleavage sequence was not established here. Crystallized GalB lacks four N-terminal residues; other kinetics use separate wild-type/variant preparations.',
+ 'GalB was expressed in E.coli and its native host KT2442. Zinc predominated after aerobic purification; physiological metal identity remains unresolved. Fe2+/Co2+ rescue apoenzyme; Table2 gives lesser activities with other metals. EDTA inactivates. Reversible CHA/CHM and HMG/CHPD assays and pH/mutant data do not imply identical physiological substrates or native constructs.',
+ 'SYK6 pathway inference from homologs and complementation must be separated from direct E6 biochemistry. Whole-KT2440 protocatechuate meta-cleavage is not demonstrated.'
+],['PMC4817193-render2.html']+[f'PMC4817193-figure-{i}.jpg'for i in range(1,10)])
+row('PMID:29658701','Complete Europe PMC primary abstract and exact current UniProt Q0KJL4/G2IQQ5 structured records; ACS full text403, thesis downloads403, figshare endpoint empty202, STRENDA response was a search shell.','material_route_correction_and_accession_identity_followup',[
+ 'The abstract reports LigU allylic isomerization from (4E)-OMA to (3Z)-KCH, followed by LigJ hydration. This is chemically distinct from an OMA→CHM keto-enol step.',
+ 'The paper title names SYK6, but the indexed methods lead identifies Q0KJL4 and the current issuing authority maps Q0KJL4 to Novosphingobium KA1. Do not treat the title as proof that the actual synthetic LigU was SYK6.',
+ 'Full construct sequence, expression tag and coupling conditions were not read; proposed changes require those details or a genuinely narrower qualified claim.'
+],['PMID29658701-europe.json','UniProt-Q0KJL4.json','UniProt-Q9KWL6.json'])
+row('PMID:30207699','Complete Europe PMC primary abstract; full ACS methods/figures not acquired.','independent_stereo_and_substrate_correction',[
+ 'LigJ is reported to hydrate KCH reversibly and produce S-CHA, with product-bound structure6DXQ, apo6DWV and E284Q substrate-bound6DXS. Zinc is structurally bound.',
+ 'Separate mutant and wild-type materials; no construct sequence or tag details inferred from abstract. Current G2IQQ5 activity is RHEA58508 (CHEBI142690 plus water to CHEBI142706).'
+],['PMID30207699-europe.json','UniProt-G2IQQ5.json'])
+row('PMID:31339729','Complete Europe PMC primary abstract; full methods/figures not acquired.','taxon_resolution_lead',[
+ 'This later LigU study explicitly identifies Novosphingobium KA1, consistent with Q0KJL4. It reports a homodimer without required cofactors/metals and a suprafacial isomerization mechanism.',
+ 'K66M/C100 substitutions and isotope-exchange mechanistic assignments do not establish native SYK6 sequence identity.'
+],['PMID31339729-europe.json','UniProt-Q0KJL4.json'])
+row('PMID:4143957','Complete primary abstract only; retrieved archive XML omits full text and HTML was a browser challenge.','historical_anchor_not_exact_stereo_proof',[
+ 'P.testosteroni has both hydrolytic activity on the meta-fission product and NAD(P)-linked dehydrogenation, reaching pyruvate and oxaloacetate. The abstract does not identify all eight exact modern members or native preparation details.'
+],['PMID4143957-europe.json','PMC251661-efetch.xml'])
+row('PMID:21219457','Complete Europe PMC primary abstract only; no full main article or supplement acquired.','shared_gallate_module_with_bounded_scope',[
+ 'KT2440 derivative gal genes establish gallate transport and GalD/GalB/GalC downstream metabolism. GalT is gallate-specific transport, not evidence for protocatechuate transport.',
+ 'The abstract calls GalD a keto-enol tautomerase and GalB a zinc-containing hydratase. No full protocatechuate pathway, exact tagged construct or exact product stereochemistry should be inferred from it.'
+],['PMID21219457-europe.json'])
+row('PMID:11073908','Complete primary abstract and issuing UniProt Q9KWL3; full HTML routes challenged and XML metadata-only.','cofactor_and_authority_field_correction_followup',[
+ 'Recombinant SYK6 LigC is dimeric and produces PDC with NADP; both NADP and NAD support assay. Abstract Km values: NADP24.6μM, NAD252μM, CHMS26.0μM with NADP and20.6μM with NAD.',
+ 'Current UniProt kinetic substrate labels transpose these four assignments. Preserve primary-source values; do not replay mislabeled authority kinetic fields as verified measurements.',
+ 'Disruption/complementation supports vanillate catabolism; proposed PDC induction does not prove direct regulator binding.'
+],['PMID11073908-europe.json','UniProt-Q9KWL3.json'])
+row('PMID:9864312','Complete primary abstract; web-rendered main text through nucleotide accession heading read (methods and Figure1 caption), not remaining results/figures. Archive XML metadata-only; local HTML routes challenged.','partial_main_text_not_full_paper_claim',[
+ 'Recombinant SYK6 LigI catalyzes reversible PDC hydrolysis/synthesis; thiol-reagent inhibition and vanillate growth phenotype require original detailed assay/construct audit before graph use.',
+ 'Historical CHM/OMA labels and the early cysteine catalytic inference must be reassessed against later structures; no exact modern stereo conversion proposed from this partial read.'
+],['PMID9864312-europe.json','PMC103531-efetch.xml'])
+row('PMID:11092855','Complete primary abstract only.','historical_assay_identity_requires_later_reconciliation',[
+ 'Recombinant SYK6 LigJ was a homodimer; thiol-reagent inhibition and vanillate/syringate phenotypes are reported. The historical OMA substrate naming must be reconciled with KCH correction, not transferred directly to RXN2463.'
+],['PMID11092855-europe.json'])
+row('PMID:12486039','Complete primary abstract only.','terminal_two_activities_supported_with_construct_gap',[
+ 'Recombinant SYK6 LigK was a hexamer catalyzing CHA cleavage and oxaloacetate decarboxylation. Insertion mutant lacks growth on vanillate/syringate. These two activities support retaining a terminal decarboxylation boundary when exact sequence, reaction stereo and construct are checked.'
+],['PMID12486039-europe.json','UniProt-Q8RQW0.json'])
+row('PMID:25562402','Complete primary abstract only.','allosteric_effect_followup',[
+ 'Vanillin enhances LigAB PCA turnover, while tested point mutants alter enhancement. Full preparation/construct and concentration details are outstanding; docking is a proposed binding site, not measured binding.'
+],['PMID25562402-europe.json'])
+row('PMID:6317682','Complete primary abstract only.','redox_state_effect_followup',[
+ 'Native P.testosteroni dioxygenase contains Fe2+; oxidation by H2O2 inactivates and ascorbate re-reduction restores activity. Retain distinct inactive-state recovery qualification and exact source taxon; historical mass/subunit data are not synthetic SYK6 assembly evidence.'
+],['PMID6317682-europe.json'])
+row('PMID:2997190','Complete primary abstract only.','binding_assay_scope',[
+ 'NO binding to native P.testosteroni dioxygenase reports Fe coordination and substrate-dependent affinity. Spectroscopic binding does not itself establish a physiological regulatory edge.'
+],['PMID2997190-europe.json'])
+row('PMID:15650824','Complete primary abstract only.','native_dioxygenase_strain_limit',[
+ 'Purified C.testosteroni T-2 PmdAB cleaves PCA; only gallate among16 alternatives induced oxygen uptake. N-termini matched BR6020, while remaining sequence differences affected stability; do not equate whole proteins by shared N-terminal peptides.'
+],['PMID15650824-europe.json'])
+row('PMID:15277747','Complete primary abstract only.','gene_cluster_lead',[
+ 'NGJ1 proLOaObD genes cloned; recombinant proL/proD purified, proOaOb expression lower. This supports a strain-specific gene-cluster lead, not all eight graph steps.'
+],['PMID15277747-europe.json'])
+row('PMID:11495993','Complete primary abstract only.','experiment_vs_homology_split',[
+ 'BR6020 pmdAB identity supported by N-terminal/mass data and pmdA disruption. Other pmd functions were tentative sequence-based assignments; do not upgrade them to purified catalytic evidence.'
+],['PMID11495993-europe.json'])
+row('PMID:2185230','Complete primary abstract only; full archive XML omitted body.','gene_complementation_lead',[
+ 'SYK6 ligA/ligB ORFs417/906bp were both required for dioxygenase activity in heterologous expression. Full sequence and construct/end-state audit still needed.'
+],['PMID2185230-europe.json','PMC208915-efetch.xml'])
+row('PMID:528534','Complete primary abstract only.','historical_product_correction',[
+ 'Purified NAD(P)-linked enzyme yielded PDC lactone rather than the initially expected open-chain acid. Historical tentative structure assignment must not replace exact modern structure checks.'
+],['PMID528534-europe.json'])
+row('PMID:6841353','Complete primary abstract only.','native_hydrolase_assay_lead',[
+ 'Native phthalate-grown P.ochraceae hydrolase interconverts PDC/OMA; pH dependence, inhibition by HgCl2 and p-chloromercuribenzoate reported. Exact chemical/strain/preparation closure pending.'
+],['PMID6841353-europe.json'])
+row('PMID:3985968','Complete primary abstract only.','native_hydratase_assay_lead',[
+ 'Native P.ochraceae dimeric hydratase has reversible activity and activation by thiols. Exact tautomer/stereo and named individual activators are not established by this abstract.'
+],['PMID3985968-europe.json'])
+row('PMID:2229032','Complete primary abstract only.','native_aldolase_and_metal_lead',[
+ 'Phthalate-grown P.ochraceae hexameric aldolase uses several divalent metals and prefers L substrate forms; associated oxaloacetate decarboxylation prevents CHA equilibrium. Native substrate preference does not license a generic racemate reaction.'
+],['PMID2229032-europe.json'])
+for id in ['26671','5076765','2280721']:
+ row('PMID:'+id,'Bibliographic metadata retrieved; no abstract/body available in response.','unread_primary_body_do_not_attribute_claims',[],[f'PMID{id}-europe.json'])
+row('PMID:20435721','Complete primary abstract read in current Europe PMC response; full PMC routes challenged. Correct identity also checked against PubMed search result.','regulatory_handoff',[
+ 'LigR activates ligK/ligJ operons with PCA or gallate and autorepresses. Full promoter coordinates, named DNA identities, protein construction and assays require follow-up before regulatory graph curation.'
+],['PMID20435721-europe.json'])
+row('PMID:20581112','Complete retrieved abstract read and rejected.','rejected_wrong_mapping',[
+ 'This is a Dickeya pectin-regulation modeling paper, not LigR. A preliminary message associated this PMID with PMC2897667; that mapping is explicitly withdrawn. Correct LigR PMID is20435721.'
+],['PMID20581112-europe.json'])
+row('PMID:27017587','Bibliographic query result inspected; irrelevant to the candidate.','rejected_wrong_mapping',[],['PMID27017587-europe.json'])
+save('component-evidence-ledger.json',{'scope':'Author-support research checkpoint; no maintained pathway or independent review verdict.','quotes':[],'direct_quote_words_per_paper':0,'coverage_claim':'Bounded accessed-source audit. Full route, source landscape and eligible-pathway discovery are not exhausted.','sources':ledger})
+# Exact structured identities, selected fields only; no synthetic sequence inferred.
+identities=[]
+for f in sorted(O.glob('UniProt-*.json')):
+ d=json.loads(f.read_text());seq=d['sequence']['value'];comments=d.get('comments',[])
+ identities.append({'request':f.stem.split('-',1)[1],'primary_accession':d['primaryAccession'],'entry_type':d.get('entryType'),'organism':d['organism']['scientificName'],'taxon':d['organism']['taxonId'],'sequence_length':len(seq),'sequence_sha256':hashlib.sha256(seq.encode()).hexdigest(),'declared_sequence_md5':d['sequence'].get('md5'),'entry_version':d.get('entryAudit'),'reactions':[{'name':c['reaction']['name'],'identifiers':c['reaction'].get('reactionCrossReferences',[]),'evidence':c['reaction'].get('evidences',[])}for c in comments if c['commentType']=='CATALYTIC ACTIVITY'],'embl_xrefs':[x for x in d.get('uniProtKBCrossReferences',[])if x['database']=='EMBL'],'original_path':str(f),'original_sha256':h(f),'sequence_audit_limit':'Issuing full sequence inspected and hashed. No independent deposited CDS translation or synthetic construct sequence comparison completed; do not claim identity beyond this issuing record.'})
+save('issuing-protein-projection.json',{'identities':identities})
+save('continuation-requirements.json',{'decision':'defer_record_keep_research_checkpoint','requirements':[
+ {'key':'exact-route-identity','need':'Reconcile native eight-member P184 definition with GalD/GalB E,E-CHM chemistry and LigU/LigJ KCH chemistry. Choose a defensible exact pathway identifier/boundary; do not silently swap reactions under an unchanged source identity.','evidence':['PMID:26867578','PMID:29658701','PMID:30207699','RHEA:58504','RHEA:58508']},
+ {'key':'ligu-assayed-strain','need':'Read complete 2018 source/author supplement/assay deposition and reconcile Q0KJL4 KA1 protein with SYK6 title; map exact synthetic construct and native strain separately.','evidence':['UniProtKB:Q0KJL4','PMID:29658701','PMID:31339729']},
+ {'key':'stereo-species-assay','need':'Independently verify full structures of E,E-CHM, KCH and S-CHA, and restrict direct hydratase evidence to actually assayed proteins; 2016 E6 results are not direct SYK6 experiments.','evidence':['CHEBI:58142','CHEBI:142690','CHEBI:142706','NCBIProtein:BAI50711.1','UniProtKB:G2IQQ5']},
+ {'key':'construct-cofactor-regulation','need':'Resolve expression tags, truncations, native preparation scopes and each chosen enzyme effector/regulator endpoint before graph assembly. Native raw assertions and newer assay evidence require separate dispositions.','evidence':['PMID:26867578','PMID:25562402','PMID:6317682','PMID:20435721']},
+ {'key':'ligc-kinetic-provenance','need':'Confirm full primary TableKm values and avoid current UniProt substrate-label transposition.','evidence':['PMID:11073908','UniProtKB:Q9KWL3']}
+],'forbidden_inferences':['A title proves the assayed protein strain.','A downstream gallate module establishes the entire protocatechuate route in KT2440.','A modeled stereocenter establishes measured absolute configuration.','Shared sequence homology proves a specific substrate tautomer.','Source metadata or challenge HTML is full-text evidence.']})
+(P/'HANDOFF.md').write_text('''# Next253 primary research handoff
+
+Research checkpoint only. No maintained edits, no pathway proposal asserted complete, and no independent review verdict.
+
+The native eight-member P184 definition cannot yet be asserted as a single experimentally closed strain-specific mechanism. The strongest new evidence separates GalD/GalB E,E-CHM chemistry from the LigU/LigJ KCH route; exact source identity, stereochemistry and assayed constructs require reconciliation. This is a reason to preserve the research and continue, not evidence that no pathway remains to add.
+
+Read `component-evidence-ledger.json` for source-by-source results and exact read scope; `issuing-protein-projection.json` for live accession/taxon/reaction bindings and sequence hashes; `continuation-requirements.json` for concrete remaining work. All verbatim quotation budgets are zero in these author summaries.
+
+The fully read primary sources are the nine original 1982 scan pages and the 2016 GalB main article, all five tables and all nine figure rasters. Other papers are abstract-only, partial, metadata-only or explicitly unread as the ledger states. Six mathematical equation rasters in the 2016 HTML were not independently inspected and no equation reconstruction is claimed. The 2019 thesis and ACS bodies failed access; downloaded error/challenge artifacts are not papers.
+
+The issuing Q0KJL4 LigU record is KA1, and Q9KWL6 resolves to primary G2IQQ5 for SYK6 LigJ. No deposited-CDS or synthetic sequence comparison was completed. The provisional LigR PMID20581112 mapping was wrong and is withdrawn; correct PMID20435721. Original files are retained externally; original-bindings.json reports current hash verification and explicitly records one overwritten earlier PMID29658701 acquisition whose original bytes are unavailable. The ledger cites the retained later retrieval, not the unavailable earlier bytes.
+
+Retain compact JSONs and acquisition helper sources as .py.txt if useful. Do not commit originals/, projections/ (which hold extracted full text), full scans, raw XML/JSON, figures or challenge responses. No new graphs, nodes or edges are proposed until these gaps close.
+''')
+files=['HANDOFF.md','component-evidence-ledger.json','issuing-protein-projection.json','continuation-requirements.json','original-bindings.json']+[x.name for x in sorted(P.glob('acquisition*-manifest.json'))]+[x.name for x in sorted(P.glob('acquire*.py'))]+['package.py']
+save('artifact-manifest.json',{'retention_files':[{'source':str(P/f),'name':f+'.txt' if f.endswith('.py') else f,'sha256':h(P/f),'bytes':(P/f).stat().st_size}for f in files],'excluded_raw_directories':['originals','projections']})
+print(json.dumps({'ledger_sources':len(ledger),'issuing_records':len(identities),'retention_files':len(files),'original_bindings':len(entries)},indent=2))
