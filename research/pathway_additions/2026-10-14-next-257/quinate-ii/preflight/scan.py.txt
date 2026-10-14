@@ -1,0 +1,153 @@
+from pathlib import Path
+import collections
+import datetime
+import hashlib
+import json
+import re
+import subprocess
+import xml.etree.ElementTree as ET
+
+import yaml
+
+B = Path(__file__).parent
+MAIN = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+WORK = Path('/private/tmp/pathwaymech-next-257-20261014')
+BASE = '11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37'
+IDS = ['MetaCyc:PWY-6416', 'MetaCyc:PWY-6419', 'MetaCyc:QUINATEDEG-PWY', 'MetaCyc:SHIKIMATEDEG-PWY', 'GO:0019631', 'GO:0019633']
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def save(name, obj):
+    (B / name).write_text(json.dumps(obj, indent=2) + '\n')
+
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=MAIN)
+
+
+records = []
+for row in git('ls-tree', '-r', '-z', BASE, '--', 'data/pathways').split(b'\0'):
+    if not row:
+        continue
+    meta, name = row.split(b'\t')
+    mode, typ, oid = meta.decode().split()
+    rel = name.decode()
+    if not rel.endswith('.yaml'):
+        continue
+    assert typ == 'blob'
+    data = git('cat-file', 'blob', oid)
+    doc = yaml.safe_load(data)
+    comparisons = {str(root): (root / rel).exists() and (root / rel).read_bytes() == data for root in [MAIN, WORK]}
+    assert all(comparisons.values()), (rel, comparisons)
+    records.append({'path': rel, 'id': doc['id'], 'label': doc['label'], 'git_blob_oid': oid, 'sha256': sha(data), 'bytes': len(data), 'live_roots_equal_git_blob': comparisons, 'nested_pathway_nodes': [{'field': field, **node} for field in ['taxa', 'participants', 'reactions'] for node in doc.get(field, []) if node.get('category') == 'pathway' or node['id'] in IDS]})
+assert len(records) == 253, len(records)
+save('baseline-record-bindings.json', {'baseline_commit': BASE, 'count': len(records), 'method': 'git ls-tree -r -z BASE -- data/pathways; git cat-file blob each OID; compare all baseline bytes with both current roots', 'records': records})
+
+patterns = collections.defaultdict(set)
+
+
+def add(value, source):
+    value = str(value).strip()
+    if value and '\n' not in value:
+        patterns[value].add(source)
+
+
+source_rows = json.loads((B / 'search-inputs.json').read_text())
+for binding in source_rows:
+    path = Path(binding['path'])
+    data = path.read_bytes()
+    assert sha(data) == binding['sha256'], str(path)
+    root = ET.fromstring(data)
+    obj = next(el for el in root if el.tag != 'metadata')
+    assert obj.get('detail') == 'full', str(path)
+    for tag in ['common-name', 'synonym']:
+        for el in obj.findall(tag):
+            value = re.sub('<[^>]*>', '', ''.join(el.itertext()))
+            if len(value) >= (3 if obj.tag == 'Gene' else 5):
+                add(value, str(path) + '/' + tag)
+    # Full source bytes remain bound. Reverse membership of ubiquitous chemical
+    # objects is not the defining reaction scope of this candidate pathway.
+    scoped = [obj]
+    for child in obj:
+        if obj.tag == 'Compound' and child.tag in {'appears-in-left-side-of', 'appears-in-right-side-of'}:
+            continue
+        scoped.extend(child.iter())
+    for el in scoped:
+        frame = el.get('frameid')
+        if frame and el.tag in {'Pathway', 'Reaction', 'Protein', 'Enzymatic-Reaction', 'Gene', 'Compound'}:
+            add('MetaCyc:' + frame, str(path) + '/' + el.tag + '@frameid')
+            if len(frame) >= 5:
+                add(frame, str(path) + '/' + el.tag + '@frameid')
+        if el.tag == 'pubmed-id' and el.text:
+            add(el.text, str(path) + '/pubmed-id')
+            add('PMID:' + el.text, str(path) + '/pubmed-id')
+        if el.tag == 'dblink':
+            db = el.findtext('dblink-db')
+            acc = el.findtext('dblink-oid')
+            prefixes = {'RHEA': 'RHEA', 'LIGAND-RXN': 'KEGG', 'UNIPROT': 'UniProtKB', 'CHEBI': 'CHEBI', 'NCBI-TAXONOMY-DB': 'NCBITaxon', 'EC': 'EC', 'METANETX-RXN': 'MetaNetX', 'NCBI-GENE': 'Entrez', 'PDB': 'PDB', 'PFAM': 'Pfam', 'EUPATHDB': 'VEuPathDB', 'ENTREZ': 'GenBank'}
+            if db in prefixes and acc:
+                add(prefixes[db] + ':' + acc, str(path) + '/dblink:' + db)
+                if db != 'NCBI-TAXONOMY-DB' and len(acc) >= 5:
+                    add(acc, str(path) + '/dblink:' + db)
+        if el.tag == 'ec-number' and el.text:
+            value = el.text.removeprefix('EC-')
+            add('EC:' + value, str(path) + '/ec-number')
+    for value in [el.text or '' for el in scoped]:
+        for pmid in re.findall(r'/pubmed/(\d+)', value):
+            add(pmid, str(path) + '/narrative PMID')
+            add('PMID:' + pmid, str(path) + '/narrative PMID')
+        for frame in re.findall(r'(?:object|id)=([A-Za-z][A-Za-z0-9_.-]+)', value):
+            if not frame.startswith('TAX-') and len(frame) >= 5:
+                add(frame, str(path) + '/narrative frame')
+                add('MetaCyc:' + frame, str(path) + '/narrative frame')
+go = json.loads((B / 'go-boundary-evidence.json').read_text())
+assert go['source']['sha256'] == '018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd'
+for gid in ['GO:0019631', 'GO:0019633']:
+    for row in go[gid]['outgoing']:
+        if row['predicate'] in ['rdfs:label', 'oio:hasExactSynonym', 'oio:hasDbXref']:
+            add(row['value'], 'go.db:' + gid + '/' + row['predicate'])
+for value in IDS:
+    add(value, 'inspected candidate and related pathway boundary')
+extra = B / 'additional-patterns.json'
+if extra.exists():
+    for row in json.loads(extra.read_text()):
+        add(row['pattern'], row['source'])
+patterns = dict(sorted(patterns.items()))
+pattern_path = B / 'patterns.txt'
+pattern_path.write_text('\n'.join(patterns) + '\n')
+save('pattern-sources.json', {'source_inputs': source_rows, 'go_source': go['source'], 'excluded_source_slots': 'Compound/appears-in-left-side-of and Compound/appears-in-right-side-of reverse memberships are unrelated incoming reaction indexes; complete original XML is still hash-bound.', 'patterns': {key: sorted(value) for key, value in patterns.items()}})
+
+reports = []
+for index, root in enumerate([MAIN, WORK]):
+    cmd = ['rg', '--no-ignore', '--hidden', '--json', '-i', '-F', '-f', str(pattern_path), '.', '-g', '!.git', '-g', '!.git/**', '-g', '!.venv', '-g', '!.venv/**']
+    stats = {term: {'lines': 0, 'paths': set()} for term in patterns}
+    out = B / f'root-{index}-matches.jsonl'
+    err = B / f'root-{index}-stderr.txt'
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    with out.open('w') as dest, err.open('w') as errors:
+        proc = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE, stderr=errors, text=True)
+        for line in proc.stdout:
+            item = json.loads(line)
+            if item['type'] != 'match':
+                continue
+            d = item['data']
+            text = d['lines'].get('text', '').lower()
+            path = d['path'].get('text', '')
+            hits = []
+            for term in patterns:
+                if term.lower() in text:
+                    stats[term]['lines'] += 1
+                    stats[term]['paths'].add(path)
+                    hits.append(term)
+            dest.write(json.dumps({'path': path, 'line_number': d['line_number'], 'patterns': hits}) + '\n')
+        code = proc.wait()
+    assert code in (0, 1), (code, err.read_text())
+    counts_path = B / f'root-{index}-complete-counts.json'
+    save(counts_path.name, {'counts': {key: {'lines': value['lines'], 'paths': sorted(value['paths'])} for key, value in stats.items()}})
+    reports.append({'root': str(root), 'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(), 'started_utc': started, 'command': cmd, 'exit_code': code, 'per_pattern_counts': {key: {'lines': value['lines'], 'files': len(value['paths'])} for key, value in stats.items()}, 'full_match_projection': {'path': str(out), 'sha256': sha(out.read_bytes()), 'bytes': out.stat().st_size}, 'complete_counts': {'path': str(counts_path), 'sha256': sha(counts_path.read_bytes()), 'bytes': counts_path.stat().st_size}, 'stderr': err.read_text()})
+membership = {candidate: {'top_level': [row['path'] for row in records if row['id'] == candidate], 'nested': [{'path': row['path'], 'node': node} for row in records for node in row['nested_pathway_nodes'] if node['id'] == candidate]} for candidate in IDS}
+save('dedup-compact.json', {'baseline_commit': BASE, 'candidate': IDS[0], 'continuing_candidate': IDS[1], 'baseline_record_count': len(records), 'exact_candidate_membership': membership, 'patterns_per_root': len(patterns), 'patterns_file': {'path': str(pattern_path), 'sha256': sha(pattern_path.read_bytes())}, 'pattern_sources': {'path': str(B / 'pattern-sources.json'), 'sha256': sha((B / 'pattern-sources.json').read_bytes())}, 'roots': reports, 'bounds': {'ignored_and_hidden_included': True, 'exclusions': ['.git/**', '.venv/**'], 'binary': 'ripgrep default binary detection; no binary payload absence claim', 'symlinks': 'Directory symlinks not followed', 'archives': 'Compressed archives not decoded', 'other_worktrees': 'Only current main and active257 worktree scanned; external caches and other worktrees not exhaustively searched', 'source_exhaustion_claim': False}, 'role': 'Author identity preflight; not independent scientific approval'})
+print(json.dumps({'records': len(records), 'patterns_per_root': len(patterns), 'source_inputs': len(source_rows), 'membership': membership}))

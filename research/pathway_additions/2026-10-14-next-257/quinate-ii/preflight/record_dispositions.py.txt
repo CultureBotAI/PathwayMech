@@ -1,0 +1,52 @@
+from pathlib import Path
+import hashlib
+import json
+import subprocess
+
+import yaml
+
+B = Path(__file__).parent
+R = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+BASE = '11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37'
+
+
+def bind(path):
+    data = path.read_bytes()
+    return {'path': str(path.relative_to(R)), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+
+
+dispositions = {
+    'data/pathways/quinate-degradation-i.yaml': 'Maintained three-step quinate-to-protocatechuate boundary starts with native quinone/quinol oxidation and separate PQQ enzyme cofactor. The II candidate starts with NAD(P)-class oxidation; sharing downstream dehydrations does not make the complete pathway identical.',
+    'data/pathways/shikimate-degradation-i.yaml': 'Maintained two-step shikimate-to-protocatechuate boundary starts with a quinone/quinol oxidation. It lacks the quinate initial substrate and DHQ intermediate of the II candidate.',
+    'data/pathways/chorismate-biosynthesis-i.yaml': 'Maintained biosynthetic pathway proceeds from erythrose-4-phosphate and PEP to chorismate. Shared DHQ/DHS chemistry is internal to a different whole boundary.',
+    'data/pathways/petrobactin-biosynthesis.yaml': 'Maintained ten-transformation petrobactin biosynthetic route shares DHS dehydration through AsbF, then builds the siderophore; not the NAD(P)-dependent three-step quinate degradation route.',
+}
+records = []
+for name, disposition in dispositions.items():
+    path = R / name
+    document = yaml.safe_load(path.read_text())
+    records.append({**bind(path), 'id': document['id'], 'label': document['label'], 'description': document['description'], 'reactions': document['reactions'], 'disposition': disposition})
+(B / 'related-record-dispositions.json').write_text(json.dumps({'baseline_commit': BASE, 'records': records}, indent=2) + '\n')
+
+prior = {
+    'research/pathway_additions/2026-10-14-next-255/quinate/preflight/CANDIDATES.md': 'Explicitly queues PWY-6416 as a later NAD-route lead. The I-route selection in that historical task does not reject II.',
+    'research/pathway_additions/2026-10-14-next-255/quinate/preflight/HANDOFF.md': 'Prior 251-record preflight establishes alternate cofactors and separately scoped enzyme evidence; superseded baseline count is not reused as current absence evidence.',
+    'research/pathway_additions/2026-10-14-next-255/quinate/preflight/continuing-queue.json': 'Hash-bound original PWY-6416 and PWY-6419 continuing leads, explicitly not scientific acceptance.',
+    'research/pathway_additions/2026-10-14-next-255/quinate/native/biological-coverage.json': 'Excludes native QsuC/QsuB and fungal qa-4 from the PQQ I variant while retaining them as NAD-route leads. This is a scope exclusion from a different record, not rejection of the II candidate.',
+    'research/pathway_additions/2026-10-14-next-256/shikimate/preflight/CANDIDATES.md': 'Explicitly names PWY-6416 as next and PWY-6419 as further; no maintained II record or scientific rejection asserted.',
+    'research/pathway_additions/2026-10-14-next-256/shikimate/preflight/HANDOFF.md': 'Prior 252-record identity work requires refreshed baseline, whole-source interpretation and enzyme/cofactor scopes for II variants.',
+    'research/pathway_additions/2026-10-14-next-256/shikimate/preflight/continuing-queue.json': 'Supplies bound complete PWY-6416 and PWY-6419 originals, verified before current reuse.',
+    'research/pathway_additions/2026-10-14-next-256/shikimate/curation.md': 'Separates completed shikimate I from unresolved quinate II and shikimate II leads.',
+    'research/pathway_additions/2026-10-14-next-256/shikimate/final-acceptance.md': 'Accepted I record remains distinct; continuation goal explicitly not exhausted.',
+}
+prior_rows = [{**bind(R / name), 'disposition': disposition} for name, disposition in prior.items()]
+cmd = ['rg', '--no-ignore', '--hidden', '-l', '-i', '-F', '-e', 'PWY-6416', '-e', 'quinate degradation II', '.', '-g', '!.git', '-g', '!.git/**', '-g', '!.venv', '-g', '!.venv/**']
+process = subprocess.run(cmd, cwd=R, capture_output=True, text=True)
+assert process.returncode in (0, 1)
+mentions = []
+for name in process.stdout.splitlines():
+    path = R / name
+    text = path.read_text()
+    mentions.append({**bind(path), 'classification': 'prior interpreted narrative or coverage ledger' if str(path.relative_to(R)) in prior else 'retained source-boundary, search vocabulary/count, reproduction-helper or provenance artifact', 'matching_lines': [i for i, line in enumerate(text.splitlines(), 1) if 'pwy-6416' in line.lower() or 'quinate degradation ii' in line.lower()]})
+(B / 'prior-research-dispositions.json').write_text(json.dumps({'baseline_commit': BASE, 'records': prior_rows, 'complete_exact_candidate_mention_inventory': {'root': str(R), 'command': cmd, 'exit_code': process.returncode, 'stderr': process.stderr, 'files': mentions}, 'interpretation': 'Prior narrative and native ledgers queue II as unreviewed continuation. Repeated source identifiers in search/provenance artifacts are not maintained whole-pathway coverage or rejection. Current scope is a follow-up of these explicit leads.'}, indent=2) + '\n')
+print(json.dumps({'related_records': len(records), 'interpreted_prior_files': len(prior_rows), 'exact_candidate_mention_files': len(mentions)}))

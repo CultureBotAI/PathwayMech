@@ -1,0 +1,9 @@
+from acquire_identities import request
+from acquire import *
+import urllib.parse
+q='"Corynebacterium glutamicum"[Organism] AND "13869"[All Fields] AND (qsuB[All Fields] OR "dehydroshikimate"[All Fields])'
+qs={'ncbi-protein13869':('https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi',{'db':'protein','term':q,'retmode':'json','retmax':100}), 'uniprot-qsub13869':('https://rest.uniprot.org/uniprotkb/search',{'query':'(taxonomy_id:1718) AND ("13869") AND ("dehydroshikimate" OR gene:qsuB)','format':'json','size':500})}
+rows=[]
+for n,(u,a) in qs.items():rows.append(request(n,u+'?'+urllib.parse.urlencode(a)))
+(ROOT/'acquisition-qsub13869-search.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows:print(r['name'],r.get('bytes',r.get('error')))

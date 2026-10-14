@@ -1,0 +1,31 @@
+from pathlib import Path
+import sqlite3, json, hashlib
+
+B = Path(__file__).parent
+DB = Path('/private/tmp/pathwaymech-curation-authorities/go.db')
+R = Path('/private/tmp/pathwaymech-next-257-20261014')
+
+def sha(p):
+    h = hashlib.sha256()
+    with p.open('rb') as f:
+        for part in iter(lambda: f.read(1024 * 1024), b''):
+            h.update(part)
+    return h.hexdigest()
+
+c = sqlite3.connect('file:' + str(DB) + '?mode=ro', uri=True)
+c.row_factory = sqlite3.Row
+queries = {
+    'lexical': "SELECT subject,predicate,object,value FROM statements WHERE predicate IN ('rdfs:label','oio:hasExactSynonym','oio:hasRelatedSynonym','oio:hasNarrowSynonym','oio:hasBroadSynonym') AND (lower(value) LIKE '%shikimat%' OR lower(value) LIKE '%quinat%') ORDER BY subject,predicate,value",
+    'outgoing': 'SELECT subject,predicate,object,value FROM statements WHERE subject=? ORDER BY predicate,object,value',
+    'incoming': 'SELECT subject,predicate,object,value FROM statements WHERE object=? ORDER BY subject,predicate',
+}
+result = {'source': {'path': str(DB), 'sha256': sha(DB), 'bytes': DB.stat().st_size}, 'queries': queries, 'lexical_matches': [dict(r) for r in c.execute(queries['lexical'])]}
+for term in ['GO:0019631', 'GO:0019633']:
+    result[term] = {k: [dict(r) for r in c.execute(queries[k], (term,))] for k in ['outgoing', 'incoming']}
+    current = json.loads((B / 'originals' / ('GO-' + term.split(':')[1] + '.json')).read_text())['results'][0]
+    labels = [r['value'] for r in result[term]['outgoing'] if r['predicate'] == 'rdfs:label']
+    definitions = [r['value'] for r in result[term]['outgoing'] if r['predicate'] == 'IAO:0000115']
+    assert labels == [current['name']] and definitions == [current['definition']['text']] and current['isObsolete'] is False
+result['current_name_definition_nonobsolete_checks'] = 'Both current QuickGO term bodies exactly match pinned SQL labels/definitions and are nonobsolete.'
+(B / 'go-boundary-evidence.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'lexical_statements': len(result['lexical_matches']), 'source_sha256': result['source']['sha256']}))

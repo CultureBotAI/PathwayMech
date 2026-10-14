@@ -1,0 +1,13 @@
+from acquire_identities import request
+from acquire import *
+import urllib.parse
+qs={
+ 'neurospora-qa':'(taxonomy_id:5141) AND (gene:qa*)',
+ 'aspergillus-qut':'(taxonomy_id:162425) AND (gene:qut*)',
+ 'corynebacterium-qsu':'(taxonomy_id:1718) AND (gene:qsu*)',
+ 'corynebacteriumR-cluster':'(organism_id:340322) AND (gene:cgR_0491 OR gene:cgR_0492 OR gene:cgR_0493 OR gene:cgR_0494 OR gene:cgR_0495)',
+}
+items=[('UniProt-search2-'+n,'https://rest.uniprot.org/uniprotkb/search?'+urllib.parse.urlencode({'query':q,'format':'json','size':500})) for n,q in qs.items()]
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:rows=list(ex.map(lambda a:request(*a),items))
+(ROOT/'acquisition-context-search.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows:print(r['name'],r.get('bytes',r.get('error')))

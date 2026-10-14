@@ -1,0 +1,30 @@
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import time
+import urllib.request
+
+B = Path(__file__).parent
+O = B / 'new-originals'
+O.mkdir(exist_ok=True)
+receipts = []
+for protein, number in [('P05195', '3875772'), ('P07046', '3875773'), ('P11635', '3875774'),
+                        ('P11636', '3875775'), ('P11637', '3875776'), ('P11638', '3875756')]:
+    url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=' + number + '&rettype=xml'
+    path = O / ('NCBIGene-' + number + '.xml')
+    assert not path.exists()
+    receipt = dict(uniprot_accession=protein, gene_id=number, url=url, path=str(path),
+                   retrieved_at=datetime.datetime.now(datetime.timezone.utc).isoformat())
+    try:
+        with urllib.request.urlopen(url, timeout=45) as response:
+            body = response.read()
+            receipt.update(status=response.status, final_url=response.url)
+        path.write_bytes(body)
+        receipt.update(bytes=len(body), sha256=hashlib.sha256(body).hexdigest())
+    except Exception as error:
+        receipt['error'] = repr(error)
+    receipts.append(receipt)
+    (B / 'acquisition-fungal-genes.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    time.sleep(0.4)
+print(json.dumps(receipts))

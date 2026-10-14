@@ -1,0 +1,142 @@
+from pathlib import Path
+import collections
+import hashlib
+import json
+import re
+import xml.etree.ElementTree as ET
+
+B = Path(__file__).parent
+N = Path('/private/tmp/pathwaymech-next-257-native')
+P = Path('/private/tmp/pathwaymech-next-257-primary')
+C = Path('/private/tmp/pathwaymech-next-257-chemistry')
+original_patterns = set((B / 'patterns.txt').read_text().splitlines())
+original_inputs = {row['path']: row['sha256'] for row in json.loads((B / 'search-inputs.json').read_text())}
+patterns = collections.defaultdict(set)
+inputs = {}
+
+
+def add(value, source):
+    value = str(value).strip()
+    if value and '\n' not in value and value not in original_patterns:
+        patterns[value].add(source)
+
+
+def bind(path, expected=None, owner=None):
+    data = path.read_bytes()
+    digest = hashlib.sha256(data).hexdigest()
+    assert expected is None or digest == expected, str(path)
+    inputs[str(path)] = {'path': str(path), 'sha256': digest, 'bytes': len(data), 'binding_owner': owner}
+    return data
+
+
+for owner in sorted(N.glob('acquisition*.json')):
+    acquired = json.loads(owner.read_text())
+    for row in acquired if isinstance(acquired, list) else [acquired]:
+        path = Path(row.get('path', ''))
+        if row.get('status') != 200 or not path.is_file():
+            continue
+        if str(path) in original_inputs:
+            assert original_inputs[str(path)] == row['sha256']
+            continue
+        data = bind(path, row['sha256'], str(owner))
+        if path.suffix == '.xml' and path.name.startswith('META-'):
+            root = ET.fromstring(data)
+            obj = next(el for el in root if el.tag != 'metadata')
+            assert obj.get('detail') == 'full', str(path)
+            for tag in ['common-name', 'synonym']:
+                for el in obj.findall(tag):
+                    value = re.sub('<[^>]*>', '', ''.join(el.itertext()))
+                    if len(value) >= (3 if obj.tag == 'Gene' else 5):
+                        add(value, str(path) + '/' + tag)
+            scoped = [obj]
+            for child in obj:
+                if obj.tag == 'Compound' and child.tag in {'appears-in-left-side-of', 'appears-in-right-side-of'}:
+                    continue
+                scoped.extend(child.iter())
+            for el in scoped:
+                frame = el.get('frameid')
+                if frame and el.tag in {'Pathway', 'Reaction', 'Protein', 'Enzymatic-Reaction', 'Gene', 'Compound'}:
+                    add('MetaCyc:' + frame, str(path) + '/' + el.tag + '@frameid')
+                    if len(frame) >= 5:
+                        add(frame, str(path) + '/' + el.tag + '@frameid')
+                if el.tag == 'pubmed-id' and el.text:
+                    add(el.text, str(path) + '/pubmed-id')
+                    add('PMID:' + el.text, str(path) + '/pubmed-id')
+                if el.tag == 'dblink':
+                    db, acc = el.findtext('dblink-db'), el.findtext('dblink-oid')
+                    prefixes = {'RHEA': 'RHEA', 'LIGAND-RXN': 'KEGG', 'UNIPROT': 'UniProtKB', 'CHEBI': 'CHEBI', 'NCBI-TAXONOMY-DB': 'NCBITaxon', 'EC': 'EC', 'METANETX-RXN': 'MetaNetX', 'NCBI-GENE': 'Entrez', 'PDB': 'PDB', 'PFAM': 'Pfam', 'EUPATHDB': 'VEuPathDB', 'ENTREZ': 'GenBank'}
+                    if db in prefixes and acc:
+                        add(prefixes[db] + ':' + acc, str(path) + '/dblink:' + db)
+                        if db != 'NCBI-TAXONOMY-DB' and len(acc) >= 5:
+                            add(acc, str(path) + '/dblink:' + db)
+            for value in [el.text or '' for el in scoped]:
+                for pmid in re.findall(r'/pubmed/(\d+)', value):
+                    add(pmid, str(path) + '/narrative PMID')
+                    add('PMID:' + pmid, str(path) + '/narrative PMID')
+                for frame in re.findall(r'(?:object|id)=([A-Za-z][A-Za-z0-9_.-]+)', value):
+                    if not frame.startswith('TAX-') and len(frame) >= 5:
+                        add(frame, str(path) + '/narrative frame')
+                        add('MetaCyc:' + frame, str(path) + '/narrative frame')
+        elif path.name.startswith('UniProt-') and path.suffix == '.json':
+            obj = json.loads(data)
+            if not obj.get('primaryAccession'):
+                continue
+            add(obj['primaryAccession'], str(path) + '/primaryAccession')
+            add('UniProtKB:' + obj['primaryAccession'], str(path) + '/primaryAccession')
+            for gene in obj.get('genes', []):
+                for key, value in gene.items():
+                    for item in value if isinstance(value, list) else [value]:
+                        if isinstance(item, dict) and item.get('value'):
+                            add(item['value'], str(path) + '/genes/' + key)
+            for xref in obj.get('uniProtKBCrossReferences', []):
+                if xref['database'] in ['GeneID', 'RefSeq', 'PDB']:
+                    prefix = {'GeneID': 'Entrez', 'RefSeq': 'NCBIProtein', 'PDB': 'PDB'}[xref['database']]
+                    add(prefix + ':' + xref['id'], str(path) + '/uniProtKBCrossReferences')
+                    add(xref['id'], str(path) + '/uniProtKBCrossReferences')
+for owner in sorted(P.glob('acquisition*.json')):
+    acquired = json.loads(owner.read_text())
+    for row in acquired if isinstance(acquired, list) else [acquired]:
+        path = Path(row.get('file', ''))
+        if row.get('status') != 200 or not path.name.endswith('-epmc.json'):
+            continue
+        obj = json.loads(bind(path, row['sha256'], str(owner)))['resultList']['result']
+        assert len(obj) == 1
+        for key, prefix in [('pmid', 'PMID'), ('doi', 'DOI'), ('pmcid', None)]:
+            if obj[0].get(key):
+                for value in [obj[0][key]] + ([prefix + ':' + obj[0][key]] if prefix else []):
+                    add(value, str(path) + '/resultList/result[0]/' + key)
+for name in ['chemical-identity-and-reaction-audit.json', 'rhea-original-projection.json', 'core-record.json']:
+    path = C / name
+    data = bind(path)
+    obj = json.loads(data)
+    for value in re.findall(r'\b(?:CHEBI|RHEA|MetaCyc|GO|PMID|UniProtKB|NCBITaxon):[A-Za-z0-9_.-]+', data.decode()):
+        add(value, str(path) + '/exact CURIE')
+    for value in re.findall(r'http://rdf.rhea-db.org/(\d+)(?:_|\b)', data.decode()):
+        add('RHEA:' + value, str(path) + '/Rhea URI')
+    if name == 'chemical-identity-and-reaction-audit.json':
+        for reaction in obj['reaction_audits'] if 'reaction_audits' in obj else obj['reactions']:
+            for value in reaction.get('rhea_family', {}).values():
+                add('RHEA:' + value, str(path) + '/rhea_family')
+    if name == 'core-record.json':
+        for field in ['taxa', 'participants', 'reactions']:
+            for node in obj.get(field, []):
+                add(node['id'], str(path) + '/' + field + '/id')
+                add(node['label'], str(path) + '/' + field + '/label')
+manual = {
+    'PMID:8257437 primary reviewer source note': ['pRSETB', 'pRF2'],
+    'PMID:1479361 primary reviewer source note': ['NCIB11946', 'NCIB 11946', 'WV2', 'GH7', 'GH12', 'GH29'],
+    'PMID:32822353 primary reviewer source note': ['ATCC13869', 'ATCC 13869', 'pET22b-qsuB', 'n-qsuB'],
+    'PMID:24674055 primary reviewer source note': ['pColdI', 'pCRF206', 'JCM18229', 'JCM 18229', 'PqsuA', 'LZ1', 'LZ2', 'LZ11', 'LZ12', 'LZ13'],
+    'Native source identity reviewer note; some Gene IDs retired, no current mapping asserted': ['NCBIProtein:BAF53458.1', 'NCBIProtein:BAF53459.1', 'NCBIProtein:BAF53460.1', 'NCBIProtein:WP_003855554.1', 'Entrez:4994226', 'Entrez:4994327', 'Entrez:4994407', 'Entrez:4993973'],
+    'Primary reviewer continuing A. niger source lead, not incorporated or accepted automatically': ['DOI:10.1093/g3journal/jkaf199', '10.1093/g3journal/jkaf199'],
+}
+for source, values in manual.items():
+    for value in values:
+        add(value, source)
+        if value.startswith('NCBIProtein:'):
+            add(value.split(':', 1)[1], source)
+patterns = dict(sorted(patterns.items()))
+(B / 'supplemental-patterns.json').write_text(json.dumps({key: sorted(value) for key, value in patterns.items()}, indent=2) + '\n')
+(B / 'supplemental-patterns.txt').write_text('\n'.join(patterns) + '\n')
+(B / 'supplemental-source-bindings.json').write_text(json.dumps(list(inputs.values()), indent=2) + '\n')
+print(json.dumps({'new_patterns': len(patterns), 'bound_supplement_sources': len(inputs)}))

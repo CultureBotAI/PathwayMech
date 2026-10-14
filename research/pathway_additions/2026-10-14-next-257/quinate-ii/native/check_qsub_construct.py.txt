@@ -1,0 +1,19 @@
+from acquire import *
+D=''.join(x.strip() for x in (ORIG/'CP016335.1-540163-542019.fasta').read_text().splitlines() if not x.startswith('>')).upper()
+protein=ET.parse(ORIG/'NCBIProtein-ANU32720.1.xml').getroot().findtext('./GBSeq/GBSeq_sequence').upper()
+bases='TCAG';amino='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+code={a+b+c:amino[i] for i,(a,b,c) in enumerate((a,b,c) for a in bases for b in bases for c in bases)}
+t=''.join(code[D[i:i+3]] for i in range(0,len(D),3));assert t==protein+'*'
+primers={'P3':'TTTTGTTTAACTTTAAGAAGGAGATATACATATGCGTACATCCATTGCCACTGT','P4':'GTGGTGGTGGTGGTGGTGGTTTGGGATTCCCCGCTCG','P5':'GTGGTGGTGGTGGTGGTGGAAATCAACACCCTCAGGTTCC'}
+def rc(s):return s.translate(str.maketrans('ACGT','TGCA'))[::-1]
+rows=[]
+for n,p in primers.items():
+ candidates=[]
+ for length in range(12,len(p)+1):
+  tail=p[-length:];q=tail if n=='P3' else rc(tail);positions=[i for i in range(len(D)-len(q)+1) if D[i:i+len(q)]==q]
+  if positions:candidates.append((length,tail,q,positions))
+ length,tail,q,positions=max(candidates);overhang=p[:-length]
+ rows.append({'primer':n,'sequence':p,'longest_exact_3prime_match_nt':length,'native_match':q,'match_1based_positions':[i+1 for i in positions],'five_prime_overhang':overhang,'translated_reverse_overhang':''.join(code[rc(overhang)[i:i+3]] for i in range(0,len(overhang)-2,3)) if n!='P3' else None})
+print(json.dumps(rows,indent=2)); print('protein residues296-298',protein[295:298], 'len',len(protein))
+out={'candidate':'NCBIProtein:ANU32720.1','strain':'ATCC 13869','locus_tag':'BBD29_02520','native_CDS':'CP016335.1:540163..542019','cds_length':len(D),'protein_length':len(protein),'translation_exact':True,'primer_source':'QsuB2020 S1 Table supplement (internal PDF label S2 Table), P3/P4/P5; /private/tmp/pathwaymech-next-257-primary/originals/QsuB-2020-s002.pdf','primer_checks':rows,'interpretation':'P3 anchors the native start. P4 matches the native C-terminal coding region while excluding stop and adding a C-terminal histidine-tag overhang. P5 anchors the truncated domain boundary. These establish exact strain/locus/construct-end consistency; article Fig1 full sequence should also be reconciled before claiming full experimental-sequence identity.'}
+(ROOT/'QsuB-ATCC13869-primer-check.json').write_text(json.dumps(out,indent=2)+'\n')

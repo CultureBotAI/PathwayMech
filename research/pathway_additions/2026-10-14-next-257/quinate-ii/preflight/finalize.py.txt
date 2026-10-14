@@ -1,0 +1,95 @@
+from pathlib import Path
+import ast
+import datetime
+import hashlib
+import json
+import shutil
+
+B = Path(__file__).parent
+DEST = Path('/private/tmp/pathwaymech-next-257-20261014/research/pathway_additions/2026-10-14-next-257/quinate-ii/preflight')
+reports = [B / 'dedup-compact.json', B / 'supplemental-search.json', B / 'late-source-supplement/supplemental-search.json', B / 'final-primary-supplement/supplemental-search.json', B / 'assembled-record-supplement/supplemental-search.json']
+all_patterns = set()
+passes = []
+
+
+def bind(path):
+    data = path.read_bytes()
+    return {'path': str(path), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+
+
+for path in reports:
+    report = json.loads(path.read_text())
+    patterns = Path(report['patterns_file']['path'])
+    assert bind(patterns)['sha256'] == report['patterns_file']['sha256']
+    all_patterns.update(patterns.read_text().splitlines())
+    for root in report['roots']:
+        assert root['exit_code'] in (0, 1) and not root['stderr']
+        for name in ['full_match_projection', 'complete_counts']:
+            assert bind(Path(root[name]['path']))['sha256'] == root[name]['sha256']
+    passes.append({'report': bind(path), 'patterns_per_root': report['patterns_per_root'], 'roots': [root['root'] for root in report['roots']]})
+baseline = json.loads((B / 'baseline-record-bindings.json').read_text())
+assert baseline['count'] == 253
+assert not any(row['id'] in ['MetaCyc:PWY-6416', 'MetaCyc:PWY-6419'] for row in baseline['records'])
+source_bindings = []
+for path in [B / 'search-inputs.json', B / 'supplemental-source-bindings.json', B / 'late-source-supplement/supplemental-source-bindings.json', B / 'final-primary-supplement/supplemental-source-bindings.json', B / 'assembled-record-supplement/supplemental-source-bindings.json']:
+    for row in json.loads(path.read_text()):
+        actual = bind(Path(row['path']))
+        assert actual['sha256'] == row['sha256'], row['path']
+        source_bindings.append(row)
+unique_sources = {row['path']: row for row in source_bindings}
+meta_xml = [path for path in unique_sources if Path(path).name.startswith('META-') and path.endswith('.xml')]
+union = {'baseline_commit': baseline['baseline_commit'], 'candidate': 'MetaCyc:PWY-6416', 'baseline_records': 253, 'distinct_fixed_strings': len(all_patterns), 'casefold_distinct_strings': len({value.casefold() for value in all_patterns}), 'passes': passes, 'all_search_source_bindings_verified': len(source_bindings), 'distinct_search_source_paths': len(unique_sources), 'distinct_complete_meta_xml_inputs': len(meta_xml), 'ignored_and_hidden_included': True, 'scope': 'Two current repository roots only, five complete passes per root. Text-search bounds are documented in dedup-compact.json. The authoritative membership claim is from all 253 baseline Git blobs; no provider or source-universe exhaustion claim.', 'created_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+(B / 'search-union.json').write_text(json.dumps(union, indent=2) + '\n')
+
+handoff = f'''# Next257 author preflight
+
+Select **MetaCyc:PWY-6416 — quinate degradation II** for the complete three-member native quinate-to-protocatechuate boundary. Its initial oxidation uses native NAD(P) classes; downstream DHQ and DHS dehydrations complete the route. Preserve enzyme-specific NAD/NADP preferences and distinguish the broader native reaction from the narrower Rhea NAD-specific family. Downstream protocatechuate cleavage is a pathway link, not a member.
+
+All **253 baseline records** at `{baseline['baseline_commit']}` were enumerated with `git ls-tree`, read from actual Git blob OIDs and byte-compared with both current roots. PWY-6416 and PWY-6419 are absent as top-level records and nested pathway nodes. Quinate I and shikimate I are present. The four closest maintained boundaries were read and differ in initial cofactor, substrate, endpoint or biological role. Shared source references or enzyme reactions are not duplicate whole-pathway coverage.
+
+The original pinned GO SQL was freshly hashed and queried. GO:0019631 explicitly `skos:narrowMatch`s both quinate variants; GO:0019633 similarly covers both shikimate variants. These broader substrate catabolic processes do not fix the exact initial cofactor or endpoint, so the native subtype ID is appropriate. The six same-day boundary/QuickGO originals were verified against committed previous acquisition bindings before reuse; native PWY-6416 was also freshly acquired with identical bytes. The 105-statement lexical query and exact outgoing/incoming queries are external. This is a scoped semantic assessment, not an exhaustive audit of all GO processes.
+
+Completed searches used **828 initial, 184 supplemental, 13 late-source, 12 final primary and 132 assembled-record patterns per root**, **{len(all_patterns)} distinct fixed strings** overall. Inputs include {len(meta_xml)} complete native/boundary XML files, primary accession metadata, current protein/gene identities, Rhea direction families, chemical mappings and source-reported gene/construct aliases. The fifth pass adds the final metal/cofactor IDs, a structure DOI and complete selected UniProt citation accessions. By that pass the authorized new record exists in the task worktree; its expected matches do not alter the baseline absence audit. Retirement, strain and class differences are not erased by searching their identifiers. No speculative crosswalk was invented for a namespace lacking an inspected candidate accession.
+
+Both current main and next257 scans include **ignored and hidden files**, excluding only Git administration and virtual-environment directories. Ripgrep uses default binary detection, does not follow directory symlinks and does not decode compressed archives. External caches, other worktrees and complete upstream provider holdings were not exhaustively searched. Commands, per-pattern counts and full external match/path-log hashes are retained. An initial overbroad scan included ubiquitous water/proton reverse-reaction indexes and was deliberately stopped. Its partial outputs remain external and support no absence claim; the completed passes exclude only `Compound/appears-in-left-side-of` and `Compound/appears-in-right-side-of` from vocabulary generation while preserving complete original XML bytes.
+
+Nine prior narrative/coverage files were interpreted, alongside the complete exact-candidate mention inventory. Previous QsuC/QsuB/qa-4 exclusions were from the PQQ I route; they explicitly preserve II-route leads and are not rejections of II. Meaningful ignored-source hits were read: SEED has selector labels, DRAM has biosynthetic modules, dbCAN has unrelated polysaccharide contexts, and PathBank is a glyoxylate-cycle canary. Supplemental strain-like hits are unrelated POLZ genes or CAZyme family names. The late native-gene and assembled-record passes have no ignored matched paths in main; final primary alias matches have their own dispositions. These text counts do not replace baseline record membership.
+
+This is **author identity preflight**, not independent scientific approval. PWY-6416's direct evidence blocks repeat I-route PMIDs 8002591 and 14586099; those must not become independent experimental support for the NAD route. Biological sources and primary papers still require exact organism, cofactor, regulatory and assayed-construct interpretation. Search aliases supplied by the primary reviewer are discovery vocabulary, not added factual graph assertions.
+
+**Continuing queue:** PWY-6419 remains a genuine separate candidate with a verified original and explicit baseline absence. The ignored SEED subsystem is a reusable-source lead. No source exhaustion or goal-completion claim is made. No maintained record/config was edited by this agent; only this author research package is retained. No corpus gate was run by this agent.
+
+Reproduction uses the frozen `search-inputs.json`, `primary-search-inputs.json`, pattern lists and source bindings, followed by the five search passes. Source-preparation helpers discover acquisition files present at their execution time; later acquisitions may expand their output. The assembled-record preparation helper preserves the selected pattern set; JSON provenance-list ordering may differ from the original one-shot preparation. Original raw sources, SQL/RDF, full match logs and full path counts stay external. Helper copies are byte-identical `.py.txt` files. `artifact-manifest.json` and `retention.json` bind retained bytes.
+'''
+(B / 'HANDOFF.md').write_text(handoff)
+names = ['CANDIDATES.md', 'HANDOFF.md', 'continuing-queue.json', 'boundary-assessment.json', 'baseline-record-bindings.json', 'related-record-dispositions.json', 'prior-research-dispositions.json', 'ignored-source-dispositions.json', 'supplemental-ignored-dispositions.json', 'chemical-source-verification.json', 'verified-reused-boundaries.json', 'search-inputs.json', 'primary-search-inputs.json', 'additional-patterns.json', 'patterns.txt', 'pattern-sources.json', 'dedup-compact.json', 'supplemental-patterns.json', 'supplemental-patterns.txt', 'supplemental-source-bindings.json', 'supplemental-search.json', 'search-union.json']
+helpers = ['read_go.py', 'prepare_inputs.py', 'scan.py', 'assess_boundaries.py', 'record_dispositions.py', 'inspect_ignored.py', 'prepare_supplement.py', 'supplement_search.py', 'prepare_final_primary_supplement.py', 'prepare_assembled_record_supplement.py', 'finalize.py']
+names += ['late-source-supplement/' + name for name in ['patterns.txt', 'search-inputs.json', 'supplemental-patterns.json', 'supplemental-patterns.txt', 'supplemental-source-bindings.json', 'supplemental-search.json', 'ignored-matches.json']]
+helpers += ['late-source-supplement/prepare_supplement.py', 'late-source-supplement/supplement_search.py']
+names += ['final-primary-supplement/' + name for name in ['supplemental-patterns.json', 'supplemental-patterns.txt', 'supplemental-source-bindings.json', 'supplemental-search.json', 'ignored-dispositions.json']]
+helpers += ['final-primary-supplement/supplement_search.py']
+names += ['assembled-record-supplement/' + name for name in ['supplemental-patterns.json', 'supplemental-patterns.txt', 'supplemental-source-bindings.json', 'supplemental-search.json', 'ignored-dispositions.json']]
+helpers += ['assembled-record-supplement/supplement_search.py']
+names += ['initial-aborted-search/termination.json']
+DEST.mkdir(parents=True, exist_ok=True)
+retained = []
+for name in names + helpers:
+    path = B / name
+    data = path.read_bytes()
+    if name.endswith('.py'):
+        ast.parse(data)
+        assert all(line == line.rstrip() for line in data.decode().splitlines()), name
+    dest = DEST / (name + '.txt' if name.endswith('.py') else name)
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if dest.exists():
+        assert dest.read_bytes() == data, str(dest)
+    else:
+        dest.write_bytes(data)
+    retained.append({'original': bind(path), 'retained': bind(dest), 'byte_identical': dest.read_bytes() == data})
+manifest = {'retained_artifact_count': len(retained), 'external_full_payloads': ['originals/', 'go-boundary-evidence.json', 'root-*-matches.jsonl', 'root-*-complete-counts.json', 'supplement-root-*-matches.jsonl', 'supplement-root-*-complete-counts.json', 'late-source-supplement, final-primary-supplement and assembled-record-supplement full matches and complete path counts', 'initial-aborted-search raw/partial outputs', 'retention-checkpoint-1 and retention-checkpoint-2 before final vocabulary expansions'], 'retained': retained}
+(B / 'artifact-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+shutil.copyfile(B / 'artifact-manifest.json', DEST / 'artifact-manifest.json')
+receipt = {'destination': str(DEST), 'count': len(retained) + 1, 'artifact_manifest': bind(B / 'artifact-manifest.json'), 'all_retained_bytes_equal': all(row['byte_identical'] for row in retained), 'no_raw_payloads_retained': True}
+(B / 'retention.json').write_text(json.dumps(receipt, indent=2) + '\n')
+shutil.copyfile(B / 'retention.json', DEST / 'retention.json')
+print(json.dumps({'destination': str(DEST), 'retained_count_including_manifest_and_receipt': len(retained) + 2, 'distinct_patterns': len(all_patterns), 'complete_meta_xml_inputs': len(meta_xml)}))

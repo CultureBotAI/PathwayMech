@@ -1,0 +1,132 @@
+"""Integrate frozen, source-backed author proposals; no authority or page edits."""
+from pathlib import Path
+import copy
+import hashlib
+import json
+import sqlite3
+
+import yaml
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-257-20261014')
+N = Path('/private/tmp/pathwaymech-next-257-native')
+P = Path('/private/tmp/pathwaymech-next-257-primary/package')
+A = Path('/private/tmp/pathwaymech-next-257-authorities')
+record = json.loads((B / 'extended-core-record.json').read_text())
+native = json.loads((N / 'native-graph-proposal.json').read_text())
+primary = json.loads((P / 'biological-graph-proposal.json').read_text())
+preview = json.loads((A / 'candidate-identity-preview.json').read_text())
+terms = {x['identifier']: x['term'] for x in preview['results']}
+changes = []
+
+def normalized_identifier(value):
+    if value.startswith('native257-'):
+        return 'MetaCyc:' + value[len('native257-'):]
+    if value == 'RCSB:2NLO-polymer1':
+        return 'DOI:10.2210/pdb2nlo/pdb'
+    if value.startswith('NCBIGene:'):
+        return 'Entrez:' + value.split(':', 1)[1]
+    return {'MetaCyc:DHSHIKIMATE-DEHYDRO-RXN': 'RHEA:24849',
+            'MetaCyc:PROTOCATECHUATE': 'CHEBI:36241'}.get(value, value)
+
+def normalize_evidence(evidence):
+    value = copy.deepcopy(evidence)
+    if 'reference' in value:
+        value['reference_id'] = value.pop('reference')
+    refid = value['reference_id']
+    value['reference_id'] = ('MetaCyc:' + refid[len('native257-'):]
+                             if refid.startswith('native257-') else
+                             'UniProtKB:' + refid[len('primary257-UniProt-'):]
+                             if refid.startswith('primary257-UniProt-') else
+                             'DOI:10.2210/pdb2nlo/pdb' if refid == 'RCSB:2NLO-polymer1' else refid)
+    return value
+
+def add_reference(item):
+    item = {key: value for key, value in item.items()
+            if key in {'id', 'title', 'citation', 'url', 'source_version', 'source_sha256'} and value is not None}
+    # Native reaction references describe source objects even if their graph node is mapped.
+    item['id'] = ('MetaCyc:' + item['id'][len('native257-'):]
+                  if item['id'].startswith('native257-') else
+                  'UniProtKB:' + item['id'][len('primary257-UniProt-'):]
+                  if item['id'].startswith('primary257-UniProt-') else
+                  'DOI:10.2210/pdb2nlo/pdb' if item['id'] == 'RCSB:2NLO-polymer1' else item['id'])
+    existing = next((r for r in record['references'] if r['id'] == item['id']), None)
+    if existing is None:
+        record['references'].append(item)
+    elif existing.get('source_sha256') != item.get('source_sha256'):
+        changes.append({'reference_id': item['id'], 'disposition': 'primary reference replaces proposal metadata',
+                        'previous': existing, 'selected': item})
+        record['references'][record['references'].index(existing)] = item
+
+for reference in native['references']:
+    add_reference(reference)
+for reference in primary.get('references', []):
+    add_reference(reference)
+
+for proposal in [native, primary]:
+    for item in proposal['edges']:
+        edge = copy.deepcopy(item)
+        edge['subject'] = normalized_identifier(edge['subject'])
+        edge['object'] = normalized_identifier(edge['object'])
+        edge['evidence'] = [normalize_evidence(e) for e in edge['evidence']]
+        for qualifier in edge.get('endpoint_qualifiers', []):
+            qualifier['evidence'] = [normalize_evidence(e) for e in qualifier['evidence']]
+            if 'NCBIProtein:ANU32720.1' in [edge['subject'], edge['object']]:
+                qualifier['description'] += ' The complete internal assay-clone sequence was not independently deposited.'
+        if edge['subject'] == 'MetaCyc:CPLX-7981' and edge['predicate'] == 'catalyzes':
+            edge['object'] = 'RHEA:22365'
+            edge['description'] = ('Recombinant ATCC 13032 QsuD supports the exact NAD-specific reaction '
+                                   'RXN-20483/RHEA:22365. NADP turnover is much lower, not absent; '
+                                   'the broader formal NAD(P) pathway member remains separately represented.')
+        if edge['subject'] == 'UniProtKB:P25415' and edge['predicate'] == 'catalyzes':
+            edge['evidence'] = [e for e in edge['evidence'] if e['reference_id'] != 'PMID:8257437']
+            edge['evidence'].append(dict(reference_id='PMID:8257437',
+                                        quote='The purified quinate dehydrogenase is bifunctional'))
+            edge['endpoint_qualifiers'][0]['evidence'] = [dict(reference_id='PMID:8257437',
+                quote='metal-chelating domain on the N-terminal end of the quinate dehydrogenase enzyme.')]
+        edge.pop('id', None)
+        record['mechanistic_edges'].append(edge)
+
+# All selected nodes must be issuing identities, not guessed placeholders.
+supplied = {normalized_identifier(n['id']): n for proposal in [native, primary]
+            for n in proposal.get('nodes', [])}
+connected = {edge[role] for edge in record['mechanistic_edges'] for role in ['subject', 'object']}
+existing = {record['id']} | {n['id'] for field in ['taxa', 'participants', 'reactions'] for n in record[field]}
+for identifier in sorted(connected - existing):
+    if identifier in supplied:
+        node = {key: value for key, value in supplied[identifier].items()
+                if key in {'id', 'label', 'category'} and value is not None}
+        node['id'] = identifier
+    elif identifier in terms:
+        node = dict(id=identifier, label=terms[identifier][1],
+                    category='gene' if identifier.startswith(('Entrez:', 'MetaCyc:G-')) else 'protein')
+    elif identifier.startswith(('CHEBI:', 'GO:')):
+        dbname = 'chebi' if identifier.startswith('CHEBI:') else 'go'
+        with sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/' + dbname + '.db?mode=ro', uri=True) as db:
+            label = db.execute("select value from statements where subject=? and predicate='rdfs:label'", (identifier,)).fetchone()[0]
+        node = dict(id=identifier, label=label, category='small_molecule' if dbname == 'chebi' else 'cellular_component')
+    else:
+        raise AssertionError(('No verified node', identifier))
+    if identifier.startswith(('NCBIProtein:', 'Entrez:')):
+        node['label'] = terms[identifier][1]
+    record['participants'].append(node)
+
+for index, edge in enumerate(record['mechanistic_edges'], 1):
+    edge['id'] = 'quinate-ii-' + str(index).zfill(3)
+used = {e['reference_id'] for edge in record['mechanistic_edges']
+        for e in edge['evidence'] + [v for q in edge.get('endpoint_qualifiers', []) for v in q['evidence']]}
+missing = used - {r['id'] for r in record['references']}
+assert not missing, ('Missing references', sorted(missing))
+record['references'] = [r for r in record['references'] if r['id'] in used]
+from pathwaymech.schema import validate_record
+validate_record(record)
+(B / 'assembled-record.json').write_text(json.dumps(record, indent=2) + '\n')
+target = R / 'data/pathways/quinate-degradation-ii.yaml'
+target.write_text(yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=95))
+(B / 'integration-dispositions.json').write_text(json.dumps(dict(
+    scope='Author integration; not independent scientific review.', reference_dispositions=changes,
+    reaction_scope='Three formal native members plus one exact NAD-specific realization of the first step; no four-step flux claimed.',
+    named_nodes=len(existing | connected), edges=len(record['mechanistic_edges']),
+    record_sha256=hashlib.sha256(target.read_bytes()).hexdigest()), indent=2) + '\n')
+print(json.dumps({'path': str(target), 'edges': len(record['mechanistic_edges']),
+                  'participants': len(record['participants']), 'references': len(record['references'])}))

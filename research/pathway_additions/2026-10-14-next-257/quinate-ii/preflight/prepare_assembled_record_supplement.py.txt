@@ -1,0 +1,60 @@
+from pathlib import Path
+import hashlib
+import json
+import shutil
+
+B = Path(__file__).parent
+S = B / 'assembled-record-supplement'
+S.mkdir(exist_ok=True)
+record_path = Path('/private/tmp/pathwaymech-next-257-chemistry/assembled-record.json')
+record = json.loads(record_path.read_text())
+prior = {value for path in [B / 'patterns.txt', B / 'supplemental-patterns.txt', B / 'late-source-supplement/supplemental-patterns.txt', B / 'final-primary-supplement/supplemental-patterns.txt'] for value in path.read_text().splitlines()}
+patterns, bindings = {}, {}
+
+
+def bind(path):
+    data = path.read_bytes()
+    bindings[str(path)] = {'path': str(path), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+    return json.loads(data)
+
+
+def add(value, source):
+    if value and value not in prior:
+        patterns.setdefault(value, []).append(source)
+
+
+bind(record_path)
+ids = {record['id']} | {node['id'] for field in ['taxa', 'participants', 'reactions', 'references'] for node in record.get(field, [])}
+for ident in sorted(ids):
+    add(ident, str(record_path) + ' named/reference ID selection; identity evidence stays in author source packages')
+    if ident.startswith(('DOI:', 'PMID:')):
+        add(ident.split(':', 1)[1], str(record_path) + ' reference accession')
+for ident in sorted(ids):
+    if not ident.startswith('UniProtKB:'):
+        continue
+    path = Path('/private/tmp/pathwaymech-next-257-native/originals/UniProt-' + ident.split(':')[1] + '.json')
+    if not path.is_file():
+        continue
+    original = bind(path)
+    for reference in original.get('references', []):
+        for cross_reference in reference.get('citation', {}).get('citationCrossReferences', []):
+            if cross_reference['database'] in ['PubMed', 'DOI']:
+                prefix = 'PMID' if cross_reference['database'] == 'PubMed' else 'DOI'
+                add(prefix + ':' + cross_reference['id'], str(path) + '/references/citation/citationCrossReferences')
+                add(cross_reference['id'], str(path) + '/references/citation/citationCrossReferences')
+path = Path('/private/tmp/pathwaymech-next-257-primary/package/reference-metadata.json')
+for row in bind(path):
+    add(row['id'], str(path) + '/id')
+    if row.get('doi'):
+        add(row['doi'], str(path) + '/doi')
+        add('DOI:' + row['doi'], str(path) + '/doi')
+    if row.get('pmcid'):
+        add(row['pmcid'], str(path) + '/pmcid')
+patterns = dict(sorted(patterns.items()))
+for key in patterns:
+    patterns[key] = sorted(patterns[key])
+(S / 'supplemental-patterns.json').write_text(json.dumps(patterns, indent=2) + '\n')
+(S / 'supplemental-patterns.txt').write_text('\n'.join(patterns) + '\n')
+(S / 'supplemental-source-bindings.json').write_text(json.dumps(sorted(bindings.values(), key=lambda row: row['path']), indent=2) + '\n')
+shutil.copyfile(B / 'supplement_search.py', S / 'supplement_search.py')
+print(json.dumps({'patterns': len(patterns), 'sources': len(bindings)}))

@@ -1,0 +1,133 @@
+from pathlib import Path
+import collections, csv, datetime, hashlib, html, json, re, subprocess, sys
+from html.parser import HTMLParser
+import xml.etree.ElementTree as ET
+import yaml
+
+R=Path('/private/tmp/pathwaymech-next-257-20261014')
+B=Path(__file__).resolve().parent
+D=R/'research/pathway_additions/2026-10-14-next-257/quinate-ii'
+BASE='11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37'
+errors=[]; checks={}
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def check(ok,msg):
+    if not ok: errors.append(msg)
+def git(*args): return subprocess.check_output(['git',*args],cwd=R)
+def binding(p): return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+files=[f for f in git('ls-tree','-r','--name-only',BASE,'--','data/pathways').decode().splitlines() if f.endswith('.yaml')]
+check(len(files)==253,'baseline count differs')
+for f in files: check((R/f).read_bytes()==git('show',BASE+':'+f),'baseline changed: '+f)
+checks['baseline_records']={'count':len(files),'all_exact_git_blobs':not errors}
+
+retained=[]
+for name,key in [('chemistry/retention.json','artifacts'),('primary/retention.json','files'),('assembly/retention.json','files')]:
+    for row in json.loads((D/name).read_text())[key]:
+        a,b=Path(row['original_path']),R/row['maintained_path']
+        check(sha(a)==sha(b)==row['sha256'],'retention differs: '+str(b))
+        retained.append(b)
+for row in json.loads((D/'native/retention-manifest.json').read_text())['retained_files']:
+    a,b=Path(row['external']),Path(row['retained'])
+    check(sha(a)==sha(b)==row['sha256'],'retention differs: '+str(b)); retained.append(b)
+for row in json.loads((D/'preflight/artifact-manifest.json').read_text())['retained']:
+    a,b=Path(row['original']['path']),Path(row['retained']['path'])
+    check(sha(a)==sha(b)==row['original']['sha256']==row['retained']['sha256'],'retention differs: '+str(b));retained.append(b)
+ignored=subprocess.run(['git','check-ignore','--stdin'],cwd=R,input='\n'.join(str(p.relative_to(R)) for p in retained),text=True,capture_output=True)
+check(ignored.returncode in (0,1),'check-ignore failed')
+check(not ignored.stdout,'retained files ignored: '+ignored.stdout)
+checks['retention']={'files':len(retained),'hashes_verified':True,'gitignore_checked':True,'ignored':ignored.stdout.splitlines()}
+
+def project_slot(e):
+    d={}
+    def plain(s):return html.unescape(re.sub('<[^>]*>','',s or '')).strip()
+    if e.text and e.text.strip():d['text']=plain(e.text)
+    if e.attrib:d['attributes']=e.attrib
+    for c in e:
+        if c.get('frameid'):
+            v={'frameid':c.get('frameid'),'kind':c.tag}
+            if c.find('common-name') is not None:v['label']=plain(c.findtext('common-name'))
+            if c.tag=='Publication':v.update({n:plain(c.findtext(n)) for n in ['pubmed-id','title','year'] if c.findtext(n)})
+            if c.tag=='Evidence-Code':v['code']=c.get('frameid')
+        else:v=project_slot(c)
+        d.setdefault(c.tag,[]).append(v)
+    return d
+ledger=json.loads((D/'native/native-fact-dispositions-compact.json').read_text())
+rows={v['locator']:v for v in ledger['rows']};count=0;objects=0;slots={}
+for row in json.loads((D/'native/source-projection-compact.json').read_text()):
+    p=Path(row['file']);check(sha(p)==row['sha256'],'native original hash: '+str(p))
+    e=ET.parse(p).getroot().find('./'+row['kind']+'[@frameid="'+row['frameid']+'"]')
+    assert e is not None
+    ns=collections.Counter();full={}
+    for c in e:
+        ns[c.tag]+=1;count+=1
+        loc=f'/ptools-xml/{e.tag}[@frameid="{row["frameid"]}"]/{c.tag}[{ns[c.tag]}]'
+        v=project_slot(c); full.setdefault(c.tag,[]).append(v)
+        check(loc in rows,'native slot missing from ledger: '+loc)
+        if loc in rows:
+            l=rows[loc]
+            check(hashlib.sha256(json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest()==l['projection_sha256'],'projection hash mismatch: '+loc)
+            check(l['reason_key'] in ledger['reason_definitions'],'unknown reason: '+loc)
+    for key,value in row['slots'].items():check(full[key]==value,'retained slot differs: '+row['frameid']+'/'+key)
+    projected=set(full)-{'credits','history','citation','creation-date'}
+    check(set(row['slots'])|set(row['omitted_slots'])==projected,'compact slot coverage: '+row['frameid'])
+    objects+=1
+check(count==len(rows)==ledger['facts']==998,'native direct-slot denominator mismatch')
+checks['native_projection']={'objects':objects,'direct_slots':count,'all_direct_slots_hash_replayed':True,'compact_slot_value_and_omission_coverage':True}
+
+target=R/'data/pathways/quinate-degradation-ii.yaml'; rec=yaml.safe_load(target.read_text())
+edges=rec['mechanistic_edges']; refs={v['id']:v for v in rec['references']}
+page=R/'pages/records/MetaCyc_PWY-6416.html'
+class Parser(HTMLParser):
+    def __init__(self):super().__init__();self.edges=[];self.nodes=[];self.ids=set()
+    def handle_starttag(self,tag,attrs):
+        a=dict(attrs)
+        if a.get('id'):self.ids.add(a['id'])
+        cls=a.get('class','').split()
+        if tag=='a' and 'graph-edge' in cls:self.edges.append(a)
+        if tag=='a' and 'graph-node' in cls:self.nodes.append(a)
+p=Parser();p.feed(page.read_text())
+check(len(p.edges)==len(edges)==60,'SVG edge count')
+qualifier_count=0
+for i,(e,v) in enumerate(zip(edges,p.edges),1):
+    check(v['data-predicate']==e['predicate'],'SVG predicate '+e['id'])
+    check(v['href']=='#mechanism-edge-'+str(i),'SVG evidence link '+e['id'])
+    check(v['href'][1:] in p.ids,'SVG anchor missing '+e['id'])
+    for role in ['subject','object']:
+        q=next((q for q in e.get('endpoint_qualifiers',[]) if q['endpoint']==role),None)
+        if q:
+            qualifier_count+=1
+            check(v['data-'+role+'-id']==e[role],'SVG qualified base identity '+e['id'])
+            inst=[n for n in p.nodes if n['data-node-id']==v['data-'+role]]
+            check(len(inst)==1 and inst[0].get('data-base-node-id')==e[role],'SVG display instance '+e['id'])
+            check(q['description'] in v['aria-label'],'SVG qualifier description '+e['id'])
+        else:check(v['data-'+role]==e[role],'SVG endpoint '+e['id'])
+with (R/'pages/downloads/edges.tsv').open() as f:kgx=[v for v in csv.DictReader(f,delimiter='\t') if v['id'].startswith('pathwaymech:MetaCyc_PWY-6416_')]
+check(len(kgx)==len(edges),'KGX edge count')
+mapping={'part_of':'BFO:0000050'}
+for e in edges:
+    hits=[v for v in kgx if '_'+e['id']+'_' in v['id']]
+    check(len(hits)==1,'KGX unique edge '+e['id'])
+    if not hits:continue
+    k=hits[0]
+    check(k['subject']==e['subject'] and k['object']==e['object'],'KGX endpoints '+e['id'])
+    check(k['predicate']==mapping.get(e['predicate'],'pathwaymech:'+e['predicate']),'KGX predicate '+e['id'])
+    check(json.loads(k['evidence'])==e['evidence'],'KGX evidence '+e['id'])
+    check(json.loads(k['endpoint_qualifiers'] or '[]')==e.get('endpoint_qualifiers',[]),'KGX qualifiers '+e['id'])
+    ids={v['reference_id'] for v in e['evidence']}|{v['reference_id'] for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']}
+    check({v['id']:v for v in json.loads(k['reference_metadata'])}=={i:refs[i] for i in ids},'KGX reference metadata '+e['id'])
+checks['graph']={'edges':len(edges),'svg_edges':len(p.edges),'kgx_edges':len(kgx),'qualified_endpoints':qualifier_count,'display_nodes':len(p.nodes),'all_payloads_preserved':True}
+with (R/'pages/downloads/nodes.tsv').open() as f:kgxnodes={v['id']:v for v in csv.DictReader(f,delimiter='\t')}
+declared=[('pathway',{'id':rec['id'],'label':rec['label']})]+[(field,n) for field in ['taxa','participants','reactions'] for n in rec[field]]
+for field,n in declared:
+    check(n['id'] in kgxnodes,'KGX missing node '+n['id'])
+    if n['id'] not in kgxnodes:continue
+    contexts=json.loads(kgxnodes[n['id']]['source_contexts'])
+    expect={'record_id':rec['id'],'collection':field,**n}
+    if field=='pathway':expect.pop('id')
+    check(expect in contexts,'KGX per-record context differs '+n['id'])
+    base=[v for v in p.nodes if v['data-node-id']==n['id']]
+    check(len(base)==1,'SVG declared base node missing '+n['id'])
+checks['graph'].update(named_nodes=len(declared),all_local_node_contexts_preserved=True)
+result={'started_input_state':'working tree','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'script':binding(Path(__file__)),'baseline':BASE,'checks':checks,'inputs':[binding(target),binding(page),binding(R/'pages/downloads/edges.tsv'),binding(R/'pages/downloads/nodes.tsv')],'errors':errors,'status':'passed' if not errors else 'failed'}
+(B/'integration-check.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'status':result['status'],'errors':errors,'checks':checks},indent=2))
+sys.exit(bool(errors))

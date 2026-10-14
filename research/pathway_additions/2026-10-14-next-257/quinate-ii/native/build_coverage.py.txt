@@ -1,0 +1,81 @@
+from project import *
+from collections import Counter,defaultdict
+activity_scopes={
+ 'ENZRXN0-6289':('exclude_nonphysiological','E. coli YdiB: native physiologically-relevant false; purified activity does not demonstrate quinate catabolism.'),
+ 'ENZRXN-17384':('include_qualified','A. nidulans QutB: retain quinate oxidation, limited to N-terminal metal-chelating fusion described by primary Methods/Results; native GST description conflicts with primary narrative.'),
+ '3-DEHYDROQUINATE-DEHYDRATASE-ENZRXN':('exclude_adjacent_biosynthesis','E. coli AroD chorismate biosynthesis; includes assay inhibitors unrelated to demonstrated quinate II route.'),
+ 'ENZRXN-18401':('exclude_plant_biosynthesis','Arabidopsis chloroplast multifunctional DHQ-SDH; plant biosynthesis, not microbial quinate degradation.'),
+ 'ENZRXN-17386':('include_inference','C. glutamicum R QsuC/AroQ: native IGI plus operon/homology/induction; 2009 does not directly characterize purified enzyme. Use enables/inference limits.'),
+ 'ENZRXN-17378':('include','Amycolatopsis methanolica dodecameric AroQ: experimentally purified; dual catabolic and biosynthetic role, retain pathway-scoped catabolic dehydration.'),
+ 'ENZRXN3O-1026':('exclude_adjacent_biosynthesis','S. cerevisiae ARO1 pentafunctional aromatic amino acid biosynthesis, not quinate-catabolic route.'),
+ 'ENZRXN-16059':('exclude_adjacent_biosynthesis','Methanococcus maripaludis aromatic amino acid biosynthesis; reaction identity alone does not establish route.'),
+ 'ENZRXN-02':('exclude_alternative_route','Gluconobacter oxydans periplasmic dehydratase belongs PQQ-initiated quinate I context, already represented separately.'),
+ 'ENZRXN-35':('exclude_alternative_route','Acinetobacter baylyi ADP1 QuiB is PQQ-initiated quinate I enzyme, already represented separately.'),
+ 'ENZRXN-1442':('exclude_adjacent_biosynthesis','Bacillus subtilis AroC supports chorismate biosynthesis, not demonstrated quinate II route.'),
+ 'ENZRXN-17385':('include_inference','C. glutamicum R QsuB: native IGI/operon/homology/induction; 2009 explicitly uncharacterized. UniProt A4QB63 now deleted; exact R protein NCBIProtein:BAF53460.1 is independently verified.'),
+ 'ENZRXN-17379':('include','N. crassa Qa4 purified native-host monomer; direct DHS dehydration. Native Mo2+ claim must be checked against primary paper; do not copy uncritically.'),
+ 'ENZRXN-16693':('exclude_adjacent_biosynthesis','B. anthracis AsbF supplies protocatechuate for petrobactin biosynthesis; not a demonstrated quinate degradation component. Zinc inhibition and Mn preference remain in adjacent module.'),
+ 'ENZRXN-3':('exclude_alternative_route','G. oxydans partially purified DHS dehydratase is PQQ-route context, not evidence for NAD-dependent route.'),
+ 'ENZRXN-38':('exclude_alternative_route','A. baylyi ADP1 QuiC belongs PQQ-initiated quinate I and shikimate I, not evidence for quinate II.'),
+ 'ENZRXN-17380':('include_specific_member','C. glutamicum ATCC13032 QsuD homodimer catalyzes native RXN-20483 NAD-specific subset of broad pathway oxidation; do not claim all native NAD(P) alternatives equally supported or equate to R strain.'),
+ 'ENZRXN-17383':('exclude_alternative_substrate','Same QsuD catalyzes NAD-dependent shikimate oxidation RXN-20484; this is shikimate degradation II boundary, not a fourth quinate II reaction.'),
+}
+protein_scope={}
+for fid,(disp,note) in activity_scopes.items():
+ e=frame(fid)
+ for x in e.findall('./enzyme/Protein'):
+  pid=x.get('frameid')
+  if pid not in protein_scope or not disp.startswith('exclude'):protein_scope[pid]=(disp,note)
+changed=True
+while changed:
+ changed=False
+ for pid,(disp,note) in list(protein_scope.items()):
+  e=frame(pid)
+  for tag in ['component','gene']:
+   for x in e.findall('./'+tag+'/*'):
+    q=x.get('frameid')
+    if q and q not in protein_scope:
+     protein_scope[q]=(disp,f'Native {tag} of {pid}. '+note);changed=True
+chem={'QUINATE','DEHYDROQUINATE','3-DEHYDRO-SHIKIMATE','3-4-DIHYDROXYBENZOATE','NAD-P-OR-NOP','NADH-P-OR-NOP','PROTON','WATER'}
+objects=[];facts=[];unassigned=[]
+for p in sorted(ORIG.glob('META-*.xml')):
+ fid=p.stem[5:];e=frame(fid)
+ if fid in activity_scopes:disp,note=activity_scopes[fid]
+ elif fid in protein_scope:disp,note=protein_scope[fid]
+ elif fid=='PWY-6416':disp,note='include_pathway','Three formal reactions, five species assertions, two orderings and downstream protocatechuate interface retained; all assay/organism claims independently scoped.'
+ elif fid in ['QUINATE-5-DEHYDROGENASE-RXN','3-DEHYDROQUINATE-DEHYDRATASE-RXN','DHSHIKIMATE-DEHYDRO-RXN']:disp,note='include_core','Formal native pathway member; exact sides and pathway-selected L2R retained. Shared-reaction enzyme lists are not automatically pathway membership.'
+ elif fid=='RXN-20483':disp,note='include_specific_member','NAD-specific QsuD reaction is biochemical subset of native broad NAD(P) reaction; no native in-pathway slot. Evidence establishes enzyme scope, not exact broad-reaction equivalence.'
+ elif fid=='RXN-20484':disp,note='exclude_alternative_substrate','NAD-dependent shikimate oxidation belongs distinct shikimate II; retain only boundary/context.'
+ elif fid in chem:disp,note='include_chemistry','Full source chemical identity retained; root independent ChEBI/Rhea mapping audit authoritative. Generic NAD(P) classes must remain generic.'
+ elif fid=='REG-12762':disp,note='exclude_adjacent_biosynthesis','AsbF zinc inhibition in petrobactin precursor enzyme assays; no quinate II specificity.'
+ else:unassigned.append(fid);disp,note='unassigned','REVIEW REQUIRED'
+ row={'frameid':fid,'kind':e.tag,'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'disposition':disp,'reason':note}
+ row['native_label']=text(e.findtext('common-name'));row['species']=[x.get('frameid') for x in e.findall('./species/Organism')]
+ row['component']=[{'frameid':x.find('./Protein').get('frameid'),'coefficient':x.findtext('coefficient')} for x in e.findall('./component') if x.find('./Protein') is not None]
+ objects.append(row)
+ counts=Counter()
+ for c in e:
+  counts[c.tag]+=1;loc=f'/ptools-xml/{e.tag}[@frameid="{fid}"]/{c.tag}[{counts[c.tag]}]'
+  fdisp,why=disp,note
+  if c.tag in {'credits','history','creation-date','molecular-weight-exp','molecular-weight-seq','pi','gibbs-0','orphan'}: fdisp,why='context_metadata','Administrative/measurement/computational context; not an additional causal relation.'
+  elif c.tag in {'appears-in-left-side-of','appears-in-right-side-of','component-of'} and e.tag=='Compound':fdisp,why='exclude_global_reverse_index','Global chemical reverse memberships are not named pathway components; water/proton memberships do not extend the route.'
+  elif c.tag=='dblink':fdisp,why='identity_context','Cross-reference is a candidate only; independent issuing authority and chemical scope required. Database RELATED-TO is not exact equivalence.'
+  elif c.tag=='taxonomic-range':fdisp,why='exclude_universal_taxon_inference','Broad native taxonomic range is not a universal species phenotype; retain five explicit species assertions only.'
+  elif c.tag=='evidence' and fid=='PWY-6416':fdisp,why='exclude_mis_scoped_pathway_evidence','Native PMID8002591 and14586099 concern PQQ routes, not direct NAD-route support. Unqualified IDA slot has no specific experiment.'
+  facts.append({'frameid':fid,'locator':loc,'slot':c.tag,'disposition':fdisp,'reason':why,'native_projection':slot(c)})
+assert not unassigned,unassigned
+closure=[]
+for row in objects:
+ e=frame(row['frameid'])
+ if e.tag!='Protein':continue
+ for tag in ['component','component-of','gene']:
+  for x in e.findall('./'+tag+'/*'):
+   if x.get('frameid'):
+    path=ORIG/('META-'+x.get('frameid')+'.xml')
+    closure.append({'source':row['frameid'],'relation':tag,'target':x.get('frameid'),'retrieved':path.is_file()})
+assert all(x['retrieved'] for x in closure)
+ledger={'pathway':'MetaCyc:PWY-6416','version':'27.0','native_objects':len(objects),'native_slot_facts':len(facts),'activity_count':len(activity_scopes),'formal_reactions':[x.get('frameid') for x in frame('PWY-6416').findall('./reaction-list/Reaction')],'objects':objects,'protein_reference_closure':closure,'unassigned':unassigned,'limitation':'Supplemental qa/qut/qsu primary and issuing identity sources extend beyond native activity list. Main pathway species slots and enzyme organism labels do not demonstrate identical strain sequences.'}
+(ROOT/'native-coverage.json').write_text(json.dumps(ledger,indent=2)+'\n')
+(ROOT/'native-fact-dispositions.json').write_text(json.dumps(facts,indent=2)+'\n')
+(ROOT/'source-projection.json').write_text(json.dumps([project(p.stem[5:]) for p in sorted(ORIG.glob('META-*.xml'))],indent=2)+'\n')
+print(len(objects),len(facts),len(closure),'protein references closed',len(activity_scopes),'activities')

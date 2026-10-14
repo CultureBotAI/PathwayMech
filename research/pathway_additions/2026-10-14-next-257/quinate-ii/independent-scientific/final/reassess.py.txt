@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,yaml,hashlib,datetime,copy
+T=Path('/private/tmp/pathwaymech-next-257-20261014');O=Path('/private/tmp/pathwaymech-next-257-adversarial/final');A=T/'research/pathway_additions/2026-10-14-next-257/quinate-ii/assembly/assembled-record.json';p=T/'data/pathways/quinate-degradation-ii.yaml'
+old=json.loads(A.read_text());new=yaml.safe_load(p.read_text());oldbytes=yaml.safe_dump(old,sort_keys=False,allow_unicode=True,width=95).encode();oldhash=hashlib.sha256(oldbytes).hexdigest();assert oldhash=='c160a52490eafd406d7d4427c0a352cf05ef0a70fec2c01aaab164b3a2ceca09'
+changes=[]
+def diff(a,b,path=''):
+ if type(a)!=type(b):changes.append({'path':path,'before':a,'after':b});return
+ if isinstance(a,dict):
+  for k in set(a)|set(b):
+   if k not in a or k not in b:changes.append({'path':path+'/'+str(k),'before':a.get(k),'after':b.get(k)})
+   else:diff(a[k],b[k],path+'/'+str(k))
+ elif isinstance(a,list):
+  if len(a)!=len(b):changes.append({'path':path,'before':a,'after':b})
+  else:
+   for i,(x,y) in enumerate(zip(a,b)):diff(x,y,path+'/'+str(i))
+ elif a!=b:changes.append({'path':path,'before':a,'after':b})
+diff(old,new)
+allowed={'/participants/'+str(i)+'/label' for i in [18,19,20,21]}|{'/mechanistic_edges/29/evidence','/mechanistic_edges/30/object','/mechanistic_edges/30/description','/mechanistic_edges/30/evidence','/mechanistic_edges/41/evidence/0/source_locator'}|{'/mechanistic_edges/'+str(i)+'/endpoint_qualifiers/0/description' for i in range(37,42)}
+assert {c['path'] for c in changes}==allowed,{c['path'] for c in changes}^allowed
+edges={e['id']:e for e in new['mechanistic_edges']};e=edges['quinate-ii-031'];assert e['object']=='RHEA:22365' and 'NAD+' in e['description'] and any(a.get('quote')=='NAD+' and 'Table 2' in a.get('source_locator','') for a in e['evidence'])
+assert e['endpoint_qualifiers']==old['mechanistic_edges'][30]['endpoint_qualifiers']
+for i in range(38,43):
+ q=edges[f'quinate-ii-{i:03d}']['endpoint_qualifiers'][0]['description'];assert 'No separately deposited complete assay-clone sequence was inspected.' in q and 'was not independently deposited' not in q
+assert 'Fig7A' not in edges['quinate-ii-042']['evidence'][0]['source_locator']
+e=edges['quinate-ii-030'];added=e['evidence'][-1];assert added['reference_id']=='MetaCyc:CPLX-7981' and added['source_locator'].endswith('/comment') and '300-fold' in added['source_assertion']
+assert all(old[k]==new[k] for k in ['id','label','description','pathway_type','taxa','reactions','references'])
+assert {n['id'] for n in old['participants']}=={n['id'] for n in new['participants']}
+oldedges={e['id']:e for e in old['mechanistic_edges']};changed=[i for i,e in edges.items() if oldedges[i]!=e];assert len(changed)==7
+quotes={}
+for e in new['mechanistic_edges']:
+ for a in e['evidence']+[a for q in e.get('endpoint_qualifiers',[]) for a in q['evidence']]:
+  if 'quote'in a:quotes.setdefault(a['reference_id'],set()).add(a['quote'])
+budgets={i:sum(len(q.split()) for q in qs) for i,qs in quotes.items()};assert max(budgets.values())<=25,budgets
+result={'observed_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'reviewer':'codex /root/next257_adversarial','initial_review_id':'20261014T191557Z-quinate-ii-initial-scientific-review','baseline_sha256':oldhash,'current_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'changed_edges':changed,'changed_labels':[old['participants'][i]['id'] for i in [18,19,20,21]],'all_changes':changes,'acceptance':{'F1':'passed: exact NAD reaction plus Table2 row evidence; formal broad member and construct qualifier retained','F2':'passed: all5 instances use inspected-access limitation','F3':'passed: locator uses Figure7/caption without wrong panel; concentration conflict retained','F4':'passed: native complex comment supports NADP comparison on nearest edge'},'unchanged_science':'IDs,reference identities,taxa,reactions,description,pathway boundary,chemical core and all other53 edges unchanged','quote_budgets_unique_words':budgets,'limitation':'This delta/source replay does not replace final full-corpus technical gates.'}
+(O/'successor-assessment.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:result[k] for k in ['current_sha256','changed_edges','acceptance','quote_budgets_unique_words']},indent=2))

@@ -1,0 +1,27 @@
+from acquire import *
+records={}
+for p in ROOT.glob('acquisition-*.json'):
+ try:j=json.loads(p.read_text())
+ except Exception:continue
+ if isinstance(j,dict):j=[j]
+ if not isinstance(j,list):continue
+ for r in j:
+  if isinstance(r,dict) and r.get('path') and r.get('url') and r.get('sha256'):records[r['path']]=r
+rows=[]
+def add(id,kind,p,version,status='candidate',note=''):
+ p=Path(p);a=records.get(str(p))
+ assert a,(id,p)
+ assert hashlib.sha256(p.read_bytes()).hexdigest()==a['sha256']
+ rows.append({'identifier':id,'kind':kind,'path':str(p),'url':a['url'],'version':version,'sha256':a['sha256'],'retrieved_at':a['retrieved_at'],'status':status,'note':note})
+for p in sorted(ORIG.glob('UniProt-*.json')):
+ if 'search' in p.name:continue
+ j=json.loads(p.read_text());a=j['primaryAccession']
+ if j['entryType']=='Inactive':continue
+ ei=j.get('entryAudit',{});version=f"Complete {j['entryType']} JSON acquired 2026-10-14; entry version {ei.get('entryVersion')}; sequence version {ei.get('sequenceVersion')}"
+ add('UniProtKB:'+a,'uniprot',p,version,'context_only' if a in ['P25416','Q00781','P11634'] else 'candidate','P11636 protein display label qa-x conflicts own geneName qa-y; gene identity and primary phenotype require contextual display.' if a=='P11636' else '')
+for fid,kind,ext in [('PWY-6416','metacyc-html','.html'),('QUINATE-5-DEHYDROGENASE-RXN','metacyc-reaction-xml','.xml'),('CPLX-7980','metacyc-protein-xml','.xml'),('CPLX-7981','metacyc-protein-xml','.xml'),('G-11737','metacyc-html','-gene.html'),('G-11738','metacyc-html','-gene.html')]:
+ add('MetaCyc:'+fid,kind,ORIG/('META-'+fid+ext),'27.0')
+for p in sorted(ORIG.glob('NCBIProtein-*.xml')):
+ e=ET.parse(p).getroot().find('GBSeq');a=e.findtext('GBSeq_accession-version');v=e.findtext('GBSeq_update-date')
+ add('NCBIProtein:'+a,'ncbi-protein-xml',p,f'Native GenBank {a}; record updated {v}; retrieved 2026-10-14','accepted_source_gene' if a=='ANU32720.1' else 'candidate','ATCC13869 source gene accepted from exact issuing strain and CDS plus all three published primer boundaries and Phe297 truncation. Article does not deposit the full assayed internal sequence; retain this limitation and the C-terminal His6 construct qualifier.' if a=='ANU32720.1' else '')
+(ROOT/'authority-candidates.json').write_text(json.dumps(rows,indent=2)+'\n');print(len(rows))

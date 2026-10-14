@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,hashlib,shutil,datetime
+R=Path('/private/tmp/pathwaymech-next-257-native')
+D=Path('/private/tmp/pathwaymech-next-257-20261014/research/pathway_additions/2026-10-14-next-257/quinate-ii/native')
+D.mkdir(parents=True,exist_ok=True)
+selected=['HANDOFF.md','native-coverage.json','native-fact-dispositions-compact.json','source-projection-compact.json','authority-candidates.json','native-graph-proposal.json','protein-identity-candidates.json','supplemental-biological-context.json','QsuD-construct-identity.json','QsuB-ATCC13869-primer-check.json','QsuB-ATCC13869-identity-disposition.json','artifact-manifest.json','original-bindings.json','helper-checks.json']
+selected += [p.name for p in sorted(R.glob('acquisition-*.json'))]
+selected += [p.name for p in sorted(R.glob('*-seed-ids.json'))]
+files=[]
+for name in selected:
+ s=R/name;d=D/name;shutil.copyfile(s,d)
+ files.append({'retained':str(d),'external':str(s),'sha256':hashlib.sha256(s.read_bytes()).hexdigest(),'bytes':s.stat().st_size})
+for s in sorted(R.glob('*.py')):
+ d=D/(s.name+'.txt');shutil.copyfile(s,d);files.append({'retained':str(d),'external':str(s),'sha256':hashlib.sha256(s.read_bytes()).hexdigest(),'bytes':s.stat().st_size})
+full=[]
+for name in ['native-fact-dispositions.json','source-projection.json']:
+ p=R/name;full.append({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size,'retained':False})
+rec={'retained_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'external_root':str(R),'retained_files':files,'full_derived_external_only':full,'raw_originals':len(json.loads((R/'original-bindings.json').read_text())),'complete_slot_denominator':998,'native_object_denominator':73,'native_activities':18,'closed_protein_references':30,'replay':'Use original external helpers, or restore helper .py.txt copies to .py in a directory with hash-verified originals. Run build_coverage.py then compact_coverage.py. This regenerates the full external projections and complete compact slot ledger. build_manifest.py verifies every original against acquisition receipts; propose_native_graph.py also binds the primary agent PDF cited in the construct qualifier. QsuB source gene is accepted by exact strain, CDS and three primer matches; no full assayed internal sequence is deposited, as recorded in the identity disposition.'}
+(D/'retention-manifest.json').write_text(json.dumps(rec,indent=2)+'\n')
+for x in files:assert hashlib.sha256(Path(x['retained']).read_bytes()).hexdigest()==x['sha256']
+assert not(D/'originals').exists()
+assert not(D/'native-fact-dispositions.json').exists()
+assert not(D/'source-projection.json').exists()
+print('Retained',len(files),'files',sum(x['bytes'] for x in files),'bytes to',D)

@@ -1,0 +1,439 @@
+# Initial integration review of quinate degradation II
+
+- Review: 20261014T191459Z-quinate-ii-integration-initial
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T19:07:24Z
+- Finished UTC: 2026-10-14T19:14:59Z
+- Reviewer: codex /root/next257_integration (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: false
+
+## Summary
+
+Independent integration checks preserve source provenance, baseline records, authority objects and all graph payloads. Full-corpus validation fails on four MetaCyc participant labels; downstream required gates have not run. Literature and mechanistic support are reviewed separately.
+
+## Scope And Provenance
+
+One-record integration review: authority provenance, baseline preservation, artifact integrity, identifier rules, SVG and KGX semantics.
+
+Selection: Exact newly added maintained record MetaCyc:PWY-6416.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6416 | data/pathways/quinate-degradation-ii.yaml | maintained | quinate degradation II |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Independent baseline, artifact, native-slot and graph replay | passed | True | MetaCyc:PWY-6416 | 253 baseline records unchanged; 151 retained bytes verified; 998 native slots, 60 SVG/KGX edges, 12 qualified endpoints and all 51 local node contexts preserved. |
+| Independent issuing-original and authority union checks | passed | True | MetaCyc:PWY-6416 | All baseline authority objects preserved, all 28 new source entries reparsed, and all 42 references bound to checked originals. |
+| Full-corpus validation | failed | True | MetaCyc:PWY-6416 | Four maintained MetaCyc participant labels fail existing canonical-or-synonym policy. Root executed this gate against the same target hash; captured log and core-input manifest inspected. |
+| just test | skipped | True | MetaCyc:PWY-6416 | Not run in the initial root sequence because just validate exited nonzero; must run after correction. |
+| just lint | skipped | True | MetaCyc:PWY-6416 | Not run in the initial root sequence because just validate exited nonzero; must run after correction. |
+| git diff --check | skipped | True | MetaCyc:PWY-6416 | Not run in the initial root sequence because just validate exited nonzero; must run after correction. |
+
+## Scientific And Domain Assessments
+
+### Authority originals and baseline preservation
+
+provenance: supported. Targets: MetaCyc:PWY-6416.
+
+253 baseline records and all 4,913 prior authority terms are preserved. The 34 added terms correspond exactly to planned nodes, and all 28 new source terms reproduce from independent issuing originals.
+
+### Native projection and exported claim preservation
+
+graph: supported. Targets: MetaCyc:PWY-6416.
+
+All 998 direct native source slots replay correctly. The 60 maintained edges survive SVG and KGX with all 12 qualified endpoints and all 51 per-record node contexts. This establishes representation fidelity, not scientific correctness.
+
+### MetaCyc participant labels
+
+nomenclature: concern. Targets: MetaCyc:PWY-6416.
+
+Four contextual labels fail existing identifier policy; canonical native labels are available and no policy relaxation is justified.
+
+## Findings
+
+### F1: Four MetaCyc participant labels fail the existing identifier gate
+
+major / open / confirmed; issue key: quinate-ii-metacyc-participant-labels.
+
+Participants CPLX-7980, CPLX-7981, G-11737 and G-11738 use contextual names instead of the independently verified source labels 3-dehydroquinate dehydratase, quinate/shikimate dehydrogenase, qsuB and qsuC. No applicable contextual exemption exists for MetaCyc participants. The authoritative identities are correct; preserve biological context in edge descriptions and replace only the four labels.
+
+## Recommended Actions And Acceptance Checks
+
+### fix-labels
+
+Replace the four MetaCyc participant labels with verified issuing labels, retain organism and assembly context in the existing descriptions, regenerate pages, then run all required gates.
+
+- just render-pages; just validate; just test; just lint; git diff --check
+- Verify exact source labels and unchanged identifiers, endpoint qualifier payloads and all 60 graph edges.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| labels | research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/just-validate.log.txt | refutes | Full-corpus just validate exited 1 at identifier QC, identifying exactly four label mismatches; 254 records passed the structural and closed-schema checks. |
+| policy | conf/identifier_policy.yaml | supports | MetaCyc participants require canonical or issuing synonym labels; contextual exemption covers MetaCyc record/reaction fields only. |
+| authority | research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/authority-check.json | supports | Independently verified unchanged 4,913 baseline authority terms; 34 planned additions, 28 issuing-source term reparses, exact 1,013 manifest prefix, 218 original hashes and all 42 reference hashes. |
+| integration | research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/integration-check.json | supports | Independently compared all 253 baseline YAML Git blobs; verified 151 artifact byte retentions, replayed 998 slots across 73 source objects, and confirmed all 60 SVG/KGX edges, 12 qualified endpoints, and 51 local node contexts. |
+| target | data/pathways/quinate-degradation-ii.yaml | supports | Entire target read before assessment. Four native MetaCyc protein-complex/gene participant labels add contextual organism and assembly names unsupported by the label policy. |
+| gates | research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/gate-receipts.json | supports | Root render-pages exited 0; validate exited 1; downstream test/lint/vendored/diff gates were not reached. These receipts are not an all-gates pass. |
+
+## Limits And Additional Notes
+
+- This is a provenance and integration review, not a literature/scientific reassessment. The separate scientific review may identify additional defects.
+- Initial just validate failed, so test/lint/diff were not executed by the initial root gate sequence. Completion remains partial.
+- Full raw downloads remain outside Git; retained manifests and projections bind them by SHA-256. All 218 relevant original hashes were checked locally.
+- Retained artifacts are not ignored but were not yet committed when reviewed; final tracked membership requires the later commit audit.
+- The first independent helper count included data/pathways/.gitkeep; the corrected YAML-only 253-record denominator was rerun successfully.
+- No new iModulonDB query was run because this bounded review does not reassess biological evidence or expression context.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T191459Z-quinate-ii-integration-initial
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Initial integration review of quinate degradation II
+started_at: '2026-10-14T19:07:24Z'
+finished_at: '2026-10-14T19:14:59Z'
+reviewer:
+  identity: codex /root/next257_integration
+  kind: agent
+  model: GPT-6
+  independence: independent
+  independence_basis: Separate reviewer; did not author the maintained record, authority
+    snapshots, chemistry audit, or source evidence. Wrote only independent audit artifacts
+    and this review.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: partial
+verdict: needs_curation
+scientific_review: false
+summary: Independent integration checks preserve source provenance, baseline records,
+  authority objects and all graph payloads. Full-corpus validation fails on four MetaCyc
+  participant labels; downstream required gates have not run. Literature and mechanistic
+  support are reviewed separately.
+source:
+  git_revision: 11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 9a57d9803cc2b7878111304c56d884e1cd7cb7589f99930cf2c7557d829bb599
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 6fa02c581830177cc8dcf0451a40212e430fa6b7ed802176df533f85d9c23985
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 5fe107f4bd42e63012d0c81befe6527d89fc33dfb2de389e8eb14cd01a69f5fd
+    role: context
+  - path: data/pathways/quinate-degradation-ii.yaml
+    sha256: c160a52490eafd406d7d4427c0a352cf05ef0a70fec2c01aaab164b3a2ceca09
+    role: target
+  - path: pages/downloads/edges.tsv
+    sha256: 95bf36615e6d90b99a9a1adceac2b30ac0f1e1b007d35fb958c784476c436ab3
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 401b159656bb2fc6ed1c1229a590a8b422a7e21aa3ece7236fbb47f333c7b22f
+    role: context
+  - path: pages/records/MetaCyc_PWY-6416.html
+    sha256: b0c7cb06f6f6836235c6d61db4a04dfc93e1e4f7013aabd99e469a74a6b9da99
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/authority-check.json
+    sha256: 82f9d7a2b0546ecf35152df8d1cb2ff5838a252885cfced1ebdf74a9fded38e0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/gate-receipts.json
+    sha256: 082a7c395ae65570ee34b81c79c1ee730c59e79aeddec88c9765abad0f804dc1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/integration-check.json
+    sha256: 4842aae3a8c1554181fd74ec3552b6319694b4d43ab0d81b129036311fb360dd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/just-validate.log.txt
+    sha256: 7c15c75f33db91408eb7cdb06c7f95934ac2c24984c5d38c64c95f186283f556
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/tested-core-input-hashes.json
+    sha256: 005e8855057656a7fbb56dae9a4a4a980b82152f7b2c205570c3473d009838b2
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 5962976b3a843dddec3b193bfb08f3052ac0846980445c3d223000c69e6590a5
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 45bbedd4459f21d4189e3eeb35504ff71ba664e975f4cdde7250a61e9ae3215b
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+scope:
+  description: 'One-record integration review: authority provenance, baseline preservation,
+    artifact integrity, identifier rules, SVG and KGX semantics.'
+  selection: Exact newly added maintained record MetaCyc:PWY-6416.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6416
+  exclusions:
+  - target: Primary scientific and experimental interpretation
+    reason: Independent scientific reviewer handles biology; this report checks integration
+      and provenance only.
+targets:
+- target_id: MetaCyc:PWY-6416
+  path: data/pathways/quinate-degradation-ii.yaml
+  label: quinate degradation II
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/quinate-degradation-ii.yaml
+    role: maintained mechanism record
+checks:
+- check_id: integration-replay
+  name: Independent baseline, artifact, native-slot and graph replay
+  status: passed
+  required: true
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-257-integration/check_integration.py
+  exit_code: 0
+  summary: 253 baseline records unchanged; 151 retained bytes verified; 998 native
+    slots, 60 SVG/KGX edges, 12 qualified endpoints and all 51 local node contexts
+    preserved.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - integration
+- check_id: authority-replay
+  name: Independent issuing-original and authority union checks
+  status: passed
+  required: true
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-257-20261014/src:/private/tmp/pathwaymech-next-257-20261014
+    /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-257-integration/check_authorities.py
+  exit_code: 0
+  summary: All baseline authority objects preserved, all 28 new source entries reparsed,
+    and all 42 references bound to checked originals.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - authority
+- check_id: validate
+  name: Full-corpus validation
+  status: failed
+  required: true
+  command: just validate
+  exit_code: 1
+  expected_exit_code: 0
+  summary: Four maintained MetaCyc participant labels fail existing canonical-or-synonym
+    policy. Root executed this gate against the same target hash; captured log and
+    core-input manifest inspected.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - labels
+  - gates
+  scope_note: 254 pathway records; deterministic validation is not scientific approval.
+- check_id: test
+  name: just test
+  status: skipped
+  required: true
+  command: just test
+  summary: Not run in the initial root sequence because just validate exited nonzero;
+    must run after correction.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+- check_id: lint
+  name: just lint
+  status: skipped
+  required: true
+  command: just lint
+  summary: Not run in the initial root sequence because just validate exited nonzero;
+    must run after correction.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+- check_id: diff
+  name: git diff --check
+  status: skipped
+  required: true
+  command: git diff --check
+  summary: Not run in the initial root sequence because just validate exited nonzero;
+    must run after correction.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+evidence:
+- evidence_id: labels
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/just-validate.log.txt
+  accessed_at: '2026-10-14T19:14:59Z'
+  support: refutes
+  summary: Full-corpus just validate exited 1 at identifier QC, identifying exactly
+    four label mismatches; 254 records passed the structural and closed-schema checks.
+  snapshot_sha256: 7c15c75f33db91408eb7cdb06c7f95934ac2c24984c5d38c64c95f186283f556
+- evidence_id: policy
+  kind: authority
+  reference: conf/identifier_policy.yaml
+  accessed_at: '2026-10-14T19:14:59Z'
+  support: supports
+  summary: MetaCyc participants require canonical or issuing synonym labels; contextual
+    exemption covers MetaCyc record/reaction fields only.
+  snapshot_sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+- evidence_id: authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/authority-check.json
+  accessed_at: '2026-10-14T19:14:59Z'
+  support: supports
+  summary: Independently verified unchanged 4,913 baseline authority terms; 34 planned
+    additions, 28 issuing-source term reparses, exact 1,013 manifest prefix, 218 original
+    hashes and all 42 reference hashes.
+  snapshot_sha256: 82f9d7a2b0546ecf35152df8d1cb2ff5838a252885cfced1ebdf74a9fded38e0
+- evidence_id: integration
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/integration-check.json
+  accessed_at: '2026-10-14T19:14:59Z'
+  support: supports
+  summary: Independently compared all 253 baseline YAML Git blobs; verified 151 artifact
+    byte retentions, replayed 998 slots across 73 source objects, and confirmed all
+    60 SVG/KGX edges, 12 qualified endpoints, and 51 local node contexts.
+  snapshot_sha256: 4842aae3a8c1554181fd74ec3552b6319694b4d43ab0d81b129036311fb360dd
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/quinate-degradation-ii.yaml
+  accessed_at: '2026-10-14T19:14:59Z'
+  support: supports
+  summary: Entire target read before assessment. Four native MetaCyc protein-complex/gene
+    participant labels add contextual organism and assembly names unsupported by the
+    label policy.
+  snapshot_sha256: c160a52490eafd406d7d4427c0a352cf05ef0a70fec2c01aaab164b3a2ceca09
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/gate-receipts.json
+  accessed_at: '2026-10-14T19:14:59Z'
+  support: supports
+  summary: Root render-pages exited 0; validate exited 1; downstream test/lint/vendored/diff
+    gates were not reached. These receipts are not an all-gates pass.
+  snapshot_sha256: 082a7c395ae65570ee34b81c79c1ee730c59e79aeddec88c9765abad0f804dc1
+assessments:
+- assessment_id: A1
+  area: provenance
+  topic: Authority originals and baseline preservation
+  outcome: supported
+  summary: 253 baseline records and all 4,913 prior authority terms are preserved.
+    The 34 added terms correspond exactly to planned nodes, and all 28 new source
+    terms reproduce from independent issuing originals.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - authority
+  - integration
+- assessment_id: A2
+  area: graph
+  topic: Native projection and exported claim preservation
+  outcome: supported
+  summary: All 998 direct native source slots replay correctly. The 60 maintained
+    edges survive SVG and KGX with all 12 qualified endpoints and all 51 per-record
+    node contexts. This establishes representation fidelity, not scientific correctness.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - integration
+- assessment_id: A3
+  area: nomenclature
+  topic: MetaCyc participant labels
+  outcome: concern
+  summary: Four contextual labels fail existing identifier policy; canonical native
+    labels are available and no policy relaxation is justified.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - labels
+  - policy
+  - authority
+  - target
+findings:
+- finding_id: F1
+  issue_key: quinate-ii-metacyc-participant-labels
+  category: nomenclature
+  severity: major
+  status: open
+  certainty: confirmed
+  title: Four MetaCyc participant labels fail the existing identifier gate
+  description: Participants CPLX-7980, CPLX-7981, G-11737 and G-11738 use contextual
+    names instead of the independently verified source labels 3-dehydroquinate dehydratase,
+    quinate/shikimate dehydrogenase, qsuB and qsuC. No applicable contextual exemption
+    exists for MetaCyc participants. The authoritative identities are correct; preserve
+    biological context in edge descriptions and replace only the four labels.
+  target_ids:
+  - MetaCyc:PWY-6416
+  field_paths:
+  - participants[18].label
+  - participants[19].label
+  - participants[20].label
+  - participants[21].label
+  evidence_ids:
+  - labels
+  - policy
+  - authority
+  - target
+  rule_id: identifier-policy-canonical-or-synonym
+  native_severity: major
+  normalization_reason: Required identifier validation fails, while pathway identity
+    and YAML structure remain valid.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/quinate-degradation-ii.yaml
+    role: maintained participant labels
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/547
+actions:
+- action_id: fix-labels
+  description: Replace the four MetaCyc participant labels with verified issuing labels,
+    retain organism and assembly context in the existing descriptions, regenerate
+    pages, then run all required gates.
+  finding_ids:
+  - F1
+  target_ids:
+  - MetaCyc:PWY-6416
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/quinate-degradation-ii.yaml
+    role: maintained participant labels
+  acceptance_checks:
+  - just render-pages; just validate; just test; just lint; git diff --check
+  - Verify exact source labels and unchanged identifiers, endpoint qualifier payloads
+    and all 60 graph edges.
+  generator: scripts/render_pages.py through just render-pages
+limitations:
+- This is a provenance and integration review, not a literature/scientific reassessment.
+  The separate scientific review may identify additional defects.
+- Initial just validate failed, so test/lint/diff were not executed by the initial
+  root gate sequence. Completion remains partial.
+- Full raw downloads remain outside Git; retained manifests and projections bind them
+  by SHA-256. All 218 relevant original hashes were checked locally.
+- Retained artifacts are not ignored but were not yet committed when reviewed; final
+  tracked membership requires the later commit audit.
+- The first independent helper count included data/pathways/.gitkeep; the corrected
+  YAML-only 253-record denominator was rerun successfully.
+- No new iModulonDB query was run because this bounded review does not reassess biological
+  evidence or expression context.
+tags:
+- integration
+- quinate-degradation-ii
+- initial-review
+```

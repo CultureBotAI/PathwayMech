@@ -1,0 +1,56 @@
+from acquire import *
+refs={};edges=[];nodes={}
+acq={}
+for p in ROOT.glob('acquisition-*.json'):
+ j=json.loads(p.read_text());j=[j] if isinstance(j,dict) else j
+ if not isinstance(j,list):continue
+ for r in j:
+  if isinstance(r,dict) and r.get('path') and r.get('url') and r.get('sha256'):acq[r['path']]=r
+
+def ref(fid):
+ rid='native257-'+fid;p=ORIG/f'META-{fid}.xml';a=acq[str(p)]
+ refs[rid]={'id':rid,'title':'MetaCyc '+fid+' complete native object','url':a['url'],'source_version':'27.0','source_sha256':a['sha256']};return rid
+
+def ev(fid,statement,locator):
+ assert len(statement)<=400
+ return {'reference_id':ref(fid),'source_assertion':statement,'source_locator':locator}
+def edge(s,p,o,desc,evidence,qual=None):
+ row={'subject':s,'predicate':p,'object':o,'description':desc,'evidence':evidence}
+ if qual:row['endpoint_qualifiers']=qual
+ edges.append(row)
+
+def node(i,l,c='protein',note=None):nodes[i]={'id':i,'label':l,'category':c,'scope_note':note}
+node('MetaCyc:CPLX-7980','Amycolatopsis methanolica AroQ dodecamer','complex')
+node('UniProtKB:P46380','Amycolatopsis methanolica AroQ subunit')
+node('MetaCyc:CPLX-7981','Corynebacterium glutamicum ATCC 13032 QsuD homodimer','complex','Native label species-scoped; UniProt subunit and PDB2NLO establish ATCC13032; never substitute strainR.')
+node('UniProtKB:Q9X5C9','Corynebacterium glutamicum ATCC 13032 QsuD subunit')
+node('UniProtKB:P25415','Aspergillus nidulans QutB')
+node('UniProtKB:P07046','Neurospora crassa Qa4')
+node('UniProtKB:A4QB64','Corynebacterium glutamicum R QsuC')
+node('NCBIProtein:BAF53460.1','Corynebacterium glutamicum R QsuB','protein','Exact native locus cgR_0493; replaces deleted UniProtA4QB63 only via inspected nativegene and originalNCBIproteinidentity, not a guessed sequence equivalence.')
+node('MetaCyc:G-11737','Corynebacterium glutamicum R qsuB gene','gene')
+node('MetaCyc:G-11738','Corynebacterium glutamicum R qsuC gene','gene')
+edge('UniProtKB:P46380','part_of','MetaCyc:CPLX-7980','The experimentally purified A. methanolica enzyme is a homododecamer; one participant represents its repeated subunit identity.',[ev('CPLX-7980','Native complex CPLX-7980 contains 12 copies of MONOMER-15327; MONOMER-15327 independently maps to UniProtKB:P46380.','/ptools-xml/Protein[@frameid="CPLX-7980"]/component')])
+edge('MetaCyc:CPLX-7980','catalyzes','RHEA:21099','Dual-role AroQ catalyzes dehydroquinate dehydration in quinate catabolism; its separate biosynthetic role does not expand this pathway.',[ev('ENZRXN-17378','ENZRXN-17378 assigns CPLX-7980 to 3-DEHYDROQUINATE-DEHYDRATASE-RXN with EV-EXP-IDA-PURIFIED-PROTEIN-NH and PMID1479361.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-17378"]')])
+edge('UniProtKB:Q9X5C9','part_of','MetaCyc:CPLX-7981','QsuD homodimer composition is separate from catalytic attribution; the monomer is not asserted to catalyze independently.',[ev('CPLX-7981','CPLX-7981 contains two MONOMER-15330 subunits; MONOMER-15330 maps to UniProtKB:Q9X5C9, whose issuing entry is ATCC 13032.','/ptools-xml/Protein[@frameid="CPLX-7981"]/component')])
+qev=ev('ENZRXN-17380','The native activity links CPLX-7981 to NAD-specific RXN-20483, supported by heterologously expressed purified protein (PMID18566515) and mutant phenotype (PMID19376919); these sources involve distinct strain scopes.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-17380"]')
+qqual={'endpoint':'subject','kind':'experimental_construct','description':'Recombinant ATCC 13032 QsuD homodimer preparation. Native evidence specifies heterologously expressed purified protein; the associated 2NLO structural sample carries a 19-residue N-terminal extension with His6. Cleavage state across all kinetic preparations was not independently verified.','evidence':[qev]}
+edge('MetaCyc:CPLX-7981','catalyzes','MetaCyc:QUINATE-5-DEHYDROGENASE-RXN','The supported activity is the NAD+-using subset RXN-20483 of the broader native NAD(P) reaction. This is not an exact reaction mapping or proof of equivalent use of both coenzymes.',[qev,ev('RXN-20483','RXN-20483 consumes quinate and NAD, producing dehydroquinate, NADH and a proton; native direction is PHYSIOL-LEFT-TO-RIGHT.','/ptools-xml/Reaction[@frameid="RXN-20483"]/left; /right; /reaction-direction')],[qqual])
+# Parent must add RCSB structural reference to qualifier if retaining its precise 19aa assertion.
+refs['PMID:8257437']={'id':'PMID:8257437','title':'Hawkins et al. 1993, QutB and 3-dehydroquinase characterization','url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC1137716/','source_sha256':hashlib.sha256(Path('/private/tmp/pathwaymech-next-257-primary/originals/PMC1137716-instance.pdf').read_bytes()).hexdigest(),'source_version':'Complete scanned article; protein preparation pp451-457; DOI10.1042/bj2960451'}
+pe={'reference_id':'PMID:8257437','source_assertion':'Methods/Results describe pRSETB/pRF2-derived N-terminal metal-chelating-domain–QutB fusion expressed in BL21(DE3); Table 2 labels the preparation GST-fusion. The construct discrepancy is retained.','source_locator':'Methods/Results, pp452,455–456; Table2'}
+edge('UniProtKB:P25415','catalyzes','MetaCyc:QUINATE-5-DEHYDROGENASE-RXN','A. nidulans QutB catalysis is based on recombinant-fusion assays; substrate scope and exact coenzyme conditions come from primary Table2, not from broad native class names.',[ev('ENZRXN-17384','ENZRXN-17384 links MONOMER-15333/QutB to QUINATE-5-DEHYDROGENASE-RXN with heterologously expressed purified-protein evidence PMID8257437.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-17384"]'),pe],[{'endpoint':'subject','kind':'experimental_construct','description':'N-terminal metal-chelating-domain QutB fusion expressed from pRSETB/pRF2 in E. coli BL21(DE3), as described in Methods/Results; Table 2 labels the preparation GST-fusion.','evidence':[pe]}])
+edge('UniProtKB:P07046','catalyzes','RHEA:24849','Native-host purified N. crassa Qa4 catalyzes DHS dehydration to protocatechuate. Metal-dependent activity and thermal stabilization require their own primary-assay edges.',[ev('ENZRXN-17379','ENZRXN-17379 links MONOMER-15329/Qa4 to DHSHIKIMATE-DEHYDRO-RXN with EV-EXP-IDA-PURIFIED-PROTEIN-NH and PMID149131.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-17379"]')])
+edge('NCBIProtein:BAF53460.1','enables','RHEA:24849','QsuB catalytic role in strain R is inferred from the 2009 operon, homology and induction context; no purified R-strain assay is asserted. The later ATCC13869 assay is a distinct protein context.',[ev('MONOMER-15334','Native MONOMER-15334 explicitly states qsuB product was not characterized and infers DHS dehydratase activity from operon context, N-terminal similarity and induction. G-11737 is cgR_0493.','/ptools-xml/Protein[@frameid="MONOMER-15334"]/comment; /gene')])
+edge('UniProtKB:A4QB64','enables','RHEA:21099','QsuC activity in strain R is inferred from operon, sequence similarity and induction; native IGI annotation is not promoted to a purified-enzyme experiment.',[ev('MONOMER-15335','Native MONOMER-15335 explicitly states qsuC product was not characterized and infers DHQ dehydratase activity from operon context, 60% sequence similarity and induction.','/ptools-xml/Protein[@frameid="MONOMER-15335"]/comment')])
+# Make precise structural construct evidence a local reference and qualifier evidence.
+rid='RCSB:2NLO-polymer1';p=ORIG/'RCSB-polymer_entity-2NLO-1.json';a=acq[str(p)];refs[rid]={'id':rid,'title':'PDB2NLO polymer entity1 structural sample metadata','url':a['url'],'source_version':'RCSB JSON acquired 2026-10-14','source_sha256':a['sha256']}
+s={'reference_id':rid,'source_assertion':'2NLO entity1 is an N-tagged wild-type Cgl0424 sample from ATCC13032, expressed in BL21(DE3) from pETNHis. Its 302-residue sequence is exactly a 19-residue His6-containing prefix followed by Q9X5C9.','source_locator':'$.entity_poly.pdbx_seq_one_letter_code_can; $.entity_src_gen[0]; $.rcsb_polymer_entity.pdbx_mutation; QsuD-construct-identity.json'}
+qqual['evidence'].append(s)
+edges[0]['evidence'].append(ev('MONOMER-15327','MONOMER-15327 has a direct UNIPROT unification dblink to P46380 and belongs to CPLX-7980.','/ptools-xml/Protein[@frameid="MONOMER-15327"]/dblink[dblink-db="UNIPROT"]; /component-of'))
+edges[2]['evidence'].append(ev('MONOMER-15330','MONOMER-15330 has a direct UNIPROT unification dblink to Q9X5C9 and belongs to CPLX-7981.','/ptools-xml/Protein[@frameid="MONOMER-15330"]/dblink[dblink-db="UNIPROT"]; /component-of'))
+edges[6]['evidence'].append(ev('G-11737','G-11737 qsuB has accession-1 cgR_0493 and product MONOMER-15334; the original R-genome protein for this exact locus is BAF53460.1.','/ptools-xml/Gene[@frameid="G-11737"]/accession-1; /product; NCBIProtein:BAF53460.1 CDS/locus_tag'))
+out={'status':'proposals requiring root integration and primary agent reconciliation','nodes':list(nodes.values()),'references':list(refs.values()),'edges':edges,'important_limits':['RHEA21099/24849 mappings depend on root independent chemistry audit.','Broad native first reaction is retained; QsuD edge supports its NAD-specific subset only.','QutB primary fusion naming disagreement is visible, never flattened to unmodified enzyme.','N. crassa Qa3/Qa2/regulators/permease and A.nidulans QutE/QutC/regulators/permease are supplemental source-backed components handled with primary proposal, not absent because native activity list omits them.','QsuR/QsuA and 2020ATCC13869QsuB facts must come from exact primary experiment/construct context.','Native pathway direct evidence PMID8002591/14586099 is PQQ-route evidence and not reused to support NAD II.']}
+for e in edges:
+ for v in e['evidence']:assert len(v.get('source_assertion',''))<=400
+(ROOT/'native-graph-proposal.json').write_text(json.dumps(out,indent=2)+'\n');print(len(nodes),len(refs),len(edges))

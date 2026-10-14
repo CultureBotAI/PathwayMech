@@ -1,0 +1,102 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+
+B = Path(__file__).resolve().parent
+R = Path('/private/tmp/pathwaymech-next-257-20261014')
+BASE = '11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37'
+
+
+def sha(path):
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        while block := stream.read(1024 * 1024):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=R, text=True).strip() == BASE
+assert not (B / 'preservation-and-promotion.json').exists(), 'Preserve prior promotion receipt before another attempt.'
+commands = json.loads((B / 'canonical-build-commands.json').read_text())
+for name, digest in commands['builder_sha256'].items():
+    assert sha(R / 'scripts' / name) == digest, (name, 'builder changed')
+assert sha(Path(commands['assembled_record']['path'])) == commands['assembled_record']['sha256'], 'Assembled record changed after selection.'
+assert sha(B / 'identifier_sources.json') == commands['manifest_sha256']
+assert sha(B / commands['selection']['selector_file']) == commands['selection']['selector_sha256']
+for row in commands['candidate_source_bindings']:
+    assert sha(Path(row['path'])) == row['sha256'], ('candidate manifest changed', row['path'])
+for key in ['source_builder', 'ontology_builder']:
+    receipt = json.loads((B / (key + '-receipt.json')).read_text())
+    assert receipt['exit_code'] == 0
+    assert receipt['command'] == commands[key]
+    assert sha(Path(receipt['log_path'])) == receipt['log_sha256']
+for row in json.loads((B / 'baseline-record-bindings.json').read_text()):
+    assert sha(Path(row['path'])) == row['sha256']
+    assert sha(R / row['git_path']) == row['sha256'], ('baseline pathway modified', row['git_path'])
+
+report = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'baseline_commit': BASE, 'snapshots': {}, 'builder_sha256': commands['builder_sha256'], 'assembled_record': commands['assembled_record']}
+all_terms, old_terms, destinations = {}, {}, []
+for name in ['sources', 'ontology']:
+    old = json.loads((B / 'baseline' / (name + '.json')).read_text())
+    new = json.loads((B / (name + '.union.json')).read_text())
+    assert old['version'] == new['version']
+    for section in ['terms', 'sources']:
+        changed = [key for key, value in old[section].items() if new[section].get(key) != value]
+        assert not changed, (name, section, changed)
+    report['snapshots'][name] = {'before_sha256': sha(B / 'baseline' / (name + '.json')), 'after_sha256': sha(B / (name + '.union.json')), 'baseline_terms': len(old['terms']), 'final_terms': len(new['terms']), 'new_terms': sorted(set(new['terms']) - set(old['terms'])), 'baseline_source_owners': len(old['sources']), 'final_source_owners': len(new['sources']), 'baseline_objects_unchanged': True}
+    old_terms.update(old['terms'])
+    for key, value in new['terms'].items():
+        assert key not in all_terms
+        all_terms[key] = value
+    destinations.append((R / 'data/identifier_authorities' / (name + '.json'), B / (name + '.union.json'), B / 'baseline' / (name + '.json')))
+planned = set(json.loads((B / 'planned-identifiers.json').read_text()))
+retained = set(json.loads((B / 'retained-authority-identifiers.json').read_text()))
+assert retained == set(old_terms) and len(retained) == 4913
+assert planned <= set(all_terms), planned - set(all_terms)
+assert set(all_terms) - retained == planned - retained, 'Authority union introduced unplanned identifiers.'
+old = json.loads((B / 'baseline/identifier_sources.json').read_text())
+new = json.loads((B / 'identifier_sources.json').read_text())
+assert new[:len(old)] == old
+assert len(old) == 1013
+assert new[len(old):] == json.loads((B / 'proposed-source-additions.json').read_text())
+digests, descriptors = {}, []
+
+
+def verify(obj, where):
+    if isinstance(obj, dict):
+        if 'path' in obj and 'sha256' in obj:
+            path = B / 'originals' / obj['path']
+            assert path.is_file(), str(path)
+            if str(path) not in digests:
+                digests[str(path)] = sha(path)
+            assert digests[str(path)] == obj['sha256'], (where, str(path))
+            descriptors.append({'context': where, 'path': str(path), 'sha256': digests[str(path)]})
+        for key, value in obj.items():
+            verify(value, where + '/' + key)
+    elif isinstance(obj, list):
+        for index, value in enumerate(obj):
+            verify(value, where + '/' + str(index))
+
+
+verify(new, 'identifier_sources')
+verify(json.loads((B / 'baseline/rhea_identifier_updates.json').read_text()), 'rhea_identifier_updates')
+report['manifest'] = {'baseline_entries': len(old), 'final_entries': len(new), 'prior_prefix_exact': True, 'all_original_hashes_match': True, 'hash_bound_descriptors': len(descriptors), 'distinct_original_paths': len(digests), 'sha256': sha(B / 'identifier_sources.json')}
+report['planned_named_identifiers'] = len(planned)
+report['final_authority_terms'] = len(all_terms)
+report['baseline_authority_terms'] = len(retained)
+report['exact_planned_new_terms'] = sorted(planned - retained)
+destinations.append((R / 'conf/identifier_sources.json', B / 'identifier_sources.json', B / 'baseline/identifier_sources.json'))
+for destination, source, baseline in destinations:
+    assert destination.read_bytes() == baseline.read_bytes(), f'Concurrent authority change: {destination}'
+for destination, source, baseline in destinations:
+    temporary = destination.with_suffix(destination.suffix + '.next257.tmp')
+    temporary.write_bytes(source.read_bytes())
+    temporary.replace(destination)
+    assert sha(destination) == sha(source)
+report['promoted_paths'] = [str(row[0]) for row in destinations]
+(B / 'preservation-and-promotion.json').write_text(json.dumps(report, indent=2) + '\n')
+(B / 'final-original-bindings.json').write_text(json.dumps(descriptors, indent=2) + '\n')
+(B / 'planned-authority-labels.json').write_text(json.dumps({key: all_terms[key] for key in sorted(planned)}, indent=2) + '\n')
+print(json.dumps(report, indent=2))

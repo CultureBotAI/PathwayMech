@@ -1,0 +1,7 @@
+from acquire_identities import request
+from acquire import *
+rows=[]
+for path in ['entry/2NLO','polymer_entity/2NLO/1']:
+ rows.append(request('RCSB-'+path.replace('/','-'),'https://data.rcsb.org/rest/v1/core/'+path))
+(ROOT/'acquisition-structure.json').write_text(json.dumps(rows,indent=2)+'\n')
+print([(r['name'],r.get('bytes',r.get('error'))) for r in rows])

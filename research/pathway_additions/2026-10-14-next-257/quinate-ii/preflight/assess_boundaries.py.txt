@@ -1,0 +1,29 @@
+from pathlib import Path
+import hashlib
+import json
+import xml.etree.ElementTree as ET
+
+B = Path(__file__).parent
+BASE = '11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37'
+go = json.loads((B / 'go-boundary-evidence.json').read_text())
+boundaries = []
+for row in json.loads((B / 'search-inputs.json').read_text()):
+    data = Path(row['path']).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == row['sha256']
+    root = ET.fromstring(data)
+    pathway = root.find('Pathway')
+    if pathway is None:
+        continue
+    if pathway.get('frameid') not in ['PWY-6416', 'PWY-6419', 'QUINATEDEG-PWY', 'SHIKIMATEDEG-PWY']:
+        continue
+    members = ['MetaCyc:' + e.get('frameid') for e in pathway.findall('reaction-list/Reaction')]
+    layouts = [{'reaction': 'MetaCyc:' + e.find('Reaction').get('frameid'), 'direction': e.findtext('direction'), 'left_primary': ['MetaCyc:' + c.get('frameid') for c in e.findall('left-primaries/Compound')], 'right_primary': ['MetaCyc:' + c.get('frameid') for c in e.findall('right-primaries/Compound')]} for e in pathway.findall('reaction-layout')]
+    ordering = [{'reaction': 'MetaCyc:' + e.find('Reaction').get('frameid'), 'predecessors': ['MetaCyc:' + c.get('frameid') for c in e.findall('predecessor-reactions/Reaction')]} for e in pathway.findall('reaction-ordering')]
+    boundaries.append({'id': 'MetaCyc:' + pathway.get('frameid'), 'label': pathway.findtext('common-name'), 'source': row, 'version': root.get('ptools-version'), 'members': members, 'layouts': layouts, 'ordering': ordering, 'direct_species': ['NCBITaxon:' + e.get('frameid').removeprefix('TAX-') for e in pathway.findall('species/Organism')], 'direct_evidence_pmids': [e.text for e in pathway.findall('evidence/Publication/pubmed-id')], 'downstream_links': ['MetaCyc:' + e.get('frameid') for e in pathway.findall('pathway-link/link-target/Pathway')]})
+assert len(boundaries) == 4
+terms = {}
+for term in ['GO:0019631', 'GO:0019633']:
+    terms[term] = {'statements': [r for r in go[term]['outgoing'] if r['predicate'] in ['rdfs:label', 'IAO:0000115', 'oio:hasExactSynonym', 'oio:hasDbXref', 'skos:narrowMatch']], 'incoming_class_children': [r for r in go[term]['incoming'] if r['predicate'] == 'rdfs:subClassOf'], 'assessment': 'Broad substrate catabolic process, with explicit narrowMatch to both I and II variants; does not select an initial electron-acceptor class or exact endpoint.'}
+result = {'baseline_commit': BASE, 'role': 'Author identity preflight; not independent scientific approval', 'decision': 'Select MetaCyc:PWY-6416 for the source-defined three-step quinate-to-protocatechuate route with NAD(P)-class initial oxidation. Do not collapse it with the PQQ/quinone route or either shikimate route.', 'GO_source': go['source'], 'GO_source_version': '2026-07-26 as pinned in maintained authority configuration; original SQL freshly queried and hashed', 'GO_terms': terms, 'native_boundaries': boundaries, 'interpretive_limits': ['PWY-6416 direct evidence blocks repeat PMIDs 8002591 and 14586099 associated with I-route contexts. They must not be presented as independent experimental confirmation of the NAD route. Specific NAD-route narrative references need their own full interpretation.', 'The initial native reaction uses NAD-P-OR-NOP and NADH-P-OR-NOP classes; NAD versus NADP use is enzyme-specific, not guaranteed by pathway identity.', 'Native phylum/Gram-status generalizations are not universal biological facts. Direct enzyme evidence takes priority.', 'Full pathway membership is distinct from source pathway links; downstream protocatechuate cleavage is outside the three-member boundary.', 'No inspected exact candidate identifier was supplied for other supported pathway namespaces, so no speculative crosswalk is invented.', 'No source exhaustion claim is made.']}
+(B / 'boundary-assessment.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'native_boundaries': len(boundaries), 'GO_terms': list(terms)}))

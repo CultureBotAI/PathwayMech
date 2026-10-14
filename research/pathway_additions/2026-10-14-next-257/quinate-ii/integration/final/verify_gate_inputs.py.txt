@@ -1,0 +1,22 @@
+from pathlib import Path
+import datetime, hashlib, json
+R=Path('/private/tmp/pathwaymech-next-257-20261014')
+B=Path(__file__).resolve().parent
+G=Path('/private/tmp/pathwaymech-next-257-checks-final')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+receipt=json.loads((G/'receipts.json').read_text())
+expected=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check']]
+assert [r['command'] for r in receipt]==expected
+assert all(r['exit_code']==0 and sha(Path(r['log_path']))==r['log_sha256'] for r in receipt)
+inputs=json.loads((G/'tested-core-input-hashes.json').read_text())
+changed=[p for p,digest in inputs.items() if sha(R/p)!=digest]
+assert not changed,changed
+assert json.loads((G/'final-input-preservation.json').read_text())['changed_after_checks']==[]
+record='data/pathways/quinate-degradation-ii.yaml'
+assert inputs[record]=='83445c4f5cedd104d29cd065771b384f0ea277ed74291e3569315a9d42b01d97'
+policy='conf/identifier_policy.yaml'
+old=json.loads((R/'research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/initial/tested-core-input-hashes.json').read_text())
+assert inputs[policy]==old[policy]
+result={'status':'passed','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'reviewer_script_sha256':sha(Path(__file__)),'reused_actual_root_commands':receipt,'core_inputs_rehashed':len(inputs),'changed_files':changed,'record_sha256':inputs[record],'identifier_policy_unchanged':True,'receipt_sha256':sha(G/'receipts.json'),'core_manifest_sha256':sha(G/'tested-core-input-hashes.json')}
+(B/'gate-input-verification.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({k:v for k,v in result.items() if k!='reused_actual_root_commands'},indent=2))

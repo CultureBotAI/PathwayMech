@@ -1,0 +1,10 @@
+from acquire_identities import request
+from acquire import *
+import urllib.parse
+qs={
+ 'ncbi-protein13869-hppd':'"Corynebacterium glutamicum"[Organism] AND "13869"[All Fields] AND ("4-hydroxyphenylpyruvate"[All Fields] OR "618"[SLEN] OR "619"[SLEN])',
+ 'ncbi-protein13869-shikimate':'"13869"[All Fields] AND ("shikimate"[All Fields] OR "quinate"[All Fields])',
+}
+rows=[]
+for n,q in qs.items():rows.append(request(n,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?'+urllib.parse.urlencode({'db':'protein','term':q,'retmode':'json','retmax':100})))
+(ROOT/'acquisition-qsub13869-broader-search.json').write_text(json.dumps(rows,indent=2)+'\n');print(rows)

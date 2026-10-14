@@ -1,0 +1,35 @@
+from concurrent.futures import ThreadPoolExecutor
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import urllib.request
+
+B = Path(__file__).parent
+O = B / 'originals'
+O.mkdir(exist_ok=True)
+frames = ['QUINATE', 'DEHYDROQUINATE', '3-DEHYDRO-SHIKIMATE', '3-4-DIHYDROXYBENZOATE',
+          'WATER', 'PROTON', 'NAD-P-OR-NOP', 'NADH-P-OR-NOP', 'NAD', 'NADH']
+
+def acquire(frame):
+    url = 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:' + frame
+    path = O / ('META-' + frame + '.xml')
+    assert not path.exists(), str(path)
+    receipt = {'frame': frame, 'url': url, 'path': str(path),
+               'requested_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    try:
+        request = urllib.request.Request(url, headers={'User-Agent': 'PathwayMech research curation'})
+        with urllib.request.urlopen(request, timeout=45) as response:
+            body = response.read()
+            receipt.update(status=response.status, final_url=response.url,
+                           content_type=response.headers.get('Content-Type'))
+        path.write_bytes(body)
+        receipt.update(bytes=len(body), sha256=hashlib.sha256(body).hexdigest())
+    except Exception as error:
+        receipt['error'] = repr(error)
+    return receipt
+
+with ThreadPoolExecutor(max_workers=4) as executor:
+    receipts = list(executor.map(acquire, frames))
+(B / 'native-compound-acquisition.json').write_text(json.dumps(receipts, indent=2) + '\n')
+print(json.dumps(receipts))
