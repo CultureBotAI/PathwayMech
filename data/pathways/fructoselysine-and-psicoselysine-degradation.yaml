@@ -1,0 +1,946 @@
+id: MetaCyc:PWY0-521
+label: fructoselysine and psicoselysine degradation
+description: The source-defined three-reaction pathway converts psicoselysine to fructoselysine through
+  FrlC, then uses ATP-dependent FrlD phosphorylation and FrlB deglycation to produce glucose 6-phosphate
+  and lysine. Fructoselysine enters at the kinase step. The two downstream reactions overlap the narrower
+  GO:1901281 fructoselysine catabolic record; these are overlapping boundaries, not disjoint capabilities
+  or exact identifier synonyms. The graph selects catabolic traversal while preserving FrlC reversibility
+  and in vitro FrlB reversibility. Native MG1655 annotations, reviewed K-12 protein identities, experimental
+  constructs and conditional growth evidence retain separate scopes.
+pathway_type: glycated-amino-acid-catabolism
+taxa:
+- id: NCBITaxon:83333
+  label: Escherichia coli K-12
+- id: NCBITaxon:511145
+  label: Escherichia coli str. K-12 substr. MG1655
+- id: NCBITaxon:679895
+  label: Escherichia coli BW25113
+participants:
+- id: CHEBI:61403
+  label: psicosyllysine(1+)
+  category: small_molecule
+- id: CHEBI:61393
+  label: fructosyllysine(1+)
+  category: small_molecule
+- id: CHEBI:30616
+  label: ATP(4-)
+  category: small_molecule
+- id: CHEBI:61392
+  label: fructoselysine 6-phosphate(1-)
+  category: small_molecule
+- id: CHEBI:456216
+  label: ADP(3-)
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: CHEBI:58247
+  label: beta-D-glucose 6-phosphate(2-)
+  category: small_molecule
+- id: CHEBI:32551
+  label: L-lysinium(1+)
+  category: small_molecule
+- id: CHEBI:49786
+  label: nickel(2+)
+  category: cofactor
+- id: CHEBI:48828
+  label: cobalt(2+)
+  category: cofactor
+- id: CHEBI:29033
+  label: iron(2+)
+  category: cofactor
+- id: CHEBI:29035
+  label: manganese(2+)
+  category: cofactor
+- id: CHEBI:29105
+  label: zinc(2+)
+  category: small_molecule
+- id: UniProtKB:P45541
+  label: Fructoselysine 3-epimerase
+  category: protein
+- id: UniProtKB:P45543
+  label: Fructoselysine 6-kinase
+  category: protein
+- id: UniProtKB:P0AC00
+  label: Fructoselysine 6-phosphate deglycase
+  category: protein
+- id: UniProtKB:P45539
+  label: Probable fructoselysine/psicoselysine transporter FrlA
+  category: protein
+- id: UniProtKB:P45544
+  label: Probable fructoselysine utilization operon transcriptional repressor
+  category: protein
+- id: UniProtKB:P0AGB3
+  label: RNA polymerase sigma factor RpoH
+  category: protein
+- id: UniProtKB:P0ACJ8
+  label: DNA-binding transcriptional dual regulator CRP
+  category: protein
+- id: MetaCyc:CPLX0-3861
+  label: fructoselysine 3-epimerase
+  category: complex
+- id: MetaCyc:CPLX0-821
+  label: fructoselysine 6-phosphate deglycase
+  category: complex
+reactions:
+- id: RHEA:28391
+  label: N(6)-(D-psicosyl)-L-lysine => N(6)-(D-fructosyl)-L-lysine
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:28379
+  label: N(6)-(D-fructosyl)-L-lysine + ATP => N(6)-(6-phospho-D-fructosyl)-L-lysine + ADP + H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:RXN0-963
+  label: fructoselysine 6-phosphate + water → beta-D-glucose 6-phosphate + L-lysine
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: frl-001
+  subject: MetaCyc:PWY0-521
+  predicate: has_part
+  object: RHEA:28391
+  description: Native core membership; exact chemistry and the selected directional Rhea member are independently
+    checked. Native RXN0-4841 is reversible with opposite printed orientation; its R2L pathway layout
+    equals this Rhea L2R psicoselysine entry.
+  evidence:
+  - reference_id: MetaCyc:PWY0-521
+    source_assertion: The native reaction-list contains RXN0-4841.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="RXN0-4841"]
+  - reference_id: MetaCyc:RXN0-4841
+    source_assertion: The native reaction directly cross-references Rhea 28393; its complete left and
+      right sides and native direction are retained in the same original.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+  - reference_id: RHEA:28391
+    source_assertion: RHEA:28390 has directional member RHEA:28391; its explicit substrate/product assignment
+      selects catabolic traversal.
+    source_locator: Aggregate rdf:Description[@rdf:about="http://rdf.rhea-db.org/28390"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/28391"]/rh:substrates and rh:products
+- id: frl-002
+  subject: CHEBI:61403
+  predicate: consumes
+  object: RHEA:28391
+  description: Complete formal reaction side, coefficient one; auxiliary substrates and products are retained.
+  evidence:
+  - reference_id: RHEA:28391
+    source_assertion: RHEA:28391 places CHEBI:61403 on its substrates side with coefficient 1 in rh:contains1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/28391/rh:substrates
+      -> http://rdf.rhea-db.org/28390_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_28390_compound_6449/rh:compound
+      -> http://rdf.rhea-db.org/Compound_6449/rh:chebi'
+- id: frl-003
+  subject: RHEA:28391
+  predicate: produces
+  object: CHEBI:61393
+  description: Complete formal reaction side, coefficient one; auxiliary substrates and products are retained.
+  evidence:
+  - reference_id: RHEA:28391
+    source_assertion: RHEA:28391 places CHEBI:61393 on its products side with coefficient 1 in rh:contains1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/28391/rh:products
+      -> http://rdf.rhea-db.org/28390_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_28390_compound_6448/rh:compound
+      -> http://rdf.rhea-db.org/Compound_6448/rh:chebi'
+- id: frl-004
+  subject: MetaCyc:PWY0-521
+  predicate: has_part
+  object: RHEA:28379
+  description: Native core membership; exact chemistry and the selected directional Rhea member are independently
+    checked.
+  evidence:
+  - reference_id: MetaCyc:PWY0-521
+    source_assertion: The native reaction-list contains RXN0-962.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="RXN0-962"]
+  - reference_id: MetaCyc:RXN0-962
+    source_assertion: The native reaction directly cross-references Rhea 28379; its complete left and
+      right sides and native direction are retained in the same original.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+  - reference_id: RHEA:28379
+    source_assertion: RHEA:28378 has directional member RHEA:28379; its explicit substrate/product assignment
+      selects catabolic traversal.
+    source_locator: Aggregate rdf:Description[@rdf:about="http://rdf.rhea-db.org/28378"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/28379"]/rh:substrates and rh:products
+- id: frl-005
+  subject: CHEBI:61393
+  predicate: consumes
+  object: RHEA:28379
+  description: Complete formal reaction side, coefficient one; auxiliary substrates and products are retained.
+  evidence:
+  - reference_id: RHEA:28379
+    source_assertion: RHEA:28379 places CHEBI:61393 on its substrates side with coefficient 1 in rh:contains1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/28379/rh:substrates
+      -> http://rdf.rhea-db.org/28378_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_28378_compound_6448/rh:compound
+      -> http://rdf.rhea-db.org/Compound_6448/rh:chebi'
+- id: frl-006
+  subject: CHEBI:30616
+  predicate: consumes
+  object: RHEA:28379
+  description: Complete formal reaction side, coefficient one; auxiliary substrates and products are retained.
+  evidence:
+  - reference_id: RHEA:28379
+    source_assertion: RHEA:28379 places CHEBI:30616 on its substrates side with coefficient 1 in rh:contains1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/28379/rh:substrates
+      -> http://rdf.rhea-db.org/28378_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_28378_compound_6372/rh:compound
+      -> http://rdf.rhea-db.org/Compound_6372/rh:chebi'
+- id: frl-007
+  subject: RHEA:28379
+  predicate: produces
+  object: CHEBI:61392
+  description: Complete formal reaction side, coefficient one; auxiliary substrates and products are retained.
+  evidence:
+  - reference_id: RHEA:28379
+    source_assertion: RHEA:28379 places CHEBI:61392 on its products side with coefficient 1 in rh:contains1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/28379/rh:products
+      -> http://rdf.rhea-db.org/28378_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_28378_compound_6447/rh:compound
+      -> http://rdf.rhea-db.org/Compound_6447/rh:chebi'
+- id: frl-008
+  subject: RHEA:28379
+  predicate: produces
+  object: CHEBI:456216
+  description: Complete formal reaction side, coefficient one; auxiliary substrates and products are retained.
+  evidence:
+  - reference_id: RHEA:28379
+    source_assertion: RHEA:28379 places CHEBI:456216 on its products side with coefficient 1 in rh:contains1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/28379/rh:products
+      -> http://rdf.rhea-db.org/28378_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_28378_compound_2710/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2710/rh:chebi'
+- id: frl-009
+  subject: RHEA:28379
+  predicate: produces
+  object: CHEBI:15378
+  description: Complete formal reaction side, coefficient one; auxiliary substrates and products are retained.
+  evidence:
+  - reference_id: RHEA:28379
+    source_assertion: RHEA:28379 places CHEBI:15378 on its products side with coefficient 1 in rh:contains1.
+    source_locator: 'Aggregate rdf:Description by rdf:about: http://rdf.rhea-db.org/28379/rh:products
+      -> http://rdf.rhea-db.org/28378_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_28378_compound_3249/rh:compound
+      -> http://rdf.rhea-db.org/Compound_3249/rh:chebi'
+- id: frl-010
+  subject: MetaCyc:PWY0-521
+  predicate: has_part
+  object: MetaCyc:RXN0-963
+  description: Native core membership preserves the beta-D-glucose 6-phosphate product; the source Rhea
+    cross-reference has broader anomer scope and is not treated as exact. This catabolic direction does
+    not assert thermodynamic irreversibility; FrlB also catalyzes the reverse conversion in vitro.
+  evidence:
+  - reference_id: MetaCyc:PWY0-521
+    source_assertion: The native reaction-list contains RXN0-963.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="RXN0-963"]
+  - reference_id: MetaCyc:RXN0-963
+    source_assertion: The complete native reaction converts FRUCTOSELYSINE-6-PHOSPHATE and WATER to GLC-6-P
+      and LYS, with LEFT-TO-RIGHT direction.
+    source_locator: /ptools-xml/Reaction/left; right; reaction-direction
+- id: frl-011
+  subject: CHEBI:61392
+  predicate: consumes
+  object: MetaCyc:RXN0-963
+  description: Complete native deglycase side; exact beta-D-glucose 6-phosphate chemistry is retained.
+    This stereochemical scope is a native database assertion, not automatically an independently measured
+    primary-study product.
+  evidence:
+  - reference_id: MetaCyc:RXN0-963
+    source_assertion: The complete native left side contains FRUCTOSELYSINE-6-PHOSPHATE.
+    source_locator: /ptools-xml/Reaction/left/Compound[@frameid="FRUCTOSELYSINE-6-PHOSPHATE"]
+  - reference_id: MetaCyc:FRUCTOSELYSINE-6-PHOSPHATE
+    source_assertion: The native compound has a direct CHEBI:61392 cross-reference and matching complete
+      InChI.
+    source_locator: /ptools-xml/Compound/dblink[dblink-db="CHEBI"]; inchi
+- id: frl-012
+  subject: CHEBI:15377
+  predicate: consumes
+  object: MetaCyc:RXN0-963
+  description: Complete native deglycase side; exact beta-D-glucose 6-phosphate chemistry is retained.
+    This stereochemical scope is a native database assertion, not automatically an independently measured
+    primary-study product.
+  evidence:
+  - reference_id: MetaCyc:RXN0-963
+    source_assertion: The complete native left side contains WATER.
+    source_locator: /ptools-xml/Reaction/left/Compound[@frameid="WATER"]
+  - reference_id: MetaCyc:WATER
+    source_assertion: The native compound has a direct CHEBI:15377 cross-reference and matching complete
+      InChI.
+    source_locator: /ptools-xml/Compound/dblink[dblink-db="CHEBI"]; inchi
+- id: frl-013
+  subject: MetaCyc:RXN0-963
+  predicate: produces
+  object: CHEBI:58247
+  description: Complete native deglycase side; exact beta-D-glucose 6-phosphate chemistry is retained.
+    This stereochemical scope is a native database assertion, not automatically an independently measured
+    primary-study product.
+  evidence:
+  - reference_id: MetaCyc:RXN0-963
+    source_assertion: The complete native right side contains GLC-6-P.
+    source_locator: /ptools-xml/Reaction/right/Compound[@frameid="GLC-6-P"]
+  - reference_id: MetaCyc:GLC-6-P
+    source_assertion: The native compound has a direct CHEBI:58247 cross-reference and matching complete
+      InChI.
+    source_locator: /ptools-xml/Compound/dblink[dblink-db="CHEBI"]; inchi
+- id: frl-014
+  subject: MetaCyc:RXN0-963
+  predicate: produces
+  object: CHEBI:32551
+  description: Complete native deglycase side; exact beta-D-glucose 6-phosphate chemistry is retained.
+    This stereochemical scope is a native database assertion, not automatically an independently measured
+    primary-study product.
+  evidence:
+  - reference_id: MetaCyc:RXN0-963
+    source_assertion: The complete native right side contains LYS.
+    source_locator: /ptools-xml/Reaction/right/Compound[@frameid="LYS"]
+  - reference_id: MetaCyc:LYS
+    source_assertion: The native compound has a direct CHEBI:32551 cross-reference and matching complete
+      InChI.
+    source_locator: /ptools-xml/Compound/dblink[dblink-db="CHEBI"]; inchi
+- id: frl-015
+  subject: RHEA:28391
+  predicate: provides_input_for
+  object: RHEA:28379
+  description: The selected upstream event provides fructoselysine to the next reaction; fructoselysine
+    may also enter directly at the kinase.
+  evidence:
+  - reference_id: MetaCyc:PWY0-521
+    source_assertion: RXN0-962 names RXN0-4841 as its predecessor; adjacent layouts share fructoselysine.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="RXN0-962"]; reaction-layout
+- id: frl-016
+  subject: RHEA:28379
+  predicate: provides_input_for
+  object: MetaCyc:RXN0-963
+  description: The selected upstream event provides fructoselysine 6-phosphate to the next reaction; fructoselysine
+    may also enter directly at the kinase.
+  evidence:
+  - reference_id: MetaCyc:PWY0-521
+    source_assertion: RXN0-963 names RXN0-962 as its predecessor; adjacent layouts share fructoselysine
+      6-phosphate.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="RXN0-963"]; reaction-layout
+- id: frl-017
+  subject: MetaCyc:CPLX0-3861
+  predicate: has_part
+  object: UniProtKB:P45541
+  description: Native homomer annotation contains 8 copies of the linked polypeptide. Source assembly
+    inference does not establish a solved structure or exact experimental construct.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-3861
+    source_assertion: The native component list specifies 8 copies of G7724-MONOMER.
+    source_locator: /ptools-xml/Protein/component[Protein/@frameid="G7724-MONOMER"]/coefficient
+  - reference_id: MetaCyc:G7724-MONOMER
+    source_assertion: The native polypeptide directly cross-references UniProt P45541.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+- id: frl-018
+  subject: MetaCyc:CPLX0-821
+  predicate: has_part
+  object: UniProtKB:P0AC00
+  description: Native homomer annotation contains 12 copies of the linked polypeptide. Source assembly
+    inference does not establish a solved structure or exact experimental construct.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-821
+    source_assertion: The native component list specifies 12 copies of G7723-MONOMER.
+    source_locator: /ptools-xml/Protein/component[Protein/@frameid="G7723-MONOMER"]/coefficient
+  - reference_id: MetaCyc:G7723-MONOMER
+    source_assertion: The native polypeptide directly cross-references UniProt P0AC00.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+- id: frl-019
+  subject: MetaCyc:CPLX0-3861
+  predicate: catalyzes
+  object: RHEA:28391
+  description: Curated native catalytic assignment; this annotation is separate from experimental preparation
+    claims.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-3861
+    source_assertion: The native catalyst activity has an enzyme backlink and reaction RXN0-4841.
+    source_locator: /ptools-xml/Protein/catalyzes/Enzymatic-Reaction[reaction/Reaction/@frameid="RXN0-4841"]/enzyme;
+      reaction
+  - reference_id: MetaCyc:RXN0-4841
+    source_assertion: The native reaction directly cross-references Rhea 28393; its complete left and
+      right sides and native direction are retained in the same original.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+  - reference_id: RHEA:28391
+    source_assertion: RHEA:28390 has directional member RHEA:28391; its explicit substrate/product assignment
+      selects catabolic traversal.
+    source_locator: Aggregate rdf:Description[@rdf:about="http://rdf.rhea-db.org/28390"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/28391"]/rh:substrates and rh:products
+- id: frl-020
+  subject: UniProtKB:P45543
+  predicate: catalyzes
+  object: RHEA:28379
+  description: Curated native catalytic assignment; this annotation is separate from experimental preparation
+    claims.
+  evidence:
+  - reference_id: MetaCyc:G7726-MONOMER
+    source_assertion: The native catalyst activity has an enzyme backlink and reaction RXN0-962.
+    source_locator: /ptools-xml/Protein/catalyzes/Enzymatic-Reaction[reaction/Reaction/@frameid="RXN0-962"]/enzyme;
+      reaction
+  - reference_id: MetaCyc:G7726-MONOMER
+    source_assertion: The native protein links directly to UniProt P45543.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db="UNIPROT"]
+  - reference_id: MetaCyc:RXN0-962
+    source_assertion: The native reaction directly cross-references Rhea 28379; its complete left and
+      right sides and native direction are retained in the same original.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; left; right; reaction-direction
+  - reference_id: RHEA:28379
+    source_assertion: RHEA:28378 has directional member RHEA:28379; its explicit substrate/product assignment
+      selects catabolic traversal.
+    source_locator: Aggregate rdf:Description[@rdf:about="http://rdf.rhea-db.org/28378"]/rh:directionalReaction;
+      rdf:Description[@rdf:about="http://rdf.rhea-db.org/28379"]/rh:substrates and rh:products
+- id: frl-021
+  subject: MetaCyc:CPLX0-821
+  predicate: catalyzes
+  object: MetaCyc:RXN0-963
+  description: Curated native catalytic assignment; this annotation is separate from experimental preparation
+    claims.
+  evidence:
+  - reference_id: MetaCyc:CPLX0-821
+    source_assertion: The native catalyst activity has an enzyme backlink and reaction RXN0-963.
+    source_locator: /ptools-xml/Protein/catalyzes/Enzymatic-Reaction[reaction/Reaction/@frameid="RXN0-963"]/enzyme;
+      reaction
+  - reference_id: MetaCyc:RXN0-963
+    source_assertion: The complete native reaction converts FRUCTOSELYSINE-6-PHOSPHATE and WATER to GLC-6-P
+      and LYS, with LEFT-TO-RIGHT direction.
+    source_locator: /ptools-xml/Reaction/left; right; reaction-direction
+- id: frl-022
+  subject: MetaCyc:CPLX0-3861
+  predicate: catalyzes
+  object: RHEA:28391
+  description: Purified recombinant FrlC interconverts the two substrates in vitro; Figure 4 includes
+    both starting substrates and enzyme-free controls. The selected graph orientation follows psicoselysine
+    catabolism.
+  evidence:
+  - reference_id: PMID:14641112
+    source_assertion: Purified FrlC reversibly interconverts psicoselysine and fructoselysine; controls
+      without enzyme remain stable.
+    source_locator: pp1049–1051 Kinetic properties and catalysed reaction; Fig4 and its caption
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 'Recombinant FrlC: Methods use BL21(DE3) DNA, pET-3a and BL21(DE3)pLysS; Results calls
+      the region K12. Figure 1 reports 275 residues versus current P45541 length 276 (extra terminal Arg).
+      Exact full-length MG1655 equivalence is not asserted. Octamer assignment derives from approximately
+      260-kDa gel filtration, results not shown.'
+    evidence:
+    - reference_id: PMID:14641112
+      source_assertion: Methods specify BL21(DE3) DNA and pET-3a expression; Results describes K12 resequencing
+        and a 275-residue protein. Gel filtration suggests an octamer.
+      source_locator: p1048 Overexpression and purification; Results Establishment of sequence; p1049
+        Fig1 and Expression and characterization
+    - reference_id: UniProtKB:P45541
+      source_assertion: The current reference sequence contains 276 residues, with terminal arginine.
+      source_locator: primaryAccession; entryAudit.sequenceVersion; sequence.length; sequence.value
+- id: frl-023
+  subject: MetaCyc:CPLX0-3861
+  predicate: has_cofactor
+  object: CHEBI:49786
+  description: Alternative in vitro metal support; nickel and cobalt enhance activity more than iron or
+    manganese. The extract assay includes 1 mM MgCl2. Physiological occupancy, fixed stoichiometry and
+    simultaneous binding of these alternatives are not established.
+  evidence:
+  - reference_id: PMID:14641112
+    source_assertion: Ni(2+) enhances the FrlC extract detritiation assay; the relative enhancement is
+      Ni > Co > Fe approximately Mn.
+    source_locator: p1049 Expression and characterization; Fig2 p1050 and complete caption
+  - reference_id: UniProtKB:P45541
+    source_assertion: COFACTOR lists Ni(2+) and Co(2+) and describes weaker in vitro support by Fe(2+)
+      or Mn(2+), with ECO:0000269/PMID:14641112.
+    source_locator: comments[commentType="COFACTOR"].cofactors; note.texts
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 'Recombinant FrlC: Methods use BL21(DE3) DNA, pET-3a and BL21(DE3)pLysS; Results calls
+      the region K12. Figure 1 reports 275 residues versus current P45541 length 276 (extra terminal Arg).
+      Exact full-length MG1655 equivalence is not asserted. Octamer assignment derives from approximately
+      260-kDa gel filtration, results not shown.'
+    evidence:
+    - reference_id: PMID:14641112
+      source_assertion: Methods specify BL21(DE3) DNA and pET-3a expression; Results describes K12 resequencing
+        and a 275-residue protein. Gel filtration suggests an octamer.
+      source_locator: p1048 Overexpression and purification; Results Establishment of sequence; p1049
+        Fig1 and Expression and characterization
+    - reference_id: UniProtKB:P45541
+      source_assertion: The current reference sequence contains 276 residues, with terminal arginine.
+      source_locator: primaryAccession; entryAudit.sequenceVersion; sequence.length; sequence.value
+- id: frl-024
+  subject: MetaCyc:CPLX0-3861
+  predicate: has_cofactor
+  object: CHEBI:48828
+  description: Alternative in vitro metal support; nickel and cobalt enhance activity more than iron or
+    manganese. The extract assay includes 1 mM MgCl2. Physiological occupancy, fixed stoichiometry and
+    simultaneous binding of these alternatives are not established.
+  evidence:
+  - reference_id: PMID:14641112
+    source_assertion: Co(2+) enhances the FrlC extract detritiation assay; the relative enhancement is
+      Ni > Co > Fe approximately Mn.
+    source_locator: p1049 Expression and characterization; Fig2 p1050 and complete caption
+  - reference_id: UniProtKB:P45541
+    source_assertion: COFACTOR lists Ni(2+) and Co(2+) and describes weaker in vitro support by Fe(2+)
+      or Mn(2+), with ECO:0000269/PMID:14641112.
+    source_locator: comments[commentType="COFACTOR"].cofactors; note.texts
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 'Recombinant FrlC: Methods use BL21(DE3) DNA, pET-3a and BL21(DE3)pLysS; Results calls
+      the region K12. Figure 1 reports 275 residues versus current P45541 length 276 (extra terminal Arg).
+      Exact full-length MG1655 equivalence is not asserted. Octamer assignment derives from approximately
+      260-kDa gel filtration, results not shown.'
+    evidence:
+    - reference_id: PMID:14641112
+      source_assertion: Methods specify BL21(DE3) DNA and pET-3a expression; Results describes K12 resequencing
+        and a 275-residue protein. Gel filtration suggests an octamer.
+      source_locator: p1048 Overexpression and purification; Results Establishment of sequence; p1049
+        Fig1 and Expression and characterization
+    - reference_id: UniProtKB:P45541
+      source_assertion: The current reference sequence contains 276 residues, with terminal arginine.
+      source_locator: primaryAccession; entryAudit.sequenceVersion; sequence.length; sequence.value
+- id: frl-025
+  subject: MetaCyc:CPLX0-3861
+  predicate: has_cofactor
+  object: CHEBI:29033
+  description: Alternative in vitro metal support; nickel and cobalt enhance activity more than iron or
+    manganese. The extract assay includes 1 mM MgCl2. Physiological occupancy, fixed stoichiometry and
+    simultaneous binding of these alternatives are not established.
+  evidence:
+  - reference_id: PMID:14641112
+    source_assertion: Fe(2+) enhances the FrlC extract detritiation assay; the relative enhancement is
+      Ni > Co > Fe approximately Mn.
+    source_locator: p1049 Expression and characterization; Fig2 p1050 and complete caption
+  - reference_id: UniProtKB:P45541
+    source_assertion: COFACTOR lists Ni(2+) and Co(2+) and describes weaker in vitro support by Fe(2+)
+      or Mn(2+), with ECO:0000269/PMID:14641112.
+    source_locator: comments[commentType="COFACTOR"].cofactors; note.texts
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 'Recombinant FrlC: Methods use BL21(DE3) DNA, pET-3a and BL21(DE3)pLysS; Results calls
+      the region K12. Figure 1 reports 275 residues versus current P45541 length 276 (extra terminal Arg).
+      Exact full-length MG1655 equivalence is not asserted. Octamer assignment derives from approximately
+      260-kDa gel filtration, results not shown.'
+    evidence:
+    - reference_id: PMID:14641112
+      source_assertion: Methods specify BL21(DE3) DNA and pET-3a expression; Results describes K12 resequencing
+        and a 275-residue protein. Gel filtration suggests an octamer.
+      source_locator: p1048 Overexpression and purification; Results Establishment of sequence; p1049
+        Fig1 and Expression and characterization
+    - reference_id: UniProtKB:P45541
+      source_assertion: The current reference sequence contains 276 residues, with terminal arginine.
+      source_locator: primaryAccession; entryAudit.sequenceVersion; sequence.length; sequence.value
+- id: frl-026
+  subject: MetaCyc:CPLX0-3861
+  predicate: has_cofactor
+  object: CHEBI:29035
+  description: Alternative in vitro metal support; nickel and cobalt enhance activity more than iron or
+    manganese. The extract assay includes 1 mM MgCl2. Physiological occupancy, fixed stoichiometry and
+    simultaneous binding of these alternatives are not established.
+  evidence:
+  - reference_id: PMID:14641112
+    source_assertion: Mn(2+) enhances the FrlC extract detritiation assay; the relative enhancement is
+      Ni > Co > Fe approximately Mn.
+    source_locator: p1049 Expression and characterization; Fig2 p1050 and complete caption
+  - reference_id: UniProtKB:P45541
+    source_assertion: COFACTOR lists Ni(2+) and Co(2+) and describes weaker in vitro support by Fe(2+)
+      or Mn(2+), with ECO:0000269/PMID:14641112.
+    source_locator: comments[commentType="COFACTOR"].cofactors; note.texts
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 'Recombinant FrlC: Methods use BL21(DE3) DNA, pET-3a and BL21(DE3)pLysS; Results calls
+      the region K12. Figure 1 reports 275 residues versus current P45541 length 276 (extra terminal Arg).
+      Exact full-length MG1655 equivalence is not asserted. Octamer assignment derives from approximately
+      260-kDa gel filtration, results not shown.'
+    evidence:
+    - reference_id: PMID:14641112
+      source_assertion: Methods specify BL21(DE3) DNA and pET-3a expression; Results describes K12 resequencing
+        and a 275-residue protein. Gel filtration suggests an octamer.
+      source_locator: p1048 Overexpression and purification; Results Establishment of sequence; p1049
+        Fig1 and Expression and characterization
+    - reference_id: UniProtKB:P45541
+      source_assertion: The current reference sequence contains 276 residues, with terminal arginine.
+      source_locator: primaryAccession; entryAudit.sequenceVersion; sequence.length; sequence.value
+- id: frl-027
+  subject: CHEBI:29105
+  predicate: inhibits
+  object: MetaCyc:CPLX0-3861
+  description: 'In vitro inhibition in the recombinant extract assay: 10 micromolar Zn2+ completely inhibits
+    reported activity, with underlying results not shown. No physiological regulatory role is inferred.'
+  evidence:
+  - reference_id: PMID:14641112
+    source_assertion: Zn2+ completely inhibited activity at 10 micromolar; these results are reported
+      as not shown.
+    source_locator: p1049 Expression and characterization, first paragraph
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: experimental_construct
+    description: 'Recombinant FrlC: Methods use BL21(DE3) DNA, pET-3a and BL21(DE3)pLysS; Results calls
+      the region K12. Figure 1 reports 275 residues versus current P45541 length 276 (extra terminal Arg).
+      Exact full-length MG1655 equivalence is not asserted. Octamer assignment derives from approximately
+      260-kDa gel filtration, results not shown.'
+    evidence:
+    - reference_id: PMID:14641112
+      source_assertion: Methods specify BL21(DE3) DNA and pET-3a expression; Results describes K12 resequencing
+        and a 275-residue protein. Gel filtration suggests an octamer.
+      source_locator: p1048 Overexpression and purification; Results Establishment of sequence; p1049
+        Fig1 and Expression and characterization
+    - reference_id: UniProtKB:P45541
+      source_assertion: The current reference sequence contains 276 residues, with terminal arginine.
+      source_locator: primaryAccession; entryAudit.sequenceVersion; sequence.length; sequence.value
+- id: frl-028
+  subject: UniProtKB:P45539
+  predicate: enables
+  object: MetaCyc:PWY0-521
+  description: FrlA participation is inferred from the growth phenotype and reviewed probable-transporter
+    annotation. Tn5 polarity and lack of rescue limit gene-product attribution; transport itself, coupling
+    and stoichiometry were not measured. FrlA is context, not a core reaction member.
+  evidence:
+  - reference_id: PMID:14641112
+    source_assertion: The frlA Tn5 mutant FB21138 does not grow on fructoselysine or psicoselysine but
+      does grow on glucose; Figure 5 treats FrlA transport as presumptive.
+    source_locator: p1047 Materials; p1051 Growth of E. coli on psicoselysine and Fig5 caption
+  - reference_id: UniProtKB:P45539
+    source_assertion: FUNCTION describes likely fructoselysine/psicoselysine transport with ECO:0000305;
+      DISRUPTION PHENOTYPE cites PMID:14641112 with ECO:0000269.
+    source_locator: comments[commentType="FUNCTION"].texts; comments[commentType="DISRUPTION PHENOTYPE"].texts
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Indirect gene-product attribution from the FB21138 frlA Tn5 growth comparison at 20 mM
+      substrates. The Materials passage does not specify this mutant background; the separately described
+      BL21 cultures do not establish it. No complementation or purified FrlA transport assay is reported.
+    evidence:
+    - reference_id: PMID:14641112
+      source_assertion: FB21138 is a Blattner-collection frlA Tn5 mutant; growth was followed in M9 with
+        20 mM substrates. The reported phenotype lacks a rescue experiment.
+      source_locator: p1047 Materials; p1048 Growth of E. coli on psicoselysine; p1051 growth Results
+- id: frl-029
+  subject: UniProtKB:P45543
+  predicate: catalyzes
+  object: RHEA:28379
+  description: Recombinant FrlD catalyzes ATP-dependent C6 phosphorylation. Product NMR establishes phosphate
+    position while retaining multiple solution forms at pH 4.1. Mg salts are assay conditions; their inclusion
+    alone does not establish an indispensable cofactor. NADH and phosphoenolpyruvate belong to coupled
+    detection.
+  evidence:
+  - reference_id: PMID:12147680
+    source_assertion: The purified kinase phosphorylates fructoselysine using ATP; product characterization
+      assigns the phosphate to carbon 6.
+    source_locator: p42524 enzyme assay Methods; pp42526–42527 product characterization and Fig6 caption
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: FrlD from BL21(DE3) genomic DNA in pET-3a, expressed in BL21(DE3)pLysS; no affinity tag
+      stated. The start-primer sequence matches current K-12 P45543, but complete experimental sequence
+      identity is not established. Approximately 28-kDa gel-filtration behavior supports the monomer assignment.
+    evidence:
+    - reference_id: PMID:12147680
+      source_assertion: Methods describe the BL21(DE3) donor and pET-3a expression in BL21(DE3)pLysS;
+        Results assigns monomeric behavior from gel filtration.
+      source_locator: p42524 Overexpression and purification of fructoselysine 6-kinase; p42526 Expression
+        and characterization; Fig5 caption
+- id: frl-030
+  subject: MetaCyc:CPLX0-821
+  predicate: catalyzes
+  object: MetaCyc:RXN0-963
+  description: 'Recombinant FrlB supports reversible cleavage to lysine and glucose 6-phosphate, including
+    the reverse condensation experiment. The enzymatic glucose-6-phosphate identification does not establish
+    anomer specificity: the beta product attached to this native reaction remains a separate database
+    assertion.'
+  evidence:
+  - reference_id: PMID:12147680
+    source_assertion: The active deglycase preparation forms glucose 6-phosphate and lysine; reverse formation
+      of fructoselysine 6-phosphate is measured.
+    source_locator: p42527 Expression and characterization of putative deglycase; p42528 Fig8 caption
+      and Discussion
+  - reference_id: MetaCyc:GLC-6-P
+    source_assertion: The native product compound directly identifies CHEBI:58247 and supplies beta-anomer-specific
+      complete InChI.
+    source_locator: /ptools-xml/Compound/common-name; inchi; dblink[dblink-db="CHEBI"]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Active first-AUG FrlB from BL21(DE3) DNA, pET-3a expression in BL21(DE3)pLysS. Its start
+      primer matches current P0AC00 residues 1 onward; complete donor sequence identity is unproved. The
+      second-AUG construct was insoluble/inactive. Approximately 450-kDa gel filtration suggests a dodecamer;
+      the assembly trace was not shown.
+    evidence:
+    - reference_id: PMID:12147680
+      source_assertion: The first-AUG construct is active, whereas the second-AUG product is insoluble
+        with no detected activity. An approximately 450-kDa apparent mass suggests a dodecamer.
+      source_locator: p42524 Overexpression and purification of fructoselysine-6-phosphate deglycase;
+        p42527 Expression and characterization of putative deglycase
+- id: frl-031
+  subject: CHEBI:29105
+  predicate: inhibits
+  object: MetaCyc:CPLX0-821
+  description: 'In vitro inhibition: 10 micromolar ZnCl2 completely suppresses the recombinant preparation
+    activity. EGTA/EDTA stimulated activity and later assays included 0.1 mM EGTA; the zinc-test buffer
+    is not separately fully restated. This is not physiological zinc regulation.'
+  evidence:
+  - reference_id: PMID:12147680
+    source_assertion: ZnCl2 at 10 micromolar completely suppressed deglycase activity; chelators stimulated
+      activity, and 0.1 mM EGTA was included in subsequent assays.
+    source_locator: p42527 Expression and characterization of putative deglycase
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: experimental_construct
+    description: Active first-AUG FrlB from BL21(DE3) DNA, pET-3a expression in BL21(DE3)pLysS. Its start
+      primer matches current P0AC00 residues 1 onward; complete donor sequence identity is unproved. The
+      second-AUG construct was insoluble/inactive. Approximately 450-kDa gel filtration suggests a dodecamer;
+      the assembly trace was not shown.
+    evidence:
+    - reference_id: PMID:12147680
+      source_assertion: The first-AUG construct is active, whereas the second-AUG product is insoluble
+        with no detected activity. An approximately 450-kDa apparent mass suggests a dodecamer.
+      source_locator: p42524 Overexpression and purification of fructoselysine-6-phosphate deglycase;
+        p42527 Expression and characterization of putative deglycase
+- id: frl-032
+  subject: UniProtKB:P45544
+  predicate: inhibits
+  object: MetaCyc:PWY0-521
+  description: Transcriptional repression of the shared frlABCD promoter controls pathway expression in
+    the BW25113 reporter system. This process-level context edge does not assert direct inhibition of
+    the pathway enzymes, separate endogenous transcript measurements, regulation of frlR itself, or psicoselysine-specific
+    reporter testing.
+  evidence:
+  - reference_id: PMID:32979851
+    source_assertion: Deleting frlR increases PfrlABCD-lux output; ectopic FrlR represses it. Epsilon-fructoselysine
+      relieves reporter repression, whereas alpha-fructoselysine does not.
+    source_locator: Thesis PDF pp89–90 (article pp5–6), Figs5b/6 and Results2.3
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: E. coli FrlR expressed from pBAD33 in BW25113/JW5698 PfrlABCD-lux reporter comparisons.
+      Exact construction/primer tables were unavailable; full insert identity to current K-12 P45544 is
+      not independently established. The measured target is a shared-promoter reporter, not each endogenous
+      transcript or an MG1655 gene instance.
+    evidence:
+    - reference_id: PMID:32979851
+      source_assertion: BW25113 and frlR-deleted JW5698 lux reporters are compared with ectopic pBAD33-FrlR;
+        construction details are referred to supporting Table S2.
+      source_locator: Thesis PDF pp89–90 (article pp5–6), Figs5b/6; Methods4.5 article p13 / PDF97
+- id: frl-033
+  subject: UniProtKB:P45544
+  predicate: regulates
+  object: MetaCyc:PWY0-521
+  description: Operator binding supplies the molecular basis for the separately observed transcriptional
+    repression. SPR measured operator-dependent binding, with reported KD 4.9 nM after active-concentration
+    correction; engineered T7/operator reporters support sequence dependence. This is regulatory context,
+    not a new metabolic event.
+  evidence:
+  - reference_id: PMID:32979851
+    source_assertion: Purified FrlR binds operator-bearing DNA in SPR. Operator mutations alter the engineered
+      reporter response, supporting sequence-dependent DNA recognition.
+    source_locator: Thesis PDF pp91–93 (article pp7–9), Results2.4 and Fig7; Methods4.6/4.9
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: 'Separate in vitro preparation: His6-SUMO-FrlR expressed in BL21(DE3), cleaved with His6-Ulp1
+      and recovered after metal-affinity cleanup. Exact supplementary construct sequence is unverified.
+      Operator DNA is the assay target; the reference protein ID does not establish a particular MG1655
+      promoter or full-length native dimer.'
+    evidence:
+    - reference_id: PMID:32979851
+      source_assertion: Protein purification uses His6-SUMO expression in BL21(DE3), His6-Ulp1 cleavage
+        and recovery of tag-free FrlR; SPR compares operator-bearing and control DNA.
+      source_locator: Thesis PDF pp97–98 (article pp13–14), Methods4.6–4.7
+- id: frl-034
+  subject: UniProtKB:P0AGB3
+  predicate: activates
+  object: MetaCyc:PWY0-521
+  description: Positive transcriptional context from RpoH overexpression and promoter-truncation reporters.
+    This is not a purified sigma-factor binding experiment, direct enzyme activation, individual endogenous-transcript
+    measurement, or a host-adaptation experiment.
+  evidence:
+  - reference_id: PMID:32979851
+    source_assertion: Arabinose-induced rpoH on pBAD33 increases PfrlABCD-lux output in promoter-truncation
+      experiments.
+    source_locator: Thesis PDF pp89–90 (article pp5–6), Fig5c; Methods4.5 article p13 / PDF97
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: pBAD33-rpoH overexpression in BW25113 shared-promoter lux reporter assays, with promoter
+      truncations and temperature conditions specified by Figure 5c and Methods4.5. Exact supplementary
+      insert sequence was not inspected; current K-12 RpoH denotes gene-product identity.
+    evidence:
+    - reference_id: PMID:32979851
+      source_assertion: The reporter experiment overproduces RpoH from pBAD33; Methods specifies adjusted
+        measurement temperatures for rpoH analysis.
+      source_locator: Thesis PDF pp89–90 Fig5c and Results2.3; PDF97 Methods4.5
+- id: frl-035
+  subject: UniProtKB:P0ACJ8
+  predicate: activates
+  object: MetaCyc:PWY0-521
+  description: Inferred CRP/cAMP-dependent positive transcriptional control from cyaA manipulation, glucose
+    response and candidate-CRP-region truncation. The study supplies no new purified CRP binding or crp-deletion
+    experiment. The source differs between 10 and 20 mM glucose descriptions; no single dose is selected
+    here.
+  evidence:
+  - reference_id: PMID:32979851
+    source_assertion: cyaA deletion reduces the reporter and ectopic cyaA restores activity; glucose and
+      promoter truncation alter the response, supporting a CRP/cAMP regulatory interpretation.
+    source_locator: Thesis PDF pp89–90 (article pp5–6), Fig5d and Results2.3; PDF97 Methods4.5
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Indirect CRP attribution in BW25113/JW3778 cyaA and PfrlABCD-lux reporter comparisons.
+      CRP itself was neither deleted nor purified in these experiments; promoter DNA and reporter context
+      were engineered. Exact equivalence of every tested sequence to the reference K-12 molecules is not
+      established.
+    evidence:
+    - reference_id: PMID:32979851
+      source_assertion: The cAMP reporter comparisons use cyaA-deleted JW3778, ectopic cyaA and truncated
+        promoter fusions; the CRP-directed interpretation is indirect.
+      source_locator: Thesis PDF pp89–90 Fig5d and Results2.3; Methods4.5 PDF97
+references:
+- id: MetaCyc:PWY0-521
+  title: MetaCyc PWY0-521 complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY0-521
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: ba16c1b315720ac66f27e4ff7e5ef039d00b5c2cd0cddb5d92293b161e35c629
+- id: MetaCyc:RXN0-4841
+  title: MetaCyc RXN0-4841 complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN0-4841
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: e6a96e66d533622066cf16eb23d880c3bb3492509b3e2ba5216f6c2fdfe6c7fb
+- id: MetaCyc:RXN0-962
+  title: MetaCyc RXN0-962 complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN0-962
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 08fb14048d03b8685bbb4a199dbdf49a35712ab7ffc90d6720a5029ae711ad79
+- id: MetaCyc:RXN0-963
+  title: MetaCyc RXN0-963 complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN0-963
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: e18967b98757d775cb085a6cdba8d145ee3ae54d082573683ddaf7f556e6c1fb
+- id: MetaCyc:CPLX0-3861
+  title: MetaCyc CPLX0-3861 complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX0-3861
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: f61c2a4054889d2f496e74fcc38a2f934333743f107dd8d657f5b7fd40df4688
+- id: MetaCyc:CPLX0-821
+  title: MetaCyc CPLX0-821 complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX0-821
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 3859f08334de813b9cc63ead127a553a4acd6aa420e25db728920adb8fe77a52
+- id: MetaCyc:G7724-MONOMER
+  title: MetaCyc G7724-MONOMER complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G7724-MONOMER
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 8671702f7c55d206250bcb37fafd72e2ea69cb23aa4bd566e5f61ea8ee50ad51
+- id: MetaCyc:G7726-MONOMER
+  title: MetaCyc G7726-MONOMER complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G7726-MONOMER
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 3e6687a4fd3aa0419333c3b8bf81846679ea6febdc3c2025a02c9d3ff86c7b8c
+- id: MetaCyc:G7723-MONOMER
+  title: MetaCyc G7723-MONOMER complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G7723-MONOMER
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: b421279075c6fa1969c8c34fb9d58e451547a133ad43aa117a72037629530858
+- id: MetaCyc:PSICOSELYSINE
+  title: MetaCyc PSICOSELYSINE complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PSICOSELYSINE
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: a1aa8c89a4652bbf493362f09292e61d5af3b84a5101c506a2111384f055ab11
+- id: MetaCyc:FRUCTOSELYSINE
+  title: MetaCyc FRUCTOSELYSINE complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:FRUCTOSELYSINE
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 3afb9c789eada922420560d411e9a5d1e44f015520071904850c5d88477e6f14
+- id: MetaCyc:FRUCTOSELYSINE-6-PHOSPHATE
+  title: MetaCyc FRUCTOSELYSINE-6-PHOSPHATE complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:FRUCTOSELYSINE-6-PHOSPHATE
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 1f463818e7eeac41fbf93cfe7a55513a2f64a21a38a68b468dfc67245a77b917
+- id: MetaCyc:ATP
+  title: MetaCyc ATP complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ATP
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 1fc4246b67bb2e45cf6e04a6dfa5e1079da4b8301b11edc6ddb63ba7da2f0615
+- id: MetaCyc:ADP
+  title: MetaCyc ADP complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ADP
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: ab4e609de498066954ce566113013cb237ee86c965289a5325337205d868c183
+- id: MetaCyc:PROTON
+  title: MetaCyc PROTON complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PROTON
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 22115ac465b8f70fb4d34d11e93120cafb805cbc00c2391f21a5a27f1563602f
+- id: MetaCyc:WATER
+  title: MetaCyc WATER complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:WATER
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 29201d5730308535e65744b47f9f6e0eb3ef9ffdcdd2eb442888a34da8a8c366
+- id: MetaCyc:GLC-6-P
+  title: MetaCyc GLC-6-P complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:GLC-6-P
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: 78c153351d510185c8b663fc7a74da6706ef493305464a2786ca74699d70049c
+- id: MetaCyc:LYS
+  title: MetaCyc LYS complete native object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:LYS
+  source_version: META PGDB 27.0; complete unmodified XML
+  source_sha256: a0b1902ad46eb1609cb84ab8ff8313f83a3700a06f687501b7dc9027eedd226d
+- id: RHEA:28391
+  title: Rhea directional reaction 28391
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; digest binds whole original RDF gzip; locators aggregate all descriptions
+    by exact URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: RHEA:28379
+  title: Rhea directional reaction 28379
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142; digest binds whole original RDF gzip; locators aggregate all descriptions
+    by exact URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: UniProtKB:P45541
+  title: Fructoselysine 3-epimerase
+  url: https://rest.uniprot.org/uniprotkb/P45541.json
+  source_version: Reviewed UniProtKB; entry 141, sequence 3; complete JSON
+  source_sha256: 51dd47c02807ae4386eb270b2a0702a9c7f99fd2582987524111b4093f294978
+- id: UniProtKB:P45543
+  title: Fructoselysine 6-kinase
+  url: https://rest.uniprot.org/uniprotkb/P45543.json
+  source_version: Reviewed UniProtKB; entry 156, sequence 1; complete JSON
+  source_sha256: dfa557a2656ad36070beb24d892ae59c01bcdfafd24d0743c81ac87151e7d5ee
+- id: UniProtKB:P0AC00
+  title: Fructoselysine 6-phosphate deglycase
+  url: https://rest.uniprot.org/uniprotkb/P0AC00.json
+  source_version: Reviewed UniProtKB; entry 126, sequence 1; complete JSON
+  source_sha256: 8a39f92fa00ac705a754a268a026765d25413c14d3bc0b5835aedf79a61ce49e
+- id: UniProtKB:P45539
+  title: Probable fructoselysine/psicoselysine transporter FrlA
+  url: https://rest.uniprot.org/uniprotkb/P45539.json
+  source_version: Reviewed UniProtKB; entry 172, sequence 2; complete JSON
+  source_sha256: d6e1058f0218f86bc86b518e24d564a078e2aebc32740e7e0eba9bfa55a281d7
+- id: UniProtKB:P45544
+  title: Probable fructoselysine utilization operon transcriptional repressor
+  url: https://rest.uniprot.org/uniprotkb/P45544.json
+  source_version: Reviewed UniProtKB; entry 175, sequence 2; complete JSON
+  source_sha256: 0aaf3b425cb6e97be71dc137df44da0e8b4c6bc8f1c22e494c855c4229919cb6
+- id: UniProtKB:P0AGB3
+  title: RNA polymerase sigma factor RpoH
+  url: https://rest.uniprot.org/uniprotkb/P0AGB3.json
+  source_version: Reviewed UniProtKB; entry 151, sequence 1; complete JSON
+  source_sha256: 9b872e05287c2b785fed43608c16d50b15a017ec07dbd5c58e09513595ca4b7f
+- id: UniProtKB:P0ACJ8
+  title: DNA-binding transcriptional dual regulator CRP
+  url: https://rest.uniprot.org/uniprotkb/P0ACJ8.json
+  source_version: Reviewed UniProtKB; entry 159, sequence 1; complete JSON
+  source_sha256: 78363826a61b49132c01d2811a8a2d68439b35023ce5a602672d6aa82927a9a1
+- id: PMID:14641112
+  title: Fructoselysine 3-epimerase, an enzyme involved in the metabolism of the unusual Amadori compound
+    psicoselysine in Escherichia coli
+  url: https://research.dial.uclouvain.be/bitstreams/d9a57554-ce88-46e1-af66-9d66e5795925/download
+  source_version: Complete primary PDF, six journal pages 1047–1052; all five figures appraised; institutional
+    handle 2078.1/21976
+  source_sha256: 3ff6bd0c195156ff78fd509723301a3d425d317a6ef9e0f65489faeec579556c
+- id: PMID:12147680
+  title: Identification of a pathway for the utilization of the Amadori product fructoselysine in Escherichia
+    coli
+  url: https://www.researchgate.net/profile/Elsa-Wiame/publication/11234416_Wiame_E_Delpierre_G_Collard_F_Van_Schaftingen_E_Identification_of_a_pathway_for_the_utilization_of_the_Amadori_product_fructoselysine_in_Escherichia_coli_J_Biol_Chem_277_42523-42529/links/566962a108aea0892c4992aa/Wiame-E-Delpierre-G-Collard-F-Van-Schaftingen-E-Identification-of-a-pathway-for-the-utilization-of-the-Amadori-product-fructoselysine-in-Escherichia-coli-J-Biol-Chem-277-42523-42529.pdf
+  source_version: Public author-deposited original PDF read through web reader; all text and captions
+    on journal pages 42523–42529 inspected. Original PDF bytes not retained; figure pixels not visually
+    appraised. No original-artifact digest is asserted.
+- id: PMID:32979851
+  title: Transcriptional regulation of the Nε-fructoselysine metabolism in Escherichia coli by global
+    and substrate-specific cues
+  url: https://edoc.ub.uni-muenchen.de/28034/7/Koller_Franziska.pdf
+  source_version: 2020 early-view article, reproduced on one-based PDF pages 85–100 of Koller 2021 thesis.
+    Digest covers whole 125-page thesis, not standalone article. All 16 article pages and nine figures
+    appraised; supporting information unavailable.
+  source_sha256: 0da0abe4b59d46041613fef11db65636d5facc75de2b722527b48c67195a0173

@@ -1,0 +1,79 @@
+{
+  "cwd": "/private/tmp/pathwaymech-next-246-20261013",
+  "baseline_commit": "4d0546f17b4a554322a0b38f8d689d5b77a1e3c8",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src"
+  },
+  "source_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_source_identifier_snapshot.py",
+    "--manifest",
+    "/private/tmp/pathwaymech-next-246-authority-staging/identifier_sources.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-246-authority-staging/originals",
+    "--records",
+    "/private/tmp/pathwaymech-next-246-authority-staging/records",
+    "--output",
+    "/private/tmp/pathwaymech-next-246-authority-staging/sources.union.json"
+  ],
+  "ontology_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_ontology_identifier_snapshot.py",
+    "--source",
+    "GO=/private/tmp/pathwaymech-curation-authorities/go.db",
+    "--source",
+    "CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db",
+    "--source",
+    "NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+    "--source",
+    "RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db",
+    "--rhea-updates",
+    "conf/rhea_identifier_updates.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-246-authority-staging/originals",
+    "--corpus",
+    "/private/tmp/pathwaymech-next-246-authority-staging/records",
+    "--include-id",
+    "GO:0008150",
+    "--include-id",
+    "GO:0006096",
+    "--include-id",
+    "GO:0005975",
+    "--output",
+    "/private/tmp/pathwaymech-next-246-authority-staging/ontology.union.json"
+  ],
+  "unchanged_builder_sha256": {
+    "build_source_identifier_snapshot.py": "7e483d89b36ec82c1e3f87cdcfd5b14f168474c31ea550905e6fb668cf41a9e0",
+    "build_ontology_identifier_snapshot.py": "fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81"
+  },
+  "selection": {
+    "scope": "Actual copied corpus updated with final regulator-inclusive draft plus exact ID-only union selector preserving all prior authority terms. No gene nodes selected.",
+    "selector_file": "records/planned-authority-selection.yaml",
+    "selector_sha256": "12f395a7dc56720f7555aa3254d2f3f0a061c04b0dceeed28c0c89e37c0e0504",
+    "reconstruct_from": [
+      "retained-authority-identifiers.json",
+      "planned-identifiers.json"
+    ],
+    "format": "yaml.safe_dump({id: MetaCyc:PWY0-521, participants: [{id: identifier} for identifier in sorted(union)]}, sort_keys=False)",
+    "pyyaml_version": "6.0.3",
+    "actual_draft_origin": "/private/tmp/pathwaymech-next-246-20261013/data/pathways/fructoselysine-and-psicoselysine-degradation.yaml",
+    "actual_draft_sha256": "3e5b25fc917a30aca70b1dbdce4c70cb7b2d69f595b1f0f13d391812b7cdcb93",
+    "immutable_input_copy": "/private/tmp/pathwaymech-next-246-authority-staging/records/fructoselysine-and-psicoselysine-degradation.yaml"
+  },
+  "manifest_sha256": "44678d183dafb98385d11df4daf9976634d369fda8c2a0c69793b02f991c840f",
+  "old_original_cache": "/private/tmp/pathwaymech-next-245-authority-staging/originals",
+  "staging_helper": {
+    "path": "/private/tmp/pathwaymech-next-246-authority-staging/prepare_regulatory_union.py",
+    "sha256": "dfd2cc422159c0f8cb6d446e39fbd4048ce55f154f6224fe6e642ab2a45f4558",
+    "scope": "External environment-bound helper, never maintained"
+  },
+  "parent_approval": "Root approved canonical union and maintainedmanifest/snapshot writes for current selected IDs; all old terms and sources must be retained exactly.",
+  "initial_helper": {
+    "path": "/private/tmp/pathwaymech-next-246-authority-staging/prepare_canonical.py",
+    "sha256": "bd1917cfa9af38a796869fdccba19fe4ac4960126a51b1aba4c550713350c7c1"
+  },
+  "initial_build_receipts": "initial-base-build"
+}

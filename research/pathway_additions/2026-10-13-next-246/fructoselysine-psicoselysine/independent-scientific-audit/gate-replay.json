@@ -1,0 +1,79 @@
+{
+  "observed_at": "2026-10-14T07:29:39.291194Z",
+  "target_sha256": "3e5b25fc917a30aca70b1dbdce4c70cb7b2d69f595b1f0f13d391812b7cdcb93",
+  "gates": [
+    {
+      "gate": "render",
+      "receipt": "research/pathway_additions/2026-10-13-next-246/fructoselysine-psicoselysine/validation/20261014T070954Z-render.json",
+      "receipt_sha256": "2b8e46262783e4acfd26063b25a133e1d621d2620cff8459aff50976d51ed2c9",
+      "compressed_sha256": "2afb170e0a63a04d8659a300e6dd4feb3a1806ff1cc7b321e3377e12d96752e3",
+      "decompressed_sha256": "11293d4429b45817c8c5f06671add24deb2be4369c457c60986d73a3c4e9410a",
+      "exit_code": 0,
+      "tail": [
+        "uv run pathwaymech-render-pages",
+        "rendered 245 pathway records"
+      ]
+    },
+    {
+      "gate": "kgx",
+      "receipt": "research/pathway_additions/2026-10-13-next-246/fructoselysine-psicoselysine/validation/20261014T070954Z-kgx.json",
+      "receipt_sha256": "a7c8947fc69471ce522458654242382a70839dc4372355cfa9345efaa25d8f4a",
+      "compressed_sha256": "9eaf7ec522db9651ecbdbd1bc6e8d17f4fe022e49a64072ea7ad17e584681462",
+      "decompressed_sha256": "6bf1ca87ec7f53dcc2dfb6875db10f5ea7d4e08e6460656420bb0a32c0a3c853",
+      "exit_code": 0,
+      "tail": [
+        "uv run pathwaymech-export-kgx ",
+        "wrote /private/tmp/pathwaymech-next-246-20261013/output/kgx/nodes.tsv and /private/tmp/pathwaymech-next-246-20261013/output/kgx/edges.tsv from 245 pathway records"
+      ]
+    },
+    {
+      "gate": "lint",
+      "receipt": "research/pathway_additions/2026-10-13-next-246/fructoselysine-psicoselysine/validation/20261014T071008Z-lint.json",
+      "receipt_sha256": "93cf6f1e5e0fabf874f6683f42d840141aaaacb1f4080d370f17047a2e13bb99",
+      "compressed_sha256": "fab45d94cd260329cc1940f54b6e6a31ba66e94a424a4fbc2606aa0d9ba4b658",
+      "decompressed_sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41",
+      "exit_code": 0,
+      "tail": [
+        "uv run --extra dev ruff check .",
+        "All checks passed!"
+      ]
+    },
+    {
+      "gate": "validate",
+      "receipt": "research/pathway_additions/2026-10-13-next-246/fructoselysine-psicoselysine/validation/20261014T071452Z-validate.json",
+      "receipt_sha256": "725f9cc1d8580e42d3fc788b2dee4f946a396694de9c966c994233a1b3d7718a",
+      "compressed_sha256": "c9c935bf71f138608b25105daaf171724c676eb18cf7e9012b629b03ea54dfca",
+      "decompressed_sha256": "d3ae948c21cccab504b074f34df31958349e17c6bc0266b9ab959447e13d67d1",
+      "exit_code": 0,
+      "tail": [
+        "history links: 423 record(s), 0 invalid",
+        "No issues found",
+        "423 history record(s) valid against src/pathwaymech/schema/history.yaml",
+        "checked 17620 evidence blocks",
+        "validated 30 source records",
+        "checked 6 documentation files",
+        "checked deep-research report contract",
+        "pages/ is current with 245 pathway records"
+      ]
+    },
+    {
+      "gate": "test",
+      "receipt": "research/pathway_additions/2026-10-13-next-246/fructoselysine-psicoselysine/validation/20261014T071452Z-test.json",
+      "receipt_sha256": "d5b0c549ef202b0f7c26f3568fe4880a85cb6e5c88649c713b9b33ba8a78d657",
+      "compressed_sha256": "e6c7b3b43a78ce3362f71004eeb3c0e92cdda7123394ee219d192ab4771a834c",
+      "decompressed_sha256": "c9d897e5452e801a886501c92d36df0326b3fc23a076239d3a635efb9189f2ea",
+      "exit_code": 0,
+      "tail": [
+        "tests/test_sssom_export.py::test_sssom_expands_native_frame_and_scoped_instance_ids[EcoCyc:3-KETOBUTYRATE-https://ecocyc.org/gene?id=3-KETOBUTYRATE]",
+        "tests/test_sssom_export.py::test_sssom_expands_native_frame_and_scoped_instance_ids[MetaCyc:MONOMER-17874-https://metacyc.org/META/NEW-IMAGE?object=MONOMER-17874]",
+        "tests/test_sssom_export.py::test_sssom_expands_native_frame_and_scoped_instance_ids[PathBank:SMP0002123/Compound/PW_C000414-https://w3id.org/culturebotai/pathwaymech/pathbank/SMP0002123/Compound/PW_C000414]",
+        "  /private/tmp/pathwaymech-next-195-20261011/.venv/lib/python3.13/site-packages/sssom/util.py:197: Pandas4Warning: The copy keyword is deprecated and will be removed in a future version. Copy-on-Write is active in pandas since 3.0 which utilizes a lazy copy mechanism that defers copies until necessary. Use .copy() to make an eager copy if necessary.",
+        "    non_double_cols = non_double_cols.infer_objects(copy=False)",
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "=========== 4867 passed, 3 skipped, 7 warnings in 821.61s (0:13:41) ============"
+      ]
+    }
+  ],
+  "pending": []
+}
