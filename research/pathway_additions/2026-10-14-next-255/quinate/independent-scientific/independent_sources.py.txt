@@ -1,0 +1,26 @@
+from pathlib import Path
+import hashlib,json,xml.etree.ElementTree as ET,gzip,re
+from datetime import datetime,timezone
+OUT=Path('/private/tmp/pathwaymech-next-255-science-review')
+C=Path('/private/tmp/pathwaymech-next-255-chemistry');N=Path('/private/tmp/pathwaymech-next-255-native/originals')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+chem=[]
+for native,cid in [('QUINATE','29751'),('DEHYDROQUINATE','32364'),('3-DEHYDRO-SHIKIMATE','16630'),('3-4-DIHYDROXYBENZOATE','36241'),('WATER','15377'),('PQQ','58442')]:
+ p=C/'originals-meta27'/f'META-{native}.xml';q=C/'originals'/f'ChEBI-{cid}.json';r=ET.parse(p).getroot()[1];d=json.loads(q.read_text());assert r.findtext('inchi')==d['default_structure']['standard_inchi'];assert r.findtext('inchi-key').removeprefix('InChIKey=')==d['default_structure']['standard_inchi_key'];chem.append({'native':native,'chebi':'CHEBI:'+cid,'full_inchi_equal':True,'inchikey_equal':True,'formula':d['chemical_data']['formula'],'charge':d['chemical_data']['charge'],'source_sha256':{str(p):sha(p),str(q):sha(q)}})
+projection=json.loads((C/'rhea-original-projection.json').read_text());rdf=Path(projection['original']['path']);assert sha(rdf)==projection['original']['sha256'];wanted=set(projection['nodes']);found={};about='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about';resource='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource'
+with gzip.open(rdf,'rb') as h:
+ for ev,e in ET.iterparse(h,events=('end',)):
+  if e.get(about) in wanted:
+   out=found.setdefault(e.get(about),{})
+   for c in e:
+    k=c.tag.split('}')[-1];value=c.get(resource) or ''.join(c.itertext()).strip()
+    if value not in out.setdefault(k,[]):out[k].append(value)
+   found[e.get(about)]=out
+diff=[{'node':k,'found':found.get(k),'expected':v} for k,v in projection['nodes'].items() if found.get(k)!=v]
+(OUT/'rhea-comparison-differences.json').write_text(json.dumps(diff,indent=2)+'\n')
+assert not diff,(len(found),len(wanted),len(diff))
+reactions=[]
+for n in ['1.1.99.25-RXN','3-DEHYDROQUINATE-DEHYDRATASE-RXN','DHSHIKIMATE-DEHYDRO-RXN']:
+ p=N/f'META-{n}.xml';r=ET.parse(p).getroot()[1];reactions.append({'native':n,'direction':r.findtext('reaction-direction'),'left':[x.get('frameid') for x in r.findall('left/Compound')],'right':[x.get('frameid') for x in r.findall('right/Compound')],'sha256':sha(p)})
+result={'reviewer':'codex/next255_science_review','completed_at':datetime.now(timezone.utc).isoformat(),'chemical_checks':chem,'native_reactions':reactions,'rhea_all_projected_nodes_against_original':len(found),'rhea_original_sha256':sha(rdf),'rhea_equations':{k:{s:found['http://rdf.rhea-db.org/'+k].get(s) for s in ['equation','side','isChemicallyBalanced','bidirectionalReaction','directionalReaction']} for k in ['21096','23672','24848']},'generic_scope_disposition':'Native Quinones comment is broad and xrefs CHEBI36141. Native representative CML is not complete class semantics. Preserve native first reaction and classes; Rhea23673 narrower 1,4-benzoquinones/hydroquinones is a related comparison, not exact whole-reaction mapping.'}
+(OUT/'independent-source-checks.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'checks':len(chem),'rhea_nodes':len(found),'reactions':reactions},indent=2))

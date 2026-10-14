@@ -1,0 +1,93 @@
+from pathlib import Path
+import datetime,hashlib,json,shutil,subprocess,sys
+import yaml
+
+B=Path(__file__).resolve().parent
+R=Path('/private/tmp/pathwaymech-next-255-20261014')
+N=Path('/private/tmp/pathwaymech-next-255-native')
+OLD=Path('/private/tmp/pathwaymech-next-254-authorities/originals')
+BASE='bfa3f5ed0e843472c0fd173ce91df2a90dd4ddb2'
+PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+def sha(p):
+    h=hashlib.sha256()
+    with p.open('rb') as f:
+        while b:=f.read(1024*1024):h.update(b)
+    return h.hexdigest()
+def save(name,obj):(B/name).write_text(json.dumps(obj,indent=2)+'\n')
+def git(*args):return subprocess.check_output(['git',*args],cwd=R)
+assert git('rev-parse','HEAD').decode().strip()==BASE
+for name in ['baseline','originals','records']:(B/name).mkdir(exist_ok=True)
+for source,name in [('conf/identifier_sources.json','identifier_sources.json'),('conf/rhea_identifier_updates.json','rhea_identifier_updates.json'),('data/identifier_authorities/sources.json','sources.json'),('data/identifier_authorities/ontology.json','ontology.json')]:
+    raw=git('show',f'{BASE}:{source}')
+    assert (R/source).read_bytes()==raw,(source,'uncommitted baseline change')
+    dst=B/'baseline'/name
+    if dst.exists():assert dst.read_bytes()==raw
+    else:dst.write_bytes(raw)
+for p in OLD.iterdir():
+    dst=B/'originals'/p.name
+    if not dst.exists():dst.symlink_to(p)
+old_manifest=json.loads((B/'baseline/identifier_sources.json').read_text())
+digests={};artifacts=[]
+def verify_descriptors(obj,where):
+    if isinstance(obj,dict):
+        if 'path' in obj and 'sha256' in obj:
+            p=B/'originals'/obj['path'];assert p.is_file(),str(p)
+            if str(p) not in digests:digests[str(p)]=sha(p)
+            assert digests[str(p)]==obj['sha256'],(where,str(p))
+            artifacts.append({'context':where,'path':str(p),'sha256':digests[str(p)]})
+        for k,v in obj.items():verify_descriptors(v,where+'/'+k)
+    elif isinstance(obj,list):
+        for i,v in enumerate(obj):verify_descriptors(v,where+f'/{i}')
+verify_descriptors(old_manifest,'identifier_sources')
+verify_descriptors(json.loads((B/'baseline/rhea_identifier_updates.json').read_text()),'rhea_identifier_updates')
+retained=set()
+for name in ['sources','ontology']:retained.update(json.loads((B/'baseline'/f'{name}.json').read_text())['terms'])
+save('retained-authority-identifiers.json',sorted(retained))
+paths=git('ls-tree','-r','--name-only',BASE,'data/pathways').decode().splitlines()
+paths=[p for p in paths if p.endswith('.yaml')]
+record_bindings=[]
+for source in paths:
+    raw=git('show',f'{BASE}:{source}');dst=B/'records'/Path(source).relative_to('data/pathways');dst.parent.mkdir(parents=True,exist_ok=True)
+    if dst.exists():assert dst.read_bytes()==raw
+    else:dst.write_bytes(raw)
+    record_bindings.append({'git_path':source,'path':str(dst),'sha256':hashlib.sha256(raw).hexdigest()})
+save('baseline-record-bindings.json',record_bindings)
+save('baseline-original-cache-verification.json',{'baseline_commit':BASE,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'manifest_entries':len(old_manifest),'hash_bound_descriptors':len(artifacts),'distinct_original_paths':len(digests),'all_original_sha256_verified':True,'old_cache':str(OLD),'retained_authority_terms':len(retained),'originals':artifacts})
+planned={'MetaCyc:QUINATEDEG-PWY','MetaCyc:1.1.99.25-RXN','MetaCyc:Quinones','MetaCyc:Reduced-Quinones','RHEA:21099','RHEA:24849','CHEBI:29751','CHEBI:58442','CHEBI:32364','CHEBI:16630','CHEBI:36241','CHEBI:15377','UniProtKB:Q59086','UniProtKB:Q59087','UniProtKB:Q43922','MetaCyc:MONOMER-0','MetaCyc:MONOMER-15328','MetaCyc:MONOMER-1','MetaCyc:MONOMER-67','GO:0016020','GO:0005886','GO:0005737','GO:0042597','NCBITaxon:62977','NCBITaxon:442'}
+save('planned-identifiers.json',sorted(planned))
+selector=B/'records/planned-authority-selection.yaml'
+selector.write_text(yaml.safe_dump({'id':'MetaCyc:QUINATEDEG-PWY','participants':[{'id':i} for i in sorted(retained|planned)]},sort_keys=False))
+native_acq={x['frameid']:x for name in ['acquisition-reactions.json','acquisition-proteins.json','acquisition-secondary.json'] for x in json.loads((N/name).read_text())}
+native_html={x['frameid']:x for x in json.loads((N/'acquisition-html.json').read_text())}
+root_html={x['frame']:x for name in ['html-acquisition.json','html-followup-acquisition.json'] for x in json.loads((B/name).read_text()) if x.get('bytes',0)>1000}
+uniprot={x['accession']:x for x in json.loads((N/'acquisition-uniprot.json').read_text())}
+add=[];bindings=[]
+for ident in sorted(planned-retained):
+    prefix,fid=ident.split(':',1)
+    if prefix=='MetaCyc':
+        if fid=='1.1.99.25-RXN':acq=native_acq[fid];kind='metacyc-reaction-xml'
+        elif fid in {'MONOMER-0','MONOMER-15328'}:acq=native_acq[fid];kind='metacyc-protein-xml'
+        elif fid in {'MONOMER-1','MONOMER-67'}:acq=native_html[fid];kind='metacyc-html'
+        else:acq=root_html[fid];kind='metacyc-html'
+        version='27.0';license='BioCyc license; redistribution not assessed'
+    elif prefix=='UniProtKB':
+        acq=uniprot[fid];kind='uniprot';data=json.loads(Path(acq['path']).read_text());v=data['entryAudit']
+        assert data['primaryAccession']==fid
+        version=f"Complete {data['entryType']} JSON acquired 2026-10-14; entry version {v['entryVersion']}; sequence version {v['sequenceVersion']}"
+        license='CC-BY-4.0'
+    else:continue
+    p=Path(acq['path']);assert sha(p)==acq['sha256']
+    rel='meta255/'+p.name;dst=B/'originals'/rel;dst.parent.mkdir(exist_ok=True)
+    if dst.exists():assert sha(dst)==sha(p)
+    else:dst.symlink_to(p)
+    entry={'key':'meta255-'+ident.replace(':','-'),'kind':kind,'path':rel,'url':acq['url'],'version':version,'license':license,'sha256':sha(p)}
+    add.append(entry);bindings.append({'identifier':ident,'entry':entry,'original':str(p),'acquisition':acq})
+assert len({e['key'] for e in old_manifest+add})==len(old_manifest+add)
+save('proposed-source-additions.json',add);save('identifier_sources.json',old_manifest+add);save('new-source-original-bindings.json',bindings)
+commands={'cwd':str(R),'baseline_commit':BASE,'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'environment':{'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','PYTHONPATH':str(R/'src')+':'+str(R)},'source_builder':[PY,'-B','scripts/build_source_identifier_snapshot.py','--manifest',str(B/'identifier_sources.json'),'--cache-dir',str(B/'originals'),'--records',str(B/'records'),'--output',str(B/'sources.union.json')],'ontology_builder':[PY,'-B','scripts/build_ontology_identifier_snapshot.py'],'builder_sha256':{f:sha(R/'scripts'/f) for f in ['build_source_identifier_snapshot.py','build_ontology_identifier_snapshot.py']},'selection':{'scope':f'All {len(paths)} baseline records copied from exact Git blobs plus an ID-only selector preserving all {len(retained)} previous authority identifiers and {len(planned)} planned named identifiers. Selector supplies no labels or scientific claims.','selector_file':'records/planned-authority-selection.yaml','selector_sha256':sha(selector),'reconstruct_from':['retained-authority-identifiers.json','planned-identifiers.json']},'manifest_sha256':sha(B/'identifier_sources.json'),'old_original_cache':str(OLD),'staging_helper':{'path':str(Path(__file__).resolve()),'sha256':sha(Path(__file__))}}
+for prefix,name in [('GO','go'),('CHEBI','chebi'),('NCBITaxon','ncbitaxon'),('RHEA','rhea')]:commands['ontology_builder']+=['--source',f'{prefix}=/private/tmp/pathwaymech-curation-authorities/{name}.db']
+commands['ontology_builder']+=['--rhea-updates',str(B/'baseline/rhea_identifier_updates.json'),'--cache-dir',str(B/'originals'),'--corpus',str(B/'records')]
+for i in ['GO:0008150','GO:0006096','GO:0005975']:commands['ontology_builder']+=['--include-id',i]
+commands['ontology_builder']+=['--output',str(B/'ontology.union.json')]
+save('canonical-build-commands.json',commands)
+print(json.dumps({'baseline_records':len(paths),'retained_terms':len(retained),'planned':len(planned),'new_source_entries':len(add),'new_identifiers':sorted(planned-retained),'original_paths_verified':len(digests)},indent=2))

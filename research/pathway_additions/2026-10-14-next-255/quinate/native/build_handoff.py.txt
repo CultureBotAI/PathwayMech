@@ -1,0 +1,96 @@
+from project import *
+from collections import Counter
+
+seed_activities=json.loads((ROOT/'activity-seed-ids.json').read_text())
+seed_proteins=json.loads((ROOT/'protein-seed-ids.json').read_text())
+secondary=json.loads((ROOT/'secondary-ids.json').read_text())
+extra=json.loads((ROOT/'extra-activity-ids.json').read_text())
+retained={'ENZRXN-29','ENZRXN-68','ENZRXN-35','ENZRXN-02','ENZRXN-38','ENZRXN-3'}
+activity_reason={
+ 'ENZRXN-29':'Retain native ADP1 QuiA activity with current UniProt PQQ annotation and primary Elsemore94 support; do not transfer SA1/AC3 purification in PMID14586098 to ADP1. Initial native quinone-class reaction awaits root chemical-class mapping review.',
+ 'ENZRXN-68':'Retain G. oxydans IFO3244 quinate oxidation; native purification/proteolytic-band state and PQQ evidence require primary qualification.',
+ 'ENZRXN-35':'Retain ADP1 catabolic QuiB; preserve crude-extract evidence. Current UniProt flags erroneous extended initiation in old sequences, so omit old leader-sequence membrane-localization inference.',
+ 'ENZRXN-02':'Retain G. oxydans IFO3244 catabolic periplasmic DHQase; native enzyme MONOMER-0 is a complex with 12 MONOMER-15328 subunits. Do not equate native assay material to 621H UniProt Q5FTS6 based on a short N-terminal match.',
+ 'ENZRXN-38':'Retain ADP1 QuiC DHS dehydration with primary-qualified recombinant crude-extract context. Exclude native protein-comment typo assigning DHQ activity and unsupported mmol unit.',
+ 'ENZRXN-3':'Retain G. oxydans cytoplasmic fraction DHS dehydratase with partial-purification evidence limits; no accession or whole-protein sequence inferred.',
+ '3-DEHYDROQUINATE-DEHYDRATASE-ENZRXN':'Exclude E. coli biosynthetic AroD and linked inhibitors; shared chemical reaction does not place this biosynthetic enzyme in the defined quinate catabolic route.',
+ 'ENZRXN-18401':'Exclude Arabidopsis bifunctional shikimate biosynthesis enzyme: nonmicrobial biosynthetic context, including a truncated assayed construct, not this pathway.',
+ 'ENZRXN-17386':'Exclude C. glutamicum qsuC from this PQQ-initiated variant; native evidence is genetic interaction in NAD-dependent quinate/shikimate utilization, pertinent to quinate degradation II.',
+ 'ENZRXN-17378':'Exclude A. methanolica dual catabolic/biosynthetic DHQase from this bounded PQQ variant; native source establishes shared downstream chemistry, not PQQ initiation in this Gram-positive context. Preserve as alternate-variant lead.',
+ 'ENZRXN3O-1026':'Exclude yeast ARO1 pentafunctional biosynthetic enzyme; functional-complementation evidence concerns chorismate biosynthesis.',
+ 'ENZRXN-16059':'Exclude M. maripaludis biosynthetic AroD; native deletion and crude-extract experiments concern aromatic amino-acid biosynthesis.',
+ 'ENZRXN-1442':'Exclude B. subtilis AroC biosynthetic enzyme; native comment explicitly places this in chorismate biosynthesis.',
+ 'ENZRXN-17385':'Exclude C. glutamicum qsuB from PQQ variant; native source explicitly says product uncharacterized and infers role from operon, sequence, and induction. Alternate NAD-dependent route lead, not direct purified catalysis.',
+ 'ENZRXN-17379':'Exclude N. crassa qa-4 enzyme and its metal cofactors from this bacterial PQQ variant; relevant to NAD-dependent fungal quinate degradation II.',
+ 'ENZRXN-16693':'Exclude B. anthracis AsbF, Mn requirement, and Zn inhibition: source supports petrobactin biosynthesis, not this catabolic route.'
+}
+
+def ids(fid,path):return [e.get('frameid') for e in frame(fid).findall(path)]
+protein_activities={fid:[a for a in seed_activities if fid in ids(a,'./enzyme/Protein')] for fid in seed_proteins}
+for fid in secondary['proteins']:
+    parents=[p for p in seed_proteins if fid in ids(p,'./component/Protein')]
+    protein_activities[fid]=sorted({a for p in parents for a in protein_activities[p]})
+def disposition(fid):
+    e=frame(fid)
+    if e.tag=='Enzymatic-Reaction':
+        if fid in extra:return 'exclude','Auxiliary activity outside the exact three native reactions; preserve as neighboring pathway or biosynthesis context, without expanding the maintained boundary.'
+        return ('retain_with_scope' if fid in retained else 'exclude'),activity_reason[fid]
+    if e.tag=='Protein':
+        aa=protein_activities[fid];keep=bool(set(aa)&retained)
+        return ('retain_with_scope' if keep else 'exclude'),'; '.join(activity_reason[a] for a in aa)
+    if e.tag=='Regulation':
+        aa=ids(fid,'./regulated-entity/Enzymatic-Reaction')
+        assert not set(aa)&retained
+        return 'exclude','Regulation of an excluded enzyme: '+'; '.join(activity_reason[a] for a in aa)
+    raise ValueError(fid)
+
+biological=seed_activities+seed_proteins+secondary['proteins']+secondary['regulations']+extra
+assert len(biological)==len(set(biological))==51
+rows=[]
+for fid in biological:
+    e=frame(fid);decision,reason=disposition(fid)
+    keep_slots={'common-name','parent','species','enzyme','reaction','component','component-of','cofactor','location','has-go-term','regulated-by','regulator','regulated-entity','mode','mechanism','evidence','reaction-direction','physiologically-relevant'}
+    slots={}
+    for c in e:
+        if c.tag in keep_slots:slots.setdefault(c.tag,[]).append(slot(c))
+    rows.append({'frameid':fid,'kind':e.tag,'decision':decision,'rationale':reason,'source_path':str(ORIG/f'META-{fid}.xml'),'sha256':hashlib.sha256((ORIG/f'META-{fid}.xml').read_bytes()).hexdigest(),'locator':f'/ptools-xml/{e.tag}[@frameid="{fid}"]','native_slots':slots})
+coverage={'status':'author-support; not independent review or final maintained disposition','scope':'All 16 direct enzyme activities of the three exact native pathway reactions, all 16 enzymes, recursively all 5 complex subunits, all 7 direct activity regulations, and all 7 additional activities of those proteins. No regulators on additional activities and no further component descendants were present in inspected originals. Four gene and two localization originals are separate identity/context supports; pathway and chemical objects are accounted separately.','counts':dict(Counter(r['kind'] for r in rows)),'total':len(rows),'dispositions':dict(Counter(r['decision'] for r in rows)),'objects':rows}
+(ROOT/'biological-coverage.json').write_text(json.dumps(coverage,indent=2)+'\n')
+
+facts=[]
+def fact(owner,predicate,subject,obj,assertion,locator,decision='propose',note=None):
+    r={'source_owner':f'MetaCyc:{owner}','source_path':str(ORIG/f'META-{owner}.xml'),'source_sha256':hashlib.sha256((ORIG/f'META-{owner}.xml').read_bytes()).hexdigest(),'subject':subject,'predicate':predicate,'object':obj,'source_assertion':assertion,'source_locator':locator,'decision':decision}
+    if note:r['review_note']=note
+    assert len(assertion)<=400
+    facts.append(r)
+for a in sorted(retained):
+    e=frame(a);p=ids(a,'./enzyme/Protein')[0];r=ids(a,'./reaction/Reaction')[0]
+    codes=ids(a,'./evidence/Evidence-Code')
+    fact(a,'catalyzes',f'MetaCyc:{p}',f'MetaCyc:{r}',f'{a} explicitly joins enzyme {p} to reaction {r}; native evidence: '+', '.join(codes)+'.',f'/ptools-xml/Enzymatic-Reaction[@frameid="{a}"]/enzyme|reaction|evidence',note=activity_reason[a])
+kept_proteins=[r['frameid'] for r in rows if r['kind']=='Protein' and r['decision']=='retain_with_scope']
+for p in kept_proteins:
+    for tax in ids(p,'./species/Organism'):
+        fact(p,'part_of',f'MetaCyc:{p}',f'NCBITaxon:{tax.removeprefix("TAX-")}',f'The native {p} species slot identifies {tax}; this is source protein context, not proof of full pathway reconstruction in a single strain.',f'/ptools-xml/Protein[@frameid="{p}"]/species')
+for p in ['MONOMER-28','MONOMER-67','MONOMER-0']:
+    e=frame(p);go=ids(p,'./has-go-term/GO-Term')[0];cco=ids(p,'./location/cco')[0]
+    fact(p,'located_in',f'MetaCyc:{p}',go,f'The native protein has location {cco} and cellular-component annotation {go}.',f'/ptools-xml/Protein[@frameid="{p}"]/location|has-go-term',decision='requires_primary_scope_check',note='QuiA native location cites SA1/AC3 paper, so prefer independent ADP1 UniProt curated location; MONOMER-0 membrane association and periplasmic location need the primary fractionation distinction.')
+fact('MONOMER-0','has_part','MetaCyc:MONOMER-0','MetaCyc:MONOMER-15328','The native protein-complex object MONOMER-0 contains 12 copies of MONOMER-15328; membership does not independently assert catalysis by an isolated subunit.','/ptools-xml/Protein[@frameid="MONOMER-0"]/parent|component',note='Keep native source identity and qualify measured IFO3244 processing; do not replace with Q5FTS6 from strain621H.')
+fact('ENZRXN-29','has_cofactor','MetaCyc:MONOMER-28','MetaCyc:PQQ','ENZRXN-29 associates the QuiA native enzyme MONOMER-28 with PQQ as a cofactor.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-29"]/enzyme|cofactor',note='Native evidence mixes strains; current ADP1 UniProt independently reports PQQ but does not label this as a strain-specific direct assay.')
+fact('ENZRXN-3','located_in','MetaCyc:MONOMER-1','GO:0005737','The native activity comment reports partial purification of Gluconobacter oxydans dehydroshikimate dehydratase from the cytoplasmic fraction.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3"]/comment',decision='requires_primary_scope_check',note='Only fractionation context; no exclusive localization or whole-protein identity implied.')
+(ROOT/'biological-edge-proposal.json').write_text(json.dumps({'status':'author proposal; root must reconcile primary constructs and exact reaction/chemical mappings before maintained assembly','facts':facts},indent=2)+'\n')
+
+identity=[]
+for p in kept_proteins:
+    e=frame(p);xrefs=[c.findtext('dblink-oid') for c in e.findall('dblink') if c.findtext('dblink-db')=='UNIPROT']
+    name=text(e.findtext('common-name'))
+    if not name:
+        aa=ids(p,'./catalyzes/Enzymatic-Reaction');assert len(aa)==1
+        name=text(frame(aa[0]).findtext('common-name'))
+    identity.append({'native_id':f'MetaCyc:{p}','native_label_or_single_activity_label':name,'category':'complex' if 'Protein-Complexes' in ids(p,'./parent/Protein') else 'protein','native_uniprot_xrefs':xrefs,'recommended_id':f'UniProtKB:{xrefs[0]}' if xrefs and p!='MONOMER-15328' else f'MetaCyc:{p}','scope_caveat': 'Do not equate IFO3244 assayed mature subunit to 621H sequence Q5FTS6.' if p=='MONOMER-15328' else 'Final experimental construct/state qualifications depend on primary source inspection.'})
+(ROOT/'biological-node-identities.json').write_text(json.dumps(identity,indent=2)+'\n')
+
+bindings=[]
+for f in sorted(ORIG.iterdir()):
+    b=f.read_bytes();bindings.append({'path':str(f),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)})
+(ROOT/'original-bindings.json').write_text(json.dumps(bindings,indent=2)+'\n')
+print(json.dumps({'coverage':coverage['counts'],'total':len(rows),'decisions':coverage['dispositions'],'edge_proposals':len(facts),'native_node_candidates':len(identity),'originals':len(bindings)},indent=2))

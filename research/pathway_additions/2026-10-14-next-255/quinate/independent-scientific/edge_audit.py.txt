@@ -1,0 +1,67 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,re
+from datetime import datetime,timezone
+import yaml
+W=Path('/private/tmp/pathwaymech-next-255-20261014');O=Path('/private/tmp/pathwaymech-next-255-science-review');N=Path('/private/tmp/pathwaymech-next-255-native/originals');C=Path('/private/tmp/pathwaymech-next-255-chemistry/originals-meta27');P=Path('/private/tmp/pathwaymech-next-255-primary')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+r=yaml.safe_load((W/'data/pathways/quinate-degradation-i.yaml').read_text());edges=r['mechanistic_edges'];refs={x['id']:x for x in r['references']};assert len(edges)==37
+protein_map={'MONOMER-28':'UniProtKB:Q59086','MONOMER-33':'UniProtKB:Q59087','MONOMER-37':'UniProtKB:Q43922'}
+rxn_map={'1.1.99.25-RXN':'MetaCyc:1.1.99.25-RXN','3-DEHYDROQUINATE-DEHYDRATASE-RXN':'RHEA:21099','DHSHIKIMATE-DEHYDRO-RXN':'RHEA:24849'}
+chem_map={'QUINATE':'CHEBI:29751','DEHYDROQUINATE':'CHEBI:32364','3-DEHYDRO-SHIKIMATE':'CHEBI:16630','3-4-DIHYDROXYBENZOATE':'CHEBI:36241','WATER':'CHEBI:15377','Quinones':'MetaCyc:Quinones','Reduced-Quinones':'MetaCyc:Reduced-Quinones'}
+xml=lambda n:E.parse(N/f'META-{n}.xml').getroot()[1]
+path=xml('QUINATEDEG-PWY');native_rxns=[x.get('frameid') for x in path.findall('reaction-list/Reaction')];assert set(native_rxns)==set(rxn_map)
+expected={}
+def add(a,b,c,reason):expected[(a,b,c)]=reason
+for x in path.findall('species/Organism'):add(r['id'],'part_of','NCBITaxon:'+x.get('frameid').removeprefix('TAX-'),'Exact native pathway species context; no all-isolate expression assertion.')
+for rn,curie in rxn_map.items():
+ add(curie,'part_of',r['id'],'Exact complete native pathway reaction-list membership.')
+ rr=xml(rn)
+ for x in rr.findall('left/Compound'):add(chem_map[x.get('frameid')],'consumes',curie,'Exact native left side; concrete identity independently checked by full InChI and ChEBI, generic classes remain native.')
+ for x in rr.findall('right/Compound'):add(curie,'produces',chem_map[x.get('frameid')],'Exact native right side; material direction is selected pathway flux and does not erase middle reversibility.')
+for x in path.findall('reaction-ordering'):
+ succ=x.find('Reaction').get('frameid')
+ for pre in x.findall('predecessor-reactions/Reaction'):add(rxn_map[pre.get('frameid')],'precedes',rxn_map[succ],'Native predecessor relation, not inferred from figure layout.')
+for ac in ['ENZRXN-02','ENZRXN-29','ENZRXN-3','ENZRXN-35','ENZRXN-38','ENZRXN-68']:
+ a=xml(ac);p=a.find('enzyme/Protein').get('frameid');rn=a.find('reaction/Reaction').get('frameid');add(protein_map.get(p,'MetaCyc:'+p),'catalyzes',rxn_map[rn],'Exact native activity/enzyme/reaction join; all linked primary scope and construct/state evidence independently read.')
+for p in ['MONOMER-0','MONOMER-1','MONOMER-28','MONOMER-33','MONOMER-37','MONOMER-67','MONOMER-15328']:
+ x=xml(p);tax=x.find('species/Organism').get('frameid');add(protein_map.get(p,'MetaCyc:'+p),'part_of','NCBITaxon:'+tax.removeprefix('TAX-'),'Exact native species context; UniProt current organism agrees for three normalized proteins.')
+for p in ['MONOMER-28','MONOMER-67']:assert xml(p).find('location/cco').get('frameid')=='CCO-MEMBRANE';add(protein_map.get(p,'MetaCyc:'+p),'located_in','GO:0016020','Native broad membrane slot; ADP1 UniProt annotation ECO0000305 and IFO3244 abstract retain inference/strain bounds.')
+add('MetaCyc:MONOMER-0','located_in','GO:0016020','2008 fractionation/detergent evidence supports broad membrane association; no measured periplasmic topology or QDH binding claimed.')
+add('MetaCyc:MONOMER-1','located_in','GO:0005737','2003 cytoplasmic fractionation supports preparation context; not exclusive localization.')
+assert xml('MONOMER-0').find('component/Protein').get('frameid')=='MONOMER-15328' and xml('MONOMER-0').findtext('component/coefficient')=='12'
+add('MetaCyc:MONOMER-0','has_part','MetaCyc:MONOMER-15328','Native coefficient12; independent 2008 gel/SDS evidence suggests assembly, short cross-strain sequence comparison not exact identity.')
+add('UniProtKB:Q59086','has_cofactor','CHEBI:58442','Native ENZRXN29 PQQ and current UniProt ChEBI58442 annotation; purified SA1/AC3 results not transferred.')
+add('MetaCyc:MONOMER-67','has_cofactor','CHEBI:58442','2004 inspected abstract states prosthetic PQQ; native preparation qualifier retained.')
+assert len(expected)==37
+rows=[]
+for e in edges:
+ key=(e['subject'],e['predicate'],e['object']);assert key in expected,key
+ rows.append({'edge_id':e['id'],'field_path':'mechanistic_edges['+str(edges.index(e))+']','triple':list(key),'assessment':'supported_with_explicit_source_bounds','rationale':expected[key],'edge_sha256':hashlib.sha256(json.dumps(e,sort_keys=True,ensure_ascii=False).encode()).hexdigest(),'reference_ids':sorted({ev['reference_id'] for ev in e['evidence']})})
+assert len({tuple(x['triple']) for x in rows})==37
+bindings=[]
+for ref in r['references']:
+ if not ref.get('source_sha256'):continue
+ id=ref['id']
+ if id.startswith('MetaCyc:'):
+  f=N/f'META-{id.split(":",1)[1]}.xml'
+  if not f.exists():f=C/f'META-{id.split(":",1)[1]}.xml'
+ elif id.startswith('RHEA:'):f=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz')
+ elif id.startswith('UniProtKB:'):f=N/f'UniProtKB-{id.split(":",1)[1]}.json'
+ else:f=P/'originals'/f'{id.split(":",1)[1]}.pdf'
+ assert f.exists() and sha(f)==ref['source_sha256'],id
+ bindings.append({'reference_id':id,'original':str(f),'sha256':sha(f)})
+texts={}
+for pm in ['14586099','18540103']:
+ texts['PMID:'+pm]=' '.join(p['text'] for p in json.loads((P/'text'/f'{pm}.json').read_text())['pages'])
+texts['PMID:15598527']=next(x['abstractText'] for x in json.loads((P/'originals/epmc-primary.json').read_text())['resultList']['result'] if x['id']=='15598527')
+texts['PMID:7592351']=' '.join(re.sub(r'^L\d+: ','',s) for p in (P/'text').glob('7592351-web-rg-capture-*.txt') for s in p.read_text().splitlines())
+quotes=[]
+for e in edges:
+ evs=list(e['evidence'])+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]
+ for ev in evs:
+  if 'quote' not in ev:continue
+  norm=lambda s:' '.join(s.split())
+  assert norm(ev['quote']) in norm(texts[ev['reference_id']]),ev
+  quotes.append({'edge_id':e['id'],'reference_id':ev['reference_id'],'quote_words':len(ev['quote'].split()),'literal_normalized_match':True})
+body={'reviewer':'codex independent next255_science_review','completed_at':datetime.now(timezone.utc).isoformat(),'record_sha256':sha(W/'data/pathways/quinate-degradation-i.yaml'),'edge_count':len(rows),'edge_reviews':rows,'reference_original_bindings':bindings,'quote_checks':quotes,'limitations':['Deterministic join and literal checks complement the separate independent human-level scientific reading; they do not prove experimental truth.','1995 full author-rendered main text and captions read; original figure rasters not available. 1988 and 2004 abstract-only limits retained.']}
+(O/'all-edge-and-reference-audit.json').write_text(json.dumps(body,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'record_sha256':body['record_sha256'],'edges':len(rows),'bound_references':len(bindings),'quote_instances':len(quotes)}))

@@ -1,0 +1,100 @@
+from pathlib import Path
+import json,hashlib,copy,collections
+B=Path('/private/tmp/pathwaymech-next-255-primary');N=Path('/private/tmp/pathwaymech-next-255-native')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+facts=json.loads((N/'biological-edge-proposal.json').read_text())['facts']
+ids={'MetaCyc:MONOMER-28':'UniProtKB:Q59086','MetaCyc:MONOMER-33':'UniProtKB:Q59087','MetaCyc:MONOMER-37':'UniProtKB:Q43922','MetaCyc:3-DEHYDROQUINATE-DEHYDRATASE-RXN':'RHEA:21099','MetaCyc:DHSHIKIMATE-DEHYDRO-RXN':'RHEA:24849','MetaCyc:PQQ':'CHEBI:58442'}
+refs={};edges=[];decisions=[]
+def ref_native(f):
+ fid=f['source_owner']; frame=fid.split(':',1)[1]
+ refs[fid]={'id':fid,'title':f'MetaCyc27 native {frame} XML','url':f'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:{frame}','source_version':'MetaCyc27.0; retrieved2026-10-14','source_sha256':f['source_sha256']}
+ return {'reference_id':fid,'source_assertion':f['source_assertion'],'source_locator':f['source_locator']}
+def q(p,quote):return {'reference_id':f'PMID:{p}','quote':quote}
+def state(endpoint,desc,evidence,kind='molecular_state'):return {'endpoint':endpoint,'kind':kind,'description':desc,'evidence':copy.deepcopy(evidence)}
+def add(f):
+ e={'id':f'quinate-bio-{len(edges)+1:03}','subject':ids.get(f['subject'],f['subject']),'predicate':f['predicate'],'object':ids.get(f['object'],f['object']),'evidence':[ref_native(f)]}
+ edges.append(e);return e
+def native_ev(frame,assertion,locator):
+ f=next(f for f in facts if f['source_owner']==frame);ref_native(f)
+ return {'reference_id':frame,'source_assertion':assertion,'source_locator':locator}
+
+for f in facts:
+ e=add(f)
+ decisions.append({'source_owner':f['source_owner'],'predicate':f['predicate'],'object':f['object'],'edge_id':e['id'],'decision':'retained_with_primary_scope'})
+ s=e['subject'];p=e['predicate']
+ if p=='catalyzes':
+  if s=='UniProtKB:Q59086':
+   e['description']='Native ADP1 QuiA activity is supported by genetic and cell-extract results in PMID8002591. The source groups this as quinone-dependent oxidation; this does not establish use of every quinone or transfer purified Acinetobacter SA1/AC3 measurements to ADP1.'
+  elif s=='UniProtKB:Q59087':
+   e['description']='Native ADP1 induced thermolabile QuiB activity and deletion phenotypes support catabolic DHQ dehydration (PMID7592351). The old recombinant290-aa annotation and proposed leader localization are not assumed identical to the corrected272-aa canonical sequence.'
+  elif s=='UniProtKB:Q43922':
+   e['description']='DHS dehydration is supported by cloned quiC activity and native genetic phenotypes. The native protein comment incorrectly labels the assay as DHQ dehydration; no numeric activity is copied.'
+   e['endpoint_qualifiers']=[state('subject','ADP1 genomic quiC expressed in E. coli DH5α(pZR564), a2.0kb HindIII insert; crude-extract assay. No protein tag reported or expressed termini measured. Text/Table1 disagree on pBSK versus pBKS vector label.',[q('7592351','pZR564 contains the open reading frame')],'experimental_construct')]
+  elif s=='MetaCyc:MONOMER-67':
+   e['description']='The native source assigns IFO3244 QDH to the generic quinone oxidation reaction. The inspected primary abstract supports purified holo-QDH; the full-body acceptor panel remains unread, so universal quinone specificity is not asserted.'
+   e['endpoint_qualifiers']=[state('subject','Native IFO3244 membrane holo-QDH preparation; SDS bands approximately65 and21kDa may reflect proteolysis of one polypeptide. Exact cleavage and whole-protein sequence are unresolved.',[q('15598527','could be the result of proteolysis of single polypeptide')])]
+  elif s=='MetaCyc:MONOMER-0':
+   e['description']='Native IFO3244 pDQD catalyzes DHQ dehydration. PMID18540103 measures a191kDa native mass and16kDa SDS subunit, suggesting12 subunits; the source molecular-weight field189kDa is not copied. Exact621H sequence identity is not assumed.'
+   e['endpoint_qualifiers']=[state('subject','Native IFO3244 detergent-purified pDQD assembly. Estimated191kDa and16kDa subunit support a proposed12mer; no engineered construct. N-terminal comparison does not establish whole-sequence identity to621H.',[q('18540103','pDQD was highly purified')])]
+  elif s=='MetaCyc:MONOMER-1':
+   e['description']='Native IFO3244 DHS-dehydratase activity was separated from DQD and detected with a coupled qualitative protocatechuate assay. No gene, sequence or purified homogeneous protein identity is claimed.'
+   e['endpoint_qualifiers']=[state('subject','Native IFO3244 partially purified cytoplasmic enzyme fraction; DHS-dehydratase activity eluted separately from DQD on DEAE-Sephadex A-50. Exact protein sequence, termini and oligomeric state are unresolved.',[q('14586099','DSA dehydratase was separated from DQD')])]
+ if p=='part_of':
+  e['description']='Source protein taxon context; assays and preparations remain strain-qualified on catalytic edges. This is not a claim that every isolate of the species expresses the full pathway.'
+ if p=='located_in' and s=='UniProtKB:Q59086':
+  e['description']='Broad membrane annotation; independently curated UniProt location is ECO:0000305, not direct ADP1 topology measurement. Predicted transmembrane regions in PMID8002591 are sequence-based.'
+  e['evidence'].append({'reference_id':'UniProtKB:Q59086','source_assertion':'Q59086 SUBCELLULAR LOCATION annotates cell membrane and multi-pass membrane protein with ECO:0000305.','source_locator':'$.comments[5].subcellularLocations[0]'})
+ if p=='located_in' and s=='MetaCyc:MONOMER-67':
+  e['description']='Native source and inspected PMID15598527 abstract describe membrane-bound IFO3244 QDH. This broad location does not establish exact membrane orientation or an obligate respiratory assembly.'
+ if p=='located_in' and s=='MetaCyc:MONOMER-0':
+  e['object']='GO:0016020'
+  e['description']='General membrane association is supported by fractionation and detergent solubilization. The precise periplasmic/plasma-membrane-side topology in the native source is not promoted: PMID18540103 explicitly lacked RSO/ISO topology tests.'
+  e['evidence']=[q('18540103','typical membrane-bound enzyme')]
+  decisions[-1]['decision']='broadened_location_to_direct_membrane_association'
+ if p=='has_part':
+  e['description']='The native source encodes12 identical subunits; the primary mass comparison supports a suggested homododecamer, not an independently solved assembly. Membership does not assign catalytic activity to isolated subunits.'
+  ev=native_ev('MetaCyc:MONOMER-0','The native MONOMER-0 complex lists MONOMER-15328 with coefficient12 and describes the complex as a homododecamer.','/ptools-xml/Protein[@frameid="MONOMER-0"]/component|comment')
+  e['endpoint_qualifiers']=[state('object','Native IFO3244 approximately16kDa pDQD subunit. Figure2C and prose differ at one N-terminal residue; the comparison uses621H GOX0437. Exact full sequence and cleavage boundaries remain unresolved.',[ev,q('18540103','N-terminal amino acid sequences')])]
+ if p=='has_cofactor':
+  e['description']='PQQ is a prosthetic cofactor, distinct from the net electron-accepting quinone. This ADP1 assertion is a native/current UniProt annotation; Acinetobacter SA1/AC3 or LMD79.41 biochemical results are not transferred as direct ADP1 tests.'
+  e['evidence'].append({'reference_id':'UniProtKB:Q59086','source_assertion':'Q59086 COFACTOR comment identifies pyrroloquinoline quinone with ChEBI:58442.','source_locator':'$.comments[3].cofactors[0]'})
+ if p=='located_in' and s=='MetaCyc:MONOMER-1':
+  e['description']='Recovery in the cytoplasmic fraction is reported in the native source and inspected PMID14586099 methods. Fractionation supports this context without asserting exclusive localization of all enzyme molecules.'
+
+# The IFO3244 cofactor is explicit in both the native protein comment and primary abstract.
+f=next(f for f in facts if f['source_owner']=='MetaCyc:MONOMER-67')
+ev=native_ev('MetaCyc:MONOMER-67','The native QDH protein comment describes a purified holoenzyme with65/21kDa SDS bands suggested to arise by proteolysis.','/ptools-xml/Protein[@frameid="MONOMER-67"]/comment')
+edges.append({'id':f'quinate-bio-{len(edges)+1:03}','subject':'MetaCyc:MONOMER-67','predicate':'has_cofactor','object':'CHEBI:58442','description':'PQQ is bound as a prosthetic group; it is not consumed as the quinone electron acceptor. The full2004 body remains unread.','evidence':[q('15598527','containing pyrroloquinoline quinone (PQQ) as the prosthetic group')], 'endpoint_qualifiers':[state('subject','Native IFO3244 purified holo-QDH preparation; exact proteolytic cleavage state is unresolved.',[ev])]})
+
+nodes=json.loads((N/'biological-node-identities.json').read_text())
+participants=[{'id':x['recommended_id'],'label':x['native_label_or_single_activity_label'],'category':x['category']} for x in nodes]
+for x in participants:
+ if x['id']=='MetaCyc:MONOMER-0':x['label']='IFO3244 membrane-associated catabolic dehydroquinate dehydratase complex'
+ if x['id']=='MetaCyc:MONOMER-15328':x['label']='IFO3244 catabolic dehydroquinate dehydratase subunit'
+participants += [{'id':'CHEBI:58442','label':'pyrroloquinoline quinone(3−)','category':'cofactor'},{'id':'GO:0016020','label':'membrane','category':'cellular_component'},{'id':'GO:0005737','label':'cytoplasm','category':'cellular_component'}]
+
+u=N/'originals/UniProtKB-Q59086.json';d=json.loads(u.read_text())
+refs['UniProtKB:Q59086']={'id':'UniProtKB:Q59086','title':'UniProtKB Q59086, ADP1 QuiA','url':'https://rest.uniprot.org/uniprotkb/Q59086.json','source_version':'retrieved2026-10-14; sequenceVersion'+str(d['entryAudit']['sequenceVersion']),'source_sha256':sha(u)}
+papers={'7592351':('Unusual ancestry of dehydratases associated with quinate catabolism in Acinetobacter calcoaceticus','https://www.researchgate.net/publication/15607491_Unusual_ancestry_of_dehydratases_associated_with_quinate_catabolism_in_Acinetobacter_calcoaceticus',None),'15598527':('Quinate oxidation in Gluconobacter oxydans IFO3244: purification and characterization of quinoprotein quinate dehydrogenase','https://pubmed.ncbi.nlm.nih.gov/15598527/',None),'18540103':('A novel3-dehydroquinate dehydratase catalyzing extracellular formation of3-dehydroshikimate by oxidative fermentation of Gluconobacter oxydans IFO3244','https://www.jstage.jst.go.jp/article/bbb/72/6/72_70778/_pdf','18540103.pdf'),'14586099':('3-Dehydroquinate production by oxidative fermentation and further conversion of3-dehydroquinate to the intermediates in the shikimate pathway','https://www.jstage.jst.go.jp/article/bbb/67/10/67_10_2124/_pdf','14586099.pdf')}
+for p,(title,url,fn) in papers.items():
+ r={'id':'PMID:'+p,'title':title,'url':url}
+ if fn:r['source_sha256']=sha(B/'originals'/fn)
+ refs[r['id']]=r
+for e in edges:
+ for old,new in list(ids.items())[:3]:
+  if e['subject']==new:
+   accession=new.split(':')[1]
+   e['evidence'].append(native_ev(old,f'The native protein {old.split(":")[1]} carries a UniProt cross-reference to {accession}.',f'/ptools-xml/Protein[@frameid="{old.split(":")[1]}"]/dblink[dblink-db="UNIPROT"]'))
+graph={'participants':participants,'taxa':[{'id':'NCBITaxon:62977','label':'Acinetobacter baylyi ADP1'},{'id':'NCBITaxon:442','label':'Gluconobacter oxydans'}],'references':list(refs.values()),'mechanistic_edges':edges}
+(B/'biological-graph-extension.json').write_text(json.dumps(graph,indent=2,ensure_ascii=False)+'\n')
+(B/'graph-dispositions.json').write_text(json.dumps({'role':'author support only, not independent approval','facts':decisions,'additional_fact':'IFO3244 QDH PQQ cofactor from primary abstract; preparation state independently reflected in native protein comment','excluded_optional_edges':['Precise pDQD periplasm/plasma membrane topology: inference only; broadened to membrane association.','QuiB leader-dependent localization: original290aa annotation differs corrected272aa; no direct localization assay.','Q5FTS6 exact IFO3244 subunit identity: sequence belongs to621H.','QDH–pDQD physical complex, QuiX transport, PCA direct regulator binding: unproven hypotheses.','Biosynthetic sDQD/SKDH, NAD(P) initial oxidation, fungi/Gram-positive branch: separate context.']},indent=2)+'\n')
+counts=collections.Counter()
+for e in edges:
+ evs=e['evidence']+sum((x['evidence'] for x in e.get('endpoint_qualifiers',[])),[])
+ for ev in evs:
+  if 'quote' in ev:counts[ev['reference_id']]+=len(ev['quote'].split())
+(B/'quote-budget.json').write_text(json.dumps({'scope':'All occurrences in proposed graph, including endpoint qualifiers. Reusing these quotes elsewhere adds to the total.','word_counts':dict(counts),'limit_per_paper':25},indent=2)+'\n')
+assert all(x<=25 for x in counts.values())
+assert all(len(ev.get('source_assertion',ev.get('quote','')))<=400 for e in edges for ev in e['evidence'])
+assert all(len(q['description'])<=400 for e in edges for q in e.get('endpoint_qualifiers',[]))
+print(json.dumps({'edges':len(edges),'references':len(refs),'quote_counts':dict(counts)}))

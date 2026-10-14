@@ -1,0 +1,16 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess
+R=Path('/private/tmp/pathwaymech-next-255-20261014');D=Path(__file__).resolve().parent;B=R/'research/pathway_additions/2026-10-14-next-255/quinate'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+a={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'retention_manifests':[],'log_wrappers':[]}
+for p in sorted(B.rglob('retention.json')):
+ d=json.loads(p.read_text());assert isinstance(d,dict) and 'files' in d
+ for f in d['files']:
+  original=Path(f['original_path']);maintained=R/f['maintained_path'];assert maintained.is_relative_to(B);assert original.read_bytes()==maintained.read_bytes();assert sha(original)==f['sha256'];assert len(maintained.read_bytes())==f['bytes']
+ a['retention_manifests'].append({'path':str(p.relative_to(R)),'sha256':sha(p),'verified_bindings':len(d['files'])})
+for p in B.rglob('*.log.json'):
+ d=json.loads(p.read_text());original=Path(d['path']);b=d['contents'].encode(d.get('encoding','utf-8'));assert original.read_bytes()==b;assert hashlib.sha256(b).hexdigest()==d['sha256'];a['log_wrappers'].append({'wrapper':str(p.relative_to(R)),'wrapper_sha256':sha(p),'raw_log_path':str(original),'raw_log_sha256':d['sha256']})
+tracked=subprocess.check_output(['git','diff','--name-only','bfa3f5ed0e843472c0fd173ce91df2a90dd4ddb2'],cwd=R,text=True).splitlines();allowed={'conf/identifier_sources.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json','pages/downloads/edges.tsv','pages/downloads/nodes.tsv','pages/downloads/manifest.json','pages/pathway_index.json','pages/index.html','pages/browse.html'}
+assert set(tracked)<=allowed,(set(tracked)-allowed);a['tracked_changed_paths']=tracked
+files=[p for p in B.rglob('*') if p.is_file()];assert all(p.suffix not in {'.pdf','.xml','.png','.html','.sqlite','.db','.gz','.py'} for p in files);a['dossier_file_count']=len(files);a['all_retained_bytes_match_external_originals']=True;a['raw_payload_extension_policy_pass']=True
+(D/'retention-integrity-audit.json').write_text(json.dumps(a,indent=2)+'\n');print(json.dumps(a,indent=2))

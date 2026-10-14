@@ -1,0 +1,58 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,re,sqlite3,xml.etree.ElementTree as E
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+
+B=Path(__file__).parent;O=B/'originals-meta27';A=Path('/private/tmp/pathwaymech-curation-authorities')
+db=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True)
+def bind(path):return dict(path=str(path),bytes=path.stat().st_size,sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+def sql(identifier):
+ return {k:v or w for k,v,w in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','IAO:0000115','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(identifier,))}
+def tally(items):
+ out=collections.Counter()
+ for item in items:
+  for atom,n in re.findall(r'([A-Z][a-z]*)([0-9]*)',item['formula']):out[atom]+=int(n or 1)*item['coefficient']
+  out['charge']+=item['charge']*item['coefficient']
+ return dict(out)
+
+mapping={'QUINATE':'29751','DEHYDROQUINATE':'32364','3-DEHYDRO-SHIKIMATE':'16630','3-4-DIHYDROXYBENZOATE':'36241','WATER':'15377','PQQ':'58442'}
+chemical_rows=[]
+for frame,number in mapping.items():
+ path=O/('META-'+frame+'.xml');root=E.parse(path).getroot();native=root.find('Compound');identifier='CHEBI:'+number
+ current_path=B/'originals'/('ChEBI-'+number+'.json');current=json.loads(current_path.read_text());pinned=sql(identifier)
+ inchi=native.findtext('inchi');live=current['default_structure'];mol=Chem.MolFromInchi(inchi);assert mol is not None
+ checks=dict(native_current_inchi_equal=inchi==live['standard_inchi'],native_pinned_inchi_equal=inchi==pinned['chemrof:inchi_string'],native_current_inchi_key_equal=native.findtext('inchi-key').removeprefix('InChIKey=')==live['standard_inchi_key'],live_pinned_formula_equal=current['chemical_data']['formula']==pinned['chemrof:generalized_empirical_formula'],live_pinned_charge_equal=current['chemical_data']['charge']==int(pinned['chemrof:charge']))
+ assert all(checks.values()),(frame,checks)
+ chemical_rows.append(dict(native_id='MetaCyc:'+frame,selected_id=identifier,native_source=bind(path),current_source=bind(current_path),version=root.find('metadata/PGDB').get('version'),native_name=native.findtext('common-name'),native_inchi=inchi,pinned=pinned,interpreted=dict(formula=rdMolDescriptors.CalcMolFormula(mol),charge=Chem.GetFormalCharge(mol),isomeric_smiles=Chem.MolToSmiles(mol,isomericSmiles=True)),checks=checks))
+
+class_rows=[]
+for frame,number in [('Quinones','132124'),('Reduced-Quinones','24646')]:
+ path=O/('META-'+frame+'.xml');native=E.parse(path).getroot().find('Compound');cml=native.find('cml/molecule');smiles=cml.find("string[@title='smiles']").text
+ placeholder_smiles=re.sub(r'\[R[0-9]+\]','[*]',smiles);native_mol=Chem.MolFromSmiles(placeholder_smiles)
+ current_path=B/'originals'/('ChEBI-'+number+'.json');current=json.loads(current_path.read_text());live_smiles=current['default_structure']['smiles'];live_mol=Chem.MolFromSmiles(live_smiles)
+ Chem.RemoveStereochemistry(native_mol);Chem.RemoveStereochemistry(live_mol)
+ representative_equal=Chem.MolToSmiles(native_mol)==Chem.MolToSmiles(live_mol)
+ class_rows.append(dict(native_id='MetaCyc:'+frame,native_source=bind(path),direct_chebi_links=[x.findtext('dblink-oid') for x in native.findall('dblink') if x.findtext('dblink-db')=='CHEBI'],native_comment=native.findtext('comment'),native_representative_smiles=smiles,native_cml_group_labels=[x.get('elementType') for x in cml.findall('atomArray/atom') if x.get('elementType').startswith('R')],comparison_id='CHEBI:'+number,comparison_source=bind(current_path),pinned=sql('CHEBI:'+number),comparison_smiles=live_smiles,representative_graph_equal_after_erasing_group_labels_and_stereo=representative_equal,scope='Representative CML skeleton comparison only. Erasing R-label annotations does not establish whole-class equality or identical substituents. Native narrative broad class and cross-reference remain separate.'))
+
+broad_path=B/'originals/ChEBI-36141.json';broad=json.loads(broad_path.read_text())
+broad_class=dict(id='CHEBI:36141',current_source=bind(broad_path),pinned=sql('CHEBI:36141'),current_definition=broad.get('definition'),current_structure=broad.get('default_structure'),narrower_direct_parents=list(db.execute("select subject,object from statements where predicate='rdfs:subClassOf' and subject in ('CHEBI:132124','CHEBI:24646') and object like 'CHEBI:%'")))
+
+rhea=json.loads((B/'rhea-original-projection.json').read_text());nodes=rhea['nodes'];N='http://rdf.rhea-db.org/'
+def side(uri):
+ items=[]
+ for property,values in nodes[uri].items():
+  if re.fullmatch(r'contains[0-9]+',property):
+   coefficient=int(property[8:] or 1)
+   for value in values:
+    compound_uri=nodes[value]['compound'][0];compound=nodes[compound_uri]
+    items.append(dict(id=compound['accession'][0],coefficient=coefficient,formula=compound['formula'][0],charge=int(compound['charge'][0]),locator=[uri+' rh:'+property+' '+value,value+' rh:compound '+compound_uri]))
+ return items
+reactions=[]
+for frame,master,selected in [('1.1.99.25-RXN','23672','MetaCyc:1.1.99.25-RXN'),('3-DEHYDROQUINATE-DEHYDRATASE-RXN','21096','RHEA:21099'),('DHSHIKIMATE-DEHYDRO-RXN','24848','RHEA:24849')]:
+ native_path=Path('/private/tmp/pathwaymech-next-255-native/originals')/('META-'+frame+'.xml');native=E.parse(native_path).getroot().find('Reaction');left=side(N+master+'_L');right=side(N+master+'_R');assert tally(left)==tally(right)
+ raw_sides={name:[dict(frame=x.find('Compound').get('frameid'),class_marker=x.find('Compound').get('class'),explicit_coefficient=x.findtext('coefficient')) for x in native.findall(name)] for name in ['left','right']}
+ reactions.append(dict(native_frame=frame,native_source=bind(native_path),native_sides=raw_sides,native_direction=native.findtext('reaction-direction'),native_rhea_links=[x.findtext('dblink-oid') for x in native.findall('dblink') if x.findtext('dblink-db')=='RHEA'],rhea_master='RHEA:'+master,rhea_equation=nodes[N+master]['equation'][0],rhea_family=rhea['directions'][master],rhea_left=left,rhea_right=right,rhea_balanced=True,rhea_totals=tally(left),selected_id=selected,decision=('Preserve native broad quinone/quinol classes and native reaction identity; do not assert exact whole-class equality to the narrower Rhea 1,4-benzoquinone representation.' if frame=='1.1.99.25-RXN' else 'Exact molecular sides match; retain native reversibility separately from selected L2R pathway flux.')))
+
+out=dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),scope='Author chemical identity audit, not independent scientific approval.',software=dict(rdkit=rdBase.rdkitVersion),pinned_chebi_sql=dict(path=str(A/'chebi.db'),resolved_path=str((A/'chebi.db').resolve()),version='255'),rhea_original=rhea['original'],concrete_mappings=chemical_rows,class_comparisons=class_rows,broad_quinone_class=broad_class,reactions=reactions,curation_decisions=['Keep the complete three-step native QUINATEDEG-PWY boundary.','Use native first reaction and native Quinones/Reduced-Quinones participants to preserve explicit source-class scope; Rhea23673 remains a related narrower representation in the research ledger.','PQQ CHEBI58442 is a separate enzyme cofactor; no net PQQ consumption is inferred from the generic quinone sides.','RHEA21099 retains source reversibility; edge direction and source ordering express selected catabolic L2R flux.','No class representative establishes acceptance of every compound in the class, exact physiological quinone identity or measured catalytic specificity.'])
+(B/'chemical-identity-and-reaction-audit.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps(dict(concrete_structures=len(chemical_rows),class_comparisons=len(class_rows),balanced_rhea_equations=len(reactions),selected_reactions=[x['selected_id'] for x in reactions])))
