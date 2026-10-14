@@ -1,0 +1,73 @@
+{
+  "stable_key": "oxoadipate249-graph-edge-label-collision",
+  "severity": "P3",
+  "status": "open; separate implementation agent addressing renderer",
+  "scope": "Deterministic generated SVG label coordinates; source graphs and evidence are intact.",
+  "record_sha256": "214ef2d38ede4bb4e919f6f53699491e7c53b8d9b5b858c6ba80084e5b067032",
+  "page_sha256": "89341ba19b94bb91238280d759c7e521dd74f492b3852b4275eb0525ce155bab",
+  "original_external_svg": "/private/tmp/pathwaymech-next-249-integration-review/diagram.svg",
+  "original_svg_sha256": "eb4ab29554b3a6f64ab5772009b62f4a5828368bfe3459ab327eee9492cae30c",
+  "collisions": [
+    {
+      "x": "416.0",
+      "y": "338.0",
+      "edges": [
+        {
+          "anchor": "#mechanism-edge-8",
+          "subject": "CHEBI:57287",
+          "predicate": "consumes",
+          "object": "RHEA:19483",
+          "label": "consumes"
+        },
+        {
+          "anchor": "#mechanism-edge-17",
+          "subject": "UniProtKB:Q52154",
+          "predicate": "regulates",
+          "object": "MetaCyc:CPLX-2722",
+          "label": "regulates"
+        }
+      ]
+    },
+    {
+      "x": "416.0",
+      "y": "410.0",
+      "edges": [
+        {
+          "anchor": "#mechanism-edge-19",
+          "subject": "CHEBI:17128",
+          "predicate": "regulates",
+          "object": "MetaCyc:CPLX-2722",
+          "label": "regulates"
+        },
+        {
+          "anchor": "#mechanism-edge-20",
+          "subject": "UniProtKB:Q52154",
+          "predicate": "regulates",
+          "object": "MetaCyc:CPLX-2746",
+          "label": "regulates"
+        }
+      ]
+    }
+  ],
+  "reproduction": "Render current record; parse generated SVG edge-label text positions or view page at native graph zoom. Labels for mechanism-edge-8 and mechanism-edge-17 have identical x=416, y=338.",
+  "acceptance": [
+    "Prevent overlapping edge label boxes for this collision fixture without dropping labels or edges.",
+    "Preserve graph endpoint/predicate/anchor identity, nodes, source directions and evidence tables.",
+    "Check other complex, cyclic and parallel-edge graph fixtures and full renderer/page gates."
+  ],
+  "issue_dedup": {
+    "command": "gh issue list --state all --limit 1000 --json number,title,body,url,state",
+    "retrieved": 272,
+    "open": 27,
+    "no_graph_label_collision_issue_identified": true,
+    "external_full_result": "/private/tmp/pathwaymech-next-249-integration-review/github-issues.json",
+    "sha256": "6596d646b03e930688bcebe586436c03598a7363899cdfa3aad91a327543be26"
+  },
+  "issue": "https://github.com/CultureBotAI/PathwayMech/issues/521",
+  "complete_corpus_before_fix": {
+    "pages": 247,
+    "pages_with_identical_label_positions": 235,
+    "duplicate_positions": 1787,
+    "external_capture": "/private/tmp/pathwaymech-next-249-integration-review/before-renderer-fix-all-graphs.json"
+  }
+}

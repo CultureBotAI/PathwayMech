@@ -1,0 +1,226 @@
+{
+  "observed_utc": "2026-10-14T10:01:13.325186+00:00",
+  "dataset_inventory": {
+    "organism_entries": 20,
+    "dataset_keys": 28,
+    "p_putida_entry": [
+      {
+        "organism_id": "p_putida",
+        "name": "Pseudomonas putida",
+        "datasets": [
+          "precise321"
+        ],
+        "description": "Pseudomonas putida dataset: precise321"
+      }
+    ],
+    "prs2000_explicit_entry_present": false,
+    "scope": "Complete returned /api/datasets payload at retrieval; not proof no unpublished/unlisted/other-site dataset exists."
+  },
+  "query_scope": {
+    "organism": "p_putida",
+    "dataset": "precise321",
+    "queries": [
+      "pca",
+      "oxoadip",
+      "ketoadip"
+    ],
+    "counts": {
+      "pca": {
+        "gene_hits": 10,
+        "module_hits": 1
+      },
+      "oxoadip": {
+        "gene_hits": 5,
+        "module_hits": 0
+      },
+      "ketoadip": {
+        "gene_hits": 2,
+        "module_hits": 0
+      }
+    }
+  },
+  "module": {
+    "key": "p_putida/precise321/65",
+    "search_annotation": [
+      {
+        "k": 65,
+        "name": "PcaR",
+        "regulator": [
+          "PcaR"
+        ],
+        "function": "Aromatic acid catabolism",
+        "category": "Carbon",
+        "matched_field": "name",
+        "matched_value": "PcaR"
+      }
+    ],
+    "returned_gene_rows": 45,
+    "in_component_rows": 45,
+    "threshold": 0.057154383,
+    "selected_pathway_related_rows": [
+      {
+        "gene_id": "PP_1377",
+        "gene_name": "pcaF-I",
+        "gene_product": "beta-ketoadipyl-CoA thiolase",
+        "weight": 0.161374854,
+        "in_imodulon": true,
+        "all_regulators": "PcaR",
+        "uniprot_id": "Q88N39",
+        "uniprot_protein_name": "Beta-ketoadipyl-CoA thiolase"
+      },
+      {
+        "gene_id": "PP_3952",
+        "gene_name": "pcaJ",
+        "gene_product": "3-oxoadipate CoA-transferase subunit A",
+        "weight": 0.139878772,
+        "in_imodulon": true,
+        "all_regulators": "PcaR",
+        "uniprot_id": "P0A101",
+        "uniprot_protein_name": "3-oxoadipate CoA-transferase subunit B"
+      },
+      {
+        "gene_id": "PP_3951",
+        "gene_name": "pcaI",
+        "gene_product": "3-oxoadipate CoA-transferase subunit A",
+        "weight": 0.134651844,
+        "in_imodulon": true,
+        "all_regulators": "PcaR",
+        "uniprot_id": "Q88FX5",
+        "uniprot_protein_name": "3-oxoadipate CoA-transferase"
+      }
+    ],
+    "historical_Q52154_exact_matches_in_returned_rows": 0,
+    "scope": "Complete returned component65 gene payload, not all5564dataset genes or direct-regulation proof."
+  },
+  "regulator": {
+    "dataset_gene": {
+      "gene_id": "PP_1375",
+      "gene_name": "pcaR",
+      "gene_product": "transcription regulatory protein (pca regulon)",
+      "cog": "Transcription",
+      "start_pos": 1566321,
+      "stop_pos": 1567196,
+      "strand": "+",
+      "operon": null,
+      "uniprot_id": "Q88N41",
+      "uniprot_protein_name": "Transcription regulatory protein (Pca regulon)",
+      "uniprot_function": null,
+      "string_id": "160488.PP_1375",
+      "external_links": null,
+      "is_regulator": true
+    },
+    "issuing_accession": "Q88N41",
+    "issuing_entry_type": "UniProtKB unreviewed (TrEMBL)",
+    "issuing_organism": {
+      "scientificName": "Pseudomonas putida (strain ATCC 47054 / DSM 6125 / CFBP 8728 / NCIMB 11950 / KT2440)",
+      "taxonId": 160488,
+      "evidences": [
+        {
+          "evidenceCode": "ECO:0000313",
+          "source": "EMBL",
+          "id": "AAN66998.1"
+        },
+        {
+          "evidenceCode": "ECO:0000313",
+          "source": "Proteomes",
+          "id": "UP000000556"
+        }
+      ],
+      "lineage": [
+        "Bacteria",
+        "Pseudomonadati",
+        "Pseudomonadota",
+        "Gammaproteobacteria",
+        "Pseudomonadales",
+        "Pseudomonadaceae",
+        "Pseudomonas"
+      ]
+    }
+  },
+  "adapter": {
+    "external_reader": "kg_microbe_sources.imodulondb.ImodulonDBClient",
+    "external_reader_sha256": "1901c6ab519795051d0b70b57412c4ad463949b3dd02a49d05936464e6fd4aa2",
+    "local_stager": "scripts/stage_imodulondb_pathway_contexts.py",
+    "local_stager_sha256": "35f51363b44e71b17741fc0f44fb9e9ebca2d5cf010ee874c831f53c4bf89a0d",
+    "semantics": "Stager indexes only explicit UniProtKB participant accessions and matches exact returned UniProt IDs for in-component genes; native MetaCyc catalyst IDs are not automatically mapped. No staging execution on a final candidate was claimed here."
+  },
+  "disposition": "Positive KT2440 expression-module context is applicable as a research lead only. It cannot establish historical PRS2000 catalyst/regulator identity, expression induction in that strain or direct regulation. The complete source-specific primary paper must support any maintained regulation edge. No module-derived edge is recommended for the present historical-source record.",
+  "source_conflict": "PP_3952 pcaJ gene_product says subunit A while uniprot_protein_name says subunit B; retain as a source annotation mismatch, not protein identity authority.",
+  "source_manifests": [
+    {
+      "requested_url": "https://imodulondb.org/api/datasets",
+      "final_url": "https://imodulondb.org/api/datasets",
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "retrieved_utc": "2026-10-14T09:57:38.390353+00:00",
+      "path": "/private/tmp/pathwaymech-next-249-preflight-20261014/imodulon-originals/ced0d968a81b2537.json",
+      "sha256": "155607e7023efdead5ebab3919279a0776d5665a7de9e28b67f02f8f521b0693",
+      "size": 2871
+    },
+    {
+      "requested_url": "https://imodulondb.org/api/search?organism=p_putida&dataset=precise321&query=ketoadip",
+      "final_url": "https://imodulondb.org/api/search?organism=p_putida&dataset=precise321&query=ketoadip",
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "retrieved_utc": "2026-10-14T09:57:38.545664+00:00",
+      "path": "/private/tmp/pathwaymech-next-249-preflight-20261014/imodulon-originals/a85acc31ffbdc5e9.json",
+      "sha256": "9c5353c5c5c267195d71d9cb37fb89dd7220138c616ebc46b168da63a190d875",
+      "size": 397
+    },
+    {
+      "requested_url": "https://imodulondb.org/api/search?organism=p_putida&dataset=precise321&query=oxoadip",
+      "final_url": "https://imodulondb.org/api/search?organism=p_putida&dataset=precise321&query=oxoadip",
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "retrieved_utc": "2026-10-14T09:57:38.545310+00:00",
+      "path": "/private/tmp/pathwaymech-next-249-preflight-20261014/imodulon-originals/6889daeabb785a77.json",
+      "sha256": "a5551f1f9014d03e6db2d7aceeb5410f98784b3625d7acaef55433fe538080a9",
+      "size": 981
+    },
+    {
+      "requested_url": "https://imodulondb.org/api/search?organism=p_putida&dataset=precise321&query=pca",
+      "final_url": "https://imodulondb.org/api/search?organism=p_putida&dataset=precise321&query=pca",
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "retrieved_utc": "2026-10-14T09:57:38.544801+00:00",
+      "path": "/private/tmp/pathwaymech-next-249-preflight-20261014/imodulon-originals/d05add73b3da4a05.json",
+      "sha256": "5d47f240b5ae2ee24dac71de6c5b51c6e24cd89dc86b70b5806a923049132aba",
+      "size": 1637
+    },
+    {
+      "requested_url": "https://imodulondb.org/api/imodulons/p_putida/precise321/65/genes",
+      "final_url": "https://imodulondb.org/api/imodulons/p_putida/precise321/65/genes",
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "retrieved_utc": "2026-10-14T09:59:12.460521+00:00",
+      "path": "/private/tmp/pathwaymech-next-249-preflight-20261014/imodulon-originals/d21aa133ce63dca8.json",
+      "sha256": "d1cfdcad2ed160bb659847a5a36d31375a18642060007d76122463b6cce2c95a",
+      "size": 21856
+    },
+    {
+      "requested_url": "https://imodulondb.org/api/genes/p_putida/precise321/PP_1375",
+      "final_url": "https://imodulondb.org/api/genes/p_putida/precise321/PP_1375",
+      "http_status": 200,
+      "content_type": "application/json; charset=utf-8",
+      "retrieved_utc": "2026-10-14T09:59:12.559141+00:00",
+      "path": "/private/tmp/pathwaymech-next-249-preflight-20261014/imodulon-originals/14e99f6d0ad0f551.json",
+      "sha256": "4cc39d9b99c21bd3b8a9b6ec6d991dcb69987414fc039a87504652ccd8f39695",
+      "size": 381
+    },
+    {
+      "requested_url": "https://rest.uniprot.org/uniprotkb/Q88N41.json",
+      "final_url": "https://rest.uniprot.org/uniprotkb/Q88N41.json",
+      "http_status": 200,
+      "content_type": "application/json",
+      "retrieved_utc": "2026-10-14T10:00:06.853077+00:00",
+      "path": "/private/tmp/pathwaymech-next-249-preflight-20261014/imodulon-originals/25e99e8fce1625ab.json",
+      "sha256": "6adbc27df3e81dee9118b24b75c497ffb965cbf43233161bfbc03fdef84324bf",
+      "size": 15104
+    }
+  ],
+  "legacy_page_reading": {
+    "url": "https://legacy.imodulondb.org/analysis.html?dataset=precise321&organism=p_putida",
+    "search_rendered_metadata": "KT2440;321 samples;118 unique conditions;5564 genes;Lim et al.2022",
+    "limit": "Search index rendered metadata read; direct web open returned unfilled JavaScript template. KT2440 regulator identity independently established through original UniProt Q88N41 response."
+  }
+}

@@ -10,6 +10,7 @@ import hashlib
 import html
 import json
 import textwrap
+from bisect import insort
 from collections import defaultdict, deque
 
 from pathwaymech.site_display import plain_label
@@ -20,6 +21,9 @@ _CONTEXT_NODES = {"cellular_component", "biological_process"}
 _WIDTH = 236
 _GAP = 212
 _MARGIN = 74
+_LABEL_ABOVE = 14
+_LABEL_BELOW = 6
+_LABEL_SPACING = _LABEL_ABOVE + _LABEL_BELOW + 4
 
 
 def _escape(value: object) -> str:
@@ -193,6 +197,73 @@ def _route_lanes(edges: list[dict], levels: dict[str, int]) -> dict[int, int]:
     return lanes
 
 
+def _edge_routes(edges: list[dict], positions: dict, heights: dict,
+                 lanes: dict[int, int]) -> list[tuple[str, float, float, float, float]]:
+    """Keep arrow geometry separate from movable labels and their attachment points."""
+    pairs = defaultdict(int)
+    for edge in edges:
+        pairs[(edge["subject"], edge["object"])] += 1
+    seen = defaultdict(int)
+    routes = []
+    for index, edge in enumerate(edges):
+        subject, obj = edge["subject"], edge["object"]
+        x1, y1 = positions[subject]
+        x2, y2 = positions[obj]
+        pair = (subject, obj)
+        number = seen[pair]
+        seen[pair] += 1
+        # Separate parallel endpoints inside each box; no fixed offset can push
+        # a large set of parallel edges outside the recorded node bounds.
+        fraction = (number + 1) / (pairs[pair] + 1)
+        sy = y1 + 22 + fraction * (heights[subject] - 38)
+        ty = y2 + 22 + fraction * (heights[obj] - 38)
+        sx, tx = x1 + _WIDTH, x2
+        if index not in lanes:
+            bend = (sx + tx) / 2
+            path = f"M{sx},{sy} C{bend},{sy} {bend},{ty} {tx},{ty}"
+            lx, ly = bend, (sy + ty) / 2 - 6
+            # Attach callouts near the source, outside every predicate text box.
+            # These are points on the same cubic Bezier, evaluated at t = .01.
+            t = .01
+            ax = sx + 3 * t * (1 - t) * (bend - sx) + t ** 3 * (tx - sx)
+            ay = sy + (3 * t ** 2 - 2 * t ** 3) * (ty - sy)
+        else:
+            lane = lanes[index]
+            # Vertical trunks stay in gutters; long horizontal runs remain
+            # above every node. Self loops enter the same node from its left.
+            right, left = sx + 74 + fraction * 34, tx - 24 - fraction * 30
+            path = f"M{sx},{sy} H{right} V{lane} H{left} V{ty} H{tx}"
+            lx, ly = sx + _GAP / 2, sy - 6
+            ax, ay = sx + 3, sy
+        routes.append((path, lx, ly, ax, ay))
+    return routes
+
+
+def _edge_label_positions(routes: list[tuple]) -> list[tuple[float, float]]:
+    """Reserve nonoverlapping text boxes in each gutter, nearest the original label.
+
+    All supported predicate labels fit inside the 212 px gutter. Reserve its full
+    width and 20 px vertically, including the text halo, plus 4 px between labels.
+    Search free intervals in stable edge order; ties prefer the upper position.
+    Dense gutters can grow below the nodes, without increasing the top header.
+    """
+    occupied = defaultdict(list)
+    positions = []
+    for _, x, preferred, _, _ in routes:
+        lower = _LABEL_ABOVE + 12
+        candidates = []
+        for baseline in occupied[x]:
+            upper = baseline - _LABEL_SPACING
+            if lower <= upper:
+                candidates.append(max(lower, min(preferred, upper)))
+            lower = baseline + _LABEL_SPACING
+        candidates.append(max(lower, preferred))
+        y = min(candidates, key=lambda candidate: (abs(candidate - preferred), candidate))
+        insort(occupied[x], y)
+        positions.append((x, y))
+    return positions
+
+
 def graph_html(record: object, labels: dict[str, str], component_anchors: dict[str, str]) -> str:
     """Render the complete asserted graph without collapsing labels or inventing edges."""
     start = ('<section id="pathway-network" class="pathway-network" '
@@ -223,6 +294,9 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
         column_bottom[column] += heights[key] + 66
     width = int(max(x for x, _ in positions.values()) + _WIDTH + _GAP)
     height = int(max(y + heights[key] for key, (_, y) in positions.items()) + _MARGIN)
+    routes = _edge_routes(edges, positions, heights, lanes)
+    label_positions = _edge_label_positions(routes)
+    height = max(height, int(max(y for _, y in label_positions) + _LABEL_BELOW + _MARGIN))
     count = (f'{len(nodes)} node{"" if len(nodes) == 1 else "s"} · '
              f'{len(edges)} asserted directed edge{"" if len(edges) == 1 else "s"}')
     out = [start, f'<p class="graph-status" role="status" aria-live="polite">{count}</p>',
@@ -268,34 +342,23 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
             f'<defs><marker id="{uid}-arrow" markerWidth="10" markerHeight="8" '
             'refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">'
             '<path d="M0,0 L10,4 L0,8 Z" fill="#64748b"/></marker></defs>']
-    pairs = defaultdict(int)
-    for edge in edges:
-        pairs[(edge["subject"], edge["object"])] += 1
-    seen = defaultdict(int)
     for index, edge in enumerate(edges):
         subject, obj = edge["subject"], edge["object"]
-        x1, y1 = positions[subject]
-        x2, y2 = positions[obj]
-        pair = (subject, obj)
-        number = seen[pair]
-        seen[pair] += 1
-        # Separate parallel endpoints inside each box; no fixed offset can push
-        # a large set of parallel edges outside the recorded node bounds.
-        fraction = (number + 1) / (pairs[pair] + 1)
-        sy = y1 + 22 + fraction * (heights[subject] - 38)
-        ty = y2 + 22 + fraction * (heights[obj] - 38)
-        sx, tx = x1 + _WIDTH, x2
-        if index not in lanes:
-            bend = (sx + tx) / 2
-            path = f"M{sx},{sy} C{bend},{sy} {bend},{ty} {tx},{ty}"
-            lx, ly = bend, (sy + ty) / 2 - 6
-        else:
-            lane = lanes[index]
-            # Vertical trunks stay in gutters; long horizontal runs remain
-            # above every node. Self loops enter the same node from its left.
-            right, left = sx + 74 + fraction * 34, tx - 24 - fraction * 30
-            path = f"M{sx},{sy} H{right} V{lane} H{left} V{ty} H{tx}"
-            lx, ly = sx + _GAP / 2, sy - 6
+        path, _, original_y, ax, ay = routes[index]
+        lx, ly = label_positions[index]
+        leader = ""
+        if abs(ly - original_y) >= _LABEL_ABOVE + _LABEL_BELOW:
+            # Conservatively allow 10 px per lowercase glyph at 11 px font size,
+            # 4 px per space and 8 px for the text halo. A side rail keeps long
+            # callouts away from all labels, including the stationary collision.
+            text_width = 8 + sum(4 if char == " " else 10
+                                 for char in edge["predicate"].replace("_", " "))
+            left = lx - text_width / 2
+            rail = lx - _GAP / 2 + 2
+            leader = (f'<path class="graph-label-leader" '
+                      f'd="M{left},{ly - 4} H{rail} V{ay} H{ax}" '
+                      'fill="none" stroke="#64748b" stroke-width="1" '
+                      'stroke-dasharray="2 3" aria-hidden="true"/>')
         predicate = edge["predicate"]
         kind = "context" if predicate in _CONTEXT else "mechanism"
         native_subject = edge.get("_native_subject", subject)
@@ -320,7 +383,7 @@ def graph_html(record: object, labels: dict[str, str], component_anchors: dict[s
             f'href="#mechanism-edge-{index + 1}" tabindex="0" aria-label="{_escape(detail)}">'
             f'<title>{_escape(detail)}</title><path class="graph-edge-line" d="{path}" '
             f'fill="none" stroke="#64748b" stroke-width="1.5"{dashed} '
-            f'marker-end="url(#{uid}-arrow)"/>'
+            f'marker-end="url(#{uid}-arrow)"/>{leader}'
             f'<text class="graph-edge-label" x="{lx}" y="{ly}" text-anchor="middle" '
             f'font-size="11" fill="#475569">{_escape(predicate.replace("_", " "))}</text></a>'
         )

@@ -34,6 +34,38 @@ def elements(root, name):
             if name in item.attrib.get("class", "").split()]
 
 
+def assert_separate_label_boxes(root):
+    """Check conservative 11 px text extents, including the page's white halo."""
+    width, height = float(root.attrib["width"]), float(root.attrib["height"])
+    boxes = []
+    for label in root.findall('.//s:text[@class="graph-edge-label"]', NS):
+        x, y = float(label.attrib["x"]), float(label.attrib["y"])
+        text_width = 8 + sum(4 if char == " " else 10 for char in label.text)
+        box = (x - text_width / 2, y - 14, x + text_width / 2, y + 6)
+        assert 0 < box[0] < box[2] < width
+        assert 0 < box[1] < box[3] < height
+        boxes.append(box)
+    node_boxes = []
+    for node in elements(root, "graph-node"):
+        shape = node.find('s:rect', NS)
+        if shape is not None:
+            x, y = float(shape.attrib["x"]), float(shape.attrib["y"])
+            node_boxes.append((x, y, x + float(shape.attrib["width"]),
+                               y + float(shape.attrib["height"])))
+        else:
+            coordinates = [tuple(map(float, pair.split(","))) for pair in
+                           node.find('s:polygon', NS).attrib["points"].split()]
+            xs, ys = zip(*coordinates, strict=True)
+            node_boxes.append((min(xs), min(ys), max(xs), max(ys)))
+
+    def separated(a, b):
+        return a[2] <= b[0] or b[2] <= a[0] or a[3] <= b[1] or b[3] <= a[1]
+
+    for index, box in enumerate(boxes):
+        assert all(separated(box, other) for other in boxes[index + 1:])
+        assert all(separated(box, node_box) for node_box in node_boxes)
+
+
 def test_declared_types_directions_edges_ids_and_evidence_are_preserved():
     item = record(
         participants=[{"id": "a", "label": "Same", "category": "small_molecule"},
@@ -125,6 +157,51 @@ def test_individual_node_heights_and_dense_routing_coordinates_stay_in_bounds():
         assert 0 < float(label.attrib["y"]) < height
     paths = [e.find("s:path", NS).attrib["d"] for e in elements(root, "graph-edge")]
     assert len(set(paths)) == len(paths)
+    assert_separate_label_boxes(root)
+    assert root.findall('.//s:path[@class="graph-label-leader"]', NS)
+    # A dense gutter expands the bottom, while leaving the nodes and header put.
+    assert height > max(float(n.find("s:rect", NS).attrib["y"])
+                        + float(n.find("s:rect", NS).attrib["height"]) for n in nodes)
+    for leader in root.findall('.//s:path[@class="graph-label-leader"]', NS):
+        assert "marker-end" not in leader.attrib
+        for command, raw in re.findall(r"([MHV])([^MHV]+)", leader.attrib["d"]):
+            numbers = [float(value) for value in raw.replace(",", " ").split()]
+            if command == "M":
+                assert 0 < numbers[0] < width and 0 < numbers[1] < height
+            else:
+                assert all(0 < value < (height if command == "V" else width)
+                           for value in numbers)
+
+
+def test_crossing_edges_with_distinct_predicates_keep_separate_linked_labels():
+    item = record(
+        participants=[{"id": "a", "label": "A"}, {"id": "b", "label": "B"}],
+        reactions=[{"id": "r", "label": "R"}, {"id": "s", "label": "S"}],
+        mechanistic_edges=[edge("a", "r", "consumes"), edge("a", "s", "consumes"),
+                           edge("b", "r", "regulates"), edge("b", "s", "regulates")],
+    )
+    root = diagram(item)
+    actual = elements(root, "graph-edge")
+    # The two crossing cubics have the same midpoint. Their paths remain intact,
+    # while the predicates now have separate boxes and their original evidence.
+    assert actual[1].find("s:path", NS).attrib["d"] == (
+        "M310,118.0 C416.0,118.0 416.0,262.0 522,262.0")
+    assert actual[2].find("s:path", NS).attrib["d"] == (
+        "M310,262.0 C416.0,262.0 416.0,118.0 522,118.0")
+    assert actual[1].find("s:text", NS).text == "consumes"
+    assert actual[2].find("s:text", NS).text == "regulates"
+    assert actual[1].attrib["href"] == "#mechanism-edge-2"
+    assert actual[2].attrib["href"] == "#mechanism-edge-3"
+    assert_separate_label_boxes(root)
+    leader = actual[2].find('s:path[@class="graph-label-leader"]', NS)
+    assert leader is not None and "marker-end" not in leader.attrib
+    # The leader ends at t=.01 on its own cubic, not the other crossing edge.
+    match = re.fullmatch(r"M[^H]+ H[^V]+ V([^H]+) H(.+)", leader.attrib["d"])
+    ay, ax = map(float, match.groups())
+    assert ax == pytest.approx(313.148412)
+    assert ay == pytest.approx(261.957088)
+    assert float(root.attrib["height"]) == 372
+    assert graph_html(item, {}, {}) == graph_html(item, {}, {})
 
 
 def test_deterministic_markup_progressive_controls_and_plain_text_picker():

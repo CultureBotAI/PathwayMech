@@ -1,0 +1,443 @@
+id: MetaCyc:PWY-2361
+label: 3-oxoadipate degradation
+description: Complete two-reaction 3-oxoadipate degradation module in MetaCyc PWY-2361, with Pseudomonas
+  putida catalyst context. CoA transfer from succinyl-CoA forms 3-oxoadipyl-CoA and succinate; thiolysis
+  with CoA forms acetyl-CoA and regenerates succinyl-CoA. The native reactions are reversible, while
+  this pathway selects CoA transfer followed by thiolysis. The upstream catechol and protocatechuate
+  branches are distinct modules. Native catalyst assemblies retain source-scoped annotations and do
+  not establish universal strain composition. Regulation edges describe expression of the pcaIJ and
+  pcaF products in the PRS2000 experimental lineage, not direct activation of purified enzymes. Adipate
+  is an experimental nonmetabolizable inducer analog. Q52154 matches the deposited pcaR translation,
+  while alternative initiating methionines remain uncertain.
+pathway_type: degradation
+taxa:
+- id: NCBITaxon:303
+  label: Pseudomonas putida
+participants:
+- id: CHEBI:15775
+  label: 3-oxoadipate(2-)
+  category: small_molecule
+- id: CHEBI:57348
+  label: 3-oxoadipyl-CoA(5-)
+  category: small_molecule
+- id: CHEBI:57292
+  label: succinyl-CoA(5-)
+  category: small_molecule
+- id: CHEBI:30031
+  label: succinate(2-)
+  category: small_molecule
+- id: CHEBI:57288
+  label: acetyl-CoA(4-)
+  category: small_molecule
+- id: CHEBI:57287
+  label: coenzyme A(4-)
+  category: small_molecule
+- id: MetaCyc:CPLX-2722
+  label: 3-oxoadipate CoA-transferase
+  category: complex
+- id: MetaCyc:MONOMER-3190
+  label: α subunit of β-ketoadipate succinyl-CoA transferase
+  category: protein
+- id: MetaCyc:MONOMER-3191
+  label: β subunit of β-ketoadipate succinyl-CoA transferase
+  category: protein
+- id: MetaCyc:CPLX-2746
+  label: β-ketoadipyl CoA thiolase
+  category: complex
+- id: MetaCyc:MONOMER-3207
+  label: subunit of β-ketoadipyl CoA thiolase
+  category: protein
+- id: UniProtKB:Q52154
+  label: Pca regulon regulatory protein
+  category: protein
+- id: CHEBI:17128
+  label: adipate(2-)
+  category: small_molecule
+reactions:
+- id: RHEA:12049
+  label: 3-oxoadipate + succinyl-CoA => 3-oxoadipyl-CoA + succinate
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:19483
+  label: 3-oxoadipyl-CoA + CoA => succinyl-CoA + acetyl-CoA
+  category: molecular_activity
+  direction: right_to_left
+mechanistic_edges:
+- id: step-1-membership
+  subject: RHEA:12049
+  predicate: part_of
+  object: MetaCyc:PWY-2361
+  description: The complete native pathway contains this reaction. Native reaction reversibility is
+    distinct from the selected pathway traversal.
+  evidence:
+  - reference_id: MetaCyc:PWY-2361
+    source_assertion: The native reaction-list contains 3-OXOADIPATE-COA-TRANSFERASE-RXN; its layout
+      selects L2R.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="3-OXOADIPATE-COA-TRANSFERASE-RXN"];
+      /ptools-xml/Pathway/reaction-layout[Reaction/@frameid="3-OXOADIPATE-COA-TRANSFERASE-RXN"]/direction
+  - reference_id: MetaCyc:3-OXOADIPATE-COA-TRANSFERASE-RXN
+    source_assertion: The native reaction cross-reference identifies RHEA:12049; the complete reaction
+      direction is REVERSIBLE.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; /ptools-xml/Reaction/reaction-direction
+- id: step-1-consumes-chebi-15775
+  subject: CHEBI:15775
+  predicate: consumes
+  object: RHEA:12049
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:12049
+    source_assertion: RHEA:12049 lists CHEBI:15775 as a substrate with coefficient 1.
+    source_locator: RHEA:12049/rh:substrates -> http://rdf.rhea-db.org/12048_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_12048_compound_1219/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1219/rh:chebi
+- id: step-1-consumes-chebi-57292
+  subject: CHEBI:57292
+  predicate: consumes
+  object: RHEA:12049
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:12049
+    source_assertion: RHEA:12049 lists CHEBI:57292 as a substrate with coefficient 1.
+    source_locator: RHEA:12049/rh:substrates -> http://rdf.rhea-db.org/12048_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_12048_compound_4684/rh:compound
+      -> http://rdf.rhea-db.org/Compound_4684/rh:chebi
+- id: step-1-produces-chebi-57348
+  subject: RHEA:12049
+  predicate: produces
+  object: CHEBI:57348
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:12049
+    source_assertion: RHEA:12049 lists CHEBI:57348 as a product with coefficient 1.
+    source_locator: RHEA:12049/rh:products -> http://rdf.rhea-db.org/12048_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_12048_compound_2553/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2553/rh:chebi
+- id: step-1-produces-chebi-30031
+  subject: RHEA:12049
+  predicate: produces
+  object: CHEBI:30031
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:12049
+    source_assertion: RHEA:12049 lists CHEBI:30031 as a product with coefficient 1.
+    source_locator: RHEA:12049/rh:products -> http://rdf.rhea-db.org/12048_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_12048_compound_2501/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2501/rh:chebi
+- id: step-2-membership
+  subject: RHEA:19483
+  predicate: part_of
+  object: MetaCyc:PWY-2361
+  description: The complete native pathway contains this reaction. Native reaction reversibility is
+    distinct from the selected pathway traversal.
+  evidence:
+  - reference_id: MetaCyc:PWY-2361
+    source_assertion: The native reaction-list contains RXN-3641; its layout selects R2L.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid="RXN-3641"]; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid="RXN-3641"]/direction
+  - reference_id: MetaCyc:RXN-3641
+    source_assertion: The native reaction cross-reference identifies RHEA:19483; the complete reaction
+      direction is REVERSIBLE.
+    source_locator: /ptools-xml/Reaction/dblink[dblink-db="RHEA"]; /ptools-xml/Reaction/reaction-direction
+- id: step-2-consumes-chebi-57348
+  subject: CHEBI:57348
+  predicate: consumes
+  object: RHEA:19483
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:19483
+    source_assertion: RHEA:19483 lists CHEBI:57348 as a substrate with coefficient 1.
+    source_locator: RHEA:19483/rh:substrates -> http://rdf.rhea-db.org/19481_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_19481_compound_2553/rh:compound
+      -> http://rdf.rhea-db.org/Compound_2553/rh:chebi
+- id: step-2-consumes-chebi-57287
+  subject: CHEBI:57287
+  predicate: consumes
+  object: RHEA:19483
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:19483
+    source_assertion: RHEA:19483 lists CHEBI:57287 as a substrate with coefficient 1.
+    source_locator: RHEA:19483/rh:substrates -> http://rdf.rhea-db.org/19481_R/rh:contains1 -> http://rdf.rhea-db.org/Participant_19481_compound_1264/rh:compound
+      -> http://rdf.rhea-db.org/Compound_1264/rh:chebi
+- id: step-2-produces-chebi-57292
+  subject: RHEA:19483
+  predicate: produces
+  object: CHEBI:57292
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:19483
+    source_assertion: RHEA:19483 lists CHEBI:57292 as a product with coefficient 1.
+    source_locator: RHEA:19483/rh:products -> http://rdf.rhea-db.org/19481_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_19481_compound_4684/rh:compound
+      -> http://rdf.rhea-db.org/Compound_4684/rh:chebi
+- id: step-2-produces-chebi-57288
+  subject: RHEA:19483
+  predicate: produces
+  object: CHEBI:57288
+  description: Coefficient 1 in the selected directional Rhea equation; all charged chemical side
+    participants are retained.
+  evidence:
+  - reference_id: RHEA:19483
+    source_assertion: RHEA:19483 lists CHEBI:57288 as a product with coefficient 1.
+    source_locator: RHEA:19483/rh:products -> http://rdf.rhea-db.org/19481_L/rh:contains1 -> http://rdf.rhea-db.org/Participant_19481_compound_4271/rh:compound
+      -> http://rdf.rhea-db.org/Compound_4271/rh:chebi
+- id: transferase-provides-thiolase-intermediate
+  subject: RHEA:12049
+  predicate: provides_input_for
+  object: RHEA:19483
+  description: CoA transfer supplies 3-oxoadipyl-CoA to the subsequent thiolysis step. Succinyl-CoA
+    is consumed by the first step and regenerated by the second.
+  evidence:
+  - reference_id: MetaCyc:PWY-2361
+    source_assertion: RXN-3641 follows 3-OXOADIPATE-COA-TRANSFERASE-RXN; the pathway layouts share
+      3-KETO-ADIPYL-COA.
+    source_locator: /ptools-xml/Pathway/reaction-ordering[Reaction/@frameid="RXN-3641"]/predecessor-reactions;
+      /ptools-xml/Pathway/reaction-layout
+- id: catalysis-cplx-2722
+  subject: MetaCyc:CPLX-2722
+  predicate: catalyzes
+  object: RHEA:12049
+  description: Native purified-protein annotation, citing PMID:6780551. The separate native complex
+    comment saying the enzyme was not purified conflicts with this annotation and the primary report.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3369
+    source_assertion: The activity links CPLX-2722 to 3-OXOADIPATE-COA-TRANSFERASE-RXN and carries
+      native evidence code EV-EXP-IDA-PURIFIED-PROTEIN.
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; /ptools-xml/Enzymatic-Reaction/reaction;
+      /ptools-xml/Enzymatic-Reaction/evidence
+- id: catalysis-cplx-2746
+  subject: MetaCyc:CPLX-2746
+  predicate: catalyzes
+  object: RHEA:19483
+  description: Native mutant-phenotype annotation, citing PMID:7961399; this does not assert purification
+    of the P. putida thiolase or direct measurement of its native oligomerization.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-5295
+    source_assertion: The activity links CPLX-2746 to RXN-3641 and carries native evidence code EV-EXP-IMP.
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; /ptools-xml/Enzymatic-Reaction/reaction;
+      /ptools-xml/Enzymatic-Reaction/evidence
+- id: assembly-monomer-3190
+  subject: MetaCyc:CPLX-2722
+  predicate: has_part
+  object: MetaCyc:MONOMER-3190
+  description: The native complex annotates 2 copies of this component. The native alpha2beta2 assignment
+    follows the historical oligomer measurements; current UniProt subunit entries instead say heterodimer,
+    a retained source disagreement.
+  evidence:
+  - reference_id: MetaCyc:CPLX-2722
+    source_assertion: The component list assigns coefficient 2 to MONOMER-3190.
+    source_locator: /ptools-xml/Protein/component[Protein/@frameid="MONOMER-3190"]/coefficient
+  - reference_id: MetaCyc:MONOMER-3190
+    source_assertion: The native monomer has a reciprocal component-of reference to CPLX-2722.
+    source_locator: /ptools-xml/Protein/component-of/Protein
+  - reference_id: UniProtKB:Q01103
+    source_assertion: The issuing SUBUNIT annotation says Heterodimer. This is retained as a conflicting
+      assembly annotation, not substituted for the native historical alpha2beta2 model.
+    source_locator: $.comments[commentType="SUBUNIT"].texts
+- id: assembly-monomer-3191
+  subject: MetaCyc:CPLX-2722
+  predicate: has_part
+  object: MetaCyc:MONOMER-3191
+  description: The native complex annotates 2 copies of this component. The native alpha2beta2 assignment
+    follows the historical oligomer measurements; current UniProt subunit entries instead say heterodimer,
+    a retained source disagreement.
+  evidence:
+  - reference_id: MetaCyc:CPLX-2722
+    source_assertion: The component list assigns coefficient 2 to MONOMER-3191.
+    source_locator: /ptools-xml/Protein/component[Protein/@frameid="MONOMER-3191"]/coefficient
+  - reference_id: MetaCyc:MONOMER-3191
+    source_assertion: The native monomer has a reciprocal component-of reference to CPLX-2722.
+    source_locator: /ptools-xml/Protein/component-of/Protein
+  - reference_id: UniProtKB:P0A102
+    source_assertion: The issuing SUBUNIT annotation says Heterodimer. This is retained as a conflicting
+      assembly annotation, not substituted for the native historical alpha2beta2 model.
+    source_locator: $.comments[commentType="SUBUNIT"].texts
+- id: assembly-monomer-3207
+  subject: MetaCyc:CPLX-2746
+  predicate: has_part
+  object: MetaCyc:MONOMER-3207
+  description: The native complex annotates 4 copies of this component. The homotetramer is a source
+    annotation, not an oligomer measurement established by the cited P. putida mutant-phenotype experiment.
+  evidence:
+  - reference_id: MetaCyc:CPLX-2746
+    source_assertion: The component list assigns coefficient 4 to MONOMER-3207.
+    source_locator: /ptools-xml/Protein/component[Protein/@frameid="MONOMER-3207"]/coefficient
+  - reference_id: MetaCyc:MONOMER-3207
+    source_assertion: The native monomer has a reciprocal component-of reference to CPLX-2746.
+    source_locator: /ptools-xml/Protein/component-of/Protein
+- id: pcar-regulates-transferase-expression
+  subject: UniProtKB:Q52154
+  predicate: regulates
+  object: MetaCyc:CPLX-2722
+  description: PcaR is required for inducer-dependent pcaIJ expression in the PRS2000 lineage. The
+    quoted pcaI-lacZ reporter measures the promoter of the independently established pcaIJ operon.
+    This is transcriptional regulation, not binding to or direct activation of the transferase.
+  evidence:
+  - reference_id: PMID:8376330
+    quote: PcaR is required for pcaI induction
+    source_locator: p. 5836, text immediately below Table 3; pcaI reporter assay and pcaIJ operon
+      context
+  - reference_id: UniProtKB:Q52154
+    source_assertion: The reviewed FUNCTION annotation describes positive regulation of pcaBDC, pcaIJ
+      and pcaF; its sequence reference identifies strain PRS2000.
+    source_locator: $.comments[commentType="FUNCTION"]; $.references[0].referenceComments[type="STRAIN"]
+- id: oxoadipate-regulates-transferase-expression
+  subject: CHEBI:15775
+  predicate: regulates
+  object: MetaCyc:CPLX-2722
+  description: 3-Oxoadipate induces synthesis of the transferase under the source-described conditions,
+    with PcaR-dependent pcaIJ expression. The edge represents expression induction; neither direct
+    inducer binding to PcaR nor catalytic activation of the transferase is asserted.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3369
+    source_assertion: The native comment states that synthesis of the P. putida transferase is induced
+      by beta-ketoadipate and cites Parales 1993 and Harwood 1996.
+    source_locator: /ptools-xml/Enzymatic-Reaction/comment
+- id: adipate-regulates-transferase-expression
+  subject: CHEBI:17128
+  predicate: regulates
+  object: MetaCyc:CPLX-2722
+  description: Adipate is a nonmetabolizable experimental inducer analog. In the PRS2000-derived PRS4050
+    chromosomal pcaI-lacZ reporter, 20 mM adipate with 10 mM glucose increased beta-galactosidase
+    activity. This is promoter induction rather than a transferase reaction substrate or direct catalytic
+    activation.
+  evidence:
+  - reference_id: PMID:8376330
+    quote: Growth with adipate, β-ketoadipate, or aromatic compounds caused a 10- to 20-fold induction
+    source_locator: p. 5836, chromosomal pcaI-lacZ fusion results and Fig. 6; reporter strain PRS4050
+- id: pcar-regulates-thiolase-expression
+  subject: UniProtKB:Q52154
+  predicate: regulates
+  object: MetaCyc:CPLX-2746
+  description: PcaR is required for pcaF expression. This is supported by the later 1995 author abstract
+    and reviewed regulatory annotation; the full 1995 paper was inaccessible here. It supersedes the
+    1994 paper's explicit uncertainty and does not assert direct PcaR binding to the thiolase.
+  evidence:
+  - reference_id: PMID:8522507
+    quote: is required for expression of both pcaF and pcaK
+    source_locator: Author abstract, sentence beginning PcaR; abstract-only primary inspection
+  - reference_id: UniProtKB:Q52154
+    source_assertion: The reviewed FUNCTION annotation includes positive regulation of pcaF within
+      the pca regulon.
+    source_locator: $.comments[commentType="FUNCTION"].texts
+- id: oxoadipate-regulates-thiolase-expression
+  subject: CHEBI:15775
+  predicate: regulates
+  object: MetaCyc:CPLX-2746
+  description: 3-Oxoadipate induces pcaF expression as reported in the 1995 author abstract. Full-paper
+    methods and data were inaccessible here. This is expression induction of the terminal thiolase
+    in the source context, not direct ligand binding or activation of purified PcaF.
+  evidence:
+  - reference_id: PMID:8522507
+    quote: the pathway intermediate beta-ketoadipate induces both genes
+    source_locator: Author abstract, pcaF/pcaK expression sentence; abstract-only primary inspection
+- id: adipate-regulates-thiolase-expression
+  subject: CHEBI:17128
+  predicate: regulates
+  object: MetaCyc:CPLX-2746
+  description: PRS2000 cell extracts showed thiolase activity of 16.1 on 10 mM glucose versus 111.0
+    nmol/min/mg on glucose plus 20 mM adipate. The pcaF mutant retained only low activity. This supports
+    inducer-dependent expression in the experimental lineage, not direct activation of the purified
+    enzyme.
+  evidence:
+  - reference_id: PMID:7961399
+    quote: Thiolase activity for PRS2000 was 16.1 and 111.0 nmol of β-ketoadipyl-CoA disappeared per
+      min per mg of protein
+    source_locator: p. 6485, first paragraph; conditions in p. 6483, pcaF mutant characterization,
+      continued across Fig. 4
+references:
+- id: MetaCyc:PWY-2361
+  title: 'MetaCyc PWY-2361: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-2361
+  source_version: META PGDB 27.0
+  source_sha256: 7e8795224de295517ebd98df074c96a5063c856892968dbbe6b7a2431437bd58
+- id: MetaCyc:CPLX-2722
+  title: 'MetaCyc CPLX-2722: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2722
+  source_version: META PGDB 27.0
+  source_sha256: 63a12dc1bcbc8eb2a93bd172e1a75c1c0a028f3a1de8a69d2d6649df897a9605
+- id: MetaCyc:MONOMER-3190
+  title: 'MetaCyc MONOMER-3190: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-3190
+  source_version: META PGDB 27.0
+  source_sha256: 4f52d2267ea86f785fffa22eeef04d82f366c483202ec4a5d0b44a1ed85dfff1
+- id: MetaCyc:MONOMER-3191
+  title: 'MetaCyc MONOMER-3191: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-3191
+  source_version: META PGDB 27.0
+  source_sha256: 25121a6629261e649c2be88786d283566f2ef046a8f84f435cb6469a67e920c6
+- id: MetaCyc:CPLX-2746
+  title: 'MetaCyc CPLX-2746: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2746
+  source_version: META PGDB 27.0
+  source_sha256: 656cdd92cd21d019fc67381f8e5bd783ec59f523d6066293d3c9a1c9d2d7f5bb
+- id: MetaCyc:MONOMER-3207
+  title: 'MetaCyc MONOMER-3207: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-3207
+  source_version: META PGDB 27.0
+  source_sha256: ec17a8a0669ab067482d86e0dfadda76850817300e6aa85781912e36faffb43b
+- id: MetaCyc:3-OXOADIPATE-COA-TRANSFERASE-RXN
+  title: 'MetaCyc 3-OXOADIPATE-COA-TRANSFERASE-RXN: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-OXOADIPATE-COA-TRANSFERASE-RXN
+  source_version: META PGDB 27.0
+  source_sha256: 9de6ecfb99056a6c2ad2c4ef99ce7499b672d4564416317434c6ccff49196154
+- id: RHEA:12049
+  title: 'Rhea 12049: complete directional reaction and participant RDF'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 (2026-09-02), complete RDF; directional family identity retained
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:RXN-3641
+  title: 'MetaCyc RXN-3641: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:RXN-3641
+  source_version: META PGDB 27.0
+  source_sha256: 252c53260b5566712aa23a640710bbd3184d15dd033bf457765f58b218b422c3
+- id: RHEA:19483
+  title: 'Rhea 19483: complete directional reaction and participant RDF'
+  url: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  source_version: Rhea 142 (2026-09-02), complete RDF; directional family identity retained
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:ENZRXN-3369
+  title: 'MetaCyc ENZRXN-3369: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3369
+  source_version: META PGDB 27.0
+  source_sha256: 5e5ac7e6d1393791bda248f3107821513ac15fd342ffca8c021f331a2f60959c
+- id: MetaCyc:ENZRXN-5295
+  title: 'MetaCyc ENZRXN-5295: complete native object'
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-5295
+  source_version: META PGDB 27.0
+  source_sha256: ea2b5061056bf7051fe16764ac57c58879729d1bbbe41537123e6438f190d7f6
+- id: PMID:8376330
+  title: Regulation of the pcaIJ genes for aromatic acid degradation in Pseudomonas putida
+  url: https://cdn.ncbi.nlm.nih.gov/pmc/blobs/e555/206662/4dcc7a07b643/jbacter00060-0100.png
+  source_version: Original archived page 5836 scan, 1993; digest covers this quoted page, not the
+    complete paper. All ten pages were inspected separately.
+  source_sha256: 00dfc73098fd7472978b5c9f5dfc8cc3f99a82676459b0a12a1ba880d896cf51
+- id: PMID:7961399
+  title: 'Identification of the pcaRKF gene cluster from Pseudomonas putida: involvement in chemotaxis,
+    biodegradation, and transport of 4-hydroxybenzoate'
+  url: https://cdn.ncbi.nlm.nih.gov/pmc/blobs/27b4/197001/747627c7126d/jbacter00039-0081.png
+  source_version: Original archived page 6485 scan, 1994; digest covers this quoted page. Assay conditions
+    are on separately retained page 6483; all ten pages were inspected.
+  source_sha256: 5f69718ba1094fcbf8836ecbd4eda381a2bd5bc99cf9629728fb1c40ae05f9de
+- id: PMID:8522507
+  title: 'Repression of 4-hydroxybenzoate transport and degradation by benzoate: a new layer of regulatory
+    control in the Pseudomonas putida beta-ketoadipate pathway'
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC177579/
+  source_version: Author abstract in the original PMC HTML, 1995; full paper, tables and figures were
+    not accessible in this retrieval.
+  source_sha256: 74023204ca88f44c6d55a110b5c1c3ed2cd25b17cf31f8bb13ceb16d81ee6e6c
+- id: UniProtKB:Q52154
+  title: Pca regulon regulatory protein
+  url: https://rest.uniprot.org/uniprotkb/Q52154.json
+  source_version: Reviewed UniProtKB JSON retrieved 2026-10-14; entry 100, sequence 1
+  source_sha256: 408333fab03c6183dfb9e6a98a5b1416605d0dcd2dc35ed738a2335fa1b64c06
+- id: UniProtKB:Q01103
+  title: 3-oxoadipate CoA-transferase subunit A
+  url: https://rest.uniprot.org/uniprotkb/Q01103.json
+  source_version: Reviewed UniProtKB JSON retrieved 2026-10-14; entry 86, sequence 2
+  source_sha256: a10a70d939ec50a169edf4366862c113958a7dfd867cb00b7eb1bb115128f90f
+- id: UniProtKB:P0A102
+  title: 3-oxoadipate CoA-transferase subunit B
+  url: https://rest.uniprot.org/uniprotkb/P0A102.json
+  source_version: Reviewed UniProtKB JSON retrieved 2026-10-14; entry 70, sequence 2
+  source_sha256: cb99529f62f36250384889ab07c8b683e93505bacbd8120e7bd54fab7c03012d
