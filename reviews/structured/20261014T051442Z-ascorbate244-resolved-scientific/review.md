@@ -1,0 +1,768 @@
+# Independent resolved scientific review of anaerobic L-ascorbate degradation
+
+- Review: 20261014T051442Z-ascorbate244-resolved-scientific
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T04:54:56Z
+- Finished UTC: 2026-10-14T05:14:42Z
+- Reviewer: Codex /root/next244_primary_evidence (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+All fields and 55 edge claims of the single maintained pathway were reviewed. Both minor findings are resolved, including residual membership-edge attribution. Three full main primary articles and all 19 main figures, exact native definitions, and the four formal Rhea equations support the bounded route. Required local checks passed with the explicitly recorded non-frozen test-run scope; full exact-head CI remains a publication gate.
+
+## Scope And Provenance
+
+One complete maintained candidate, read in full; bounded primary and authority source verification.
+
+Selection: Exact integrated MetaCyc:PWY0-301 record requested for independent adversarial review.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base c0a6363601fc6237cfc868112bf70ed7fa3ed3e6.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY0-301 | data/pathways/l-ascorbate-degradation-i.yaml | maintained | L-ascorbate degradation I (bacterial, anaerobic) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Native pre-assessment inspections | passed | True | MetaCyc:PWY0-301 | Captured actual final target before assessing changed membership assertions. |
+| just validate | passed | True | MetaCyc:PWY0-301 | Actual command completed with exit 0; receipt/log hash verified. |
+| just test | passed | True | MetaCyc:PWY0-301 | Full local suite passed: 4867 passed, 3 skipped, 7 warnings in 1041.09 seconds. Its receipt captured a3fac at start; five membership assertion/description corrections occurred during execution. Independent exact delta review and final QC cover those corrections. |
+| just lint | passed | True | MetaCyc:PWY0-301 | Actual command completed with exit 0; receipt/log hash verified. |
+| git diff --check | passed | True | MetaCyc:PWY0-301 | Actual command completed with exit 0; receipt/log hash verified. |
+| just render-pages | passed | False | MetaCyc:PWY0-301 | Actual command completed with exit 0; receipt/log hash verified. |
+| Final original reference hash verification | passed | False | MetaCyc:PWY0-301 | 36 of 36 references match original issuing bytes. |
+| Independent formal Rhea closure inspection | passed | False | MetaCyc:PWY0-301 | All 11 ChEBI roles and coefficients agree with the record. |
+| Final five-edge semantic delta verification | passed | False | MetaCyc:PWY0-301 | Only five descriptions and five source assertions changed; all other YAML values are identical. |
+
+## Scientific And Domain Assessments
+
+### Bounded complete five-event pathway
+
+identity: supported. Targets: MetaCyc:PWY0-301.
+
+Native PWY0-301 and primary enzyme/transport studies support the selected anaerobic E. coli route; neighboring aerobic yia metabolism is not merged.
+
+### Participants, directions and catalysts
+
+grounding: supported. Targets: MetaCyc:PWY0-301.
+
+Four directional Rhea equations and native aggregate transport match the declared chemical progression. Native protein identities and cofactors retain experimental versus inferred scope.
+
+### Regulatory context
+
+graph: supported. Targets: MetaCyc:PWY0-301.
+
+Regulatory signs and promoter-bearing gene targets agree with the inspected 2004 results; the two later abstract-only claims are explicitly qualified.
+
+### Edge-local provenance and strain limits
+
+evidence: supported. Targets: MetaCyc:PWY0-301.
+
+Both minor provenance/scope findings are resolved on final daf2a8. Each repaired assertion is scoped to the cited object, the five residual membership assertions are narrow, and JM101/PB11 is explicit. All 36 source hashes match originals.
+
+### Native checks and final-byte limitations
+
+schema: supported. Targets: MetaCyc:PWY0-301.
+
+Final native QC, lint, diff and render receipts pass. The local full test suite passed with its explicitly non-frozen input scope; final-head CI remains a publication gate. These checks are separate from the scientific source appraisal.
+
+## Findings
+
+### F1: Remove unrelated multi-source boilerplate from edge-local source assertions
+
+minor / resolved / confirmed; issue key: ascorbate244-edge-local-attribution.
+
+Several source_assertion values append true or contextual claims not established by their cited native object: ascorbate-014 through -024 append UlaE/UlaF orientation to every Rhea participant assertion; -025 through -029 append pathway enzyme exclusions to individual reaction XML claims; -030 through -034 append all three assembly descriptions to each individual complex. Keep each assertion scoped to its actual object and separately cite the pathway or other complex when needed. The checked endpoints remain supported; this is a bounded provenance defect rather than a wrong pathway. The successor pass also identified the same copied-context defect on membership edges001–005, which attached 22.5 history to 27.0-only citations.
+
+Disposition: Independently re-read repaired edges001–005 and014–034 against issuing originals. Formal participant assertions now describe only their own equation; catalyst statements separately cite pathway exclusions and protein identity joins; complex statements describe only their own assembly. The five membership assertions now state only their own 27.0 reaction-list fact. Formal chemistry, graph structure and all other final values remain supported.
+
+### F2: Identify JM101/PB11 beside general PTS-dependence evidence
+
+minor / resolved / confirmed; issue key: ascorbate244-pts-strain-context.
+
+ascorbate-039 and -040 describe the combined ptsHIcrr deletion without its strain background, while the record introduction foregrounds BW25113 transport genetics and promises claim-local strain scope. PMID12644495 Methods explicitly excludes the enzyme-I/HPr experiments from BW25113: they use JM101 and PB11. Add that strain pairing to both affected descriptions and primary evidence statements; preserve the combined deletion and avoid claiming individual ptsH or ptsI knockout tests. K-12 scope remains valid.
+
+Disposition: Both ascorbate-039 and -040 now name JM101 versus PB11, explicitly retain the combined ptsHIcrr deletion and cAMP non-rescue, and avoid asserting individual ptsH/ptsI knockout tests. This matches the independently re-read primary Methods/Table1 and Results; the separate UlaABC BW25113 scope remains intact.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| native-pathway | /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/bf2i-id-META-PWY0-301.xml; Pathway reaction-list, reaction-ordering, enzymes-not-used, species, pathway-link | supports | Five native events, ordered transport through terminal epimerization, exclusions and pentose-phosphate interface; K-12/MG1655 is a supported bounded taxon scope. |
+| native-transport | /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/bf2i-id-META-RXN0-2461.xml; Reaction left, right, enzymatic-reaction, dblink | supports | HPr-state aggregate transport and EIISGA catalyst; this reaction object does not contain the pathway-wide alternative-enzyme exclusions. |
+| rhea | /private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz; Exact directional subjects 28804,14354,18499,22369 and source side identifiers; obsolete33303 and current42436 | supports | Issuing Rhea directional equations support the four chemical steps and UlaE reverse orientation relative to its master. Individual reaction assertions do not establish unrelated enzyme orientations. |
+| uniprot | /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/uniprot-ula-search.json; Eight exact primaryAccession objects: names, genes, BioCyc/GeneID links, function, location, cofactors and evidence codes | supports | Reviewed identities and explicit annotation limitations support the protein nodes, UlaD magnesium and UlaF similarity-based zinc claim. |
+| enzymes2002 | /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC134747.html; Complete main text; Methods; Tables 1/2; visually inspected original Figures 1–4 | supports | MG1655 recombinant UlaD/E/F preparations have removed His10 tags; chemical conversions and genetic assignment are supported. Figure 3C preserves the earlier hydrolysis-before-PTS proposal, not the present final ordering. |
+| transport2003 | /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC151508.html; Complete main text; Methods and Table 1; original Figures 1–8 visually inspected | supports | UlaABC mutants use BW25113. The general PTS comparison instead uses JM101/PB11 with a combined ptsHIcrr deletion. Uptake, PEP-dependent phosphorylation, cAMP non-rescue and UlaG utilization phenotypes are supported; individual ptsH/ptsI knockout tests are not asserted. |
+| regulation2004 | /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC355983.html; Complete main text; Methods; Tables 1/2; original Figures 1–7 visually inspected | supports | JA134-family reporter and tag-cleaved UlaR binding studies support UlaR and basal IHF repression, CRP activation of ulaA only, and glucose repression. Proposed looping and inducer exclusion are not elevated to direct observations. |
+| ulag2010 | /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMID20359483.xml; result/abstractText | partial | Primary abstract reports hexameric architecture and Mn- or Co-loaded UlaG lactonase activity. Full article methods and figures were not read. |
+| ular2008 | /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMID18844374.xml; result/abstractText | partial | Primary abstract identifies ascorbate6P effector and tetramer/dimer regulatory model. Full article methods and figures were not read. |
+| inspect | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/final-daf2-inspect.json; Native output captured before assessing the final five membership corrections | supports | Target daf2a8 and prior review/context hashes were captured before final delta assessment. |
+| prior-review | reviews/structured/20261014T045249Z-ascorbate244-initial-scientific/review.yaml; Initial F1 and F2 | supports | Exact predecessor findings and stable issue keys were read; both target the same maintained pathway. |
+| final-record | data/pathways/l-ascorbate-degradation-i.yaml; Entire record, all fields and 55 edges; revised 001–005,014–034,039–040 | supports | Final evidence asserts only each cited native object; separate exclusions and identity joins have their own citations. Both general PTS-dependence edges explicitly identify JM101 versus PB11 and the combined deletion. |
+| reading-coverage | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/reading-coverage.json; Exact primary originals and 19 figure-file SHA-256 bindings | supports | Records independent complete main-text and main-figure coverage of the 2002, 2003 and 2004 papers and the two abstract-only sources; preserves historic supplementary access limits. |
+| reference-hashes | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/final-daf2-reference-hashes.json; All 36 references and original-file hashes | supports | Every final record source_sha256 matches its retained original bytes and the author binding manifest. |
+| rhea-closure | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/rhea-original-formal-closure.json; Exact issuing RDF subjects, sides, participants, compounds and rh:contains1 | supports | All 11 chemical-role assignments resolve to the exact declared ChEBI forms with coefficient 1. UlaE is the right-to-left directional child; UlaF is left-to-right. Old 33303 is obsolete, and 42436 has a generic histidyl-protein donor. |
+| final-delta | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/final-daf2-semantic-delta.json; All parsed YAML values compared between a3fac and daf2a8 | supports | Exactly ten narrative/assertion values on edges001–005 changed; all other YAML values, including participants, directions, topology and other evidence, remain identical. |
+| residual-attribution | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/residual-508-observation.json; Independent observation on a3fac edges001–005 | supports | A last instance of the same #508 defect appended 22.5 history to five citations of 27.0 membership objects; final daf2a8 removes that unrelated local clause. |
+| native-pathway225 | /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/sgd-META-PWY0-301.xml; PGDB version 22.5; four reaction-list entries; pathway-link incoming-link-target RXN0-2461 | supports | The historical comparison retained in record-level context is true; it belongs to this distinct original, not a 27.0 reaction-list XPath. |
+| imodulondb | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/imodulondb-ula-search.md; Public e_coli/precise_mg1655 query ula; gene keys b4191–b4198 | context_only | Covered MG1655 gene names match ulaR and ulaA–G. Module hits are generic substring matches and give no independent evidence for mechanism or module membership; no absence-based inference is made. |
+| initial-native-check | research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/initial-review-check.log; Complete check output | supports | Native review checker passed for 130 saved reviews, including the initial bundle; declared-scope coverage only. |
+| gate-validate | research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050647Z-validate.json; Actual command, timestamps, input hashes, exit code and hashed stdout | supports | Inspected passing receipt and log for just validate. Recorded target hash is the reviewed final daf2a8. |
+| gate-test | research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T045647Z-test.json; Actual command, timestamps, input hashes, exit code and hashed stdout | supports | Inspected passing receipt and log for just test. Test input was captured at a3fac when the suite started; the five later membership assertion/description changes occurred during the run, so this was not a frozen final-target test execution. |
+| gate-lint | research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050647Z-lint.json; Actual command, timestamps, input hashes, exit code and hashed stdout | supports | Inspected passing receipt and log for just lint. Recorded target hash is the reviewed final daf2a8. |
+| gate-diff-check | research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050833Z-diff.json; Actual command, timestamps, input hashes, exit code and hashed stdout | supports | Inspected passing receipt and log for git diff --check. Recorded target hash is the reviewed final daf2a8. |
+| gate-render-pages | research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050440Z-render.json; Actual command, timestamps, input hashes, exit code and hashed stdout | supports | Inspected passing receipt and log for just render-pages. Recorded target hash is the reviewed final daf2a8. |
+
+## Limits And Additional Notes
+
+- PMID20359483 (UlaG2010) and PMID18844374 (UlaR2008) were inspected as primary abstracts/metadata only, as explicitly disclosed in the record; full methods, constructs, figures and supplements are not inferred.
+- The historical 2003 author-website supplementary Tables S1–S3 and Figures S1–S9 were not retrieved or independently inspected. The main article, its Table1 and all eight main figures were inspected; no supplemental-only quantitative claim is adopted.
+- Current UlaF zinc annotation retains similarity/inference evidence. Native complex annotations are curated source assertions, not claims that every underlying structural primary paper was read.
+- The passing full local test run captured a3fac at start while the final five membership wording corrections occurred during execution. It is not a frozen final-daf2a8 test receipt. Exact final-head GitHub CI remains required before merge; final native QC and independent semantic delta review cover the changed content here.
+- This is one-record scientific review, not a licensing, public release, whole-source-fleet or complete generated-export audit. Main article figure inspection is complete for the three full-text primaries; newer abstract-only sources remain bounded.
+- iModulonDB search results are structured metadata context, not biochemical or regulatory proof. No absence-based biological conclusion is drawn.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T051442Z-ascorbate244-resolved-scientific
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent resolved scientific review of anaerobic L-ascorbate degradation
+started_at: '2026-10-14T04:54:56Z'
+finished_at: '2026-10-14T05:14:42Z'
+reviewer:
+  identity: Codex /root/next244_primary_evidence
+  kind: agent
+  model: GPT-6
+  independence: independent
+  independence_basis: Did not author this pathway or its authority changes; independently
+    inspected the integrated record and source content. Prior research task concerned
+    a different glucitol candidate.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: All fields and 55 edge claims of the single maintained pathway were reviewed.
+  Both minor findings are resolved, including residual membership-edge attribution.
+  Three full main primary articles and all 19 main figures, exact native definitions,
+  and the four formal Rhea equations support the bounded route. Required local checks
+  passed with the explicitly recorded non-frozen test-run scope; full exact-head CI
+  remains a publication gate.
+source:
+  git_revision: c0a6363601fc6237cfc868112bf70ed7fa3ed3e6
+  state: working_tree
+  inputs:
+  - path: data/pathways/l-ascorbate-degradation-i.yaml
+    sha256: daf2a8db6988c442aeae2dc094071b8d26d6c4e0ebb81a7b3a94f134d9870083
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: research/pathway_additions/2026-10-13-next-244/ascorbate/author/issues-508-509-repair.json
+    sha256: 95a97b8634637d01777d8caedefff25d072bf6817b92f48110b341b97495ee1a
+    role: context
+  - path: reviews/structured/20261014T045249Z-ascorbate244-initial-scientific/review.yaml
+    sha256: 759bea759cfd133e76585e042a792b2b147743f2ad8cc2010e9150f399532227
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+scope:
+  description: One complete maintained candidate, read in full; bounded primary and
+    authority source verification.
+  selection: Exact integrated MetaCyc:PWY0-301 record requested for independent adversarial
+    review.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY0-301
+  exclusions:
+  - target: Other pathway records, licensing and publication readiness
+    reason: Outside this one-record scientific review.
+targets:
+- target_id: MetaCyc:PWY0-301
+  path: data/pathways/l-ascorbate-degradation-i.yaml
+  label: L-ascorbate degradation I (bacterial, anaerobic)
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+checks:
+- check_id: native-inspect
+  name: Native pre-assessment inspections
+  status: passed
+  required: true
+  summary: Captured actual final target before assessing changed membership assertions.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/.venv/bin/python
+    scripts/record_review.py inspect --targets /private/tmp/pathwaymech-ascorbate-independent-review-20261013/targets.yaml
+    --input src/pathwaymech/schema.py --input docs/CAUSAL_GRAPHS.md --input reviews/structured/20261014T045249Z-ascorbate244-initial-scientific/review.yaml
+    --input research/pathway_additions/2026-10-13-next-244/ascorbate/author/issues-508-509-repair.json
+  exit_code: 0
+  evidence_ids:
+  - inspect
+- check_id: validate
+  name: just validate
+  status: passed
+  required: true
+  summary: Actual command completed with exit 0; receipt/log hash verified.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: just validate
+  exit_code: 0
+  evidence_ids:
+  - gate-validate
+- check_id: test
+  name: just test
+  status: passed
+  required: true
+  summary: 'Full local suite passed: 4867 passed, 3 skipped, 7 warnings in 1041.09
+    seconds. Its receipt captured a3fac at start; five membership assertion/description
+    corrections occurred during execution. Independent exact delta review and final
+    QC cover those corrections.'
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: just test
+  exit_code: 0
+  evidence_ids:
+  - gate-test
+  - final-delta
+  scope_note: This check is not represented as frozen daf2a8 execution. Exact final-head
+    GitHub CI is required before merge; the scientific review is qualified accordingly.
+- check_id: lint
+  name: just lint
+  status: passed
+  required: true
+  summary: Actual command completed with exit 0; receipt/log hash verified.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: just lint
+  exit_code: 0
+  evidence_ids:
+  - gate-lint
+- check_id: diff-check
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Actual command completed with exit 0; receipt/log hash verified.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: git diff --check
+  exit_code: 0
+  evidence_ids:
+  - gate-diff-check
+- check_id: render-pages
+  name: just render-pages
+  status: passed
+  required: false
+  summary: Actual command completed with exit 0; receipt/log hash verified.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: just render-pages
+  exit_code: 0
+  evidence_ids:
+  - gate-render-pages
+- check_id: reference-hashes
+  name: Final original reference hash verification
+  status: passed
+  required: false
+  summary: 36 of 36 references match original issuing bytes.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: Independent Python SHA-256 comparison of every final reference against
+    its original file
+  exit_code: 0
+  evidence_ids:
+  - reference-hashes
+- check_id: formal-rhea
+  name: Independent formal Rhea closure inspection
+  status: passed
+  required: false
+  summary: All 11 ChEBI roles and coefficients agree with the record.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: Independent original RDF node resolution and rh:contains1 inspection
+  exit_code: 0
+  evidence_ids:
+  - rhea
+  - rhea-closure
+- check_id: semantic-delta
+  name: Final five-edge semantic delta verification
+  status: passed
+  required: false
+  summary: Only five descriptions and five source assertions changed; all other YAML
+    values are identical.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: Independent parsed YAML comparison of a3fac and daf2a8
+  exit_code: 0
+  evidence_ids:
+  - final-delta
+evidence:
+- evidence_id: native-pathway
+  kind: database
+  reference: /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/bf2i-id-META-PWY0-301.xml
+  locator: Pathway reaction-list, reaction-ordering, enzymes-not-used, species, pathway-link
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: Five native events, ordered transport through terminal epimerization, exclusions
+    and pentose-phosphate interface; K-12/MG1655 is a supported bounded taxon scope.
+  snapshot_sha256: ea8ec0b44e56bd2704db601db32127fd1ddf2ea7910c9a4a66fce787e4d9fc41
+- evidence_id: native-transport
+  kind: database
+  reference: /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/bf2i-id-META-RXN0-2461.xml
+  locator: Reaction left, right, enzymatic-reaction, dblink
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: HPr-state aggregate transport and EIISGA catalyst; this reaction object
+    does not contain the pathway-wide alternative-enzyme exclusions.
+  snapshot_sha256: 8a02ce152294884685fdb067eebb5196eef6bbc00bbb7894ae1d494b8bbc3fa5
+- evidence_id: rhea
+  kind: authority
+  reference: /private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz
+  locator: Exact directional subjects 28804,14354,18499,22369 and source side identifiers;
+    obsolete33303 and current42436
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: Issuing Rhea directional equations support the four chemical steps and
+    UlaE reverse orientation relative to its master. Individual reaction assertions
+    do not establish unrelated enzyme orientations.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: uniprot
+  kind: database
+  reference: /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/uniprot-ula-search.json
+  locator: 'Eight exact primaryAccession objects: names, genes, BioCyc/GeneID links,
+    function, location, cofactors and evidence codes'
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: Reviewed identities and explicit annotation limitations support the protein
+    nodes, UlaD magnesium and UlaF similarity-based zinc claim.
+  snapshot_sha256: a228ec7063193d39125acdb74aad93a7058bb356f156b4d48da82e68fcae801b
+- evidence_id: enzymes2002
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC134747.html
+  locator: Complete main text; Methods; Tables 1/2; visually inspected original Figures
+    1–4
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: MG1655 recombinant UlaD/E/F preparations have removed His10 tags; chemical
+    conversions and genetic assignment are supported. Figure 3C preserves the earlier
+    hydrolysis-before-PTS proposal, not the present final ordering.
+  snapshot_sha256: 15a0e641414b0521407fdfb7750b71929e292417b2eaeb7f83dc735d65a5fd5c
+- evidence_id: transport2003
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC151508.html
+  locator: Complete main text; Methods and Table 1; original Figures 1–8 visually
+    inspected
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: UlaABC mutants use BW25113. The general PTS comparison instead uses JM101/PB11
+    with a combined ptsHIcrr deletion. Uptake, PEP-dependent phosphorylation, cAMP
+    non-rescue and UlaG utilization phenotypes are supported; individual ptsH/ptsI
+    knockout tests are not asserted.
+  snapshot_sha256: a0417d23314c57ba663bd0742607043046ae2822fcca9e88ac9378bd1b5eedb3
+- evidence_id: regulation2004
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC355983.html
+  locator: Complete main text; Methods; Tables 1/2; original Figures 1–7 visually
+    inspected
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: JA134-family reporter and tag-cleaved UlaR binding studies support UlaR
+    and basal IHF repression, CRP activation of ulaA only, and glucose repression.
+    Proposed looping and inducer exclusion are not elevated to direct observations.
+  snapshot_sha256: 80c0c9194c4ec36031989b26a805b94a038288d0a7dfa43214a4924595a3b337
+- evidence_id: ulag2010
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMID20359483.xml
+  locator: result/abstractText
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: partial
+  summary: Primary abstract reports hexameric architecture and Mn- or Co-loaded UlaG
+    lactonase activity. Full article methods and figures were not read.
+  snapshot_sha256: b05273dadd7cacdf45cf057ca5a3a8d879d0eab5be770246e84957b90f3463e4
+- evidence_id: ular2008
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMID18844374.xml
+  locator: result/abstractText
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: partial
+  summary: Primary abstract identifies ascorbate6P effector and tetramer/dimer regulatory
+    model. Full article methods and figures were not read.
+  snapshot_sha256: d773d9dd97931f96a26c97d1ed382529d263eab4dbbe33e22fc73b7002fca204
+- evidence_id: inspect
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/final-daf2-inspect.json
+  locator: Native output captured before assessing the final five membership corrections
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Target daf2a8 and prior review/context hashes were captured before final
+    delta assessment.
+  snapshot_sha256: a2ecd36ee578b906200fd15fe25b992d766c8a9dae9a0b423691d40d4632901c
+- evidence_id: prior-review
+  kind: prior_review
+  reference: reviews/structured/20261014T045249Z-ascorbate244-initial-scientific/review.yaml
+  locator: Initial F1 and F2
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Exact predecessor findings and stable issue keys were read; both target
+    the same maintained pathway.
+  snapshot_sha256: 759bea759cfd133e76585e042a792b2b147743f2ad8cc2010e9150f399532227
+- evidence_id: final-record
+  kind: record_content
+  reference: data/pathways/l-ascorbate-degradation-i.yaml
+  locator: Entire record, all fields and 55 edges; revised 001–005,014–034,039–040
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Final evidence asserts only each cited native object; separate exclusions
+    and identity joins have their own citations. Both general PTS-dependence edges
+    explicitly identify JM101 versus PB11 and the combined deletion.
+  snapshot_sha256: daf2a8db6988c442aeae2dc094071b8d26d6c4e0ebb81a7b3a94f134d9870083
+- evidence_id: reading-coverage
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/reading-coverage.json
+  locator: Exact primary originals and 19 figure-file SHA-256 bindings
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Records independent complete main-text and main-figure coverage of the
+    2002, 2003 and 2004 papers and the two abstract-only sources; preserves historic
+    supplementary access limits.
+  snapshot_sha256: dcfcacf0c3c44dffd834eef8d1f0e44fd4b70f9049c13708c32bbbafa65813f6
+- evidence_id: reference-hashes
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/final-daf2-reference-hashes.json
+  locator: All 36 references and original-file hashes
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Every final record source_sha256 matches its retained original bytes and
+    the author binding manifest.
+  snapshot_sha256: 4906706357bec99846329d00b34fd114aaec2a492671173799f2ecff596416c8
+- evidence_id: rhea-closure
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/rhea-original-formal-closure.json
+  locator: Exact issuing RDF subjects, sides, participants, compounds and rh:contains1
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: All 11 chemical-role assignments resolve to the exact declared ChEBI forms
+    with coefficient 1. UlaE is the right-to-left directional child; UlaF is left-to-right.
+    Old 33303 is obsolete, and 42436 has a generic histidyl-protein donor.
+  snapshot_sha256: 763ef7bcc06a72931b262992dfa67c718bb7a483b302f44bcaf770a044ea3c22
+- evidence_id: final-delta
+  kind: record_content
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/final-daf2-semantic-delta.json
+  locator: All parsed YAML values compared between a3fac and daf2a8
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Exactly ten narrative/assertion values on edges001–005 changed; all other
+    YAML values, including participants, directions, topology and other evidence,
+    remain identical.
+  snapshot_sha256: 338bc453c330d418011fc8f47cd3e85564e0a3dcf24792c9c00933c393d17e39
+- evidence_id: residual-attribution
+  kind: record_content
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/residual-508-observation.json
+  locator: Independent observation on a3fac edges001–005
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: 'A last instance of the same #508 defect appended 22.5 history to five
+    citations of 27.0 membership objects; final daf2a8 removes that unrelated local
+    clause.'
+  snapshot_sha256: cc52172c4fe200de12e159f5157c773b96467fc2cff076930bd0c9cf4f43b7b7
+- evidence_id: native-pathway225
+  kind: database
+  reference: /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/sgd-META-PWY0-301.xml
+  locator: PGDB version 22.5; four reaction-list entries; pathway-link incoming-link-target
+    RXN0-2461
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: The historical comparison retained in record-level context is true; it
+    belongs to this distinct original, not a 27.0 reaction-list XPath.
+  snapshot_sha256: 8f2c8c72c1b33bdaa1431ae3e983ed6bd10b6194ef7d1376dc5d87500ed2c1d6
+- evidence_id: imodulondb
+  kind: database
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/imodulondb-ula-search.md
+  locator: Public e_coli/precise_mg1655 query ula; gene keys b4191–b4198
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: context_only
+  summary: Covered MG1655 gene names match ulaR and ulaA–G. Module hits are generic
+    substring matches and give no independent evidence for mechanism or module membership;
+    no absence-based inference is made.
+  snapshot_sha256: 4eb08e8179b9ca8d3376703ec16405ff2e095e90ae5fd124813f1bf4910b342e
+- evidence_id: initial-native-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/independent-scientific-audit/initial-review-check.log
+  locator: Complete check output
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Native review checker passed for 130 saved reviews, including the initial
+    bundle; declared-scope coverage only.
+  snapshot_sha256: c975c97d431745770b8ddc1ffb3033db240b55c8315fa438b7d6c7f7bd0315e7
+- evidence_id: gate-validate
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050647Z-validate.json
+  locator: Actual command, timestamps, input hashes, exit code and hashed stdout
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Inspected passing receipt and log for just validate. Recorded target hash
+    is the reviewed final daf2a8.
+  snapshot_sha256: 4853979b040f13f03638f63ba5d089ce4e89b8ab5adaa72e76e8206e19b8a1f6
+- evidence_id: gate-test
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T045647Z-test.json
+  locator: Actual command, timestamps, input hashes, exit code and hashed stdout
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Inspected passing receipt and log for just test. Test input was captured
+    at a3fac when the suite started; the five later membership assertion/description
+    changes occurred during the run, so this was not a frozen final-target test execution.
+  snapshot_sha256: 1992d89d5c9f785365ad7bdad51ce940c4d5a8eaa6b0f1c6cc540e132b4fee3a
+- evidence_id: gate-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050647Z-lint.json
+  locator: Actual command, timestamps, input hashes, exit code and hashed stdout
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Inspected passing receipt and log for just lint. Recorded target hash is
+    the reviewed final daf2a8.
+  snapshot_sha256: c5cf7b612efb5c68bfd596ab3016e87c4bf858cf55a188c62d58d04c14caf2cc
+- evidence_id: gate-diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050833Z-diff.json
+  locator: Actual command, timestamps, input hashes, exit code and hashed stdout
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Inspected passing receipt and log for git diff --check. Recorded target
+    hash is the reviewed final daf2a8.
+  snapshot_sha256: 0b7d4db86603e6525102d879d6bdc6658d1d24dbe4ee9dc8d4211fb99a09fb04
+- evidence_id: gate-render-pages
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-244/ascorbate/validation/20261014T050440Z-render.json
+  locator: Actual command, timestamps, input hashes, exit code and hashed stdout
+  accessed_at: '2026-10-14T05:14:42Z'
+  support: supports
+  summary: Inspected passing receipt and log for just render-pages. Recorded target
+    hash is the reviewed final daf2a8.
+  snapshot_sha256: ff55759b7bd29f9e096c7e6d02ad8263b8c81922e50cff359df489c1b447fb38
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Bounded complete five-event pathway
+  outcome: supported
+  summary: Native PWY0-301 and primary enzyme/transport studies support the selected
+    anaerobic E. coli route; neighboring aerobic yia metabolism is not merged.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - native-pathway
+  - enzymes2002
+  - transport2003
+- assessment_id: chemistry
+  area: grounding
+  topic: Participants, directions and catalysts
+  outcome: supported
+  summary: Four directional Rhea equations and native aggregate transport match the
+    declared chemical progression. Native protein identities and cofactors retain
+    experimental versus inferred scope.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - rhea
+  - native-transport
+  - uniprot
+  - ulag2010
+  - rhea-closure
+- assessment_id: regulation
+  area: graph
+  topic: Regulatory context
+  outcome: supported
+  summary: Regulatory signs and promoter-bearing gene targets agree with the inspected
+    2004 results; the two later abstract-only claims are explicitly qualified.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - regulation2004
+  - ular2008
+- assessment_id: provenance
+  area: evidence
+  topic: Edge-local provenance and strain limits
+  outcome: supported
+  summary: Both minor provenance/scope findings are resolved on final daf2a8. Each
+    repaired assertion is scoped to the cited object, the five residual membership
+    assertions are narrow, and JM101/PB11 is explicit. All 36 source hashes match
+    originals.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - final-record
+  - native-pathway
+  - native-pathway225
+  - rhea-closure
+  - transport2003
+  - reference-hashes
+  - final-delta
+- assessment_id: validation
+  area: schema
+  topic: Native checks and final-byte limitations
+  outcome: supported
+  summary: Final native QC, lint, diff and render receipts pass. The local full test
+    suite passed with its explicitly non-frozen input scope; final-head CI remains
+    a publication gate. These checks are separate from the scientific source appraisal.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - gate-validate
+  - gate-test
+  - gate-lint
+  - gate-diff-check
+  - gate-render-pages
+  - final-delta
+findings:
+- finding_id: F1
+  issue_key: ascorbate244-edge-local-attribution
+  category: evidence
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Remove unrelated multi-source boilerplate from edge-local source assertions
+  description: 'Several source_assertion values append true or contextual claims not
+    established by their cited native object: ascorbate-014 through -024 append UlaE/UlaF
+    orientation to every Rhea participant assertion; -025 through -029 append pathway
+    enzyme exclusions to individual reaction XML claims; -030 through -034 append
+    all three assembly descriptions to each individual complex. Keep each assertion
+    scoped to its actual object and separately cite the pathway or other complex when
+    needed. The checked endpoints remain supported; this is a bounded provenance defect
+    rather than a wrong pathway. The successor pass also identified the same copied-context
+    defect on membership edges001–005, which attached 22.5 history to 27.0-only citations.'
+  target_ids:
+  - MetaCyc:PWY0-301
+  field_paths:
+  - mechanistic_edges[id=ascorbate-001..005].evidence and description
+  - mechanistic_edges[id=ascorbate-014..024].evidence
+  - mechanistic_edges[id=ascorbate-025..029].evidence
+  - mechanistic_edges[id=ascorbate-030..034].evidence
+  - mechanistic_edges[id=ascorbate-014..034].description
+  evidence_ids:
+  - native-pathway
+  - native-transport
+  - rhea
+  - uniprot
+  - final-record
+  - rhea-closure
+  - native-pathway225
+  - residual-attribution
+  - final-delta
+  rule_id: docs/CAUSAL_GRAPHS.md:Evidence and provenance; review-yaml-record:nearest
+    cited source
+  native_severity: minor
+  normalization_reason: Mechanistic endpoint claims have positive evidence elsewhere
+    in the inspected sources; the correction makes provenance narrow and independently
+    auditable.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/508
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261014T045249Z-ascorbate244-initial-scientific
+    finding_id: F1
+  disposition_reason: Independently re-read repaired edges001–005 and014–034 against
+    issuing originals. Formal participant assertions now describe only their own equation;
+    catalyst statements separately cite pathway exclusions and protein identity joins;
+    complex statements describe only their own assembly. The five membership assertions
+    now state only their own 27.0 reaction-list fact. Formal chemistry, graph structure
+    and all other final values remain supported.
+- finding_id: F2
+  issue_key: ascorbate244-pts-strain-context
+  category: scope
+  severity: minor
+  status: resolved
+  certainty: confirmed
+  title: Identify JM101/PB11 beside general PTS-dependence evidence
+  description: 'ascorbate-039 and -040 describe the combined ptsHIcrr deletion without
+    its strain background, while the record introduction foregrounds BW25113 transport
+    genetics and promises claim-local strain scope. PMID12644495 Methods explicitly
+    excludes the enzyme-I/HPr experiments from BW25113: they use JM101 and PB11. Add
+    that strain pairing to both affected descriptions and primary evidence statements;
+    preserve the combined deletion and avoid claiming individual ptsH or ptsI knockout
+    tests. K-12 scope remains valid.'
+  target_ids:
+  - MetaCyc:PWY0-301
+  field_paths:
+  - mechanistic_edges[id=ascorbate-039].description
+  - mechanistic_edges[id=ascorbate-039].evidence
+  - mechanistic_edges[id=ascorbate-040].description
+  - mechanistic_edges[id=ascorbate-040].evidence
+  evidence_ids:
+  - transport2003
+  - final-record
+  rule_id: review-yaml-record:Preserve scope
+  native_severity: minor
+  normalization_reason: The general K-12 route is supported; this corrects missing
+    experimental provenance without changing pathway identity.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261014T045249Z-ascorbate244-initial-scientific
+    finding_id: F2
+  disposition_reason: Both ascorbate-039 and -040 now name JM101 versus PB11, explicitly
+    retain the combined ptsHIcrr deletion and cAMP non-rescue, and avoid asserting
+    individual ptsH/ptsI knockout tests. This matches the independently re-read primary
+    Methods/Table1 and Results; the separate UlaABC BW25113 scope remains intact.
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/509
+actions: []
+limitations:
+- PMID20359483 (UlaG2010) and PMID18844374 (UlaR2008) were inspected as primary abstracts/metadata
+  only, as explicitly disclosed in the record; full methods, constructs, figures and
+  supplements are not inferred.
+- The historical 2003 author-website supplementary Tables S1–S3 and Figures S1–S9
+  were not retrieved or independently inspected. The main article, its Table1 and
+  all eight main figures were inspected; no supplemental-only quantitative claim is
+  adopted.
+- Current UlaF zinc annotation retains similarity/inference evidence. Native complex
+  annotations are curated source assertions, not claims that every underlying structural
+  primary paper was read.
+- The passing full local test run captured a3fac at start while the final five membership
+  wording corrections occurred during execution. It is not a frozen final-daf2a8 test
+  receipt. Exact final-head GitHub CI remains required before merge; final native
+  QC and independent semantic delta review cover the changed content here.
+- This is one-record scientific review, not a licensing, public release, whole-source-fleet
+  or complete generated-export audit. Main article figure inspection is complete for
+  the three full-text primaries; newer abstract-only sources remain bounded.
+- iModulonDB search results are structured metadata context, not biochemical or regulatory
+  proof. No absence-based biological conclusion is drawn.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/508
+- https://github.com/CultureBotAI/PathwayMech/issues/509
+tags:
+- ascorbate
+- scientific-review
+- resolved-successor
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261014T045249Z-ascorbate244-initial-scientific
+  relationship: Successor independently reassesses and resolves both initial findings;
+    initial bundle remains immutable.
+```
