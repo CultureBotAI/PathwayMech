@@ -1,0 +1,372 @@
+schema_version: 1.0.0
+review_id: 20261014T045249Z-ascorbate244-initial-scientific
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent initial scientific review of anaerobic L-ascorbate degradation
+started_at: '2026-10-14T04:46:43Z'
+finished_at: '2026-10-14T04:52:49Z'
+reviewer:
+  identity: Codex /root/next244_primary_evidence
+  kind: agent
+  model: GPT-6
+  independence: independent
+  independence_basis: Did not author this pathway or its authority changes; independently
+    inspected the integrated record and source content. Prior research task concerned
+    a different glucitol candidate.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: All record fields and 55 edge claims were read. The bounded pathway and regulatory
+  mechanism have positive evidence; two minor provenance/scope findings require correction.
+  Final gates and visual-source follow-up remain pending, so this is an initial partial
+  observation.
+source:
+  git_revision: 995b0ad9b19eaa3a46cc2898e73445cf0cce16db
+  state: working_tree
+  inputs:
+  - path: data/pathways/l-ascorbate-degradation-i.yaml
+    sha256: b729f7688c5eccf6db7372f7878d68284cfad0c384d5b6e9d5fe39be63ac4d60
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+scope:
+  description: One complete maintained candidate, read in full; bounded primary and
+    authority source verification.
+  selection: Exact integrated MetaCyc:PWY0-301 record requested for independent adversarial
+    review.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY0-301
+  exclusions:
+  - target: Other pathway records, licensing and publication readiness
+    reason: Outside this one-record scientific review.
+targets:
+- target_id: MetaCyc:PWY0-301
+  path: data/pathways/l-ascorbate-degradation-i.yaml
+  label: L-ascorbate degradation I (bacterial, anaerobic)
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+checks:
+- check_id: native-inspect
+  name: Native pre-assessment target inspection
+  status: passed
+  required: true
+  summary: Captured source Git base and unchanged exact target bytes before assessment.
+  target_ids:
+  - MetaCyc:PWY0-301
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/.venv/bin/python
+    scripts/record_review.py inspect --targets /private/tmp/pathwaymech-ascorbate-independent-review-20261013/targets.yaml
+    --input src/pathwaymech/schema.py --input docs/CAUSAL_GRAPHS.md
+  exit_code: 0
+  evidence_ids:
+  - inspect
+- check_id: validate
+  name: just validate
+  status: unavailable
+  required: true
+  summary: Root is coordinating final worktree gate receipts; this initial observation
+    has not inspected a completed target-bound receipt and does not claim a result.
+  target_ids:
+  - MetaCyc:PWY0-301
+- check_id: test
+  name: just test
+  status: unavailable
+  required: true
+  summary: Root is coordinating final worktree gate receipts; this initial observation
+    has not inspected a completed target-bound receipt and does not claim a result.
+  target_ids:
+  - MetaCyc:PWY0-301
+- check_id: lint
+  name: just lint
+  status: unavailable
+  required: true
+  summary: Root is coordinating final worktree gate receipts; this initial observation
+    has not inspected a completed target-bound receipt and does not claim a result.
+  target_ids:
+  - MetaCyc:PWY0-301
+- check_id: diff-check
+  name: git diff --check
+  status: unavailable
+  required: true
+  summary: Root is coordinating final worktree gate receipts; this initial observation
+    has not inspected a completed target-bound receipt and does not claim a result.
+  target_ids:
+  - MetaCyc:PWY0-301
+evidence:
+- evidence_id: native-pathway
+  kind: database
+  reference: /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/bf2i-id-META-PWY0-301.xml
+  locator: Pathway reaction-list, reaction-ordering, enzymes-not-used, species, pathway-link
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: Five native events, ordered transport through terminal epimerization, exclusions
+    and pentose-phosphate interface; K-12/MG1655 is a supported bounded taxon scope.
+  snapshot_sha256: ea8ec0b44e56bd2704db601db32127fd1ddf2ea7910c9a4a66fce787e4d9fc41
+- evidence_id: native-transport
+  kind: database
+  reference: /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/bf2i-id-META-RXN0-2461.xml
+  locator: Reaction left, right, enzymatic-reaction, dblink
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: HPr-state aggregate transport and EIISGA catalyst; this reaction object
+    does not contain the pathway-wide alternative-enzyme exclusions.
+  snapshot_sha256: 8a02ce152294884685fdb067eebb5196eef6bbc00bbb7894ae1d494b8bbc3fa5
+- evidence_id: rhea
+  kind: authority
+  reference: /private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz
+  locator: Exact directional subjects 28804,14354,18499,22369 and source side identifiers;
+    obsolete33303 and current42436
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: Issuing Rhea directional equations support the four chemical steps and
+    UlaE reverse orientation relative to its master. Individual reaction assertions
+    do not establish unrelated enzyme orientations.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: uniprot
+  kind: database
+  reference: /private/tmp/pathwaymech-ascorbate-authority-20261013/raw/uniprot-ula-search.json
+  locator: 'Eight exact primaryAccession objects: names, genes, BioCyc/GeneID links,
+    function, location, cofactors and evidence codes'
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: Reviewed identities and explicit annotation limitations support the protein
+    nodes, UlaD magnesium and UlaF similarity-based zinc claim.
+  snapshot_sha256: a228ec7063193d39125acdb74aad93a7058bb356f156b4d48da82e68fcae801b
+- evidence_id: enzymes2002
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC134747.html
+  locator: Protein purification; Table2 and pathway-function Results; Figure3 caption
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: MG1655 recombinant UlaD/E/F preparations have cleaved His10 tags; three
+    chemical conversions and genetic pathway assignment are supported. Both entry-order
+    alternatives were originally considered.
+  snapshot_sha256: 15a0e641414b0521407fdfb7750b71929e292417b2eaeb7f83dc735d65a5fd5c
+- evidence_id: transport2003
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC151508.html
+  locator: Materials and Methods, Bacterial strains and Table1; Results growth, transport,
+    phosphorylation and UlaG
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: UlaABC experiments use BW25113; enzyme-I/HPr dependence instead uses JM101
+    and its PB11 ptsHIcrr-deletion derivative. Uptake, PEP-dependent phosphorylation
+    and UlaG utilization phenotypes are supported.
+  snapshot_sha256: a0417d23314c57ba663bd0742607043046ae2822fcca9e88ac9378bd1b5eedb3
+- evidence_id: regulation2004
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMC355983.html
+  locator: Table2; expression/purification and binding Methods; Results Figures3–7
+    and Discussion
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: JA134 derivative reporters and tag-cleaved UlaR binding studies support
+    UlaR/IHF repression, CRP activation of ulaA only, and glucose repression; looping
+    remains proposed.
+  snapshot_sha256: 80c0c9194c4ec36031989b26a805b94a038288d0a7dfa43214a4924595a3b337
+- evidence_id: ulag2010
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMID20359483.xml
+  locator: result/abstractText
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: partial
+  summary: Primary abstract reports hexameric architecture and Mn- or Co-loaded UlaG
+    lactonase activity. Full article methods and figures were not read.
+  snapshot_sha256: b05273dadd7cacdf45cf057ca5a3a8d879d0eab5be770246e84957b90f3463e4
+- evidence_id: ular2008
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-ascorbate-author-20261013/originals/PMID18844374.xml
+  locator: result/abstractText
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: partial
+  summary: Primary abstract identifies ascorbate6P effector and tetramer/dimer regulatory
+    model. Full article methods and figures were not read.
+  snapshot_sha256: d773d9dd97931f96a26c97d1ed382529d263eab4dbbe33e22fc73b7002fca204
+- evidence_id: inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-ascorbate-independent-review-20261013/inspect.json
+  locator: Complete native inspect output
+  accessed_at: '2026-10-14T04:52:49Z'
+  support: supports
+  summary: Native inspect ran before scientific assessment and captured target b729f7688c5eccf6db7372f7878d68284cfad0c384d5b6e9d5fe39be63ac4d60.
+  snapshot_sha256: caf10a383b99672736829f5a4cf0a1e280aa06dce644276e2aa7be9a93f1c161
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Bounded complete five-event pathway
+  outcome: supported
+  summary: Native PWY0-301 and primary enzyme/transport studies support the selected
+    anaerobic E. coli route; neighboring aerobic yia metabolism is not merged.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - native-pathway
+  - enzymes2002
+  - transport2003
+- assessment_id: chemistry
+  area: grounding
+  topic: Participants, directions and catalysts
+  outcome: supported
+  summary: Four directional Rhea equations and native aggregate transport match the
+    declared chemical progression. Native protein identities and cofactors retain
+    experimental versus inferred scope.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - rhea
+  - native-transport
+  - uniprot
+  - ulag2010
+- assessment_id: regulation
+  area: graph
+  topic: Regulatory context
+  outcome: supported
+  summary: Regulatory signs and promoter-bearing gene targets agree with the inspected
+    2004 results; the two later abstract-only claims are explicitly qualified.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - regulation2004
+  - ular2008
+- assessment_id: provenance
+  area: evidence
+  topic: Edge-local provenance and strain limits
+  outcome: concern
+  summary: Two minor corrections are needed; full-source visual inspection and final
+    validation receipts remain unfinished in this initial observation.
+  target_ids:
+  - MetaCyc:PWY0-301
+  evidence_ids:
+  - native-transport
+  - rhea
+  - transport2003
+findings:
+- finding_id: F1
+  issue_key: ascorbate244-edge-local-attribution
+  category: evidence
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Remove unrelated multi-source boilerplate from edge-local source assertions
+  description: 'Several source_assertion values append true or contextual claims not
+    established by their cited native object: ascorbate-014 through -024 append UlaE/UlaF
+    orientation to every Rhea participant assertion; -025 through -029 append pathway
+    enzyme exclusions to individual reaction XML claims; -030 through -034 append
+    all three assembly descriptions to each individual complex. Keep each assertion
+    scoped to its actual object and separately cite the pathway or other complex when
+    needed. The checked endpoints remain supported; this is a bounded provenance defect
+    rather than a wrong pathway.'
+  target_ids:
+  - MetaCyc:PWY0-301
+  field_paths:
+  - mechanistic_edges[id=ascorbate-014..024].evidence
+  - mechanistic_edges[id=ascorbate-025..029].evidence
+  - mechanistic_edges[id=ascorbate-030..034].evidence
+  - mechanistic_edges[id=ascorbate-014..034].description
+  evidence_ids:
+  - native-pathway
+  - native-transport
+  - rhea
+  - uniprot
+  rule_id: docs/CAUSAL_GRAPHS.md:Evidence and provenance; review-yaml-record:nearest
+    cited source
+  native_severity: minor
+  normalization_reason: Mechanistic endpoint claims have positive evidence elsewhere
+    in the inspected sources; the correction makes provenance narrow and independently
+    auditable.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/508
+- finding_id: F2
+  issue_key: ascorbate244-pts-strain-context
+  category: scope
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Identify JM101/PB11 beside general PTS-dependence evidence
+  description: 'ascorbate-039 and -040 describe the combined ptsHIcrr deletion without
+    its strain background, while the record introduction foregrounds BW25113 transport
+    genetics and promises claim-local strain scope. PMID12644495 Methods explicitly
+    excludes the enzyme-I/HPr experiments from BW25113: they use JM101 and PB11. Add
+    that strain pairing to both affected descriptions and primary evidence statements;
+    preserve the combined deletion and avoid claiming individual ptsH or ptsI knockout
+    tests. K-12 scope remains valid.'
+  target_ids:
+  - MetaCyc:PWY0-301
+  field_paths:
+  - mechanistic_edges[id=ascorbate-039].description
+  - mechanistic_edges[id=ascorbate-039].evidence
+  - mechanistic_edges[id=ascorbate-040].description
+  - mechanistic_edges[id=ascorbate-040].evidence
+  evidence_ids:
+  - transport2003
+  rule_id: review-yaml-record:Preserve scope
+  native_severity: minor
+  normalization_reason: The general K-12 route is supported; this corrects missing
+    experimental provenance without changing pathway identity.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+actions:
+- action_id: A1
+  description: Replace copied cross-source boilerplate with claim-specific assertions,
+    retaining separately cited context where necessary.
+  finding_ids:
+  - F1
+  target_ids:
+  - MetaCyc:PWY0-301
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Inspect every revised source_assertion against its precise native object; retain
+    all 55 supported edge endpoints and correct reaction directions.
+  - Regenerate the record page and run required native validation, tests, lint and
+    diff checks.
+  generator: just render-pages
+- action_id: A2
+  description: Add the JM101/PB11 background beside both general PTS-dependence claims.
+  finding_ids:
+  - F2
+  target_ids:
+  - MetaCyc:PWY0-301
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/l-ascorbate-degradation-i.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Both ascorbate-039 and -040 identify JM101 versus PB11 and the combined ptsHIcrr
+    deletion, without inventing individual gene knockouts.
+  - Re-read PMID12644495 Methods and Table1; preserve BW25113 attribution for separate
+    UlaABC experiments.
+limitations:
+- Required final gate receipts are pending; no suite pass or publication approval
+  is claimed.
+- PMID20359483 and PMID18844374 were inspected only as primary abstracts/metadata,
+  as disclosed in the record.
+- Initial observation reads main primary text/tables and figure captions; visual figure
+  checking continues and is not claimed complete here.
+- Complete referenced source-original retention, generated pages, SSSOM and KGX exports
+  are not yet independently audited in this initial observation.
+- Structured UniProt/MetaCyc/Rhea sources were inspected; iModulonDB checks remain
+  pending and no absence-based biological inference is made.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/508
+tags:
+- ascorbate
+- scientific-review
+- initial-observation

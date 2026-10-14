@@ -1,0 +1,62 @@
+{
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src"
+  },
+  "cwd": "/private/tmp/pathwaymech-next-244-20261013",
+  "source_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_source_identifier_snapshot.py",
+    "--manifest",
+    "/private/tmp/pathwaymech-next-244-authority-staging/identifier_sources.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-244-authority-staging/originals",
+    "--records",
+    "/private/tmp/pathwaymech-next-244-authority-staging/records",
+    "--output",
+    "/private/tmp/pathwaymech-next-244-authority-staging/sources.union.json"
+  ],
+  "ontology_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_ontology_identifier_snapshot.py",
+    "--source",
+    "GO=/private/tmp/pathwaymech-curation-authorities/go.db",
+    "--source",
+    "CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db",
+    "--source",
+    "NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+    "--source",
+    "RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db",
+    "--rhea-updates",
+    "conf/rhea_identifier_updates.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-244-authority-staging/originals",
+    "--corpus",
+    "/private/tmp/pathwaymech-next-244-authority-staging/records",
+    "--include-id",
+    "GO:0008150",
+    "--include-id",
+    "GO:0006096",
+    "--include-id",
+    "GO:0005975",
+    "--output",
+    "/private/tmp/pathwaymech-next-244-authority-staging/ontology.union.json"
+  ],
+  "selector_reconstruction": {
+    "filename": "retained-authority-selection.yaml",
+    "id": "MetaCyc:PWY0-301",
+    "participants": "one id-only mapping per sorted identifier from retained-authority-identifiers.json",
+    "serializer": "yaml.safe_dump(..., sort_keys=False)",
+    "pyyaml_version": "6.0.3",
+    "selector_sha256": "6ff887e3b50cc389e043b0b864a31e8de556c058e9cea799449086c4a4fa86a6"
+  },
+  "original_staging": "Alias every recursive manifest path, including nested companion paths, to the unmodified retained original. Add copied stable author candidate to the full baseline corpus, then this external ID-only selector. Originals are documented separately; no raw original is contained in this receipt.",
+  "staging_helper_receipt": "external-staging-helper.json",
+  "baseline_reconstruction": "The observed command paths identify the completed run. For a new run, reconstruct staging from a read-only baseline 995b0ad9b19eaa3a46cc2898e73445cf0cce16db checkout plus the accepted candidate and nine new originals. The external selector only supplies baseline snapshot IDs; it is not a maintained scientific record.",
+  "unchanged_canonical_builder_sha256": {
+    "build_source_identifier_snapshot.py": "7e483d89b36ec82c1e3f87cdcfd5b14f168474c31ea550905e6fb668cf41a9e0",
+    "build_ontology_identifier_snapshot.py": "fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81"
+  }
+}
