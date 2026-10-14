@@ -1,0 +1,691 @@
+# Independent initial scientific review of D-galactarate degradation I
+
+- Review: 20261014T060122Z-galactarate245-initial-scientific
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T05:54:21Z
+- Finished UTC: 2026-10-14T06:01:22Z
+- Reviewer: Codex /root/ascorbate244_pr_review (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+All fields and all 60 edges were scientifically assessed. Exact native stereochemistry and bounded primary claims are supported, but two middle-step descriptions incorrectly imply exact Rhea chemistry. This initial native review is partial because required full validate/test commands remain pending.
+
+## Scope And Provenance
+
+One complete maintained pathway and its evidence-linked graph.
+
+Selection: Exact promoted ee9e6209 candidate requested for independent adversarial review.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 3ead64024e50c06206aaa959cdf89d896f1cdbac.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:GALACTARDEG-PWY | data/pathways/d-galactarate-degradation-i.yaml | maintained | D-galactarate degradation I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Native pre-assessment inspection | passed | True | MetaCyc:GALACTARDEG-PWY | Actual initial inspection succeeded before assessment. |
+| just render-pages | passed | False | MetaCyc:GALACTARDEG-PWY | Actual root-run command succeeded on unchanged ee9e6209; independently read receipt and verified compressed/decompressed log hashes. |
+| just lint | passed | True | MetaCyc:GALACTARDEG-PWY | Actual root-run command succeeded on unchanged ee9e6209; independently read receipt and verified compressed/decompressed log hashes. |
+| just kgx-export | passed | False | MetaCyc:GALACTARDEG-PWY | Actual root-run command succeeded on unchanged ee9e6209; independently read receipt and verified compressed/decompressed log hashes. |
+| just validate | unavailable | True | MetaCyc:GALACTARDEG-PWY | Root execution is still pending completion at this initial review; no passing status or exit code is inferred. |
+| just test | unavailable | True | MetaCyc:GALACTARDEG-PWY | Root execution is still pending completion at this initial review; no passing status or exit code is inferred. |
+| git diff --check | passed | True | MetaCyc:GALACTARDEG-PWY | Actual focused formatting check passed. |
+| 35 reference original hashes | passed | False | MetaCyc:GALACTARDEG-PWY | All 35 references match independently recomputed SHA-256 of complete originals. |
+
+## Scientific And Domain Assessments
+
+### Exact four-event native pathway
+
+identity: supported. Targets: MetaCyc:GALACTARDEG-PWY.
+
+Distinct galactarate entry and native four-member route retained; existing glucarate record is adjacent, not duplicate. Native27.0 (2R) product and donor classes are preserved.
+
+### Chemical sides, directions and biological kind
+
+grounding: supported. Targets: MetaCyc:GALACTARDEG-PWY.
+
+Rhea16006 and27378 formal side closures match exact native endpoints. KDGALDOL is reversible with pathway left-to-right layout; TSA reduction is right-to-left. Protein, assembly, gene, class and small-molecule kinds remain distinct.
+
+### Catalysis, assembly and construct evidence
+
+evidence: supported. Targets: MetaCyc:GALACTARDEG-PWY.
+
+GarD two-copy and GarL six-copy native assemblies, native enzyme identities and qualified engineered GarD/GarK studies are supported. GarL metals are alternatives, not simultaneous occupancy.
+
+### Expression and context graph
+
+graph: supported. Targets: MetaCyc:GALACTARDEG-PWY.
+
+CdaR/SdaR regulatory edges target genes and retain MC4100 construct/391-versus385-residue limits. GarPLRK expression is an operon inference. Sugar acids are expression inducers, not established CdaR ligands. Structured iModulon results provide compatible context only.
+
+### 2025 pathway participation
+
+evidence: supported. Targets: MetaCyc:GALACTARDEG-PWY.
+
+GarP/L/R enables edges correctly preserve Keio BW25113, pCW-lic/tac, IPTG, 25C/48h, peptone+galactarate acidification endpoint and BL21 comparator, with exact insert/MG1655 equivalence unestablished.
+
+### Source-local assertions and wording
+
+provenance: concern. Targets: MetaCyc:GALACTARDEG-PWY.
+
+All 35 reference hashes match originals and repaired D1–D5 locators are correct. One minor descriptive defect remains on native middle-step membership edges002–003; their evidence assertions themselves are correct.
+
+### Completed and pending technical gates
+
+schema: supported. Targets: MetaCyc:GALACTARDEG-PWY.
+
+Root render/lint/KGX and focused git diff check passed on initial target. Full validate/test are still pending; scientific content assessment is full but native review completion remains partial.
+
+## Findings
+
+### F1: Retain native chemistry scope in middle-step descriptions
+
+minor / open / confirmed; issue key: galactarate245-native-middle-rhea-description.
+
+Both middle-step membership descriptions say mapped Rhea endpoints preserve the complete native chemistry and selected direction. These events intentionally retain MetaCyc:KDGALDOL-RXN and MetaCyc:TSA-REDUCT-RXN because current candidate Rhea equations do not preserve the native CPD-26279 (2R) stereochemistry. The edge-local native membership assertions and locators themselves are correct. Narrow the two descriptions to native membership/chemistry; retain exact IDs, graph topology and source assertions.
+
+## Recommended Actions And Acceptance Checks
+
+### correct-middle-descriptions
+
+Narrow the two native middle-step descriptions to native membership and chemistry; preserve exact IDs, topology and evidence assertions.
+
+- Reinspect final bytes and verify only the two intended descriptions changed.
+- Regenerate affected outputs and complete pending technical gates with their actual input scope.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| inspect | research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/initial-inspect.json; Complete receipt | supports | Actual native inspection before assessment captured initial ee9e6209 and its context hashes. |
+| reference-hashes | research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/reference-hashes.json; Complete receipt | supports | All 35 source references match freshly hashed complete issuing originals. |
+| reading-coverage | research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/reading-coverage.json; Complete receipt | supports | Separates this reviewer source/figure coverage from complete 2020 and 2025 contributor appraisals. |
+| observation | research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/initial-finding.json; Complete receipt | supports | Exact initial target and two misleading descriptions captured before curation. |
+| diff-check | research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/initial-diff-check.json; Complete receipt | supports | Actual git diff --check execution passed on the initial target. |
+| record | data/pathways/d-galactarate-degradation-i.yaml; Entire record; especially galactarate-002 and -003 descriptions | supports | Exact native middle-step IDs and evidence assertions are correct, but their descriptions incorrectly imply exact Rhea mapping. |
+| identity-audit | research/pathway_additions/2026-10-13-next-245/galactarate/identity-audit/exact-mapping.json; Whole native chemical InChI, reaction sides, class membership and aggregated formal Rhea closure | supports | The four-event native route and exact entry/end Rhea mappings are supported; native (2R)-tartronate semialdehyde and NAD(P) donor classes cannot be replaced by broader Rhea forms. |
+| dedup | research/pathway_additions/2026-10-13-next-245/galactarate/identity-audit/dedup-receipt.json; Exact and semantic route identities in all maintained records and ignored/hidden files | context_only | No duplicate pathway record was identified; existing glucarate entry differs and GO0046392 is a broader concept. |
+| imodulondb | research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/imodulondb-sugar-diacid.md; e_coli/precise_mg1655/38 Sugar Diacid; all nine member rows | context_only | Structured searches found garD/garP/garL/garR/garK/cdaR in the Sugar Diacid module with correct UniProt identities. Module/regulon membership is contextual and is not direct biochemical or promoter-binding proof. |
+| regulation2000 | /private/tmp/pathwaymech-next-245-author-20261013/originals/PMC111340.html; Complete main text; Table1; Figures1–2; expression, pleiotropic mutants, regulator cloning and sdaR expression sections | supports | MC4100 transcriptional-unit regulation, mutant/complementation utilization, and positive autoregulation support qualified expression edges; direct ligand binding and all-strain generalization are not asserted. |
+| kinase2015 | /private/tmp/pathwaymech-next-245-author-20261013/originals/PMC4378991.xml; Complete main text; Results/Figure2/Table1; Cloning and His6 primer table | supports | Engineered four-deletion metabolic selection supports GarK 2-phosphoglycerate product; His6 construct and printed Mg1665 donor spelling are retained without claiming native galactarate flux. |
+| gard2020 | /private/tmp/pathwaymech-next-245-gard-primary-20261013/originals/PMC7021002-europe.pdf; Results2.1,2.5/Fig5; Methods4.1–4.3,4.5; printed713,716,718–721 | supports | Solution dimer evidence and Fe-dependent semicarbazone assay support the qualified recombinant GarD activity; three residual tag residues belong to structural material and activity-sample scar/phosphorylation occupancy was not measured. |
+| rescue2025 | /private/tmp/pathwaymech-next-245-oxidized-sugars-primary-20261013/originals/PMC11775122.xml; Par15,18,43,45,47; Fig3B,C,D and complete caption | supports | Native-gene pCW-lic/tac rescue in Keio BW25113 mutants supports gene-product participation, with acidification endpoint and BL21 positive comparator; no exact insert or purified-protein mechanism claim. |
+| appraisal2020 | research/pathway_additions/2026-10-13-next-245/galactarate/reading/2020/primary-appraisal.txt; Independent complete primary appraisal by /root/next244_source_coverage | supports | Contributor inspected the entire 2020 paper including all figures and tables; construct, solution assembly and catalytic-metal limits retained. |
+| appraisal2025 | research/pathway_additions/2026-10-13-next-245/galactarate/reading/2025/appraisal.json; Independent complete primary appraisal by /root/next244_primary_evidence | supports | Contributor distinguishes actual native E. coli rescue from Enterocloster replacement constructs and records figure-caption/n discrepancies excluded from the record. |
+| gate-render | research/pathway_additions/2026-10-13-next-245/galactarate/validation/20261014T055614Z-render.json; Actual root-run timestamps, target hash, exit code and retained compressed stdout | supports | Passing root-run receipt and log hashes verified; frozen target ee9e6209 throughout this command. |
+| gate-lint | research/pathway_additions/2026-10-13-next-245/galactarate/validation/20261014T055654Z-lint.json; Actual root-run timestamps, target hash, exit code and retained compressed stdout | supports | Passing root-run receipt and log hashes verified; frozen target ee9e6209 throughout this command. |
+| gate-kgx | research/pathway_additions/2026-10-13-next-245/galactarate/validation/20261014T055726Z-kgx.json; Actual root-run timestamps, target hash, exit code and retained compressed stdout | supports | Passing root-run receipt and log hashes verified; frozen target ee9e6209 throughout this command. |
+
+## Limits And Additional Notes
+
+- Required full just validate and just test receipts are pending, so completion is partial. Later results must not be retroactively inserted into this immutable initial review.
+- Primary 2020/2025 entire-paper appraisal is attributed to independent contributors; this reviewer personally checked claim-relevant original text and original Fig3 of2025 plus all main figures of2000/2015, as documented in reading-coverage.
+- Native27.0 stereochemistry is database-supported; the inspected GarD semicarbazone and 2025 fermentation assays are not stereoselective exact-reaction demonstrations. Native NAD(P) classes preserve source generality.
+- The 1998 characterization was not independently read as complete full text. Annotation evidence codes and underlying citations are retained without upgrading them to personally verified primary experiments.
+- iModulonDB module membership is context, not direct biochemical, causal regulatory or ligand-binding evidence. No absence-based inference is drawn.
+- Raw original files remain in documented external archives; retained hashes and compact projections aid auditing but do not embed every raw original in the repository.
+- Draft D1–D5 were corrected before promoted native inspection and are not fabricated as resolved previous native findings.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T060122Z-galactarate245-initial-scientific
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent initial scientific review of D-galactarate degradation I
+started_at: '2026-10-14T05:54:21Z'
+finished_at: '2026-10-14T06:01:22Z'
+reviewer:
+  identity: Codex /root/ascorbate244_pr_review
+  kind: agent
+  model: GPT-6
+  independence: independent
+  independence_basis: Did not author the maintained record or authority owners. Performed
+    prior read-only identity research and draft feedback; inspected promoted bytes
+    independently, with separate full-paper appraisals attributed to their contributors.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: All fields and all 60 edges were scientifically assessed. Exact native stereochemistry
+  and bounded primary claims are supported, but two middle-step descriptions incorrectly
+  imply exact Rhea chemistry. This initial native review is partial because required
+  full validate/test commands remain pending.
+source:
+  git_revision: 3ead64024e50c06206aaa959cdf89d896f1cdbac
+  state: working_tree
+  inputs:
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/pathways/d-galactarate-degradation-i.yaml
+    sha256: ee9e62099798aec25f6a53c5240a240eb4a4b0375b98d805bf7d7306c2631154
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+scope:
+  description: One complete maintained pathway and its evidence-linked graph.
+  selection: Exact promoted ee9e6209 candidate requested for independent adversarial
+    review.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  exclusions:
+  - target: Other maintained pathways, complete generated exports, data licensing
+      and public-release readiness
+    reason: Outside this single-record scientific review.
+targets:
+- target_id: MetaCyc:GALACTARDEG-PWY
+  path: data/pathways/d-galactarate-degradation-i.yaml
+  label: D-galactarate degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactarate-degradation-i.yaml
+    role: maintained pathway record
+checks:
+- check_id: native-inspect
+  name: Native pre-assessment inspection
+  status: passed
+  required: true
+  summary: Actual initial inspection succeeded before assessment.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  command: scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-245-native-review-20261013/targets.json
+    --input src/pathwaymech/schema.py --input src/pathwaymech/schema/pathwaymech.yaml
+    --input docs/CAUSAL_GRAPHS.md --input docs/HARMONIZATION.md --input docs/CURATION.md
+    --input docs/record-review-profile.md --input conf/record_review.yaml
+  exit_code: 0
+  evidence_ids:
+  - inspect
+- check_id: render
+  name: just render-pages
+  status: passed
+  required: false
+  summary: Actual root-run command succeeded on unchanged ee9e6209; independently
+    read receipt and verified compressed/decompressed log hashes.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  command: just render-pages
+  exit_code: 0
+  evidence_ids:
+  - gate-render
+- check_id: lint
+  name: just lint
+  status: passed
+  required: true
+  summary: Actual root-run command succeeded on unchanged ee9e6209; independently
+    read receipt and verified compressed/decompressed log hashes.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  command: just lint
+  exit_code: 0
+  evidence_ids:
+  - gate-lint
+- check_id: kgx
+  name: just kgx-export
+  status: passed
+  required: false
+  summary: Actual root-run command succeeded on unchanged ee9e6209; independently
+    read receipt and verified compressed/decompressed log hashes.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  command: just kgx-export
+  exit_code: 0
+  evidence_ids:
+  - gate-kgx
+- check_id: validate
+  name: just validate
+  status: unavailable
+  required: true
+  summary: Root execution is still pending completion at this initial review; no passing
+    status or exit code is inferred.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  scope_note: Pending checks require a successor review; this initial review is partial.
+- check_id: test
+  name: just test
+  status: unavailable
+  required: true
+  summary: Root execution is still pending completion at this initial review; no passing
+    status or exit code is inferred.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  scope_note: Pending checks require a successor review; this initial review is partial.
+- check_id: diff-check
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Actual focused formatting check passed.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  command: git diff --check
+  exit_code: 0
+  evidence_ids:
+  - diff-check
+- check_id: original-hashes
+  name: 35 reference original hashes
+  status: passed
+  required: false
+  summary: All 35 references match independently recomputed SHA-256 of complete originals.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - reference-hashes
+evidence:
+- evidence_id: inspect
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/initial-inspect.json
+  locator: Complete receipt
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Actual native inspection before assessment captured initial ee9e6209 and
+    its context hashes.
+  snapshot_sha256: 8fef9a60b722c57b2240be0aa16aeb540c0ed36180d8d760a36580849a219b74
+- evidence_id: reference-hashes
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/reference-hashes.json
+  locator: Complete receipt
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: All 35 source references match freshly hashed complete issuing originals.
+  snapshot_sha256: 0460a96fda5676f7b42c5e5ce2bf7594b0b7ca1a9380ff5188775761704c8cdc
+- evidence_id: reading-coverage
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/reading-coverage.json
+  locator: Complete receipt
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Separates this reviewer source/figure coverage from complete 2020 and 2025
+    contributor appraisals.
+  snapshot_sha256: df3e59c99961c3cd21ecef958640a550e6c944ddd5a73e0c8df36278a0910862
+- evidence_id: observation
+  kind: record_content
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/initial-finding.json
+  locator: Complete receipt
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Exact initial target and two misleading descriptions captured before curation.
+  snapshot_sha256: e0b87a17142bc0bdd4e46b6ba02481b78b588d21e070f823225439011fb287bd
+- evidence_id: diff-check
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/initial-diff-check.json
+  locator: Complete receipt
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Actual git diff --check execution passed on the initial target.
+  snapshot_sha256: 2bc21ed8c4580f9570fa45483fdfe704cfbbcdd745d0279e6a156baddc9e56a6
+- evidence_id: record
+  kind: record_content
+  reference: data/pathways/d-galactarate-degradation-i.yaml
+  locator: Entire record; especially galactarate-002 and -003 descriptions
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Exact native middle-step IDs and evidence assertions are correct, but their
+    descriptions incorrectly imply exact Rhea mapping.
+  snapshot_sha256: ee9e62099798aec25f6a53c5240a240eb4a4b0375b98d805bf7d7306c2631154
+- evidence_id: identity-audit
+  kind: authority
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/identity-audit/exact-mapping.json
+  locator: Whole native chemical InChI, reaction sides, class membership and aggregated
+    formal Rhea closure
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: The four-event native route and exact entry/end Rhea mappings are supported;
+    native (2R)-tartronate semialdehyde and NAD(P) donor classes cannot be replaced
+    by broader Rhea forms.
+  snapshot_sha256: a2a48e4ab9abe9b56e52c9dc4001f7b6bc0d377375d05233f3c68e9b6cf5d800
+- evidence_id: dedup
+  kind: search
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/identity-audit/dedup-receipt.json
+  locator: Exact and semantic route identities in all maintained records and ignored/hidden
+    files
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: context_only
+  summary: No duplicate pathway record was identified; existing glucarate entry differs
+    and GO0046392 is a broader concept.
+  snapshot_sha256: 69897b176647c4e7d086e026489419f23b61974f623e043347d7b61cf16b76dd
+  search_scope: Initial candidate exact GALACTARDEG-PWY, galactarate names, native
+    reaction IDs and adjacent glucarate/GO identities across all repository files
+    including ignored and hidden files; maintained inventory contains 243 prior records.
+    This establishes repository-level candidate duplication only, not universal biological
+    absence.
+- evidence_id: imodulondb
+  kind: database
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/independent-scientific-audit/imodulondb-sugar-diacid.md
+  locator: e_coli/precise_mg1655/38 Sugar Diacid; all nine member rows
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: context_only
+  summary: Structured searches found garD/garP/garL/garR/garK/cdaR in the Sugar Diacid
+    module with correct UniProt identities. Module/regulon membership is contextual
+    and is not direct biochemical or promoter-binding proof.
+  snapshot_sha256: 1a8d1809af32e7ceed2f5cc4f5058ef3e33c5fde5c08145eed11fe26c4e6618d
+- evidence_id: regulation2000
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-245-author-20261013/originals/PMC111340.html
+  locator: Complete main text; Table1; Figures1–2; expression, pleiotropic mutants,
+    regulator cloning and sdaR expression sections
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: MC4100 transcriptional-unit regulation, mutant/complementation utilization,
+    and positive autoregulation support qualified expression edges; direct ligand
+    binding and all-strain generalization are not asserted.
+  snapshot_sha256: 558ddd8487022da44e22f533f49a4f2d8d9c433fd2cdfa3bd6613449c702c391
+- evidence_id: kinase2015
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-245-author-20261013/originals/PMC4378991.xml
+  locator: Complete main text; Results/Figure2/Table1; Cloning and His6 primer table
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Engineered four-deletion metabolic selection supports GarK 2-phosphoglycerate
+    product; His6 construct and printed Mg1665 donor spelling are retained without
+    claiming native galactarate flux.
+  snapshot_sha256: 8f97177babf460118ddaadb2e1192c5f210205e2be5a51eea47900fe054f54a9
+- evidence_id: gard2020
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-245-gard-primary-20261013/originals/PMC7021002-europe.pdf
+  locator: Results2.1,2.5/Fig5; Methods4.1–4.3,4.5; printed713,716,718–721
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Solution dimer evidence and Fe-dependent semicarbazone assay support the
+    qualified recombinant GarD activity; three residual tag residues belong to structural
+    material and activity-sample scar/phosphorylation occupancy was not measured.
+  snapshot_sha256: 0e574a7216c39c92082523acc48311e6220b53553afc60aca969bdda3512c3f5
+- evidence_id: rescue2025
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-245-oxidized-sugars-primary-20261013/originals/PMC11775122.xml
+  locator: Par15,18,43,45,47; Fig3B,C,D and complete caption
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Native-gene pCW-lic/tac rescue in Keio BW25113 mutants supports gene-product
+    participation, with acidification endpoint and BL21 positive comparator; no exact
+    insert or purified-protein mechanism claim.
+  snapshot_sha256: 987410875f8659cd93f47895c5c1377533027f3d420b95f58c1f46ab08ff4f7b
+- evidence_id: appraisal2020
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/reading/2020/primary-appraisal.txt
+  locator: Independent complete primary appraisal by /root/next244_source_coverage
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Contributor inspected the entire 2020 paper including all figures and tables;
+    construct, solution assembly and catalytic-metal limits retained.
+  snapshot_sha256: 7a45e7d605d9722c301c46959f71d7f59d142c5996eea161114b38a435348500
+- evidence_id: appraisal2025
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/reading/2025/appraisal.json
+  locator: Independent complete primary appraisal by /root/next244_primary_evidence
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Contributor distinguishes actual native E. coli rescue from Enterocloster
+    replacement constructs and records figure-caption/n discrepancies excluded from
+    the record.
+  snapshot_sha256: 5208e7ba32cece278aeb850b234b331e54a5377f881c76657546646c3a70e2c5
+- evidence_id: gate-render
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/validation/20261014T055614Z-render.json
+  locator: Actual root-run timestamps, target hash, exit code and retained compressed
+    stdout
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Passing root-run receipt and log hashes verified; frozen target ee9e6209
+    throughout this command.
+  snapshot_sha256: a15627455b8729116befba6b5ee3b791525cf6350e29ede1ee23f313af9f2170
+- evidence_id: gate-lint
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/validation/20261014T055654Z-lint.json
+  locator: Actual root-run timestamps, target hash, exit code and retained compressed
+    stdout
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Passing root-run receipt and log hashes verified; frozen target ee9e6209
+    throughout this command.
+  snapshot_sha256: 87bd37d0359e8f3f4bbab15be273ec1ae4ee43dd322231377849e3cfa50025e4
+- evidence_id: gate-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-13-next-245/galactarate/validation/20261014T055726Z-kgx.json
+  locator: Actual root-run timestamps, target hash, exit code and retained compressed
+    stdout
+  accessed_at: '2026-10-14T06:01:22Z'
+  support: supports
+  summary: Passing root-run receipt and log hashes verified; frozen target ee9e6209
+    throughout this command.
+  snapshot_sha256: 686d820a2431e2c152eac2361a5034d010002dbfb26592e7a09a1d3da054d068
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact four-event native pathway
+  outcome: supported
+  summary: Distinct galactarate entry and native four-member route retained; existing
+    glucarate record is adjacent, not duplicate. Native27.0 (2R) product and donor
+    classes are preserved.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - identity-audit
+  - dedup
+- assessment_id: chemistry
+  area: grounding
+  topic: Chemical sides, directions and biological kind
+  outcome: supported
+  summary: Rhea16006 and27378 formal side closures match exact native endpoints. KDGALDOL
+    is reversible with pathway left-to-right layout; TSA reduction is right-to-left.
+    Protein, assembly, gene, class and small-molecule kinds remain distinct.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - identity-audit
+  - record
+- assessment_id: enzyme
+  area: evidence
+  topic: Catalysis, assembly and construct evidence
+  outcome: supported
+  summary: GarD two-copy and GarL six-copy native assemblies, native enzyme identities
+    and qualified engineered GarD/GarK studies are supported. GarL metals are alternatives,
+    not simultaneous occupancy.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - record
+  - identity-audit
+  - gard2020
+  - kinase2015
+  - appraisal2020
+  dimensions:
+  - name: evidence_tier
+    value: Native curated assertions, reviewed UniProt annotation and bounded primary
+      experiments are distinguished.
+    definition: Evidence type does not silently become direct native biochemical proof.
+    evidence_ids:
+    - identity-audit
+    - gard2020
+    - kinase2015
+  - name: component_role
+    value: Assemblies catalyze native reactions; gene-product rescue enables the pathway;
+      transport coupling is not invented.
+    definition: Role of each represented biological entity.
+    evidence_ids:
+    - identity-audit
+    - rescue2025
+- assessment_id: regulation
+  area: graph
+  topic: Expression and context graph
+  outcome: supported
+  summary: CdaR/SdaR regulatory edges target genes and retain MC4100 construct/391-versus385-residue
+    limits. GarPLRK expression is an operon inference. Sugar acids are expression
+    inducers, not established CdaR ligands. Structured iModulon results provide compatible
+    context only.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - regulation2000
+  - imodulondb
+  - record
+  dimensions:
+  - name: taxon_condition
+    value: MC4100 reporters, BW25113 rescue and MG1655 database annotation retain
+      separate scopes.
+    definition: Experimental strain and condition provenance.
+    evidence_ids:
+    - regulation2000
+    - rescue2025
+    - record
+- assessment_id: rescue
+  area: evidence
+  topic: 2025 pathway participation
+  outcome: supported
+  summary: GarP/L/R enables edges correctly preserve Keio BW25113, pCW-lic/tac, IPTG,
+    25C/48h, peptone+galactarate acidification endpoint and BL21 comparator, with
+    exact insert/MG1655 equivalence unestablished.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - rescue2025
+  - appraisal2025
+  - record
+- assessment_id: provenance
+  area: provenance
+  topic: Source-local assertions and wording
+  outcome: concern
+  summary: All 35 reference hashes match originals and repaired D1–D5 locators are
+    correct. One minor descriptive defect remains on native middle-step membership
+    edges002–003; their evidence assertions themselves are correct.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - reference-hashes
+  - identity-audit
+  - observation
+  - record
+  dimensions:
+  - name: source_object
+    value: Formal Rhea uses aggregated rdf:Description/rh:contains1; native pathway
+      layout is separate from reaction direction; exact source paragraphs and evidence
+      reference numbers retained.
+    definition: Each assertion is read from its cited native object or primary location.
+    evidence_ids:
+    - identity-audit
+    - record
+    - kinase2015
+    - gard2020
+- assessment_id: validation
+  area: schema
+  topic: Completed and pending technical gates
+  outcome: supported
+  summary: Root render/lint/KGX and focused git diff check passed on initial target.
+    Full validate/test are still pending; scientific content assessment is full but
+    native review completion remains partial.
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - gate-render
+  - gate-lint
+  - gate-kgx
+  - diff-check
+findings:
+- finding_id: F1
+  issue_key: galactarate245-native-middle-rhea-description
+  severity: minor
+  certainty: confirmed
+  status: open
+  title: Retain native chemistry scope in middle-step descriptions
+  field_paths:
+  - mechanistic_edges[id=galactarate-002].description
+  - mechanistic_edges[id=galactarate-003].description
+  description: Both middle-step membership descriptions say mapped Rhea endpoints
+    preserve the complete native chemistry and selected direction. These events intentionally
+    retain MetaCyc:KDGALDOL-RXN and MetaCyc:TSA-REDUCT-RXN because current candidate
+    Rhea equations do not preserve the native CPD-26279 (2R) stereochemistry. The
+    edge-local native membership assertions and locators themselves are correct. Narrow
+    the two descriptions to native membership/chemistry; retain exact IDs, graph topology
+    and source assertions.
+  category: evidence
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  evidence_ids:
+  - record
+  - identity-audit
+  - observation
+  rule_id: docs/CAUSAL_GRAPHS.md:Evidence and provenance; review-yaml-record:source-local
+    claims
+  native_severity: minor
+  normalization_reason: Native reaction identities, exact chemistry and evidence assertions
+    remain supported; the defect is two misleading edge descriptions.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactarate-degradation-i.yaml
+    role: maintained pathway record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/512
+actions:
+- action_id: correct-middle-descriptions
+  description: Narrow the two native middle-step descriptions to native membership
+    and chemistry; preserve exact IDs, topology and evidence assertions.
+  finding_ids:
+  - F1
+  target_ids:
+  - MetaCyc:GALACTARDEG-PWY
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/d-galactarate-degradation-i.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Reinspect final bytes and verify only the two intended descriptions changed.
+  - Regenerate affected outputs and complete pending technical gates with their actual
+    input scope.
+limitations:
+- Required full just validate and just test receipts are pending, so completion is
+  partial. Later results must not be retroactively inserted into this immutable initial
+  review.
+- Primary 2020/2025 entire-paper appraisal is attributed to independent contributors;
+  this reviewer personally checked claim-relevant original text and original Fig3
+  of2025 plus all main figures of2000/2015, as documented in reading-coverage.
+- Native27.0 stereochemistry is database-supported; the inspected GarD semicarbazone
+  and 2025 fermentation assays are not stereoselective exact-reaction demonstrations.
+  Native NAD(P) classes preserve source generality.
+- The 1998 characterization was not independently read as complete full text. Annotation
+  evidence codes and underlying citations are retained without upgrading them to personally
+  verified primary experiments.
+- iModulonDB module membership is context, not direct biochemical, causal regulatory
+  or ligand-binding evidence. No absence-based inference is drawn.
+- Raw original files remain in documented external archives; retained hashes and compact
+  projections aid auditing but do not embed every raw original in the repository.
+notes:
+- Draft D1–D5 were corrected before promoted native inspection and are not fabricated
+  as resolved previous native findings.
+tags:
+- galactarate
+- scientific-review
+- initial-review
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/512
+```

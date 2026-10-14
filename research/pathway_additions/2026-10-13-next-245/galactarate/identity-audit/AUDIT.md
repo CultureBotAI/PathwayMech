@@ -1,0 +1,49 @@
+# Read-only identity audit: next245 galactarate degradation I
+
+Observed 2026-10-14 UTC (2026-10-13 America/Los_Angeles), against main `3ead64024e50c06206aaa959cdf89d896f1cdbac`. This is an identity and source-boundary handoff under the repository add-pathway guidance, not a completed scientific review, record adoption, source-exhaustion decision, or validation pass. No maintained repository, authority snapshot, or GitHub object was changed.
+
+**Identity accepted for scientific authoring:** `MetaCyc:GALACTARDEG-PWY`, native title **D-galactarate degradation I**. It is a distinct four-event route with a galactarate-specific entry and three downstream events shared with glucarate degradation I. The exact pathway identifier is preferable to `GO:0046392`, whose pinned definition and narrow mappings encompass both this route and `MetaCyc:PWY-6497` (degradation II). Native route II proceeds through 2,5-dioxovalerate to 2-oxoglutarate and is not this record.
+
+## Accepted route and chemical mappings
+
+| Native member | Accepted record identifier | Complete pathway-direction chemistry |
+| --- | --- | --- |
+| GALACTARDEHYDRA-RXN | RHEA:16006 | CHEBI:16537 → CHEBI:42819 + CHEBI:15377 |
+| KDGALDOL-RXN | MetaCyc:KDGALDOL-RXN | CHEBI:42819 → MetaCyc:CPD-26279 + CHEBI:15361 |
+| TSA-REDUCT-RXN | MetaCyc:TSA-REDUCT-RXN | MetaCyc:CPD-26279 + MetaCyc:NADH-P-OR-NOP + CHEBI:15378 → CHEBI:16659 + MetaCyc:NAD-P-OR-NOP |
+| GKI-RXN | RHEA:27378 | CHEBI:16659 + CHEBI:30616 → CHEBI:58289 + CHEBI:456216 + CHEBI:15378 |
+
+Native KDGALDOL is reversible, with the pathway using left-to-right cleavage; native TSA uses right-to-left reduction. Preserve that distinction in descriptions rather than asserting that the native aldolase is irreversible. Both accepted directional Rhea endpoints have formal coefficient one for every participant, approved status, and chemically balanced assertions in the complete issuing RDF closure. All nine native small-molecule mappings above have identical full InChIs and explicit native ChEBI cross-references. This verifies charge/protonation and stereochemistry as well as connectivity, including ATP/ADP, water, proton, and pyruvate. `exact-mapping.json` retains the full comparisons, complete native sides, original hashes, CML identity slots, donor-class instances, and pinned ChEBI statements.
+
+**Do not substitute CHEBI:57978 for CPD-26279.** Native MetaCyc 27.0 specifies `(2R)-tartronate semialdehyde`, with InChI `InChI=1S/C3H4O4/c4-1-2(5)3(6)7/h1-2,5H,(H,6,7)/p-1/t2-/m1/s1` and key `QWBAFPFNGRFSFB-UWTATZPHSA-M`. CHEBI:57978 and the participants in Rhea 27727/18843/18847 lack the stereochemical layer. Their native cross-references therefore do not justify exact reaction unification. An exact InChI query and full same-connectivity/label searches in pinned ChEBI 255 found no exact stereospecified counterpart; see `tartronate-chebi-exact-search.json`. Native PubChem cross-reference 23585790 was observed but not independently verified and is not an adopted authority.
+
+The native NAD(P) oxidized/reduced objects are expressly **classes**, with instances NAD/NADP and NADH/NADPH respectively. Their graph participation represents alternative donor families, not simultaneous NADH plus NADPH consumption. Current UniProt P0ABQ2 independently annotates both families but uses stereounspecified tartronate semialdehyde; it does not close the exact native/Rhea identity gap.
+
+The native D-GALACTARATE CML `smiles` value is the incomplete generic `C([R])(=O)[O-]`. Its full InChI, formula, charge, and ChEBI cross-reference are consistent with meso-galactarate. The exact mapping relies on those agreeing identity assertions and issuing ChEBI structure, not the malformed SMILES. Native commentary explicitly says this symmetric compound has no D/L forms; retain the native pathway title without implying a chemically distinct D-enantiomer of galactarate.
+
+## Enzyme identity and source limits
+
+- GarD is UniProtKB:P39829, native GALACTARDEHYDRA-MONOMER, gene EG12522/b3128. The monomer has no direct native common-name or catalytic-activity slot. The named native homodimer CPLX0-8537 has two copies and carries GALACTARDEHYDRA-ENZRXN. Current UniProt supplies the canonical monomer name, Fe2+ annotation, and homodimer annotation; primary 2020 evidence is being assessed separately.
+- GarL is UniProtKB:P23522, native KDGALDOL-MONOMER, gene EG10016. CPLX0-7615 has six copies and the exact aldolase catalytic activity. It lacks a direct common-name, but the **existing guarded homomer fallback** accepts its native enzymatic-reaction name. Current UniProt warns that the historical name “2-dehydro-3-deoxygalactarate aldolase” in PMID10921867 denotes an enantiomeric substrate not established as its pathway substrate. Use exact CHEBI:42819, not that title as chemical identity.
+- GarR is UniProtKB:P0ABQ2, native TSA-REDUCT-MONOMER, gene EG11176/b3125. Its direct catalytic activity is native TSA-REDUCT-RXN. No inferred oligomer is required.
+- GarK is UniProtKB:P23524, native GKI-MONOMER, gene EG11175/b3124. Native and formal Rhea chemistry supports 2-phospho-D-glycerate, not 3-phosphoglycerate. Current UniProt retains a GK1/GK2 historical gene-assignment caution. Prior228 explicitly retained assembly/metal and paper-naming uncertainty; this audit does not erase those limits.
+
+The native pathway species assertion is E. coli K-12 MG1655 (511145); UniProt proteins are K-12 (83333). Broad native Bacteria range is not experimental evidence for all bacteria. Native membership has no transport event; any GarP/GudP interface, regulation, metal dependence, or additional strain phenotype needs its own evidence. The complete native route ends at 2-phosphoglycerate; UniProt's “D-glycerate from galactarate, step 1/3–3/3” uses a shorter endpoint and must not redefine the pathway boundary.
+
+## Duplicate search and retained predecessors
+
+`dedup-search.txt` and its receipt preserve the repository-wide `rg --no-ignore --hidden` search (only .git and .venv metadata excluded). A supplemental GO:0046392 search included ignored and hidden YAML/Markdown/JSON and returned no matches. `maintained-record-inventory.json` enumerates the maintained YAML corpus independently of gitignore. No exact GALACTARDEG-PWY record or semantically equivalent complete galactarate route was found. Compressed archive interiors were not recursively searched; this is not a claim that every historical source payload lacks the pathway.
+
+The closest maintained `data/pathways/d-glucarate-degradation-i.yaml` begins with D-glucarate CHEBI:30612/RHEA:14574, so shared downstream chemistry does not make it a duplicate. That retained record cites MetaCyc **22.5** and uses stereounspecified CHEBI:57978 with donor-specific Rhea alternatives. Fresh native **27.0** GLUCARDEG-PWY shares the three downstream member IDs with GALACTARDEG-PWY and now points its layout at CPD-26279. The 22.5 whole original was not re-acquired/read in this audit; do not claim a fully proven release-to-release chemical change or silently migrate the old record from these observations.
+
+Prior228 author and science-correction scope/conflict records were read. They concern mannosylglycerate degradation PWY0-1300 and related GarK/CdaR context, not adoption of this complete galactarate route. PMID9772162 and PMID18675808 were abstract-only there; the current preflight still lacks a legitimate full 1998 body. Native CPD-26279 stereochemistry is a database assertion, not a stereoselectivity result independently verified from that abstract. Other agents own the full 2020/2025 paper appraisal.
+
+PathBank screening rows PW000795.owl and PW122585.owl contain combined glucarate/galactarate roots plus TCA roots. Their retained dispositions require membership selection, scientific review, and semantic deduplication. These unadopted broader candidates neither duplicate the new exact route nor demonstrate source exhaustion.
+
+## Authority handoff and reproducibility
+
+`new-id-assessment.json` records exact current selected-term presence and absent IDs. Minimal new chemical/reaction owners are GALACTARDEG-PWY, KDGALDOL-RXN, TSA-REDUCT-RXN, CPD-26279, NAD-P-OR-NOP, and NADH-P-OR-NOP. Add RHEA:16006 from the pinned ontology snapshot. If the author includes native assemblies, CPLX0-8537 and CPLX0-7615 need source owners. P39829/P23522/P0ABQ2 need selected-term inclusion but **already exist in the unchanged, hash-verified canonical `uniprot-ecoli-reviewed-cofactors` original**; P23524 is already selected. No new UniProt source owner is necessary. No gene ID is proposed merely to decorate the record.
+
+`native-adapter-probe.json` records successful unmodified native reaction/protein adapters, including guarded CPLX0-7615 naming. Root separately owns native HTML probes for the three chemical/class IDs and pathway; this audit does not claim their adapter results before reading them.
+
+The complete Rhea RDF original is `/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz`, SHA-256 `8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf`, 8,718,726 bytes; the directions table is SHA-256 `deae1911da372c70ee8fc97992809c7923e63b288a8702fc4396edcb2633fb04`. These were rehashed in this audit. `rhea-original-projection.json` aggregates all RDF fragments for 65 selected reaction/family/side/participant/compound subjects from the whole document. This is **release 142**, distinct from the retained release139 SQL identity cache; cite the actual consulted original accurately. Native XML acquisition receipts preserve exact public URLs, UTC access times, status, size, and whole-body hashes. Pinned ontology hash metadata was inspected but large SQL originals were not freshly rehashed here. External helper scripts/projections are reproducibility aids, not replacements for issuing originals.
