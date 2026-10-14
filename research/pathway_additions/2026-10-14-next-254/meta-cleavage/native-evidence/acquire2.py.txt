@@ -1,0 +1,11 @@
+exec(open('/private/tmp/pathwaymech-next-254-native-evidence/acquire.py').read().split('r=list(')[0])
+urls={
+'PMC111406-citeseer.pdf':'https://citeseerx.ist.psu.edu/document?doi=60603d49aa8f4e9682070aed00590b808851ba62&repid=rep1&type=pdf',
+'PMC111406-bin.pdf':'https://pmc.ncbi.nlm.nih.gov/articles/PMC111406/pdf/jb006651.pdf',
+'PMC2897667-publisher-lower.html':'https://journals.asm.org/doi/full/10.1128/jb.00215-10',
+'PMC2897667-bio.html':'https://pmc.ncbi.nlm.nih.gov/articles/PMC2897667/?report=reader',
+'PMC2897667-bin.pdf':'https://pmc.ncbi.nlm.nih.gov/articles/PMC2897667/pdf/0215-10.pdf',
+'PMC2897667-europe-pdf.pdf':'https://europepmc.org/articles/PMC2897667?pdf=render',
+'PMC111406-europe-pdf.pdf':'https://europepmc.org/articles/PMC111406?pdf=render',
+}
+r=list(concurrent.futures.ThreadPoolExecutor(4).map(get,urls.items()));(root/'acquisition2.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r,indent=2))

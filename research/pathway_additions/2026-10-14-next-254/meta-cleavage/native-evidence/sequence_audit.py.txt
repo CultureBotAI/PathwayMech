@@ -1,0 +1,21 @@
+import pathlib,re,json,hashlib
+r=pathlib.Path('/private/tmp/pathwaymech-next-254-native-evidence');o=r/'originals'
+aa='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG';bases='TCAG';code={a+b+c:x for (a,b,c),x in zip(((a,b,c) for a in bases for b in bases for c in bases),aa)}
+def parse(path):
+ text=path.read_text();seq=re.sub('[^acgt]','',text.split('SQ   ')[1].split('\n',1)[1].split('//')[0]).upper();out=[]
+ for m in re.finditer(r'^FT   CDS +([^\n]+)\n((?:FT                   [^\n]*\n)*)',text,re.M):
+  loc,feat=m.groups();gene=re.search('/gene="([^"]+)"',feat)
+  if not gene or gene[1] not in ['ligC','ligK','ligR']:continue
+  tr=re.search(r'/translation="([\s\S]*?)"',feat)[1];tr=re.sub(r'FT +|\s','',tr)
+  s,e=map(int,re.search(r'(\d+)\.\.(\d+)',loc).groups());nt=seq[s-1:e]
+  if loc.startswith('complement'):nt=nt.translate(str.maketrans('ACGT','TGCA'))[::-1]
+  prod=''.join(code[nt[i:i+3]] for i in range(0,len(nt),3)).rstrip('*');prod='M'+prod[1:]
+  out.append({'gene':gene[1],'location':loc,'protein_id':re.search('/protein_id="([^"]+)"',feat)[1],'translation_length':len(tr),'nt_translation_matches_annotated':prod==tr,'translation_sha256':hashlib.sha256(tr.encode()).hexdigest(),'sequence':tr,'source':str(path),'source_sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
+ return out
+rows=parse(o/'AB073227-ena.txt')+parse(o/'AB035122-ena.txt')
+for x in rows:
+ path=o/({'ligR':'Q8RQV9','ligC':'Q9KWL3','ligK':'Q8RQW0'}[x['gene']]+'.json')
+ if not path.exists():path=pathlib.Path('/private/tmp/pathwaymech-next-253-primary/originals')/('UniProt-'+{'ligK':'Q8RQW0'}[x['gene']]+'.json')
+ u=json.loads(path.read_text());x.update(uniprot_id=u['primaryAccession'],uniprot_taxon_id=u['organism']['taxonId'],uniprot_sequence_matches=x['sequence']==u['sequence']['value'],uniprot_source=str(path),uniprot_sha256=hashlib.sha256(path.read_bytes()).hexdigest());del x['sequence']
+assert all(x['nt_translation_matches_annotated'] and x['uniprot_sequence_matches'] for x in rows)
+(r/'deposited-CDS-sequence-audit.json').write_text(json.dumps({'scope':'Full issuing sequence equality; not proof that a final recombinant construct has no unreported vector-derived residues. Primary LigR/LigC methods independently report entire native gene inserts; LigK initialMet processing is measured.','rows':rows},indent=2)+'\n');print(json.dumps(rows,indent=2))

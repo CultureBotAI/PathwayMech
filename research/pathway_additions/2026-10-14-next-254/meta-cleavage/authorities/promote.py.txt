@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,hashlib,datetime,yaml
+B=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-254-20261014')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline':'dfe42721bfd31468cb27b2d6a1a4b460f2b71a12','snapshots':{}}
+allids=set()
+for name in ['sources','ontology']:
+ old=json.loads((B/'baseline'/f'{name}.json').read_text());new=json.loads((B/f'{name}.union.json').read_text())
+ assert old['version']==new['version']
+ for section in ['terms','sources']:
+  changed=[k for k,v in old[section].items() if new[section].get(k)!=v]
+  assert not changed,(name,section,changed)
+ report['snapshots'][name]={'before_sha256':sha(B/'baseline'/f'{name}.json'),'after_sha256':sha(B/f'{name}.union.json'),'baseline_terms':len(old['terms']),'final_terms':len(new['terms']),'new_terms':sorted(set(new['terms'])-set(old['terms'])),'baseline_source_owners':len(old['sources']),'final_source_owners':len(new['sources']),'baseline_objects_unchanged':True}
+ allids.update(new['terms'])
+r=yaml.safe_load((R/'data/pathways/protocatechuate-meta-cleavage.yaml').read_text());nodes={r['id']}|{x['id'] for s in ['taxa','participants','reactions'] for x in r[s]};assert nodes<=allids,nodes-allids
+old=json.loads((B/'baseline/identifier_sources.json').read_text());new=json.loads((B/'identifier_sources.json').read_text());assert new[:len(old)]==old
+for x in new:assert sha(B/'originals'/x['path'])==x['sha256'],x['path']
+c=json.loads((B/'canonical-build-commands.json').read_text())
+for n,h in c['builder_sha256'].items():assert sha(R/'scripts'/n)==h,(n,'builder changed')
+for key in ['source_builder','ontology_builder']:assert json.loads((B/(key+'-receipt.json')).read_text())['exit_code']==0
+report['manifest']={'baseline_entries':len(old),'final_entries':len(new),'prior_prefix_exact':True,'all_original_hashes_match':True,'sha256':sha(B/'identifier_sources.json')};report['named_node_count']=len(nodes);report['builder_sha256']=c['builder_sha256']
+for name in ['sources','ontology']:(R/'data/identifier_authorities'/f'{name}.json').write_bytes((B/f'{name}.union.json').read_bytes())
+(R/'conf/identifier_sources.json').write_bytes((B/'identifier_sources.json').read_bytes())
+(B/'preservation-and-promotion.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

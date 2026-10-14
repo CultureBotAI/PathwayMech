@@ -1,0 +1,27 @@
+from pathlib import Path
+import json,hashlib,shutil,datetime
+B=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-254-20261014');old=Path('/private/tmp/pathwaymech-next-252-authorities/originals')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+(B/'baseline').mkdir(exist_ok=True);(B/'originals').mkdir(exist_ok=True);(B/'records').mkdir(exist_ok=True)
+for src,name in [(R/'conf/identifier_sources.json','identifier_sources.json'),(R/'conf/rhea_identifier_updates.json','rhea_identifier_updates.json'),(R/'data/identifier_authorities/sources.json','sources.json'),(R/'data/identifier_authorities/ontology.json','ontology.json')]:
+ dst=B/'baseline'/name
+ if dst.exists():assert dst.read_bytes()==src.read_bytes()
+ else:shutil.copyfile(src,dst)
+for p in old.iterdir():
+ target=B/'originals'/p.name
+ if not target.exists():target.symlink_to(p)
+oldm=json.loads((B/'baseline/identifier_sources.json').read_text())
+missing=[];mismatch=[]
+for x in oldm:
+ p=B/'originals'/x['path']
+ if not p.exists():missing.append(x['path'])
+ elif sha(p)!=x['sha256']:mismatch.append(x['path'])
+assert not missing and not mismatch,(missing,mismatch)
+retained=set()
+for f in ['sources','ontology']:retained.update(json.loads((B/'baseline'/f'{f}.json').read_text())['terms'])
+(B/'retained-authority-identifiers.json').write_text(json.dumps(sorted(retained),indent=2)+'\n')
+for p in (R/'data/pathways').glob('*.yaml'):
+ dst=B/'records'/p.name
+ if not dst.exists():dst.symlink_to(p)
+(B/'baseline-original-cache-verification.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'manifest_entries':len(oldm),'all_original_sha256_verified':True,'old_cache':str(old),'retained_terms':len(retained)},indent=2)+'\n')
+print('All',len(oldm),'baseline manifest originals verified;',len(retained),'authority terms preserved for selection')

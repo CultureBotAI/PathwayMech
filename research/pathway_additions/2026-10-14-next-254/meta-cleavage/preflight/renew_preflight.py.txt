@@ -1,0 +1,37 @@
+from pathlib import Path
+import json,hashlib,datetime,subprocess,yaml
+B=Path(__file__).parent
+R=Path('/private/tmp/pathwaymech-next-254-20261014')
+roots=[Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'),R]
+base='dfe42721bfd31468cb27b2d6a1a4b460f2b71a12'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(n,v):(B/n).write_text(json.dumps(v,indent=2)+'\n')
+records=[]
+for p in sorted((R/'data/pathways').glob('*.yaml')):
+ d=yaml.safe_load(p.read_text()); rel=str(p.relative_to(R)); blob=subprocess.check_output(['git','show',base+':'+rel],cwd=R)
+ assert p.read_bytes()==blob
+ records.append({'path':rel,'id':d['id'],'label':d['label'],'sha256':sha(p)})
+assert len(records)==250
+save('baseline-record-bindings.json',{'base':base,'count':len(records),'records':records,'git_blob_membership_verified':True})
+prior=Path('/private/tmp/pathwaymech-next-253-preflight/extended-dedup-patterns.txt')
+patterns=sorted(set(prior.read_text().splitlines())|{'6P3J','6P3H','RHEA:58504','RHEA:58508','RHEA:28931','RHEA:17401','CHEBI:142690','CHEBI:142706','CHEBI:58075','G2IQQ5','20435721','bi8b00295_si_001','bi8b00713_si_001','bi9b00549_si_001','6192995','7138124','9442076'})
+pf=B/'patterns.txt';pf.write_text('\n'.join(patterns)+'\n')
+reports=[]
+for i,r in enumerate(roots):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(pf),'.','-g','!.git','-g','!.git/**','-g','!.venv','-g','!.venv/**']
+ stats={x:{'lines':0,'paths':set()} for x in patterns}; out=B/f'root-{i}-matches.jsonl';err=B/f'root-{i}-stderr.txt'
+ with out.open('w') as dest,err.open('w') as e:
+  p=subprocess.Popen(cmd,cwd=r,stdout=subprocess.PIPE,stderr=e,text=True)
+  for raw in p.stdout:
+   item=json.loads(raw)
+   if item['type']!='match':continue
+   d=item['data'];line=d['lines'].get('text','').lower();path=d['path'].get('text','');hits=[]
+   for term in patterns:
+    if term.lower() in line:stats[term]['lines']+=1;stats[term]['paths'].add(path);hits.append(term)
+   dest.write(json.dumps({'path':path,'line_number':d['line_number'],'patterns':hits})+'\n')
+  code=p.wait()
+ assert code in (0,1),(code,err.read_text())
+ reports.append({'root':str(r),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=r,text=True).strip(),'command':cmd,'exit_code':code,'results':{x:{'lines':v['lines'],'paths':sorted(v['paths'])} for x,v in stats.items()},'full_match_projection':{'path':str(out),'sha256':sha(out),'bytes':out.stat().st_size},'stderr':err.read_text()})
+report={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'candidate':'MetaCyc:P184-PWY','context':'Follow-up of open issue534 and merged next253 checkpoint, not a newly discovered lead.','baseline_exact_record_matches':[x for x in records if x['id']=='MetaCyc:P184-PWY'],'patterns_per_root':len(patterns),'patterns_file':{'path':str(pf),'sha256':sha(pf)},'prior_pattern_input':{'path':str(prior),'sha256':sha(prior)},'roots':reports,'bounds':{'ignored_and_hidden_included':True,'exclusions':['.git/**','.venv/**'],'binary':'rg default binary detection; no claim of binary payload absence','symlinks':'Directory symlinks not followed in text pass','archives':'Current scan does not decode archives. Previous next253 separately inspected 2710 retained archive members with its28pattern vocabulary; that historical bound is not expanded here.','other_worktrees':'Current main and active254 worktree only; historical checkpoints inspected directly, not an exhaustive search of every external cache/worktree.','source_exhaustion_claim':False}}
+save('dedup.json',report)
+print(json.dumps({'records':len(records),'patterns':len(patterns),'candidate_record_matches':report['baseline_exact_record_matches'],'roots':len(reports)}))

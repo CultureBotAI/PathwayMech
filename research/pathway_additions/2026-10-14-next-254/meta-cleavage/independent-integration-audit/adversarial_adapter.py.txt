@@ -1,0 +1,48 @@
+from pathlib import Path
+import copy,datetime,hashlib,importlib.util,json,sys,xml.etree.ElementTree as E,yaml
+R=Path('/private/tmp/pathwaymech-next-254-20261014');S=Path('/private/tmp/pathwaymech-next-254-independent-integration');C=S/'adapter-cases';C.mkdir(exist_ok=True)
+spec=importlib.util.spec_from_file_location('independent_builder',R/'scripts/build_source_identifier_snapshot.py');m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)
+original=Path('/private/tmp/pathwaymech-next-253-native/originals/META-CPLX-2865.xml');tree=E.fromstring(original.read_bytes());url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2865';sha=lambda b:hashlib.sha256(b).hexdigest();results=[]
+def write(name,t):
+ p=C/(name+'.xml');p.write_bytes(E.tostring(t,encoding='utf-8',xml_declaration=True));return p
+def parse(p):return m.metacyc_protein_terms(p,url=url,version='27.0')
+positive=parse(original);label=positive[0][1];assert label=='4-carboxy-4-hydroxy-2-oxoadipate aldolase';results.append({'case':'exact_original','expected':'accepted','result':positive})
+def bad(name,mut):
+ t=copy.deepcopy(tree);mut(t.find('Protein'));p=write(name,t)
+ try:parse(p);results.append({'case':name,'expected':'reject','rejected':False})
+ except ValueError as ex:results.append({'case':name,'expected':'reject','rejected':True,'error':str(ex)})
+bad('empty_direct_common_name',lambda p:E.SubElement(p,'common-name',datatype='string'))
+bad('direct_common_name_wrong_type',lambda p:setattr(E.SubElement(p,'common-name',datatype='integer'),'text',label))
+bad('ambiguous_direct_alias',lambda p:setattr(E.SubElement(p,'synonym',datatype='string'),'text','oxaloacetate β-decarboxylase'))
+bad('no_matching_native_alias',lambda p:[p.remove(x) for x in p.findall('synonym')])
+bad('other_activity_bad_backreference',lambda p:p.find('catalyzes/Enzymatic-Reaction/enzyme/Protein').set('resource','#META:OTHER'))
+bad('other_activity_bad_reaction_scope',lambda p:p.find('catalyzes/Enzymatic-Reaction/reaction/Reaction').set('orgid','ECOLI'))
+bad('other_activity_duplicate_common_name',lambda p:setattr(E.SubElement(p.find('catalyzes/Enzymatic-Reaction'),'common-name',datatype='string'),'text','second name'))
+bad('invalid_alias_even_unselected',lambda p:setattr(E.SubElement(p,'synonym',datatype='string'),'text','<img src="x">'))
+bad('homomer_coefficient_one',lambda p:setattr(p.find('component/coefficient'),'text','1'))
+bad('duplicate_activity_id',lambda p:p.find('catalyzes').append(copy.deepcopy(p.find('catalyzes/Enzymatic-Reaction'))))
+# Equivalent order changes must preserve label/synonyms and signature.
+t=copy.deepcopy(tree);p=t.find('Protein');cat=p.find('catalyzes');cat[:]=list(cat)[::-1];reordered=write('equivalent_activity_order',t);assert parse(reordered)==positive
+results.append({'case':'equivalent_activity_order','expected':'accepted_equal','equal':True})
+# Same-label native conflicts and branch downgrades must fail before selection.
+variants={}
+t=copy.deepcopy(tree);t.find('Protein/component/coefficient').text='2';variants['coefficient']=write('conflict_coefficient',t)
+t=copy.deepcopy(tree);reaction=t.find('Protein/catalyzes/Enzymatic-Reaction/reaction/Reaction');reaction.set('frameid','RXN-TEST');reaction.set('resource','getxml?META:RXN-TEST');variants['other_reaction']=write('conflict_other_reaction',t)
+t=copy.deepcopy(tree);p=t.find('Protein');E.SubElement(p,'common-name',datatype='string').text=label;variants['direct_name_downgrade']=write('conflict_direct',t)
+t=copy.deepcopy(tree);p=t.find('Protein');cat=p.find('catalyzes');cat.remove(list(cat)[0]);cat.find('Enzymatic-Reaction/common-name').text=label;variants['sole_activity_downgrade']=write('conflict_sole',t)
+html=C/'conflict.html';html.write_text('<TITLE>MetaCyc '+label+'</TITLE><script>var typeObjectPage = {object:\'CPLX-2865\',orgid:\'META\'}</script>');variants['html_downgrade']=html
+for v,p in variants.items():
+ for selected in [False,True]:
+  for order in ['original_first','other_first']:
+   d=C/(v+str(selected)+order);d.mkdir(exist_ok=True);records=d/'records';records.mkdir(exist_ok=True);(records/'selection.yaml').write_text(yaml.safe_dump({'id':'MetaCyc:CPLX-2865' if selected else 'GO:0008150'}))
+   entries=[]
+   for key,q in [('native',original),('competing',p)]:
+    dest=d/q.name;dest.write_bytes(q.read_bytes());entries.append({'key':key,'kind':'metacyc-html' if q==html else 'metacyc-protein-xml','path':q.name,'url':url,'version':'27.0','license':'test synthetic source perturbation','sha256':sha(q.read_bytes())})
+   if order=='other_first':entries.reverse()
+   manifest=d/'manifest.json';manifest.write_text(json.dumps(entries))
+   try:m.build_snapshot(manifest,records,d);rejected=False;error=''
+   except ValueError as ex:rejected=True;error=str(ex)
+   results.append({'case':v,'selected':selected,'order':order,'expected':'reject','rejected':rejected,'error':error})
+fail=[x for x in results if x.get('expected')=='reject' and not x.get('rejected')]
+out={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'builder_sha256':sha((R/'scripts/build_source_identifier_snapshot.py').read_bytes()),'original_path':str(original),'original_sha256':sha(original.read_bytes()),'scope':'Independent adversarial review probes against exact original and synthetic in-memory XML/HTML perturbations; no maintained file edits or full test-suite duplication. Exact original positive parse;10 malformed cases;equivalent reordering;20 conflicts in both selection states/orders.','case_count':len(results),'results':results,'failures':fail}
+stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ');(S/f'{stamp}-adapter-adversarial.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2));assert not fail

@@ -1,0 +1,50 @@
+import json,pathlib,hashlib
+r=pathlib.Path('/private/tmp/pathwaymech-next-254-native-evidence');x=json.loads((r/'graph-extension.json').read_text());edges=x['mechanistic_edges'];nodes={n['id']:n for n in x['participants']};refs={n['id']:n for n in x['references']}
+def ref(nid,title,url,path=None):
+ d={'id':nid,'title':title,'url':url}
+ if path:d['source_sha256']=hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+ refs[nid]=d
+ref('PMID:26867578','Structural and Kinetic Characterization of the 4-Carboxy-2-hydroxymuconate Hydratase from Pseudomonas putida KT2440','https://pmc.ncbi.nlm.nih.gov/articles/PMC4817193/','/private/tmp/pathwaymech-next-253-primary/originals/PMC4817193-render2.html')
+ref('PMID:20435721','Regulatory system of the protocatechuate 4,5-cleavage pathway genes essential for lignin downstream catabolism','https://pmc.ncbi.nlm.nih.gov/articles/PMC2897667/',r/'originals/PMC2897667-bio.html')
+ref('PMID:6317682','Mössbauer and EPR studies of protocatechuate 4,5-dioxygenase from Pseudomonas testosteroni','https://pubmed.ncbi.nlm.nih.gov/6317682/','/private/tmp/pathwaymech-next-253-primary/originals/PMID6317682-europe.json')
+ref('UniProtKB:Q8RQV9','UniProt Q8RQV9 LigR protein','https://rest.uniprot.org/uniprotkb/Q8RQV9.json',r/'originals/Q8RQV9.json')
+def assert_ev(nid,statement,loc):assert len(statement)<=400;return {'reference_id':nid,'source_assertion':statement,'source_locator':loc}
+def quote(nid,t):return {'reference_id':nid,'quote':t}
+def add(s,p,o,d,ev,quals=None):
+ a={'id':f'meta-bio-{len(edges)+1:03}','subject':s,'predicate':p,'object':o,'description':d,'evidence':ev}
+ if quals:a['endpoint_qualifiers']=quals
+ edges.append(a)
+def qualifier(endpoint,kind,d,e):return {'endpoint':endpoint,'kind':kind,'description':d,'evidence':e}
+# Full inspected2016 Figure1 supports exactE,E. Source native COMMENT'sZ,Z link is rejected explicitly.
+for e in edges:
+ if e['predicate']=='catalyzes' and e['subject'] in ['MetaCyc:G1G01-2697-MONOMER','MetaCyc:CPLX-8178']:
+  e['evidence'].append(assert_ev('PMID:26867578','Figure1A draws GalD conversion of OMA into(2E,4E)-CHM and GalB hydration of that CHM to CHA; product absoluteconfiguration is not specified by these experiments.','Figure1A, gallate branch; Figure5A/C optical-rotation comparison; Discussion, stereochemical specificity.'))
+ if e['subject']=='MetaCyc:G1G01-2697-MONOMER' and e['predicate']=='catalyzes':
+  e['endpoint_qualifiers']=[qualifier('subject','experimental_construct','KT2440 GalD expressed in E.coliBL21(DE3), purified by Ni-NTA with retained His6 tag; an internal thrombin site prevented tag removal. No substitution of a SYK6 LigU homolog.',[quote('PMID:26867578','removal of the His6 tag was not attempted')])]
+ if e['subject']=='MetaCyc:CPLX-8178' and e['predicate'] in ['catalyzes','has_cofactor']:
+  e['endpoint_qualifiers']=[qualifier('subject','experimental_construct','Source-native GalB assay preparation: KT2440 gene expressed with a His tag in KT2442/E.coli. Do not substitute the separate2016 GalBNt crystal construct lacking four Nterminal residues or infer absoluteCHA configuration.',[assert_ev('MetaCyc:CPLX-8178','The native protein comment identifies His-tagged GalB expression and purification in KT2442 and E.coli.','/ptools-xml/Protein[@frameid="CPLX-8178"]/comment')])]
+# Alternative GalB metal effects measured on EDTA-produced apoenzyme, not uniform physiologicaloccupancy.
+for co,label,rel in [('CHEBI:29033','iron(2+)','100±4.6%'),('CHEBI:48828','cobalt(2+)','79±4.0%')]:
+ nodes.setdefault(co,{'id':co,'label':label,'category':'cofactor'})
+ add('MetaCyc:CPLX-8178','has_cofactor',co,'2016 apoenzyme reconstitution supports this alternative metal; native-host aerobic purification was zinc-rich, and physiological metal identity remains unresolved.',[assert_ev('PMID:26867578',f'Table2 reports {label} restoration of GalB CHM hydration to relativeactivity {rel}, with Fe2+setto100%; the native-aerobically-purified sample is a distinct preparation.','Table2, named-metal row; tablecaption: native before EDTA treatment.')],[qualifier('subject','molecular_state','EDTA-treated GalB apoenzyme subsequently incubated with the named divalent metal; compare separately from zinc-rich aerobically purified KT2442 material.',[assert_ev('PMID:26867578','Table2 contrasts the named metal reconstitutions, Apo, EDTA, Native, and Native+Co2+ conditions.','Table2 condition rows and caption')])])
+# Native broad P.straminea aldolase metal alternatives explicitly source-supported.
+for co,label in [('CHEBI:29035','manganese(2+)'),('CHEBI:48828','cobalt(2+)'),('CHEBI:29105','zinc(2+)'),('CHEBI:48775','cadmium(2+)')]:
+ nodes.setdefault(co,{'id':co,'label':label,'category':'cofactor'})
+ add('MetaCyc:CPLX-2782','has_cofactor',co,'Historical P.straminea/P.ochraceae aldolase metal alternative; do not transfer this result to SYK6 LigK, whose assay metal preferences differ.',[assert_ev('MetaCyc:CPLX-2782','The native protein/comment lists Mg2+,Mn2+,Co2+,Zn2+andCd2+ as divalent ions supporting the historical aldolase.','/ptools-xml/Protein[@frameid="CPLX-2782"]/comment')])
+# LigR exact archived CDS393aa matches issuingQ8RQV9 (unreviewed oldtaxon13689); native experiment isSYK6.
+nodes['UniProtKB:Q8RQV9']={'id':'UniProtKB:Q8RQV9','label':'LigR protein','category':'protein'}
+add('UniProtKB:Q8RQV9','regulates','MetaCyc:P184-PWY','In SYK6, LigR activates ligK-orf1-ligI-lsdA and ligJABC transcription with PCA/gallate and autorepresses ligR. This regulatory evidence does not validate every chemical step of the composite native8-member definition; promoterDNA identifiers and cooperative-binding hypotheses are not invented.',[quote('PMID:20435721','LigR activates the transcription of the ligK and ligJ operons in the presence of PCA or GA')])
+# Do not create PCA→protein direct-binding edge solely from downstream EMSA pattern. Conditional effect is captured above.
+# Native dioxygenase oxidation and recovery, distinct from modern recombinantLigAB.
+nodes['CHEBI:16240']={'id':'CHEBI:16240','label':'hydrogen peroxide','category':'small_molecule'};nodes['CHEBI:22651']={'id':'CHEBI:22651','label':'ascorbate','category':'chemical_entity'}
+add('CHEBI:16240','inhibits','MetaCyc:CPLX-2701','Historical native P.testosteroni dioxygenase is inactivated when its Fe2+ is oxidized; this is assay-induced redox inactivation, not inferred physiological regulation.',[quote('PMID:6317682','oxidized, for instance by H2O2'),quote('PMID:6317682','In the oxidized state, protocatechuate 4,5-dioxygenase is inactive')])
+add('CHEBI:22651','activates','MetaCyc:CPLX-2701','Ascorbate restores activity by reducing the oxidized iron site in the historical native preparation; it is not generalized activation of already-active dioxygenase.',[quote('PMID:6317682','rereduced by ascorbate to yield active enzyme')],[qualifier('object','molecular_state','Previously oxidized,inactive Fe3+-containing native P.testosteroni dioxygenase; reduction recovers activity.',[quote('PMID:6317682','In the oxidized state')])])
+x['participants']=list(nodes.values());x['references']=list(refs.values());x['mechanistic_edges']=edges
+(r/'graph-extension-final.json').write_text(json.dumps(x,indent=2)+'\n')
+quotes={}
+for e in edges:
+ for ev in e['evidence']+sum([q['evidence'] for q in e.get('endpoint_qualifiers',[])],[]):
+  if 'quote'in ev:quotes[ev['reference_id']]=quotes.get(ev['reference_id'],0)+len(ev['quote'].split())
+assert all(v<=25 for v in quotes.values()),quotes
+(r/'quote-budget.json').write_text(json.dumps(quotes,indent=2)+'\n')
+print({'nodes':len(nodes),'edges':len(edges),'refs':len(refs),'quote_words':quotes})

@@ -1,0 +1,38 @@
+from pathlib import Path
+import json,sqlite3
+import yaml
+B=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-254-20261014');p=R/'research/pathway_additions/2026-10-14-next-253/meta-cleavage/native';g=json.loads((B/'complete-native-graph-proposal.json').read_text());old=json.loads((p/'reaction-identity-closure.json').read_text());rhea=json.loads((p/'rhea-original-projection.json').read_text());db=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db?mode=ro',uri=True)
+record=dict(g['recommended_identity']);record['pathway_type']='aromatic-compound-catabolism';record['taxa']=[]
+for t in g['taxa_source_assertions']:
+ id='NCBITaxon:'+t['source_id'].split('-')[1];label=db.execute("select value from statements where subject=? and predicate='rdfs:label'",(id,)).fetchone()[0];record['taxa'].append({'id':id,'label':label})
+record['participants']=g['participants'];record['reactions']=g['reactions'];record['mechanistic_edges']=g['mechanistic_edges'];record['references']=g['native_references']
+for x in old['reactions']:
+ id=x['exact_chemical_equation_id']
+ if not id.startswith('RHEA:'):continue
+ record['references'].append({'id':id,'title':'Rhea exact equation '+id,'url':'https://www.rhea-db.org/rhea/'+id.split(':')[1],'source_version':'Rhea 142','source_sha256':rhea['original']['sha256']})
+ for side,pred in [('substrates','consumes'),('products','produces')]:
+  for c in x['rhea_sides'][side]:
+   edge=next(e for e in record['mechanistic_edges']if e['predicate']==pred and(e['object']==id if pred=='consumes'else e['subject']==id)and(e['subject']==c['id']if pred=='consumes'else e['object']==c['id']))
+   edge['evidence'].append({'reference_id':id,'source_assertion':id+' '+side+' contain '+c['id']+' with coefficient '+str(c['coefficient'])+'.','source_locator':'; '.join(c['traversal'])})
+# An optional author-support biological extension is integrated without rewriting its scientific assertions.
+ext=B/'graph-extension.json'
+if ext.exists():
+ ex=json.loads(ext.read_text())
+ for key in ['participants','reactions','references','taxa']:
+  for row in ex.get(key,ex.get('suggested_taxa',[])if key=='taxa'else[]):
+   same=next((v for v in record[key]if v['id']==row['id']),None)
+   if same is None:record[key].append(row)
+   else:assert same==row,(key,same,row)
+ for e in ex.get('mechanistic_edges',[]):record['mechanistic_edges'].append(e)
+if ext.exists():
+ cobalt=next(n for n in record['participants']if n['id']=='CHEBI:48828')
+ assert cobalt['category']=='small_molecule'
+ assert any(e['predicate']=='has_cofactor'and e['object']=='CHEBI:48828'for e in record['mechanistic_edges'])
+ cobalt['category']='cofactor'
+if ext.exists():record['description']+=' Taxa also include the explicitly scoped enzyme-source contexts; KT2440 gallate-module activities do not establish complete pathway occurrence in that strain.'
+for i,e in enumerate(record['mechanistic_edges'],1):e['id']='meta-'+str(i).zfill(3)
+(B/'protocatechuate-meta-cleavage.yaml').write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100))
+(B/'record-identifiers.json').write_text(json.dumps({'record':record['id'],'nodes':[x['id']for key in ['taxa','participants','reactions']for x in record[key]],'references':[x['id']for x in record['references']]},indent=2)+'\n')
+from pathwaymech.schema import validate_record
+validate_record(record)
+print('Record shape validated:',len(record['participants']),'participants;',len(record['reactions']),'reactions;',len(record['mechanistic_edges']),'edges;',len(record['references']),'references')

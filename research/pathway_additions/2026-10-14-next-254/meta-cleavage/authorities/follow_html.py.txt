@@ -1,0 +1,17 @@
+from pathlib import Path
+import urllib.request,json,hashlib,datetime,concurrent.futures,re
+B=Path(__file__).parent;out=B/'redirected-originals';out.mkdir(exist_ok=True)
+inputs=json.loads((B/'html-acquisition.json').read_text())
+def fetch(x):
+ p=Path(x['path']);m=re.fullmatch(r"<script TYPE=\"text/javascript\">\s*window.location.replace\('([^']+)'\);</script>",p.read_text())
+ if not m:return None
+ assert m[1].startswith(('/gene?','/compound?','/protein?'))
+ u='https://bf2i-artsymbiocyc.insa-lyon.fr'+m[1]
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech research'}),timeout=50) as r:
+   b=r.read();dst=out/(x['frame']+'.html');dst.write_bytes(b)
+   return dict(frame=x['frame'],url=u,final_url=r.url,http_status=r.status,retrieved_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),path=str(dst),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b),redirect_source=x)
+ except Exception as e:return dict(frame=x['frame'],url=u,error=str(e))
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:results=[x for x in pool.map(fetch,inputs) if x]
+(B/'html-followup-acquisition.json').write_text(json.dumps(results,indent=2)+'\n')
+print(json.dumps([{k:v for k,v in x.items() if k in ['frame','http_status','bytes','error']} for x in results]))

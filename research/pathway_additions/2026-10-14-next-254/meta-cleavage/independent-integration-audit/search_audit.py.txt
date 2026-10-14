@@ -1,0 +1,20 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,subprocess,yaml
+R=Path('/private/tmp/pathwaymech-next-254-20261014');S=Path('/private/tmp/pathwaymech-next-254-independent-integration');D=R/'research/pathway_additions/2026-10-14-next-254/meta-cleavage/preflight';B='dfe42721bfd31468cb27b2d6a1a4b460f2b71a12'
+compact=json.loads((D/'dedup-compact.json').read_text());patterns=(D/'patterns.txt').read_text().splitlines();bindings=json.loads((D/'baseline-record-bindings.json').read_text());fail=[];roots=[]
+for row in bindings['records']:
+ b=subprocess.check_output(['git','show',B+':'+row['path']],cwd=R);d=yaml.safe_load(b)
+ if hashlib.sha256(b).hexdigest()!=row['sha256'] or d['id']!=row['id'] or d['label']!=row['label']:fail.append({'baseline':row['path']})
+for root in compact['roots']:
+ artifact=root['full_match_projection'];p=Path(artifact['path']);assert hashlib.sha256(p.read_bytes()).hexdigest()==artifact['sha256'];counts=collections.Counter();paths={x:set() for x in patterns}
+ for raw in p.read_text().splitlines():
+  d=json.loads(raw)
+  for term in d['patterns']:counts[term]+=1;paths[term].add(d['path'])
+ mismatches=[]
+ for term,v in root['results'].items():
+  if v['matched_lines']!=counts[term] or v['matching_files']!=len(paths[term]) or ('paths'in v and v['paths']!=sorted(paths[term])):mismatches.append(term)
+ if mismatches:fail.append({'root':root['root'],'count_mismatches':mismatches})
+ roots.append({'root':root['root'],'patterns_verified':len(root['results']),'projection_bytes':p.stat().st_size,'count_mismatches':mismatches,'hidden_and_ignored_flags':all(x in root['command'] for x in ['--no-ignore','--hidden'])})
+assert len(patterns)==len(set(patterns))==compact['patterns_per_root'];assert len(bindings['records'])==250
+out={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Bound exact retained search receipt to552 unique patterns, original full match projections and actual250 baseline Git blobs; recomputed every compact count and retained path list. Did not repeat global text search or claim provider/source exhaustion. Original scans explicitly include ignored and hidden files with stated exclusions.','baseline_record_count':len(bindings['records']),'pattern_count':len(patterns),'roots':roots,'failures':fail}
+(S/'search-scope-audit.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2));assert not fail

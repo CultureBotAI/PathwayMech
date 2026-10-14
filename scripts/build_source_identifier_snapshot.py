@@ -546,6 +546,16 @@ def _metacyc_protein_label(
 ) -> str:
     """Decode a native name after its owning Protein or activity is validated."""
     node = _metacyc_protein_one(parent, "common-name")
+    return _metacyc_protein_name(node, frame, activity_frame=activity_frame)
+
+
+def _metacyc_protein_name(
+    node: ElementTree.Element,
+    frame: str,
+    *,
+    activity_frame: str | None = None,
+) -> str:
+    """Apply the same bounded presentation decoder to a native name slot."""
     if len(node) or not (node.text or "").strip():
         raise ValueError("MetaCyc protein source requires one nonempty common-name")
     if node.get("datatype") != "string" or (
@@ -582,11 +592,11 @@ def _metacyc_protein_reference(node: ElementTree.Element, frame: str, resource: 
         raise ValueError("MetaCyc protein source requires an exact empty native reference")
 
 
-def _metacyc_complex_activity(
+def _metacyc_complex_activities(
     protein: ElementTree.Element,
     frame: str,
-) -> tuple[ElementTree.Element, str]:
-    """Resolve the sole native enzyme-name relation for an unnamed homomer.
+) -> list[tuple[ElementTree.Element, str]]:
+    """Validate every native enzyme-name relation for an unnamed homomer.
 
     Pathway Tools documents linked enzymatic-reaction names as protein names
     when COMMON-NAME is absent. This bounded case requires a native homomer
@@ -624,11 +634,25 @@ def _metacyc_complex_activity(
     ):
         raise ValueError("MetaCyc enzyme-name fallback requires a homomer coefficient at least two")
     catalyzes = _metacyc_protein_one(protein, "catalyzes")
-    activity = _metacyc_protein_one(catalyzes, "Enzymatic-Reaction")
+    activities = catalyzes.findall("Enzymatic-Reaction")
+    if not activities or len(catalyzes) != len(activities):
+        raise ValueError("MetaCyc enzyme-name fallback requires resolved native activities")
+    result = []
+    seen = set()
+    for activity in activities:
+        activity_frame = _metacyc_complex_activity_identity(activity, frame)
+        if activity_frame in seen:
+            raise ValueError("MetaCyc enzyme-name fallback has duplicate activity identities")
+        seen.add(activity_frame)
+        result.append((activity, activity_frame))
+    return result
+
+
+def _metacyc_complex_activity_identity(activity: ElementTree.Element, frame: str) -> str:
+    """Validate one resolved activity and its exact enzyme/reaction references."""
     activity_frame = activity.get("frameid", "")
     if (
-        len(catalyzes) != 1
-        or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", activity_frame)
+        not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", activity_frame)
         or activity.get("ID") != "META:" + activity_frame
         or activity.get("orgid") != "META"
         or activity.get("detail") not in {"low", "full"}
@@ -649,7 +673,25 @@ def _metacyc_complex_activity(
             "MetaCyc enzyme-name fallback requires one exact native reaction reference"
         )
     _metacyc_protein_reference(native_reaction, reaction_frame, "getxml?META:" + reaction_frame)
-    return activity, activity_frame
+    return activity_frame
+
+
+def _metacyc_protein_aliases(
+    parent: ElementTree.Element,
+    frame: str,
+    *,
+    activity_frame: str | None = None,
+) -> list[str]:
+    """Decode direct native aliases without borrowing names from descendants."""
+    aliases = []
+    for node in parent.findall("synonym"):
+        if node.attrib != {"datatype": "string"}:
+            raise ValueError("MetaCyc protein synonym must be an exact native string")
+        alias = _metacyc_protein_name(node, frame, activity_frame=activity_frame)
+        if alias in aliases:
+            raise ValueError("MetaCyc protein source has duplicate native synonyms")
+        aliases.append(alias)
+    return aliases
 
 
 def metacyc_protein_terms(
@@ -659,14 +701,61 @@ def metacyc_protein_terms(
     version: str,
 ) -> list[tuple[str, str, list[str]]]:
     """Extract one native Protein name, including a guarded homomer enzyme name."""
+    term, _ = _metacyc_protein_record(path, url=url, version=version)
+    return [term]
+
+
+def _metacyc_protein_record(
+    path: Path,
+    *,
+    url: str,
+    version: str,
+) -> tuple[tuple[str, str, list[str]], tuple | None]:
+    """Return a bounded signature only for the multi-activity alias branch."""
     protein, frame = _metacyc_protein_identity(path, url=url, version=version)
+    synonyms: list[str] = []
+    signature = None
     if protein.findall("common-name"):
         # Any direct slot takes precedence, including an invalid one that must fail.
         label = _metacyc_protein_label(protein, frame)
     else:
-        activity, activity_frame = _metacyc_complex_activity(protein, frame)
-        label = _metacyc_protein_label(activity, frame, activity_frame=activity_frame)
-    return [("MetaCyc:" + frame, label, [])]
+        activities = _metacyc_complex_activities(protein, frame)
+        if len(activities) == 1:
+            activity, activity_frame = activities[0]
+            label = _metacyc_protein_label(activity, frame, activity_frame=activity_frame)
+        else:
+            aliases = _metacyc_protein_aliases(protein, frame)
+            observations = []
+            matches = []
+            for activity, activity_frame in activities:
+                activity_label = _metacyc_protein_label(
+                    activity, frame, activity_frame=activity_frame,
+                )
+                activity_aliases = _metacyc_protein_aliases(
+                    activity, frame, activity_frame=activity_frame,
+                )
+                names = {activity_label, *activity_aliases}
+                matches.extend((alias, activity_frame) for alias in aliases if alias in names)
+                reaction = activity.find("reaction/Reaction")
+                assert reaction is not None  # exact reference validated above
+                observations.append((
+                    activity_frame, reaction.attrib["frameid"], activity_label,
+                    tuple(sorted(activity_aliases)),
+                ))
+            if len(matches) != 1:
+                raise ValueError(
+                    "MetaCyc multi-activity homomer requires one unambiguous native alias match"
+                )
+            label = matches[0][0]
+            synonyms = [alias for alias in aliases if alias != label]
+            component = protein.find("component/Protein")
+            coefficient = protein.find("component/coefficient")
+            assert component is not None and coefficient is not None
+            signature = (
+                version, component.attrib["frameid"], int(coefficient.text.strip()),
+                tuple(sorted(observations)), label, tuple(sorted(aliases)),
+            )
+    return ("MetaCyc:" + frame, label, synonyms), signature
 
 
 class _MetaCycReactionTreeBuilder(ElementTree.TreeBuilder):
@@ -1705,6 +1794,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     metanetx_assertions: dict[str, str] = {}
     metacyc_names: dict[str, set[str]] = {}
     metacyc_xml_ids: set[str] = set()
+    metacyc_multi_activity_assertions: dict[str, set[tuple | None]] = {}
     metacyc_kinds: dict[str, set[str]] = {}
     metacyc_reaction_assertions: dict[str, tuple] = {}
     metacyc_carrier_assertions: dict[str, tuple] = {}
@@ -1777,6 +1867,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             # Refuse non-regular resolved originals before the common byte read.
             carrier_original_path(entry, cache_dir)
         metadata = {name: entry[name] for name in ("url", "version", "license")}
+        multi_activity_assertion = None
         if "sha256_scope" in entry:
             metadata["sha256_scope"] = entry["sha256_scope"]
         if not all(isinstance(value, str) and value for value in metadata.values()):
@@ -1972,6 +2063,11 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             if len(ecocyc_versions) != 1:
                 raise ValueError("conflicting EcoCyc native PGDB versions")
             parsed_terms = [term]
+        elif entry["kind"] == "metacyc-protein-xml":
+            term, multi_activity_assertion = _metacyc_protein_record(
+                path, url=entry["url"], version=entry["version"],
+            )
+            parsed_terms = [term]
         elif entry["kind"] == "ncbi-entrezgene-xml":
             term, taxon = _ncbi_gene_record(path, entry["url"])
             identifier, label, synonyms = term
@@ -2073,6 +2169,12 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
                 raise ValueError("BiGG identifiers require native universal JSON authority")
             if entry["kind"] in {"metacyc-protein-xml", "metacyc-html"}:
+                scopes = metacyc_multi_activity_assertions.setdefault(identifier, set())
+                scopes.add(multi_activity_assertion)
+                if len(scopes) != 1:
+                    raise ValueError(
+                        f"conflicting MetaCyc multi-activity native assertions for {identifier}"
+                    )
                 names = metacyc_names.setdefault(identifier, set())
                 names.add(label)
                 if entry["kind"] == "metacyc-protein-xml":

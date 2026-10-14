@@ -1,0 +1,63 @@
+import pathlib,json,hashlib,re,xml.etree.ElementTree as E,datetime
+r=pathlib.Path('/private/tmp/pathwaymech-next-254-native-evidence');old=pathlib.Path('/private/tmp/pathwaymech-next-253-native');g=json.loads((r/'graph-extension-final.json').read_text());d=json.loads((r/'complete-native-slot-dispositions.json').read_text());core=json.loads(pathlib.Path('/private/tmp/pathwaymech-next-254-route/complete-native-graph-proposal.json').read_text())
+def sha(p):return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+def save(name,x):(r/name).write_text(json.dumps(x,indent=2)+'\n')
+rx={}
+for e in core['mechanistic_edges']:
+ if e['predicate']=='part_of'and e['object']=='MetaCyc:P184-PWY':
+  m=re.search("frameid='([^']+)'",e['evidence'][0]['source_locator'])
+  if m:rx['MetaCyc:'+m[1]]=e['subject']
+audit=[]
+for a in json.loads((old/'native-fact-dispositions.json').read_text())['activities']:
+ es=[e for e in g['mechanistic_edges']if e['predicate']in['catalyzes','enables']and any(z['reference_id']==a['native_id']for z in e['evidence'])]
+ row={'native_activity':a['native_id'],'native_enzyme':a['enzyme'],'native_reaction':a['reaction'],'expected_named_reaction':rx[a['reaction']],'graph_edges':[e['id']for e in es],'joined':all(e['subject']==a['enzyme']and e['object']==rx[a['reaction']] for e in es),'disposition':'accepted'if es else'excluded with explicit scientific/scope reason in native-slot ledger'};audit.append(row)
+assert len(audit)==22 and all(x['joined']for x in audit)
+save('native-catalyst-reaction-join-audit.json',{'source_core':str(pathlib.Path('/private/tmp/pathwaymech-next-254-route/complete-native-graph-proposal.json')),'source_core_sha256':sha('/private/tmp/pathwaymech-next-254-route/complete-native-graph-proposal.json'),'biological_fragment_sha256':sha(r/'graph-extension-final.json'),'all_22_native_activities_accounted':True,'accepted18':sum(x['disposition']=='accepted'for x in audit),'rows':audit,'initial_author_defect':'First scratch generator transposed RHEA28932 tautomerase and28936 aldolysis. Printed-label inspection and concurrent independent review detected this; corrected before final fragment. This join audit independently derives expected destinations from route-author full chemistry part_of slots.','integration_note':'Route merger explicitly upgrades cobalt CHEBI48828 category from small_molecule to cofactor, because added has_cofactor role requires that schema category. Frozen sourcefragment remains preserved.'})
+# Update object ledger to reference frozen final edge relationships.
+for row in d['dispositions']:
+ ids=[]
+ for e in g['mechanistic_edges']:
+  ev=e['evidence']+sum([q['evidence']for q in e.get('endpoint_qualifiers',[])],[])
+  if any(v['reference_id']==row['native_id']for v in ev):ids.append(e['id'])
+ row['final_fragment_edge_ids']=ids
+facts=json.loads((old/'native-fact-dispositions.json').read_text())['source_fact_dispositions']
+updates=[
+'Complete8-member native chemical boundary preserved, including both spontaneous slots and terminalOAAdecarboxylation; native source composite not asserted as single-strain reconstitution.',
+'2016 nativeGalD/GalB E,E chemistry matches structured native reaction. Reject old protein-comment Z,Z CPD185 link. Exclude modernLigU/KCH andSYK6LigJ from old reactionIDs; E6PmdE biochemical data not transferred toBR6020PmdE.',
+'Graph contains NAD/NADP coenzyme alternatives for both native dehydrogenase preparations. LigC primaryTable3 values override mislabeledUniProt kineticfields.',
+'HistoricalP.straminea hydratase annotation preserved as source-scoped native activity; GalB separately taggedprep+Znsource+Fe/Co apoalternatives; oldSYK6LigJ catalysis andlinkedregulators omitted from exactnative chemicalbranch.',
+'Nativealdolase complexes/sourcepreparations separated, broadCHA never asserted racemicorS; explicitalternative metals retained forhistoricalP.straminea andnot transferred toLigK. AlternateHMG activities outside8-member route remain explanatory, no newchemicalbranch.',
+'BR6020PmdE exact oldchemical assignment omitted: homology from historicalLigJ doesnot resolveexactsubstrate. ExperimentalE6PmdE is different accession/strain.',
+'GalD sharing module is source-scopedKT2440 gallatebiochemistry; no entireKT2440P184 occurrence norSYK6LigUequivalence inferred.',
+'Nativecomplex composition edges retained without assigning individualsubunit catalysis or equating historicalComamonaspreparations to currentBR6020sequence.',
+'Mn/Ni/Co regulatorobjects withoutmode retained as unsignedregulates; no signinferred.',
+'TCA pathwaylink is contextonly, not an elementary directtransfer edge.'
+]
+for f,u in zip(facts,updates):f['successor_disposition']=u
+facts +=[
+{'source_ids':['PMID:6317682'],'fact':'NativeComamonasdioxygenase Fe2+ oxidation andascorbate recovery.','successor_disposition':'H2O2inhibits; ascorbateactivates molecular-state-qualified previouslyoxidizedinactiveFe3+ preparation. Nitricoxide spectroscopy doesnot support signedphysiologicalregulation.'},
+{'source_ids':['PMID:20435721','UniProtKB:Q8RQV9'],'fact':'LigR activatesligK/ligJABCoperons conditionally withPCA/GA and autorepresses.','successor_disposition':'Oneboundedregulatespathwayedge with exact17-wordquote; descriptionretains effectors/operons/autorepression. NoinventedpromoterIDs, no directligandbinding inferredsolely fromEMSA, no cooperativebindinghypotheses promoted.'},
+{'source_ids':['PMID:26867578'],'fact':'GalB metals andopticallyactiveCHA, mutantmechanism andGalBNtstructure.','successor_disposition':'Fe/Coapo-reconstitution edgesexplicit; genericCHA endpointretains noabsoluteS; lowmetalsquantitativeTable2results retained without physiologicaloccupancyinference; GalBNt4residuecrystaltruncation notsubstituted forWTkinetics; pointmutantmechanisticproposals excludedfromnativepathwaycomponentclaims.'}
+]
+d.update(scope=d['scope']+' All dispositions joined to frozenfinal fragment; sourcefact narrative coverage appended.',source_fact_dispositions=facts,biological_fragment_sha256=sha(r/'graph-extension-final.json'),direct_primary_quote_words=json.loads((r/'quote-budget.json').read_text()))
+save('complete-native-slot-dispositions-final.json',d)
+# Primary followupexactreadbounds and faithful compact table.
+km=[{'varied_substrate':'NAD+','fixed_CHMS_uM':150,'Km_uM':252,'Km_error_uM':3.9,'Vmax_U_mg':449,'Vmax_error':3.9},{'varied_substrate':'NADP+','fixed_CHMS_uM':150,'Km_uM':24.6,'Km_error_uM':1.5,'Vmax_U_mg':363,'Vmax_error':1.4},{'varied_substrate':'CHMS','fixed_coenzyme':'NAD+','fixed_coenzyme_uM':200,'Km_uM':20.6,'Km_error_uM':1.0,'Vmax_U_mg':175,'Vmax_error':10},{'varied_substrate':'CHMS','fixed_coenzyme':'NADP+','fixed_coenzyme_uM':200,'Km_uM':26.0,'Km_error_uM':0.5,'Vmax_U_mg':383,'Vmax_error':3.8}]
+u=json.loads((r/'originals/Q9KWL3.json').read_text());up=next(c['kineticParameters']['michaelisConstants'] for c in u['comments']if c['commentType']=='BIOPHYSICOCHEMICAL PROPERTIES')
+save('LigC-kinetic-table3-audit.json',{'primary':'PMID:11073908','primary_url':'https://journals.asm.org/doi/full/10.1128/jb.182.23.6651-6658.2000','locator':'Table3 SYK6fourrows; methodsenzymeassay; resultsenzymeproperties','primary_read':'Publisherweb-tool mainbody andall3tables read; fourfigurecaptionsread, figure rastersnotindependentlyinspected. Archived rawfullHTMLroutes challenged; externalweb-tooltranscription is not rawpublisherHTML.','external_tool_transcription':str(r/'LigC-web-tool-transcription.txt'),'external_tool_transcription_sha256':sha(r/'LigC-web-tool-transcription.txt'),'actual_table_rows':km,'uniprot_current_kinetic_fields':up,'uniprot_source_sha256':sha(r/'originals/Q9KWL3.json'),'disposition':'FourcurrentUniProtKm substrateassignments conflictwithprimaryTable3. Retain primaryvalues, preserveoriginalauthoritybytes, do notclaim tocorrectUniProtremotely. BothNAD/NADPsupportgraphcoenzymeedges; kineticassertions identifyexactprimarytablerows.'})
+prev=pathlib.Path('/private/tmp/pathwaymech-next-253-primary/component-evidence-ledger.json');p=json.loads(prev.read_text());p.update(scope='Author successor interpretations. Prior next253 ledger immutable. Unchanged primaryreadbounds explicitly inherited, not newlyclaimed fullbody reads.',predecessor=str(prev),predecessor_sha256=sha(prev))
+for s in p['sources']:
+ s['next254_disposition']='Predecessor sourcebounds retained; native databaseassertions used onlywith their ownexact sourceprovenance. No upgradefromabstract/metadata tofullpaper.'
+ if s['reference_id']=='PMID:11073908':s.update(next254_disposition='FullprimaryTable3resolves kineticlabelmismatch; completeCDSidentitycloses geneaccession; in-vitro inhibitors retained undernative sourceobjects. SuggestedPDCinduction in2000is not accepted as directbinding, subsequentLigR2010 favorsPCA/GA.',next254_read_scope='Publisher mainbody, all3tables andfourfigurecaptions read. Noindependentfigure-rasterread; no rawpublisherHTMLsuccess. externaltooltranscriptionbound separately.')
+ if s['reference_id']=='PMID:20435721':s.update(next254_disposition='Fullprimaryregulatoryscope supports boundedLigRpathwayregulation; originalLigR393aaCDS matchesQ8RQV9. CurrentUniProtgenericoldtaxon andcomputationalSignalPcleavage are notused to replace thetestedfull-lengthSYK6sequence.',next254_read_scope='Completeprimarymainbody methods/results/discussion; all8originalfigurerasters andTable2read, relevantTable1constructrowsread; SIzip/index werechallengeHTML, TableS1andFigS1notindependentlyacquired.',next254_original={'path':str(r/'originals/PMC2897667-bio.html'),'sha256':sha(r/'originals/PMC2897667-bio.html')})
+ if s['reference_id']=='PMID:26867578':s.update(next254_disposition='NativeGalD/GalBexactE,E assignment retained; sourceincorrectZ,Zcommentlink rejected. GalDretainedHis6; GalBNtcrystaltruncationdistinctfromWT; Fe/Cosupportingapoassaysretained withphysiologicalmetalunknown. NoSYK6LigJorBR6020PmdEtransfer.',next254_read_scope='Re-read completeDNAmanipulation/expression/proteinpurification sections, substratepreparation, GalBmetalresults/Table2, stereospecificitycomparison anddiscussion. Priorfullpaper+9figurerasterreadbounds preserved; no claimnewreadingofallinlineequationrasters.')
+ if s['reference_id']=='PMID:6317682':s.update(next254_disposition='Re-read completeprimaryabstract; addednativeH2O2inactivation andoxidizedFe3+ascorbaterecovery with24totalquotewords. Nofullbodyclaim, noNOphysiologicalregulatoryclaim.')
+save('primary-component-evidence-successor.json',p)
+# All successful HTTPartifacts explicitly classify challenge/errorbytes.
+allacq=[]
+for f in sorted(r.glob('acquisition*.json')):
+ for a in json.loads(f.read_text()):
+  if 'sha256'in a:
+   path=r/'originals'/a['name'];a.update(path=str(path),current_hash_verified=sha(path)==a['sha256']);raw=path.read_bytes();a['artifact_kind']='challenge_or_preparing_download_HTML'if b'POW_CHALLENGE'in raw or b'recaptcha'in raw.lower()else('original_paper_HTML'if a['name']=='PMC2897667-bio.html'else('figure'if a['name'].endswith('.jpg')else'issuing_record'))
+  allacq.append(a)
+save('source-acquisition-bindings.json',{'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'artifacts':allacq,'not_original':'LigC-web-tool-transcription.txt is a retainedtool-returned transcription, not a hashofactualpublisherresponsebytes.'})

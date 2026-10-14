@@ -1,0 +1,16 @@
+from pathlib import Path
+from dataclasses import asdict
+import csv,datetime,hashlib,json,yaml
+from pathwaymech.schema import validate_record
+from pathwaymech.kgx import kgx_edges,kgx_nodes
+R=Path('/private/tmp/pathwaymech-next-254-20261014');S=Path('/private/tmp/pathwaymech-next-254-independent-integration');P='data/pathways/protocatechuate-meta-cleavage.yaml';raw=(R/P).read_bytes();record=validate_record(yaml.safe_load(raw));E=R/'pages/downloads/edges.tsv';N=R/'pages/downloads/nodes.tsv'
+with E.open(newline='') as f:edges={r['id']:r for r in csv.DictReader(f,delimiter='\t')}
+with N.open(newline='') as f:nodes={r['id']:r for r in csv.DictReader(f,delimiter='\t')}
+ef=[];nf=[]
+for e in kgx_edges([record]):
+ row=asdict(e)
+ if edges.get(e.id)!=row:ef.append(e.id)
+for n in kgx_nodes([record]):
+ wanted=json.loads(n.source_contexts);actual=json.loads(nodes.get(n.id,{}).get('source_contexts','[]'))
+ if any(v not in actual for v in wanted):nf.append(n.id)
+out={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':hashlib.sha256(raw).hexdigest(),'scope':'Actual generated whole-corpus KGX TSV files inspected, every127 new record edge row compared to exact native serialization; all77 node declaration contexts retained among merged global contexts.','edge_count':127,'node_count':77,'exports':{str(p.relative_to(R)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [E,N]},'failures':{'edges':ef,'node_contexts':nf}};(S/'kgx-export-acceptance.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2));assert not ef and not nf

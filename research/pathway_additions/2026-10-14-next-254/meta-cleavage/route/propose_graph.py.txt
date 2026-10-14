@@ -1,0 +1,44 @@
+from pathlib import Path
+import json,hashlib,datetime,xml.etree.ElementTree as E
+B=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-254-20261014');P=R/'research/pathway_additions/2026-10-14-next-253/meta-cleavage/native'
+old=json.loads((P/'reaction-identity-closure.json').read_text());chems=json.loads((P/'chemical-identity-closure.json').read_text())['chemicals'];native=Path('/private/tmp/pathwaymech-next-253-native/originals');pn=E.parse(native/'META-P184-PWY.xml').getroot().find('Pathway')
+parts={};reactions=[];edges=[];refs=[];corrections=[]
+def add(s,p,o,d,ref,assertion,locator):
+ assert len(assertion)<=400
+ edges.append({'id':'meta-'+str(len(edges)+1).zfill(3),'subject':s,'predicate':p,'object':o,'description':d,'evidence':[{'reference_id':ref,'source_assertion':assertion,'source_locator':locator}]})
+def ref(id,title,path):return {'id':id,'title':title,'url':'https://biocyc.org/META/NEW-IMAGE?type=OBJECT&object='+id.split(':',1)[1],'source_version':'MetaCyc 27.0 public mirror','source_sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+refs.append(ref('MetaCyc:P184-PWY','MetaCyc protocatechuate degradation I (meta-cleavage pathway)',native/'META-P184-PWY.xml'))
+for q in old['reactions']:
+ nid=q['native_id'];f=nid.split(':',1)[1];id=q['exact_chemical_equation_id'];p=native/('META-'+f+'.xml');n=E.parse(p).getroot().find('Reaction');sp=n.findtext('spontaneous');rev=n.findtext('reaction-direction');direction='reversible'if rev=='REVERSIBLE'else'left_to_right';label=q.get('rhea_label')or'4-carboxy-2-hydroxymuconate semialdehyde hemiacetal formation'
+ reactions.append({'id':id,'label':label,'category':'molecular_activity','direction':direction})
+ refs.append(ref(nid,'MetaCyc '+f,p))
+ d='Member of the complete eight-step source-defined pathway. Material edges use the pathway-selected forward conversion.'
+ if f=='RXN-2463':d+=' The selected hydration runs opposite to the native reaction object written as dehydration.'
+ if rev=='REVERSIBLE':d+=' Native reversible metadata is retained alongside the selected forward Rhea equation identity.'
+ if sp=='true':d+=' Native spontaneous=true permits uncatalyzed conversion without asserting its physiological rate or excluding enzyme acceleration.'
+ add(id,'part_of','MetaCyc:P184-PWY',d,'MetaCyc:P184-PWY','The native pathway explicitly lists '+f+' and selects '+q['selected_pathway_direction_relative_native']+' layout flux.',q['pathway_membership_locator']+'; '+q['pathway_layout_locator'])
+ if sp!=q['native_spontaneous']:corrections.append({'native_id':nid,'old_projection_value':q['native_spontaneous'],'direct_original_value':sp,'locator':"/ptools-xml/Reaction[@frameid='"+f+"']/spontaneous",'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'disposition':'Successor projection corrects omitted metadata; old immutable artifact is unchanged.'})
+ for side,key in [('substrates','consumes'),('products','produces')]:
+  for x in q['selected_sides'][side]:
+   c=chems[x['native_frame']];parts.setdefault(x['id'],{'id':x['id'],'label':c['live_identity']['ascii_name'],'category':'cofactor'if x['id']=='CHEBI:58349'else'small_molecule'})
+   source_side='left'if'/left['in x['source_locator']else'right';ds='Coefficient '+str(x['coefficient'])+' in the selected pathway flux.'
+   if x['id']=='CHEBI:58142':ds+=' Exact native E,E enol; historical cis,cis display terminology does not equate it to KCH or the Z,Z enol.'
+   if x['id']=='CHEBI:58075':ds+=' Native structure leaves absolute configuration unspecified; no racemic mixture or S-specific product is inferred.'
+   add(x['id']if key=='consumes'else id,key,id if key=='consumes'else x['id'],ds,nid,'The complete native reaction '+source_side+' side contains '+x['native_frame']+' with coefficient '+str(x['coefficient'])+'.',x['source_locator'])
+# Each explicit native predecessor relation is also backed by an exact shared material.
+lookup={x['native_id'].split(':',1)[1]:x for x in old['reactions']}
+for ordering in pn.findall('reaction-ordering'):
+ target=ordering.find('Reaction').get('frameid')
+ for predecessor in ordering.findall('predecessor-reactions/Reaction'):
+  origin=predecessor.get('frameid');a=lookup[origin];z=lookup[target]
+  shared=sorted({x['id']for x in a['selected_sides']['products']} & {x['id']for x in z['selected_sides']['substrates']})
+  assert shared,(origin,target)
+  add(a['exact_chemical_equation_id'],'provides_input_for',z['exact_chemical_equation_id'],'Selected pathway material transfer through '+', '.join(shared)+'. This source ordering does not assert an additional regulatory effect.','MetaCyc:P184-PWY','The pathway names '+origin+' as a predecessor of '+target+'; selected reaction layouts transfer '+', '.join(shared)+'.',"/ptools-xml/Pathway/reaction-ordering[Reaction/@frameid='"+target+"']/predecessor-reactions/Reaction[@frameid='"+origin+"']; /ptools-xml/Pathway/reaction-layout")
+for edge in edges:
+ if edge['subject']=='RHEA:29588'and edge['predicate']=='part_of':edge['description']+=' The native obsolete RHEA:10889 cross-reference is replaced only after exact equation comparison by approved RHEA:29588.'
+out={'scope':'Author-support full eight-member chemistry proposal. This is a graph fragment, not a ready validated pathway record. Root must integrate all supported biological components, canonical authorities/history and independent review.','recommended_identity':{'id':'MetaCyc:P184-PWY','label':'protocatechuate degradation I (meta-cleavage pathway)','description':'The complete MetaCyc 27.0 eight-member protocatechuate 4,5-cleavage definition proceeds through a semialdehyde hemiacetal, pyrone dicarboxylate, oxalomesaconate, the source-defined E,E enol and stereochemically unspecified CHA to oxaloacetate and pyruvate, followed by oxaloacetate decarboxylation. This is a source-defined composite with enzyme and taxon assertions scoped individually; it is not an experimentally reconstituted eight-step route in one strain. Modern LigU/LigJ reactions use distinct KCH and stereospecific S-CHA and are not substituted under the historical native reaction IDs.'},'taxa_source_assertions':[{'source_id':x[0].get('frameid'),'label':x[0].findtext('common-name'),'locator':"/ptools-xml/Pathway/species/Organism[@frameid='"+x[0].get('frameid')+"']"}for x in pn.findall('species')],'participants':list(parts.values()),'reactions':reactions,'mechanistic_edges':edges,'native_references':refs,'native_metadata_corrections':corrections,'complete_native_members':old['pathway_members'],'rhea_mapping_input':{'path':str(P/'reaction-identity-closure.json'),'sha256':hashlib.sha256((P/'reaction-identity-closure.json').read_bytes()).hexdigest()},'unresolved_optional_claims':['GalD/GalB native E,E assignments are supported by separately inspected 2016 primary evidence; reject the conflicting narrative Z,Z compound link. Exact construct scopes remain required for experimental claims.','Do not transfer modern LigU/LigJ catalytic evidence to native RXN-9983/RXN-2463.','Native generic CHA must not be silently replaced by S-CHA.','Do not turn broad species slots, partial activity assays or distinct protein preparations into an assertion of complete same-strain experimental reconstitution.']}
+assert len(reactions)==8
+assert {x['native_id'].split(':',1)[1]for x in old['reactions']}==set(old['pathway_members'])
+assert len(parts)==15
+(B/'complete-native-graph-proposal.json').write_text(json.dumps(out,indent=2)+'\n')
+print(len(parts),'chemical participants;',len(reactions),'reaction members;',len(edges),'chemical/membership edges;',len(corrections),'metadata corrections')

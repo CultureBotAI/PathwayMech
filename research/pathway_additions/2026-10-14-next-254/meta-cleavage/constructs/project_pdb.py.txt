@@ -1,0 +1,40 @@
+from pathlib import Path
+import json, hashlib, shlex
+root=Path(__file__).parent
+prior=Path('/private/tmp/pathwaymech-next-253-primary/originals')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def loop_rows(text, category):
+    lines=text.splitlines(); out=[]
+    for i,line in enumerate(lines):
+        if line.strip()!='loop_':continue
+        j=i+1; cols=[]
+        while j<len(lines) and lines[j].strip().startswith('_'):
+            cols.append(lines[j].strip());j+=1
+        if not cols or not cols[0].startswith(category+'.'):continue
+        tokens=[]
+        while j<len(lines) and lines[j].strip()!='#':
+            tokens.extend(shlex.split(lines[j]));j+=1
+        assert len(tokens)%len(cols)==0,(category,len(tokens),len(cols))
+        out.extend(dict(zip(cols,tokens[k:k+len(cols)])) for k in range(0,len(tokens),len(cols)))
+    return out
+def spans(items):
+    ranges=[]
+    for n in sorted(set(items)):
+        if ranges and n==ranges[-1][1]+1:ranges[-1][1]=n
+        else:ranges.append([n,n])
+    return ranges
+rows=[]
+for pdb,acc in [('6P3J','Q0KJL4'),('6P3H','Q0KJL4'),('6DWV','G2IQQ5'),('6DXQ','G2IQQ5'),('6DXS','G2IQQ5')]:
+    f=root/'originals'/f'{pdb}-entity.json';cif=root/'originals'/f'{pdb}.cif';d=json.loads(f.read_text());nativep=prior/f'UniProt-{acc}.json';native=json.loads(nativep.read_text())
+    seq=d['entity_poly']['pdbx_seq_one_letter_code_can'];ref=native['sequence']['value'];txt=cif.read_text()
+    align=d['rcsb_polymer_entity_align'][0]['aligned_regions'][0]
+    start=align['ref_beg_seq_id']-1; length=align['length']; original=ref[start:start+length]
+    diffs=[{'native_position':i+start+1,'native':a,'sample':b} for i,(a,b) in enumerate(zip(original,seq[:length])) if a!=b]
+    atoms=loop_rows(txt,'_atom_site');observed={}
+    for x in atoms:
+        if x['_atom_site.group_PDB']!='ATOM' or x['_atom_site.label_entity_id']!='1':continue
+        if float(x['_atom_site.occupancy'])<=0:continue
+        observed.setdefault(x['_atom_site.auth_asym_id'],set()).add(int(x['_atom_site.auth_seq_id']))
+    rows.append({'pdb':pdb,'source':{'entity_url':'https://data.rcsb.org/rest/v1/core/polymer_entity/'+pdb+'/1','entity_sha256':sha(f),'cif_url':'https://files.rcsb.org/download/'+pdb+'.cif','cif_sha256':sha(cif)},'native_reference':{'accession':acc,'path':str(nativep),'sha256':sha(nativep),'taxon':native['organism'],'length':len(ref),'sequence_sha256':hashlib.sha256(ref.encode()).hexdigest()},'deposited_sample':{'length':len(seq),'sequence_sha256':hashlib.sha256(seq.encode()).hexdigest(),'aligned_native_start':start+1,'aligned_native_end':start+length,'substitutions':diffs,'C_terminal_extension':seq[length:],'source_taxonomy_and_expression':d.get('entity_src_gen'),'exact_native_sequence':seq==ref,'has_native_prefix':seq.startswith(ref)},'source_difference_annotations':loop_rows(txt,'_struct_ref_seq_dif'),'ordered_crystal_residues':{k:{'count':len(v),'auth_number_ranges':spans(v)} for k,v in observed.items()},'limits':['Deposited sample/entity sequence is distinct from ordered crystal residues.','PDB record alone does not establish expression tags or cleavage state of every kinetic assay in the linked paper.','Native residue numbering follows the quoted alignment; experimental-paper numbering may omit the leading methionine.']})
+(root/'pdb-construct-projection.json').write_text(json.dumps({'records':rows},indent=2)+'\n')
+print(json.dumps([{'pdb':r['pdb'],'deposited_sample':r['deposited_sample'],'ordered':r['ordered_crystal_residues']} for r in rows],indent=2))
