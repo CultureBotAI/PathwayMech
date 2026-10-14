@@ -1,0 +1,9 @@
+from acquire_identities import request
+from acquire import *
+import urllib.parse
+queries={x:'Corynebacterium glutamicum R[Organism] AND '+x+'[All Fields]' for x in ['cgR_0491','cgR_0492','cgR_0493','cgR_0494','cgR_0495','qsuR']}
+rows=[]
+for n,q in queries.items():
+ rows.append(request('NCBI-gene-search-'+n,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?'+urllib.parse.urlencode({'db':'gene','term':q,'retmode':'json','retmax':100})))
+(ROOT/'acquisition-gene-search.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows: print(r['name'],r.get('bytes',r.get('error')))

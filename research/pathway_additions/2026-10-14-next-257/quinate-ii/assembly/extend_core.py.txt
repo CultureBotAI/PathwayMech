@@ -1,0 +1,69 @@
+"""Retain the formal NAD(P) step and add its exact NAD-specific realization."""
+from pathlib import Path
+import hashlib
+import json
+import sqlite3
+
+B = Path(__file__).parent
+N = Path('/private/tmp/pathwaymech-next-257-native/originals')
+record = json.loads((B / 'core-record.json').read_text())
+audit = json.loads((B / 'chemical-identity-and-reaction-audit.json').read_text())
+row = next(r for r in audit['reactions'] if r['native_frame'] == 'RXN-20483')
+assert row['exact_whole_sides_match'] and row['rhea_balanced']
+rid = row['selected_identity_candidate']
+mapping = {r['native_id'].split(':', 1)[1]: r['selected_id'] for r in audit['concrete_mappings']}
+
+def label(name, identifier):
+    with sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/' + name + '.db?mode=ro', uri=True) as db:
+        return db.execute("select value from statements where subject=? and predicate='rdfs:label'", (identifier,)).fetchone()[0]
+
+def reference(identifier, title, url, path, version):
+    item = dict(id=identifier, title=title, url=url, source_version=version,
+                source_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    old = next((r for r in record['references'] if r['id'] == identifier), None)
+    if old is None:
+        record['references'].append(item)
+    else:
+        assert old == item
+
+def native(frame, directory=N):
+    identifier = 'MetaCyc:' + frame
+    reference(identifier, 'MetaCyc native object ' + frame,
+              'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:' + frame,
+              directory / ('META-' + frame + '.xml'), 'MetaCyc 27.0')
+    return identifier
+
+def ev(identifier, text, locator):
+    assert len(text) <= 400
+    return dict(reference_id=identifier, source_assertion=text, source_locator=locator)
+
+def edge(subject, predicate, obj, description, evidence):
+    record['mechanistic_edges'].append(dict(id='pending', subject=subject, predicate=predicate,
+                                           object=obj, description=description, evidence=evidence))
+
+record['description'] += (' The separately displayed NAD-specific reaction is a molecular realization '
+                          'of the first step, not an additional sequential fourth step.')
+for frame in ['NAD', 'NADH']:
+    identifier = mapping[frame]
+    record['participants'].append(dict(id=identifier, label=label('chebi', identifier), category='small_molecule'))
+    native(frame, B / 'originals')
+native('RXN-20483')
+reference(rid, 'Rhea equation ' + rid, 'https://www.rhea-db.org/rhea/' + rid.split(':')[1],
+          Path(audit['rhea_original']['path']), 'Rhea 142')
+record['reactions'].append(dict(id=rid, label=label('rhea', rid), category='molecular_activity', direction='left_to_right'))
+for side, predicate in [('left', 'consumes'), ('right', 'produces')]:
+    for compound in row['native_sides'][side]:
+        frame = compound['frame']
+        chemical = mapping[frame]
+        molecular = next(c for c in row['rhea_' + side] if c['id'] == chemical)
+        edge(chemical if predicate == 'consumes' else rid, predicate,
+             rid if predicate == 'consumes' else chemical,
+             'NAD-specific realization of the first oxidation step; distinct from the broad native NAD(P) class reaction.',
+             [ev('MetaCyc:RXN-20483', 'RXN-20483 ' + side + ' side contains ' + frame + '; its physiological direction is left to right.',
+                 '/ptools-xml/Reaction[@frameid="RXN-20483"]/' + side + '/Compound[@frameid="' + frame + '"]; /reaction-direction'),
+              ev(rid, rid + ' ' + side + ' side contains ' + chemical + ' with coefficient ' + str(molecular['coefficient']) + '.',
+                 '; '.join(molecular['locator']))])
+for i, item in enumerate(record['mechanistic_edges'], 1):
+    item['id'] = 'quinate-ii-' + str(i).zfill(3)
+(B / 'extended-core-record.json').write_text(json.dumps(record, indent=2) + '\n')
+print(json.dumps({'edges': len(record['mechanistic_edges']), 'reactions': len(record['reactions']), 'record': 'extended-core-record.json'}))

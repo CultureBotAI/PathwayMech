@@ -1,0 +1,528 @@
+# Integration resolution of quinate degradation II
+
+- Review: 20261014T193035Z-quinate-ii-integration-resolution
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T19:18:21Z
+- Finished UTC: 2026-10-14T19:30:35Z
+- Reviewer: codex /root/next257_integration (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+All four MetaCyc participant labels now exactly match issuing authority labels under the unchanged policy. Required full-corpus gates passed on the corrected record. Independent integration replay preserves baseline records, authority objects, original provenance and all graph payloads; the prior integration finding is resolved.
+
+## Scope And Provenance
+
+One-record integration resolution: exact correction of four labels, authority provenance, baseline and artifact preservation, SVG/KGX payload fidelity, and final gate input binding.
+
+Selection: Exact newly added maintained record MetaCyc:PWY-6416.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6416 | data/pathways/quinate-degradation-ii.yaml | maintained | quinate degradation II |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Independent final integration replay | passed | True | MetaCyc:PWY-6416 | All 183 retained author artifacts, 998 native slots, 60 SVG/KGX edges, 12 qualified endpoints and 51 local node contexts pass; baseline 253 records are exact. |
+| Independent authority replay | passed | True | MetaCyc:PWY-6416 | All original authority objects preserved and all selected new source terms independently reproduced from issuing bytes. |
+| Independent final root-gate receipt verification | passed | True | MetaCyc:PWY-6416 | Rehashed 1241 tested core inputs with no changed bytes, and verified each completed command log digest. |
+| just render-pages | passed | True | MetaCyc:PWY-6416 | Actual root execution receipt reused after independent input-byte and log-hash verification. |
+| just validate | passed | True | MetaCyc:PWY-6416 | Actual root execution receipt reused after independent input-byte and log-hash verification. |
+| just test | passed | True | MetaCyc:PWY-6416 | Actual root execution receipt reused after independent input-byte and log-hash verification. |
+| just lint | passed | True | MetaCyc:PWY-6416 | Actual root execution receipt reused after independent input-byte and log-hash verification. |
+| just vendored-check | passed | True | MetaCyc:PWY-6416 | Actual root execution receipt reused after independent input-byte and log-hash verification. |
+| git diff --check | passed | True | MetaCyc:PWY-6416 | Actual root execution receipt reused after independent input-byte and log-hash verification. |
+
+## Scientific And Domain Assessments
+
+### Four canonical MetaCyc participant labels
+
+nomenclature: supported. Targets: MetaCyc:PWY-6416.
+
+CPLX-7980, CPLX-7981, G-11737 and G-11738 now use the exact issuing labels while organism, assembly and strain context remains in the existing descriptions. The policy and authority terms were not relaxed.
+
+### Authority and retained source integrity
+
+provenance: supported. Targets: MetaCyc:PWY-6416.
+
+Every prior authority object and baseline record remains unchanged. All 34 new named identities are independently grounded, and 218 checked originals bind all 42 references.
+
+### Final rendered and exported graph
+
+graph: supported. Targets: MetaCyc:PWY-6416.
+
+All 60 maintained edges and all 12 qualified endpoints are preserved with full evidence and reference payloads; every one of the 51 named local nodes retains its source context. The changed QutB endpoint and qualified QsuB wording propagate correctly.
+
+### Final gate input correspondence
+
+consistency: supported. Targets: MetaCyc:PWY-6416.
+
+All required gates passed against the corrected record and unchanged identifier policy; every tested core input still matches the final execution manifest.
+
+## Findings
+
+### F1: Four MetaCyc participant labels now satisfy the unchanged identifier gate
+
+major / resolved / confirmed; issue key: quinate-ii-metacyc-participant-labels.
+
+Participants CPLX-7980, CPLX-7981, G-11737 and G-11738 use contextual names instead of the independently verified source labels 3-dehydroquinate dehydratase, quinate/shikimate dehydrogenase, qsuB and qsuC. No applicable contextual exemption exists for MetaCyc participants. The authoritative identities are correct; preserve biological context in edge descriptions and replace only the four labels.
+
+Disposition: The four labels exactly match the independent issuing labels. Full-corpus validation now passes under byte-identical identifier policy, and export replay preserves the labels and contextual mechanism descriptions.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| prior | reviews/structured/20261014T191459Z-quinate-ii-integration-initial/review.yaml | supports | Immutable initial integration review records F1 under stable issue key quinate-ii-metacyc-participant-labels. |
+| target | data/pathways/quinate-degradation-ii.yaml | supports | Reassessed corrected record, including all four canonical labels and the seven documented edge deltas. Node IDs and reference objects remain unchanged. |
+| policy | conf/identifier_policy.yaml | supports | Original MetaCyc canonical-or-synonym policy remains byte unchanged; no contextual exemption was broadened. |
+| authority | research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/authority-check.json | supports | Reparsed 28 new issuing originals and verified all 4,913 baseline terms plus exactly 34 planned additions, exact manifest prefix, 218 raw original hashes and all 42 references. |
+| integration | research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/integration-check.json | supports | Replayed 253 baseline YAML Git blobs, 183 retained artifact hashes, 998 native direct-slot hashes, all 60 SVG/KGX edges, 12 endpoint qualifiers and 51 local node contexts. |
+| gates | research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/gate-input-verification.json | supports | All six actual root commands completed with exit 0; independently rehashed every tested core input and checked exact log hashes, corrected target hash, and unchanged policy. |
+| remediation | research/pathway_additions/2026-10-14-next-257/quinate-ii/remediation/review-fixes.json | supports | Author remediation ledger binds the initial review, four canonical-label changes, seven bounded edge changes and unchanged node identities/reference objects. |
+
+## Limits And Additional Notes
+
+- This is a scoped provenance and integration review, not an independent reassessment of all literature or experimental interpretation; the scientific reviewer handles that scope.
+- Full raw downloads remain external and hash-bound; this review verified the 218 relevant local original hashes and preserved compact artifacts.
+- At review time artifacts were not yet committed. Exact committed-tree membership, including the intentionally force-added ignored scientific validation log, remains a separate finalization audit.
+- No new iModulonDB query was run because expression and biological evidence reassessment are outside this integration scope.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T193035Z-quinate-ii-integration-resolution
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Integration resolution of quinate degradation II
+started_at: '2026-10-14T19:18:21Z'
+finished_at: '2026-10-14T19:30:35Z'
+reviewer:
+  identity: codex /root/next257_integration
+  kind: agent
+  model: GPT-6
+  independence: independent
+  independence_basis: Separate reviewer; did not author the maintained record, authority
+    snapshots, chemistry audit, or source evidence. Wrote only independent audit artifacts
+    and this review.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: All four MetaCyc participant labels now exactly match issuing authority labels
+  under the unchanged policy. Required full-corpus gates passed on the corrected record.
+  Independent integration replay preserves baseline records, authority objects, original
+  provenance and all graph payloads; the prior integration finding is resolved.
+source:
+  git_revision: 11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37
+  state: working_tree
+  inputs:
+  - path: conf/identifier_policy.yaml
+    sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 9a57d9803cc2b7878111304c56d884e1cd7cb7589f99930cf2c7557d829bb599
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 6fa02c581830177cc8dcf0451a40212e430fa6b7ed802176df533f85d9c23985
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 5fe107f4bd42e63012d0c81befe6527d89fc33dfb2de389e8eb14cd01a69f5fd
+    role: context
+  - path: data/pathways/quinate-degradation-ii.yaml
+    sha256: 83445c4f5cedd104d29cd065771b384f0ea277ed74291e3569315a9d42b01d97
+    role: target
+  - path: pages/downloads/edges.tsv
+    sha256: 6cc4716deed58f5dcd3b320747778b402da438752b62e597dfa1ffdfc8ee3945
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 0e874e38709f497c5efc4f38a51fd47d0aa67de332ad92baa8731246f7f56cc1
+    role: context
+  - path: pages/records/MetaCyc_PWY-6416.html
+    sha256: 125564e890ce7bbac9e5e1f5da679c1f7e4575c88625b2cdd7f28682c46244c0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/authorities/artifact-manifest.json
+    sha256: ea699c43230dea38ad16a83cd93de799f858f689204a73cf661cabef7e80340d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/chemistry/chemical-identity-and-reaction-audit.json
+    sha256: 251c63229af0c2075ef098822e7464a7199cd9efdc59a32565ea9e060b9dc47a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/authority-check.json
+    sha256: 2c9e42615d71db1f2f1408c5ad6342a6dfe15bc6d02f7a3f772c9f3a90420161
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/gate-input-verification.json
+    sha256: 65196d5eb769e9df0d4527b40eb64f762fd198a4568aff45fd8d5de33ff98397
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/integration-check.json
+    sha256: 9cafa66da831ec7909960b00e7ba4799af88537bcabd446eb24ae0a32eb089e5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/native/native-fact-dispositions-compact.json
+    sha256: f6282c80968ecbf429d9abc6c552a2cc9afad9e9c538a8653e19287845ea2026
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/native/original-bindings.json
+    sha256: 3c04fb512f392bcf73fbb00d4be69970798dcc82bb414cd29fe047fb5b8073b6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/native/source-projection-compact.json
+    sha256: 00a90fdbe0f71f6bddf4b3a5d8413ae7f42c589dcf1e6952f56d858c69d1dc53
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/preflight/artifact-manifest.json
+    sha256: 9628df577a1f99a35e3f10b2d04c08f71d23ce1b44dbf74ac497984510254f66
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/primary/original-bindings.json
+    sha256: 90b87366a98f8e4eba20c4e1ad93805165b8c435f88e79a316fae16a5f9a514a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/remediation/review-fixes.json
+    sha256: f61bf901021921614e3e0bcad815eedc11f831f91bfb0520b6ec723e4c6ebd72
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/validation/receipts.json
+    sha256: d059f968381f3a89060555211502021e54b3172ae636f6c7859e64f4757e9e02
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-257/quinate-ii/validation/tested-core-input-hashes.json
+    sha256: 7e0d1cc99199dc1662cae4d00045d5fa2321e04424174cc0b001534955b4e8b6
+    role: context
+  - path: reviews/structured/20261014T191459Z-quinate-ii-integration-initial/review.yaml
+    sha256: 9234ee693b27bba4f4b7bba01c90e7913a99ff2c8307f5c6eec03a15968e0fe8
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 5962976b3a843dddec3b193bfb08f3052ac0846980445c3d223000c69e6590a5
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 45bbedd4459f21d4189e3eeb35504ff71ba664e975f4cdde7250a61e9ae3215b
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+scope:
+  description: 'One-record integration resolution: exact correction of four labels,
+    authority provenance, baseline and artifact preservation, SVG/KGX payload fidelity,
+    and final gate input binding.'
+  selection: Exact newly added maintained record MetaCyc:PWY-6416.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6416
+  exclusions:
+  - target: Primary scientific and experimental interpretation
+    reason: Independent scientific reviewer handles biology; this report checks integration
+      and provenance only.
+targets:
+- target_id: MetaCyc:PWY-6416
+  path: data/pathways/quinate-degradation-ii.yaml
+  label: quinate degradation II
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/quinate-degradation-ii.yaml
+    role: maintained mechanism record
+checks:
+- check_id: integration-replay
+  name: Independent final integration replay
+  status: passed
+  required: true
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-257-integration/final/check_integration.py
+  exit_code: 0
+  summary: All 183 retained author artifacts, 998 native slots, 60 SVG/KGX edges,
+    12 qualified endpoints and 51 local node contexts pass; baseline 253 records are
+    exact.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - integration
+- check_id: authority-replay
+  name: Independent authority replay
+  status: passed
+  required: true
+  command: PYTHONPATH=/private/tmp/pathwaymech-next-257-20261014/src:/private/tmp/pathwaymech-next-257-20261014
+    /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-257-integration/final/check_authorities.py
+  exit_code: 0
+  summary: All original authority objects preserved and all selected new source terms
+    independently reproduced from issuing bytes.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - authority
+- check_id: gate-input-binding
+  name: Independent final root-gate receipt verification
+  status: passed
+  required: true
+  command: /usr/local/bin/python3.11 /private/tmp/pathwaymech-next-257-integration/final/verify_gate_inputs.py
+  exit_code: 0
+  summary: Rehashed 1241 tested core inputs with no changed bytes, and verified each
+    completed command log digest.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+- check_id: gate-1
+  name: just render-pages
+  status: passed
+  required: true
+  command: just render-pages
+  exit_code: 0
+  summary: Actual root execution receipt reused after independent input-byte and log-hash
+    verification.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+  scope_note: Full corpus; deterministic gates are not a scientific verdict.
+- check_id: gate-2
+  name: just validate
+  status: passed
+  required: true
+  command: just validate
+  exit_code: 0
+  summary: Actual root execution receipt reused after independent input-byte and log-hash
+    verification.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+  scope_note: Full corpus; deterministic gates are not a scientific verdict.
+- check_id: gate-3
+  name: just test
+  status: passed
+  required: true
+  command: just test
+  exit_code: 0
+  summary: Actual root execution receipt reused after independent input-byte and log-hash
+    verification.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+  scope_note: Full corpus; deterministic gates are not a scientific verdict.
+- check_id: gate-4
+  name: just lint
+  status: passed
+  required: true
+  command: just lint
+  exit_code: 0
+  summary: Actual root execution receipt reused after independent input-byte and log-hash
+    verification.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+  scope_note: Full corpus; deterministic gates are not a scientific verdict.
+- check_id: gate-5
+  name: just vendored-check
+  status: passed
+  required: true
+  command: just vendored-check
+  exit_code: 0
+  summary: Actual root execution receipt reused after independent input-byte and log-hash
+    verification.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+  scope_note: Full corpus; deterministic gates are not a scientific verdict.
+- check_id: gate-6
+  name: git diff --check
+  status: passed
+  required: true
+  command: git diff --check
+  exit_code: 0
+  summary: Actual root execution receipt reused after independent input-byte and log-hash
+    verification.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+  scope_note: Full corpus; deterministic gates are not a scientific verdict.
+evidence:
+- evidence_id: prior
+  kind: prior_review
+  reference: reviews/structured/20261014T191459Z-quinate-ii-integration-initial/review.yaml
+  accessed_at: '2026-10-14T19:30:35Z'
+  support: supports
+  summary: Immutable initial integration review records F1 under stable issue key
+    quinate-ii-metacyc-participant-labels.
+  snapshot_sha256: 9234ee693b27bba4f4b7bba01c90e7913a99ff2c8307f5c6eec03a15968e0fe8
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/quinate-degradation-ii.yaml
+  accessed_at: '2026-10-14T19:30:35Z'
+  support: supports
+  summary: Reassessed corrected record, including all four canonical labels and the
+    seven documented edge deltas. Node IDs and reference objects remain unchanged.
+  snapshot_sha256: 83445c4f5cedd104d29cd065771b384f0ea277ed74291e3569315a9d42b01d97
+- evidence_id: policy
+  kind: authority
+  reference: conf/identifier_policy.yaml
+  accessed_at: '2026-10-14T19:30:35Z'
+  support: supports
+  summary: Original MetaCyc canonical-or-synonym policy remains byte unchanged; no
+    contextual exemption was broadened.
+  snapshot_sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+- evidence_id: authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/authority-check.json
+  accessed_at: '2026-10-14T19:30:35Z'
+  support: supports
+  summary: Reparsed 28 new issuing originals and verified all 4,913 baseline terms
+    plus exactly 34 planned additions, exact manifest prefix, 218 raw original hashes
+    and all 42 references.
+  snapshot_sha256: 2c9e42615d71db1f2f1408c5ad6342a6dfe15bc6d02f7a3f772c9f3a90420161
+- evidence_id: integration
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/integration-check.json
+  accessed_at: '2026-10-14T19:30:35Z'
+  support: supports
+  summary: Replayed 253 baseline YAML Git blobs, 183 retained artifact hashes, 998
+    native direct-slot hashes, all 60 SVG/KGX edges, 12 endpoint qualifiers and 51
+    local node contexts.
+  snapshot_sha256: 9cafa66da831ec7909960b00e7ba4799af88537bcabd446eb24ae0a32eb089e5
+- evidence_id: gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/integration/final/gate-input-verification.json
+  accessed_at: '2026-10-14T19:30:35Z'
+  support: supports
+  summary: All six actual root commands completed with exit 0; independently rehashed
+    every tested core input and checked exact log hashes, corrected target hash, and
+    unchanged policy.
+  snapshot_sha256: 65196d5eb769e9df0d4527b40eb64f762fd198a4568aff45fd8d5de33ff98397
+- evidence_id: remediation
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-257/quinate-ii/remediation/review-fixes.json
+  accessed_at: '2026-10-14T19:30:35Z'
+  support: supports
+  summary: Author remediation ledger binds the initial review, four canonical-label
+    changes, seven bounded edge changes and unchanged node identities/reference objects.
+  snapshot_sha256: f61bf901021921614e3e0bcad815eedc11f831f91bfb0520b6ec723e4c6ebd72
+assessments:
+- assessment_id: A1
+  area: nomenclature
+  topic: Four canonical MetaCyc participant labels
+  outcome: supported
+  summary: CPLX-7980, CPLX-7981, G-11737 and G-11738 now use the exact issuing labels
+    while organism, assembly and strain context remains in the existing descriptions.
+    The policy and authority terms were not relaxed.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - target
+  - authority
+  - policy
+  - gates
+  - remediation
+- assessment_id: A2
+  area: provenance
+  topic: Authority and retained source integrity
+  outcome: supported
+  summary: Every prior authority object and baseline record remains unchanged. All
+    34 new named identities are independently grounded, and 218 checked originals
+    bind all 42 references.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - authority
+  - integration
+- assessment_id: A3
+  area: graph
+  topic: Final rendered and exported graph
+  outcome: supported
+  summary: All 60 maintained edges and all 12 qualified endpoints are preserved with
+    full evidence and reference payloads; every one of the 51 named local nodes retains
+    its source context. The changed QutB endpoint and qualified QsuB wording propagate
+    correctly.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - integration
+  - remediation
+- assessment_id: A4
+  area: consistency
+  topic: Final gate input correspondence
+  outcome: supported
+  summary: All required gates passed against the corrected record and unchanged identifier
+    policy; every tested core input still matches the final execution manifest.
+  target_ids:
+  - MetaCyc:PWY-6416
+  evidence_ids:
+  - gates
+findings:
+- finding_id: F1
+  issue_key: quinate-ii-metacyc-participant-labels
+  category: nomenclature
+  severity: major
+  status: resolved
+  certainty: confirmed
+  title: Four MetaCyc participant labels now satisfy the unchanged identifier gate
+  description: Participants CPLX-7980, CPLX-7981, G-11737 and G-11738 use contextual
+    names instead of the independently verified source labels 3-dehydroquinate dehydratase,
+    quinate/shikimate dehydrogenase, qsuB and qsuC. No applicable contextual exemption
+    exists for MetaCyc participants. The authoritative identities are correct; preserve
+    biological context in edge descriptions and replace only the four labels.
+  target_ids:
+  - MetaCyc:PWY-6416
+  field_paths:
+  - participants[18].label
+  - participants[19].label
+  - participants[20].label
+  - participants[21].label
+  evidence_ids:
+  - prior
+  - target
+  - policy
+  - authority
+  - gates
+  - remediation
+  rule_id: identifier-policy-canonical-or-synonym
+  native_severity: major
+  normalization_reason: Required identifier validation fails, while pathway identity
+    and YAML structure remain valid.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/quinate-degradation-ii.yaml
+    role: maintained participant labels
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/547
+  disposition_reason: The four labels exactly match the independent issuing labels.
+    Full-corpus validation now passes under byte-identical identifier policy, and
+    export replay preserves the labels and contextual mechanism descriptions.
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261014T191459Z-quinate-ii-integration-initial
+    finding_id: F1
+actions: []
+limitations:
+- This is a scoped provenance and integration review, not an independent reassessment
+  of all literature or experimental interpretation; the scientific reviewer handles
+  that scope.
+- Full raw downloads remain external and hash-bound; this review verified the 218
+  relevant local original hashes and preserved compact artifacts.
+- At review time artifacts were not yet committed. Exact committed-tree membership,
+  including the intentionally force-added ignored scientific validation log, remains
+  a separate finalization audit.
+- No new iModulonDB query was run because expression and biological evidence reassessment
+  are outside this integration scope.
+tags:
+- integration
+- quinate-degradation-ii
+- resolution
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261014T191459Z-quinate-ii-integration-initial
+  relationship: Resolves F1 after exact maintained-label correction and final gate
+    checks.
+```

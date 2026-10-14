@@ -1,0 +1,72 @@
+from pathlib import Path
+import ast
+import datetime
+import hashlib
+import json
+
+B = Path(__file__).resolve().parent
+R = Path('/private/tmp/pathwaymech-next-257-20261014')
+D = R / 'research/pathway_additions/2026-10-14-next-257/quinate-ii/authorities'
+
+
+def bind(path):
+    data = path.read_bytes()
+    return {'path': str(path), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+
+
+promotion = json.loads((B / 'preservation-and-promotion.json').read_text())
+commands = json.loads((B / 'canonical-build-commands.json').read_text())
+assert promotion['final_authority_terms'] == 4947
+assert promotion['baseline_authority_terms'] == 4913
+assert promotion['manifest']['baseline_entries'] == 1013
+assert promotion['manifest']['final_entries'] == 1041
+for name, rel in [('sources', 'data/identifier_authorities/sources.json'), ('ontology', 'data/identifier_authorities/ontology.json')]:
+    assert bind(R / rel)['sha256'] == promotion['snapshots'][name]['after_sha256']
+assert bind(R / 'conf/identifier_sources.json')['sha256'] == promotion['manifest']['sha256']
+for path in [B / 'prepare_union.stderr.txt', B / 'promote.stderr.txt']:
+    assert path.read_text() == ''
+execution = {'prepared_utc': commands['created_utc'], 'preparation': {'command': ['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python', '-B', str(B / 'prepare_union.py')], 'environment': commands['environment'], 'exit_code': 0, 'stdout': dict(bind(B / 'prepare_union.stdout.txt'), contents=(B / 'prepare_union.stdout.txt').read_text()), 'stderr': dict(bind(B / 'prepare_union.stderr.txt'), contents='')}, 'promotion': {'command': ['/usr/local/bin/python3.11', str(B / 'promote.py')], 'exit_code': 0, 'stdout': bind(B / 'promote.stdout.txt'), 'stderr': dict(bind(B / 'promote.stderr.txt'), contents='')}, 'initial_environment_failure': 'attempt-missing-task-pythonpath/receipt.json', 'scope': 'Successful tool exit codes and preserved output bindings; initial pre-staging import failure remains explicit.'}
+(B / 'execution-receipts.json').write_text(json.dumps(execution, indent=2) + '\n')
+snapshot_bindings = {'baseline_commit': promotion['baseline_commit'], 'baseline_files': [bind(B / 'baseline' / name) for name in ['identifier_sources.json', 'rhea_identifier_updates.json', 'sources.json', 'ontology.json']], 'promoted_files': [bind(R / rel) for rel in ['conf/identifier_sources.json', 'data/identifier_authorities/sources.json', 'data/identifier_authorities/ontology.json']], 'baseline_record_bindings': bind(B / 'baseline-record-bindings.json'), 'selector': bind(B / 'records/planned-authority-selection.yaml'), 'source_originals_external': str(B / 'originals'), 'large_baseline_and_generated_union_json_not_duplicated_in_research': True}
+(B / 'snapshot-bindings.json').write_text(json.dumps(snapshot_bindings, indent=2) + '\n')
+readme = '''# Next257 authority union
+
+Both unchanged canonical builders completed successfully. The promoted union preserves all 4,913 baseline terms and all 837 baseline source-owner objects byte-equivalently as JSON objects, while adding exactly the 34 planned named identities. The final total is 4,947 terms. The source manifest preserves its complete 1,013-entry prefix and appends 28 independently acquired originals, ending at 1,041 entries. All 1,056 descriptors over 1,040 distinct cache paths were rehashed before promotion.
+
+The author-frozen assembled record supplies only the selection of 51 named identifiers. Independent issuing originals supply names and identity. An ID-only selector preserves every previous authority term; it supplies no labels or biological assertions. New ontology IDs are five taxa and RHEA:22365. Source additions are enumerated in `proposed-source-additions.json` and bound to original acquisitions in `new-source-original-bindings.json`. The selected pathway uses the established native HTML identity reader, and both native complexes retain typed XML identity. No source object was truncated, no builder was changed and no label-policy exception was added.
+
+The baseline is `11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37`. `prepare_baseline.py.txt` reconstructs its 253 exact Git records, original-cache links and 4,913-ID retention selector. `prepare_union.py.txt` reads the frozen assembled record, selected candidate originals and fungal-gene authority candidates. `canonical-build-commands.json` records the exact interpreter, working directory, PYTHONPATH, original paths and builder hashes. Run preparation with that task PYTHONPATH as well as running the recorded canonical commands. `run_builds.py.txt` launches the two independent builds in parallel; `promote.py.txt` verifies prior objects, exact planned new terms, original hashes and concurrent-change guards before replacing only the three authority/manifest files.
+
+The initial preparation invocation omitted the task PYTHONPATH, causing the reused environment to resolve an older installed package without `pathwaymech.biocyc_aceto`. It failed before selector/cache/manifest staging. The full failure receipt is preserved under `attempt-missing-task-pythonpath/`. The successful retry supplied the task src/root explicitly, with unchanged canonical builders and acceptance guards. `execution-receipts.json` records that sequence. Raw `.log` files stay external; complete UTF-8 contents and hashes are retained in the `.log.json` files.
+
+Fungal gene source acquisition, complete original identity verification and candidate records are retained. The earlier broad candidate preview is historical author support; `selected-identity-previews.json` records the exact 28 selected source-backed additions. The ANU32720.1 original establishes issuing identity; its separate primer/CDS evidence preserves experimental-construct limits and does not assert a deposited complete internal assay sequence.
+
+Baseline full snapshots, all raw original XML/JSON/HTML/SQL/RDF, the baseline record staging directory and generated full union copies stay external. `snapshot-bindings.json` links them to the maintained promoted files. `artifact-manifest.json` and `retention.json` bind compact retained bytes. This package supplies author reproduction evidence; independent review and repository gates are separate.
+'''
+(B / 'README.md').write_text(readme)
+names = ['README.md', 'execution-receipts.json', 'snapshot-bindings.json', 'baseline-record-bindings.json', 'baseline-original-cache-verification.json', 'retained-authority-identifiers.json', 'planned-identifiers.json', 'proposed-source-additions.json', 'new-source-original-bindings.json', 'selected-identity-previews.json', 'canonical-build-commands.json', 'source_builder-receipt.json', 'ontology_builder-receipt.json', 'source_builder.log.json', 'ontology_builder.log.json', 'preservation-and-promotion.json', 'final-original-bindings.json', 'planned-authority-labels.json', 'candidate-identity-preview.json', 'union-helper-readiness.json', 'acquisition-fungal-genes.json', 'fungal-gene-authority-candidates.json', 'fungal-gene-identity-audit.json', 'attempt-missing-task-pythonpath/receipt.json']
+helpers = ['prepare_baseline.py', 'prepare_union.py', 'run_builds.py', 'promote.py', 'preview_candidates.py', 'acquire_fungal_genes.py', 'verify_fungal_genes.py', 'retain.py']
+D.mkdir(parents=True, exist_ok=True)
+retained = []
+for name in names + helpers:
+    source = B / name
+    data = source.read_bytes()
+    if name.endswith('.py'):
+        ast.parse(data)
+    if name.endswith('.json'):
+        json.loads(data)
+    assert all(line == line.rstrip() for line in data.decode().splitlines()), name
+    target = D / (name + '.txt' if name.endswith('.py') else name)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists():
+        assert target.read_bytes() == data, str(target)
+    else:
+        target.write_bytes(data)
+    retained.append({'original': bind(source), 'retained': bind(target), 'byte_identical': target.read_bytes() == data})
+manifest = {'retained_artifact_count': len(retained), 'retained': retained, 'raw_originals_and_full_baseline_cache_external': True, 'promoted_authority_files': snapshot_bindings['promoted_files']}
+(B / 'artifact-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+(D / 'artifact-manifest.json').write_bytes((B / 'artifact-manifest.json').read_bytes())
+receipt = {'created_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'destination': str(D), 'retained_file_count_including_manifest_and_receipt': len(retained) + 2, 'all_retained_bytes_equal': True, 'artifact_manifest': bind(B / 'artifact-manifest.json')}
+(B / 'retention.json').write_text(json.dumps(receipt, indent=2) + '\n')
+(D / 'retention.json').write_bytes((B / 'retention.json').read_bytes())
+print(json.dumps(receipt))

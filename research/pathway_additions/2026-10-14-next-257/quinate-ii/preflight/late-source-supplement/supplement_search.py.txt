@@ -1,0 +1,47 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+
+B = Path(__file__).parent
+ROOTS = [Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'), Path('/private/tmp/pathwaymech-next-257-20261014')]
+patterns = json.loads((B / 'supplemental-patterns.json').read_text())
+pattern_path = B / 'supplemental-patterns.txt'
+assert pattern_path.read_text().splitlines() == list(patterns)
+
+
+def binding(path):
+    data = path.read_bytes()
+    return {'path': str(path), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+
+
+reports = []
+for index, root in enumerate(ROOTS):
+    cmd = ['rg', '--no-ignore', '--hidden', '--json', '-i', '-F', '-f', str(pattern_path), '.', '-g', '!.git', '-g', '!.git/**', '-g', '!.venv', '-g', '!.venv/**']
+    stats = {term: {'lines': 0, 'paths': set()} for term in patterns}
+    out, err = B / f'supplement-root-{index}-matches.jsonl', B / f'supplement-root-{index}-stderr.txt'
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    with out.open('w') as dest, err.open('w') as errors:
+        proc = subprocess.Popen(cmd, cwd=root, stdout=subprocess.PIPE, stderr=errors, text=True)
+        for line in proc.stdout:
+            item = json.loads(line)
+            if item['type'] != 'match':
+                continue
+            data = item['data']
+            text, path = data['lines'].get('text', '').lower(), data['path'].get('text', '')
+            hits = []
+            for term in patterns:
+                if term.lower() in text:
+                    stats[term]['lines'] += 1
+                    stats[term]['paths'].add(path)
+                    hits.append(term)
+            dest.write(json.dumps({'path': path, 'line_number': data['line_number'], 'patterns': hits}) + '\n')
+        code = proc.wait()
+    assert code in (0, 1), (code, err.read_text())
+    counts = B / f'supplement-root-{index}-complete-counts.json'
+    counts.write_text(json.dumps({'counts': {term: {'lines': row['lines'], 'paths': sorted(row['paths'])} for term, row in stats.items()}}, indent=2) + '\n')
+    reports.append({'root': str(root), 'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(), 'started_utc': started, 'command': cmd, 'exit_code': code, 'per_pattern_counts': {term: {'lines': row['lines'], 'files': len(row['paths'])} for term, row in stats.items()}, 'full_match_projection': binding(out), 'complete_counts': binding(counts), 'stderr': err.read_text()})
+result = {'patterns_per_root': len(patterns), 'pattern_source': binding(B / 'supplemental-patterns.json'), 'patterns_file': binding(pattern_path), 'source_bindings': binding(B / 'supplemental-source-bindings.json'), 'roots': reports, 'bounds': 'Same ignored/hidden-inclusive text-search bounds and exclusions as dedup-compact.json. Raw source accessions and construct strings are leads, not equivalent or current identity assertions.'}
+(B / 'supplemental-search.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'patterns_per_root': len(patterns), 'roots': len(reports)}))

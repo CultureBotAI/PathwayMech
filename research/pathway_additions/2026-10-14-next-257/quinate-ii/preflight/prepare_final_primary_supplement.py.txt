@@ -1,0 +1,32 @@
+from pathlib import Path
+import hashlib
+import json
+import shutil
+
+B = Path(__file__).parent
+S = B / 'final-primary-supplement'
+S.mkdir(exist_ok=True)
+prior = set()
+for path in [B / 'patterns.txt', B / 'supplemental-patterns.txt', B / 'late-source-supplement/supplemental-patterns.txt']:
+    prior.update(path.read_text().splitlines())
+rows = {
+    'PMID:32822353 primary final handoff and inspected NCBIProtein:ANU32720.1 issuing record': ['ANU32720.1', 'NCBIProtein:ANU32720.1', 'BBD29_02520', 'CP016335.1', 'GenBank:CP016335.1', 'pET22b-n-qsuB'],
+    'PMID:2943985 primary final handoff; mutant search aliases only': ['M158', 'M162', 'M141', 'M105', 'M105-R12-1.5', '74A', '10.1128/mcb.5.12.3593-3599.1985', 'DOI:10.1128/mcb.5.12.3593-3599.1985'],
+    'PMID:40853219 primary continuing A. niger source lead; not source exhaustion or automatic new record acceptance': ['40853219', 'PMID:40853219', '10.1093/g3journal/jkaf199', 'DOI:10.1093/g3journal/jkaf199'],
+}
+patterns = {}
+for source, values in rows.items():
+    for value in values:
+        if value not in prior:
+            patterns.setdefault(value, []).append(source)
+patterns = dict(sorted(patterns.items()))
+(S / 'supplemental-patterns.json').write_text(json.dumps(patterns, indent=2) + '\n')
+(S / 'supplemental-patterns.txt').write_text('\n'.join(patterns) + '\n')
+bindings = []
+sources = [Path('/private/tmp/pathwaymech-next-257-native/originals/NCBIProtein-ANU32720.1.xml'), Path('/private/tmp/pathwaymech-next-257-primary/originals/QsuB-2020-epmc.json'), Path('/private/tmp/pathwaymech-next-257-primary/originals/PMID-2943985-epmc.json')]
+for path in sources:
+    data = path.read_bytes()
+    bindings.append({'path': str(path), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data), 'scope': 'Identifier search provenance; assay interpretation belongs to primary/native author evidence packages.'})
+(S / 'supplemental-source-bindings.json').write_text(json.dumps(bindings, indent=2) + '\n')
+shutil.copyfile(B / 'supplement_search.py', S / 'supplement_search.py')
+print(json.dumps({'new_patterns': len(patterns), 'source_bindings': len(bindings)}))

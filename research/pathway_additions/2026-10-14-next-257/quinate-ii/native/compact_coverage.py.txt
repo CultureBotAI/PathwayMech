@@ -1,0 +1,20 @@
+from project import *
+facts=json.loads((ROOT/'native-fact-dispositions.json').read_text()); reasons={};rows=[]
+for x in facts:
+ reason=x['reason'];rk=next((k for k,v in reasons.items() if v==reason),None)
+ if rk is None:rk='reason-'+str(len(reasons)+1).zfill(3);reasons[rk]=reason
+ b=json.dumps(x['native_projection'],sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+ rows.append({'frameid':x['frameid'],'locator':x['locator'],'disposition':x['disposition'],'reason_key':rk,'projection_sha256':hashlib.sha256(b).hexdigest()})
+output={'format':'complete per-direct-slot ledger, no raw source payload','hash_spec':'SHA256 of UTF8 JSON(native_projection, sort_keys=True, separators=(comma,colon), ensure_ascii=False); source projection regenerates from full original XML using project.py slot function','facts':len(rows),'reason_definitions':reasons,'rows':rows}
+(ROOT/'native-fact-dispositions-compact.json').write_text(json.dumps(output,indent=2)+'\n')
+keep={'parent','comment','reaction-list','reaction-layout','reaction-ordering','pathway-link','species','taxonomic-range','reaction-direction','left','right','enzyme','reaction','component','component-of','gene','product','catalyzes','cofactors','regulated-by','regulator','regulated-entity','mode','physiologically-relevant','common-name','synonym','accession-1','evidence','locations'}
+mechanistic=[]
+for r in json.loads((ROOT/'source-projection.json').read_text()):
+ if r['kind']=='Compound':
+  retain={'common-name','synonym','chemical-formula','smiles','inchi','inchi-key','atom-charges','dblink','parent'}
+ else:retain=keep
+ slots={k:v for k,v in r.get('slots',{}).items() if k in retain}
+ if r['kind']=='Compound':slots.pop('synonym',None)
+ mechanistic.append({**{k:v for k,v in r.items() if k!='slots'},'slots':slots,'omitted_slots':[k for k in r.get('slots',{}) if k not in slots]})
+(ROOT/'source-projection-compact.json').write_text(json.dumps(mechanistic,indent=2)+'\n')
+print('compact ledgerbytes',(ROOT/'native-fact-dispositions-compact.json').stat().st_size,'projectionbytes',(ROOT/'source-projection-compact.json').stat().st_size)

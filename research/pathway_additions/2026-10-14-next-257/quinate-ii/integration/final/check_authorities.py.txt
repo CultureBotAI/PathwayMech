@@ -1,0 +1,73 @@
+from pathlib import Path
+import datetime, hashlib, json, subprocess, sys
+import yaml
+R=Path('/private/tmp/pathwaymech-next-257-20261014');B=Path(__file__).resolve().parent
+A=Path('/private/tmp/pathwaymech-next-257-authorities')
+D=R/'research/pathway_additions/2026-10-14-next-257/quinate-ii'
+BASE='11afa1984bbb0d41c34dc82361bd0f0e1c0b9f37'
+errors=[];checks={}
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def check(ok,msg):
+    if not ok:errors.append(msg)
+def git(*args):return subprocess.check_output(['git',*args],cwd=R)
+old_all={};new_all={};snapshots={}
+for name in ['sources','ontology']:
+    rel='data/identifier_authorities/'+name+'.json'
+    old=json.loads(git('show',BASE+':'+rel)); new=json.loads((R/rel).read_text())
+    for field in ['version','sources','terms']:
+        if field=='version':check(old[field]==new[field],name+' version')
+        else:
+            for ident,v in old[field].items():check(new[field].get(ident)==v,'baseline authority changed '+ident)
+    old_all.update(old['terms']);new_all.update(new['terms'])
+    check((R/rel).read_bytes()==(A/(name+'.union.json')).read_bytes(),'promoted authority differs from builder output '+name)
+    snapshots[rel]={'sha256':sha(R/rel),'baseline_terms':len(old['terms']),'final_terms':len(new['terms'])}
+rec=yaml.safe_load((R/'data/pathways/quinate-degradation-ii.yaml').read_text())
+named={rec['id']}|{n['id'] for f in ['participants','taxa','reactions'] for n in rec[f]}
+check(set(new_all)-set(old_all)==named-set(old_all),'unplanned added authority IDs')
+check(named<=set(new_all),'record ID absent from authority')
+manifest=json.loads((R/'conf/identifier_sources.json').read_text());old_manifest=json.loads(git('show',BASE+':conf/identifier_sources.json'))
+check(manifest[:len(old_manifest)]==old_manifest,'manifest prefix changed')
+check(manifest==json.loads((A/'identifier_sources.json').read_text()),'promoted manifest differs')
+for row in manifest[len(old_manifest):]:check(sha(A/'originals'/row['path'])==row['sha256'],'new issuing original hash '+row['key'])
+sys.path.insert(0,str(R/'scripts'))
+from build_source_identifier_snapshot import source_terms
+parsed=0
+for row in manifest[len(old_manifest):]:
+    terms=list(source_terms(row['kind'],A/'originals'/row['path'],url=row['url'],version=row['version']))
+    selected={i:v for i,v in new_all.items() if v['source']==row['key']}
+    for ident,term in selected.items():
+        hits=[v for v in terms if v[0]==ident]
+        check(len(hits)==1,'issuing parser unique identity '+ident)
+        if hits:
+            value={'label':hits[0][1],'synonyms':sorted(set(hits[0][2])-{hits[0][1]}),'source':row['key']}
+            if row['kind']=='metacyc-reaction-xml':value.update(label_kind='source_context',entity_type='reaction')
+            check(value==term,'issuing parse differs from authority term '+ident)
+            parsed+=1
+commands=json.loads((A/'canonical-build-commands.json').read_text())
+for name,digest in commands['builder_sha256'].items():
+    p=R/'scripts'/name;check(sha(p)==digest,'builder hash '+name)
+    check(p.read_bytes()==git('show',BASE+':scripts/'+name),'canonical builder changed '+name)
+for key in ['source_builder','ontology_builder']:
+    receipt=json.loads((A/(key+'-receipt.json')).read_text())
+    check(receipt['command']==commands[key],'builder command mismatch '+key)
+    check(receipt['exit_code']==0,'builder failure '+key)
+    check(sha(receipt['log_path'])==receipt['log_sha256'],'builder log hash '+key)
+checks['authority_union']={'baseline_terms':len(old_all),'final_terms':len(new_all),'added_terms':len(set(new_all)-set(old_all)),'new_source_terms_reparsed':parsed,'named_record_ids':len(named),'baseline_manifest_entries':len(old_manifest),'final_manifest_entries':len(manifest),'baseline_objects_exact':True,'only_planned_new_ids':True,'canonical_builders_unchanged':True,'snapshots':snapshots}
+originals=[]
+for rel in ['native/original-bindings.json','primary/original-bindings.json','chemistry/native-compound-acquisition.json']:
+    originals.extend(json.loads((D/rel).read_text()))
+originals.append(json.loads((D/'chemistry/rhea-original-projection.json').read_text())['original'])
+byhash={}
+for row in originals:
+    check(sha(row['path'])==row['sha256'],'original bytes changed '+row['path'])
+    byhash.setdefault(row['sha256'],[]).append(row['path'])
+refs=[]
+for ref in rec['references']:
+    digest=ref.get('source_sha256')
+    check(digest in byhash,'reference hash has no checked original '+ref['id'])
+    refs.append({'id':ref['id'],'sha256':digest,'originals':byhash.get(digest,[])})
+checks['reference_originals']={'originals_checked':len(originals),'references':len(refs),'all_digests_bound':True,'rows':refs}
+result={'status':'passed' if not errors else 'failed','finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline':BASE,'script_sha256':sha(Path(__file__)),'target_sha256':sha(R/'data/pathways/quinate-degradation-ii.yaml'),'checks':checks,'errors':errors}
+(B/'authority-check.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({k:v for k,v in result.items() if k!='checks'}));print(json.dumps({k:{a:b for a,b in v.items() if a!='rows'} for k,v in checks.items()},indent=2))
+sys.exit(bool(errors))

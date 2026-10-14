@@ -1,0 +1,13 @@
+import urllib.request,json,hashlib,datetime
+from pathlib import Path
+base=Path('/private/tmp/pathwaymech-next-257-adversarial');rows=[]
+for pmid in ['126226','143663']:
+ url=f'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:{pmid}%20AND%20SRC:MED&format=json&resultType=core'
+ now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ try:
+  with urllib.request.urlopen(url,timeout=30) as r: data=r.read();status=r.status
+  p=base/f'PMID-{pmid}-epmc.json';p.write_bytes(data)
+  rows.append({'pmid':pmid,'url':url,'acquired_at':now,'status':status,'file':p.name,'sha256':hashlib.sha256(data).hexdigest()})
+ except Exception as e: rows.append({'pmid':pmid,'url':url,'acquired_at':now,'error':str(e)})
+(base/'qa2-acquisition.json').write_text(json.dumps(rows,indent=2)+'\n')
+print(json.dumps(rows,indent=2))

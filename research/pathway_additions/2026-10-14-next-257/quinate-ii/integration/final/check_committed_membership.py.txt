@@ -1,0 +1,36 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess,sys
+import yaml
+R=Path('/private/tmp/pathwaymech-next-257-20261014');B=Path(__file__).resolve().parent
+expected=sys.argv[1]
+def git(*a):return subprocess.check_output(['git',*a],cwd=R)
+head=git('rev-parse','HEAD').decode().strip();assert head==expected
+entries={}
+for row in git('ls-tree','-r','-z',head).split(b'\0'):
+ if not row:continue
+ meta,path=row.split(b'\t',1);entries[path.decode()]=meta.decode().split()[2]
+def assert_committed(rel):
+ assert rel in entries,('missing committed path',rel)
+ data=(R/rel).read_bytes();blob=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+ assert blob==entries[rel],('working bytes differ from committed blob',rel)
+ return hashlib.sha256(data).hexdigest()
+prefix='research/pathway_additions/2026-10-14-next-257/quinate-ii'
+artifacts=[str(p.relative_to(R)) for p in (R/prefix).rglob('*') if p.is_file()]
+for rel in artifacts:assert_committed(rel)
+reviews=[]; final_count=0
+for p in (R/'reviews/structured').glob('*quinate-ii*/review.yaml'):
+ review=yaml.safe_load(p.read_text());rel=str(p.relative_to(R));assert_committed(rel);assert_committed(str(p.with_name('review.md').relative_to(R)))
+ target=next(i for i in review['source']['inputs'] if i['path']=='data/pathways/quinate-degradation-ii.yaml')
+ final=target['sha256']=='83445c4f5cedd104d29cd065771b384f0ea277ed74291e3569315a9d42b01d97'
+ if final:final_count+=1
+ changed=[]
+ for inp in review['source']['inputs']:
+  digest=assert_committed(inp['path'])
+  if digest!=inp['sha256']:changed.append(inp['path'])
+ if final:assert not changed,(review['review_id'],'final review inputs changed',changed)
+ reviews.append({'review_id':review['review_id'],'source_input_count':len(review['source']['inputs']),'all_inputs_committed':True,'final_corrected_record':final,'historical_initial_inputs_changed_by_remediation':changed})
+assert final_count>=2,'Need both independent successor reviews committed'
+special=prefix+'/independent-scientific/initial/just-validate.log'
+special_sha=assert_committed(special)
+result={'status':'passed','checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'commit':head,'artifact_files':len(artifacts),'enumeration':'Path.rglob includes hidden and ignored files; membership checked against exact Git tree blobs.','reviews':reviews,'explicit_ignored_log':{'path':special,'sha256':special_sha,'tracked_at_commit':True},'final_successor_reviews':final_count}
+(B/'committed-membership.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

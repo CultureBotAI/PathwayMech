@@ -1,0 +1,17 @@
+from pathlib import Path
+import os,subprocess,json,datetime,hashlib,time
+R=Path('/private/tmp/pathwaymech-next-257-20261014');B=Path(__file__).parent;env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1',UV_NO_SYNC='1',UV_CACHE_DIR='/private/tmp/pathwaymech-next-257-uv-cache',UV_PROJECT_ENVIRONMENT='/private/tmp/pathwaymech-next-195-20261011/.venv',PYTHONPATH=f'{R}/src:{R}')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+receipts=[]
+def run(cmd):
+ name='-'.join(cmd).replace('--','');log=B/(name+'.log');start=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic()
+ with log.open('w') as f:res=subprocess.run(cmd,cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT)
+ row={'command':cmd,'cwd':str(R),'started_utc':start,'elapsed_seconds':round(time.monotonic()-t,2),'exit_code':res.returncode,'log_path':str(log),'log_sha256':sha(log)};receipts.append(row);(B/'receipts.json').write_text(json.dumps(receipts,indent=2)+'\n');print(json.dumps(row),flush=True)
+ if res.returncode:print(log.read_text()[-10000:],flush=True);raise SystemExit(res.returncode)
+run(['just','render-pages'])
+paths=subprocess.check_output(['git','ls-files','-co','--exclude-standard','-z','--','src','tests','conf','data','history','pages','scripts','schema','pyproject.toml','uv.lock','justfile','docs/IDENTIFIERS.md'],cwd=R).split(b'\0')
+inputs={p.decode():sha(R/p.decode()) for p in paths if p and (R/p.decode()).is_file()};(B/'tested-core-input-hashes.json').write_text(json.dumps(inputs,indent=2)+'\n')
+(B/'environment.json').write_text(json.dumps({k:env[k] for k in ['PYTHONDONTWRITEBYTECODE','PYTHONNOUSERSITE','UV_NO_SYNC','UV_CACHE_DIR','UV_PROJECT_ENVIRONMENT','PYTHONPATH']},indent=2)+'\n')
+for cmd in [['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check']]:run(cmd)
+changed=[p for p,h in inputs.items() if sha(R/p)!=h];assert not changed,changed
+(B/'final-input-preservation.json').write_text(json.dumps({'tested_core_files':len(inputs),'changed_after_checks':changed,'final_record_sha256':sha(R/'data/pathways/quinate-degradation-ii.yaml')},indent=2)+'\n');print('All gates passed;',len(inputs),'tested core files unchanged',flush=True)

@@ -1,0 +1,45 @@
+from pathlib import Path
+import hashlib
+import json
+import re
+import subprocess
+
+B = Path(__file__).parent
+R = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+counts = json.loads((B / 'root-0-complete-counts.json').read_text())['counts']
+paths = sorted({path for row in counts.values() for path in row['paths']})
+result = subprocess.run(['git', 'check-ignore', '--stdin'], cwd=R, input='\n'.join(paths) + '\n', text=True, capture_output=True)
+assert result.returncode in (0, 1)
+rows = []
+for name in result.stdout.splitlines():
+    path = R / name
+    data = path.read_bytes()
+    text = data.decode()
+    patterns = [key for key, value in counts.items() if name in value['paths']]
+    details = {}
+    if name.endswith('subsystem_select.body'):
+        disposition = 'The source selector names Quinate degradation, Shikimate kinase containing cluster and the downstream protocatechuate branch. It does not supply subsystem roles or organism mechanism in this selector; Quinate degradation remains a reusable-source lead.'
+        details['exact_selector_labels'] = [value for value in ['Quinate degradation', 'Shikimate kinase containing cluster', 'Protocatechuate branch of beta-ketoadipate pathway'] if value in text]
+    elif name.endswith('module_step_form.tsv'):
+        matched = [(i, line) for i, line in enumerate(text.splitlines(), 1) if re.search('quinate|shikimate|R03084', line, re.I)]
+        disposition = 'Candidate substrate/reaction-name rows belong to KEGG M00022 chorismate biosynthesis or M00039 monolignol biosynthesis, neither the complete NAD(P)-dependent quinate-to-protocatechuate pathway.'
+        details = {'line_numbers': [i for i, line in matched], 'module_ids': sorted({line.split('\t')[2] for i, line in matched})}
+    elif '/dram/ingested-native.tsv' in name:
+        disposition = 'Adapter output repeats the pinned original DRAM rows; it is not a separate maintained pathway or independent biochemical evidence.'
+    elif name.endswith('/seed/pegs.json'):
+        disposition = 'Raw numeric Rhea 21099 matches the unrelated SEED genome identifier 1121099.3, not an exact reaction assertion.'
+        details['matched_genome_id'] = '1121099.3'
+    elif name.endswith('LaRosa2019.html'):
+        disposition = 'The quiC substring is the page navigation phrase Quick links. Other hits are generic genes/water words; not exact pathway identity.'
+    elif '/dbcan/ingested-native.tsv' in name:
+        disposition = 'Shared C. glutamicum taxon occurs in beta-glucoside and cellobiose PUL support rows. NCBITaxon:442 is a substring of taxon 44256 for Caldanaerobius polysaccharolyticus. Neither establishes the quinate II pathway.'
+        details['distinct_PUL_contexts'] = ['PUL0370', 'PUL0372', 'PUL0570', 'PUL0217', 'PUL0227', 'PUL0309']
+    elif '/pathbank/' in name:
+        disposition = 'Local PathBank:SMP0000983 / PW000967 is the glyoxylate-cycle canary. Hits are common water/proton identities, not candidate boundary membership.'
+    elif '.pytest_cache/' in name:
+        disposition = 'Generated pytest test-node names reference common water/cofactor identities; no pathway source or maintained record.'
+    else:
+        disposition = 'Generic Genes/water words in reusable-source software or metadata; no exact PWY-6416 identity or quinate II boundary.'
+    rows.append({'path': str(path), 'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data), 'patterns': patterns, 'disposition': disposition, 'details': details})
+(B / 'ignored-source-dispositions.json').write_text(json.dumps({'source_dispositions': rows, 'scope': 'All ignored matched file paths from the completed first main-root scan are classified; meaningful source substrate/reaction/identifier contexts were read. General words and incidental numeric substrings are not pathway membership. Compressed archives remain outside this text scan.'}, indent=2) + '\n')
+print(json.dumps({'ignored_paths': len(rows)}))

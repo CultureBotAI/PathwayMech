@@ -1,0 +1,37 @@
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import sys
+import xml.etree.ElementTree as E
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-257-20261014')
+sys.path.insert(0, str(R / 'scripts'))
+from build_source_identifier_snapshot import _ncbi_gene_record
+
+rows = []
+candidates = []
+for receipt in json.loads((B / 'acquisition-fungal-genes.json').read_text()):
+    path = Path(receipt['path'])
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == receipt['sha256']
+    term, taxon = _ncbi_gene_record(path, receipt['url'])
+    protein_path = Path('/private/tmp/pathwaymech-next-257-native/originals') / ('UniProt-' + receipt['uniprot_accession'] + '.json')
+    protein = json.loads(protein_path.read_text())
+    crossrefs = [item['id'] for item in protein.get('uniProtKBCrossReferences', []) if item['database'] == 'GeneID']
+    assert receipt['gene_id'] in crossrefs
+    assert taxon == str(protein['organism']['taxonId']), (taxon, protein['organism'])
+    entity = E.parse(path).getroot().find('Entrezgene')
+    track = entity.find('Entrezgene_track-info/Gene-track')
+    row = dict(identifier=term[0], label=term[1], synonyms=term[2], taxon=taxon,
+               native_status='omitted' if track.find('Gene-track_status') is None else track.find('Gene-track_status').get('value'),
+               original=receipt, uniprot=receipt['uniprot_accession'], uniprot_original=str(protein_path),
+               uniprot_sha256=hashlib.sha256(protein_path.read_bytes()).hexdigest(),
+               limits='Issuing identity, gene/product xref and taxon agreement only; historical assay mapping and expression require separate scientific evidence.')
+    rows.append(row)
+    candidates.append(dict(identifier=term[0], kind='ncbi-entrezgene-xml', path=str(path),
+                           url=receipt['url'], version='NCBI Gene original XML retrieved 2026-10-14; native status omitted',
+                           sha256=receipt['sha256'], retrieved_at=receipt['retrieved_at'], status='candidate'))
+(B / 'fungal-gene-identity-audit.json').write_text(json.dumps(dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), identities=rows), indent=2) + '\n')
+(B / 'fungal-gene-authority-candidates.json').write_text(json.dumps(candidates, indent=2) + '\n')
+print(json.dumps(dict(verified=len(rows), identities=[row['identifier'] for row in rows])))

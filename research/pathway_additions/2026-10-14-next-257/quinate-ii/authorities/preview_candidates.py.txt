@@ -1,0 +1,37 @@
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-257-20261014')
+N = Path('/private/tmp/pathwaymech-next-257-native')
+sys.path.insert(0, str(R / 'scripts'))
+from build_source_identifier_snapshot import source_terms
+
+candidate_sources = [N / 'authority-candidates.json', B / 'fungal-gene-authority-candidates.json']
+rows = []
+for source in candidate_sources:
+    for candidate in json.loads(source.read_text()):
+        if candidate['status'] == 'context_only':
+            continue
+        path = Path(candidate['path'])
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == candidate['sha256']
+        result = dict(identifier=candidate['identifier'], candidate_source=str(source),
+                      original=candidate, acceptance_scope='Issuing identity/name only; scientific selection remains pending.')
+        try:
+            terms = list(source_terms(candidate['kind'], path, url=candidate['url'], version=candidate['version']))
+            found = [row for row in terms if row[0] == candidate['identifier']]
+            assert len(found) == 1, terms
+            result.update(accepted=True, term=found[0])
+        except Exception as error:
+            result.update(accepted=False, error=repr(error))
+        rows.append(result)
+report = dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              builder_sha256=hashlib.sha256((R / 'scripts/build_source_identifier_snapshot.py').read_bytes()).hexdigest(),
+              source_candidates=[dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest()) for path in candidate_sources],
+              results=rows)
+(B / 'candidate-identity-preview.json').write_text(json.dumps(report, indent=2) + '\n')
+print(json.dumps(dict(accepted=sum(row['accepted'] for row in rows),
+                     failed=[dict(id=row['identifier'], error=row.get('error')) for row in rows if not row['accepted']]), indent=2))

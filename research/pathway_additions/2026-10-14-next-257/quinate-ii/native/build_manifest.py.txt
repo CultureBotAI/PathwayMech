@@ -1,0 +1,20 @@
+from acquire import *
+records={};errors=[]
+for p in sorted(ROOT.glob('acquisition-*.json')):
+ try:j=json.loads(p.read_text())
+ except Exception:continue
+ if isinstance(j,dict):j=[j]
+ if not isinstance(j,list):continue
+ for r in j:
+  if not isinstance(r,dict):continue
+  if 'error' in r:errors.append({'manifest':str(p),**r})
+  if r.get('path') and r.get('url') and r.get('sha256'):
+   f=Path(r['path']);assert f.exists();actual=hashlib.sha256(f.read_bytes()).hexdigest();assert actual==r['sha256'],(p,f)
+   rr=dict(r);rr['acquisition_manifest']=str(p);records[str(f)]=rr
+actual={str(p) for p in ORIG.iterdir() if p.is_file()};assert actual==set(records),(actual-set(records),set(records)-actual)
+(ROOT/'artifact-manifest.json').write_text(json.dumps({'artifacts':[records[k] for k in sorted(records)],'failed_acquisitions':errors,'raw_originals_external':True},indent=2)+'\n')
+(ROOT/'original-bindings.json').write_text(json.dumps([{'path':k,'sha256':records[k]['sha256'],'bytes':Path(k).stat().st_size} for k in sorted(records)],indent=2)+'\n')
+j=json.loads((ORIG/'RCSB-polymer_entity-2NLO-1.json').read_text());u=json.loads((ORIG/'UniProt-Q9X5C9.json').read_text());s=j['entity_poly']['pdbx_seq_one_letter_code_can'];q=u['sequence']['value'];assert s.endswith(q)
+proof={'pdb':'2NLO','uniprot':'Q9X5C9','native_length':len(q),'construct_length':len(s),'prefix':s[:-len(q)],'exact_native_sequence_after_prefix':s[-len(q):]==q,'source_taxon':j['entity_src_gen'][0]['pdbx_gene_src_ncbi_taxonomy_id'],'source_strain':j['entity_src_gen'][0]['gene_src_strain'],'source_gene':j['entity_src_gen'][0]['pdbx_gene_src_gene'],'vector':j['entity_src_gen'][0]['plasmid_name'],'host':j['entity_src_gen'][0]['pdbx_host_org_scientific_name'],'explicit_construct_name':j['rcsb_polymer_entity']['pdbx_mutation'],'scope':'Structural sample identity, not independent full-paper inspection or a proof that every kinetic preparation had identical tag cleavage state. Primary abstract/native enzyme assertion must retain their own source.'}
+(ROOT/'QsuD-construct-identity.json').write_text(json.dumps(proof,indent=2)+'\n')
+print(len(records),'originals',len(errors),'acquisitionerrorsretained')

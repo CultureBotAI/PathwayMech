@@ -1,0 +1,87 @@
+"""Apply the four independently assessed findings without rewriting author inputs."""
+from pathlib import Path
+import copy
+import datetime
+import hashlib
+import json
+import sys
+
+import yaml
+from pathwaymech.schema import validate_record
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-257-20261014')
+target = R / 'data/pathways/quinate-degradation-ii.yaml'
+initial_review = R / sys.argv[1]
+review = yaml.safe_load(initial_review.read_text())
+integration_review = R / sys.argv[2]
+integration = yaml.safe_load(integration_review.read_text())
+expected_keys = {'quinate-ii-qutb-nad-assay-scope', 'quinate-ii-qsub-deposition-absence',
+                 'quinate-ii-qsub-inhibition-panel', 'quinate-ii-qsud-nadp-specificity-evidence'}
+assert expected_keys == {f['issue_key'] for f in review['findings']}
+assert all(f['status'] == 'open' for f in review['findings'])
+assert len(integration['findings']) == 1
+assert integration['findings'][0]['status'] == 'open'
+before = target.read_bytes()
+initial = json.loads((B / 'assembled-record.json').read_text())
+record = yaml.safe_load(before)
+assert record == initial, 'Review fix expects the frozen author record'
+edges = {e['id']: e for e in record['mechanistic_edges']}
+qutb = edges['quinate-ii-031']
+assert qutb['object'] == 'MetaCyc:QUINATE-5-DEHYDROGENASE-RXN'
+qutb['object'] = 'RHEA:22365'
+qutb['description'] = ('The recombinant A. nidulans QutB preparation was assayed with NAD+ '
+                       '(primary Table 2), supporting this NAD-specific realization. The native '
+                       'ENZRXN-17384 assignment to the broader NAD(P) pathway member is retained '
+                       'as source context and does not establish NADP activity.')
+qutb['evidence'].append(dict(reference_id='PMID:8257437', quote='NAD+',
+                             source_locator='Table 2, quinate dehydrogenase fusion protein, NAD+ substrate row; superscript normalized'))
+count = 0
+for number in range(38, 43):
+    edge = edges[f'quinate-ii-{number:03d}']
+    qualifier = edge['endpoint_qualifiers'][0]
+    old = 'The complete internal assay-clone sequence was not independently deposited.'
+    new = 'No separately deposited complete assay-clone sequence was inspected.'
+    assert old in qualifier['description']
+    qualifier['description'] = qualifier['description'].replace(old, new)
+    count += 1
+inhibition = edges['quinate-ii-042']
+assert inhibition['evidence'][0]['source_locator'] == 'Results kinetic studies, Fig7A'
+inhibition['evidence'][0]['source_locator'] = 'Results kinetic analysis; Figure 7 and caption (full-length QsuB)'
+qsud = edges['quinate-ii-030']
+qsud['evidence'].append(dict(reference_id='MetaCyc:CPLX-7981',
+    source_assertion='CPLX-7981 reports that replacing NAD+ with NADP+ reduces turnover by more than 300-fold; this supports preference, not complete absence of NADP activity.',
+    source_locator='/ptools-xml/Protein[@frameid="CPLX-7981"]/comment'))
+authority = json.loads((R / 'data/identifier_authorities/sources.json').read_text())
+label_ids = {'MetaCyc:CPLX-7980', 'MetaCyc:CPLX-7981', 'MetaCyc:G-11737', 'MetaCyc:G-11738'}
+label_changes = []
+for node in record['participants']:
+    if node['id'] in label_ids:
+        original_label = node['label']
+        node['label'] = authority['terms'][node['id']]['label']
+        label_changes.append(dict(identifier=node['id'], before=original_label, after=node['label']))
+assert len(label_changes) == 4
+validate_record(record)
+assert [n['id'] for n in record['participants']] == [n['id'] for n in initial['participants']]
+assert record['reactions'] == initial['reactions']
+assert record['references'] == initial['references']
+assert len(record['mechanistic_edges']) == len(initial['mechanistic_edges']) == 60
+assert count == 5
+assert any(e['subject'] == 'MetaCyc:QUINATE-5-DEHYDROGENASE-RXN' and e['predicate'] == 'part_of'
+           for e in record['mechanistic_edges'])
+target.write_text(yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=95))
+changes = [dict(edge_id=e['id'], before=previous, after=e)
+           for previous, e in zip(initial['mechanistic_edges'], record['mechanistic_edges']) if previous != e]
+receipt = dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    initial_review_path=str(initial_review.relative_to(R)), review_id=review['review_id'],
+    initial_review_sha256=hashlib.sha256(initial_review.read_bytes()).hexdigest(),
+    before_sha256=hashlib.sha256(before).hexdigest(), after_sha256=hashlib.sha256(target.read_bytes()).hexdigest(),
+    integration_review_path=str(integration_review.relative_to(R)), integration_review_id=integration['review_id'],
+    integration_review_sha256=hashlib.sha256(integration_review.read_bytes()).hexdigest(),
+    issue_keys=sorted(expected_keys | {integration['findings'][0]['issue_key']}), github_issues=[545, 546, 547],
+    changed_edges=changes, label_changes=label_changes,
+    unchanged_node_identities_and_references=True, final_edge_count=60,
+    scope='Author application and shape checks; independent successor review is required for resolution.')
+(B / 'review-fixes.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'changed_edges': len(changes), 'qualified_qsub_endpoints': count,
+                  'after_sha256': receipt['after_sha256']}))

@@ -1,0 +1,15 @@
+from acquire import *
+import sys
+mode=sys.argv[1]
+if mode=='activities':
+ ids=[x.get('frameid') for p in ['QUINATE-5-DEHYDROGENASE-RXN','3-DEHYDROQUINATE-DEHYDRATASE-RXN','DHSHIKIMATE-DEHYDRO-RXN'] for x in frame(p).findall('./enzymatic-reaction/Enzymatic-Reaction')]
+elif mode=='proteins':
+ ids=[x.get('frameid') for p in ORIG.glob('META-ENZRXN*.xml') for x in frame(p.stem[5:]).findall('./enzyme/Protein')]
+ ids += [x.get('frameid') for x in frame('3-DEHYDROQUINATE-DEHYDRATASE-ENZRXN').findall('./enzyme/Protein')]
+elif mode=='components':
+ ids=[x.get('frameid') for p in ORIG.glob('META-*.xml') for tag in ('component','component-of','gene') for x in frame(p.stem[5:]).findall('./'+tag+'/*') if x.get('frameid')]
+elif mode=='chemicals':
+ ids=[x.get('frameid') for p in ['QUINATE-5-DEHYDROGENASE-RXN','3-DEHYDROQUINATE-DEHYDRATASE-RXN','DHSHIKIMATE-DEHYDRO-RXN'] for tag in ['left','right'] for x in frame(p).findall('./'+tag+'/Compound')]
+else:raise ValueError(mode)
+(ROOT/f'{mode}-seed-ids.json').write_text(json.dumps(sorted(set(ids)),indent=2)+'\n')
+batch(ids,mode)

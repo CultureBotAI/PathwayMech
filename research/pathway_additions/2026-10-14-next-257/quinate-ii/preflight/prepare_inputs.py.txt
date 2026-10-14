@@ -1,0 +1,55 @@
+from pathlib import Path
+import hashlib
+import json
+
+B = Path(__file__).parent
+NATIVE = Path('/private/tmp/pathwaymech-next-257-native')
+PRIMARY = Path('/private/tmp/pathwaymech-next-257-primary')
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+inputs = {}
+for owner in sorted(NATIVE.glob('acquisition*.json')):
+    for row in json.loads(owner.read_text()):
+        path = Path(row.get('path', ''))
+        if row.get('status') != 200 or path.suffix != '.xml':
+            continue
+        data = path.read_bytes()
+        assert sha(data) == row['sha256'], str(path)
+        inputs[str(path)] = {'path': str(path), 'sha256': row['sha256'], 'bytes': len(data), 'binding_owner': str(owner), 'binding_owner_sha256': sha(owner.read_bytes()), 'url': row['url']}
+for row in json.loads((B / 'verified-reused-boundaries.json').read_text()):
+    if not row['path'].endswith('.xml') or row['path'].endswith('META-PWY-6416.xml'):
+        continue
+    path = Path(row['path'])
+    data = path.read_bytes()
+    assert sha(data) == row['sha256'], str(path)
+    inputs[str(path)] = {'path': str(path), 'sha256': row['sha256'], 'bytes': len(data), 'binding_owner': str(B / 'verified-reused-boundaries.json'), 'binding_owner_sha256': sha((B / 'verified-reused-boundaries.json').read_bytes()), 'url': row['url']}
+(B / 'search-inputs.json').write_text(json.dumps(sorted(inputs.values(), key=lambda row: row['path']), indent=2) + '\n')
+
+extra = []
+primary_inputs = []
+for owner in sorted(PRIMARY.glob('acquisition*.json')):
+    for row in json.loads(owner.read_text()):
+        path = Path(row.get('file', ''))
+        if row.get('status') != 200 or not path.name.endswith('-epmc.json'):
+            continue
+        data = path.read_bytes()
+        assert sha(data) == row['sha256'], str(path)
+        primary_inputs.append({'path': str(path), 'sha256': row['sha256'], 'bytes': len(data), 'binding_owner': str(owner), 'binding_owner_sha256': sha(owner.read_bytes()), 'url': row['url']})
+        result = json.loads(data)['resultList']['result']
+        assert len(result) == 1
+        result = result[0]
+        for key, prefix in [('pmid', 'PMID'), ('doi', 'DOI'), ('pmcid', None)]:
+            if result.get(key):
+                for value in [result[key]] + ([prefix + ':' + result[key]] if prefix else []):
+                    extra.append({'pattern': value, 'source': str(path) + '/$.resultList.result[0].' + key})
+for value in ['qsuD', 'qsuC', 'qsuB', 'qsuA', 'qsuR', 'cgR_0491', 'cgR_0492', 'cgR_0493', 'cgR_0494', 'cgR_0495']:
+    extra.append({'pattern': value, 'source': 'PMID:19376919 Figure 3 and primary reviewer message; alias search lead, not assertion of strain identity equivalence'})
+for value in ['qutB', 'qa-3', 'qutC', 'qa-4', 'qutE', 'qa-2', 'qutD', 'qa-y']:
+    extra.append({'pattern': value, 'source': 'Fungal gene aliases identified in primary review; search leads, not assertion of cross-species equivalence'})
+(B / 'additional-patterns.json').write_text(json.dumps(extra, indent=2) + '\n')
+(B / 'primary-search-inputs.json').write_text(json.dumps(primary_inputs, indent=2) + '\n')
+print(json.dumps({'native_boundary_sources': len(inputs), 'primary_sources': len(primary_inputs), 'extra_patterns': len(extra)}))

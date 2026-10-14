@@ -1,0 +1,48 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib,sqlite3,xml.etree.ElementTree as E
+import yaml
+O=Path('/private/tmp/pathwaymech-next-257-adversarial');N=Path('/private/tmp/pathwaymech-next-257-native/originals')
+T=Path('/private/tmp/pathwaymech-next-257-20261014/data/pathways/quinate-degradation-ii.yaml');x=yaml.safe_load(T.read_text())
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+rows=[]
+for p in x['participants']:
+ ident=p['id']
+ if ident.startswith('UniProtKB:'):
+  a=ident.split(':')[1];f=N/f'UniProt-{a}.json';z=json.load(open(f));assert z['primaryAccession']==a
+  rows.append({'id':ident,'source':str(f),'sha256':sha(f),'organism':z['organism']['scientificName'],'taxon_id':z['organism']['taxonId'],'genes':z.get('genes'),'entry_type':z['entryType']})
+ elif ident.startswith('NCBIProtein:'):
+  a=ident.split(':')[1];f=N/f'NCBIProtein-{a}.xml';z=E.parse(f).getroot().find('GBSeq');assert z.findtext('GBSeq_accession-version')==a
+  q={};
+  for v in z.findall('.//GBQualifier'):
+   q.setdefault(v.findtext('GBQualifier_name'),[]).append(v.findtext('GBQualifier_value'))
+  rows.append({'id':ident,'source':str(f),'sha256':sha(f),'definition':z.findtext('GBSeq_definition'),'organism':z.findtext('GBSeq_organism'),'qualifiers':q})
+ elif ident.startswith('Entrez:'):
+  a=ident.split(':')[1];f=Path('/private/tmp/pathwaymech-next-257-authorities/new-originals')/f'NCBIGene-{a}.xml';z=E.parse(f).getroot();assert z.findtext('.//Gene-track_geneid')==a
+  rows.append({'id':ident,'source':str(f),'sha256':sha(f),'gene_locus':z.findtext('.//Gene-ref_locus'),'gene_locus_tag':z.findtext('.//Gene-ref_locus-tag'),'organism':z.findtext('.//Org-ref_taxname')})
+# Exact structural sample sequence comparison, performed independently.
+u=json.load(open(N/'UniProt-Q9X5C9.json'))['sequence']['value']
+p=json.load(open(N/'RCSB-polymer_entity-2NLO-1.json'));seq=p['entity_poly']['pdbx_seq_one_letter_code_can'].replace('\n','')
+assert seq.endswith(u);prefix=seq[:-len(u)];assert prefix=='MSGHHHHHHGSEQLYFQGA'
+# Assay source gene boundaries independently replayed against issuing CDS and supplementary primers.
+a=E.parse(N/'NCBIProtein-ANU32720.1.xml').getroot().find('GBSeq');protein=a.findtext('GBSeq_sequence').upper()
+fasta=(N/'CP016335.1-540163-542019.fasta').read_text();cds=''.join(fasta.splitlines()[1:]).upper()
+# Standard bacterial translation table for this complete CDS.
+bases='TCAG';aa='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+code={a+b+c:aa[i*16+j*4+k] for i,a in enumerate(bases) for j,b in enumerate(bases) for k,c in enumerate(bases)}
+translation=''.join(code[cds[i:i+3]] for i in range(0,len(cds),3));assert translation.rstrip('*')==protein
+primers={'P3':'TTTTGTTTAACTTTAAGAAGGAGATATACATATGCGTACATCCATTGCCACTGT','P4':'GTGGTGGTGGTGGTGGTGGTTTGGGATTCCCCGCTCG','P5':'GTGGTGGTGGTGGTGGTGGAAATCAACACCCTCAGGTTCC'}
+rc=lambda s:s.translate(str.maketrans('ACGT','TGCA'))[::-1]
+checks=[]
+for name,primer in primers.items():
+ for length in range(len(primer),0,-1):
+  end=primer[-length:];native=end if name=='P3' else rc(end)
+  if native in cds:break
+ pos=cds.index(native);checks.append({'primer':name,'match_nt':length,'start_1based':pos+1,'end_1based':pos+length,'overhang':primer[:-length]})
+assert checks[0]['start_1based']==1 and checks[1]['end_1based']==1854 and checks[2]['end_1based']==891
+assert protein[296]=='F' and len(protein)==618
+for check in checks[1:]:
+ tail=rc(check['overhang']);assert ''.join(code[tail[i:i+3]] for i in range(0,len(tail),3))=='HHHHHH'
+result={'observed_at':datetime.now(timezone.utc).isoformat(),'target_sha256':sha(T),'identities':rows,'QsuD_construct':{'native_length':len(u),'construct_length':len(seq),'prefix':prefix,'exact_base_sequence_after_prefix':True},'QsuB_source_gene':{'id':'NCBIProtein:ANU32720.1','cds_translation_matches':True,'protein_length':len(protein),'primers':checks,'interpretation':'Exact named source strain and gene boundaries, C-terminal His6; no independently deposited complete assay-clone sequence inspected. Full internal assayed clone identity is not proven by these boundaries.'}}
+(O/'independent-identities.json').write_text(json.dumps(result,indent=2)+'\n')
+print('Passed exact identity checks for',len(rows),'gene/protein nodes, QsuD structural sequence, and QsuB issuing CDS/primer boundaries')

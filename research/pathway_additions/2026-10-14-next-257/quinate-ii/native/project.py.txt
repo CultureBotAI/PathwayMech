@@ -1,0 +1,28 @@
+from acquire import *
+import html,re,collections
+def text(e):
+    return html.unescape(re.sub('<[^>]*>','',e or '')).strip()
+def slot(e):
+    d={}
+    if e.text and e.text.strip():d['text']=text(e.text)
+    if e.attrib:d['attributes']=e.attrib
+    for c in e:
+        if c.get('frameid'):
+            v={'frameid':c.get('frameid'),'kind':c.tag}
+            if c.find('common-name') is not None:v['label']=text(c.findtext('common-name'))
+            if c.tag=='Publication':
+                v.update({n:text(c.findtext(n)) for n in ['pubmed-id','title','year'] if c.findtext(n)})
+            if c.tag=='Evidence-Code':v['code']=c.get('frameid')
+        else:v=slot(c)
+        d.setdefault(c.tag,[]).append(v)
+    return d
+def project(fid):
+    e=frame(fid);d={'frameid':fid,'kind':e.tag,'file':str(ORIG/f'META-{fid}.xml'),'sha256':hashlib.sha256((ORIG/f'META-{fid}.xml').read_bytes()).hexdigest()}
+    for c in e:
+        if c.tag in {'credits','history','citation','creation-date'}:continue
+        d.setdefault('slots',{}).setdefault(c.tag,[]).append(slot(c))
+    return d
+if __name__=='__main__':
+    rows=[project(p.stem[5:]) for p in sorted(ORIG.glob('META-*.xml'))]
+    (ROOT/'source-projection.json').write_text(json.dumps(rows,indent=2)+'\n')
+    print(len(rows))

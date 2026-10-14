@@ -1,0 +1,6 @@
+from acquire_identities import request
+from acquire import *
+ids=['A4QB65','P11635','P05195','P11636','P11637','P11638','P11634','Q00784','P05147','P10563','P15325','P25416','Q00774','Q00781']
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex: rows=list(ex.map(lambda a:request('UniProt-'+a,'https://rest.uniprot.org/uniprotkb/'+a+'.json'),ids))
+(ROOT/'acquisition-context-identities.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows:print(r['name'],r.get('bytes',r.get('error')))
