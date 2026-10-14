@@ -1,0 +1,47 @@
+import concurrent.futures
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import sys
+import urllib.error
+import urllib.request
+import urllib.parse
+from xml.etree import ElementTree as ET
+
+BASE = Path(__file__).resolve().parent
+ORIGINALS = BASE/'originals'
+ORIGINALS.mkdir(parents=True, exist_ok=True)
+
+def acquire(frame):
+    url = 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=' + urllib.parse.quote('META:' + frame,safe='')
+    record = {'frame':frame, 'url':url,
+              'retrieved_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    try:
+        req=urllib.request.Request(url,headers={'User-Agent':'PathwayMech evidence curation'})
+        with urllib.request.urlopen(req,timeout=45) as response:
+            data=response.read()
+            record.update(status=response.status,final_url=response.url,
+                          headers={k:v for k,v in response.headers.items()
+                                   if k.lower() in {'content-type','last-modified','etag'}})
+        digest=hashlib.sha256(data).hexdigest()
+        path=ORIGINALS/('META-'+frame+'.xml')
+        if path.exists() and path.read_bytes()!=data:
+            path=ORIGINALS/(path.stem+'-'+digest[:12]+'.xml')
+        path.write_bytes(data)
+        root=ET.fromstring(data)
+        exact=[n for n in root if n.attrib.get('frameid')==frame]
+        record.update(path=str(path),bytes=len(data),sha256=digest,
+                      root_tag=root.tag,exact_frame_count=len(exact),
+                      object_types=[n.tag for n in exact])
+        assert root.tag=='ptools-xml' and len(exact)==1
+    except Exception as error:
+        record['error']=str(error)
+    return record
+
+if __name__=='__main__':
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        records=list(pool.map(acquire,sys.argv[1:]))
+    stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+    (BASE/('acquisition-'+stamp+'.json')).write_text(json.dumps(records,indent=2)+'\n')
+    for record in records:print(json.dumps(record))

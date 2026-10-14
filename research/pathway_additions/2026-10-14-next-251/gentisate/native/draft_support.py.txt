@@ -1,0 +1,33 @@
+import json,hashlib
+from pathlib import Path
+B=Path(__file__).parent
+reactions=['RHEA:18237','RHEA:17393','RHEA:26168']
+# Rhea master IDs here are issuing UniProt xrefs; root independently closes direction and chemistry.
+refs=[]
+def ref(i,name,p,url,version):
+ r={'id':i,'title':name,'url':url,'source_version':version,'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest()};refs.append(r);return i
+U={}
+for acc in ['O86041','O86043','O86042','Q8NLC1']:
+ p=B/'originals'/('UniProt-'+acc+'.json');d=json.loads(p.read_text());U[acc]=d
+ ref('UniProtKB:'+acc,'UniProtKB '+acc,p,'https://rest.uniprot.org/uniprotkb/'+acc+'.json','UniProtKB entry version '+str(d['entryAudit']['entryVersion'])+'; sequence version '+str(d['entryAudit']['sequenceVersion'])+'; retrieved 2026-10-14')
+for frame in ['PWY-6223','ENZRXN-16398','ENZRXN-16399','ENZRXN-16400','G18NG-12642-MONOMER','ENZRXN-16404']:
+ ref('MetaCyc:'+frame,'MetaCyc '+frame,B/'originals'/('META-'+frame+'.xml'),'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame,'MetaCyc 27.0; Pathway Tools XML 27.0; retrieved 2026-10-14')
+parts=[]
+for acc in ['O86041','O86043','O86042']:
+ parts.append({'id':'UniProtKB:'+acc,'label':U[acc]['proteinDescription']['recommendedName']['fullName']['value'],'category':'protein'})
+parts.append({'id':'MetaCyc:G18NG-12642-MONOMER','label':'mycothiol-dependent maleylpyruvate isomerase','category':'protein'})
+edges=[]
+def edge(i,s,p,o,desc,r,assertion,loc):
+ assert len(assertion)<=400
+ edges.append({'id':i,'subject':s,'predicate':p,'object':o,'description':desc,'evidence':[{'reference_id':r,'source_assertion':assertion,'source_locator':loc}]})
+for acc,r,frame,gene in [('O86041',reactions[0],'ENZRXN-16398','NagI'),('O86043',reactions[1],'ENZRXN-16399','NagL'),('O86042',reactions[2],'ENZRXN-16400','NagK')]:
+ edge('u2-'+gene.lower()+'-catalysis','UniProtKB:'+acc,'catalyzes',r,'Ralstonia sp. U2 '+gene+' catalysis is supported by the original study; the native ENZRXN records unpurified heterologous-host assays, not a claim that all assayed preparations were purified.','UniProtKB:'+acc,'The reviewed entry assigns '+r+' catalytic activity to '+gene+' with ECO:0000269 citing PMID:11133965. Its cited genomic sequence is from strain U2.','comments[commentType="CATALYTIC ACTIVITY"].reaction; references[citation.id="11133965"].referenceComments[type="STRAIN"]')
+edge('u2-nagl-gsh','UniProtKB:O86043','has_cofactor','CHEBI:57925','Glutathione is a catalytic cofactor of the U2 isomerase, not a stoichiometric reactant in the net isomerization.','UniProtKB:O86043','The COFACTOR comment identifies glutathione (CHEBI:57925) with ECO:0000269 citing PMID:18824004.','comments[commentType="COFACTOR"].cofactors[cofactorCrossReference.id="CHEBI:57925"]')
+for chem,label in [('CHEBI:18420','Mg(2+)'),('CHEBI:29035','Mn(2+)')]:
+ edge('u2-nagk-'+('mg' if chem.endswith('18420') else 'mn'),'UniProtKB:O86042','has_cofactor',chem,'The reviewed UniProt entry annotates this metal by similarity (ECO:0000250). It does not establish direct U2 cofactor measurements or simultaneous occupancy with the alternative metal.','UniProtKB:O86042','The COFACTOR comment lists '+label+' ('+chem+') with ECO:0000250 (by similarity), without a direct experimental citation.','comments[commentType="COFACTOR"].cofactors[cofactorCrossReference.id="'+chem+'"]')
+edge('cgl-nagl-catalysis','MetaCyc:G18NG-12642-MONOMER','catalyzes',reactions[1],'This separate Corynebacterium glutamicum ATCC 13032 isomerase example is not the U2 NagL enzyme. Native source reports purified heterologous-host assays; primary construct details require their own qualifier if a tagged preparation is asserted.','MetaCyc:ENZRXN-16404','ENZRXN-16404 links enzyme G18NG-12642-MONOMER to MALEYLPYRUVATE-ISOMERASE-RXN; its evidence entries cite PMID:16000747 and PMID:16481315 with EV-EXP-IDA-PURIFIED-PROTEIN-HH.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-16404"]/enzyme; /reaction; /evidence')
+edge('cgl-nagl-mycothiol','MetaCyc:G18NG-12642-MONOMER','has_cofactor','CHEBI:16768','Mycothiol dependence belongs to the C. glutamicum enzyme; it must not be assigned to U2 NagL or represented as generic glutathione independence for every gentisate isomerase.','MetaCyc:ENZRXN-16404','ENZRXN-16404 has cofactor CPD1G-2 (mycothiol) with citation PMID:16481315. The enzyme is G18NG-12642-MONOMER.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-16404"]/cofactor; /enzyme')
+# This is an external author-support proposal, not a complete PathwayRecord or independent review.
+out={'status':'external author-support proposal; root selects final claims and independently closes chemistry, primary construct qualification, authority labels and source contexts','participants':parts,'mechanistic_edges':edges,'references':refs,'non_edge_annotations':[{'protein':'UniProtKB:O86043','assembly':'Homodimer','source':'UniProtKB:O86043 comments[commentType="SUBUNIT"]','evidence':'ECO:0000269 PMID:18824004','disposition':'Retain in description if supported by primary review. No registered exact assembly identifier was established in this bounded native acquisition, so do not invent a complex CURIE or self-membership edge.'},{'protein':'MetaCyc:G18NG-12642-MONOMER','native_apparent_mass_kDa':34,'uniprot_sequence_mass_Da':26449,'length':241,'disposition':'Preserve measurement versus sequence-calculation distinction. UniProt Q8NLC1 is unreviewed and called Uncharacterized protein; its exact Cgl3021 identity, PDB2NSF/2NSG mapping and native source support do not authorize changing the issuing canonical label.'}]}
+(B/'author-support-proposal.json').write_text(json.dumps(out,indent=2)+'\n')
+print('proposal',len(parts),'protein participants',len(edges),'edges',len(refs),'refs')
