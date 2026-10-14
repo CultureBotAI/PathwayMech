@@ -1,0 +1,39 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as ET,re
+B = Path(__file__).parent
+C = Path('/private/tmp/pathwaymech-next-256-chemistry')
+audit = C / 'chemical-identity-and-reaction-audit.json'
+x = json.loads(audit.read_text())
+rows = {}
+def add(value,source):
+    value = value.strip()
+    if value and '\n' not in value:
+        rows.setdefault(value,set()).add(source)
+origin = str(audit) + ' sha256=' + hashlib.sha256(audit.read_bytes()).hexdigest()
+for row in x['concrete_mappings']:
+    add(row['native_id'],origin+' concrete_mappings.native_id')
+    add(row['selected_id'],origin+' concrete_mappings.selected_id')
+for row in x['class_comparisons']:
+    add(row['native_id'],origin+' class_comparisons.native_id')
+    add(row['comparison_id'],origin+' class_comparisons.comparison_id; comparison only')
+add(x['broad_quinone_class']['id'],origin+' broad_quinone_class.id')
+for row in x['reactions']:
+    add('MetaCyc:'+row['native_frame'],origin+' reactions.native_frame')
+    for accession in row['rhea_family'].values():
+        add('RHEA:'+accession,origin+' reactions.rhea_family; orientation is not asserted by searching')
+inputs=[]
+for p in sorted((C/'originals-meta27').glob('*.xml')):
+    data=p.read_bytes();inputs.append({'path':str(p),'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)})
+    obj=ET.fromstring(data).find('Compound')
+    for tag in ['common-name','synonym']:
+        for element in obj.findall(tag):
+            value=re.sub('<[^>]*>','',''.join(element.itertext()))
+            if len(value)>=5:add(value,p.name+'/'+tag)
+for term in ['KEGG:R02415','R02415','MetaNetX:MNXR123880','MNXR123880']:
+    add(term,'Native SHIKIMATE-PQQ-RXN direct dblink (also in first pass)')
+flat=[{'pattern':k,'source':'; '.join(sorted(v))} for k,v in sorted(rows.items())]
+(B/'chemistry-patterns.json').write_text(json.dumps(flat,indent=2)+'\n')
+(B/'chemistry-pattern-inputs.json').write_text(json.dumps({'audit':{'path':str(audit),'sha256':hashlib.sha256(audit.read_bytes()).hexdigest()},'native_compounds':inputs},indent=2)+'\n')
+s=(B/'supplement_search.py').read_text().replace("B/'additional-patterns.json'","B/'chemistry-patterns.json'").replace('supplemental-patterns.txt','chemistry-patterns.txt').replace('supplement-root','chemistry-root').replace('supplemental-search.json','chemistry-search.json').replace('Additional source-inspected primary paper, protein and deposited sequence identifiers after the main source-derived vocabulary was frozen','Chemical identifiers and top-level chemical names/synonyms added after the initial vocabulary was frozen')
+(B/'chemistry_search.py').write_text(s)
+print('Final chemistry patterns:',len(flat))

@@ -1,0 +1,69 @@
+from pathlib import Path
+import json,hashlib,datetime
+B=Path(__file__).parent
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(n,x):(B/n).write_text(json.dumps(x,indent=2)+'\n')
+dedup=json.loads((B/'dedup-compact.json').read_text())
+boundary=json.loads((B/'boundary-assessment.json').read_text())
+supp=json.loads((B/'supplemental-search.json').read_text())
+chem=json.loads((B/'chemistry-search.json').read_text())
+compact=json.loads(json.dumps(chem))
+for root in compact['roots']:
+    for counts in root['counts'].values():
+        counts.pop('paths',None)
+compact['complete_report']={'path':str(B/'chemistry-search.json'),'sha256':sha(B/'chemistry-search.json'),'bytes':(B/'chemistry-search.json').stat().st_size}
+save('chemistry-search-compact.json',compact)
+sets=[set((B/n).read_text().splitlines()) for n in ['patterns.txt','supplemental-patterns.txt','chemistry-patterns.txt']]
+union=set().union(*sets)
+for report in [dedup,supp,chem]:
+    assert len(report['roots'])==2 and all(r['exit_code'] in [0,1] for r in report['roots'])
+for row in json.loads((B/'pattern-sources.json').read_text())['source_inputs']:
+    assert sha(row['path'])==row['sha256']
+assert dedup['baseline_record_count']==252
+assert dedup['exact_candidate_membership']['MetaCyc:SHIKIMATEDEG-PWY']=={'top_level':[],'nested':[]}
+assert dedup['exact_candidate_membership']['MetaCyc:QUINATEDEG-PWY']['top_level']==['data/pathways/quinate-degradation-i.yaml']
+save('search-union.json',{'base':dedup['baseline_commit'],'passes':[{'report':n,'sha256':sha(B/n),'patterns':len(s)} for n,s in zip(['dedup-compact.json','supplemental-search.json','chemistry-search-compact.json'],sets)],'distinct_patterns_per_root':len(union),'union_patterns':sorted(union),'role':'Author preflight; candidate duplicate search, not scientific approval or source exhaustion.'})
+queue=[]
+for row in boundary['native_boundaries']:
+    if row['id'] not in ['MetaCyc:PWY-6416','MetaCyc:PWY-6419']:continue
+    queue.append({'id':row['id'],'label':row['label'],'source':row['original'],'members':row['members'],'direct_evidence_pmids':row['direct_evidence_pmids'],'baseline_top_level_or_nested_matches':dedup['exact_candidate_membership'][row['id']],'status':'Continuing research lead, not scientific acceptance.','next_requirement':'Inspect complete biological source and primary evidence with organism, cofactor, reaction direction and construct scope before adding its separate pathway record.'})
+save('continuing-queue.json',{'current':'MetaCyc:SHIKIMATEDEG-PWY','baseline_commit':dedup['baseline_commit'],'already_maintained':'MetaCyc:QUINATEDEG-PWY','continuing_candidates':queue,'reusable_source_lead':{'source':'Ignored SEED subsystem selector','label':'Quinate degradation','scope':'Selector name only; actual subsystem roles and organism evidence remain unassessed.'},'source_exhaustion_claim':False})
+metadata_paths=[Path('/private/tmp/pathwaymech-next-256-native/originals/UniProtKB-O83046.json'),Path('/private/tmp/pathwaymech-next-256-primary/originals/15691962-pmc.html'),Path('/private/tmp/pathwaymech-next-256-primary/originals/van-kleef-thesis.pdf')]
+save('supplemental-source-bindings.json',{'role':'Original artifacts associated with primary/native author-provided additional search patterns; preflight does not independently approve their scientific claims.','sources':[{'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size} for p in metadata_paths],'ncbi_gene_limit':'Entrez:2879574 and Entrez:2879469 are historical search identifiers. Root issuing-authority checks report discontinued entries; this preflight makes no claim that they are current accepted graph identities. Native G-27 and G-36 are separately searched.'})
+(B/'CANDIDATES.md').write_text('''# Next256 candidate decision and continuing queue
+
+1. **Selected: MetaCyc:SHIKIMATEDEG-PWY — shikimate degradation I.** The complete META 27.0 native boundary uses SHIKIMATE-PQQ-RXN followed by DHSHIKIMATE-DEHYDRO-RXN, converting shikimate to protocatechuate. GO:0019633 is a broader substrate catabolic process and explicitly narrow-matches both the I and II variants. The narrower native pathway identity is appropriate. Reaction, protein, taxon and construct evidence require the separate author and independent reviews.
+
+2. **Already maintained: MetaCyc:QUINATEDEG-PWY — quinate degradation I.** The 252-record baseline includes its three-step quinate-to-protocatechuate record. It shares QuiA/QuiC and terminal dehydration with the selected shikimate route, but its initial substrate and reaction membership differ. Shared papers or proteins are not duplicate whole-pathway coverage.
+
+3. **Next: MetaCyc:PWY-6416 — quinate degradation II.** Fresh complete META 27.0 XML selects NAD-dependent QUINATE-5-DEHYDROGENASE-RXN followed by the two dehydration members. Its fungal and Corynebacterium examples and individual enzymes need complete scientific review.
+
+4. **Further: MetaCyc:PWY-6419 — shikimate degradation II.** Fresh complete META 27.0 XML selects RXN-20484 and DHSHIKIMATE-DEHYDRO-RXN, with a distinct NAD-dependent initial reaction and Corynebacterium/QsuR evidence that remains unreviewed here.
+
+The selected shikimate I and both II variants are absent as top-level records and nested pathway nodes in the actual 252 baseline Git blobs. Ignored and hidden text was included in both current repository-root scans. Prior research explicitly queued these pathways; it did not reject them or accept them as maintained records. The ignored SEED Quinate degradation selector remains a reusable-source lead. No source exhaustion claim is made.
+''')
+(B/'HANDOFF.md').write_text(f'''# Next256 author preflight
+
+Select **MetaCyc:SHIKIMATEDEG-PWY — shikimate degradation I** for the two-step source-defined shikimate-to-protocatechuate boundary. Its native members are SHIKIMATE-PQQ-RXN and DHSHIKIMATE-DEHYDRO-RXN. Downstream protocatechuate ring cleavage is a pathway link, not a member. The pinned GO 2026-07-26 original SQL was freshly queried and hashed: GO:0019633 explicitly `skos:narrowMatch`s both I and II variants. Current QuickGO names/definitions agree and both substrate catabolic terms are nonobsolete. The 105-statement lexical query and exact outgoing/incoming term queries remain external; compact boundary evidence is retained. These queries support exact scope selection, not an exhaustive audit of all biological-process semantics.
+
+All **252 baseline records** at `{dedup['baseline_commit']}` were enumerated using `git ls-tree`, read via actual Git blob OIDs and byte-compared to both main and active next256 copies. The selected pathway and both II variants are absent as top-level or nested pathway IDs. Quinate I is correctly present. Its three-reaction quinate boundary differs from the two-reaction shikimate route despite shared proteins and references. Existing chorismate, phenylethanol and petrobactin records were read and have distinct whole boundaries. See `baseline-record-bindings.json`, `related-record-dispositions.json` and `prior-research-dispositions.json`.
+
+Completed searches used **{len(sets[0])} initial patterns, {len(sets[1])} additional regulatory/primary patterns and {len(sets[2])} chemical patterns per root**, **{len(union)} distinct strings** across the three passes. The first vocabulary binds 36 complete XML inputs (32 biological objects and four pathway boundary objects). Additional patterns include PcaU, exact target genes/loci, the 2005 transcription paper, its deposits/constructs, and explicit chemical mapping/comparison IDs. Whole-class quinone differences and historical NCBI Gene discontinuations are not erased by searching their identifiers. Raw source accession matches are search leads, not biological equivalence or valid-current-ID assertions.
+
+Both main and active next256 scans include **ignored and hidden files**, excluding only Git administrative and virtual-environment directories. Ripgrep uses default binary detection, does not follow directory symlinks and does not decode compressed archives. Only these two current roots are claimed; complete upstream provider holdings, external caches and other worktrees were not exhaustively searched. Exact commands, per-pattern counts and external match-log bindings are retained. Whole text-search counts include incidental substrings and shared source references; they do not substitute for the actual 252-record membership audit. No arbitrary pathway crosswalk was invented for a source family lacking an inspected candidate identifier.
+
+Meaningful ignored-source matches were read. SEED names Quinate degradation and Shikimate kinase containing cluster without actual subsystem role/organism graphs. DRAM hits are M00022 chorismate biosynthesis and M00039 monolignol biosynthesis. The dbCAN source paper has Quiagen/quick-method spellings rather than exact quiA/quiC genes. Prior research queued shikimate I for later primary review. The 2010 DHSase DOI also appeared as an explicitly unread next255 follow-up lead; its mention is not an earlier maintained pathway or a scientific rejection.
+
+This identity preflight is **author support**, not independent scientific approval. Native broad Gram-positive/negative generalizations, exact PQQ versus generic quinone roles, protein aliases, organism scopes, activity/regulation evidence and assay constructs require the other evidence ledgers and independent reviewers. LMD79.41, ADP1, SA1/AC3 and G.oxydans sources must not be silently equated. Native MONOMER-1521 and MONOMER-28 are source identity leads, not proof of distinct biological proteins.
+
+**Continuing queue:** quinate II and shikimate II remain genuine separate candidates with fresh original hashes and explicit baseline absence. The source universe is not exhausted.
+
+No maintained file was edited, no authority union was built and no corpus test gate was run by this agent. `artifact-manifest.json` lists recommended compact retention; raw originals, GO SQL/full projections and full match logs stay external. Helpers may be retained byte-identically as `.py.txt`. All helper source lines were checked for trailing whitespace before sealing.
+''')
+keep=['HANDOFF.md','CANDIDATES.md','boundary-assessment.json','baseline-record-bindings.json','dedup-compact.json','patterns.txt','pattern-sources.json','supplemental-patterns.json','additional-patterns.json','supplemental-patterns.txt','supplemental-search.json','supplemental-source-bindings.json','chemistry-patterns.json','chemistry-patterns.txt','chemistry-pattern-inputs.json','chemistry-search-compact.json','search-union.json','related-record-dispositions.json','prior-research-dispositions.json','ignored-source-dispositions.json','continuing-queue.json','current-acquisition-escalated.json','renew_preflight.py','supplement_search.py','chemistry_search.py','prepare_supplement.py','prepare_chemistry_patterns.py','finish_preflight.py','read_go.py','read_prior_mentions.py','inspect_ignored_matches.py','seal_preflight.py','acquire_boundary.py']
+for n in keep:
+    if n.endswith('.py'):
+        assert all(line.rstrip()==line for line in (B/n).read_text().splitlines()),n
+rows=[{'path':str(B/n),'recommended_name':n+'.txt' if n.endswith('.py') else n,'sha256':sha(B/n),'bytes':(B/n).stat().st_size} for n in keep]
+save('artifact-manifest.json',{'sealed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Author preflight, not independent scientific approval. No maintained writes by this agent.','files':rows,'external_only':['originals/','go-boundary-evidence.json','root-*-matches.jsonl','root-*-complete-counts.json','supplement-root-*-matches.jsonl','chemistry-root-*-matches.jsonl','chemistry-search.json']})
+print(json.dumps({'files':len(rows),'bytes':sum(x['bytes'] for x in rows),'manifest_sha256':sha(B/'artifact-manifest.json'),'distinct_patterns_per_root':len(union)}))

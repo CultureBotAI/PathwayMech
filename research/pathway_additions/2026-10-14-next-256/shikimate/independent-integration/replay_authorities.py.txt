@@ -1,0 +1,44 @@
+from pathlib import Path
+import concurrent.futures,datetime,hashlib,json,os,subprocess
+R=Path('/private/tmp/pathwaymech-next-256-20261014');A=Path('/private/tmp/pathwaymech-next-256-authorities');D=Path(__file__).resolve().parent
+BASE='b645cc4c0afd75f3eff521376b75602a3c2ad679'
+def h(b):return hashlib.sha256(b).hexdigest()
+def sha(p):return h(p.read_bytes())
+def git(*a):return subprocess.check_output(['git',*a],cwd=R)
+c=json.loads((A/'canonical-build-commands.json').read_text());audit={'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base':BASE,'builder_sources':{},'baseline_records':[],'snapshots':{}}
+assert git('rev-parse','HEAD').decode().strip()==BASE
+for name,expected in c['builder_sha256'].items():
+ p='scripts/'+name;b=git('show',BASE+':'+p);assert (R/p).read_bytes()==b;assert h(b)==expected;audit['builder_sources'][p]={'git_object':git('rev-parse',BASE+':'+p).decode().strip(),'sha256':h(b)}
+allold=set();allnew=set()
+for name in ['ontology','sources']:
+ p='data/identifier_authorities/'+name+'.json';b=git('show',BASE+':'+p);old=json.loads(b);new=json.loads((R/p).read_bytes());assert (A/'baseline'/f'{name}.json').read_bytes()==b
+ for section in ['terms','sources']:
+  assert all(new[section].get(k)==v for k,v in old[section].items()),(name,section)
+ assert old['version']==new['version'];allold.update(old['terms']);allnew.update(new['terms'])
+ audit['snapshots'][name]={'baseline_git_object':git('rev-parse',BASE+':'+p).decode().strip(),'baseline_sha256':h(b),'final_sha256':sha(R/p),'old_terms':len(old['terms']),'new_terms':len(new['terms']),'old_owners':len(old['sources']),'new_owners':len(new['sources']),'added_terms':sorted(set(new['terms'])-set(old['terms'])),'all_baseline_objects_unchanged':True}
+paths=[p for p in git('ls-tree','-r','--name-only',BASE,'data/pathways').decode().splitlines() if p.endswith('.yaml')]
+for p in paths:
+ b=git('show',BASE+':'+p);staged=A/'records'/Path(p).relative_to('data/pathways');assert staged.read_bytes()==b,(p,'not exact baseline blob');audit['baseline_records'].append({'path':p,'git_object':git('rev-parse',BASE+':'+p).decode().strip(),'sha256':h(b)})
+import yaml
+selector=A/c['selection']['selector_file'];s=yaml.safe_load(selector.read_text());planned=json.loads((A/'planned-identifiers.json').read_text());assert set(s)=={'id','participants'};assert all(set(n)=={'id'} for n in s['participants']);assert {n['id'] for n in s['participants']}==allold|set(planned);assert sha(selector)==c['selection']['selector_sha256'];assert len(list((A/'records').rglob('*.yaml')))==len(paths)+1
+p='conf/identifier_sources.json';b=git('show',BASE+':'+p);old=json.loads(b);new=json.loads((R/p).read_bytes());assert new[:len(old)]==old;assert (R/p).read_bytes()==(A/'identifier_sources.json').read_bytes();assert sha(R/p)==c['manifest_sha256'];assert len({x['key'] for x in new})==len(new)
+audit['manifest']={'baseline_git_object':git('rev-parse',BASE+':'+p).decode().strip(),'baseline_sha256':h(b),'final_sha256':sha(R/p),'baseline_entries':len(old),'final_entries':len(new),'exact_old_prefix':True}
+upd=git('show',BASE+':conf/rhea_identifier_updates.json');assert (A/'baseline/rhea_identifier_updates.json').read_bytes()==upd
+hashes={};descriptors=[]
+def verify(x,locator):
+ if isinstance(x,dict):
+  if 'path' in x and 'sha256' in x:
+   p=A/'originals'/x['path'];k=str(p)
+   if k not in hashes:hashes[k]=sha(p)
+   assert hashes[k]==x['sha256'],(locator,k);descriptors.append({'locator':locator,'path':k,'sha256':hashes[k]})
+  for k,v in x.items():verify(v,locator+'/'+k)
+ elif isinstance(x,list):
+  for i,v in enumerate(x):verify(v,locator+'/'+str(i))
+verify(new,'identifier_sources');verify(json.loads(upd),'rhea_identifier_updates')
+audit['all_original_descriptors']=descriptors;audit['distinct_originals']=len(hashes)
+audit['baseline_term_total']=len(allold);audit['new_term_total']=len(allnew);audit['selector']={'sha256':sha(selector),'only_ids':True,'baseline_ids':len(allold),'planned_ids':planned}
+def replay(key):
+ args=list(c[key]);dst=D/(key+'.replayed.json');assert not dst.exists();args[args.index('--output')+1]=str(dst);start=datetime.datetime.now(datetime.timezone.utc).isoformat();p=subprocess.run(args,cwd=c['cwd'],env=dict(os.environ,**c['environment']),capture_output=True);log=D/(key+'.log');log.write_bytes(p.stdout+p.stderr);assert p.returncode==0,(key,p.returncode,log.read_text()[-1000:]);name='sources' if key=='source_builder' else 'ontology';expected=R/'data/identifier_authorities'/f'{name}.json';assert dst.read_bytes()==expected.read_bytes(),(key,'reproduction differs');return {'command':args,'cwd':c['cwd'],'environment':c['environment'],'started_utc':start,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exit_code':p.returncode,'log_path':str(log),'log_sha256':sha(log),'output_path':str(dst),'output_sha256':sha(dst),'promoted_output_bytes_equal':True}
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:audit['replay']=list(pool.map(replay,['source_builder','ontology_builder']))
+audit['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();(D/'authority-replay-audit.json').write_text(json.dumps(audit,indent=2)+'\n')
+print(json.dumps({k:v for k,v in audit.items() if k not in ['baseline_records','all_original_descriptors']},indent=2))

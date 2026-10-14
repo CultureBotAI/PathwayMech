@@ -1,0 +1,11 @@
+from pathlib import Path
+import urllib.request,json,hashlib,datetime,concurrent.futures
+B=Path('/private/tmp/pathwaymech-next-256-preflight');(B/'originals').mkdir(exist_ok=True)
+urls={'META-SHIKIMATEDEG-PWY.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:SHIKIMATEDEG-PWY','META-QUINATEDEG-PWY.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:QUINATEDEG-PWY','GO-0019631.json':'https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0019631','GO-0019633.json':'https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0019633','META-PWY-6416.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-6416','META-PWY-6419.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-6419'}
+def get(it):
+ n,u=it; out={'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'path':str(B/'originals'/n)}
+ try:
+  r=urllib.request.urlopen(urllib.request.Request(u,headers={'Accept':'application/json' if n.endswith('json') else '*/*'}),timeout=60);data=r.read();(B/'originals'/n).write_bytes(data);out.update(status=r.status,final_url=r.url,sha256=hashlib.sha256(data).hexdigest(),bytes=len(data))
+ except Exception as e:out['error']=str(e)
+ return out
+res=list(concurrent.futures.ThreadPoolExecutor(max_workers=4).map(get,urls.items()));(B/'current-acquisition-escalated.json').write_text(json.dumps(res,indent=2)+'\n');print(json.dumps(res))

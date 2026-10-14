@@ -1,0 +1,64 @@
+from acquire import *
+from collections import Counter
+
+def ids(fid,path):
+    return {e.get('frameid') for e in frame(fid).findall(path)}
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+pw=frame('SHIKIMATEDEG-PWY')
+reactions=ids('SHIKIMATEDEG-PWY','./reaction-list/Reaction')
+assert reactions=={'SHIKIMATE-PQQ-RXN','DHSHIKIMATE-DEHYDRO-RXN'}
+activities={a for r in reactions for a in ids(r,'./enzymatic-reaction/Enzymatic-Reaction')}
+proteins={p for a in activities for p in ids(a,'./enzyme/Protein')}
+direct_proteins=set(proteins)
+while True:
+    missing={p for f in proteins for p in ids(f,'./component/Protein')}-proteins
+    if not missing:break
+    proteins.update(missing)
+aux={a for p in proteins for a in ids(p,'./catalyzes/Enzymatic-Reaction')}-activities
+regulators={r for f in proteins|activities|aux for r in ids(f,'./regulated-by/Regulation')}
+allobjects=activities|proteins|aux|regulators
+ledger=json.loads((ROOT/'biological-coverage.json').read_text())
+assert len(ledger['objects'])==len(allobjects)==17
+assert {r['frameid'] for r in ledger['objects']}==allobjects
+for row in ledger['objects']:
+    assert row['sha256']==sha(row['source_path'])
+    assert row['kind']==frame(row['frameid']).tag
+    assert row['decision'] in {'retain_with_scope','exclude_outside_variant','exclude_duplicate_context','exclude_adjacent_activity'}
+    assert row['rationale']
+for a in activities|aux:
+    ps=ids(a,'./enzyme/Protein');assert ps<=proteins
+    for p in ps:assert a in ids(p,'./catalyzes/Enzymatic-Reaction')
+for p in proteins-direct_proteins:
+    parents=ids(p,'./component-of/Protein')
+    assert any(p in ids(q,'./component/Protein') for q in parents)
+for a in activities|aux|proteins:
+    assert ids(a,'./regulated-by/Regulation')<=regulators
+for f in proteins:
+    for gene in ids(f,'./gene/Gene'):assert f in ids(gene,'./product/Protein')
+extra=json.loads((ROOT/'supplemental-context.json').read_text())
+assert len(extra)==9
+for row in extra:assert row['sha256']==sha(row['source_path'])
+assert ids('MONOMER-67','./catalyzes/Enzymatic-Reaction')=={'ENZRXN-68'}
+assert ids('ENZRXN-68','./enzyme/Protein')=={'MONOMER-67'}
+assert 'shikimate showing 25% activity' in frame('ENZRXN-68').findtext('comment')
+assert ids('ENZRXN-68','./reaction/Reaction')=={'1.1.99.25-RXN'}
+assert 'ENZRXN-68' not in activities
+proposal=json.loads((ROOT/'biological-edge-proposal.json').read_text())
+for row in proposal['facts']:
+    assert row['source_sha256']==sha(row['source_path'])
+    assert len(row['source_assertion'])<=400
+bindings=json.loads((ROOT/'original-bindings.json').read_text())
+assert {row['path'] for row in bindings}=={str(f) for f in ORIG.iterdir()}
+for row in bindings:
+    assert row['sha256']==sha(row['path'])
+    assert row['bytes']==Path(row['path']).stat().st_size
+comparisons=[]
+for fid in ['DHSHIKIMATE-DEHYDRO-RXN','ENZRXN-3','ENZRXN-38','MONOMER-1','MONOMER-28','MONOMER-37','MONOMER-67','ENZRXN-68']:
+    a=ORIG/f'META-{fid}.xml';b=Path('/private/tmp/pathwaymech-next-255-native/originals')/a.name
+    comparisons.append({'frameid':fid,'fresh_path':str(a),'fresh_sha256':sha(a),'prior_path':str(b),'prior_sha256':sha(b),'byte_equal':a.read_bytes()==b.read_bytes()})
+a=ORIG/'META-SHIKIMATEDEG-PWY.xml';b=Path('/private/tmp/pathwaymech-next-251-preflight-20261014/originals')/a.name
+comparisons.append({'frameid':'SHIKIMATEDEG-PWY','fresh_path':str(a),'fresh_sha256':sha(a),'prior_path':str(b),'prior_sha256':sha(b),'byte_equal':a.read_bytes()==b.read_bytes()})
+report={'status':'pass; mechanical source closure and bindings only, not independent scientific review','reactions':sorted(reactions),'direct_activities':len(activities),'direct_proteins':len(direct_proteins),'recursive_subunits':len(proteins-direct_proteins),'auxiliary_activities':len(aux),'regulations':len(regulators),'native_biological_objects':len(allobjects),'supplemental_source_contexts':len(extra),'proposed_facts':len(proposal['facts']),'raw_originals':len(bindings),'checks':['exact native two-reaction pathway boundary','all direct enzyme activities and physical enzymes','all recursive protein subunits','all auxiliary activities of inspected proteins','all native regulation links','source-to-ledger exact set equality','unique disposition for every direct-neighborhood object','all original source hashes','activity/enzyme reciprocal joins','complex subunit reciprocity','gene/product reciprocal joins','supplemental G. oxydans shikimate activity is comment, not direct reaction-list attachment','all proposed fact bindings and maximum assertion length','fresh originals compared with prior source bytes'],'coverage_sha256':sha(ROOT/'biological-coverage.json'),'proposal_sha256':sha(ROOT/'biological-edge-proposal.json'),'source_reuse_checks':comparisons}
+(ROOT/'biological-coverage-replay.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k!='source_reuse_checks'},indent=2))

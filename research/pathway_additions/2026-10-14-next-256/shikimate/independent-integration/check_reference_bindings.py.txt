@@ -1,0 +1,21 @@
+from pathlib import Path
+import datetime,hashlib,json,xml.etree.ElementTree as ET
+import yaml
+R=Path('/private/tmp/pathwaymech-next-256-20261014');D=Path(__file__).resolve().parent
+P=R/'data/pathways/shikimate-degradation-i.yaml';d=yaml.safe_load(P.read_text());out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':hashlib.sha256(P.read_bytes()).hexdigest(),'bindings':[]}
+roots=[Path('/private/tmp/pathwaymech-next-256-native/originals'),Path('/private/tmp/pathwaymech-next-256-chemistry/originals-meta27'),Path('/private/tmp/pathwaymech-next-256-primary/originals'),Path('/private/tmp/pathwaymech-next-255-primary/originals')]
+actual={}
+for root in roots:
+ for p in root.iterdir():
+  if p.is_file():actual.setdefault(hashlib.sha256(p.read_bytes()).hexdigest(),[]).append(p)
+rhea=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz');actual.setdefault(hashlib.sha256(rhea.read_bytes()).hexdigest(),[]).append(rhea)
+for ref in d['references']:
+ i=ref['id'];prefix,name=i.split(':',1)
+ if 'source_sha256' not in ref:out['bindings'].append({'reference':i,'hash_bound':False,'note':'URL-linked paper reference; no artifact digest asserted'});continue
+ matches=actual.get(ref['source_sha256'],[]);assert matches,(i,ref['source_sha256'])
+ if prefix=='MetaCyc':
+  matches=[p for p in matches if p.suffix=='.xml'];assert matches;root=ET.parse(matches[0]).getroot();assert root.attrib['ptools-version']=='27.0';assert root.findtext('metadata/query')=='META:'+name;assert root.find('metadata/PGDB').attrib['version']=='27.0';top=[n for n in root if n.tag!='metadata'];assert len(top)==1 and top[0].attrib['frameid']==name and top[0].attrib['detail']=='full';assert ref['url']=='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+name
+ if prefix=='UniProtKB':
+  obj=json.loads(matches[0].read_bytes());assert obj['primaryAccession']==name
+ out['bindings'].append({'reference':i,'source_sha256':ref['source_sha256'],'actual_originals':[str(p) for p in matches],'url':ref.get('url'),'hash_bound':True})
+out['hash_bound_references']=sum(x['hash_bound'] for x in out['bindings']);out['reference_total']=len(out['bindings']);out['actual_original_search_roots']=[str(x) for x in roots]+[str(rhea)];(D/'reference-bindings-audit.json').write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({k:v for k,v in out.items() if k!='bindings'},indent=2))

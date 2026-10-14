@@ -1,0 +1,13 @@
+from acquire import *
+import urllib.parse
+requests={
+'UniProt-PcaU-search': 'https://rest.uniprot.org/uniprotkb/search?'+urllib.parse.urlencode({'query':'(gene:pcaU) AND (organism_id:62977)','format':'json','size':100}),
+}
+rows=[]
+for name,url in requests.items():
+    start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+    with urllib.request.urlopen(url,timeout=60) as r:b=r.read();meta={'status':r.status,'final_url':r.url,'headers':dict(r.headers)}
+    f=ORIG/(name+'.json');f.write_bytes(b);j=json.loads(b)
+    rows.append({'name':name,'url':url,'retrieved_at':start,**meta,'path':str(f),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)})
+    print([(x.get('primaryAccession'),x.get('genes'),x.get('proteinDescription')) for x in j.get('results',[])])
+(ROOT/'acquisition-regulation.json').write_text(json.dumps(rows,indent=2)+'\n')

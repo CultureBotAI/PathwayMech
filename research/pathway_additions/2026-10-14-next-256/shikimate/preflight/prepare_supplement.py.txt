@@ -1,0 +1,31 @@
+from pathlib import Path
+import json, hashlib
+B = Path(__file__).parent
+N = Path('/private/tmp/pathwaymech-next-256-native/originals')
+rows = []
+def add(pattern, origin):
+    rows.append({'pattern': pattern, 'source': origin})
+u = N / 'UniProtKB-O83046.json'
+x = json.loads(u.read_text())
+assert x['primaryAccession'] == 'O83046'
+origin = str(u) + ' sha256=' + hashlib.sha256(u.read_bytes()).hexdigest()
+for accession in [x['primaryAccession'], *x.get('secondaryAccessions', [])]:
+    add(accession, origin + ' primary/secondary accession')
+    add('UniProtKB:' + accession, origin + ' primary/secondary accession')
+for gene in x['genes']:
+    add(gene['geneName']['value'], origin + ' genes[].geneName')
+    for locus in gene.get('orderedLocusNames', []):
+        add(locus['value'], origin + ' genes[].orderedLocusNames')
+for name in ['G-27','G-36']:
+    p = N / ('META-' + name + '.xml')
+    origin = str(p) + ' sha256=' + hashlib.sha256(p.read_bytes()).hexdigest()
+    add(name, origin + ' Gene@frameid; exact native ID')
+    add('MetaCyc:' + name, origin + ' Gene@frameid; exact native ID')
+for term in ['ACIAD1716','ACIAD1714']:
+    add(term, 'Native gene contexts G-27/G-36 and current UniProt gene locus fields, next256_native author evidence')
+for term in ['PMID:15691962','15691962','10.1128/AEM.71.2.1025-1034.2005','NC_005966','pAC27','pAC43','pAC24','pAC25','ADPU1','ADP331','ADPU331','10.1271/bbb.100043','LC169767']:
+    add(term, 'next256_primary inspected full PMID15691962/Table1 or explicitly unpromoted follow-up lead; source message 2026-10-14; search-only, no biological equivalence asserted')
+(B / 'additional-patterns.json').write_text(json.dumps(rows, indent=2) + '\n')
+script = Path('/private/tmp/pathwaymech-next-255-preflight/supplement_search.py').read_text().replace('next-255','next-256').replace("B/'supplemental-patterns.json'", "B/'additional-patterns.json'")
+(B / 'supplement_search.py').write_text('\n'.join(line.rstrip() for line in script.splitlines()) + '\n')
+print('Additional search patterns:',len(rows))

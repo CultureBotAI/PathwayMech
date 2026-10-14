@@ -1,0 +1,117 @@
+from pathlib import Path
+import copy, hashlib, json, yaml
+B=Path('/private/tmp/pathwaymech-next-256-chemistry')
+N=Path('/private/tmp/pathwaymech-next-256-native')
+P=Path('/private/tmp/pathwaymech-next-256-primary')
+R=Path('/private/tmp/pathwaymech-next-256-20261014')
+def load(p): return json.loads(p.read_text())
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+x=load(B/'core-record.json')
+old=yaml.safe_load((R/'data/pathways/quinate-degradation-i.yaml').read_text())
+labels=load(Path('/private/tmp/pathwaymech-next-256-authorities/planned-authority-labels.json'))
+refs={r['id']:r for r in x['references']}
+oldrefs={r['id']:r for r in old['references']}
+oldedges={(e['subject'],e['predicate'],e['object']):e for e in old['mechanistic_edges']}
+identities=load(N/'biological-node-identities.json')
+for item in identities:
+    ident=item['recommended_id']
+    x['participants'].append({'id':ident,'label':labels[ident]['label'],'category':'gene' if ident in ['MetaCyc:G-27','MetaCyc:G-36'] else item['category']})
+for ident,category in [('CHEBI:58442','cofactor'),('GO:0016020','cellular_component'),('GO:0005737','cellular_component')]:
+    x['participants'].append({'id':ident,'label':labels[ident]['label'],'category':category})
+species=load(P/'species-context-proposal.json')
+x['mechanistic_edges'][1]['description']=species['description']
+x['mechanistic_edges'][1]['evidence']+=species['evidence']
+x['mechanistic_edges'][2]['description']='Native G. oxydans oxidative-enzyme context, including IFO3244 preparations. This does not assert shikimate-supported growth, complete mineralization, or a purified two-step reconstruction.'
+for e in x['mechanistic_edges'][:3]:
+    tax=e['object'].split(':')[1]
+    e['evidence'][0]['source_assertion']=f'The native pathway species slot lists TAX-{tax}; this is a source-listed organism context.'
+
+def add_native_ref(ident,path):
+    assert path.is_file(),path
+    accession=ident.split(':',1)[1]
+    if ident.startswith('MetaCyc:'):
+        ref={'id':ident,'title':f'MetaCyc native object {accession}','url':f'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:{accession}','source_version':'MetaCyc 27.0','source_sha256':sha(path)}
+    else:
+        raw=load(path)
+        ref={'id':ident,'title':f'UniProtKB {accession}','url':f'https://rest.uniprot.org/uniprotkb/{accession}.json','source_version':f"retrieved 2026-10-14; entryVersion {raw['entryAudit']['entryVersion']}; sequenceVersion {raw['entryAudit']['sequenceVersion']}",'source_sha256':sha(path)}
+    if ident in refs: assert refs[ident]['source_sha256']==ref['source_sha256'],ident
+    refs[ident]=ref
+
+def assertion(ref,text,locator):return {'reference_id':ref,'source_assertion':text,'source_locator':locator}
+
+facts=load(N/'biological-edge-proposal.json')['facts']
+descriptions=[
+ 'Native ADP1 QuiA shikimate activity is supported by pathway and genetic evidence. The native purified-protein code and kinetics cite Acinetobacter SA1/AC3 preparations; those measurements are not assigned to ADP1. The source groups the reaction as quinone-dependent oxidation without establishing use of every quinone.',
+ 'ADP1 source protein context; strain-specific activity and preparation limits remain on the catalytic edge.',
+ 'DHS dehydration is supported by cloned quiC activity and native genetic phenotypes. The native protein comment incorrectly labels the assay as DHQ dehydration; no numeric activity is copied.',
+ 'ADP1 source protein context; the catalytic experiment used the qualified recombinant crude-extract preparation.',
+ 'Native IFO3244 DHS-dehydratase activity was separated from DQD and detected with a coupled qualitative protocatechuate assay. Exact gene and sequence identity remain unresolved.',
+ 'Source protein taxon context; this partially purified IFO3244 activity is not a sequence identity or full-route reconstruction for every strain.',
+ 'PQQ is a prosthetic cofactor, distinct from the net electron-accepting quinone. The native assignment is independently supported by current ADP1 UniProt annotation; SA1/AC3 or LMD79.41 biochemical tests are not transferred to ADP1.',
+ 'Recovery in the cytoplasmic fraction supports this preparation context without establishing exclusive localization of a sequence-defined enzyme.',
+ 'The inspected native ENZRXN-68 comment reports shikimate activity at 25% of the quinate rate and ferricyanide as the most efficient artificial acceptor, citing PMID:15598527. Its formal reaction slot is quinate oxidation. The shikimate claim is curated-source evidence; the 2004 full paper was unavailable. No physiological quinone specificity is inferred from the artificial-acceptor result.',
+ 'Native G. oxydans protein context; the cited preparation is IFO3244. This does not establish sequence identity or shikimate-supported growth for every strain.',
+ 'Native source and the inspected primary abstract describe membrane-bound IFO3244 QDH. This broad location does not establish exact orientation or an obligate respiratory assembly.',
+ 'The reviewed UniProt membrane annotation uses ECO:0000305 curator inference. The five membrane segments proposed in the 1994 study are hydropathy predictions, not direct topology measurements.',
+ 'Reviewed ADP1 PcaU context; the initiating methionine is uncertain between Met1 and Met5, so no exact tested N terminus is assumed.'
+]
+for f,description in zip(facts,descriptions,strict=True):
+    path=Path(f['source_path']); assert sha(path)==f['source_sha256']
+    add_native_ref(f['source_owner'],path)
+    e={k:f[k] for k in ['subject','predicate','object']}
+    e['description']=description
+    e['evidence']=[assertion(f['source_owner'],f['source_assertion'],f['source_locator'])]
+    if e['subject'] in ['UniProtKB:Q59086','UniProtKB:Q43922']:
+        native={'UniProtKB:Q59086':'MONOMER-28','UniProtKB:Q43922':'MONOMER-37'}[e['subject']]
+        add_native_ref('MetaCyc:'+native,N/'originals'/f'META-{native}.xml')
+        e['evidence'].append(assertion('MetaCyc:'+native,f"The native protein {native} carries a UniProt cross-reference to {e['subject'].split(':')[1]}.",f'/ptools-xml/Protein[@frameid="{native}"]/dblink[dblink-db="UNIPROT"]'))
+    key=(e['subject'],e['predicate'],e['object'])
+    if key==('UniProtKB:Q59086','has_cofactor','CHEBI:58442'):
+        add_native_ref('UniProtKB:Q59086',N/'originals/UniProtKB-Q59086.json')
+        e['evidence'].append(assertion('UniProtKB:Q59086','Q59086 COFACTOR comment identifies pyrroloquinoline quinone with ChEBI:58442.','$.comments[3].cofactors[0]'))
+    if key==('UniProtKB:Q43922','catalyzes','RHEA:24849'):
+        e['endpoint_qualifiers']=copy.deepcopy(oldedges[key]['endpoint_qualifiers'])
+    if e['subject']=='MetaCyc:MONOMER-1' and e['predicate'] in ['catalyzes','located_in']:
+        e['endpoint_qualifiers']=copy.deepcopy(oldedges[('MetaCyc:MONOMER-1','catalyzes','RHEA:24849')]['endpoint_qualifiers'])
+    if e['subject']=='MetaCyc:MONOMER-67' and e['predicate']=='catalyzes':
+        e['endpoint_qualifiers']=copy.deepcopy(oldedges[('MetaCyc:MONOMER-67','catalyzes','MetaCyc:1.1.99.25-RXN')]['endpoint_qualifiers'])
+    if e['subject']=='MetaCyc:MONOMER-67' and e['predicate']=='located_in':
+        e['endpoint_qualifiers']=copy.deepcopy(oldedges[('MetaCyc:MONOMER-67','has_cofactor','CHEBI:58442')]['endpoint_qualifiers'])
+    x['mechanistic_edges'].append(e)
+
+x['mechanistic_edges'].append(copy.deepcopy(oldedges[('MetaCyc:MONOMER-67','has_cofactor','CHEBI:58442')]))
+reg=load(P/'regulatory-graph-proposal.json')
+for e in reg['mechanistic_edges']:
+    gene=e['object'];g=gene.split(':')[1]
+    add_native_ref(gene,N/'originals'/f'META-{g}.xml')
+    e['evidence'].append(assertion(gene,f'The native gene {g} has common-name {labels[gene]["label"]} and the corresponding ADP1 protein product.',f'/ptools-xml/Gene[@frameid="{g}"]/common-name|product'))
+    x['mechanistic_edges'].append(e)
+for i,e in enumerate(x['mechanistic_edges'],1):e['id']=f'shikimate-{i:03d}'
+for ident in ['PMID:7592351','PMID:14586099','PMID:15598527']: refs[ident]=copy.deepcopy(oldrefs[ident])
+# The author-rendered 1995 text is explicitly distinguished from the unavailable figure raster.
+refs['PMID:7592351']['source_version']='Author-rendered full text and captions inspected; original figure images unavailable; exact captured text bindings retained in research dossier'
+refs['PMID:15598527']['source_version']='Primary abstract inspected via Europe PMC; full body unavailable; native database commentary separately cited'
+refs['PMID:15598527']['source_sha256']='787511b9e5396984ebb44ee38cbb4584352ab5959511bf8639c25d3f8ddaa5c0'
+for r in load(P/'reference-metadata.json'):
+    if r['id'] in ['PMID:3044290','PMID:15691962']:
+        refs[r['id']]={k:r[k] for k in ['id','title','url','source_version','source_sha256']}
+# Five concrete chemical mappings and the two generic native classes were checked independently.
+# The first reaction has a contextual label; all other labels equal their authoritative canonical form.
+for node in [x]+x['taxa']+x['participants']+x['reactions']:
+    if node['id']!='MetaCyc:SHIKIMATE-PQQ-RXN': assert node['label']==labels[node['id']]['label'],node
+x['references']=list(refs.values())
+assert len(x['mechanistic_edges'])==31
+assert len(x['participants'])==16
+out=R/'data/pathways/shikimate-degradation-i.yaml'
+out.write_text(yaml.safe_dump(x,sort_keys=False,allow_unicode=True,width=96))
+used=set()
+quotes={}
+for e in x['mechanistic_edges']:
+    for a in e['evidence']+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]:
+        used.add(a['reference_id'])
+        if 'quote' in a: quotes[a['reference_id']]=quotes.get(a['reference_id'],0)+len(a['quote'].split())
+assert used <= refs.keys()
+assert all(n<=25 for n in quotes.values()),quotes
+ledger={'record':str(out),'sha256':sha(out),'named_nodes':22,'participants':16,'reactions':2,'taxa':3,'edges':31,'references':len(refs),'quote_words_by_source':quotes,'reuse':{'baseline_record':str(R/'data/pathways/quinate-degradation-i.yaml'),'sha256':sha(R/'data/pathways/quinate-degradation-i.yaml'),'scope':'Only qualified shared preparations and primary reference metadata reused; author and independent reviewer reread bounded original sources. No quinate-only reaction or enzyme copied.'},'inputs':{str(p):sha(p) for p in [B/'core-record.json',N/'biological-edge-proposal.json',N/'biological-node-identities.json',P/'regulatory-graph-proposal.json',P/'species-context-proposal.json']},'unused_identity_references':sorted(refs.keys()-used)}
+(B/'assembly-ledger.json').write_text(json.dumps(ledger,indent=2)+'\n')
+print(json.dumps(ledger,indent=2))

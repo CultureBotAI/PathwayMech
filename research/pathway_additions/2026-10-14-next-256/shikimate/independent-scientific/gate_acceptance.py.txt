@@ -1,0 +1,63 @@
+from pathlib import Path
+import json,hashlib,re
+from datetime import datetime,timezone
+W=Path('/private/tmp/pathwaymech-next-256-20261014'); C=Path('/private/tmp/pathwaymech-next-256-checks');O=Path('/private/tmp/pathwaymech-next-256-science-review')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+archive=C/'attempt-before-history-render'
+archived_bindings=json.loads((archive/'archive-bindings.json').read_text())
+for row in archived_bindings['files']:
+ p=Path(row['archived_path']);assert sha(p)==row['sha256'] and p.stat().st_size==row['bytes']
+previous=json.loads((archive/'receipts.json').read_text())
+assert [r['command'] for r in previous]==[['just','render-pages'],['just','validate'],['just','test']]
+assert [r['exit_code'] for r in previous]==[0,0,1]
+for row in previous:
+ p=archive/Path(row['log_path']).name;assert sha(p)==row['log_sha256'];row['verified_archived_log_path']=str(p)
+failed_log=(archive/'just-test.log').read_text()
+assert '1 failed, 4959 passed, 3 skipped' in failed_log
+assert 'FAILED tests/test_render_pages.py::test_the_committed_site_is_current' in failed_log
+assert 'pages/records/MetaCyc_SHIKIMATEDEG-PWY.html: not what its record renders to' in failed_log
+old=(archive/'MetaCyc_SHIKIMATEDEG-PWY.html').read_text();new=(W/'pages/records/MetaCyc_SHIKIMATEDEG-PWY.html').read_text()
+prefix=next(i for i,(a,b) in enumerate(zip(old,new)) if a!=b)
+suffix=next(i for i,(a,b) in enumerate(zip(reversed(old),reversed(new))) if a!=b)
+assert old[prefix:len(old)-suffix]==''
+inserted=new[prefix:len(new)-suffix]
+assert '2026-10-14T174930Z-codex-a826f9' in inserted and 'issue 543' in inserted
+history=json.loads((C/'history-correction-receipt.json').read_text())
+assert history['command']==['just','validate-history'] and history['exit_code']==0 and history['cwd']==str(W)
+assert sha(Path(history['log_path']))==history['log_sha256']
+assert '443 history record(s) valid' in Path(history['log_path']).read_text()
+network_archive=C/'attempt-vendored-network'
+network_receipts=json.loads((network_archive/'receipts.json').read_text())
+assert len(network_receipts)==5 and all(r['exit_code']==0 for r in network_receipts[:4])
+network_failure=dict(network_receipts[-1]);assert network_failure['command']==['just','vendored-check'] and network_failure['exit_code']==1
+network_log=network_archive/'just-vendored-check.log'
+assert sha(network_log)==network_failure['log_sha256']
+assert 'FETCH ERROR' in network_log.read_text() and '[Errno 8]' in network_log.read_text()
+network_relocation=json.loads((network_archive/'relocation.json').read_text())
+assert network_relocation['sha256']==sha(network_log)
+network_failure['verified_archived_log_path']=str(network_log)
+receipts=json.loads((C/'receipts.json').read_text());expected=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check']]
+assert [r['command'] for r in receipts]==expected
+assert receipts[:4]==network_receipts[:4]
+rows=[]
+for row in receipts:
+ assert row['exit_code']==0 and row['cwd']==str(W)
+ p=Path(row['log_path']);assert sha(p)==row['log_sha256'];txt=p.read_text()
+ print('\nCOMMAND',' '.join(row['command']),'\n',txt[-2200:])
+ summaries={
+  'just render-pages':'Generated all maintained pages/graph data successfully.',
+  'just validate':'Full closed-schema, identifier/label, evidence and history/review validation passed.',
+  'just test':'Full pytest suite passed; complete terminal summary retained in original log.',
+  'just lint':'Full Ruff lint passed.',
+  'just vendored-check':'Canonical vendored helper check passed.',
+  'git diff --check':'Whitespace check passed.'}
+ if row['command']==['just','test']:
+  counts=re.search(r'(\d+ passed, \d+ skipped)',txt);assert counts
+  summaries['just test']='Final full pytest suite: '+counts.group(1)+'. Complete terminal summary retained in original log.'
+ rows.append(dict(row,reviewer_summary=summaries[' '.join(row['command'])]))
+inputs=json.loads((C/'tested-core-input-hashes.json').read_text());changed=[p for p,h in inputs.items() if sha(W/p)!=h];assert not changed,changed
+assert 'history/records/shikimate-degradation-i/2026-10-14T174930Z-codex-a826f9.yaml' in inputs
+end=json.loads((C/'final-input-preservation.json').read_text());assert end['tested_core_files']==len(inputs) and end['changed_after_checks']==[]
+assert inputs['data/pathways/shikimate-degradation-i.yaml']==end['final_record_sha256']=='ae4b0f56055956fcfe86d0d887fa4d1654efaad87a77d46bb2922335e66e4808'
+body={'reviewer':'codex:/root/next256_scientific_review','checked_at':datetime.now(timezone.utc).isoformat(),'execution_owner':'Root curator executed gates; reviewer independently verified original logs, receipts and all tested-core input hashes.','verified_receipts':rows,'superseded_attempt_receipts':previous,'superseded_attempt_disposition':'The initial full suite had one stale-page failure after issue 543 appended history. All archived files and the actual traceback were verified; current page differs from the archived page only by the inserted history correction. A complete successful rerun including history in the tested inputs supersedes that attempt.','superseded_network_check':network_failure,'network_retry_disposition':'The first vendored-check invocation failed fetching the pinned GitHub artifact with DNS Errno 8. Its original failure is retained; the identical command subsequently passed on unchanged inputs with authorized network access.','page_correction':{'archived_sha256':sha(archive/'MetaCyc_SHIKIMATEDEG-PWY.html'),'final_sha256':sha(W/'pages/records/MetaCyc_SHIKIMATEDEG-PWY.html'),'insertion_only':True,'inserted_characters':len(inserted)},'history_correction_receipt':history,'tested_core_files':len(inputs),'changed_tested_files':changed,'final_record_sha256':end['final_record_sha256'],'receipt_inputs':{str(C/n):sha(C/n) for n in ['receipts.json','tested-core-input-hashes.json','final-input-preservation.json','environment.json','run_checks.py','resume_checks.py','history-correction-receipt.json','history-correction.log','attempt-before-history-render/archive-bindings.json','attempt-vendored-network/receipts.json','attempt-vendored-network/relocation.json']}}
+(O/'gate-acceptance.json').write_text(json.dumps(body,indent=2)+'\n');print(json.dumps({'verified_gates':len(rows),'unchanged_tested_core_files':len(inputs),'record_sha256':body['final_record_sha256']}))

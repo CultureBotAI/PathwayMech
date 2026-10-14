@@ -1,0 +1,142 @@
+{
+  "history_correction_gate": {
+    "command": [
+      "just",
+      "validate-history"
+    ],
+    "cwd": "/private/tmp/pathwaymech-next-256-20261014",
+    "started_utc": "2026-10-14T17:49:39.077831+00:00",
+    "elapsed_seconds": 8.04,
+    "exit_code": 0,
+    "log_path": "/private/tmp/pathwaymech-next-256-checks/history-correction.log",
+    "log_sha256": "2e1051ec1e44085941dea00fa1b8a2100859755bf610d5cc32a5a6d8e7779432",
+    "reason": "Append-only actor correction for issue543; no tested core input changed."
+  },
+  "validated_history_count": 443,
+  "vendored_network_observation": {
+    "original_five_receipts_sha256": "50310261b8fd0fdc6396487722e9410a875500e895f1ff6795e7af6cbdf8f010",
+    "original_failed_gate": {
+      "command": [
+        "just",
+        "vendored-check"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-256-20261014",
+      "started_utc": "2026-10-14T18:06:33.943250+00:00",
+      "elapsed_seconds": 0.43,
+      "exit_code": 1,
+      "log_path": "/private/tmp/pathwaymech-next-256-checks/just-vendored-check.log",
+      "log_sha256": "5c0bc23f897952690d071dc55631ff5e55cb0c369902d174847de4600bf1b6a2"
+    },
+    "archived_raw_log_path": "/private/tmp/pathwaymech-next-256-checks/attempt-vendored-network/just-vendored-check.log",
+    "archived_raw_log_sha256": "5c0bc23f897952690d071dc55631ff5e55cb0c369902d174847de4600bf1b6a2",
+    "relocation_sha256": "7edb15a2f4d4ad095d5f168de9a387801dd4e4bf16d7f27ab0668ad7d855a153",
+    "first_four_successful_receipts_reused_exactly": true,
+    "unchanged_vendored_command_retry": {
+      "command": [
+        "just",
+        "vendored-check"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-256-20261014",
+      "started_utc": "2026-10-14T18:07:31.833978+00:00",
+      "elapsed_seconds": 4.33,
+      "exit_code": 0,
+      "log_path": "/private/tmp/pathwaymech-next-256-checks/just-vendored-check.log",
+      "log_sha256": "b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6",
+      "network_retry_of": "/private/tmp/pathwaymech-next-256-checks/attempt-vendored-network/receipts.json"
+    }
+  },
+  "utc": "2026-10-14T18:08:13.644180+00:00",
+  "record_sha256": "ae4b0f56055956fcfe86d0d887fa4d1654efaad87a77d46bb2922335e66e4808",
+  "all_six_gates_pass": true,
+  "unchanged_tested_core_files": 1237,
+  "verified_retention_bindings": 191,
+  "verified_log_wrappers": 14,
+  "logs": [
+    {
+      "command": [
+        "just",
+        "render-pages"
+      ],
+      "bytes": 61,
+      "sha256": "e9e6cc1c2a449189653c4f179e19fb293bbbea18c2b948ff4eebd9aa77a1ae87",
+      "final_lines": [
+        "uv run pathwaymech-render-pages",
+        "rendered 253 pathway records"
+      ]
+    },
+    {
+      "command": [
+        "just",
+        "validate"
+      ],
+      "bytes": 573,
+      "sha256": "2092814ffd149b797244b90d988fa1f0fb0888f2f1f41017f1a759c6541c5f9c",
+      "final_lines": [
+        "validated 30 source records",
+        "checked 6 documentation files",
+        "checked deep-research report contract",
+        "pages/ is current with 253 pathway records"
+      ]
+    },
+    {
+      "command": [
+        "just",
+        "test"
+      ],
+      "bytes": 15462,
+      "sha256": "943c8cd8c2406ab7366a74ac9a8609194256dbad99e7979cdf3363cc4caf779e",
+      "final_lines": [
+        "    non_double_cols = non_double_cols.infer_objects(copy=False)",
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "=========== 4960 passed, 3 skipped, 7 warnings in 623.92s (0:10:23) ============"
+      ]
+    },
+    {
+      "command": [
+        "just",
+        "lint"
+      ],
+      "bytes": 51,
+      "sha256": "df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41",
+      "final_lines": [
+        "uv run --extra dev ruff check .",
+        "All checks passed!"
+      ]
+    },
+    {
+      "command": [
+        "just",
+        "vendored-check"
+      ],
+      "bytes": 93,
+      "sha256": "b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6",
+      "final_lines": [
+        "bash scripts/check_vendored_sync.sh",
+        "OK: 22 governed artifacts match the pinned claw revision"
+      ]
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "final_lines": []
+    }
+  ],
+  "tracked_changed_paths": [
+    "conf/identifier_sources.json",
+    "data/identifier_authorities/ontology.json",
+    "data/identifier_authorities/sources.json",
+    "pages/browse.html",
+    "pages/downloads/edges.tsv",
+    "pages/downloads/manifest.json",
+    "pages/downloads/nodes.tsv",
+    "pages/index.html",
+    "pages/pathway_index.json"
+  ],
+  "untracked_paths_count": 209
+}

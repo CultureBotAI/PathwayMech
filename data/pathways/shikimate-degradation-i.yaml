@@ -1,0 +1,690 @@
+id: MetaCyc:SHIKIMATEDEG-PWY
+label: shikimate degradation I
+description: The two-step MetaCyc 27.0 shikimate degradation I definition converts shikimate through
+  3-dehydroshikimate to protocatechuate. The initial oxidation retains the source-defined quinone
+  and quinol classes, with PQQ as a separate enzyme cofactor. This is distinct from the NAD-dependent
+  shikimate II route and the three-step quinate I route. Enzyme and regulatory evidence retains organism,
+  preparation and inference scope; the record does not assert a purified two-enzyme reconstruction
+  for every source-listed organism.
+pathway_type: aromatic-compound-catabolism
+taxa:
+- id: NCBITaxon:62977
+  label: Acinetobacter baylyi ADP1
+- id: NCBITaxon:471
+  label: Acinetobacter calcoaceticus
+- id: NCBITaxon:442
+  label: Gluconobacter oxydans
+participants:
+- id: CHEBI:36208
+  label: shikimate
+  category: small_molecule
+- id: CHEBI:16630
+  label: 3-dehydroshikimate
+  category: small_molecule
+- id: CHEBI:36241
+  label: 3,4-dihydroxybenzoate
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: MetaCyc:Quinones
+  label: a quinone
+  category: chemical_entity
+- id: MetaCyc:Reduced-Quinones
+  label: a quinol
+  category: chemical_entity
+- id: UniProtKB:Q59086
+  label: Quinate/shikimate dehydrogenase (quinone)
+  category: protein
+- id: UniProtKB:Q43922
+  label: 3-dehydroshikimate dehydratase
+  category: protein
+- id: MetaCyc:MONOMER-1
+  label: dehydroshikimate dehydratase
+  category: protein
+- id: MetaCyc:MONOMER-67
+  label: quinate dehydrogenase
+  category: protein
+- id: UniProtKB:O83046
+  label: Pca operon regulatory protein
+  category: protein
+- id: MetaCyc:G-27
+  label: quiA
+  category: gene
+- id: MetaCyc:G-36
+  label: quiC
+  category: gene
+- id: CHEBI:58442
+  label: pyrroloquinoline quinone(3-)
+  category: cofactor
+- id: GO:0016020
+  label: membrane
+  category: cellular_component
+- id: GO:0005737
+  label: cytoplasm
+  category: cellular_component
+reactions:
+- id: MetaCyc:SHIKIMATE-PQQ-RXN
+  label: shikimate oxidation with a quinone
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:24849
+  label: 3-dehydroshikimate => 3,4-dihydroxybenzoate + H2O
+  category: molecular_activity
+  direction: left_to_right
+mechanistic_edges:
+- id: shikimate-001
+  subject: MetaCyc:SHIKIMATEDEG-PWY
+  predicate: part_of
+  object: NCBITaxon:62977
+  description: Native pathway species context; individual enzyme evidence retains its strain and preparation
+    scope.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATEDEG-PWY
+    source_assertion: The native pathway species slot lists TAX-62977; this is a source-listed organism
+      context.
+    source_locator: /ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/species/Organism[@frameid="TAX-62977"]
+- id: shikimate-002
+  subject: MetaCyc:SHIKIMATEDEG-PWY
+  predicate: part_of
+  object: NCBITaxon:471
+  description: 'Historical A. calcoaceticus LMD 79.41 context: Table 1 reports shikimate growth of
+    the wild type and impaired growth of PQQ-biosynthesis mutants. The paragraph above Table 1 describes
+    rescue by added PQQ, while Methods reports identification using API 20 NE. This context is distinct
+    from ADP1 and does not assert modern retyping of the historical isolate or purification of its
+    complete route.'
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATEDEG-PWY
+    source_assertion: The native pathway species slot lists TAX-471; this is a source-listed organism
+      context.
+    source_locator: /ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/species/Organism[@frameid="TAX-471"]
+  - reference_id: PMID:3044290
+    source_assertion: Table 1 records shikimate growth for wild-type LMD 79.41, no shikimate growth
+      for the PQQ-biosynthesis mutants M7, 82.43 and 1347, and delayed or weak growth for several
+      mutants under the tested PQQ-free conditions.
+    source_locator: 'Authorized author reprint in the 1988 van Kleef dissertation: Chapter V, printed
+      p. 85 (PDF page 94), Table 1, shikimate columns.'
+- id: shikimate-003
+  subject: MetaCyc:SHIKIMATEDEG-PWY
+  predicate: part_of
+  object: NCBITaxon:442
+  description: Native G. oxydans oxidative-enzyme context, including IFO3244 preparations. This does
+    not assert shikimate-supported growth, complete mineralization, or a purified two-step reconstruction.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATEDEG-PWY
+    source_assertion: The native pathway species slot lists TAX-442; this is a source-listed organism
+      context.
+    source_locator: /ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/species/Organism[@frameid="TAX-442"]
+- id: shikimate-004
+  subject: MetaCyc:SHIKIMATE-PQQ-RXN
+  predicate: part_of
+  object: MetaCyc:SHIKIMATEDEG-PWY
+  description: One of the two explicit native pathway members; the native reaction direction is preserved.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATEDEG-PWY
+    source_assertion: The reaction-list includes SHIKIMATE-PQQ-RXN and the selected pathway layout
+      is L2R.
+    source_locator: /ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/reaction-list|reaction-layout[Reaction/@frameid="SHIKIMATE-PQQ-RXN"]
+- id: shikimate-005
+  subject: CHEBI:36208
+  predicate: consumes
+  object: MetaCyc:SHIKIMATE-PQQ-RXN
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATE-PQQ-RXN
+    source_assertion: The native left side contains SHIKIMATE. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="SHIKIMATE-PQQ-RXN"]/left/Compound[@frameid="SHIKIMATE"]
+  - reference_id: MetaCyc:SHIKIMATE
+    source_assertion: The native compound links CHEBI:36208; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="SHIKIMATE"] /dblink[dblink-db="CHEBI"]|inchi
+- id: shikimate-006
+  subject: MetaCyc:Quinones
+  predicate: consumes
+  object: MetaCyc:SHIKIMATE-PQQ-RXN
+  description: Selected catabolic pathway orientation. Native generic quinone class; this does not
+    establish specificity for every class member or a measured physiological quinone.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATE-PQQ-RXN
+    source_assertion: The native left side contains Quinones. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="SHIKIMATE-PQQ-RXN"]/left/Compound[@frameid="Quinones"]
+- id: shikimate-007
+  subject: MetaCyc:SHIKIMATE-PQQ-RXN
+  predicate: produces
+  object: CHEBI:16630
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATE-PQQ-RXN
+    source_assertion: The native right side contains 3-DEHYDRO-SHIKIMATE. No explicit coefficient
+      is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="SHIKIMATE-PQQ-RXN"]/right/Compound[@frameid="3-DEHYDRO-SHIKIMATE"]
+  - reference_id: MetaCyc:3-DEHYDRO-SHIKIMATE
+    source_assertion: The native compound links CHEBI:16630; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="3-DEHYDRO-SHIKIMATE"] /dblink[dblink-db="CHEBI"]|inchi
+- id: shikimate-008
+  subject: MetaCyc:SHIKIMATE-PQQ-RXN
+  predicate: produces
+  object: MetaCyc:Reduced-Quinones
+  description: Selected catabolic pathway orientation. Native generic quinone class; this does not
+    establish specificity for every class member or a measured physiological quinone.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATE-PQQ-RXN
+    source_assertion: The native right side contains Reduced-Quinones. No explicit coefficient is
+      supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="SHIKIMATE-PQQ-RXN"]/right/Compound[@frameid="Reduced-Quinones"]
+- id: shikimate-009
+  subject: RHEA:24849
+  predicate: part_of
+  object: MetaCyc:SHIKIMATEDEG-PWY
+  description: One of the two explicit native pathway members; the native reaction direction is preserved.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATEDEG-PWY
+    source_assertion: The reaction-list includes DHSHIKIMATE-DEHYDRO-RXN and the selected pathway
+      layout is L2R.
+    source_locator: /ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/reaction-list|reaction-layout[Reaction/@frameid="DHSHIKIMATE-DEHYDRO-RXN"]
+- id: shikimate-010
+  subject: CHEBI:16630
+  predicate: consumes
+  object: RHEA:24849
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+    source_assertion: The native left side contains 3-DEHYDRO-SHIKIMATE. No explicit coefficient is
+      supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/left/Compound[@frameid="3-DEHYDRO-SHIKIMATE"]
+  - reference_id: MetaCyc:3-DEHYDRO-SHIKIMATE
+    source_assertion: The native compound links CHEBI:16630; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="3-DEHYDRO-SHIKIMATE"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:24849
+    source_assertion: RHEA:24849 left side contains CHEBI:16630 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24848_L rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_3489;
+      http://rdf.rhea-db.org/Participant_24848_compound_3489 rh:compound http://rdf.rhea-db.org/Compound_3489
+- id: shikimate-011
+  subject: RHEA:24849
+  predicate: produces
+  object: CHEBI:36241
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+    source_assertion: The native right side contains 3-4-DIHYDROXYBENZOATE. No explicit coefficient
+      is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/right/Compound[@frameid="3-4-DIHYDROXYBENZOATE"]
+  - reference_id: MetaCyc:3-4-DIHYDROXYBENZOATE
+    source_assertion: The native compound links CHEBI:36241; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="3-4-DIHYDROXYBENZOATE"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:24849
+    source_assertion: RHEA:24849 right side contains CHEBI:36241 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24848_R rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_3099;
+      http://rdf.rhea-db.org/Participant_24848_compound_3099 rh:compound http://rdf.rhea-db.org/Compound_3099
+- id: shikimate-012
+  subject: RHEA:24849
+  predicate: produces
+  object: CHEBI:15377
+  description: Selected catabolic pathway orientation.
+  evidence:
+  - reference_id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+    source_assertion: The native right side contains WATER. No explicit coefficient is supplied.
+    source_locator: /ptools-xml/Reaction[@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/right/Compound[@frameid="WATER"]
+  - reference_id: MetaCyc:WATER
+    source_assertion: The native compound links CHEBI:15377; its complete InChI agrees with the selected
+      ChEBI molecular identity.
+    source_locator: /ptools-xml/Compound[@frameid="WATER"] /dblink[dblink-db="CHEBI"]|inchi
+  - reference_id: RHEA:24849
+    source_assertion: RHEA:24849 right side contains CHEBI:15377 with coefficient 1.
+    source_locator: http://rdf.rhea-db.org/24848_R rh:contains1 http://rdf.rhea-db.org/Participant_24848_compound_1283;
+      http://rdf.rhea-db.org/Participant_24848_compound_1283 rh:compound http://rdf.rhea-db.org/Compound_1283
+- id: shikimate-013
+  subject: MetaCyc:SHIKIMATE-PQQ-RXN
+  predicate: precedes
+  object: RHEA:24849
+  description: Native pathway reaction ordering selects forward catabolic progression.
+  evidence:
+  - reference_id: MetaCyc:SHIKIMATEDEG-PWY
+    source_assertion: SHIKIMATE-PQQ-RXN is a predecessor of DHSHIKIMATE-DEHYDRO-RXN.
+    source_locator: /ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/reaction-ordering[Reaction/@frameid="DHSHIKIMATE-DEHYDRO-RXN"]/predecessor-reactions
+- subject: UniProtKB:Q59086
+  predicate: catalyzes
+  object: MetaCyc:SHIKIMATE-PQQ-RXN
+  description: Native ADP1 QuiA shikimate activity is supported by pathway and genetic evidence. The
+    native purified-protein code and kinetics cite Acinetobacter SA1/AC3 preparations; those measurements
+    are not assigned to ADP1. The source groups the reaction as quinone-dependent oxidation without
+    establishing use of every quinone.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-11861
+    source_assertion: ENZRXN-11861 explicitly joins native enzyme MONOMER-28 to SHIKIMATE-PQQ-RXN.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-11861"]/enzyme | /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-11861"]/reaction
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  id: shikimate-014
+- subject: UniProtKB:Q59086
+  predicate: part_of
+  object: NCBITaxon:62977
+  description: ADP1 source protein context; strain-specific activity and preparation limits remain
+    on the catalytic edge.
+  evidence:
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein species slot identifies NCBI Taxonomy 62977; this is the
+      source enzyme context, not full-route reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/species
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  id: shikimate-015
+- subject: UniProtKB:Q43922
+  predicate: catalyzes
+  object: RHEA:24849
+  description: DHS dehydration is supported by cloned quiC activity and native genetic phenotypes.
+    The native protein comment incorrectly labels the assay as DHQ dehydration; no numeric activity
+    is copied.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-38
+    source_assertion: ENZRXN-38 explicitly joins native enzyme MONOMER-37 to DHSHIKIMATE-DEHYDRO-RXN.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-38"]/enzyme | /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-38"]/reaction
+  - reference_id: MetaCyc:MONOMER-37
+    source_assertion: The native protein MONOMER-37 carries a UniProt cross-reference to Q43922.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-37"]/dblink[dblink-db="UNIPROT"]
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: ADP1 genomic quiC expressed in E. coli DH5α(pZR564), a 2.0 kb HindIII insert; crude-extract
+      assay. No protein tag reported or expressed termini measured. Text/Table 1 disagree on pBSK
+      versus pBKS vector label.
+    evidence:
+    - reference_id: PMID:7592351
+      quote: pZR564 contains the open reading frame
+  id: shikimate-016
+- subject: UniProtKB:Q43922
+  predicate: part_of
+  object: NCBITaxon:62977
+  description: ADP1 source protein context; the catalytic experiment used the qualified recombinant
+    crude-extract preparation.
+  evidence:
+  - reference_id: MetaCyc:MONOMER-37
+    source_assertion: The native protein species slot identifies NCBI Taxonomy 62977; this is the
+      source enzyme context, not full-route reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-37"]/species
+  - reference_id: MetaCyc:MONOMER-37
+    source_assertion: The native protein MONOMER-37 carries a UniProt cross-reference to Q43922.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-37"]/dblink[dblink-db="UNIPROT"]
+  id: shikimate-017
+- subject: MetaCyc:MONOMER-1
+  predicate: catalyzes
+  object: RHEA:24849
+  description: Native IFO3244 DHS-dehydratase activity was separated from DQD and detected with a
+    coupled qualitative protocatechuate assay. Exact gene and sequence identity remain unresolved.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3
+    source_assertion: ENZRXN-3 explicitly joins native enzyme MONOMER-1 to DHSHIKIMATE-DEHYDRO-RXN.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3"]/enzyme | /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3"]/reaction
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 partially purified cytoplasmic enzyme fraction; DHS-dehydratase activity
+      eluted separately from DQD on DEAE-Sephadex A-50. Exact protein sequence, termini and oligomeric
+      state are unresolved.
+    evidence:
+    - reference_id: PMID:14586099
+      quote: DSA dehydratase was separated from DQD
+  id: shikimate-018
+- subject: MetaCyc:MONOMER-1
+  predicate: part_of
+  object: NCBITaxon:442
+  description: Source protein taxon context; this partially purified IFO3244 activity is not a sequence
+    identity or full-route reconstruction for every strain.
+  evidence:
+  - reference_id: MetaCyc:MONOMER-1
+    source_assertion: The native protein species slot identifies NCBI Taxonomy 442; this is the source
+      enzyme context, not full-route reconstruction in a single strain.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-1"]/species
+  id: shikimate-019
+- subject: UniProtKB:Q59086
+  predicate: has_cofactor
+  object: CHEBI:58442
+  description: PQQ is a prosthetic cofactor, distinct from the net electron-accepting quinone. The
+    native assignment is independently supported by current ADP1 UniProt annotation; SA1/AC3 or LMD79.41
+    biochemical tests are not transferred to ADP1.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-11861
+    source_assertion: The QuiA shikimate activity record associates PQQ with enzyme MONOMER-28 as
+      a cofactor. PQQ is distinct from the separately consumed quinone acceptor class.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-11861"]/enzyme | /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-11861"]/cofactor
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  - reference_id: UniProtKB:Q59086
+    source_assertion: Q59086 COFACTOR comment identifies pyrroloquinoline quinone with ChEBI:58442.
+    source_locator: $.comments[3].cofactors[0]
+  id: shikimate-020
+- subject: MetaCyc:MONOMER-1
+  predicate: located_in
+  object: GO:0005737
+  description: Recovery in the cytoplasmic fraction supports this preparation context without establishing
+    exclusive localization of a sequence-defined enzyme.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-3
+    source_assertion: The native activity comment reports partial purification of G. oxydans dehydroshikimate
+      dehydratase from the cytoplasmic fraction.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3"]/comment
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 partially purified cytoplasmic enzyme fraction; DHS-dehydratase activity
+      eluted separately from DQD on DEAE-Sephadex A-50. Exact protein sequence, termini and oligomeric
+      state are unresolved.
+    evidence:
+    - reference_id: PMID:14586099
+      quote: DSA dehydratase was separated from DQD
+  id: shikimate-021
+- subject: MetaCyc:MONOMER-67
+  predicate: catalyzes
+  object: MetaCyc:SHIKIMATE-PQQ-RXN
+  description: The inspected native ENZRXN-68 comment reports shikimate activity at 25% of the quinate
+    rate and ferricyanide as the most efficient artificial acceptor, citing PMID:15598527. Its formal
+    reaction slot is quinate oxidation. The shikimate claim is curated-source evidence; the 2004 full
+    paper was unavailable. No physiological quinone specificity is inferred from the artificial-acceptor
+    result.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-68
+    source_assertion: The native G. oxydans QDH activity comment reports shikimate activity at 25%
+      of the quinate rate and identifies ferricyanide as the most efficient artificial acceptor.
+    source_locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-68"]/enzyme | /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-68"]/comment
+      | /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-68"]/evidence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 membrane holo-QDH preparation; SDS bands approximately 65 and 21 kDa
+      may reflect proteolysis of one polypeptide. Exact cleavage and whole-protein sequence are unresolved.
+    evidence:
+    - reference_id: PMID:15598527
+      quote: could be the result of proteolysis of single polypeptide
+  id: shikimate-022
+- subject: MetaCyc:MONOMER-67
+  predicate: part_of
+  object: NCBITaxon:442
+  description: Native G. oxydans protein context; the cited preparation is IFO3244. This does not
+    establish sequence identity or shikimate-supported growth for every strain.
+  evidence:
+  - reference_id: MetaCyc:MONOMER-67
+    source_assertion: The native protein species slot identifies G. oxydans; the linked PMID 15598527
+      title identifies the IFO3244 preparation.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-67"]/species | /ptools-xml/Protein[@frameid="MONOMER-67"]/molecular-weight-exp/citation/Publication/title
+  id: shikimate-023
+- subject: MetaCyc:MONOMER-67
+  predicate: located_in
+  object: GO:0016020
+  description: Native source and the inspected primary abstract describe membrane-bound IFO3244 QDH.
+    This broad location does not establish exact orientation or an obligate respiratory assembly.
+  evidence:
+  - reference_id: MetaCyc:MONOMER-67
+    source_assertion: The native G. oxydans protein has membrane location and cellular-component annotation
+      GO:0016020.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-67"]/location | /ptools-xml/Protein[@frameid="MONOMER-67"]/has-go-term
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 purified holo-QDH preparation; exact proteolytic cleavage state is
+      unresolved.
+    evidence:
+    - reference_id: MetaCyc:MONOMER-67
+      source_assertion: The native QDH protein comment describes a purified holoenzyme with 65/21
+        kDa SDS bands suggested to arise by proteolysis.
+      source_locator: /ptools-xml/Protein[@frameid="MONOMER-67"]/comment
+  id: shikimate-024
+- subject: UniProtKB:Q59086
+  predicate: located_in
+  object: GO:0016020
+  description: The reviewed UniProt membrane annotation uses ECO:0000305 curator inference. The five
+    membrane segments proposed in the 1994 study are hydropathy predictions, not direct topology measurements.
+  evidence:
+  - reference_id: UniProtKB:Q59086
+    source_assertion: The reviewed ADP1 QuiA entry annotates cell-membrane location and multipass
+      topology with ECO:0000305 curator inference.
+    source_locator: $.comments[?(@.commentType=="SUBCELLULAR LOCATION")].subcellularLocations
+  - reference_id: MetaCyc:MONOMER-28
+    source_assertion: The native protein MONOMER-28 carries a UniProt cross-reference to Q59086.
+    source_locator: /ptools-xml/Protein[@frameid="MONOMER-28"]/dblink[dblink-db="UNIPROT"]
+  id: shikimate-025
+- subject: UniProtKB:O83046
+  predicate: part_of
+  object: NCBITaxon:62977
+  description: Reviewed ADP1 PcaU context; the initiating methionine is uncertain between Met1 and
+    Met5, so no exact tested N terminus is assumed.
+  evidence:
+  - reference_id: UniProtKB:O83046
+    source_assertion: The reviewed PcaU entry identifies gene pcaU, locus ACIAD1702 and Acinetobacter
+      baylyi ADP1 (NCBI Taxonomy 62977).
+    source_locator: $.primaryAccession|$.genes|$.organism
+  id: shikimate-026
+- id: shikimate-027
+  subject: MetaCyc:MONOMER-67
+  predicate: has_cofactor
+  object: CHEBI:58442
+  description: PQQ is bound as a prosthetic group; it is not consumed as the quinone electron acceptor.
+    The full 2004 body remains unread.
+  evidence:
+  - reference_id: PMID:15598527
+    quote: containing pyrroloquinoline quinone (PQQ) as the prosthetic group
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: molecular_state
+    description: Native IFO3244 purified holo-QDH preparation; exact proteolytic cleavage state is
+      unresolved.
+    evidence:
+    - reference_id: MetaCyc:MONOMER-67
+      source_assertion: The native QDH protein comment describes a purified holoenzyme with 65/21
+        kDa SDS bands suggested to arise by proteolysis.
+      source_locator: /ptools-xml/Protein[@frameid="MONOMER-67"]/comment
+- id: shikimate-028
+  subject: UniProtKB:O83046
+  predicate: regulates
+  object: MetaCyc:G-27
+  description: PcaU controls quiA transcript abundance in ADP1 under protocatechuate induction. Northern
+    analysis of ADP331 with a 552 bp pcaU deletion showed reduced transcript abundance and loss of
+    inducer dependence relative to wild-type ADP1. The quiA signal was 25% of the induced wild-type
+    level. The 442 bp quiA probe measures the target directly. This is transcriptional control inferred
+    from genetic perturbation. Constitutive quiAp remains active independently of PcaU.
+  evidence:
+  - reference_id: PMID:15691962
+    quote: much less abundant
+    source_locator: 'PMC546756 #sec16, first paragraph; probe definitions in #sec6.'
+  - reference_id: MetaCyc:G-27
+    source_assertion: The native gene G-27 has common-name quiA and the corresponding ADP1 protein
+      product.
+    source_locator: /ptools-xml/Gene[@frameid="G-27"]/common-name|product
+- id: shikimate-029
+  subject: CHEBI:36241
+  predicate: regulates
+  object: MetaCyc:G-27
+  description: Protocatechuate induces ADP1 quiA expression through the regulated pca-qui transcription
+    system. Addition of 2 mM protocatechuate to cells growing on 20 mM pyruvate produced stronger
+    Northern signals after 15 min. The pcaU deletion removed inducer dependence. The 442 bp quiA probe
+    measures the target directly. No direct metabolite–PcaU binding is asserted.
+  evidence:
+  - reference_id: PMID:15691962
+    quote: reflecting the induction of expression by protocatechuate
+    source_locator: 'PMC546756 #sec14, first paragraph; probe definitions in #sec6.'
+  - reference_id: MetaCyc:G-27
+    source_assertion: The native gene G-27 has common-name quiA and the corresponding ADP1 protein
+      product.
+    source_locator: /ptools-xml/Gene[@frameid="G-27"]/common-name|product
+- id: shikimate-030
+  subject: UniProtKB:O83046
+  predicate: regulates
+  object: MetaCyc:G-36
+  description: 'PcaU controls quiC transcript abundance in ADP1 under protocatechuate induction. Northern
+    analysis of ADP331 with a 552 bp pcaU deletion showed reduced transcript abundance and loss of
+    inducer dependence relative to wild-type ADP1. The shared quiC–quiX probe signal was 14% of the
+    induced wild-type level. Target assignment is at the operon level: the 1,522 bp probe spans quiC
+    and quiX and is called the quiX probe in the paper. Isolated quiC promoter activity was not measured.
+    This is transcriptional control inferred from genetic perturbation. Constitutive quiAp remains
+    active independently of PcaU.'
+  evidence:
+  - reference_id: PMID:15691962
+    quote: much less abundant
+    source_locator: 'PMC546756 #sec16, first paragraph; probe definitions in #sec6.'
+  - reference_id: MetaCyc:G-36
+    source_assertion: The native gene G-36 has common-name quiC and the corresponding ADP1 protein
+      product.
+    source_locator: /ptools-xml/Gene[@frameid="G-36"]/common-name|product
+- id: shikimate-031
+  subject: CHEBI:36241
+  predicate: regulates
+  object: MetaCyc:G-36
+  description: 'Protocatechuate induces ADP1 quiC expression through the regulated pca-qui transcription
+    system. Addition of 2 mM protocatechuate to cells growing on 20 mM pyruvate produced stronger
+    Northern signals after 15 min. The pcaU deletion removed inducer dependence. Target assignment
+    is at the operon level: the 1,522 bp probe spans quiC and quiX and is called the quiX probe in
+    the paper. Isolated quiC promoter activity was not measured. No direct metabolite–PcaU binding
+    is asserted.'
+  evidence:
+  - reference_id: PMID:15691962
+    quote: reflecting the induction of expression by protocatechuate
+    source_locator: 'PMC546756 #sec14, first paragraph; probe definitions in #sec6.'
+  - reference_id: MetaCyc:G-36
+    source_assertion: The native gene G-36 has common-name quiC and the corresponding ADP1 protein
+      product.
+    source_locator: /ptools-xml/Gene[@frameid="G-36"]/common-name|product
+references:
+- id: MetaCyc:SHIKIMATEDEG-PWY
+  title: MetaCyc native object SHIKIMATEDEG-PWY
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:SHIKIMATEDEG-PWY
+  source_version: MetaCyc 27.0
+  source_sha256: 9153c7962f156d28786f875f73aee72b4ad67cd07d3e03e6adb5254b3d0d66a3
+- id: MetaCyc:Quinones
+  title: MetaCyc native object Quinones
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:Quinones
+  source_version: MetaCyc 27.0
+  source_sha256: df6ff7e4fbd2b0699369f2fb5e57f08881d97a83037cd6e44f00bef784ba5bc2
+- id: MetaCyc:Reduced-Quinones
+  title: MetaCyc native object Reduced-Quinones
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:Reduced-Quinones
+  source_version: MetaCyc 27.0
+  source_sha256: 79e85269833944d6fc63116e11f52f6e863159cafd03dc11094c26cfe326a4bf
+- id: MetaCyc:SHIKIMATE-PQQ-RXN
+  title: MetaCyc native object SHIKIMATE-PQQ-RXN
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:SHIKIMATE-PQQ-RXN
+  source_version: MetaCyc 27.0
+  source_sha256: 71c965c13cf5d52b57ef1bcb2ed6745e5d44005c74fcd057f503bafca09cfab2
+- id: MetaCyc:SHIKIMATE
+  title: MetaCyc native object SHIKIMATE
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:SHIKIMATE
+  source_version: MetaCyc 27.0
+  source_sha256: cc27f3ac05001f2c20140a842f33d1801af9ca7514df37150a975ade9812b204
+- id: MetaCyc:3-DEHYDRO-SHIKIMATE
+  title: MetaCyc native object 3-DEHYDRO-SHIKIMATE
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-DEHYDRO-SHIKIMATE
+  source_version: MetaCyc 27.0
+  source_sha256: d0f5d73eb794f9644dfd8822b74c02eec042e5d494ee24a599b97babb6770c61
+- id: MetaCyc:DHSHIKIMATE-DEHYDRO-RXN
+  title: MetaCyc native object DHSHIKIMATE-DEHYDRO-RXN
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:DHSHIKIMATE-DEHYDRO-RXN
+  source_version: MetaCyc 27.0
+  source_sha256: 9817702da07b7b4df130381752e639afe1184490dc844d8558c16da4d21613b7
+- id: RHEA:24849
+  title: Rhea equation RHEA:24849
+  url: https://www.rhea-db.org/rhea/24849
+  source_version: Rhea 142
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:3-4-DIHYDROXYBENZOATE
+  title: MetaCyc native object 3-4-DIHYDROXYBENZOATE
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-4-DIHYDROXYBENZOATE
+  source_version: MetaCyc 27.0
+  source_sha256: cd2b2dad4c5e768eaa5979a44d6e65f0a7ed47318f2d3e49b1139413ac5ed632
+- id: MetaCyc:WATER
+  title: MetaCyc native object WATER
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:WATER
+  source_version: MetaCyc 27.0
+  source_sha256: 29201d5730308535e65744b47f9f6e0eb3ef9ffdcdd2eb442888a34da8a8c366
+- id: MetaCyc:ENZRXN-11861
+  title: MetaCyc native object ENZRXN-11861
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-11861
+  source_version: MetaCyc 27.0
+  source_sha256: acbef49bdd879cbc6c3ab00dfcf169867a996d9ffa050e141ec12ede506bbc62
+- id: MetaCyc:MONOMER-28
+  title: MetaCyc native object MONOMER-28
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-28
+  source_version: MetaCyc 27.0
+  source_sha256: 3769731fddd69bb5d4d3bf832fbb4e3868a73abc8608d148ed6c66efadc6d0c8
+- id: MetaCyc:ENZRXN-38
+  title: MetaCyc native object ENZRXN-38
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-38
+  source_version: MetaCyc 27.0
+  source_sha256: 31ffaf53b76ff73d1bb89e4d1c7f179536fca810a467ac734e2a7612ec944fee
+- id: MetaCyc:MONOMER-37
+  title: MetaCyc native object MONOMER-37
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-37
+  source_version: MetaCyc 27.0
+  source_sha256: aa051b12ab812ae7cb68673b48fa86208532fb4af96c8cf89d44a1b1bb8d496b
+- id: MetaCyc:ENZRXN-3
+  title: MetaCyc native object ENZRXN-3
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3
+  source_version: MetaCyc 27.0
+  source_sha256: 6b747b4c778fc515291ca384595388ad0630ace8a41bdd59f0dee4fcfdc33a7c
+- id: MetaCyc:MONOMER-1
+  title: MetaCyc native object MONOMER-1
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-1
+  source_version: MetaCyc 27.0
+  source_sha256: 7bf77b4fdb81ac4c306cebbca6600c88449bc33dd60fd9ba80e47eb860717231
+- id: UniProtKB:Q59086
+  title: UniProtKB Q59086
+  url: https://rest.uniprot.org/uniprotkb/Q59086.json
+  source_version: retrieved 2026-10-14; entryVersion 170; sequenceVersion 1
+  source_sha256: 25d86e8505af8ac4923f508fa03b7fd2aadfeaf1dd1dea924faeec64c532eafe
+- id: MetaCyc:ENZRXN-68
+  title: MetaCyc native object ENZRXN-68
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-68
+  source_version: MetaCyc 27.0
+  source_sha256: a5aa7e49b6d284ee5b96d8e3aff26c454a9afae33cf8bd9d97c3dab19b0b2c42
+- id: MetaCyc:MONOMER-67
+  title: MetaCyc native object MONOMER-67
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:MONOMER-67
+  source_version: MetaCyc 27.0
+  source_sha256: 7b52bfa1ae93fe802ecc6661d052a76dad719f95b10e4c007c8021d7be1369de
+- id: UniProtKB:O83046
+  title: UniProtKB O83046
+  url: https://rest.uniprot.org/uniprotkb/O83046.json
+  source_version: retrieved 2026-10-14; entryVersion 147; sequenceVersion 1
+  source_sha256: 4fc6acac931fcb47fcecd0508b54c36c3a7c932c13420580ba8ed61c36aba81c
+- id: MetaCyc:G-27
+  title: MetaCyc native object G-27
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G-27
+  source_version: MetaCyc 27.0
+  source_sha256: a2b3d82c7627140d0919cbb7242d26d76a9113fc1e85ee4ba9c933af02b89e91
+- id: MetaCyc:G-36
+  title: MetaCyc native object G-36
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G-36
+  source_version: MetaCyc 27.0
+  source_sha256: 8f00c53a548a8eff52cde2ce5e0cbc5aac0b578511c4f5e9667455ba52b93c17
+- id: PMID:7592351
+  title: Unusual ancestry of dehydratases associated with quinate catabolism in Acinetobacter calcoaceticus
+  url: https://www.researchgate.net/publication/15607491_Unusual_ancestry_of_dehydratases_associated_with_quinate_catabolism_in_Acinetobacter_calcoaceticus
+  source_version: Author-rendered full text and captions inspected; original figure images unavailable;
+    exact captured text bindings retained in research dossier
+- id: PMID:14586099
+  title: 3-Dehydroquinate production by oxidative fermentation and further conversion of 3-dehydroquinate
+    to the intermediates in the shikimate pathway
+  url: https://www.jstage.jst.go.jp/article/bbb/67/10/67_10_2124/_pdf
+  source_sha256: fe0a94a47666acfe3a85aed78521589dd0e251b352f3dbfb8bba93df76351f6c
+- id: PMID:15598527
+  title: 'Quinate oxidation in Gluconobacter oxydans IFO3244: purification and characterization of
+    quinoprotein quinate dehydrogenase'
+  url: https://pubmed.ncbi.nlm.nih.gov/15598527/
+  source_version: Primary abstract inspected via Europe PMC; full body unavailable; native database
+    commentary separately cited
+  source_sha256: 787511b9e5396984ebb44ee38cbb4584352ab5959511bf8639c25d3f8ddaa5c0
+- id: PMID:3044290
+  title: Bacterial NAD(P)-independent quinate dehydrogenase is a quinoprotein.
+  url: https://repository.tudelft.nl/file/File_568d007a-a882-4759-b342-9d21fd7d69bc?preview=1
+  source_version: Authorized author reprint, Chapter V printed pages 81–93 in Mario van Kleef’s 1988
+    dissertation; PDF pages 90–102; identification on PDF page 9
+  source_sha256: 9059bfeef93bb35ecadf868c689cc1ed208cd7bac677c3849bdd63852b1b8c97
+- id: PMID:15691962
+  title: Transcriptional organization of genes for protocatechuate and quinate degradation from Acinetobacter
+    sp. strain ADP1
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC546756/
+  source_version: Original PMC HTML retrieved 2026-10-14; main body, Tables 1–2 and Figures 1–7 inspected
+  source_sha256: a6ce5986eb9687d2acca79fbccdb1882ed2e715bbd9c1f746a32bd7fc3d71a23

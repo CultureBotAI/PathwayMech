@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,subprocess,hashlib,datetime
+B=Path(__file__).parent
+rows=json.loads((B/'additional-patterns.json').read_text());patterns=sorted(set(x['pattern'] for x in rows));pf=B/'supplemental-patterns.txt';pf.write_text('\n'.join(patterns)+'\n')
+roots=['/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech','/private/tmp/pathwaymech-next-256-20261014']
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+reports=[]
+for i,r in enumerate(roots):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(pf),'.','-g','!.git','-g','!.git/**','-g','!.venv','-g','!.venv/**']
+ stats={p:{'lines':0,'paths':set()} for p in patterns};log=B/f'supplement-root-{i}-matches.jsonl';err=B/f'supplement-root-{i}-stderr.txt'
+ with log.open('w') as out,err.open('w') as e:
+  proc=subprocess.Popen(cmd,cwd=r,stdout=subprocess.PIPE,stderr=e,text=True)
+  for line in proc.stdout:
+   item=json.loads(line)
+   if item['type']!='match':continue
+   d=item['data'];text=d['lines'].get('text','').lower();path=d['path'].get('text','');hits=[]
+   for p in patterns:
+    if p.lower() in text:stats[p]['lines']+=1;stats[p]['paths'].add(path);hits.append(p)
+   out.write(json.dumps({'path':path,'line_number':d['line_number'],'patterns':hits})+'\n')
+  code=proc.wait()
+ assert code in [0,1],(code,err.read_text())
+ reports.append({'root':r,'command':cmd,'exit_code':code,'counts':{p:{'lines':v['lines'],'files':len(v['paths']),'paths':sorted(v['paths'])} for p,v in stats.items()},'match_projection':{'path':str(log),'sha256':sha(log),'bytes':log.stat().st_size},'stderr':err.read_text()})
+report={'scope':'Additional source-inspected primary paper, protein and deposited sequence identifiers after the main source-derived vocabulary was frozen; no accession-equivalence inference. Same ignored/hidden text-search bounds as dedup-compact.json.','created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'patterns_per_root':len(patterns),'patterns_file':{'path':str(pf),'sha256':sha(pf)},'roots':reports}
+(B/'supplemental-search.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'patterns_per_root':len(patterns),'roots':len(reports),'total_matching_lines':[sum(x['lines'] for x in r['counts'].values()) for r in reports]}))

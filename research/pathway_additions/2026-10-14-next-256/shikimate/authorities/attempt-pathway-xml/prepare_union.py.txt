@@ -1,0 +1,49 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess
+import yaml
+B=Path(__file__).parent
+R=Path('/private/tmp/pathwaymech-next-256-20261014')
+N=Path('/private/tmp/pathwaymech-next-256-native')
+BASE='b645cc4c0afd75f3eff521376b75602a3c2ad679'
+PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(n,x):(B/n).write_text(json.dumps(x,indent=2)+'\n')
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()==BASE
+old=json.loads((B/'baseline/identifier_sources.json').read_text())
+retained=set(json.loads((B/'retained-authority-identifiers.json').read_text()))
+core=json.loads(Path('/private/tmp/pathwaymech-next-256-chemistry/core-record.json').read_text())
+planned={core['id']}|{n['id'] for field in ['taxa','participants','reactions'] for n in core[field]}
+planned|={'UniProtKB:Q59086','UniProtKB:Q43922','MetaCyc:MONOMER-1','MetaCyc:MONOMER-67','CHEBI:58442','GO:0016020','GO:0005737','UniProtKB:O83046','MetaCyc:G-27','MetaCyc:G-36'}
+save('planned-identifiers.json',sorted(planned))
+selector=B/'records/planned-authority-selection.yaml'
+assert not selector.exists()
+selector.write_text(yaml.safe_dump({'id':core['id'],'participants':[{'id':i} for i in sorted(retained|planned)]},sort_keys=False))
+initial={x['frameid']:x for x in json.loads((N/'acquisition-initial-escalated.json').read_text())}
+genes={x['frameid']:x for x in json.loads((N/'acquisition-gene-html-direct.json').read_text())}
+regulator=json.loads((N/'acquisition-regulator.json').read_text())
+adds=[];bindings=[]
+for ident in sorted(planned-retained):
+ prefix,fid=ident.split(':',1)
+ if prefix=='MetaCyc':
+  if fid=='SHIKIMATEDEG-PWY':acq=initial[fid];kind='metacyc-pathway-xml'
+  elif fid=='SHIKIMATE-PQQ-RXN':acq=initial[fid];kind='metacyc-reaction-xml'
+  else:acq=genes[fid];kind='metacyc-html'
+  version='27.0';license='BioCyc license; redistribution not assessed'
+ elif prefix=='UniProtKB':
+  assert fid=='O83046';acq=regulator;kind='uniprot'
+  u=json.loads(Path(acq['path']).read_text());assert u['primaryAccession']==fid
+  v=u['entryAudit'];version=f"Complete {u['entryType']} JSON acquired 2026-10-14; entry version {v['entryVersion']}; sequence version {v['sequenceVersion']}";license='CC-BY-4.0'
+ else:continue
+ p=Path(acq['path']);assert sha(p)==acq['sha256']
+ rel='meta256/'+p.name;dst=B/'originals'/rel;dst.parent.mkdir(exist_ok=True);assert not dst.exists();dst.symlink_to(p)
+ entry=dict(key='meta256-'+ident.replace(':','-'),kind=kind,path=rel,url=acq['url'],version=version,license=license,sha256=sha(p))
+ adds.append(entry);bindings.append(dict(identifier=ident,entry=entry,original=str(p),acquisition=acq))
+assert len({e['key'] for e in old+adds})==len(old+adds)
+save('proposed-source-additions.json',adds);save('identifier_sources.json',old+adds);save('new-source-original-bindings.json',bindings)
+commands=dict(cwd=str(R),baseline_commit=BASE,created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),environment={'PYTHONDONTWRITEBYTECODE':'1','PYTHONNOUSERSITE':'1','PYTHONPATH':str(R/'src')+':'+str(R)},source_builder=[PY,'-B','scripts/build_source_identifier_snapshot.py','--manifest',str(B/'identifier_sources.json'),'--cache-dir',str(B/'originals'),'--records',str(B/'records'),'--output',str(B/'sources.union.json')],ontology_builder=[PY,'-B','scripts/build_ontology_identifier_snapshot.py'],builder_sha256={f:sha(R/'scripts'/f) for f in ['build_source_identifier_snapshot.py','build_ontology_identifier_snapshot.py']},selection=dict(scope=f'All 252 baseline records copied from exact Git blobs plus an ID-only selector preserving all {len(retained)} previous authority terms and {len(planned)} planned IDs. Selector supplies no labels or scientific claims.',selector_file='records/planned-authority-selection.yaml',selector_sha256=sha(selector),reconstruct_from=['retained-authority-identifiers.json','planned-identifiers.json']),manifest_sha256=sha(B/'identifier_sources.json'),old_original_cache='/private/tmp/pathwaymech-next-255-authorities/originals',staging_helper=dict(path=str(Path(__file__).resolve()),sha256=sha(Path(__file__))))
+for prefix,name in [('GO','go'),('CHEBI','chebi'),('NCBITaxon','ncbitaxon'),('RHEA','rhea')]:commands['ontology_builder']+=['--source',f'{prefix}=/private/tmp/pathwaymech-curation-authorities/{name}.db']
+commands['ontology_builder']+=['--rhea-updates',str(B/'baseline/rhea_identifier_updates.json'),'--cache-dir',str(B/'originals'),'--corpus',str(B/'records')]
+for i in ['GO:0008150','GO:0006096','GO:0005975']:commands['ontology_builder']+=['--include-id',i]
+commands['ontology_builder']+=['--output',str(B/'ontology.union.json')]
+save('canonical-build-commands.json',commands)
+print(json.dumps(dict(planned=len(planned),new_identifiers=sorted(planned-retained),new_source_entries=len(adds))))

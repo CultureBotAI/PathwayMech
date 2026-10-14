@@ -1,0 +1,21 @@
+from pathlib import Path
+import json, hashlib, subprocess
+
+B = Path(__file__).parent
+R = Path('/private/tmp/pathwaymech-next-256-20261014')
+BASE = 'b645cc4c0afd75f3eff521376b75602a3c2ad679'
+notes = {
+    'research/pathway_additions/2026-10-14-next-252/para/preflight/CANDIDATES.md': 'Explicit shikimate I lead queued after protocatechuate and quinate routes; exact PQQ step and direct primary evidence were deferred. This is prior pending research, not rejection or accepted pathway coverage.',
+    'research/pathway_additions/2026-10-14-next-253/meta-cleavage/preflight/CANDIDATES.md': 'Explicit two-member shikimate I lead retained with distinct chorismate, phenylethanol and petrobactin boundaries; no record approval.',
+    'research/pathway_additions/2026-10-14-next-253/meta-cleavage/preflight/HANDOFF.md': 'Retains the unreviewed shikimate I lead and bounded 250-record preflight; current preflight replaces its stale baseline counts without changing historical evidence.',
+    'research/pathway_additions/2026-10-14-next-255/quinate/preflight/CANDIDATES.md': 'Names shikimate I as next separate route and quinate II/shikimate II as further leads. Previous quinate I decision is now a maintained record at this baseline.',
+    'research/pathway_additions/2026-10-14-next-255/quinate/preflight/HANDOFF.md': 'Documents exact GO narrowMatch boundaries and two-root search on the prior 251-record baseline. It does not approve shikimate I; this task refreshes its base/count/evidence.',
+    'research/pathway_additions/2026-10-14-next-255/quinate/preflight/continuing-queue.json': 'Bound source originals for three continuing candidates. Shikimate I is selected now; both II variants remain unresolved distinct routes.',
+}
+rows = []
+for rel, note in notes.items():
+    original = subprocess.check_output(['git', 'show', BASE + ':' + rel], cwd=R)
+    assert original == (R / rel).read_bytes()
+    rows.append({'path': rel, 'sha256': hashlib.sha256(original).hexdigest(), 'bytes': len(original), 'disposition': note})
+(B / 'prior-research-dispositions.json').write_text(json.dumps({'baseline_commit': BASE, 'records': rows, 'other_match_types': ['Historical search patterns, count reports and retained helpers repeat the same pending candidate; those are search artifacts rather than independent rejected or approved records.', 'Quinate I native reaction references can mention shikimate as the other activity of QuiA; this does not include the shikimate oxidation reaction in its maintained graph.']}, indent=2) + '\n')
+print('Prior maintained research mentions read and bound to actual baseline blobs.')

@@ -1,0 +1,12 @@
+from acquire import *
+import urllib.parse,time
+rows=[]
+for gene in ['quiA','quiC']:
+    term=f'{gene}[Gene Name] AND 62977[Taxonomy ID]'
+    url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?'+urllib.parse.urlencode({'db':'gene','term':term,'retmode':'json','retmax':100})
+    start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+    with urllib.request.urlopen(url,timeout=60) as r:b=r.read();meta={'status':r.status,'final_url':r.url}
+    j=json.loads(b);f=ORIG/f'NCBI-current-{gene}-search.json';f.write_bytes(b)
+    rows.append({'gene_name':gene,'query':term,'url':url,'retrieved_at':start,**meta,'path':str(f),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)})
+    print(gene,j)
+(ROOT/'acquisition-current-gene-search.json').write_text(json.dumps(rows,indent=2)+'\n')

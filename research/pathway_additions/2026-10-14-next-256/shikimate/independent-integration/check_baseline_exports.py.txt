@@ -1,0 +1,21 @@
+from pathlib import Path
+import csv,datetime,hashlib,io,json,subprocess
+R=Path('/private/tmp/pathwaymech-next-256-20261014');D=Path(__file__).resolve().parent;BASE='b645cc4c0afd75f3eff521376b75602a3c2ad679';ID='MetaCyc:SHIKIMATEDEG-PWY'
+def blob(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
+def rows(raw):return list(csv.DictReader(io.StringIO(raw.decode()),delimiter='\t'))
+a={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline':BASE}
+for name in ['nodes','edges']:
+ p='pages/downloads/'+name+'.tsv';old={r['id']:r for r in rows(blob(p))};new={r['id']:r for r in rows((R/p).read_bytes())};assert set(old)<=set(new)
+ for i,v in old.items():
+  x=dict(new[i])
+  if name=='nodes':x['source_contexts']=json.dumps([c for c in json.loads(x['source_contexts']) if c['record_id']!=ID],ensure_ascii=False,sort_keys=True)
+  assert x==v,(name,i)
+ a[name]={'baseline_count':len(old),'final_count':len(new),'added_count':len(set(new)-set(old)),'all_baseline_content_preserved':True}
+p='pages/pathway_index.json';old=json.loads(blob(p));new=json.loads((R/p).read_bytes());assert list(old)==list(new)
+for key in old:
+ if isinstance(old[key],list):assert [v for v in new[key] if v.get('id')!=ID]==old[key]
+ else:assert old[key]==new[key]
+m=json.loads((R/'pages/downloads/manifest.json').read_text());assert m['pathway_records']==253
+for n in ['nodes','edges']:p=R/'pages/downloads'/f'{n}.tsv';assert m['files'][f'{n}.tsv']['sha256']==hashlib.sha256(p.read_bytes()).hexdigest();assert m['files'][f'{n}.tsv']['rows']==a[n]['final_count']
+a['baseline_index_entries_unchanged']=True;a['manifest_actual_hashes_and_counts_match']=True
+(D/'baseline-exports-audit.json').write_text(json.dumps(a,indent=2)+'\n');print(json.dumps(a,indent=2))

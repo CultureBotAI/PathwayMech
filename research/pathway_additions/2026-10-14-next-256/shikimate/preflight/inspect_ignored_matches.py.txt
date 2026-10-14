@@ -1,0 +1,29 @@
+from pathlib import Path
+import hashlib, json, re
+
+B = Path(__file__).parent
+R = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+rows = []
+def add(rel, disposition, details):
+    p = R / rel
+    rows.append({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size,'disposition':disposition,'details':details})
+
+seed = 'reports/local_source_ingestion/2026-10-08-dram-seed/seed/subsystem_select.body'
+text = (R / seed).read_text()
+assert 'Quinate degradation' in text and 'Shikimate kinase containing cluster' in text
+add(seed, 'The selector names Quinate degradation and Shikimate kinase containing cluster. It contains no subsystem role/organism mechanism in this selector; the former remains a reusable-source lead and the latter is a distinct kinase context, not the selected oxidative shikimate catabolic route.', {'matched_labels':['Quinate degradation','Shikimate kinase containing cluster']})
+dram = 'reports/local_source_ingestion/2026-10-08-dram-seed/dram/module_step_form.tsv'
+text = (R / dram).read_text()
+matched = [{'line':i,'cells':line.split('\t')} for i,line in enumerate(text.splitlines(),1) if re.search('shikimate|quinate',line,re.I)]
+assert {r['cells'][2] for r in matched} == {'M00022','M00039'}
+add(dram, 'The shikimate/quinate-name hits belong to M00022 chorismate biosynthesis and M00039 monolignol biosynthesis. Neither is the PQQ-dependent two-step shikimate-to-protocatechuate boundary.', {'line_numbers':[r['line'] for r in matched],'module_ids':sorted({r['cells'][2] for r in matched})})
+ingested = 'reports/local_source_ingestion/2026-10-08-dram-seed/dram/ingested-native.tsv'
+assert 'M00022' in (R / ingested).read_text()
+add(ingested, 'Local DRAM adapter output repeats the pinned original rows; it is not independent pathway evidence.', {'original_path':dram})
+paper = 'reports/local_source_ingestion/2026-10-08-pathbank-dbcan/dbcan/LaRosa2019.html'
+text = (R / paper).read_text()
+words = sorted(set(m.group(0) for m in re.finditer(r'\b\w*qui[ac]\w*\b',text,re.I)))
+assert not re.search(r'\bqui[ac]\b',text,re.I)
+add(paper, 'The quiA/quiC substring hits are supplier/method spellings rather than the pathway genes.', {'matching_words':words})
+(B / 'ignored-source-dispositions.json').write_text(json.dumps({'source_dispositions':rows,'scope':'Meaningful source-specific ignored text matches were inspected after the complete two-root vocabulary scan. Broad shared compounds, generic names and substring matches are not exact pathway membership. Compressed archives and complete upstream provider holdings were not decoded/researched by this preflight.'},indent=2)+'\n')
+print('Bound ignored-source dispositions:',len(rows))
