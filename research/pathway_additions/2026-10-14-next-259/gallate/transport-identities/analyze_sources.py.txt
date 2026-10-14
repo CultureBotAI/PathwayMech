@@ -1,0 +1,104 @@
+"""Offline identity and GO authority analysis; no maintained changes."""
+from pathlib import Path
+import json,hashlib,re,sqlite3,subprocess,concurrent.futures,html
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+R=Path(__file__).resolve().parent
+A=Path('/private/tmp/pathwaymech-curation-authorities')
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def binding(p):return {'path':str(p),'realpath':str(p.resolve()),'bytes':p.stat().st_size,'sha256':sha(p)}
+def write(n,d):
+ p=R/n
+ if p.exists():raise FileExistsError(p)
+ p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+def triples(db,id):return [{'predicate':p,'object':o,'value':v} for p,o,v in db.execute('select predicate,object,value from statements where subject=? order by predicate,object,value',(id,))]
+def values(rows,p):return [x['object'] or x['value'] for x in rows if x['predicate']==p]
+def val(rows,p):
+ v=values(rows,p);return v[0] if v else None
+def strip(s):return html.unescape(re.sub('<[^>]*>','',s))
+
+c=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True)
+g=sqlite3.connect('file:'+str(A/'go.db')+'?mode=ro',uri=True)
+specs=[
+ ('FCCP','CHEBI:75458','N(N=C(C#N)C#N)c1ccc(OC(F)(F)F)cc1','Carbonyl cyanide hydrazone attached to phenyl position1; trifluoromethoxy group para atposition4. Two identical cyano substituents preclude E/Z assignment at the hydrazone carbon.','candidate_wiley-web-result.json, Figure2C caption L221; 30micromolar in DMSO'),
+ ('CCCP','CHEBI:3259','N(N=C(C#N)C#N)c1cc(Cl)ccc1','Carbonyl cyanide phenylhydrazone with chlorine meta to the hydrazone linkage. The source acronym resolves the abbreviated m-chlorophenylhydrazone wording.','candidate_wiley-web-result.json, Figure2C caption L222; 20micromolar'),
+ ('2,4-dinitrophenol','CHEBI:42017','Oc1c([N+](=O)[O-])cc([N+](=O)[O-])cc1','Phenol bearing nitro substituents at2 and4; neutral named parent, not the phenolate.','candidate_wiley-web-result.json, Figure2C caption L222; 1millimolar'),
+ ('DEPC / diethyl pyrocarbonate','CHEBI:59051','O=C(OCC)OC(=O)OCC','Dicarbonic acid diethyl ester, with a bridging anhydride oxygen; not diethyl carbonate or a modified histidine product.','gal2011_methods-web.json, L383–384; stock0.5M in acetonitrile, assay0.5mM,7min,25C,pH7.0'),
+]
+chem=[];allchebi={}
+for name,id,smiles,interpretation,source in specs:
+ number=id.split(':')[1];p=R/'originals'/f'CHEBI-{number}.json';live=json.loads(p.read_text());rows=triples(c,id);allchebi[id]=rows
+ manual=Chem.MolFromSmiles(smiles);current=Chem.MolFromSmiles(live['default_structure']['smiles']);pinned=Chem.MolFromSmiles(val(rows,'chemrof:smiles_string'))
+ assert manual and current and pinned
+ generated={'smiles':Chem.MolToSmiles(manual),'inchi':Chem.MolToInchi(manual),'inchi_key':Chem.MolToInchiKey(manual),'formula':rdMolDescriptors.CalcMolFormula(manual),'charge':Chem.GetFormalCharge(manual),'components':len(Chem.GetMolFrags(manual)),'chiral_centers':Chem.FindMolChiralCenters(manual,includeUnassigned=True)}
+ canonical=live.get('ascii_name') or strip(live['name'])
+ checks={'id':live['chebi_accession']==id,'canonical_label':canonical==val(rows,'rdfs:label'),'name_based_graph_equals_issuing':generated['smiles']==Chem.MolToSmiles(current),'name_based_graph_equals_pinned':generated['smiles']==Chem.MolToSmiles(pinned),'full_inchi':generated['inchi']==live['default_structure']['standard_inchi']==val(rows,'chemrof:inchi_string'),'full_inchi_key':generated['inchi_key']==live['default_structure']['standard_inchi_key']==val(rows,'chemrof:inchi_key_string'),'formula':generated['formula']==live['chemical_data']['formula']==val(rows,'chemrof:generalized_empirical_formula'),'charge':generated['charge']==live['chemical_data']['charge']==int(val(rows,'chemrof:charge'))==0,'single_component':generated['components']==1}
+ assert all(checks.values()),(id,checks)
+ Chem.MolToMolFile(manual,str(R/'projections'/f'name-graph-{number}.mol'))
+ chem.append({'source_name':name,'proposed_id':id,'canonical_label':canonical,'source_locator':source,'primary_knowledge':'Inspected primary publisher text transcripts supply reagent names/abbreviations, not chemical drawings or catalog/salt identifiers. This is name-to-issuing identity reconciliation; no primary structural drawing is claimed.','name_interpretation':interpretation,'manual_name_smiles':smiles,'structure':generated,'issuing_original':binding(p),'issuing_names':live.get('names'),'issuing_modified_on':live.get('modified_on'),'checks':checks,'boundary':'Canonical named neutral-parent reagent identity does not establish a unique solution or protein-bound microspecies, supplied salt, transport stoichiometry, direct binding, or covalent modification site.'})
+allchebi['CHEBI:84561']=triples(c,'CHEBI:84561')
+write('chemical-identity-proposals.json',{'role':'Author identity research; no new graph edges or approval','rdkit_version':rdBase.rdkitVersion,'chemicals':chem,'excluded':[{'id':'CHEBI:84561','label':val(allchebi['CHEBI:84561'],'rdfs:label'),'reason':'The anion has a related 2,4-dinitrophenol synonym, but the paper does not establish this exact microspecies. Use the named neutral parent and retain the limitation.'}],'label_rules':'Use canonical labels. FCCP is a related synonym in pinned ChEBI and DEPC is the primary abbreviation, so neither abbreviation alone is proposed as a canonical label.'})
+write('projections/pinned-reagent-triples.json',allchebi)
+
+# Full pinned lexical search: all named GO subjects and every literal annotation,
+# not the maintained selected-term subset. The SQL query has no gitignore filter.
+patterns=['gallate','gallic','protocatech','3,4-dihydroxybenzo','3, 4-dihydroxybenzo','3,4,5-trihydroxybenzo','3, 4, 5-trihydroxybenzo']
+sql="select subject,predicate,object,value from statements where subject like 'GO:%' and ("+' or '.join('lower(value) like ?' for _ in patterns)+')'
+lex=[{'subject':s,'predicate':p,'object':o,'value':v} for s,p,o,v in g.execute(sql,tuple('%'+x+'%' for x in patterns))]
+# Separate abbreviation search, with whole-token PCA filtering to avoid treating
+# unrelated words containing pca as protocatechuate.
+pca=[{'subject':s,'predicate':p,'object':o,'value':v} for s,p,o,v in g.execute("select subject,predicate,object,value from statements where subject like 'GO:%' and lower(value) like '%pca%'") if re.search(r'\bPCA\b',v or '',re.I)]
+compoundids=['CHEBI:16918','CHEBI:30778','CHEBI:36241','CHEBI:36062']
+logical=[]
+for compound in compoundids:
+ seeds=[{'subject':s,'predicate':p,'object':o,'value':v} for s,p,o,v in g.execute('select subject,predicate,object,value from statements where object=?',(compound,))]
+ todo=[x['subject'] for x in seeds];seen=set();named=set();arcs=[]
+ while todo:
+  node=todo.pop()
+  if node in seen:continue
+  seen.add(node)
+  if node.startswith('GO:'):named.add(node);continue
+  if not node.startswith('_:'):continue
+  for s,p,o,v in g.execute('select subject,predicate,object,value from statements where object=?',(node,)):
+   arcs.append({'subject':s,'predicate':p,'object':o,'value':v})
+   if s not in seen:todo.append(s)
+ logical.append({'compound_id':compound,'compound_label':val(triples(c,compound),'rdfs:label'),'initial_references':seeds,'anonymous_reverse_arcs':arcs,'visited_nodes':len(seen),'nearest_named_GO_terms':[{'id':id,'label':val(triples(g,id),'rdfs:label')} for id in sorted(named)]})
+candidateids={x['subject'] for x in lex+pca}|{x['id'] for row in logical for x in row['nearest_named_GO_terms']}
+candidateprojection={id:triples(g,id) for id in sorted(candidateids)}
+transport_candidates=[{'id':id,'label':val(rows,'rdfs:label')} for id,rows in candidateprojection.items() if any(re.search(r'transport|uptake|import|export|symport|antiport|porin',s or '',re.I) for s in [val(rows,'rdfs:label'),val(rows,'IAO:0000115')]+values(rows,'oio:hasExactSynonym'))]
+write('projections/GO-substrate-specific-search.json',{'scope':'Complete pinned GO2026-07-26 named GO literal annotations plus reverse anonymous-expression closure from exact gallate/gallic acid and protocatechuate/protocatechuic acid ChEBI IDs. This is not a claim about future GO releases or every external ontology.','patterns':patterns,'lexical_matches':lex,'PCA_abbreviation_matches':pca,'chemical_logical_search':logical,'all_candidate_term_statements':candidateprojection,'transport_candidates':transport_candidates,'database_named_GO_label_count':g.execute("select count(distinct subject) from statements where subject like 'GO:%' and predicate='rdfs:label'").fetchone()[0]})
+
+quick=json.loads((R/'originals/QuickGO-selected-terms.json').read_text())
+go=[];allgo={}
+for item in quick['results']:
+ id=item['id'];rows=triples(g,id);allgo[id]=rows
+ checks={'same_id':id in [val(rows,'oio:id'),id] and bool(rows),'same_label':item['name']==val(rows,'rdfs:label'),'same_aspect':item['aspect']==val(rows,'oio:hasOBONamespace'),'current_not_obsolete':not item.get('isObsolete'),'pinned_not_obsolete':val(rows,'owl:deprecated')not in ['true','1']}
+ assert all(checks.values()),(id,checks)
+ category={'molecular_function':'molecular_activity','biological_process':'biological_process','cellular_component':'cellular_component'}[item['aspect']]
+ go.append({'id':id,'canonical_label':item['name'],'aspect':item['aspect'],'record_category':category,'definition':item.get('definition',{}).get('text'),'checks':checks,'pinned_direct_parents':values(rows,'rdfs:subClassOf'),'authority_only':'Term identity and definition do not establish an experimental protein annotation or a substrate-specific transport event.'})
+write('GO-authority-options.json',{'terms':go,'no_new_edges':True,'scope_notes':['GO:0046943 is the exact source-native GalT molecular-function annotation. GO:0005886 is its cellular-component annotation.','GO:0015288 and GO:0016020 are the exact source-native GalP function/component annotations.','GO:1905039 and GO:0046942 are broad biological-process options for source-scoped transport observations, not gallate-specific issuing terms.','GO:0008028 and GO:0015718 are chemical-class-specific possibilities requiring primary scope reasoning; they are not asserted as direct UniProt annotations here.','Do not convert membrane uncoupler sensitivity into a direct GalT-binding inhibition edge or fixed proton symport stoichiometry.','Do not replace generic GO canonical labels with invented gallate/PCA-specific labels. Parent owns event scope and graph semantics.']})
+write('projections/pinned-selected-GO-triples.json',allgo)
+
+annotations=[]
+for name in ['E8ZB61','Q88JX6']:
+ p=R/'originals'/f'{name}.json';d=json.loads(p.read_text())
+ annotations.append({'protein':'UniProtKB:'+name,'source':binding(p),'entry_audit':d['entryAudit'],'sequence_length':d['sequence']['length'],'GO_crossreferences':[x for x in d['uniProtKBCrossReferences'] if x['database']=='GO'],'comments':d.get('comments'),'boundary':'GO evidence labels are retained exactly. IEA annotations are computational evidence, not direct experimental proof of the molecular function or location; primary construct/strain specificity remains required.'})
+write('protein-annotation-evidence.json',annotations)
+
+sources=json.loads(Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/data/identifier_authorities/ontology.json').read_text())['sources']
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:bindings=list(pool.map(binding,[A/'chebi.db',A/'go.db']))
+for b,key in zip(bindings,['chebi-255','go-2026-07-26']):
+ assert b['sha256']==sources[key]['sha256'],(key,b['sha256']);b['source_key']=key;b['issuing_source']=sources[key]
+write('pinned-original-bindings.json',bindings)
+
+inventory=subprocess.run(['rg','--files','--hidden','--no-ignore',str(A),'/Users/marcin/.data/oaklib','/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/data/identifier_authorities'],capture_output=True,text=True,check=True)
+paths=[s for s in inventory.stdout.splitlines() if re.search(r'(^|/)(go[^/]*\.(db|json|owl|obo|ofn)|ontology\.json|ontology-inputs\.json)$',s,re.I)]
+write('GO-inventory-receipt.json',{'command':'rg --files --hidden --no-ignore <shared authorities> /Users/marcin/.data/oaklib <maintained authorities>; filtered candidate source filenames','ignored_files_included':True,'paths':paths,'explicit_pinned_database':str(A/'go.db'),'explicit_resolved_database':str((A/'go.db').resolve()),'content_search':'The entire explicit GO SQLite statements table was queried independently of filesystem ignore rules; symlink resolved path is recorded.','negative_claim_limit':'No gallate/PCA-specific transport term found by the complete pinned lexical/logical search if transport_candidates is empty; not a universal ontology absence claim.'})
+
+authority=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/data/identifier_authorities/ontology.json');raw=authority.read_bytes();ad=json.loads(raw);selected=[x['proposed_id'] for x in chem]+[x['id'] for x in go]
+write('authority-requirements.json',{'snapshot_sha256':hashlib.sha256(raw).hexdigest(),'terms':{id:{'present':id in ad['terms'],'current_term':ad['terms'].get(id)} for id in selected},'action':'Root chooses which broad terms are needed, extracts missing exact keys from the existing full pinned originals through the normal workflow, and obtains scientific review. No authority edit or new edge was made here.'})
+print(json.dumps({'chemicals':len(chem),'chemical_checks_pass':True,'GO_terms':len(go),'transport_candidates':transport_candidates,'all_go_labels_compared':len(candidateids),'pinned_hashes_verified':True}))

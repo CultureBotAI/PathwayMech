@@ -1,0 +1,88 @@
+from pathlib import Path
+from html.parser import HTMLParser
+import collections
+import datetime
+import hashlib
+import json
+import re
+import yaml
+
+B = Path('/private/tmp/pathwaymech-next-259-20261014')
+O = Path('/private/tmp/pathwaymech-next-259-science-successor')
+destination = O / 'independent-context-and-page-replay.json'
+assert not destination.exists()
+sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+applied = json.loads((O / 'applied-inspect.json').read_text())
+previous = json.loads(Path('/private/tmp/pathwaymech-next-259-science/completed-inspect.json').read_text())
+previous_hashes = {entry['path']: entry['sha256'] for entry in previous['source']['inputs']}
+changes = []
+for entry in applied['source']['inputs']:
+    if entry['path'] not in previous_hashes or entry['sha256'] == previous_hashes[entry['path']]:
+        continue
+    if entry['role'] == 'target':
+        classification = 'Maintained correction; all 31 field changes replayed independently.'
+        preimage = Path('/private/tmp/pathwaymech-next-259-science/initial-maintained-record.yaml')
+    else:
+        assert entry['path'].endswith('/root-retention-map.json')
+        package = Path(entry['path']).parent.name
+        assert package in ['record-final', 'adapter-author', 'adapter-review']
+        preimage = B / 'research/pathway_additions/2026-10-14-next-259/corrections/application/predecessor-root-metadata' / package / 'root-retention-map.json'
+        classification = 'Root retention metadata correction for compact-link/lossless-gzip defects; exact old metadata preimage retained.'
+    assert sha(preimage) == previous_hashes[entry['path']]
+    assert sha(B / entry['path']) == entry['sha256']
+    changes.append({'path': entry['path'], 'prior_sha256': previous_hashes[entry['path']], 'new_sha256': entry['sha256'], 'preimage_path': str(preimage), 'classification': classification})
+assert len(changes) == 4
+record = yaml.safe_load((O / 'applied-record.yaml').read_text())
+page = B / 'pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html'
+
+class Graph(HTMLParser):
+    def __init__(self):
+        super().__init__(); self.edges = []; self.links = []
+    def handle_starttag(self, tag, attributes):
+        attributes = dict(attributes)
+        if tag == 'a' and 'graph-edge' in attributes.get('class', '').split():
+            self.edges.append(attributes)
+        if tag == 'a' and attributes.get('href'):
+            self.links.append(attributes['href'])
+
+graph = Graph(); graph.feed(page.read_text())
+assert len(graph.edges) == 130
+norm = lambda value: re.sub(r'\s+', ' ', value).strip()
+for edge in graph.edges:
+    index = int(edge['href'].rsplit('-', 1)[1]) - 1
+    source = record['mechanistic_edges'][index]
+    actual = [edge.get('data-subject-id', edge['data-subject']), edge['data-predicate'], edge.get('data-object-id', edge['data-object'])]
+    assert actual == [source[key] for key in ['subject', 'predicate', 'object']]
+    assert norm(source['description']) in norm(edge['aria-label'])
+    for qualifier in source.get('endpoint_qualifiers', []):
+        assert norm(qualifier['description']) in norm(edge['aria-label'])
+        for evidence in qualifier['evidence']:
+            assert norm(evidence.get('quote', evidence.get('source_assertion'))) in norm(edge['aria-label'])
+            assert norm(evidence['source_locator']) in norm(edge['aria-label'])
+assert 'https://www.ebi.ac.uk/QuickGO/term/GO:0046943' in graph.links
+comparison = Path('/private/tmp/pathwaymech-next-259-checks-final/record-export-comparison.json')
+export = json.loads(comparison.read_text())
+assert export['record_sha256'] == sha(O / 'applied-record.yaml')
+artifacts = [{'path': relative, 'sha256': expected, 'matches': sha(B / relative) == expected} for relative, expected in export['artifacts'].items()]
+assert all(item['matches'] for item in artifacts)
+history_receipt = Path('/private/tmp/pathwaymech-next-259-ci/initial-saved-history-check.json')
+history = json.loads(history_receipt.read_text())
+assert history['exit_code'] == 0 and history['stdout']['valid_reviews'] == 167
+result = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Independent successor context classification and actual static SVG semantics replay; not a visual-layout review.',
+    'changed_predecessor_inputs': changes,
+    'other_comparable_prior_inputs_unchanged': True,
+    'actual_SVG_edges_checked': 130,
+    'CSS_classes': dict(collections.Counter(edge['class'] for edge in graph.edges)),
+    'all_graph_edge_triples_descriptions_and_qualifier_evidence_match_actual_record': True,
+    'quickgo_navigation_link_present': True,
+    'root_export_comparison': {'path': str(comparison), 'sha256': sha(comparison), 'scope': 'Root separately compared all HTML/KGX metadata; reviewer independently rehashed artifacts and checked actual SVG semantics.'},
+    'artifacts': artifacts,
+    'initial_history_check': {'path': str(history_receipt), 'sha256': sha(history_receipt), 'exit_code': 0, 'valid_reviews': 167},
+    'reviewer_attempt_note': 'An initial inline check selected only the mechanism CSS class and failed its expected-130 count because the actual SVG has 95 mechanism and 35 context edges. No output artifact was written. Direct DOM inspection established both classes and the original source-ID fallback for unqualified endpoints; this retained helper verifies all 130 edges. This was a reviewer check assumption, not a renderer defect.',
+    'limitations': ['No browser screenshot or visual-layout approval is claimed.', 'Final complete suite and staged check receipts remain pending; the initial failed staged check remains immutable historical evidence.']
+}
+with destination.open('x') as stream:
+    json.dump(result, stream, indent=2); stream.write('\n')
+print(json.dumps({'path': str(destination), 'sha256': sha(destination), 'changes': len(changes), 'SVG_edges': len(graph.edges)}, indent=2))

@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,datetime
+B=Path(__file__).parent;R=B/'retained';R.mkdir(exist_ok=True);(R/'helpers').mkdir(exist_ok=True)
+def bind(p,relative=False):
+ h=hashlib.sha256()
+ with p.open('rb')as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return {'path':str(p.relative_to(B))if relative else str(p),'bytes':p.stat().st_size,'sha256':h.hexdigest()}
+frozen=[]
+for root,expected in [('/private/tmp/pathwaymech-next-259-native','3e46ccb2ce1759e4d512f457c6452c9374d2c696144dfe24f901d3c6e9d40360'),('/private/tmp/pathwaymech-next-259-primary','518b06fee06916f8df2ed5cb6ead277f121da63d1fe1fb7ded181bd55e7b1b5e')]:
+ root=Path(root);p=root/'artifact-manifest.json';receipt=bind(p);assert receipt['sha256']==expected;manifest=json.loads(p.read_text())
+ for r in manifest['files']:
+  got=bind(root/r['path']);assert got['sha256']==r['sha256']and got['bytes']==r['bytes'],r['path']
+ frozen.append({'manifest':receipt,'verified_members':len(manifest['files']),'unchanged_from_received_frozen_hash':True})
+reuse=json.loads((B/'reuse-receipts.json').read_text())
+for r in reuse:
+ got=bind(Path(r['path']));assert got['sha256']==r['sha256']and got['bytes']==r['bytes'],r['path']
+raw=[bind(p,True)for p in sorted((B/'originals').iterdir())if p.is_file()]
+for p in B.glob('acquisition-*.json'):
+ rs=json.loads(p.read_text());rs=rs if isinstance(rs,list)else[rs]
+ for r in rs:
+  if 'sha256'in r:
+   got=bind(Path(r['path']));assert got['sha256']==r['sha256']and got['bytes']==r['bytes'],r['path']
+(B/'external-originals-manifest.json').write_text(json.dumps({'scope':'All raw files in this external supplement, including failed/challenge responses. File membership is not authority validation; acquisition and disposition ledgers govern. Raw originals stay external.','files':raw,'count':len(raw),'bytes':sum(x['bytes']for x in raw)},indent=2)+'\n')
+chem=json.loads((B/'projections/DesB-inhibitor-identity-closure.json').read_text());prot=json.loads((B/'projections/protein-and-gene-identities.json').read_text());syk=json.loads((B/'projections/SYK6-LigAB-DesZ-identities.json').read_text());inv=json.loads((B/'projections/authority-parser-inventory.json').read_text())
+endpoints={'scope':'Author endpoint bindings for primary ledger integration; no maintained node or edge approval. Preserve primary claim-specific preparation qualifiers.','regulation_targets':[{'primary_alias':'galB gene / PP_RS13150 / oldPP2515','candidate_id':'KEGG:ppu:PP_2515','category':'DNA','status':'Exact coding-locus source and strict parser supported. GalR transcriptional control targets this gene context, not GalB protein activity.'},{'primary_alias':'galT gene / PP_RS13170 / oldPP2519','candidate_id':'KEGG:ppu:PP_2519','category':'DNA','status':'Exact issuing pseudogene identity; current strict CDS profile rejects. Separate supported gene-only owner shape required before maintained use. Not repaired GalT protein.'}],'protein_candidates':[{'locus':r['locus'],'ids':r['protein_endpoints'],'sequence_sha256':r['sequence_sha256'],'length':r['aa_length']}for r in prot['rows']],'SYK6_candidates':[{'native_id':r['native_protein'],'ids':r['protein_ids'],'sequence_sha256':r['sequence_sha256'],'length':r['length']}for r in syk['proteins']],'SYK6_complex':syk['complex'],'inhibitor_candidates':[{'primary_label':r['primary_label'],'id':r['id'],'scope':r['mechanism_scope']}for r in chem['rows']],'excluded_crosswalks':['Current UniProt GeneIDs83680896/83680898 identify NMI24_14, not KT2440.','DiscontinuedKT2440 Entrez1045763/1045766/1045767/44144364 are not current authority terms.','Do not equate current258aa GalB with historical244aa or240aa crystal construct without explicit qualifications.','No historicalComamonasLigAB to SYK6LigAB equivalence; no DesB2021fusion to unmodifiednativeDesB equivalence.']}
+(B/'projections/endpoint-handoff.json').write_text(json.dumps(endpoints,indent=2)+'\n')
+verification={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'source author; no independent review verdict','frozen_packages_unchanged':frozen,'raw_originals_rehashed':len(raw),'reused_sources_rehashed':len(reuse),'exact_KT2440_CDS_protein_comparisons':len(prot['rows']),'exact_SYK6_CDS_protein_comparisons':len(syk['proteins']),'exact_inhibitor_structures':len(chem['rows']),'GalB_crystal_sequence_and_8_numbering_checks':True,'authority_candidate_count':len(inv['inventory']),'parser_preflights':len(inv['parser_preflights']),'scope_limits':['Primary construct/tag/allele qualifications remain necessary.','galT gene-only owner support remains a concrete integration prerequisite.','No maintained writes, adapter changes, worktree, or GitHub action.','No whole-source exhaustion, whole-repository absence, or independent scientific approval.']}
+(B/'verification.json').write_text(json.dumps(verification,indent=2)+'\n')
+for p in B.glob('*.py'):(R/'helpers'/(p.name+'.txt')).write_bytes(p.read_bytes())
+selected=[B/'HANDOFF.md',B/'external-originals-manifest.json',B/'reuse-receipts.json',B/'verification.json']+sorted(B.glob('acquisition-*.json'))+sorted(p for p in (B/'projections').iterdir()if p.is_file())+sorted((R/'helpers').iterdir())
+files=[bind(p,True)for p in selected];manifest={'role':'bounded primary-endpoint identity source-author supplement','scope':'Compact retained-artifact allowlist; raw originals external; helpers inert text. This manifest excludes itself.','files':files,'count':len(files),'bytes':sum(x['bytes']for x in files)}
+(B/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+for r in files:assert bind(B/r['path'],True)==r
+print(json.dumps({'retained_artifacts':len(files),'retained_bytes':manifest['bytes'],'external_originals':len(raw),'manifest':bind(B/'artifact-manifest.json'),'all_hash_checks_passed':True},indent=2))

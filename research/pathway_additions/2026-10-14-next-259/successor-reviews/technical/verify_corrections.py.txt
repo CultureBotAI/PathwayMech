@@ -1,0 +1,70 @@
+"""Independently verify applied technical corrections after canonical capture."""
+from pathlib import Path
+import datetime,gzip,hashlib,json,subprocess
+import yaml
+R=Path('/private/tmp/pathwaymech-next-259-20261014');O=Path(__file__).parent;I=Path('/private/tmp/pathwaymech-next-259-integration-review');G=R/'research/pathway_additions/2026-10-14-next-259/gallate'
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def digest(data):return hashlib.sha256(data).hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+def relative(p):return str(p.relative_to(R))
+capture=load(O/'canonical-inspect.json')
+for row in capture['source']['inputs']:assert sha(R/row['path'])==row['sha256'],row['path']
+prior=yaml.safe_load((R/'reviews/structured/20261014T230631Z-next259-technical-integration-initial/review.yaml').read_text());prior_inputs={r['path']:r['sha256'] for r in prior['source']['inputs']}
+unchanged_targets=['kegg-gene-parser','identifier-consumer','source-builder','pseudogene-tests','identifier-documentation','source-manifest','source-authority','ontology-authority','gallate-creation-history']
+for t in prior['targets']:
+ if t['target_id'] in unchanged_targets:assert sha(R/t['path'])==prior_inputs[t['path']],t['path']
+old_retention=load(I/'research-retention-verification.json')['paths'];changed_allowed={relative(G/name/file) for name in ['record-final','adapter-author','adapter-review'] for file in ['root-retention-map.json','retained-manifest.json']}|{relative(G/'research-retention.json')}
+staged_initial=load(I/'staged-diff-full-inventory-failure.json');removed={x['path'] for x in staged_initial['affected_artifacts']}
+unchanged=0;changed=[];missing=[]
+for path,oldsha in old_retention.items():
+ p=R/path
+ if not p.is_file():assert path in removed,path;missing.append(path)
+ elif sha(p)!=oldsha:assert path in changed_allowed,path;changed.append(path)
+ else:unchanged+=1
+assert set(missing)==removed
+index=load(G/'research-retention.json');assert len(index['packages'])==18
+paths={relative(G/'research-retention.json'):sha(G/'research-retention.json')};packages=[]
+for package in index['packages']:
+ mp=R/package['manifest'];assert sha(mp)==package['sha256'];paths[relative(mp)]=sha(mp);manifest=load(mp)
+ declared={row['path'] for row in manifest['files']};actual={str(p.relative_to(mp.parent)) for p in mp.parent.rglob('*') if p.is_file() and p!=mp};assert declared==actual,(mp,declared^actual)
+ assert package['retained_files']==len(manifest['files'])
+ for row in manifest['files']:
+  p=mp.parent/row['path'];assert p.stat().st_size==row['bytes'] and sha(p)==row['sha256'],p;paths[relative(p)]=sha(p)
+ packages.append({'manifest':relative(mp),'sha256':sha(mp),'files':len(manifest['files'])})
+expected_new={p+'.gz' for p in removed}|{relative(G/'record-final/gallate-degradation-i.yaml')}
+assert set(paths)-set(old_retention) <= expected_new|{relative(G/'research-retention.json')},set(paths)-set(old_retention)
+assert set(old_retention)-set(paths)==removed
+handoff=G/'record-final/HANDOFF.md';draft=handoff.parent/'gallate-degradation-i.yaml';oldsha='9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665'
+assert sha(handoff)==prior_inputs[relative(handoff)]
+assert '[gallate-degradation-i.yaml](gallate-degradation-i.yaml)' in handoff.read_text();assert sha(draft)==oldsha
+mapping=load(handoff.parent/'root-retention-map.json');row=next(x for x in mapping['files'] if x['source_relative_path']=='gallate-degradation-i.yaml');assert row['retained_path']=='gallate-degradation-i.yaml' and row['sha256']==oldsha
+compressed=[]
+for artifact in staged_initial['affected_artifacts']:
+ p=R/artifact['path'];q=Path(str(p)+'.gz');raw=gzip.decompress(q.read_bytes());assert digest(raw)==artifact['sha256'];assert gzip.compress(raw,mtime=0)==q.read_bytes();assert not p.exists()
+ package=G/('adapter-review' if '/adapter-review/' in artifact['path'] else 'adapter-author');mapping=load(package/'root-retention-map.json');row=next(x for x in mapping['files'] if x['retained_path']==str(q.relative_to(package)))
+ assert row['retained_encoding']=='gzip' and row['retained_sha256']==sha(q) and row['uncompressed_sha256']==artifact['sha256'] and row['sha256']==artifact['sha256']
+ assert Path(row['external_path']).read_bytes()==raw
+ compressed.append({'original_path':artifact['path'],'retained_path':relative(q),'sha256':sha(q),'uncompressed_sha256':digest(raw),'uncompressed_bytes':len(raw)})
+for name in ['record-final','adapter-author','adapter-review']:
+ p=G/name/'source-author-manifest.json';assert sha(p)==prior_inputs[relative(p)]
+recordpath=R/'data/pathways/gallate-degradation-i.yaml';record=yaml.safe_load(recordpath.read_text());go=next(x for x in record['references'] if x['id']=='GO:0046943')
+assert go['url']=='https://www.ebi.ac.uk/QuickGO/term/GO:0046943'
+assert go['source_sha256']=='018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd'
+assert go['source_version']=='Pinned GO semantic SQL metadata version 2026-07-26; digest is the uncompressed semantic SQL database, not the linked current term page'
+author=yaml.safe_load(Path('/private/tmp/pathwaymech-next-259-citation-correction/gallate-degradation-i.yaml').read_text());patched=json.loads(json.dumps(author));g=next(x for x in patched['references'] if x['id']=='GO:0046943');g['url']=go['url'];g['source_version']=go['source_version'];assert patched==record
+application=R/'research/pathway_additions/2026-10-14-next-259/corrections/application/application-receipt.json';app=load(application);assert app['final_record']['sha256']==sha(recordpath) and app['initial_record_sha256']==oldsha
+for path,h in app['authorities_unchanged'].items():assert sha(R/path)==h==prior_inputs[path]
+for path,h in prior_inputs.items():
+ if path.startswith('data/pathways/') and path!=relative(recordpath):assert sha(R/path)==h,path
+ontology=load(R/'data/identifier_authorities/ontology.json');sources=load(R/'data/identifier_authorities/sources.json');declared={record['id']}|{n['id'] for k in ['participants','reactions','taxa'] for n in record[k]};assert len(declared)==88
+assert declared <= set(ontology['terms'])|set(sources['terms'])
+assert ontology['terms']['GO:0005829']['label']=='cytosol'
+pseudogene=next(x for x in record['participants'] if x['id']=='KEGG:ppu:PP_2519');assert pseudogene['category']=='gene'
+checks=[]
+for command in [['git','diff','--cached','--check'],['git','diff','--check']]:
+ p=subprocess.run(command,cwd=R,capture_output=True,text=True);checks.append({'command':command,'exit_code':p.returncode,'stdout':p.stdout,'stderr':p.stderr});assert p.returncode==0,p.stdout+p.stderr
+# Every current compact artifact must already be published in the index byte-for-byte.
+for path,h in paths.items():
+ blob=subprocess.check_output(['git','show',':'+path],cwd=R);assert digest(blob)==h,path
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed','record_sha256':sha(recordpath),'canonical_inputs_rechecked':len(capture['source']['inputs']),'unchanged_prior_targets':unchanged_targets,'prior_retention_unchanged_files':unchanged,'changed_root_metadata_paths':changed,'removed_raw_paths':missing,'current_retained_files':len(paths),'packages':packages,'paths':paths,'restored_frozen_draft_sha256':sha(draft),'immutable_handoff_sha256':sha(handoff),'compressed_artifacts':compressed,'go_reference':go,'newly_selected_cytosol_authority':ontology['terms']['GO:0005829'],'all_selected_ids_covered':len(declared),'application_receipt_sha256':sha(application),'author_proposal_sha256':sha(Path('/private/tmp/pathwaymech-next-259-citation-correction/gallate-degradation-i.yaml')),'author_proposal_difference':'Only the GO URL and source_version wording differ; biological corrections require the separate scientific review.','whitespace_checks':checks,'retained_index_blobs_verified':len(paths),'scope':'Actual post-application correction checks; no scientific approval. Original external bytes and original author manifests remain unchanged. Exact current compact file enumeration includes hidden/ignored files.'}
+p=O/'corrections-independent-verification.json';assert not p.exists();p.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['paths','packages']},indent=2))

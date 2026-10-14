@@ -1,0 +1,20 @@
+from pathlib import Path
+import json, hashlib, sqlite3, xml.etree.ElementTree as E
+from datetime import datetime, timezone
+from rdkit import Chem, rdBase
+from rdkit.Chem import rdMolDescriptors
+cases=[('48828','[Co+2]','cobalt(2+)'),('75458','FC(F)(F)Oc1ccc(NN=C(C#N)C#N)cc1','carbonyl cyanide p-trifluoromethoxyphenylhydrazone'),('3259','Clc1cccc(NN=C(C#N)C#N)c1','CCCP'),('42017','Oc1c([N+]([O-])=O)cc([N+]([O-])=O)cc1','2,4-dinitrophenol'),('59051','O=C(OCC)OC(=O)OCC','diethyl pyrocarbonate')]
+c=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+rows=[]
+for n,smiles,label in cases:
+ p=Path('/private/tmp/pathwaymech-next-259-cobalt/CHEBI-'+n+'.json') if n=='48828' else Path('/private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-'+n+'.json')
+ d=json.loads(p.read_text());m=Chem.MolFromSmiles(smiles);struct=d['default_structure'];key=Chem.MolToInchiKey(m);inchi=Chem.MolToInchi(m)
+ triples=c.execute('SELECT predicate, object, value FROM statements WHERE subject=?',('CHEBI:'+n,)).fetchall()
+ values={a:v for a,o,v in triples if v is not None}
+ check={'source_label':d['ascii_name']==label,'source_key':struct['standard_inchi_key']==key,'source_inchi':struct['standard_inchi']==inchi,'source_smiles_graph':Chem.MolToSmiles(Chem.MolFromSmiles(struct['smiles']))==Chem.MolToSmiles(m),'source_charge':d['chemical_data']['charge']==Chem.GetFormalCharge(m),'pinned_label':values['rdfs:label']==label,'pinned_key':values['chemrof:inchi_key_string']==key,'pinned_inchi':values['chemrof:inchi_string']==inchi,'pinned_smiles_graph':Chem.MolToSmiles(Chem.MolFromSmiles(values['chemrof:smiles_string']))==Chem.MolToSmiles(m)}
+ rows.append({'id':'CHEBI:'+n,'name_encoded_smiles':smiles,'computed_smiles':Chem.MolToSmiles(m),'computed_inchi':inchi,'computed_key':key,'computed_formula':rdMolDescriptors.CalcMolFormula(m),'current_original':str(p),'current_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'pinned_triples':triples,'checks':check})
+ assert all(check.values()),(n,check)
+p=Path('/private/tmp/pathwaymech-next-259-native/originals/CO+2.xml');tree=E.fromstring(p.read_bytes());nodes=[x for x in tree if x.tag.split('}')[-1]=='Compound'];co=nodes[0];native={x.tag.split('}')[-1]:''.join(x.itertext()).strip() for x in co if x.tag.split('}')[-1] in ('inchi','inchi-key')};assert native['inchi']==rows[0]['computed_inchi'];assert native['inchi-key']=='InChIKey='+rows[0]['computed_key']
+out={'role':'Independent reviewer chemical identity spot-check, not whole record approval','utc':datetime.now(timezone.utc).isoformat(),'software':rdBase.rdkitVersion,'checks_count':sum(len(r['checks']) for r in rows)+2,'cases':rows,'cobalt_native_path':str(p),'cobalt_native_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'cobalt_native_fields':native,'pinned_full_db_hash_policy':'Direct selected triple query from actual read-only database; whole4GB hash already computed by root, not independently repeated here','scope_limits':['Reagents encoded independently from unambiguous chemical names; primary2011 reagent drawings/catalogues unavailable.','Named neutral parents do not prove supplied salt, microspecies or protonation at assaypH.','Exact cobalt ion identity does not prove physiological cofactor role.']}
+Path('/private/tmp/pathwaymech-next-259-science/independent-identity-replay.json').write_text(json.dumps(out,indent=2)+'\n')
+print(out['checks_count'],'passed checks')

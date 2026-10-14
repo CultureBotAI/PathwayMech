@@ -1,0 +1,20 @@
+from pathlib import Path
+import datetime,hashlib,json,urllib.request,urllib.error
+ROOT=Path(__file__).resolve().parent
+IDS=['16240','29036','30351','113451']
+receipts=[]
+for identifier in IDS:
+ url=f'https://www.ebi.ac.uk/chebi/backend/api/public/compound/{identifier}/'
+ target=ROOT/'originals'/f'CHEBI-{identifier}.json'
+ if target.exists(): raise RuntimeError(f'Will not overwrite {target}')
+ row={'requested_url':url,'started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech bounded source-author research'}),timeout=40) as r:
+   data=r.read(); row.update(status=r.status,final_url=r.url,headers=dict(r.headers))
+ except urllib.error.HTTPError as e:
+  data=e.read();row.update(status=e.code,final_url=e.url,error=str(e));target=target.with_suffix('.http-error.txt')
+ except Exception as e:
+  row.update(error=repr(e));receipts.append(row);continue
+ target.write_bytes(data);row.update(path=str(target.relative_to(ROOT)),bytes=len(data),sha256=hashlib.sha256(data).hexdigest());receipts.append(row)
+(ROOT/'acquisition-chemistry.json').write_text(json.dumps(receipts,indent=2)+'\n')
+print(json.dumps([{k:v for k,v in r.items() if k in ['requested_url','status','bytes','error']} for r in receipts],indent=2))

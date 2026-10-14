@@ -1,0 +1,75 @@
+from pathlib import Path
+import json,hashlib,re,subprocess,datetime
+import yaml
+from lxml import html,etree
+O=Path(__file__).resolve().parent;B=Path('/private/tmp');REPO=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+def binding(p):
+ p=Path(p);b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def save(name,d):(O/name).write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+manifest_paths=['pathwaymech-next-259-native/artifact-manifest.json','pathwaymech-next-259-primary/artifact-manifest.json','pathwaymech-next-259-primary/gal2016/artifact-manifest.json','pathwaymech-next-259-primary/gal2014/artifact-manifest.json','pathwaymech-next-259-primary/gal2005-successor/manifest.json','pathwaymech-next-259-chemistry/artifact-manifest.json','pathwaymech-next-259-primary-identities/artifact-manifest.json','pathwaymech-next-259-evidence-successor/artifact-manifest.json','pathwaymech-next-259-ligab-supplement/author-successor/manifest.json','pathwaymech-next-259-ligab-chemistry/manifest.json','pathwaymech-next-259-transport-identities/manifest.json']
+checks=[]
+for rel in manifest_paths:
+ p=B/rel
+ if not p.exists():
+  checks.append({'manifest':str(p),'status':'expected_name_unavailable'});continue
+ d=json.loads(p.read_text());rows=d.get('files',[]) if isinstance(d,dict) else d;fails=[];n=0
+ for r in rows:
+  if not isinstance(r,dict) or 'sha256' not in r or 'path' not in r:continue
+  f=Path(r['path']);f=f if f.is_absolute() else p.parent/f;n+=1
+  if not f.is_file():fails.append({'path':str(f),'status':'missing'});continue
+  actual=binding(f)
+  if actual['sha256']!=r['sha256'] or ('bytes' in r and actual['bytes']!=r['bytes']):fails.append({'path':str(f),'expected':r,'actual':actual})
+ checks.append({'manifest':binding(p),'files_rehashed':n,'failures':fails,'status':'pass' if not fails else 'fail'})
+save('validation/frozen-package-verification.json',checks)
+# Recheck full original manifests separately; these are public scientific task roots only.
+orig=[]
+for rel in ['pathwaymech-next-259-native/external-originals-manifest.json','pathwaymech-next-259-primary/author/external-originals-manifest.json','pathwaymech-next-259-evidence-successor/external-originals-manifest.json']:
+ p=B/rel;d=json.loads(p.read_text());rows=d if isinstance(d,list) else d.get('files',d.get('originals',[]));n=0;fails=[]
+ for r in rows:
+  if not isinstance(r,dict) or 'path' not in r or 'sha256' not in r:continue
+  f=Path(r['path']);base=p.parent.parent if p.parent.name=='author' else p.parent;f=f if f.is_absolute() else base/f;n+=1
+  if not f.is_file():fails.append({'path':str(f),'reason':'missing'});continue
+  a=binding(f)
+  if a['sha256']!=r['sha256']:fails.append({'path':str(f),'reason':'digest mismatch'})
+ orig.append({'manifest':binding(p),'originals_checked':n,'failures':fails})
+save('validation/original-reuse-verification.json',orig)
+# Quotes replay only against retained original text/HTML/XML, never generated author ledgers.
+def strings(x):
+ if isinstance(x,str):return [x]
+ if isinstance(x,dict):return [s for v in x.values() for s in strings(v)]
+ if isinstance(x,list):return [s for v in x for s in strings(v)]
+ return []
+def text(p):
+ b=p.read_bytes()
+ if p.suffix=='.json':return '\n'.join(strings(json.loads(b)))
+ if p.suffix=='.html':return html.fromstring(b).text_content()
+ if p.suffix=='.xml':return ''.join(etree.fromstring(b).itertext())
+ return b.decode()
+primary=B/'pathwaymech-next-259-primary/originals'
+sources={
+'PMID:21219457':list(primary.glob('candidate_wiley*web-result.json'))+[primary/'gal2011_methods-web.json'],
+'PMID:16030014':list((B/'pathwaymech-next-259-primary/gal2005-successor/originals').glob('gal2005*web.json')),
+'PMID:36724292':[primary/'PMC9942251.xml'],
+'PMID:23977959':[B/'pathwaymech-next-259-ligab-supplement/author-successor/originals/PMC3926093.html'],
+'DOI:10.1016/j.procbio.2021.01.019':list(primary.glob('desb2021*web.json')),
+'PMID:16030198':[primary/'PMC1196043-render.html'],
+'PMID:30346405':[primary/'PMC6235412.html'],
+'PMID:26867578':[primary/'PMC4817193-render2.html'],
+'PMID:24657997':[B/'pathwaymech-next-259-primary/gal2014/originals/plos-manuscript.xml']}
+cache={k:[(p,text(p)) for p in v if p.exists()] for k,v in sources.items()}
+record=yaml.safe_load((O/'gallate-degradation-i.yaml').read_text());replay=[]
+for e in record['mechanistic_edges']:
+ for placement,v in [('edge',v) for v in e['evidence']]+[(q['endpoint']+' qualifier',v) for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]:
+  if 'quote' not in v:continue
+  needle=' '.join(v['quote'].split());matches=[str(p) for p,t in cache.get(v['reference_id'],[]) if needle in ' '.join(t.split())]
+  replay.append({'edge':e['id'],'placement':placement,'reference_id':v['reference_id'],'quote_sha256':hashlib.sha256(v['quote'].encode()).hexdigest(),'matched_originals':matches,'exact_text_after_whitespace_normalization':bool(matches)})
+save('validation/quotation-replay.json',{'normalization':'Whitespace only after HTML/XML text extraction or retained web-result JSON string decoding. No case/hyphen/word corrections.','results':replay,'all_matched':all(x['exact_text_after_whitespace_normalization'] for x in replay),'originals':[binding(p) for v in sources.values() for p in v if p.exists()]})
+# Both current validators are actually executed on the external record.
+from pathwaymech.schema import validate_record
+validate_record(record)
+cmd=[str(REPO/'.venv/bin/python'),'-B',str(REPO/'scripts/validate_strict.py'),str(O/'gallate-degradation-i.yaml')]
+r=subprocess.run(cmd,cwd=REPO,text=True,capture_output=True)
+quotes=json.loads((O/'validation/quotation-audit.json').read_text())
+inputs=[binding(O/'gallate-degradation-i.yaml')]+[binding(REPO/f) for f in ['src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/strict.py','docs/CAUSAL_GRAPHS.md','.claude/skills/add-pathway/SKILL.md']]
+save('validation/final-checks.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'author checks only, not scientific/authority approval','inputs':inputs,'local_schema':True,'strict_command':cmd,'strict_exit_code':r.returncode,'strict_stdout':r.stdout,'strict_stderr':r.stderr,'paper_quote_counts':{k:v['words'] for k,v in quotes.items()},'all_quote_budgets_pass':all(v['words']<=25 for v in quotes.values()),'quote_replay_all_matched':all(x['exact_text_after_whitespace_normalization'] for x in replay),'counts':{'participants':len(record['participants']),'reaction_context_nodes':len(record['reactions']),'edges':len(record['mechanistic_edges']),'taxa':len(record['taxa'])}})
+print(json.dumps({'package_checks':[(x.get('status'),x.get('files_rehashed')) for x in checks],'original_checks':[(x['originals_checked'],len(x['failures'])) for x in orig],'quote_failures':[x for x in replay if not x['exact_text_after_whitespace_normalization']],'strict':r.returncode}))

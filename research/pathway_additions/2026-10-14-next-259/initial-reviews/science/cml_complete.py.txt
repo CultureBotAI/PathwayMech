@@ -1,0 +1,25 @@
+from pathlib import Path
+import json,hashlib,sqlite3,xml.etree.ElementTree as E
+from datetime import datetime, timezone
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+cases=[('CPD-183', '16918'), ('OXYGEN-MOLECULE', '15379'), ('PROTON', '15378'), ('4-OXALOMESACONATE', '57471'), ('CPD-12849', '58142'), ('CPD-185', '57732'), ('4-OH-4-ACETYL-2-OXOGLUTARATE', '58075'), ('OXALACETIC_ACID', '16452'), ('PYRUVATE', '15361'), ('WATER', '15377')]
+c=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+rows=[]
+for native,chebi in cases:
+ p=Path('/private/tmp/pathwaymech-next-259-native/originals')/(native+'.xml')
+ if not p.exists():raise FileNotFoundError(p)
+ root=E.parse(p).getroot();compound=next(x for x in root if x.tag=='Compound');cml=compound.find('cml/molecule');atoms=cml.findall('atomArray/atom');m=Chem.RWMol();idx={};conf=Chem.Conformer(len(atoms));conf.Set3D(False)
+ for a in atoms:
+  atom=Chem.Atom(a.attrib['elementType']);atom.SetFormalCharge(int(a.attrib.get('formalCharge','0')));i=m.AddAtom(atom);idx[a.attrib['id']]=i;conf.SetAtomPosition(i,(float(a.attrib['x2'])/1000,float(a.attrib['y2'])/1000,0))
+ for b in cml.findall('bondArray/bond'):
+  f,t=b.attrib['atomRefs'].split();m.AddBond(idx[f],idx[t],{1:Chem.BondType.SINGLE,2:Chem.BondType.DOUBLE,3:Chem.BondType.TRIPLE}[int(b.attrib['order'])])
+ mol=m.GetMol();mol.AddConformer(conf);Chem.SanitizeMol(mol);Chem.DetectBondStereochemistry(mol,0);Chem.AssignStereochemistry(mol,cleanIt=True,force=True)
+ inchi=Chem.MolToInchi(mol);key=Chem.MolToInchiKey(mol)
+ triples=c.execute('SELECT predicate,object,value FROM statements WHERE subject=?',('CHEBI:'+chebi,)).fetchall();val={a:v for a,o,v in triples if v is not None}
+ checks={'native_inchi':compound.findtext('inchi')==inchi,'native_key':compound.findtext('inchi-key')=='InChIKey='+key,'pinned_inchi':val['chemrof:inchi_string']==inchi,'pinned_key':val['chemrof:inchi_key_string']==key,'pinned_smiles_graph':Chem.MolToSmiles(Chem.RemoveHs(Chem.MolFromSmiles(val['chemrof:smiles_string'])))==Chem.MolToSmiles(Chem.RemoveHs(mol)),'cml_charge':int(cml.attrib['formalCharge'])==Chem.GetFormalCharge(mol)}
+ rows.append({'native':native,'chebi':'CHEBI:'+chebi,'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'cml_smiles_field_not_used':cml.findtext("string[@title='smiles']"),'computed_smiles':Chem.MolToSmiles(mol),'computed_inchi':inchi,'computed_key':key,'computed_formula':rdMolDescriptors.CalcMolFormula(mol),'pinned_smiles':val['chemrof:smiles_string'],'pinned_smiles_inchi':Chem.MolToInchi(Chem.MolFromSmiles(val['chemrof:smiles_string'])),'checks':checks})
+ print(native,checks)
+ assert all(v for k,v in checks.items() if k != 'pinned_smiles_graph'),rows[-1]
+out={'role':'Independent reviewer full formal chemical CML reconstruction plus conflicting Z,Z comparator','utc':datetime.now(timezone.utc).isoformat(),'software':rdBase.rdkitVersion,'cases':rows,'limitations':['Absolute stereochemistry unspecified in nativeCHA remains unspecified.','Formal quartet and balance independently replayed from full Rhea source and actual maintained target.','Pinned CHEBI58142 SMILES lacks stereochemical completeness although pinned InChI/key and native CML agree; false pinned_smiles_graph is retained as actual source-field inconsistency, not a failed identity match.','Native CML embedded smiles strings not used: some are generic partial motifs.']}
+Path('/private/tmp/pathwaymech-next-259-science/independent-cml-complete-native-chemistry.json').write_text(json.dumps(out,indent=2)+'\n')

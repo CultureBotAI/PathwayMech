@@ -1,0 +1,14 @@
+from pathlib import Path
+import hashlib,json,re,xml.etree.ElementTree as E
+p=Path('/private/tmp/pathwaymech-next-259-primary'); raw=(p/'originals/FN669140.embl').read_text()
+dna=''.join(re.findall('[acgt]+',raw.split('SQ   Sequence',1)[1].split('\n',1)[1].split('//',1)[0])).upper()
+bases='TCAG'; aas='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+table=dict(zip((a+b+c for a in bases for b in bases for c in bases),aas))
+translated=''.join(table[dna[i:i+3]] for i in range(0,len(dna),3))
+embl_translation=re.sub(r'\s','',re.sub(r'^FT\s*','',re.search('/translation="([^"]+)"',raw).group(1),flags=re.M))
+ncbi=E.parse(p/'originals/CBJ94499.1.xml').getroot();seq=ncbi.find('.//GBSeq');nseq=seq.findtext('GBSeq_sequence').upper()
+u=json.loads((p/'originals/E8ZB61.json').read_text());useq=u['sequence']['value']
+assert len(dna)==1350 and translated.endswith('*') and translated.count('*')==1
+assert translated[:-1]==embl_translation==nseq==useq and len(useq)==449
+r={'scope':'exact KTGAL repaired GalT identity; not a current KT2440 native CDS or the2023 construct sequence','originals':[{'path':f'originals/{x}','sha256':hashlib.sha256((p/'originals'/x).read_bytes()).hexdigest()} for x in ('FN669140.embl','CBJ94499.1.xml','E8ZB61.json')],'ena':{'entry':'FN669140','version':1,'strain':'KTGAL','taxon':303,'cds':'1..1350','translation_table':11,'dna_length':len(dna),'dna_sha256':hashlib.sha256(dna.encode()).hexdigest()},'ncbi':{'accession_version':seq.findtext('GBSeq_accession-version'),'organism':seq.findtext('GBSeq_organism'),'length':len(nseq)},'uniprot':{'accession':u['primaryAccession'],'entry_type':u['entryType'],'organism':u['organism'],'genes':u.get('genes'),'comments':u.get('comments')},'sequence_equality':True,'protein_length':len(useq),'protein_sha256':hashlib.sha256(useq.encode()).hexdigest(),'translation_proof':'All1350bp translated using standard bacterial table11 internal codons, initiatingATG; terminalTAA removed; exact449aa matches all3issuing originals. No internal stop.'}
+(p/'projections/repaired-GalT-identity.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps({k:r[k] for k in ('ena','ncbi','sequence_equality','protein_length','protein_sha256')},indent=2))

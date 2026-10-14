@@ -11,7 +11,8 @@ ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-e
 ncbi-protein-xml, rhea-components-rdf-gz, rhea-polymer-rdf,
 metacyc-electron-transfer-reaction-xml, metacyc-chemical-class-xml, metacyc-pathway-xml,
 ecocyc-named-protein-complex-xml, kegg-module-flatfile,
-kegg-reaction-flatfile, kegg-compound-flatfile, kegg-gene-flatfile, metanetx-chemical-html,
+kegg-reaction-flatfile, kegg-compound-flatfile, kegg-gene-flatfile,
+kegg-pseudogene-flatfile, metanetx-chemical-html,
 bigg-universal-metabolite-json, bigg-universal-reaction-json and
 pubchem-compound-property-json. Source files are
 never generated from curated labels. The corpus only selects which identifiers
@@ -86,12 +87,14 @@ from pathwaymech.ecocyc_named_complex import (
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_metadata, state_term
 from pathwaymech.kegg_gene import (
     GENE_KIND,
+    GENE_KINDS,
     gene_metadata,
     gene_term,
     is_gene_id,
     validate_gene_assertions,
 )
 from pathwaymech.kegg_gene import project as kegg_gene_project
+from pathwaymech.kegg_gene import project_pseudogene as kegg_pseudogene_project
 from pathwaymech.pathbank_context import (
     PATHBANK_CONTEXT_KIND,
     context_metadata,
@@ -1772,8 +1775,9 @@ def source_terms(
         yield _pubchem_record(path, url or "")
     elif kind in KEGG_SOURCE_TYPES:
         yield from kegg_terms(path.read_text(encoding="utf-8"), kind, url or "")
-    elif kind == GENE_KIND:
-        native = kegg_gene_project(path.read_bytes(), url or "")
+    elif kind in GENE_KINDS:
+        projector = kegg_gene_project if kind == GENE_KIND else kegg_pseudogene_project
+        native = projector(path.read_bytes(), url or "")
         yield native["id"], native["locus"], []
     elif kind == "metanetx-chemical-html":
         yield from metanetx_chemical_terms(path.read_text(encoding="utf-8"), url or "")
@@ -1824,7 +1828,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         raise ValueError("source manifest must be a nonempty list")
     gene_sources = {
         index: gene_metadata(entry, cache_dir)
-        if entry["kind"] == GENE_KIND
+        if entry["kind"] in GENE_KINDS
         else {name: entry[name] for name in ("url", "kind", "native_gene") if name in entry}
         for index, entry in enumerate(entries)
     }
@@ -1898,7 +1902,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if context_roots and entry["kind"] in {"biopax", "pathbank-biopax"}:
             if pathbank_body_roots(path) & context_roots:
                 raise ValueError("PathBank context rejects an untyped native body identity")
-        if entry["kind"] == GENE_KIND:
+        if entry["kind"] in GENE_KINDS:
             metadata = gene_sources[entry_index]
             identifier, typed_term = gene_term(metadata, key)
             parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
@@ -2107,7 +2111,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             )
         all_aceto_sources[key] = metadata
         for identifier, label, synonyms in parsed_terms:
-            if is_gene_id(identifier) and entry["kind"] != GENE_KIND:
+            if is_gene_id(identifier) and entry["kind"] not in GENE_KINDS:
                 raise ValueError("KEGG gene identity requires its complete typed source")
             if identifier in context_ids and entry["kind"] != PATHBANK_CONTEXT_KIND:
                 raise ValueError("PathBank context rejects a competing parsed native identity")
@@ -2250,7 +2254,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = projector(metadata, key)[1]
             if entry["kind"] == PATHBANK_CONTEXT_KIND:
                 terms[identifier] = context_term(identifier, context_projections[entry_index], key)
-            if entry["kind"] == GENE_KIND:
+            if entry["kind"] in GENE_KINDS:
                 terms[identifier] = gene_term(metadata, key)[1]
             if entry["kind"] in ACETO_KINDS:
                 terms[identifier] = aceto_term(metadata, key)[1]

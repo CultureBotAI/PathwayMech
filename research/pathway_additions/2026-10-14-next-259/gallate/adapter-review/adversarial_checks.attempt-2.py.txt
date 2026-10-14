@@ -1,0 +1,137 @@
+"""Independent bounded probes, using merged-baseline blobs and actual PP_2519."""
+from __future__ import annotations
+
+import copy
+import hashlib
+import importlib.util
+import json
+import subprocess
+from pathlib import Path
+
+import yaml
+
+from pathwaymech import kegg_gene as new
+from pathwaymech.identifiers import _load_authority, identifier_errors
+from scripts import build_source_identifier_snapshot as builder
+
+OUT = Path(__file__).resolve().parent
+REPO = Path('/private/tmp/pathwaymech-next-259-20261014')
+BASE = '7e18d0e2b7dd066ea5176b3f679624f7e50a0dc3'
+spec = importlib.util.spec_from_file_location('baseline', OUT / 'baseline-kegg_gene.py')
+old = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(old)
+assert Path(new.__file__) == OUT / 'sandbox/src/pathwaymech/kegg_gene.py'
+checks = []
+
+
+def check(name, condition):
+    assert condition, name
+    checks.append(name)
+
+
+def rejected(name, fn, *args):
+    try:
+        fn(*args)
+    except ValueError:
+        checks.append(name)
+    else:
+        raise AssertionError(name + ' unexpectedly accepted')
+
+
+def outcome(fn, data, url):
+    try:
+        return 'accepted', fn(data, url)
+    except ValueError:
+        return 'rejected', None
+
+
+raw = Path('/private/tmp/pathwaymech-next-259-pseudogene-author/KEGG-ppu-PP_2519.txt').read_bytes()
+check('actual PP_2519 original digest', hashlib.sha256(raw).hexdigest() == '239bb58885aea1fae6ae2ff387c68f78d76388e6bb261f1e8c2694153a313401')
+url = 'https://rest.kegg.jp/get/ppu:PP_2519'
+projected = new.project_pseudogene(raw, url)
+check('actual native three-base annotation', projected['ntseq'] == {'length': 3, 'sequence': 'ccg'})
+check('actual native annotation range', projected['position'] == {'native': '2867058..2867060', 'start': 2867058, 'end': 2867060, 'strand': '+'})
+check('no AASEQ inferred', 'aaseq' not in projected)
+check('annotation-only scope retained', projected['sequence_scope'] == 'native_annotation_only')
+rejected('default CDS rejects actual pseudogene', new.project, raw, url)
+
+work = OUT / 'probe-data'
+work.mkdir(exist_ok=True)
+(work / 'original.txt').write_bytes(raw)
+entry = dict(key='pseudogene', kind=new.PSEUDOGENE_KIND, path='original.txt', url=url, version='independent replay 2026-10-14', license='Source terms outside technical review', sha256=hashlib.sha256(raw).hexdigest())
+meta = new.gene_metadata(entry, work)
+term = new.gene_term(meta, entry['key'])[1]
+check('canonical locus with no SYMBOL alias', term == dict(label='PP_2519', synonyms=[], source='pseudogene', entity_type='native_gene', label_kind='canonical'))
+records = work / 'data/pathways'
+records.mkdir(parents=True, exist_ok=True)
+module = b'ENTRY       M99999  Pathway Module\nNAME        Technical identifier selector\n///\n'
+(work / 'module.txt').write_bytes(module)
+module_entry = dict(key='module', kind='kegg-module-flatfile', path='module.txt', url='https://rest.kegg.jp/get/M99999', version='synthetic', license='Synthetic fixture', sha256=hashlib.sha256(module).hexdigest())
+record = {'id': 'KEGG:M99999', 'label': 'Technical identifier selector', 'taxa': [], 'reactions': [], 'participants': [{'id': 'KEGG:ppu:PP_2519', 'label': 'PP_2519', 'category': 'gene'}]}
+record_path = records / 'selector.yaml'
+record_path.write_text(yaml.safe_dump(record))
+manifest = work / 'manifest.json'
+manifest.write_text(json.dumps([entry, module_entry]))
+snapshot = builder.build_snapshot(manifest, records, work)
+authority = work / 'snapshot.json'
+authority.write_text(json.dumps(snapshot))
+check('actual builder to independent consumer replay', _load_authority(authority) == snapshot['terms'])
+check('original survives builder snapshot byte-exact', snapshot['sources']['pseudogene']['native_gene']['original_text'].encode() == raw)
+
+# Placement uses the real public checker, even with a deliberately broad waiver.
+(work / 'conf').mkdir(exist_ok=True)
+(work / 'conf/identifier_policy.yaml').write_text(yaml.safe_dump({'version': 1, 'namespaces': {'KEGG': {'snapshot': 'snapshot.json', 'policy': 'canonical'}, 'MetaCyc': {'snapshot': 'snapshot.json', 'policy': 'canonical'}}, 'contextual_labels': [{'namespace': 'KEGG', 'sections': ['record', 'participants', 'reactions', 'taxa'], 'record_prefixes': ['MetaCyc', 'KEGG'], 'reason': 'Independent attempted contextual waiver'}]}))
+for category in ['protein', 'complex', 'molecular_activity', 'small_molecule']:
+    bad = copy.deepcopy(record)
+    bad['participants'][0]['category'] = category
+    record_path.write_text(yaml.safe_dump(bad))
+    check('pseudogene cannot be ' + category, any('ENTITY_TYPE_MISMATCH' in e for e in identifier_errors(work)))
+record_path.write_text(yaml.safe_dump(record))
+
+# Corrupt raw source and recompute its hash while keeping the stale projection.
+# This checks that the consumer reparses facts, not only hashes.
+for before, after in [('T00114', 'T00115'), ('gllT', 'galT'), ('ccg', 'cct'), ('2867058..2867060', '2867059..2867061')]:
+    bad = copy.deepcopy(meta)
+    bad['native_gene']['original_text'] = raw.decode().replace(before, after)
+    bad['sha256'] = hashlib.sha256(bad['native_gene']['original_text'].encode()).hexdigest()
+    rejected('rehash cannot conceal stale projection ' + before, new.validate_gene_metadata, bad)
+
+for before, after in [('gene      T00114', 'CDS       T00114'), ('pseudogene', 'pseudogene-like'), ('NAME        (GenBank) pseudogene', 'NAME        (RefSeq) pseudogene'), ('2867058..2867060', 'complement2867058..2867060)'), ('NTSEQ       3', 'NTSEQ       +3')]:
+    rejected('native parser malformed ' + before + ' -> ' + after, new.project_pseudogene, raw.replace(before.encode(), after.encode()), url)
+for name, payload in [('BOM', b'\xef\xbb\xbf'+raw), ('invalid utf8', raw+b'\xff'), ('extra terminated object', raw+raw), ('AASEQ injection', raw.replace(b'NTSEQ', b'AASEQ       1\n            P\nNTSEQ'))]:
+    rejected(name, new.project_pseudogene, payload, url)
+
+# Each duplicated distinct owner remains conflicting even with no selected term.
+changed_raw = raw.replace(b'2867058..2867060', b'2867059..2867061')
+(work / 'second.txt').write_bytes(changed_raw)
+second = dict(entry, key='second', path='second.txt', sha256=hashlib.sha256(changed_raw).hexdigest())
+record_path.write_text(yaml.safe_dump(dict(record, participants=[])))
+for entries in [[entry, second], [second, entry]]:
+    manifest.write_text(json.dumps(entries))
+    rejected('unselected conflict source order ' + entries[0]['key'], builder.build_snapshot, manifest, records, work)
+
+# Systematic differential checks preserve existing complete-CDS behavior.
+# Baseline snapshots are read directly from Git, not the author's copied snapshot.
+snapshot_raw = subprocess.check_output(['git', 'show', BASE + ':data/identifier_authorities/sources.json'], cwd=REPO)
+source_snapshot = json.loads(snapshot_raw)
+cds_inputs = []
+diff_count = 0
+for source, metadata in source_snapshot['sources'].items():
+    if metadata.get('kind') != new.GENE_KIND:
+        continue
+    data = metadata['native_gene']['original_text'].encode()
+    cds_inputs.append({'source': source, 'sha256': hashlib.sha256(data).hexdigest()})
+    check('merged-baseline CDS exact projection ' + source, new.project(data, metadata['url']) == old.project(data, metadata['url']) == metadata['native_gene'])
+    lines = data.splitlines(keepends=True)
+    variants = [data, data.rstrip(b'\n'), data+b'\n', data+data, b'\xef\xbb\xbf'+data, data.replace(b'\n', b'\r\n')]
+    for index in range(len(lines)):
+        variants.append(b''.join(lines[:index]+lines[index+1:]))
+        variants.append(b''.join(lines[:index]+[lines[index]]+lines[index:]))
+    for variant in variants:
+        check('CDS differential %d' % diff_count, outcome(new.project, variant, metadata['url']) == outcome(old.project, variant, metadata['url']))
+        diff_count += 1
+check('all baseline CDS owners covered', len(cds_inputs) == 3)
+
+report = {'status': 'pass', 'check_count': len(checks), 'checks': checks, 'cds_differential_cases': diff_count, 'cds_sources': cds_inputs, 'baseline_snapshot_sha256': hashlib.sha256(snapshot_raw).hexdigest(), 'source_module': str(new.__file__), 'limits': ['Bounded technical review; no biological function or genome-organism crosswalk approval.', 'Parser success means issuing annotation retained, not reconstructed full gene or protein.', 'No claim of exhaustive fuzzing or full integration-suite execution.']}
+(OUT / 'adversarial-checks.json').write_text(json.dumps(report, indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k != 'checks'}, indent=2))

@@ -1,0 +1,60 @@
+from pathlib import Path
+import hashlib,io,json,subprocess,tarfile
+R=Path('/private/tmp/pathwaymech-next-258-20261014');O=Path(__file__).parent;P=O/'prototype';P.mkdir(exist_ok=False)
+BASE='b718850b63e4a1d2a14cf521950737c641963e38'
+paths=['src','scripts','tests','conf','schema','docs/IDENTIFIERS.md','pyproject.toml','data/identifier_authorities','README.md']
+raw=subprocess.check_output(['git','archive',BASE,*paths],cwd=R)
+with tarfile.open(fileobj=io.BytesIO(raw)) as archive:archive.extractall(P,filter='data')
+original=Path('/private/tmp/pathwaymech-next-259-primary-identities/originals/KEGG-ppu-PP_2519.txt');(O/'KEGG-ppu-PP_2519.txt').write_bytes(original.read_bytes())
+files=['src/pathwaymech/kegg_gene.py','src/pathwaymech/identifiers.py','scripts/build_source_identifier_snapshot.py','docs/IDENTIFIERS.md','tests/test_kegg_gene_authority.py']
+(O/'input-bindings.json').write_text(json.dumps({'baseline_commit':BASE,'repository':str(R),'files':{x:hashlib.sha256((P/x).read_bytes()).hexdigest() for x in files},'complete_original':{'path':str(original),'sha256':hashlib.sha256(original.read_bytes()).hexdigest(),'bytes':original.stat().st_size},'prototype':str(P)},indent=2)+'\n')
+# One parser, explicit profiles. The original public project signature is unchanged.
+p=P/'src/pathwaymech/kegg_gene.py';s=p.read_text();s=s.replace('"""Whole, singly requested KEGG bacterial CDS identities.','"""Whole, singly requested KEGG bacterial CDS or annotated pseudogene identities.')
+s=s.replace('GENE_KIND = "kegg-gene-flatfile"','GENE_KIND = "kegg-gene-flatfile"\nPSEUDOGENE_KIND = "kegg-pseudogene-flatfile"\nGENE_KINDS = {GENE_KIND, PSEUDOGENE_KIND}')
+s=s.replace('def project(raw: bytes, url: str) -> dict:\n    organism, locus = request(url)','def project(raw: bytes, url: str) -> dict:\n    """Strict complete-CDS profile; never falls back to a gene annotation."""\n    return _project(raw, url, native_type="CDS")\n\n\ndef project_pseudogene(raw: bytes, url: str) -> dict:\n    """Explicit pseudogene annotation; NTSEQ does not establish a complete gene."""\n    return _project(raw, url, native_type="gene")\n\n\ndef _project(raw: bytes, url: str, *, native_type: str) -> dict:\n    require(native_type in {"CDS", "gene"}, "unsupported native type profile")\n    pseudogene = native_type == "gene"\n    profile = "pseudogene" if pseudogene else "CDS"\n    organism, locus = request(url)')
+s=s.replace('"requires one complete terminated CDS")','f"requires one complete terminated {profile}")')
+s=s.replace('require(REQUIRED <= seen, "missing required native CDS fields")','required = REQUIRED - {"AASEQ"} if pseudogene else REQUIRED\n    require(required <= seen, f"missing required native {profile} fields")\n    if pseudogene:\n        require("AASEQ" not in seen, "pseudogene annotation must not contain AASEQ")')
+s=s.replace('entry = re.fullmatch(r"([A-Za-z0-9][A-Za-z0-9_.-]*) +CDS +(T[0-9]{5})", single("ENTRY"))','if pseudogene:\n        require(single("NAME") == "(GenBank) pseudogene", "requires exact pseudogene annotation")\n    entry = re.fullmatch(\n        rf"([A-Za-z0-9][A-Za-z0-9_.-]*) +{native_type} +(T[0-9]{{5}})", single("ENTRY")\n    )')
+s=s.replace('"ENTRY locus/CDS/genome identity mismatch")','f"ENTRY locus/{native_type}/genome identity mismatch")')
+s=s.replace('aa = sequence("AASEQ", "[ACDEFGHIKLMNPQRSTVWY]")','aa = None if pseudogene else sequence("AASEQ", "[ACDEFGHIKLMNPQRSTVWY]")')
+s=s.replace('    require(\n        nt["length"] == 3 * (aa["length"] + 1), "complete CDS nucleotide/protein lengths disagree"\n    )\n    require(\n        nt["sequence"][-3:].upper() in {"TAA", "TAG", "TGA"}, "complete CDS lacks terminal stop"\n    )','    if not pseudogene:\n        require(\n            nt["length"] == 3 * (aa["length"] + 1),\n            "complete CDS nucleotide/protein lengths disagree",\n        )\n        require(\n            nt["sequence"][-3:].upper() in {"TAA", "TAG", "TGA"},\n            "complete CDS lacks terminal stop",\n        )')
+s=s.replace('"native_type": "CDS",','"native_type": native_type,').replace('        "aaseq": aa,','        **(\n            {"annotation_class": "pseudogene", "sequence_scope": "native_annotation_only"}\n            if pseudogene\n            else {"aaseq": aa}\n        ),')
+s=s.replace('metadata["kind"] == GENE_KIND','metadata["kind"] in GENE_KINDS')
+s=s.replace('expected = project(raw, metadata["url"])','projector = project if metadata["kind"] == GENE_KIND else project_pseudogene\n    expected = projector(raw, metadata["url"])')
+s=s.replace('entry["kind"] == GENE_KIND and','entry["kind"] in GENE_KINDS and')
+s=s.replace('        "kind": GENE_KIND,\n        FIELD: project(raw, entry["url"]),','        "kind": entry["kind"],\n        FIELD: (project if entry["kind"] == GENE_KIND else project_pseudogene)(raw, entry["url"]),')
+s=s.replace('metadata.get("kind") == GENE_KIND','metadata.get("kind") in GENE_KINDS').replace('assertion = json.dumps(native, sort_keys=True), metadata["version"]','assertion = metadata["kind"], json.dumps(native, sort_keys=True), metadata["version"]')
+p.write_text(s)
+# Consumer accepts both explicit kinds through one exact native_gene validator.
+p=P/'src/pathwaymech/identifiers.py';s=p.read_text().replace('    GENE_KIND,\n','    GENE_KIND,\n    GENE_KINDS,\n    PSEUDOGENE_KIND,\n',1)
+s=s.replace('            GENE_KIND,\n','            GENE_KIND,\n            PSEUDOGENE_KIND,\n')
+s=s.replace('            (GENE_KIND, "native_gene", validate_gene_metadata),\n','')
+needle='        if metadata.get("kind") == ECOCYC_COMPLEX_KIND:\n'
+s=s.replace(needle,'        if metadata.get("kind") in GENE_KINDS:\n            validate_gene_metadata(metadata)\n        elif "native_gene" in metadata:\n            raise ValueError(f"source {source}: typed native metadata requires its source kind")\n'+needle,1)
+s=s.replace('is_gene_id(identifier) and source_kind != GENE_KIND','is_gene_id(identifier) and source_kind not in GENE_KINDS')
+s=s.replace('                    GENE_KIND: gene_term,','                    GENE_KIND: gene_term,\n                    PSEUDOGENE_KIND: gene_term,')
+p.write_text(s)
+# Producer dispatch always uses the explicitly declared manifest kind.
+p=P/'scripts/build_source_identifier_snapshot.py';s=p.read_text().replace('kegg-compound-flatfile, kegg-gene-flatfile, metanetx-chemical-html,','kegg-compound-flatfile, kegg-gene-flatfile, kegg-pseudogene-flatfile, metanetx-chemical-html,')
+s=s.replace('    GENE_KIND,\n','    GENE_KIND,\n    GENE_KINDS,\n',1).replace('from pathwaymech.kegg_gene import project as kegg_gene_project','from pathwaymech.kegg_gene import project as kegg_gene_project\nfrom pathwaymech.kegg_gene import project_pseudogene as kegg_pseudogene_project')
+s=s.replace('elif kind == GENE_KIND:\n        native = kegg_gene_project(path.read_bytes(), url or "")','elif kind in GENE_KINDS:\n        projector = kegg_gene_project if kind == GENE_KIND else kegg_pseudogene_project\n        native = projector(path.read_bytes(), url or "")')
+s=s.replace('entry["kind"] == GENE_KIND','entry["kind"] in GENE_KINDS').replace('is_gene_id(identifier) and entry["kind"] != GENE_KIND','is_gene_id(identifier) and entry["kind"] not in GENE_KINDS')
+p.write_text(s)
+p=P/'docs/IDENTIFIERS.md';s=p.read_text();mark='The consumer rehashes and reparses the entire retained original and requires\n';addition='''`kegg-pseudogene-flatfile` is a distinct, explicitly selected annotation profile.
+It requires the same exact organism:locus request, complete fixed-column object,
+identity fields and genomic-span/count checks, but ENTRY must have native type
+`gene`, NAME must be exactly `(GenBank) pseudogene`, and AASEQ must be absent.
+NTSEQ is retained as the issuing annotation only: it does not establish the
+complete biological gene, a translated product or a functional protein. A short
+native annotation such as the three-base PP_2519 object is not expanded or
+translated. The profile records `native_type: gene`,
+`annotation_class: pseudogene` and `sequence_scope: native_annotation_only` in
+`native_gene`; it does not manufacture an `aaseq` projection. SYMBOL remains
+source annotation, not an accepted alias. The original `project(raw, url)` and
+`kegg-gene-flatfile` default remain the strict complete-CDS profile and never
+fall back to pseudogene handling. Pseudogenes require `project_pseudogene` or the
+explicit distinct source kind. Conflicting CDS/pseudogene owners for one locus
+fail before term selection in either order, including unselected owners.
+
+''';assert mark in s;s=s.replace(mark,addition+mark,1);p.write_text(s)
+print(P)

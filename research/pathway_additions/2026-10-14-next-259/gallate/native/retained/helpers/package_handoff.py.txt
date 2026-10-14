@@ -1,0 +1,53 @@
+"""Freeze the compact author handoff without changing any original source."""
+from pathlib import Path
+import datetime, hashlib, json, shutil
+
+B = Path(__file__).parent
+R = B / 'retained'
+def info(p, relative=True):
+    h = hashlib.sha256()
+    with p.open('rb') as f:
+        for block in iter(lambda: f.read(1024*1024), b''):
+            h.update(block)
+    return {'path': str(p.relative_to(B)) if relative else str(p), 'bytes': p.stat().st_size, 'sha256': h.hexdigest()}
+
+# Verify all pre-existing authoritative native bindings before freezing new files.
+native = json.loads((R/'native-original-manifest.json').read_text())
+for row in native['objects']:
+    got = info(Path(row['path']), False)
+    assert got['bytes'] == row['bytes'] and got['sha256'] == row['sha256'], row['path']
+
+originals = [info(p) for p in sorted((B/'originals').rglob('*')) if p.is_file()]
+assert not any(p.is_symlink() for p in (B/'originals').rglob('*'))
+(B/'external-originals-manifest.json').write_text(json.dumps({
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'scope': 'All ordinary files in the external originals directory, including failed-response transcripts; membership alone is not a claim that a file is a successful issuing record. Native/authority/sequence/HTML acquisition ledgers identify status and provenance. No originals are changed.',
+    'count': len(originals), 'total_bytes': sum(x['bytes'] for x in originals), 'files': originals,
+}, indent=2)+'\n')
+
+(R/'helpers').mkdir(exist_ok=True)
+for p in sorted(B.glob('*.py')):
+    (R/'helpers'/(p.name+'.txt')).write_bytes(p.read_bytes())
+
+inventory = json.loads((R/'candidate-identifier-inventory.json').read_text())
+proposal = json.loads((R/'proposed-native-graph.json').read_text())
+ids = {proposal['id']} | {x['id'] for x in proposal['participants']+proposal['reactions']}
+missing = {root: [x['id'] for x in inventory['inventory'] if x['id'] in ids and not x['coverage'][root]['present']] for root in inventory['inventory'][0]['coverage']}
+(R/'handoff-verification.json').write_text(json.dumps({
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'native_original_rehashes_passed': len(native['objects']),
+    'total_external_original_files': len(originals),
+    'proposal_counts': {'participants': len(proposal['participants']), 'reaction_and_context_pathway_nodes': len(proposal['reactions']), 'edges': len(proposal['mechanistic_edges']), 'distinct_ids': len(ids)},
+    'candidate_identifiers': len(inventory['inventory']),
+    'proposal_missing_authorities_by_snapshot': missing,
+    'simple_ion_checks': 'Five exact native single-atom/charge/full-InChI identities passed against pinned ChEBI; graph unchanged.',
+    'boundary': 'Stable author checkpoint only. Primary and independent chemistry reconciliation, final baseline preflight, integration, and scientific review remain separate work.',
+}, indent=2)+'\n')
+
+selected = [B/'HANDOFF.md', B/'external-originals-manifest.json', B/'native-protein-sequences.fasta'] + sorted(p for p in R.rglob('*') if p.is_file())
+files = [info(p) for p in selected]
+manifest = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'role': 'source-author handoff; no scientific approval', 'scope': 'Compact retained-artifact allowlist. Raw originals remain external and hash-bound by external-originals-manifest.json. Helper copies are inert text. This manifest excludes itself.', 'count': len(files), 'total_bytes': sum(x['bytes'] for x in files), 'files': files}
+(B/'artifact-manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
+for row in files:
+    assert info(B/row['path']) == row, row['path']
+print(json.dumps({'retained_files': len(files), 'retained_bytes': manifest['total_bytes'], 'external_originals': len(originals), 'external_bytes': sum(x['bytes'] for x in originals), 'manifest': info(B/'artifact-manifest.json'), 'all_retained_hashes_reverified': True}, indent=2))

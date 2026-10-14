@@ -1,0 +1,41 @@
+from pathlib import Path
+import json, hashlib, shutil, datetime
+ROOT=Path('/private/tmp/pathwaymech-next-259-chemistry')
+NATIVE=Path('/private/tmp/pathwaymech-next-259-native')
+PRIMARY=Path('/private/tmp/pathwaymech-next-259-primary')
+OLD=Path('/private/tmp/pathwaymech-next-253-primary')
+(ROOT/'originals').mkdir(parents=True,exist_ok=True)
+(ROOT/'inputs').mkdir(exist_ok=True)
+receipts=[]
+def retain(p,group,expected=None,provenance=None):
+    raw=p.read_bytes(); h=hashlib.sha256(raw).hexdigest()
+    if expected: assert h==expected,(p,h,expected)
+    dest=ROOT/group/p.name
+    if dest.exists(): assert dest.read_bytes()==raw
+    else: dest.write_bytes(raw)
+    receipts.append({'path':str(dest),'reused_original':str(p),'bytes':len(raw),'sha256':h,'expected_sha256':expected,'expected_match':h==expected if expected else None,'provenance':provenance})
+closure=json.loads((NATIVE/'retained/chemical-identity-closure.json').read_text())
+acq=json.loads((NATIVE/'retained/native-acquisition.json').read_text())
+acq+=json.loads((NATIVE/'retained/authority-acquisition.json').read_text())
+acq+=json.loads((NATIVE/'retained/chebi-reuse.json').read_text())
+by_path={x['path']:x for x in acq if 'path' in x}
+for c in closure['chemicals'].values():
+    for key in ['native_source','live_source']:
+        item=c[key];retain(Path(item['path']),'originals',item['sha256'],by_path.get(item['path']))
+reaction=json.loads((NATIVE/'retained/reaction-identity-closure.json').read_text())
+for item in [reaction['pathway_source']]+[x['source'] for x in reaction['reactions']]:retain(Path(item['path']),'originals',item['sha256'],by_path.get(item['path']))
+for name in ['chemical-identity-closure.json','reaction-identity-closure.json','rhea-original-projection.json','chebi-reuse.json','native-acquisition.json','authority-acquisition.json','native-original-manifest.json']:
+    retain(NATIVE/'retained'/name,'inputs')
+rhea=json.loads((NATIVE/'retained/rhea-original-projection.json').read_text())
+for key in ['original','directions_original']:
+    item=rhea[key];retain(Path(item['path']),'originals',item['sha256'],{'authority':'Rhea','scope':'existing full issuing download; not fresh upstream reacquisition'})
+manifest=json.loads((PRIMARY/'gal2016/original-rehash.json').read_text())
+for name in ['PMC4817193-render2.html']+[f'PMC4817193-figure-{i}.jpg' for i in [1,4,5,9]]:
+    retain(PRIMARY/'originals'/name,'originals',provenance={'doi':'10.1074/jbc.M115.682054','scope':'same frozen original used for full2016 read'})
+for name in ['candidate_wiley-web-result.json','candidate_wiley_part2-web-result.json','candidate_wiley_part3-web-result.json','gal2011_methods-web.json','gal2011_pdf_attempts-web.json','gal2011_assets-web.json','gal2011_fig_screenshots-web.json','PMC9942251.xml','sb2c00537_0002.jpg']:
+    retain(PRIMARY/'originals'/name,'originals',provenance={'scope':'primary package reuse; web-result files are tool transcriptions, not publisher bytes'})
+retain(PRIMARY/'gal2014/originals/g001.png','originals',provenance={'doi':'10.1371/journal.pone.0092249','figure':1})
+for name in ['PMID30207699-europe.json','PMID31339729-europe.json','PMID29658701-europe.json','LigU-si.pdf']:
+    retain(OLD/'originals'/name,'originals',provenance={'scope':'prior original reuse; metadata/abstract access is not full main-paper access'})
+(ROOT/'reuse-receipts.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'External author research copies; no authority promotion or review verdict','files':receipts},indent=2)+'\n')
+print('retained',len(receipts),'original/input files')

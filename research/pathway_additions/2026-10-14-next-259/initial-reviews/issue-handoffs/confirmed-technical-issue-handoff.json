@@ -1,0 +1,111 @@
+{
+  "schema_version": "1.0",
+  "created_utc": "2026-10-14T23:03:27.752893+00:00",
+  "reviewer": "/root/next259_integration_review",
+  "scope": "Independent technical observations only; no scientific approval. All findings confirmed by retained proofs. Formal canonical initial review awaits actual terminal shared gate receipts. This handoff does not assert those pending gates have passed.",
+  "record_path": "data/pathways/gallate-degradation-i.yaml",
+  "record_sha256": "9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665",
+  "canonical_capture_sha256": "3619ddbeb9ead018c5dec564e5510999eff716808bb8f7556be81bbdebe29859",
+  "canonical_inputs_rechecked_unchanged": 800,
+  "issue_creation_authorized_executor": "/root",
+  "issues": [
+    {
+      "issue_key": "gallate-final-author-handoff-unresolved-relative-link",
+      "severity": "minor",
+      "status": "confirmed_observation_formal_review_pending_terminal_gates",
+      "title": "Retained final author handoff links to an omitted gallate draft",
+      "description": "The retained record-final/HANDOFF.md line 3 links to gallate-degradation-i.yaml in its own directory, but the root retention map omitted that file. A direct file enumeration including hidden and ignored files confirms the relative target is absent. The handoff binds the initial author draft SHA-256 9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665. The external original and initial maintained record recover the provenance but do not make the public relative link resolve; after curation the maintained record will also differ from the historical draft.",
+      "field_paths": [
+        "research/pathway_additions/2026-10-14-next-259/gallate/record-final/HANDOFF.md:3",
+        "research/pathway_additions/2026-10-14-next-259/gallate/record-final/root-retention-map.json"
+      ],
+      "evidence": [
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/broken-retained-link.json",
+          "sha256": "0f5c65f6e20e25b803a7a54e9da39c3f0e088f3d6c5215f51a7ad4282ee2dcda"
+        },
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/gallate/record-final/HANDOFF.md",
+          "sha256": "5e88e02ca1539ae7c16368018f023093cb64ecde2142cdf5676ee14c48d1e93d"
+        },
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/gallate/record-final/root-retention-map.json",
+          "sha256": "b91f790e5d78a2e552ba93f10d5639dcc43da40685658bea2c0152661b6b07fa"
+        }
+      ],
+      "acceptance_checks": [
+        "Retain the exact original 9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665 author draft beside the immutable handoff; verify the relative link resolves to those bytes.",
+        "Update only the root-owned retention mapping, compact manifest and package index to reflect the added retained draft.",
+        "Keep the original external author manifest and handoff unchanged; distinguish the historical draft from the corrected maintained record."
+      ]
+    },
+    {
+      "issue_key": "gallate-go-reference-unresolvable-download-url",
+      "severity": "minor",
+      "status": "confirmed_observation_formal_review_pending_terminal_gates",
+      "title": "Gallate GO reference links to an unavailable ontology download",
+      "description": "The gallate GO:0046943 reference URL http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn redirects to https://release.geneontology.org/2026-07-26/ontology/extensions/go-plus.ofn, which independently returns HTTP 404 NoSuchKey. Requests to the HTTPS PURL and direct final URL also return 404. The official QuickGO term page and API return 200, with the API identifying the exact nonobsolete term carboxylic acid transmembrane transporter activity. The embedded SQL metadata version IRI is not a verified downloadable artifact. This is a public navigation defect; the independently validated pinned SQL authority bytes and owner metadata remain intact.",
+      "field_paths": [
+        "data/pathways/gallate-degradation-i.yaml:2800",
+        "references[id=GO:0046943].url",
+        "references[id=GO:0046943].source_version"
+      ],
+      "evidence": [
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/public-http-observations.json",
+          "sha256": "d80ee1d272276903682fc14e6c083238eb1ccb47925b539d3b7ca69d7f075489"
+        },
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/public-projection-receipt.json",
+          "sha256": "eb0efd87a404e8ddcb1bf57f8b0a4bbb5dbddd8909cce390d00599aa57be461a"
+        },
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/finding.json",
+          "sha256": "23814341b7dd2ec757c5e6d30424e2479177ad7d2621cb0c347c5548cf6b36be"
+        }
+      ],
+      "related_issues": [
+        {
+          "url": "https://github.com/CultureBotAI/PathwayMech/issues/518",
+          "relationship": "Same navigation defect in other records; the gallate repair does not resolve the broader existing issue."
+        }
+      ],
+      "acceptance_checks": [
+        "Use https://www.ebi.ac.uk/QuickGO/term/GO:0046943 as the issuing term navigation URL; the official API must identify the exact nonobsolete GO:0046943 term.",
+        "Preserve source_sha256 018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd as the complete uncompressed Semantic SQL digest, with wording that separates pinned database provenance from live page navigation.",
+        "Regenerate the record page and verify its link matches the maintained reference. Keep the canonical source and ontology authority owner objects unchanged."
+      ]
+    },
+    {
+      "issue_key": "gallate-retained-log-staged-whitespace-failure",
+      "severity": "minor",
+      "status": "confirmed_observation_formal_review_pending_terminal_gates",
+      "title": "Four retained source artifacts fail the required staged whitespace check",
+      "description": "After full explicit staging, git diff --cached --check independently exits 2 with 23 trailing-whitespace diagnostics across two exact historical patch files, one inert author helper and one pytest log. The four working-tree and staged blobs match their original hashes. The shared gate runner only invokes the unstaged git diff --check, so its result does not cover this staged-only failure. Preserve original evidence bytes through deterministic lossless compression instead of trimming them or suppressing checks.",
+      "field_paths": [
+        "research/pathway_additions/2026-10-14-next-259/gallate/adapter-author/before-format-trim/pseudogene-profile.patch",
+        "research/pathway_additions/2026-10-14-next-259/gallate/adapter-author/pseudogene-profile.patch",
+        "research/pathway_additions/2026-10-14-next-259/gallate/adapter-author/trim_formatting.py.txt",
+        "research/pathway_additions/2026-10-14-next-259/gallate/adapter-review/targeted-tests.log"
+      ],
+      "evidence": [
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/initial-reviews/technical-staging-complete/independent-staged-diff-full-inventory-failure.json",
+          "sha256": "b244212a40302e22e4e3209e7a9c525d9e47fa598e8d81e79368a94165b4fd4d"
+        },
+        {
+          "path": "research/pathway_additions/2026-10-14-next-259/initial-reviews/technical-supplement/full-initial-stage-receipt.json",
+          "sha256": "3323e87ba7631b07e7671822d0466129496b3b1e1d90ecbe54ba64629910753d"
+        }
+      ],
+      "reproduction": "git diff --cached --check",
+      "observed_exit_code": 2,
+      "expected_exit_code": 0,
+      "acceptance_checks": [
+        "Retain all four unchanged original artifacts as deterministic gzip and verify each decompressed SHA-256 against the affected_artifacts entry in the full independent staged-diff receipt.",
+        "Remove only the uncommitted raw retained copies and update root-owned retention maps, compact manifests and package index. Preserve external raw artifacts, original author/source manifests and initial review evidence.",
+        "Verify every final staged blob against the updated retention inventory. Both git diff --cached --check and git diff --check must exit 0."
+      ]
+    }
+  ]
+}

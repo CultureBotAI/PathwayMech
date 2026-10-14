@@ -1,0 +1,53 @@
+{
+  "role": "Source relationship evidence and schema guidance only; parent decides graph insertion",
+  "direct_axiom": {
+    "source": "GO:0046943",
+    "restriction": "_:riog00237193",
+    "on_property": "BFO:0000050",
+    "property_label": "part of",
+    "some_values_from": "GO:1905039",
+    "interpretation": "Every instance of the molecular-function class is part of some instance of carboxylic acid transmembrane transport. This is a class-level context axiom, not an assay-specific event or direct regulation."
+  },
+  "evidence": [
+    {
+      "reference_id": "GO:0046943",
+      "source_assertion": "GO:0046943 has an rdfs:subClassOf restriction on BFO:0000050 (part of) with owl:someValuesFrom GO:1905039.",
+      "source_locator": "statements GO:0046943 rdfs:subClassOf _:riog00237193; _:riog00237193 owl:onProperty BFO:0000050 and owl:someValuesFrom GO:1905039"
+    }
+  ],
+  "other_source_relations": [
+    {
+      "source": "GO:1905039",
+      "relation": "rdfs:subClassOf",
+      "target": "GO:0046942",
+      "boundary": "Subclass relation must not be relabeled part_of."
+    },
+    {
+      "source": "GO:1905039",
+      "relation": "rdfs:subClassOf",
+      "target": "GO:0055085"
+    },
+    {
+      "source": "GO:0046943",
+      "restriction": "_:riog00237194",
+      "relation": "RO:0004009",
+      "relation_label": "has primary input",
+      "target": "CHEBI:29067"
+    },
+    {
+      "source": "GO:0022857",
+      "restriction": "_:riog00165746",
+      "relation": "RO:0002342",
+      "relation_label": "results in transport across",
+      "target": "GO:0016020",
+      "boundary": "This is not occurs_in; do not silently rename the relation."
+    }
+  ],
+  "schema_guidance": [
+    "Protein enables molecular_activity is the source-aligned type for a molecular-function annotation; retain the annotation evidence and experimental scope.",
+    "molecular_activity part_of biological_process is an allowed context relation and is directly supported here by the pinned GO restriction.",
+    "Molecular-function activity and biological process are different node categories. Neither should be treated as a consumed metabolite.",
+    "occurs_in requires a cellular-component object. It is not an activity-to-biological-process relation.",
+    "No generic GO term should be relabeled as a gallate- or PCA-specific issuing transport term."
+  ]
+}

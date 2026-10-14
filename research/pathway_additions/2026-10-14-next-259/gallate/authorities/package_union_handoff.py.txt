@@ -1,0 +1,91 @@
+"""Package compact author evidence externally; no maintained repository writes."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import shutil
+
+B = Path(__file__).resolve().parent
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def load(name):
+    return json.loads((B / name).read_text())
+
+
+def binding(path):
+    return dict(path=str(path), sha256=sha(path), bytes=path.stat().st_size)
+
+
+report = load('union-preservation-verification.json')
+assert report['status'] == 'author_verification_passed_pending_independent_review'
+assert load('identifier-policy-verification.json')['status'] == 'passed'
+assert not (B / 'UNION-HANDOFF.json').exists() and not (B / 'compact').exists()
+out = B / 'compact'
+out.mkdir()
+names = [
+    'CANDIDATE-HANDOFF.json', 'candidate-handoff-manifest.json',
+    'baseline-preflight.json', 'candidate-rejections.json',
+    'bai50711-acquisition-initial.json', 'bai50711-acquisition-public-retry.json',
+    'bai50711-candidate.json', 'supplemental-authority-candidates.json',
+    'prepare_union.py', 'run_union_builds.py', 'verify_union.py', 'package_union_handoff.py',
+    'prepare-union.log', 'selection-freeze.json', 'author-selection-observation.json',
+    'planned-identifiers.json', 'proposed-source-additions.json',
+    'new-source-original-bindings.json', 'selected-source-identity-previews.json',
+    'selected-ontology-identity-previews.json', 'canonical-build-commands.json',
+    'source_builder.log', 'source_builder-receipt.json',
+    'ontology_builder.log', 'ontology_builder-receipt.json',
+    'build-input-preservation.json', 'identifier-policy-verification.json',
+    'final-record-selection-binding.json', 'planned-authority-labels.json',
+    'union-preservation-verification.json', 'verify-union.log',
+]
+candidate_manifest = load('candidate-handoff-manifest.json')
+for name, expected in candidate_manifest.items():
+    assert sha(B / name) == expected['sha256']
+    if name not in names:
+        names.append(name)
+mapping = []
+for name in names:
+    source = B / name
+    target = out / (name + '.txt' if name.endswith('.py') else name)
+    assert source.is_file() and not target.exists()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, target)
+    assert sha(source) == sha(target)
+    mapping.append(dict(source=binding(source), retained_path=target.name, disposition='retained_compact_evidence'))
+external = [B / name for name in ['identifier_sources.json', 'sources.union.json', 'ontology.union.json',
+                                 'author-record-observation.yaml', 'baseline-original-cache-verification.json',
+                                 'baseline-record-bindings.json']]
+for source in external:
+    mapping.append(dict(source=binding(source), retained_path=None,
+                        disposition='external_full_snapshot_or_prior_inventory; exact bytes hash-bound; not copied to maintained research'))
+(out / 'retention-map.json').write_text(json.dumps(mapping, indent=2) + '\n')
+manifest = {str(path.relative_to(out)): {'sha256': sha(path), 'bytes': path.stat().st_size}
+            for path in sorted(out.rglob('*')) if path.is_file()}
+(out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+handoff = dict(status='canonical_union_ready_for_root_inspection_and_independent_review',
+               role='Author; this handoff does not approve scientific claims, adapter implementation, or promotion.',
+               utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+               baseline_commit=report['baseline_commit'], final_record=report['final_record'],
+               selected_identifier_count=87, baseline_terms=4954, new_terms=35, final_terms=4989,
+               manifest_entries_before=1047, manifest_entries_after=1062,
+               source_owners_before=866, source_owners_after=881, ontology_owners_unchanged=5,
+               prior_terms_and_owners_exact=True, prior_manifest_entries_exact=True,
+               canonical_identifier_gate_records=256, final_record_ids_match_frozen_selection=True,
+               output_bindings={name: binding(B / name) for name in ['identifier_sources.json', 'sources.union.json', 'ontology.union.json']},
+               compact_package=str(out), compact_manifest=binding(out / 'manifest.json'),
+               compact_files=len(manifest), compact_bytes=sum(row['bytes'] for row in manifest.values()),
+               verification=binding(B / 'union-preservation-verification.json'),
+               maintained_files_edited=False, outputs_promoted=False,
+               limitations=['Identifier/name/native entity placement verification is not independent scientific review.',
+                            'Initial record observation is historical. Final record is separately bound with unchanged exact selected IDs.',
+                            'Full issuing originals, database files, and whole authority snapshots remain external. No licensing release decision is made.'])
+(B / 'UNION-HANDOFF.json').write_text(json.dumps(handoff, indent=2) + '\n')
+print(json.dumps(handoff, indent=2))

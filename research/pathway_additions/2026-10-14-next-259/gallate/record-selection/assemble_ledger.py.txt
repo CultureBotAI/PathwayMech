@@ -1,0 +1,89 @@
+from pathlib import Path
+import json,hashlib,collections
+O=Path(__file__).resolve().parent;B=Path('/private/tmp');bindings=[]
+def read(rel):
+ p=B/rel;b=p.read_bytes();bindings.append({'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()});return json.loads(b)
+def save(rel,d):(O/rel).write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+rows=[]
+def collect(rel,key,group,selected):
+ d=read(rel)
+ for x in d[key]:
+  cid=x.get('claim_id',x.get('id'));m=selected.get(cid);ed=x.get('evidence',{})
+  fact=x.get('research_fact',x.get('research_assertion',x.get('claim',ed.get('source_assertion',x.get('topic','')))))
+  reason=x.get('limitations_and_disposition',x.get('disposition',x.get('qualification','')))
+  if m is not None:
+   status='selected' if m else 'context-only';reason=('Represented on the listed source-qualified edges; '+str(reason)) if m else str(reason)
+  else:status='context-only';m=[];reason=str(reason)
+  if group=='ligab' and str(cid).startswith('M'):
+   status='deferred' if cid in ['M03','M04','M05','M06','M07','M08','M09','M10','M16'] else 'context-only'
+   if status=='deferred':reason+=' The exact 2015 assayed preparation/full methods remain unavailable or the attributed 2013 inhibition classification conflicts; no unqualified WT or gallate-flux edge is inserted.'
+  if group=='primary' and cid in ['K05-07']:
+   status='context-only';reason='Direct gallate-dependent O2-consumption kinetics for exact SYK-6 DesZ/LigAB are retained, but the assay does not resolve the immediate product. No RHEA:28928 catalyst edge is inferred solely from oxygen turnover; LigAB PCA regulator context remains separate.'
+  rows.append({'source_group':group,'claim_id':cid,'source_ledger':str(B/rel),'source_row_identity':cid,'research_fact':fact,'source_locator':x.get('source_locator',x.get('locator',ed.get('source_locator'))),'scope':x.get('scope',x.get('conditions')),'disposition':status,'final_edge_ids':m,'reason':reason or 'Retained as source-specific context; it does not assert a distinct mechanism edge under the supported graph predicates.'})
+P={
+'G11-01':['galt-transport'],'G11-02':['galt-transport'],'G11-03':['galt-transport'],'G11-05':['gallate-uptake-inhibition-fccp','gallate-uptake-inhibition-cccp','gallate-uptake-inhibition-dnp'],'G11-06':['galp-porin','galp-location'],'G11-09':['gallate-induced-galb','gallate-induced-galt'],'G11-10':['gala-catalysis','native-026'],'G11-11':['native-027'],'G11-12':['native-048'],'G11-13':['native-028','galb-2011-edta'],'G11-14':['galb-2011-depc'],'G11-15':['native-037'],'G11-17':['native-026','native-027','native-037'],'G11-19':['galr-regulates-galb','galr-regulates-galt'],'G11-22':['native-027'],
+'K05-01':['native-022'],'K05-02':['native-022'],'K05-03':['native-046'],'K05-04':['native-022'],'K05-06':['native-022'],'K05-08':['desb-2005-edta','desb-2005-fe','desb-2005-mn','desb-2005-cu'],'K05-09':['native-022'],'G23-01':['galr-regulates-galb','galr-regulates-galt'],'G23-02':['galr-regulates-galb'],'G23-03':['galr-regulates-galt'],'G23-12':['galr-regulates-galt'],'D18-01':['desb-2018-4nc','desb-2018-gallate'],'D18-03':['desb-2018-4nc'],'D18-04':['desb-2018-gallate']}
+d21=['desB2021_inhibitor_'+s for s in ['protocatechuate','4-nitrocatechol','vanillate','2-methoxy-4-methylphenol','syringate','vanillin','syringaldehyde']]
+for i in ['D21-01','D21-02','D21-03']:P[i]=d21
+P['D21-04']=['desB2021_substrate_inhibition'];P['D21-05']=['desB2021_inhibitor_protocatechuate']
+collect('pathwaymech-next-259-primary/author/claim-ledger.json','claims','primary',P)
+g16={'G16-01':['native-001','native-006','native-009','native-013'],'G16-03':['native-027'],'G16-04':['pmde-e6-hydration'],'G16-05':['native-011'],'G16-06':['pmde-e6-hydration'],'G16-08':['native-028'],'G16-10':['galb-2016-reactivation-zn'],'G16-11':['galb-2016-reactivation-fe','galb-2016-cofactor-fe'],'G16-12':['galb-2016-reactivation-co','galb-2016-cofactor-co'],'G16-13':['galb-2016-edta'],'G16-14':['galb-2016-edta'],'G16-15':['galb-2016-reactivation-'+m for m in ['mn','fe3','ni','ca','mg','cd']]+['galb-2016-copper-inhibition'],'G16-16':['galb-2016-native-cobalt'],'G16-18':['native-048'],'G16-20':['pmde-e6-hydration'],'G16-21':['pmde-e6-hydration'],'G16-22':['pmde-e6-hydration'],'G16-34':['native-027','pmde-e6-hydration']}
+collect('pathwaymech-next-259-primary/gal2016/claim-ledger.json','claims','galb2016',g16)
+g14={'D14-01':['desb-2014-catalysis'],'D14-02':['native-002'],'D14-03':['native-003'],'D14-04':['desb-2014-iron'],'D14-05':['desb-2014-catalysis'],'D14-06':['desb-2014-catalysis'],'D14-07':['desb-2014-dimer'],'D14-08':['desb-2014-catalysis'],'D14-27':['desb-2014-catalysis','desb-2014-iron','desb-2014-dimer']}
+collect('pathwaymech-next-259-primary/gal2014/claim-ledger.json','claims','desb2014',g14)
+fmap={}
+for n in [1,2,3,4,5,6,7,9,10,12]:fmap[f'F{n:02}']=['gala-catalysis']
+for n in [15,18]:fmap[f'F{n:02}']=['gala-edta-inhibition','gala-dipyridyl-inhibition','gala-peroxide-inhibition','gala-iron-reactivation']
+for n,ids in {16:['gala-edta-inhibition'],17:['gala-dipyridyl-inhibition'],19:['gala-iron-cofactor','gala-iron-reactivation'],20:['gala-manganese-reactivation'],21:['gala-copper-reactivation'],22:['gala-cobalt-reactivation'],24:['gala-peroxide-inhibition'],25:['gala-ascorbate-reactivation'],26:['gala-predominant-trimer'],29:['gallate-induced-gala']}.items():fmap[f'F{n:02}']=ids
+collect('pathwaymech-next-259-primary/gal2005-successor/research-facts.json','facts','gala2005',fmap)
+lmap={}
+for i,c in [(11,'88714'),(12,'18026'),(13,'16318'),(14,'17254'),(15,'141700')]:lmap[f'L{i:02}']=['ligab-pca-inhibition-'+c]
+for n,r in [(19,'r19'),(20,'r20'),(21,'r21'),(23,'r23')]:lmap[f'L{n:02}']=['ligab-pca-'+r]
+alllig=[e for es in lmap.values() for e in es]
+for i in [1,2,3,10,31]:lmap[f'L{i:02}']=alllig
+lmap['N01']=['ligab-context-72','ligab-context-73','ligab-context-74']
+collect('pathwaymech-next-259-ligab-supplement/author-successor/claims.json','facts','ligab',lmap)
+chem=read('pathwaymech-next-259-chemistry/chemistry-claim-ledger.json')
+cm={'C01':['gala-catalysis','native-004'],'C02':['native-026','native-008'],'C03':['native-026'],'C04':['native-027','native-010','native-012'],'C05':['native-027'],'C06':['native-037','native-015','native-016'],'C07':['native-027','pmde-e6-hydration'],'C08':['native-027','pmde-e6-hydration'],'C09':['native-012'],'C16':['native-008','native-010'],'C17':['native-008','native-010'],'C18':['native-012','native-014']}
+for x in chem['claims']:
+ ed=x.get('evidence',{});ids=cm.get(x['claim_id'],[])
+ rows.append({'source_group':'chemistry','claim_id':x['claim_id'],'source_ledger':str(B/'pathwaymech-next-259-chemistry/chemistry-claim-ledger.json'),'research_fact':ed.get('source_assertion',x.get('claim')),'source_locator':ed.get('source_locator'),'scope':x.get('scope'),'disposition':'selected' if ids else 'context-only','final_edge_ids':ids,'reason':x.get('disposition','Chemistry identity/context constraint; no new atom-transfer mechanism inferred.')})
+# Correct exact source locators and known frozen ledger errors append-only here.
+err=read('pathwaymech-next-259-evidence-successor/author/frozen-primary-errata.json')
+for r in rows:
+ if r['claim_id'] in ['G23-02','G23-03']:r['source_locator']='Main Figure 2B and Supplementary Figure S2; XML body paragraph ordinal10 (zero9). The old S4 locator is corrected here.'
+ if r['claim_id']=='G23-01':r['research_fact']='Three reporter hosts are documented in SI Table S3; main Table 1 contains biosensor-response parameters, not a construct-component table. KT2440 genomic DNA was the reported insert source.'
+ if r['claim_id']=='G23-12':r['research_fact']='SI Table S4 supplies primers; S3 is a three-host strain table. Main Table 1 contains response parameters. No full sequenced 2023 GalT insert establishes repaired-allele equivalence.'
+ if r['claim_id'] in ['G23-04','G23-05']:r['source_locator']='Main Figure 4: E. coli 5mM/6h reconstruction. SI S3: C. necator; S4: KT2440 expanded5mM panel (mostly one biological replicate); S5: specificity, not construct comparison.'
+# Every native direct slot retains its own disposition and exact coordinate; object co-occurrence alone is not evidence for every edge.
+slots=read('pathwaymech-next-259-native/retained/source-to-claim-coverage.json')['slots']
+selection=read('pathwaymech-next-259-record-author/author/proposal-selection-progress.json')
+replaced={'native-024':['gala-catalysis'],'native-025':['gala-iron-cofactor'],'native-047':['gala-predominant-trimer']}
+for s in slots:s['final_edge_ids']=[out for e in s.get('proposed_edges_using_object',[]) for out in replaced.get(e,[e])]
+# Final IDs check catches accidental guessed numbering.
+import yaml
+record=yaml.safe_load((O/'gallate-degradation-i.yaml').read_text());valid={e['id'] for e in record['mechanistic_edges']}
+context=[e['id'] for e in record['mechanistic_edges'] if e['id'].startswith('ligab-context-')]
+for r in rows:
+ if r['claim_id']=='N01':r['final_edge_ids']=context
+ for i in r['final_edge_ids']:assert i in valid,(r['claim_id'],i)
+# Proposal dispositions include every frozen initial edge and replacements/staging.
+initial=read('pathwaymech-next-259-primary/author/edge-proposals.json')['edges'];proposals=[]
+mapids={'galT_gallate_uptake':['galt-transport'],'galT_pca_uptake':['galt-transport'],'galP_gallate_uptake':['galp-porin'],'galT_membrane':['galt-location'],'galR_expression_B':['galr-regulates-galb'],'galR_expression_T':['galr-regulates-galt'],'GalP_outer_membrane':['galp-location'],'uncoupler_FCCP':['gallate-uptake-inhibition-fccp'],'uncoupler_CCCP':['gallate-uptake-inhibition-cccp'],'uncoupler_2,4-dinitrophenol':['gallate-uptake-inhibition-dnp'],'desB_pyrogallol':['native-022'],'DesB_SYK6_2005_gallate':['native-022'],'desB_reconstitution_Fe2+':['desb-2005-fe'],'desB_reconstitution_Mn2+':['desb-2005-mn'],'desB_reconstitution_Cu2+':['desb-2005-cu']}
+for p in initial:
+ ids=mapids.get(p['id'],[p['id']] if p['id'] in valid else [])
+ reason='Selected or merged with source-scoped experimental qualification.'
+ status='selected'
+ if p['id'] in ['DesZ_SYK6_2005_gallate','LigAB_SYK6_2005_gallate']:status='context-only';reason='Direct O2 turnover is retained in the complete claim ledger and record context; exact immediate-product reaction assignment is unresolved. No false Rhea product claim is inserted.'
+ if p['id']=='desB_pyrogallol':status='context-only';reason='Alternative 0.11U/mg O2 consumption and unresolved product are preserved in the exact2005 catalyst description and K05-04; not a second formal pathway reaction.'
+ if p['id']=='GalP_outer_membrane':status='replaced';reason='Use actual issuing membrane annotation plus explicitly inferred Opr-family location; no direct localization experiment is claimed.'
+ proposals.append({'origin':p['id'],'disposition':status,'final_edge_ids':ids,'reason':reason})
+for p in read('pathwaymech-next-259-evidence-successor/author/gala-replacement-proposals.json')['proposals']+read('pathwaymech-next-259-evidence-successor/author/galr-proposals.json')['proposals']:
+ proposals.append({'origin':p['proposal_id'],'disposition':'selected','final_edge_ids':[p['proposal_id']],'reason':'Full preparation/assay context retained. Fresh GalA replaces older three-ready/nine-staged set; GalR uses exact gene targets. Integration shortens the Fe result quote to allocate two words for independently supported galA transcription.'})
+# Full native activity and source-fact ledgers retained by digest, with explicit acceptance of the frozen scope and primary successor changes.
+nativefacts=read('pathwaymech-next-259-native/retained/source-fact-dispositions.json')
+activities=read('pathwaymech-next-259-native/retained/native-component-dispositions.json')
+save('author/source-claim-disposition-ledger.json',{'role':'Author selection only; no scientific approval. Research paraphrases in this ledger are not Evidence.source_assertion objects.','claims':rows,'counts_by_group':dict(collections.Counter(r['source_group'] for r in rows)),'counts_by_disposition':dict(collections.Counter(r['disposition'] for r in rows)),'frozen_errata':err,'source_ledgers':bindings})
+save('author/native-slot-disposition-ledger.json',{'scope':'All1881 direct native slots, preserving exact prior classification and mapping retained/replaced object-associated candidates; the edge-local evidence locator remains authoritative.','slots':slots,'source_fact_dispositions':nativefacts,'activity_dispositions':activities,'successor_changes':['Fresh GalA treatment/assembly set replaces native24/25/47.','The direct2016 BAI50711.1 E6 preparation is added separately; older MONOMER3183 homology and SYK6KCH exclusions are not silently reversed.','GalB2011 Km85/Vmax76 are explicitly enol-substrate values; frozen incorrect native CHA attachment remains recorded.','The native GalB His-tag comment is not adopted: 2016 methods explicitly handle His tags for GalD/LigJ, while GalB uses three chromatographic steps without an established GalB tag.','Native CO+2 is normalized to independently verified CHEBI48828.','Native record-to-TCA material interface becomes final aldolase reaction-to-TCA, preserving oxaloacetate transfer and endpoint typing.']})
+save('author/edge-proposal-dispositions.json',{'native_and_selected':selection,'primary_initial':proposals,'old_gala_set':{'disposition':'replaced','source':'gal2005-successor edge-proposals.json and research-edge-proposals.json','reason':'Fresh11 GalA replacements preserve all accepted treatments/preparations/assembly. Historical quote allocations are not repeated in the selected record.'},'ligab2015':{'disposition':'deferred','source':str(B/'pathwaymech-next-259-ligab-supplement/author-successor/supplemental-evidence-and-staged-proposals.json'),'claim_ids':['M03','M04','M05','M06','M07','M08','M09','M10','M16'],'reason':'Exact2015 assay construct/preparation unresolved; five small inhibition values conflict with2013 source classifications; mutation-specific observations are not WT regulation.'}})
+print('claim_rows',len(rows),'native_slots',len(slots),'initial_proposals',len(proposals))

@@ -1,0 +1,12 @@
+from pathlib import Path
+import urllib.request,urllib.error,datetime,hashlib,json,time
+B=Path(__file__).parent;O=B/'originals';rows=[]
+urls={'Q7WYU8.json':'https://rest.uniprot.org/uniprotkb/Q7WYU8.json','M34835.embl':'https://www.ebi.ac.uk/ena/browser/api/embl/M34835?download=false','AAA17727.1-AAA17728.1.xml':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAA17727.1,AAA17728.1&rettype=gb&retmode=xml'}
+for n,u in urls.items():
+ p=O/n;assert not p.exists();r={'path':str(p),'url':u,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech source author'}),timeout=45)as f:b=f.read();r.update(status=f.status,final_url=f.url)
+ except urllib.error.HTTPError as e:b=e.read();r.update(status=e.code,error=str(e))
+ except Exception as e:rows.append(dict(r,error=str(e)));continue
+ p.write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());rows.append(r);print(n,r.get('status'),len(b));time.sleep(.5)
+(B/'acquisition-syk6-sequences.json').write_text(json.dumps(rows,indent=2)+'\n')

@@ -1,4 +1,4 @@
-"""Whole, singly requested KEGG bacterial CDS identities.
+"""Whole, singly requested KEGG bacterial CDS or annotated pseudogene identities.
 
 The native ENTRY locus labels a gene. NAME is retained functional annotation,
 not a gene symbol. Sequence translation and experimental function are separate
@@ -15,6 +15,8 @@ from pathlib import Path
 from typing import Any
 
 GENE_KIND = "kegg-gene-flatfile"
+PSEUDOGENE_KIND = "kegg-pseudogene-flatfile"
+GENE_KINDS = {GENE_KIND, PSEUDOGENE_KIND}
 FIELD = "native_gene"
 PROVENANCE = ("url", "version", "license", "sha256")
 IDENTITY = r"([a-z][a-z0-9]{1,9}):([A-Za-z0-9][A-Za-z0-9_.-]*)"
@@ -42,6 +44,19 @@ def is_gene_id(identifier: Any) -> bool:
 
 
 def project(raw: bytes, url: str) -> dict:
+    """Strict complete-CDS profile; never falls back to a gene annotation."""
+    return _project(raw, url, native_type="CDS")
+
+
+def project_pseudogene(raw: bytes, url: str) -> dict:
+    """Explicit pseudogene annotation; NTSEQ does not establish a complete gene."""
+    return _project(raw, url, native_type="gene")
+
+
+def _project(raw: bytes, url: str, *, native_type: str) -> dict:
+    require(native_type in {"CDS", "gene"}, "unsupported native type profile")
+    pseudogene = native_type == "gene"
+    profile = "pseudogene" if pseudogene else "CDS"
     organism, locus = request(url)
     try:
         text = raw.decode("utf-8", errors="strict")
@@ -56,7 +71,10 @@ def project(raw: bytes, url: str) -> dict:
     lines = text.split("\n")
     if lines[-1] == "":
         lines.pop()
-    require(lines[-1] == "///" and "///" not in lines[:-1], "requires one complete terminated CDS")
+    require(
+        lines[-1] == "///" and "///" not in lines[:-1],
+        f"requires one complete terminated {profile}",
+    )
     fields = []
     seen = set()
     current = None
@@ -86,15 +104,25 @@ def project(raw: bytes, url: str) -> dict:
             seen.add(tag)
             current = {"tag": tag, "lines": [line]}
             fields.append(current)
-    require(REQUIRED <= seen, "missing required native CDS fields")
+    required = REQUIRED - {"AASEQ"} if pseudogene else REQUIRED
+    require(required <= seen, f"missing required native {profile} fields")
+    if pseudogene:
+        require("AASEQ" not in seen, "pseudogene annotation must not contain AASEQ")
     indexed = {field["tag"]: field["lines"] for field in fields}
 
     def single(tag: str) -> str:
         require(len(indexed[tag]) == 1, "continued identity field " + tag)
         return indexed[tag][0][12:]
 
-    entry = re.fullmatch(r"([A-Za-z0-9][A-Za-z0-9_.-]*) +CDS +(T[0-9]{5})", single("ENTRY"))
-    require(entry is not None and entry[1] == locus, "ENTRY locus/CDS/genome identity mismatch")
+    if pseudogene:
+        require(single("NAME") == "(GenBank) pseudogene", "requires exact pseudogene annotation")
+    entry = re.fullmatch(
+        rf"([A-Za-z0-9][A-Za-z0-9_.-]*) +{native_type} +(T[0-9]{{5}})", single("ENTRY")
+    )
+    require(
+        entry is not None and entry[1] == locus,
+        f"ENTRY locus/{native_type}/genome identity mismatch",
+    )
     org = re.fullmatch(r"([a-z][a-z0-9]{1,9}) +([^ ].*\S)", single("ORGANISM"))
     require(org is not None and org[1] == organism, "ORGANISM differs from requested organism")
     position = single("POSITION")
@@ -122,18 +150,21 @@ def project(raw: bytes, url: str) -> dict:
         require(len(value) == int(count), "sequence length differs from count " + tag)
         return {"length": int(count), "sequence": value}
 
-    aa = sequence("AASEQ", "[ACDEFGHIKLMNPQRSTVWY]")
+    aa = None if pseudogene else sequence("AASEQ", "[ACDEFGHIKLMNPQRSTVWY]")
     nt = sequence("NTSEQ", "[acgtACGT]")
     require(int(match[3]) - int(match[2]) + 1 == nt["length"], "POSITION span differs from NTSEQ")
-    require(
-        nt["length"] == 3 * (aa["length"] + 1), "complete CDS nucleotide/protein lengths disagree"
-    )
-    require(
-        nt["sequence"][-3:].upper() in {"TAA", "TAG", "TGA"}, "complete CDS lacks terminal stop"
-    )
+    if not pseudogene:
+        require(
+            nt["length"] == 3 * (aa["length"] + 1),
+            "complete CDS nucleotide/protein lengths disagree",
+        )
+        require(
+            nt["sequence"][-3:].upper() in {"TAA", "TAG", "TGA"},
+            "complete CDS lacks terminal stop",
+        )
     return {
         "id": "KEGG:" + organism + ":" + locus,
-        "native_type": "CDS",
+        "native_type": native_type,
         "locus": locus,
         "organism_code": organism,
         "organism_name": org[2],
@@ -145,7 +176,11 @@ def project(raw: bytes, url: str) -> dict:
             "end": int(match[3]),
             "strand": "-" if match[1] else "+",
         },
-        "aaseq": aa,
+        **(
+            {"annotation_class": "pseudogene", "sequence_scope": "native_annotation_only"}
+            if pseudogene
+            else {"aaseq": aa}
+        ),
         "ntseq": nt,
         "fields": fields,
         "original_text": text,
@@ -154,7 +189,7 @@ def project(raw: bytes, url: str) -> dict:
 
 def validate_gene_metadata(metadata: Any) -> None:
     keys(metadata, set(PROVENANCE) | {"kind", FIELD}, "incomplete typed provenance")
-    require(metadata["kind"] == GENE_KIND, "wrong source kind")
+    require(metadata["kind"] in GENE_KINDS, "wrong source kind")
     require(
         all(isinstance(metadata[k], str) and bool(metadata[k].strip()) for k in PROVENANCE),
         "empty source provenance",
@@ -172,7 +207,8 @@ def validate_gene_metadata(metadata: Any) -> None:
     require(
         hashlib.sha256(raw).hexdigest() == metadata["sha256"], "retained original hash mismatch"
     )
-    expected = project(raw, metadata["url"])
+    projector = project if metadata["kind"] == GENE_KIND else project_pseudogene
+    expected = projector(raw, metadata["url"])
     require(
         json.dumps(native, sort_keys=True) == json.dumps(expected, sort_keys=True),
         "metadata differs from complete original projection",
@@ -182,7 +218,9 @@ def validate_gene_metadata(metadata: Any) -> None:
 def gene_metadata(entry: dict, cache_dir: Path) -> dict:
     keys(entry, set(PROVENANCE) | {"key", "kind", "path"}, "unsupported manifest fields")
     require(
-        entry["kind"] == GENE_KIND and isinstance(entry["key"], str) and bool(entry["key"].strip()),
+        entry["kind"] in GENE_KINDS
+        and isinstance(entry["key"], str)
+        and bool(entry["key"].strip()),
         "wrong manifest kind/key",
     )
     require(isinstance(entry["path"], str) and bool(entry["path"]), "missing original path")
@@ -197,8 +235,8 @@ def gene_metadata(entry: dict, cache_dir: Path) -> dict:
     require(hashlib.sha256(raw).hexdigest() == entry["sha256"], "original hash mismatch")
     result = {
         **{k: entry[k] for k in PROVENANCE},
-        "kind": GENE_KIND,
-        FIELD: project(raw, entry["url"]),
+        "kind": entry["kind"],
+        FIELD: (project if entry["kind"] == GENE_KIND else project_pseudogene)(raw, entry["url"]),
     }
     validate_gene_metadata(result)
     return result
@@ -220,10 +258,10 @@ def validate_gene_assertions(sources: dict) -> set[str]:
     """Check whole original claims before term selection, in either source order."""
     assertions = {}
     for metadata in sources.values():
-        if metadata.get("kind") == GENE_KIND:
+        if metadata.get("kind") in GENE_KINDS:
             validate_gene_metadata(metadata)
             native = metadata[FIELD]
-            assertion = json.dumps(native, sort_keys=True), metadata["version"]
+            assertion = metadata["kind"], json.dumps(native, sort_keys=True), metadata["version"]
             previous = assertions.setdefault(native["id"], assertion)
             require(previous == assertion, "conflicting whole gene identity/context assertions")
         else:

@@ -1,0 +1,26 @@
+from pathlib import Path
+import datetime,hashlib,json,sqlite3
+R=Path(__file__).resolve().parent
+P=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+def bind(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h.hexdigest()}
+db=sqlite3.connect('file:'+str(P)+'?mode=ro',uri=True)
+query="""select subject,predicate,value from statements where predicate in ('rdfs:label','oio:hasExactSynonym','oio:hasRelatedSynonym','oio:hasBroadSynonym','oio:hasNarrowSynonym') and (lower(value) like '%edta%' or lower(value) like '%edetate%' or lower(value) like '%edetic%' or lower(value) like '%ethylenediaminetetraacet%' or lower(value) like '%ethylenedinitrilotetraacet%') order by subject,predicate,value"""
+rows=db.execute(query).fetchall()
+subjects=sorted({r[0] for r in rows})
+terms=[]
+for subject in subjects:
+ props=db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','IAO:0000115','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:inchi_string','chemrof:smiles_string','rdfs:subClassOf')",(subject,)).fetchall()
+ terms.append({'id':subject,'properties':props})
+options=[]
+for id,disposition in [('4735','conditional_named_parent_normalization_only'),('64755','excluded_unspecified_charge'),('42191','excluded_unspecified_charge'),('64734','excluded_unspecified_sodium_salt')]:
+ p=R/'originals'/('CHEBI-'+id+'.json');x=json.loads(p.read_text());assert x['chebi_accession']=='CHEBI:'+id
+ pin={k:o or v for k,o,v in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:charge','chemrof:generalized_empirical_formula')",('CHEBI:'+id,))}
+ checks={'accession_exact':x['id']==int(id),'pinned_inchi_matches_current':pin['chemrof:inchi_string']==x['default_structure']['standard_inchi'],'pinned_charge_matches_current':int(pin['chemrof:charge'])==x['chemical_data']['charge'],'pinned_formula_matches_current':pin['chemrof:generalized_empirical_formula']==x['chemical_data']['formula']};assert all(checks.values())
+ options.append({'id':x['chebi_accession'],'label':x['ascii_name'],'disposition':disposition,'original':bind(p),'chemical_data':x['chemical_data'],'structure':x['default_structure'],'outgoing_relations':x['ontology_relations']['outgoing_relations'],'checks':checks})
+out={'role':'bounded source-author EDTA identity options; no authority promotion','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'pinned_database':bind(P),'query':query,'lexical_match_rows':rows,'matching_terms':terms,'search_scope':'All label and synonym statements in this pinned ChEBI SQLite graph, plus four fresh issuing entities. This is a bounded ontology query, not a whole-internet absence claim. Hidden/ignored filesystem filtering does not affect a direct full-database SQL scan.','result':'No matching EDTA-specific term inspected here denotes an explicit union of all acid/salt/protonation forms. CHEBI:4735 is a genuine named neutral parent acid and EDTA synonym carrier; it must not be described as a charge-agnostic class. Its broad is-a ancestors include other chemical skeletons or functional groups and cannot carry an EDTA-specific assay effect without overgeneralization.','options':options,'conditional_patch':{'proposal_id':'gala-edta-inhibition','root_requested_normalization_proposal':{'subject':'CHEBI:4735','participant_label':'EDTA parent acid (assay form unspecified)','category':'chemical_entity','append_to_edge_description':'The source names EDTA without a salt or protonation specification. CHEBI:4735 is used only as the named parent-acid reference for that reagent; this normalization does not establish addition of the neutral acid, a sodium salt, or a unique solution microspecies.'},'status':'Root selected this explicit canonical named-parent normalization proposal; independent science review must judge it. Never interpret it as a form-specific measured neutral-acid effect.'},'required_scope':'Retain the observed EDTA inhibition and exact conditions whether or not the conditional graph normalization is accepted. The chemical identity gap is narrower than the mechanism evidence gap, which is resolved.'}
+(R/'projections/EDTA-authority-options.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({'lexical_rows':len(rows),'matching_terms':len(subjects),'live_options':len(options),'database_bytes':P.stat().st_size}))

@@ -1,0 +1,11 @@
+import pathlib,xml.etree.ElementTree as E,sys
+B=pathlib.Path('/private/tmp/pathwaymech-next-259-native')
+for p in sorted((B/'originals').glob('*.xml')):
+ try:o=list(E.parse(p).getroot())[1]
+ except:continue
+ if o.tag not in sys.argv[1:]: continue
+ print('\n###',p.stem,o.tag)
+ for c in o:
+  if c.tag in ['credits','parent','citations']:continue
+  text=' '.join(c.itertext()).strip(); refs=[(x.tag,x.get('frameid')) for x in c.iter() if x.get('frameid')]
+  print(c.tag,refs,text[:15000])

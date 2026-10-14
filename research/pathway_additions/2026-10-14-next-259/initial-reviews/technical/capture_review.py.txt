@@ -1,0 +1,25 @@
+from pathlib import Path
+import datetime,json,os,subprocess
+import yaml
+R=Path('/private/tmp/pathwaymech-next-259-20261014');O=Path(__file__).parent;REPO='CultureBotAI/PathwayMech'
+def owner(path,role):return {'repository':REPO,'path':path,'role':role}
+def target(tid,path,label,kind='maintained',owners=None):return {'target_id':tid,'path':path,'label':label,'kind':kind,'owner_paths':owners or [owner(path,'Maintained owner of this reviewed artifact')]}
+r='data/pathways/gallate-degradation-i.yaml'
+targets=[target('kegg-gene-parser','src/pathwaymech/kegg_gene.py','Explicit pseudogene parser'),target('identifier-consumer','src/pathwaymech/identifiers.py','Authority consumer'),target('source-builder','scripts/build_source_identifier_snapshot.py','Source authority builder'),target('pseudogene-tests','tests/test_kegg_pseudogene_authority.py','Pseudogene regression tests'),target('identifier-documentation','docs/IDENTIFIERS.md','Typed identifier contract'),target('source-manifest','conf/identifier_sources.json','Append-only source manifest'),target('source-authority','data/identifier_authorities/sources.json','Selected source authority union','generated',[owner('conf/identifier_sources.json','Source selection and original bindings'),owner('scripts/build_source_identifier_snapshot.py','Canonical generator')]),target('ontology-authority','data/identifier_authorities/ontology.json','Selected ontology authority union','generated',[owner('scripts/build_ontology_identifier_snapshot.py','Canonical generator'),owner('conf/rhea_identifier_updates.json','Explicit Rhea overrides')]),target('MetaCyc:GALLATE-DEGRADATION-II-PWY',r,'Gallate record technical representation'),target('gallate-record-page','pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html','Generated gallate graph and evidence page','generated',[owner(r,'Maintained graph and evidence'),owner('src/pathwaymech/cli.py','Page generator'),owner('src/pathwaymech/graph_view.py','SVG graph generator')]),target('kgx-edges','pages/downloads/edges.tsv','Complete KGX edge export','generated',[owner(r,'Added gallate claims'),owner('src/pathwaymech/kgx.py','KGX exporter')]),target('kgx-nodes','pages/downloads/nodes.tsv','Complete KGX node export','generated',[owner(r,'Added gallate nodes and contexts'),owner('src/pathwaymech/kgx.py','KGX exporter')]),target('gallate-research-retention','research/pathway_additions/2026-10-14-next-259/gallate/research-retention.json','Compact provenance retention inventory','source'),target('gallate-creation-history','history/records/gallate-degradation-i/2026-10-14T223610Z-codex-7872e4.yaml','Append-only gallate creation history')]
+(O/'targets.yaml').write_text(yaml.safe_dump({'targets':targets},sort_keys=False))
+extra=set(json.loads((O/'research-retention-verification.json').read_text())['paths'])
+extra.update(str(p.relative_to(R)) for p in (R/'data/pathways').glob('*.yaml'))
+extra.update(['CLAUDE.md','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','docs/record-reviews.md','docs/record-review-profile.md','schema/record_review.yaml','scripts/record_review.py','src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml','src/pathwaymech/edge_identity.py','src/pathwaymech/cli.py','src/pathwaymech/graph_view.py','src/pathwaymech/kgx.py','scripts/build_ontology_identifier_snapshot.py','conf/identifier_policy.yaml','conf/rhea_identifier_updates.json','justfile','pyproject.toml','uv.lock','pages/pathway_index.json','pages/downloads/manifest.json','pages/browse.html','pages/index.html'])
+extra.update(str(p.relative_to(R)) for p in (R/'history/infrastructure/kegg-pseudogene-authority').glob('*.yaml'))
+extra-=set(x['path'] for x in targets)
+command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','inspect','--targets',str(O/'targets.yaml')]
+for x in sorted(extra):command+=['--input',x]
+assert not (O/'canonical-inspect.json').exists()
+started=datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
+p=subprocess.run(command,cwd=R,env=env,capture_output=True,text=True)
+(O/'canonical-inspect.stdout').write_text(p.stdout);(O/'canonical-inspect.stderr').write_text(p.stderr)
+(O/'canonical-inspect-receipt.json').write_text(json.dumps({'command':command,'cwd':str(R),'started_at':started,'exit_code':p.returncode,'targets':len(targets),'additional_inputs':len(extra)},indent=2)+'\n')
+if p.returncode==0:
+ x=json.loads(p.stdout);(O/'canonical-inspect.json').write_text(json.dumps(x,indent=2)+'\n')
+print(json.dumps({'exit_code':p.returncode,'stdout_chars':len(p.stdout),'stderr':p.stderr[:2000],'targets':len(targets),'additional_inputs':len(extra)}));raise SystemExit(p.returncode)

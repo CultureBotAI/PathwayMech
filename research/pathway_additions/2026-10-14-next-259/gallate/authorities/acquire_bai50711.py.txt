@@ -1,0 +1,12 @@
+from pathlib import Path
+import datetime,hashlib,json,sys,urllib.request,urllib.error
+B=Path(__file__).parent;D=B/'candidate-originals';D.mkdir(exist_ok=True);target=D/'NCBIProtein-BAI50711.1.xml';assert not target.exists()
+attempt=sys.argv[1];receipt=B/('bai50711-acquisition-'+attempt+'.json');assert not receipt.exists()
+url='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=BAI50711.1&rettype=gp&retmode=xml'
+row=dict(url=url,path=str(target),retrieved_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),attempt=attempt)
+try:
+ with urllib.request.urlopen(url,timeout=60) as response:
+  body=response.read();row.update(status=response.status,final_url=response.url,content_type=response.headers.get('Content-Type'));assert response.status==200;target.write_bytes(body);row.update(bytes=len(body),sha256=hashlib.sha256(body).hexdigest())
+except Exception as exc:
+ row['error']=repr(exc)
+receipt.write_text(json.dumps(row,indent=2)+'\n');print(json.dumps(row,indent=2));raise SystemExit(0 if row.get('status')==200 else 1)

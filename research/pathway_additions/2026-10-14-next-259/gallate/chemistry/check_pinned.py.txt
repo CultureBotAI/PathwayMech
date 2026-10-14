@@ -1,0 +1,16 @@
+from pathlib import Path
+import json,hashlib,sqlite3,datetime
+R=Path('/private/tmp/pathwaymech-next-259-chemistry');p=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');h=hashlib.sha256()
+with p.open('rb') as f:
+ for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+binding={'path':str(p),'resolved_path':str(p.resolve()),'bytes':p.stat().st_size,'sha256':h.hexdigest(),'scope':'Existing original Semantic SQL authority, read-only; hash before parsing; no new upstream retrieval'}
+(R/'pinned-original-binding.json').write_text(json.dumps(binding,indent=2)+'\n')
+prior=json.loads((R/'inputs/chemical-identity-closure.json').read_text());db=sqlite3.connect('file:'+str(p)+'?mode=ro',uri=True);rows=[]
+versions=db.execute("select subject,predicate,object,value from statements where predicate in ('owl:versionIRI','owl:versionInfo')").fetchall()
+assert ('obo:chebi.owl','owl:versionInfo',None,'255') in versions
+binding['version_rows']=versions
+for f,c in prior['chemicals'].items():
+ found={pred:obj or val for pred,obj,val in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(c['recommended_id'],))}
+ checks={'matches_full_native_agent_projection':found==c['pinned'],'full_inchi_matches_native_original':found['chemrof:inchi_string']==c['native_full_inchi'],'full_key_matches_native_original':found['chemrof:inchi_key_string']==c['native_inchi_key'],'formula_matches_native_original':found['chemrof:generalized_empirical_formula']==c['formula'],'charge_matches_native_original':int(found['chemrof:charge'])==c['charge']}
+ rows.append({'id':c['recommended_id'],'fields':found,'checks':checks});assert all(checks.values())
+(R/'pinned-recheck.json').write_text(json.dumps({'binding':binding,'rows':rows,'all_checks_pass':True},indent=2)+'\n');print('All ten pinned ChEBI rows independently re-read and match; SQL SHA256',binding['sha256'])

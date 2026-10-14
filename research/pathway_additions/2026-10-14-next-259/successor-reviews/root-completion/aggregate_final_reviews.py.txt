@@ -1,0 +1,13 @@
+from pathlib import Path
+import datetime,hashlib,json
+from kg_microbe_reviews.aggregate import collect_repository,triage
+R=Path('/private/tmp/pathwaymech-next-259-20261014');CI=Path('/private/tmp/pathwaymech-next-259-ci');OUT=CI/'final-review-aggregation.json';assert not OUT.exists()
+index=json.loads((CI/'saved-successor-reviews.json').read_text());assert len(index['reviews'])==2
+for row in index['reviews']:
+ p=R/row['path'];assert hashlib.sha256(p.read_bytes()).hexdigest()==row['sha256']
+repo=collect_repository(R,'CultureBotAI/PathwayMech',ref=None);report=triage([repo]);report['generated_at']=datetime.datetime.now(datetime.timezone.utc).isoformat();report['root_execution_scope']={'repository':'CultureBotAI/PathwayMech','working_tree':str(R),'canonical_source_commit':'a5d562962c75a2ad9efd8160b548df5944315422','method':'Unmodified pinned kg_microbe_reviews.aggregate collect_repository(ref=None) and triage public functions; only the specified working tree; no fetch or sibling edits.','runtime_export_manifest':'/private/tmp/pathwaymech-next-259-claw-review-runtime/export-manifest.json'}
+OUT.write_text(json.dumps(report,indent=2)+'\n')
+keys={'next259-construct-evidence-locality','next259-galb-cytosol-false-absence','gallate-final-author-handoff-unresolved-relative-link','gallate-go-reference-unresolvable-download-url','gallate-retained-log-staged-whitespace-failure'}
+issues=[issue for issue in report['issues'] if issue['issue_key'] in keys];assert len(issues)==5
+summary={'reports':len(repo['reports']),'repository_error':repo['error'],'lineage_diagnostics':report['lineage_diagnostics'],'provenance_diagnostics':report['provenance_diagnostics'],'selected_issues':[{'issue_key':i['issue_key'],'status':i['status']} for i in issues],'report_sha256':hashlib.sha256(OUT.read_bytes()).hexdigest()}
+(CI/'final-review-aggregation-summary.json').write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary,indent=2));assert not repo['error'] and not report['lineage_diagnostics'] and not report['provenance_diagnostics'];assert all(i['status']=='resolved' for i in issues)

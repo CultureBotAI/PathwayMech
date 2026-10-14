@@ -1,0 +1,30 @@
+"""Complete the hash/inventory tail after the read-only first run was interrupted."""
+from pathlib import Path
+import json,hashlib,concurrent.futures,re,subprocess,sqlite3
+R=Path(__file__).resolve().parent;A=Path('/private/tmp/pathwaymech-curation-authorities')
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def binding(p):return {'path':str(p),'realpath':str(p.resolve()),'bytes':p.stat().st_size,'sha256':sha(p)}
+def write(n,d):
+ p=R/n
+ if p.exists():raise FileExistsError(p)
+ p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+root=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+raw=(root/'data/identifier_authorities/ontology.json').read_bytes();ad=json.loads(raw)
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:bindings=list(pool.map(binding,[A/'chebi.db',A/'go.db']))
+for b,key in zip(bindings,['chebi-255','go-2026-07-26']):
+ assert b['sha256']==ad['sources'][key]['sha256'];b['source_key']=key;b['issuing_source']=ad['sources'][key]
+write('pinned-original-bindings.json',bindings)
+inventory=subprocess.run(['rg','--files','--hidden','--no-ignore',str(A),'/Users/marcin/.data/oaklib',str(root/'data/identifier_authorities')],capture_output=True,text=True,check=True)
+paths=[s for s in inventory.stdout.splitlines() if re.search(r'(^|/)(go[^/]*\.(db|json|owl|obo|ofn)|ontology\.json|ontology-inputs\.json)$',s,re.I)]
+write('GO-inventory-receipt.json',{'command':'rg --files --hidden --no-ignore <shared authorities> /Users/marcin/.data/oaklib <maintained authorities>; filtered candidate source filenames','ignored_files_included':True,'paths':paths,'explicit_pinned_database':str(A/'go.db'),'explicit_resolved_database':str((A/'go.db').resolve()),'content_search':'The entire explicit GO SQLite statements table was queried independently of filesystem ignore rules; symlink resolved path is recorded.','negative_claim_limit':'No gallate/PCA-specific transport term found by the complete pinned lexical/logical search; not a universal ontology absence claim.'})
+chem=json.loads((R/'chemical-identity-proposals.json').read_text())['chemicals'];go=json.loads((R/'GO-authority-options.json').read_text())['terms'];selected=[x['proposed_id'] for x in chem]+[x['id'] for x in go]
+write('authority-requirements.json',{'snapshot_sha256':hashlib.sha256(raw).hexdigest(),'terms':{id:{'present':id in ad['terms'],'current_term':ad['terms'].get(id)} for id in selected},'action':'Root chooses which broad terms are needed, extracts missing exact keys from the existing full pinned originals through the normal workflow, and obtains scientific review. No authority edit or new edge was made here.'})
+g=sqlite3.connect('file:'+str(A/'go.db')+'?mode=ro',uri=True)
+excluded={id:[{'predicate':p,'object':o,'value':v} for p,o,v in g.execute('select predicate,object,value from statements where subject=?',(id,))] for id in ['GO:0005342','GO:1903825']}
+write('projections/obsolete-broad-GO-exclusions.json',excluded)
+write('analysis-attempt-receipt.json',{'initial_run':'analyze_sources.py completed chemical/GO/protein projections, then was interrupted during final parallel file hashing. Existing projections were retained unchanged.','continuation':'finalize_analysis.py recomputed and verified both complete original database hashes and finished the inventory/authority tail.','no_ontology_mutation':True})
+print(json.dumps({'pinned_hashes_verified':True,'GO_inventory_paths':len(paths),'missing_selected_authority_keys':[id for id in selected if id not in ad['terms']]}))

@@ -1,0 +1,29 @@
+from pathlib import Path
+import datetime,hashlib,importlib.util,json,shutil,subprocess,time
+CI=Path('/private/tmp/pathwaymech-next-259-ci')
+spec=importlib.util.spec_from_file_location('original',CI/'run_final_checks.py');original=importlib.util.module_from_spec(spec);spec.loader.exec_module(original)
+B=original.ROOT;S=original.OUT;O=Path('/private/tmp/pathwaymech-next-259-checks-completed')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+prior=json.loads((S/'receipts.json').read_text())
+assert len(prior)==5 and all(x['exit_code']==0 for x in prior[:4])
+assert prior[-1]['command']==['just','vendored-check'] and prior[-1]['exit_code']==1
+assert 'nodename nor servname provided' in (S/'just-vendored-check.log').read_text()
+for x in prior:assert sha(Path(x['log_path']))==x['log_sha256']
+core=json.loads((S/'tested-core-input-hashes.json').read_text());assert original.inventory()==core
+assert not O.exists();O.mkdir()
+for name in ['environment.json','tested-core-input-hashes.json','record-export-comparison.json','just-test.log']:
+ shutil.copyfile(S/name,O/name);assert sha(S/name)==sha(O/name)
+shutil.copyfile(S/'receipts.json',O/'prior-attempt-receipts.json')
+effective=prior[:4];attempts=list(prior)
+for cmd in [['just','vendored-check'],['git','diff','--check'],['git','diff','--cached','--check']]:
+ log=O/('-'.join(cmd)+'.log');start=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic()
+ with log.open('w') as stream:p=subprocess.run(cmd,cwd=B,env=original.ENV,stdout=stream,stderr=subprocess.STDOUT)
+ row={'command':cmd,'cwd':str(B),'started_utc':start,'elapsed_seconds':round(time.monotonic()-t,2),'exit_code':p.returncode,'log_path':str(log),'log_sha256':sha(log)}
+ attempts.append(row);effective.append(row)
+ (O/'gate-execution-history.json').write_text(json.dumps({'scope':'Original attempts plus bounded continuation after sandbox DNS failure; no successful full test/validation run repeated.','original_receipts_path':str(S/'receipts.json'),'original_receipts_sha256':sha(S/'receipts.json'),'attempts':attempts},indent=2)+'\n')
+ (O/'receipts.json').write_text(json.dumps(effective,indent=2)+'\n');print(json.dumps(row),flush=True)
+ if p.returncode:print(log.read_text()[-5000:],flush=True);raise SystemExit(p.returncode)
+assert original.inventory()==core
+out={'tested_core_files':len(core),'all_unchanged':True,'scope':original.SCOPE,'ignored_and_hidden_included':True,'excluded_runtime_caches':['__pycache__','.pytest_cache'],'record_sha256':sha(B/'data/pathways/gallate-degradation-i.yaml'),'original_core_snapshot':str(S/'tested-core-input-hashes.json'),'execution_history':str(O/'gate-execution-history.json'),'continuation_reason':'Original vendored network fetch failed at sandbox DNS; its failed receipt/log remain immutable. Vendored network retry and remaining whitespace checks completed; successful render/validate/test/lint were not rerun.'}
+(O/'final-input-preservation.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({'status':'passed','effective_commands':len(effective),'all_attempts':len(attempts),'core_files_unchanged':len(core),'output':str(O)}),flush=True)

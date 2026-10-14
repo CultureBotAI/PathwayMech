@@ -1,0 +1,15 @@
+from pathlib import Path
+import datetime,hashlib,json,os,subprocess,time
+O=Path(__file__).parent;P=O/'prototype';PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+files=['src/pathwaymech/kegg_gene.py','src/pathwaymech/identifiers.py','scripts/build_source_identifier_snapshot.py','docs/IDENTIFIERS.md','tests/test_kegg_pseudogene_authority.py']
+tests=['tests/test_kegg_pseudogene_authority.py','tests/test_kegg_gene_authority.py','tests/test_kegg_identifier_authority.py','tests/test_identifiers.py','tests/test_source_identifier_snapshot.py','tests/test_typed_authority_consumer_integrity.py','tests/test_identifier_snapshot_builders.py']
+inputs={x:hashlib.sha256((P/x).read_bytes()).hexdigest() for x in dict.fromkeys(files+tests)}
+(O/'tested-inputs-before-checks.json').write_text(json.dumps(inputs,indent=2)+'\n')
+env=dict(os.environ,PYTHONPATH=str(P/'src'),PYTHONDONTWRITEBYTECODE='1');receipts=[]
+for name,cmd in [('tests',[PY,'-B','-m','pytest',*tests,'-q']),('lint',[PY,'-B','-m','ruff','check',*[x for x in files if x.endswith('.py')]])]:
+ log=O/(name+'.log');start=datetime.datetime.now(datetime.timezone.utc).isoformat();then=time.monotonic()
+ with log.open('wb') as f:r=subprocess.run(cmd,cwd=P,env=env,stdout=f,stderr=subprocess.STDOUT)
+ receipts.append(dict(command=cmd,cwd=str(P),started_utc=start,elapsed_seconds=round(time.monotonic()-then,3),exit_code=r.returncode,log_path=str(log),log_sha256=hashlib.sha256(log.read_bytes()).hexdigest()))
+ (O/'verification-receipts.json').write_text(json.dumps(receipts,indent=2)+'\n');assert r.returncode==0,log.read_text()
+for x,d in inputs.items():assert hashlib.sha256((P/x).read_bytes()).hexdigest()==d,x
+(O/'tested-inputs.json').write_text(json.dumps(dict(environment={'PYTHONPATH':env['PYTHONPATH'],'PYTHONDONTWRITEBYTECODE':'1'},input_hashes=inputs,unchanged_after_checks=True),indent=2)+'\n');print(json.dumps(receipts,indent=2))

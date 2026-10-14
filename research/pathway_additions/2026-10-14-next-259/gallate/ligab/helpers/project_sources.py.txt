@@ -1,0 +1,84 @@
+"""Offline projections; no network and no source mutation."""
+from pathlib import Path
+from html.parser import HTMLParser
+from xml.etree import ElementTree as ET
+import hashlib, json, shutil, zipfile
+
+ROOT = Path(__file__).resolve().parent
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+def write(name, obj):
+    p=ROOT/name
+    if p.exists(): raise FileExistsError(p)
+    p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
+
+class Node:
+    def __init__(self, tag, attrs=(), parent=None):
+        self.tag,self.attrs,self.parent,self.children=tag,dict(attrs),parent,[]
+    def text(self):
+        return ''.join(x if isinstance(x,str) else x.text() for x in self.children)
+    def find(self, tag=None, id=None):
+        out=[]
+        for c in self.children:
+            if isinstance(c,Node):
+                if (tag is None or c.tag==tag) and (id is None or c.attrs.get('id')==id): out.append(c)
+                out.extend(c.find(tag,id))
+        return out
+class Parse(HTMLParser):
+    def __init__(self): super().__init__();self.root=Node('root');self.at=self.root
+    def handle_starttag(self,t,a):
+        n=Node(t,a,self.at);self.at.children.append(n)
+        if t not in ('img','meta','link','input','br','hr','source','wbr','area','base','embed','param','track','col'):self.at=n
+    def handle_endtag(self,t):
+        p=self.at
+        while p.parent and p.tag!=t:p=p.parent
+        if p.parent:self.at=p.parent
+    def handle_data(self,s):self.at.children.append(s)
+def norm(s):return ' '.join(s.split())
+html=ROOT/'originals/PMC3926093.html'
+p=Parse();p.feed(html.read_text())
+tables=[]
+for tid in ['T1','T2','T3']:
+    n=p.root.find(id=tid)[0]
+    tables.append({'id':tid,'source_sha256':sha(html),'locator':f'#{tid}',
+                   'title_and_footnotes':norm(n.text()),
+                   'rows':[[norm(c.text()) for c in r.children if isinstance(c,Node) and c.tag in ('th','td')] for r in n.find('tr')]})
+write('projections/2013-structured-tables.json',tables)
+paragraphs=[{'id':n.attrs['id'],'text':norm(n.text())} for n in p.root.find('p') if n.attrs.get('id','').startswith('P')]
+sections=[{'id':n.attrs.get('id'),'heading':norm(n.find()[0].text()) if n.find() else ''} for n in p.root.find('section') if n.attrs.get('id','').startswith('S')]
+write('projections/2013-paragraph-locators.json',{'source_sha256':sha(html),'paragraphs':paragraphs,'sections':sections})
+
+docx=ROOT/'originals/LigAB2015-publisher-si.docx'
+W={'w':'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+with zipfile.ZipFile(docx) as z:
+    x=ET.fromstring(z.read('word/document.xml'))
+    tabs=[]
+    for i,t in enumerate(x.findall('.//w:tbl',W),1):
+        tabs.append({'index':i,'locator':f'word/document.xml /w:document/w:body/w:tbl[{i}]',
+          'rows':[[''.join(c.itertext()) for c in []]],
+          'cells':[[''.join(n.text or '' for n in c.findall('.//w:t',W)) for c in r.findall('w:tc',W)] for r in t.findall('w:tr',W)]})
+        del tabs[-1]['rows']
+    members=[{'member':n,'bytes':len(z.read(n)),'sha256':hashlib.sha256(z.read(n)).hexdigest()} for n in z.namelist() if n in ['word/document.xml','word/_rels/document.xml.rels'] or n.startswith('word/media/')]
+write('projections/2015-SI-structured-tables.json',{'source_sha256':sha(docx),'tables':tabs})
+write('projections/2015-SI-member-bindings.json',{'source':str(docx),'sha256':sha(docx),'members':members,'render_pdf':{'path':'projections/LigAB2015-publisher-si.pdf','sha256':sha(ROOT/'projections/LigAB2015-publisher-si.pdf')},'render_engine':'LibreOffice headless; PNGs rendered using mutool draw -r 115; read-only conversion','pages':[{'page':i,'path':f'projections/LigAB2015-si-page-{i}.png','sha256':sha(ROOT/f'projections/LigAB2015-si-page-{i}.png')} for i in range(1,16)]})
+pdf=ROOT/'originals/figshare2013-bi400665t_si_001.pdf'
+metadata=json.loads((ROOT/'originals/figshare2013-article.json').read_text())
+f=metadata['files'][0]
+assert hashlib.md5(pdf.read_bytes()).hexdigest()==f['computed_md5']
+write('projections/2013-SI-member-bindings.json',{'source':str(pdf),'sha256':sha(pdf),'issuing_file_id':f['id'],'issuing_computed_md5':f['computed_md5'],'md5_matches':True,'render_engine':'mutool draw; read-only PDF rendering','pages':[{'page':i,'path':f'projections/LigAB2013-si-page-{i}.png','sha256':sha(ROOT/f'projections/LigAB2013-si-page-{i}.png')} for i in range(1,9)]})
+
+native=Path('/private/tmp/pathwaymech-next-259-primary-identities')
+reuse=[]
+for name in ['CPLX-7916.xml','MONOMER-15116.xml','MONOMER-15117.xml','M34835.embl','P22635.json','P22636.json']:
+    source=native/'originals'/name;target=ROOT/'originals'/('native-'+name)
+    if target.exists():raise FileExistsError(target)
+    shutil.copyfile(source,target)
+    assert sha(source)==sha(target)
+    reuse.append({'source':str(source),'retained':str(target.relative_to(ROOT)),'bytes':target.stat().st_size,'sha256':sha(target)})
+source=native/'projections/SYK6-LigAB-DesZ-identities.json';target=ROOT/'projections/native-SYK6-LigAB-DesZ-identities.json'
+shutil.copyfile(source,target)
+reuse.append({'source':str(source),'retained':str(target.relative_to(ROOT)),'bytes':target.stat().st_size,'sha256':sha(target),'role':'author projection; original deposit sources copied separately'})
+write('native-reuse-receipts.json',reuse)
+ident=json.loads(target.read_text())
+lig=[{k:x[k] for k in ['gene','native_protein','protein_ids','CDS_location','length','sequence','checks','boundary']} for x in ident['proteins'] if x['gene'] in ['ligA','ligB']]
+write('projections/native-identity-summary.json',{'proteins':lig,'complex':ident['complex'],'synthetic_construct_limit':'Deposited reference identity does not establish exact synthesized insert sequence, residual thrombin scar, or 2015 vector/tag identity.'})
+print(json.dumps({'2013_tables':[len(x['rows']) for x in tables],'2015_tables':[len(x['cells']) for x in tabs],'native_reused':len(reuse),'SI2013_md5_valid':True}))

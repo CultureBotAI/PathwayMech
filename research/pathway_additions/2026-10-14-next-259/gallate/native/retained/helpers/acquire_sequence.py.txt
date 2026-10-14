@@ -1,0 +1,14 @@
+from pathlib import Path
+import json,urllib.request,urllib.error,urllib.parse,concurrent.futures,datetime,hashlib
+B=Path('/private/tmp/pathwaymech-next-259-native'); O=B/'originals';out=[]
+urls={'AE015451.embl':'https://www.ebi.ac.uk/ena/browser/api/embl/AE015451','AB190989.embl':'https://www.ebi.ac.uk/ena/browser/api/embl/AB190989','GalA-uniprot-search.json':'https://rest.uniprot.org/uniprotkb/search?query='+urllib.parse.quote('(gene:galA) AND (organism_id:160488)')+'&format=json&size=500','1045771-gene.xml':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id=1045771&retmode=xml'}
+def get(it):
+ n,u=it;p=O/n;row={'path':str(p),'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(u,timeout=50) as r:b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+ except urllib.error.HTTPError as e:b=e.read();row.update(status=e.code,error=str(e))
+ except Exception as e:return dict(row,error=str(e))
+ p.write_bytes(b);row.update(sha256=hashlib.sha256(b).hexdigest(),bytes=len(b));return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:
+ for x in ex.map(get,urls.items()):out.append(x);print(Path(x['path']).name,x.get('status'),x.get('error',''))
+(B/'retained/sequence-acquisition.json').write_text(json.dumps(out,indent=2)+'\n')

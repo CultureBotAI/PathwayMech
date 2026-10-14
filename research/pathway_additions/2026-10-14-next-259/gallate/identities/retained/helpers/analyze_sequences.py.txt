@@ -1,0 +1,32 @@
+from pathlib import Path
+import hashlib,json,re,xml.etree.ElementTree as E,csv
+B=Path(__file__).parent;O=B/'originals';P=B/'projections'
+def bind(p):b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def seqhash(s):return hashlib.sha256(s.encode()).hexdigest()
+def fields(s):
+ out={};key=None
+ for line in s.splitlines():
+  if line=='///':break
+  if line[:12].strip():key=line[:12].strip();out.setdefault(key,[])
+  if key:out[key].append(line[12:].strip())
+ return out
+embl=Path('/private/tmp/pathwaymech-next-259-native/originals/AE015451.embl');raw=embl.read_text();dna=''.join(re.findall('[a-z]+',raw.split('\nSQ   ')[1].split('\n',1)[1].split('//')[0])).upper()
+features=json.loads((P/'ENA-gal-locus-features.json').read_text());code={a+b+c:aa for (a,b,c),aa in zip(((a,b,c)for a in 'TCAG' for b in 'TCAG' for c in 'TCAG'),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG')}
+ncbi=E.parse(O/'AAN68127.1-AAN68128.1-AAN68129.1.xml').getroot();n={x.findtext('GBSeq_accession-version'):x for x in ncbi.findall('GBSeq')}
+rows=[]
+for locus,uni in [('PP_2515','Q88JX8-current'),('PP_2516','Q88JX7'),('PP_2517','Q88JX6')]:
+ f=next(f for f in features if f['feature'].startswith('CDS ') and f['qualifiers']['locus_tag']==[locus]);q=f['qualifiers'];loc=f['feature'].split(None,1)[1];m=re.fullmatch('(complement\()?([0-9]+)\.\.([0-9]+)\)?',loc);rev,start,end=m.groups();nt=dna[int(start)-1:int(end)];nt=nt.translate(str.maketrans('ACGT','TGCA'))[::-1]if rev else nt
+ tr=''.join(code[nt[i:i+3]]for i in range(0,len(nt),3));assert tr[-1]=='*';tr='M'+tr[1:-1]
+ up=json.loads((O/(uni+'.json')).read_text());k=fields((O/('KEGG-ppu-'+locus+'.txt')).read_text());kaa=''.join(k['AASEQ'][1:]);knt=''.join(k['NTSEQ'][1:]).upper();acc=q['protein_id'][0];ns=n[acc].findtext('GBSeq_sequence').upper()
+ checks={'ENA_translated_equals_annotated':tr==q['translation'][0],'ENA_equals_UniProt':tr==up['sequence']['value'],'ENA_equals_NCBI':tr==ns,'ENA_equals_KEGG_aa':tr==kaa,'ENA_equals_KEGG_nt':nt==knt};assert all(checks.values())
+ rows.append({'locus':locus,'gene_endpoint':'KEGG:ppu:'+locus,'protein_endpoints':['UniProtKB:'+up['primaryAccession'],'NCBIProtein:'+acc],'location':loc,'aa_length':len(tr),'nt_length':len(nt),'sequence_sha256':seqhash(tr),'sequence':tr,'nucleotide_sha256':seqhash(nt),'checks':checks,'sources':[bind(embl),bind(O/(uni+'.json')),bind(O/'AAN68127.1-AAN68128.1-AAN68129.1.xml'),bind(O/('KEGG-ppu-'+locus+'.txt'))],'annotation':{'gene_names':up.get('genes'),'protein_description':up['proteinDescription'],'organism':up['organism'],'sequence':up['sequence'],'comments':up.get('comments'),'features':up.get('features'),'references':up.get('references')},'boundary':'Exact deposited source identity and sequence correspondence; this alone does not establish the sequence of every historical assay construct.'})
+(P/'protein-and-gene-identities.json').write_text(json.dumps({'role':'source author, no approval','rows':rows},indent=2)+'\n')
+full=rows[0]['sequence'];pdb=json.loads((O/'5CGZ-polymer-1.json').read_text());crystal=pdb['entity_poly']['pdbx_seq_one_letter_code_can'];short=full[14:];assert len(short)==244 and short.startswith('MNTPQ') and crystal=='M'+full[19:] and len(crystal)==240
+old=(O/'Q88JX8-version1.txt').read_text();oldseq=''.join(re.findall('[A-Z]+',old.split('\nSQ   ')[1].split('\n',1)[1].split('//')[0]));assert oldseq==full
+history=list(csv.DictReader((O/'Q88JX8-history.tsv').read_text().splitlines(),delimiter='\t'));assert {x['Sequence version']for x in history}=={'1'}
+sites=[]
+for mut in ['A16D','R21A','E48A','R67A','H127A','Y123A','H164A','R216A']:
+ aa,pos,new=re.fullmatch('([A-Z])([0-9]+)([A-Z])',mut).groups();pos=int(pos);assert short[pos-1]==full[pos+13]==aa;sites.append({'paper_variant':mut,'paper_position':pos,'deposited_258aa_position':pos+14,'wild_type_residue':aa,'exact_match':True})
+out={'role':'source-author reconciliation; no exact 2011 insert equivalence claim','full_deposited':{'id':'UniProtKB:Q88JX8 / NCBIProtein:AAN68127.1','length':len(full),'sequence_sha256':seqhash(full),'prefix_14':full[:14]},'historical_UniProt':{'source':bind(O/'Q88JX8-version1.txt'),'entry_version':1,'sequence_version':1,'sequence_equals_current':oldseq==full,'history_source':bind(O/'Q88JX8-history.tsv'),'history_rows':len(history),'all_report_sequence_version_1':True},'short_form_inference':{'length':244,'proposed_start_in_258aa':15,'sequence':short,'sequence_sha256':seqhash(short),'status':'Length and mutation numbering consistent with 2011 Table1 and 2016 methods, but full historical insert/primers are unavailable; this is not an issuing exact244aa accession.'},'PDB_5CGZ':{'sources':[bind(O/'5CGZ.cif'),bind(O/'5CGZ-polymer-1.json')],'length':len(crystal),'sequence':crystal,'sequence_sha256':seqhash(crystal),'exact_comparison':'initiating M + current UniProt residues20–258','native_fragment':'UNP residues 20-258','CIF_locators':['_entity.pdbx_fragment','_entity_poly.pdbx_seq_one_letter_code','_struct_ref_seq: seq_align2..240 ↔ Q88JX8 20..258, author6..244','_struct_ref_seq_dif: entity1 M, author5, initiating methionine'],'web_annotation_boundary':'RCSB SIFTS aggregate alignment includes an initiating-M artifact at reference position19; raw CIF resolves it separately. Do not claim M equals nativeQ19.'},'paper_to_current_mutation_numbering':sites,'interpretation':'A putative244aa form starts at M15. Removing its first four residues15–18 exposesQ19; PDB instead has initiatingM then20–258. Thus four-residue deletion alone does not give the exact deposited crystal sequence: engineered initiation also changes the first residue. The PDB author numbering5..244 and all eight primary mutation positions support the +14 index shift, without proving every residue of the 2011 assay insert.','outstanding':'2011 complete insert/primer sequence or independently deposited exact assay plasmid needed for definitive assayed244aa identity; preserve source-native assay endpoint and current full258aa sequence separately.'}
+(P/'GalB-construct-reconciliation.json').write_text(json.dumps(out,indent=2)+'\n')
+print('Three exact gene/CDS/protein identity comparisons passed; GalB240aa PDB construct and eight +14 residue mappings checked.')

@@ -1,0 +1,15 @@
+from pathlib import Path
+import datetime,hashlib,json,sqlite3
+R=Path('/private/tmp/pathwaymech-next-259-20261014');O=Path(__file__).parent;B=Path('/private/tmp/pathwaymech-next-259-authorities')
+a=json.loads((R/'data/identifier_authorities/ontology.json').read_text());binding=next(r for r in json.loads((B/'canonical-build-commands.json').read_text())['database_bindings'] if r['owner_key']=='go-2026-07-26');p=Path(binding['path']);h=hashlib.sha256()
+with p.open('rb') as f:
+ for chunk in iter(lambda:f.read(1024*1024),b''):h.update(chunk)
+assert h.hexdigest()==binding['sha256']==a['sources']['go-2026-07-26']['sha256'];rows=[]
+with sqlite3.connect('file:'+str(p.resolve())+'?mode=ro',uri=True) as con:
+ for ident in ['GO:0005829','GO:0046943']:
+  values=list(con.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('rdfs:label','oio:hasExactSynonym')",(ident,)))
+  labels={value for pred,value in values if pred=='rdfs:label' and value};assert labels=={a['terms'][ident]['label']}
+  expected={'label':a['terms'][ident]['label'],'synonyms':sorted({value for pred,value in values if pred=='oio:hasExactSynonym' and value and value!=a['terms'][ident]['label']}),'source':'go-2026-07-26'};assert expected==a['terms'][ident]
+  rows.append({'id':ident,'canonical_term':a['terms'][ident],'native_sql_rows':values})
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed','command':'/usr/local/bin/python3.11 -B /private/tmp/pathwaymech-next-259-integration-successor/verify_selected_go_sql.py','exit_code':0,'database_path':str(p),'resolved_database_path':str(p.resolve()),'bytes':p.stat().st_size,'full_uncompressed_database_sha256':h.hexdigest(),'owner_metadata':a['sources']['go-2026-07-26'],'direct_native_term_checks':rows,'scope':'Fresh full SHA-256 of the pinned uncompressed GO Semantic SQL database and independent read-only SQL label/synonym checks for newly selected cytosol and repaired-reference term. No inference of experimental localization or transport specificity.'}
+q=O/'selected-go-sql-verification.json';assert not q.exists();q.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

@@ -1,0 +1,73 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+
+B = Path('/private/tmp/pathwaymech-next-259-20261014')
+R = Path('/private/tmp/pathwaymech-next-259-checks-initial')
+O = Path('/private/tmp/pathwaymech-next-259-science')
+destination = O / 'shared-check-binding-final.json'
+assert not destination.exists(), 'Final proof already exists; do not overwrite it.'
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+manifest = R / 'tested-core-input-hashes.json'
+inputs = json.loads(manifest.read_text())
+mismatches = []
+for relative, expected in inputs.items():
+    path = B / relative
+    actual = sha(path) if path.is_file() else None
+    if actual != expected:
+        mismatches.append({'path': relative, 'expected': expected, 'actual': actual})
+assert not mismatches, mismatches
+
+receipt_file = R / 'receipts.json'
+receipts = json.loads(receipt_file.read_text())
+commands = {' '.join(receipt['command']) for receipt in receipts}
+assert {'just render-pages', 'just validate', 'just test', 'just lint', 'git diff --check'} <= commands, commands
+logs = []
+for receipt in receipts:
+    path = Path(receipt['log_path'])
+    actual = sha(path)
+    assert actual == receipt['log_sha256'], path
+    logs.append({**receipt, 'verified_log_sha256': actual})
+
+export_file = R / 'record-export-comparison.json'
+exports = json.loads(export_file.read_text())
+artifact_checks = []
+for relative, expected in exports['artifacts'].items():
+    actual = sha(B / relative)
+    assert actual == expected, relative
+    artifact_checks.append({'path': relative, 'sha256': actual, 'matches': True})
+
+staged_relative = 'research/pathway_additions/2026-10-14-next-259/initial-reviews/technical-staging-complete/independent-staged-diff-full-inventory-failure.json'
+staged_path = B / staged_relative
+staged = json.loads(staged_path.read_text())
+assert staged['exit_code'] == 2 and staged['status'] == 'failed'
+staged_artifacts = []
+for artifact in staged['affected_artifacts']:
+    actual = sha(B / artifact['path'])
+    assert actual == artifact['sha256'], artifact['path']
+    staged_artifacts.append({'path': artifact['path'], 'sha256': actual, 'matches': True})
+
+record = B / 'data/pathways/gallate-degradation-i.yaml'
+assert sha(record) == '9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665'
+result = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Independent scientific-reviewer binding of root-executed shared gates and the technical reviewer staged-diff failure; no duplicate full suite run.',
+    'input_hash_file': {'path': str(manifest), 'sha256': sha(manifest)},
+    'input_count': len(inputs),
+    'input_mismatches': mismatches,
+    'completed_receipts': logs,
+    'receipt_file': {'path': str(receipt_file), 'sha256': sha(receipt_file)},
+    'export_comparison': {'path': str(export_file), 'sha256': sha(export_file)},
+    'export_artifacts': artifact_checks,
+    'required_staged_diff': {'path': staged_relative, 'sha256': sha(staged_path), 'exit_code': staged['exit_code'], 'status': staged['status'], 'affected_artifacts': staged_artifacts},
+    'record_sha256': sha(record),
+    'conclusion': 'All shared commands were inspected with their actual results. The required staged diff check failed; a successful unstaged diff check does not supersede it.'
+}
+with destination.open('x') as stream:
+    json.dump(result, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'path': str(destination), 'sha256': sha(destination), 'input_count': len(inputs), 'commands': len(receipts), 'staged_diff_status': 'failed'}, indent=2))

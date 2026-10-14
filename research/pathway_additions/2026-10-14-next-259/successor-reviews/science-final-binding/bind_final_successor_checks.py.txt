@@ -1,0 +1,159 @@
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import subprocess
+import yaml
+
+B = Path('/private/tmp/pathwaymech-next-259-20261014')
+O = Path('/private/tmp/pathwaymech-next-259-science-successor')
+R = Path('/private/tmp/pathwaymech-next-259-checks-completed')
+retained = B / 'research/pathway_additions/2026-10-14-next-259/successor-reviews/checks'
+destination = O / 'final-shared-check-binding.json'
+assert not destination.exists(), 'Never overwrite a frozen proof.'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def binding(path):
+    return {'path': str(path), 'sha256': sha(path)}
+
+
+expected_commands = {
+    'just render-pages', 'just validate', 'just test', 'just lint',
+    'just vendored-check', 'git diff --check', 'git diff --cached --check',
+}
+receipts = json.loads((R / 'receipts.json').read_text())
+commands = [' '.join(row['command']) for row in receipts]
+assert set(commands) == expected_commands and len(commands) == 7, commands
+verified_receipts = []
+for row in receipts:
+    assert row['exit_code'] == 0, row
+    assert Path(row['cwd']) == B, row
+    path = Path(row['log_path'])
+    assert sha(path) == row['log_sha256'], path
+    verified_receipts.append({**row, 'verified_original_log_sha256': sha(path)})
+
+history = json.loads((R / 'gate-execution-history.json').read_text())
+attempts = history['attempts']
+assert len(attempts) == 8, attempts
+original_receipts = Path(history['original_receipts_path'])
+assert sha(original_receipts) == history['original_receipts_sha256']
+assert (R / 'prior-attempt-receipts.json').read_bytes() == original_receipts.read_bytes()
+assert attempts[:5] == json.loads(original_receipts.read_text())
+assert receipts == [row for row in attempts if row['exit_code'] == 0]
+failed_attempts = [row for row in attempts if row['exit_code'] != 0]
+assert len(failed_attempts) == 1
+failed = failed_attempts[0]
+assert failed['command'] == ['just', 'vendored-check'] and failed['exit_code'] == 1
+assert sha(Path(failed['log_path'])) == failed['log_sha256']
+assert 'nodename nor servname provided, or not known' in Path(failed['log_path']).read_text()
+for row in attempts:
+    assert sha(Path(row['log_path'])) == row['log_sha256'], row
+
+core = json.loads((R / 'tested-core-input-hashes.json').read_text())
+core_mismatches = []
+for relative, expected in core.items():
+    actual = sha(B / relative) if (B / relative).is_file() else None
+    if actual != expected:
+        core_mismatches.append({'path': relative, 'expected': expected, 'actual': actual})
+assert not core_mismatches, core_mismatches
+preservation = json.loads((R / 'final-input-preservation.json').read_text())
+assert preservation['all_unchanged'] is True, preservation
+assert preservation['tested_core_files'] == len(core), preservation
+assert sha(Path(preservation['original_core_snapshot'])) == sha(R / 'tested-core-input-hashes.json')
+
+inspect = json.loads((O / 'applied-inspect.json').read_text())
+input_checks = []
+for row in inspect['source']['inputs']:
+    actual = sha(B / row['path'])
+    assert actual == row['sha256'], row
+    input_checks.append({'path': row['path'], 'sha256': actual, 'matches': True})
+
+retention = json.loads((retained / 'retention-manifest.json').read_text())
+retention_checks = []
+retained_original_paths = set()
+for row in retention['files']:
+    original = Path(row['source_path'])
+    encoded = retained / row['retained_path']
+    assert sha(original) == row['source_sha256'], original
+    assert sha(encoded) == row['sha256'], encoded
+    data = encoded.read_bytes()
+    assert len(data) == row['bytes'], encoded
+    if row['encoding'] == 'gzip':
+        decoded = gzip.decompress(data)
+    else:
+        assert row['encoding'] == 'identity', row
+        decoded = data
+    assert decoded == original.read_bytes(), encoded
+    retained_original_paths.add(str(original))
+    retention_checks.append({**row, 'decoded_original_bytes_match': True})
+assert {row['log_path'] for row in receipts} <= retained_original_paths
+assert {row['log_path'] for row in attempts} <= retained_original_paths
+assert {str(R / name) for name in ['receipts.json', 'tested-core-input-hashes.json', 'final-input-preservation.json', 'record-export-comparison.json']} <= retained_original_paths
+
+exports = json.loads((R / 'record-export-comparison.json').read_text())
+export_checks = []
+for relative, expected in exports['artifacts'].items():
+    actual = sha(B / relative)
+    assert actual == expected, relative
+    export_checks.append({'path': relative, 'sha256': actual, 'matches': True})
+
+record = B / 'data/pathways/gallate-degradation-i.yaml'
+assert sha(record) == '5574dbd48b8c2937ecaca6337a0c87fa3485754464a70afea8fc8460ae4a770f'
+predecessor = B / 'reviews/structured/20261014T230639Z-next259-science-initial/review.yaml'
+assert sha(predecessor) == '159ea2df32914be7357e41fc3368895a5d0a4cb323c5a4afffbca33b5f9a9912'
+assert sha(predecessor.with_name('review.md')) == '65fdd5de66a4f9b997884278530a68e37046a92aa68874a737b3cebce355ef27'
+prior = yaml.safe_load(predecessor.read_text())
+keys = {finding['issue_key'] for finding in prior['findings']}
+search_command = ['rg', '--no-ignore', '--hidden', '-l', '-e', 'next259-construct-evidence-locality', '-e', 'next259-galb-cytosol-false-absence', 'reviews/structured']
+search = subprocess.run(search_command, cwd=B, capture_output=True, text=True)
+assert search.returncode == 0, search.stderr
+occurrences = []
+for path in sorted((B / 'reviews/structured').rglob('review.yaml')):
+    parsed = yaml.safe_load(path.read_text())
+    for finding in parsed.get('findings', []):
+        if finding.get('issue_key') in keys:
+            occurrences.append({'path': str(path.relative_to(B)), 'review_id': parsed['review_id'], 'finding_id': finding['finding_id'], 'issue_key': finding['issue_key'], 'status': finding['status']})
+assert len(occurrences) == 2, occurrences
+assert all(row['review_id'] == prior['review_id'] and row['status'] == 'open' for row in occurrences), occurrences
+
+go = B / 'research/pathway_additions/2026-10-14-next-259/successor-reviews/technical-supplement/selected-go-sql-verification.json'
+assert sha(go) == 'a699b4516304a8c9c7f7121dc4f8816541d0e15a0b179a3a8c796c66263728a0'
+go_data = json.loads(go.read_text())
+assert go_data['full_uncompressed_database_sha256'] == '018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd'
+
+result = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Independent scientific reviewer binding root-executed final gates; no duplicate full suite run and no maintained writes.',
+    'status': 'passed',
+    'record_sha256': sha(record),
+    'tested_core_manifest': binding(R / 'tested-core-input-hashes.json'),
+    'tested_core_file_count': len(core),
+    'tested_core_mismatches': core_mismatches,
+    'root_final_input_preservation': binding(R / 'final-input-preservation.json'),
+    'receipt_file': binding(R / 'receipts.json'),
+    'completed_receipts': verified_receipts,
+    'execution_history': binding(R / 'gate-execution-history.json'),
+    'all_eight_attempts': attempts,
+    'preserved_failed_attempt': failed,
+    'original_attempt_receipts': binding(original_receipts),
+    'retention_manifest': binding(retained / 'retention-manifest.json'),
+    'lossless_retention_checks': retention_checks,
+    'applied_inspect': binding(O / 'applied-inspect.json'),
+    'all_initial_successor_inspect_inputs_unchanged': input_checks,
+    'export_comparison': binding(R / 'record-export-comparison.json'),
+    'export_artifact_checks': export_checks,
+    'predecessor_yaml': binding(predecessor),
+    'predecessor_markdown': binding(predecessor.with_name('review.md')),
+    'lineage_search': {'command': search_command, 'exit_code': search.returncode, 'stdout': search.stdout, 'stderr': search.stderr, 'scope': 'Only the current worktree reviews/structured directory, including hidden and ignored files; no global absence claim.', 'matching_finding_occurrences': occurrences},
+    'peer_go_database_verification': {**binding(go), 'scope': 'The technical reviewer freshly hashed the full pinned SQL database. This scientific reviewer binds that proof and separately inspected the native computational localization and queried GO; no duplicate full database hash is claimed.'},
+    'conclusion': 'Seven final gate requirements are satisfied across eight actual attempts. The first vendored check failed at sandbox DNS and remains preserved; its bounded retry passed. Successful render, validation, tests and lint were not repeated. The terminal staged diff check passes; the predecessor failed staged check remains unchanged historical evidence. Both scientific findings retain exact predecessor occurrences for the successor dispositions.'
+}
+with destination.open('x') as stream:
+    json.dump(result, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'path': str(destination), 'sha256': sha(destination), 'tested_core_files': len(core), 'commands': len(receipts), 'retained_files': len(retention_checks), 'inspect_inputs': len(input_checks), 'status': 'passed'}, indent=2))

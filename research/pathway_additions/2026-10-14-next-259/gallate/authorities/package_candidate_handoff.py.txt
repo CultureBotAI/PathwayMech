@@ -1,0 +1,25 @@
+"""Freeze a bounded candidate handoff; this does not start a canonical union build."""
+from pathlib import Path
+import datetime,hashlib,json
+B=Path(__file__).resolve().parent
+
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(n):return json.loads((B/n).read_text())
+receipt=load('candidate-preflight-receipt.json');candidates=load('authority-candidates.json');ontology=load('ontology-candidates.json')
+base={}
+for n in ['sources','ontology']:base.update(load('baseline/'+n+'.json')['terms'])
+bai=load('bai50711-candidate.json');extra=[dict(identifier='NCBIProtein:BAI50711.1',candidate=bai,parsed_term=bai['terms'][0],already_retained='NCBIProtein:BAI50711.1' in base,retained_term=base.get('NCBIProtein:BAI50711.1'),roles=[dict(role='Requested direct 2016 Comamonas sp. E6 PmdE source identity; construct limits belong to record author')],status='unselected_source_candidate')]
+(B/'supplemental-authority-candidates.json').write_text(json.dumps(extra,indent=2)+'\n')
+req=Path('/private/tmp/pathwaymech-next-259-record-author/author/identifier-requirements.json');raw=req.read_bytes();copy=B/'preliminary-author-requirements.json';copy.write_bytes(raw);author=json.loads(raw);wanted={author['record_id']}|{n['id'] for key in ['participants','reactions','taxa'] for n in author.get(key,[])}|{'NCBIProtein:BAI50711.1'}
+all_candidates=candidates+extra;rows=[]
+for i in sorted(wanted):
+ sources=[c for c in all_candidates if c['identifier']==i];ont=[o['terms'][i] for o in ontology if i in o['terms']]
+ rows.append(dict(identifier=i,already_retained=i in base,retained_term=base.get(i),source_candidate_count=len(sources),source_candidate_terms=[s['parsed_term'] for s in sources],ontology_terms=ont,covered=bool(i in base or sources or ont)))
+(B/'preliminary-author-coverage.json').write_text(json.dumps(dict(scope='Preliminary current author ID set plus explicitly requested BAI50711.1; not final selection',source=dict(path=str(req),sha256=hashlib.sha256(raw).hexdigest(),copy=str(copy)),rows=rows),indent=2)+'\n')
+files=['inventory_candidates.py','candidate-preflight.log','candidate-preflight-receipt.json','baseline-preflight.json','authority-candidates.json','candidate-rejections.json','ontology-candidates.json','candidate-coverage.json','bai50711-acquisition-initial.json','bai50711-acquisition-public-retry.json','bai50711-candidate.json','supplemental-authority-candidates.json','preliminary-author-requirements.json','preliminary-author-coverage.json','run_builds.py','acquire_bai50711.py','package_candidate_handoff.py']
+for folder in sorted(B.glob('candidate-attempt-*')):
+ files.extend(str(p.relative_to(B)) for p in folder.iterdir() if p.is_file())
+manifest={n:dict(sha256=sha(B/n),bytes=(B/n).stat().st_size) for n in files}
+(B/'candidate-handoff-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+result=dict(status='bounded_author_candidate_inventory_ready',utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),baseline_commit=receipt['baseline_commit'],source_candidate_count=len(all_candidates),source_parser_rejections=receipt['parser_rejections'],preliminary_author_ids=len(wanted),uncovered_preliminary_ids=[r['identifier'] for r in rows if not r['covered']],author_record_frozen=False,canonical_build_started=False,manifest_or_snapshot_promoted=False,maintained_files_edited=False,next_step='Root reactivates authority author with final frozen record path/hash and any newly resolved source candidates; only then prepare exact selected union and run external canonical builders.',manifest=dict(path=str(B/'candidate-handoff-manifest.json'),sha256=sha(B/'candidate-handoff-manifest.json')),prior_failed_preflight_attempts_preserved=3,initial_bai_network_failure_preserved=True,bai_original=dict(path=bai['path'],sha256=bai['sha256']),notes=['Candidate inventory membership is not an authority addition or scientific approval.','All prior terms, owners and manifest prefix remain unchanged.','Candidate source descriptors preserve successful original acquisition/reuse chains and exact parsed native labels.','Final ontology snapshots must be produced by the canonical builder from pinned databases.'])
+(B/'CANDIDATE-HANDOFF.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2));print('HANDOFF_SHA256',sha(B/'CANDIDATE-HANDOFF.json'))

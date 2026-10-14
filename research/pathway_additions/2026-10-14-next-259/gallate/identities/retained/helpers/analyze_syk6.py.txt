@@ -1,0 +1,29 @@
+from pathlib import Path
+import json,hashlib,re,xml.etree.ElementTree as E
+B=Path(__file__).parent;O=B/'originals';P=B/'projections'
+def bind(p):b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+code={a+b+c:aa for(a,b,c),aa in zip(((a,b,c)for a in 'TCAG'for b in 'TCAG'for c in 'TCAG'),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG')}
+rows=[]
+for source,targets,ncbifile in [('M34835',{'ligA':('P22635','MONOMER-15116','G-11551'),'ligB':('P22636','MONOMER-15117','G-11552')},'AAA17727.1-AAA17728.1.xml'),('AB110976',{'desZ':('Q7WYU8','MONOMER-15115','G-11550')},'BAC79261.1.xml')]:
+ ep=O/(source+'.embl');raw=ep.read_text();dna=''.join(re.findall('[a-z]+',raw.split('\nSQ   ')[1].split('\n',1)[1].split('//')[0])).upper();nr=E.parse(O/ncbifile).getroot();n={r.findtext('GBSeq_accession-version'):r for r in nr.findall('GBSeq')}
+ for z in re.split(r'\nFT   (?=[A-Za-z])',raw)[1:]:
+  if not z.startswith('CDS '):continue
+  lines=z.splitlines();loc=lines[0].split(None,1)[1].strip();text=''.join(l[21:].strip()for l in lines[1:]if l.startswith('FT                   '));q={}
+  for k,v in re.findall(r'/([\w_]+)=("[^"]*"|[^/]+)',text):q.setdefault(k,[]).append(v.strip('"'))
+  gene=q.get('gene',[''])[0]
+  if gene not in targets:continue
+  uni,frame,gframe=targets[gene];m=re.fullmatch('(complement\()?([0-9]+)\.\.([0-9]+)\)?',loc);assert m,loc;rev,s,e=m.groups();nt=dna[int(s)-1:int(e)];nt=nt.translate(str.maketrans('ACGT','TGCA'))[::-1]if rev else nt;tr=''.join(code[nt[i:i+3]]for i in range(0,len(nt),3));assert tr[-1]=='*';tr='M'+tr[1:-1];acc=q['protein_id'][0];up=json.loads((O/(uni+'.json')).read_text());nc=n[acc].findtext('GBSeq_sequence').upper();native=E.parse(O/(frame+'.xml')).getroot().find('Protein');ng=E.parse(O/(gframe+'.xml')).getroot().find('Gene')
+  checks={'translated_equals_annotation':tr==q['translation'][0],'translated_equals_UniProt':tr==up['sequence']['value'],'translated_equals_NCBI':tr==nc,'native_protein_crossref_to_UniProt':any(x.findtext('dblink-db')=='UNIPROT'and x.findtext('dblink-oid')==uni for x in native.findall('dblink')),'native_gene_name_matches':ng.findtext('common-name')==gene,'native_gene_product_matches':any(x.get('frameid')==frame for x in ng.findall('product/Protein'))};assert all(checks.values()),(gene,checks)
+  rows.append({'gene':gene,'native_protein':'MetaCyc:'+frame,'native_gene':'MetaCyc:'+gframe,'protein_ids':['UniProtKB:'+uni,'NCBIProtein:'+acc],'ENA_accession':raw.splitlines()[0],'CDS_location':loc,'CDS_qualifiers':q,'length':len(tr),'sequence':tr,'sequence_sha256':hashlib.sha256(tr.encode()).hexdigest(),'nt_sha256':hashlib.sha256(nt.encode()).hexdigest(),'checks':checks,'source_bindings':[bind(ep),bind(O/ncbifile),bind(O/(uni+'.json')),bind(O/(frame+'.xml')),bind(O/(gframe+'.xml'))],'issuing_protein_annotation':up,'boundary':'Exact deposited reference/issuing correspondence. Full historical assay vector inserts or tags are not reconstructed by this match; retain paper-specific preparations.'})
+assert len(rows)==3
+c=E.parse(O/'CPLX-7916.xml').getroot().find('Protein');parts=[{'id':'MetaCyc:'+x.find('Protein').get('frameid'),'coefficient':x.findtext('coefficient'),'coefficient_present':x.find('coefficient')is not None}for x in c.findall('component')]
+assert {x['id']for x in parts}=={'MetaCyc:MONOMER-15116','MetaCyc:MONOMER-15117'}
+out={'role':'bounded source-author exact identity supplement','proteins':rows,'complex':{'id':'MetaCyc:CPLX-7916','label':c.findtext('common-name'),'components':parts,'source':bind(O/'CPLX-7916.xml'),'boundary':'SYK-6 LigAB is distinct from historical ComamonasCPLX-2701. Native component slots supply no coefficients; do not invent stoichiometry or equate later tagged constructs.'},'taxonomic_bounds':'Original ENA deposits explicitly identify SYK6/SYK-6 while using historical S.paucimobilis taxonomy13689; nativeMETA27 usesSphingomonassp.SYK6502559; currentLigA/B UniProt usesSphingobiumSYK6taxon627192; currentDesZQ7WYU8 stilluses13689. Preserve issuing contexts; no automatic taxon-ID equivalence asserted.','primary_link':'Kasai2005 Table2 and pELAB/DesZ contexts identify SYK-6 enzymes; parent primary author owns activity/product and physiological interpretation. Do not infer a gallate-to-OMA catalytic edge solely from chemical names or O2 consumption. New2013/2015 primary supplement is separately assigned.'}
+(P/'SYK6-LigAB-DesZ-identities.json').write_text(json.dumps(out,indent=2)+'\n')
+slots=[]
+for f in ['CPLX-7916','MONOMER-15115','MONOMER-15116','MONOMER-15117','G-11550','G-11551','G-11552']:
+ p=O/(f+'.xml');r=E.parse(p).getroot();n=next(x for x in r if x.get('frameid')==f);counts={}
+ for x in n:
+  counts[x.tag]=counts.get(x.tag,0)+1;slots.append({'frame':f,'type':n.tag,'source':bind(p),'slot':x.tag,'ordinal':counts[x.tag],'locator':f"/ptools-xml/{n.tag}[@frameid='{f}']/{x.tag}[{counts[x.tag]}]",'element_sha256':hashlib.sha256(E.tostring(x,encoding='utf-8')).hexdigest(),'values':list(x.itertext()),'targets':[a.get('frameid')for a in x.iter()if a.get('frameid')],'disposition':'Retain source identity/annotation context. Alternative-reaction links and narrative do not add formal pathway members or transfer assay specificity; all native narrative remains in the bound original.'})
+(P/'SYK6-native-direct-slots.json').write_text(json.dumps({'scope':'All directslots of seven inspected supplemental native identity objects; hashes use ElementTree serialization, not contiguous original bytes. No recursive database exhaustion.','count':len(slots),'slots':slots},indent=2)+'\n')
+print('Three SYK-6 protein/CDS identities exact; seven native objects/',len(slots),'directslots retained.')

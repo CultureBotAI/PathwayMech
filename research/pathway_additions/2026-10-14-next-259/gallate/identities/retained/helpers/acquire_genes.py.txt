@@ -1,0 +1,14 @@
+from pathlib import Path
+import urllib.request,urllib.error,datetime,hashlib,json,time
+B=Path(__file__).parent;O=B/'originals';rows=[]
+urls={'NCBIGene-search-PP_RS13170-retry.json':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&retmode=json&term=PP_RS13170'}
+for id in ['1045763','1045766','1045767','83680896','83680898']:
+ urls['NCBIGene-'+id+'.xml']='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+id+'&rettype=xml'
+for n,u in urls.items():
+ p=O/n;assert not p.exists(),p;r={'path':str(p),'url':u,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech-source-author/1.0'}),timeout=45) as f:b=f.read();r.update(status=f.status,final_url=f.url)
+ except urllib.error.HTTPError as e:b=e.read();r.update(status=e.code,error=str(e))
+ except Exception as e:rows.append(dict(r,error=str(e)));continue
+ p.write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());rows.append(r);print(n,r.get('status'),len(b));time.sleep(0.5)
+(B/'acquisition-genes.json').write_text(json.dumps(rows,indent=2)+'\n')

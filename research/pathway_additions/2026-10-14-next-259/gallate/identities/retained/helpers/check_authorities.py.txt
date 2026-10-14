@@ -1,0 +1,44 @@
+from pathlib import Path
+import json,hashlib,importlib.util,sys,subprocess,xml.etree.ElementTree as E,datetime
+B=Path(__file__).parent;O=B/'originals';T=Path('/private/tmp/pathwaymech-next-258-20261014');M=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+def bind(p):b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+spec=importlib.util.spec_from_file_location('identity_snapshot_preflight',T/'scripts/build_source_identifier_snapshot.py');mod=importlib.util.module_from_spec(spec);sys.modules[spec.name]=mod;spec.loader.exec_module(mod)
+tests=[];wanted={}
+def test(kind,p,url):
+ row={'kind':kind,'source':bind(p),'url':url}
+ try:row['terms']=list(mod.source_terms(kind,p,url=url))
+ except Exception as e:row['rejected']=str(e)
+ tests.append(row);return row
+for i in range(2513,2520):
+ id='KEGG:ppu:PP_'+str(i);wanted[id]='source gene/CDS locus; not a protein';test('kegg-gene-flatfile',O/f'KEGG-ppu-PP_{i}.txt',f'https://rest.kegg.jp/get/ppu:PP_{i}')
+for name in ['Q88JX7','Q88JX6','Q88JX8-current']:
+ t=test('uniprot',O/(name+'.json'),'https://rest.uniprot.org/uniprotkb/'+name.removesuffix('-current')+'.json');wanted[t['terms'][0][0]]='protein; current258aaGalB not unqualified historical assay construct'
+t=test('ncbi-protein-xml',O/'AAN68127.1-AAN68128.1-AAN68129.1.xml','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAN68127.1,AAN68128.1,AAN68129.1&rettype=gb&retmode=xml')
+for a in t.get('terms',[]):wanted[a[0]]='exact versioned protein; preserve construct qualifications'
+genes=[]
+for id in ['1045763','1045766','1045767','44144364','83680896','83680898']:
+ p=O/('NCBIGene-'+id+'.xml');r=E.parse(p).getroot();s=r.find('.//Gene-track_status');tags=[x.text for x in r.iter('OrgMod_subname')];g={'requested_id':'Entrez:'+id,'returned_id':r.findtext('.//Gene-track_geneid'),'status':s.get('value')if s is not None else 'omitted','locus':r.findtext('.//Gene-ref_locus'),'locus_tag':r.findtext('.//Gene-ref_locus-tag'),'taxon_name':r.findtext('.//Org-ref_taxname'),'organism_modifiers':tags,'source':bind(p)}
+ g['disposition']='Exclude as current authority: discontinued record; retain historical old/new locus association.'if g['status']=='discontinued'else'Exclude as KT2440 gene endpoint: source is P.alloputida NMI24_14 with LU682 locus, not KT2440.'
+ g['parser_preflight']=test('ncbi-entrezgene-xml',p,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+id+'&rettype=xml');genes.append(g);wanted['Entrez:'+id]='excluded gene candidate; retain exact reason'
+for cid in ['36241','16318','16632','89886','132111','18346','67380']:wanted['CHEBI:'+cid]='exact DesB2021 inhibitor chemical'
+for name in ['P22635','P22636','Q7WYU8']:
+ t=test('uniprot',O/(name+'.json'),'https://rest.uniprot.org/uniprotkb/'+name+'.json');wanted[t['terms'][0][0]]='exact SYK-6 source protein; preserve historical taxonomy and assay constructs'
+for frame in ['CPLX-7916','MONOMER-15115','MONOMER-15116','MONOMER-15117']:
+ row={'kind':'metacyc-protein-xml','source':bind(O/(frame+'.xml')),'url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame,'version':'27.0'}
+ try:row['terms']=list(mod.source_terms('metacyc-protein-xml',O/(frame+'.xml'),url=row['url'],version='27.0'))
+ except Exception as e:row['rejected']=str(e)
+ tests.append(row);wanted['MetaCyc:'+frame]='exact SYK-6 native catalyst/component identity'
+for filename,accessions in [('AAA17727.1-AAA17728.1.xml','AAA17727.1,AAA17728.1'),('BAC79261.1.xml','BAC79261.1')]:
+ t=test('ncbi-protein-xml',O/filename,'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id='+accessions+'&rettype=gb&retmode=xml')
+ for a in t.get('terms',[]):wanted[a[0]]='exact deposited SYK-6 protein'
+test('metacyc-html',O/'G1G01-2703.html','https://biocyc.org/gene?orgid=META&id=G1G01-2703')
+roots=[];lookup={}
+for root in [M,T]:
+ run=subprocess.run(['rg','--files','--hidden','--no-ignore',str(root/'data/identifier_authorities')],check=True,capture_output=True,text=True);files=[Path(p)for p in run.stdout.splitlines()if p.endswith('.json')];terms={};bs=[]
+ for p in files:
+  raw=p.read_bytes();d=json.loads(raw);terms.update(d['terms']);bs.append({'path':str(p),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()})
+ roots.append({'root':str(root),'sources':bs,'enumeration_argv':['rg','--files','--hidden','--no-ignore',str(root/'data/identifier_authorities')],'stderr':run.stderr});lookup[str(root)]=terms
+inventory=[{'id':id,'role':role,'coverage':{r:{'present':id in d,'term':d.get(id)}for r,d in lookup.items()}}for id,role in sorted(wanted.items())]
+out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Point-in-time authority-key inventory; ignored and hidden authority files enumerated and every JSON parsed. No whole-repository absence assertion, binary/archive content search, or symlink traversal. Root must rerun after final baseline changes. No authority promotion or owner mutation.','parser_sources':[bind(T/'scripts/build_source_identifier_snapshot.py'),bind(T/'src/pathwaymech/kegg_gene.py')],'snapshots':roots,'inventory':inventory,'parser_preflights':tests,'gene_candidate_dispositions':genes,'regulation_endpoint_decisions':{'galB':'Exact gene endpoint KEGG:ppu:PP_2515 passes current strict CDS parser. GalR activates transcription in promoter reporters; do not target GalB protein activity.','galT':'Exact KEGG:ppu:PP_2519 exists as gene/pseudogene with3nt and noAASEQ; strict CDS parser correctly rejects. Old NCBI PP_RS13170 is discontinued. Do not replace this transcription endpoint with repaired GalT protein. Either a separately reviewed bounded non-CDS native gene owner/profile is needed, or retain this edge in research until supported.','galR':'Protein UniProtKB:Q88JX7 / NCBIProtein:AAN68128.1 is397aa; distinct gene KEGG:ppu:PP_2516.','galP':'Protein UniProtKB:Q88JX6 / NCBIProtein:AAN68129.1 is410aa; distinct gene KEGG:ppu:PP_2517.','native_gene_lead':'G1G01-2703 was a candidate lookup only; nativeXML404 and canonicalHTML not a valid authority. No negative claim about all nativegalT records.'},'owner_prerequisites':['Use existing strict CDS profile for supported genes; no weakening to accept arbitrary non-CDS records.','galT pseudogene shape requires separate bounded reviewed support, including gene-versus-CDS class, organism/locus identity, no inferred coding translation, and exact source provenance. No implementation here.','Chemical identities are eligible for selected pinned ontology extraction only after root integration decisions; raw issuing evidence is not automatic approval.']}
+(B/'projections/authority-parser-inventory.json').write_text(json.dumps(out,indent=2)+'\n')
+print('Inventory',len(inventory),'IDs; preflights',len(tests));print([(x['source']['path'].split('/')[-1],x.get('rejected','PASS'))for x in tests])

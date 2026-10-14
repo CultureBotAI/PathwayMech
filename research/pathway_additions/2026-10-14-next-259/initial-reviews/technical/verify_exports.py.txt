@@ -1,0 +1,96 @@
+"""Independently check actual HTML/KGX, including local evidence placement."""
+from pathlib import Path
+from html.parser import HTMLParser
+import csv,datetime,hashlib,json,re
+import yaml
+R=Path('/private/tmp/pathwaymech-next-259-20261014');O=Path(__file__).parent
+class Element:
+ def __init__(self,tag='',attrs=(),parent=None):self.tag=tag;self.attrs=dict(attrs);self.parent=parent;self.children=[]
+ def all(self):
+  yield self
+  for c in self.children:
+   if isinstance(c,Element):yield from c.all()
+ def text(self):return ''.join(c.text() if isinstance(c,Element) else c for c in self.children)
+ def cls(self,value):return value in self.attrs.get('class','').split()
+class Document(HTMLParser):
+ def __init__(self):super().__init__();self.root=Element('root');self.current=self.root
+ def handle_starttag(self,tag,attrs):
+  n=Element(tag,attrs,self.current);self.current.children.append(n)
+  if tag not in ['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']:self.current=n
+ def handle_startendtag(self,tag,attrs):self.current.children.append(Element(tag,attrs,self.current))
+ def handle_endtag(self,tag):
+  x=self.current
+  while x.parent is not None:
+   if x.tag==tag:self.current=x.parent;return
+   x=x.parent
+ def handle_data(self,data):self.current.children.append(data)
+def norm(s):return ' '.join(s.split())
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def descendants(n,tag=None,cl=None):return [x for x in n.all() if (tag is None or x.tag==tag) and (cl is None or x.cls(cl))]
+record_path=R/'data/pathways/gallate-degradation-i.yaml';record=yaml.safe_load(record_path.read_text());pages=list((R/'pages/records').glob('*GALLATE-DEGRADATION-II-PWY*'));assert len(pages)==1,pages
+page=pages[0];doc=Document();doc.feed(page.read_text());allnodes=list(doc.root.all());ids={}
+for n in allnodes:
+ if 'id' in n.attrs:
+  assert n.attrs['id'] not in ids,n.attrs['id'];ids[n.attrs['id']]=n
+svg_edges=descendants(doc.root,'a','graph-edge');svg_nodes=descendants(doc.root,'a','graph-node');assert len(svg_edges)==len(record['mechanistic_edges'])==129
+refs={r['id']:r for r in record['references']};qualifiers=0;evidence_count=0;quotes=0;assertions=0
+for i,(e,ge) in enumerate(zip(record['mechanistic_edges'],svg_edges),1):
+ row=ids['mechanism-edge-'+str(i)];td=[c for c in row.children if isinstance(c,Element) and c.tag=='td'];assert len(td)==4
+ assert e['subject'] in td[0].text() and e['object'] in td[2].text()
+ assert norm(e['description']) in norm(td[1].text()) and e['predicate'] in td[1].text()
+ assert ge.attrs['href']=='#mechanism-edge-'+str(i)
+ assert ge.attrs.get('data-subject-id',ge.attrs['data-subject'])==e['subject'] and ge.attrs.get('data-object-id',ge.attrs['data-object'])==e['object']
+ assert ge.attrs['data-predicate']==e['predicate']
+ paths=descendants(ge,'path');assert any('marker-end' in p.attrs for p in paths)
+ # Each evidence item must reside in the corresponding evidence cell or its exact endpoint qualifier.
+ def verify_evidence(items,container):
+  global evidence_count,quotes,assertions
+  lis=descendants(container,'li');assert len(lis)==len(items),(e['id'],len(lis),len(items))
+  for expected,li in zip(items,lis):
+   evidence_count+=1;t=norm(li.text());assert expected['reference_id'] in t
+   links=descendants(li,'a');anchor='reference-'+str(next(j for j,r in enumerate(record['references'],1) if r['id']==expected['reference_id']))
+   assert any(a.attrs.get('href')=='#'+anchor for a in links)
+   assert anchor in ids
+   content=expected.get('quote',expected.get('source_assertion'));assert norm(content) in t,(e['id'],content)
+   if 'source_locator' in expected:assert norm(expected['source_locator']) in t
+   blocks=descendants(li,'blockquote')
+   if 'source_assertion' in expected:
+    assertions+=1;assert not blocks and 'Source assertion:' in t
+   else:quotes+=1;assert len(blocks)==1 and norm(content) in norm(blocks[0].text())
+ verify_evidence(e['evidence'],td[3])
+ for q in e.get('endpoint_qualifiers',[]):
+  qualifiers+=1;role=q['endpoint'];qnode=ids[f'mechanism-edge-{i}-qualifier-{role}'];assert qnode in list(td[0 if role=='subject' else 2].all())
+  assert norm(q['description']) in norm(qnode.text());verify_evidence(q['evidence'],qnode)
+  key=ge.attrs['data-'+role];matches=[n for n in svg_nodes if n.attrs.get('data-node-id')==key];assert len(matches)==1
+  dn=matches[0];assert dn.attrs['data-base-node-id']==e[role]
+  assert q['description'] in dn.attrs['aria-label']
+  assert dn.attrs['href']==f'#mechanism-edge-{i}-qualifier-{role}'
+  for ev in q['evidence']:
+   assert ev.get('quote',ev.get('source_assertion')) in dn.attrs['aria-label']
+   if 'source_locator' in ev:assert ev['source_locator'] in dn.attrs['aria-label']
+declared={record['id']}|{n['id'] for k in ['participants','reactions','taxa'] for n in record[k]};assert len(declared)==87
+assert {n.attrs.get('data-base-node-id',n.attrs['data-node-id']) for n in svg_nodes}==declared
+assert len(svg_nodes)==len(declared)+qualifiers
+# KGX independent semantic key based on native edge ID; do not invoke exporter.
+pred={'provides_input_for':'RO:0002413','has_input':'RO:0002233','has_output':'RO:0002234','located_in':'RO:0001025','part_of':'BFO:0000050','has_part':'BFO:0000051'}
+ep=R/'pages/downloads/edges.tsv';np=R/'pages/downloads/nodes.tsv';prefix='pathwaymech:MetaCyc_GALLATE-DEGRADATION-II-PWY_'
+with ep.open(newline='') as f:es=[x for x in csv.DictReader(f,delimiter='\t') if x['id'].startswith(prefix)]
+assert len(es)==129 and len({e['id'] for e in es})==129
+for e in record['mechanistic_edges']:
+ rows=[x for x in es if x['id'].startswith(prefix+re.sub('[^A-Za-z0-9._-]+','_',e['id'])+'_')];assert len(rows)==1,e['id'];x=rows[0]
+ assert [x[k] for k in ['subject','object']]==[e[k] for k in ['subject','object']]
+ assert x['predicate']==pred.get(e['predicate'],'pathwaymech:'+e['predicate'])
+ assert x['description']==re.sub('[\t\r\n]+',' ',e.get('description','')).strip()
+ assert json.loads(x['evidence'])==e['evidence']
+ assert json.loads(x['endpoint_qualifiers'] or '[]')==e.get('endpoint_qualifiers',[])
+ refs_expected=sorted({v['reference_id'] for v in e['evidence']}|{v['reference_id'] for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']})
+ assert x['source_records'].split('|')==refs_expected
+ assert json.loads(x['reference_metadata'])==[refs[i] for i in refs_expected]
+with np.open(newline='') as f:ns={x['id']:x for x in csv.DictReader(f,delimiter='\t')}
+expected_categories={'small_molecule':'biolink:SmallMolecule','cofactor':'biolink:ChemicalEntity','complex':'biolink:MacromolecularComplex','protein':'biolink:Protein','gene':'biolink:Gene','cellular_component':'biolink:CellularComponent','molecular_activity':'biolink:MolecularActivity','biological_process':'biolink:BiologicalProcess','pathway':'biolink:Pathway'}
+for field in ['participants','reactions']:
+ for n in record[field]:
+  x=ns[n['id']];assert {'record_id':record['id'],'collection':field,**n} in json.loads(x['source_contexts'])
+  assert expected_categories[n['category']] in x['category'].split('|'),(n,x['category'])
+result={'status':'passed','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':sha(record_path),'edge_rows_and_links':129,'declared_nodes':87,'display_nodes':len(svg_nodes),'qualified_endpoint_instances':qualifiers,'evidence_instances':evidence_count,'quotes':quotes,'structured_assertions':assertions,'artifacts':{str(p.relative_to(R)):sha(p) for p in [record_path,page,ep,np]},'scope':'Actual HTML per-edge cells and exact-role qualifier evidence plus SVG endpoint links/arrowheads, KGX full evidence/qualifier/reference arrays, native IDs and node contexts/categories. No browser screenshot/visual layout judgement.'}
+(O/'exports-independent-verification.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

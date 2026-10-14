@@ -1,0 +1,29 @@
+"""Capture the successor state only after root confirms render and history completion."""
+from pathlib import Path
+import datetime,hashlib,json,os,subprocess
+import yaml
+R=Path('/private/tmp/pathwaymech-next-259-20261014');O=Path(__file__).parent
+P=R/'reviews/structured/20261014T230631Z-next259-technical-integration-initial/review.yaml'
+a=yaml.safe_load(P.read_text());targets=a['targets'];target_paths={t['path'] for t in targets}
+assert len(targets)==14
+removed=set(next(f for f in a['findings'] if f['finding_id']=='F3')['field_paths'])
+extra=set()
+for row in a['source']['inputs']:
+ if (R/row['path']).is_file():extra.add(row['path'])
+ else:assert row['path'] in removed,row['path']
+for folder in ['research/pathway_additions/2026-10-14-next-259/gallate','research/pathway_additions/2026-10-14-next-259/initial-reviews','research/pathway_additions/2026-10-14-next-259/corrections','history/records/gallate-degradation-i','history/infrastructure/kegg-pseudogene-authority','history/other/gallate-research-retention',str(P.parent.relative_to(R))]:
+ for p in (R/folder).rglob('*'):
+  if p.is_file():extra.add(str(p.relative_to(R)))
+extra.add('conf/record_review.yaml')
+extra-=target_paths
+(O/'targets.yaml').write_text(yaml.safe_dump({'targets':targets},sort_keys=False))
+command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','inspect','--targets',str(O/'targets.yaml')]
+for x in sorted(extra):command+=['--input',x]
+assert not (O/'canonical-inspect.json').exists()
+started=datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
+p=subprocess.run(command,cwd=R,env=env,capture_output=True,text=True)
+(O/'canonical-inspect.stdout').write_text(p.stdout);(O/'canonical-inspect.stderr').write_text(p.stderr)
+(O/'canonical-inspect-receipt.json').write_text(json.dumps({'command':command,'cwd':str(R),'started_at':started,'exit_code':p.returncode,'targets':len(targets),'additional_inputs':len(extra),'predecessor_sha256':hashlib.sha256(P.read_bytes()).hexdigest(),'removed_prior_input_paths':sorted(removed),'enumeration':'Direct pathlib traversal includes ignored/hidden files; no gitignore filtering.'},indent=2)+'\n')
+if p.returncode==0:(O/'canonical-inspect.json').write_text(json.dumps(json.loads(p.stdout),indent=2)+'\n')
+print(json.dumps({'exit_code':p.returncode,'stdout_chars':len(p.stdout),'stderr':p.stderr[:2000],'targets':len(targets),'additional_inputs':len(extra)}));raise SystemExit(p.returncode)

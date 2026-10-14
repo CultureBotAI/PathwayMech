@@ -1,0 +1,36 @@
+"""Author-only exact simple-ion check against the pinned ChEBI database."""
+from pathlib import Path
+import datetime, hashlib, json, sqlite3, xml.etree.ElementTree as E
+
+B = Path(__file__).parent
+P = Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+db = sqlite3.connect('file:' + str(P) + '?mode=ro', uri=True)
+def bind(p):
+    b = p.read_bytes()
+    return {'path': str(p), 'bytes': len(b), 'sha256': hashlib.sha256(b).hexdigest()}
+
+rows = []
+for frame, term in [('FE+2','29033'), ('MG+2','18420'), ('MN+2','29035'), ('ZN+2','29105'), ('HG+2','16793')]:
+    p = B / 'originals' / (frame + '.xml')
+    n = E.parse(p).getroot().find('Compound')
+    m = n.find('cml/molecule')
+    atoms = m.findall('atomArray/atom')
+    bonds = m.findall('bondArray/bond')
+    assert len(atoms) == 1 and not bonds
+    element = atoms[0].get('elementType').capitalize()
+    charge = int(m.get('formalCharge'))
+    props = {k: o or v for k,o,v in db.execute('SELECT predicate,object,value FROM statements WHERE subject=?', ('CHEBI:'+term,)) if k.startswith('chemrof:') or k == 'rdfs:label'}
+    checks = {
+        'native_single_atom_without_bonds': len(atoms) == 1 and not bonds,
+        'atom_and_molecule_charge_equal': int(atoms[0].get('formalCharge')) == charge,
+        'formula_equals_pinned': element == props['chemrof:generalized_empirical_formula'],
+        'charge_equals_pinned': charge == int(props['chemrof:charge']),
+        'full_inchi_equals_pinned': n.findtext('inchi') == props['chemrof:inchi_string'],
+        'inchi_key_equals_pinned': n.findtext('inchi-key').removeprefix('InChIKey=') == props['chemrof:inchi_key_string'],
+    }
+    assert all(checks.values()), (frame, checks)
+    rows.append({'native_id': 'MetaCyc:'+frame, 'canonical_id': 'CHEBI:'+term, 'native_source': bind(p), 'native_full_inchi': n.findtext('inchi'), 'native_element': element, 'native_charge': charge, 'pinned_properties': props, 'checks': checks})
+
+out = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'scope': 'Exact simple-ion identity against the pinned ChEBI database; no new current ChEBI acquisition. Existing author graph is unchanged; replacements need integration in its owner and authority preflight.', 'pinned_database': bind(P), 'rows': rows}
+(B/'retained/simple-ion-identity-closure.json').write_text(json.dumps(out, indent=2)+'\n')
+print('Five exact simple-ion identities passed.')

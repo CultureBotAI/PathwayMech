@@ -1,0 +1,14 @@
+from pathlib import Path
+import urllib.request,urllib.error,json,hashlib,datetime,time
+B=Path(__file__).parent;rows=[]
+for n,u in {
+ 'G1G01-2703.xml':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G1G01-2703',
+ 'G1G01-2703.html':'https://biocyc.org/gene?orgid=META&id=G1G01-2703',
+}.items():
+ p=B/'originals'/n;assert not p.exists();r={'path':str(p),'url':u,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0'}),timeout=45)as f:b=f.read();r.update(status=f.status,final_url=f.url)
+ except urllib.error.HTTPError as e:b=e.read();r.update(status=e.code,error=str(e))
+ except Exception as e:rows.append(dict(r,error=str(e)));continue
+ p.write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());rows.append(r);print(n,r.get('status'),len(b));time.sleep(.5)
+(B/'acquisition-native-gene.json').write_text(json.dumps(rows,indent=2)+'\n')

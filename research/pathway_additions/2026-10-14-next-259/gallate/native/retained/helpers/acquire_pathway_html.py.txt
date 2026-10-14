@@ -1,0 +1,12 @@
+from pathlib import Path
+import urllib.request,urllib.error,json,hashlib,datetime,concurrent.futures
+B=Path(__file__).parent;O=B/'originals'
+def get(f):
+ u='https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?type=PATHWAY&object='+f;p=O/(f+'.html');r={'frame':f,'url':u,'path':str(p),'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={"User-Agent":"Mozilla/5.0"}),timeout=50)as x:b=x.read();r.update(status=x.status,content_type=x.headers.get('Content-Type'),final_url=x.url)
+ except urllib.error.HTTPError as e:b=e.read();r.update(status=e.code,error=str(e))
+ except Exception as e:return dict(r,error=repr(e),bytes=0)
+ p.write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());return r
+with concurrent.futures.ThreadPoolExecutor(max_workers=1)as ex:rows=list(ex.map(get,['GALLATE-DEGRADATION-II-PWY','PWY-6339','TCA']))
+(B/'retained/pathway-html-acquisition.json').write_text(json.dumps(rows,indent=2)+'\n');print([(x['frame'],x.get('status'),x['bytes'])for x in rows])

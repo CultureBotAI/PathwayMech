@@ -1,0 +1,51 @@
+from pathlib import Path
+import json,hashlib,datetime,yaml
+base=Path('/private/tmp/pathwaymech-next-259-20261014');out=Path('/private/tmp/pathwaymech-next-259-science');p=base/'data/pathways/gallate-degradation-i.yaml';r=yaml.safe_load(p.read_text())
+notes={
+'formal':'Inspected exact four native reaction objects, pathway member/order/interface slots and full Rhea equations. Full CML reconstruction of nine formal chemicals preserves E,E enol, keto OMA, unspecified CHA, water/proton coefficients; source direction differs from selected physiological hydration and remains qualified.',
+'native_catalyst':'Inspected exact native activity enzyme/reaction/evidence links and catalyst object. Historical species/strain/assay class remains scoped; primary publications behind historical native annotations were not all independently read. No automatic modern sequence or whole-route occurrence claim.',
+'native_component':'Direct source component and coefficient match. Assembly does not imply independently catalytic subunits; native GalA/LigAB coefficientless slots remain coefficientless. Historical preparation does not imply full modern sequence identity.',
+'native_regulation':'Direct native Regulation regulator/mode/target links and linked activity enzyme match. Signed effects retained only for included activities; no unsigned alternative-activity effect promoted or transplanted LigJ regulation.',
+'gala':'2005 source methods/results and 2011 immediate-product evidence support source-scoped GalA catalysis, processed-chain/trimer qualification and conditional treatments. Table1 final-specific-activity differs from kinetic Vmax; no medium reagent becomes a cofactor. Named neutral EDTA is a normalization with explicit salt/microspecies limits.',
+'galr':'2023 reporter comparisons support bounded inferred promoter/gene regulation with extra GalR and endogenous GalR in controls. No native RNA, physical occupancy or protein activation claim. Current PP2519 locus is distinct from repaired 2011 KTGAL protein and unsequenced 2023 insert.',
+'ligab_context':'Native CPLX7916 component slots lack coefficients; P22636 cofactor annotation is protein-level context, not assayed metal occupancy. Synthetic 2013 construct remains separate.',
+'ligab':'2013 methods, Table2, metal-treatment prose and SI support exact PCA assay effects, anaerobic tag-cleaved preparation, doses/times and limited rescue. Does not show regulation of gallate flux. 2015 SI candidates legitimately remain staged given method access and attribution conflicts.',
+'desb2021':'2021 author-deposited main transcription, table and SI support seven screen effects and high-substrate inhibition on DesB-MBP fusion. No direct peripheral-site mechanism or native-cell regulation is inferred. Source acquisition and kinetic contradictions remain explicit limitations.',
+'desb2005':'2005 primary results support EDTA inhibition and partial/full metal reactivation in the exact treatment context. Qualifier Table1 assertion improperly assigns expression-host role to strain row; host-expression association is source prose and needs local citation correction.',
+'desb2018':'Full 2018 scientific text supports conditional 4-nitrocatechol/high-gallate inhibition on MBP fusion. Contradictory quantitative fit/iron conditions are bounded rather than combined; no site-specific mechanism inferred.',
+'galb2016':'2016 Tables2/4 and methods support scoped metal substitution, washed apo versus EDTA-present preparation and native KT2442 supplementation. Numerical activities compare correctly to apo/Fe2+ baselines, not in-vivo preference; uncertain 244/258/240-residue constructs remain separate.',
+'pmde':'2016 direct E6 BAI50711.1 assay complements GalB on GalD-derived enol; negative CHA optical sign does not establish absolute configuration. E6 is separate from older homology-only PmdE and modern SYK6 KCH specificity; tag removal and unresolved scar retained.',
+'desb2014':'2014 reactivated WT and anaerobic dimer structures are source-scoped; primary2009 preparation was read. Alternative refined Fe positions do not imply two simultaneous irons; static structural models do not directly observe proton transfer or solution product tautomer.',
+'transport':'2011 repaired GalT uptake/uncoupler and GalP genetic contribution stay whole-cell/construct scoped. UniProt GO locations/functions retain IEA rather than claimed direct localization. Direct GO restriction was independently queried; broad process labels remain broad.',
+'galb2011':'2011 DEPC purified-protein versus EDTA cell-extract preparations are distinct. Numeric dose/time effects are supported; exact insert remains unresolved, modified histidine unspecified, 2011 rescue failure not generalized over2016 protocol.',
+'induction':'2005/2011 RT-PCR source supports conditional whole-cell environmental induction at gene/promoter context, with polar mutant effects noted; no direct gallate-GalR binding or protein activation asserted.'}
+rows=[]
+for e in r['mechanistic_edges']:
+ k=e['id']; group=None
+ if k.startswith('native-'):
+  n=int(k.split('-')[1]);group='formal' if n<=19 or n>=61 else 'native_catalyst' if n<=38 else 'native_component' if n<=49 else 'native_regulation'
+ elif k.startswith('gala-'):group='gala'
+ elif k.startswith('galr-'):group='galr'
+ elif k.startswith('ligab-context'):group='ligab_context'
+ elif k.startswith('ligab-'):group='ligab'
+ elif k.startswith('desB2021'):group='desb2021'
+ elif k.startswith('desb-2005'):group='desb2005'
+ elif k.startswith('desb-2018'):group='desb2018'
+ elif k.startswith('galb-2016'):group='galb2016'
+ elif k.startswith('pmde-'):group='pmde'
+ elif k.startswith('desb-2014'):group='desb2014'
+ elif k.startswith(('galt-','galp-','transport-','gallate-uptake')):group='transport'
+ elif k.startswith('galb-2011'):group='galb2011'
+ elif k.startswith('gallate-induced'):group='induction'
+ assert group,k
+ concerns=[]
+ if k in ['native-022','native-026','native-037'] or group=='desb2005':concerns=['F1']
+ rows.append({'edge_id':k,'source_group':group,'inspection':'Complete maintained edge/qualifier/evidence manually read, then compared with independently inspected sources; this judgment is not generated from validator success.','scientific_observation':notes[group],'finding_ids':concerns})
+claims=json.loads((base/'research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/source-claim-disposition-ledger.json').read_text())
+claimrows=[]
+for x in claims['claims']:
+ comment='Disposition inspected against stated source scope and actual maintained edges. Context-only does not claim negative biology; selected mapping need not repeat every research detail.'
+ if x['disposition']=='deferred':comment='Agree with deferral: 2015 LigAB full preparation/method access or attributed2013 weak-inhibition conflict unresolved; engineered F103H not WT gallate regulation.'
+ claimrows.append({'source_group':x['source_group'],'claim_id':x['claim_id'],'author_disposition':x['disposition'],'reviewer_disposition':'accepted_with_scope','reviewer_note':comment,'edge_ids':x['final_edge_ids']})
+a={'role':'Independent scientific observations on actual frozen maintained record, not author proposal approval','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'edges':rows,'source_claim_dispositions':claimrows,'native_slot_assessment':{'denominator':1881,'original_objects':130,'mechanical_replay':'independent-target-replay.json','semantic_scope':'All slot-family dispositions reviewed, direct biological relation/property slots inspected from originals; 504 xrefs remain identity/context candidates rather than automatically promoted exact equivalences. All32 native narrative slots retained; principal formal catalyst, pathway and conflicting chemistry narratives were independently read. Historical cited papers not all independently read.','exception':'F2: explicit GalB monomer cytosol location and computational GO0005829 contradict blanket compartment-absence claim.'},'independent_decisions':{'edta':'CHEBI4735 neutral named-parent normalization is acceptable given explicit salt/protonation uncertainty, not inferred physiological microspecies.','reporter':'GalR-to-promoter/gene inference is appropriately bounded and distinct from direct DNA binding/protein activation.','copper':'2016 Cu activity0.19±0.10 versus apo4.0±0.33 supports inhibition in this challenged apo preparation, not native physiological inhibition.','cml':'All9 formal CML graphs plus Z,Z comparator reconstructed; native/pinned InChI/key/charge agree. Three pinned SMILES fields omit stereochemistry, preserved as source-field limitations.'}}
+(out/'independent-record-observations.json').write_text(json.dumps(a,indent=2)+'\n');print(len(rows),len(claimrows))

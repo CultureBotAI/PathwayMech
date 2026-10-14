@@ -1,0 +1,99 @@
+"""Independent read-only replay and baseline preservation review."""
+from pathlib import Path
+import copy,datetime,hashlib,json,sqlite3,subprocess,sys
+import yaml
+R=Path('/private/tmp/pathwaymech-next-259-20261014'); B=Path('/private/tmp/pathwaymech-next-259-authorities'); O=Path(__file__).parent
+BASE='7e18d0e2b7dd066ea5176b3f679624f7e50a0dc3'
+sys.path[:0]=[str(R/'src'),str(R)]
+from scripts import build_source_identifier_snapshot as builder
+from pathwaymech.kegg_gene import gene_metadata,gene_term,project,project_pseudogene,GENE_KINDS
+from pathwaymech.identifiers import _load_authority
+
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def gitblob(p): return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
+def load(p): return json.loads(Path(p).read_text())
+report={'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'reviewer':'/root/next259_integration_review','baseline':BASE,'scope':'Technical authority preservation, issuing source replay, and typed gene invariants; not biological evidence review','checks':[],'inputs':{}}
+def check(k,v,detail=None):
+ report['checks'].append({'id':k,'passed':bool(v),'detail':detail}); assert v,(k,detail)
+check('current_base',subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip()==BASE)
+rec=R/'data/pathways/gallate-degradation-i.yaml'; report['inputs'][str(rec)]=sha(rec)
+check('frozen_record',sha(rec)=='9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665')
+y=yaml.safe_load(rec.read_text()); ids={y['id']}|{n['id'] for k in ['taxa','participants','reactions'] for n in y[k]}
+check('record_ids',len(ids)==87)
+old={};new={};allold={};allnew={}
+for name in ['sources','ontology']:
+ rel='data/identifier_authorities/'+name+'.json';raw=gitblob(rel); old[name]=json.loads(raw); new[name]=load(B/(name+'.union.json'))
+ report['inputs'][str(B/(name+'.union.json'))]=sha(B/(name+'.union.json'))
+ check(name+'_baseline_exact_git',raw==(B/'baseline'/(name+'.json')).read_bytes())
+ for field in ['terms','sources']:
+  check(name+'_'+field+'_preserved',all(new[name][field].get(k)==v for k,v in old[name][field].items()),{'old':len(old[name][field]),'new':len(new[name][field])})
+ check(name+'_version',new[name]['version']==old[name]['version'])
+ check(name+'_consumer_replay',_load_authority(B/(name+'.union.json'))==new[name]['terms'])
+ allold.update(old[name]['terms']);allnew.update(new[name]['terms'])
+check('exact_selected_union',set(allnew)==set(allold)|ids,{'baseline':len(allold),'final':len(allnew),'added':sorted(set(allnew)-set(allold))})
+oldmanifest=json.loads(gitblob('conf/identifier_sources.json')); manifest=load(B/'identifier_sources.json')
+check('manifest_prefix',manifest[:len(oldmanifest)]==oldmanifest,{'before':len(oldmanifest),'after':len(manifest)})
+check('new_manifest_owners',set(x['key'] for x in manifest[len(oldmanifest):])==set(new['sources']['sources'])-set(old['sources']['sources']))
+check('no_policy_change',gitblob('conf/identifier_policy.yaml')==(R/'conf/identifier_policy.yaml').read_bytes())
+check('no_rhea_override_change',gitblob('conf/rhea_identifier_updates.json')==(R/'conf/rhea_identifier_updates.json').read_bytes())
+# Every complete retained original and nested companion is rehashed. Keep hashes, not original bytes.
+def descriptors(v):
+ if isinstance(v,dict):
+  if 'path' in v and 'sha256' in v: yield v
+  for x in v.values():yield from descriptors(x)
+ elif isinstance(v,list):
+  for x in v:yield from descriptors(x)
+paths={}
+for d in descriptors(manifest):
+ p=B/'originals'/d['path']; key=str(p.resolve())
+ if key not in paths:paths[key]=sha(p)
+ check('original_hash:'+d['path'],paths[key]==d['sha256'])
+report['unique_originals_rehashed']=len(paths)
+# Actual added objects, parsed with original-source readers; each single new owner has one selected ID.
+for e in manifest[len(oldmanifest):]:
+ p=B/'originals'/e['path']; owner=new['sources']['sources'][e['key']]
+ expected_ids={k for k,v in new['sources']['terms'].items() if v['source']==e['key']}
+ parsed=list(builder.source_terms(e['kind'],p,url=e['url'],version=e['version']))
+ check('one_new_owner:'+e['key'],len(expected_ids)==1)
+ for ident in expected_ids:
+  matches=[(label,syns) for i,label,syns in parsed if i==ident]
+  check('original_identity:'+ident,len(matches)==1)
+  label,syns=matches[0]
+  term={'label':label,'synonyms':sorted(set(syns)-{label}),'source':e['key']}
+  if e['kind'] in GENE_KINDS:
+   meta=gene_metadata(e,B/'originals');check('typed_full_owner:'+ident,meta==owner);term=gene_term(meta,e['key'])[1]
+  else:
+   check('source_provenance:'+ident,owner=={k:e[k] for k in ['url','version','license','sha256']})
+  check('source_replay:'+ident,term==new['sources']['terms'][ident])
+# Independently query SQL values (not builder extract_terms) for all new ontology terms.
+cmd=load(B/'canonical-build-commands.json'); dbs={row['owner_key']:row for row in cmd['database_bindings']}
+for ident in sorted(set(new['ontology']['terms'])-set(old['ontology']['terms'])):
+ term=new['ontology']['terms'][ident];db=dbs[term['source']];p=Path(db['path']);st=p.stat()
+ check('db_frozen:'+ident,st.st_size==db['bytes'] and st.st_mtime_ns==db['mtime_ns'])
+ with sqlite3.connect('file:'+str(p.resolve())+'?mode=ro',uri=True) as con:
+  rows=list(con.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('rdfs:label','oio:hasExactSynonym')",(ident,)))
+  labels={v for pred,v in rows if pred=='rdfs:label' and v}
+  expected={'label':term['label'],'synonyms':sorted({v for pred,v in rows if pred=='oio:hasExactSynonym' and v and v!=term['label']}),'source':term['source']}
+  check('ontology_native:'+ident,labels=={term['label']} and term==expected)
+# Native PP_2519 annotation is neither a complete CDS nor repaired protein.
+pseudo=new['sources']['sources']['meta259-KEGG-ppu-PP_2519'];native=pseudo['native_gene']
+check('PP2519_exact_annotation',native['ntseq']=={'length':3,'sequence':'ccg'} and native['position']=={'native':'2867058..2867060','start':2867058,'end':2867060,'strand':'+'} and native['annotation_class']=='pseudogene' and native['sequence_scope']=='native_annotation_only' and 'aaseq' not in native)
+try:project(native['original_text'].encode(),pseudo['url']);strict_reject=False
+except ValueError:strict_reject=True
+check('PP2519_strict_CDS_rejects',strict_reject)
+check('PP2519_explicit_replay',project_pseudogene(native['original_text'].encode(),pseudo['url'])==native)
+p=[p for p in y['participants'] if p['id']=='KEGG:ppu:PP_2519'];check('PP2519_gene_placement',len(p)==1 and p[0]['category']=='gene' and p[0]['label']=='PP_2519')
+# All baseline YAMLs retained, independent of author lists.
+oldpaths=subprocess.check_output(['git','ls-tree','-r','--name-only',BASE,'data/pathways'],cwd=R,text=True).splitlines();oldpaths=[p for p in oldpaths if p.endswith(('.yaml','.yml'))]
+check('baseline_record_count',len(oldpaths)==255)
+for p in oldpaths:check('baseline_record:'+p,(R/p).read_bytes()==gitblob(p))
+# Bind the existing independent adapter result to actual code bytes and preserved result artifacts.
+prior_path=Path('/private/tmp/pathwaymech-next-259-adapter-independent-review/review.json');prior=load(prior_path);report['inputs'][str(prior_path)]=sha(prior_path)
+for p,h in prior['proposed_file_hashes'].items():check('previous_review_code:'+p,sha(R/p)==h);report['inputs'][str(R/p)]=sha(R/p)
+for p,row in prior['artifacts'].items():check('previous_review_artifact:'+p,sha(prior_path.parent/p)==row['sha256'])
+report['status']='passed';report['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();report['checks_passed']=len(report['checks']);out=O/'authority-independent-verification.json';assert not out.exists();out.write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k!='checks'},indent=2))

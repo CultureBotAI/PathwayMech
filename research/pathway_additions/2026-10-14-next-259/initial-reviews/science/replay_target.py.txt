@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,collections,xml.etree.ElementTree as ET,re,yaml
+base=Path('/private/tmp/pathwaymech-next-259-20261014'); own=Path('/private/tmp/pathwaymech-next-259-science'); orig=Path('/private/tmp/pathwaymech-next-259-native/originals')
+p=base/'data/pathways/gallate-degradation-i.yaml'; rec=yaml.safe_load(p.read_text());edges={e['id']:e for e in rec['mechanistic_edges']};r=base/'research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author'
+ledger=json.loads((r/'native-slot-disposition-ledger.json').read_text()); claims=json.loads((r/'source-claim-disposition-ledger.json').read_text())
+actual={}; roots={}; files={}; failures=[]
+for frame in set(x['frame'] for x in ledger['slots']):
+ f=orig/(frame+'.xml'); rt=ET.fromstring(f.read_bytes()); root=next(x for x in rt if x.get('frameid')==frame); roots[frame]=root;files[frame]={'path':str(f),'sha256':hashlib.sha256(f.read_bytes()).hexdigest()}; counts=collections.Counter()
+ for slot in root:
+  counts[slot.tag]+=1; key=(frame,slot.tag,counts[slot.tag]);actual[key]=slot
+slots=[]
+for x in ledger['slots']:
+ key=(x['frame'],x['slot'],x['ordinal']); node=actual.get(key); ids=x['final_edge_ids'];missing=[e for e in ids if e not in edges]
+ if node is None or missing:failures.append({'key':key,'missing_node':node is None,'missing_edges':missing})
+ slots.append({'key':list(key),'source_locator':x['source_locator'],'source_node_sha256':hashlib.sha256(ET.tostring(node)).hexdigest() if node is not None else None,'selected_edges_exist':not missing,'author_disposition':x['disposition'],'final_edge_ids':ids})
+keys=[(x['frame'],x['slot'],x['ordinal']) for x in ledger['slots']]; extras=sorted(set(actual)-set(keys));duplicates=[k for k,n in collections.Counter(keys).items() if n>1]
+quotes=collections.defaultdict(list)
+for e in edges.values():
+ evs=[('edge',v) for v in e['evidence']]
+ for q in e.get('endpoint_qualifiers',[]):evs.extend(('qualifier',v) for v in q['evidence'])
+ for kind,v in evs:
+  if 'quote' in v:quotes[v['reference_id']].append({'edge':e['id'],'location':kind,'quote':v['quote'],'word_count':len(v['quote'].split())})
+claim_rows=[]
+for x in claims['claims']:
+ missing=[e for e in x['final_edge_ids'] if e not in edges]
+ claim_rows.append({'group':x['source_group'],'claim_id':x['claim_id'],'disposition':x['disposition'],'final_edge_ids':x['final_edge_ids'],'missing_edges':missing})
+out={'role':'Independent mechanical replay, not a substitute for scientific reading','target_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'edge_count':len(edges),'participant_count':len(rec['participants']),'source_files':files,'native':{'ledger_rows':len(slots),'actual_direct_slots':len(actual),'unaccounted_actual_slots':extras,'duplicate_keys':duplicates,'failures':failures,'slot_replay':slots},'claims':claim_rows,'quote_totals':{k:sum(x['word_count'] for x in v) for k,v in quotes.items()},'quotes':dict(quotes)}
+(own/'independent-target-replay.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({k:v for k,v in out.items() if k not in ['source_files','native','claims','quotes']},indent=2));print('native',len(slots),len(actual),'extras',extras,'duplicates',duplicates,'failures',failures)
+# Compact direct slot texts for remaining manual boundary review; administrative/chemical/xref families are reviewed via independent identities.
+selected={'component','cofactor','regulator','regulated-entity','mode','mechanism','reaction-direction','spontaneous','pathway-link','super-pathways','reaction-list','reaction-ordering','location','has-go-term','enzyme','reaction'}
+lines=[]
+for key,n in actual.items():
+ if key[1] in selected:lines.append(json.dumps({'key':key,'xml':ET.tostring(n,encoding='unicode')},ensure_ascii=False))
+(own/'native-material-slot-projection.jsonl').write_text('\n'.join(lines)+'\n')

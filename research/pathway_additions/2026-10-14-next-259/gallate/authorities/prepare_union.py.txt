@@ -1,0 +1,204 @@
+"""Prepare external canonical authority inputs from a frozen ID selection only."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import sqlite3
+import subprocess
+import sys
+
+import yaml
+
+B = Path(__file__).resolve().parent
+R = Path('/private/tmp/pathwaymech-next-259-20261014')
+A = Path('/private/tmp/pathwaymech-next-259-record-author')
+BASE = '7e18d0e2b7dd066ea5176b3f679624f7e50a0dc3'
+PY = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+PREFIXES = {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'}
+inputs = {}
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+
+def bind(path, digest=None):
+    path = Path(path)
+    row = dict(path=str(path), resolved=str(path.resolve()), sha256=digest or sha(path))
+    assert str(path) not in inputs or inputs[str(path)] == row
+    inputs[str(path)] = row
+    return row
+
+
+def load(path):
+    bind(path)
+    return json.loads(Path(path).read_text())
+
+
+def save(name, value):
+    path = B / name
+    assert not path.exists(), f'Preserve prior attempt before replacement: {path}'
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+    return path
+
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=R)
+
+
+assert git('rev-parse', 'HEAD').decode().strip() == BASE
+assert not (B / 'canonical-build-commands.json').exists()
+baseline = {}
+for rel, name in [('conf/identifier_sources.json', 'identifier_sources.json'),
+                  ('conf/rhea_identifier_updates.json', 'rhea_identifier_updates.json'),
+                  ('data/identifier_authorities/sources.json', 'sources.json'),
+                  ('data/identifier_authorities/ontology.json', 'ontology.json')]:
+    assert (R / rel).read_bytes() == (B / 'baseline' / name).read_bytes() == git('show', BASE + ':' + rel)
+    baseline[name] = load(B / 'baseline' / name)
+    bind(R / rel)
+old_terms = {}
+for name in ['sources.json', 'ontology.json']:
+    assert not old_terms.keys() & baseline[name]['terms'].keys()
+    old_terms.update(baseline[name]['terms'])
+retained = set(load(B / 'retained-authority-identifiers.json'))
+assert retained == set(old_terms) and len(retained) == 4954
+old_manifest = baseline['identifier_sources.json']
+assert len(old_manifest) == 1047
+records = load(B / 'baseline-record-bindings.json')
+assert len(records) == 255
+for row in records:
+    assert sha(row['path']) == row['sha256'] == sha(R / row['git_path'])
+    bind(row['path'], row['sha256'])
+    bind(R / row['git_path'], row['sha256'])
+
+# Final identifier set is frozen while prose corrections continue independently.
+# Retain immutable observations; never treat the mutable author path as a build input.
+selection_path = A / 'author/selected-identifiers.json'
+selection_bytes = selection_path.read_bytes()
+selection = json.loads(selection_bytes)
+planned = set(selection['selected_identifiers'])
+assert len(planned) == selection['count'] == 87
+draft_path = A / 'gallate-degradation-i.yaml'
+draft_bytes = draft_path.read_bytes()
+record = yaml.safe_load(draft_bytes)
+actual = {record['id']} | {n['id'] for section in ['taxa', 'participants', 'reactions'] for n in record.get(section, [])}
+assert record['id'] == 'MetaCyc:GALLATE-DEGRADATION-II-PWY' and actual == planned
+for name, content in [('author-selection-observation.json', selection_bytes), ('author-record-observation.yaml', draft_bytes)]:
+    path = B / name
+    assert not path.exists()
+    path.write_bytes(content)
+    bind(path)
+save('selection-freeze.json', dict(
+    utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    status='identifier_set_frozen_final_scientific_record_pending',
+    selected_identifiers=sorted(planned), selected_count=len(planned),
+    selection_observation=dict(path=str(selection_path), sha256=sha(B / 'author-selection-observation.json'), declared_record_sha256=selection['record_sha256']),
+    record_observation=dict(path=str(draft_path), sha256=sha(B / 'author-record-observation.yaml')),
+    scope='Authority construction uses only the exact frozen identifiers. This observation is not the final scientific record or its approval. Final record must be rebound and its selected IDs checked before promotion.'))
+bind(B / 'selection-freeze.json')
+new_ids = planned - retained
+
+sys.path[:0] = [str(R / 'src'), str(R / 'scripts')]
+from build_source_identifier_snapshot import source_terms
+from build_ontology_identifier_snapshot import extract_terms
+
+candidate_paths = [B / 'authority-candidates.json', B / 'supplemental-authority-candidates.json']
+candidates = {}
+for path in candidate_paths:
+    for row in load(path):
+        candidates.setdefault(row['identifier'], []).append(dict(row=row, inventory=str(path), inventory_sha256=sha(path)))
+adds, new_bindings, previews, staged = [], [], [], {}
+for ident in sorted(new_ids):
+    if ident.split(':', 1)[0] in PREFIXES:
+        continue
+    rows = candidates.get(ident, [])
+    assert len(rows) == 1, (ident, len(rows), 'Resolve exact original candidate before selection')
+    wrapper = rows[0]
+    candidate = wrapper['row']['candidate']
+    source = Path(candidate['path'])
+    assert sha(source) == candidate['sha256']
+    parsed = list(source_terms(candidate['kind'], source, url=candidate['url'], version=candidate['version']))
+    matched = [term for term in parsed if term[0] == ident]
+    assert len(matched) == 1 and list(matched[0]) == wrapper['row']['parsed_term'], (ident, parsed)
+    rel = 'meta259/' + source.name
+    assert rel not in staged or staged[rel] == str(source), ('cache filename collision', rel)
+    staged[rel] = str(source)
+    license_text = {'uniprot': 'CC-BY-4.0', 'ncbi-protein-xml': 'NCBI data usage policies; source attribution retained', 'kegg-gene-flatfile': 'KEGG database use terms; redistribution not assessed', 'kegg-pseudogene-flatfile': 'KEGG database use terms; redistribution not assessed'}.get(candidate['kind'], 'BioCyc license; redistribution not assessed')
+    entry = dict(key='meta259-' + ident.replace(':', '-'), kind=candidate['kind'], path=rel,
+                 url=candidate['url'], version=candidate['version'], license=license_text, sha256=candidate['sha256'])
+    adds.append(entry)
+    new_bindings.append(dict(identifier=ident, entry=entry, original=str(source), **wrapper))
+    previews.append(dict(identifier=ident, term=matched[0], scope='Canonical parser applied to exact issuing original; identity and name only.'))
+    bind(source, candidate['sha256'])
+assert len(adds) == 15
+assert len({row['key'] for row in old_manifest + adds}) == len(old_manifest + adds)
+
+ontology_previews = []
+database_bindings = []
+for prior in load(B / 'ontology-candidates.json'):
+    db = Path(prior['database']['path'])
+    assert db.stat().st_size == prior['database']['bytes']
+    owner_key, owner = prior['owner']
+    assert baseline['ontology.json']['sources'][owner_key] == owner
+    requested = sorted(i for i in new_ids if i.startswith(prior['prefix'] + ':'))
+    with sqlite3.connect(db.resolve().as_uri() + '?mode=ro', uri=True) as connection:
+        terms, missing = extract_terms(connection, requested, owner_key)
+    assert not missing, (prior['prefix'], missing)
+    ontology_previews.append(dict(prefix=prior['prefix'], owner=owner_key, terms=terms))
+    stat = db.stat()
+    database_bindings.append(dict(path=str(db), resolved=str(db.resolve()), sha256=prior['database']['sha256'], bytes=stat.st_size, mtime_ns=stat.st_mtime_ns, owner_key=owner_key,
+                                  verification='Prior inventory verified full database hash. Canonical builder will independently hash complete database and final verifier requires unchanged owner. Runner also checks size and mtime before/after; no redundant preparer database hashing.'))
+assert sum(len(row['terms']) for row in ontology_previews) == 20
+
+for rel, source in staged.items():
+    target = B / 'originals' / rel
+    target.parent.mkdir(exist_ok=True)
+    assert not target.exists() and not target.is_symlink()
+    target.symlink_to(source)
+    bind(target)
+selector = B / 'records/planned-authority-selection.yaml'
+assert not selector.exists()
+selector.write_text(yaml.safe_dump({'id': record['id'], 'participants': [{'id': i} for i in sorted(retained | planned)]}, sort_keys=False))
+bind(selector)
+for name, value in [('planned-identifiers.json', sorted(planned)), ('proposed-source-additions.json', adds),
+                    ('identifier_sources.json', old_manifest + adds), ('new-source-original-bindings.json', new_bindings),
+                    ('selected-source-identity-previews.json', previews), ('selected-ontology-identity-previews.json', ontology_previews)]:
+    bind(save(name, value))
+
+# Bind every baseline original descriptor, including nested original descriptors.
+cache = load(B / 'baseline-original-cache-verification.json')
+assert cache['baseline_commit'] == BASE
+for row in cache['originals']:
+    assert str(Path(row['path']).resolve()) == row['resolved']
+    bind(row['path'], row['sha256'])
+runtime = {}
+for directory in ['src/pathwaymech', 'scripts']:
+    for path in sorted((R / directory).rglob('*.py')):
+        if '__pycache__' not in path.parts:
+            runtime[str(path.relative_to(R))] = sha(path)
+            bind(path)
+for path in [Path(__file__), B / 'run_union_builds.py']:
+    bind(path)
+
+commands = dict(cwd=str(R), baseline_commit=BASE, created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                author_frozen_record=False, frozen_identifier_selection=True,
+                output_scope='external_candidates_only_no_promotion',
+                environment={'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONNOUSERSITE': '1', 'PYTHONPATH': str(R / 'src') + ':' + str(R)},
+                source_builder=[PY, '-B', 'scripts/build_source_identifier_snapshot.py', '--manifest', str(B / 'identifier_sources.json'), '--cache-dir', str(B / 'originals'), '--records', str(B / 'records'), '--output', str(B / 'sources.union.json')],
+                ontology_builder=[PY, '-B', 'scripts/build_ontology_identifier_snapshot.py'],
+                selection=dict(scope='255 exact baseline records plus an ID-only selector preserving all 4954 previous authority terms and 87 selected IDs; no labels supplied by selector.', selector_file=str(selector), selector_sha256=sha(selector), frozen_selection_file=str(B / 'selection-freeze.json')),
+                input_bindings=list(inputs.values()), database_bindings=database_bindings, runtime_sha256=runtime,
+                intentional_runtime_change='Independently reviewed kegg-pseudogene-flatfile adapter; default CDS parsing remains strict.',
+                maintained_edits=False)
+for prefix, name in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+    commands['ontology_builder'] += ['--source', prefix + '=/private/tmp/pathwaymech-curation-authorities/' + name + '.db']
+commands['ontology_builder'] += ['--rhea-updates', str(B / 'baseline/rhea_identifier_updates.json'), '--cache-dir', str(B / 'originals'), '--corpus', str(B / 'records')]
+for ident in ['GO:0008150', 'GO:0006096', 'GO:0005975']:
+    commands['ontology_builder'] += ['--include-id', ident]
+commands['ontology_builder'] += ['--output', str(B / 'ontology.union.json')]
+save('canonical-build-commands.json', commands)
+print(json.dumps(dict(status='exact_id_union_prepared_not_built', planned=len(planned), new_identifiers=len(new_ids), new_sources=len(adds), new_ontology_identifiers=20, final_scientific_record_pending=True, command_file_sha256=sha(B / 'canonical-build-commands.json'))))

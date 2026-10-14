@@ -1,0 +1,110 @@
+"""Offline independent reconstruction of the five primary inhibitor drawings."""
+from pathlib import Path
+import copy,hashlib,json,sqlite3,datetime
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+R=Path(__file__).resolve().parent
+def sha(p):
+    h=hashlib.sha256()
+    with p.open('rb') as f:
+        for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+    return h.hexdigest()
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def write(n,d):
+    p=R/n
+    if p.exists():raise FileExistsError(p)
+    p.write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+
+# These ring positions were transcribed from the red structures in Figure S2,
+# before use of issuing SMILES. Positions are conventional parent numbering.
+specs=[
+ {'source_name':'2,3,4-trihydroxybenzoic acid','id':'CHEBI:88714','substituents':{1:'COOH',2:'OH',3:'OH',4:'OH'},'figure_position':'red row, fourth structure from left','table_percent':95,'figure_percent':94.7,'proposal':'R11'},
+ {'source_name':'2,3-dihydroxybenzoic acid','id':'CHEBI:18026','substituents':{1:'COOH',2:'OH',3:'OH'},'figure_position':'red row, first structure from left','table_percent':36,'figure_percent':36,'proposal':'R12'},
+ {'source_name':'4-nitrocatechol','id':'CHEBI:16318','substituents':{1:'OH',2:'OH',4:'NO2'},'figure_position':'red row, fifth structure from left','table_percent':31,'figure_percent':31,'proposal':'R13'},
+ {'source_name':'4-methylcatechol','id':'CHEBI:17254','substituents':{1:'OH',2:'OH',4:'CH3'},'figure_position':'red row, second structure from left','table_percent':28,'figure_percent':28,'proposal':'R14'},
+ {'source_name':'3-methoxycatechol','id':'CHEBI:141700','substituents':{1:'OH',2:'OH',3:'OCH3'},'figure_position':'red row, third structure from left','table_percent':26,'figure_percent':26,'proposal':'R15'},
+]
+def drawn_graph(subs):
+    rw=Chem.RWMol()
+    for i in range(6):
+        atom=Chem.Atom('C');atom.SetIsAromatic(True);rw.AddAtom(atom)
+    for i in range(6):rw.AddBond(i,(i+1)%6,Chem.BondType.AROMATIC)
+    def atom(element,charge=0):
+        x=Chem.Atom(element);x.SetFormalCharge(charge);return rw.AddAtom(x)
+    def bond(a,b,double=False):rw.AddBond(a,b,Chem.BondType.DOUBLE if double else Chem.BondType.SINGLE)
+    for pos,group in subs.items():
+        root=pos-1
+        if group=='OH':bond(root,atom('O'))
+        elif group=='CH3':bond(root,atom('C'))
+        elif group=='OCH3':
+            o=atom('O');bond(root,o);bond(o,atom('C'))
+        elif group=='COOH':
+            c=atom('C');bond(root,c);bond(c,atom('O'),True);bond(c,atom('O'))
+        elif group=='NO2':
+            n=atom('N',1);bond(root,n);bond(n,atom('O'),True);bond(n,atom('O',-1))
+        else:raise ValueError(group)
+    m=rw.GetMol();Chem.SanitizeMol(m);return m
+def moldata(m):
+    assert m is not None
+    return {'smiles':Chem.MolToSmiles(m,isomericSmiles=True),'inchi':Chem.MolToInchi(m),'inchi_key':Chem.MolToInchiKey(m),'formula':rdMolDescriptors.CalcMolFormula(m),'net_charge':Chem.GetFormalCharge(m),'heavy_atoms':m.GetNumHeavyAtoms(),'fragments':len(Chem.GetMolFrags(m)),'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True),'atom_graph':[{'index':a.GetIdx(),'element':a.GetSymbol(),'charge':a.GetFormalCharge(),'aromatic':a.GetIsAromatic(),'total_hydrogens':a.GetTotalNumHs()} for a in m.GetAtoms()],'bond_graph':[{'a':b.GetBeginAtomIdx(),'b':b.GetEndAtomIdx(),'order':str(b.GetBondType()),'stereo':str(b.GetStereo())} for b in m.GetBonds()]}
+
+dbpath=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+db=sqlite3.connect('file:'+str(dbpath)+'?mode=ro',uri=True)
+binding=bind(dbpath)
+assert binding['sha256']=='26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+dbsource=dict(binding,source_url='http://purl.obolibrary.org/obo/chebi/255/chebi.owl',version='255',sha256_scope='uncompressed_semantic_sql_database',reused_original=True)
+write('pinned-original-binding.json',dbsource)
+closure=[];participants=[];refs=[];termprojection={}
+for item in specs:
+    cid=item['id'];number=cid.split(':')[1];path=R/'originals'/f'CHEBI-{number}.json';live=json.loads(path.read_text())
+    assert live['chebi_accession']==cid
+    triples=[{'predicate':p,'object':o,'value':v} for p,o,v in db.execute('select predicate,object,value from statements where subject=? order by predicate,object,value',(cid,))]
+    termprojection[cid]=triples
+    props={t['predicate']:t['object'] or t['value'] for t in triples if t['predicate'] in ['rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string']}
+    m=drawn_graph(item['substituents']);d=moldata(m);l=moldata(Chem.MolFromSmiles(live['default_structure']['smiles']));p=moldata(Chem.MolFromSmiles(props['chemrof:smiles_string']))
+    checks={
+      'exact_issuing_id':live['chebi_accession']==cid,
+      'primary_name_matches_canonical':item['source_name']==live['name']==props['rdfs:label'],
+      'drawn_graph_matches_live_smiles':d['smiles']==l['smiles'],
+      'drawn_graph_matches_pinned_smiles':d['smiles']==p['smiles'],
+      'full_inchi_matches_live':d['inchi']==live['default_structure']['standard_inchi']==l['inchi'],
+      'full_inchi_matches_pinned':d['inchi']==props['chemrof:inchi_string']==p['inchi'],
+      'inchi_key_matches_live':d['inchi_key']==live['default_structure']['standard_inchi_key'],
+      'inchi_key_matches_pinned':d['inchi_key']==props['chemrof:inchi_key_string'],
+      'formula_matches_all':d['formula']==live['chemical_data']['formula']==props['chemrof:generalized_empirical_formula'],
+      'net_charge_matches_all':d['net_charge']==live['chemical_data']['charge']==int(props['chemrof:charge'])==0,
+      'single_component_no_salt':d['fragments']==1,
+      'no_unspecified_stereocenter':d['chiral_centers']==[],
+    }
+    assert all(checks.values()),(cid,checks)
+    Chem.MolToMolFile(m,str(R/'projections'/f'drawing-{number}.mol'))
+    closure.append(dict(item,canonical_label=live['name'],issuing=bind(path),issuing_url=f'https://www.ebi.ac.uk/chebi/backend/api/public/compound/{number}/',modified_on=live.get('modified_on'),primary_source={'artifact':'originals/bi400665t_si_001.pdf','sha256':sha(R/'originals/bi400665t_si_001.pdf'),'locator':'Supporting Information Figure S2, page5; '+item['figure_position']},drawn_graph=d,issuing_smiles_graph=l,pinned_smiles_graph=p,pinned_properties=props,checks=checks,identity_limit='Exact named and drawn neutral parent identity. It does not establish the predominant or binding microspecies at assay pH7.5, the supplied salt, a physiological inhibition effect, or inhibition of gallate flux.',nitro_representation_note='NO2 is encoded by standard charge-separated resonance notation N+/O−, with net charge0; phenolic groups stay neutral.' if number=='16318' else None))
+    participants.append({'id':cid,'label':live['name'],'category':'small_molecule'})
+    refs.append({'id':cid,'title':f'ChEBI issuing record: {live["name"]}','url':f'https://www.ebi.ac.uk/chebi/CHEBI:{number}','source_version':'ChEBI public compound API snapshot retrieved '+datetime.date.today().isoformat(),'source_sha256':sha(path)})
+write('projections/pinned-five-compound-triples.json',{'source':dbsource,'terms':termprojection})
+write('chemical-identity-closure.json',{'role':'Author research, not independent review or authority promotion','rdkit_version':rdBase.rdkitVersion,'source_drawing_independence':'Ring/substituent graphs were manually transcribed from the inspected primary FigureS2; issuing SMILES were used only for comparison.','chemicals':closure})
+write('participant-proposals.json',participants)
+write('issuing-reference-proposals.json',refs)
+
+# Carry forward the same five source-supported claims. This replaces unresolved
+# labels in the original author proposals; it adds no new quotation allocation.
+frozen=Path('/private/tmp/pathwaymech-next-259-ligab-supplement/author-successor/regulatory-proposals-2013.json')
+old=json.loads(frozen.read_text())['proposals'];new=[]
+for item in specs:
+    x=copy.deepcopy(next(x for x in old if x['id']==item['proposal']))
+    edge={k:x[k] for k in ['predicate','object','description','evidence','endpoint_qualifiers']}
+    edge['subject']=item['id']
+    edge['description']+=' The endpoint follows the neutral parent drawn in SI FigureS2; no assayed salt or unique pH7.5 microspecies is assigned.'
+    for evidence in edge['evidence']+[e for q in edge['endpoint_qualifiers'] for e in q['evidence']]:
+        assert evidence['reference_id']=='LigAB2013';evidence['reference_id']='PMID:23977959'
+    new.append(edge)
+write('five-regulatory-edge-proposals.json',new)
+write('proposal-reuse-binding.json',{'source':bind(frozen),'scope':'Identity-completed replacement view of five existing2013regulatory proposals; not additional claims or duplicate maintained edges. The existing25-word2013allocation remains controlling.','changes':['Exact chemical subject CURIE added','Reference key adapted to PMID:23977959 for maintained schema','Neutral drawn-parent boundary made edge-local'],'additional_quoted_words':0})
+
+# Exact-key inventory, not a promotion and not a whole-repository absence claim.
+authority=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/data/identifier_authorities/ontology.json')
+ab=bind(authority);terms=json.loads(authority.read_text())['terms'];assert sha(authority)==ab['sha256']
+write('authority-inventory.json',{'snapshot':ab,'scope':'Exact five keys in this fully parsed maintained ontology snapshot only. No broader absence claim.','terms':{s['id']:terms.get(s['id']) for s in specs},'action':'Root must perform normal selected-term extraction and independent review; no authority file was changed.'})
+reused=R/'originals/CHEBI-16318-reused.json';current=R/'originals/CHEBI-16318.json'
+write('verification.json',{'all_five_graphs_pass':True,'checks_per_chemical':12,'current_16318_bytes_equal_reused':sha(reused)==sha(current),'current_16318_semantics_equal_reused':json.loads(reused.read_text())==json.loads(current.read_text()),'primary_originals_unchanged':True,'pinned_db_digest_verified':True,'all_claims_PCA_only':True,'no_maintained_changes':True,'no_approval_verdict':True})
+print(json.dumps({'chemicals':len(closure),'all_checks_pass':True,'pinned_database_sha256':binding['sha256'],'new_authority_terms_needed':[s['id'] for s in specs if s['id'] not in terms],'canonical_labels':[x['label'] for x in participants]}))

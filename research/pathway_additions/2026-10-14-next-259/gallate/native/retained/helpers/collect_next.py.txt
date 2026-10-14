@@ -1,0 +1,11 @@
+import pathlib,xml.etree.ElementTree as E,subprocess,json
+B=pathlib.Path('/private/tmp/pathwaymech-next-259-native');frames=set()
+for p in (B/'originals').glob('*.xml'):
+ try:o=list(E.parse(p).getroot())[1]
+ except Exception:continue
+ if o.tag in ['Protein','Gene','Enzymatic-Reaction','Regulation']:
+  for name in ['enzyme','component','components','gene','species','cofactor','regulated-by','regulator','alternative-substrate','product']:
+   frames.update(el.get('frameid') for el in o.findall('./'+name+'/*') if el.get('frameid') and el.tag not in ['Publication','Evidence-Code'])
+frames.update(['TAX-502559','TAX-2','CPD-184','3-4-DIHYDROXYBENZOATE','PYROGALLOL'])
+frames={f for f in frames if not (B/'originals'/f'{f}.xml').exists()}; (B/'next-frames.json').write_text(json.dumps(sorted(frames)))
+print(' '.join(sorted(frames)))

@@ -1,0 +1,27 @@
+from pathlib import Path
+import json,hashlib,sqlite3,datetime,re
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+B=Path(__file__).parent;O=B/'originals';P=B/'projections';dbpath=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');db=sqlite3.connect('file:'+str(dbpath)+'?mode=ro',uri=True)
+def bind(p):
+ h=hashlib.sha256()
+ with p.open('rb')as f:
+  for b in iter(lambda:f.read(1024*1024),b''):h.update(b)
+ return {'path':str(p),'bytes':p.stat().st_size,'sha256':h.hexdigest()}
+# Independent transcription of all seven red structures from inspected FigureS1.
+items=[
+ ('protocatechuate','36241','O=C([O-])c1cc(O)c(O)cc1','benzoate carboxylate; phenolic OH at3,4'),
+ ('4-nitrocatechol','16318','Oc1ccc([N+](=O)[O-])cc1O','catechol OH1,2; nitro4; totalneutral'),
+ ('vanillate','16632','O=C([O-])c1cc(OC)c(O)cc1','benzoate carboxylate; methoxy3,hydroxy4'),
+ ('2-methoxy-4-methylphenol','89886','Oc1c(OC)cc(C)cc1','phenolOH1; methoxy2;methyl4'),
+ ('syringate','132111','O=C([O-])c1cc(OC)c(O)c(OC)c1','benzoate carboxylate; methoxy3,5;hydroxy4'),
+ ('vanillin','18346','O=Cc1cc(OC)c(O)cc1','benzaldehyde; methoxy3;hydroxy4'),
+ ('syringaldehyde','67380','O=Cc1cc(OC)c(O)c(OC)c1','benzaldehyde; methoxy3,5;hydroxy4'),
+]
+rows=[]
+for name,cid,drawing,features in items:
+ p=O/('CHEBI-'+cid+'.json');j=json.loads(p.read_text());live=j['default_structure'];chemical=j['chemical_data'];n=Chem.MolFromSmiles(drawing);sm=Chem.MolFromSmiles(live['smiles']);pin={k:o or v for k,o,v in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",('CHEBI:'+cid,))}
+ checks={'issuing_accession_exact':j['chebi_accession']=='CHEBI:'+cid,'drawing_InChI_equals_issuing':Chem.MolToInchi(n)==live['standard_inchi'],'drawing_InChIKey_equals_issuing':Chem.MolToInchiKey(n)==live['standard_inchi_key'],'drawing_charge_equals_issuing':Chem.GetFormalCharge(n)==chemical['charge'],'drawing_formula_equals_issuing':re.sub(r'[+-][0-9]*$','',rdMolDescriptors.CalcMolFormula(n))==chemical['formula'],'issuing_SMILES_InChI_roundtrip':Chem.MolToInchi(sm)==live['standard_inchi'],'pinned_full_InChI_equals_issuing':pin['chemrof:inchi_string']==live['standard_inchi'],'pinned_key_equals_issuing':pin['chemrof:inchi_key_string']==live['standard_inchi_key'],'pinned_charge_equals_issuing':int(pin['chemrof:charge'])==chemical['charge'],'pinned_formula_equals_issuing':pin['chemrof:generalized_empirical_formula']==chemical['formula']};assert all(checks.values()),(name,checks)
+ rows.append({'primary_label':name,'id':'CHEBI:'+cid,'issuing_label':j['ascii_name'],'drawing_locator':'DesB2021 supplementary FigureS1, red structure labelled '+name,'drawing_features':features,'author_transcribed_drawing_smiles':drawing,'issuing_source':bind(p),'issuing_structure':live,'issuing_chemical_data':chemical,'pinned_properties':pin,'checks':checks,'mechanism_scope':'Observed inhibition of the synthetic DesB–MBP fusion at5mM compound with1mM gallate in primaryTable1; does not establish inhibition of an unmodified natural DesB preparation or a unique binding mode.','protonation_scope':'Matches the structure drawn in FigureS1. No inference that this is the sole solution microspecies at the assay pH; no salt/counterion substituted.'})
+out={'role':'source-author chemical identity, not independent review','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'software':{'rdkit':rdBase.rdkitVersion,'environment':'existing read-only next253 UV environment; requested project venv lacks RDKit'},'primary_figure':bind(P/'DesB2021-FigureS1.png'),'primary_archive':bind(Path('/private/tmp/pathwaymech-next-259-primary/originals/DesB2021-mmc1-retry.docx')),'pinned_database':bind(dbpath),'rows':rows,'coverage':'All seven red inhibitor structures in FigureS1 retained; gallate substrate inhibition uses already-closed CHEBI16918 separately. This is a chemical identity supplement, not renewed whole-paper coverage.'}
+(P/'DesB-inhibitor-identity-closure.json').write_text(json.dumps(out,indent=2)+'\n');print('All seven exact inhibitor structures passed current issuing and pinned identity comparisons.')

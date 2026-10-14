@@ -403,6 +403,22 @@ translation or independently resolve the genome-ID/organism-code crosswalk;
 those are separately grounded scientific identity checks. It does not accept
 joined, partial or ambiguous sequences by guessing missing source context.
 
+`kegg-pseudogene-flatfile` is a distinct, explicitly selected annotation profile.
+It requires the same exact organism:locus request, complete fixed-column object,
+identity fields and genomic-span/count checks, but ENTRY must have native type
+`gene`, NAME must be exactly `(GenBank) pseudogene`, and AASEQ must be absent.
+NTSEQ is retained as the issuing annotation only: it does not establish the
+complete biological gene, a translated product or a functional protein. A short
+native annotation such as the three-base PP_2519 object is not expanded or
+translated. The profile records `native_type: gene`,
+`annotation_class: pseudogene` and `sequence_scope: native_annotation_only` in
+`native_gene`; it does not manufacture an `aaseq` projection. SYMBOL remains
+source annotation, not an accepted alias. The original `project(raw, url)` and
+`kegg-gene-flatfile` default remain the strict complete-CDS profile and never
+fall back to pseudogene handling. Pseudogenes require `project_pseudogene` or the
+explicit distinct source kind. Conflicting CDS/pseudogene owners for one locus
+fail before term selection in either order, including unselected owners.
+
 The consumer rehashes and reparses the entire retained original and requires
 its derived projection to agree exactly, including every field and sequence.
 Conflicting whole originals or versions fail across all supplied owners before

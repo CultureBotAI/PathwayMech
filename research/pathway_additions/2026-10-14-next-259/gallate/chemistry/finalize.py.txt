@@ -1,0 +1,61 @@
+from pathlib import Path
+import json,hashlib,datetime,xml.etree.ElementTree as ET
+R=Path('/private/tmp/pathwaymech-next-259-chemistry');now=datetime.datetime.now(datetime.timezone.utc).isoformat()
+def h(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+reuse=json.loads((R/'reuse-receipts.json').read_text())['files'];verification=[]
+for x in reuse:
+ p=Path(x['path']);src=Path(x['reused_original']);verification.append({'copy':str(p),'original':str(src),'sha256':h(p),'copy_matches_bound':h(p)==x['sha256'],'original_still_matches_bound':h(src)==x['sha256']})
+for x in json.loads((R/'2021-additional-reuse.json').read_text()):
+ p=Path(x['path']);src=Path(x['reused_original']);verification.append({'copy':str(p),'original':str(src),'sha256':h(p),'copy_matches_bound':h(p)==x['sha256'],'original_still_matches_bound':h(src)==x['sha256']})
+frozen=json.loads(Path('/private/tmp/pathwaymech-next-259-primary/gal2016/original-rehash.json').read_text());frozen_checks=[]
+for x in frozen:
+ dest=R/'originals'/Path(x['path']).name
+ if dest.exists():frozen_checks.append({'path':str(dest),'sha256':h(dest),'matches_frozen2016':h(dest)==x['sha256']})
+identity=[]
+data=json.loads((R/'independent-chemistry-check.json').read_text())
+for frame,c in data['chemicals'].items():
+ j=json.loads((R/'originals'/('ChEBI-'+c['id'].split(':')[1]+'.json')).read_text());e=ET.parse(R/'originals'/(frame+'.xml')).getroot();identity.append({'frame':frame,'id':c['id'],'issuing_accession_matches':j['chebi_accession']==c['id'],'native_query_matches':e.findtext('./metadata/query')=='META:'+frame,'native_full_identity_matches':e.find('Compound').get('ID')=='META:'+frame and e.find('Compound').get('detail')=='full','native_release':e.find('./metadata/PGDB').get('version')})
+cl=json.loads((R/'chemistry-claim-ledger.json').read_text());assertions=[x['evidence']['source_assertion'] for x in cl['claims']]+[e['source_assertion'] for x in cl['full_material_edge_proposals'] for e in x['evidence']]
+rhea=json.loads((R/'inputs/rhea-original-projection.json').read_text());nodes=rhea['nodes'];rhea_checks=[]
+for rid,rxn in zip(['28928','28932','17403','28936'],data['reactions']):
+ exact={}
+ for prop in ['substrates','products']:
+  triples=[]
+  for side in nodes['http://rdf.rhea-db.org/'+rid][prop]:
+   for k,ps in nodes[side].items():
+    if k.startswith('contains') and k[8:].isdigit():
+     for participant in ps:
+      for compound in nodes[participant]['compound']:
+       for cid in nodes[compound]['accession']:triples.append((cid,int(k[8:])))
+  exact[prop]=sorted(triples)
+ expected={'substrates':sorted((x['id'],x['coefficient']) for x in rxn['selected_inputs']),'products':sorted((x['id'],x['coefficient']) for x in rxn['selected_outputs'])}
+ rhea_checks.append({'reaction':'RHEA:'+rid,'rdf_selected_sides':exact,'independently_parsed_native_sides':expected,'exact_match':exact==expected})
+directions={}
+for line in (R/'originals/rhea-directions.tsv').read_text().splitlines()[1:]:
+ a=line.split('\t')
+ if a[0] in rhea['directions']:directions[a[0]]=dict(zip(['master','left_to_right','right_to_left','bidirectional'],a))
+assert directions==rhea['directions'] and all(x['exact_match'] for x in rhea_checks)
+(R/'independent-rhea-equation-check.json').write_text(json.dumps({'exact_equation_checks':rhea_checks,'direction_quartets':directions,'all_checks_pass':True},indent=2)+'\n')
+result={'utc':now,'original_copy_checks':verification,'frozen2016_checks':frozen_checks,'issuing_identity_checks':identity,'assertion_count':len(assertions),'max_assertion_characters':max(map(len,assertions)),'all_assertions_at_most400':all(len(x)<=400 for x in assertions),'verbatim_quotes':0,'independent_chemical_balance_checks_pass':data['all_chemical_balance_checks_pass'],'rhea_subjects_pass':data['rhea_original_projection_check']['all_equal'],'pinned_checks_pass':json.loads((R/'pinned-recheck.json').read_text())['all_checks_pass'],'all_reused_originals_unchanged':all(x['copy_matches_bound'] and x['original_still_matches_bound'] for x in verification),'all_issuing_identity_checks_pass':all(x['issuing_accession_matches'] and x['native_query_matches'] and x['native_full_identity_matches'] for x in identity),'maintained_files_changed':False,'review_approval_issued':False}
+assert result['all_reused_originals_unchanged'] and result['all_issuing_identity_checks_pass'] and result['all_assertions_at_most400'] and result['pinned_checks_pass']
+(R/'verification.json').write_text(json.dumps(result,indent=2)+'\n')
+coverage=[
+ {'source':'META27.0 full pathway +4 full reactions +10 full compounds','read_scope':'Whole formal compound structures/CML, InChI/key, synonyms/comments/xrefs; full4 equations, coefficients,directions,spontaneous flag; pathway comments,formal membership/layout and interface','methods':'Original native copies bound to acquisition receipts; independently parsed CML including2D double-bond stereo; all ten structures and all four balances checked','limit':'Mirror27.0 is not asserted current upstream MetaCyc release. Database assertions are not primary experiments.'},
+ {'source':'Current issuing ChEBI JSON for10 chemicals','read_scope':'Exact accession/default_structure/formula/charge; same-day raw API originals rehashed, nine reused from earlier same-day retrieval','methods':'Independent SMILES/InChI/CML/formula/charge comparisons; current web58142 page corroborates E,E IUPAC name andfull structure','limit':'Web57732 request failed but intact issuing JSON was verified; no source-exhaustion or latest-release guarantee.'},
+ {'source':'Pinned ChEBI Semantic SQL255','read_scope':'Six chemistry/label fields for each of10 exactIDs','methods':'Whole4.14GB source hashed before read-only SQL queries; direct rows independently compared to nativeagent projection and raw native identities','limit':'Pinned SMILES for three unsaturated compounds omit stereo; full pinned InChI/key and current issuing SMILES retain it. SQL original remains external at resolved source path.'},
+ {'source':'Rhea142 RDF and direction TSV','read_scope':'All45 reaction-family,side,participant,compound subjects in native projection plus directional quartets','methods':'Reconstructed each subject from whole retained gzip RDF, compared exact properties including split fragments; full coefficients and charges checked independently','limit':'RDF source is previously retrieved2026-10-10, not freshly bulk downloaded. Current web17403 independently corroborates hydration and participant structures.'},
+ {'source':'PMID21219457 / DOI10.1111/j.1365-2958.2010.07448.x (2011)','read_scope':'Relevant main sections on GalA product,GalD,GalB,GalC; Figure1/3/4 captions; substrate synthesis/NMR/enzyme-assay methods','methods':'Publisher-indexed full text andPDF text transcriptions retained before interpretation; fresh web requests corroborated Figure3 text','limit':'No raw primary PDF/HTML original successfully acquired by this subtask. Fresh screenshot attempts produced strings/no image and one timeout, so no2011 visual figure read is claimed. Supplement access remains incomplete. HTML units preferred over PDF OCR mM/mg substitutions.'},
+ {'source':'PMID26867578 / PMC4817193 (2016)','read_scope':'Prior complete full-text/table/figure author package frozen; this focused reconciliation reread substrate prep,kinetics,optical-product,pH,discussion and visually reinspected Figures1,4,5,9','methods':'Raw HTML and four original JPGs copied and checked against frozen hashes','limit':'2016 geometry relies on2011 NMR; absolute(-)-CHA remains unknown. Proposed enolate/atomic mechanism not directly observed bound-substrate structure.'},
+ {'source':'DOI10.1371/journal.pone.0092249 (2014)','read_scope':'Figure1A freshly visually inspected; prior complete paper+10supplements package unchanged','methods':'Independent manual chemical graph transcription of shown product; carboxyl protonation normalization explicitly calculated','limit':'Schematic neutral E,E enol is not a new solution-product assignment; differs from immediate GalA keto product evidence without proving DesB disagreement.'},
+ {'source':'DOI10.1021/acssynbio.2c00537 / PMC9942251 (2023)','read_scope':'Figure1A original image freshly viewed; XML identity/caption checked','methods':'Raw XML/image copied from parent; full primary/reporter read owned by parent','limit':'Background pathway scheme only; no new product-geometry orCHA absolute assignment.'},
+ {'source':'DOI10.1016/j.procbio.2021.01.019 (2021)','read_scope':'Original Figure1 visually inspected; introduction/background and Figure1 caption read through retained author-fulltext web transcripts','methods':'Figure and two web transcripts rehashed/copied; apparentCHA label conflict recorded','limit':'Only this chemistry drawing/caption reviewed here. KCH-like topology is an author interpretation, not a corrected source label or new identifier; parent owns enzyme inhibition study.'},
+ {'source':'PMID30207699 / DOI10.1021/acs.biochem.8b00713 (2018LigJ)','read_scope':'Issuing publisher and EuropePMC abstracts andSI description','methods':'Current publisher access/search retained; prior exact EuropePMC original rehashed','limit':'Main full text and relevantSI not successfully acquired; attempted SI URLs did not yield content. One failed Figshare candidate URL was unverified and is not authority evidence. Detailed assay/structure/supplement reread not claimed.'},
+ {'source':'PMID31339729 / DOI10.1021/acs.biochem.9b00549 (2019LigU)','read_scope':'Issuing publisher and EuropePMC abstract andSI contents description','methods':'Current publisher access/search retained; prior exact EuropePMC original andSI PDF rehashed','limit':'Main full text unavailable from inspected legitimate publisher route; retainedSI is not relied on for new mechanism claims. No whole-paper read or detailed crystal reanalysis claimed.'},
+ {'source':'P184-PWY precedent','read_scope':'Native full pathway object membership, eight members; shared3 downstream member identities confirmed','methods':'Separate raw XML original copied and hashed; maintained record used only as a comparator','limit':'Shared membership is not authority for gallate entry,whole-route equivalence,strain usage or protein assignment.'}
+]
+(R/'source-coverage-ledger.json').write_text(json.dumps({'utc':now,'sources':coverage,'search_bounds':{'included_hidden_and_ignored':True,'roots':['/private/tmp/pathwaymech-next-258-20261014','/private/tmp/pathwaymech-next-259-native','/private/tmp/pathwaymech-next-259-primary','/private/tmp/pathwaymech-next-253-primary','/private/tmp/pathwaymech-next-253-native'],'purpose':'Locate existing primary originals, native closure andP184 precedent; no absence/source-exhaustion claim','limits':'Filename/content searches did not unpack archives or search binary bodies; no repository-wide new candidate preflight performed by this subtask'}},indent=2)+'\n')
+manifest=[]
+for p in sorted(R.rglob('*')):
+ if p.is_file() and p.name!='artifact-manifest.json':manifest.append({'path':str(p.relative_to(R)),'bytes':p.stat().st_size,'sha256':h(p)})
+(R/'artifact-manifest.json').write_text(json.dumps({'utc':now,'scope':'External author package; all present files except this manifest; retained originals are not authority promotion','files':manifest},indent=2)+'\n')
+print('Verified',len(verification),'reused copies;',len(cl['claims']),'claims;',len(cl['full_material_edge_proposals']),'material edges;',len(manifest),'files')

@@ -1,0 +1,7 @@
+from pathlib import Path
+import urllib.request,urllib.error,json,hashlib,datetime
+B=Path(__file__).parent;O=B/'originals';u='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAN68130.2,CBJ94499.1&rettype=gp&retmode=xml';p=O/'AAN68130.2-CBJ94499.1-protein.xml';row={'url':u,'path':str(p),'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+try:
+ with urllib.request.urlopen(u,timeout=50)as r:b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+except urllib.error.HTTPError as e:b=e.read();row.update(status=e.code,error=str(e))
+p.write_bytes(b);row.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());(B/'retained/ncbi-protein-acquisition.json').write_text(json.dumps(row,indent=2)+'\n');print(row)

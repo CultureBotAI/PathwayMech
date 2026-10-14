@@ -1,0 +1,208 @@
+from pathlib import Path
+import json, re, hashlib, copy, xml.etree.ElementTree as ET
+
+B = Path(__file__).parent
+O = B / 'originals'
+P = B / 'projections'
+P.mkdir(exist_ok=True)
+def save(name, value):
+    (B / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+def text(name): return (P / name).read_text()
+def lines(name, start, end):
+    result = []
+    for line in text(name).splitlines():
+        m = re.match(r'L(\d+):\s?(.*)', line)
+        if m and start <= int(m[1]) <= end:
+            result.append(m[2])
+    return ' '.join(' '.join(result).split())
+
+# Literal Table 1 numerical cells, manually checked against the retained transcript.
+table = {
+    'reference': 'GalA2005',
+    'source': 'originals/gal2005_rg_rest1-web.json',
+    'source_locator': 'Table 1, p.35385, transcript L1212-L1233',
+    'host_as_transcribed': 'E. coli BLB21(DE3) (pETGalA)',
+    'host_spelling_caveat': 'Figure 1 caption L1204-L1206 spells the host BL21(DE3); the methods/table OCR spells BLB21(DE3).',
+    'units': {'total_protein':'mg','total_activity':'micromol/min','specific_activity':'micromol/min/mg','yield':'percent','purification':'fold'},
+    'rows': [
+        {'step':1,'method':'Crude extract','total_protein':490,'total_activity':10497,'specific_activity':21.4,'yield':100,'purification':1.0},
+        {'step':2,'method':'Ultracentrifugation','total_protein':385,'total_activity':9673,'specific_activity':25.1,'yield':92.1,'purification':1.17},
+        {'step':3,'method':'Phenyl-Sepharose','total_protein':150,'total_activity':6412,'specific_activity':42.7,'yield':61,'purification':2.0},
+    ],
+    'interpretation': 'Specific activity 42.7 is the purification-table value; 53.2 is the separately fitted Vmax. Do not substitute one for the other.'
+}
+save('projections/table1.json',table)
+
+# Re-inspection of the actual issuing ENA feature, not only another author's projection.
+ena=(O/'AE015451.embl').read_text()
+feature=re.search(r'(?m)^FT   CDS\s+complement\(2865514\.\.2866776\).*?(?=^FT   \w|^SQ)',ena,re.S)[0]
+translation=re.search(r'/translation="([^"]+)"',feature,re.S)[1]
+translation=re.sub(r'FT\s+|\s','',translation)
+assert len(translation)==420 and translation.startswith('MARIIGG')
+old=json.loads((O/'Q88JX5.json').read_text())['sequence']['value']
+assert len(old)==340 and old != translation
+save('projections/sequence-check.json',{
+    'source_sha256':sha(O/'AE015451.embl'),
+    'source_locator':'ENA AE015451.2; CDS complement(2865514..2866776); /protein_id="AAN68130.2"; /locus_tag="PP_2518"; /translation',
+    'issuing_translation_length':len(translation),'issuing_translation_sha256':hashlib.sha256(translation.encode()).hexdigest(),
+    'issuing_translation_prefix':translation[:7],
+    'primary_edman_observation':'ARIIGG',
+    'initiator_removed_length_arithmetic':len(translation)-1,
+    'processing_status':'The paper interpreted Edman sequencing as apparent initiator-Met processing; 419 is the arithmetic length after that removal, not a separately issued mature sequence accession.',
+    'obsolete_uniprot_length':len(old),'full_sequence_equals_uniprot':translation==old,
+    'full_residue81':translation[80],'old_residue1':old[0],
+    'full_82_to_420_equal_old_2_to_340':translation[81:]==old[1:],
+    'scope':'This does not establish complete sequence identity of every recombinant molecule or a vector-derived C terminus.'
+})
+(P/'ENA-GalA-feature.txt').write_text(feature)
+
+# Only native slots or actual table cells will be written as source_assertion.
+native={}
+for name in ['CPLX-8177.xml','ENZRXN-18371.xml','G1G01-2702-MONOMER.xml']:
+    root=ET.parse(O/name).getroot()
+    obj=[el for el in root if el.tag!='metadata'][0]
+    native[name]={'id':obj.attrib['ID'],'sha256':sha(O/name),'slots':{}}
+    tags=['catalyzes','component','component-of','gene','cofactor','enzyme','reaction','evidence','km','ph-opt','molecular-weight-exp','molecular-weight-seq','comment']
+    for tag in tags:
+        entries=obj.findall(tag)
+        if entries: native[name]['slots'][tag]=[ET.tostring(el,encoding='unicode') for el in entries]
+save('projections/native-slot-check.json',native)
+
+facts=[]
+def fact(i,claim,locator,conditions=None,qualification=None,disposition='research fact; not an Evidence.source_assertion'):
+    facts.append({'id':i,'reference':'GalA2005','claim':claim,'source_locator':locator,'conditions':conditions,'qualification':qualification,'disposition':disposition})
+fact('F01','The cloned galA locus was 1263 bp and encoded a 420-residue protein, correcting an 80-residue-short PP2518 annotation.','Results, cloning/expression, p.35384-35385; methods transcript L968-L1020',qualification='Current ENA AAN68130.2 agrees in length and N-terminal sequence. Q88JX5 is a different 340-residue sequence and cannot stand for the tested full-length enzyme.')
+fact('F02','The PCR insert from KT2440 genomic DNA was cloned through pGEM-T Easy into NdeI/EcoRI-cut pET-29a(+), producing pETGalA under T7lac control. The reverse primer was reported 100 bp beyond the native stop.','Experimental Procedures, overproduction, p.35383; methods transcript L512-L532',qualification='This supports the named construct and argues against a deliberate C-terminal fusion; no complete plasmid sequence was obtained here. Do not assert a fully sequenced tag-free recombinant product.')
+fact('F03','E. coli BL21(DE3) carried pETGalA; the Figure 1 caption gives BL21(DE3), while body/table transcription gives BLB21(DE3).','Figure 1 caption, p.35385; rest1 transcript L1199-L1210; methods L534-L567',conditions='Induced at OD600 0.5 with 0.1 mM IPTG for 3 h.',qualification='Host spelling is reconciled from the paper caption, not silently repaired inside a quotation.')
+fact('F04','Edman sequencing gave ARIIGG, consistent with apparent removal of the initiator methionine. A 419-residue processed chain follows from the 420-residue encoded chain.','Results, cloning/expression, p.35385; methods transcript L1005-L1020',qualification='The source calls processing apparent. This is not an issued 419-residue protein accession or evidence of other terminal modifications.')
+fact('F05','Purification used ultracentrifugation and phenyl-Sepharose. Table 1 gives 42.7 micromol/min/mg in the final fraction, 61% yield and twofold purification.','Table 1, p.35385; rest1 transcript L1212-L1233; methods L569-L603',conditions='Extraction included 50 mM MOPS pH 8, 10% glycerol, 0.2 mM ferrous ammonium sulfate and 2 mM L-cysteine; purification at 4 C.',disposition='Table cells support structured primary evidence; extraction conditions remain prose-located facts.')
+fact('F06','Standard activity assays measured substrate-dependent oxygen use; purified preparation and crude extracts were separately specified.','Experimental Procedures, activity assays, p.35384; methods transcript L676-L719',conditions='1 ml, 100 mM Tris-HCl pH 7.0, 30 C, 15 microg purified protein or 20 microg crude extract, 250 microM aromatic substrate.',qualification='Do not transfer substrate-screen negatives to other pH, concentrations, hosts or enzymes.')
+fact('F07','Gallate-dependent crude-extract oxygen use was 19.1 micromol/min/mg; vector-control extracts lacked this activity. Absorbance-based gallate loss was 19.2 micromol/min/mg.','Results, cloning/expression, p.35385; methods transcript L1022-L1085',qualification='These crude-extract values differ from the purification table and the fitted Vmax.')
+fact('F08','In the crude-extract screen, protocatechuate, catechol, resorcinolate, resorcinol, gentisate, hydroquinone, pyrogallol, methyl gallate and syringate did not produce oxygen consumption.','Experimental Procedures L699-L703; Results L1028-L1054',conditions='Standard assay F06; purified enzyme subsequently showed oxygen use only with gallate in the reported screen.',qualification='No measured activity under these conditions; not proof of universal non-substrate status and not inhibition.')
+fact('F09','Gallate additions of 50, 100 and 250 nmol consumed 49, 99 and 244 nmol O2, respectively.','Results, cloning/expression, p.35385; methods transcript L1056-L1066',qualification='Supports approximately one O2 per gallate in the tested assay; complete reaction charge/proton accounting belongs to independently reconciled native/Rhea chemistry.')
+fact('F10','The NMR product analysis was consistent with OMA, but the authors described keto/enol alternatives and stated that their D2O preparation gave a single peak despite those alternatives.','Results, product identification, p.35385-35386; rest1 transcript L1118-L1188; Figure 2 caption L1408-L1427',conditions='Product reaction: 5 ml, 100 mM Tris-HCl pH 7, 100 microg enzyme, 2 mM gallate, 30 C for 1 h with shaking; NMR in D2O at 298 K, pH 8 or 3.',qualification='The 2005 read alone does not establish immediate keto-only OMA formation or a complete absolute alkene assignment. Figure 2 pixels remain inaccessible in this package.')
+fact('F11','Mass spectra showed an OMA-assigned ion at m/z 201 and a PDC-assigned ion at 183. NMR lacked the predicted PDC signals, so the authors favored PDC formation during electrospray.','Results, product identification, p.35386; rest1 transcript L1240-L1261; Figure 3 and caption p.35387 L1547-L1550',qualification='Do not create a physiological GalA-to-PDC edge; decarboxylated ions 157.1 and 139 were likewise analysis-associated products.')
+fact('F12','Purified enzyme had reported optimal pH 7, activity over pH 6-9, and optimal temperature around 30 C; Km was 144 microM and Vmax 53.2 micromol/min/mg.','Results, characterization, p.35386; rest1 transcript L1262-L1299',conditions='Gallate kinetics: 0.0005-5 mM; 10 points; 3 independent experiments; source reports SD below 10%.',qualification='The table specific activity 42.7 is not Vmax. pH/temperature optima are assay-specific.')
+fact('F13','High protocatechuate concentrations did not inhibit gallate cleavage in the purified-enzyme assay.','Results, characterization, p.35386; rest1 transcript L1262-L1270',qualification='No numerical concentration or inhibition curve supplied; source marks data not shown. Do not encode PCA inhibition or infer a demonstrated binding mechanism.')
+fact('F14','Purified enzyme absorption was maximal at 280 nm; no long-wavelength band characteristic of the listed iron-sulfur, flavin or heme cofactors was observed.','Results, characterization, p.35386; rest1 transcript L1301-L1322',qualification='Spectral non-observation is not a general proof that all other cofactors are absent.')
+fact('F15','Chelator and peroxide experiments preincubated purified enzyme before starting the gallate reaction.','Experimental Procedures, activity assays, p.35384; methods transcript L749-L765',conditions='Enzyme 1 mg/ml; 100 mM Tris-HCl pH 7.0; 30 min at 4 C; reaction initiated with 250 microM gallic acid.',qualification='Treat these as preparation-dependent inhibition/damage assays, not constitutive physiological regulation.')
+fact('F16','EDTA at 1 mM reduced activity to less than 1% of untreated enzyme.','Results, cofactor analysis, p.35386; rest1 transcript L1324-L1329; pretreatment methods L749-L765',conditions='F15 pretreatment.',qualification='Chelator action; less than 1%, not a measured exact zero.')
+fact('F17','2,2-prime-dipyridyl at 2 mM abolished detectable activity.','Results, cofactor analysis, p.35386; rest1 transcript L1329-L1339; pretreatment methods L749-L765',conditions='F15 pretreatment.',qualification='Conditional complete loss in the reported assay; no detection threshold supplied.')
+fact('F18','Reactivation added metal salts at 2 mM to EDTA- or dipyridyl-treated enzyme, then incubated for another 30 min at 4 C before adding gallate.','Experimental Procedures, activity assays, p.35384; methods transcript L767-L814',conditions='Salts: FeSO4, MgCl2, MnSO4, ZnCl2, CoCl2, CuCl2, NiCl2, or ferric citrate; gallate 250 microM.',qualification='Results aggregate the two chelator preparations; do not invent separate per-chelator recovery values or claim removal of chelator before rescue.')
+fact('F19','Fe2+ was the only tested metal reported to restore full activity after chelation.','Results, cofactor analysis, p.35386; rest1 transcript L1339-L1381',conditions='F18 reactivation protocol.',qualification='Native ENZRXN-18371 independently records Fe2+ as cofactor. The assay does not directly measure iron occupancy or prove a fixed stoichiometry.')
+fact('F20','Mn2+ restored 8% of untreated-enzyme activity after chelation.','Results, cofactor analysis, p.35386; rest1 transcript L1383-L1396',conditions='2 mM MnSO4; F18 protocol.',qualification='Weak conditional reactivation, not evidence for Mn2+ as the physiological main cofactor.')
+fact('F21','Cu2+ restored 9% of untreated-enzyme activity after chelation.','Results, cofactor analysis, p.35386; rest1 transcript L1383-L1396',conditions='2 mM CuCl2; F18 protocol.',qualification='Weak conditional reactivation; do not assign a preferred/native Cu cofactor.')
+fact('F22','Co2+ restored 5% of untreated-enzyme activity after chelation.','Results, cofactor analysis, p.35386; rest1 transcript L1383-L1396',conditions='2 mM CoCl2; F18 protocol.',qualification='Weak conditional reactivation; distinguish from 2016 GalB cobalt experiments.')
+fact('F23','Fe3+, Mg2+, Zn2+ and Ni2+ were included in the metal rescue panel, but only Fe2+ fully restored activity and numeric results for these four ions were not stated.','Methods L767-L800; Results L1339-L1381',qualification='Do not turn absence of reported numeric recovery into 0%, inhibition, or a proven lack of all reactivation.')
+fact('F24','Hydrogen peroxide at 1 mM left 15% of untreated activity.','Results, cofactor analysis, p.35386; rest1 transcript L1396-L1402; pretreatment methods L749-L765',conditions='F15 pretreatment.',qualification='Oxidative-treatment result; not proof of a physiological inhibitory interaction.')
+fact('F25','Adding 10 mM sodium ascorbate after peroxide treatment restored activity to 50% of the untreated value.','Results, cofactor analysis, p.35386; rest1 transcript L1400-L1406; methods L800-L814',conditions='After peroxide pretreatment, another 30 min at 4 C before 250 microM gallate.',qualification='Partial rescue of oxidized preparation; not complete recovery or activation of untreated enzyme. Methods specify sodium ascorbate; do not silently map to neutral ascorbic acid.')
+fact('F26','The main sedimenting species represented about 75% of loaded protein, had s20,w 7.29 +/- 0.10 S and an equilibrium mass of 132000 +/- 12000 Da. With a calculated monomer mass of 47644 Da this was consistent with a globular homotrimer.','Results, assembly, p.35386; rest1/rest2 transcript L1446-L1466',conditions='Purified enzyme in extraction buffer; sedimentation velocity at 40000 rpm and 20 C; equilibrium at 10000/13000 rpm.',qualification='Supports a predominant trimer under these preparation conditions, not a uniformly trimeric population or directly measured exact subunit mass.')
+fact('F27','The N-terminal 1-281 and C-terminal 294-420 regions showed similarity to LigB and LigA, with a 282-293 linker. Proposed iron ligands and catalytic residues were obtained from a homology model.','Results, subgroup/model, p.35387-35389; rest2 transcript L1485-L1687; Figure 4 caption',qualification='Residues His12/His59/Glu240 and catalytic His193 were predictions, not newly measured coordination or mutational causal evidence. Do not create free amino-acid nodes or transfer LigAB chemistry to GalA.')
+fact('F28','The phylogenetic analysis suggested a distinct GalA subgroup and possible fusion ancestry; activities of homologs were proposed from sequence, not experimentally measured here.','Results, subgroup, p.35389; rest2 transcript L1689-L1798; Figure 5 caption',qualification='No experimental GalA assertion for other taxa can be inherited from this tree.')
+fact('F29','In citrate-grown KT2440, gallate induced galA transcript in the tested aromatic panel; syringate, protocatechuate, phloroglucinol and pyrogallol did not show that induction.','Methods L923-L955; Results and Figure 6 caption L1800-L1846',conditions='At OD600 0.5, 1 mM aromatic compound for 2 h; RT-PCR with no-RT contamination controls.',qualification='Transcriptional response, not direct allosteric enzyme activation or proof of a direct GalR ligand. Parent 2023 work handles the regulatory mechanism.')
+fact('F30','Adapted KT2440 grew with 5 mM gallate as sole carbon source; the insertional galA mutant did not and lacked detectable gallate dioxygenase activity in citrate plus gallate.','Methods L443-L450 and L888-L921; Results L1848-L1878',conditions='Gallate growth medium included 1 mM L-cysteine to reduce oxidation; parental citrate-plus-gallate extract activity was 1.0 micromol/min/mg.',qualification='The mutant was made by single-crossover insertion of a 0.7-kb internal fragment through pK18mob, not a clean deletion. Do not infer every downstream enzyme or all strain-wide exclusivity from this experiment.')
+fact('F31','Gallate did not induce the tested pca, pha or hmg genes in the reported RT-PCR experiment.','Results, physiology, p.35390; final/rest2 transcript L1880-L1885',qualification='Data not shown; condition-specific negative expression observation, not metabolic impossibility.')
+save('research-facts.json', {'scope':'Author paraphrases of inspected research content; these objects are NOT graph Evidence objects. They do not license use of prose paraphrases as source_assertion.','facts':facts})
+
+refs={
+ 'GalA2005':{'id':'PMID:16030014','doi':'10.1074/jbc.M502585200','url':'https://doi.org/10.1074/jbc.M502585200','access':'Author-uploaded full-text web transcripts plus Figure 3 image. No complete raw publisher/author PDF or complete figure set obtained.','artifacts':['originals/gal2005_methods-successor-web.json','originals/gal2005_rg_rest1-web.json','originals/gal2005_rg_rest2-web.json']},
+ 'MetaCyc-ENZRXN-18371':{'url':'http://bf2i-artsymbiocyc.insa-lyon.fr:443/getxml?META:ENZRXN-18371','source_version':'MetaCyc mirror 27.0','source_sha256':sha(O/'ENZRXN-18371.xml'),'artifact':'originals/ENZRXN-18371.xml'},
+ 'MetaCyc-CPLX-8177':{'url':'http://bf2i-artsymbiocyc.insa-lyon.fr:443/getxml?META:CPLX-8177','source_version':'MetaCyc mirror 27.0','source_sha256':sha(O/'CPLX-8177.xml'),'artifact':'originals/CPLX-8177.xml'},
+ 'ENA-AE015451':{'url':'https://www.ebi.ac.uk/ena/browser/api/embl/AE015451.2','source_version':'AE015451.2','source_sha256':sha(O/'AE015451.embl'),'artifact':'originals/AE015451.embl'},
+}
+save('references.json',refs)
+def assertion(ref,statement,locator):
+    assert len(statement)<=400
+    return {'reference_id':ref,'source_assertion':statement,'source_locator':locator}
+def quote(q,loc): return {'reference_id':'GalA2005','quote':q,'source_locator':loc}
+
+# Two complete proposed edges use 22 total quoted words, counting every repeated qualifier quote.
+# Exact paper text is restricted to tiny host/processing excerpts; no quotation is repeated elsewhere.
+host_quote=' '.join(lines('gal2005_rg_rest1-web.txt',1206,1206).split()[6:10]).rstrip(';')
+processing_quote=' '.join(lines('gal2005_methods-successor-web.txt',1015,1015).split()[2:9])
+assert host_quote in lines('gal2005_rg_rest1-web.txt',1204,1208)
+assert processing_quote in lines('gal2005_methods-successor-web.txt',1011,1015)
+qualifier={
+ 'endpoint':'subject','kind':'experimental_construct',
+ 'description':'KT2440 GalA expressed from pETGalA in E. coli BL21(DE3). The encoded chain has 420 residues; Edman sequencing indicated apparent initiator-Met removal, giving a 419-residue processed chain. The complete recombinant sequence and any other terminal changes were not established here.',
+ 'evidence':[
+  assertion('ENA-AE015451','The PP_2518 CDS names protein AAN68130.2 and supplies a 420-residue translation beginning MARIIGG.','CDS complement(2865514..2866776), /locus_tag, /protein_id, /translation'),
+  quote(host_quote,'Figure 1 caption, lane 3, p.35385; retained rest1 transcript L1206'),
+  quote(processing_quote,'Results, cloning/expression, p.35385; retained methods transcript L1015'),
+ ]}
+assert len(qualifier['description'])<=400
+ready=[
+ {'id':'P01','status':'author proposal with grammar-shaped evidence; not approval','source_facts':['F01','F03','F04','F05','F07','F09','F10'],
+  'edge':{'subject':'MetaCyc:CPLX-8177','predicate':'catalyzes','object':'MetaCyc:GALLATE-DIOXYGENASE-RXN',
+   'description':'GalA catalyzes gallate ring cleavage. The 2005 recombinant preparation supports the activity; its late product analysis alone does not resolve the immediate keto/enol product. Exact formal reaction chemistry also requires the native/Rhea and 2011 reconciliation.',
+   'evidence':[
+    assertion('MetaCyc-ENZRXN-18371','ENZRXN-18371 connects enzyme CPLX-8177 to GALLATE-DIOXYGENASE-RXN and records a purified heterologous-host assay with PMID16030014.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-18371"]/{enzyme,reaction,evidence[Evidence-Code/@frameid="EV-EXP-IDA-PURIFIED-PROTEIN-HH"]}'),
+    assertion('GalA2005','Table 1 lists 42.7 micromol/min/mg for gallate dioxygenase in the final phenyl-Sepharose fraction from E. coli carrying pETGalA.','Table 1, p.35385, title and row 3/specific activity; retained rest1 transcript L1212-L1233')],
+   'endpoint_qualifiers':[copy.deepcopy(qualifier)]}},
+ {'id':'P02','status':'author proposal with grammar-shaped evidence; not approval','source_facts':['F04','F15','F18','F19','F20','F21','F22','F23','F24','F25'],
+  'edge':{'subject':'MetaCyc:CPLX-8177','predicate':'has_cofactor','object':'CHEBI:29033',
+   'description':'Native ENZRXN-18371 records Fe2+ as GalA cofactor with the 2005 publication. Conditional metal-rescue, chelator and peroxide findings are separately retained as research proposals; this edge does not assert fixed iron occupancy or exclude weak rescue by other metals.',
+   'evidence':[assertion('MetaCyc-ENZRXN-18371','The cofactor slot of ENZRXN-18371 identifies FE+2 and cites PUB-16030014.','/ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-18371"]/cofactor')],
+   'endpoint_qualifiers':[copy.deepcopy(qualifier)]}},
+ {'id':'P03','status':'author native-composition proposal; not an assay-specific stoichiometric observation','source_facts':['F26'],
+  'edge':{'subject':'MetaCyc:CPLX-8177','predicate':'has_part','object':'MetaCyc:G1G01-2702-MONOMER',
+   'description':'The native GalA complex contains G1G01-2702-MONOMER. The component slot does not provide a numeric coefficient. The primary preparation had a predominant species consistent with a homotrimer; that conditional assembly result is retained separately.',
+   'evidence':[assertion('MetaCyc-CPLX-8177','The component slot of CPLX-8177 points to G1G01-2702-MONOMER.','/ptools-xml/Protein[@frameid="CPLX-8177"]/component/Protein[@frameid="G1G01-2702-MONOMER"]')]}}
+]
+save('edge-proposals.json',{'scope':'Author proposals only. P03 describes the native composition assertion, not a recombinant assembly experiment. P01-P02 must retain every qualifier. Native/ENA identifiers remain subject to the parent integration workflow.','proposals':ready})
+
+# Every requested treatment has an explicit proposed edge, even when current grammar cannot yet carry it.
+staged=[]
+def stage(i,sub,pred,obj,desc,fact_ids,kind='molecular_state',endpoint='object',state=None,identity=None):
+    staged.append({'id':i,'status':'research proposal; NOT ready to insert as a maintained edge','subject_label_or_verified_id':sub,'predicate':pred,'object_label_or_verified_id':obj,'proposed_description':desc,'supporting_fact_ids':fact_ids,'required_qualification':{'endpoint':endpoint,'kind':kind,'state':state,'construct':'KT2440 full-length GalA from pETGalA/pET-29a(+), E. coli BL21(DE3), with apparent initiator-Met processing; same preparation as F01-F05.'},'evidence_gap':'Relevant numerical/conditional statements are primary prose. No native inhibition/rescue slot was found in the fully inspected ENZRXN-18371 or CPLX-8177 objects. They cannot be written as source_assertion under the current instruction; primary quotation budget is shared and nearly used by exact construct qualifiers.','identity_gap':identity})
+stage('P04','EDTA','inhibits','MetaCyc:CPLX-8177','1 mM EDTA for 30 min at 4 C in 100 mM Tris-HCl pH 7, with enzyme 1 mg/ml, left less than 1% activity; assay initiated with 250 microM gallate.',['F15','F16'],state='Purified recombinant GalA subjected to the specified chelator pretreatment.',identity='Exact EDTA acid/salt and protonation state were not specified in the paper; no new chemical CURIE selected here.')
+stage('P05','2,2-prime-dipyridyl','inhibits','MetaCyc:CPLX-8177','2 mM 2,2-prime-dipyridyl under the F15 30 min, 4 C, pH 7 pretreatment abolished activity in the reported assay.',['F15','F17'],state='Purified recombinant GalA subjected to the specified chelator pretreatment.',identity='Issuing identifier for the explicit positional isomer is still required; no guessed CURIE.')
+stage('P06','Hydrogen peroxide','inhibits','MetaCyc:CPLX-8177','1 mM peroxide under the F15 30 min, 4 C, pH 7 pretreatment left 15% activity relative to untreated enzyme.',['F15','F24'],state='Purified recombinant GalA after oxidative pretreatment.',identity='Paper reagent identity is explicit; a verified issuing chemical identifier is required before insertion.')
+stage('P07','CHEBI:29033','activates','MetaCyc:CPLX-8177','2 mM FeSO4 reactivated the chelator-treated preparation fully after a further 30 min at 4 C; gallate was 250 microM.',['F18','F19'],state='EDTA- or dipyridyl-pretreated recombinant GalA; results are not separately reported for the two chelators.',identity='Verified Fe2+ identity comes from the native package. FeSO4 is reagent delivery, not an alternative identity for free Fe2+.')
+stage('P08','Mn2+','activates','MetaCyc:CPLX-8177','2 mM MnSO4 restored 8% of untreated activity after chelation and a further 30 min at 4 C.',['F18','F20'],state='Chelator-treated recombinant GalA; weak conditional reactivation.',identity='Native package has verified CHEBI:29035 for Mn2+; parent must preserve ion versus sulfate-reagent distinction.')
+stage('P09','Cu2+','activates','MetaCyc:CPLX-8177','2 mM CuCl2 restored 9% of untreated activity after chelation and a further 30 min at 4 C.',['F18','F21'],state='Chelator-treated recombinant GalA; weak conditional reactivation.',identity='No Cu2+ issuing identifier was independently established in this bounded package.')
+stage('P10','Co2+','activates','MetaCyc:CPLX-8177','2 mM CoCl2 restored 5% of untreated activity after chelation and a further 30 min at 4 C.',['F18','F22'],state='Chelator-treated recombinant GalA; weak conditional reactivation.',identity='Native CO+2 exists in the sibling package, but this package does not claim a verified external structure match.')
+stage('P11','Sodium ascorbate','activates','MetaCyc:CPLX-8177','10 mM sodium ascorbate after peroxide exposure restored activity to 50% of untreated enzyme after a further 30 min at 4 C.',['F24','F25'],state='Peroxide-pretreated recombinant GalA; partial rescue, not untreated-enzyme activation.',identity='Salt, ascorbate ion and neutral acid are not interchangeable. Exact issuing endpoint needs reconciliation.')
+stage('P12','MetaCyc:CPLX-8177','has_part','MetaCyc:G1G01-2702-MONOMER','Purified recombinant GalA showed a predominant species consistent with a homotrimer, not an exclusively trimeric preparation.',['F04','F26'],endpoint='subject',state='Purified preparation in extraction buffer; main species about 75%, 132 +/-12 kDa; monomer sequence mass 47.644 kDa.',identity='Source-native complex/monomer plus full-length ENA binding; do not substitute Q88JX5. Assay-specific trimer evidence is still prose.')
+save('research-edge-proposals.json',{'scope':'These are explicit edge candidates with all source qualifications preserved, not Evidence objects or approved graph insertions. Reassess relation choice and chemical identity before integration. Do not resolve an evidence-grammar gap by converting these paraphrases into structured assertions.','proposals':staged})
+
+coverage={
+ 'author_read_scope':'Scientific main text, sole Table 1, all six figure captions, and Figure 3 pixels were read in this successor task. Full article transcript through the conclusions was available. Reference list is contextual bibliography, not newly read primary evidence.',
+ 'sections':[
+  {'section':'title/abstract/introduction','artifacts':['gal2005_rg-web.json'],'disposition':'Read; background comparisons do not confer experiments on homologs.'},
+  {'section':'all Experimental Procedures','artifacts':['gal2005_rg-web.json','gal2005_methods-successor-web.json'],'disposition':'Read; extraction, construct, inhibitor/rescue and physiology conditions retained.'},
+  {'section':'all Results and Discussion','artifacts':['gal2005_methods-successor-web.json','gal2005_rg_rest1-web.json','gal2005_rg_rest2-web.json','gal2005_final-web.json'],'disposition':'Read; F01-F31 span source-specific findings.'},
+  {'section':'Table 1','artifacts':['gal2005_rg_rest1-web.json'],'disposition':'All three rows and numerical columns inspected and transcribed.'}],
+ 'figures':[
+  {'number':1,'caption_read':True,'pixels_read':False,'disposition':'SDS-PAGE caption supports BL21(DE3) host spelling; gel pixels unavailable here.'},
+  {'number':2,'caption_read':True,'pixels_read':False,'disposition':'NMR and product drawing caption read. Prior normal raw request 403; this successor public page succeeded but linked image returned 404. No visual claim.'},
+  {'number':3,'caption_read':True,'pixels_read':True,'artifact':'originals/GalA2005-fig3.png','disposition':'OMA keto/enol alternatives, PDC drawing and mass peaks visually inspected; MS artifacts not promoted to pathway products.'},
+  {'number':4,'caption_read':True,'pixels_read':False,'disposition':'Sequence/homology-model caption and all relevant main text read; predictions remain predictions.'},
+  {'number':5,'caption_read':True,'pixels_read':False,'disposition':'Phylogenetic caption read; no visual topology or experimental homolog activity asserted.'},
+  {'number':6,'caption_read':True,'pixels_read':False,'disposition':'RT-PCR caption and main-text finding read; no independent pixel-level band assessment.'}],
+ 'supplement':'No supplement was identified in the retained main-text transcript/links inspected in this bounded task. This is an access-limited statement, not proof that none exists.',
+ 'access_limitations':['Complete raw publisher/author PDF was not acquired by the parent; retained linked PDF receipt is 404, while parent reported normal direct publisher/author requests 403.','Successor uses hash-bound prior web-tool transcripts; they are not raw publisher HTML/PDF.','Figure 3 only was visually inspected.','No raw alignment or complete pETGalA plasmid sequence obtained.'],
+ 'complete_native_objects_checked':['CPLX-8177','ENZRXN-18371','G1G01-2702-MONOMER'],
+ 'negative_claim_limits':['No activity does not imply inhibition.','Not fully rescued is not zero rescue.','Spectral non-observation is not proof of absent cofactor.','Induction is not direct ligand binding.','Predominant trimer is not uniform trimer stoichiometry.','2005 OMA assignment is not an immediate keto-only product demonstration.']
+}
+save('source-coverage.json',coverage)
+
+# Count repeated quote placements, not only unique strings.
+quotes=[]
+def walk(x,path=''):
+    if isinstance(x,dict):
+        if 'quote' in x: quotes.append({'path':path,'words':len(x['quote'].split()),'sha256':hashlib.sha256(x['quote'].encode()).hexdigest()})
+        if 'source_assertion' in x:
+            assert len(x['source_assertion'])<=400 and x.get('source_locator')
+        for k,v in x.items(): walk(v,path+'/'+k)
+    elif isinstance(x,list):
+        for i,v in enumerate(x):walk(v,path+'/'+str(i))
+walk(ready)
+assert sum(q['words'] for q in quotes)==22
+save('quotation-budget.json',{'source':'PMID:16030014','limit_words':25,'used_words_counting_every_occurrence':22,'remaining_words':3,'placements':quotes,'caveat':'Do not duplicate these two qualifier quote pairs into additional maintained edges without recounting the total. No quote text is copied into this budget ledger.'})
+
+receipts=json.loads((B/'reuse-receipts.json').read_text())
+for r in receipts: assert sha(B/r['destination'])==r['sha256']
+save('verification.json',{'reused_originals_checked':len(receipts),'all_reused_hashes_match':True,'table_numeric_rows_checked':3,'primary_quote_word_count':22,'source_assertions_limited_to_inspected_native_slots_table_cells_and_ENA_feature':True,'prose_research_ledger_not_Evidence':True,'native_proposals':len(ready),'staged_treatment_assembly_proposals':len(staged),'research_facts':len(facts),'maintained_files_modified':False,'approval_verdict':None})
+print('Built',len(facts),'facts,',len(ready),'evidence-shaped proposals,',len(staged),'staged proposals; 22 quoted words.')

@@ -1,0 +1,21 @@
+from pathlib import Path
+import urllib.request,urllib.error,urllib.parse,datetime,hashlib,json,concurrent.futures
+B=Path(__file__).parent;O=B/'originals'
+urls={
+ 'Q88JX8-version1.txt':'https://rest.uniprot.org/unisave/Q88JX8?format=txt&versions=1',
+}
+for id in ['36241','16318','16632','89886','132111','18346','67380']:
+ urls['CHEBI-'+id+'.json']='https://www.ebi.ac.uk/chebi/backend/api/public/compound/'+id+'/'
+for tag in ['PP_RS13150','PP_RS13155','PP_RS13160','PP_RS13170']:
+ urls['NCBIGene-search-'+tag+'.json']='https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=gene&retmode=json&term='+urllib.parse.quote(tag)
+def get(it):
+ n,u=it;p=O/n;assert not p.exists(),p
+ r={'path':str(p),'url':u,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech-source-author/1.0'}),timeout=45) as f:b=f.read();r.update(status=f.status,final_url=f.url,headers=dict(f.headers))
+ except urllib.error.HTTPError as e:b=e.read();r.update(status=e.code,error=str(e))
+ except Exception as e:return dict(r,error=str(e))
+ p.write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());return r
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:rows=list(ex.map(get,urls.items()))
+(B/'acquisition-followup.json').write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows:print(Path(r['path']).name,r.get('status'),r.get('bytes'),r.get('error',''))
