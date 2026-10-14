@@ -1,0 +1,26 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess
+R=Path('/private/tmp/pathwaymech-next-256-20261014');D=Path(__file__).resolve().parent;B=R/'research/pathway_additions/2026-10-14-next-256/shikimate'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def original_log(wrapper,data):
+ raw=Path(data.get('path',data.get('original_path','')))
+ relocation=B/'authorities/failed-attempt-log-relocation.json'
+ if relocation.is_file():
+  x=json.loads(relocation.read_text())
+  if str(wrapper.relative_to(R))==x['wrapper']['maintained_path']:
+   assert sha(wrapper)==x['wrapper']['sha256'];assert Path(x['wrapper']['path']).read_bytes()==wrapper.read_bytes()
+   assert str(raw)==x['embedded_historical_raw_path'];assert sha(raw)==x['successful_retry_raw_log']['sha256']
+   raw=Path(x['archived_actual_raw_log']['path']);assert sha(raw)==x['archived_actual_raw_log']['sha256']==data['sha256'];assert len(raw.read_bytes())==x['archived_actual_raw_log']['bytes']
+ return raw
+a={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'retention_manifests':[],'log_wrappers':[]}
+for p in sorted(B.rglob('retention.json')):
+ d=json.loads(p.read_text());assert isinstance(d,dict) and 'files' in d
+ for f in d['files']:
+  original=Path(f['original_path']);maintained=R/f['maintained_path'];assert maintained.is_relative_to(B);assert original.read_bytes()==maintained.read_bytes();assert sha(original)==f['sha256'];assert len(maintained.read_bytes())==f['bytes']
+ a['retention_manifests'].append({'path':str(p.relative_to(R)),'sha256':sha(p),'verified_bindings':len(d['files'])})
+for p in B.rglob('*.log.json'):
+ d=json.loads(p.read_text());original=original_log(p,d);b=d.get('contents',d.get('text','')).encode(d.get('encoding','utf-8'));assert original.read_bytes()==b;assert hashlib.sha256(b).hexdigest()==d['sha256'];a['log_wrappers'].append({'wrapper':str(p.relative_to(R)),'wrapper_sha256':sha(p),'raw_log_path':str(original),'raw_log_sha256':d['sha256']})
+tracked=subprocess.check_output(['git','diff','--name-only','b645cc4c0afd75f3eff521376b75602a3c2ad679'],cwd=R,text=True).splitlines();allowed={'conf/identifier_sources.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json','pages/downloads/edges.tsv','pages/downloads/nodes.tsv','pages/downloads/manifest.json','pages/pathway_index.json','pages/index.html','pages/browse.html'}
+assert set(tracked)<=allowed,(set(tracked)-allowed);a['tracked_changed_paths']=tracked
+files=[p for p in B.rglob('*') if p.is_file()];assert all(p.suffix not in {'.pdf','.xml','.png','.html','.sqlite','.db','.gz','.py'} for p in files);a['dossier_file_count']=len(files);a['all_retained_bytes_match_external_originals']=True;a['raw_payload_extension_policy_pass']=True
+(D/'retention-integrity-audit.json').write_text(json.dumps(a,indent=2)+'\n');print(json.dumps(a,indent=2))

@@ -1,0 +1,8 @@
+from pathlib import Path
+import datetime,hashlib,json,os,re,subprocess,time
+R=Path('/private/tmp/pathwaymech-next-256-20261014');D=Path(__file__).resolve().parent;env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1',PYTHONPATH=str(R/'src')+':'+str(R));cmd=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','check','--base','b645cc4c0afd75f3eff521376b75602a3c2ad679'];start=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic();log=D/'final-review-archive.log';assert not log.exists()
+with log.open('w') as f:p=subprocess.run(cmd,cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT)
+raw=log.read_bytes();row={'command':cmd,'cwd':str(R),'started_utc':start,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'elapsed_seconds':time.monotonic()-t,'exit_code':p.returncode,'log_path':str(log),'log_sha256':hashlib.sha256(raw).hexdigest()};(D/'final-review-archive-receipt.json').write_text(json.dumps(row,indent=2)+'\n');(D/'final-review-archive.log.json').write_text(json.dumps({'path':str(log),'sha256':row['log_sha256'],'encoding':'utf-8','contents':raw.decode()},indent=2)+'\n')
+if p.returncode==0:
+ match=re.search(r'\{\s*"repository"[\s\S]*\}\s*$',raw.decode());assert match;result=json.loads(match.group());assert result['repository']=='CultureBotAI/PathwayMech';count=result['valid_reviews'];assert isinstance(count,int) and count>0;row.update(valid_reviews=count,validated_result=result,original_receipt_path=str(D/'final-review-archive-receipt.json'));(Path('/private/tmp/pathwaymech-next-256-checks')/'review-final-receipt.json').write_text(json.dumps(row,indent=2)+'\n')
+print(json.dumps(row,indent=2));print(raw.decode()[-2000:]);raise SystemExit(p.returncode)

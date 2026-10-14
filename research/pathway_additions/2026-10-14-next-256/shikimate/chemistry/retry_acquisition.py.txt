@@ -1,0 +1,22 @@
+from pathlib import Path
+import datetime,hashlib,json,urllib.request,concurrent.futures
+B=Path(__file__).parent
+O=B/'originals';O.mkdir(exist_ok=True)
+requests=[('META-SHIKIMATE.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:SHIKIMATE'),('ChEBI-36208.json','https://www.ebi.ac.uk/chebi/backend/api/public/compound/36208/')]
+def get(pair):
+ name,url=pair;path=O/name
+ row=dict(url=url,started_utc=datetime.datetime.now(datetime.timezone.utc).isoformat())
+ try:
+  req=urllib.request.Request(url,headers={'User-Agent':'PathwayMech evidence curation'})
+  with urllib.request.urlopen(req,timeout=60) as response:
+   raw=response.read();row.update(final_url=response.url,status=response.status,content_type=response.headers.get('Content-Type'))
+  if path.exists():
+   assert path.read_bytes()==raw,'Upstream bytes changed; preserve old observation and inspect'
+  else:path.write_bytes(raw)
+  row.update(path=str(path),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw))
+ except Exception as e:row['error']=repr(e)
+ row['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool: rows=list(pool.map(get,requests))
+(B/'retry-acquisition.json').write_text(json.dumps(rows,indent=2)+'\n')
+print(json.dumps(rows))

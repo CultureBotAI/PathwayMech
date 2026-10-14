@@ -1,0 +1,117 @@
+from pathlib import Path
+import datetime, hashlib, json, sqlite3, xml.etree.ElementTree as ET
+import yaml
+
+B = Path(__file__).parent
+N = Path('/private/tmp/pathwaymech-next-256-native/originals')
+R = Path('/private/tmp/pathwaymech-next-256-20261014')
+audit = json.loads((B / 'chemical-identity-and-reaction-audit.json').read_text())
+pid = 'MetaCyc:SHIKIMATEDEG-PWY'
+record = dict(
+    id=pid, label='shikimate degradation I',
+    description=('The two-step MetaCyc 27.0 shikimate degradation I definition converts shikimate '
+                 'through 3-dehydroshikimate to protocatechuate. The initial oxidation retains '
+                 'the source-defined quinone and quinol classes, with PQQ as a separate enzyme '
+                 'cofactor. This is distinct from the NAD-dependent shikimate II route and the '
+                 'three-step quinate I route. Enzyme and regulatory evidence retains organism, '
+                 'preparation and inference scope; the record does not assert a purified '
+                 'two-enzyme reconstruction for every source-listed organism.'),
+    pathway_type='aromatic-compound-catabolism', taxa=[], participants=[], reactions=[],
+    mechanistic_edges=[], references=[])
+def label(database, identifier):
+    with sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/'+database+'.db?mode=ro', uri=True) as db:
+        return db.execute("select value from statements where subject=? and predicate='rdfs:label'", (identifier,)).fetchone()[0]
+def ref(identifier, title, path, url, version='MetaCyc 27.0'):
+    item = dict(id=identifier, title=title, url=url, source_version=version,
+                source_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    existing = next((r for r in record['references'] if r['id']==identifier), None)
+    if existing is None: record['references'].append(item)
+    else: assert existing == item, (existing, item)
+def native_ref(frame, folder=N):
+    identifier='MetaCyc:'+frame
+    ref(identifier, 'MetaCyc native object '+frame, folder/('META-'+frame+'.xml'),
+        'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame)
+    return identifier
+def evidence(identifier, assertion, locator):
+    assert len(assertion)<=400, assertion
+    return dict(reference_id=identifier, source_assertion=assertion, source_locator=locator)
+def edge(subject, predicate, obj, description, items):
+    record['mechanistic_edges'].append(dict(id='pending',subject=subject,predicate=predicate,
+        object=obj,description=description,evidence=items))
+native_ref('SHIKIMATEDEG-PWY')
+for number in ['62977','471','442']:
+    identifier='NCBITaxon:'+number
+    record['taxa'].append(dict(id=identifier,label=label('ncbitaxon',identifier)))
+    edge(pid,'part_of',identifier,'Native pathway species context; individual enzyme evidence retains its strain and preparation scope.',
+         [evidence(pid,'The pathway species slot lists TAX-'+number+'; native pathway evidence includes mutant-phenotype and direct-assay annotations.',
+          '/ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/species/Organism[@frameid="TAX-'+number+'"]')])
+
+mapping = {x['native_id'].split(':',1)[1]:x['selected_id'] for x in audit['concrete_mappings']}
+for frame in ['SHIKIMATE','3-DEHYDRO-SHIKIMATE','3-4-DIHYDROXYBENZOATE','WATER']:
+    identifier=mapping[frame]
+    record['participants'].append(dict(id=identifier,label=label('chebi',identifier),category='small_molecule'))
+for frame, name in [('Quinones','a quinone'),('Reduced-Quinones','a quinol')]:
+    mapping[frame]='MetaCyc:'+frame
+    record['participants'].append(dict(id='MetaCyc:'+frame,label=name,category='chemical_entity'))
+    native_ref(frame, B/'originals-meta27')
+rxmapping = {x['native_frame']:x['selected_id'] for x in audit['reactions']}
+for row in audit['reactions']:
+    frame=row['native_frame']; identifier=row['selected_id']; native_ref(frame)
+    title = ('shikimate oxidation with a quinone' if identifier.startswith('MetaCyc:') else
+             label('rhea',identifier))
+    record['reactions'].append(dict(id=identifier,label=title,category='molecular_activity',
+        direction='reversible' if row['native_direction']=='REVERSIBLE' else 'left_to_right'))
+    edge(identifier,'part_of',pid,'One of the two explicit native pathway members; the native reaction direction is preserved.',
+         [evidence(pid,'The reaction-list includes '+frame+' and the selected pathway layout is L2R.',
+                   '/ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/reaction-list|reaction-layout[Reaction/@frameid="'+frame+'"]')])
+    if identifier.startswith('RHEA:'):
+        ref(identifier,'Rhea equation '+identifier,Path(audit['rhea_original']['path']),
+            'https://www.rhea-db.org/rhea/'+identifier.split(':')[1],'Rhea 142')
+    for side,predicate in [('left','consumes'),('right','produces')]:
+        for compound in row['native_sides'][side]:
+            source_frame=compound['frame']; chemical=mapping[source_frame]
+            items=[evidence('MetaCyc:'+frame,
+                'The native '+side+' side contains '+source_frame+'. No explicit coefficient is supplied.',
+                '/ptools-xml/Reaction[@frameid="'+frame+'"]/'+side+'/Compound[@frameid="'+source_frame+'"]')]
+            if chemical.startswith('CHEBI:'):
+                native_ref(source_frame,B/'originals-meta27')
+                items.append(evidence('MetaCyc:'+source_frame,
+                    'The native compound links '+chemical+'; its complete InChI agrees with the selected ChEBI molecular identity.',
+                    '/ptools-xml/Compound[@frameid="'+source_frame+'"] /dblink[dblink-db="CHEBI"]|inchi'))
+            if identifier.startswith('RHEA:'):
+                molecule=next(x for x in row['rhea_'+side] if x['id']==chemical)
+                items.append(evidence(identifier,
+                    identifier+' '+side+' side contains '+chemical+' with coefficient '+str(molecule['coefficient'])+'.',
+                    '; '.join(molecule['locator'])))
+            description = 'Selected catabolic pathway orientation.'
+            if compound['class_marker']=='true':
+                description += ' Native generic quinone class; this does not establish specificity for every class member or a measured physiological quinone.'
+            if row['native_direction']=='REVERSIBLE':
+                description += ' The reaction itself is reversible; this edge does not restrict reverse chemistry.'
+            edge(chemical if predicate=='consumes' else identifier,predicate,
+                 identifier if predicate=='consumes' else chemical,description,items)
+
+pathway=ET.parse(N/'META-SHIKIMATEDEG-PWY.xml').getroot().find('Pathway')
+orders=[]
+for ordering in pathway.findall('reaction-ordering'):
+    successor=ordering.find('Reaction').get('frameid')
+    for predecessor in ordering.findall('predecessor-reactions/Reaction'):
+        previous=predecessor.get('frameid'); orders.append([previous,successor])
+        edge(rxmapping[previous],'precedes',rxmapping[successor],
+             'Native pathway reaction ordering selects forward catabolic progression.',
+             [evidence(pid,previous+' is a predecessor of '+successor+'.',
+              '/ptools-xml/Pathway[@frameid="SHIKIMATEDEG-PWY"]/reaction-ordering[Reaction/@frameid="'+successor+'"]/predecessor-reactions')])
+for i,e in enumerate(record['mechanistic_edges'],1):e['id']='shikimate-'+str(i).zfill(3)
+(B/'core-record.json').write_text(json.dumps(record,indent=2)+'\n')
+coverage=dict(observed_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    scope='Author core graph coverage; not an independent review.', native_pathway_members=list(rxmapping),
+    selected_reaction_ids=list(rxmapping.values()),all_native_sides_retained=True,
+    native_predecessor_pairs=orders, selected_species=[x['id'] for x in record['taxa']],
+    excluded_context=[
+        dict(slot='pathway-link',object='MetaCyc:PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY',reason='Downstream protocatechuate degradation is a separately maintained pathway outside this two-reaction boundary.'),
+        dict(slot='super-pathways/in-pathway',objects=['MetaCyc:PWY-2504','MetaCyc:PWY-6954'],reason='Broader source superpathways are not additional reactions of the selected route.'),
+        dict(slot='taxonomic-range',object='NCBITaxon:2',reason='Broad bacterial classification is not an occurrence assertion for all bacteria.'),
+        dict(slot='comment',reason='Narrative-wide Gram-positive/negative, type-I/type-II, distribution and periplasm generalizations are not promoted; enzyme-specific primary reconciliation is retained separately.')],
+    record_sha256=hashlib.sha256((B/'core-record.json').read_bytes()).hexdigest())
+(B/'core-coverage.json').write_text(json.dumps(coverage,indent=2)+'\n')
+print(json.dumps({'core_edges':len(record['mechanistic_edges']),'core_reactions':len(record['reactions'])}))

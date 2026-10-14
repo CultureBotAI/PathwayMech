@@ -1,0 +1,18 @@
+from pathlib import Path
+import concurrent.futures,datetime,hashlib,json,os,subprocess,time
+B=Path(__file__).resolve().parent
+c=json.loads((B/'canonical-build-commands.json').read_text())
+env=dict(os.environ,**c['environment'])
+def run(key):
+    started=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic()
+    log=B/(key+'.log');receipt=B/(key+'-receipt.json')
+    assert not receipt.exists(),f'Preserve prior attempt before rerunning {key}'
+    with log.open('w') as f:p=subprocess.run(c[key],cwd=c['cwd'],env=env,stdout=f,stderr=subprocess.STDOUT)
+    result={'command':c[key],'cwd':c['cwd'],'environment':c['environment'],'started_utc':started,'elapsed_seconds':round(time.monotonic()-t,2),'exit_code':p.returncode,'log_path':str(log),'log_sha256':hashlib.sha256(log.read_bytes()).hexdigest()}
+    receipt.write_text(json.dumps(result,indent=2)+'\n')
+    (B/(key+'.log.json')).write_text(json.dumps({'path':str(log),'sha256':result['log_sha256'],'encoding':'utf-8','contents':log.read_text()},indent=2)+'\n')
+    print(json.dumps(result),flush=True)
+    if p.returncode:print(log.read_text()[-10000:],flush=True)
+    return p.returncode
+with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:codes=list(pool.map(run,['source_builder']))
+raise SystemExit(max(codes))

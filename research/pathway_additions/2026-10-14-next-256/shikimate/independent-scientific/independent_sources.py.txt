@@ -1,0 +1,40 @@
+from pathlib import Path
+import hashlib,json,sqlite3,xml.etree.ElementTree as E,gzip
+from datetime import datetime,timezone
+O=Path('/private/tmp/pathwaymech-next-256-science-review')
+C=Path('/private/tmp/pathwaymech-next-256-chemistry')
+N=Path('/private/tmp/pathwaymech-next-256-native/originals')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+db=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+sql=sqlite3.connect('file:'+str(db)+'?mode=ro',uri=True)
+checks=[]
+for native,cid in [('SHIKIMATE','36208'),('3-DEHYDRO-SHIKIMATE','16630'),('3-4-DIHYDROXYBENZOATE','36241'),('WATER','15377'),('PQQ','58442')]:
+ p=C/'originals-meta27'/f'META-{native}.xml'
+ x=E.parse(p).getroot().find('Compound')
+ d=dict(sql.execute('select predicate,value from statements where subject=? and value is not null',('CHEBI:'+cid,)))
+ assert x.findtext('inchi')==d['chemrof:inchi_string']
+ assert x.findtext('inchi-key').removeprefix('InChIKey=')==d['chemrof:inchi_key_string']
+ refs=[q.findtext('dblink-oid') for q in x.findall('dblink') if q.findtext('dblink-db')=='CHEBI']
+ assert cid in refs
+ checks.append({'native':native,'chebi':'CHEBI:'+cid,'native_original':str(p),'native_sha256':sha(p),'complete_inchi_and_key_equal':True,'pinned_inchi':d['chemrof:inchi_string'],'formula':d['chemrof:generalized_empirical_formula'],'charge':d['chemrof:charge']})
+projection=json.loads((C/'rhea-original-projection.json').read_text())
+rdf=Path(projection['original']['path']);assert sha(rdf)==projection['original']['sha256']
+wanted=set(projection['nodes']);found={}
+about='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about';res='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource'
+with gzip.open(rdf,'rb') as h:
+ for ev,e in E.iterparse(h,events=('end',)):
+  if e.get(about) in wanted:
+   out=found.setdefault(e.get(about),{})
+   for q in e:
+    k=q.tag.split('}')[-1];v=q.get(res) or ''.join(q.itertext()).strip()
+    if v not in out.setdefault(k,[]):out[k].append(v)
+assert found==projection['nodes']
+reactions=[]
+for id,expected in [('SHIKIMATE-PQQ-RXN',(['SHIKIMATE','Quinones'],['3-DEHYDRO-SHIKIMATE','Reduced-Quinones'])),('DHSHIKIMATE-DEHYDRO-RXN',(['3-DEHYDRO-SHIKIMATE'],['3-4-DIHYDROXYBENZOATE','WATER']))]:
+ p=N/f'META-{id}.xml';x=E.parse(p).getroot().find('Reaction')
+ sides=[[q.get('frameid') for q in x.findall(s+'/Compound')] for s in ['left','right']]
+ assert sides==list(expected) and x.findtext('reaction-direction')=='LEFT-TO-RIGHT'
+ reactions.append({'id':id,'left':sides[0],'right':sides[1],'direction':'LEFT-TO-RIGHT','source_path':str(p),'sha256':sha(p)})
+result={'reviewer':'codex:/root/next256_scientific_review','completed_at':datetime.now(timezone.utc).isoformat(),'chemical_checks':checks,'pinned_chebi_sql_path':str(db),'pinned_chebi_sql_sha256':sha(db),'native_reactions':reactions,'rhea_projected_nodes_reparsed_from_original':len(found),'rhea_original_path':str(rdf),'rhea_original_sha256':sha(rdf),'reaction_scope':'Native SHIKIMATE-PQQ-RXN has broad Quinones and Reduced-Quinones. Rhea47049 uses CHEBI132124/24646 1,4-benzoquinone/hydroquinone classes and is not an exact class-scope replacement. RHEA24849 exact molecular sides match native DHS dehydration. PQQ is the enzyme prosthetic cofactor, not the net substrate Quinones.','limitations':['Current ChEBI shikimate API unavailable to author; independently verified actual pinned ChEBI255 SQL, not a current API response.','Full InChI equality preserves connectivity, stereochemistry and protonation; no inference that every member of a generic quinone class is experimentally accepted.']}
+(O/'independent-source-checks.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'concrete_structures':len(checks),'rhea_original_nodes':len(found),'native_reactions':len(reactions)}))

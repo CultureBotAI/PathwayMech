@@ -1,0 +1,11 @@
+from acquire import *
+import sys
+WORKTREE=Path('/private/tmp/pathwaymech-next-256-20261014')
+sys.path.insert(0,str(WORKTREE/'scripts'))
+sys.path.insert(0,str(WORKTREE/'src'))
+import build_source_identifier_snapshot as builder
+p=ORIG/'META-SHIKIMATEDEG-PWY.html';terms=list(builder.metacyc_terms(p.read_bytes().decode('utf-8',errors='surrogateescape')))
+assert terms==[('MetaCyc:SHIKIMATEDEG-PWY','shikimate degradation I',[])],terms
+report={'status':'pass','parser_path':str(Path(builder.__file__)),'parser_sha256':hashlib.sha256(Path(builder.__file__).read_bytes()).hexdigest(),'source_path':str(p),'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'parsed_terms':terms,'source_url':'https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?type=PATHWAY&object=SHIKIMATEDEG-PWY','source_version':'MetaCyc 27.0 native page; acquired 2026-10-14','mechanism_source_note':'The full original XML remains the mechanism evidence. Only identifier-name authority uses supported native HTML; no XML mechanism slots or pathway-link facts are dropped.'}
+(ROOT/'pathway-html-acceptance.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps(report,indent=2))

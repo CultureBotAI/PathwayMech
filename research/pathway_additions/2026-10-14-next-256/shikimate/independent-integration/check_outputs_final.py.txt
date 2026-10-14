@@ -1,0 +1,45 @@
+from pathlib import Path
+import csv,datetime,hashlib,html,json,re
+from html.parser import HTMLParser
+import yaml
+R=Path('/private/tmp/pathwaymech-next-256-20261014');D=Path(__file__).resolve().parent;P=R/'data/pathways/shikimate-degradation-i.yaml'
+d=yaml.safe_load(P.read_text());refs={x['id']:x for x in d['references']}
+predicates={'part_of':'BFO:0000050','located_in':'RO:0001025',**{x:'pathwaymech:'+x for x in ['catalyzes','consumes','produces','precedes','regulates','has_cofactor']}}
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+class Scan(HTMLParser):
+ def __init__(self):super().__init__();self.edges=[];self.nodes=[];self.ids=[]
+ def handle_starttag(self,t,a):
+  a=dict(a)
+  if 'id' in a:self.ids.append(a['id'])
+  if t=='a' and 'graph-edge' in a.get('class','').split():self.edges.append(a)
+  if t=='a' and 'graph-node' in a.get('class','').split():self.nodes.append(a)
+page=R/'pages/records/MetaCyc_SHIKIMATEDEG-PWY.html';raw=page.read_text();p=Scan();p.feed(raw)
+assert len(p.edges)==len(d['mechanistic_edges']);assert len(p.ids)==len(set(p.ids))
+allq=[]
+for n,(e,a) in enumerate(zip(d['mechanistic_edges'],p.edges),1):
+ assert a['href']==f'#mechanism-edge-{n}';assert a['data-predicate']==e['predicate'];assert f'mechanism-edge-{n}' in p.ids
+ for role in ['subject','object']:
+  assert a.get('data-'+role+'-id',a['data-'+role])==e[role]
+ for q in e.get('endpoint_qualifiers',[]):
+  allq.append(q);assert q['description'] in a['aria-label'];assert html.escape(q['description']) in raw;assert f'mechanism-edge-{n}-qualifier-{q["endpoint"]}' in p.ids
+  for v in q['evidence']:assert v['reference_id'] in a['aria-label'];assert v.get('quote',v.get('source_assertion')) in a['aria-label']
+ for v in e['evidence']:
+  if 'source_assertion' in v:assert '<p><strong>Source assertion:</strong> '+html.escape(v['source_assertion'])+'</p>' in raw
+  if 'source_locator' in v:assert html.escape(v['source_locator']) in raw
+nodes=list(csv.DictReader((R/'pages/downloads/nodes.tsv').open(),delimiter='\t'));edges=list(csv.DictReader((R/'pages/downloads/edges.tsv').open(),delimiter='\t'))
+selected=[x for x in edges if x['id'].startswith('pathwaymech:MetaCyc_SHIKIMATEDEG-PWY_shikimate-')];assert len(selected)==len(d['mechanistic_edges'])
+for e in d['mechanistic_edges']:
+ matches=[x for x in selected if x['id'].startswith('pathwaymech:MetaCyc_SHIKIMATEDEG-PWY_'+e['id']+'_')];assert len(matches)==1;x=matches[0]
+ assert x['predicate']==predicates[e['predicate']];assert (x['subject'],x['object'])==(e['subject'],e['object']);assert json.loads(x['evidence'])==e['evidence'];assert json.loads(x['endpoint_qualifiers'] or '[]')==e.get('endpoint_qualifiers',[]);assert x['description']==e.get('description','')
+ ids={v['reference_id'] for v in e['evidence']}|{v['reference_id'] for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']};assert json.loads(x['reference_metadata'])==[refs[k] for k in sorted(ids)];assert x['source_records'].split('|')==sorted(ids)
+for group in ['taxa','participants','reactions']:
+ for n in d[group]:
+  x=next(x for x in nodes if x['id']==n['id']);cs=[v for v in json.loads(x['source_contexts']) if v['record_id']==d['id'] and v['collection']==group];assert cs==[{'record_id':d['id'],'collection':group,**n}],(n,x)
+  expected={'gene':'biolink:Gene','complex':'biolink:MacromolecularComplex','protein':'biolink:Protein','molecular_activity':'biolink:MolecularActivity','cellular_component':'biolink:CellularComponent','chemical_entity':'biolink:ChemicalEntity','cofactor':'biolink:ChemicalEntity','small_molecule':'biolink:SmallMolecule'}.get(n.get('category'))
+  if expected:assert expected in x['category'].split('|')
+  if group=='taxa':assert 'biolink:OrganismTaxon' in x['category'].split('|')
+  if 'direction' in n:assert n['direction'] in x['direction'].split('|')
+assert len(p.nodes)==1+sum(len(d[x]) for x in ['taxa','participants','reactions'])+len(allq);assert sum(x.get('data-qualified')=='true' for x in p.nodes)==len(allq)
+a={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':sha(P),'pathway_id':d['id'],'biological_node_count':1+sum(len(d[x]) for x in ['taxa','participants','reactions']),'edge_count':len(selected),'qualified_endpoint_instances':len(allq),'svg_node_count':len(p.nodes),'svg_edge_count':len(p.edges),'full_evidence_qualifier_reference_payloads_preserved':True,'structured_assertions_distinct_from_quotes':True,'outputs':{str(f.relative_to(R)):sha(f) for f in [page,R/'pages/downloads/nodes.tsv',R/'pages/downloads/edges.tsv']}}
+a['previous_observation']={'path':str(D/'output-integrity-audit.json'),'sha256':hashlib.sha256((D/'output-integrity-audit.json').read_bytes()).hexdigest(),'reason':'Final generated output rechecked after append-only history actor correction required a page refresh; earlier observation preserved unchanged.'}
+(D/'output-integrity-final-audit.json').write_text(json.dumps(a,indent=2)+'\n');print(json.dumps(a,indent=2))

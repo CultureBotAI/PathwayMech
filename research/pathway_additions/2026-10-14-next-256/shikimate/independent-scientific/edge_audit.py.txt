@@ -1,0 +1,76 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,re,yaml
+from lxml import html
+from datetime import datetime,timezone
+W=Path('/private/tmp/pathwaymech-next-256-20261014');O=Path('/private/tmp/pathwaymech-next-256-science-review');N=Path('/private/tmp/pathwaymech-next-256-native/originals');C=Path('/private/tmp/pathwaymech-next-256-chemistry/originals-meta27');P=Path('/private/tmp/pathwaymech-next-256-primary');OLD=Path('/private/tmp/pathwaymech-next-255-primary')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+r=yaml.safe_load((W/'data/pathways/shikimate-degradation-i.yaml').read_text());edges=r['mechanistic_edges'];assert len(edges)==31
+proteins={'MONOMER-28':'UniProtKB:Q59086','MONOMER-37':'UniProtKB:Q43922'}
+rxns={'SHIKIMATE-PQQ-RXN':'MetaCyc:SHIKIMATE-PQQ-RXN','DHSHIKIMATE-DEHYDRO-RXN':'RHEA:24849'}
+chem={'SHIKIMATE':'CHEBI:36208','3-DEHYDRO-SHIKIMATE':'CHEBI:16630','3-4-DIHYDROXYBENZOATE':'CHEBI:36241','WATER':'CHEBI:15377','Quinones':'MetaCyc:Quinones','Reduced-Quinones':'MetaCyc:Reduced-Quinones'}
+xml=lambda n:next(q for q in E.parse(N/f'META-{n}.xml').getroot() if q.tag!='metadata')
+expected={}
+def add(a,b,c,reason):
+ assert (a,b,c) not in expected
+ expected[(a,b,c)]=reason
+path=xml('SHIKIMATEDEG-PWY');assert {q.get('frameid') for q in path.findall('reaction-list/Reaction')}==set(rxns)
+for q in path.findall('species/Organism'):add(r['id'],'part_of','NCBITaxon:'+q.get('frameid').removeprefix('TAX-'),'Exact source-listed taxon context, with historical LMD79.41 versus ADP1 and Gox oxidative scope retained.')
+for n,curie in rxns.items():
+ add(curie,'part_of',r['id'],'Exact native two-step boundary and left-to-right layout.')
+ x=xml(n)
+ for q in x.findall('left/Compound'):add(chem[q.get('frameid')],'consumes',curie,'Exact native left side; concrete molecular identities independently checked; classes remain native.')
+ for q in x.findall('right/Compound'):add(curie,'produces',chem[q.get('frameid')],'Exact native right side, with Rhea24849 identity checked separately.')
+for q in path.findall('reaction-ordering'):
+ for pre in q.findall('predecessor-reactions/Reaction'):add(rxns[pre.get('frameid')],'precedes',rxns[q.find('Reaction').get('frameid')],'Explicit native predecessor relation, not diagram-layout inference.')
+for ac in ['ENZRXN-11861','ENZRXN-38','ENZRXN-3']:
+ x=xml(ac);p=x.find('enzyme/Protein').get('frameid');rn=x.find('reaction/Reaction').get('frameid');add(proteins.get(p,'MetaCyc:'+p),'catalyzes',rxns[rn],'Native enzyme/activity/reaction join, reconciled with original primary preparation and strain scope.')
+for p in ['MONOMER-28','MONOMER-37','MONOMER-1','MONOMER-67']:
+ x=xml(p);tax=x.find('species/Organism').get('frameid');add(proteins.get(p,'MetaCyc:'+p),'part_of','NCBITaxon:'+tax.removeprefix('TAX-'),'Exact native species context; UniProt agrees for normalized ADP1 proteins.')
+add('MetaCyc:MONOMER-67','catalyzes','MetaCyc:SHIKIMATE-PQQ-RXN','Native ENZRXN68 comment explicitly reports shikimate activity; formal reaction slot is quinate. Scoped curated evidence, not independently read 2004 assay.')
+for p in ['MONOMER-28','MONOMER-67']:
+ assert xml(p).find('location/cco').get('frameid')=='CCO-MEMBRANE'
+ add(proteins.get(p,'MetaCyc:'+p),'located_in','GO:0016020','Native membrane slot corroborated by UniProt inference/primary abstract; no precise topology claim.')
+add('MetaCyc:MONOMER-1','located_in','GO:0005737','Original 2003 cytoplasmic fraction and partial purification, qualified as preparation not exclusive localization.')
+add('UniProtKB:Q59086','has_cofactor','CHEBI:58442','Original native ENZRXN11861 PQQ and current UniProt explicit ChEBI58442; independent of net quinone acceptor.')
+add('MetaCyc:MONOMER-67','has_cofactor','CHEBI:58442','2004 original abstract explicitly states prosthetic PQQ; possible proteolysis state retained.')
+add('UniProtKB:O83046','part_of','NCBITaxon:62977','Current issuing UniProt maps pcaU/ACIAD1702 to ADP1; uncertain Met1/Met5 is not erased.')
+for p in ['UniProtKB:O83046','CHEBI:36241']:
+ for g in ['MetaCyc:G-27','MetaCyc:G-36']:add(p,'regulates',g,'2005 original methods/results support transcriptional regulation. QuiA probe direct; quiC–quiX shared probe is operon-level; constitutive quiAp and indirect genetic inference retained.')
+assert len(expected)==31
+nodes={r['id']}|{n['id'] for field in ['taxa','participants','reactions'] for n in r[field]};refs={x['id']:x for x in r['references']}
+rows=[]
+for i,e in enumerate(edges):
+ t=(e['subject'],e['predicate'],e['object']);assert t in expected and e['subject'] in nodes and e['object'] in nodes
+ evs=list(e['evidence'])+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]
+ assert all(v['reference_id'] in refs for v in evs)
+ rows.append({'edge_id':e['id'],'field_path':f'mechanistic_edges[{i}]','triple':list(t),'assessment':'supported_with_explicit_scope','rationale':expected[t],'edge_sha256':hashlib.sha256(json.dumps(e,sort_keys=True,ensure_ascii=False).encode()).hexdigest(),'reference_ids':sorted({v['reference_id'] for v in evs})})
+assert len({tuple(x['triple']) for x in rows})==31
+bindings=[]
+for ref in r['references']:
+ if not ref.get('source_sha256'):continue
+ id=ref['id'];fid=id.split(':',1)[1]
+ if id.startswith('MetaCyc:'):
+  choices=[N/f'META-{fid}.xml',C/f'META-{fid}.xml'];matches=[p for p in choices if p.exists()];assert matches;f=matches[0]
+ elif id.startswith('RHEA:'):f=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz')
+ elif id.startswith('UniProtKB:'):f=N/f'UniProtKB-{fid}.json'
+ elif id=='PMID:3044290':f=P/'originals/van-kleef-thesis.pdf'
+ elif id=='PMID:15691962':f=P/'originals/15691962-pmc.html'
+ elif id=='PMID:15598527':f=OLD/'originals/epmc-primary.json'
+ else:f=OLD/'originals'/f'{fid}.pdf'
+ assert sha(f)==ref['source_sha256'],id
+ bindings.append({'reference_id':id,'original':str(f),'sha256':sha(f)})
+texts={'PMID:14586099':' '.join(p['text'] for p in json.loads((OLD/'text/14586099.json').read_text())['pages'])}
+texts['PMID:15598527']=next(x['abstractText'] for x in json.loads((OLD/'originals/epmc-primary.json').read_text())['resultList']['result'] if x['id']=='15598527')
+texts['PMID:7592351']=' '.join(re.sub(r'^L\d+: ','',s) for p in (OLD/'text').glob('7592351-web-rg-capture-*.txt') for s in p.read_text().splitlines())
+texts['PMID:15691962']=' '.join(html.fromstring((P/'originals/15691962-pmc.html').read_bytes()).itertext())
+quotes=[];wordcounts={}
+for e in edges:
+ for ev in list(e['evidence'])+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]:
+  if 'quote' not in ev:continue
+  norm=lambda s:' '.join(s.split())
+  assert norm(ev['quote']) in norm(texts[ev['reference_id']]),ev
+  n=len(ev['quote'].split());wordcounts[ev['reference_id']]=wordcounts.get(ev['reference_id'],0)+n
+  quotes.append({'edge_id':e['id'],'reference_id':ev['reference_id'],'quote_words':n,'literal_normalized_match':True})
+assert all(n<=25 for n in wordcounts.values())
+result={'reviewer':'codex:/root/next256_scientific_review','completed_at':datetime.now(timezone.utc).isoformat(),'record_sha256':sha(W/'data/pathways/shikimate-degradation-i.yaml'),'edge_count':len(rows),'edge_reviews':rows,'reference_original_bindings':bindings,'quote_checks':quotes,'verbatim_words_by_source':wordcounts,'limits':['This exact triple/reference/quote replay complements independent original-source scientific reading; it is not a substitute.','1995 figure rasters unavailable; 2004 abstract-only. Actual independent primary coverage is recorded separately.']}
+(O/'all-edge-and-reference-audit.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'record_sha256':result['record_sha256'],'edges':len(rows),'reference_hashes':len(bindings),'quote_instances':len(quotes),'quote_words':wordcounts}))

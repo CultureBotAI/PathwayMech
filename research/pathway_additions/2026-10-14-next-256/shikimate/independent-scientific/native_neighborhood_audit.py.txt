@@ -1,0 +1,45 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E
+from datetime import datetime,timezone
+N=Path('/private/tmp/pathwaymech-next-256-native/originals');O=Path('/private/tmp/pathwaymech-next-256-science-review')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+cache={}
+def obj(i):
+ if i not in cache:
+  p=N/f'META-{i}.xml';x=next(q for q in E.parse(p).getroot() if q.tag!='metadata');assert x.get('frameid')==i;cache[i]=(p,x)
+ return cache[i][1]
+def links(i,xp):return {q.get('frameid') for q in obj(i).findall(xp)}
+rxns=links('SHIKIMATEDEG-PWY','reaction-list/Reaction')
+assert rxns=={'SHIKIMATE-PQQ-RXN','DHSHIKIMATE-DEHYDRO-RXN'}
+acts=set().union(*(links(i,'enzymatic-reaction/Enzymatic-Reaction') for i in rxns))
+proteins=set().union(*(links(i,'enzyme/Protein') for i in acts));direct=set(proteins)
+while True:
+ child=set().union(*(links(i,'component/Protein') for i in proteins))
+ if child<=proteins:break
+ proteins|=child
+allacts=acts|set().union(*(links(i,'catalyzes/Enzymatic-Reaction') for i in proteins))
+regs=set().union(*(links(i,'regulated-by/Regulation') for i in allacts))
+observed=allacts|proteins|regs
+assert (len(acts),len(direct),len(proteins-direct),len(allacts-acts),len(regs),len(observed))==(7,7,1,1,1,17)
+groups=[
+ (['ENZRXN-11861','MONOMER-28'],'retain_with_scope','ADP1 QuiA, native activity and current Q59086 join. Original 1994 genetics support the native shikimate route. Native 74% and 260 micromolar measurements cite Acinetobacter SA1/AC3, not ADP1, and are not transferred.'),
+ (['ENZRXN-38','MONOMER-37'],'retain_with_scope','ADP1 QuiC DHS-dehydration supported by 1995 recombinant pZR564 crude-extract assays, without purification claim. The native protein-comment DHQ substrate and mmol typo is excluded.'),
+ (['ENZRXN-3','MONOMER-1'],'retain_with_scope','G. oxydans IFO3244 cytoplasmic fraction with partial purification and qualitative DHS-to-PCA product test; not exact protein sequence or whole-route utilization.'),
+ (['ENZRXN-1682','MONOMER-1521'],'exclude_duplicate_context','Low-resolution genus-level QuiA account cites same 1994 ADP1 structural gene; no evidence for an independent second catalyst. No exact sequence equivalence is asserted.'),
+ (['ENZRXN-17379','MONOMER-15329'],'exclude_outside_variant','N. crassa qa-4 belongs to NAD-dependent fungal variant; its purified activity and metal requirements do not establish the PQQ variant.'),
+ (['ENZRXN-17385','MONOMER-15334'],'exclude_outside_variant','C. glutamicum qsuB belongs to alternate NAD-dependent route and native source explicitly treats function as inferred rather than purified characterization.'),
+ (['ENZRXN-16693','CPLX-7874','MONOMER-14940','REG-12762'],'exclude_outside_variant','Petrobactin AsbF dimer/subunit and Zn inhibition are outside PQQ shikimate catabolism; a shared DHS chemical reaction does not prove pathway membership.'),
+ (['ENZRXN-29'],'exclude_adjacent_activity','QuiA quinate oxidation is a real auxiliary activity but not a third step of this exact two-reaction shikimate route.')]
+dispositions={i:(d,r) for ids,d,r in groups for i in ids};assert set(dispositions)==observed
+rows=[]
+for i in sorted(observed):
+ x=obj(i);p=cache[i][0];d,r=dispositions[i]
+ rows.append({'source_object':i,'kind':x.tag,'source_path':str(p),'source_sha256':sha(p),'source_locator':f'/ptools-xml/{x.tag}[@frameid="{i}"]','disposition':d,'rationale':r,'native_links':{slot:sorted(links(i,slot+'/'+typ)) for slot,typ in [('enzyme','Protein'),('reaction','Reaction'),('component','Protein'),('species','Organism'),('regulated-by','Regulation')] if links(i,slot+'/'+typ)}})
+author=json.loads((N.parent/'biological-coverage.json').read_text())
+assert {r['frameid'] for r in author['objects']}==observed
+assert all(dispositions[r['frameid']][0]==r['decision'] for r in author['objects'])
+supplement=[]
+for i,why in [('MONOMER-67','Native IFO3244 holo-QDH preparation with possible proteolysis; activity toward shikimate is separately attributed to curated ENZRXN68 comment, not independently verified 2004 full-body assay.'),('ENZRXN-68','Formal reaction slot is quinate oxidation; explicit comment reports shikimate activity. Only comment supports shikimate catalytic context.'),('G-27','Exact physical ADP1 quiA gene for transcriptional regulation, not a generic DNA node.'),('G-36','Exact physical ADP1 quiC gene for expression-regulation context; shared quiC–quiX probe limits resolution.'),('G-1021','Lower-resolution duplicate QuiA gene context excluded as independent physical gene.'),('G-11390','Excluded AsbF gene of the petrobactin route.'),('G-11732','Excluded fungal qa-4 gene.'),('G-11737','Excluded NAD-route qsuB gene.'),('CCO-MEMBRANE','Broad membrane cellular component context; no precise periplasmic topology implied.')]:
+ x=obj(i);p=cache[i][0];supplement.append({'source_object':i,'source_path':str(p),'sha256':sha(p),'rationale':why})
+report={'reviewer':'codex:/root/next256_scientific_review','completed_at':datetime.now(timezone.utc).isoformat(),'method':'Independent traversal of exact native reaction, enzyme, complex, auxiliary activity and regulation slots, with source-read scientific dispositions. No author denominator assumed.','counts':{'native_pathway_reactions':2,'direct_activities':7,'direct_proteins':7,'recursive_subunits':1,'auxiliary_activities':1,'regulations':1,'total_biological_objects':17,'retained_with_scope':6,'excluded':11,'supplemental_objects':9},'author_object_set_and_dispositions_match':True,'rows':rows,'supplemental_context':supplement,'limits':['Bounded native neighborhood is complete; not a literature-exhaustion assertion.','UniProt, primary transcription assays and chemical authority objects are checked separately.']}
+(O/'native-neighborhood-audit.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report['counts']))

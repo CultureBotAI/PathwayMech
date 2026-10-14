@@ -1,0 +1,16 @@
+from acquire import *
+rows=[]
+for fid,acc in [('MONOMER-28','Q59086'),('MONOMER-37','Q43922')]:
+    e=frame(fid);xrefs=[x.findtext('dblink-oid') for x in e.findall('dblink') if x.findtext('dblink-db')=='UNIPROT']
+    assert xrefs==[acc]
+    f=ORIG/f'UniProtKB-{acc}.json';j=json.loads(f.read_text());assert j['primaryAccession']==acc and j['organism']['taxonId']==62977
+    rows.append({'native_id':f'MetaCyc:{fid}','recommended_id':f'UniProtKB:{acc}','label':j['proteinDescription']['recommendedName']['fullName']['value'],'category':'protein','native_path':str(ORIG/f'META-{fid}.xml'),'native_sha256':hashlib.sha256((ORIG/f'META-{fid}.xml').read_bytes()).hexdigest(),'authority_path':str(f),'authority_sha256':hashlib.sha256(f.read_bytes()).hexdigest(),'scope':'ADP1 physical protein; primary experimental preparation qualifications apply edge by edge.'})
+for fid,activity in [('MONOMER-1','ENZRXN-3'),('MONOMER-67','ENZRXN-68')]:
+    rows.append({'native_id':f'MetaCyc:{fid}','recommended_id':f'MetaCyc:{fid}','label':frame(activity).findtext('common-name'),'category':'protein','native_path':str(ORIG/f'META-{fid}.xml'),'native_sha256':hashlib.sha256((ORIG/f'META-{fid}.xml').read_bytes()).hexdigest(),'native_label_source':f'/ptools-xml/Enzymatic-Reaction[@frameid="{activity}"]/common-name','authority_note':'Existing baseline native HTML authority already verifies this ID/name. Native XML lacks a direct common-name but its sole activity identifies it. Do not invent a sequence accession.','scope':'Partially purified cytoplasmic DHS preparation' if fid=='MONOMER-1' else 'Purified IFO3244 QDH preparation with possible proteolysis; shikimate substrate activity from explicit native ENZRXN-68 commentary.'})
+f=ORIG/'UniProtKB-O83046.json';j=json.loads(f.read_text())
+rows.append({'recommended_id':'UniProtKB:O83046','label':j['proteinDescription']['recommendedName']['fullName']['value'],'category':'protein','authority_path':str(f),'authority_sha256':hashlib.sha256(f.read_bytes()).hexdigest(),'scope':'PcaU from ADP1; retain initiator uncertainty (Met1 versus Met5) and transcriptional regulation rather than catalytic activation.'})
+for fid,gene in [('G-27','quiA'),('G-36','quiC')]:
+    f=ORIG/f'META-{fid}-gene.html'
+    rows.append({'native_id':f'MetaCyc:{fid}','recommended_id':f'MetaCyc:{fid}','label':gene,'category':'dna','authority_path':str(f),'authority_sha256':hashlib.sha256(f.read_bytes()).hexdigest(),'xml_path':str(ORIG/f'META-{fid}.xml'),'xml_sha256':hashlib.sha256((ORIG/f'META-{fid}.xml').read_bytes()).hexdigest(),'scope':'Exact physical ADP1 gene, not an entire promoter/transcription unit and not a protein activity. Native old NCBI gene xref is discontinued; current successor not assumed.'})
+(ROOT/'biological-node-identities.json').write_text(json.dumps(rows,indent=2)+'\n')
+print(len(rows))

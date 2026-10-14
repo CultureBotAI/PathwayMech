@@ -1,0 +1,27 @@
+from acquire import *
+import sys
+WORKTREE=Path('/private/tmp/pathwaymech-next-256-20261014')
+sys.path.insert(0,str(WORKTREE/'scripts'))
+sys.path.insert(0,str(WORKTREE/'src'))
+import build_source_identifier_snapshot as builder
+rows=[]
+for fid,label in [('G-27','quiA'),('G-36','quiC')]:
+    f=ORIG/f'META-{fid}-gene.html'
+    terms=list(builder.metacyc_terms(f.read_bytes().decode('utf-8',errors='surrogateescape')))
+    assert terms==[(f'MetaCyc:{fid}',label,[])],terms
+    rows.append({'frameid':fid,'source_path':str(f),'sha256':hashlib.sha256(f.read_bytes()).hexdigest(),'parsed_terms':terms,'xml_path':str(ORIG/f'META-{fid}.xml'),'xml_sha256':hashlib.sha256((ORIG/f'META-{fid}.xml').read_bytes()).hexdigest()})
+report={'status':'pass','parser_path':str(Path(builder.__file__)),'parser_sha256':hashlib.sha256(Path(builder.__file__).read_bytes()).hexdigest(),'objects':rows,'redirect_note':'NEW-IMAGE?type=GENE&object pages were preserved as JavaScript redirects, then their explicit /gene?orgid=META&id destinations were requested and used as original authority bytes.'}
+(ROOT/'gene-html-acceptance.json').write_text(json.dumps(report,indent=2)+'\n')
+retired=[]
+for gid,gene,oldlocus,fid in [('2879574','quiA','ACIAD1716','G-27'),('2879469','quiC','ACIAD1714','G-36')]:
+    p=ORIG/f'NCBI-Gene-{gid}.xml';root=ET.parse(p).getroot();g=root.find('Entrezgene');assert len(root.findall('Entrezgene'))==1
+    actual=g.findtext('./Entrezgene_track-info/Gene-track/Gene-track_geneid')
+    status=g.find('./Entrezgene_track-info/Gene-track/Gene-track_status')
+    name=g.findtext('./Entrezgene_gene/Gene-ref/Gene-ref_locus');lt=g.findtext('./Entrezgene_gene/Gene-ref/Gene-ref_locus-tag')
+    assert (actual,status.attrib['value'],name,lt)==(gid,'discontinued',gene,oldlocus)
+    successor=g.findall('./Entrezgene_track-info/Gene-track/Gene-track_current-id');assert not successor
+    q=ORIG/f'NCBI-current-{gene}-search.json';j=json.loads(q.read_text())
+    assert j['esearchresult']['idlist']==[gid]
+    retired.append({'queried_gene_id':gid,'issuing_returned_gene_id':actual,'status':status.attrib['value'],'gene':name,'locus_tag':lt,'source_path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'track_locator':'/Entrezgene-Set/Entrezgene/Entrezgene_track-info/Gene-track','successor_ids_in_original_track':[], 'bounded_query':f'{gene}[Gene Name] AND 62977[Taxonomy ID]','bounded_query_path':str(q),'bounded_query_sha256':hashlib.sha256(q.read_bytes()).hexdigest(),'bounded_query_result_ids':j['esearchresult']['idlist'],'disposition':f'Do not add retired Entrez:{gid} as a current participant. Preserve exact native physical gene MetaCyc:{fid}, verified by independent original XML and native HTML. No global claim that a current successor cannot exist.'})
+(ROOT/'gene-retirement-assessment.json').write_text(json.dumps({'status':'verified discontinued xrefs; source-native genes retained','objects':retired},indent=2)+'\n')
+print(json.dumps({'html_authority':'pass','retired_gene_ids':[r['queried_gene_id'] for r in retired]},indent=2))
