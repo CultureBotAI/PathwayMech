@@ -1,0 +1,88 @@
+{
+  "target": "/private/tmp/pathwaymech-next-245-author-20261013/candidate.yaml",
+  "target_sha256": "09ff77ad5137f6ca7630a4c82380863d5d72e27abad5ffdcadf04948140fc177",
+  "stage": "External first-draft feedback; not a native saved scientific review or final record acceptance",
+  "scope": "All 52 edges and reaction/participant declarations inspected. Chemical sides, Rhea/native mapping, source-local assertions, catalysts, cofactor alternatives, regulatory and experimental endpoint context reviewed. 2020 primary assay/assembly detail checked by its independent source reviewer and communicated during this review; future 2025 GarP context excluded.",
+  "findings": [
+    {
+      "id": "D1",
+      "severity": "medium",
+      "edges": [
+        "galactarate-005",
+        "galactarate-006",
+        "galactarate-007",
+        "galactarate-008",
+        "galactarate-009",
+        "galactarate-010",
+        "galactarate-011",
+        "galactarate-012"
+      ],
+      "problem": "The locator cites rh:coefficient for coefficient one, but this Rhea RDF encodes that multiplicity with rh:contains1 on the ReactionSide.",
+      "evidence": "The complete original-bound rhea-original-projection.json has side contains1 links for every endpoint reaction participant, and each participant resolves by rh:compound to a compound with rh:accession. There is no rh:coefficient property on these selected records.",
+      "fix": "Locate the exact ReactionSide URI and its rh:contains1 participant link, then the participant compound and compound accession. Do not imply XML nesting where the RDF objects are separately described.",
+      "chemistry_affected": false
+    },
+    {
+      "id": "D2",
+      "severity": "medium",
+      "edges": [
+        "galactarate-013",
+        "galactarate-014",
+        "galactarate-015"
+      ],
+      "problem": "Each reaction-local source_assertion claims the pathway traversal uses left-to-right cleavage, but the cited whole KDGALDOL-RXN reaction only says REVERSIBLE.",
+      "evidence": "META-KDGALDOL-RXN.xml reaction-direction is REVERSIBLE. GALACTARDEG-PWY.xml reaction-layout for KDGALDOL-RXN has direction L2R and the explicit primary sides.",
+      "fix": "Restrict the reaction-local assertion to its side/reversibility and add separate GALACTARDEG-PWY reaction-layout direction evidence for physiological traversal.",
+      "chemistry_affected": false
+    },
+    {
+      "id": "D3",
+      "severity": "low",
+      "edges": [
+        "galactarate-032",
+        "galactarate-033",
+        "galactarate-034",
+        "galactarate-035"
+      ],
+      "problem": "The selector references[citation.id=Ref.5] does not select the UniProt bibliographic entry.",
+      "evidence": "P23522 JSON references entry5 has referenceNumber:5 and citation.id:CI-6QDHSLOVEBP3E. Ref.5 is the evidence id, not its citation.id.",
+      "fix": "Use references[referenceNumber=5] or the exact citation.id. The cofactor assertions and alternatives otherwise match the reviewed annotation.",
+      "chemistry_affected": false
+    },
+    {
+      "id": "D4",
+      "severity": "low",
+      "edges": [
+        "galactarate-036 endpoint_qualifiers.subject"
+      ],
+      "problem": "The qualifier says the Cloning section provides the four-deletion background, but that named background is explicit in Results & Discussion, Figure2 and Table1.",
+      "evidence": "PMC4378991 Cloning gives the gene-deletion procedure, plasmid procedure, donor spelling and His6-bearing primers; Results & Discussion establishes deletion of both mutases plus garK/glxK, also named in Figure2 and Table1.",
+      "fix": "Split the section-specific assertion or add Results & Discussion/Figure2/Table1 to the qualifier locator. Product-selection and tag caveats themselves agree with the source.",
+      "chemistry_affected": false
+    },
+    {
+      "id": "D5",
+      "severity": "medium",
+      "edges": [
+        "galactarate-030 endpoint_qualifiers.subject"
+      ],
+      "problem": "The paper-only qualifier gives the exact SNA activity-sample remnant and cites Methods4.1,4.4,4.5/Results2.1, but the paper states three residual tag residues in structural material at Methods4.3; the exact SNA sequence is separately established from PDB6U7L.",
+      "evidence": "Independent 2020 source reviewer /root/next244_source_coverage confirmed paper4.3 p720 for three tag residues, exact SNA in PDB6U7L struct_ref_seq_dif/entitypoly, and no separate sequencing of the assay material. The complex endpoint is supported jointly by native homodimer and paper solution SEC/nativePAGE dimer evidence2.1/Fig2d-e.",
+      "fix": "Use TEV-cleaved recombinant unlabeled GarD; describe SNA as the structural remnant of the same expression construct with assay-sample scar/phosphorylation occupancy not separately measured. Cite the exact PDB source if retaining SNA, and correct paper locator to4.3. Prefer presence0.5mM versusabsence over ambiguous \u00b10.5mM.",
+      "chemistry_affected": false
+    }
+  ],
+  "positive_checks": [
+    "All four core member IDs, directions and complete pathway chemical sides match the accepted identity audit.",
+    "Both Rhea endpoints preserve formal coefficient-one sides; water, pyruvate, proton, ATP and ADP are retained.",
+    "Native CPD-26279 stereochemistry and NAD(P) classes are preserved; broader Rhea/UniProt chemistry is explicitly distinguished.",
+    "Native GarD homodimer and GarL hexamer catalytic assignments preserve complex-versus-subunit identity.",
+    "Native GarR and GarK cross-references bridge correctly to P0ABQ2 and P23524; current gene identifiers match the full UniProt entries.",
+    "GarL cofactor annotations retain database-only status and alternative-metal scope.",
+    "The 2000 source supports MC4100 expression-level regulation and sdaR autoregulation; no direct ligand-binding claim is introduced.",
+    "The 2015 source supports engineered product selection for 2PG; no complete galactarate flux or native assembly claim is introduced.",
+    "Taxon assertions distinguish MG1655 native database context from K-12/MC4100 experimental context.",
+    "All 30 non-Rhea references in the three inspected original directories matched their whole-original hashes; the 2020 PDF is held by its separate reviewer. Both Rhea references match the already rehashed whole RDF original."
+  ],
+  "mutations": "No candidate, author helper, maintained file, snapshot, or GitHub object edited."
+}
