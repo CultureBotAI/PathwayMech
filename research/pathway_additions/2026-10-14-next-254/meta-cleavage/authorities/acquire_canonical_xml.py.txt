@@ -1,0 +1,16 @@
+from pathlib import Path
+import urllib.request,json,hashlib,datetime,concurrent.futures,shutil
+B=Path(__file__).parent;O=B/'canonical-native-originals';O.mkdir(exist_ok=True)
+prior=B/'initial-build';prior.mkdir(exist_ok=True)
+for n in ['source_builder.log','ontology_builder.log','source_builder-receipt.json','ontology_builder-receipt.json','canonical-build-commands.json','identifier_sources.json','planned-identifiers.json']:
+ if not(prior/n).exists():shutil.copyfile(B/n,prior/n)
+items=[x for x in json.loads((B/'proposed-source-additions.json').read_text()) if x['kind'].endswith('-xml')]
+def fetch(x):
+ f=x['key'].split('MetaCyc-',1)[1];u='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+f
+ with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech research'}),timeout=50) as r:
+  b=r.read();p=O/('META-'+f+'.xml');p.write_bytes(b);h=hashlib.sha256(b).hexdigest()
+  return dict(frame=f,url=u,final_url=r.url,http_status=r.status,retrieved_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),path=str(p),sha256=h,bytes=len(b),prior_sha256=x['sha256'],same_as_prior_original=h==x['sha256'])
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:out=list(pool.map(fetch,items))
+(B/'canonical-native-acquisition.json').write_text(json.dumps(out,indent=2)+'\n')
+assert all(x['same_as_prior_original'] for x in out)
+print('Canonical requests verified exact same original bytes for',len(out),'native objects')

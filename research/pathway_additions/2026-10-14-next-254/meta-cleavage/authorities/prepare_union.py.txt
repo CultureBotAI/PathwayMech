@@ -1,0 +1,44 @@
+from pathlib import Path
+import json,hashlib,datetime,subprocess,yaml,xml.etree.ElementTree as E
+B=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-254-20261014');N=Path('/private/tmp/pathwaymech-next-253-native');C=Path('/private/tmp/pathwaymech-next-254-native-evidence');PY='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(n,v):(B/n).write_text(json.dumps(v,indent=2)+'\n')
+retained=set(json.loads((B/'retained-authority-identifiers.json').read_text()));old=json.loads((B/'baseline/identifier_sources.json').read_text())
+core=yaml.safe_load(Path('/private/tmp/pathwaymech-next-254-route/protocatechuate-meta-cleavage.yaml').read_text());ext=json.loads((C/'graph-extension-final.json').read_text())
+planned={core['id']}|{x['id'] for s in ['participants','reactions','taxa'] for x in core.get(s,[])}|{x['id'] for x in ext['participants']}|{'UniProtKB:Q8RQV9','NCBITaxon:303','NCBITaxon:160488'}
+for x in ext.get('suggested_taxa',[]):planned.add(x['id'])
+save('planned-identifiers.json',sorted(planned))
+selector=B/'records/planned-authority-selection.yaml';selector.write_text(yaml.safe_dump({'id':'MetaCyc:P184-PWY','participants':[{'id':x} for x in sorted(retained|planned)]},sort_keys=False))
+raws={x['frame']:x for x in json.loads((N/'acquisition-manifest.json').read_text())}
+canonical={x['frame']:x for x in json.loads((B/'canonical-native-acquisition.json').read_text())}
+html={x['frame']:x for n in ['html-acquisition.json','html-followup-acquisition.json'] for x in json.loads((B/n).read_text()) if x.get('http_status')==200 and x.get('bytes',0)>1000}
+add=[];bindings=[]
+for ident in sorted(planned-retained):
+ f=ident.split(':',1)[1]
+ if ident.startswith('MetaCyc:'):
+  raw=raws.get(f);kind=None
+  if raw:
+   p=Path(raw['path']);t=E.parse(p);node=t.getroot()[1]
+   if node.tag=='Pathway':kind=None # independently retrieved HTML supplies canonical identity; XML retains mechanism evidence
+   elif node.tag=='Reaction':kind='metacyc-reaction-xml'
+   elif node.tag=='Protein':
+    if node.find('common-name') is not None or (len(node.findall('./catalyzes/Enzymatic-Reaction'))>=1 and node.find("./parent/Protein[@frameid='Protein-Complexes']") is not None):kind='metacyc-protein-xml'
+  if kind:
+   acq=canonical.get(f,raw);p=Path(acq['path'])
+  else:
+   acq=html[f];p=Path(acq['path']);kind='metacyc-html'
+  url=acq['url'];version='27.0';license='BioCyc license; redistribution not assessed'
+ elif ident.startswith('UniProtKB:'):
+  p=C/'originals'/f'{f}.json';d=json.loads(p.read_text());assert d['primaryAccession']==f;kind='uniprot';v=d['entryAudit'];version=f"Complete {d['entryType']} JSON acquired 2026-10-14; entry version {v['entryVersion']}; sequence version {v['sequenceVersion']}";license='CC-BY-4.0';url='https://rest.uniprot.org/uniprotkb/'+f+'.json';acq={'path':str(p),'sha256':sha(p),'url':url,'note':'Original acquisition receipt retained in native-evidence dossier.'}
+ else:continue
+ rel='meta254/'+p.name;e={'key':'meta254-'+ident.replace(':','-'),'kind':kind,'path':rel,'url':url,'version':version,'license':license,'sha256':sha(p)};dst=B/'originals'/rel;dst.parent.mkdir(exist_ok=True)
+ if not dst.exists():dst.symlink_to(p)
+ else:assert sha(dst)==sha(p)
+ add.append(e);bindings.append({'entry':e,'original':str(p),'acquisition':acq})
+save('proposed-source-additions.json',add);save('identifier_sources.json',old+add);save('new-source-original-bindings.json',bindings)
+cmd={'cwd':str(R),'baseline_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'environment':{'PYTHONDONTWRITEBYTECODE':'1','PYTHONPATH':str(R/'src')},'source_builder':[PY,'-B','scripts/build_source_identifier_snapshot.py','--manifest',str(B/'identifier_sources.json'),'--cache-dir',str(B/'originals'),'--records',str(B/'records'),'--output',str(B/'sources.union.json')],'ontology_builder':[PY,'-B','scripts/build_ontology_identifier_snapshot.py'],'builder_sha256':{x:sha(R/'scripts'/x) for x in ['build_source_identifier_snapshot.py','build_ontology_identifier_snapshot.py']},'selection':{'scope':f'All250 baseline records plus ID-only selector preserving all{len(retained)} prior authority identifiers and{len(planned)} planned named node IDs. Selector supplies no labels or scientific claims.','selector_file':'records/planned-authority-selection.yaml','selector_sha256':sha(selector),'reconstruct_from':['retained-authority-identifiers.json','planned-identifiers.json']},'manifest_sha256':sha(B/'identifier_sources.json'),'old_original_cache':'/private/tmp/pathwaymech-next-252-authorities/originals','staging_helper':{'path':str(Path(__file__)),'sha256':sha(Path(__file__))}}
+for prefix,name in [('GO','go'),('CHEBI','chebi'),('NCBITaxon','ncbitaxon'),('RHEA','rhea')]:cmd['ontology_builder']+=['--source',f'{prefix}=/private/tmp/pathwaymech-curation-authorities/{name}.db']
+cmd['ontology_builder']+=['--rhea-updates',str(B/'baseline/rhea_identifier_updates.json'),'--cache-dir',str(B/'originals'),'--corpus',str(B/'records')]
+for ident in ['GO:0008150','GO:0006096','GO:0005975']:cmd['ontology_builder']+=['--include-id',ident]
+cmd['ontology_builder']+=['--output',str(B/'ontology.union.json')]
+save('canonical-build-commands.json',cmd);print('planned',len(planned),'source additions',len(add))

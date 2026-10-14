@@ -1,4 +1,4 @@
-"""Native complex enzyme names require a single, identity-checked relation."""
+"""Native complex names require bounded, identity-checked source relations."""
 
 from __future__ import annotations
 
@@ -271,3 +271,245 @@ def test_real_cli_success_and_failure_preserve_the_output_contract(
             assert output.read_bytes() == sentinel
         else:
             assert not output.exists()
+
+
+MULTI_ALIAS = "4-carboxy-4-hydroxy-2-oxoadipate aldolase"
+MULTI_SYNONYM = "CHA aldolase"
+
+
+def multi_root():
+    """Synthetic native shape exercises a real dual-activity alias relationship."""
+    document = root()
+    protein = document.find("Protein")
+    protein.find("component/coefficient").text = "6"
+    protein.find("synonym").text = MULTI_ALIAS
+    ET.SubElement(protein, "synonym", datatype="string").text = MULTI_SYNONYM
+    first = protein.find("catalyzes/Enzymatic-Reaction")
+    first.find("common-name").text = "4-oxalocitramalate aldolase"
+    first.find("synonym").text = MULTI_ALIAS
+    second = copy.deepcopy(first)
+    second.set("ID", "META:ENZRXN-2")
+    second.set("frameid", "ENZRXN-2")
+    second.find("common-name").text = "oxaloacetate &beta;-decarboxylase"
+    second.remove(second.find("synonym"))
+    reaction = second.find("reaction/Reaction")
+    reaction.set("frameid", "RXN-2")
+    reaction.set("resource", "getxml?META:RXN-2")
+    protein.find("catalyzes").append(second)
+    return document
+
+
+@pytest.mark.parametrize("match_slot", ["common-name", "synonym"])
+def test_multi_activity_label_is_one_explicit_native_alias(tmp_path, match_slot):
+    document = multi_root()
+    if match_slot == "common-name":
+        document.find(ACTIVITY + "/common-name").text = MULTI_ALIAS
+    assert parse(tmp_path, document) == [
+        ("MetaCyc:CPLX-1", MULTI_ALIAS, [MULTI_SYNONYM]),
+    ]
+
+
+@pytest.mark.parametrize("problem", [
+    "no-alias", "no-match", "two-aliases-match", "same-alias-two-activities",
+    "duplicate-activity", "duplicate-protein-alias", "duplicate-activity-alias",
+    "unresolved-activity", "mismatched-activity-id", "wrong-enzyme",
+    "wrong-reaction", "duplicate-reaction", "missing-activity-name",
+    "unexpected-catalyzes-child", "coefficient-one", "wrong-component",
+    "bad-direct-name",
+])
+def test_multi_activity_native_ambiguity_and_identity_fail_closed(tmp_path, problem):
+    document = multi_root()
+    protein = document.find("Protein")
+    activities = protein.findall("catalyzes/Enzymatic-Reaction")
+    second = activities[1]
+    if problem == "no-alias":
+        for alias in protein.findall("synonym"):
+            protein.remove(alias)
+    elif problem == "no-match":
+        protein.find("synonym").text = "Different native alias"
+    elif problem == "two-aliases-match":
+        second.find("common-name").text = MULTI_SYNONYM
+    elif problem == "same-alias-two-activities":
+        second.find("common-name").text = MULTI_ALIAS
+    elif problem == "duplicate-activity":
+        protein.find("catalyzes").append(copy.deepcopy(activities[0]))
+    elif problem == "duplicate-protein-alias":
+        protein.append(copy.deepcopy(protein.find("synonym")))
+    elif problem == "duplicate-activity-alias":
+        activities[0].append(copy.deepcopy(activities[0].find("synonym")))
+    elif problem == "unresolved-activity":
+        second.set("resource", "getxml?META:ENZRXN-2")
+    elif problem == "mismatched-activity-id":
+        second.set("ID", "META:ENZRXN-3")
+    elif problem == "wrong-enzyme":
+        second.find("enzyme/Protein").set("resource", "#META:OTHER-CPLX")
+    elif problem == "wrong-reaction":
+        second.find("reaction/Reaction").set("resource", "getxml?META:OTHER-RXN")
+    elif problem == "duplicate-reaction":
+        second.append(copy.deepcopy(second.find("reaction")))
+    elif problem == "missing-activity-name":
+        second.remove(second.find("common-name"))
+    elif problem == "unexpected-catalyzes-child":
+        ET.SubElement(protein.find("catalyzes"), "common-name").text = MULTI_ALIAS
+    elif problem == "coefficient-one":
+        protein.find("component/coefficient").text = "1"
+    elif problem == "wrong-component":
+        protein.find("component/Protein").set("orgid", "ECOLI")
+    else:
+        ET.SubElement(protein, "common-name", datatype="string").text = " "
+    with pytest.raises(ValueError):
+        parse(tmp_path, document)
+
+
+@pytest.mark.parametrize("target", ["protein-alias", "activity-alias", "activity-name"])
+@pytest.mark.parametrize(
+    "problem", ["blank", "markup", "escaped", "datatype", "attribute", "nested"],
+)
+def test_multi_activity_validates_even_unmatched_names_and_aliases(tmp_path, target, problem):
+    document = multi_root()
+    if target == "protein-alias":
+        node = document.findall("Protein/synonym")[1]
+    else:
+        second = document.findall(ACTIVITY)[1]
+        if target == "activity-alias":
+            node = ET.SubElement(second, "synonym", datatype="string")
+            node.text = "Unused valid alias"
+        else:
+            node = second.find("common-name")
+    if problem == "blank":
+        node.text = " "
+    elif problem == "markup":
+        node.text = "<script>bad</script>"
+    elif problem == "escaped":
+        node.text = "enzyme &amp;#946;"
+    elif problem == "datatype":
+        node.set("datatype", "symbol")
+    elif problem == "attribute":
+        node.set("resource", "getxml?META:SOME-NAME")
+    else:
+        ET.SubElement(node, "name").text = "nested"
+    with pytest.raises(ValueError):
+        parse(tmp_path, document)
+
+
+def cli(tmp_path, entries, *, selected=True, existing_output=False):
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(json.dumps(entries))
+    records = tmp_path / "records"
+    records.mkdir()
+    record_id = "MetaCyc:CPLX-1" if selected else "MetaCyc:OTHER-PWY"
+    (records / "record.yaml").write_text(f"id: {record_id}\nlabel: Curated invention\n")
+    output = tmp_path / "authority.json"
+    sentinel = b"previous reviewed authority\n"
+    if existing_output:
+        output.write_bytes(sentinel)
+    builder = Path(__file__).resolve().parents[1] / "scripts/build_source_identifier_snapshot.py"
+    result = subprocess.run([
+        sys.executable, "-B", str(builder), "--manifest", str(manifest),
+        "--records", str(records), "--cache-dir", str(tmp_path), "--output", str(output),
+    ], capture_output=True, text=True, check=False)
+    return result, output, sentinel
+
+
+@pytest.mark.parametrize("existing_output", [False, True])
+def test_multi_activity_actual_cli_uses_source_alias_and_hash(tmp_path, existing_output):
+    entry = source_entry(tmp_path, "native.xml", multi_root())
+    result, output, _ = cli(tmp_path, [entry], existing_output=existing_output)
+    assert result.returncode == 0, result.stderr
+    snapshot = json.loads(output.read_bytes())
+    assert snapshot["terms"] == {"MetaCyc:CPLX-1": {
+        "label": MULTI_ALIAS, "synonyms": [MULTI_SYNONYM], "source": "native.xml",
+    }}
+    assert snapshot["sources"]["native.xml"]["sha256"] == entry["sha256"]
+    assert "Curated invention" not in output.read_text()
+
+
+@pytest.mark.parametrize("change", [
+    "component", "coefficient", "activity", "reaction", "alias", "sole", "direct", "html",
+])
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("selected", [False, True])
+def test_multi_activity_actual_cli_rejects_same_label_scope_conflicts_atomically(
+    tmp_path, change, reverse, selected,
+):
+    entries = [source_entry(tmp_path, "native.xml", multi_root())]
+    other = multi_root()
+    protein = other.find("Protein")
+    second = other.findall(ACTIVITY)[1]
+    if change == "component":
+        node = protein.find("component/Protein")
+        node.set("frameid", "MONOMER-2")
+        node.set("resource", "getxml?META:MONOMER-2")
+    elif change == "coefficient":
+        protein.find("component/coefficient").text = "4"
+    elif change == "activity":
+        second.set("frameid", "ENZRXN-3")
+        second.set("ID", "META:ENZRXN-3")
+    elif change == "reaction":
+        node = second.find("reaction/Reaction")
+        node.set("frameid", "RXN-3")
+        node.set("resource", "getxml?META:RXN-3")
+    elif change == "alias":
+        protein.findall("synonym")[1].text = "Different unused native alias"
+    elif change == "sole":
+        protein.find("catalyzes").remove(second)
+        protein.find("catalyzes/Enzymatic-Reaction/common-name").text = MULTI_ALIAS
+    elif change == "direct":
+        ET.SubElement(protein, "common-name", datatype="string").text = MULTI_ALIAS
+    entry = source_entry(tmp_path, "other.xml", other)
+    if change == "html":
+        path = tmp_path / "other.xml"
+        path.write_text(
+            f"<TITLE>MetaCyc {MULTI_ALIAS}</TITLE>"
+            "<script>typeObjectPage={object:'CPLX-1',orgid:'META'}</script>"
+        )
+        entry.update(kind="metacyc-html", sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    entries.append(entry)
+    if reverse:
+        entries.reverse()
+    result, output, sentinel = cli(
+        tmp_path, entries, selected=selected, existing_output=selected,
+    )
+    assert result.returncode != 0
+    assert "conflicting MetaCyc multi-activity native assertions" in result.stderr
+    assert "Retained" not in result.stdout
+    if selected:
+        assert output.read_bytes() == sentinel
+    else:
+        assert not output.exists()
+
+
+def test_matching_multi_activity_duplicates_ignore_slot_order(tmp_path):
+    first = multi_root()
+    second = multi_root()
+    catalyzes = second.find("Protein/catalyzes")
+    catalyzes[:] = list(reversed(catalyzes))
+    entries = [source_entry(tmp_path, "one.xml", first), source_entry(tmp_path, "two.xml", second)]
+    result, output, _ = cli(tmp_path, entries)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(output.read_text())["terms"]["MetaCyc:CPLX-1"]["label"] == MULTI_ALIAS
+
+
+@pytest.mark.parametrize("existing_output", [False, True])
+@pytest.mark.parametrize("problem", ["backref", "unmatched-alias", "later-invalid-source"])
+def test_multi_activity_actual_cli_malformed_sources_leave_output_untouched(
+    tmp_path, existing_output, problem,
+):
+    document = multi_root()
+    if problem == "backref":
+        document.findall(ACTIVITY)[1].find("enzyme/Protein").set("orgid", "ECOLI")
+    elif problem == "unmatched-alias":
+        document.findall("Protein/synonym")[1].text = "<script>unsafe</script>"
+    entries = [source_entry(tmp_path, "native.xml", document)]
+    if problem == "later-invalid-source":
+        later = multi_root()
+        later.find("Protein/component/coefficient").text = "1"
+        entries.append(source_entry(tmp_path, "later.xml", later))
+    result, output, sentinel = cli(tmp_path, entries, existing_output=existing_output)
+    assert result.returncode != 0
+    assert "ValueError: MetaCyc" in result.stderr
+    assert "Retained" not in result.stdout
+    if existing_output:
+        assert output.read_bytes() == sentinel
+    else:
+        assert not output.exists()

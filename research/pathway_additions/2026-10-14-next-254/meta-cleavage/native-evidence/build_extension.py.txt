@@ -1,0 +1,120 @@
+import json,pathlib,hashlib,xml.etree.ElementTree as E,re,html
+root=pathlib.Path('/private/tmp/pathwaymech-next-254-native-evidence');old=pathlib.Path('/private/tmp/pathwaymech-next-253-native');orig=old/'originals'
+oldledger=json.loads((old/'native-fact-dispositions.json').read_text())
+objs={};bindings=[]
+for group in ['activities','proteins','regulations']:
+ for item in oldledger[group]:
+  path=pathlib.Path(item['source']['path']);b=path.read_bytes();assert hashlib.sha256(b).hexdigest()==item['source']['sha256'];top=E.fromstring(b);obj=[e for e in top if e.tag!='metadata'][0];objs[item['native_id']]=obj;bindings.append(dict(item['source'],native_id=item['native_id'],original_hash_verified=True))
+def plain(t):return re.sub('<[^>]+>','',html.unescape(t or '')).strip()
+def frame(x):return x.split(':',1)[1]
+def ref(nid):
+ p=orig/f'META-{frame(nid)}.xml';e=objs.get(nid)
+ if e is None:e=[z for z in E.parse(p).getroot() if z.tag!='metadata'][0]
+ return {'id':nid,'title':f'MetaCyc 27.0 {frame(nid)} native {e.tag} object','url':f'https://biocyc.org/META/NEW-IMAGE?type=OBJECT&object={frame(nid)}','source_version':'MetaCyc 27.0; BF2I public Pathway Tools mirror','source_sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+refs={};nodes={};edges=[];disps=[]
+def use(nid):refs[nid]=ref(nid)
+def ev(nid,assertion,loc):use(nid);assert len(assertion)<=400;return {'reference_id':nid,'source_assertion':assertion,'source_locator':loc}
+def edge(s,p,o,desc,evidence,qual=None):
+ r={'id':f'meta-bio-{len(edges)+1:03}','subject':s,'predicate':p,'object':o,'description':desc,'evidence':evidence}
+ if qual:r['endpoint_qualifiers']=qual
+ edges.append(r);return r['id']
+exclude_activities={
+'MetaCyc:ENZRXN-30805':'Excluded: generic P. aeruginosa OAA decarboxylase has no pathway-specific occurrence evidence; do not infer P184 occurrence.',
+'MetaCyc:OXALODECARB-ENZRXN':'Excluded: E. coli Eda OAA activity is a generic secondary activity, not evidence of P184 occurrence.',
+'MetaCyc:ENZRXN-3626':'Excluded exact historical reaction assignment: modern SYK6 LigJ uses KCH (RHEA58508), not native E,E enol RHEA17403. Preserve historical assay and regulations in ledger; do not remap to old reaction.',
+'MetaCyc:ENZRXN-11023':'Excluded exact chemical assignment: PmdE is a sequence-homology inference from historical LigJ assignment. New KCH specificity in SYK6 does not experimentally close BR6020 exact substrate; no experimental catalysis assertion.'}
+rx={'PROTOCATECHUATE-45-DIOXYGENASE-RXN':'RHEA:24045','1.2.1.45-RXN':'RHEA:29588','RXN-2462':'RHEA:10645','RXN-9983':'RHEA:28932','RXN-2463':'RHEA:17403','RXN-2464':'RHEA:28936','OXALODECARB-RXN':'RHEA:15642'}
+# Correct mapped reaction ids are verified against route author's full chemistry fragment.
+chem=json.loads(pathlib.Path('/private/tmp/pathwaymech-next-254-route/complete-native-graph-proposal.json').read_text())
+for v in chem['reactions']:print(v['id'],v['label'])
+# Earlier local mnemonic order is deliberately verified below using labels.
+for v in chem['reactions']:
+ if 'tautomer' in v['label'].lower():pass
+prep={
+'CPLX-2701':'Historical Comamonas/Pseudomonas testosteroni preparations; native species object spans reported strains. Do not equate the original preparations with modern BR6020 subunit accession sequences.',
+'CPLX-2781':'Historical phthalate-grown P. straminea/P. ochraceae purified homodimer; retain native substrate assignment as a database assertion, not independent absolute stereochemical identification.',
+'CPLX-2782':'Historical P. straminea/P. ochraceae homohexamer and separately recombinant proA observations; broad CHA node does not mean racemic substrate, and reported L-substrate preference is retained.',
+'CPLX-2861':'Historical P. straminea/P. ochraceae purified CHMS dehydrogenase homodimer; both NAD and NADP are supported, with higher apparent affinity for NADP.',
+'CPLX-2863':'Recombinant SYK6 LigC from native-gene pSM21 in E. coli BL21(DE3), purified near homogeneity. First20 residues matched deduced gene; full paper reports both NAD/NADP support and67kDa homodimer.',
+'CPLX-2865':'Recombinant SYK6 LigK native-gene pETK in E. coli BL21(DE3), near-homogeneous hexamer. Native broad CHA assignment does not assert absolute substrate configuration; terminal OAA decarboxylation separately supported.',
+'CPLX-2881':'Historical P. putida HMG/CHA aldolase preparation; avoid identifying the original strain solely from later KT2440 galC sequence.',
+'CPLX-7916':'Native SYK6 LigAB complex assignment is supported by functional complementation, not independent purified subunit catalysis. Later His-tagged/synthetic preparations are separate.',
+'CPLX-7917':'Historical Comamonas/Pseudomonas testosteroni HMG/CHA aldolase, source experimental evidence includes crude/part-purified assays; R-HMG preference does not assign CHA absolute chirality.',
+'CPLX-8178':'KT2440 GalB gallate-module enzyme; native-host KT2442 and recombinant E. coli preparations are separate. Modern 2016 substrate assays support GalD-generated E,E-CHM and(-)-CHA without absolute product assignment; not whole KT2440 P184 occurrence.',
+'CPLX1G01-155':'KT2440 GalC/gllC gallate-module activity; native/heterologous assays and historical species-level enzyme are distinct. Does not establish the whole protocatechuate meta-cleavage pathway in KT2440.',
+'G1G01-2697-MONOMER':'KT2440 GalD shared gallate-module tautomerase. 2016 assays retained His6 tag due internal thrombin site; native exact reaction is E,E enol, while old narrative Z,Z link is rejected. No whole KT2440 P184 occurrence.',
+'MONOMER-10723':'Unpurified PDC-hydrolase from P. putida PDC selected on PDC. This strain uses ortho cleavage for PCA in the1982 primary; no fullP184 occurrence inference.',
+'MONOMER-3182':'Historical phthalate-grown P. straminea/P. ochraceae purified PDC hydrolase; later recombinant proL is distinct, and current native cross-reference does not prove old strain sequence identity.',
+'MONOMER-3463':'Purified native Pseudomonas/Comamonas testosteroni PDC hydrolase from4-hydroxybenzoate-grown cells; reversible/pH-dependent reaction. Original1982 source does not individually characterize all open-chain isomers.',
+'MONOMER-3467':'Recombinant SYK6 LigI near-homogeneous monomer from historical experiment. Later synthetic/tagged2012 structural preparation is distinct.'}
+# Read and preserve every direct slot separately; only unsupported assignments excluded.
+accepted=[]
+for a in oldledger['activities']:
+ nid=a['native_id'];e=objs[nid]
+ d={'native_id':nid,'kind':'activity','source':a['source'],'evidence_codes':a['evidence_codes'],'citation_pmids':a['citation_pmids']}
+ if nid in exclude_activities:d.update(disposition=exclude_activities[nid],proposed_edges=[]);disps.append(d);continue
+ enzyme=a['enzyme'];reaction=rx[frame(a['reaction'])];accepted.append(enzyme)
+ codes=', '.join(dict.fromkeys(a['evidence_codes']));statement=f"The enzymatic-reaction object assigns {enzyme} to {a['reaction']}; source evidence: {codes}."
+ if len(statement)>400:statement=f"Native enzyme={enzyme}; reaction={a['reaction']}; evidence codes retained in source disposition ledger."
+ predicate='enables' if nid=='MetaCyc:ENZRXN-16927' else 'catalyzes'
+ ids=[edge(enzyme,predicate,reaction,prep.get(frame(enzyme),'Source-native enzyme assignment; organism/preparation limited to the cited native object.'),[ev(nid,statement,f"/ptools-xml/Enzymatic-Reaction[@frameid='{frame(nid)}']/enzyme; reaction; evidence")])]
+ d.update(disposition='Accepted source-scoped enzyme/activity assignment; not proof of a single strain completing the full native composite.',proposed_edges=ids)
+ if nid in ['MetaCyc:ENZRXN-18372','MetaCyc:ENZRXN-18373']:d['stereochemistry_reconciliation']='Native structured reaction uses E,E enol; old protein COMMENT Z,Z link conflicts.2016 GalD/GalB experimental chemistry supports E,E substrate; inferential transfer to SYK6 is not accepted.'
+ disps.append(d)
+# Build source-native proteins and component relations; no automatic UniProt substitution.
+keep=set(accepted)
+for p in oldledger['proteins']:
+ if p['native_id'] in keep:keep.update(c['native_id'] for c in p['components'])
+labels={'CPLX-2863':'LigC homodimer','CPLX-2861':'4-carboxy-2-hydroxymuconate-6-semialdehyde dehydrogenase homodimer','CPLX-2865':'LigK homohexamer','CPLX-2781':'4-oxalomesaconate hydratase homodimer','CPLX1G01-155':'GalC HMG/CHA aldolase homohexamer','G1G01-2697-MONOMER':'GalD 4-oxalomesaconate tautomerase','MONOMER-10723':'PDC hydrolase of Pseudomonas putida PDC','MONOMER-3182':'2-pyrone-4,6-dicarboxylate hydrolase'}
+for p in oldledger['proteins']:
+ nid=p['native_id'];e=objs[nid];d={'native_id':nid,'kind':'protein','source':p['source'],'source_species_frames':p['source_species_frames'],'direct_uniprot_xrefs':p['direct_uniprot_xrefs'],'proposed_edges':[]}
+ if nid not in keep:d['disposition']='Excluded with unsupported/out-of-pathway activity; composition and source xrefs retained here without gene/protein identity substitution.';disps.append(d);continue
+ name=plain(e.findtext('common-name')) or labels.get(frame(nid),'')
+ if not name:
+  # Native enzymatic-reaction common-name can label unnamed single-activity object; authority builder must resolve, this is only proposal.
+  names=[plain(objs[a['native_id']].findtext('common-name')) for a in oldledger['activities'] if a['enzyme']==nid];name=names[0] if names else frame(nid)
+ nodes[nid]={'id':nid,'label':name,'category':'complex' if p['components'] else 'protein'}
+ for c in p['components']:
+  if c['native_id'] not in keep:continue
+  coef=c['coefficient'];specific=c['coefficient_scope'];statement=f"The native protein object lists component {c['native_id']}. {specific} (source value {coef})."
+  d['proposed_edges'].append(edge(c['native_id'],'part_of',nid,'Native complex membership; subunit membership alone is not an assertion of independent catalysis.',[ev(nid,statement,f"/ptools-xml/Protein[@frameid='{frame(nid)}']/component")]))
+ d['disposition']='Accepted source-native physical object and explicit composition. Native UniProt crossrefs are retained only as leads; no unverified historical strain/sequence equivalence.'
+ disps.append(d)
+ions={'FE+2':('CHEBI:29033','iron(2+)'),'MG+2':('CHEBI:18420','magnesium(2+)'),'MN+2':('CHEBI:29035','manganese(2+)'),'ZN+2':('CHEBI:29105','zinc(2+)'),'CO+2':('CHEBI:48828','cobalt(2+)'),'NI+2':('CHEBI:49786','nickel(2+)'),'CU+2':('CHEBI:29036','copper(2+)'),'HG+2':('CHEBI:16793','mercury(2+)')}
+def chemnode(f,category='small_molecule'):
+ if f in ions:nid,label=ions[f]
+ elif f=='OXALACETIC_ACID':return 'CHEBI:16452'
+ else:
+  nid='MetaCyc:'+f;e=E.parse(orig/f'META-{f}.xml').getroot().find('Compound');label=plain(e.findtext('common-name'))
+ nodes.setdefault(nid,{'id':nid,'label':label,'category':category});return nid
+for a in oldledger['activities']:
+ if a['native_id'] in exclude_activities:continue
+ for co in a['cofactor_frames']:
+  target=chemnode(co,'cofactor');nid=a['native_id']
+  # Deduplicate same-enzyme cofactor across the two LigK activities, preserving both evidence objects.
+  prior=next((x for x in edges if x['subject']==a['enzyme'] and x['predicate']=='has_cofactor' and x['object']==target),None)
+  evidence=ev(nid,f"The enzymatic-reaction cofactor slot identifies {co} for enzyme {a['enzyme']}.",f"/ptools-xml/Enzymatic-Reaction[@frameid='{frame(nid)}']/cofactor")
+  if prior:prior['evidence'].append(evidence)
+  else:edge(a['enzyme'],'has_cofactor',target,'Source-scoped cofactor annotation. Alternative metals and assay-specific effects must not be generalized across distinct aldolases or hydratases.',[evidence])
+for r in oldledger['regulations']:
+ nid=r['native_id'];activity='MetaCyc:'+r['activity'];d={'native_id':nid,'kind':'regulation','source':r['source'],'mode':r['mode'],'citation_pmids':r['citation_pmids'],'proposed_edges':[]}
+ if activity in exclude_activities:d['disposition']='Excluded from this native-chemistry graph along with the historical LigJ exact-substrate assignment; not evidence that the protein lacks the reported assay effects.';disps.append(d);continue
+ a=next(x for x in oldledger['activities'] if x['native_id']==activity);reg=chemnode(r['regulator']);predicate={'-':'inhibits','+':'activates',None:'regulates'}[r['mode']]
+ statement=f"Regulation object: regulator {r['regulator']}; regulated-entity {r['activity']}; mode {'unspecified' if r['mode'] is None else r['mode']}. The target activity names enzyme {a['enzyme']}."
+ desc='Source-reported in-vitro enzyme effect; the chemical source node is retained exactly. No physiological regulatory role or unreported dose is inferred.'
+ if r['mode'] is None:desc='Native source leaves the effect sign unspecified; this edge does not assert activation or inhibition.'
+ if activity=='MetaCyc:ENZRXN-3624':desc+=' LigC2000 assayed purified recombinant pSM21 protein; Hg was delivered as HgCl2, pCMB10μM/78%,HgCl2 10μM/83%,DTNB100μM/98% inhibition after1h. These are separate treatments.'
+ eid=edge(reg,predicate,a['enzyme'],desc,[ev(nid,statement,f"/ptools-xml/Regulation[@frameid='{frame(nid)}']/regulator; regulated-entity; mode")]);d['proposed_edges']=[eid];d['disposition']='Accepted signed assay effect.' if r['mode'] else 'Accepted unsigned regulates edge; absent mode preserved.';disps.append(d)
+# Alternative nicotinamide usage, not extra unproven catalytic equations.
+nodes['CHEBI:57540']={'id':'CHEBI:57540','label':'NAD(1-)','category':'cofactor'}
+for eid in ['MetaCyc:CPLX-2861','MetaCyc:CPLX-2863']:
+ statement='The native protein/comment reports support by both NAD and NADP; the selected graph equation uses NADP without claiming exclusivity.' if eid.endswith('2861') else 'The native protein records recombinant LigC production of PDC with NADP; primary Table3 separately demonstrates NAD support, retained in the kinetic audit.'
+ # For LigC, native comment does not itself support NAD; defer explicit primary quote extension.
+ if eid.endswith('2861'):
+  for co in ['CHEBI:57540','CHEBI:58349']:edge(eid,'has_cofactor',co,'Historical enzyme supports either nicotinamide coenzyme; higher apparent NADP affinity does not mean exclusive NADP usage.',[ev(eid,statement,f"/ptools-xml/Protein[@frameid='{frame(eid)}']/comment")])
+refs['PMID:11073908']={'id':'PMID:11073908','title':'Genetic and biochemical characterization of CHMS dehydrogenase in Sphingomonas paucimobilis SYK-6','url':'https://journals.asm.org/doi/full/10.1128/jb.182.23.6651-6658.2000'}
+for co in ['CHEBI:57540','CHEBI:58349']:
+ edge('MetaCyc:CPLX-2863','has_cofactor',co,'Purified recombinant SYK6 LigC supports NAD and NADP. Primary Table3 values supersede transposed UniProt kinetic substrate labels.',[{'reference_id':'PMID:11073908','source_assertion':'Table3 lists SYK6 LigC rates and Km values for NAD+ and NADP+ separately:252±3.9μM and24.6±1.5μM; CHMS Km20.6±1.0μM with200μM NAD+ and26.0±0.5μM with200μM NADP+.','source_locator':'Table3, SYK-6 four rows; column headings identify the varied substrate and fixed cosubstrate.'}])
+(root/'graph-extension.json').write_text(json.dumps({'scope':'Author biological graph fragment; canonical authority labels and independent review pending. Native exact slots preserved; no whole-strain composite inference.','participants':list(nodes.values()),'mechanistic_edges':edges,'references':list(refs.values()),'suggested_taxa':[{'id':'NCBITaxon:285','label':'Comamonas testosteroni'},{'id':'NCBITaxon:47882','label':'Phytopseudomonas straminea'},{'id':'NCBITaxon:502559','label':'Sphingomonas sp. SYK6'},{'id':'NCBITaxon:303','label':'Pseudomonas putida'},{'id':'NCBITaxon:160488','label':'Pseudomonas putida KT2440'}]},indent=2)+'\n')
+(root/'complete-native-slot-dispositions.json').write_text(json.dumps({'scope':'All22 direct native activity objects,36 protein objects and36 regulatory objects from prior complete acquisition re-read and original hashes verified. Generic excluded terminal subtrees not expanded as pathway evidence.','source':str(old/'native-fact-dispositions.json'),'source_sha256':hashlib.sha256((old/'native-fact-dispositions.json').read_bytes()).hexdigest(),'dispositions':disps,'originals_verified':bindings,'quotes_per_primary_paper':{},'notes':['No spontaneous-slot correction: RXN9983 rawXML and prior ledger both already saytrue; an interim reader claim of omission was withdrawn.','LigC primary Table3 corrects current UniProt kinetic labels; no modification to issuing authority is claimed.','LigR primary regulation graph extension and source narrative facts follow separately.']},indent=2)+'\n')
+print({'participants':len(nodes),'edges':len(edges),'refs':len(refs),'native_objects':len(disps)})

@@ -1,0 +1,41 @@
+from pathlib import Path
+import json,hashlib,datetime,sqlite3,re
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+from collections import Counter
+B=Path(__file__).parent;O=B/'originals';A=Path('/private/tmp/pathwaymech-curation-authorities')
+DB=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True)
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def minfo(m):return {'inchi':Chem.MolToInchi(m),'inchi_key':Chem.MolToInchiKey(m),'smiles':Chem.MolToSmiles(m,isomericSmiles=True),'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),'chiral_centers':[list(x)for x in Chem.FindMolChiralCenters(m,includeUnassigned=True)],'double_bond_stereo':[str(b.GetStereo())for b in m.GetBonds()if b.GetBondType()==Chem.BondType.DOUBLE]}
+rows={}
+for id in ['57471','58142','57732','142690','58075','142706']:
+ p=O/('ChEBI-'+id+'.json');j=json.loads(p.read_text());s=j['default_structure'];pin={a:b or c for a,b,c in DB.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",('CHEBI:'+id,))};m=Chem.MolFromSmiles(s['smiles']);m2=Chem.MolFromInchi(s['standard_inchi']);a=Chem.Mol(m);Chem.RemoveStereochemistry(a)
+ row={'id':'CHEBI:'+id,'issuing_record':bind(p),'live':{'ascii_name':j['ascii_name'],'chemical_data':j['chemical_data'],'structure':s},'pinned_chebi255':pin,'interpreted_live_smiles':minfo(m),'interpreted_live_inchi':minfo(m2),'achiral_smiles':Chem.MolToSmiles(a),'direct_ontology_parents':[x[0]for x in DB.execute("select object from statements where subject=? and predicate='rdfs:subClassOf' and object like 'CHEBI:%'",('CHEBI:'+id,))]}
+ row['checks']={'pinned_and_current_inchi_equal':pin['chemrof:inchi_string']==s['standard_inchi'],'pinned_and_current_inchi_key_equal':pin['chemrof:inchi_key_string']==s['standard_inchi_key'],'pinned_current_formula_equal':pin['chemrof:generalized_empirical_formula']==j['chemical_data']['formula'],'pinned_current_charge_equal':int(pin['chemrof:charge'])==j['chemical_data']['charge'],'live_smiles_inchi_equal':Chem.MolToInchi(m)==s['standard_inchi'],'live_smiles_inchi_key_equal':Chem.MolToInchiKey(m)==s['standard_inchi_key'],'live_inchi_roundtrip_equal':Chem.MolToInchi(m2)==s['standard_inchi']};assert all(row['checks'].values()),row
+ rows['CHEBI:'+id]=row
+comparisons=[]
+for a,b,interpretation in [('CHEBI:57471','CHEBI:142690','OMA and KCH differ in the position of their carbon-carbon double bond and hydrogen placement. Neither full structure nor bond-order connectivity is identical.'),('CHEBI:58142','CHEBI:142690','The native E,E enol and modern KCH keto compound are distinct tautomeric structures; identical formula and charge do not make them interchangeable.'),('CHEBI:58142','CHEBI:57732','E,E and Z,Z enols share element/bond-order connectivity but differ in defined double-bond stereochemistry.'),('CHEBI:58075','CHEBI:142706','The native CHA class leaves stereochemistry unspecified; modern S-CHA is explicitly stereospecific and is an issuing ChEBI subclass, not an identical chemical ID.')]:
+ x,y=rows[a],rows[b]; comparisons.append({'ids':[a,b],'full_inchi_equal':x['live']['structure']['standard_inchi']==y['live']['structure']['standard_inchi'],'achiral_bond_order_graph_equal':x['achiral_smiles']==y['achiral_smiles'],'formula_charge_equal':x['live']['chemical_data']['formula']==y['live']['chemical_data']['formula']and x['live']['chemical_data']['charge']==y['live']['chemical_data']['charge'],'interpretation':interpretation})
+r=json.loads((B/'rhea-original-projection.json').read_text());nodes=r['nodes'];N='http://rdf.rhea-db.org/'
+def side(uri):
+ result=[]
+ for prop,vals in nodes[uri].items():
+  if prop.startswith('contains'):
+   coefficient=int(prop[8:]or '1')
+   for v in vals:
+    c=nodes[nodes[v]['compound'][0]]
+    result.append({'chebi':c['accession'][0],'coefficient':coefficient,'formula':c['formula'][0],'charge':int(c['charge'][0]),'source_locator':[uri+' rh:'+prop+' '+v,v+' rh:compound '+nodes[v]['compound'][0],nodes[v]['compound'][0]+' rh:chebi '+c['chebi'][0]]})
+ return result
+def tally(s):
+ c=Counter()
+ for x in s:
+  for atom,n in re.findall(r'([A-Z][a-z]*)([0-9]*)',x['formula']):c[atom]+=int(n or '1')*x['coefficient']
+  c['charge']+=x['charge']*x['coefficient']
+ return dict(c)
+rx=[]
+for id in ['58504','58508','28931','17401']:
+ n=nodes[N+id];l=side(N+id+'_L');rr=side(N+id+'_R');t1,t2=tally(l),tally(rr);assert t1==t2
+ rx.append({'id':'RHEA:'+id,'status':n['status'],'equation':n['equation'][0],'direction_type':'undefined master; directional and reversible versions are distinct IDs','forward_direction':r['directions'][id]['left_to_right'],'reverse_direction':r['directions'][id]['right_to_left'],'bidirectional':r['directions'][id]['bidirectional'],'left':l,'right':rr,'left_totals':t1,'right_totals':t2,'balanced':True,'citation':n.get('citation',[]),'replacement_assertions':{k:v for k,v in n.items()if k in ['replacedBy','replaces']}})
+out={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Author-support exact structure/equation analysis. Chemical equality is distinct from enzyme specificity or in-vivo completeness. Not an independent review verdict.','software':{'rdkit':rdBase.rdkitVersion},'pinned_sql':{'path':str(A/'chebi.db'),'resolved_path':str((A/'chebi.db').resolve()),'version':'ChEBI255'},'rhea_input':r['original'],'chemicals':rows,'pairwise_comparisons':comparisons,'reaction_comparisons':rx,'direction_inference_limits':['A Rhea master is not a reversibility assertion. A bidirectional Rhea identifier establishes database direction representation, not physiological same-strain flux.','Source-native RXN-9983 and RXN-2463 explicitly declare REVERSIBLE; native selected pathway layout chooses forward keto-to-enol then hydration.','2018 LigJ equilibrium ratio observed in supplemented pH8 assays cannot be generalized to all physiological conditions.'],'curation_decision':'Retain the complete native eight-member definition under MetaCyc:P184-PWY with explicit source-defined composite scope. Do not replace RXN-9983/RXN-2463 by LigU/LigJ modern chemistry under unchanged reaction identifiers. Withhold contradicted exact catalyst mappings; these optional mappings do not erase source-defined chemical steps.'}
+(B/'exact-chemistry-comparison.json').write_text(json.dumps(out,indent=2)+'\n')
+print('six structures, four reaction equations, four pair comparisons closed')

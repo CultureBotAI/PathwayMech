@@ -1,0 +1,67 @@
+from pathlib import Path
+import datetime,hashlib,io,json,posixpath,re,subprocess,sys,tarfile,yaml
+R=Path('/private/tmp/pathwaymech-next-254-20261014'); S=Path('/private/tmp/pathwaymech-next-254-independent-integration')
+D='research/pathway_additions/2026-10-14-next-254/meta-cleavage';B='dfe42721bfd31468cb27b2d6a1a4b460f2b71a12'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def git(*args):return subprocess.check_output(['git',*args],cwd=R)
+def archive(ref):
+ with tarfile.open(fileobj=io.BytesIO(git('archive',ref)),mode='r:') as t:return {m.name:t.extractfile(m).read() for m in t.getmembers() if m.isfile()}
+def walk(x,loc='$'):
+ yield loc,x
+ if isinstance(x,dict):
+  for k,v in x.items():yield from walk(v,loc+'.'+str(k))
+ elif isinstance(x,list):
+  for i,v in enumerate(x):yield from walk(v,f'{loc}[{i}]')
+base=archive(B);mode=sys.argv[1] if len(sys.argv)>1 else 'working'
+commit=None if mode=='working' else git('rev-parse',mode).decode().strip()
+current=archive(commit) if commit else None
+read=lambda p:current.get(p) if commit else ((R/p).read_bytes() if (R/p).is_file() else None)
+files={p:b for p,b in current.items() if p.startswith(D+'/')} if commit else {p.relative_to(R).as_posix():p.read_bytes() for p in (R/D).rglob('*') if p.is_file()}
+changes=[x.split('\t') for x in git('diff','--name-status',B,*([commit] if commit else [])).decode().splitlines()]
+allowed_changes={'conf/identifier_sources.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json','pages/index.html','pages/browse.html','pages/pathway_index.json','docs/IDENTIFIERS.md','scripts/build_source_identifier_snapshot.py','tests/test_metacyc_complex_naming.py'}
+unexpected=[x for x in changes if x[0]!='A' and x[1] not in allowed_changes and not x[1].startswith('pages/downloads/')]
+baseline_records=[p for p in base if p.startswith('data/pathways/') and p.endswith('.yaml')]
+baseline_mismatch=[p for p in baseline_records if read(p)!=base[p]]
+prior_immutable=[p for p in base if p.startswith(('history/','reviews/structured/','research/'))]
+immutable_mismatch=[p for p in prior_immutable if read(p)!=base[p]]
+authorities={}
+for p in ['data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json']:
+ old=json.loads(base[p]);new=json.loads(read(p));fields={}
+ for k in ['terms','sources']:
+  if isinstance(old[k],dict):bad=[i for i,x in old[k].items() if new[k].get(i)!=x]
+  else:bad=[x for x in old[k] if x not in new[k]]
+  fields[k]={'baseline_count':len(old[k]),'current_count':len(new[k]),'changed_or_missing':bad}
+ authorities[p]=fields
+mold=json.loads(base['conf/identifier_sources.json']);mnew=json.loads(read('conf/identifier_sources.json'))
+manifest_prefix=mnew[:len(mold)]==mold
+retained=[];external=[];wrappers=[];links=[];errors=[];hashdecl=[]
+for p,b in files.items():
+ if p.endswith('.json'):
+  try:j=json.loads(b)
+  except Exception as e:errors.append({'path':p,'error':str(e)});continue
+  for loc,x in walk(j):
+   if not isinstance(x,dict):continue
+   if isinstance(x.get('maintained_path'),str):
+    q=x['maintained_path'];raw=read(q);expected=x.get('sha256')
+    retained.append({'manifest':p,'locator':loc,'path':q,'declared_sha256':expected,'exists':raw is not None,'actual_sha256':sha(raw) if raw is not None else None,'length_matches':raw is not None and len(raw)==x.get('bytes',len(raw))})
+   q=x.get('path');h=x.get('sha256')
+   if isinstance(q,str) and q.startswith('/') and isinstance(h,str) and re.fullmatch('[a-f0-9]{64}',h):
+    qpath=Path(q);raw=qpath.read_bytes() if qpath.is_file() else None
+    external.append({'manifest':p,'locator':loc,'path':q,'declared_sha256':h,'actual_sha256':sha(raw) if raw is not None else None,'exists':raw is not None})
+   if isinstance(q,str) and not q.startswith('/') and isinstance(h,str) and re.fullmatch('[a-f0-9]{64}',h) and q in base:
+    raw=read(q);hashdecl.append({'manifest':p,'locator':loc,'path':q,'sha256_matches':raw is not None and sha(raw)==h,'declared_sha256':h})
+  if p.endswith('.log.json'):
+   raw=j['text'].encode(j.get('encoding','utf-8'));wrappers.append({'path':p,'sha256_matches':sha(raw)==j.get('original_sha256',j.get('sha256'))})
+ if p.endswith('.md'):
+  for link in re.findall(r'\[[^\]]*\]\(([^)]+)\)',b.decode()):
+   if '://' in link or link.startswith('#'):continue
+   dest=posixpath.normpath(posixpath.join(posixpath.dirname(p),link.split('#')[0]));links.append({'path':p,'link':link,'target':dest,'exists':read(dest) is not None})
+declarations={}
+for x in retained:
+ if x['declared_sha256']:declarations.setdefault(x['path'],set()).add(x['declared_sha256'])
+for x in retained:
+ candidates=declarations.get(x['path'],set());x['sha256_matches']=x['actual_sha256']==(x['declared_sha256'] or (next(iter(candidates)) if len(candidates)==1 else None))
+forbidden=[p for p in files if Path(p).suffix.lower() in {'.xml','.pdf','.jpg','.jpeg','.png','.db','.rdf','.gz','.zip','.py','.log'} or '/originals/' in p]
+failures={'baseline_records':baseline_mismatch,'prior_immutable':immutable_mismatch,'unexpected_changes':unexpected,'authority_loss':[p for p,x in authorities.items() if any(v['changed_or_missing'] for v in x.values())],'manifest_prefix':[] if manifest_prefix else ['Changed existing source manifest prefix'],'retained':[x for x in retained if not x['exists'] or not x['sha256_matches'] or not x['length_matches']],'json_errors':errors,'wrappers':[x for x in wrappers if not x['sha256_matches']],'local_links':[x for x in links if not x['exists']],'forbidden_payloads':forbidden}
+out={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base':B,'commit':commit,'scope':'Actual complete committed tree and blobs' if commit else 'Recursive dossier traversal includes ignored/hidden files; baseline assessed from exact Git blobs. Workingtree membership only.','dossier_files':len(files),'dossier_bytes':sum(map(len,files.values())),'baseline_pathways':len(baseline_records),'immutable_baseline_files':len(prior_immutable),'authorities':authorities,'manifest_baseline_entries':len(mold),'manifest_current_entries':len(mnew),'manifest_prefix_equal':manifest_prefix,'retained_references':retained,'external_count':len(external),'external_unique_paths':len(set(x['path'] for x in external)),'external_mismatches':[x for x in external if x['declared_sha256']!=x['actual_sha256']],'generic_repository_hash_declarations':hashdecl,'wrappers':wrappers,'links':links,'changes':changes,'failures':failures}
+stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ');dest=S/f'{stamp}-'+Path('unused') if False else S/f'{stamp}-{commit[:12] if commit else "working"}-audit.json';dest.write_text(json.dumps(out,indent=2)+'\n');print(dest);print(json.dumps({k:v for k,v in out.items() if k not in ['retained_references','changes','links','generic_repository_hash_declarations']},indent=2));sys.exit(1 if any(failures.values()) else 0)

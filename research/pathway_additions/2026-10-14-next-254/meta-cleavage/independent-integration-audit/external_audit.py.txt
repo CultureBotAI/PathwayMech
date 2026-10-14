@@ -1,0 +1,29 @@
+from pathlib import Path
+import datetime,hashlib,json,re,yaml
+R=Path('/private/tmp/pathwaymech-next-254-20261014');S=Path('/private/tmp/pathwaymech-next-254-independent-integration');D=R/'research/pathway_additions/2026-10-14-next-254/meta-cleavage'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def walk(x,loc='$'):
+ yield loc,x
+ if isinstance(x,dict):
+  for k,v in x.items():yield from walk(v,loc+'.'+k)
+ elif isinstance(x,list):
+  for i,v in enumerate(x):yield from walk(v,f'{loc}[{i}]')
+checks=[];seen=set()
+pairs=[('path','sha256'),('original_path','sha256'),('original','sha256'),('scratch_path','sha256'),('source_path','sha256'),('source','source_sha256'),('predecessor','predecessor_sha256'),('source_core','source_core_sha256'),('external_tool_transcription','external_tool_transcription_sha256'),('uniprot_source','uniprot_sha256'),('log_path','log_sha256'),('historical_log_original_path','log_sha256')]
+for p in D.rglob('*.json'):
+ for loc,x in walk(json.loads(p.read_text())):
+  if not isinstance(x,dict):continue
+  for pk,hk in pairs:
+   path=x.get(pk);h=x.get(hk)
+   if not isinstance(path,str) or not path.startswith('/') or not isinstance(h,str) or not re.fullmatch('[a-f0-9]{64}',h):continue
+   q=Path(path);raw=q.read_bytes() if q.is_file() else None;checks.append({'manifest':str(p.relative_to(R)),'locator':loc,'path_key':pk,'hash_key':hk,'path':path,'expected_sha256':h,'actual_sha256':sha(raw) if raw is not None else None,'equal':raw is not None and sha(raw)==h,'historical_relocation':x.get('historical_log_original_path') if pk=='log_path' else None})
+record=yaml.safe_load((R/'data/pathways/protocatechuate-meta-cleavage.yaml').read_text());known={x['expected_sha256'] for x in checks if x['equal']};refs=[]
+for x in record['references']:
+ h=x.get('source_sha256')
+ if h:refs.append({'reference':x['id'],'sha256':h,'in_verified_external_hashes':h in known})
+fail=[x for x in checks if not x['equal']]
+for x in fail:
+ q=Path(x['historical_relocation']) if x.get('historical_relocation') else None
+ x['resolved_to_preserved_historical_original']=bool(q and q.is_file() and sha(q.read_bytes())==x['expected_sha256'])
+out={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Every recognized absolute path/hash binding in all recursively enumerated current JSON dossier files (hidden/ignored included), with specific paired keys for source, original, script, log and predecessor artifacts. No remote reacquisition; no ownership of mutable acquisition paths implied.','path_hash_observations':len(checks),'unique_paths':len(set(x['path'] for x in checks)),'mismatches':fail,'unresolved_mismatches':[x for x in fail if not x['resolved_to_preserved_historical_original']],'record_hash_references':refs,'unbound_record_reference_hashes':[x for x in refs if not x['in_verified_external_hashes']],'verified_path_hashes':checks}
+stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ');dest=S/f'{stamp}-external-audit.json';dest.write_text(json.dumps(out,indent=2)+'\n');print(dest);print(json.dumps({k:v for k,v in out.items() if k not in ['verified_path_hashes','record_hash_references']},indent=2))

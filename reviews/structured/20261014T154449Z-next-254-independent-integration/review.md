@@ -1,0 +1,1398 @@
+# Independent P184-PWY integration, authority, parser and generated-graph review
+
+- Review: 20261014T154449Z-next-254-independent-integration
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T15:15:34.991135Z
+- Finished UTC: 2026-10-14T15:44:49.516615Z
+- Reviewer: codex independent integration reviewer /root/next254_independent_integration (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+No unresolved integration findings in the declared 16-target scope; the initial required lint failure was corrected by an independently verified AST-equal decorator wrap. Exact source-backed authority extension, bounded native homomer alias parser, immutable prior data/history, retained artifact provenance and all 127 final graph/KGX edges pass independent checks. Final executions of all six project gates pass; 788 tested core files remain unchanged and one AST-equal test-decorator wrap is separately rerun with final exact bindings. This does not replace the separately saved scientific review or establish committed-tree membership.
+
+## Scope And Provenance
+
+Independent technical integration/provenance/code review of the final P184-PWY addition and its bounded authority-parser support. Review covers all 16 expressly selected maintained/generated targets; dossier files are provenance context, not a claim of full scientific reassessment.
+
+Selection: All changed maintained core owners, canonical new history events, final record and its principal generated projections; complete final compact dossier retained as provenance context.
+Coverage: full; 16 reviewed / 16 in the declared population.
+Source: working_tree at Git base dfe42721bfd31468cb27b2d6a1a4b460f2b71a12.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| pathway | data/pathways/protocatechuate-meta-cleavage.yaml | maintained | P184-PWY final record: integration and provenance |
+| adapter | scripts/build_source_identifier_snapshot.py | maintained | Bounded unnamed multi-activity homomer authority parser |
+| tests | tests/test_metacyc_complex_naming.py | maintained | Native complex naming regression cases |
+| identifier-docs | docs/IDENTIFIERS.md | maintained | Identifier authority adapter contract |
+| manifest | conf/identifier_sources.json | maintained | 997 native source entry manifest |
+| ontology | data/identifier_authorities/ontology.json | maintained | Ontology authority union |
+| sources | data/identifier_authorities/sources.json | maintained | Source authority union |
+| dossier | research/pathway_additions/2026-10-14-next-254/meta-cleavage/curation.md | maintained | Compact dossier provenance and declared evidence scope |
+| reproduction | research/pathway_additions/2026-10-14-next-254/meta-cleavage/reproduction.md | maintained | Reproduction instructions and limitations |
+| history-create | history/records/protocatechuate-meta-cleavage/2026-10-14T151353Z-codex-5d93b5.yaml | maintained | Canonical record creation history |
+| history-edit | history/records/protocatechuate-meta-cleavage/2026-10-14T152459Z-codex-97ae64.yaml | maintained | Canonical assay and label correction history |
+| history-adapter | history/infrastructure/metacyc-multi-activity-homomer-naming/2026-10-14T152458Z-codex-c7e15d.yaml | maintained | Canonical parser history |
+| page | pages/records/MetaCyc_P184-PWY.html | generated | Generated P184 record page and graph payload |
+| kgx-nodes | pages/downloads/nodes.tsv | generated | Generated global KGX node contexts |
+| kgx-edges | pages/downloads/edges.tsv | generated | Generated global KGX edge rows |
+| index | pages/pathway_index.json | generated | Generated pathway discovery index |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Original-backed authority extension | passed | True | ontology, sources, manifest | 997 original byte checks, 37 source replay comparisons and 19 SQL-extracted additions pass; 4,835 terms and 784 prior owners preserved. |
+| Independent parser adversarial probes | passed | True | adapter, tests, identifier-docs | All 32 independent probes pass, including malformed names and same-label native scope changes before selection. |
+| Generated graph fidelity | passed | True | pathway, page | Exact final page/graph payload, qualifiers, endpoints and anchors pass. |
+| Actual KGX export fidelity | passed | True | pathway, kgx-nodes, kgx-edges | Actual global TSV output retains 127 exact edges and 77 node contexts. |
+| Complete retained external hash bindings | passed | True | pathway, dossier, reproduction | All observed source/receipt hashes verify, including explicitly relocated historical logs; no unresolved mismatch in its declared earlier package stage. The final external successor separately accounts for the later formatting delta and validation wrappers. |
+| Search compact projection consistency | passed | True | pathway, dossier | All compact pattern projections and 250 baseline record bindings match exact source projections/base blobs. |
+| Final retained package consistency | passed | True | pathway, adapter, tests, identifier-docs, manifest, ontology, sources, dossier, reproduction, history-create, history-edit, history-adapter, page, kgx-nodes, kgx-edges, index | Final recursive hidden/ignored-inclusive dossier audit passes; no retained path/hash mismatches, unexpected modifications, prior immutable changes, forbidden raw payloads or broken local links. |
+| Required project gates and tested-byte bindings | passed | True | pathway, adapter, tests, identifier-docs, manifest, ontology, sources, dossier, reproduction, history-create, history-edit, history-adapter, page, kgx-nodes, kgx-edges, index | Independently verified root executions of just render-pages, just validate, just test, just lint, just vendored-check and git diff --check; final executions of all six required gates exit 0; full suite 4960 passed/3 skipped, then one AST-equal test-formatting fix passed the focused file and lint. All 788 other tested core files remain exact; all 789 final bindings match. |
+
+## Scientific And Domain Assessments
+
+### Final pathway integration and primary passage fidelity
+
+provenance: supported. Targets: pathway.
+
+The final record is original-backed and its explicit qualifiers, source hashes and edge-local evidence survive rendering and KGX export. The bounded LigK passage comparison supports transcription/scope fidelity; this is not a full scientific re-review.
+
+### Exact native alias homomer naming
+
+identity: supported. Targets: adapter, tests, identifier-docs.
+
+The parser accepts the exact issuing homomer alias without inventing labels, validates all constituent activity/reaction assertions, rejects malformed direct names and ambiguity, and reconciles same-ID scope conflicts before selection in both orders. Tests and documentation describe that bounded behavior; original direct/single-activity outputs remain preserved. The initial 102-character decorator lint defect was fixed by wrapping only its formatting: independent AST comparison is equal, the affected test file passes, and final lint passes; initial failure and exact before bytes remain retained. The separate vendored check DNS failure is also preserved; its network-authorized rerun passes.
+
+### Original-backed additive authority union
+
+grounding: supported. Targets: manifest, ontology, sources.
+
+All 56 added terms derive from exact source artifacts or pinned SQL. The 997-entry manifest extends its unchanged 960-entry prefix; 4,835 prior terms and 784 prior owners are unchanged. P184 HTML supplies identity while full XML retains mechanism evidence; no adapter was weakened for unsupported XML slots.
+
+### Retained evidence and reproduction boundaries
+
+provenance: supported. Targets: dossier, reproduction.
+
+Compact retained artifacts have traceable original/helper hashes, declared stage and reading bounds, preserved failed build receipts and candid reconstruction limits. Raw scientific payloads remain external; bounded dedup coverage is not described as source exhaustion.
+
+### Append-only canonical history
+
+consistency: supported. Targets: history-create, history-edit, history-adapter.
+
+All three appended history events identify their actual scopes and distinguish author checks from independent review; existing research, history and reviews remain byte-identical to the base.
+
+### Generated page, graph, KGX and index
+
+representation: supported. Targets: page, kgx-nodes, kgx-edges, index.
+
+The final renderer and actual exports retain every scoped endpoint, evidence link and qualifier, while the discovery index adds exactly the new record. Maintained owners and generators are identified for future fixes.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| e-authority | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/authority-acceptance.json | supports | Independently SHA-checked all 997 exact original source-cache artifacts, replayed all 37 added source terms/owners with the reviewed canonical builder and an ID-only selector, and independently extracted all 19 added ontology terms directly from pinned SQL. The scope-wording correction preserves its earlier receipt and changes no result. |
+| e-adapter | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T152038Z-adapter-adversarial.json | supports | 32 independent probes passed: exact unmodified native original, ten malformed inputs, equivalent activity reordering, and 20 same-ID conflicts in both manifest orders and selected/unselected states. Malformed direct names cannot fallback; direct-name, sole-activity and HTML downgrade conflicts reject before selection. |
+| e-graph | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T152754Z-graph-audit.json | supports | Final exact renderer output and embedded graph preserve all 127 edge endpoints, predicates and evidence anchors, 78 graph nodes and seven qualified nodes. Local anchors and node IDs resolve; all qualifier/evidence/reference metadata remains explicit. |
+| e-kgx | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/kgx-export-acceptance.json | supports | Actual exported global TSVs contain the exact 127 record edge serializations and all 77 record node declaration contexts after corpus merging. |
+| e-external | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T153048Z-external-audit.json | supports | 849 absolute-path/hash observations across 390 paths verified; two mutable historic log locations are explicitly resolved to preserved originals with exact hashes. No unresolved mismatch; all 85 final record source hashes are original-backed. |
+| e-search | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/search-scope-audit.json | supports | Independent recomputation of all compact count/path projections matches 552 unique patterns per root and all 250 baseline record identity/hash bindings. The reviewer inspected projections and command scope rather than repeating the search. |
+| e-assay | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/final-assay-integration.json | supports | Bounded primary-text fidelity check of LigK purification, enzyme-property and product-identification passages against the original HTML; three retained snippets total 22 words and match after whitespace normalization. Final metal/phosphate and N-terminal-processing qualifiers retain assay/construct scope. |
+| e-package | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T153306Z-working-audit.json | supports | Earlier complete package audit proves all 250 baseline pathways and 14,028 baseline research/history/review files unchanged, all 4,835 prior terms and 784 prior owners preserved, and the 960-entry manifest prefix identical. Stage-bound package references and links pass; later additions are checked separately. |
+| e-gates | research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/gate-acceptance.json | supports | Independently verified nine actual root-executed receipts for six required gates plus a focused rerun, including preserved initial lint and sandbox-DNS failures, original complete log hashes and 788 unchanged tested-core files plus one independently AST-equal test-formatting delta. This records shared execution, not a second full-suite run. |
+| e-final-external | /private/tmp/pathwaymech-next-254-independent-integration/20261014T154420Z-external-final-audit.json | supports | Final successor checks 920 external path/hash observations across 437 paths: no unresolved mismatch and all 85 record source hashes backed. It explicitly resolves the historical test input to retained pre-format bytes and two historical log relocations. Nine validation retention originals now correctly identify exact external JSON wrappers; raw log identities remain inside each lossless wrapper. |
+| e-provenance | research/pathway_additions/2026-10-14-next-254/meta-cleavage/curation.md | supports | Read final curation and reproduction reports with retained final artifact manifests/acquisition hashes and canonical build/promotion receipts. Failed preliminary builds, corrected drafting observations, external raw originals, bounded literature reading and source-defined composite scope are disclosed. |
+| e-record | data/pathways/protocatechuate-meta-cleavage.yaml | supports | Read complete final pathway and checked provenance/serialization: six taxa, 62 participants, eight reactions, 127 edges, 85 references and seven qualified endpoints, exact SHA df99d07970ecd4a3512c5923644845595c8ef63a98070edc97aeb25a4979e4bc. This is technical integration assessment; independent scientific review owns pathway support. |
+| e-history-0 | history/records/protocatechuate-meta-cleavage/2026-10-14T151353Z-codex-5d93b5.yaml | supports | Read the entire newly appended canonical event: correct record/infrastructure identity, actual author/tool/model and bounded creation, refinement or parser purpose; no prior event rewritten. |
+| e-history-1 | history/records/protocatechuate-meta-cleavage/2026-10-14T152459Z-codex-97ae64.yaml | supports | Read the entire newly appended canonical event: correct record/infrastructure identity, actual author/tool/model and bounded creation, refinement or parser purpose; no prior event rewritten. |
+| e-history-2 | history/infrastructure/metacyc-multi-activity-homomer-naming/2026-10-14T152458Z-codex-c7e15d.yaml | supports | Read the entire newly appended canonical event: correct record/infrastructure identity, actual author/tool/model and bounded creation, refinement or parser purpose; no prior event rewritten. |
+| e-code | scripts/build_source_identifier_snapshot.py | supports | Read the entire source-builder diff, associated test diff and identifier documentation. Fallback requires absence of direct common-name, validated homomer component/coefficient, all activity/enzyme/reaction joins and an unambiguous exact native alias match. Native signatures are reconciled before corpus selection; existing outputs remain preserved. |
+| e-index | pages/pathway_index.json | supports | Inspected exact index diff: one new P184-PWY entry, unchanged earlier entries and coherent final counts/context. |
+| e-final-package | /private/tmp/pathwaymech-next-254-independent-integration/20261014T154434Z-working-audit.json | supports | Final post-retention recursive package scan verifies every declared maintained-path hash/length and local link, complete JSON/log wrappers and baseline preservation. This final external receipt is hash-bound; its helper is retained in the dossier. Ignored/hidden files included. |
+
+## Limits And Additional Notes
+
+- This is a non-scientific technical/provenance review. Native composite scope and the final bounded primary-assay passage fidelity were inspected, but full primary literature support is assessed separately.
+- Shared root-executed full gates are verified by original logs and complete tested-core bindings; they were not duplicated by this reviewer. The full suite ran before one AST-equal test-only formatting correction; the complete affected test file and lint ran again on final bytes. Generated graph payload/anchors were checked, but visual layout geometry was not assessed in a browser.
+- Raw originals remain external and hash-bound. Two overwritten historic log_path locations resolve to explicitly preserved original logs, and the historical adapter-validation test hash resolves to the retained pre-format test snapshot. The receipts do not claim current mutable paths still hold historic bytes.
+- The search audit recomputes retained compact projections and baseline identity bindings, not a fresh global search. Its ignored/hidden-inclusive author search has the explicit binary, symlink, worktree and provider exclusions recorded in evidence.
+- The evidence package records corrected intermediate author observations and failed preliminary builds honestly; absence of an exact pre-fix draft is not replaced with fabricated historical hashes or structured lineage.
+- This source.state working_tree review does not prove Git membership. Exact committed blobs, every retained maintained_path declaration and every passing review input must be checked after commit and before publication.
+- The shared initial lint run exposed one overlong test decorator. The exact pre-fix bytes/log and final AST-equal formatting fix are preserved, and focused tests plus final lint passed. This already-applied correction is an evidence-linked assessment, not a fabricated resolved structured finding. A clean technical review does not dispose of earlier scientific findings.
+- Final package scrutiny also corrected nine validation-retention original_path fields from raw log paths to exact JSON-wrapper paths, while preserving their raw-log identities and payloads. The initial discrepancy audit and final acceptance are hash-bound external observations; no fabricated structured predecessor is asserted.
+- The earlier authority-audit scope adjective was corrected by an explicit successor retaining the original receipt; actual builder hash and results were unchanged.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T154449Z-next-254-independent-integration
+kind: repository
+repository: CultureBotAI/PathwayMech
+title: Independent P184-PWY integration, authority, parser and generated-graph review
+started_at: '2026-10-14T15:15:34.991135Z'
+finished_at: '2026-10-14T15:44:49.516615Z'
+reviewer:
+  identity: codex independent integration reviewer /root/next254_independent_integration
+  kind: agent
+  model: gpt-6
+  independence: independent
+  independence_basis: Separate reviewer authored none of the maintained pathway, production
+    parser/tests/docs, authority snapshots/manifest, author dossiers or history. Reviewer
+    read and challenged parser boundaries, requested same-label/cross-path conflict
+    checks, authored independent adversarial probes and audit receipts, and saves
+    only this independent review bundle. Shared full gates were executed by the integration
+    author and their actual logs/input bindings were independently verified.
+skill: .claude/skills/pathwaymech-resolve-reviews/SKILL.md (review history interpretation
+  and bounded repository integration observation under docs/record-reviews.md)
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: No unresolved integration findings in the declared 16-target scope; the initial
+  required lint failure was corrected by an independently verified AST-equal decorator
+  wrap. Exact source-backed authority extension, bounded native homomer alias parser,
+  immutable prior data/history, retained artifact provenance and all 127 final graph/KGX
+  edges pass independent checks. Final executions of all six project gates pass; 788
+  tested core files remain unchanged and one AST-equal test-decorator wrap is separately
+  rerun with final exact bindings. This does not replace the separately saved scientific
+  review or establish committed-tree membership.
+source:
+  git_revision: dfe42721bfd31468cb27b2d6a1a4b460f2b71a12
+  state: working_tree
+  inputs:
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: f28428d63fffaa595f5278e13be5d4d082ed47e87cde6bb5742d20028e009dab
+    role: target
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 120fdbd6a98c3c5126595df08d8c8cab35769b008e43e28cda7462b6d7dc506d
+    role: target
+  - path: data/identifier_authorities/sources.json
+    sha256: 75bdd1b12c5ce4ab8696b3a1a06661318d14a7c0c3691cace26e9725208d2b59
+    role: target
+  - path: data/pathways/protocatechuate-meta-cleavage.yaml
+    sha256: df99d07970ecd4a3512c5923644845595c8ef63a98070edc97aeb25a4979e4bc
+    role: target
+  - path: docs/IDENTIFIERS.md
+    sha256: fbb4312f2bbd69b8ed72d9d39f27a97803165acc225b386b676611dea9617881
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/README.md
+    sha256: 478bf99c5e5cf47f9487e16c1fa78baa4bf1a43598f43f66f9e428e156f3c696
+    role: context
+  - path: history/infrastructure/metacyc-multi-activity-homomer-naming/2026-10-14T152458Z-codex-c7e15d.yaml
+    sha256: 1b3c0008875a971afefc870ce052104b6f815c0aba3074a6c208c395067a1445
+    role: target
+  - path: history/records/protocatechuate-meta-cleavage/2026-10-14T151353Z-codex-5d93b5.yaml
+    sha256: 042d69206509334c95b31c8eb4abf08965e74708628b65d4b8a21613fa662c70
+    role: target
+  - path: history/records/protocatechuate-meta-cleavage/2026-10-14T152459Z-codex-97ae64.yaml
+    sha256: 552e0da98eb3d364d4d60840eea8026372b5589a05c3aa7b77da8a6098e427fa
+    role: target
+  - path: pages/browse.html
+    sha256: 02bfb8dba54e7888739ffb657a89f376efdd3ca04b89241ca206764b8f92cfc5
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 5832714885ade2ae24b05e9f518e810221c4e43a32478053f66c3a76e05cf99b
+    role: target
+  - path: pages/downloads/manifest.json
+    sha256: 9f5e693011ab14358cbbf77fc050b351d4fc8e65c38893565d0ba5c7377cc956
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: db3708aca4ce4dd8abf4cd32f70bee1f4ef3a908d05a65f6b476a364b7af7aa2
+    role: target
+  - path: pages/index.html
+    sha256: b8faa28281d9f7cf7f9116c6b8939712fe22fac6ed246ddcb21b06383c842bb2
+    role: context
+  - path: pages/pathway_index.json
+    sha256: 8b5ca6fd7a2f16f1a14499546df61fc6fc699635b706b07c0a0670112bd66a65
+    role: target
+  - path: pages/records/MetaCyc_P184-PWY.html
+    sha256: fe6ffda03884fc946e26affcc14fd7da57eda04199dedb7efccb7ed657679463
+    role: target
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/acquire_canonical_xml.py.txt
+    sha256: f8f840890056d2b0c0667d2e5f8e6898913098e012369c4460b0ee8297766d12
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/acquire_html.py.txt
+    sha256: 723f22e2eba99caa1cc30fef12cc0edfdf4afa3340b83d627c9040ecef81e85f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/baseline-authority-summary.json
+    sha256: a21555357af69428b13f59290064ae6500af763dc5c071ae9e9b46d94a7e2c4e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/baseline-original-cache-verification.json
+    sha256: 27887d0c4f3305db8eb3891fefe21f77c2d7348c58a0bfe6863940d1359ceb4e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/canonical-build-commands.json
+    sha256: bec30d3456e776e2cd4dc1811d18c0bccf050ec55eaa9bfa9649b02224cdceab
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/canonical-native-acquisition.json
+    sha256: 4a76b76f26223fe93c12cd6a6b663aff58cc57960b9f89005dc0870d2f76dfd1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/follow_html.py.txt
+    sha256: 5e5b2368f67d7c51579845cce2bebe74d229d374f1e6ac37ca3cd272812f47e4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/html-acquisition.json
+    sha256: 89a58f0e13b3aa437bf697dc29da7b789c1247ab65372b8f1b82905b37af431d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/html-followup-acquisition.json
+    sha256: 14d9c74008b3fd470be02599bcb956f7381bd725de6fcdc63b28a257a018f6e6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/new-source-original-bindings.json
+    sha256: 0e2e15bcfbca1dbd0d1cd70edcefd764de45678e0bc7586d5ec3ab45f3510ba1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/ontology_builder-receipt.json
+    sha256: 3a4942dba630f4211ce5ef2d67352bf6a7edbe0349492538c880699bda384c9a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/ontology_builder.log.json
+    sha256: 53fc9d9f6c96079bd77c67a7606169744b4790640890995e9cccfac8c643ca0d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/planned-identifiers.json
+    sha256: f0099cef5ba9275076612c6a3ebd256e56702404c9d0157d9bdff1845e40cce6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/prepare_union.py.txt
+    sha256: 9a2b11922abca7808b7e11428f13a5a2723de4be3a28e2071a9dd28d7cfcf697
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/preservation-and-promotion.json
+    sha256: a4ba632546b7baef61dc21ecdccf47b5cd942216c00903519c1290b4791ae8b9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/prior-attempts.json
+    sha256: 7a37918e38b07476b6cb943d4bf602e5bd557428f71d94fc36df80cd4019ade5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/promote.py.txt
+    sha256: e36f9a5410eb5fbdb925edb7a573c184bf2ed311e6fc1b584bbf92017ddf92a4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/proposed-source-additions.json
+    sha256: 47f6bd9e4b632d02e2d9cd63b5ff49d48e89252bcf061bb14bdbe65771398d46
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/retained-authority-identifiers.json
+    sha256: 5d63fa30894cf5068a53a20b67116e896f21fa76580c511cc51da7598af3ba80
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/retention.json
+    sha256: 26b1c3f61b19a8cd3a4ae1de67d21b49b1b955da3ac0ae9c5f241fe1b79eb0be
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/run_builds.py.txt
+    sha256: 5c9a68ed87336da6918c4bc6cb9d0ee723dc44ffc99b2ed8a7467bc420666ade
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/source_builder-receipt.json
+    sha256: 5d6c23380442991f6fe0b2cff18cae582c640e4a8b88cd804b054d4b69f63812
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/source_builder.log.json
+    sha256: 940efb5e99737a9ffd1078a9664e1f9c32e214c1e524ff9ab955fc98727ae08c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/authorities/stage.py.txt
+    sha256: 7c4272f49970d26af9dd76364908f1baee91a7c43014ef7bc82d1f93dcc3c769
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/HANDOFF.md
+    sha256: ee233cfc3c3f2e8613280bef839812c139b3620e791fbf0acaf65c7acfc7e6c1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/acquire.py.txt
+    sha256: 33aa339021a6883f83b63500c8773872290351699adc0834cec1ae6828a1bb56
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/acquisition-components.json
+    sha256: dda9c40f0f5dc227b49843f4fd475165f63b7a54655bce0259c4defc62bb770b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/acquisition-ligk.json
+    sha256: 3962b96a328ae734ae9a204bbad57cf65ff25a6fe69f4ebeab70c6faf1cdcb44
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/acquisition-thesis.json
+    sha256: 97d8b56a559ee5695598721b4a86702e7ff51b2219017e7bef5b72952a857cbb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/acquisition.json
+    sha256: b45a162db2800e7e3d9f3d580a2f97c16b6e45d16243bd9ef79c3accf6610104
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/component-construct-ledger.json
+    sha256: dab3a45b6c270fac95187f2bafb9826e34f3cf5130d17cca785d9cf90a7691c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/extract_html.py.txt
+    sha256: fe274cab39161c3507937cab477e862bedeca7cf79134c117993415d54e81364
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/original-bindings.json
+    sha256: c23a9fffdcd15a7e3637aa878f262a6297cf7071b831b6f05ca94c2bd913c0c8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/package.py.txt
+    sha256: c24010678ad4c16aa480fe4ef332d58771e87916418553dcf0d938c3c8c41ce9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/pdb-construct-projection.json
+    sha256: 151db11854b928d64b3de75f4c317b8b335780569295d2d2699205e4bed9fda7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/project_pdb.py.txt
+    sha256: 1a106630b3f0417b3646bca3194e514a74ade517929548da55b6f234cf088ad6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/render.py.txt
+    sha256: 303042a2d16673fd7b7efc9b5451afb5690e33a3e8840f2793f2aa84b3dc7e9f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/retention-candidates.json
+    sha256: f468941f7ac467fa395244e5ca40f62bb6264d1ad106385d2cb7587cf61e2353
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/retention.json
+    sha256: b488bb9b0f5d12e863532fbb29a9e782962a709d1f6fb411284807558dd942e5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/constructs/supplement-evidence-ledger.json
+    sha256: a82f0b953ac210f19145460c566ccd0dbf164be77e1f2a3cb49e326a7a8a0365
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/curation.md
+    sha256: 09ffd62d9d7d227d1664fc5e4b740d3f1c848d7dd9a234af6e5e8dda421ea09d
+    role: target
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T152038Z-adapter-adversarial.json
+    sha256: 05feb159d154964ff8868c0634b9b3929c12106bb3d4335a39df9c997adc2c65
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T152730Z-authority-audit.json
+    sha256: 96745c1eabe474d076f90aea3413013ae5ba54ea84d9d64d330a1effac691b55
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T152754Z-graph-audit.json
+    sha256: 9af0ff58f3f2cfb4ee0540e5776be82695766197dd6e248042e84bd0ece76dca
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T153048Z-external-audit.json
+    sha256: 7e38104449866089f77a05630ddec19ceb1b22dd44666085db3e49576cc95d36
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T153306Z-working-audit.json
+    sha256: db8781755f0b27e80ab4092f1e7c19aa9c66b35f1b27ac650ea345929e65fd1d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/adversarial_adapter.py.txt
+    sha256: 6bb1f7547c651810892be208c4bf7479261077b1a38cb44182391d1b2af95a76
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/authority-acceptance.json
+    sha256: 3d92b85f7a3096578645a2863daf9db3135ee5935859815c3d6ce866b1d96d8c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/authority_audit.py.txt
+    sha256: 04e57f1b2fe09537ecab8d6df1ce851c1a962196ca395b4d5b545c7ace0d53fd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/external_audit.py.txt
+    sha256: 3884f479de29dff9b5e0e387f407087195408faf6f17e293752bc66501762a06
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/final-assay-integration.json
+    sha256: 715fb438004c024f2aa3c53b13e6e072943a8b53712521a566cf809605b3816c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/gate-acceptance.json
+    sha256: b861ed632b49b18bf3553b75688a1d5b8ba960715aed26fc9075bf9ca4a25802
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/gate_audit.py.txt
+    sha256: aeebc44eaf07339ce0977784bb6cc9e4ba74d11487350de3d4bac3707570d35c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/graph_audit.py.txt
+    sha256: cc76a99748436dc0435946acd35a8dda3f01918e4e1307636e5970f2ecfd8aca
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/kgx-export-acceptance.json
+    sha256: 5344b991269d4d61f15ca662e51d54e251bd8e8a449093cc0a9b54ea6d5c0a01
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/kgx_export_audit.py.txt
+    sha256: 29c12c5c7eb92626418bd452c199824fc52a8b8ac49e101b1750a3c6bd997ecf
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/package_audit.py.txt
+    sha256: 146c4cbfcbb630b5aa2facbf6f9fddf47983b3412ecdce7bb21efe0f51df1a14
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/retention.json
+    sha256: e711f8a6c3f1456baa8aea343a5ec03de5db9bfebf6032861ea692fe430e46a6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/search-scope-audit.json
+    sha256: a8047adbeca6274b8ae19269cdaee0883e7df7080f72be2d03afc684284f4f5b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/search_audit.py.txt
+    sha256: 91e1f5617e4295106cc42ae1f5e8d43c7697f0b4ba844b8c153667bbe3b7e6d9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/final-maintained-replay.json
+    sha256: ef390c30dd57ea1daa0d12990e16d390b2e2115d889d1ebca3488e9f1b555a09
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/final-primary-evidence-replay.json
+    sha256: 85019c02c7d426f5ce1a1c0e72cfef3b2b775fa91dff916ccc15b3cf83c4275e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/final-target-delta-acceptance.json
+    sha256: 66a14a4b92bf6e41d4bfb474c7789917390c7ac354ec61954cdec0756da3d6b6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/independent-authority-node-audit.json
+    sha256: a9da9fb849b58eca19bce29afe0ffcea542b6ab107163d088970734344669a4c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/independent-chemical-comparison.json
+    sha256: 6a4ea6c64d94ef12bbd975ed9a0b0332bdea64f03ad2442ff7f023f99e0dccbe
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/independent-imodulondb-context.json
+    sha256: ca60e52e24912b7ffaba2fa5afcd954e96751438c816889039997e3a89e2b53e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/independent-native-coverage.json
+    sha256: ac3c555ac843fc2961e6335690b6ac0d33b9ac6403646f40b31e634c7dea814b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/independent-primary-reading-ledger.json
+    sha256: 44f9ba8493373fef7972c4cab4ef204b144ccf6132e785e00f871b2fb41e0358
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/independent-review-lineage.json
+    sha256: cc551eb52dd15de690f8a411d6bb30bebfc95aae9a99c26c04fd7c3ec59bb081
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/independent-sequence-replay.json
+    sha256: 50895f041e7af17b6dd5a2259c6882fc64d4ad69ba04592989497fe037fee0da
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/initial-maintained-replay.json
+    sha256: 759a391c6dfc63b844653103f0030c3d5af71dd962dd8279818879437b6f2353
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/ligk-primary-completeness-finding.json
+    sha256: 2714c74f752502f2980bf2482c453f27a617e15006469a47c1cb0a44f0edcc9e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/replay_authority_nodes.py.txt
+    sha256: 3ab0180a3d90d82758bc3c0460ef0348d1a7984f9c0020e4c5bee5a346014606
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/replay_native.py.txt
+    sha256: 7760b30ce6f01bc033a345af425adc648e4338f343c250f8032581693a0c8d6d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/replay_native_coverage.py.txt
+    sha256: 4c1ab2986c3165519bf46eb243a099514b6b763b97329002bf6ad27689cfcbf6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/replay_primary_evidence.py.txt
+    sha256: 75e113ade955a60c414c3f0f26966b25dd998254d62a391afbc86f7efc6a28e0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/replay_sequences.py.txt
+    sha256: 412a7ac3bd89562c767aa89e9b929c655e337afb0a694e65e9b98617a298a10e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/retention.json
+    sha256: a3f8da98c084061439f1d7411511f606f8c38694bd9f8e052886a8bd1076f2c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-scientific-audit/transient-mapping-observation.json
+    sha256: 10304eea655db8a976dd7aba18d43cd68f9c37c18e0ec067aee014d8071f7844
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/HANDOFF.md
+    sha256: 13426db4681782319bafa3fd9b14ad2d1bc46ce21f81cc73c9899d0c2dcc6482
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/LigC-kinetic-table3-audit.json
+    sha256: 4c940995bacae915ad9bb8f5b5c014d7865baaba9795b5ad446bda401f746c7c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquire.py.txt
+    sha256: 7235ec52635098397f9e3a031a0ff76afc154aaaf0b132be37a33c873efd312a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquire2.py.txt
+    sha256: fec89208d8448e08810a8f939d31d8356008e88530e017e8d7fbeacd9f042d45
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquire3.py.txt
+    sha256: 04d11459c7257f5f6eb965aee24b49d42402ffd5db16f354eeeb0867aba2cd9b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquire4.py.txt
+    sha256: ee733b68e144d2c0ea8da32710665a7b302a9dcf0fa1a858c71452314d11280f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquisition.json
+    sha256: bc095e7da2ebce2cf630031f4e084d070eabe3f2441121903c7b90002bf190a0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquisition2.json
+    sha256: e67099fb20ce455aee8820acb8f38c4cca3ea1a7668b51849a232575c364ee18
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquisition3.json
+    sha256: 01532e9eae07952ac2e235a734fc78fc3d991770f29409dfcf2833782aa75e22
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/acquisition4.json
+    sha256: ca435d5b99619c30df305d48e48d6ce44395851bbd3aa04b84addf8328d706ac
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/adapter-validation.json
+    sha256: dca0b07fc1328660723ea567dc4941be731bf88f88e19d87f0e563c9d6bd37f5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/artifact-manifest.json
+    sha256: d258d8dad4989dc18d6374dc80faf50a5bc7f41bc1eddaa337b59f9177b0176c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/build_extension.py.txt
+    sha256: 9340f2b81bdfb2c3c24d62bfb28f0ffd48245d40a4afb51b6734d3df422c26a0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/check_complex.py.txt
+    sha256: 0461b5bf7081def612cd976391de1dc4e42af5985f9110fbfda03018188a6868
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/complete-native-slot-dispositions-final.json
+    sha256: 32c5e2ec6bdb26f59d45a7f1767d3c44f0d3525180ca6e0fe8ce7bab74635618
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/complete-native-slot-dispositions.json
+    sha256: 0730f17e598b560bcafb8c4958327ec5b215c60afa25c01a6e4c00a4fe781f48
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/complex-authority-attempts.json
+    sha256: 7784c6527d56762d4619f7207c1db0e54fee127396fd36e4cdd0bb2b7eda0636
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/deposited-CDS-sequence-audit.json
+    sha256: 784f32c98798e788deaf1e20b927a5e0baaa19e78675317a9928946befaf5e9c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/enrich_extension.py.txt
+    sha256: 792e602c2b054b0745074250459de9080f2523069a34477fbf6b0147436e29c2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/graph-extension-final.json
+    sha256: f332e2fcb4c5b918cd0da093a96c3056f53279abc0cf6c44bd077659e30c9221
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/graph-extension.json
+    sha256: 361731b427db6aa066013659622b1c3e1d1bfb6c4d54558059b66750695eb7ab
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/native-catalyst-reaction-join-audit.json
+    sha256: f57319946d49346949790bd7bab878bad22834b9af9cf386995dd37990ae5688
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/package.py.txt
+    sha256: 3cbbff3c3aa8fa2c6a5d064ae68232843049aea181c51ee28389364c113eb3d7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/primary-component-evidence-successor.json
+    sha256: a6ee1b058447280626bc5cb86b67d5750bed24bdd9b6c9c239aa81c52c0ea847
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/quote-budget.json
+    sha256: 542e4849492c16d20b376f6efc6dd4ce70d8eb309d189afc50c0fbc65192ceb7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/retention.json
+    sha256: 7445289e0f3e60ca428f00ed7025df9b533cef4d960c52e43bd359664e308be0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/sequence_audit.py.txt
+    sha256: fd7bc59e1bb746f663e5bf58713ff811f53bc9c8fd5d3f639b38d8b36ea98374
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/native-evidence/source-acquisition-bindings.json
+    sha256: 3e2a781720e6e18ef6868e601ff31e89f061dc138cbbbb8a2be877d59176fe9b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/preflight/baseline-record-bindings.json
+    sha256: b1f051734bd653f30c83365a546a63620291dbd12131eb42ee73c584f8e5b465
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/preflight/dedup-compact.json
+    sha256: 4d3452795e921a241ab3d1a257d3b04a31e1689b6ee42d9c241819cbdd060f95
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/preflight/patterns.txt
+    sha256: 01800608a4bd804e8a194d1c7bbe324d4ac1c5f326a6cb70ab7fe79122d53411
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/preflight/renew_preflight.py.txt
+    sha256: 1f28ab507250752bc8799ce34881dcae6c94bfe2be413ca02422df56a457a38f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/preflight/retention.json
+    sha256: 7f3df0c013fe5acba95d2b04a6736c1c64ccd8e2bf4ae0d5c01b4c74d6264d6c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/primary-assay-followup.json
+    sha256: 5e2622da07616ac5f4fa509480820da6c52d15d9537063ef0cef42021258080c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/record-index.json
+    sha256: 61560f8c8362c7c081f7b6600f567d2a8070bf1b20207568ed01e45de77b7e3b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/reproduction.md
+    sha256: c15343e5b05fdb93b9c949f6fc4bbb7469442f745f8e6d054df1840548314d79
+    role: target
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/HANDOFF.md
+    sha256: 4c76efb519b92f3107f35720ca3de04932990b545bd71308afe8dfb7c54b4925
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/assemble_record.py.txt
+    sha256: 138732d1d3109aa40e3a72f4907f1449345736525f22d9fbca446b31aa41927d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/assembly-check.json
+    sha256: 286b65a170a855bbc2d98a2ba49dcf6d1a0a1a09f4e0a88391311bff7123c03b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/chebi-acquisition.json
+    sha256: 2e534315d816355ff819be6b096d5a359b949fda541471e2b1898450c8809230
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/chemical-coverage.json
+    sha256: 871efd7016bc5a69ff06fd45c4e0b830916aaa27590b184d4b4da9d2b51eafa1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/compare_chemistry.py.txt
+    sha256: 5511f40b0b151a177aa45db18065fc4e227b3108f210e11282844ceb1dc8b504
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/complete-native-graph-proposal.json
+    sha256: 6eee9e2b1c3cd2fdb418259f3f5f8652ec9729d73e7bd363525abb67e12c52bd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/exact-chemistry-comparison.json
+    sha256: 5a0fc7442b0acc2ac4eb9cc279973ab03440eb2680f83adf1c7a8d19e8c2155b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/extract_rhea.py.txt
+    sha256: fef6b14aacbc7bb81278813e42343284b42e7950608565d5a3910a3745c7bce0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/fetch_chebi.py.txt
+    sha256: b0eae9127c9af2b9d6b4f97522dadfd75031ca65b825f11298a5df3dab568a45
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/finalize.py.txt
+    sha256: f39a1eb076c7765278c2ae8da1b30a629fe8e8c7fc726dd476e2b2d8bf1e5648
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/merge-accounting.json
+    sha256: a5e730277ce0d5caf5ae4ee7deb5ba069131fe4883d51f45253924dc538688dc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/propose_graph.py.txt
+    sha256: 7420701b8e36b4fb2b5393afae2d1e451a79a3d8e27f821694e535468ef1051b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/record-identifiers.json
+    sha256: 8163e6b058c7af42a1c0b5100d7be084564bebc1f607c0a4a571c2c69aa07f93
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/retention-candidates.json
+    sha256: 4f8cc68cb5c491c95693dd86b14d58d8b11e43e67d3e1bfbdac406d77b5157c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/retention.json
+    sha256: c87aaea5583b4462288e5859db525d2461fe4600ae9729e588a013f5e7771d28
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/route/rhea-original-projection.json
+    sha256: 0422d42c5b18a96b7d6dcf0269e7c1399a331ddfde145f8b036a378d02704b40
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/environment.json
+    sha256: ca82c94dca153be2ae80b459f9cda77658e7099f9508f3abeccbb0370c43ff4e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/final-core-input-hashes.json
+    sha256: 48c071faa1241c0824256620a275038b5e6b63b8fde1aee9a6831c0f937f904d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/final-input-preservation.json
+    sha256: 9a53ac646c4483aca7780522071890cedd4cbdea9d1e43819a000bd234c8d880
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/finish_checks.py.txt
+    sha256: 1b352a5bd60a0e9a7caf750fb62f9dd6fbbdb20f4829fde90011198571150fd3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/finish_network_checks.py.txt
+    sha256: bafdaf1be42c0973afe6248fa9bda67a32aac79592e0a47c9714226177ba7ce7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/git-diff-check.log.json
+    sha256: f6d06c0dfac3a894c2d7cfc7b8f50daa8912981fb18d4b5abac3e4d3c16bb24f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/just-lint.log.json
+    sha256: bba867a17d35204be1f675e1bb3abc59f7cd6078d2f9ed700f47e9ae1688e1b4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/just-render-pages.log.json
+    sha256: 30ad8692c91db4e7949642d06cbe31eef1035036ba29fd3339f5a3f7ccf33fb1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/just-test.log.json
+    sha256: ee1dfc44226086bdc9bfed8bb18851bb76a308e16086ceec16b56848404f5980
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/just-validate.log.json
+    sha256: 23be024df8d1fe12c78df532039ee4427eb1fa9ff5ffbbb080ba540c34ba2971
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/just-vendored-check.log.json
+    sha256: 370918301d0098a7aa58134b096ee83a9bdf0b26f5d287d5bf3b8ef3656bf27d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/lint-formatting-delta.json
+    sha256: 602c4ef1ead41c5e148f0580e4db9a6f45bfec24f8c7b50e6158556bd7c014af
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/network-vendored-check.log.json
+    sha256: 5986824d8ca6d34696ecf241c88582b92b77b5bfcf0ca25169010a687985f283
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/post-format-focused-test.log.json
+    sha256: 0697fc87a15841091f1f89cb2c5d5cd000ac31ba903417ac7e417eff4ab58f6e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/post-format-lint.log.json
+    sha256: d8afa6a3403a834e03fb66c1c873bf12bee61c45f5184fa217604f75a15d951d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/pre-lint-fix-receipts.json
+    sha256: fcad52664247d5a58c37e9db893904034d38cdbd2c142ec951583f1c492ec4d4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/pre-lint-fix-test.py.txt
+    sha256: 84525244f5125e4b1104419b84d135cf439b8b85a3cc531b4c40b332e6f88e0a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/receipts.json
+    sha256: 758966e13a6a40ac4db65937500e4f0310d0c12eeb817676af52cfd46a4d072b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/retention.json
+    sha256: c1125a53009ff4a0516eb6f7daa935b00638f69dc0dc4f2eaac11b620a3802c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/run_checks.py.txt
+    sha256: a9718174185407b8a1916e67a65e9c15582f23519adcca550cc3bb596725d8bf
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/validation/tested-core-input-hashes.json
+    sha256: 22cbdc1c1119fd3011d7e16e6f846dceff98cce089f62b5e563b74d779717007
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 5962976b3a843dddec3b193bfb08f3052ac0846980445c3d223000c69e6590a5
+    role: target
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: scripts/render_pages.py
+    sha256: 1a33dd27e2c90306080c482ac77890ef561763bbff09f3454526d04bf9588cee
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 45bbedd4459f21d4189e3eeb35504ff71ba664e975f4cdde7250a61e9ae3215b
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+  - path: tests/test_metacyc_complex_naming.py
+    sha256: 272a17797ca5de0040897958e5044457ddc942d7dc0d6d7f9900956e78275171
+    role: target
+scope:
+  description: Independent technical integration/provenance/code review of the final
+    P184-PWY addition and its bounded authority-parser support. Review covers all
+    16 expressly selected maintained/generated targets; dossier files are provenance
+    context, not a claim of full scientific reassessment.
+  selection: All changed maintained core owners, canonical new history events, final
+    record and its principal generated projections; complete final compact dossier
+    retained as provenance context.
+  coverage: full
+  population_size: 16
+  reviewed_target_ids:
+  - pathway
+  - adapter
+  - tests
+  - identifier-docs
+  - manifest
+  - ontology
+  - sources
+  - dossier
+  - reproduction
+  - history-create
+  - history-edit
+  - history-adapter
+  - page
+  - kgx-nodes
+  - kgx-edges
+  - index
+  exclusions:
+  - target: 'Full scientific pathway and literature support, issues #534/#537/#538
+      dispositions'
+    reason: Owned by the separate independent scientific review; this clean technical
+      observation cannot silently close those findings.
+  - target: Publication-time committed tree, remote PR checks and merge result
+    reason: Working-tree source attestation only; independent exact Git-blob membership
+      audit is required after the author creates the final commit.
+  - target: Whole original paper/figure acquisition replay and exhaustive global source
+      search
+    reason: Exact original hashes and bounded inspected passages/projections were
+      verified; raw remote reacquisition and broader reading/search were not repeated.
+targets:
+- target_id: pathway
+  path: data/pathways/protocatechuate-meta-cleavage.yaml
+  label: 'P184-PWY final record: integration and provenance'
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: Maintained owner for future fixes
+- target_id: adapter
+  path: scripts/build_source_identifier_snapshot.py
+  label: Bounded unnamed multi-activity homomer authority parser
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/build_source_identifier_snapshot.py
+    role: Maintained owner for future fixes
+- target_id: tests
+  path: tests/test_metacyc_complex_naming.py
+  label: Native complex naming regression cases
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: tests/test_metacyc_complex_naming.py
+    role: Maintained owner for future fixes
+- target_id: identifier-docs
+  path: docs/IDENTIFIERS.md
+  label: Identifier authority adapter contract
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: docs/IDENTIFIERS.md
+    role: Maintained owner for future fixes
+- target_id: manifest
+  path: conf/identifier_sources.json
+  label: 997 native source entry manifest
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: conf/identifier_sources.json
+    role: Maintained owner for future fixes
+- target_id: ontology
+  path: data/identifier_authorities/ontology.json
+  label: Ontology authority union
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/build_ontology_identifier_snapshot.py
+    role: Maintained owner for future fixes
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: Maintained owner for future fixes
+- target_id: sources
+  path: data/identifier_authorities/sources.json
+  label: Source authority union
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/build_source_identifier_snapshot.py
+    role: Maintained owner for future fixes
+  - repository: CultureBotAI/PathwayMech
+    path: conf/identifier_sources.json
+    role: Maintained owner for future fixes
+- target_id: dossier
+  path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/curation.md
+  label: Compact dossier provenance and declared evidence scope
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/curation.md
+    role: Maintained owner for future fixes
+- target_id: reproduction
+  path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/reproduction.md
+  label: Reproduction instructions and limitations
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-254/meta-cleavage/reproduction.md
+    role: Maintained owner for future fixes
+- target_id: history-create
+  path: history/records/protocatechuate-meta-cleavage/2026-10-14T151353Z-codex-5d93b5.yaml
+  label: Canonical record creation history
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: history/records/protocatechuate-meta-cleavage/2026-10-14T151353Z-codex-5d93b5.yaml
+    role: Maintained owner for future fixes
+- target_id: history-edit
+  path: history/records/protocatechuate-meta-cleavage/2026-10-14T152459Z-codex-97ae64.yaml
+  label: Canonical assay and label correction history
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: history/records/protocatechuate-meta-cleavage/2026-10-14T152459Z-codex-97ae64.yaml
+    role: Maintained owner for future fixes
+- target_id: history-adapter
+  path: history/infrastructure/metacyc-multi-activity-homomer-naming/2026-10-14T152458Z-codex-c7e15d.yaml
+  label: Canonical parser history
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: history/infrastructure/metacyc-multi-activity-homomer-naming/2026-10-14T152458Z-codex-c7e15d.yaml
+    role: Maintained owner for future fixes
+- target_id: page
+  path: pages/records/MetaCyc_P184-PWY.html
+  label: Generated P184 record page and graph payload
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: Maintained owner for future fixes
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/graph_view.py
+    role: Maintained owner for future fixes
+- target_id: kgx-nodes
+  path: pages/downloads/nodes.tsv
+  label: Generated global KGX node contexts
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: Maintained owner for future fixes
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/kgx.py
+    role: Maintained owner for future fixes
+- target_id: kgx-edges
+  path: pages/downloads/edges.tsv
+  label: Generated global KGX edge rows
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: Maintained owner for future fixes
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/kgx.py
+    role: Maintained owner for future fixes
+- target_id: index
+  path: pages/pathway_index.json
+  label: Generated pathway discovery index
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: Maintained owner for future fixes
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/render_pages.py
+    role: Maintained owner for future fixes
+checks:
+- check_id: authority-replay
+  name: Original-backed authority extension
+  status: passed
+  required: true
+  summary: 997 original byte checks, 37 source replay comparisons and 19 SQL-extracted
+    additions pass; 4,835 terms and 784 prior owners preserved.
+  target_ids:
+  - ontology
+  - sources
+  - manifest
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/authority_audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-authority
+  - e-package
+- check_id: adapter-probes
+  name: Independent parser adversarial probes
+  status: passed
+  required: true
+  summary: All 32 independent probes pass, including malformed names and same-label
+    native scope changes before selection.
+  target_ids:
+  - adapter
+  - tests
+  - identifier-docs
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/adversarial_adapter.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-adapter
+  - e-code
+- check_id: graph-serialization
+  name: Generated graph fidelity
+  status: passed
+  required: true
+  summary: Exact final page/graph payload, qualifiers, endpoints and anchors pass.
+  target_ids:
+  - pathway
+  - page
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/graph_audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-graph
+- check_id: kgx-serialization
+  name: Actual KGX export fidelity
+  status: passed
+  required: true
+  summary: Actual global TSV output retains 127 exact edges and 77 node contexts.
+  target_ids:
+  - pathway
+  - kgx-nodes
+  - kgx-edges
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/kgx_export_audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-kgx
+- check_id: external-provenance
+  name: Complete retained external hash bindings
+  status: passed
+  required: true
+  summary: All observed source/receipt hashes verify, including explicitly relocated
+    historical logs; no unresolved mismatch in its declared earlier package stage.
+    The final external successor separately accounts for the later formatting delta
+    and validation wrappers.
+  target_ids:
+  - pathway
+  - dossier
+  - reproduction
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/external_audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-external
+- check_id: dedup-scope
+  name: Search compact projection consistency
+  status: passed
+  required: true
+  summary: All compact pattern projections and 250 baseline record bindings match
+    exact source projections/base blobs.
+  target_ids:
+  - pathway
+  - dossier
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/search_audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-search
+- check_id: final-package
+  name: Final retained package consistency
+  status: passed
+  required: true
+  summary: Final recursive hidden/ignored-inclusive dossier audit passes; no retained
+    path/hash mismatches, unexpected modifications, prior immutable changes, forbidden
+    raw payloads or broken local links.
+  target_ids:
+  - pathway
+  - adapter
+  - tests
+  - identifier-docs
+  - manifest
+  - ontology
+  - sources
+  - dossier
+  - reproduction
+  - history-create
+  - history-edit
+  - history-adapter
+  - page
+  - kgx-nodes
+  - kgx-edges
+  - index
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/package_audit.py
+    working
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-final-package
+- check_id: shared-required-gates
+  name: Required project gates and tested-byte bindings
+  status: passed
+  required: true
+  summary: Independently verified root executions of just render-pages, just validate,
+    just test, just lint, just vendored-check and git diff --check; final executions
+    of all six required gates exit 0; full suite 4960 passed/3 skipped, then one AST-equal
+    test-formatting fix passed the focused file and lint. All 788 other tested core
+    files remain exact; all 789 final bindings match.
+  target_ids:
+  - pathway
+  - adapter
+  - tests
+  - identifier-docs
+  - manifest
+  - ontology
+  - sources
+  - dossier
+  - reproduction
+  - history-create
+  - history-edit
+  - history-adapter
+  - page
+  - kgx-nodes
+  - kgx-edges
+  - index
+  command: python -B /private/tmp/pathwaymech-next-254-independent-integration/gate_audit.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - e-gates
+evidence:
+- evidence_id: e-authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/authority-acceptance.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Independently SHA-checked all 997 exact original source-cache artifacts,
+    replayed all 37 added source terms/owners with the reviewed canonical builder
+    and an ID-only selector, and independently extracted all 19 added ontology terms
+    directly from pinned SQL. The scope-wording correction preserves its earlier receipt
+    and changes no result.
+  snapshot_sha256: 3d92b85f7a3096578645a2863daf9db3135ee5935859815c3d6ce866b1d96d8c
+- evidence_id: e-adapter
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T152038Z-adapter-adversarial.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: '32 independent probes passed: exact unmodified native original, ten malformed
+    inputs, equivalent activity reordering, and 20 same-ID conflicts in both manifest
+    orders and selected/unselected states. Malformed direct names cannot fallback;
+    direct-name, sole-activity and HTML downgrade conflicts reject before selection.'
+  snapshot_sha256: 05feb159d154964ff8868c0634b9b3929c12106bb3d4335a39df9c997adc2c65
+- evidence_id: e-graph
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T152754Z-graph-audit.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Final exact renderer output and embedded graph preserve all 127 edge endpoints,
+    predicates and evidence anchors, 78 graph nodes and seven qualified nodes. Local
+    anchors and node IDs resolve; all qualifier/evidence/reference metadata remains
+    explicit.
+  snapshot_sha256: 9af0ff58f3f2cfb4ee0540e5776be82695766197dd6e248042e84bd0ece76dca
+- evidence_id: e-kgx
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/kgx-export-acceptance.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Actual exported global TSVs contain the exact 127 record edge serializations
+    and all 77 record node declaration contexts after corpus merging.
+  snapshot_sha256: 5344b991269d4d61f15ca662e51d54e251bd8e8a449093cc0a9b54ea6d5c0a01
+- evidence_id: e-external
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T153048Z-external-audit.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: 849 absolute-path/hash observations across 390 paths verified; two mutable
+    historic log locations are explicitly resolved to preserved originals with exact
+    hashes. No unresolved mismatch; all 85 final record source hashes are original-backed.
+  snapshot_sha256: 7e38104449866089f77a05630ddec19ceb1b22dd44666085db3e49576cc95d36
+- evidence_id: e-search
+  kind: search
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/search-scope-audit.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Independent recomputation of all compact count/path projections matches
+    552 unique patterns per root and all 250 baseline record identity/hash bindings.
+    The reviewer inspected projections and command scope rather than repeating the
+    search.
+  snapshot_sha256: a8047adbeca6274b8ae19269cdaee0883e7df7080f72be2d03afc684284f4f5b
+  search_scope: Author text search explicitly includes hidden/ignored files in current
+    main and active next254 worktree; .git and .venv excluded. Binary content, directory
+    symlink targets, other worktrees, providers and every external cache are outside
+    exhaustive scope. No source-exhaustion conclusion.
+- evidence_id: e-assay
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/final-assay-integration.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Bounded primary-text fidelity check of LigK purification, enzyme-property
+    and product-identification passages against the original HTML; three retained
+    snippets total 22 words and match after whitespace normalization. Final metal/phosphate
+    and N-terminal-processing qualifiers retain assay/construct scope.
+  snapshot_sha256: 715fb438004c024f2aa3c53b13e6e072943a8b53712521a566cf809605b3816c
+- evidence_id: e-package
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/20261014T153306Z-working-audit.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Earlier complete package audit proves all 250 baseline pathways and 14,028
+    baseline research/history/review files unchanged, all 4,835 prior terms and 784
+    prior owners preserved, and the 960-entry manifest prefix identical. Stage-bound
+    package references and links pass; later additions are checked separately.
+  snapshot_sha256: db8781755f0b27e80ab4092f1e7c19aa9c66b35f1b27ac650ea345929e65fd1d
+- evidence_id: e-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/independent-integration-audit/gate-acceptance.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Independently verified nine actual root-executed receipts for six required
+    gates plus a focused rerun, including preserved initial lint and sandbox-DNS failures,
+    original complete log hashes and 788 unchanged tested-core files plus one independently
+    AST-equal test-formatting delta. This records shared execution, not a second full-suite
+    run.
+  snapshot_sha256: b861ed632b49b18bf3553b75688a1d5b8ba960715aed26fc9075bf9ca4a25802
+- evidence_id: e-final-external
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-254-independent-integration/20261014T154420Z-external-final-audit.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: 'Final successor checks 920 external path/hash observations across 437
+    paths: no unresolved mismatch and all 85 record source hashes backed. It explicitly
+    resolves the historical test input to retained pre-format bytes and two historical
+    log relocations. Nine validation retention originals now correctly identify exact
+    external JSON wrappers; raw log identities remain inside each lossless wrapper.'
+  snapshot_sha256: e807e3d49724b0d4d6aa3e56506dd29dfd8078bc74af965de40799965953877d
+- evidence_id: e-provenance
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-254/meta-cleavage/curation.md
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Read final curation and reproduction reports with retained final artifact
+    manifests/acquisition hashes and canonical build/promotion receipts. Failed preliminary
+    builds, corrected drafting observations, external raw originals, bounded literature
+    reading and source-defined composite scope are disclosed.
+  snapshot_sha256: 09ffd62d9d7d227d1664fc5e4b740d3f1c848d7dd9a234af6e5e8dda421ea09d
+- evidence_id: e-record
+  kind: record_content
+  reference: data/pathways/protocatechuate-meta-cleavage.yaml
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: 'Read complete final pathway and checked provenance/serialization: six
+    taxa, 62 participants, eight reactions, 127 edges, 85 references and seven qualified
+    endpoints, exact SHA df99d07970ecd4a3512c5923644845595c8ef63a98070edc97aeb25a4979e4bc.
+    This is technical integration assessment; independent scientific review owns pathway
+    support.'
+  snapshot_sha256: df99d07970ecd4a3512c5923644845595c8ef63a98070edc97aeb25a4979e4bc
+- evidence_id: e-history-0
+  kind: record_content
+  reference: history/records/protocatechuate-meta-cleavage/2026-10-14T151353Z-codex-5d93b5.yaml
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: 'Read the entire newly appended canonical event: correct record/infrastructure
+    identity, actual author/tool/model and bounded creation, refinement or parser
+    purpose; no prior event rewritten.'
+  snapshot_sha256: 042d69206509334c95b31c8eb4abf08965e74708628b65d4b8a21613fa662c70
+- evidence_id: e-history-1
+  kind: record_content
+  reference: history/records/protocatechuate-meta-cleavage/2026-10-14T152459Z-codex-97ae64.yaml
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: 'Read the entire newly appended canonical event: correct record/infrastructure
+    identity, actual author/tool/model and bounded creation, refinement or parser
+    purpose; no prior event rewritten.'
+  snapshot_sha256: 552e0da98eb3d364d4d60840eea8026372b5589a05c3aa7b77da8a6098e427fa
+- evidence_id: e-history-2
+  kind: record_content
+  reference: history/infrastructure/metacyc-multi-activity-homomer-naming/2026-10-14T152458Z-codex-c7e15d.yaml
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: 'Read the entire newly appended canonical event: correct record/infrastructure
+    identity, actual author/tool/model and bounded creation, refinement or parser
+    purpose; no prior event rewritten.'
+  snapshot_sha256: 1b3c0008875a971afefc870ce052104b6f815c0aba3074a6c208c395067a1445
+- evidence_id: e-code
+  kind: record_content
+  reference: scripts/build_source_identifier_snapshot.py
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Read the entire source-builder diff, associated test diff and identifier
+    documentation. Fallback requires absence of direct common-name, validated homomer
+    component/coefficient, all activity/enzyme/reaction joins and an unambiguous exact
+    native alias match. Native signatures are reconciled before corpus selection;
+    existing outputs remain preserved.
+  snapshot_sha256: 5962976b3a843dddec3b193bfb08f3052ac0846980445c3d223000c69e6590a5
+- evidence_id: e-index
+  kind: record_content
+  reference: pages/pathway_index.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: 'Inspected exact index diff: one new P184-PWY entry, unchanged earlier
+    entries and coherent final counts/context.'
+  snapshot_sha256: 8b5ca6fd7a2f16f1a14499546df61fc6fc699635b706b07c0a0670112bd66a65
+- evidence_id: e-final-package
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-254-independent-integration/20261014T154434Z-working-audit.json
+  accessed_at: '2026-10-14T15:44:49.516615Z'
+  support: supports
+  summary: Final post-retention recursive package scan verifies every declared maintained-path
+    hash/length and local link, complete JSON/log wrappers and baseline preservation.
+    This final external receipt is hash-bound; its helper is retained in the dossier.
+    Ignored/hidden files included.
+  snapshot_sha256: a7be2122bc7e66fec96a98153f4688729bc3f2f13174409d6d619bb49a9bfa29
+assessments:
+- assessment_id: a-record
+  area: provenance
+  topic: Final pathway integration and primary passage fidelity
+  outcome: supported
+  summary: The final record is original-backed and its explicit qualifiers, source
+    hashes and edge-local evidence survive rendering and KGX export. The bounded LigK
+    passage comparison supports transcription/scope fidelity; this is not a full scientific
+    re-review.
+  target_ids:
+  - pathway
+  evidence_ids:
+  - e-record
+  - e-external
+  - e-assay
+  - e-graph
+  - e-kgx
+- assessment_id: a-parser
+  area: identity
+  topic: Exact native alias homomer naming
+  outcome: supported
+  summary: 'The parser accepts the exact issuing homomer alias without inventing labels,
+    validates all constituent activity/reaction assertions, rejects malformed direct
+    names and ambiguity, and reconciles same-ID scope conflicts before selection in
+    both orders. Tests and documentation describe that bounded behavior; original
+    direct/single-activity outputs remain preserved. The initial 102-character decorator
+    lint defect was fixed by wrapping only its formatting: independent AST comparison
+    is equal, the affected test file passes, and final lint passes; initial failure
+    and exact before bytes remain retained. The separate vendored check DNS failure
+    is also preserved; its network-authorized rerun passes.'
+  target_ids:
+  - adapter
+  - tests
+  - identifier-docs
+  evidence_ids:
+  - e-code
+  - e-adapter
+  - e-gates
+- assessment_id: a-authorities
+  area: grounding
+  topic: Original-backed additive authority union
+  outcome: supported
+  summary: All 56 added terms derive from exact source artifacts or pinned SQL. The
+    997-entry manifest extends its unchanged 960-entry prefix; 4,835 prior terms and
+    784 prior owners are unchanged. P184 HTML supplies identity while full XML retains
+    mechanism evidence; no adapter was weakened for unsupported XML slots.
+  target_ids:
+  - manifest
+  - ontology
+  - sources
+  evidence_ids:
+  - e-authority
+  - e-package
+  - e-gates
+- assessment_id: a-dossier
+  area: provenance
+  topic: Retained evidence and reproduction boundaries
+  outcome: supported
+  summary: Compact retained artifacts have traceable original/helper hashes, declared
+    stage and reading bounds, preserved failed build receipts and candid reconstruction
+    limits. Raw scientific payloads remain external; bounded dedup coverage is not
+    described as source exhaustion.
+  target_ids:
+  - dossier
+  - reproduction
+  evidence_ids:
+  - e-provenance
+  - e-external
+  - e-final-external
+  - e-search
+  - e-package
+  - e-final-package
+  - e-gates
+- assessment_id: a-history
+  area: consistency
+  topic: Append-only canonical history
+  outcome: supported
+  summary: All three appended history events identify their actual scopes and distinguish
+    author checks from independent review; existing research, history and reviews
+    remain byte-identical to the base.
+  target_ids:
+  - history-create
+  - history-edit
+  - history-adapter
+  evidence_ids:
+  - e-history-0
+  - e-history-1
+  - e-history-2
+  - e-package
+- assessment_id: a-projections
+  area: representation
+  topic: Generated page, graph, KGX and index
+  outcome: supported
+  summary: The final renderer and actual exports retain every scoped endpoint, evidence
+    link and qualifier, while the discovery index adds exactly the new record. Maintained
+    owners and generators are identified for future fixes.
+  target_ids:
+  - page
+  - kgx-nodes
+  - kgx-edges
+  - index
+  evidence_ids:
+  - e-graph
+  - e-kgx
+  - e-index
+  - e-gates
+findings: []
+actions: []
+limitations:
+- This is a non-scientific technical/provenance review. Native composite scope and
+  the final bounded primary-assay passage fidelity were inspected, but full primary
+  literature support is assessed separately.
+- Shared root-executed full gates are verified by original logs and complete tested-core
+  bindings; they were not duplicated by this reviewer. The full suite ran before one
+  AST-equal test-only formatting correction; the complete affected test file and lint
+  ran again on final bytes. Generated graph payload/anchors were checked, but visual
+  layout geometry was not assessed in a browser.
+- Raw originals remain external and hash-bound. Two overwritten historic log_path
+  locations resolve to explicitly preserved original logs, and the historical adapter-validation
+  test hash resolves to the retained pre-format test snapshot. The receipts do not
+  claim current mutable paths still hold historic bytes.
+- The search audit recomputes retained compact projections and baseline identity bindings,
+  not a fresh global search. Its ignored/hidden-inclusive author search has the explicit
+  binary, symlink, worktree and provider exclusions recorded in evidence.
+- The evidence package records corrected intermediate author observations and failed
+  preliminary builds honestly; absence of an exact pre-fix draft is not replaced with
+  fabricated historical hashes or structured lineage.
+- This source.state working_tree review does not prove Git membership. Exact committed
+  blobs, every retained maintained_path declaration and every passing review input
+  must be checked after commit and before publication.
+notes:
+- The shared initial lint run exposed one overlong test decorator. The exact pre-fix
+  bytes/log and final AST-equal formatting fix are preserved, and focused tests plus
+  final lint passed. This already-applied correction is an evidence-linked assessment,
+  not a fabricated resolved structured finding. A clean technical review does not
+  dispose of earlier scientific findings.
+- Final package scrutiny also corrected nine validation-retention original_path fields
+  from raw log paths to exact JSON-wrapper paths, while preserving their raw-log identities
+  and payloads. The initial discrepancy audit and final acceptance are hash-bound
+  external observations; no fabricated structured predecessor is asserted.
+- The earlier authority-audit scope adjective was corrected by an explicit successor
+  retaining the original receipt; actual builder hash and results were unchanged.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/534
+- https://github.com/CultureBotAI/PathwayMech/issues/537
+- https://github.com/CultureBotAI/PathwayMech/issues/538
+tags:
+- next254
+- integration
+- provenance
+- metacyc
+- independent
+- non-scientific
+```

@@ -1,0 +1,11 @@
+import urllib.request,concurrent.futures,pathlib,json,hashlib,re
+p=pathlib.Path('/private/tmp/pathwaymech-next-254-native-evidence')
+base='https://bf2i-artsymbiocyc.insa-lyon.fr'
+urls=[base+'/META/NEW-IMAGE?type=ENZYME&object=CPLX-2865',base+'/META/NEW-IMAGE?type=PROTEIN&object=CPLX-2865',base+'/protein?orgid=META&id=CPLX-2865',base+'/META/NEW-IMAGE?object=CPLX-2865&redirect=no']
+def f(z):
+ i,u=z
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0'}),timeout=35) as r:
+   b=r.read();o=p/'originals'/f'CPLX-2865-route-{i}.html';o.write_bytes(b);return dict(url=u,final_url=r.url,path=str(o),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b),title=re.findall(r'<title[^>]*>(.*?)</title>',b.decode('utf-8','replace'),re.S))
+ except Exception as e:return dict(url=u,error=str(e))
+a=list(concurrent.futures.ThreadPoolExecutor(max_workers=4).map(f,enumerate(urls)));(p/'complex-authority-attempts.json').write_text(json.dumps(a,indent=2)+'\n');print(json.dumps(a,indent=2))

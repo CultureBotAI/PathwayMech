@@ -1,0 +1,20 @@
+import urllib.request,hashlib,json,pathlib,concurrent.futures
+root=pathlib.Path('/private/tmp/pathwaymech-next-254-native-evidence');out=root/'originals'
+urls={
+'PMC111406-europe.xml':'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC111406/fullTextXML',
+'PMC2897667-europe.xml':'https://www.ebi.ac.uk/europepmc/webservices/rest/PMC2897667/fullTextXML',
+'PMC111406-report.xml':'https://pmc.ncbi.nlm.nih.gov/articles/PMC111406/?report=xml',
+'PMC2897667-report.xml':'https://pmc.ncbi.nlm.nih.gov/articles/PMC2897667/?report=xml',
+'PMC111406-efetch.xml':'https://www.ncbi.nlm.nih.gov/pmc/utils/oa/oa.fcgi?id=PMC111406',
+'PMC2897667-oa.xml':'https://www.ncbi.nlm.nih.gov/pmc/utils/oa/oa.fcgi?id=PMC2897667',
+'PMC111406-publisher.html':'https://journals.asm.org/doi/10.1128/JB.182.23.6651-6658.2000',
+'PMC2897667-publisher.html':'https://journals.asm.org/doi/10.1128/JB.00215-10'
+}
+def get(t):
+ n,u=t;r={'name':n,'url':u}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech research contact public literature'}),timeout=60) as h: b=h.read();r.update(status=h.status,final_url=h.url,content_type=h.headers.get('Content-Type'))
+  (out/n).write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest())
+ except Exception as e:r['error']=repr(e)
+ return r
+r=list(concurrent.futures.ThreadPoolExecutor(4).map(get,urls.items()));(root/'acquisition.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r,indent=2))

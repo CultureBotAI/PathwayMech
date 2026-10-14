@@ -1,0 +1,28 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: scripts/build_source_identifier_snapshot.py
+  slug: metacyc-multi-activity-homomer-naming
+session:
+  id: 2026-10-14T152458Z-codex-c7e15d
+  timestamp: '2026-10-14T15:24:58Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/534
+events:
+- type: EDIT
+  outcome: changed
+  summary: Resolve explicit native aliases for unnamed homomers with multiple validated activities
+  details: Added a bounded MetaCyc protein XML naming branch for an unnamed homomer whose
+    direct native alias matches exactly one validated linked activity name or direct synonym.
+    Preserve all activity/enzyme/reaction identities, explicit component stoichiometry and
+    ambiguous/malformed-source failure; reject same-ID native-scope conflicts or downgrades
+    before selection. Direct-name and single-activity behavior remain unchanged. Actual CPLX-2865
+    LigK homohexamer now resolves from its original bytes, without recasting it as an isolated
+    monomer or inventing an authority label. Focused author checks passed349 tests; independent
+    adversarial probes and the full gate suite are separately recorded.

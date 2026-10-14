@@ -1,0 +1,18 @@
+"""Independent named-node authority existence/label check using original pinned SQLite and source originals."""
+from pathlib import Path
+import json,hashlib,sqlite3,yaml,datetime
+s=Path('/private/tmp/pathwaymech-next-254-authorities');target=Path('/private/tmp/pathwaymech-next-254-20261014/data/pathways/protocatechuate-meta-cleavage.yaml');d=yaml.safe_load(target.read_text());so=json.loads((s/'sources.union.json').read_text());on=json.loads((s/'ontology.union.json').read_text());manifest={x['key']:x for x in json.loads((s/'identifier_sources.json').read_text())}; conns={};rows=[];bindings={}
+for node in [d]+d['taxa']+d['participants']+d['reactions']:
+ i=node['id'];prefix=i.split(':')[0]
+ if i in on['terms']:
+  term=on['terms'][i];kind='ontology'; db=Path('/private/tmp/pathwaymech-curation-authorities')/({'NCBITaxon':'ncbitaxon','CHEBI':'chebi','RHEA':'rhea','GO':'go'}[prefix]+'.db')
+  if prefix not in conns: conns[prefix]=sqlite3.connect('file:'+str(db)+'?mode=ro',uri=True)
+  labels=[r[0] for r in conns[prefix].execute("select distinct value from statements where subject=? and predicate='rdfs:label'",(i,))]
+  # Rhea142 replacements may use retained native RDF updates instead of older SQLite labels.
+  approved=node['label'] in [term['label']]+term.get('synonyms',[])
+  rows.append({'id':i,'record_label':node['label'],'kind':kind,'authority_source':term['source'],'authority_label':term['label'],'pinned_sqlite_path':str(db),'pinned_sqlite_labels':labels,'exists_in_pinned_sqlite':bool(labels),'accepted_authority_label':approved})
+ else:
+  term=so['terms'][i];entry=manifest[term['source']];raw=s/'originals'/entry['path'];actual=hashlib.sha256(raw.read_bytes()).hexdigest();assert actual==entry['sha256'];bindings[str(raw)]=actual
+  rows.append({'id':i,'record_label':node['label'],'kind':entry['kind'],'authority_source':term['source'],'authority_label':term['label'],'accepted_authority_label':node['label'] in [term['label']]+term.get('synonyms',[]) or (prefix=='MetaCyc' and node in d['reactions'] and term.get('label_kind')=='source_context'),'label_policy': 'MetaCyc record/reaction contextual-label allowance in conf/identifier_policy.yaml; exact reaction shape independently replayed' if term.get('label_kind')=='source_context' else 'canonical source name or synonym','source_original':str(raw),'source_sha256':actual})
+out={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),'target_sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'rows':rows,'count':len(rows),'label_failures':[x for x in rows if not x['accepted_authority_label']],'source_bindings':bindings,'snapshot_bindings':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [s/'sources.union.json',s/'ontology.union.json',s/'identifier_sources.json']},'limits':['Named-node identity/label audit is additional to actual native biology and exactRheaRDF chemical replay; source-naming adapter implementation is assessed separately by integration reviewer.','DirectSQLite reads establish original pinned labels; refreshedRheaRDF authority can supersede retired or stale labels. Database file digests use root retained builder receipts, not separately rehashed in this bounded audit.']}
+p=Path('/private/tmp/pathwaymech-next-254-independent-science/independent-authority-node-audit.json');p.write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({'count':len(rows),'label_failures':out['label_failures'],'pinned_sqlite_missing':[x['id'] for x in rows if x.get('exists_in_pinned_sqlite') is False]},indent=2))

@@ -1,0 +1,43 @@
+from pathlib import Path
+import csv,datetime,hashlib,html,io,json,re,sys,yaml
+from html.parser import HTMLParser
+from pathwaymech.schema import validate_record
+from pathwaymech.cli import _record_page,_slug
+from pathwaymech.kgx import kgx_nodes,kgx_edges,LOCAL_PREDICATE_CURIES
+from pathwaymech.site_display import load_site_history
+R=Path('/private/tmp/pathwaymech-next-254-20261014');S=Path('/private/tmp/pathwaymech-next-254-independent-integration');P='data/pathways/protocatechuate-meta-cleavage.yaml'
+raw=(R/P).read_bytes();record=validate_record(yaml.safe_load(raw));history=load_site_history(R).get(P,[]);rendered=_record_page(record,P,history);(S/'record-preview.html').write_text(rendered)
+class Parse(HTMLParser):
+ def __init__(self):super().__init__();self.ids=[];self.links=[];self.edges=[];self.nodes=[]
+ def handle_starttag(self,t,a):
+  d=dict(a)
+  if 'id'in d:self.ids.append(d['id'])
+  if 'href'in d:self.links.append(d['href'])
+  if 'graph-edge' in d.get('class','').split():self.edges.append(d)
+  if 'graph-node' in d.get('class','').split() and 'data-node-id'in d:self.nodes.append(d)
+p=Parse();p.feed(rendered)
+fail=[]
+assert len(p.edges)==len(record.mechanistic_edges)
+for i,(view,edge) in enumerate(zip(p.edges,record.mechanistic_edges),1):
+ if view.get('data-subject-id',view['data-subject'])!=edge['subject'] or view.get('data-object-id',view['data-object'])!=edge['object'] or view['data-predicate']!=edge['predicate'] or view['href']!=f'#mechanism-edge-{i}':fail.append({'edge':i,'failure':'SVG endpoint/predicate/anchor mismatch'})
+local=[x[1:] for x in p.links if x.startswith('#')]
+missing=[x for x in local if x and x not in p.ids]
+if missing:fail.append({'missing_local_anchors':missing})
+from collections import Counter
+duplicates=[x for x,n in Counter(p.ids).items() if n>1]
+if duplicates:fail.append({'duplicate_ids':duplicates})
+expected_base={x['id'] for f in ['participants','reactions'] for x in getattr(record,f)}|{record.id}|{x['id'] for x in record.taxa if any(x['id'] in [e['subject'],e['object']] for e in record.mechanistic_edges)}
+if not expected_base.issubset({x['data-node-id'] for x in p.nodes}):fail.append({'missing_base_nodes':sorted(expected_base-{x['data-node-id'] for x in p.nodes})})
+quals=[(i,q) for i,e in enumerate(record.mechanistic_edges,1) for q in e.get('endpoint_qualifiers',[])]
+qualified=[n for n in p.nodes if n.get('data-qualified')=='true']
+if len(quals)!=len(qualified):fail.append({'qualifier_node_count':len(qualified),'expected':len(quals)})
+kg=kgx_edges([record]);refs={r['id']:r for r in record.references}
+for e,k in zip(record.mechanistic_edges,kg):
+ if (k.subject,k.predicate,k.object)!=(e['subject'],LOCAL_PREDICATE_CURIES[e['predicate']],e['object']):fail.append({'edge':e['id'],'failure':'KGX endpoint/predicate mismatch'})
+ if json.loads(k.evidence)!=e['evidence'] or json.loads(k.endpoint_qualifiers or '[]')!=e.get('endpoint_qualifiers',[]):fail.append({'edge':e['id'],'failure':'KGX evidence or qualifier mismatch'})
+ refids={x['reference_id'] for x in e['evidence']}
+ for q in e.get('endpoint_qualifiers',[]):refids|={x['reference_id'] for x in q['evidence']}
+ if json.loads(k.reference_metadata)!=[refs[x] for x in sorted(refids)]:fail.append({'edge':e['id'],'failure':'KGX reference metadata loss'})
+page=R/'pages/records'/(_slug(record.id)+'.html');page_equal=page.is_file() and page.read_text()==rendered
+out={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record':P,'record_sha256':hashlib.sha256(raw).hexdigest(),'rendered_page_sha256':hashlib.sha256(rendered.encode()).hexdigest(),'current_page_exists':page.is_file(),'current_page_equal':page_equal,'counts':{'taxa':len(record.taxa),'participants':len(record.participants),'reactions':len(record.reactions),'mechanistic_edges':len(record.mechanistic_edges),'references':len(record.references),'graph_nodes':len(p.nodes),'qualified_nodes':len(qualified),'graph_edges':len(p.edges),'kgx_nodes':len(kgx_nodes([record])),'kgx_edges':len(kg)},'missing_anchors':missing,'duplicate_ids':duplicates,'failures':fail,'scope':'Full record edge-by-edge preservation through unchanged renderer and KGX API; actual generated page equality assessed if present. No independent scientific literature verdict; SVG geometry not visually assessed.'}
+stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ');dest=S/f'{stamp}-graph-audit.json';dest.write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2));assert not fail

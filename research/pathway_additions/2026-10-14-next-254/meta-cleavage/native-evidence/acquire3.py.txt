@@ -1,0 +1,8 @@
+exec(open('/private/tmp/pathwaymech-next-254-native-evidence/acquire.py').read().split('r=list(')[0])
+urls={
+'PMC111406-reader.html':'https://pmc.ncbi.nlm.nih.gov/articles/PMC111406/?report=reader',
+'PMC111406-full.html':'https://journals.asm.org/doi/full/10.1128/jb.182.23.6651-6658.2000',
+'LigR-uniprot-search.json':'https://rest.uniprot.org/uniprotkb/search?query=%28gene%3AligR%29%20AND%20%28organism_id%3A627192%29&format=json',
+'LigR-uniprot-search-broad.json':'https://rest.uniprot.org/uniprotkb/search?query=%28gene%3AligR%29&format=json&size=100'
+}
+r=list(concurrent.futures.ThreadPoolExecutor(4).map(get,urls.items()));(root/'acquisition3.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r,indent=2))

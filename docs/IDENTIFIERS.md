@@ -94,14 +94,29 @@ back to the same complex, one coherent native reaction reference and one string
 [BioCyc loader manual](https://bioinformatics.ai.sri.com/biowarehouse/repos/biocyc-loader/flatfile/doc/biocyc-manual.html)
 documents linked activity names for proteins lacking `COMMON-NAME`, and its
 [`full-enzyme-name` function](https://bioinformatics.ai.sri.com/ptools/ptools-fns.html)
-describes native protein naming from those slots. The adapter implements only
-the single-activity homomer case; unnamed monomers, heteromers, absent or
-noninteger coefficients, multiple activities (even with identical names), and
-unresolved or mismatched back-references remain unsupported. It does not
-concatenate activity names or add assembly words to a label.
+describes native protein naming from those slots. Unnamed monomers, heteromers,
+absent or noninteger coefficients, and unresolved or mismatched back-references
+remain unsupported. It does not concatenate activity names or add assembly
+words to a label.
 
-Both name paths decode native inline presentation markup and character entities,
-with no curated-label fallback or imported synonyms, including activity aliases.
+An additional bounded case supports an unnamed homomer with multiple activities
+only when exactly one direct native protein `synonym` matches a direct
+`common-name` or `synonym` of exactly one independently validated activity.
+Every activity must have a unique coherent META identity and the same exact
+enzyme back-reference, an exact native reaction reference, and a valid name.
+Every direct protein and activity alias is safely decoded, including unmatched
+aliases; duplicate aliases and ambiguous matches fail. The matching protein
+alias supplies the label and remaining direct protein aliases supply synonyms.
+This is an explicit native alias, not an inferred preferred name encompassing
+all functions. Activity aliases are not otherwise imported. For example, the
+native CPLX-2865 alias `4-carboxy-4-hydroxy-2-oxoadipate aldolase` matches one
+activity alias while its separate decarboxylase activity retains its own identity.
+The complex remains CPLX-2865; the six-subunit assembly is not collapsed to its
+monomer.
+
+All name paths decode native inline presentation markup and character entities,
+with no curated-label fallback. The direct-name and sole-activity paths retain
+their existing output, including no imported synonyms.
 Malformed or still-escaped numeric references and decoded characters outside the
 supported XML character ranges are rejected; references are not recursively
 unescaped to guess a label. Component, organism and curator names are not
@@ -112,6 +127,13 @@ establishes identifier/name provenance, not species/strain equivalence,
 assembly, sequence, reaction or experimental function. Conflicting canonical
 names involving an XML source fail before corpus selection, including conflicts
 with a MetaCyc HTML source; existing HTML-only selection behavior is unchanged.
+When the multi-activity alias case is present, competing sources for that same
+body-derived ID must have compatible validated native scope: component,
+coefficient, activity/reaction identities, names, aliases, and PGDB version.
+Conflicting assertions fail even with identical labels and unselected IDs, in
+either manifest order. A direct-name, sole-activity, or HTML source for the same
+ID is conservatively rejected as mixed scope. IDs without this new case keep
+their previous behavior. Native activity order does not change the signature.
 
 A term with `label_kind: source_context` is an identifier assertion in an
 independent source's cross-reference or local graph, not a canonical name

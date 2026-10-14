@@ -1,0 +1,23 @@
+from pathlib import Path
+import urllib.request, json, hashlib, datetime
+root=Path(__file__).parent
+urls={}
+for pdb in ('6P3J','6P3H','6DWV','6DXQ','6DXS'):
+    urls[pdb+'.cif']='https://files.rcsb.org/download/'+pdb+'.cif'
+    urls[pdb+'-entity.json']='https://data.rcsb.org/rest/v1/core/polymer_entity/'+pdb+'/1'
+    urls[pdb+'-entry.json']='https://data.rcsb.org/rest/v1/core/entry/'+pdb
+urls['tamu-hogancamp-item.html']='https://oaktrust.library.tamu.edu/items/9ab5b9c6-8d89-4d58-8a1c-175f5f3b2a5d'
+urls['tamu-thesis.pdf']='https://oaktrust.library.tamu.edu/bitstreams/4debd50c-d6c5-49b7-b712-d21ea08e3971/download'
+urls['tamu-handle.html']='https://hdl.handle.net/1969.1/188745'
+out=[]
+for name,url in urls.items():
+    row={'name':name,'requested_url':url,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    try:
+        request=urllib.request.Request(url,headers={'User-Agent':'PathwayMech source research; public scholarly retrieval'})
+        with urllib.request.urlopen(request,timeout=45) as r:
+            data=r.read(); row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+        (root/'originals'/name).write_bytes(data)
+        row.update(bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
+    except Exception as e: row['error']=str(e)
+    out.append(row); print(name,row.get('status'),row.get('bytes'),row.get('error'),flush=True)
+    (root/'acquisition.json').write_text(json.dumps(out,indent=2)+'\n')

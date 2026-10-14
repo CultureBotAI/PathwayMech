@@ -1,0 +1,29 @@
+from pathlib import Path
+import datetime,hashlib,importlib.util,json,sqlite3,subprocess,sys
+R=Path('/private/tmp/pathwaymech-next-254-20261014');S=Path('/private/tmp/pathwaymech-next-254-independent-integration');A=Path('/private/tmp/pathwaymech-next-254-authorities');B='dfe42721bfd31468cb27b2d6a1a4b460f2b71a12'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def old(p):return json.loads(subprocess.check_output(['git','show',B+':'+p],cwd=R))
+def module(name,path):
+ spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);sys.modules[name]=m;spec.loader.exec_module(m);return m
+src=module('independent_source_builder',R/'scripts/build_source_identifier_snapshot.py');ont=module('independent_ontology_builder',R/'scripts/build_ontology_identifier_snapshot.py')
+manifest=json.loads((R/'conf/identifier_sources.json').read_text());prior=old('conf/identifier_sources.json');added=manifest[len(prior):];assert manifest[:len(prior)]==prior
+cache=[]
+for x in manifest:
+ p=A/'originals'/x['path'];cache.append({'key':x['key'],'path':str(p),'sha256_matches':p.is_file() and sha(p.read_bytes())==x['sha256']})
+mp=S/'new-source-manifest.json';mp.write_text(json.dumps(added,indent=2)+'\n')
+assert added,'Await final promoted authorities'
+actual=json.loads((R/'data/identifier_authorities/sources.json').read_text());newkeys={x['key'] for x in added};selection=S/'new-authority-selector';selection.mkdir(exist_ok=True);selected=[k for k,v in actual['terms'].items() if v['source'] in newkeys];(selection/'ids.yaml').write_text(json.dumps({'id':'GO:0008150','participants':[{'id':x} for x in selected]}));rebuilt=src.build_snapshot(mp,selection,A/'originals');source_mismatch=[]
+for kind in ['sources','terms']:
+ for k,v in rebuilt[kind].items():
+  if actual[kind].get(k)!=v:source_mismatch.append({'kind':kind,'key':k,'expected':v,'actual':actual[kind].get(k)})
+actont=json.loads((R/'data/identifier_authorities/ontology.json').read_text());oldont=old('data/identifier_authorities/ontology.json');newids=sorted(set(actont['terms'])-set(oldont['terms']));onchecks=[]
+for prefix,dbname in [('GO','go'),('CHEBI','chebi'),('NCBITaxon','ncbitaxon'),('RHEA','rhea')]:
+ ids=[x for x in newids if x.startswith(prefix+':')]
+ if not ids:continue
+ db=Path('/private/tmp/pathwaymech-curation-authorities')/(dbname+'.db');con=sqlite3.connect(f'file:{db}?mode=ro',uri=True)
+ for ident in ids:
+  sourcekey=actont['terms'][ident]['source'];terms,missing=ont.extract_terms(con,[ident],sourcekey);onchecks.append({'id':ident,'source_key':sourcekey,'source_sql':str(db),'equal':not missing and terms.get(ident)==actont['terms'][ident]})
+ con.close()
+fail={'source_cache':[x for x in cache if not x['sha256_matches']],'new_source_replay':source_mismatch,'new_ontology_terms':[x for x in onchecks if not x['equal']]}
+out={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base':B,'scope':'Independent complete original-byte cache hash check; canonical reviewed source builder replay of every added manifest entry; direct pinned SQL extraction of every new ontology term. Baseline snapshot preservation audited separately. Does not rerun corpus suite or reacquire remote originals.','manifest_entries':len(manifest),'new_manifest_entries':len(added),'cache_hashes_checked':len(cache),'new_source_terms':len(rebuilt['terms']),'new_source_objects':len(rebuilt['sources']),'new_ontology_term_count':len(newids),'new_ontology_checks':onchecks,'builder_hashes':{p:sha((R/p).read_bytes()) for p in ['scripts/build_source_identifier_snapshot.py','scripts/build_ontology_identifier_snapshot.py']},'failures':fail}
+stamp=datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%SZ');dest=S/f'{stamp}-authority-audit.json';dest.write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2));assert not any(fail.values())

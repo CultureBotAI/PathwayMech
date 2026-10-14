@@ -1,0 +1,14 @@
+exec(open('/private/tmp/pathwaymech-next-254-native-evidence/acquire.py').read().split('r=list(')[0])
+import re
+s=(out/'PMC2897667-bio.html').read_text();images=re.findall(r'src="(https://cdn.ncbi.nlm.nih.gov/pmc/blobs/[^\"]+\.jpg)"',s)
+urls={f'PMC2897667-figure-{i}.jpg':u for i,u in enumerate(images,1)}
+urls.update({
+'PMC2897667-SI.zip':'https://pmc.ncbi.nlm.nih.gov/articles/instance/2897667/bin/supp_192_13_3394__Supplemental_file.zip',
+'AB073227-ena.txt':'https://www.ebi.ac.uk/ena/browser/api/embl/AB073227?download=false',
+'Q8RQV9.json':'https://rest.uniprot.org/uniprotkb/Q8RQV9.json',
+'Q9KWL3.json':'https://rest.uniprot.org/uniprotkb/Q9KWL3.json',
+'AB035122-ena.txt':'https://www.ebi.ac.uk/ena/browser/api/embl/AB035122?download=false',
+'PMC111406-printer.html':'https://pmc.ncbi.nlm.nih.gov/articles/PMC111406/?report=printable',
+'PMC2897667-SI-index.html':'https://pmc.ncbi.nlm.nih.gov/articles/instance/2897667/bin/supp_192_13_3394__index.html'
+})
+r=list(concurrent.futures.ThreadPoolExecutor(4).map(get,urls.items()));(root/'acquisition4.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r,indent=2))

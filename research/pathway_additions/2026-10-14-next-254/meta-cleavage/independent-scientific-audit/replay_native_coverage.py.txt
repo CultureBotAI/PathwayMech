@@ -1,0 +1,35 @@
+"""Independent direct native neighborhood/disposition coverage; no author helper imports."""
+import json,hashlib,datetime,xml.etree.ElementTree as E
+from pathlib import Path
+root=Path('/private/tmp/pathwaymech-next-253-native/originals'); ledger=Path('/private/tmp/pathwaymech-next-254-native-evidence/complete-native-slot-dispositions-final.json')
+bindings={}
+def get(i):
+ p=root/('META-'+i+'.xml'); bindings[str(p)]=hashlib.sha256(p.read_bytes()).hexdigest();return next(x for x in E.parse(p).getroot() if x.get('frameid')==i)
+def ids(o,p):return {x.get('frameid') for x in o.findall(p)}
+p=get('P184-PWY');reactions=ids(p,'reaction-list/Reaction');activities=set();proteins=set();regulations=set()
+for r in reactions:activities|=ids(get(r),'enzymatic-reaction/Enzymatic-Reaction')
+for a in activities:
+ o=get(a);proteins|=ids(o,'enzyme/Protein');regulations|=ids(o,'regulated-by/Regulation')
+# Match direct enzyme objects and their explicitly named components only.
+for p in list(proteins):proteins|=ids(get(p),'component/Protein')
+for p in proteins:get(p)
+for r in regulations:get(r)
+d=json.loads(ledger.read_text());dispositions={x['native_id'].split(':',1)[1]:x for x in d['dispositions']}; scoped=activities|proteins|regulations
+checks=[]
+def chk(n,a,b):checks.append({'check':n,'expected':a,'actual':b,'pass':a==b})
+chk('exact_native_direct_neighborhood_dispositions',sorted(scoped),sorted(dispositions))
+for i,x in dispositions.items():chk(i+':raw_sha',bindings[x['source']['path']],x['source']['sha256'])
+rows=[]
+for i in sorted(scoped):
+ o=get(i);facts={}
+ for slot in ['enzyme','reaction','cofactor','component','species','regulated-by','regulator','regulated-entity']:
+  vals=[]
+  for v in o.findall(slot):
+   vals.extend({'id':q.get('frameid'),'coefficient':v.findtext('coefficient')} for q in v if q.get('frameid'))
+  if vals:facts[slot]=vals
+ if o.find('mode') is not None:facts['mode']=o.findtext('mode')
+ if o.find('reaction-direction') is not None:facts['reaction-direction']=o.findtext('reaction-direction')
+ facts['evidence_codes']=sorted(ids(o,'evidence/Evidence-Code'))
+ rows.append({'native_id':i,'native_kind':o.tag,'replayed_slots':facts,'disposition':dispositions[i]['disposition']})
+out={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),'independent_scope':{'source':'P184-PWY reaction-list -> direct enzymatic-reaction slots -> direct enzyme objects plus explicit component objects; direct activity regulated-by slots','reaction_count':len(reactions),'activity_count':len(activities),'protein_count':len(proteins),'regulation_count':len(regulations),'object_denominator':len(scoped)},'checks':checks,'failures':[x for x in checks if not x['pass']],'source_bindings':bindings,'disposition_ledger':{'path':str(ledger),'sha256':hashlib.sha256(ledger.read_bytes()).hexdigest()},'rows':rows,'limits':['Excluded generic terminal-decarboxylase subtrees not recursively expanded beyond explicit component objects. No claim to all MetaCyc possible cofactors, regulation or published literature.','Retained native comments independently read for all included enzyme/complex objects. Source-defined experimental evidence codes remain database assertions, not independently reread primary experiments for every historical enzyme.']}
+p=Path('/private/tmp/pathwaymech-next-254-independent-science/independent-native-coverage.json');p.write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({'scope':out['independent_scope'],'checks':len(checks),'failures':out['failures']},indent=2))

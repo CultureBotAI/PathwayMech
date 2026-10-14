@@ -1,0 +1,245 @@
+"""Independent scientific reviewer replay; no author helper imports.
+
+This checks source/graph correspondence, not experimental truth of every source.
+Raw originals remain external; output records compact facts and their hashes.
+"""
+import collections
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import re
+import sys
+import xml.etree.ElementTree as ET
+
+import yaml
+
+target = Path(sys.argv[1])
+output = Path(sys.argv[2])
+native = Path('/private/tmp/pathwaymech-next-253-native/originals')
+rhea = Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz')
+record = yaml.safe_load(target.read_text())
+failures = []
+checks = []
+bindings = {}
+objects = {}
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def get_native(identifier):
+    identifier = identifier.removeprefix('MetaCyc:')
+    if identifier not in objects:
+        path = native / ('META-' + identifier + '.xml')
+        root = ET.parse(path).getroot()
+        matches = [n for n in root if n.get('frameid') == identifier]
+        assert len(matches) == 1, (identifier, len(matches))
+        objects[identifier] = matches[0]
+        bindings[str(path)] = sha(path)
+    return objects[identifier]
+
+
+def check(label, expected, actual):
+    result = expected == actual
+    entry = {'check': label, 'expected': expected, 'actual': actual, 'pass': result}
+    checks.append(entry)
+    if not result:
+        failures.append(entry)
+
+
+def chebi(identifier):
+    obj = get_native(identifier)
+    identifiers = [n.findtext('dblink-oid') for n in obj.findall('dblink')
+                   if n.findtext('dblink-db') == 'CHEBI']
+    return 'CHEBI:' + identifiers[0] if len(identifiers) == 1 else 'MetaCyc:' + identifier
+
+
+pathway = get_native('P184-PWY')
+# Explicit mapping is checked below against complete independent equations.
+mapping = {
+    'PROTOCATECHUATE-45-DIOXYGENASE-RXN': 'RHEA:24045',
+    'R107-RXN': 'MetaCyc:R107-RXN',
+    '1.2.1.45-RXN': 'RHEA:29588',
+    'RXN-2462': 'RHEA:10645',
+    'RXN-9983': 'RHEA:28932',
+    'RXN-2463': 'RHEA:17403',
+    'RXN-2464': 'RHEA:28936',
+    'OXALODECARB-RXN': 'RHEA:15642',
+}
+native_members = [x.get('frameid') for x in pathway.findall('reaction-list/Reaction')]
+check('complete_native_members', sorted(mapping), sorted(native_members))
+check('exact_graph_reactions', sorted(mapping.values()), sorted(n['id'] for n in record['reactions']))
+check('pathway_identity', 'MetaCyc:P184-PWY', record['id'])
+layout = {x.find('Reaction').get('frameid'): x.findtext('direction') for x in pathway.findall('reaction-layout')}
+equations = {}
+for rid, mapped in mapping.items():
+    obj = get_native(rid)
+    sides = []
+    for side in ['left', 'right']:
+        terms = {}
+        for n in obj.findall(side):
+            term = chebi(n.find('Compound').get('frameid'))
+            terms[term] = int(n.findtext('coefficient', '1'))
+        sides.append(terms)
+    if layout[rid] == 'R2L':
+        sides.reverse()
+    equations[mapped] = sides
+    # Independently balance the native equation using its native chemical formula.
+    atom_sums=[]
+    for side_name in ['left','right']:
+        counts=collections.Counter()
+        for entry in obj.findall(side_name):
+            chemical=get_native(entry.find('Compound').get('frameid'))
+            molecule=chemical.find('cml/molecule')
+            coefficient=int(entry.findtext('coefficient','1'))
+            assert molecule is not None, chemical.get('frameid')
+            formula=molecule.find('formula').get('concise').split()
+            counts.update({formula[i]:coefficient*int(formula[i+1]) for i in range(0,len(formula),2)})
+            counts['charge']+=coefficient*int(molecule.get('formalCharge','0'))
+        atom_sums.append(dict(counts))
+    check(mapped+':native_atom_charge_balance',atom_sums[0],atom_sums[1])
+    for index, predicate in enumerate(['consumes', 'produces']):
+        edges = [e for e in record['mechanistic_edges'] if e['predicate'] == predicate
+                 and e['object' if index == 0 else 'subject'] == mapped]
+        graph_terms = [e['subject' if index == 0 else 'object'] for e in edges]
+        check(f'{mapped}:{predicate}:exact_participants', sorted(sides[index]), sorted(graph_terms))
+    memberships = [e for e in record['mechanistic_edges'] if e['subject'] == mapped
+                   and e['predicate'] == 'part_of' and e['object'] == record['id']]
+    check(f'{mapped}:membership', 1, len(memberships))
+
+orders = sorted((mapping[x.find('predecessor-reactions/Reaction').get('frameid')],
+                 mapping[x.find('Reaction').get('frameid')]) for x in pathway.findall('reaction-ordering'))
+graph_orders = sorted((e['subject'],e['object']) for e in record['mechanistic_edges'] if e['predicate'] == 'provides_input_for')
+check('all_native_material_transfers', orders, graph_orders)
+
+# Read actual RDF triples, preserving multiple descriptions of one resource.
+RDF = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+RH = 'http://rdf.rhea-db.org/'
+desired = set()
+locator_triples = []
+for edge in record['mechanistic_edges']:
+    for ev in edge['evidence']:
+        if ev['reference_id'].startswith('RHEA:'):
+            for trip in ev.get('source_locator', '').split('; '):
+                fields = trip.split()
+                if len(fields) == 3 and fields[1].startswith('rh:'):
+                    s,p,o = fields
+                    locator_triples.append((edge['id'],s,RH+p[3:],o))
+                    desired.add(s)
+for identifier in list(mapping.values()) + ['RHEA:58504','RHEA:58508']:
+    if identifier.startswith('RHEA:'):
+        desired.add(RH+identifier[5:])
+triples = set()
+details = collections.defaultdict(list)
+# Three passes follow reaction->side->participant->compound dependencies.
+for _ in range(4):
+    additions = set()
+    with gzip.open(rhea,'rb') as stream:
+        for _,el in ET.iterparse(stream, events=['end']):
+            about=el.get(RDF+'about')
+            if about in desired:
+                for child in el:
+                    pred=child.tag[1:].replace('}', '', 1) if child.tag.startswith('{') else child.tag
+                    value=child.get(RDF+'resource',child.text or '')
+                    triples.add((about,pred,value))
+                    if pred in [RH+'substrates', RH+'products', RH+'compound'] or pred.startswith(RH+'contains'):
+                        additions.add(value)
+            if el.tag == RDF+'Description':
+                el.clear()
+    desired |= additions
+for s,p,o in triples:
+    details[s].append((p,o))
+for edge_id,s,p,o in locator_triples:
+    check(f'{edge_id}:rdf_locator:{p.rsplit("/",1)[-1]}',True,(s,p,o) in triples)
+
+
+def values(node,predicate):
+    return sorted(set(o for p,o in details[node] if p == RH+predicate))
+
+
+def rhea_side(reaction,side):
+    out={}
+    for rside in values(reaction,side):
+        for pred,part in details[rside]:
+            match = re.fullmatch(re.escape(RH)+r'contains(\d+)',pred)
+            if not match:
+                continue
+            compounds = values(part,'compound')
+            assert len(compounds)==1
+            ids=values(compounds[0],'accession')
+            assert len(ids)==1
+            out[ids[0]]=int(match[1])
+    return out
+
+
+for mapped, equation in equations.items():
+    if mapped.startswith('RHEA:'):
+        resource=RH+mapped[5:]
+        check(mapped+':RDF_approved', [RH+'Approved'], values(resource,'status'))
+        for index, side in enumerate(['substrates','products']):
+            check(mapped+':native_vs_RDF:'+side,equation[index],rhea_side(resource,side))
+
+bio_replay=[]
+for edge in record['mechanistic_edges']:
+    for ev in edge['evidence']:
+        ref=ev['reference_id']
+        if not ref.startswith('MetaCyc:'):
+            continue
+        obj=get_native(ref)
+        item={'edge_id':edge['id'],'reference_id':ref,'native_class':obj.tag}
+        if edge['predicate'] in ['catalyzes','enables'] and obj.tag == 'Enzymatic-Reaction':
+            enzyme='MetaCyc:'+obj.find('enzyme/Protein').get('frameid')
+            reaction=obj.find('reaction/Reaction').get('frameid')
+            check(edge['id']+':native_enzyme',enzyme,edge['subject'])
+            check(edge['id']+':native_reaction',mapping[reaction],edge['object'])
+            item.update(native_enzyme=enzyme,native_reaction=reaction)
+            codes=sorted(set(n.get('frameid') for n in obj.findall('evidence/Evidence-Code')))
+            stated=sorted(set(re.findall(r'EV-[A-Z0-9-]+',ev.get('source_assertion',''))))
+            check(edge['id']+':native_evidence_codes',codes,stated)
+        elif edge['predicate'] == 'part_of' and obj.tag == 'Protein':
+            components=['MetaCyc:'+n.get('frameid') for n in obj.findall('component/Protein')]
+            check(edge['id']+':native_complex','MetaCyc:'+obj.get('frameid'),edge['object'])
+            check(edge['id']+':native_component',True,edge['subject'] in components)
+            item['native_components']=components
+        elif edge['predicate'] == 'has_cofactor' and obj.tag == 'Enzymatic-Reaction':
+            cofactors=[chebi(n.get('frameid')) for n in obj.findall('cofactor/Compound')]
+            check(edge['id']+':native_cofactor',True,edge['object'] in cofactors)
+            check(edge['id']+':native_cofactor_enzyme','MetaCyc:'+obj.find('enzyme/Protein').get('frameid'),edge['subject'])
+            item['native_cofactors']=cofactors
+        elif edge['predicate'] in ['inhibits','activates','regulates'] and obj.tag == 'Regulation':
+            native_regulator=obj.find('regulator/Compound').get('frameid')
+            regulator=chebi(native_regulator)
+            activity=obj.find('regulated-entity/Enzymatic-Reaction').get('frameid')
+            enz='MetaCyc:'+get_native(activity).find('enzyme/Protein').get('frameid')
+            mode=obj.findtext('mode')
+            predicate={'-':'inhibits','+':'activates'}.get(mode,'regulates')
+            check(edge['id']+':native_regulator',True,
+                  edge['subject'] in [regulator,'MetaCyc:'+native_regulator])
+            check(edge['id']+':native_regulated_enzyme',enz,edge['object'])
+            check(edge['id']+':native_effect_sign',predicate,edge['predicate'])
+            item.update(native_mode=mode,native_activity=activity,native_enzyme=enz)
+        bio_replay.append(item)
+
+references=[]
+for ref in record['references']:
+    if ref['id'].startswith('MetaCyc:'):
+        get_native(ref['id'])
+        path=native/('META-'+ref['id'][8:]+'.xml')
+        check(ref['id']+':raw_reference_hash',sha(path),ref.get('source_sha256'))
+    elif ref['id'].startswith('RHEA:'):
+        check(ref['id']+':raw_reference_hash',sha(rhea),ref.get('source_sha256'))
+
+out={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),
+     'target':str(target),'target_sha256':sha(target),'source_bindings':bindings,
+     'rhea_binding':{'path':str(rhea),'sha256':sha(rhea)},
+     'native_equations_in_selected_direction':equations,
+     'modern_rhea_equations':{i:[rhea_side(RH+i,'substrates'),rhea_side(RH+i,'products')] for i in ['58504','58508']},
+     'native_biological_replay':bio_replay,
+     'checks':checks,'failures':failures,
+     'limits':['A native database assertion is verified as a database assertion; this replay alone does not independently validate every cited historical experiment.',
+               'Taxon scope, textual evidence, construct qualifiers, primary chemical interpretation, labels and exclusions require separate reviewer inspection.']}
+output.write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({'checks':len(checks),'failures':failures,'source_count':len(bindings),'output':str(output)},indent=2))

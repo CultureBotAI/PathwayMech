@@ -1,0 +1,28 @@
+"""Independent EMBL CDS and UniProt equality check; no author helper imports."""
+import re,json,hashlib,datetime
+from pathlib import Path
+base=Path('/private/tmp/pathwaymech-next-254-native-evidence/originals')
+# Standard bacterial coding table; internal coding assignments match standard code.
+bases='TCAG'; aa='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+codons=[a+b+c for a in bases for b in bases for c in bases]; code=dict(zip(codons,aa))
+rows=[]
+for accession,genes in [('AB073227',['ligK','ligR','ligC']),('AB035122',['ligC'])]:
+ p=base/(accession+'-ena.txt'); text=p.read_text()
+ sequence=re.sub('[^acgt]','',text.split('\nSQ   ',1)[1].split('\n',1)[1].split('//',1)[0]).upper()
+ for block in re.split(r'(?m)^FT   CDS\s+',text)[1:]:
+  gm=re.search(r'/gene="([^"]+)"',block)
+  if not gm or gm.group(1) not in genes: continue
+  gene=gm.group(1);location=block.splitlines()[0].strip(); start,end=map(int,re.findall(r'\d+',location))
+  cds=sequence[start-1:end]
+  if location.startswith('complement'):cds=cds.translate(str.maketrans('ATGC','TACG'))[::-1]
+  translated=''.join(code[cds[i:i+3]] for i in range(0,len(cds),3)).removesuffix('*')
+  if cds[:3] in ['ATG','GTG','TTG']:translated='M'+translated[1:]
+  full=re.search(r'/translation="([^"]+)"',block).group(1)
+  annotated=re.sub(r'[^A-Z]','',full.replace('FT',''))
+  up=Path('/private/tmp/pathwaymech-next-253-primary/originals/UniProt-Q8RQW0.json') if gene=='ligK' else base/({'ligR':'Q8RQV9','ligC':'Q9KWL3'}[gene]+'.json')
+  uniprot=json.loads(up.read_text()); current=uniprot['sequence']['value']
+  rows.append({'accession':accession,'gene':gene,'location':location,'protein_id':re.search(r'/protein_id="([^"]+)"',block).group(1),'issuing_source':str(p),'issuing_source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'cds_length_nt':len(cds),'annotated_length_aa':len(annotated),'translated_equals_annotation':translated==annotated,'current_accession':uniprot['primaryAccession'],'current_taxon_id':uniprot['organism']['taxonId'],'current_source':str(up),'current_source_sha256':hashlib.sha256(up.read_bytes()).hexdigest(),'annotated_equals_current_sequence':annotated==current,'sequence_sha256':hashlib.sha256(annotated.encode()).hexdigest()})
+out={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),'rows':rows,'limitations':['Checks deposited CDS translations and current issuing protein sequence, not complete expressed construct residues or physiological assignment.','Historical generic issuing taxon13689 for LigR remains distinct from current genome627192; exact sequence equality does not itself make whole-organism or pathway assertions.']}
+p=Path('/private/tmp/pathwaymech-next-254-independent-science/independent-sequence-replay.json');p.write_text(json.dumps(out,indent=2)+'\n');print(json.dumps(out,indent=2))
+assert len(rows)==4
+assert all(r['translated_equals_annotation'] and r['annotated_equals_current_sequence'] for r in rows)

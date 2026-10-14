@@ -1,0 +1,33 @@
+"""Independent exact paper-quotation/hash checks and qualified follow-up audit."""
+from pathlib import Path
+from html.parser import HTMLParser
+import yaml,json,hashlib,re,collections,datetime,sys
+class P(HTMLParser):
+ def __init__(self):super().__init__();self.text=[]
+ def handle_data(self,x):self.text.append(x)
+def norm(x):return re.sub(r'\s+',' ',x).strip()
+def htmltext(p):
+ q=P();q.feed(p.read_text());return norm(''.join(q.text))
+root=Path('/private/tmp/pathwaymech-next-254-independent-science'); target=Path(sys.argv[1]);d=yaml.safe_load(target.read_text())
+files={
+'PMID:26867578':Path('/private/tmp/pathwaymech-next-253-primary/originals/PMC4817193-render2.html'),
+'PMID:20435721':Path('/private/tmp/pathwaymech-next-254-native-evidence/originals/PMC2897667-bio.html'),
+'PMID:6317682':Path('/private/tmp/pathwaymech-next-253-primary/originals/PMID6317682-europe.json'),
+'PMID:12486039':Path('/private/tmp/pathwaymech-next-254-constructs/originals/PMC141877.html'),
+'UniProtKB:Q8RQV9':Path('/private/tmp/pathwaymech-next-254-native-evidence/originals/Q8RQV9.json')}
+texts={k:htmltext(p) for k,p in files.items() if p.suffix=='.html'}
+texts['PMID:6317682']=norm(json.loads(files['PMID:6317682'].read_text())['resultList']['result'][0]['abstractText'])
+checks=[];counts=collections.Counter();qcount=0
+for e in d['mechanistic_edges']:
+ vals=[(e['id'],x) for x in e['evidence']]
+ vals.extend((e['id']+':qualifier',x) for q in e.get('endpoint_qualifiers',[]) for x in q['evidence'])
+ for where,v in vals:
+  if 'quote' not in v:continue
+  qcount+=1;ref=v['reference_id'];q=norm(v['quote']);counts[ref]+=len(q.split())
+  checks.append({'check':where+':exact_quote','reference_id':ref,'quote_words':len(q.split()),'pass':q in texts[ref]})
+for ref,count in counts.items():checks.append({'check':ref+':total_repeated_quote_words_le25','actual':count,'pass':count<=25})
+for r in d['references']:
+ if r['id'] in files:
+  actual=hashlib.sha256(files[r['id']].read_bytes()).hexdigest();checks.append({'check':r['id']+':raw_reference_hash','actual':actual,'pass':actual==r.get('source_sha256')})
+out={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),'target_sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'checks':checks,'quote_occurrences':qcount,'quote_words_with_repetition':dict(counts),'failures':[x for x in checks if not x['pass']],'primary_bindings':{k:{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for k,p in files.items()},'limits':['Automated string/hash checks accompany actual independent source reading; they are not sufficient scientific support alone.','LigC Table3 has independently read official PMC text but no primary rawhash declaration in the record.']}
+p=root/'final-primary-evidence-replay.json';p.write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({k:out[k] for k in ['target_sha256','quote_occurrences','quote_words_with_repetition','failures']},indent=2))

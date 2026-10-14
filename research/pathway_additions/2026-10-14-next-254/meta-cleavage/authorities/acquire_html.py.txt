@@ -1,0 +1,14 @@
+from pathlib import Path
+import urllib.request,json,hashlib,datetime,concurrent.futures
+B=Path(__file__).parent/'new-originals';B.mkdir(exist_ok=True)
+frames=['P184-PWY','G1G01-2697-MONOMER','MONOMER-3183','MONOMER-10723','MONOMER-3182','CPLX-2865','CPD-29','CUSO4','N-ETHYLMALEIMIDE','DITHIO-NITROBENZOATE','IODOACETATE','CYS']
+def fetch(f):
+ u='https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object='+f
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech research'}),timeout=50) as r:
+   b=r.read();p=B/(f+'.html');p.write_bytes(b)
+   return dict(frame=f,url=u,final_url=r.url,http_status=r.status,retrieved_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),path=str(p),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b))
+ except Exception as e:return dict(frame=f,url=u,error=str(e))
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:out=list(pool.map(fetch,frames))
+(B.parent/'html-acquisition.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps([{k:v for k,v in x.items() if k in ['frame','http_status','bytes','error']} for x in out]))

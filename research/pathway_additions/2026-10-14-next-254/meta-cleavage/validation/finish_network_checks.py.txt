@@ -1,0 +1,18 @@
+from pathlib import Path
+import os,subprocess,json,datetime,hashlib,time
+R=Path('/private/tmp/pathwaymech-next-254-20261014');B=Path(__file__).parent
+env=dict(os.environ,**json.loads((B/'environment.json').read_text()))
+receipts=json.loads((B/'receipts.json').read_text());assert len(receipts)==7 and receipts[-1]['exit_code']==1
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def run(cmd,name):
+ log=B/(name+'.log');start=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic()
+ with log.open('w') as f:res=subprocess.run(cmd,cwd=R,env=env,stdout=f,stderr=subprocess.STDOUT)
+ row={'command':cmd,'cwd':str(R),'started_utc':start,'elapsed_seconds':round(time.monotonic()-t,2),'exit_code':res.returncode,'log_path':str(log),'log_sha256':sha(log)};receipts.append(row);(B/'receipts.json').write_text(json.dumps(receipts,indent=2)+'\n');print(json.dumps(row),flush=True)
+ assert res.returncode==0,log.read_text()
+run(['just','vendored-check'],'network-vendored-check')
+run(['git','diff','--check'],'git-diff-check')
+inputs=json.loads((B/'tested-core-input-hashes.json').read_text());delta=json.loads((B/'lint-formatting-delta.json').read_text())
+changed=[p for p,h in inputs.items() if sha(R/p)!=h];assert changed==[delta['path']],changed
+assert inputs[delta['path']]==delta['before_sha256'] and sha(R/delta['path'])==delta['after_sha256']
+final={p:sha(R/p) for p in inputs};(B/'final-core-input-hashes.json').write_text(json.dumps(final,indent=2)+'\n')
+(B/'final-input-preservation.json').write_text(json.dumps({'tested_core_files':len(inputs),'changed_after_full_suite':changed,'unreviewed_changes_after_checks':[],'formatting_delta':'lint-formatting-delta.json','final_record_sha256':sha(R/'data/pathways/protocatechuate-meta-cleavage.yaml'),'scope':'Full suite passed before one AST-identical test-decorator wrap; affected tests, lint, vendored sync and diff passed on final bytes. The first vendored check failed because sandbox DNS was unavailable and was retried with network access. All other tested inputs unchanged.'},indent=2)+'\n');print('Final gates passed; one AST-identical formatting delta explicitly retained',flush=True)
