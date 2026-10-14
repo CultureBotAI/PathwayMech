@@ -1,0 +1,27 @@
+from pathlib import Path
+import json,hashlib,datetime,sqlite3,xml.etree.ElementTree as E
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+B=Path(__file__).parent;O=B/'originals';cs=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+def props(db,id):return {p:o or v for p,o,v in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(id,))}
+def molinfo(m):
+ if m is None:return {'parsed':False}
+ return {'parsed':True,'inchi':Chem.MolToInchi(m),'inchi_key':Chem.MolToInchiKey(m),'isomeric_smiles':Chem.MolToSmiles(m,isomericSmiles=True),'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),'heavy_atom_count':m.GetNumHeavyAtoms(),'rings':[len(x) for x in m.GetRingInfo().AtomRings()],'chiral_centers':[list(x) for x in Chem.FindMolChiralCenters(m,includeUnassigned=True)],'double_bond_stereo':[str(b.GetStereo()) for b in m.GetBonds() if b.GetBondType()==Chem.BondType.DOUBLE]}
+def achiral_smiles(m):
+ m=Chem.RemoveHs(Chem.Mol(m));Chem.RemoveStereochemistry(m);return Chem.MolToSmiles(m)
+def cml_graph(c):
+ mol=c.find('cml/molecule');rw=Chem.RWMol();idx={}
+ for a in mol.findall('atomArray/atom'):
+  atom=Chem.Atom(a.get('elementType'));atom.SetFormalCharge(int(a.get('formalCharge','0')));idx[a.get('id')]=rw.AddAtom(atom)
+ for b in mol.findall('bondArray/bond'):
+  a,z=b.get('atomRefs').split();rw.AddBond(idx[a],idx[z],{1:Chem.BondType.SINGLE,2:Chem.BondType.DOUBLE,3:Chem.BondType.TRIPLE}[int(b.get('order'))])
+ m=rw.GetMol();Chem.SanitizeMol(m);return m
+
+rows=[]
+for frame,chebi in [('GLUTATHIONE','57925'),('CPD1G-2','16768')]:
+ p=O/('META-'+frame+'.xml');n=E.parse(p).getroot().find('Compound');m=n.find('cml/molecule');fs=m.find('formula').get('concise').split();formula=''.join(a+(v if v!='1' else '') for a,v in zip(fs[::2],fs[1::2]));charge=int(m.get('formalCharge'));ch=props(cs,'CHEBI:'+chebi);lp=O/('ChEBI-'+chebi+'.json');live=json.loads(lp.read_text());ni=n.findtext('inchi');nk=n.findtext('inchi-key').removeprefix('InChIKey=');cml=cml_graph(n);lm=Chem.MolFromSmiles(live['default_structure']['smiles']);pm=Chem.MolFromSmiles(ch['chemrof:smiles_string']);ns=n.findtext("cml/molecule/string[@title='smiles']");nm=Chem.MolFromSmiles(ns)
+ checks={'native_full_inchi_matches_pinned':ni==ch['chemrof:inchi_string'],'native_full_inchi_matches_live':ni==live['default_structure']['standard_inchi'],'native_inchi_key_matches_pinned':nk==ch['chemrof:inchi_key_string'],'native_formula_matches_pinned':formula==ch['chemrof:generalized_empirical_formula'],'native_charge_matches_pinned':charge==int(ch['chemrof:charge']),'native_formula_matches_live':formula==live['chemical_data']['formula'],'native_charge_matches_live':charge==live['chemical_data']['charge'],'live_smiles_matches_native_full_inchi':Chem.MolToInchi(lm)==ni,'pinned_smiles_matches_native_full_inchi':Chem.MolToInchi(pm)==ni,'native_cml_connectivity_matches_live_without_stereo':achiral_smiles(cml)==achiral_smiles(lm)}
+ assert all(checks.values()),(frame,checks)
+ rows.append({'native':'MetaCyc:'+frame,'recommended_id':'CHEBI:'+chebi,'native_name':n.findtext('common-name'),'pinned_label':ch['rdfs:label'],'native_formula':formula,'native_charge':charge,'native_inchi':ni,'native_inchi_key':nk,'pinned':ch,'live':{'id':live['chebi_accession'],'label':live['ascii_name'],'default_structure':live['default_structure'],'chemical_data':live['chemical_data']},'checks':checks,'representations':{'native_cml':molinfo(cml),'native_smiles':ns,'native_smiles_interpreted':molinfo(nm),'pinned_smiles_interpreted':molinfo(pm),'live_smiles_interpreted':molinfo(lm)},'limits':'CML comparison establishes element/charge/bond connectivity, not stereochemistry from coordinates. Full native and pinned/current InChI plus interpreted issuing SMILES establish stereochemistry. Cofactor role is separately protein-specific.','sources':[{'path':str(x),'sha256':hashlib.sha256(x.read_bytes()).hexdigest()}for x in [p,lp]]})
+ print(frame,chebi,formula,charge,'all exactness checks passed')
+(B/'cofactor-identity-closure.json').write_text(json.dumps({'rdkit_version':rdBase.rdkitVersion,'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Two native protein-specific cofactors; not a claim of net stoichiometric consumption','cofactors':rows},indent=2)+'\n')

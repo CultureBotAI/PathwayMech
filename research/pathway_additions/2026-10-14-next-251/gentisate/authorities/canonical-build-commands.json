@@ -1,0 +1,71 @@
+{
+  "cwd": "/private/tmp/pathwaymech-next-251-20261014",
+  "baseline_commit": "cd42a526b06ce531e8326a2717d54d7ff770bd2b",
+  "created_utc": "2026-10-14T12:07:19.858168+00:00",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src"
+  },
+  "source_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_source_identifier_snapshot.py",
+    "--manifest",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/identifier_sources.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/originals",
+    "--records",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/records",
+    "--output",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/sources.union.json"
+  ],
+  "ontology_builder": [
+    "/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python",
+    "-B",
+    "scripts/build_ontology_identifier_snapshot.py",
+    "--source",
+    "GO=/private/tmp/pathwaymech-curation-authorities/go.db",
+    "--source",
+    "CHEBI=/private/tmp/pathwaymech-curation-authorities/chebi.db",
+    "--source",
+    "NCBITaxon=/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db",
+    "--source",
+    "RHEA=/private/tmp/pathwaymech-curation-authorities/rhea.db",
+    "--rhea-updates",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/baseline/rhea_identifier_updates.json",
+    "--cache-dir",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/originals",
+    "--corpus",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/records",
+    "--include-id",
+    "GO:0008150",
+    "--include-id",
+    "GO:0006096",
+    "--include-id",
+    "GO:0005975",
+    "--output",
+    "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/ontology.union.json"
+  ],
+  "unchanged_builder_sha256": {
+    "build_source_identifier_snapshot.py": "7e483d89b36ec82c1e3f87cdcfd5b14f168474c31ea550905e6fb668cf41a9e0",
+    "build_ontology_identifier_snapshot.py": "fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81"
+  },
+  "selection": {
+    "scope": "All 248 unchanged baseline records plus ID-only selector preserving every 4799 prior authority identifier and 31 approved planned IDs. Selector supplies no labels/scientific claims.",
+    "selector_file": "records/planned-authority-selection.yaml",
+    "selector_sha256": "87a7861a2681ecfb7c711f1b981bb47065835327e11f6b7c99d897cc985373fd",
+    "reconstruct_from": [
+      "retained-authority-identifiers.json",
+      "planned-identifiers.json"
+    ],
+    "format": "yaml.safe_dump({id: MetaCyc:PWY-6223, participants: [{id: identifier} for identifier in sorted(union)]}, sort_keys=False)",
+    "pyyaml_version": "6.0.3"
+  },
+  "manifest_sha256": "ffdde43abf9fbf85e4038dd1ecfbac0abfae75380da0e9cedbbe31b991a12d0e",
+  "old_original_cache": "/private/tmp/pathwaymech-next-250-preflight-20261014/authority-staging/originals",
+  "staging_helper": {
+    "path": "/private/tmp/pathwaymech-next-251-preflight-20261014/authority-staging/prepare_union.py",
+    "sha256": "b57d6016eef59af56094aaaf6389a9e2e0a003034c2a68515e0a7acf1fdc3fe6",
+    "scope": "External helper only; unchanged canonical builders perform authority extraction."
+  }
+}

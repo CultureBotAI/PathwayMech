@@ -1,0 +1,28 @@
+import datetime,hashlib,json,re
+from pathlib import Path
+from xml.etree import ElementTree as ET
+BASE=Path(__file__).parent
+manifest=[]
+for p in sorted(BASE.glob('acquisition-*.json')):
+ manifest.extend(json.loads(p.read_text()))
+for p in ['pathway-html-acquisition.json','uniprot-acquisition.json','ena-acquisition.json','variant-acquisition.json','bagl-acquisition.json','variant-sequence-acquisition.json','variant-cofactor-assembly-acquisition.json']:
+ for r in json.loads((BASE/p).read_text()):
+  r={**r}
+  if 'headers' in r:r['headers']={k:v for k,v in r['headers'].items() if k.lower() in ['content-type','last-modified','etag']}
+  manifest.append(r)
+for r in manifest:
+ if 'path' in r:
+  r['semantic_use']='account-required HTML; not a valid pathway authority' if Path(r['path']).name=='biocyc-PWY-6223.html' else 'retrieved original; claim-specific interpretation required'
+  b=Path(r['path']).read_bytes();assert hashlib.sha256(b).hexdigest()==r['sha256'];assert len(b)==r['bytes']
+(BASE/'source-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+objects=[]
+for p in sorted((BASE/'originals').glob('META-*.xml')):
+ root=ET.parse(p).getroot();n=list(root)[1];obj={'id':'MetaCyc:'+n.attrib['frameid'],'object_type':n.tag,'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'source_version':root.find('./metadata/PGDB').attrib['version'],'common_name':n.findtext('common-name'),'synonyms':[x.text for x in n.findall('synonym')],'dbxrefs':[{x.tag:x.text for x in d}for d in n.findall('dblink')],'fields':{}}
+ fields=['parent','reaction-list','reaction-ordering','reaction-layout','pathway-link','taxonomic-range','species','enzyme','reaction','cofactor','component','component-of','regulated-by','mode','regulator','regulated-entity','gene','evidence','citation','left','right','reaction-direction','inchi','chemical-formula','atom-charges','molecular-weight-exp','molecular-weight-seq','catalyzes']
+ def project(n):
+  return {'tag':n.tag,'attributes':n.attrib,'text':n.text.strip() if n.text and n.text.strip() else None,'children':[project(x) for x in n if x.tag not in ['comment','credits','affiliations','email']]}
+ for field in fields:
+  if n.findall(field):obj['fields'][field]=[project(x) for x in n.findall(field)]
+ objects.append(obj)
+(BASE/'object-projection.json').write_text(json.dumps(objects,indent=2)+'\n')
+print('objects',len(objects),'manifest entries',len(manifest),'successful',sum('path' in r for r in manifest),'failed',sum('error' in r for r in manifest))

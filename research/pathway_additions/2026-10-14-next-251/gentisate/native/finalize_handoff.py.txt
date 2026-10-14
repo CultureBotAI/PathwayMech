@@ -1,0 +1,23 @@
+import json,hashlib,datetime
+from pathlib import Path
+B=Path(__file__).parent
+manifest=json.loads((B/'source-manifest.json').read_text())
+proposal=json.loads((B/'author-support-proposal.json').read_text())
+bindings=[]
+for ref in proposal['references']:
+ matches=[r for r in manifest if r.get('sha256')==ref['source_sha256'] and r.get('url')==ref['url']]
+ assert len(matches)==1,(ref['id'],matches)
+ r=matches[0];assert hashlib.sha256(Path(r['path']).read_bytes()).hexdigest()==ref['source_sha256']
+ bindings.append({'reference_id':ref['id'],'source_url':ref['url'],'source_version':ref['source_version'],'source_sha256':ref['source_sha256'],'original_path':r['path'],'verified_exact_hash_and_url':True})
+(B/'author-reference-bindings.json').write_text(json.dumps({'scope':'References in the author-support proposal, not a final root-curated record','verified_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'references':bindings},indent=2)+'\n')
+files=['HANDOFF.md','source-manifest.json','object-projection.json','go-candidates.json','go-identity-extension.json','u2-sequence-identity.json','q8nlc1-sequence-identity.json','variant-protein-identity.json','u2-nagl-assembly-identity.json','cofactor-identity-closure.json','variant-cofactor-identity-closure.json','author-support-proposal.json','author-reference-bindings.json','acquire.py','project.py','draft_support.py','close_cofactors.py','close_variant_cofactors.py','finalize_handoff.py']
+rows=[]
+for name in files:
+ p=B/name;data=p.read_bytes()
+ if p.suffix in {'.json','.md'}:assert b'SET-COOKIE' not in data and b'PTools-session' not in data,(name,'session header unexpectedly retained')
+ rows.append({'path':str(p),'name':name,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)})
+originals={r['path']:r for r in manifest if 'path' in r}
+for p,r in originals.items():assert hashlib.sha256(Path(p).read_bytes()).hexdigest()==r['sha256']
+out={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'complete external author-support handoff; no repository edits','retention_scope':'Only the listed files plus this allowlist itself may be copied as maintained research. All original downloads and raw acquisition receipts remain external. This does not grant public-release licensing.','allowed_files':rows,'allowlist_self':'retained-artifacts.json (not self-hashed)','originals_verified':len(originals),'acquisition_entries':len(manifest),'failed_http_attempts':sum('error' in r for r in manifest),'semantic_rejections':[{'path':r['path'],'reason':r['semantic_use']}for r in manifest if 'path' in r and r.get('semantic_use','').startswith('account-required')],'proposal_references_verified':len(bindings),'excluded_files':['originals/','pathway-html-acquisition.json','acquisition-*.json','uniprot-acquisition.json','ena-acquisition.json','variant-acquisition.json','bagl-acquisition.json','variant-sequence-acquisition.json','variant-cofactor-assembly-acquisition.json','native-cofactor-identity.json (superseded by full closure)']}
+(B/'retained-artifacts.json').write_text(json.dumps(out,indent=2)+'\n')
+print('Allowed',len(rows),'files plus retained-artifacts.json; all',len(originals),'original hashes verified;',len(bindings),'proposal reference bindings verified.')
