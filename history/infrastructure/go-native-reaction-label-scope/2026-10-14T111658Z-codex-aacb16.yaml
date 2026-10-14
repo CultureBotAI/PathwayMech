@@ -1,0 +1,27 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: src/pathwaymech/identifiers.py
+  slug: go-native-reaction-label-scope
+session:
+  id: 2026-10-14T111658Z-codex-aacb16
+  timestamp: '2026-10-14T11:16:58Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/526
+events:
+- type: EDIT
+  outcome: changed
+  summary: Constrain native reaction label waivers to verified reaction authority types
+  details: Address independent integration finding INT-250-01. Add optional authority_entity_types
+    selector with the bounded value reaction, evaluated against independent authority metadata.
+    The existing native typed-placement check still requires reactions/category molecular_activity.
+    Apply it only to the new GO/MetaCyc rule; existing rules retain their previous scope.
+    Focused regression coverage demonstrates that missing identifiers, wrong native placement,
+    and false pathway-interface labels fail, including a recategorized interface. 289 focused
+    identifier/native-reaction tests and scoped lint passed before the complete final gates.

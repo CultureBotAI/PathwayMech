@@ -1,0 +1,804 @@
+# Independent initial scientific review of protocatechuate ortho-cleavage
+
+- Review: 20261014T111342Z-protocatechuate-independent-initial
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T11:08:11Z
+- Finished UTC: 2026-10-14T11:13:42Z
+- Reviewer: Codex delegated independent scientific reviewer /root/next250_science_review (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+Complete record-level scientific inspection supports the four-step chemistry, historical native machinery and downstream boundary. One minor repeated GO source-locator defect needs correction. Aggregate validation fails only for stale generated page, and required test/lint runs have not yet occurred; this is an interim observation before correction.
+
+## Scope And Provenance
+
+One exact maintained record: all 37 mechanistic edges, 19 participants, one species, four core reactions, one downstream interface and all 21 references.
+
+Selection: Exact parent-assigned file data/pathways/protocatechuate-ortho-cleavage.yaml; no sample.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 4270a34ae30f4ccb5ce139d8a6f8fde35e938f5b.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| GO:0019618 | data/pathways/protocatechuate-ortho-cleavage.yaml | maintained | protocatechuate catabolic process, ortho-cleavage |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Native pre-assessment inspection | passed | True | GO:0019618 | Ran documented saver inspect before scientific assessment; source and target hashes retained. |
+| Full repository validation | failed | True | GO:0019618 | Actual root-run shared receipt; scientific reviewer did not rerun corpus gate. Stale generated GO_0019618.html is the sole reported failure. |
+| Full repository tests | skipped | True | GO:0019618 | Root sequential gate runner stopped at failed validation; tests not yet run. |
+| Repository lint | skipped | True | GO:0019618 | Root sequential gate runner stopped at failed validation; lint not yet run. |
+| Whitespace check | passed | True | GO:0019618 | Reviewer independently ran git diff --check; exit 0. |
+| Independent original-source replay and reaction balance | passed | False | GO:0019618 | Complete original RDF aggregation, 17 native reference hash comparisons, original XML objects, GO SQL, chemical structures and independent four-reaction atom/charge balance inspected. This does not replace repository validators. |
+| Structured expression context adapter | failed | False | GO:0019618 | Runner returned exit 2 due network resolution failure; no applicable dataset claim made. |
+
+## Scientific And Domain Assessments
+
+### Exact GO branch and native route boundary
+
+identity: supported. Targets: GO:0019618.
+
+GO definition, logical input/output and exact MetaCyc cross-reference identify the complete four-reaction protocatechuate branch ending at 3-oxoadipate. The separate downstream pathway is typed as an interface.
+
+### All reaction participants, molecular states and stoichiometry
+
+grounding: supported. Targets: GO:0019618.
+
+All nine reaction chemicals and ferric cofactor are correctly identified; complete equations retain two protons from intradiol cleavage. All four equations conserve atoms and charge. The exact native R-lactone cycloisomerase identity avoids a broader Rhea mapping.
+
+### All 37 edge claims and local node roles
+
+graph: supported. Targets: GO:0019618.
+
+All 37 edges have declared endpoints and permitted predicates: four memberships, 15 chemical sides, three internal material transfers, four catalysts, five complex components, one ferric cofactor, four expression-induction links and one downstream interface. All 19 participants and five activity/interface nodes were examined. No protein subunit is promoted to an independent catalyst.
+
+### Historical catalyst and assembly identity
+
+evidence: supported. Targets: GO:0019618.
+
+Native enzyme/evidence slots establish all four activity annotations. Alpha4/beta4 historical PcaHG is distinguished from ATCC23975 alpha12/beta12; source-native subunits are retained. PcaB tetramer, PcaC hexamer and historical PcaD three-copy annotation are preserved without asserting modern sequence equivalence.
+
+### Expression induction and cofactor placement
+
+scope: supported. Targets: GO:0019618.
+
+Native comments support protocatechuate induction of PcaHG and 3-oxoadipate induction of B/C/D. Descriptions explicitly retain expression-level context. Ferric iron is bound cofactor; oxygen remains consumed. Assay inhibitors and inferred regulator binding are not made physiological graph claims.
+
+### Exact GO logical source locators
+
+provenance: concern. Targets: GO:0019618.
+
+Biology is supported, but the four repeated GO input locators use the wrong OWL predicate path. Correct the path to the equivalence intersection; no reaction/node change is required.
+
+### Aggregate validation and generated page
+
+schema: concern. Targets: GO:0019618.
+
+Schema, identifiers and evidence grammar pass, while aggregate QC fails on the stale generated page. Full tests and lint remain outstanding.
+
+## Findings
+
+### F1: Four GO source locators incorrectly identify the input restriction as a direct subclass restriction
+
+minor / open / confirmed; issue key: protocatechuate-go-logical-source-locator.
+
+proto-001, proto-006, proto-010 and proto-015 correctly assert GO input CHEBI:36241 and output CHEBI:15775, but their source_locator says rdfs:subClassOf restrictions for both. Direct original GO:0019618 subclass statements contain only output restriction _:riog00158934. Input _:riog00158930 is a member of owl:equivalentClass _:riog00158927 / owl:intersectionOf _:riog00158933; output _:riog00158929 is also in that intersection. This is an exact locator defect, not unsupported pathway identity.
+
+## Recommended Actions And Acceptance Checks
+
+### A1
+
+Correct all four GO locators to the original owl:equivalentClass/owl:intersectionOf list members, retain the correct biological claim, regenerate pages and re-inspect changed input bytes.
+
+- Native GO SQL traversal locates RO:0004009/CHEBI:36241 and RO:0004008/CHEBI:15775 under the stated equivalence/intersection path.
+- All four affected evidence items use the corrected path.
+- Regenerate through just render-pages, then pass just validate, just test, just lint and git diff --check.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| go-original | http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn; go.db statements GO:0019618; owl:equivalentClass _:riog00158927; intersectionOf _:riog00158933; list members _:riog00158930 (input) and _:riog00158929 (output); direct subclass _:riog00158934 (output) | supports | Read issuing semantic SQL source directly and traversed all blank-node statements. Exact definition and MetaCyc cross-reference support protocatechuate to beta-ketoadipate scope. The direct subclass input locator asserted by the record is absent from that complete direct-statement set; input occurs under the equivalence intersection. |
+| native-protocatechuate-ortho-cleavage-pwy | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY; /ptools-xml/Pathway[@frameid="PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY"] | supports | Read complete original pathway object: four memberships, three predecessor links, all selected layouts, species and downstream connection. |
+| native-protocatechuate-34-dioxygenase-rxn | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PROTOCATECHUATE-34-DIOXYGENASE-RXN; /ptools-xml/Reaction[@frameid="PROTOCATECHUATE-34-DIOXYGENASE-RXN"] | supports | Read complete original reaction sides, coefficients, direction and cross-references. |
+| native-5-5-1-2-rxn | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:5.5.1.2-RXN; /ptools-xml/Reaction[@frameid="5.5.1.2-RXN"] | supports | Read complete original reaction sides, coefficients, direction and cross-references. |
+| native-4-carboxymuconolactone-decarboxylase-rxn | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:4-CARBOXYMUCONOLACTONE-DECARBOXYLASE-RXN; /ptools-xml/Reaction[@frameid="4-CARBOXYMUCONOLACTONE-DECARBOXYLASE-RXN"] | supports | Read complete original reaction sides, coefficients, direction and cross-references. |
+| native-3-oxoadipate-enol-lactonase-rxn | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-OXOADIPATE-ENOL-LACTONASE-RXN; /ptools-xml/Reaction[@frameid="3-OXOADIPATE-ENOL-LACTONASE-RXN"] | supports | Read complete original reaction sides, coefficients, direction and cross-references. |
+| native-enzrxn-3343 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3343; /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3343"] | supports | Read original enzyme, reaction, evidence and cofactor objects; activity citations were checked separately from general citations. |
+| native-enzrxn-3366 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3366; /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3366"] | supports | Read original enzyme, reaction, evidence and cofactor objects; activity citations were checked separately from general citations. |
+| native-enzrxn-3367 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3367; /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3367"] | supports | Read original enzyme, reaction, evidence and cofactor objects; activity citations were checked separately from general citations. |
+| native-enzrxn-3368 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3368; /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3368"] | supports | Read original enzyme, reaction, evidence and cofactor objects; activity citations were checked separately from general citations. |
+| native-cplx-2721 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2721; /ptools-xml/Protein[@frameid="CPLX-2721"] | supports | Read original component coefficients, species, induction comment and scope distinctions. Native assembly and chemical induction are retained without modern sequence equivalence. |
+| native-cplx-2762 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2762; /ptools-xml/Protein[@frameid="CPLX-2762"] | supports | Read original component coefficients, species, induction comment and scope distinctions. Native assembly and chemical induction are retained without modern sequence equivalence. |
+| native-cplx-2745 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2745; /ptools-xml/Protein[@frameid="CPLX-2745"] | supports | Read original component coefficients, species, induction comment and scope distinctions. Native assembly and chemical induction are retained without modern sequence equivalence. |
+| native-cplx-2761 | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2761; /ptools-xml/Protein[@frameid="CPLX-2761"] | supports | Read original component coefficients, species, induction comment and scope distinctions. Native assembly and chemical induction are retained without modern sequence equivalence. |
+| rhea-original | https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz; Rhea 142; aggregated rdf:Description by URI for 10085, 23349, 10185 and 23658; substrates/products -&gt; containsN -&gt; participant -&gt; compound -&gt; chebi | supports | Independently parsed complete original gzip and aggregated same-URI descriptions; all 12 Rhea-side graph edges and coefficients exactly match. Native cycloisomerase mapping to 23658 would replace CHEBI:58771 with stereo-unspecified CHEBI:57979, so it is correctly rejected. |
+| chemical-originals | https://www.ebi.ac.uk/chebi/; Nine ChEBI original issuing JSON objects 36241,57496,58771,58425,15775,15379,15378,15377,16526; native compound XML full InChI, CML formula and formalCharge; pinned ChEBI SQL CHEBI:29034 | supports | Read chemical identities, full stereochemical InChIs, ion states, formulas and labels directly. Native structures agree with their exact ChEBI structures. Formula/charge arithmetic independently balances all four full reactions. Ferric cofactor is Fe3+; O2 is a substrate. Original artifacts and exact hashes retained externally in independent-original-audit.json. |
+| downstream-original | https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-2361; /ptools-xml/Pathway[@frameid="PWY-2361"]/reaction-list; reaction-ordering; reaction-layout | supports | Read complete downstream object. CoA transfer consumes 3-KETO-ADIPATE and precedes thiolysis; this is correctly a separate pathway interface outside the four-step GO scope. |
+| primary-6273403 | https://europepmc.org/article/MED/6273403; original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText when present | context_only | Independently read complete author abstract and metadata. Purification and properties of protocatechuate 3,4-dioxygenase from Pseudomonas putida. A new iron to subunit stoichiometry. |
+| primary-7391022 | https://europepmc.org/article/MED/7391022; original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText when present | context_only | Independently read complete author abstract and metadata. Repetitions in the NH2-terminal amino acid sequence of beta-ketoadipate enol-lactone hydrolase from Pseudomonas putida. |
+| primary-7391024 | https://europepmc.org/article/MED/7391024; original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText when present | context_only | Independently read complete author abstract and metadata. Homologies in the NH2-terminal amino acid sequences of gamma-carboxymuconolactone decarboxylases and muconolactone isomerases. |
+| primary-1390752 | https://europepmc.org/article/MED/1390752; original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText when present | context_only | Independently read complete author abstract and metadata. 3-Carboxy-cis,cis-muconate lactonizing enzyme from Pseudomonas putida is homologous to the class II fumarase family: a new reaction in the evolution of a mechanistic motif. |
+| primary-4199895 | https://europepmc.org/article/MED/4199895; original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText when present | context_only | Independently read metadata only; no original full paper was available in this retrieval. Relationships among enzymes of the beta-ketoadipate pathway. II. Properties of crystalline beta-carboxy-cis,cis-muconate-lactonizing enzyme from Pseudomonas putida. |
+| primary-4199896 | https://europepmc.org/article/MED/4199896; original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText when present | context_only | Independently read metadata only; no original full paper was available in this retrieval. Relationships among enzymes of the beta-ketoadipate pathway. 3. Properties of crystalline gamma-carboxymuconolactone decarboxylase from Pseudomonas putida. |
+| primary-916393 | https://europepmc.org/article/MED/916393; original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText when present | context_only | Independently read metadata only; no original full paper was available in this retrieval. Prostaglandin and norepinephrine metabolism: effect of indomethacin on prostaglandin synthesis and norepinephrine turnover rate. |
+| primary-8407791-scan | https://pmc.ncbi.nlm.nih.gov/articles/PMC206714/; Original first page (printed p. 6194), abstract and introduction; visually inspected page PNG | supports | Original first-page pixels independently confirm ATCC23975, formerly P. aeruginosa, and alpha12 beta12 quaternary structure. This supports the record distinction from the historical alpha4 beta4 model. Only this page was independently read by this reviewer; author-agent full-paper reading is not substituted. |
+| deterministic-initial | /private/tmp/pathwaymech-next-250-checks/receipts.json; just-validate.log; receipt command just validate, exit 1; SHA256 8fa9a395bc4e3d32d7b7329ab46aee5b82c92d41121313dd06422bd3bb021003 | partial | Inspected actual root-run command receipt and complete summary. 248 records pass closed schema and identifier policies, 17750 evidence blocks pass; generated GO_0019618.html is stale, causing aggregate validation failure. Required test/lint were not reached. |
+| imodulon-attempt | https://imodulondb.org/api/datasets; /private/tmp/pathwaymech-next-250-scientific-review/imodulon-receipt.json | unknown | Local structured runner was found in culturebotai-claw and executed; exit 2 due DNS/network unavailable. Web fallback home page supplied no readable dataset inventory. No dataset absence or negative biological inference is made. |
+
+## Limits And Additional Notes
+
+- Required full tests and lint are not yet run; aggregate validation failed on generated-page staleness.
+- Historical PcaHG/B/C/D assembly annotations remain source-scoped; fresh structural validation and exact sequence joins are outside this review.
+- Full primary-paper stereochemical experimental methods were not accessible; the R-lactone identity is supported by directly inspected original native chemical structures, ChEBI identity and Rhea comparison.
+- iModulonDB dataset inventory could not be retrieved; no negative expression/biology claim is made.
+- Shared root-run gate receipts were independently inspected rather than duplicating the full-corpus run.
+- Original source artifacts remain outside the repository. Derived reviewer audit files are in /private/tmp/pathwaymech-next-250-scientific-review.
+- No record, history, GitHub object or generated page was changed by this reviewer.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T111342Z-protocatechuate-independent-initial
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent initial scientific review of protocatechuate ortho-cleavage
+started_at: '2026-10-14T11:08:11Z'
+finished_at: '2026-10-14T11:13:42Z'
+reviewer:
+  identity: Codex delegated independent scientific reviewer /root/next250_science_review
+  kind: agent
+  model: GPT-6
+  independence: independent
+  independence_basis: Did not author the record. Independently read complete target
+    and native XML/RDF/GO/ChEBI originals; used author handoffs only as locational
+    leads. Shared actual corpus checks are disclosed.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: Complete record-level scientific inspection supports the four-step chemistry,
+  historical native machinery and downstream boundary. One minor repeated GO source-locator
+  defect needs correction. Aggregate validation fails only for stale generated page,
+  and required test/lint runs have not yet occurred; this is an interim observation
+  before correction.
+source:
+  git_revision: 4270a34ae30f4ccb5ce139d8a6f8fde35e938f5b
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: data/pathways/protocatechuate-ortho-cleavage.yaml
+    sha256: 2ed9e5c4a25e93f4434b2d0299588de4f6849b3a558efdec867cf0e54f3d7bc1
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+scope:
+  description: 'One exact maintained record: all 37 mechanistic edges, 19 participants,
+    one species, four core reactions, one downstream interface and all 21 references.'
+  selection: Exact parent-assigned file data/pathways/protocatechuate-ortho-cleavage.yaml;
+    no sample.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - GO:0019618
+  exclusions:
+  - target: Full original papers behind historical MetaCyc citations
+    reason: Most historical full articles were access-blocked; independently read
+      author abstracts/metadata and the original first page of PMID8407791. Database
+      evidence is not relabelled as a fresh full-paper claim.
+targets:
+- target_id: GO:0019618
+  path: data/pathways/protocatechuate-ortho-cleavage.yaml
+  label: protocatechuate catabolic process, ortho-cleavage
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-ortho-cleavage.yaml
+    role: maintained pathway record
+checks:
+- check_id: inspect
+  name: Native pre-assessment inspection
+  status: passed
+  required: true
+  summary: Ran documented saver inspect before scientific assessment; source and target
+    hashes retained.
+  target_ids:
+  - GO:0019618
+  command: python -B scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-250-scientific-review/targets.yaml
+    --input <ten listed local rubric/schema paths>
+  exit_code: 0
+- check_id: validate
+  name: Full repository validation
+  status: failed
+  required: true
+  summary: Actual root-run shared receipt; scientific reviewer did not rerun corpus
+    gate. Stale generated GO_0019618.html is the sole reported failure.
+  target_ids:
+  - GO:0019618
+  command: just validate
+  exit_code: 1
+  evidence_ids:
+  - deterministic-initial
+  scope_note: All 248 records; all 17750 evidence blocks; actual bytes before GO locator
+    correction.
+- check_id: test
+  name: Full repository tests
+  status: skipped
+  required: true
+  summary: Root sequential gate runner stopped at failed validation; tests not yet
+    run.
+  target_ids:
+  - GO:0019618
+- check_id: lint
+  name: Repository lint
+  status: skipped
+  required: true
+  summary: Root sequential gate runner stopped at failed validation; lint not yet
+    run.
+  target_ids:
+  - GO:0019618
+- check_id: diff-check
+  name: Whitespace check
+  status: passed
+  required: true
+  summary: Reviewer independently ran git diff --check; exit 0.
+  target_ids:
+  - GO:0019618
+  command: git diff --check
+  exit_code: 0
+- check_id: original-replay
+  name: Independent original-source replay and reaction balance
+  status: passed
+  required: false
+  summary: Complete original RDF aggregation, 17 native reference hash comparisons,
+    original XML objects, GO SQL, chemical structures and independent four-reaction
+    atom/charge balance inspected. This does not replace repository validators.
+  target_ids:
+  - GO:0019618
+  command: python -B /private/tmp/pathwaymech-next-250-scientific-review/audit_originals.py
+  exit_code: 0
+  evidence_ids:
+  - rhea-original
+  - chemical-originals
+  - go-original
+- check_id: imodulon
+  name: Structured expression context adapter
+  status: failed
+  required: false
+  summary: Runner returned exit 2 due network resolution failure; no applicable dataset
+    claim made.
+  target_ids:
+  - GO:0019618
+  command: uv run --offline --project /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw
+    kg-microbe-sources imodulondb datasets
+  exit_code: 2
+  evidence_ids:
+  - imodulon-attempt
+evidence:
+- evidence_id: go-original
+  kind: authority
+  reference: http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn
+  locator: go.db statements GO:0019618; owl:equivalentClass _:riog00158927; intersectionOf
+    _:riog00158933; list members _:riog00158930 (input) and _:riog00158929 (output);
+    direct subclass _:riog00158934 (output)
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read issuing semantic SQL source directly and traversed all blank-node
+    statements. Exact definition and MetaCyc cross-reference support protocatechuate
+    to beta-ketoadipate scope. The direct subclass input locator asserted by the record
+    is absent from that complete direct-statement set; input occurs under the equivalence
+    intersection.
+  snapshot_sha256: 018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd
+- evidence_id: native-protocatechuate-ortho-cleavage-pwy
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY
+  locator: /ptools-xml/Pathway[@frameid="PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: 'Read complete original pathway object: four memberships, three predecessor
+    links, all selected layouts, species and downstream connection.'
+  snapshot_sha256: ebf707a98118965161eb2dbcd803299d8a94efe31737bb365ed336c48b64e4e2
+- evidence_id: native-protocatechuate-34-dioxygenase-rxn
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PROTOCATECHUATE-34-DIOXYGENASE-RXN
+  locator: /ptools-xml/Reaction[@frameid="PROTOCATECHUATE-34-DIOXYGENASE-RXN"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read complete original reaction sides, coefficients, direction and cross-references.
+  snapshot_sha256: bedc6e25198d02d95718a932193524dc45609b1e3d38e4ba660f0a5ac1cff88f
+- evidence_id: native-5-5-1-2-rxn
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:5.5.1.2-RXN
+  locator: /ptools-xml/Reaction[@frameid="5.5.1.2-RXN"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read complete original reaction sides, coefficients, direction and cross-references.
+  snapshot_sha256: 2f1c7ca80d8648b968a66274d6f65034f06f2d1351834bbeb70a707b1cfc4d33
+- evidence_id: native-4-carboxymuconolactone-decarboxylase-rxn
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:4-CARBOXYMUCONOLACTONE-DECARBOXYLASE-RXN
+  locator: /ptools-xml/Reaction[@frameid="4-CARBOXYMUCONOLACTONE-DECARBOXYLASE-RXN"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read complete original reaction sides, coefficients, direction and cross-references.
+  snapshot_sha256: fe0c7d60ae5fc3e2d8caee54c1a0606ea3aa74060e22708dabf0c854451beff8
+- evidence_id: native-3-oxoadipate-enol-lactonase-rxn
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:3-OXOADIPATE-ENOL-LACTONASE-RXN
+  locator: /ptools-xml/Reaction[@frameid="3-OXOADIPATE-ENOL-LACTONASE-RXN"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read complete original reaction sides, coefficients, direction and cross-references.
+  snapshot_sha256: 7a438bdff84971939300f99d5202a19abccaee11ea2a909a931ccd9edfc902be
+- evidence_id: native-enzrxn-3343
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3343
+  locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3343"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original enzyme, reaction, evidence and cofactor objects; activity
+    citations were checked separately from general citations.
+  snapshot_sha256: 26202585075fcfb6a5c44b2f82d0dc84f9d1ea53ad73970a2b1f496c873cce0c
+- evidence_id: native-enzrxn-3366
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3366
+  locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3366"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original enzyme, reaction, evidence and cofactor objects; activity
+    citations were checked separately from general citations.
+  snapshot_sha256: a2569b4c0b9fccd11c73831e0f2dec9db2edee2946ca78ccc459f13bfcb9ee86
+- evidence_id: native-enzrxn-3367
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3367
+  locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3367"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original enzyme, reaction, evidence and cofactor objects; activity
+    citations were checked separately from general citations.
+  snapshot_sha256: 4121b336bb495549cc6c3c9142890e408b061764acde25598977aa870fe19696
+- evidence_id: native-enzrxn-3368
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:ENZRXN-3368
+  locator: /ptools-xml/Enzymatic-Reaction[@frameid="ENZRXN-3368"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original enzyme, reaction, evidence and cofactor objects; activity
+    citations were checked separately from general citations.
+  snapshot_sha256: 2cf63a0a9049c1f3867869116c0026e0cca4e5151346ed5c426350751d111274
+- evidence_id: native-cplx-2721
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2721
+  locator: /ptools-xml/Protein[@frameid="CPLX-2721"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original component coefficients, species, induction comment and scope
+    distinctions. Native assembly and chemical induction are retained without modern
+    sequence equivalence.
+  snapshot_sha256: 21041c4a0a8338a69042bcb6f6bc4c255115d90260f17d93978f572568f2a0d4
+- evidence_id: native-cplx-2762
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2762
+  locator: /ptools-xml/Protein[@frameid="CPLX-2762"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original component coefficients, species, induction comment and scope
+    distinctions. Native assembly and chemical induction are retained without modern
+    sequence equivalence.
+  snapshot_sha256: cdf55aba916d476d9009efa6e55fc0a0b5fa7bceac0b3d481d9cab630efce60c
+- evidence_id: native-cplx-2745
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2745
+  locator: /ptools-xml/Protein[@frameid="CPLX-2745"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original component coefficients, species, induction comment and scope
+    distinctions. Native assembly and chemical induction are retained without modern
+    sequence equivalence.
+  snapshot_sha256: 90fe2262547ac05e2ea47c8a80b4b92772c8cabe6c9e7216a50f57b8c155d7d1
+- evidence_id: native-cplx-2761
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:CPLX-2761
+  locator: /ptools-xml/Protein[@frameid="CPLX-2761"]
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read original component coefficients, species, induction comment and scope
+    distinctions. Native assembly and chemical induction are retained without modern
+    sequence equivalence.
+  snapshot_sha256: 47b3c6b84e9dffb235b17eb4a47da3f67d90d2f1d73216e44c6ad386651094ef
+- evidence_id: rhea-original
+  kind: database
+  reference: https://ftp.expasy.org/databases/rhea/rdf/rhea.rdf.gz
+  locator: Rhea 142; aggregated rdf:Description by URI for 10085, 23349, 10185 and
+    23658; substrates/products -> containsN -> participant -> compound -> chebi
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Independently parsed complete original gzip and aggregated same-URI descriptions;
+    all 12 Rhea-side graph edges and coefficients exactly match. Native cycloisomerase
+    mapping to 23658 would replace CHEBI:58771 with stereo-unspecified CHEBI:57979,
+    so it is correctly rejected.
+  snapshot_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- evidence_id: chemical-originals
+  kind: authority
+  reference: https://www.ebi.ac.uk/chebi/
+  locator: Nine ChEBI original issuing JSON objects 36241,57496,58771,58425,15775,15379,15378,15377,16526;
+    native compound XML full InChI, CML formula and formalCharge; pinned ChEBI SQL
+    CHEBI:29034
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read chemical identities, full stereochemical InChIs, ion states, formulas
+    and labels directly. Native structures agree with their exact ChEBI structures.
+    Formula/charge arithmetic independently balances all four full reactions. Ferric
+    cofactor is Fe3+; O2 is a substrate. Original artifacts and exact hashes retained
+    externally in independent-original-audit.json.
+- evidence_id: downstream-original
+  kind: database
+  reference: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-2361
+  locator: /ptools-xml/Pathway[@frameid="PWY-2361"]/reaction-list; reaction-ordering;
+    reaction-layout
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Read complete downstream object. CoA transfer consumes 3-KETO-ADIPATE and
+    precedes thiolysis; this is correctly a separate pathway interface outside the
+    four-step GO scope.
+  snapshot_sha256: 7e8795224de295517ebd98df074c96a5063c856892968dbbe6b7a2431437bd58
+- evidence_id: primary-6273403
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/6273403
+  locator: 'original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText
+    when present'
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: context_only
+  summary: Independently read complete author abstract and metadata. Purification
+    and properties of protocatechuate 3,4-dioxygenase from Pseudomonas putida. A new
+    iron to subunit stoichiometry.
+  snapshot_sha256: 7c3c2d884128b4a4034e060a46acc33a9e0053c803c219d62f45dca4d52c7a04
+- evidence_id: primary-7391022
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/7391022
+  locator: 'original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText
+    when present'
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: context_only
+  summary: Independently read complete author abstract and metadata. Repetitions in
+    the NH2-terminal amino acid sequence of beta-ketoadipate enol-lactone hydrolase
+    from Pseudomonas putida.
+  snapshot_sha256: d0b365b73355a17e0f231d5d62f8d50baccbd01d16774d8565cecbf95bcff25c
+- evidence_id: primary-7391024
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/7391024
+  locator: 'original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText
+    when present'
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: context_only
+  summary: Independently read complete author abstract and metadata. Homologies in
+    the NH2-terminal amino acid sequences of gamma-carboxymuconolactone decarboxylases
+    and muconolactone isomerases.
+  snapshot_sha256: 45f43f302215ab66d21bf92e95779227b02b28a79d001e8b231a3450dfe22c37
+- evidence_id: primary-1390752
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/1390752
+  locator: 'original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText
+    when present'
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: context_only
+  summary: 'Independently read complete author abstract and metadata. 3-Carboxy-cis,cis-muconate
+    lactonizing enzyme from Pseudomonas putida is homologous to the class II fumarase
+    family: a new reaction in the evolution of a mechanistic motif.'
+  snapshot_sha256: 6dba1206e999dd60e7259a1a2cec4517ce88c703d5b34a9dcd6375f65a5864d4
+- evidence_id: primary-4199895
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/4199895
+  locator: 'original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText
+    when present'
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: context_only
+  summary: Independently read metadata only; no original full paper was available
+    in this retrieval. Relationships among enzymes of the beta-ketoadipate pathway.
+    II. Properties of crystalline beta-carboxy-cis,cis-muconate-lactonizing enzyme
+    from Pseudomonas putida.
+  snapshot_sha256: 98c9794136049f40a752312c1af772b2a5b2afb18856e79503ff02ac5d820496
+- evidence_id: primary-4199896
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/4199896
+  locator: 'original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText
+    when present'
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: context_only
+  summary: Independently read metadata only; no original full paper was available
+    in this retrieval. Relationships among enzymes of the beta-ketoadipate pathway.
+    3. Properties of crystalline gamma-carboxymuconolactone decarboxylase from Pseudomonas
+    putida.
+  snapshot_sha256: 16161e50c195e6727b2975a2718316fb24705628fe60f493736f867c39b529af
+- evidence_id: primary-916393
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/916393
+  locator: 'original Europe PMC API resultList.result[0]: title, authors, DOI, abstractText
+    when present'
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: context_only
+  summary: 'Independently read metadata only; no original full paper was available
+    in this retrieval. Prostaglandin and norepinephrine metabolism: effect of indomethacin
+    on prostaglandin synthesis and norepinephrine turnover rate.'
+  snapshot_sha256: 94149b6c661e8c3f6289ce31a3603b653ca8109495878eed00e4e355e51643ea
+- evidence_id: primary-8407791-scan
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC206714/
+  locator: Original first page (printed p. 6194), abstract and introduction; visually
+    inspected page PNG
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: supports
+  summary: Original first-page pixels independently confirm ATCC23975, formerly P.
+    aeruginosa, and alpha12 beta12 quaternary structure. This supports the record
+    distinction from the historical alpha4 beta4 model. Only this page was independently
+    read by this reviewer; author-agent full-paper reading is not substituted.
+  snapshot_sha256: fd979e9ea5dcac0a937b3fb98ef486152be0e147aa7881f3e15edeb2ea122a3d
+- evidence_id: deterministic-initial
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-250-checks/receipts.json
+  locator: just-validate.log; receipt command just validate, exit 1; SHA256 8fa9a395bc4e3d32d7b7329ab46aee5b82c92d41121313dd06422bd3bb021003
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: partial
+  summary: Inspected actual root-run command receipt and complete summary. 248 records
+    pass closed schema and identifier policies, 17750 evidence blocks pass; generated
+    GO_0019618.html is stale, causing aggregate validation failure. Required test/lint
+    were not reached.
+- evidence_id: imodulon-attempt
+  kind: search
+  reference: https://imodulondb.org/api/datasets
+  locator: /private/tmp/pathwaymech-next-250-scientific-review/imodulon-receipt.json
+  accessed_at: '2026-10-14T11:13:42Z'
+  support: unknown
+  summary: Local structured runner was found in culturebotai-claw and executed; exit
+    2 due DNS/network unavailable. Web fallback home page supplied no readable dataset
+    inventory. No dataset absence or negative biological inference is made.
+  search_scope: Exact structured dataset inventory command attempted; available runner
+    located using gitignore-independent hidden/ignored search in KG-Microbe and /private/tmp,
+    with explicit inaccessible directory errors. No complete filesystem absence claim
+    is made.
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact GO branch and native route boundary
+  outcome: supported
+  summary: GO definition, logical input/output and exact MetaCyc cross-reference identify
+    the complete four-reaction protocatechuate branch ending at 3-oxoadipate. The
+    separate downstream pathway is typed as an interface.
+  target_ids:
+  - GO:0019618
+  evidence_ids:
+  - go-original
+  - native-protocatechuate-ortho-cleavage-pwy
+  - downstream-original
+- assessment_id: chemistry
+  area: grounding
+  topic: All reaction participants, molecular states and stoichiometry
+  outcome: supported
+  summary: All nine reaction chemicals and ferric cofactor are correctly identified;
+    complete equations retain two protons from intradiol cleavage. All four equations
+    conserve atoms and charge. The exact native R-lactone cycloisomerase identity
+    avoids a broader Rhea mapping.
+  target_ids:
+  - GO:0019618
+  evidence_ids:
+  - rhea-original
+  - chemical-originals
+  - native-5-5-1-2-rxn
+  metrics:
+  - name: complete core reactions independently inspected
+    value: 4
+    unit: reactions
+    definition: All core elementary reactions have complete sides, direction and exact
+      intermediate identity checked.
+    denominator: 4
+- assessment_id: graph
+  area: graph
+  topic: All 37 edge claims and local node roles
+  outcome: supported
+  summary: 'All 37 edges have declared endpoints and permitted predicates: four memberships,
+    15 chemical sides, three internal material transfers, four catalysts, five complex
+    components, one ferric cofactor, four expression-induction links and one downstream
+    interface. All 19 participants and five activity/interface nodes were examined.
+    No protein subunit is promoted to an independent catalyst.'
+  target_ids:
+  - GO:0019618
+  evidence_ids:
+  - native-protocatechuate-ortho-cleavage-pwy
+  - rhea-original
+  - downstream-original
+  metrics:
+  - name: edge coverage
+    value: 37
+    unit: edges
+    definition: Every maintained edge was read and compared against its closest original
+      structured source.
+    denominator: 37
+- assessment_id: enzymes
+  area: evidence
+  topic: Historical catalyst and assembly identity
+  outcome: supported
+  summary: Native enzyme/evidence slots establish all four activity annotations. Alpha4/beta4
+    historical PcaHG is distinguished from ATCC23975 alpha12/beta12; source-native
+    subunits are retained. PcaB tetramer, PcaC hexamer and historical PcaD three-copy
+    annotation are preserved without asserting modern sequence equivalence.
+  target_ids:
+  - GO:0019618
+  evidence_ids:
+  - native-enzrxn-3343
+  - native-enzrxn-3366
+  - native-enzrxn-3367
+  - native-enzrxn-3368
+  - native-cplx-2721
+  - native-cplx-2762
+  - native-cplx-2745
+  - native-cplx-2761
+  - primary-6273403
+  - primary-7391022
+  - primary-7391024
+  - primary-8407791-scan
+  dimensions:
+  - name: evidence_tier
+    value: Native curated structured-source assertions; independently read abstracts
+      and one original page for scope checks
+    definition: Preserves the distinction between native experimental evidence coding
+      and a fresh complete paper reading.
+    evidence_ids:
+    - native-enzrxn-3343
+    - native-enzrxn-3368
+    - primary-8407791-scan
+  - name: taxon_scope
+    value: Pseudomonas putida; historical preparation and strain limits retained
+    definition: Not a universal claim across all strains; no modern KT2440 sequence
+      substitution.
+    evidence_ids:
+    - native-cplx-2721
+    - native-cplx-2761
+- assessment_id: regulation
+  area: scope
+  topic: Expression induction and cofactor placement
+  outcome: supported
+  summary: Native comments support protocatechuate induction of PcaHG and 3-oxoadipate
+    induction of B/C/D. Descriptions explicitly retain expression-level context. Ferric
+    iron is bound cofactor; oxygen remains consumed. Assay inhibitors and inferred
+    regulator binding are not made physiological graph claims.
+  target_ids:
+  - GO:0019618
+  evidence_ids:
+  - native-cplx-2721
+  - native-cplx-2762
+  - native-cplx-2745
+  - native-cplx-2761
+  - native-enzrxn-3343
+- assessment_id: locators
+  area: provenance
+  topic: Exact GO logical source locators
+  outcome: concern
+  summary: Biology is supported, but the four repeated GO input locators use the wrong
+    OWL predicate path. Correct the path to the equivalence intersection; no reaction/node
+    change is required.
+  target_ids:
+  - GO:0019618
+  evidence_ids:
+  - go-original
+- assessment_id: validation
+  area: schema
+  topic: Aggregate validation and generated page
+  outcome: concern
+  summary: Schema, identifiers and evidence grammar pass, while aggregate QC fails
+    on the stale generated page. Full tests and lint remain outstanding.
+  target_ids:
+  - GO:0019618
+  evidence_ids:
+  - deterministic-initial
+findings:
+- finding_id: F1
+  issue_key: protocatechuate-go-logical-source-locator
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Four GO source locators incorrectly identify the input restriction as a direct
+    subclass restriction
+  description: proto-001, proto-006, proto-010 and proto-015 correctly assert GO input
+    CHEBI:36241 and output CHEBI:15775, but their source_locator says rdfs:subClassOf
+    restrictions for both. Direct original GO:0019618 subclass statements contain
+    only output restriction _:riog00158934. Input _:riog00158930 is a member of owl:equivalentClass
+    _:riog00158927 / owl:intersectionOf _:riog00158933; output _:riog00158929 is also
+    in that intersection. This is an exact locator defect, not unsupported pathway
+    identity.
+  target_ids:
+  - GO:0019618
+  field_paths:
+  - mechanistic_edges[id=proto-001].evidence[reference_id=GO:0019618].source_locator
+  - mechanistic_edges[id=proto-006].evidence[reference_id=GO:0019618].source_locator
+  - mechanistic_edges[id=proto-010].evidence[reference_id=GO:0019618].source_locator
+  - mechanistic_edges[id=proto-015].evidence[reference_id=GO:0019618].source_locator
+  evidence_ids:
+  - go-original
+  rule_id: docs/CAUSAL_GRAPHS.md#evidence-and-provenance; review-yaml-record Evidence
+    Rules
+  native_severity: minor
+  normalization_reason: Bounded provenance defect; original definition, xref and logical
+    restriction still establish the correct biological scope.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-ortho-cleavage.yaml
+    role: maintained pathway record
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/525
+actions:
+- action_id: A1
+  description: Correct all four GO locators to the original owl:equivalentClass/owl:intersectionOf
+    list members, retain the correct biological claim, regenerate pages and re-inspect
+    changed input bytes.
+  finding_ids:
+  - F1
+  target_ids:
+  - GO:0019618
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-ortho-cleavage.yaml
+    role: maintained pathway record
+  acceptance_checks:
+  - Native GO SQL traversal locates RO:0004009/CHEBI:36241 and RO:0004008/CHEBI:15775
+    under the stated equivalence/intersection path.
+  - All four affected evidence items use the corrected path.
+  - Regenerate through just render-pages, then pass just validate, just test, just
+    lint and git diff --check.
+  generator: just render-pages
+limitations:
+- Required full tests and lint are not yet run; aggregate validation failed on generated-page
+  staleness.
+- Historical PcaHG/B/C/D assembly annotations remain source-scoped; fresh structural
+  validation and exact sequence joins are outside this review.
+- Full primary-paper stereochemical experimental methods were not accessible; the
+  R-lactone identity is supported by directly inspected original native chemical structures,
+  ChEBI identity and Rhea comparison.
+- iModulonDB dataset inventory could not be retrieved; no negative expression/biology
+  claim is made.
+- Shared root-run gate receipts were independently inspected rather than duplicating
+  the full-corpus run.
+notes:
+- Original source artifacts remain outside the repository. Derived reviewer audit
+  files are in /private/tmp/pathwaymech-next-250-scientific-review.
+- No record, history, GitHub object or generated page was changed by this reviewer.
+```
