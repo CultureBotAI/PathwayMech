@@ -21,6 +21,12 @@ preserve the primary abstract's scope. The original 42 edges, 22 participants an
 29 references remain unchanged. A linked scientific successor resolves the
 original finding; the initial observation is preserved.
 
+The first commit omitted three retained authority build logs because the existing
+ignore rule excludes log files. This commit-packaging defect is tracked in #532.
+The exact files were explicitly added, preserving their original paths, bytes
+and retention manifests. Independent committed-tree verification and a linked
+integration successor document the correction; the first commit is preserved.
+
 All six final local gates passed: `just render-pages`, `just validate`, `just test`,
 `just lint`, `just vendored-check` and `git diff --check`.
 Test result: 4882 passed, 3 skipped, 7 warnings in 536.51s (0:08:56).
@@ -33,6 +39,7 @@ Completed independent observations:
 
 - [Protocatechuate para-cleavage integration accepted](../../../../reviews/structured/20261014T133634Z-next252-para-integration-final/review.md) ([YAML](../../../../reviews/structured/20261014T133634Z-next252-para-integration-final/review.yaml)): pass_with_limitations.
 - [Independent successor scientific review of protocatechuate para-cleavage](../../../../reviews/structured/20261014T133636Z-next252-para-science-final/review.md) ([YAML](../../../../reviews/structured/20261014T133636Z-next252-para-science-final/review.yaml)): pass_with_limitations.
+- [Committed protocatechuate evidence retention resolved](../../../../reviews/structured/20261014T134804Z-next252-retention-resolved/review.md) ([YAML](../../../../reviews/structured/20261014T134804Z-next252-retention-resolved/review.yaml)): pass_with_limitations.
 
 Scientific limits remain explicit: the 1993 full article and 2009 supplementary
 material were unavailable, recombinant terminal/tag details are unresolved, and

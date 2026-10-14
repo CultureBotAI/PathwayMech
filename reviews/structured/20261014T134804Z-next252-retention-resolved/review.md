@@ -1,0 +1,421 @@
+# Committed protocatechuate evidence retention resolved
+
+- Review: 20261014T134804Z-next252-retention-resolved
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T13:46:01Z
+- Finished UTC: 2026-10-14T13:48:04.277775Z
+- Reviewer: Codex /root/next252_integration_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+Commit 27d755dccddc734d3f965923b3ce80d952fe16da adds the three exact authority build logs omitted from its preserved parent. Every one of 111 declared retained-path references exists in actual committed blobs and matches its declared hash; all 901 tested core input blobs are unchanged. F1 / issue #532 is explicitly resolved in this bounded packaging review.
+
+## Scope And Provenance
+
+Exact committed retention correction for the sole new pathway, including explicit initial F1 lineage.
+
+Selection: All recursively declared maintained_path references in every committed JSON under the complete next252/para dossier at 27d755dccddc734d3f965923b3ce80d952fe16da.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: git_commit at Git base 27d755dccddc734d3f965923b3ce80d952fe16da.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6336 | data/pathways/protocatechuate-para-cleavage.yaml | maintained | protocatechuate para-cleavage pathway |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Capture corrected exact committed inputs before disposition | passed | True | MetaCyc:PWY-6336 | Governed inspect captured the target and ten context paths; every inspected SHA-256 was independently matched to the correction commit blob. |
+| All promised retained paths exist in the actual correction commit | passed | True | MetaCyc:PWY-6336 | All 111 committed maintained_path references are present and their declared hashes match. Authoritative git archive includes the exact committed tracked tree; ignored files cannot disappear silently behind a filesystem check. |
+| Exact correction scope and prior tested core preservation | passed | True | MetaCyc:PWY-6336 | Exactly six additions: three exact logs, unchanged initial failure receipt and two immutable initial review files. Parent preserved; all 901 tested core input blobs still match; no prior committed file, policy, code or scientific record changed. |
+| Exact predecessor and competing local heads | passed | True | MetaCyc:PWY-6336 | Same stable issue key, finding F1, affected target, fields and owners are retained. Hidden/ignored-inclusive search across 55 registered worktrees / 139 existing structured and legacy review roots found only the exact initial YAML/Markdown pair before this successor. |
+| Configured CLAW aggregation availability | unavailable | False | MetaCyc:PWY-6336 | Previously inspected configured installation has no usable aggregator entry point; exact local predecessor and competing-head checks are retained. Root will run the governed complete bundle checker after this immutable successor is saved. |
+
+## Scientific And Domain Assessments
+
+### Declared evidence membership in the correction commit
+
+provenance: supported. Targets: MetaCyc:PWY-6336.
+
+The actual committed tree now contains all three formerly missing artifacts with their original exact SHA-256 values. All other 108 declared references remain present/hash-matching; the preservation requirement is met.
+
+### Explicit closure of exact initial F1 without rewritten history
+
+completeness: supported. Targets: MetaCyc:PWY-6336.
+
+Same issue key, predecessor occurrence, target, fields and owners are retained; initial defect and commit remain immutable. No competing local head was found within the declared complete available-worktree scope.
+
+### Test applicability and unchanged scientific inputs
+
+schema: supported. Targets: MetaCyc:PWY-6336.
+
+All 901 gate core files still match committed blobs; fixing tracked membership changed no biology, renderer, authorities, schema, runtime or ignore policy. Root owns the final complete bundle check and exact-head acceptance follows final documentation.
+
+## Findings
+
+### F1: All three declared authority logs are now committed with exact original bytes
+
+major / resolved / confirmed; issue key: protocatechuate-para-committed-retained-logs.
+
+Correction 27d755dccddc734d3f965923b3ce80d952fe16da adds precisely source_builder.log, ontology_builder.log and redox-followup/ontology-builder.log, alongside the immutable initial evidence. The initial defective parent is preserved. Every declared retained path in the correction commit is present and hash-matches.
+
+Disposition: Independent Git-blob membership and SHA-256 checks verify all three promised originals and every other declared retained artifact. The parent diff is limited to six expected additions and all 901 tested core inputs are unchanged. Exact predecessor identity and affected targets/fields/owners are retained with no competing local head found.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| retention-check | /private/tmp/pathwaymech-next-252-integration-review/committed-retention-resolved.json | supports | Independent audit of all 111 maintained_path references in committed JSON; zero absent or changed blobs. |
+| fix | /private/tmp/pathwaymech-next-252-integration-review/retention-fix-assessment.json | supports | Exact six additions, all three promised log hashes, preserved initial parent/failure receipt, and all 901 gate core hashes verified from actual Git blobs. |
+| prior | reviews/structured/20261014T134301Z-next252-retention-initial/review.yaml; F1 / protocatechuate-para-committed-retained-logs; complete YAML and rendered Markdown inspected | supports | Complete immutable initial F1, major/open; parent commit 37e8e0516636c901666360826e4403774162050a is retained and still exhibits the original defect. |
+| lineage | /private/tmp/pathwaymech-next-252-integration-review/retention-lineage-search.json | supports | No competing local same-key head found before this successor in all available review roots of 55 registered worktrees, including hidden, ignored and symlinked files. Scope excludes remote-only and deleted worktrees. |
+| core-gates | research/pathway_additions/2026-10-14-next-252/para/independent-integration-evidence/final-gate-acceptance.json | supports | Earlier independently checked six successful required corpus gates (4,882 tests passed) remain applicable: the exact correction changes no tested core blob. This successor does not claim those commands reran. |
+
+## Limits And Additional Notes
+
+- This bounded non-scientific disposition covers correction commit 27d755dccddc734d3f965923b3ce80d952fe16da. Final acceptance documents and any later commit need an exact-head check; they are deliberately excluded from immutable source inputs.
+- No new scientific judgement is made; the separate independently saved scientific successor supplies biological assessment.
+- Full corpus tests were not rerun for the packaging-only correction: all 901 previously tested core blobs are unchanged. The root will perform the final complete governed bundle check after saving this successor.
+- Configured CLAW aggregation was unavailable as previously inspected; explicit local predecessor and ignored/hidden-inclusive competing-head search cover available registered worktrees, not remote-only or deleted worktrees.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T134804Z-next252-retention-resolved
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Committed protocatechuate evidence retention resolved
+started_at: '2026-10-14T13:46:01Z'
+finished_at: '2026-10-14T13:48:04.277775Z'
+reviewer:
+  identity: Codex /root/next252_integration_review
+  kind: agent
+  independence: independent
+  independence_basis: Reviewer independently reproduced the initial committed-file
+    omission, inspected the root-authored correction via Git blobs, and authored only
+    external reviewer evidence plus immutable review bundles. No authorship of the
+    pathway, packaging fix or final acceptance documents.
+skill: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: 'Commit 27d755dccddc734d3f965923b3ce80d952fe16da adds the three exact authority
+  build logs omitted from its preserved parent. Every one of 111 declared retained-path
+  references exists in actual committed blobs and matches its declared hash; all 901
+  tested core input blobs are unchanged. F1 / issue #532 is explicitly resolved in
+  this bounded packaging review.'
+source:
+  git_revision: 27d755dccddc734d3f965923b3ce80d952fe16da
+  state: git_commit
+  inputs:
+  - path: .gitignore
+    sha256: 70389633ea1b22b8ced2da3f97a54db912f5c1c96045b1468fadbf6329853f64
+    role: context
+  - path: data/pathways/protocatechuate-para-cleavage.yaml
+    sha256: 2a5e42e39a4e8eadb77eabf6f95896ecc7f001bafba04dec6eb74e7251169d89
+    role: target
+  - path: research/pathway_additions/2026-10-14-next-252/para/authorities/ontology_builder.log
+    sha256: e69a2c7be841403c8f7995af1354a901ba5b01bd6d8e085e9bc568a7929aff75
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-252/para/authorities/redox-followup/ontology-builder.log
+    sha256: 1055c3347b9fc60bd3e6bebb5f7adbb1a87048c5849a5ae4852906c3533584c8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-252/para/authorities/redox-followup/retention.json
+    sha256: 9f679f1cbdd0bf9f5d15a0c95b9b39243124c61546368f3eab61b4ec80af345c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-252/para/authorities/retention.json
+    sha256: 99629a745e3360f3dcd495ec361b40b3e9ce230f4e8fd7dc90a819a266ae4ef7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-252/para/authorities/source_builder.log
+    sha256: f150ffbc158367473dd2f94a27c97986484aba1b41c75b03f27b14bfacfa3db6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-252/para/independent-integration-evidence/committed-retention-initial.json
+    sha256: 019a7d62ab96fea965a88fb9887ccf07899409b367247cbbb2e11f38ebac8a2d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-252/para/independent-integration-evidence/final-gate-acceptance.json
+    sha256: e075b88967087e7b89ccff2d54278d0a2fd36d19f16c707b179b471003245085
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-252/para/validation/final/core-input-hashes.json
+    sha256: bd7e7b6ac563ea0873bba9206f938a33679e112a0c052397bf3993075ac6b84a
+    role: context
+  - path: reviews/structured/20261014T134301Z-next252-retention-initial/review.yaml
+    sha256: 1f0ef2e75244d728a766efda4a0d594b3fd37ee38c2758216204029c16171e69
+    role: context
+scope:
+  description: Exact committed retention correction for the sole new pathway, including
+    explicit initial F1 lineage.
+  selection: All recursively declared maintained_path references in every committed
+    JSON under the complete next252/para dossier at 27d755dccddc734d3f965923b3ce80d952fe16da.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6336
+  exclusions:
+  - target: Fresh biological literature/scientific assessment and duplicate full corpus
+      test execution
+    reason: The correction adds evidence logs and immutable review records only; all
+      901 originally tested core blobs are unchanged.
+targets:
+- target_id: MetaCyc:PWY-6336
+  path: data/pathways/protocatechuate-para-cleavage.yaml
+  label: protocatechuate para-cleavage pathway
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained pathway record
+checks:
+- check_id: inspect
+  name: Capture corrected exact committed inputs before disposition
+  status: passed
+  required: true
+  summary: Governed inspect captured the target and ten context paths; every inspected
+    SHA-256 was independently matched to the correction commit blob.
+  target_ids:
+  - MetaCyc:PWY-6336
+  command: python -B scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-252-integration-review/targets.yaml
+    --input <ten declared stable paths>
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fix
+- check_id: committed-retention
+  name: All promised retained paths exist in the actual correction commit
+  status: passed
+  required: true
+  summary: All 111 committed maintained_path references are present and their declared
+    hashes match. Authoritative git archive includes the exact committed tracked tree;
+    ignored files cannot disappear silently behind a filesystem check.
+  target_ids:
+  - MetaCyc:PWY-6336
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-252-integration-review/audit_committed_retention.py
+    27d755dccddc734d3f965923b3ce80d952fe16da committed-retention-resolved
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - retention-check
+- check_id: fix-scope
+  name: Exact correction scope and prior tested core preservation
+  status: passed
+  required: true
+  summary: 'Exactly six additions: three exact logs, unchanged initial failure receipt
+    and two immutable initial review files. Parent preserved; all 901 tested core
+    input blobs still match; no prior committed file, policy, code or scientific record
+    changed.'
+  target_ids:
+  - MetaCyc:PWY-6336
+  command: Independent Git archive and parent-diff inspection recorded in retention-fix-assessment.json
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - fix
+  - core-gates
+- check_id: lineage
+  name: Exact predecessor and competing local heads
+  status: passed
+  required: true
+  summary: Same stable issue key, finding F1, affected target, fields and owners are
+    retained. Hidden/ignored-inclusive search across 55 registered worktrees / 139
+    existing structured and legacy review roots found only the exact initial YAML/Markdown
+    pair before this successor.
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - prior
+  - lineage
+- check_id: aggregator
+  name: Configured CLAW aggregation availability
+  status: unavailable
+  required: false
+  summary: Previously inspected configured installation has no usable aggregator entry
+    point; exact local predecessor and competing-head checks are retained. Root will
+    run the governed complete bundle checker after this immutable successor is saved.
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - lineage
+evidence:
+- evidence_id: retention-check
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-252-integration-review/committed-retention-resolved.json
+  accessed_at: '2026-10-14T13:48:04.277775Z'
+  support: supports
+  summary: Independent audit of all 111 maintained_path references in committed JSON;
+    zero absent or changed blobs.
+  search_scope: Every maintained_path reference recursively in every committed JSON
+    under the complete next252/para dossier; git archive enumerates the authoritative
+    tracked tree. Working-tree existence checks include ignored files. No ignored
+    exclusion is used to infer absence.
+  snapshot_sha256: ff272ea2a986bb75de8e62e31b5538984bcb23867cb6236e4baab75bd4bec2d2
+- evidence_id: fix
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-252-integration-review/retention-fix-assessment.json
+  accessed_at: '2026-10-14T13:48:04.277775Z'
+  support: supports
+  summary: Exact six additions, all three promised log hashes, preserved initial parent/failure
+    receipt, and all 901 gate core hashes verified from actual Git blobs.
+  snapshot_sha256: 5092215c4e0763d3a9cd8e76cf7bf3fa8a29897fd414cd17329920fbef563970
+- evidence_id: prior
+  kind: prior_review
+  reference: reviews/structured/20261014T134301Z-next252-retention-initial/review.yaml
+  accessed_at: '2026-10-14T13:48:04.277775Z'
+  support: supports
+  summary: Complete immutable initial F1, major/open; parent commit 37e8e0516636c901666360826e4403774162050a
+    is retained and still exhibits the original defect.
+  locator: F1 / protocatechuate-para-committed-retained-logs; complete YAML and rendered
+    Markdown inspected
+  snapshot_sha256: 1f0ef2e75244d728a766efda4a0d594b3fd37ee38c2758216204029c16171e69
+- evidence_id: lineage
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-252-integration-review/retention-lineage-search.json
+  accessed_at: '2026-10-14T13:48:04.277775Z'
+  support: supports
+  summary: No competing local same-key head found before this successor in all available
+    review roots of 55 registered worktrees, including hidden, ignored and symlinked
+    files. Scope excludes remote-only and deleted worktrees.
+  search_scope: 55 registered worktrees; 139 existing structured/legacy review roots;
+    rg --no-ignore --hidden --follow -l -F protocatechuate-para-committed-retained-logs
+  snapshot_sha256: 1cf7d8fd1476126d50984c56313aa7f050b71fe8dc6f62f0db4c965a157107e4
+- evidence_id: core-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-252/para/independent-integration-evidence/final-gate-acceptance.json
+  accessed_at: '2026-10-14T13:48:04.277775Z'
+  support: supports
+  summary: 'Earlier independently checked six successful required corpus gates (4,882
+    tests passed) remain applicable: the exact correction changes no tested core blob.
+    This successor does not claim those commands reran.'
+  snapshot_sha256: e075b88967087e7b89ccff2d54278d0a2fd36d19f16c707b179b471003245085
+assessments:
+- assessment_id: retention
+  area: provenance
+  topic: Declared evidence membership in the correction commit
+  outcome: supported
+  summary: The actual committed tree now contains all three formerly missing artifacts
+    with their original exact SHA-256 values. All other 108 declared references remain
+    present/hash-matching; the preservation requirement is met.
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - retention-check
+  - fix
+  - prior
+- assessment_id: lineage
+  area: completeness
+  topic: Explicit closure of exact initial F1 without rewritten history
+  outcome: supported
+  summary: Same issue key, predecessor occurrence, target, fields and owners are retained;
+    initial defect and commit remain immutable. No competing local head was found
+    within the declared complete available-worktree scope.
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - prior
+  - lineage
+  - fix
+- assessment_id: scope
+  area: schema
+  topic: Test applicability and unchanged scientific inputs
+  outcome: supported
+  summary: All 901 gate core files still match committed blobs; fixing tracked membership
+    changed no biology, renderer, authorities, schema, runtime or ignore policy. Root
+    owns the final complete bundle check and exact-head acceptance follows final documentation.
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - fix
+  - core-gates
+findings:
+- finding_id: F1
+  issue_key: protocatechuate-para-committed-retained-logs
+  category: provenance
+  severity: major
+  status: resolved
+  certainty: confirmed
+  title: All three declared authority logs are now committed with exact original bytes
+  description: Correction 27d755dccddc734d3f965923b3ce80d952fe16da adds precisely
+    source_builder.log, ontology_builder.log and redox-followup/ontology-builder.log,
+    alongside the immutable initial evidence. The initial defective parent is preserved.
+    Every declared retained path in the correction commit is present and hash-matches.
+  target_ids:
+  - MetaCyc:PWY-6336
+  field_paths:
+  - research/pathway_additions/2026-10-14-next-252/para/authorities/redox-followup/ontology-builder.log
+  - research/pathway_additions/2026-10-14-next-252/para/authorities/source_builder.log
+  - research/pathway_additions/2026-10-14-next-252/para/authorities/ontology_builder.log
+  evidence_ids:
+  - retention-check
+  - fix
+  - prior
+  - lineage
+  - core-gates
+  rule_id: docs/CAUSAL_GRAPHS.md evidence and provenance; declared authorities retention
+    mappings
+  native_severity: major
+  normalization_reason: A systematic staging exclusion makes explicitly retained audit
+    artifacts unavailable in the committed reviewable result; the biological pathway
+    remains unchanged.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-252/para/authorities/redox-followup/ontology-builder.log
+    role: declared retained authority build log
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-252/para/authorities/source_builder.log
+    role: declared retained authority build log
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-252/para/authorities/ontology_builder.log
+    role: declared retained authority build log
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/532
+  disposition_reason: Independent Git-blob membership and SHA-256 checks verify all
+    three promised originals and every other declared retained artifact. The parent
+    diff is limited to six expected additions and all 901 tested core inputs are unchanged.
+    Exact predecessor identity and affected targets/fields/owners are retained with
+    no competing local head found.
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261014T134301Z-next252-retention-initial
+    finding_id: F1
+actions: []
+limitations:
+- This bounded non-scientific disposition covers correction commit 27d755dccddc734d3f965923b3ce80d952fe16da.
+  Final acceptance documents and any later commit need an exact-head check; they are
+  deliberately excluded from immutable source inputs.
+- No new scientific judgement is made; the separate independently saved scientific
+  successor supplies biological assessment.
+- 'Full corpus tests were not rerun for the packaging-only correction: all 901 previously
+  tested core blobs are unchanged. The root will perform the final complete governed
+  bundle check after saving this successor.'
+- Configured CLAW aggregation was unavailable as previously inspected; explicit local
+  predecessor and ignored/hidden-inclusive competing-head search cover available registered
+  worktrees, not remote-only or deleted worktrees.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261014T134301Z-next252-retention-initial
+  relationship: 'Explicit successor resolving exact F1 / issue #532 while preserving
+    initial failure bytes and historical parent commit.'
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261014T133634Z-next252-para-integration-final
+  relationship: Additional committed-artifact acceptance after independent working-tree
+    integration checks.
+tags:
+- next252
+- integration
+- retention
+- successor
+- issue-532
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/532
+```
