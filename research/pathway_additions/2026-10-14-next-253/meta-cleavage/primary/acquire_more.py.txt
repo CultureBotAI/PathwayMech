@@ -1,0 +1,8 @@
+exec(open('/private/tmp/pathwaymech-next-253-primary/acquire.py').read().split("pmids=")[0])
+pmids=['12486039','25562402','29658701','27017587','20581112']
+jobs=[(f'PMID{x}-europe.json',f'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:{x}%20AND%20SRC:MED&format=json&resultType=core') for x in pmids]
+jobs += [(f'{x}-europe.xml',f'https://www.ebi.ac.uk/europepmc/webservices/rest/{x}/fullTextXML') for x in ['PMC251661','PMC221622','PMC111406','PMC2897667','PMC4817193','PMC103531','PMC10094722','PMC208915']]
+jobs += [('LigU-acs.html','https://pubs.acs.org/doi/10.1021/acs.biochem.8b00295'),('LigU-openalex.json','https://api.openalex.org/works/https://doi.org/10.1021/acs.biochem.8b00295')]
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex: results=list(ex.map(get,jobs))
+(P/'acquisition-more-manifest.json').write_text(json.dumps(results,indent=2)+'\n')
+for r in results: print(r['name'],r.get('status',r.get('error')),r.get('bytes'))

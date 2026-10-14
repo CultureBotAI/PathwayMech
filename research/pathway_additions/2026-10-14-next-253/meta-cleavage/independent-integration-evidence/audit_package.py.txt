@@ -1,0 +1,64 @@
+from pathlib import Path
+import datetime, hashlib, io, json, re, subprocess, sys, tarfile
+
+R=Path('/private/tmp/pathwaymech-next-253-20261014')
+S=Path('/private/tmp/pathwaymech-next-253-integration-review')
+D='research/pathway_additions/2026-10-14-next-253/meta-cleavage'
+B='d2ac9ebc5595f1208e4ffc8863fc7d44aed7907b'
+mode=sys.argv[1] if len(sys.argv)>1 else 'working'
+digest=lambda b:hashlib.sha256(b).hexdigest()
+def git(*args):return subprocess.check_output(['git',*args],cwd=R)
+def walk(x,locator='$'):
+ yield locator,x
+ if isinstance(x,dict):
+  for k,v in x.items():yield from walk(v,locator+'.'+k)
+ elif isinstance(x,list):
+  for i,v in enumerate(x):yield from walk(v,f'{locator}[{i}]')
+commit=None if mode=='working' else git('rev-parse',mode).decode().strip()
+blobs={}
+if commit:
+ with tarfile.open(fileobj=io.BytesIO(git('archive',commit)),mode='r:') as t:
+  blobs={m.name:t.extractfile(m).read() for m in t.getmembers() if m.isfile()}
+ files={p:b for p,b in blobs.items() if p.startswith(D+'/')}
+else:
+ files={str(p.relative_to(R)):p.read_bytes() for p in (R/D).rglob('*') if p.is_file()}
+def current(p):return blobs.get(p) if commit else ((R/p).read_bytes() if (R/p).is_file() else None)
+maintained=[]; external=[]; json_errors=[]; local_links=[]
+for path,raw in files.items():
+ if path.endswith('.json'):
+  try:j=json.loads(raw)
+  except Exception as e:json_errors.append({'path':path,'error':str(e)});continue
+  for loc,x in walk(j):
+   if not isinstance(x,dict):continue
+   if 'maintained_path' in x:
+    p=x['maintained_path'];b=current(p)
+    maintained.append({'manifest':path,'locator':loc,'path':p,'exists':b is not None,'sha256_matches':b is not None and digest(b)==x.get('sha256'),'length_matches':b is not None and len(b)==x.get('bytes',len(b)),'sha256':x.get('sha256')})
+   p=x.get('path');sha=x.get('sha256')
+   if isinstance(p,str) and p.startswith('/') and isinstance(sha,str) and len(sha)==64:
+    q=Path(p); b=q.read_bytes() if q.is_file() else None
+    external.append({'manifest':path,'locator':loc,'path':p,'exists':b is not None,'sha256_matches':b is not None and digest(b)==sha,'declared_sha256':sha,'actual_sha256':None if b is None else digest(b),'eligible':x.get('eligible_as_retained_original')})
+ if path.endswith('.md'):
+  for link in re.findall(r'\[[^\]]*\]\(([^)]+)\)',raw.decode()):
+   if '://' in link or link.startswith('#'):continue
+   p=(R/Path(path).parent/link.split('#')[0]).resolve()
+   try:rel=str(p.relative_to(R))
+   except ValueError:rel=str(p)
+   local_links.append({'source':path,'link':link,'resolved':rel,'exists':current(rel) is not None})
+tracked=git('ls-tree','-r','--name-only',B).decode().splitlines()
+baseline_pathways=[p for p in tracked if p.startswith('data/pathways/') and p.endswith('.yaml')]
+baseline_mismatch=[]
+for p in baseline_pathways:
+ old=git('show',B+':'+p)
+ if current(p)!=old:baseline_mismatch.append(p)
+diff=git('diff','--name-status',B,commit).decode() if commit else git('diff','--name-status',B).decode()
+diff_rows=[row.split('\t') for row in diff.splitlines()]
+old_changes=[r for r in diff_rows if r[0]!='A']
+all_new=[p for p in files if p not in tracked]
+forbidden=[p for p in all_new if Path(p).suffix.lower() in {'.xml','.pdf','.jpg','.jpeg','.png','.db','.rdf','.gz','.zip','.py','.log'} or '/originals/' in p or '/projections/' in p]
+native=json.loads(files[D+'/native/native-object-projection.json'])
+native_comments=[loc for loc,x in walk(native) if isinstance(x,dict) and x.get('tag') in {'comment','credits'}]
+receipt={'timestamp':datetime.datetime.now(datetime.UTC).isoformat(),'scope':'Complete actual Git tree' if commit else 'Complete filesystem dossier recursive enumeration, including hidden/ignored files; tracked baseline via git tree and diff. Not a committed-membership claim.','commit':commit,'base':B,'dossier_file_count':len(files),'dossier_total_bytes':sum(map(len,files.values())),'retained_references':maintained,'retention_failures':[x for x in maintained if not all(x[k] for k in ['exists','sha256_matches','length_matches'])],'external_reference_count':len(external),'external_unique_paths':len(set(x['path'] for x in external)),'external_mismatches':[x for x in external if not x['sha256_matches']],'json_errors':json_errors,'markdown_local_links':local_links,'broken_local_links':[x for x in local_links if not x['exists']],'baseline_pathway_count':len(baseline_pathways),'baseline_pathway_mismatches':baseline_mismatch,'baseline_tracked_changes':old_changes,'diff_rows':diff_rows,'forbidden_raw_or_runtime_paths':forbidden,'native_projection_object_count':len(native['objects']),'native_projection_comment_or_credit_slots':native_comments,'checks_note':'No biological truth judgement or full replay. External stale earlier PMID29658701 acquisition is expected and explicitly ineligible in original-bindings.json; raw acquisition manifests are historical attempts.'}
+out=S/('working-package-audit.json' if not commit else 'committed-package-audit-'+commit[:12]+'.json')
+out.write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps({k:v for k,v in receipt.items() if k not in {'retained_references','diff_rows'}},indent=2))
+if any([receipt['retention_failures'],json_errors,receipt['broken_local_links'],baseline_mismatch,old_changes,forbidden,native_comments]):raise SystemExit(1)

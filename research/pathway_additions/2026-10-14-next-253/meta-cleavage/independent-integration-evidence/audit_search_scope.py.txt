@@ -1,0 +1,48 @@
+from pathlib import Path
+import datetime, hashlib, json, zipfile
+import yaml
+R=Path('/private/tmp/pathwaymech-next-253-20261014')
+S=Path('/private/tmp/pathwaymech-next-253-integration-review')
+D=R/'research/pathway_additions/2026-10-14-next-253/meta-cleavage/preflight'
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+def walk(x,loc='$'):
+ yield loc,x
+ if isinstance(x,dict):
+  for k,v in x.items():yield from walk(v,loc+'.'+k)
+ elif isinstance(x,list):
+  for i,v in enumerate(x):yield from walk(v,f'{loc}[{i}]')
+pairs=[('projection','projection_sha256'),('bindings_path','bindings_sha256'),('inventory_path','inventory_sha256'),('members_receipt','members_receipt_sha256')]
+refs=[]
+for p in D.glob('*.json'):
+ for loc,x in walk(json.loads(p.read_text())):
+  if not isinstance(x,dict):continue
+  for pk,hk in pairs:
+   if pk in x and hk in x and isinstance(x[pk],str):
+    q=Path(x[pk]);refs.append({'owner':p.name,'locator':loc,'path':str(q),'exists':q.is_file(),'hash_matches':q.is_file() and sha(q)==x[hk]})
+dedup=json.loads((D/'dedup-final.json').read_text())
+patterns=set(v for values in dedup['patterns'].values() for v in values)
+record_bindings=json.loads((D/'baseline-record-bindings.json').read_text())
+baseline=[]
+for a in record_bindings['records']:
+ p=R/a['path'];j=yaml.safe_load(p.read_text());baseline.append({'path':a['path'],'sha256_matches':sha(p)==a['sha256'],'id_matches':j['id']==a['id'],'label_matches':j['label']==a['label']})
+coverage=json.loads((D/'source-family-coverage.json').read_text())
+reg=yaml.safe_load((R/'conf/sources.yaml').read_text())
+print('registry_keys',list(reg))
+archive_replays=[]
+for a in coverage['archive_searches']:
+ patterns28=[s.lower().encode() for s in coverage['patterns']]
+ matches=[];total=0
+ with zipfile.ZipFile(a['path']) as z:
+  members=z.infolist()
+  for m in members:
+   data=z.read(m);total+=len(data)
+   hits=[coverage['patterns'][i] for i,p in enumerate(patterns28) if p in data.lower()]
+   if hits:matches.append({'member':m.filename,'patterns':hits})
+ archive_replays.append({'path':a['path'],'sha256_matches':sha(Path(a['path']))==a['sha256'],'member_count':len(members),'expected_member_count':a['members'],'uncompressed_bytes_read':total,'expected_bytes_read':a['uncompressed_bytes_read'],'matches':matches})
+receipt={'timestamp':datetime.datetime.now(datetime.UTC).isoformat(),'scope':'Independent search-provenance/bounds validation; no fresh global text scan and no upstream source exhaustion claim. Three declared archive searches independently replayed against exact bytes.','extra_path_hash_checks':refs,'path_hash_failures':[r for r in refs if not r['hash_matches']],'dedup_pattern_unique_count':len(patterns),'declared_dedup_count':dedup['pattern_count'],'pattern_file_equal':set(Path('/private/tmp/pathwaymech-next-253-preflight/extended-dedup-patterns.txt').read_text().splitlines())==patterns,'baseline_record_count':len(baseline),'baseline_binding_failures':[a for a in baseline if not all(a[k] for k in ['sha256_matches','id_matches','label_matches'])],'source_registry_hash_matches':sha(R/'conf/sources.yaml')==coverage['registry']['sha256'],'source_family_declared_count':len(coverage['families']),'source_family_actual_registry_count':len(reg['sources']),'archive_replays':archive_replays,'search_scope_assessment':'Global search commands explicitly include --hidden --no-ignore and declare binary, archive, symlink, external-cache and other-worktree limits. Three ZIP/XLSX archives use 28 patterns, not the later 541-pattern text pass. No extrapolation to complete provider holdings is warranted or claimed.'}
+(S/'search-scope-audit.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps({k:v for k,v in receipt.items() if k!='extra_path_hash_checks'},indent=2))
+assert not receipt['path_hash_failures'] and not receipt['baseline_binding_failures']
+assert receipt['dedup_pattern_unique_count']==receipt['declared_dedup_count'] and receipt['pattern_file_equal']
+assert receipt['source_registry_hash_matches'] and receipt['source_family_declared_count']==receipt['source_family_actual_registry_count']==30
+assert all(a['sha256_matches'] and a['member_count']==a['expected_member_count'] and a['uncompressed_bytes_read']==a['expected_bytes_read'] and not a['matches'] for a in archive_replays)

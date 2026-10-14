@@ -1,0 +1,4 @@
+exec(open('/private/tmp/pathwaymech-next-253-primary/acquire.py').read().split("pmids=")[0])
+r=get(('PMID20435721-europe.json','https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:20435721%20AND%20SRC:MED&format=json&resultType=core'))
+(P/'acquisition-ligr-manifest.json').write_text(json.dumps([r],indent=2)+'\n')
+print(r['name'],r.get('status'),r.get('bytes'))

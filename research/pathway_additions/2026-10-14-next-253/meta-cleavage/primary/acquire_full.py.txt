@@ -1,0 +1,8 @@
+exec(open('/private/tmp/pathwaymech-next-253-primary/acquire.py').read().split("pmids=")[0])
+pmcs=['PMC251661','PMC221622','PMC111406','PMC2897667','PMC4817193','PMC103531','PMC208915']
+jobs=[(f'{x}-bioc.xml',f'https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/{x}/unicode') for x in pmcs]
+jobs += [(f'{x}-plain.html',f'https://pmc.ncbi.nlm.nih.gov/articles/{x}/') for x in pmcs]
+jobs += [('LigU-strenda.html','https://doi.org/10.22011/strenda_db.7leaa5'),('PMC221622.pdf','https://pmc.ncbi.nlm.nih.gov/articles/PMC221622/pdf/jbacter00253-0198.pdf')]
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex: results=list(ex.map(get,jobs))
+(P/'acquisition-full-manifest.json').write_text(json.dumps(results,indent=2)+'\n')
+for r in results: print(r['name'],r.get('status',r.get('error')),r.get('bytes'))

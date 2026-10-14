@@ -1,0 +1,9 @@
+exec(open('/private/tmp/pathwaymech-next-253-primary/acquire.py').read().split("pmids=")[0])
+import re
+s=(O/'PMC4817193-render2.html').read_text()
+jobs=[(f'PMC4817193-figure-{i}.jpg',u) for i,u in enumerate(re.findall('<img[^>]+src="([^"]+)"[^>]+alt="FIGURE',s),1)]
+jobs += [('Hogancamp2019-thesis-api.pdf','https://oaktrust.library.tamu.edu/server/api/core/bitstreams/4debd50c-d6c5-49b7-b712-d21ea08e3971/content'),('Hogancamp2019-thesis-old.pdf','https://oaktrust.library.tamu.edu/bitstream/handle/1969.1/188745/HOGANCAMP-DISSERTATION-2019.pdf?sequence=1&isAllowed=y')]
+jobs += [(f'UniProt-{x}.json',f'https://rest.uniprot.org/uniprotkb/{x}.json') for x in ['Q9KWL6','G2IQQ5','Q8RQW0']]
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex: results=list(ex.map(get,jobs))
+(P/'acquisition-final-manifest.json').write_text(json.dumps(results,indent=2)+'\n')
+for r in results: print(r['name'],r.get('status',r.get('error')),r.get('bytes'))

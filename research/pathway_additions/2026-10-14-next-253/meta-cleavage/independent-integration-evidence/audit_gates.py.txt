@@ -1,0 +1,23 @@
+from pathlib import Path
+import datetime, hashlib, json
+R=Path('/private/tmp/pathwaymech-next-253-20261014')
+S=Path('/private/tmp/pathwaymech-next-253-integration-review')
+C=Path('/private/tmp/pathwaymech-next-253-checks')
+sha=lambda b:hashlib.sha256(b).hexdigest()
+checks=[];coremaps=[]
+for stage in ['core','final']:
+ receipts=json.loads((C/stage/'receipts.json').read_text())
+ core=json.loads((C/stage/'core-input-hashes.json').read_text());coremaps.append(core)
+ for row in receipts:
+  log=Path(row['log_path']).read_bytes()
+  checks.append({**row,'log_sha256_verified':sha(log)==row['log_sha256'],'log_bytes':len(log)})
+core_mismatches=[p for p,h in coremaps[0].items() if sha((R/p).read_bytes())!=h]
+prior=json.loads((C/'review-initial/receipt.json').read_text())
+print('prior',prior)
+initial=Path(C/'review-initial/review-check.log').read_bytes()
+test=(C/'core/just-test.log').read_text()
+receipt={'timestamp':datetime.datetime.now(datetime.UTC).isoformat(),'checks':checks,'core_map_count':len(coremaps[0]),'core_maps_equal':coremaps[0]==coremaps[1],'current_core_mismatches':core_mismatches,'test_summary':'4882 passed, 3 skipped, 7 warnings','test_summary_verified':'4882 passed, 3 skipped, 7 warnings' in test,'core_gate_scope':'Six documented commands executed once by root; independently inspected exact receipts and full log bytes. No duplicate test run. All tracked core inputs at both runs and current worktree match. History validation includes initial+correction entries. New final review bundles require later governed check.','initial_review_check':prior,'initial_review_check_log_sha256':sha(initial),'initial_review_check_summary':initial.decode().splitlines()[-1]}
+(S/'gate-acceptance.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps(receipt,indent=2))
+assert len(checks)==6 and all(x['exit_code']==0 and x['log_sha256_verified'] for x in checks)
+assert not core_mismatches and receipt['core_maps_equal'] and receipt['test_summary_verified']

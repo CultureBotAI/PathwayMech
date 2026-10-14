@@ -1,0 +1,8 @@
+exec(open('/private/tmp/pathwaymech-next-253-primary/acquire.py').read().split("pmids=")[0])
+jobs=[(f'{x}-efetch.xml',f'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id={x[3:]}') for x in ['PMC251661','PMC221622','PMC111406','PMC2897667','PMC4817193','PMC103531','PMC208915']]
+jobs += [(f'{x}-render2.html',f'https://pmc.ncbi.nlm.nih.gov/articles/{x}/?report=xml') for x in ['PMC4817193','PMC111406','PMC2897667','PMC103531']]
+jobs += [('LigU-crossref.json','https://api.crossref.org/works/10.1021/acs.biochem.8b00295'),('LigU-si.pdf','https://acs.figshare.com/doi/suppl/10.1021/acs.biochem.8b00295')]
+results=[]
+for job in jobs:
+ r=get(job);results.append(r);print(r['name'],r.get('status',r.get('error')),r.get('bytes'),flush=True)
+(P/'acquisition-routes-manifest.json').write_text(json.dumps(results,indent=2)+'\n')

@@ -1,0 +1,27 @@
+from pathlib import Path
+import gzip,json,re,xml.etree.ElementTree as E,hashlib,datetime
+root=Path('/private/tmp/pathwaymech-next-253-native');base=Path('/private/tmp/pathwaymech-curation-authorities');source=base/'rhea.rdf.gz';raw=gzip.decompress(source.read_bytes()).decode();starts={}
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">',raw):starts.setdefault(m[1],[]).append(m.start())
+ns={'rh':'http://rdf.rhea-db.org/','rdfs':'http://www.w3.org/2000/01/rdf-schema#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+wrapper='<root '+ ' '.join(f'xmlns:{k}="{v}"' for k,v in ns.items())+'>';directions={}
+seeds={'24045','10889','10644','28934','17404','28938','15642','29587'}
+for line in (base/'rhea-directions.tsv').read_text().splitlines()[1:]:
+ values=line.split('\t')
+ if seeds.intersection(values):directions[values[0]]=dict(zip(['master','left_to_right','right_to_left','bidirectional'],values))
+wanted={ns['rh']+x for d in directions.values() for x in d.values()}|{ns['rh']+x for x in seeds};nodes={}
+while wanted:
+ uri=wanted.pop()
+ if uri in nodes or uri not in starts:continue
+ props={}
+ for start in starts[uri]:
+  end=raw.index('</rdf:Description>',start)+len('</rdf:Description>');node=E.fromstring(wrapper+raw[start:end]+'</root>')[0]
+  for child in node:
+   key=child.tag.split('}',1)[1];val=child.get('{'+ns['rdf']+'}resource') or child.text
+   if val not in props.setdefault(key,[]):props[key].append(val)
+   if key in {'side','substrates','products','contains','contains1','contains2','contains3','contains4','compound','reactivePart','chebi','underlyingChebi','replacedBy','replaces','directionalReaction','bidirectionalReaction'} and val and val.startswith(ns['rh']):wanted.add(val)
+ nodes[uri]=props
+out={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'original':{'path':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'bytes':source.stat().st_size},'directions_original':{'path':str(base/'rhea-directions.tsv'),'sha256':hashlib.sha256((base/'rhea-directions.tsv').read_bytes()).hexdigest()},'seeds':sorted(seeds),'directions':directions,'nodes':nodes};(root/'rhea-original-projection.json').write_text(json.dumps(out,indent=2)+'\n')
+print('nodes',len(nodes),'raw bytes',len(raw))
+for seed in sorted(seeds):print(seed,json.dumps(nodes.get(ns['rh']+seed)))
+for uri,n in nodes.items():
+ if 'compound' in uri or 'chebi' in n:print(uri,json.dumps(n))

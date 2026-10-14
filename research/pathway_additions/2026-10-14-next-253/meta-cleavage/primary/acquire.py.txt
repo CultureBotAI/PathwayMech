@@ -1,0 +1,16 @@
+import urllib.request, urllib.parse, json, hashlib, datetime, concurrent.futures
+from pathlib import Path
+P=Path('/private/tmp/pathwaymech-next-253-primary'); O=P/'originals'
+def get(item):
+ name,url=item; out={'name':name,'requested_url':url,'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  r=urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech/curation research'}), timeout=60); b=r.read(); (O/name).write_bytes(b)
+  out.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'),bytes=len(b),sha256=hashlib.sha256(b).hexdigest(),path=str(O/name))
+ except Exception as e: out['error']=repr(e)
+ return out
+pmids=['4143957','7142106','21219457','29658701','9864312','2185230','15277747','11495993','26671','528534','6841353','3985968','2229032','5076765','6317682','2997190','2280721']
+jobs=[(f'PMID{x}-europe.json',f'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:{x}%20AND%20SRC:MED&format=json&resultType=core') for x in pmids]
+jobs += [(f'{x}.html',f'https://pmc.ncbi.nlm.nih.gov/articles/{x}/?pdf=render') for x in ['PMC221622','PMC111406','PMC2897667','PMC4817193']]
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex: results=list(ex.map(get,jobs))
+(P/'acquisition-manifest.json').write_text(json.dumps(results,indent=2)+'\n')
+for r in results: print(r['name'],r.get('status',r.get('error')),r.get('bytes'))

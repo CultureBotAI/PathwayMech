@@ -1,0 +1,15 @@
+from pathlib import Path
+from urllib.request import Request,urlopen
+from concurrent.futures import ThreadPoolExecutor
+import json,hashlib,datetime,sys
+B=Path(__file__).parent;O=B/'originals'
+def fetch(ch):
+ u='https://www.ebi.ac.uk/chebi/backend/api/public/compound/'+ch+'/';p=O/('ChEBI-'+ch+'.json');r={'id':'CHEBI:'+ch,'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urlopen(Request(u,headers={'User-Agent':'PathwayMech exact identity audit'}),timeout=45) as x:b=x.read();r.update(http_status=x.status,final_url=x.url,content_type=x.headers.get('Content-Type'))
+  j=json.loads(b);assert j['chebi_accession']=='CHEBI:'+ch;p.write_bytes(b);r.update(path=str(p),bytes=len(b),sha256=hashlib.sha256(b).hexdigest())
+ except Exception as e:r['error']=repr(e)
+ return r
+with ThreadPoolExecutor(max_workers=5) as ex:rows=list(ex.map(fetch,sys.argv[1:]))
+p=B/'chebi-acquisition.json';prior=json.loads(p.read_text())if p.exists()else[];p.write_text(json.dumps(prior+rows,indent=2)+'\n')
+for r in rows:print(r['id'],r.get('http_status'),r.get('error'))

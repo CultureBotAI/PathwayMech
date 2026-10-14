@@ -1,0 +1,213 @@
+schema_version: 1.0.0
+review_id: 20261014T142535Z-next253-history-initial
+kind: repository
+repository: CultureBotAI/PathwayMech
+title: Initial next253 research history actor provenance finding
+started_at: '2026-10-14T14:25:35.796053Z'
+finished_at: '2026-10-14T14:25:35.796053Z'
+reviewer:
+  identity: Codex /root/next253_integration_review
+  kind: agent
+  independence: independent
+  independence_basis: No authorship of research report, retained author artifacts,
+    or history. Independently read exact initial history, canonical scaffolder, and
+    append-only policy after root reported possible defect.
+skill: docs/record-reviews.md
+completion: completed
+verdict: needs_curation
+scientific_review: false
+summary: 'One confirmed minor provenance defect: the initial research audit names
+  the default claude-code actor despite Codex authorship. Preserve the initial event
+  and append an explicit correction; no scientific record assessment is claimed.'
+source:
+  git_revision: d2ac9ebc5595f1208e4ffc8863fc7d44aed7907b
+  state: working_tree
+  inputs:
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/README.md
+    sha256: 478bf99c5e5cf47f9487e16c1fa78baa4bf1a43598f43f66f9e428e156f3c696
+    role: context
+  - path: history/reports/protocatechuate-meta-cleavage-next253/2026-10-14T142318Z-claude-code-9c8c63.yaml
+    sha256: 7789e6f402da22644beb9a667a8d2c9be7e676d742778a2129f096e428336145
+    role: target
+  - path: research/pathway_additions/2026-10-14-next-253/meta-cleavage/curation.md
+    sha256: 5126a0d4632c6f3b2d9aef59f283006ae70649501ae6311814e7cb4110b4a953
+    role: target
+  - path: scripts/new_history_record.py
+    sha256: 290e13857618afdc1d12a4894d31d82341fe0e69564defb95ae875592dd0a738
+    role: context
+  - path: src/pathwaymech/schema/history.yaml
+    sha256: b01b06f1b9a37db205c26c31ec0fd910690848507c7e1bfb73b424ac0829c52d
+    role: context
+scope:
+  description: Bounded initial history actor inspection for research-only checkpoint.
+  selection: Exact new report and its initial audit history, with canonical history
+    policy and scaffolder.
+  coverage: full
+  population_size: 2
+  reviewed_target_ids:
+  - next253-research-checkpoint
+  - next253-history-provenance
+  exclusions:
+  - target: Scientific evidence, final research packaging, complete corpus gates and
+      committed Git membership
+    reason: These are separate later review scopes; research package and checks remain
+      in progress.
+targets:
+- target_id: next253-research-checkpoint
+  path: research/pathway_additions/2026-10-14-next-253/meta-cleavage/curation.md
+  label: Protocatechuate meta-cleavage bounded research checkpoint
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-253/meta-cleavage/curation.md
+    role: maintained research report
+- target_id: next253-history-provenance
+  path: history/reports/protocatechuate-meta-cleavage-next253/2026-10-14T142318Z-claude-code-9c8c63.yaml
+  label: Initial next253 audit provenance
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: history/reports/protocatechuate-meta-cleavage-next253/2026-10-14T142318Z-claude-code-9c8c63.yaml
+    role: immutable initial audit history
+checks:
+- check_id: inspect
+  name: Capture exact history/report inputs
+  status: passed
+  required: true
+  summary: Canonical inspect captured both targets plus four context inputs before
+    assessment.
+  target_ids:
+  - next253-research-checkpoint
+  - next253-history-provenance
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/record_review.py
+    inspect --targets /private/tmp/pathwaymech-next-253-integration-review/initial-targets.yaml
+    --input history/README.md --input scripts/new_history_record.py --input src/pathwaymech/schema/history.yaml
+    --input docs/record-reviews.md
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - history
+  - policy
+  - scaffolder
+- check_id: actor-identity
+  name: Actor provenance agrees with actual executing tool
+  status: failed
+  required: true
+  summary: The immutable initial event retains the claude-code default rather than
+    the actual Codex actor.
+  target_ids:
+  - next253-research-checkpoint
+  - next253-history-provenance
+  evidence_ids:
+  - history
+  - scaffolder
+evidence:
+- evidence_id: history
+  kind: record_content
+  reference: history/reports/protocatechuate-meta-cleavage-next253/2026-10-14T142318Z-claude-code-9c8c63.yaml
+  locator: session.actors[0] and original session id
+  accessed_at: '2026-10-14T14:25:35.796053Z'
+  support: supports
+  summary: Initial event names claude-code, but its tool is codex and model gpt-6.
+    Root author confirmed scaffolder default was inherited.
+  snapshot_sha256: 7789e6f402da22644beb9a667a8d2c9be7e676d742778a2129f096e428336145
+- evidence_id: policy
+  kind: record_content
+  reference: history/README.md
+  locator: Opening append-only provenance policy; Writing a record
+  accessed_at: '2026-10-14T14:25:35.796053Z'
+  support: supports
+  summary: History identifies who changed what and must never be edited afterwards;
+    correction is a new record naming the original in details.
+  snapshot_sha256: 478bf99c5e5cf47f9487e16c1fa78baa4bf1a43598f43f66f9e428e156f3c696
+- evidence_id: scaffolder
+  kind: record_content
+  reference: scripts/new_history_record.py
+  locator: build() actor construction and --actor-name CLI default
+  accessed_at: '2026-10-14T14:25:35.796053Z'
+  support: supports
+  summary: The canonical scaffolder uses the passed actor name and otherwise defaults
+    to claude-code. Explicit --actor-name codex records the actual tool identity.
+  snapshot_sha256: 290e13857618afdc1d12a4894d31d82341fe0e69564defb95ae875592dd0a738
+assessments:
+- assessment_id: history-identity
+  area: provenance
+  topic: Accurate actor attribution for the maintained research report
+  outcome: concern
+  summary: The report audit is attached to the correct target, but its actor name
+    is inconsistent with its actual author/tool metadata. An append-only correction
+    is required.
+  target_ids:
+  - next253-research-checkpoint
+  - next253-history-provenance
+  evidence_ids:
+  - history
+  - policy
+  - scaffolder
+findings:
+- finding_id: F1
+  issue_key: next253-history-actor-provenance
+  category: provenance
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Initial research history inherited the wrong actor name
+  description: The original record says session.actors[0].name claude-code and includes
+    that value in its session id, while agent_tool is codex and model is gpt-6. Root
+    confirmed Codex authored this checkpoint. This is an attribution defect, not evidence
+    of a scientific change. Do not rewrite the original event.
+  target_ids:
+  - next253-research-checkpoint
+  - next253-history-provenance
+  field_paths:
+  - session.actors[0].name
+  - session.id
+  evidence_ids:
+  - history
+  - policy
+  - scaffolder
+  rule_id: history/README.md append-only actor provenance
+  native_severity: minor
+  normalization_reason: Bounded actor attribution error in a research audit; the report
+    target and scientific non-promotion scope remain intact.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: history/reports/protocatechuate-meta-cleavage-next253/2026-10-14T142318Z-claude-code-9c8c63.yaml
+    role: immutable initial audit history
+  - repository: CultureBotAI/PathwayMech
+    path: history/reports/protocatechuate-meta-cleavage-next253
+    role: append-only correction owner
+actions:
+- action_id: correct-actor
+  description: Use the unchanged canonical history scaffolder with explicit --actor-name
+    codex to append a correction naming the initial event and the actual actor. Preserve
+    original bytes.
+  finding_ids:
+  - F1
+  target_ids:
+  - next253-research-checkpoint
+  - next253-history-provenance
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: history/reports/protocatechuate-meta-cleavage-next253
+    role: append-only correction owner
+  acceptance_checks:
+  - Initial history SHA-256 remains 7789e6f402da22644beb9a667a8d2c9be7e676d742778a2129f096e428336145
+  - New canonical record explicitly names the original history path and corrected
+    Codex actor
+  - History gate passes and successor review cites exact F1 lineage
+  generator: scripts/new_history_record.py
+limitations:
+- This initial review is limited to history attribution; it does not certify scientific
+  evidence, complete packaging, or committed membership.
+- No literature reassessment or pathway promotion is performed. The final full integration
+  assessment must consume actual shared gate receipts and inspect the eventual committed
+  tree.
+tags:
+- next253
+- integration
+- history
+- initial
