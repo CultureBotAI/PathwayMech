@@ -1,0 +1,29 @@
+from pathlib import Path
+from collections import Counter
+import json,re,xml.etree.ElementTree as E,hashlib
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+root=Path(__file__).parent;j=json.loads((root/'chemical-identity-projection.json').read_text());rows=[]
+def elements(f):
+ c=Counter()
+ for fragment in f.split('.'):
+  m=re.match(r'^(\d+)(.*)$',fragment);mult=int(m.group(1))if m else 1;fragment=m.group(2)if m else fragment
+  for el,num in re.findall(r'([A-Z][a-z]?)(\d*)',fragment):c[el]+=mult*(int(num)if num else 1)
+ return dict(c)
+for d in j['identities']:
+ s=d['current_structure']
+ if not s:
+  assert d['id']=='CHEBI:22651';rows.append({'id':d['id'],'structure_resolution':'Generic chemical entity; neither issuing nor pinned source supplies a specific structure. No absolute stereochemistry, formula, counterion or salt has been invented.','class_checks':{'current_has_L_ascorbate_child':any(x['init_id']==38290 and x['relation_type']=='is a'for x in d['ontology_relations']['incoming_relations'])}});continue
+ m=Chem.MolFromSmiles(s['smiles']);assert m is not None
+ pm=Chem.MolFromSmiles(d['pinned']['chemrof:smiles_string']);assert pm is not None
+ charge=Chem.GetFormalCharge(m);formula=rdMolDescriptors.CalcMolFormula(m);inchi=Chem.MolToInchi(m);key=Chem.MolToInchiKey(m)
+ checks={'current_and_pinned_isomeric_graph_equal':Chem.MolToSmiles(m,isomericSmiles=True)==Chem.MolToSmiles(pm,isomericSmiles=True),'element_count_equal':elements(formula)==elements(d['chemical_data']['formula']),'charge_equal':charge==d['chemical_data']['charge'],'full_inchi_equal':inchi==s['standard_inchi'],'inchi_key_equal':key==s['standard_inchi_key']}
+ row={'id':d['id'],'checks':checks,'parsed_isomeric_smiles':Chem.MolToSmiles(m,isomericSmiles=True),'parsed_formula':formula,'parsed_charge':charge,'parsed_inchi':inchi,'parsed_inchi_key':key,'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True),'element_counts':elements(formula),'atom_count':m.GetNumAtoms(),'bond_count':m.GetNumBonds()}
+ if d['id']in ['CHEBI:30060','CHEBI:5020']:
+  row['representation_limit']='The source encodes the complex charge on the central iron in its connected SMILES. This is a formal graph representation; its atom formal charge must not be read as the oxidation number of iron. The reagent is ferricyanide/iron(III), not ferrocyanide/iron(II).'
+  row['fragments']=[Chem.MolToSmiles(x)for x in Chem.GetMolFrags(m,asMols=True)]
+  if d['id']=='CHEBI:30060':checks['three_K_counterions']=sum(1 for a in m.GetAtoms()if a.GetSymbol()=='K'and a.GetFormalCharge()==1)==3
+ assert all(checks.values()),row
+ rows.append(row)
+output={'software':{'rdkit':rdBase.rdkitVersion},'checks':rows,'scope':'Exact issuing and pinned chemical identity, not measured assay protonation, iron occupancy or ascorbate stereochemistry. No raw-source or earlier dossier mutation.'}
+(root/'structure-checks.json').write_text(json.dumps(output,indent=2)+'\n');print(json.dumps(output,indent=2))

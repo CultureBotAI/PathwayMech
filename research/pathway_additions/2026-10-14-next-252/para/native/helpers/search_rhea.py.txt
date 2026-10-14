@@ -1,0 +1,13 @@
+from pathlib import Path
+import gzip,re,json,hashlib,datetime,html
+p=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz');s=gzip.decompress(p.read_bytes()).decode()
+patterns=['RXN-10882','RXN-10883','5-carboxy-2-hydroxy','5-carboxymuconate','(2Z,4E)-2-hydroxyhexa-2,4-dienedioate','(3E)-2-oxohex-3-enedioate','(2Z)-2-hydroxypenta-2,4-dienoate']
+rows=[]
+for frag in s.split('<rdf:Description rdf:about="')[1:]:
+ uri,rest=frag.split('"',1);body=rest.split('</rdf:Description>')[0]
+ if re.fullmatch('http://rdf.rhea-db.org/[0-9]+',uri):
+  eq=re.search(r'<rh:equation>(.*?)</rh:equation>',body,re.S)
+  if eq and any(x in body for x in patterns):rows.append({'uri':uri,'equation':html.unescape(eq[1]),'matches':[x for x in patterns if x in body]})
+out={'source':{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()},'search_scope':'Complete decompressed Rhea142 RDF; all reaction descriptions; no ignored-file filtering.','patterns':patterns,'results':rows}
+Path('/private/tmp/pathwaymech-next-252-native/rhea-candidate-search.json').write_text(json.dumps(out,indent=2)+'\n')
+for r in rows:print(r['uri'],r['equation'])

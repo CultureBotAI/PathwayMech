@@ -1,0 +1,379 @@
+# Independent initial scientific review of protocatechuate para-cleavage
+
+- Review: 20261014T131508Z-next252-para-science-initial
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T13:11:28Z
+- Finished UTC: 2026-10-14T13:15:08Z
+- Reviewer: codex:/root/next252_scientific_review (independent)
+- Completion: partial
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+The complete initial record was read and original 2009 full text, eight main figure rasters and native objects examined. Direct 1993 evidence of reversible native dioxygenase redox inactivation has no graph disposition. One major completeness finding requires curation; chemical and final-gate assessment is still ongoing.
+
+## Scope And Provenance
+
+Exactly one new pathway; full record read, bounded initial finding concerning native dioxygenase redox-state mechanism. Final chemistry/gates remain in progress.
+
+Selection: Exact path and ID assigned for independent adversarial review.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 099b4fc58fc8c04006f3879f111f3da3eeabb767.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-6336 | data/pathways/protocatechuate-para-cleavage.yaml | maintained | protocatechuate degradation III (para-cleavage pathway) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Initial target inspection | passed | True | MetaCyc:PWY-6336 | Captured exact initial working-tree target and rubric hashes before assessment. |
+| Existing review lineage search | passed | True | MetaCyc:PWY-6336 | Ignore-inclusive hidden-file search of current worktree reviews returned no matching prior target or issue key; rg exit1 denotes no matches. |
+| just validate | unavailable | True | MetaCyc:PWY-6336 | Root-owned final gate sequence pending; not claimed as executed by this reviewer or passed. |
+| just test | unavailable | True | MetaCyc:PWY-6336 | Root-owned final gate sequence pending; not claimed as executed by this reviewer or passed. |
+| just lint | unavailable | True | MetaCyc:PWY-6336 | Root-owned final gate sequence pending; not claimed as executed by this reviewer or passed. |
+| git diff --check | unavailable | True | MetaCyc:PWY-6336 | Root-owned final gate sequence pending; not claimed as executed by this reviewer or passed. |
+
+## Scientific And Domain Assessments
+
+### Five-step boundary and experimental scope
+
+scope: supported. Targets: MetaCyc:PWY-6336.
+
+The exact pathway boundary and heterologous versus native preparations are defensible in the initial target; this does not close remaining chemistry and gate checks.
+
+### Native dioxygenase redox perturbations
+
+completeness: concern. Targets: MetaCyc:PWY-6336.
+
+An inspected directly supported in-vitro mechanism is absent despite retained database-only inhibitor edges. Full-paper access failure does not prevent bounded use of the original abstract.
+
+## Findings
+
+### F1: Native dioxygenase redox inactivation and recovery are omitted
+
+major / open / confirmed; issue key: protocatechuate-para-native-redox-coverage.
+
+The initial graph contains native complex/cofactor and EDTA/nitrilotriacetate effects, yet omits the directly reported H2O2 and ferricyanide inactivation and ascorbate recovery of the oxidatively inactivated enzyme. The source ledger labels these supportable without a scientific exclusion. This loses a supported redox-state mechanism; it does not make the pathway identity wrong.
+
+## Recommended Actions And Acceptance Checks
+
+### A1
+
+Curate the bounded native dioxygenase redox effects with exact chemical identities and state scope.
+
+- Verify H2O2, ferricyanide and ascorbate identities at issuing authorities.
+- Represent in-vitro H2O2/ferricyanide inhibition of native CPLX-7915 using inspected primary abstract evidence.
+- Qualify the ascorbate target as oxidatively inactivated native complex; do not imply baseline activation, measured doses, physiological regulation or recombinant sequence identity.
+- Preserve native historical preparation and source-access limitations; regenerate page and rerun required curation gates.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/protocatechuate-para-cleavage.yaml; Whole record; mechanistic_edges para-031 through para-035 and participants | supports | Record retains native assembly, iron cofactor and two database-only inhibitors but no hydrogen peroxide/ferricyanide inhibition or state-qualified ascorbate reactivation. Initial exact bytes were inspected. |
+| native-redox | https://europepmc.org/article/MED/8392511; Original EPMC core response /resultList/result[id=8392511]/abstractText; local /private/tmp/pathwaymech-next-252-primary/originals/older1993-europe.json | supports | Original 1993 abstract directly reports purified JJ1b dioxygenase inactivation by H2O2 and potassium ferricyanide through iron oxidation, and restoration after ascorbate reduction. Full dose/time protocols were not inspected. |
+| rules | docs/CAUSAL_GRAPHS.md; Components and relations; Experimental constructs and molecular states; Verification | supports | Source-to-graph coverage and supported component/state relations must be retained. A reactivation assay is about the inactivated complex, not stimulation of the untreated protein. |
+| lineage | /private/tmp/pathwaymech-next-252-science-review/initial-lineage.json; Complete search receipt | supports | No matching prior review in searched worktree reviews directory. |
+| paper2009 | https://pmc.ncbi.nlm.nih.gov/articles/PMC2795304/; Entire archived HTML; methods, Table1, sections20-27; main figures1-8 independently visually read | supports | Five separately expressed crude-extract enzymes support the core route; seven subject qualifiers preserve construct uncertainty. PraB NADP alternative, spontaneous loss, upstream/downstream boundaries and homolog-only metal suggestions are distinguished. |
+
+## Limits And Additional Notes
+
+- This is an initial partial observation; final chemical identity/reaction balance/reference audit and required root-run corpus checks are not yet complete.
+- 1993 primary abstract inspected; full 1993 paper and 2009 supplement remain unavailable. No unseen protocol, kinetic or terminal sequence claims are made.
+- Current web PMC request returned a browser challenge; the complete previously acquired HTML original and all eight main rasters were independently inspected.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T131508Z-next252-para-science-initial
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent initial scientific review of protocatechuate para-cleavage
+started_at: '2026-10-14T13:11:28Z'
+finished_at: '2026-10-14T13:15:08Z'
+reviewer:
+  identity: codex:/root/next252_scientific_review
+  kind: agent
+  independence: independent
+  independence_basis: Reviewer has not authored or edited the pathway, authority snapshots,
+    history, pages or research dossier. Read the complete target and original source
+    evidence independently; owns only reviewer scratch and immutable review bundles.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: partial
+verdict: needs_curation
+scientific_review: true
+summary: The complete initial record was read and original 2009 full text, eight main
+  figure rasters and native objects examined. Direct 1993 evidence of reversible native
+  dioxygenase redox inactivation has no graph disposition. One major completeness
+  finding requires curation; chemical and final-gate assessment is still ongoing.
+source:
+  git_revision: 099b4fc58fc8c04006f3879f111f3da3eeabb767
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: data/pathways/protocatechuate-para-cleavage.yaml
+    sha256: 58741a8412e62e9d75b98169b8729ed3550fac3a3db57449944649b6bc699044
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+scope:
+  description: Exactly one new pathway; full record read, bounded initial finding
+    concerning native dioxygenase redox-state mechanism. Final chemistry/gates remain
+    in progress.
+  selection: Exact path and ID assigned for independent adversarial review.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-6336
+  exclusions:
+  - target: Other maintained pathways
+    reason: No new scientific review of the rest of the corpus.
+targets:
+- target_id: MetaCyc:PWY-6336
+  path: data/pathways/protocatechuate-para-cleavage.yaml
+  label: protocatechuate degradation III (para-cleavage pathway)
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained_record
+checks:
+- check_id: inspect
+  name: Initial target inspection
+  status: passed
+  required: true
+  summary: Captured exact initial working-tree target and rubric hashes before assessment.
+  command: python -B scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-252-science-review/targets.yaml
+    --input <declared rubric inputs>
+  exit_code: 0
+  expected_exit_code: 0
+  target_ids:
+  - MetaCyc:PWY-6336
+- check_id: lineage
+  name: Existing review lineage search
+  status: passed
+  required: true
+  summary: Ignore-inclusive hidden-file search of current worktree reviews returned
+    no matching prior target or issue key; rg exit1 denotes no matches.
+  command: rg --no-ignore --hidden -l "PWY-6336|protocatechuate-para-cleavage|protocatechuate-para-native-redox-coverage"
+    reviews
+  exit_code: 1
+  expected_exit_code: 1
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - lineage
+- check_id: pending-0
+  name: just validate
+  status: unavailable
+  required: true
+  command: just validate
+  summary: Root-owned final gate sequence pending; not claimed as executed by this
+    reviewer or passed.
+  target_ids:
+  - MetaCyc:PWY-6336
+- check_id: pending-1
+  name: just test
+  status: unavailable
+  required: true
+  command: just test
+  summary: Root-owned final gate sequence pending; not claimed as executed by this
+    reviewer or passed.
+  target_ids:
+  - MetaCyc:PWY-6336
+- check_id: pending-2
+  name: just lint
+  status: unavailable
+  required: true
+  command: just lint
+  summary: Root-owned final gate sequence pending; not claimed as executed by this
+    reviewer or passed.
+  target_ids:
+  - MetaCyc:PWY-6336
+- check_id: pending-3
+  name: git diff --check
+  status: unavailable
+  required: true
+  command: git diff --check
+  summary: Root-owned final gate sequence pending; not claimed as executed by this
+    reviewer or passed.
+  target_ids:
+  - MetaCyc:PWY-6336
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/protocatechuate-para-cleavage.yaml
+  locator: Whole record; mechanistic_edges para-031 through para-035 and participants
+  accessed_at: '2026-10-14T13:15:08Z'
+  support: supports
+  summary: Record retains native assembly, iron cofactor and two database-only inhibitors
+    but no hydrogen peroxide/ferricyanide inhibition or state-qualified ascorbate
+    reactivation. Initial exact bytes were inspected.
+  snapshot_sha256: 58741a8412e62e9d75b98169b8729ed3550fac3a3db57449944649b6bc699044
+- evidence_id: native-redox
+  kind: primary_source
+  reference: https://europepmc.org/article/MED/8392511
+  locator: Original EPMC core response /resultList/result[id=8392511]/abstractText;
+    local /private/tmp/pathwaymech-next-252-primary/originals/older1993-europe.json
+  accessed_at: '2026-10-14T13:15:08Z'
+  support: supports
+  summary: Original 1993 abstract directly reports purified JJ1b dioxygenase inactivation
+    by H2O2 and potassium ferricyanide through iron oxidation, and restoration after
+    ascorbate reduction. Full dose/time protocols were not inspected.
+  snapshot_sha256: 4e8fce4526bd4f7cfabcfdaf039a786789a3757deee9ec13580fe732c708ae33
+- evidence_id: rules
+  kind: record_content
+  reference: docs/CAUSAL_GRAPHS.md
+  locator: Components and relations; Experimental constructs and molecular states;
+    Verification
+  accessed_at: '2026-10-14T13:15:08Z'
+  support: supports
+  summary: Source-to-graph coverage and supported component/state relations must be
+    retained. A reactivation assay is about the inactivated complex, not stimulation
+    of the untreated protein.
+- evidence_id: lineage
+  kind: search
+  reference: /private/tmp/pathwaymech-next-252-science-review/initial-lineage.json
+  locator: Complete search receipt
+  accessed_at: '2026-10-14T13:15:08Z'
+  support: supports
+  summary: No matching prior review in searched worktree reviews directory.
+  search_scope: rg --no-ignore --hidden recursively searched all current worktree
+    reviews including ignored/hidden files for pathway ID, exact slug and proposed
+    issue key; no fleet-wide claim.
+- evidence_id: paper2009
+  kind: primary_source
+  reference: https://pmc.ncbi.nlm.nih.gov/articles/PMC2795304/
+  locator: Entire archived HTML; methods, Table1, sections20-27; main figures1-8 independently
+    visually read
+  accessed_at: '2026-10-14T13:15:08Z'
+  support: supports
+  summary: Five separately expressed crude-extract enzymes support the core route;
+    seven subject qualifiers preserve construct uncertainty. PraB NADP alternative,
+    spontaneous loss, upstream/downstream boundaries and homolog-only metal suggestions
+    are distinguished.
+  snapshot_sha256: 73d8f20f4d2502b2f69e205f1867056493598ad72993dab0e410bd9bd573a7c2
+assessments:
+- assessment_id: scope
+  area: scope
+  topic: Five-step boundary and experimental scope
+  outcome: supported
+  summary: The exact pathway boundary and heterologous versus native preparations
+    are defensible in the initial target; this does not close remaining chemistry
+    and gate checks.
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - target
+  - paper2009
+  dimensions:
+  - name: taxon_condition
+    value: Paenibacillus sp. JJ-1b native enzyme and explicitly qualified E. coli
+      recombinant crude extracts
+    definition: Exact biological and assay context of reviewed mechanism.
+    evidence_ids:
+    - paper2009
+- assessment_id: redox-coverage
+  area: completeness
+  topic: Native dioxygenase redox perturbations
+  outcome: concern
+  summary: An inspected directly supported in-vitro mechanism is absent despite retained
+    database-only inhibitor edges. Full-paper access failure does not prevent bounded
+    use of the original abstract.
+  target_ids:
+  - MetaCyc:PWY-6336
+  evidence_ids:
+  - target
+  - native-redox
+  - rules
+findings:
+- finding_id: F1
+  issue_key: protocatechuate-para-native-redox-coverage
+  category: completeness
+  severity: major
+  status: open
+  certainty: confirmed
+  title: Native dioxygenase redox inactivation and recovery are omitted
+  description: The initial graph contains native complex/cofactor and EDTA/nitrilotriacetate
+    effects, yet omits the directly reported H2O2 and ferricyanide inactivation and
+    ascorbate recovery of the oxidatively inactivated enzyme. The source ledger labels
+    these supportable without a scientific exclusion. This loses a supported redox-state
+    mechanism; it does not make the pathway identity wrong.
+  target_ids:
+  - MetaCyc:PWY-6336
+  field_paths:
+  - participants
+  - mechanistic_edges
+  evidence_ids:
+  - target
+  - native-redox
+  - rules
+  rule_id: docs/CAUSAL_GRAPHS.md#verification
+  native_severity: major
+  normalization_reason: Material source-to-graph mechanistic completeness gap, while
+    the core five-step pathway remains supported.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained_record
+actions:
+- action_id: A1
+  description: Curate the bounded native dioxygenase redox effects with exact chemical
+    identities and state scope.
+  finding_ids:
+  - F1
+  target_ids:
+  - MetaCyc:PWY-6336
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-para-cleavage.yaml
+    role: maintained_record
+  acceptance_checks:
+  - Verify H2O2, ferricyanide and ascorbate identities at issuing authorities.
+  - Represent in-vitro H2O2/ferricyanide inhibition of native CPLX-7915 using inspected
+    primary abstract evidence.
+  - Qualify the ascorbate target as oxidatively inactivated native complex; do not
+    imply baseline activation, measured doses, physiological regulation or recombinant
+    sequence identity.
+  - Preserve native historical preparation and source-access limitations; regenerate
+    page and rerun required curation gates.
+limitations:
+- This is an initial partial observation; final chemical identity/reaction balance/reference
+  audit and required root-run corpus checks are not yet complete.
+- 1993 primary abstract inspected; full 1993 paper and 2009 supplement remain unavailable.
+  No unseen protocol, kinetic or terminal sequence claims are made.
+- Current web PMC request returned a browser challenge; the complete previously acquired
+  HTML original and all eight main rasters were independently inspected.
+tags:
+- next252
+- independent-science
+- initial
+```

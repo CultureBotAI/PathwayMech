@@ -1,0 +1,15 @@
+import pathlib,urllib.request,hashlib,json,concurrent.futures,datetime
+root=pathlib.Path('/private/tmp/pathwaymech-next-252-primary');out=root/'originals'
+urls={
+'supplements-render.zip':'https://pmc.ncbi.nlm.nih.gov/articles/instance/2795304/bin/supp_191_21_6758__Supplemental_Materials.zip?pdf=render',
+'supplements-europe.zip':'https://europepmc.org/articles/PMC2795304/bin/supp_191_21_6758__Supplemental_Materials.zip',
+'supplements-publisher.zip':'https://journals.asm.org/doi/suppl/10.1128/jb.00840-09/suppl_file/supplemental_materials.zip',
+'PMC2795304-pdf-render.pdf':'https://pmc.ncbi.nlm.nih.gov/articles/PMC2795304/pdf/0840-09.pdf?pdf=render',
+'AB505864.xml':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=AB505864&rettype=gb&retmode=xml',
+'AB505863.xml':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=AB505863&rettype=gb&retmode=xml'}
+def get(kv):
+ k,u=kv
+ try:
+  b=urllib.request.urlopen(u,timeout=45).read();(out/k).write_bytes(b);return {'file':k,'url':u,'size':len(b),'sha256':hashlib.sha256(b).hexdigest(),'magic':str(b[:40]),'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ except Exception as e:return {'file':k,'url':u,'error':str(e)}
+res=list(concurrent.futures.ThreadPoolExecutor(3).map(get,urls.items()));print(json.dumps(res,indent=2));(root/'supplement-retry-acquisition.json').write_text(json.dumps(res,indent=2))

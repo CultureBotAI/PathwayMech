@@ -1,0 +1,1017 @@
+id: MetaCyc:PWY-6336
+label: protocatechuate degradation III (para-cleavage pathway)
+description: The complete five-step protocatechuate 2,3-cleavage route in Paenibacillus sp. JJ-1b proceeds
+  through the Z,Z carboxysemialdehyde, hydroxymuconate semialdehyde, hydroxymuconate and oxalocrotonate
+  to the Z-enol hydroxypentadienoate. It connects to the separate downstream degradation pathway. The
+  five individual recombinant enzymes are assayed as crude extracts; their endpoint qualifications retain
+  construct uncertainty. The historical native dioxygenase assembly and iron annotation remain distinct
+  from those recombinant preparations. Spontaneous intermediate conversion is compatible with enzyme acceleration.
+  NAD is the selected reaction coenzyme; lower NADP-supported PraB activity is retained separately. Upstream
+  4-hydroxybenzoate conversion and the downstream three-enzyme module are outside the internal five-step
+  boundary.
+pathway_type: aromatic-compound-catabolism
+taxa:
+- id: NCBITaxon:649508
+  label: Paenibacillus sp. JJ-1b
+participants:
+- id: CHEBI:36241
+  label: 3,4-dihydroxybenzoate
+  category: small_molecule
+- id: CHEBI:16526
+  label: carbon dioxide
+  category: small_molecule
+- id: CHEBI:28080
+  label: (2Z,4E)-2-hydroxymuconate(2-)
+  category: small_molecule
+- id: CHEBI:67152
+  label: (2Z)-2-hydroxypenta-2,4-dienoate
+  category: small_molecule
+- id: MetaCyc:CPD-14966
+  label: (2Z,4Z)-2-hydroxy-5-carboxymuconate-6-semialdehyde
+  category: small_molecule
+- id: CHEBI:64908
+  label: (3E)-2-oxohex-3-enedioate
+  category: small_molecule
+- id: CHEBI:71198
+  label: (2Z,4E)-2-hydroxy-6-oxohexa-2,4-dienoate
+  category: small_molecule
+- id: CHEBI:57540
+  label: NAD(1-)
+  category: cofactor
+- id: CHEBI:57945
+  label: NADH(2-)
+  category: small_molecule
+- id: CHEBI:15379
+  label: dioxygen
+  category: small_molecule
+- id: CHEBI:15378
+  label: hydron
+  category: small_molecule
+- id: CHEBI:15377
+  label: water
+  category: small_molecule
+- id: MetaCyc:CPLX-7915
+  label: protocatechuate 2,3-dioxygenase
+  category: complex
+- id: CHEBI:29033
+  label: iron(2+)
+  category: cofactor
+- id: CHEBI:64755
+  label: EDTA(2-)
+  category: small_molecule
+- id: CHEBI:25548
+  label: nitrilotriacetate(3-)
+  category: small_molecule
+- id: UniProtKB:C4TP01
+  label: Protocatechuate 2,3-dioxygenase
+  category: protein
+- id: UniProtKB:C4TP08
+  label: 5-carboxy-2-hydroxymuconate-6-semialdehyde decarboxylase
+  category: protein
+- id: UniProtKB:C4TP02
+  label: 2-hydroxymuconate-6-semialdehyde dehydrogenase
+  category: protein
+- id: UniProtKB:C4TP07
+  label: Tautomerase
+  category: protein
+- id: UniProtKB:C4TP06
+  label: 4-oxalocrotonate decarboxylase
+  category: protein
+- id: CHEBI:58349
+  label: NADP(3-)
+  category: cofactor
+- id: CHEBI:16240
+  label: hydrogen peroxide
+  category: small_molecule
+- id: CHEBI:30060
+  label: potassium hexacyanoferrate(3-)
+  category: small_molecule
+- id: CHEBI:22651
+  label: ascorbate
+  category: chemical_entity
+reactions:
+- id: MetaCyc:RXN-10882
+  label: protocatechuate 2,3-ring cleavage
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:RXN-10883
+  label: 5-carboxy-2-hydroxymuconate semialdehyde decarboxylation
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:34220
+  label: (2Z,4E)-2-hydroxy-6-oxohexa-2,4-dienoate + NAD(+) + H2O => (2Z,4E)-2-hydroxyhexa-2,4-dienedioate
+    + NADH + 2 H(+)
+  category: molecular_activity
+  direction: left_to_right
+- id: RHEA:33432
+  label: (2Z,4E)-2-hydroxyhexa-2,4-dienedioate => (3E)-2-oxohex-3-enedioate
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:4.1.1.77-RXN
+  label: 4-oxalocrotonate decarboxylation to the Z-enol
+  category: molecular_activity
+  direction: left_to_right
+- id: MetaCyc:PWY-5162
+  label: 2-hydroxypenta-2,4-dienoate degradation
+  category: pathway
+mechanistic_edges:
+- id: para-001
+  subject: MetaCyc:RXN-10882
+  predicate: part_of
+  object: MetaCyc:PWY-6336
+  description: Member of the five-step protocatechuate 2,3-cleavage route.
+  evidence:
+  - reference_id: MetaCyc:PWY-6336
+    source_assertion: The complete native pathway lists MetaCyc:RXN-10882 as a member and selects L2R
+      flux.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid='RXN-10882']; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-10882']
+- id: para-002
+  subject: CHEBI:36241
+  predicate: consumes
+  object: MetaCyc:RXN-10882
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:RXN-10882
+    source_assertion: The complete native reaction left side contains 3-4-DIHYDROXYBENZOATE with coefficient
+      1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10882']/left[Compound/@frameid='3-4-DIHYDROXYBENZOATE']
+- id: para-003
+  subject: CHEBI:15379
+  predicate: consumes
+  object: MetaCyc:RXN-10882
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:RXN-10882
+    source_assertion: The complete native reaction left side contains OXYGEN-MOLECULE with coefficient
+      1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10882']/left[Compound/@frameid='OXYGEN-MOLECULE']
+- id: para-004
+  subject: MetaCyc:RXN-10882
+  predicate: produces
+  object: MetaCyc:CPD-14966
+  description: Coefficient 1 in the selected pathway flux. Explicit member/layout Z,Z source frame retained;
+    narrative hyperlink CPD-11842 is the distinct E,Z stereoisomer.
+  evidence:
+  - reference_id: MetaCyc:RXN-10882
+    source_assertion: The complete native reaction right side contains CPD-14966 with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10882']/right[Compound/@frameid='CPD-14966']
+- id: para-005
+  subject: MetaCyc:RXN-10882
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:RXN-10882
+    source_assertion: The complete native reaction right side contains PROTON with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10882']/right[Compound/@frameid='PROTON']
+- id: para-006
+  subject: MetaCyc:RXN-10883
+  predicate: part_of
+  object: MetaCyc:PWY-6336
+  description: Member of the five-step protocatechuate 2,3-cleavage route. Native spontaneous=true allows
+    uncatalyzed background; this does not negate experimentally accelerated PraH catalysis.
+  evidence:
+  - reference_id: MetaCyc:PWY-6336
+    source_assertion: The complete native pathway lists MetaCyc:RXN-10883 as a member and selects L2R
+      flux.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid='RXN-10883']; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-10883']
+- id: para-007
+  subject: MetaCyc:CPD-14966
+  predicate: consumes
+  object: MetaCyc:RXN-10883
+  description: Coefficient 1 in the selected pathway flux. Explicit member/layout Z,Z source frame retained;
+    narrative hyperlink CPD-11842 is the distinct E,Z stereoisomer.
+  evidence:
+  - reference_id: MetaCyc:RXN-10883
+    source_assertion: The complete native reaction left side contains CPD-14966 with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10883']/left[Compound/@frameid='CPD-14966']
+- id: para-008
+  subject: CHEBI:15378
+  predicate: consumes
+  object: MetaCyc:RXN-10883
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:RXN-10883
+    source_assertion: The complete native reaction left side contains PROTON with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10883']/left[Compound/@frameid='PROTON']
+- id: para-009
+  subject: MetaCyc:RXN-10883
+  predicate: produces
+  object: CHEBI:71198
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:RXN-10883
+    source_assertion: The complete native reaction right side contains HYDROXYMUCONATE-SALD with coefficient
+      1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10883']/right[Compound/@frameid='HYDROXYMUCONATE-SALD']
+- id: para-010
+  subject: MetaCyc:RXN-10883
+  predicate: produces
+  object: CHEBI:16526
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:RXN-10883
+    source_assertion: The complete native reaction right side contains CARBON-DIOXIDE with coefficient
+      1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-10883']/right[Compound/@frameid='CARBON-DIOXIDE']
+- id: para-011
+  subject: RHEA:34220
+  predicate: part_of
+  object: MetaCyc:PWY-6336
+  description: Member of the five-step protocatechuate 2,3-cleavage route.
+  evidence:
+  - reference_id: MetaCyc:PWY-6336
+    source_assertion: The complete native pathway lists MetaCyc:RXN-8527 as a member and selects L2R flux.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid='RXN-8527']; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-8527']
+  - reference_id: RHEA:34220
+    source_assertion: The complete issuing reaction sides exactly match the native substrates, products,
+      coefficients and selected flux.
+    source_locator: Aggregate rdf:Description rdf:about=http://rdf.rhea-db.org/34220
+- id: para-012
+  subject: CHEBI:71198
+  predicate: consumes
+  object: RHEA:34220
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:34220
+    source_assertion: RHEA:34220 places CHEBI:71198 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/34220 rh:substrates http://rdf.rhea-db.org/34219_L
+      -> http://rdf.rhea-db.org/34219_L rh:contains1 http://rdf.rhea-db.org/Participant_34219_compound_7622
+      -> http://rdf.rhea-db.org/Participant_34219_compound_7622 rh:compound http://rdf.rhea-db.org/Compound_7622
+      -> http://rdf.rhea-db.org/Compound_7622 rh:chebi http://purl.obolibrary.org/obo/CHEBI_71198'
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The complete native reaction left side contains HYDROXYMUCONATE-SALD with coefficient
+      1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8527']/left[Compound/@frameid='HYDROXYMUCONATE-SALD']
+- id: para-013
+  subject: CHEBI:15377
+  predicate: consumes
+  object: RHEA:34220
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:34220
+    source_assertion: RHEA:34220 places CHEBI:15377 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/34220 rh:substrates http://rdf.rhea-db.org/34219_L
+      -> http://rdf.rhea-db.org/34219_L rh:contains1 http://rdf.rhea-db.org/Participant_34219_compound_1283
+      -> http://rdf.rhea-db.org/Participant_34219_compound_1283 rh:compound http://rdf.rhea-db.org/Compound_1283
+      -> http://rdf.rhea-db.org/Compound_1283 rh:chebi http://purl.obolibrary.org/obo/CHEBI_15377'
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The complete native reaction left side contains WATER with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8527']/left[Compound/@frameid='WATER']
+- id: para-014
+  subject: CHEBI:57540
+  predicate: consumes
+  object: RHEA:34220
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:34220
+    source_assertion: RHEA:34220 places CHEBI:57540 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/34220 rh:substrates http://rdf.rhea-db.org/34219_L
+      -> http://rdf.rhea-db.org/34219_L rh:contains1 http://rdf.rhea-db.org/Participant_34219_compound_3484
+      -> http://rdf.rhea-db.org/Participant_34219_compound_3484 rh:compound http://rdf.rhea-db.org/Compound_3484
+      -> http://rdf.rhea-db.org/Compound_3484 rh:chebi http://purl.obolibrary.org/obo/CHEBI_57540'
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The complete native reaction left side contains NAD with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8527']/left[Compound/@frameid='NAD']
+- id: para-015
+  subject: RHEA:34220
+  predicate: produces
+  object: CHEBI:28080
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:34220
+    source_assertion: RHEA:34220 places CHEBI:28080 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/34220 rh:products http://rdf.rhea-db.org/34219_R
+      -> http://rdf.rhea-db.org/34219_R rh:contains1 http://rdf.rhea-db.org/Participant_34219_compound_7273
+      -> http://rdf.rhea-db.org/Participant_34219_compound_7273 rh:compound http://rdf.rhea-db.org/Compound_7273
+      -> http://rdf.rhea-db.org/Compound_7273 rh:chebi http://purl.obolibrary.org/obo/CHEBI_28080'
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The complete native reaction right side contains CPD-13339 with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8527']/right[Compound/@frameid='CPD-13339']
+- id: para-016
+  subject: RHEA:34220
+  predicate: produces
+  object: CHEBI:57945
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:34220
+    source_assertion: RHEA:34220 places CHEBI:57945 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/34220 rh:products http://rdf.rhea-db.org/34219_R
+      -> http://rdf.rhea-db.org/34219_R rh:contains1 http://rdf.rhea-db.org/Participant_34219_compound_1650
+      -> http://rdf.rhea-db.org/Participant_34219_compound_1650 rh:compound http://rdf.rhea-db.org/Compound_1650
+      -> http://rdf.rhea-db.org/Compound_1650 rh:chebi http://purl.obolibrary.org/obo/CHEBI_57945'
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The complete native reaction right side contains NADH with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8527']/right[Compound/@frameid='NADH']
+- id: para-017
+  subject: RHEA:34220
+  predicate: produces
+  object: CHEBI:15378
+  description: Coefficient 2 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:34220
+    source_assertion: RHEA:34220 places CHEBI:15378 on its products side with coefficient 2.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/34220 rh:products http://rdf.rhea-db.org/34219_R
+      -> http://rdf.rhea-db.org/34219_R rh:contains2 http://rdf.rhea-db.org/Participant_34219_compound_3249
+      -> http://rdf.rhea-db.org/Participant_34219_compound_3249 rh:compound http://rdf.rhea-db.org/Compound_3249
+      -> http://rdf.rhea-db.org/Compound_3249 rh:chebi http://purl.obolibrary.org/obo/CHEBI_15378'
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The complete native reaction right side contains PROTON with coefficient 2.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8527']/right[Compound/@frameid='PROTON']
+- id: para-018
+  subject: RHEA:33432
+  predicate: part_of
+  object: MetaCyc:PWY-6336
+  description: Member of the five-step protocatechuate 2,3-cleavage route. Native reaction is REVERSIBLE;
+    this graph selects its degradative flux. Native Rhea32214 xref has different stereoisomers; the exact
+    equation is RHEA33432.
+  evidence:
+  - reference_id: MetaCyc:PWY-6336
+    source_assertion: The complete native pathway lists MetaCyc:RXN-8529 as a member and selects L2R flux.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid='RXN-8529']; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='RXN-8529']
+  - reference_id: RHEA:33432
+    source_assertion: The complete issuing reaction sides exactly match the native substrates, products,
+      coefficients and selected flux.
+    source_locator: Aggregate rdf:Description rdf:about=http://rdf.rhea-db.org/33432
+- id: para-019
+  subject: CHEBI:28080
+  predicate: consumes
+  object: RHEA:33432
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:33432
+    source_assertion: RHEA:33432 places CHEBI:28080 on its substrates side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/33432 rh:substrates http://rdf.rhea-db.org/33431_L
+      -> http://rdf.rhea-db.org/33431_L rh:contains1 http://rdf.rhea-db.org/Participant_33431_compound_7273
+      -> http://rdf.rhea-db.org/Participant_33431_compound_7273 rh:compound http://rdf.rhea-db.org/Compound_7273
+      -> http://rdf.rhea-db.org/Compound_7273 rh:chebi http://purl.obolibrary.org/obo/CHEBI_28080'
+  - reference_id: MetaCyc:RXN-8529
+    source_assertion: The complete native reaction left side contains CPD-13339 with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8529']/left[Compound/@frameid='CPD-13339']
+- id: para-020
+  subject: RHEA:33432
+  predicate: produces
+  object: CHEBI:64908
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: RHEA:33432
+    source_assertion: RHEA:33432 places CHEBI:64908 on its products side with coefficient 1.
+    source_locator: 'Aggregate rdf:Description: http://rdf.rhea-db.org/33432 rh:products http://rdf.rhea-db.org/33431_R
+      -> http://rdf.rhea-db.org/33431_R rh:contains1 http://rdf.rhea-db.org/Participant_33431_compound_7274
+      -> http://rdf.rhea-db.org/Participant_33431_compound_7274 rh:compound http://rdf.rhea-db.org/Compound_7274
+      -> http://rdf.rhea-db.org/Compound_7274 rh:chebi http://purl.obolibrary.org/obo/CHEBI_64908'
+  - reference_id: MetaCyc:RXN-8529
+    source_assertion: The complete native reaction right side contains CPD-8742 with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='RXN-8529']/right[Compound/@frameid='CPD-8742']
+- id: para-021
+  subject: MetaCyc:4.1.1.77-RXN
+  predicate: part_of
+  object: MetaCyc:PWY-6336
+  description: Member of the five-step protocatechuate 2,3-cleavage route.
+  evidence:
+  - reference_id: MetaCyc:PWY-6336
+    source_assertion: The complete native pathway lists MetaCyc:4.1.1.77-RXN as a member and selects L2R
+      flux.
+    source_locator: /ptools-xml/Pathway/reaction-list/Reaction[@frameid='4.1.1.77-RXN']; /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='4.1.1.77-RXN']
+- id: para-022
+  subject: CHEBI:64908
+  predicate: consumes
+  object: MetaCyc:4.1.1.77-RXN
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:4.1.1.77-RXN
+    source_assertion: The complete native reaction left side contains CPD-8742 with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='4.1.1.77-RXN']/left[Compound/@frameid='CPD-8742']
+- id: para-023
+  subject: CHEBI:15378
+  predicate: consumes
+  object: MetaCyc:4.1.1.77-RXN
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:4.1.1.77-RXN
+    source_assertion: The complete native reaction left side contains PROTON with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='4.1.1.77-RXN']/left[Compound/@frameid='PROTON']
+- id: para-024
+  subject: MetaCyc:4.1.1.77-RXN
+  predicate: produces
+  object: CHEBI:67152
+  description: Coefficient 1 in the selected pathway flux. The immediate Z-enol is retained. RHEA24261
+    instead produces the keto tautomer CHEBI11641; it is not an exact replacement.
+  evidence:
+  - reference_id: MetaCyc:4.1.1.77-RXN
+    source_assertion: The complete native reaction right side contains CPD-14447 with coefficient 1.
+    source_locator: /ptools-xml/Reaction[@frameid='4.1.1.77-RXN']/right[Compound/@frameid='CPD-14447']
+- id: para-025
+  subject: MetaCyc:4.1.1.77-RXN
+  predicate: produces
+  object: CHEBI:16526
+  description: Coefficient 1 in the selected pathway flux.
+  evidence:
+  - reference_id: MetaCyc:4.1.1.77-RXN
+    source_assertion: The complete native reaction right side contains CARBON-DIOXIDE with coefficient
+      1.
+    source_locator: /ptools-xml/Reaction[@frameid='4.1.1.77-RXN']/right[Compound/@frameid='CARBON-DIOXIDE']
+- id: para-026
+  subject: MetaCyc:RXN-10882
+  predicate: provides_input_for
+  object: MetaCyc:RXN-10883
+  description: Direct transfer through the same exact intermediate MetaCyc:CPD-14966.
+  evidence:
+  - reference_id: MetaCyc:RXN-10882
+    source_assertion: The native reaction produces CPD-14966.
+    source_locator: /ptools-xml/Reaction/right[Compound/@frameid='CPD-14966']
+  - reference_id: MetaCyc:RXN-10883
+    source_assertion: The next native reaction consumes the same CPD-14966.
+    source_locator: /ptools-xml/Reaction/left[Compound/@frameid='CPD-14966']
+- id: para-027
+  subject: MetaCyc:RXN-10883
+  predicate: provides_input_for
+  object: RHEA:34220
+  description: Direct transfer through the same exact intermediate CHEBI:71198.
+  evidence:
+  - reference_id: MetaCyc:RXN-10883
+    source_assertion: The native reaction produces HYDROXYMUCONATE-SALD.
+    source_locator: /ptools-xml/Reaction/right[Compound/@frameid='HYDROXYMUCONATE-SALD']
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The next native reaction consumes the same HYDROXYMUCONATE-SALD.
+    source_locator: /ptools-xml/Reaction/left[Compound/@frameid='HYDROXYMUCONATE-SALD']
+- id: para-028
+  subject: RHEA:34220
+  predicate: provides_input_for
+  object: RHEA:33432
+  description: Direct transfer through the same exact intermediate CHEBI:28080.
+  evidence:
+  - reference_id: MetaCyc:RXN-8527
+    source_assertion: The native reaction produces CPD-13339.
+    source_locator: /ptools-xml/Reaction/right[Compound/@frameid='CPD-13339']
+  - reference_id: MetaCyc:RXN-8529
+    source_assertion: The next native reaction consumes the same CPD-13339.
+    source_locator: /ptools-xml/Reaction/left[Compound/@frameid='CPD-13339']
+- id: para-029
+  subject: RHEA:33432
+  predicate: provides_input_for
+  object: MetaCyc:4.1.1.77-RXN
+  description: Direct transfer through the same exact intermediate CHEBI:64908.
+  evidence:
+  - reference_id: MetaCyc:RXN-8529
+    source_assertion: The native reaction produces CPD-8742.
+    source_locator: /ptools-xml/Reaction/right[Compound/@frameid='CPD-8742']
+  - reference_id: MetaCyc:4.1.1.77-RXN
+    source_assertion: The next native reaction consumes the same CPD-8742.
+    source_locator: /ptools-xml/Reaction/left[Compound/@frameid='CPD-8742']
+- id: para-030
+  subject: MetaCyc:4.1.1.77-RXN
+  predicate: provides_input_for
+  object: MetaCyc:PWY-5162
+  description: The terminal Z-enol supplies the separately identified downstream pathway. Its first reaction
+    is selected R2L and consumes this exact enol; downstream reactions are outside the five-step record
+    boundary.
+  evidence:
+  - reference_id: MetaCyc:PWY-6336
+    source_assertion: The native pathway links terminal CPD-14447 to PWY-5162.
+    source_locator: /ptools-xml/Pathway/pathway-link[Compound/@frameid='CPD-14447']/link-target/Pathway[@frameid='PWY-5162']
+  - reference_id: MetaCyc:PWY-5162
+    source_assertion: PWY-5162 selects R2L flux through 2-OXOPENT-4-ENOATE-HYDRATASE-RXN, using right-primary
+      CPD-14447.
+    source_locator: /ptools-xml/Pathway/reaction-layout[Reaction/@frameid='2-OXOPENT-4-ENOATE-HYDRATASE-RXN']
+  - reference_id: MetaCyc:2-OXOPENT-4-ENOATE-HYDRATASE-RXN
+    source_assertion: The complete written right side contains CPD-14447 and WATER; R2L consumes the exact
+      Z-enol.
+    source_locator: /ptools-xml/Reaction/right
+- id: para-031
+  subject: MetaCyc:CPLX-7915
+  predicate: has_part
+  object: UniProtKB:C4TP01
+  description: Native MetaCyc complex model has four PraA subunits. Historical native enzyme was reported
+    tetrameric, but its 35.5-kDa subunit estimate differs from the 266-aa recombinant sequence; this does
+    not establish exact sequence identity of the historical preparation or measure oligomerization of
+    the 2009 recombinant construct.
+  evidence:
+  - reference_id: MetaCyc:CPLX-7915
+    source_assertion: The native complex component is MONOMER-15106 with coefficient 4.
+    source_locator: /ptools-xml/Protein/component[Protein/@frameid='MONOMER-15106']/coefficient
+  - reference_id: MetaCyc:MONOMER-15106
+    source_assertion: MONOMER-15106 is explicitly unified to UniProt C4TP01.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db='UNIPROT']
+- id: para-032
+  subject: MetaCyc:CPLX-7915
+  predicate: has_cofactor
+  object: CHEBI:29033
+  description: Fe2+ is a source-supported cofactor of the historical native protocatechuate 2,3-dioxygenase,
+    reported at one atom per subunit. The native database associates this property with CPLX-7915; the
+    2009 recombinant assembly and its metal occupancy were not measured by this evidence.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-16910
+    source_assertion: ENZRXN-16910 lists FE+2 as a cofactor, cites PMID:8392511, and identifies CPLX-7915
+      as its enzyme.
+    source_locator: /ptools-xml/Enzymatic-Reaction/cofactor; enzyme
+  - reference_id: MetaCyc:CPLX-7915
+    source_assertion: The native annotation reports Fe2+ dependence and one iron atom per monomer, citing
+      the 1993 characterization.
+    source_locator: /ptools-xml/Protein/comment
+- id: para-033
+  subject: CHEBI:64755
+  predicate: inhibits
+  object: MetaCyc:CPLX-7915
+  description: Native database assertion of an in-vitro inhibitor of the purified-enzyme activity, citing
+    Wolgel and Lipscomb 1990. Concentration and inhibition mechanism are not given in the structured object;
+    no physiological regulatory role or metal requirement is inferred. Chemical ionization follows the
+    source-normalized compound, not measured assay protonation.
+  evidence:
+  - reference_id: MetaCyc:REG-12850
+    source_assertion: The native regulation object assigns mode minus to EDTA acting on ENZRXN-16910/CPLX-7915;
+      its citation is PMID:2280722 and mechanism is OTHER.
+    source_locator: /ptools-xml/Regulation/mode; regulator; regulated-entity; citation; mechanism
+- id: para-034
+  subject: CHEBI:25548
+  predicate: inhibits
+  object: MetaCyc:CPLX-7915
+  description: Native database assertion of an in-vitro inhibitor of the purified-enzyme activity, citing
+    Wolgel and Lipscomb 1990. Concentration and inhibition mechanism are not given in the structured object;
+    no physiological regulatory role or metal requirement is inferred. Chemical ionization follows the
+    source-normalized compound, not measured assay protonation.
+  evidence:
+  - reference_id: MetaCyc:REG-12851
+    source_assertion: The native regulation object assigns mode minus to CPD-10188 acting on ENZRXN-16910/CPLX-7915;
+      its citation is PMID:2280722 and mechanism is OTHER.
+    source_locator: /ptools-xml/Regulation/mode; regulator; regulated-entity; citation; mechanism
+- id: para-035
+  subject: MetaCyc:CPLX-7915
+  predicate: catalyzes
+  object: MetaCyc:RXN-10882
+  description: The native database model assigns protocatechuate 2,3-cleavage activity to CPLX-7915 with
+    native-host purified-protein evidence from 1990/1993. This is the curated historical enzyme assignment;
+    it does not directly establish that the historical 35.5-kDa subunit preparation had the complete 2009
+    C4TP01 sequence or that the recombinant construct had the same assembly.
+  evidence:
+  - reference_id: MetaCyc:ENZRXN-16910
+    source_assertion: ENZRXN-16910 assigns CPLX-7915 to RXN-10882. Separate EV-EXP-IDA-PURIFIED-PROTEIN-NH
+      evidence cites PMID:2280722 and PMID:8392511; the 2009 heterologous assay is not the basis of this
+      native-preparation claim.
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence[Evidence-Code/@frameid='EV-EXP-IDA-PURIFIED-PROTEIN-NH']
+- id: para-036
+  subject: UniProtKB:C4TP01
+  predicate: catalyzes
+  object: MetaCyc:RXN-10882
+  description: PraA recombinant crude-extract assay supports the initial ring cleavage. Its product subsequently
+    decarboxylates spontaneously; PraA is not assigned the separate decarboxylation reaction. Exact chemical
+    stereochemistry follows the native reaction and chemical objects.
+  evidence:
+  - reference_id: PMID:19717587
+    source_assertion: Figure 2A records the PCA substrate spectrum changing to a product peak at 350 nm
+      in the crude PraA assay; panel B records the later 350-to-375 nm change. The initial cleavage product
+      precedes spontaneous decarboxylation.
+    source_locator: PMC2795304 HTML figure#f2, panelsA–B and caption; source rasterfigure-2.jpg
+  - reference_id: MetaCyc:MONOMER-15106
+    source_assertion: The native protein object explicitly links MONOMER-15106 to UniProt C4TP01.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db='UNIPROT']
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Recombinant praA product from pETA23 (pET21a(+)) expressed in E. coli BL21(DE3) and assayed
+      as crude extract. Exact terminal sequence and tag state were not independently resolved from the
+      unavailable primer supplement.
+    evidence:
+    - reference_id: PMID:19717587
+      source_assertion: Table 1 identifies pETA23 as a pET21a(+) expression plasmid carrying praA; the
+        study uses BL21(DE3) for expression.
+      source_locator: PMC2795304 HTML section#t1, pETA23 and BL21(DE3) rows; section#sec6
+- id: para-037
+  subject: UniProtKB:C4TP08
+  predicate: catalyzes
+  object: MetaCyc:RXN-10883
+  description: PraH accelerates conversion of the unstable initial cleavage intermediate to hydroxymuconate
+    semialdehyde. Spontaneous conversion on a longer timescale remains supported; this edge does not claim
+    that the enzyme is strictly required for all conversion.
+  evidence:
+  - reference_id: PMID:19717587
+    quote: praH encodes 5CHMS decarboxylase
+    source_locator: PMC2795304 HTML section#sec21
+  - reference_id: MetaCyc:MONOMER-15107
+    source_assertion: The native protein object explicitly links MONOMER-15107 to UniProt C4TP08.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db='UNIPROT']
+  - reference_id: MetaCyc:ENZRXN-16911
+    source_assertion: The complete native enzymatic-reaction object assigns MONOMER-15107 to RXN-10883.
+      Heterologous-assay evidence includes PMID:19717587; primary construct details must remain on affected
+      assay endpoints.
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Recombinant PraH from pETH23 in E. coli BL21(DE3), assayed as crude extract. The selected
+      MYDVH start matches deposited C4TP08; it is not a demonstrated native truncation. Exact terminal
+      sequence and tag state remain unresolved.
+    evidence:
+    - reference_id: PMID:19717587
+      source_assertion: Table 1 identifies pETH23 as a pET21a(+) expression plasmid carrying praH; the
+        study uses BL21(DE3) for expression.
+      source_locator: PMC2795304 HTML section#t1, pETH23 and BL21(DE3) rows; section#sec6
+- id: para-038
+  subject: UniProtKB:C4TP02
+  predicate: catalyzes
+  object: RHEA:34220
+  description: PraB recombinant crude-extract assay supports NAD-dependent semialdehyde oxidation. NADP
+    also supports lower activity in the same study; neither reaction membership nor the selected NAD equation
+    establishes exclusive physiological coenzyme use.
+  evidence:
+  - reference_id: PMID:19717587
+    quote: praB encodes HMS dehydrogenase
+    source_locator: PMC2795304 HTML section#sec22
+  - reference_id: MetaCyc:MONOMER-15108
+    source_assertion: The native protein object explicitly links MONOMER-15108 to UniProt C4TP02.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db='UNIPROT']
+  - reference_id: MetaCyc:ENZRXN-16912
+    source_assertion: The complete native enzymatic-reaction object assigns MONOMER-15108 to RXN-8527.
+      Heterologous-assay evidence includes PMID:19717587; primary construct details must remain on affected
+      assay endpoints.
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Recombinant praB product from pETB23 (pET21a(+)) expressed in E. coli BL21(DE3) and assayed
+      as crude extract. Exact terminal sequence and tag state were not independently resolved from the
+      unavailable primer supplement.
+    evidence:
+    - reference_id: PMID:19717587
+      source_assertion: Table 1 identifies pETB23 as a pET21a(+) expression plasmid carrying praB; the
+        study uses BL21(DE3) for expression.
+      source_locator: PMC2795304 HTML section#t1, pETB23 and BL21(DE3) rows; section#sec6
+- id: para-039
+  subject: UniProtKB:C4TP07
+  predicate: catalyzes
+  object: RHEA:33432
+  description: PraC accelerates hydroxymuconate tautomerization. The native reaction is reversible and
+    its comment also describes slow aqueous conversion; the pathway selects the forward flux. The exact
+    Rhea equation is 33432; the native 32214 cross-reference has different stereoisomers.
+  evidence:
+  - reference_id: PMID:19717587
+    quote: tautomerization catalyzed by PraC
+    source_locator: PMC2795304 HTML section#sec22
+  - reference_id: MetaCyc:MONOMER-15109
+    source_assertion: The native protein object explicitly links MONOMER-15109 to UniProt C4TP07.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db='UNIPROT']
+  - reference_id: MetaCyc:ENZRXN-16913
+    source_assertion: The complete native enzymatic-reaction object assigns MONOMER-15109 to RXN-8529.
+      Heterologous-assay evidence includes PMID:19717587; primary construct details must remain on affected
+      assay endpoints.
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Recombinant praC product from pETC23 (pET21a(+)) expressed in E. coli BL21(DE3) and assayed
+      as crude extract. Exact terminal sequence and tag state were not independently resolved from the
+      unavailable primer supplement.
+    evidence:
+    - reference_id: PMID:19717587
+      source_assertion: Table 1 identifies pETC23 as a pET21a(+) expression plasmid carrying praC; the
+        study uses BL21(DE3) for expression.
+      source_locator: PMC2795304 HTML section#t1, pETC23 and BL21(DE3) rows; section#sec6
+- id: para-040
+  subject: UniProtKB:C4TP06
+  predicate: catalyzes
+  object: MetaCyc:4.1.1.77-RXN
+  description: PraD recombinant crude-extract assay supports oxalocrotonate decarboxylation to hydroxypentadienoate.
+    The assay included 500 micromolar MgSO4, which alone does not prove a physiological magnesium requirement.
+    The enol product is preserved, rather than substituted by its keto tautomer.
+  evidence:
+  - reference_id: PMID:19717587
+    quote: decarboxylation of OCA to produce HPD
+    source_locator: PMC2795304 HTML section#sec22
+  - reference_id: MetaCyc:MONOMER-15110
+    source_assertion: The native protein object explicitly links MONOMER-15110 to UniProt C4TP06.
+    source_locator: /ptools-xml/Protein/dblink[dblink-db='UNIPROT']
+  - reference_id: MetaCyc:ENZRXN-16914
+    source_assertion: The complete native enzymatic-reaction object assigns MONOMER-15110 to 4.1.1.77-RXN.
+      Heterologous-assay evidence includes PMID:19717587; primary construct details must remain on affected
+      assay endpoints.
+    source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Recombinant praD product from pC4D23 (pColdIV) expressed in E. coli BL21(DE3) and assayed
+      as crude extract. Exact terminal sequence and tag state were not independently resolved from the
+      unavailable primer supplement.
+    evidence:
+    - reference_id: PMID:19717587
+      source_assertion: Table 1 identifies pC4D23 as a pColdIV expression plasmid carrying praD; the study
+        uses BL21(DE3) for expression.
+      source_locator: PMC2795304 HTML section#t1, pC4D23 and BL21(DE3) rows; section#sec6
+- subject: UniProtKB:C4TP02
+  predicate: has_cofactor
+  object: CHEBI:57540
+  description: Recombinant crude PraB uses NAD+ in the HMS dehydrogenase assay (1.19±0.07U/mg). NADP+
+    also supports activity at approximately one-eleventh this rate, so this is preference rather than
+    exclusivity. Chemical ionization is the curated ChEBI normalization, not measured assay protonation.
+  evidence:
+  - reference_id: PMID:19717587
+    quote: in the presence of NAD+
+    source_locator: PMC2795304 HTML section#sec22, second paragraph, comparative HMS dehydrogenase activities
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Recombinant praB product from pETB23 (pET21a(+)) expressed in E. coli BL21(DE3) and assayed
+      as crude extract. Exact terminal sequence and tag state were not independently resolved from the
+      unavailable primer supplement.
+    evidence:
+    - reference_id: PMID:19717587
+      source_assertion: Table 1 identifies pETB23 as a pET21a(+) expression plasmid carrying praB; the
+        study uses BL21(DE3) for expression.
+      source_locator: PMC2795304 HTML section#t1, pETB23 and BL21(DE3) rows; section#sec6
+  id: para-041
+- subject: UniProtKB:C4TP02
+  predicate: has_cofactor
+  object: CHEBI:58349
+  description: Recombinant crude PraB supports a lower HMS dehydrogenase activity with NADP+ (0.113±0.009U/mg)
+    than with NAD+ (1.19±0.07U/mg). This in-vitro alternative does not establish the dominant physiological
+    coenzyme. Chemical ionization is the curated ChEBI normalization, not measured assay protonation.
+  evidence:
+  - reference_id: PMID:19717587
+    quote: with NADP+
+    source_locator: PMC2795304 HTML section#sec22, second paragraph, comparative HMS dehydrogenase activities
+  endpoint_qualifiers:
+  - endpoint: subject
+    kind: experimental_construct
+    description: Recombinant praB product from pETB23 (pET21a(+)) expressed in E. coli BL21(DE3) and assayed
+      as crude extract. Exact terminal sequence and tag state were not independently resolved from the
+      unavailable primer supplement.
+    evidence:
+    - reference_id: PMID:19717587
+      source_assertion: Table 1 identifies pETB23 as a pET21a(+) expression plasmid carrying praB; the
+        study uses BL21(DE3) for expression.
+      source_locator: PMC2795304 HTML section#t1, pETB23 and BL21(DE3) rows; section#sec6
+  id: para-042
+- id: para-043
+  subject: CHEBI:16240
+  predicate: inhibits
+  object: MetaCyc:CPLX-7915
+  description: The 1993 abstract reports in-vitro inactivation of purified native JJ1b protocatechuate
+    2,3-dioxygenase by hydrogen peroxide among Fe2+-oxidizing reagents. This is an assay perturbation
+    of the historical native preparation, not physiological regulation or a 2009 recombinant-sequence
+    claim. No dose or exact damaged-site occupancy is asserted.
+  evidence:
+  - reference_id: PMID:8392511
+    quote: enzyme was inactivated
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: PMID:8392511
+    quote: H2O2
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: MetaCyc:CPLX-7915
+    source_assertion: The native complex annotation describes purification from JJ-1b and a later native
+      homotetramer characterization citing PMID:8392511; this maps the historical preparation to CPLX-7915
+      without proving its complete 2009 protein sequence.
+    source_locator: /ptools-xml/Protein[@frameid="CPLX-7915"]/comment
+- id: para-044
+  subject: CHEBI:22651
+  predicate: activates
+  object: MetaCyc:CPLX-7915
+  description: Ascorbate restores activity to the historical purified native enzyme after oxidative inactivation,
+    including the reported hydrogen peroxide treatment. The abstract attributes recovery to reduction
+    of the iron. This edge claims recovery of the qualified inactive preparation, not stimulation of untreated
+    enzyme; stereochemistry of the ascorbate reagent is not specified.
+  evidence:
+  - reference_id: PMID:8392511
+    quote: full activity was restored
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: PMID:8392511
+    quote: by ascorbate
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: MetaCyc:CPLX-7915
+    source_assertion: The native complex annotation describes purification from JJ-1b and a later native
+      homotetramer characterization citing PMID:8392511; this maps the historical preparation to CPLX-7915
+      without proving its complete 2009 protein sequence.
+    source_locator: /ptools-xml/Protein[@frameid="CPLX-7915"]/comment
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: molecular_state
+    description: Historical purified native JJ1b 2,3-PCD after inactivation by hydrogen peroxide, as described
+      among the oxidizing treatments in the 1993 abstract. This qualifier restricts the recovery claim
+      to inactive enzyme; the source does not resolve damage sites, metal-state occupancy, dose or a separate
+      treatment-specific recovery protocol.
+    evidence:
+    - reference_id: PMID:8392511
+      quote: inactivated
+      source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+        beginning The enzyme was inactivated
+    - reference_id: MetaCyc:CPLX-7915
+      source_assertion: The native complex annotation describes purification from JJ-1b and a later native
+        homotetramer characterization citing PMID:8392511; this maps the historical preparation to CPLX-7915
+        without proving its complete 2009 protein sequence.
+      source_locator: /ptools-xml/Protein[@frameid="CPLX-7915"]/comment
+- id: para-045
+  subject: CHEBI:30060
+  predicate: inhibits
+  object: MetaCyc:CPLX-7915
+  description: The 1993 abstract reports in-vitro inactivation of purified native JJ1b protocatechuate
+    2,3-dioxygenase by potassium ferricyanide among Fe2+-oxidizing reagents. This is an assay perturbation
+    of the historical native preparation, not physiological regulation or a 2009 recombinant-sequence
+    claim. No dose or exact damaged-site occupancy is asserted.
+  evidence:
+  - reference_id: PMID:8392511
+    quote: enzyme was inactivated
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: PMID:8392511
+    quote: K3FE(CN)6
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: MetaCyc:CPLX-7915
+    source_assertion: The native complex annotation describes purification from JJ-1b and a later native
+      homotetramer characterization citing PMID:8392511; this maps the historical preparation to CPLX-7915
+      without proving its complete 2009 protein sequence.
+    source_locator: /ptools-xml/Protein[@frameid="CPLX-7915"]/comment
+- id: para-046
+  subject: CHEBI:22651
+  predicate: activates
+  object: MetaCyc:CPLX-7915
+  description: Ascorbate restores activity to the historical purified native enzyme after oxidative inactivation,
+    including the reported potassium ferricyanide treatment. The abstract attributes recovery to reduction
+    of the iron. This edge claims recovery of the qualified inactive preparation, not stimulation of untreated
+    enzyme; stereochemistry of the ascorbate reagent is not specified.
+  evidence:
+  - reference_id: PMID:8392511
+    quote: full activity was restored
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: PMID:8392511
+    quote: by ascorbate
+    source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+      beginning The enzyme was inactivated
+  - reference_id: MetaCyc:CPLX-7915
+    source_assertion: The native complex annotation describes purification from JJ-1b and a later native
+      homotetramer characterization citing PMID:8392511; this maps the historical preparation to CPLX-7915
+      without proving its complete 2009 protein sequence.
+    source_locator: /ptools-xml/Protein[@frameid="CPLX-7915"]/comment
+  endpoint_qualifiers:
+  - endpoint: object
+    kind: molecular_state
+    description: Historical purified native JJ1b 2,3-PCD after inactivation by potassium ferricyanide,
+      as described among the oxidizing treatments in the 1993 abstract. This qualifier restricts the recovery
+      claim to inactive enzyme; the source does not resolve damage sites, metal-state occupancy, dose
+      or a separate treatment-specific recovery protocol.
+    evidence:
+    - reference_id: PMID:8392511
+      quote: inactivated
+      source_locator: PubmedArticleSet/PubmedArticle/MedlineCitation/Article/Abstract/AbstractText; sentence
+        beginning The enzyme was inactivated
+    - reference_id: MetaCyc:CPLX-7915
+      source_assertion: The native complex annotation describes purification from JJ-1b and a later native
+        homotetramer characterization citing PMID:8392511; this maps the historical preparation to CPLX-7915
+        without proving its complete 2009 protein sequence.
+      source_locator: /ptools-xml/Protein[@frameid="CPLX-7915"]/comment
+references:
+- id: MetaCyc:PWY-6336
+  title: MetaCyc protocatechuate degradation III definition
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:PWY-6336
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 422f097c2153f73b3f40c3dbe5430de2db54a60f4e4eee574fc9c5be6f1f4e5b
+- id: MetaCyc:RXN-10882
+  title: MetaCyc:RXN-10882 complete native source object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ARXN-10882
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 9fa63566a2efc9d005a958471f2ccdf8b7b0e9fd2951ac0f6550e62a30cad393
+- id: MetaCyc:RXN-10883
+  title: MetaCyc:RXN-10883 complete native source object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ARXN-10883
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: e636f5ee6604b902b9ec04c115e92e106091bcf4630aa523fe820d9fe027f485
+- id: MetaCyc:RXN-8527
+  title: MetaCyc:RXN-8527 complete native source object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ARXN-8527
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 9c74c81f157a70532a1b501f16ff72946247c36c1e32b3f73166f2f0ca37ff27
+- id: RHEA:34220
+  title: RHEA:34220 complete directional equation and participant sides
+  url: https://www.rhea-db.org/rhea/34220
+  source_version: Rhea 142; digest binds complete RDF gzip; aggregate descriptions by URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:RXN-8529
+  title: MetaCyc:RXN-8529 complete native source object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ARXN-8529
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 96c75414c1254d671dce876bbaec63c6107e1d516e5598bfa56eb66f6f64acda
+- id: RHEA:33432
+  title: RHEA:33432 complete directional equation and participant sides
+  url: https://www.rhea-db.org/rhea/33432
+  source_version: Rhea 142; digest binds complete RDF gzip; aggregate descriptions by URI
+  source_sha256: 8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf
+- id: MetaCyc:4.1.1.77-RXN
+  title: MetaCyc:4.1.1.77-RXN complete native source object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3A4.1.1.77-RXN
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 3700e95f1953325d678bc6c1ed983fbf69d083e623a6676e4d35dac1742242d7
+- id: MetaCyc:PWY-5162
+  title: MetaCyc 2-hydroxypenta-2,4-dienoate degradation definition
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3APWY-5162
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 267048b17a4e31be301718597cebe9ec75f508fa606f53885bcf9f8a985f5bea
+- id: MetaCyc:2-OXOPENT-4-ENOATE-HYDRATASE-RXN
+  title: MetaCyc:2-OXOPENT-4-ENOATE-HYDRATASE-RXN complete native source object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3A2-OXOPENT-4-ENOATE-HYDRATASE-RXN
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 50ff954c6928539a557ad2d12bf05ecf5bbb89ae67edba4e6d90300a08e50076
+- id: MetaCyc:CPLX-7915
+  title: MetaCyc native CPLX-7915 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ACPLX-7915
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: b59e3690439c48be245824acaa0b4f183c4859b279abe1886d5ed622b2a65fb7
+- id: MetaCyc:MONOMER-15106
+  title: MetaCyc native MONOMER-15106 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AMONOMER-15106
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: fb9e16d74b0ad40fb29e705780e0601dc70702efd72e208bc11a98ca51b291ff
+- id: MetaCyc:ENZRXN-16910
+  title: MetaCyc native ENZRXN-16910 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16910
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: 88b90b489865fc0c83961ff353bdca65baccf3d0a200e5e407c493ae1f89dbab
+- id: MetaCyc:REG-12850
+  title: MetaCyc native REG-12850 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AREG-12850
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: 672a60400199a7e3d8b23b27ad20bd6cb5ba4d0bb9522a484f40cf4a6f2d13fc
+- id: MetaCyc:REG-12851
+  title: MetaCyc native REG-12851 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AREG-12851
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: dc85fb9a24b9ab8e4981fa8adecb3cd3c3af5d83f45e9ffc81aaaa2d8b3163ab
+- id: MetaCyc:ENZRXN-16911
+  title: MetaCyc native ENZRXN-16911 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16911
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: 7f8a0380c9ca17a717ed2bf00c7e5764c1f2ead95fe35d146080ee2f30d50b9f
+- id: MetaCyc:ENZRXN-16912
+  title: MetaCyc native ENZRXN-16912 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16912
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: f86194778d83ca46f3889ffedf3b82adfcb205e6319a555cfcd4c6ace74c6c06
+- id: MetaCyc:ENZRXN-16913
+  title: MetaCyc native ENZRXN-16913 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16913
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: 9d31b6a99d9bc6a50f6556854b2fdb695eeb49c98003b98473d0109181121254
+- id: MetaCyc:ENZRXN-16914
+  title: MetaCyc native ENZRXN-16914 object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16914
+  source_version: MetaCyc 27.0; complete source XML
+  source_sha256: 59eaf1addeefd80d9ab7284f024e1bf778dd7373711ccf78ece94b97ae376044
+- id: UniProtKB:C4TP01
+  title: 'UniProt C4TP01: Protocatechuate 2,3-dioxygenase'
+  url: https://rest.uniprot.org/uniprotkb/C4TP01.json
+  source_version: Unreviewed TrEMBL entry; entry version 38, sequence version 1; retrieved 2026-10-14
+  source_sha256: 13757b072bfd6e60c9893d130e5da123e811d5d34c98b5789a0a350e38feb6b0
+- id: UniProtKB:C4TP08
+  title: 'UniProt C4TP08: 5-carboxy-2-hydroxymuconate-6-semialdehyde decarboxylase'
+  url: https://rest.uniprot.org/uniprotkb/C4TP08.json
+  source_version: Unreviewed TrEMBL entry; entry version 49, sequence version 1; retrieved 2026-10-14
+  source_sha256: 722b376714b047826a587dbcff856ed113d842c83192580e421de54d14a25371
+- id: MetaCyc:MONOMER-15107
+  title: MetaCyc native MONOMER-15107 protein object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AMONOMER-15107
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 97b2b1b73852ab8a3ad1534a6fe67f1c53b2c5d9efaa0e2cd49bf4ea76a505db
+- id: UniProtKB:C4TP02
+  title: 'UniProt C4TP02: 2-hydroxymuconate-6-semialdehyde dehydrogenase'
+  url: https://rest.uniprot.org/uniprotkb/C4TP02.json
+  source_version: Unreviewed TrEMBL entry; entry version 53, sequence version 1; retrieved 2026-10-14
+  source_sha256: e8206fc1280a14c7ea87a9f089c8cb34f9d76a38e15f5dde4076f7b0d2b05c58
+- id: MetaCyc:MONOMER-15108
+  title: MetaCyc native MONOMER-15108 protein object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AMONOMER-15108
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 55063f79833d1904403f0c10dbc502f32227c6a4f89eaf59cffb189e70085e66
+- id: UniProtKB:C4TP07
+  title: 'UniProt C4TP07: Tautomerase'
+  url: https://rest.uniprot.org/uniprotkb/C4TP07.json
+  source_version: Unreviewed TrEMBL entry; entry version 46, sequence version 1; retrieved 2026-10-14
+  source_sha256: 0f5f602aa0743d5d5424d2d0accc0729a9ee98cc305e16ab49cb5caf37dca6b9
+- id: MetaCyc:MONOMER-15109
+  title: MetaCyc native MONOMER-15109 protein object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AMONOMER-15109
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: f1abccee5302758d4ef00dfaf00516057bea29f2ca18db81c4371957309834f5
+- id: UniProtKB:C4TP06
+  title: 'UniProt C4TP06: 4-oxalocrotonate decarboxylase'
+  url: https://rest.uniprot.org/uniprotkb/C4TP06.json
+  source_version: Unreviewed TrEMBL entry; entry version 39, sequence version 1; retrieved 2026-10-14
+  source_sha256: 51fb1ceecac56e9c3589df9219d678abd99bf3186b543777bcafce17d00747b0
+- id: MetaCyc:MONOMER-15110
+  title: MetaCyc native MONOMER-15110 protein object
+  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AMONOMER-15110
+  source_version: MetaCyc 27.0; complete native XML object
+  source_sha256: 063147b0a1db6e2758178da262911af7e949554d7c5c8633d30ca2651f44af6a
+- id: PMID:19717587
+  title: Uncovering the Protocatechuate 2,3-Cleavage Pathway Genes.
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC2795304/?pdf=render
+  source_version: 2009 article; digest binds complete PMC HTML; all eight main figure rasters inspected
+    separately; supplement unavailable
+  source_sha256: 73d8f20f4d2502b2f69e205f1867056493598ad72993dab0e410bd9bd573a7c2
+- id: PMID:8392511
+  title: 'Purification and characterization of protocatechuate 2,3-dioxygenase from Bacillus macerans:
+    a new extradiol catecholic dioxygenase.'
+  url: https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=8392511&retmode=xml
+  source_version: PubMed record retrieved 2026-10-14; abstract inspected, full article not retrieved
+  source_sha256: cf039adc4ce83fd8aef5b6d651c9a5b88ae695140c4d8e956389b76cecfa0bd1

@@ -1,0 +1,44 @@
+from pathlib import Path
+import json,hashlib,datetime,xml.etree.ElementTree as E,re,sqlite3
+from collections import Counter
+D=Path(__file__).parent;O=D/'originals';A=Path('/private/tmp/pathwaymech-curation-authorities');R=Path('/private/tmp/pathwaymech-next-252-20261014')
+c=json.loads((D/'chemical-identity-closure.json').read_text());chem=c['chemicals'];rdf=json.loads((D/'rhea-original-projection.json').read_text());nodes=rdf['nodes'];rh='http://rdf.rhea-db.org/';cs=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True);rs=sqlite3.connect('file:'+str(A/'rhea.db')+'?mode=ro',uri=True)
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+def chebi(id):return {p:o or v for p,o,v in cs.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(id,))}
+def sides(rid):
+ n=nodes[rh+rid];out={}
+ for side in ['substrates','products']:
+  su=n[side][0];out[side]=[]
+  for pred,vals in nodes[su].items():
+   if not re.fullmatch('contains[0-9]+',pred):continue
+   for pu in vals:
+    cu=nodes[pu]['compound'][0];cp=nodes[cu];out[side].append({'id':cp['accession'][0],'coefficient':int(pred[8:]),'formula':cp['formula'][0],'charge':int(cp['charge'][0]),'traversal':[rh+rid+' rh:'+side+' '+su,su+' rh:'+pred+' '+pu,pu+' rh:compound '+cu,cu+' rh:chebi '+cp['chebi'][0]]})
+ return out
+pp=Path('/private/tmp/pathwaymech-next-251-preflight-20261014/originals/META-PWY-6336.xml');pf=E.parse(pp).getroot().find('Pathway');plan=[('RXN-10882',None),('RXN-10883',None),('RXN-8527','34220'),('RXN-8529','33432'),('4.1.1.77-RXN',None)];rxns=[]
+for frame,rid in plan:
+ p=O/('META-'+frame+'.xml');n=E.parse(p).getroot().find('Reaction');lay=next(x for x in pf.findall('reaction-layout')if x.find('Reaction').get('frameid')==frame);assert lay.findtext('direction')=='L2R';selected={};totals={}
+ for side,k in [('substrates','left'),('products','right')]:
+  selected[side]=[];total=Counter({'charge':0})
+  for x in n.findall(k):
+   f=x.find('Compound').get('frameid');num=int(x.findtext('coefficient','1'));ch=chem[f];loc="/ptools-xml/Reaction[@frameid='"+frame+"']/"+k+"[Compound/@frameid='"+f+"']"
+   selected[side].append({'native_frame':f,'id':ch['recommended_id'],'coefficient':num,'source_locator':loc,'coefficient_source':loc+'/coefficient'if num!=1 else 'one native occurrence; no non-unit coefficient'})
+   total['charge']+=ch['charge']*num
+   for a,b in re.findall(r'([A-Z][a-z]?)([0-9]*)',ch['formula']):total[a]+=int(b or 1)*num
+  totals[side]=dict(total)
+ assert totals['substrates']==totals['products']
+ row={'native_id':'MetaCyc:'+frame,'recommended_id':'RHEA:'+rid if rid else 'MetaCyc:'+frame,'direction':'left_to_right','native_direction':n.findtext('reaction-direction'),'native_spontaneous':n.findtext('spontaneous'),'source':bind(p),'native_xrefs':[{'db':x.findtext('dblink-db'),'id':x.findtext('dblink-oid')}for x in n.findall('dblink')],'selected_sides':selected,'verified_element_charge_totals':totals,'balanced':True,'pathway_membership_locator':"/ptools-xml/Pathway/reaction-list/Reaction[@frameid='"+frame+"']",'pathway_layout_locator':"/ptools-xml/Pathway/reaction-layout[Reaction/@frameid='"+frame+"']"}
+ if rid:
+  ss=sides(rid);assert all(sorted((x['id'],x['coefficient'])for x in selected[k])==sorted((x['id'],x['coefficient'])for x in ss[k])for k in ss)
+  for k in ss:
+   for x in ss[k]:
+    ch=chebi(x['id']);assert x['formula']==ch['chemrof:generalized_empirical_formula'] and x['charge']==int(ch['chemrof:charge'])
+  label=rs.execute("select value from statements where subject=? and predicate='rdfs:label'",('RHEA:'+rid,)).fetchone()[0];assert label==nodes[rh+rid]['label'][0]
+  row.update(rhea_sides=ss,rhea_equation=nodes[rh+rid]['equation'][0],rhea_label=label,exact_rhea_mapping=True)
+ rxns.append(row)
+# Explicitly reject the native crossrefs whose complete compounds differ.
+wrong_tauto=sides('32212');wrong_decarb=sides('24261')
+reject=[{'native_id':'MetaCyc:RXN-8529','rejected_xref':'RHEA:32214','compared_forward':'RHEA:32212','rhea_sides':wrong_tauto,'rhea_compounds':{x['id']:chebi(x['id'])for v in wrong_tauto.values()for x in v},'reason':'Both Rhea32211-family structures are different stereoisomers from the explicit native substrate CHEBI28080 and productCHEBI64908. Use independently exact RHEA33432.'},{'native_id':'MetaCyc:4.1.1.77-RXN','rejected_xref':'RHEA:24261','rhea_sides':wrong_decarb,'rhea_compounds':{x['id']:chebi(x['id'])for v in wrong_decarb.values()for x in v},'reason':'Rhea24261 produces keto CHEBI11641; native member produces enol CHEBI67152. InChI tautomer normalization can obscure this difference, so explicit bond/chemical class and issuing structural definitions are retained; no exact replacement.'}]
+joins=[{'from':rxns[i]['recommended_id'],'to':rxns[i+1]['recommended_id'],'id':chem[f]['recommended_id'],'native_frame':f,'full_inchi':chem[f]['native_full_inchi']}for i,f in enumerate(['CPD-14966','HYDROXYMUCONATE-SALD','CPD-13339','CPD-8742'])]
+out={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Author-support complete native five-member pathway chemistry; not independent review.','pathway_source':bind(pp),'pathway_members':[x.get('frameid')for x in pf.findall('reaction-list/Reaction')],'reactions':rxns,'material_joins':joins,'rejected_crossrefs':reject,'calculated_net_equation':'protocatechuate(-1) + O2 + H2O + NAD(-1) -> (2Z)-2-hydroxypenta-2,4-dienoate(-1) + 2 CO2 + NADH(-2) + H(+)','net_equation_scope':'Calculated sum only; not an extra elementary reaction.','all_native_members_and_sides_closed':True,'rhea_original':rdf['original'],'authority_sql_scope':'Pinned ChEBI255/Rhea139 source bindings maintained by root; SQL opened read-only; original Rhea142 RDF independently hashed in projection.'}
+(D/'reaction-identity-closure.json').write_text(json.dumps(out,indent=2)+'\n')
+print('All5complete native reactions balanced;2exact Rhea replacements;2native crossrefs rejected explicitly.')

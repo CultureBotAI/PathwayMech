@@ -1,0 +1,18 @@
+import json
+from pathlib import Path
+p=Path('/private/tmp/pathwaymech-next-252-primary/proposed-evidence-qualifiers.json');j=json.loads(p.read_text())
+a=next(x for x in j['proposals'] if x['gene']=='praA')
+a['evidence']={'reference_id':'PMID:19717587','source_assertion':'Figure 2A records the PCA substrate spectrum changing to a product peak at350nm in the crude PraA assay; panel B records the later350-to-375nm change. The initial cleavage product precedes spontaneous decarboxylation.','source_locator':'PMC2795304 HTML figure#f2, panelsA–B and caption; source rasterfigure-2.jpg'}
+b=next(x for x in j['proposals'] if x['gene']=='praB')
+j['cofactor_proposals']=[]
+for chem,label,quote,desc in [('CHEBI:57540','NAD(1-)','in the presence of NAD+','Recombinant crude PraB uses NAD+ in the HMS dehydrogenase assay (1.19±0.07U/mg). NADP+ also supports activity at approximately one-eleventh this rate, so this is preference rather than exclusivity.'),('CHEBI:58349','NADP(3-)','with NADP+','Recombinant crude PraB supports a lower HMS dehydrogenase activity with NADP+ (0.113±0.009U/mg) than with NAD+ (1.19±0.07U/mg). This in-vitro alternative does not establish the dominant physiological coenzyme.')]:
+ j['cofactor_proposals'].append({'subject':'UniProtKB:C4TP02','predicate':'has_cofactor','object':chem,'object_label':label,'description':desc,'evidence':[{'reference_id':'PMID:19717587','quote':quote,'source_locator':'PMC2795304 HTML section#sec22, second paragraph, comparative HMS dehydrogenase activities'}],'endpoint_qualifiers':[b['endpoint_qualifier']]})
+quotes=[]
+for x in j['proposals']:
+ if 'quote'in x['evidence']:quotes.append(x['evidence']['quote'])
+for x in j['cofactor_proposals']:quotes.extend(z['quote']for z in x['evidence']if'quote'in z)
+j['primary2009_quote_words']=sum(len(x.split())for x in quotes)
+j['quote_accounting']={'strings':quotes,'total_words':j['primary2009_quote_words'],'counts_repeated_quotations_per_occurrence':True,'A_catalysis':'Structured Figure2 data assertion replaced4word narrative quotation to reserve7words for NAD/NADP evidence.'}
+assert j['primary2009_quote_words']==25
+p.write_text(json.dumps(j,indent=2)+'\n')
+print(j['quote_accounting'])

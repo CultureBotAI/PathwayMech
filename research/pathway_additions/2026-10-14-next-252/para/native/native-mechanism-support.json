@@ -1,0 +1,289 @@
+{
+  "scope": "Author-support native assembly/cofactor/inhibition and catalyst evidence, not independent review.",
+  "participants": [
+    {
+      "id": "MetaCyc:CPLX-7915",
+      "label": "protocatechuate 2,3-dioxygenase",
+      "category": "complex"
+    },
+    {
+      "id": "CHEBI:29033",
+      "label": "iron(2+)",
+      "category": "cofactor"
+    },
+    {
+      "id": "CHEBI:64755",
+      "label": "EDTA(2-)",
+      "category": "small_molecule"
+    },
+    {
+      "id": "CHEBI:25548",
+      "label": "nitrilotriacetate(3-)",
+      "category": "small_molecule"
+    }
+  ],
+  "mechanistic_edges": [
+    {
+      "id": "pca23-native-assembly",
+      "subject": "MetaCyc:CPLX-7915",
+      "predicate": "has_part",
+      "object": "UniProtKB:C4TP01",
+      "description": "Native MetaCyc complex model has four PraA subunits. Historical native enzyme was reported tetrameric, but its 35.5-kDa subunit estimate differs from the 266-aa recombinant sequence; this does not establish exact sequence identity of the historical preparation or measure oligomerization of the 2009 recombinant construct.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:CPLX-7915",
+          "source_assertion": "The native complex component is MONOMER-15106 with coefficient4.",
+          "source_locator": "/ptools-xml/Protein/component[Protein/@frameid='MONOMER-15106']/coefficient"
+        },
+        {
+          "reference_id": "MetaCyc:MONOMER-15106",
+          "source_assertion": "MONOMER-15106 is explicitly unified to UniProt C4TP01.",
+          "source_locator": "/ptools-xml/Protein/dblink[dblink-db='UNIPROT']"
+        }
+      ]
+    },
+    {
+      "id": "pca23-native-iron",
+      "subject": "MetaCyc:CPLX-7915",
+      "predicate": "has_cofactor",
+      "object": "CHEBI:29033",
+      "description": "Fe2+ is a source-supported cofactor of the historical native protocatechuate 2,3-dioxygenase, reported at one atom per subunit. The native database associates this property with CPLX-7915; the 2009 recombinant assembly and its metal occupancy were not measured by this evidence.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:ENZRXN-16910",
+          "source_assertion": "ENZRXN-16910 lists FE+2 as a cofactor, cites PMID8392511, and identifies CPLX-7915 as its enzyme.",
+          "source_locator": "/ptools-xml/Enzymatic-Reaction/cofactor; enzyme"
+        },
+        {
+          "reference_id": "MetaCyc:CPLX-7915",
+          "source_assertion": "The native annotation reports Fe2+ dependence and one iron atom per monomer, citing the 1993 characterization.",
+          "source_locator": "/ptools-xml/Protein/comment"
+        }
+      ]
+    },
+    {
+      "id": "pca23-native-reg-12850",
+      "subject": "CHEBI:64755",
+      "predicate": "inhibits",
+      "object": "MetaCyc:CPLX-7915",
+      "description": "Native database assertion of an in-vitro inhibitor of the purified-enzyme activity, citing Wolgel and Lipscomb1990. Concentration and inhibition mechanism are not given in the structured object; no physiological regulatory role or metal requirement is inferred. Chemical ionization follows the source-normalized compound, not measured assay protonation.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:REG-12850",
+          "source_assertion": "The native regulation object assigns mode minus to EDTA acting on ENZRXN-16910/CPLX-7915; its citation is PMID2280722 and mechanism is OTHER.",
+          "source_locator": "/ptools-xml/Regulation/mode; regulator; regulated-entity; citation; mechanism"
+        }
+      ]
+    },
+    {
+      "id": "pca23-native-reg-12851",
+      "subject": "CHEBI:25548",
+      "predicate": "inhibits",
+      "object": "MetaCyc:CPLX-7915",
+      "description": "Native database assertion of an in-vitro inhibitor of the purified-enzyme activity, citing Wolgel and Lipscomb1990. Concentration and inhibition mechanism are not given in the structured object; no physiological regulatory role or metal requirement is inferred. Chemical ionization follows the source-normalized compound, not measured assay protonation.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:REG-12851",
+          "source_assertion": "The native regulation object assigns mode minus to CPD-10188 acting on ENZRXN-16910/CPLX-7915; its citation is PMID2280722 and mechanism is OTHER.",
+          "source_locator": "/ptools-xml/Regulation/mode; regulator; regulated-entity; citation; mechanism"
+        }
+      ]
+    },
+    {
+      "id": "pca23-native-catalysis",
+      "subject": "MetaCyc:CPLX-7915",
+      "predicate": "catalyzes",
+      "object": "MetaCyc:RXN-10882",
+      "description": "The native database model assigns protocatechuate 2,3-cleavage activity to CPLX-7915 with native-host purified-protein evidence from 1990/1993. This is the curated historical enzyme assignment; it does not directly establish that the historical 35.5-kDa subunit preparation had the complete 2009 C4TP01 sequence or that the recombinant construct had the same assembly.",
+      "evidence": [
+        {
+          "reference_id": "MetaCyc:ENZRXN-16910",
+          "source_assertion": "ENZRXN-16910 assigns CPLX-7915 to RXN-10882. Separate EV-EXP-IDA-PURIFIED-PROTEIN-NH evidence cites PMID2280722 and PMID8392511; the 2009 heterologous assay is not the basis of this native-preparation claim.",
+          "source_locator": "/ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence[Evidence-Code/@frameid='EV-EXP-IDA-PURIFIED-PROTEIN-NH']"
+        }
+      ]
+    }
+  ],
+  "catalyst_support": [
+    {
+      "native_enzyme": "CPLX-7915",
+      "reaction": "MetaCyc:RXN-10882",
+      "native_reaction": "RXN-10882",
+      "evidence_codes": [
+        "EV-EXP-IDA-UNPURIFIED-PROTEIN-HH",
+        "EV-EXP-IDA-PART-PURIFIED-PROTEIN-NH",
+        "EV-EXP-IDA-PURIFIED-PROTEIN-NH",
+        "EV-EXP-IDA-PURIFIED-PROTEIN-NH"
+      ],
+      "taxa": [
+        "TAX-649508"
+      ],
+      "evidence": {
+        "reference_id": "MetaCyc:ENZRXN-16910",
+        "source_assertion": "The complete native enzymatic-reaction object assigns CPLX-7915 to RXN-10882. Heterologous-assay evidence includes PMID19717587; primary construct details must remain on affected assay endpoints.",
+        "source_locator": "/ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence"
+      },
+      "integration": "Add this source assertion beside independently inspected primary construct evidence; do not create an unqualified duplicate assay edge."
+    },
+    {
+      "native_enzyme": "MONOMER-15107",
+      "reaction": "MetaCyc:RXN-10883",
+      "native_reaction": "RXN-10883",
+      "evidence_codes": [
+        "EV-EXP-IDA-UNPURIFIED-PROTEIN-HH"
+      ],
+      "taxa": [
+        "TAX-649508"
+      ],
+      "evidence": {
+        "reference_id": "MetaCyc:ENZRXN-16911",
+        "source_assertion": "The complete native enzymatic-reaction object assigns MONOMER-15107 to RXN-10883. Heterologous-assay evidence includes PMID19717587; primary construct details must remain on affected assay endpoints.",
+        "source_locator": "/ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence"
+      },
+      "integration": "Add this source assertion beside independently inspected primary construct evidence; do not create an unqualified duplicate assay edge."
+    },
+    {
+      "native_enzyme": "MONOMER-15108",
+      "reaction": "RHEA:34220",
+      "native_reaction": "RXN-8527",
+      "evidence_codes": [
+        "EV-EXP-IDA-UNPURIFIED-PROTEIN-HH"
+      ],
+      "taxa": [
+        "TAX-649508"
+      ],
+      "evidence": {
+        "reference_id": "MetaCyc:ENZRXN-16912",
+        "source_assertion": "The complete native enzymatic-reaction object assigns MONOMER-15108 to RXN-8527. Heterologous-assay evidence includes PMID19717587; primary construct details must remain on affected assay endpoints.",
+        "source_locator": "/ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence"
+      },
+      "integration": "Add this source assertion beside independently inspected primary construct evidence; do not create an unqualified duplicate assay edge."
+    },
+    {
+      "native_enzyme": "MONOMER-15109",
+      "reaction": "RHEA:33432",
+      "native_reaction": "RXN-8529",
+      "evidence_codes": [
+        "EV-EXP-IDA-UNPURIFIED-PROTEIN-HH"
+      ],
+      "taxa": [
+        "TAX-649508"
+      ],
+      "evidence": {
+        "reference_id": "MetaCyc:ENZRXN-16913",
+        "source_assertion": "The complete native enzymatic-reaction object assigns MONOMER-15109 to RXN-8529. Heterologous-assay evidence includes PMID19717587; primary construct details must remain on affected assay endpoints.",
+        "source_locator": "/ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence"
+      },
+      "integration": "Add this source assertion beside independently inspected primary construct evidence; do not create an unqualified duplicate assay edge."
+    },
+    {
+      "native_enzyme": "MONOMER-15110",
+      "reaction": "MetaCyc:4.1.1.77-RXN",
+      "native_reaction": "4.1.1.77-RXN",
+      "evidence_codes": [
+        "EV-EXP-IDA-UNPURIFIED-PROTEIN-HH"
+      ],
+      "taxa": [
+        "TAX-649508"
+      ],
+      "evidence": {
+        "reference_id": "MetaCyc:ENZRXN-16914",
+        "source_assertion": "The complete native enzymatic-reaction object assigns MONOMER-15110 to 4.1.1.77-RXN. Heterologous-assay evidence includes PMID19717587; primary construct details must remain on affected assay endpoints.",
+        "source_locator": "/ptools-xml/Enzymatic-Reaction/enzyme; reaction; evidence"
+      },
+      "integration": "Add this source assertion beside independently inspected primary construct evidence; do not create an unqualified duplicate assay edge."
+    }
+  ],
+  "references": [
+    {
+      "id": "MetaCyc:CPLX-7915",
+      "title": "MetaCyc native CPLX-7915 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ACPLX-7915",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "b59e3690439c48be245824acaa0b4f183c4859b279abe1886d5ed622b2a65fb7"
+    },
+    {
+      "id": "MetaCyc:MONOMER-15106",
+      "title": "MetaCyc native MONOMER-15106 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AMONOMER-15106",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "fb9e16d74b0ad40fb29e705780e0601dc70702efd72e208bc11a98ca51b291ff"
+    },
+    {
+      "id": "MetaCyc:ENZRXN-16910",
+      "title": "MetaCyc native ENZRXN-16910 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16910",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "88b90b489865fc0c83961ff353bdca65baccf3d0a200e5e407c493ae1f89dbab"
+    },
+    {
+      "id": "MetaCyc:REG-12850",
+      "title": "MetaCyc native REG-12850 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AREG-12850",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "672a60400199a7e3d8b23b27ad20bd6cb5ba4d0bb9522a484f40cf4a6f2d13fc"
+    },
+    {
+      "id": "MetaCyc:REG-12851",
+      "title": "MetaCyc native REG-12851 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AREG-12851",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "dc85fb9a24b9ab8e4981fa8adecb3cd3c3af5d83f45e9ffc81aaaa2d8b3163ab"
+    },
+    {
+      "id": "MetaCyc:ENZRXN-16911",
+      "title": "MetaCyc native ENZRXN-16911 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16911",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "7f8a0380c9ca17a717ed2bf00c7e5764c1f2ead95fe35d146080ee2f30d50b9f"
+    },
+    {
+      "id": "MetaCyc:ENZRXN-16912",
+      "title": "MetaCyc native ENZRXN-16912 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16912",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "f86194778d83ca46f3889ffedf3b82adfcb205e6319a555cfcd4c6ace74c6c06"
+    },
+    {
+      "id": "MetaCyc:ENZRXN-16913",
+      "title": "MetaCyc native ENZRXN-16913 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16913",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "9d31b6a99d9bc6a50f6556854b2fdb695eeb49c98003b98473d0109181121254"
+    },
+    {
+      "id": "MetaCyc:ENZRXN-16914",
+      "title": "MetaCyc native ENZRXN-16914 object",
+      "url": "https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3AENZRXN-16914",
+      "source_version": "MetaCyc 27.0; complete source XML",
+      "source_sha256": "59eaf1addeefd80d9ab7284f024e1bf778dd7373711ccf78ece94b97ae376044"
+    }
+  ],
+  "limits": {
+    "historical_assembly_identity": "Database mapping explicitly distinguishes canonical source model from direct native-preparation sequence verification. Parent primary audit owns the measured mass discrepancy and any construct qualifier.",
+    "spontaneous_background": [
+      {
+        "step": "RXN-10883",
+        "source": "spontaneous=true",
+        "interpretation": "Enzymatic decarboxylation is compatible with spontaneous background; do not imply strictly enzyme-required reaction."
+      },
+      {
+        "step": "RXN-8529",
+        "source": "comment acknowledges slow aqueous conversion about7minutehalf-life under reported experiments; spontaneous=false flag also present",
+        "interpretation": "Preserve comment/flag tension and enzyme acceleration, not an absolute claim that reaction cannot occur without enzyme."
+      },
+      {
+        "step": "4.1.1.77-RXN",
+        "source": "No spontaneous flag. PWY5162 comment describes terminal-enol ketonization in aqueous solution.",
+        "interpretation": "Product tautomerization is a separate background process, not evidence the decarboxylation itself is spontaneous."
+      },
+      {
+        "step": "RXN-10882 andRXN-8527",
+        "source": "No spontaneous flag in complete objects",
+        "interpretation": "Omission cannot establish no spontaneous background."
+      }
+    ],
+    "chemical_normalization": "EDTA dianionCHEBI64755 and NTA trianionCHEBI25548 exactly match native fullInChI,CML element/charge/bonds,current/pinned ChEBI. Inhibitor assay protonation and concentrations were not measured by inspected native structured assertions.",
+    "primary_1990_status": "Not retrieved as full text by this author audit. Both inhibition edges cite inspected native source, not invented paper quotations."
+  }
+}
