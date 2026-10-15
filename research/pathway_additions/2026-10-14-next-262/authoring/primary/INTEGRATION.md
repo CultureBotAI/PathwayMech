@@ -1,0 +1,21 @@
+This is an author proposal for MetaCyc:PWY-5420, not independent review or a maintained record. All outputs are external. The source, native, chemistry and biological dossiers remain unchanged.
+
+Apply `native-edge-patches.json` to the exact frozen native draft (SHA256 832e369a8aa0211ed2198b4aa6cbf4825bb24526ba0b7533a539513f6e005ab3). Each of 33 patches gives the exact subject/predicate/object triple, expected description hash, complete replacement description, any appended evidence, and any replacement endpoint qualification. Preserve native evidence. Rebind explicitly if a later draft changes the expected text. The 15 high-level decisions and their native counterparts are in `native-override-correspondence.json`.
+
+Append the 29 `primary-edges.json` edges, retaining their p001–p029 identifiers and complete endpoint qualifiers. They distinguish component activity from exact formal chemistry and preserve source-specific crude extracts, native preparations and modified structures. Add the selected references from `reference-needs.json`, using their actual read scopes. Existing native references remain necessary. The six Rhea route reactions and the exact native enol-producing decarboxylase remain unchanged.
+
+Two participant decisions require root integration: add CHEBI:58349 as the alternative PraB coenzyme if its existing issuing chemistry/authority is rebound; update CHEBI:57540 from small_molecule to cofactor as recorded in `node-role-updates.json`. This role change does not alter its identity or equation. The other 40 overlay endpoints already occur in the native draft. No new biological identifier is selected here.
+
+The 198-row `claim-dispositions.json` accounts for every new and predecessor claim. `record-narrative-units.json` preserves individual source locators, preparation scope, numerical detail and limitations. `record-description-paragraphs.json` is a concrete 26-paragraph description proposal, including actual source access scopes. It is scientific paraphrase, not graph evidence. Keep the per-unit limitations and `source-specific-assay-appendix.json` available when condensing the description. Context-only rows concern measured adjacent mechanisms, alternative routes or unsupported transfers and explicitly explain why they do not become formal-route edges. The former 1971 and YwhB access limitations are explicitly superseded, not repeated as current gaps.
+
+`biological-context-proposal.json` supplies mandatory accession-specific AP3 naming and modern engineered 8IH6/modified 1BJP distinctions with exact identity-dossier bindings. Root must select the issuing structure references before using those deposit statements in the record. The 2000 paper does not substantiate 8IH6; the 1998 abstract alone does not prove current 1BJP assembly/version metadata. No unsupported PDB CURIE or guessed modern protein correspondence is introduced.
+
+Quote evidence is verified against actual frozen source text; total unique excerpt words include inherited selections from both prior records. All 11 source budgets are at or below 25 words, and every excerpt/assertion is at most 400 characters. The 13 structured evidence items refer to actual published table rows or footnotes. Their semantic replay is author inspection, not an automated or independent scientific review. No narrative paraphrase is labeled a structured-source assertion. Full originals remain in the frozen external source packages.
+
+`combined-author-preview.yaml` is a complete reviewable native-plus-primary composition with 214 edges and 204 references, not the authority of record. It passes the copied repository schema. Its 185 native edges are preserved with explicit patches, plus 29 additions. Repository authority selection, new-baseline duplicate checks, maintained generation/tests and independent scientific review belong to root.
+
+Run the read-only frozen replay with the cached Python environment that provides jsonschema and PyYAML:
+
+    /Users/marcin/.cache/uv/archive-v0/efRVfUf5_t7EqVl55Ms7A/bin/python3 -B helpers/verify_frozen.py.txt
+
+It verifies the manifest, lossless compression, exact reconstruction of the combined preview, schema shape, 198-row coverage, quotation budgets and bound source hashes. It writes nothing. Other helper files document author construction and are inert; they must not be rerun into frozen outputs.

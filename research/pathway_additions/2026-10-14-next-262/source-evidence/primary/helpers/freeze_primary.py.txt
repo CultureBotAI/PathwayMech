@@ -1,0 +1,34 @@
+import json,hashlib,gzip,datetime
+from pathlib import Path
+P=Path('/private/tmp/pathwaymech-next-262-primary')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def write(n,d):(P/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+def row(p):return {'path':str(p.relative_to(P)),'sha256':sha(p),'bytes':p.stat().st_size}
+assert not (P/'artifact-manifest.json').exists(), 'Already frozen; do not rewrite.'
+assert json.loads((P/'verification.json').read_text())['status']=='PASS'
+# Preserve replay helpers as inert provenance; no maintained script is installed.
+for f in (P/'helpers').glob('*.py'):f.rename(f.with_name(f.name+'.txt'))
+compressed=[]
+names=['material-claim-ledger.json','source-artifact-inventory.json','native-primary-coverage-crosswalk.json','source-coverage-and-dispositions.json','predecessor-claim-dispositions.json','material-conflicts-and-dispositions.json','predecessor-intake.json']
+for n in names:
+ f=P/n;g=P/(n+'.gz');g.write_bytes(gzip.compress(f.read_bytes(),compresslevel=9,mtime=0));assert gzip.decompress(g.read_bytes())==f.read_bytes()
+ compressed.append({'original':row(f),'compressed':row(g),'decoded_sha256':sha(f),'lossless':True})
+write('compression-receipt.json',{'format':'gzip, deterministic mtime0, level9','pairs':compressed})
+selected=['HANDOFF.md','additional-primary-source-coverage.json','AP3-nomenclature-and-preparation-conflict.json','XylH-assembly-context.json','seven-step-primary-scope.json','quotation-ledger.json','verification.json','compression-receipt.json']+[n+'.gz' for n in names]
+selected += [str(f.relative_to(P)) for f in sorted((P/'notes').glob('*.json'))]
+selected += ['pra-supplement/'+n for n in ['HANDOFF.md','material-claim-ledger.json','reading-coverage.json','deposit-projection.json','source-integrity.json','artifact-manifest.json']]
+selected += ['ywhb-supplement/'+n for n in ['HANDOFF.md','material-claim-ledger.json','kinetics-and-stereochemistry.json','reading-coverage.json','artifact-manifest.json']]
+selected += ['helpers/inventory_and_verify.py.txt','helpers/native_primary_crosswalk.py.txt','helpers/freeze_primary.py.txt']
+for n in selected:assert (P/n).is_file(),n
+write('compact-retention-manifest.json',{'role':'Exact lossless author proposal; full originals and transformed texts remain external. Selected compressed files reconstruct byte-identical full ledgers.','files':[row(P/n) for n in sorted(selected)],'file_count':len(selected),'total_bytes':sum((P/n).stat().st_size for n in selected),'new_quote_words':0,'full_originals_included':False})
+files=[row(f) for f in sorted(P.rglob('*')) if f.is_file() and f.name!='artifact-manifest.json']
+# Include nested supplement manifests (the root filename alone is excluded).
+for sub in ['pra-supplement','ywhb-supplement','predecessor261']:
+ f=P/sub/'artifact-manifest.json';files.append(row(f))
+files.sort(key=lambda x:x['path']);assert len({r['path'] for r in files})==len(files)
+write('artifact-manifest.json',{'root':str(P),'candidate':'MetaCyc:PWY-5420','role':'Frozen primary-evidence author handoff; not independent review','frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'inventory_method':'Path.rglob includes hidden and ignored files; every file except root artifact-manifest.json.','file_count':len(files),'total_bytes':sum(x['bytes'] for x in files),'files':files})
+manifest=json.loads((P/'artifact-manifest.json').read_text())
+assert {str(f.relative_to(P)) for f in P.rglob('*') if f.is_file()}=={r['path'] for r in files}|{'artifact-manifest.json'}
+for r in files:assert sha(P/r['path'])==r['sha256']
+result={'status':'PASS','files':len(files),'bytes':manifest['total_bytes'],'compact_files':len(selected),'compact_bytes':sum((P/n).stat().st_size for n in selected),'lossless_pairs':len(compressed),'handoff':row(P/'HANDOFF.md'),'artifact_manifest':row(P/'artifact-manifest.json'),'compact_manifest':row(P/'compact-retention-manifest.json')}
+out=Path('/private/tmp/pathwaymech-next-262-primary-final-verification.json');out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2));print('external receipt sha256',sha(out))

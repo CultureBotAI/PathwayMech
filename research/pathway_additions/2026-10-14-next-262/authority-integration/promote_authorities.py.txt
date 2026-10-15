@@ -1,0 +1,152 @@
+"""Verify frozen authority proposal and promote exactly its three outputs."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import os
+import subprocess
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-262-20261014')
+SOURCE = Path('/private/tmp/pathwaymech-next-262-authority-integration')
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+DOSSIER = ROOT / 'research/pathway_additions/2026-10-14-next-262'
+DEST = DOSSIER / 'authority-integration'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+
+def sha(path):
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+def load(path):
+    return json.loads(path.read_text())
+
+def bind(path):
+    return {'path': str(path), 'sha256': sha(path), 'bytes': path.stat().st_size}
+
+manifest = SOURCE / 'artifact-manifest.json'
+assert sha(manifest) == '21d966a875c2b0e79a22611cfa2db672a20cc58c41fbba3fba2dafa9881b1fa9'
+rows = load(manifest)['files']
+assert len(rows) == 694
+index = {row['path']: row for row in rows}
+assert len(index) == len(rows)
+for row in rows:
+    path = SOURCE / row['path']
+    assert not path.is_symlink() and path.resolve().is_relative_to(SOURCE)
+    assert path.stat().st_size == row['bytes'] and sha(path) == row['sha256'], path
+actual = {str(p.relative_to(SOURCE)) for p in SOURCE.rglob('*') if p.is_file() and not p.is_symlink()}
+assert actual == set(index) | {'artifact-manifest.json'}
+selection_path = SOURCE / 'compact-retention-selection.json'
+assert sha(selection_path) == '1416124dc6649267064bb4dcc49e1209ecc6d4e467cefdf2b4e312815c00879e'
+selection = load(selection_path)['files']
+assert len(selection) == 39
+for row in selection:
+    retained = SOURCE / row['retain_path']
+    original = SOURCE / row['original_path']
+    assert sha(retained) == row['sha256'] and retained.stat().st_size == row['bytes']
+    assert sha(original) == row['original_sha256'] and original.stat().st_size == row['original_bytes']
+    decoded = gzip.decompress(retained.read_bytes()) if row['encoding'] == 'gzip_lossless' else retained.read_bytes()
+    assert decoded == original.read_bytes()
+
+record_path = ROOT / 'data/pathways/catechol-degradation-ii.yaml'
+assert sha(record_path) == '4931e9a8cc5ae9f55c434d942c70fc65c75ad73a49e878bd34fbcfc4250df110'
+record = yaml.safe_load(record_path.read_text())
+selected = {record['id']} | {node['id'] for field in ['taxa', 'participants', 'reactions'] for node in record[field]}
+assert len(selected) == 177
+verification = load(SOURCE / 'retained/union-preservation-verification.json')
+assert verification['identifier_policy_passed'] and verification['records_checked'] == 259
+mapping = {'conf/identifier_sources.json': 'proposal/identifier_sources.json',
+           'data/identifier_authorities/sources.json': 'proposal/sources.union.json',
+           'data/identifier_authorities/ontology.json': 'proposal/ontology.union.json'}
+checks = []
+new_terms = set()
+for destination, proposed in mapping.items():
+    current = ROOT / destination
+    baseline = SOURCE / 'baseline' / destination
+    proposal = SOURCE / proposed
+    assert current.read_bytes() == baseline.read_bytes(), destination
+    old = load(current)
+    new = load(proposal)
+    if destination.startswith('conf/'):
+        assert len(old) == 1142 and len(new) == 1205 and new[:len(old)] == old
+        assert len({row['key'] for row in new}) == len(new)
+        checks.append({'path': destination, 'old_count': len(old), 'new_count': len(new), 'old_prefix_exact': True})
+    else:
+        for key in ['terms', 'sources']:
+            assert all(new[key].get(k) == v for k, v in old[key].items()), (destination, key)
+        added = set(new['terms']) - set(old['terms'])
+        assert added <= selected
+        new_terms |= added
+        checks.append({'path': destination, 'old_terms': len(old['terms']), 'new_terms': len(new['terms']),
+                       'old_owners': len(old['sources']), 'new_owners': len(new['sources']),
+                       'all_old_objects_equal': True, 'added_identifiers': sorted(added)})
+assert new_terms == set(verification['new_identifiers']) and len(new_terms) == 69
+for name in ['source_builder', 'ontology_builder']:
+    receipt = load(SOURCE / 'retained' / (name + '-receipt.json'))
+    assert receipt['exit_code'] == 0 and sha(Path(receipt['log_path'])) == receipt['log_sha256']
+baseline = load(CI / 'merged-baseline-worktree.json')
+for row in baseline['records']:
+    assert sha(ROOT / row['path']) == row['sha256']
+assert len(baseline['records']) == 258
+assert not DEST.exists()
+DEST.mkdir()
+retained_rows = []
+for row in selection:
+    destination = DEST / row['retain_path']
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    assert not destination.exists()
+    destination.write_bytes((SOURCE / row['retain_path']).read_bytes())
+    retained_rows.append(bind(destination) | {'original_path': row['original_path'],
+                         'original_sha256': row['original_sha256'], 'encoding': row['encoding']})
+for path in [manifest, selection_path]:
+    (DEST / path.name).write_bytes(path.read_bytes())
+before_after = []
+for destination, proposed in mapping.items():
+    target = ROOT / destination
+    previous = bind(target)
+    target.write_bytes((SOURCE / proposed).read_bytes())
+    assert sha(target) == index[proposed]['sha256']
+    before_after.append({'previous': previous, 'promoted': bind(target)})
+result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Root authority integration verification and exact promotion; independent review remains separate',
+    'frozen_manifest': bind(manifest), 'all_owned_regular_files_verified': len(rows),
+    'inventory_includes_hidden_and_ignored': True,
+    'inventory_scope': 'Owned regular files; external source-cache symlinks are separately bound in the frozen author package',
+    'all_compact_original_pairs_verified': len(selection), 'retained': retained_rows,
+    'preservation_checks': checks, 'promoted_files': before_after,
+    'new_selected_terms': len(new_terms), 'all258_predecessor_records_unchanged': True,
+    'current_record': bind(record_path),
+    'initial_builder_record_binding': verification['final_record'],
+    'remaining': ['Independent authority review', 'Exact repaired-record authority successor consumer',
+                  'Full repository gates and rendered output review']}
+(DEST / 'root-promotion-receipt.json').write_text(json.dumps(result, indent=2) + '\n')
+(DEST / 'promote_authorities.py.txt').write_bytes(Path(__file__).read_bytes())
+env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+command = [PYTHON, '-B', 'scripts/new_history_record.py', '--kind', 'infrastructure',
+    '--slug', 'catechol-degradation-ii-authorities', '--path', 'conf/identifier_sources.json',
+    '--event', 'EDIT', '--outcome', 'changed', '--actor-name', 'codex', '--model', 'gpt-6', '--agent-tool', 'codex',
+    '--summary', 'Add selected catechol degradation II identifier authorities',
+    '--details', 'Verified all 694 owned files in the frozen author package including hidden and ignored files, '
+    'checked all 39 compact/original pairs, and promoted exactly the proposed source config and two authority snapshots. '
+    'The 69 added terms comprise 63 source terms and six ontology terms selected by the maintained record. '
+    'All 5103 old terms, 961 source owners, five ontology owners and the complete 1142-entry config prefix remain exact. '
+    'Both unchanged canonical builders and the real offline consumer passed against the initial 259-record corpus. '
+    'The ten-locator repaired record has unchanged selected identities; a separately bound successor consumer and '
+    'independent review remain pending. No parser or policy was changed.']
+p = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True)
+log = CI / 'authority-history.log'
+assert not log.exists()
+log.write_text(p.stdout + p.stderr)
+assert p.returncode == 0, log.read_text()
+history = ROOT / p.stdout.strip().splitlines()[-1]
+v = subprocess.run([PYTHON, '-B', 'scripts/validate_history.py', str(history)], cwd=ROOT, env=env, capture_output=True, text=True)
+assert v.returncode == 0, v.stdout + v.stderr
+(CI / 'authority-promotion-result.json').write_text(json.dumps({'promotion': bind(DEST / 'root-promotion-receipt.json'),
+    'history': bind(history), 'current_record': bind(record_path)}, indent=2) + '\n')
+print(json.dumps({'promoted': len(mapping), 'verified_files': len(rows), 'retained_count': len(selection),
+                  'selected_new_terms': len(new_terms), 'all_old_objects_equal': True}))

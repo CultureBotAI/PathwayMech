@@ -1,0 +1,93 @@
+"""Freeze completed external authority outputs after real consumer success."""
+from pathlib import Path
+import datetime,gzip,hashlib,json
+B=Path(__file__).resolve().parents[1]
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb')as f:
+  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+def save(relative,value):
+ p=B/relative;assert not p.exists(),('Preserve frozen artifact',p)
+ p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(value,indent=2,ensure_ascii=False)+'\n')
+def binding(p):return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def main():
+ report=load(B/'retained/union-preservation-verification.json');base=load(B/'retained/baseline-preparation.json');inventory=load(B/'retained/candidate-source-inventory.json')
+ assert report['status']=='author_verification_passed_pending_independent_review'
+ assert sha(report['final_record']['path'])==report['final_record']['sha256']
+ sources=report['snapshots']['sources'];ontology=report['snapshots']['ontology']
+ outputs=[binding(B/'proposal'/n)for n in ['identifier_sources.json','sources.union.json','ontology.union.json']]
+ save('retained/author-handoff.json',{'role':'Authority integration author; root inspection and independent review required','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline_commit':report['baseline_commit'],'final_record':report['final_record'],'selected_identifiers':report['selected_identifier_count'],'new_terms':len(report['new_identifiers']),'final_terms':report['final_authority_terms'],'new_source_terms':len(sources['new_terms']),'new_ontology_terms':len(ontology['new_terms']),'old_terms_preserved':base['total_terms'],'old_source_owners_preserved':base['source_owners'],'old_ontology_owners_preserved':base['ontology_owners'],'outputs':outputs,'verification':binding(B/'retained/union-preservation-verification.json'),'maintained_writes':False,'independent_approval':False})
+ text=f'''# Next262 selected authority union — author handoff
+
+This external authority proposal is ready for root inspection and independent
+review. It is authored integration work, not a scientific review or maintained
+promotion. No maintained file, Git state, parser or policy was changed.
+
+The actual integrated record selects {report['selected_identifier_count']} IDs.
+The proposal adds exactly {len(report['new_identifiers'])} terms:
+{len(sources['new_terms'])} source terms and {len(ontology['new_terms'])} ontology
+terms. All {base['total_terms']} prior terms, {base['source_owners']} source
+owners, {base['ontology_owners']} ontology owners and the entire
+{report['manifest']['baseline_entries']}-entry config prefix remain equal as
+JSON objects. The resulting authority union has {report['final_authority_terms']}
+terms. The optional {inventory['candidate_source_count']}-source candidate pool
+is not bulk-promoted; only previously absent final-record IDs are added.
+
+The source and ontology canonical builders passed using copied, hash-bound
+runtime bytes. Complete pinned SQL digests match existing owner objects; all
+bound inputs remain unchanged before and after the builders. The unchanged
+real offline identifier consumer passed on {report['records_checked']} actual
+records: {base['records']} predecessors and root's supplied record. A synthetic
+old-term selector retains snapshot coverage only and was never passed to the
+real consumer. Every predecessor ID, label and category is preserved.
+
+Final record SHA-256: `{report['final_record']['sha256']}`.
+Path: `{report['final_record']['path']}`. Exact proposed file paths and hashes
+are in `retained/author-handoff.json`. Root owns maintained promotion.
+
+Full original sources provide new source labels; pinned issuing databases
+provide ontology labels. Native AP3 spelling, exact source-instance identity,
+versioned reference sequences and historical preparation boundaries stay
+distinct. A reference sequence or broader issuer taxon does not overwrite the
+native entity. Existing native, chemical and pathway owners remain exact.
+Formal chemistry and experimental claims remain owned by their frozen source
+dossiers and integrated record; authority validation does not resolve those
+scientific conflicts or upgrade native database annotations to direct assays.
+
+The production Rhea Semantic SQL authority and explicit update manifest are
+preserved. Original Rhea142 chemical evidence is a separate source version,
+not an ontology refresh. No parser extension or fallback source was introduced.
+
+This bounded reproduction does not replace full repository schema, scientific,
+history, rendering, KGX, test or saved-review gates. It does not claim independent
+scientific approval. Root and independent reviewers must assess the complete
+integrated record and promote only the exact verified proposal files.
+
+Compact retention includes checks, source bindings, exact record observation
+and inert helper copies. Large observations and logs use lossless gzip with
+decoded hashes. Baseline corpora, copied runtime, full proposal outputs and
+external cache originals are not duplicated into compact evidence. The three
+proposal files remain available for promotion; cache originals remain bound
+by explicit receipts. Every owned regular file is in the complete artifact
+manifest; external source-cache symlinks have separate exact target bindings.
+'''
+ handoff=B/'HANDOFF.md';assert not handoff.exists();handoff.write_text(text)
+ selection=[]
+ for original in [handoff,*sorted((B/'retained').rglob('*')),*sorted((B/'helpers').glob('*.py'))]:
+  if not original.is_file()or original.is_symlink():continue
+  relative=original.relative_to(B)
+  if relative.parts[0]=='helpers':target=B/'compact'/(str(relative)+'.txt');encoding='inert_python_text';encoded=original.read_bytes()
+  elif original.stat().st_size>100000 or original.suffix in {'.log','.yaml'}:target=B/'compact'/(str(relative)+'.gz');encoding='gzip_lossless';encoded=gzip.compress(original.read_bytes(),mtime=0)
+  else:target=original;encoding='identity';encoded=None
+  if target!=original:
+   assert not target.exists();target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(encoded)
+  if encoding=='gzip_lossless':assert gzip.decompress(target.read_bytes())==original.read_bytes()
+  elif encoding=='inert_python_text':assert target.read_bytes()==original.read_bytes()
+  selection.append({'retain_path':str(target.relative_to(B)),'original_path':str(relative),'encoding':encoding,'sha256':sha(target),'bytes':target.stat().st_size,'original_sha256':sha(original),'original_bytes':original.stat().st_size})
+ save('compact-retention-selection.json',{'root':str(B),'scope':'External author checks and source bindings, not independent review or promotion','files':selection,'count':len(selection),'bytes':sum(r['bytes']for r in selection),'excluded':['baseline corpus/snapshots','copied runtime','full proposals retained for separate promotion','externally bound source-cache originals']})
+ files=[{'path':str(p.relative_to(B)),'sha256':sha(p),'bytes':p.stat().st_size}for p in sorted(B.rglob('*'))if p.is_file()and not p.is_symlink()and p.name!='artifact-manifest.json']
+ save('artifact-manifest.json',{'root':str(B),'scope':'Frozen authority author package. Recursive inventory includes hidden and ignored owned files; external cache symlinks are separately bound by builder receipts.','frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':files,'count':len(files),'bytes':sum(r['bytes']for r in files)})
+ print(json.dumps({'status':'frozen_author_handoff','handoff_sha256':sha(handoff),'artifact_manifest_sha256':sha(B/'artifact-manifest.json'),'compact_selection_sha256':sha(B/'compact-retention-selection.json'),'compact_files':len(selection),'compact_bytes':sum(r['bytes']for r in selection)},indent=2))
+if __name__=='__main__':main()

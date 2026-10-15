@@ -1,0 +1,50 @@
+from pathlib import Path
+import json,hashlib,re
+O=Path('/private/tmp/pathwaymech-next-262-native');D=Path('/private/tmp/pathwaymech-next-262-discovery')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+manifest=json.loads((D/'artifact-manifest.json').read_text());indexed={x.get('relative_path',x['path']):x for x in manifest['files']};dest=O/'discovery-bindings';dest.mkdir(exist_ok=True);bs=[]
+for name in ['native-connectivity-proof.json','alternative-pathway-boundaries.json','primary-source-lead-dispositions.json','source-family-scope.json']:
+ p=D/name;entry=indexed.get(name) or indexed.get(str(p));assert entry and sha(p)==entry['sha256'];(dest/name).write_bytes(p.read_bytes());bs.append({'predecessor_path':str(p),'path':str(dest/name),'sha256':sha(p),'predecessor_manifest_sha256':sha(D/'artifact-manifest.json'),'role':'Exact frozen discovery artifact, retained without alteration or a new baseline/dedup claim.'})
+dump('frozen-discovery-bindings.json',bs)
+rs=json.loads((O/'native-full-object-projection.json').read_text());objs={r['frame']:r for r in rs};F=json.loads((D/'next-source-follow-set.json').read_text())['new_oxidative_activity_leads'];fs={a['activity_id'] for a in F}|{p for a in F for p in a['catalyst_ids']};primary={}
+for r in rs:
+ if r['frame'] not in fs|{'RXN-8529','CPD-13337','CPD-246','PWY-5420'}:continue
+ for s in r['slots']:
+  ids=set()
+  if s['slot']=='comment':ids.update(re.findall(r'pubmed/(\d+)',s['text']))
+  if s['slot']=='evidence':ids.update(d['frameid'].removeprefix('PUB-') for d in s['direct_children'] if d['type']=='Publication')
+  for pmid in ids:primary.setdefault(pmid,[]).append({'native_frame':r['frame'],'slot':s['slot'],'locator':s['locator'],'sha256':r['sha256']})
+priority={'7868591':'XylG alternate-substrate/product wording and purified preparation; correct historical benzaldehyde assignment.','16517619':'CnbG unchlorinated assay versus assumed chlorinated tautomerization; CnbF/CnbE coexpressed chlorinated substrate experiment versus unchlorinated source assignments.','12620844':'NbaG experimental code versus similarity prediction; distinguish upstream enzymes studied directly.','17090920':'Bordetella preparation, four-subunit tautomerase, inhibitor concentrations/assay conditions, decarboxylase/hydratase coassembly and product labels.','19717587':'PraB/C/D sequential crude-extract assay, spectral/product inference and ambiguous keto hyperlinks; prior next252 source may be reusable.','11081795':'AP3 AmnE/AmnF assembly, unlinked AmnF identity, metal requirements and Cu/Hg prose-slot discrepancy.','10651637':'Decarboxylase expression, correct enol stereochemistry and isotope/construct limits.','2681159':'Frozen discovery contains fully read retained1989 main text; mass, gene-label, keto/enol and preparation limitations remain.','9573204':'Spontaneous conversion claims and correct product under assay conditions; discovery did not reproducibly retain accessible publisher full body.','4325686':'Parent whole-route experimental citation; discovery retained metadata only and Wiley PDF access403.','9778344':'Later mt-2 XylH crystal trimer-of-dimers, exact biological assembly and construct.','1339435':'Earlier XylH pentamer/mass claim; preserve historical chronology.','7966298':'Related CF600 tautomerase hexamer/preparation; avoid transferring taxon-specific result.','8547259':'Related CF600 structural context; avoid transfer to mt-2 without exact study.'}
+dump('oxidative-primary-follow-proposal.json',[{'pmid':pm,'url':'https://pubmed.ncbi.nlm.nih.gov/'+pm+'/','native_leads':v,'priority_question':priority.get(pm,'Resolve historical native compound/biological assertion using exact primary source context.'),'reading_status_here':'Native bibliographic/prose context inspected; this task acquired no new primary full texts. Frozen discovery/predecessor primary receipts remain separate.'} for pm,v in sorted(primary.items())])
+# Follow-state for every prose target is explicitly scoped, including unbound names.
+prose=json.loads((O/'native-prose-link-dispositions.json').read_text());missing={}
+for r in prose:
+ t=r['target']
+ if not t or t in objs:continue
+ if t.startswith('['):reason='Citation lookup token, not a native biological frame. Metadata-only lead; root primary stage may follow.'
+ elif t.startswith('EC-'):reason='Enzyme-class cross-reference, not an exact catalyst/chemistry authority selection.'
+ elif t in ['MONOMER-2968']:reason='Historical misassignment comparator (benzaldehyde dehydrogenase); no properties of this uninspected protein are transferred to XylG.'
+ elif t in ['G-12174','G-91','G-92','G-80414']:reason='Adjacent metabolism/gene-expression context for generic terminal reaction catalysts, not a selected PWY5420 route component.'
+ elif t.startswith(('PD','EG')):reason='Explicitly excluded AdhE assembly adjacent expression/interaction context; no candidate route assertion.'
+ elif t.startswith('PWY') or t in ['DESULFONATION-PWY','FERMENTATION-PWY','OXIDATIVEPENT-PWY']:reason='Alternative upstream or broader pathway context. Exact catechol alternatives were fully assessed in frozen discovery; this source reference does not create an additional candidate.'
+ elif t in ['NADP','NADPH','ADENINE','NIACINAMIDE','Cofactors','CPLX-84']:reason='General nicotinamide cofactor identity/background context; no new authority identity expansion or global incidence traversal.'
+ else:reason='General chemical/taxonomic/nomenclature/background comparator, not a claimed candidate reaction or catalyst.'
+ missing.setdefault(t,{'target':t,'source_refs':[],'disposition':reason})['source_refs'].append({'source':r['source'],'locator':r['locator'],'sha256':r['source_sha256']})
+dump('explicit-prose-boundary-decisions.json',list(missing.values()))
+dump('scope-and-open-gaps.json',{
+ 'role':'External native source-evidence authoring only. No maintained record, independent scientific review, branch, Git/GitHub change, or authority selection.',
+ 'source_scope':'Complete issuing MetaCyc objects served by the public bf2i-artsymbiocyc mirror at PGDB META27.0. Snapshot version is explicit; no claim that this is the latest official MetaCyc release.',
+ 'candidate':'One full PWY-5420 record candidate; PWY-5419 (four-step oxidative cleavage) and PWY-5162 (three-step terminal metabolism) are nested modules, not two extra pathway additions.',
+ 'formal_boundary':['CATECHOL-23-DIOXYGENASE-RXN','RXN-8527','RXN-8529','4.1.1.77-RXN','2-OXOPENT-4-ENOATE-HYDRATASE-RXN','MHPELY-RXN','ACETALD-DEHYDROG-RXN'],
+ 'orientation':'Preserve native REVERSIBLE versus chosen pathway flux; hydratase uses native right-to-left chemistry. Frozen discovery contains all28 material entries, six exact joins and original ordering context.',
+ 'finite_closure':'All41 formal activity leads, their complete catalysts/components/assemblies/genes/organisms/regulators/cofactors/locations and adjacent activities; all explicit selected reaction sides; explicit protein/activity alternate-substrate/kinetic/prose chemical contrasts; final prose-linked host/taxon objects and alternative XylF context. No recursive generic chemical-incidence, organism-ancestor, ontology-class or all-adjacent-pathway expansion.',
+ 'prose_identity_gap':'AP3 protein comment names an AmnF hydratase without a linked frame; formal CPLX-7822 has only AmnE component and no coefficient. This dossier does not invent an AmnF frame or total assembly stoichiometry.',
+ 'source_version_policy':'Seven known22.5 predecessors were excluded in favor of exact27.0 successors. Removed MhpF kinetics are not merged back. Two early compound requests redundantly re-fetched already frozen byte-identical27.0 originals before cache scope was expanded; receipts preserve this operational fact without claiming a source change.',
+ 'chemistry_gaps':['RXN-8529 native Rhea32214 stereochemical mismatch; prior33432 proposal remains root chemistry task.','Native4.1.1.77 enol product versus linked keto Rhea24261.','Historical CPD-13337/CPD-246 versus formal CPD-8742 and spontaneous product labels.','Native source formulas, stereochemistry and xrefs retained; final authoritative chemistry/charge/balance identity verification belongs to root.'],
+ 'biology_gaps':['CnbF unchlorinated formal activity versus coexpression experiment on chlorinated substrate; CnbE/CnbF labels remain tied to exact gene/frame IDs.','NbaG assay code versus similarity prediction.','AP3 Cu/Hg source list difference, unlinked AmnF and undefined total stoichiometry.','Bordetella activity-specific inhibitor preparations and unknown decarboxylase/hydratase total stoichiometry.','XylG alternate-substrate slot and product wording require primary adjudication.','Full pathway taxon evidence is not established from generic catalyst associations. Historical mt-2 and KU-7 source organisms are not assigned guessed modern accessions.'],
+ 'reused_primary_limits':'Shared261 primary conflict dispositions are imported as exact author predecessors, not a new independent review. This task acquired no new primary full texts. Discovery access/reading limitations remain binding; native bibliography entries are metadata, not a count of read papers.',
+ 'next_owner_tasks':['Root final merged-baseline rebind and hidden/ignored duplicate check after261 merge.','Root authoritative chemistry and targeted primary-source adjudication.','Root decides maintained identity/graph/assertion retention and complete evidence chain.'],
+ 'no_source_exhaustion_claim':True,
+ 'complete_context_accounting':'Complete original bytes, every direct slot and nested reference retained; broad incidence references receive explicit boundary dispositions. Human scientific interpretation focuses on material route/assay/preparation/identity conflicts, not an assertion that every unrelated global incidence object was read.'})
+print({'discovery_bindings':len(bs),'primary_follow_leads':len(primary),'explicit_prose_boundaries':len(missing)})

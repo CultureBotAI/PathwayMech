@@ -1,0 +1,158 @@
+"""Verify frozen identity bytes and independently translate nine issuing CDSs."""
+from pathlib import Path
+from collections import Counter
+import datetime
+import gzip
+import hashlib
+import itertools
+import json
+import re
+import xml.etree.ElementTree as ET
+
+B = Path('/private/tmp/pathwaymech-next-262-biological-identity')
+OUT = Path('/private/tmp/pathwaymech-next-262-ci/biological-identity-intake.json')
+assert not OUT.exists()
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+expected = {'HANDOFF.md': 'f4bd7d9b8423136337c2366565baed227b06e4008eecdea9c8260793c2827e80',
+            'artifact-manifest.json': '5a1a6f4aa4b6cab21c9c6443966458722ba1be5e6d82cc976e0a16df2fa89944',
+            'compact-retention-manifest.json': '8d45a73a538ba42dc469c750d62aa4246045944bff334be71f5749b5523245ed'}
+for name, digest in expected.items():
+    assert sha(B / name) == digest
+manifest = json.loads((B / 'artifact-manifest.json').read_text())
+rows = manifest['files']
+assert len(rows) == len({row['path'] for row in rows}) == manifest['file_count'] == 225
+assert {str(p.relative_to(B)) for p in B.rglob('*') if p.is_file()} == {row['path'] for row in rows} | {'artifact-manifest.json'}
+for row in rows:
+    p = B / row['path']
+    assert not p.is_symlink() and p.stat().st_size == row['bytes'] and sha(p) == row['sha256']
+assert sum(row['bytes'] for row in rows) == manifest['total_bytes'] == 15036604
+compact = json.loads((B / 'compact-retention-manifest.json').read_text())
+assert compact['selected_files'] == len(compact['files']) == 60
+for row in compact['files']:
+    source = Path(row['source_path'])
+    stored = B / row['retained_path']
+    assert source == B / row['source_relative_path']
+    assert source.stat().st_size == row['original_bytes'] and sha(source) == row['original_sha256']
+    assert stored.stat().st_size == row['stored_bytes'] and sha(stored) == row['stored_sha256']
+    assert row['encoding'] in {'identity', 'gzip'}
+    decoded = gzip.decompress(stored.read_bytes()) if row['encoding'] == 'gzip' else stored.read_bytes()
+    assert decoded == source.read_bytes()
+assert sum(row['stored_bytes'] for row in compact['files']) == 809964
+
+source_hashes = {}
+def checked(row):
+    p = Path(row['path'])
+    digest = sha(p)
+    assert digest == row['sha256']
+    source_hashes[str(p)] = digest
+    return p
+
+ledger = json.loads((B / 'complete-biological-object-identity-ledger.json').read_text())
+counts = Counter()
+slots = 0
+for row in ledger:
+    source = checked(row['source'])
+    frame = row['native_identifier'].split(':', 1)[1]
+    element = ET.parse(source).getroot().find('./' + row['entity_type'] + '[@frameid="' + frame + '"]')
+    assert element is not None and len(element) == row['direct_slot_count']
+    counts[row['entity_type']] += 1
+    slots += len(element)
+assert len(ledger) == 125 and slots == 1712
+
+codons = [''.join(c) for c in itertools.product('TCAG', repeat=3)]
+amino = 'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+table = dict(zip(codons, amino))
+assert len(table) == 64
+starts = {'TTG', 'CTG', 'ATT', 'ATC', 'ATA', 'ATG', 'GTG'}
+
+def embl(path, protein_id):
+    lines = path.read_text().splitlines()
+    sequence = ''.join(re.findall('[A-Za-z]+', '\n'.join(lines[next(i for i, s in enumerate(lines) if s.startswith('SQ ')) + 1:]))).upper()
+    features = []
+    current = None
+    for line in lines:
+        if not line.startswith('FT '):
+            continue
+        key = line[5:21].strip()
+        if key:
+            current = {'key': key, 'lines': []}
+            features.append(current)
+        if current is not None:
+            current['lines'].append(line[21:].strip())
+    selected = [f for f in features if f['key'] == 'CDS' and '/protein_id="' + protein_id + '"' in ''.join(f['lines'])]
+    assert len(selected) == 1
+    lines = selected[0]['lines']
+    body = ' '.join(lines[1:])
+    qualifiers = {key: val.strip('"') for key, val in re.findall(r'/(\w+)=("[^"]*"|[^ /]+)', body)}
+    qualifiers['translation'] = ''.join(qualifiers['translation'].split())
+    return sequence, lines[0], qualifiers
+
+def genbank_xml(path, protein_id, accession):
+    root = ET.parse(path).getroot()
+    records = [record for record in root.iter('GBSeq') if record.findtext('GBSeq_accession-version') == accession]
+    assert len(records) == 1
+    record = records[0]
+    selected = []
+    for feature in record.findall('./GBSeq_feature-table/GBFeature'):
+        if feature.findtext('GBFeature_key') != 'CDS':
+            continue
+        qualifiers = {q.findtext('GBQualifier_name'): q.findtext('GBQualifier_value') for q in feature.findall('./GBFeature_quals/GBQualifier')}
+        if qualifiers.get('protein_id') == protein_id:
+            selected.append((feature, qualifiers))
+    assert len(selected) == 1
+    feature, qualifiers = selected[0]
+    return record.findtext('GBSeq_sequence').upper(), feature.findtext('GBFeature_location'), qualifiers
+
+comparisons = json.loads((B / 'projections/new-exact-cds-comparisons.json').read_text())
+assert len(comparisons) == 9
+results = []
+for row in comparisons:
+    upath = checked(row['uniprot_source'])
+    uniprot = json.loads(upath.read_text())
+    assert uniprot['primaryAccession'] == row['uniprot']
+    nucleotide = checked(row['deposit_source'])
+    protein_id = row['protein_accession']
+    if nucleotide.suffix == '.embl':
+        sequence, location, qualifiers = embl(nucleotide, protein_id)
+    else:
+        sequence, location, qualifiers = genbank_xml(nucleotide, protein_id, row['deposit'])
+    assert location == row['feature']['location']
+    reverse = location.startswith('complement(')
+    plain = location[len('complement('):-1] if reverse else location
+    match = re.fullmatch(r'(\d+)\.\.(\d+)', plain)
+    assert match
+    start, end = map(int, match.groups())
+    cds = sequence[start - 1:end]
+    if reverse:
+        cds = cds.translate(str.maketrans('ATCG', 'TAGC'))[::-1]
+    assert int(qualifiers['transl_table']) == 11 and int(qualifiers['codon_start']) == 1
+    assert len(cds) % 3 == 0 and cds[:3] in starts
+    translation = ''.join(table[cds[i:i + 3]] for i in range(0, len(cds), 3))
+    assert translation.endswith('*') and '*' not in translation[:-1]
+    translation = 'M' + translation[1:-1]
+    assert cds == row['translation_check']['nucleotide_sequence']
+    assert translation == qualifiers['translation'] == uniprot['sequence']['value']
+    protein_path = checked(row['ncbi_protein']['source'])
+    records = [r for r in ET.parse(protein_path).getroot().iter('GBSeq') if r.findtext('GBSeq_accession-version') == protein_id]
+    assert len(records) == 1 and records[0].findtext('GBSeq_sequence').upper() == translation
+    assert translation == row['translation_check']['independent_translation']
+    results.append({'uniprot': row['uniprot'], 'deposit': row['deposit'], 'protein_accession': protein_id,
+                    'location': location, 'length': len(translation),
+                    'sequence_sha256': hashlib.sha256(translation.encode()).hexdigest(),
+                    'issuing_gene_name': qualifiers.get('gene'), 'uniprot_gene_names': uniprot.get('genes', [])})
+
+result = {'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'package': str(B),
+          'manifest_hashes': expected, 'files': len(rows), 'bytes': manifest['total_bytes'],
+          'compact_files': len(compact['files']), 'compact_bytes': 809964,
+          'biological_originals': len(ledger), 'direct_slots': slots, 'types': dict(counts),
+          'source_hashes': source_hashes, 'independent_cds_comparisons': results,
+          'limits': ['Artifact, native-object and original CDS/reference-sequence replay only.',
+                     'Does not prove physiological function, historical preparation identity or whole-route occurrence.',
+                     'Exact gene-name conflicts remain explicit; this is not the final independent scientific record review.',
+                     'Large pinned taxonomy database and all prior owner builders were not independently rerun here.']}
+OUT.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'receipt': str(OUT), 'sha256': sha(OUT), 'files': len(rows), 'compact_files': len(compact['files']),
+                  'native_objects': len(ledger), 'native_slots': slots, 'exact_translations': len(results)}))

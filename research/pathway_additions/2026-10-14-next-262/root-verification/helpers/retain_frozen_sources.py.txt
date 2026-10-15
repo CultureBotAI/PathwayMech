@@ -1,0 +1,162 @@
+"""Verify all frozen source packages before retaining compact research evidence."""
+from pathlib import Path
+import argparse
+import datetime
+import gzip
+import hashlib
+import json
+import shutil
+
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+REPO = Path('/private/tmp/pathwaymech-next-262-20261014')
+OUT = REPO / 'research/pathway_additions/2026-10-14-next-262'
+PLANS = [
+    ('discovery', 'a98721c8fda99faf54f553b247170f1954599ae529d7bc00094379da4575c569', 'cc8f4451839838217ceaa10188a94f6c2a74a7c41f9edb77156db84079675b89', 106, 40),
+    ('native', '8d1ad92744d1e6a4e216d0e53e545cb8c5d1a26997afda982f0a04d777af4952', 'aabd9638d9eb1bab4900c33828ef5af9ecc331b143003858cf639e056eeb2890', 441, 50),
+    ('chemistry', '9db93b6f64814d3f6e8b7fb10d1bf3b669ae7cdd7ce133b51fa638598267bbab', '2d040f63d5ba55a5ec1619725be0015bda1a1e553a394ea10093d5e000143b40', 122, 61),
+    ('primary', 'd2af43f37080c71b9525a622e96ed83cf9359cbd9e5356c62d40a213d62d53df', '008b255990560d961526994089e937ebd47260f42af0b3ca34dbbad674d5a710', 289, 49),
+    ('biological-identity', '5a1a6f4aa4b6cab21c9c6443966458722ba1be5e6d82cc976e0a16df2fa89944', '8d45a73a538ba42dc469c750d62aa4246045944bff334be71f5749b5523245ed', 225, 60),
+]
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def load(path):
+    return json.loads(path.read_text())
+
+
+def source(root, relative):
+    path = root / relative
+    assert not Path(relative).is_absolute() and '..' not in Path(relative).parts
+    assert path.resolve().is_relative_to(root.resolve()) and path.is_file(), path
+    return path
+
+
+def verify(path, sha256, size=None):
+    data = path.read_bytes()
+    assert digest(data) == sha256, path
+    assert size is None or len(data) == size, path
+    return data
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--write', action='store_true')
+args = parser.parse_args()
+checks, copies = [], []
+for suffix, manifest_hash, compact_hash, file_count, compact_count in PLANS:
+    root = Path('/private/tmp/pathwaymech-next-262-' + suffix)
+    manifest_path = root / 'artifact-manifest.json'
+    compact_path = root / 'compact-retention-manifest.json'
+    manifest = json.loads(verify(manifest_path, manifest_hash))
+    compact = json.loads(verify(compact_path, compact_hash))
+    assert len(manifest['files']) == file_count
+    assert len(compact['files']) == compact_count
+    listed = set()
+    for row in manifest['files']:
+        relative = row['path']
+        assert relative not in listed, relative
+        listed.add(relative)
+        verify(source(root, relative), row['sha256'], row['bytes'])
+    actual = {str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}
+    extras = actual - listed - {'artifact-manifest.json', 'compact-retention-manifest.json'}
+    assert not extras, (suffix, sorted(extras))
+    compressed = 0
+    for row in compact['files']:
+        if suffix == 'biological-identity':
+            relative = row['retained_path']
+            payload = verify(source(root, relative), row['stored_sha256'], row['stored_bytes'])
+            assert row['encoding'] in {'identity', 'gzip'}
+            decoded = gzip.decompress(payload) if row['encoding'] == 'gzip' else payload
+            original = source(root, row['source_relative_path'])
+            assert decoded == verify(original, row['original_sha256'], row['original_bytes'])
+            is_compressed = row['encoding'] == 'gzip'
+        else:
+            relative = row['path']
+            payload = verify(source(root, relative), row['sha256'], row['bytes'])
+            is_compressed = relative.endswith('.gz')
+            decoded = gzip.decompress(payload) if is_compressed else payload
+            original_relative = relative[:-3] if is_compressed else relative
+            if suffix == 'discovery' and is_compressed:
+                original_relative = str(Path(original_relative).relative_to('compact'))
+            original = source(root, original_relative)
+            assert decoded == original.read_bytes(), (suffix, relative)
+        compressed += is_compressed
+        destination = row.get('retain_as', relative)
+        assert not Path(destination).is_absolute() and '..' not in Path(destination).parts
+        if destination.endswith('.py'):
+            destination += '.txt'
+        copies.append((source(root, relative), Path('source-evidence') / suffix / destination,
+                       {'package': suffix, 'encoding': 'gzip' if is_compressed else 'identity',
+                        'original_source': str(original), 'original_sha256': digest(decoded),
+                        'original_bytes': len(decoded)}))
+    retained_sources = {str(p) for p, _, _ in copies}
+    for path in [manifest_path, compact_path]:
+        if str(path) not in retained_sources:
+            copies.append((path, Path('source-evidence') / suffix / path.name,
+                           {'package': suffix, 'encoding': 'identity'}))
+    checks.append({'package': suffix, 'root': str(root), 'manifest_sha256': manifest_hash,
+                   'compact_manifest_sha256': compact_hash, 'verified_files': file_count,
+                   'verified_bytes': sum(r['bytes'] for r in manifest['files']),
+                   'compact_files': compact_count, 'compact_gzip_original_pairs': compressed,
+                   'ignored_and_hidden_files_in_inventory': True})
+
+# The supplemental chemistry result has a closed verification receipt instead
+# of a full-package manifest. Only its four bound outputs and receipt are copied.
+additional = Path('/private/tmp/pathwaymech-next-262-additional-chemistry')
+additional_receipt = additional / 'verification.json'
+ar = json.loads(verify(additional_receipt, '935f83f7060aacb3b0d513c9c109c89f8874b5652fe0d5058b6e4563ae6849ac'))
+assert len(ar['files']) == 4 and ar['exact_predecessor_reuse'] == 13 and ar['independent_issuing_comparisons'] == 8
+for row in ar['files']:
+    path = Path(row['path'])
+    assert path.parent == additional
+    verify(path, row['sha256'], row['bytes'])
+    copies.append((path, Path('source-evidence/additional-chemistry') / path.name, {'encoding': 'identity'}))
+copies.append((additional_receipt, Path('source-evidence/additional-chemistry/verification.json'), {'encoding': 'identity'}))
+
+for name in ['discovery-intake.json', 'native-intake.json', 'chemistry-artifact-intake.json',
+             'chemistry-root-intake-summary.json', 'formal-equation-independent-replay.json',
+             'rhea-original-independent-replay.json', 'primary-artifact-intake.json',
+             'biological-identity-intake.json', 'merged-baseline-worktree.json']:
+    path = CI / name
+    assert path.is_file()
+    copies.append((path, Path('root-verification') / name, {'encoding': 'identity'}))
+
+for name in ['verify_formal_equations.py', 'verify_rhea_original_equations.py',
+             'verify_primary_intake.py', 'verify_biological_identity_intake.py',
+             'resolve_additional_chemical_needs.py', 'retain_frozen_sources.py']:
+    path = CI / name
+    assert path.is_file(), path
+    copies.append((path, Path('root-verification/helpers') / (name + '.txt'), {'encoding': 'identity', 'role': 'inert reproduction helper'}))
+
+destinations = [str(x[1]) for x in copies]
+assert len(set(destinations)) == len(destinations), 'duplicate retained destination'
+receipt = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'role': 'Root source retention integrity verification; not independent scientific acceptance',
+           'packages': checks, 'retained_count': len(copies),
+           'retained_bytes': sum(p.stat().st_size for p, _, _ in copies),
+           'additional_chemical_identities': 21,
+           'mode': 'write' if args.write else 'verify-only', 'files': []}
+for path, destination, metadata in copies:
+    raw = path.read_bytes()
+    receipt['files'].append(dict(metadata, source=str(path), retained_path=str(destination),
+                                 bytes=len(raw), sha256=digest(raw)))
+
+if args.write:
+    assert not OUT.exists(), 'Refuse to overwrite maintained source retention'
+    for (path, destination, _), row in zip(copies, receipt['files']):
+        data = verify(path, row['sha256'], row['bytes'])
+        target = OUT / destination
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        assert target.read_bytes() == data
+    target = OUT / 'root-verification/source-retention-receipt.json'
+else:
+    target = CI / 'frozen-source-retention-preflight.json'
+assert not target.exists(), target
+target.write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'receipt': str(target), 'sha256': digest(target.read_bytes()),
+                  'packages': len(checks), 'verified_files': sum(r['verified_files'] for r in checks),
+                  'retained_files': len(copies), 'retained_bytes': receipt['retained_bytes'],
+                  'mode': receipt['mode']}))

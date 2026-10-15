@@ -1,0 +1,70 @@
+"""Freeze the finite authority successor check; no maintained writes."""
+from pathlib import Path
+import datetime,gzip,hashlib,json
+B=Path('/private/tmp/pathwaymech-next-262-authority-successor')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(name,value):
+ p=B/name;assert not p.exists(),('Preserve frozen artifact',p)
+ p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(value,indent=2,ensure_ascii=False)+'\n')
+def main():
+ assert not(B/'artifact-manifest.json').exists()
+ v=json.loads((B/'verification.json').read_text());assert v['status']=='passed' and v['locator_only_changes']==10 and v['actual_records_checked']==259
+ actual=Path('/private/tmp/pathwaymech-next-262-20261014/data/pathways/catechol-degradation-ii.yaml');assert sha(actual)==v['repaired_record_sha256']
+ text=f'''# Next262 authority successor binding
+
+The repaired record `{v['repaired_record_sha256']}` is compatible with the
+unchanged frozen authority proposal. A fresh complete tree comparison found
+exactly ten changed `source_locator` leaves across four edges. Replacing those
+ten leaves reconstructs the initial record object exactly. All 177 selected
+identifiers, labels and categories are unchanged; all other record content is
+unchanged. The exact field and byte deltas are retained.
+
+The frozen `rebind_record_successor.py` helper was run with a new external
+output directory. Its receipt agrees with the independent tree comparison.
+The original authority package and maintained files were not modified by this
+work. Its complete owned regular-file manifest and hidden/ignored inventory
+were verified before and after the consumer check. The external cache files
+were not consumed or revalidated here; their source bindings remain in the
+original frozen canonical-builder receipts.
+
+The unchanged real offline `pathwaymech.cli.check_identifiers_main` consumer
+passed on all 259 actual record byte sequences: 258 unchanged predecessor
+records and the exact repaired successor. A separate external shadow tree
+used the frozen proposed authority outputs, containing 5,172 terms, and the
+unchanged policy. No synthetic selection record was passed to the consumer.
+All current record bytes and runtime files were unchanged after checking.
+
+`verification.json`, `independent-locator-delta-check.json`,
+`identifier-consumer-receipt.json` and `actual-corpus-bindings.json` contain
+the precise scope, source hashes, actual times and corpus inventory. The
+initial record was `021069187297588d42fc144e192f572beeb2e9c7415196c9ebd79550c688dd3e`.
+The authority package manifest remains
+`21d966a875c2b0e79a22611cfa2db672a20cc58c41fbba3fba2dafa9881b1fa9`.
+
+This is bounded authority author verification, not an independent scientific
+verdict or a substitute for full repository, render, history, tests or saved
+review gates. Root owns maintained promotion and scientific dispositions.
+No authority selection or builder rerun was necessary for these locator-only
+changes. Compact evidence uses lossless gzip for logs, YAML and large
+receipts, and inert Python text for helpers. The full external shadow corpus
+is hash-bound but excluded from compact retention. All owned files are in the
+complete manifest, including hidden and ignored paths; the manifest excludes
+itself.
+'''
+ (B/'HANDOFF.md').write_text(text)
+ rows=[]
+ for original in sorted(B.iterdir()):
+  if not original.is_file():continue
+  rel=original.relative_to(B).as_posix()
+  if original.suffix=='.py':dest=B/'compact'/(rel+'.txt');encoding='inert_python_text';encoded=original.read_bytes()
+  elif original.suffix in ['.yaml','.log','.patch']or original.stat().st_size>50000:dest=B/'compact'/(rel+'.gz');encoding='gzip_lossless';encoded=gzip.compress(original.read_bytes(),mtime=0)
+  else:dest=original;encoding='identity';encoded=None
+  if dest!=original:assert not dest.exists();dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(encoded)
+  if encoding=='gzip_lossless':assert gzip.decompress(dest.read_bytes())==original.read_bytes()
+  elif encoding=='inert_python_text':assert dest.read_bytes()==original.read_bytes()
+  rows.append({'original_path':rel,'retain_path':dest.relative_to(B).as_posix(),'encoding':encoding,'original_sha256':sha(original),'sha256':sha(dest),'original_bytes':original.stat().st_size,'bytes':dest.stat().st_size})
+ save('compact-retention-selection.json',{'root':str(B),'scope':'Finite successor-delta and unchanged real consumer evidence; shadow corpus is separately hash-bound','files':rows,'count':len(rows),'bytes':sum(r['bytes']for r in rows),'excluded':['identifier-consumer-root copied actual corpus, policy and proposed snapshots']})
+ files=[{'path':p.relative_to(B).as_posix(),'sha256':sha(p),'bytes':p.stat().st_size}for p in sorted(B.rglob('*'))if p.is_file()and p.name!='artifact-manifest.json']
+ save('artifact-manifest.json',{'root':str(B),'role':'Frozen bounded authority successor verification; no maintained promotion or independent scientific verdict','frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'inventory_method':'Path.rglob includes hidden and ignored files; exact owned regular-file inventory excludes this manifest only','files':files,'count':len(files),'bytes':sum(r['bytes']for r in files)})
+ print(json.dumps({'handoff_sha256':sha(B/'HANDOFF.md'),'artifact_manifest_sha256':sha(B/'artifact-manifest.json'),'compact_selection_sha256':sha(B/'compact-retention-selection.json'),'compact_files':len(rows),'compact_bytes':sum(r['bytes']for r in rows),'all_files':len(files)},indent=2))
+if __name__=='__main__':main()

@@ -1,0 +1,286 @@
+"""Compose immutable author proposals and bind issuing structure context."""
+from pathlib import Path
+import copy
+import datetime
+import hashlib
+import json
+import sys
+import yaml
+from jsonschema import Draft7Validator, FormatChecker
+
+REPO = Path('/private/tmp/pathwaymech-next-262-20261014')
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+N = Path('/private/tmp/pathwaymech-next-262-native-author')
+P = Path('/private/tmp/pathwaymech-next-262-primary-author')
+BIO = Path('/private/tmp/pathwaymech-next-262-biological-identity')
+PRIMARY = Path('/private/tmp/pathwaymech-next-262-primary')
+RESEARCH = REPO / 'research/pathway_additions/2026-10-14-next-262'
+sys.path[:0] = [str(REPO / 'src'), str(REPO)]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import json_schema
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def load(path):
+    return json.loads(path.read_text())
+
+
+def verify_package(root, expected, count):
+    raw = (root / 'artifact-manifest.json').read_bytes()
+    assert sha(raw) == expected
+    rows = json.loads(raw)['files']
+    assert len(rows) == count
+    index = {}
+    for row in rows:
+        path = root / row['path']
+        assert path.resolve().is_relative_to(root)
+        data = path.read_bytes()
+        assert len(data) == row['bytes'] and sha(data) == row['sha256'], path
+        assert row['path'] not in index
+        index[row['path']] = row
+    actual = {str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}
+    assert actual == set(index) | {'artifact-manifest.json'}
+    return index
+
+
+native_files = verify_package(N, 'a8458aa08bd8815b2b2aafe3f47ca71168bd871b7c874aa8ae064796acbf122a', 103)
+primary_files = verify_package(P, '5a0e816995e4a61020b53eae826343426f62b64556ee59f9e309548244be07a1', 52)
+native_bytes = (N / 'native-draft.yaml').read_bytes()
+assert sha(native_bytes) == '832e369a8aa0211ed2198b4aa6cbf4825bb24526ba0b7533a539513f6e005ab3'
+assert native_bytes == (P / 'inputs/native-author-draft-at-overlay-check.yaml').read_bytes()
+native = yaml.safe_load(native_bytes)
+record = copy.deepcopy(native)
+assert record['id'] == 'MetaCyc:PWY-5420'
+native_edges = {e['id']: copy.deepcopy(e) for e in record['mechanistic_edges']}
+assert len(native_edges) == 185
+nodes = {node['id']: node for field in ['taxa', 'participants', 'reactions'] for node in record[field]}
+new_node_ids = []
+for node in load(P / 'node-needs.json')['nodes']:
+    if node['id'] not in nodes:
+        assert node['id'] == 'CHEBI:58349'
+        record['participants'].append(copy.deepcopy(node))
+        nodes[node['id']] = record['participants'][-1]
+        new_node_ids.append(node['id'])
+assert new_node_ids == ['CHEBI:58349']
+for update in load(P / 'node-role-updates.json'):
+    node = nodes[update['id']]
+    assert update['id'] == 'CHEBI:57540' and node['category'] == update['expected_category'] == 'small_molecule'
+    assert update['category'] == 'cofactor'
+    node['category'] = update['category']
+
+refs = {reference['id']: reference for reference in record['references']}
+for reference in load(P / 'reference-needs.json')['references']:
+    assert reference['id'] not in refs or refs[reference['id']] == reference
+    refs[reference['id']] = copy.deepcopy(reference)
+record['references'] = list(refs.values())
+patches = load(P / 'native-edge-patches.json')
+assert len(patches) == 33
+for patch in patches:
+    matches = [e for e in record['mechanistic_edges'] if all(e[key] == value for key, value in patch['selector'].items())]
+    assert len(matches) == 1, patch['id']
+    edge = matches[0]
+    assert edge['id'] == patch['expected_native_id']
+    assert sha(edge.get('description', '').encode()) == patch['expected_description_sha256']
+    edge['description'] = patch['description']
+    edge['evidence'].extend(copy.deepcopy(patch['evidence_append']))
+    if 'endpoint_qualifiers_replace' in patch:
+        edge['endpoint_qualifiers'] = copy.deepcopy(patch['endpoint_qualifiers_replace'])
+    assert edge['evidence'][:len(native_edges[edge['id']]['evidence'])] == native_edges[edge['id']]['evidence']
+primary_edges = load(P / 'primary-edges.json')
+assert len(primary_edges) == 29
+record['mechanistic_edges'].extend(copy.deepcopy(primary_edges))
+paragraphs = load(P / 'record-description-paragraphs.json')
+assert len(paragraphs) == 26
+record['description'] += '\n\n' + '\n\n'.join(row['description'] for row in paragraphs)
+preview = yaml.safe_load((P / 'combined-author-preview.yaml').read_text())
+assert record == preview, 'Root reconstruction must match the exact author preview before explicit root additions'
+
+# Each structure DOI is declared in its complete issuing entry. The reference
+# digest is explicitly the entry digest, never a digest of all associated files.
+structure_bindings = []
+source_indexes = {}
+for root in [BIO, PRIMARY]:
+    source_indexes[root] = {row['path']: row for row in load(root / 'artifact-manifest.json')['files']}
+
+
+def bind_original(root, relative, role, reference_id=None):
+    row = source_indexes[root][relative]
+    path = root / relative
+    data = path.read_bytes()
+    assert len(data) == row['bytes'] and sha(data) == row['sha256']
+    binding = {'path': str(path), 'sha256': sha(data), 'bytes': len(data), 'role': role}
+    if reference_id:
+        binding['reference_id'] = reference_id
+    structure_bindings.append(binding)
+    return data
+
+
+structure_specs = [
+    ('8IH6', BIO, 'originals/structure-lead/RCSB-8IH6-entry.json',
+     ['originals/exact-follow/8IH6-polymer1.json', 'originals/exact-follow/8IH6-polymer2.json',
+      'originals/exact-follow/8IH6-assembly1.json', 'originals/exact-follow/8IH6.cif']),
+    ('1BJP', PRIMARY, 'originals/RCSB-1BJP-entry.json',
+     ['originals/RCSB-1BJP-polymer1.json', 'originals/RCSB-1BJP-assembly1.json',
+      'originals/RCSB-1BJP-assembly2.json', 'originals/RCSB-1BJP-assembly3.json', 'originals/RCSB-1BJP.cif']),
+]
+structure_refs = {}
+for entry_id, root, entry_path, companions in structure_specs:
+    data = bind_original(root, entry_path, 'complete issuing entry')
+    entry = json.loads(data)
+    assert entry['rcsb_id'] == entry_id
+    doi_rows = [x for x in entry['database_2'] if x.get('database_id') == 'PDB' and x.get('database_code') == entry_id]
+    assert len(doi_rows) == 1
+    doi = doi_rows[0]['pdbx_DOI']
+    assert doi == '10.2210/pdb' + entry_id.lower() + '/pdb'
+    reference_id = 'DOI:' + doi
+    structure_bindings[-1]['reference_id'] = reference_id
+    for companion in companions:
+        bind_original(root, companion, 'associated complete polymer/assembly/mmCIF original', reference_id)
+    version = entry['rcsb_accession_info']
+    reference = {'id': reference_id, 'title': 'RCSB PDB ' + entry_id + ' complete issuing entry and associated structure context',
+                 'url': 'https://data.rcsb.org/rest/v1/core/entry/' + entry_id,
+                 'source_version': 'Entry revision ' + str(version['major_revision']) + '.' + str(version['minor_revision']) +
+                    '; source_sha256 hashes entry JSON only. Exact associated polymer, assembly and mmCIF originals are separately bound in the source dossier.',
+                 'source_sha256': sha(data)}
+    assert reference_id not in refs
+    refs[reference_id] = reference
+    structure_refs[entry_id] = reference_id
+
+uniprot_sources = {
+    'Q9KWS3': BIO / 'originals/public/Q9KWS3.json',
+    'Q9KWS4': BIO / 'originals/public/Q9KWS4.json',
+    'Q01468': Path('/private/tmp/pathwaymech-next-261-biological-identities/originals/initial/uniprot-Q01468.json'),
+}
+for accession, path in uniprot_sources.items():
+    data = path.read_bytes()
+    original = json.loads(data)
+    assert original['primaryAccession'] == accession
+    if path.is_relative_to(BIO):
+        assert sha(data) == source_indexes[BIO][str(path.relative_to(BIO))]['sha256']
+    else:
+        proof = load(BIO / 'projections/XylH-1BJP-reference-sequence-check.json')['uniprot']
+        assert str(path) == proof['path'] and sha(data) == proof['sha256']
+    reference_id = 'UniProtKB:' + accession
+    structure_bindings.append({'path': str(path), 'sha256': sha(data), 'bytes': len(data),
+                               'reference_id': reference_id, 'role': 'Complete issuing sequence/name counterpart; no automatic assay or whole-route claim'})
+    reference = {'id': reference_id, 'title': 'UniProtKB ' + accession + ' issuing sequence and accession-specific name context',
+                 'url': 'https://rest.uniprot.org/uniprotkb/' + accession + '.json',
+                 'source_version': 'Frozen complete issuing JSON; original acquisition is bound in the biological identity dossier',
+                 'source_sha256': sha(data)}
+    assert reference_id not in refs or refs[reference_id] == reference
+    refs[reference_id] = reference
+
+ena_data = bind_original(PRIMARY, 'originals/AP3-AB020521.embl', 'Complete ENA AB020521.1 deposited CDS original; cited by its issuing URL in narrative')
+assert b'AB020521' in ena_data and all(x in ena_data for x in [b'BAB03534.1', b'BAB03535.1', b'BAB03536.1'])
+biological_contexts = load(P / 'biological-context-proposal.json')
+assert len(biological_contexts) == 3
+context_citations = {
+    'ap3-cds-naming-split': 'Issuing deposit: https://www.ebi.ac.uk/ena/browser/view/AB020521.1; exact deposited CDS and translated sequence proof are retained in the source dossier. [UniProtKB:Q9KWS3; PMID:11081795]',
+    'ap3-8ih6-engineered': '[DOI:10.2210/pdb8ih6/pdb; UniProtKB:Q9KWS3; UniProtKB:Q9KWS4]',
+    'xylh-1bjp-modified': '[DOI:10.2210/pdb1bjp/pdb; UniProtKB:Q01468; PMID:9778344]',
+}
+for context in biological_contexts:
+    record['description'] += '\n\n' + context['proposed_record_text'] + ' ' + context_citations[context['id']]
+
+# Complement the paper's modified-assembly observation with the exact deposit
+# assembly statements, retaining the paper and its endpoint qualification.
+xylh = next(e for e in record['mechanistic_edges'] if e['id'] == 'p029')
+assembly_paths = [PRIMARY / ('originals/RCSB-1BJP-assembly' + str(i) + '.json') for i in [1, 2, 3]]
+assert all(load(path)['pdbx_struct_assembly']['oligomeric_count'] == 6 for path in assembly_paths)
+xylh['evidence'].append({'reference_id': structure_refs['1BJP'],
+    'source_assertion': 'Each of the three deposited author/software-defined 1BJP biological assemblies has oligomeric_count 6 and oligomeric_details hexameric.',
+    'source_locator': 'Official core/assembly/1BJP/1, /2 and /3 JSON: $.pdbx_struct_assembly.oligomeric_count and oligomeric_details; complete originals separately hash-bound in integration/issuing-structure-context.json.'})
+
+extra = Path('/private/tmp/pathwaymech-next-262-primary-extra-chemistry')
+nadp = load(extra / 'ChEBI-58349.json')
+nadp_proof = load(extra / 'verification.json')
+nadp_bytes = (extra / 'ChEBI-58349.json').read_bytes()
+assert sha(nadp_bytes) == nadp_proof['issuing_original_sha256'] == '926fac9840c5fd2ba87c3a19b2a0ee1a5567446564d1a351e870abc8714bbd73'
+assert nadp['chebi_accession'] == 'CHEBI:58349' and nadp['chemical_data']['charge'] == -3
+assert nadp['chemical_data']['formula'] == 'C21H25N7O17P3'
+assert nadp['default_structure']['standard_inchi_key'] == 'XJLXINKUBYWONI-NNYOXOHSSA-K'
+refs['CHEBI:58349'] = {'id': 'CHEBI:58349', 'title': 'ChEBI NADP(3-) issuing chemical identity',
+    'url': 'https://www.ebi.ac.uk/chebi/backend/api/public/compound/58349/',
+    'source_version': 'Complete issuing JSON originally retrieved 2026-10-14; exact bytes reused. Chemical normalization does not assert measured assay protonation.',
+    'source_sha256': sha(nadp_bytes)}
+nadp_edge = next(e for e in record['mechanistic_edges'] if e['id'] == 'p020')
+assert nadp_edge['object'] == 'CHEBI:58349'
+nadp_edge['evidence'].append({'reference_id': 'CHEBI:58349',
+    'source_assertion': 'ChEBI 58349 is NADP(3-), formula C21H25N7O17P3 and charge -3, defined as a species arising from deprotonation of the phosphate and diphosphate OH groups of NADP+.',
+    'source_locator': '$.chebi_accession, $.name, $.chemical_data.formula, $.chemical_data.charge and $.definition; complete issuing JSON'})
+record['references'] = list(refs.values())
+
+validate_record(record)
+strict_errors = [str(e) for e in Draft7Validator(json.loads(json_schema()), format_checker=FormatChecker()).iter_errors(record)]
+assert not strict_errors, strict_errors
+edges = {e['id']: e for e in record['mechanistic_edges']}
+assert len(edges) == len(record['mechanistic_edges']) == 214
+assert all((edges[k]['subject'], edges[k]['predicate'], edges[k]['object']) ==
+           (v['subject'], v['predicate'], v['object']) for k, v in native_edges.items())
+assert all(edges[k]['evidence'][:len(v['evidence'])] == v['evidence'] for k, v in native_edges.items())
+assert record['taxa'] == native['taxa'] and record['reactions'] == native['reactions']
+claims = load(P / 'claim-dispositions.json')
+assert len(claims) == 198
+assert all(set(row['edge_ids']) <= set(edges) for row in claims)
+assert len(load(P / 'record-narrative-units.json')) == 198
+assert all(row['description'] in record['description'] for row in paragraphs)
+
+chemistry = load(Path('/private/tmp/pathwaymech-next-262-chemistry/formal-chemistry-proof.json'))
+direction_map = {row['native_reaction']: row for row in load(N / 'native-formal-direction-correspondence.json')}
+formal_checks = []
+for fact in chemistry['material_facts']:
+    reaction = direction_map[fact['reaction']]['selected_route_identifier']
+    triple = (fact['id'], 'consumes', reaction) if fact['role'] == 'input' else (reaction, 'produces', fact['id'])
+    matches = [e for e in edges.values() if (e['subject'], e['predicate'], e['object']) == triple]
+    assert len(matches) == 1, triple
+    edge = matches[0]
+    assert any(v['reference_id'] == 'MetaCyc:' + fact['reaction'] and v.get('source_locator') == fact['locator'] for v in edge['evidence'])
+    formal_checks.append({'edge_id': edge['id'], 'reaction': reaction, 'compound': fact['id'],
+                          'role': fact['role'], 'coefficient': fact['coefficient'], 'original_locator': fact['locator']})
+assert len(formal_checks) == 28
+order = [direction_map[step['native_reaction']]['selected_route_identifier'] for step in chemistry['steps']]
+for left, right in zip(order, order[1:]):
+    assert any(e['subject'] == left and e['object'] == right and e['predicate'] == 'provides_input_for' for e in edges.values())
+    assert any(e['subject'] == left and e['object'] == right and e['predicate'] == 'precedes' for e in edges.values())
+
+baseline = load(CI / 'merged-baseline-worktree.json')
+assert baseline['pathway_records'] == 258
+for row in baseline['records']:
+    assert sha((REPO / row['path']).read_bytes()) == row['sha256'], row['path']
+target = REPO / 'data/pathways/catechol-degradation-ii.yaml'
+assert not target.exists()
+serialized = yaml.safe_dump(record, sort_keys=False, allow_unicode=True, width=100)
+assert yaml.safe_load(serialized) == record
+target.write_text(serialized)
+assert yaml.safe_load(target.read_text()) == record
+integration = RESEARCH / 'integration'
+integration.mkdir(exist_ok=False)
+structure_receipt = {'role': 'Root integration source binding, not independent review',
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'sources': structure_bindings,
+    'reference_digest_scope': 'Each structure reference source_sha256 is its complete entry JSON only. Companion originals retain their individual hashes above; no aggregate-original hash is claimed.',
+    'biological_context_proposals': biological_contexts,
+    'chemical_normalization': nadp_proof,
+    'limits': ['Sequence equality does not prove assay identity or physiological assembly.', 'Modern engineered 8IH6 is distinct from historical native AP3 preparations.', 'No new engineered complex graph identity was invented.']}
+(integration / 'issuing-structure-context.json').write_text(json.dumps(structure_receipt, indent=2) + '\n')
+selected = {record['id']} | {n['id'] for field in ['taxa', 'participants', 'reactions'] for n in record[field]}
+result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'role': 'Root integration author; independent review pending',
+    'record': {'path': str(target), 'sha256': sha(target.read_bytes()), 'counts': {k: len(record[k]) for k in ['taxa', 'participants', 'reactions', 'mechanistic_edges', 'references']}},
+    'native_manifest': sha((N / 'artifact-manifest.json').read_bytes()), 'primary_manifest': sha((P / 'artifact-manifest.json').read_bytes()),
+    'all155_author_files_rehashed': True, 'root_reconstruction_equals_frozen_author_preview_before_root_additions': True,
+    'native_patches': len(patches), 'primary_edges': len(primary_edges), 'primary_claim_dispositions': len(claims),
+    'primary_description_paragraphs_preserved': len(paragraphs), 'all_native_triples_and_original_evidence_preserved': True,
+    'root_additions': ['Three accession/structure context paragraphs with explicit issuing references', 'Six issuing references: two deposited-structure DOIs, three UniProt records and ChEBI58349', 'Two structured issuing-source evidence additions on p029 and p020'],
+    'all258_prior_records_unchanged': True, 'shape_and_closed_schema_passed': True,
+    'formal_material_checks': formal_checks, 'formal_order': order,
+    'selected_ids': sorted(selected), 'selected_count': len(selected),
+    'remaining': ['Selected authority union', 'Independent scientific and technical findings', 'History, render/KGX and all full gates', 'Authorized PR/review/merge workflow']}
+(integration / 'record-integration.json').write_text(json.dumps(result, indent=2) + '\n')
+(integration / 'integrate_record.py.txt').write_bytes(Path(__file__).read_bytes())
+selection = {'record_sha256': result['record']['sha256'], 'nodes': [{'id': record['id'], 'label': record['label'], 'collection': 'pathway'}] +
+             [dict(node, collection=field) for field in ['taxa', 'participants', 'reactions'] for node in record[field]],
+             'selected_count': len(selected), 'reference_ids': sorted(refs)}
+(RESEARCH / 'identifier-selection.json').write_text(json.dumps(selection, indent=2) + '\n')
+print(json.dumps(result['record'] | {'selected_count': len(selected)}))

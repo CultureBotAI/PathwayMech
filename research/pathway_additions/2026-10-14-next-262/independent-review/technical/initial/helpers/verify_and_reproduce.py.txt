@@ -1,0 +1,53 @@
+from pathlib import Path
+import hashlib,json,gzip,datetime,shutil,subprocess,os,re,sys
+B=Path('/private/tmp/pathwaymech-next-262-native-author');O=Path('/private/tmp/pathwaymech-next-262-independent-technical');COPY=O/'isolated-native-reproduction';R=Path('/private/tmp/pathwaymech-next-262-20261014')
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def sha(p):
+ with Path(p).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def read(p):return json.loads(Path(p).read_text())
+def dump(n,j):(O/n).write_text(json.dumps(j,indent=2)+'\n')
+def bind(p):return {'path':str(p),'sha256':sha(p),'bytes':Path(p).stat().st_size}
+manifest=B/'artifact-manifest.json';assert sha(manifest)=='a8458aa08bd8815b2b2aafe3f47ca71168bd871b7c874aa8ae064796acbf122a'
+assert sha(B/'native-draft.yaml')=='832e369a8aa0211ed2198b4aa6cbf4825bb24526ba0b7533a539513f6e005ab3'
+contracts=read(B/'contract-and-input-bindings.json');start=now()
+dump('preparation-input-capture.json',{'captured_utc':start,'role':'Independent technical preparation for native-author draft; actual final integrated record review remains pending.','independence':'Reviewer authored only the262 duplicate-assessment successor, not native record, native/chemistry/biological/primary source packages or overlay. No independent full scientific review is claimed.','native_manifest':bind(manifest),'native_draft':bind(B/'native-draft.yaml'),'repository_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'repository_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=R,text=True).strip(),'guidance':[bind(R/p)for p in ['.claude/skills/review-yaml-record/SKILL.md','docs/CAUSAL_GRAPHS.md','docs/record-review-profile.md','CLAUDE.md','docs/CURATION.md','.claude/skills/add-pathway/SKILL.md','docs/HARMONIZATION.md']],'canonical_inspect':'Pending actual maintained target; external author draft is not yet a canonical record review target.'})
+packages=[(B,sha(manifest))]+[(Path(contracts[k]['path']).parent,contracts[k]['sha256'])for k in ['native_manifest','chemistry_manifest','identity_manifest','primary_manifest']]
+def verify_package(p,expected):
+ m=p/'artifact-manifest.json';assert sha(m)==expected
+ rows=read(m)['files'];actual={str(f.relative_to(p))for f in p.rglob('*')if f.is_file()and f!=m};expected_paths={x['path']for x in rows};assert actual==expected_paths,(p,actual-expected_paths,expected_paths-actual)
+ for x in rows:
+  f=p/x['path'];assert sha(f)==x['sha256'] and f.stat().st_size==x['bytes'],f
+ return {'root':str(p),'manifest':bind(m),'files_verified':len(rows),'hidden_and_ignored_included':True,'exact_inventory':True}
+verified=[verify_package(p,h)for p,h in packages]
+compact=read(B/'compact-retention-manifest.json')['files'];pairs=[]
+for x in compact:
+ raw=B/x['source_path'];stored=B/x['stored_path'];assert sha(raw)==x['source_sha256'] and raw.stat().st_size==x['source_bytes'];assert sha(stored)==x['stored_sha256'] and stored.stat().st_size==x['stored_bytes'];decoded=gzip.decompress(stored.read_bytes())if x['encoding']=='gzip'else stored.read_bytes();assert decoded==raw.read_bytes();pairs.append({'source_path':x['source_path'],'stored_path':x['stored_path'],'encoding':x['encoding'],'decoded_sha256':hashlib.sha256(decoded).hexdigest()})
+for c in contracts['read_contracts_and_replayed_modules']+contracts['current_authorities']:
+ assert sha(c['path'])==c['sha256'] and Path(c['path']).stat().st_size==c['bytes'],c['path']
+dump('frozen-package-preservation.initial.json',{'checked_utc':now(),'packages':verified,'compact_manifest':bind(B/'compact-retention-manifest.json'),'compact_entries_verified':len(pairs),'lossless_pairs':pairs,'contract_inputs_match':True})
+assert not COPY.exists();shutil.copytree(B,COPY)
+adaptations=[]
+for name in ['build_native.py','check_and_disposition.py']:
+ p=COPY/'helpers'/name;before=p.read_text();old="Path('/private/tmp/pathwaymech-next-262-native-author')";assert before.count(old)==1;after=before.replace(old,'Path('+repr(str(COPY))+')');p.write_text(after);adaptations.append({'helper':name,'original':bind(B/'helpers'/name),'isolated':bind(p),'sole_edit':'Redirect B output root to isolated reproduction copy; source packages and repository modules remain read-only.'})
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1');runs=[]
+for name in ['build_native.py','check_and_disposition.py']:
+ cmd=[sys.executable,'-B',str(COPY/'helpers'/name)];t=now();p=subprocess.run(cmd,cwd=COPY,capture_output=True,env=env);(O/(name+'.stdout')).write_bytes(p.stdout);(O/(name+'.stderr')).write_bytes(p.stderr);runs.append({'command':cmd,'started':t,'finished':now(),'exit_code':p.returncode,'stdout':bind(O/(name+'.stdout')),'stderr':bind(O/(name+'.stderr'))});assert p.returncode==0,(name,p.stderr.decode())
+assert sha(COPY/'native-draft.yaml')==sha(B/'native-draft.yaml')
+# Every generated output is compared. Differences in bound output path/time are explicit.
+written=set()
+for name in ['build_native.py','check_and_disposition.py']:
+ text=(B/'helpers'/name).read_text();written.update(re.findall(r"write\('([^']+)'",text))
+written.add('native-draft.yaml');comparisons=[]
+for n in sorted(written):
+ a=(B/n).read_bytes();b=(COPY/n).read_bytes();same=a==b;reason='exact bytes'
+ if not same:
+  ja=json.loads(a);jb=json.loads(b)
+  if n=='verification.json':
+   for k in ['started_at','finished_at']:ja.pop(k);jb.pop(k)
+   jb['record']['path']=jb['record']['path'].replace(str(COPY),str(B));assert ja==jb;reason='Only actual execution times and isolated output path differ.'
+  elif n=='contract-and-input-bindings.json':assert json.dumps(ja,sort_keys=True)==json.dumps(jb,sort_keys=True).replace(str(COPY),str(B));reason='Only copied baseline-authority paths differ.'
+  else:raise AssertionError(('Unexpected nondeterministic output',n))
+ comparisons.append({'name':n,'original':bind(B/n),'reproduced':bind(COPY/n),'exact_bytes':same,'comparison':reason})
+post=[verify_package(p,h)for p,h in packages]
+dump('reproduction-receipt.json',{'started_at':start,'finished_at':now(),'python':sys.version,'scope':'Independent execution of frozen author helpers in an isolated copy; source equivalence and technical evidence checks remain separate independent work.','adaptations':adaptations,'runs':runs,'generated_output_comparisons':comparisons,'draft_exact_bytes_reproduced':True,'all_frozen_packages_unchanged_after_run':post,'no_maintained_git_or_github_writes':True,'limitations':['Reproduction is not scientific validation.','Full repository gates and actual final integrated target are pending.','Maintained worktree research may advance concurrently; frozen runtime modules were separately hash-bound.']})
+print(json.dumps({'packages':[(x['root'],x['files_verified'])for x in verified],'compact_entries':len(pairs),'reproduced_outputs':len(comparisons),'draft_exact':True},indent=2))

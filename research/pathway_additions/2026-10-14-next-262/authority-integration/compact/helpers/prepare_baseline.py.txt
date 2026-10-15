@@ -1,0 +1,99 @@
+"""Copy and hash-bind the 262 baseline in an external author staging directory."""
+from pathlib import Path
+import datetime, hashlib, json, shutil, subprocess, sys
+sys.dont_write_bytecode=True
+
+B = Path(__file__).resolve().parents[1]
+R = Path('/private/tmp/pathwaymech-next-262-20261014')
+CACHE = Path('/private/tmp/pathwaymech-next-261-authority-integration/source-cache')
+COMMIT = 'fbccbdc027f2a86ad4919e9dbbb16a736cc0746a'
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+def save(relative, value):
+    path = B / relative
+    assert not path.exists(), ('preserve existing attempt', path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+def copy(relative, destination):
+    original = R / relative
+    path = B / destination / relative
+    assert not path.exists()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(original, path)
+    digest = sha(path)
+    assert digest == sha(original)
+    return dict(relative_path=str(relative), path=str(path), maintained_path=str(original), sha256=digest, bytes=path.stat().st_size)
+
+def descriptors(value, context):
+    if isinstance(value, dict):
+        if isinstance(value.get('path'), str) and isinstance(value.get('sha256'), str):
+            yield context, value
+        for key, item in value.items():
+            yield from descriptors(item, context + '/' + key)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from descriptors(item, context + '/' + str(index))
+
+def main():
+    files = [copy(Path(relative), 'baseline') for relative in [
+        'conf/identifier_sources.json', 'conf/rhea_identifier_updates.json',
+        'conf/identifier_policy.yaml', 'data/identifier_authorities/sources.json',
+        'data/identifier_authorities/ontology.json']]
+    baseline_paths = subprocess.run(['git','-C',str(R),'ls-tree','-r','--name-only',COMMIT,'--','data/pathways'],check=True,capture_output=True,text=True).stdout.splitlines()
+    records = [copy(Path(relative), 'records') for relative in baseline_paths if relative.endswith('.yaml')]
+    for row in records:
+        original_bytes=subprocess.run(['git','-C',str(R),'show',COMMIT+':'+row['relative_path']],check=True,capture_output=True).stdout
+        assert hashlib.sha256(original_bytes).hexdigest()==row['sha256'], ('Baseline record changed',row['relative_path'])
+    runtime = [copy(path.relative_to(R), 'runtime') for directory in ['src', 'scripts']
+               for path in sorted((R / directory).rglob('*.py')) if path.is_file()]
+    manifest = json.loads((B / 'baseline/conf/identifier_sources.json').read_text())
+    updates = json.loads((B / 'baseline/conf/rhea_identifier_updates.json').read_text())
+    found = list(descriptors(manifest, 'identifier_sources')) + list(descriptors(updates, 'rhea_updates'))
+    original_rows, seen = [], {}
+    for context, entry in found:
+        relative = Path(entry['path'])
+        assert not relative.is_absolute() and '..' not in relative.parts
+        original = CACHE / relative
+        assert original.is_file(), ('missing original in complete successor cache', original)
+        resolved = original.resolve()
+        digest = seen.setdefault(resolved, sha(resolved)) if resolved not in seen else seen[resolved]
+        assert digest == entry['sha256'], (original, 'hash mismatch')
+        target = B / 'source-cache' / relative
+        if target.is_symlink():
+            assert target.resolve() == resolved
+        else:
+            assert not target.exists()
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.symlink_to(resolved)
+        original_rows.append(dict(context=context, cache_relative_path=str(relative), path=str(target), resolved=str(resolved), sha256=digest, bytes=resolved.stat().st_size))
+    snapshots = {name: json.loads((B / 'baseline/data/identifier_authorities' / (name + '.json')).read_text()) for name in ['sources', 'ontology']}
+    terms = set(snapshots['sources']['terms']) | set(snapshots['ontology']['terms'])
+    assert len(terms) == 5103
+    assert len(manifest) == 1142
+    assert len(records) == 258
+    save('retained/baseline-record-bindings.json', records)
+    save('retained/runtime-bindings.json', runtime)
+    save('retained/retained-authority-identifiers.json', sorted(terms))
+    save('retained/baseline-original-cache-verification.json', dict(
+        baseline_commit=COMMIT, manifest_entries=len(manifest), hash_bound_descriptors=len(found),
+        unique_originals=len(seen), originals=original_rows,
+        search_scope='Complete recursive JSON source-descriptor inventory including nested companions and Rhea updates; exact cache paths followed independent of gitignore. No filesystem absence inferred outside this bounded inventory.',
+        cache_root=str(CACHE)))
+    report = dict(role='Authority integration author; not independent review', baseline_commit=COMMIT,
+        utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), baseline_files=files,
+        records=len(records), runtime_python_files=len(runtime), source_terms=len(snapshots['sources']['terms']),
+        ontology_terms=len(snapshots['ontology']['terms']), source_owners=len(snapshots['sources']['sources']),
+        ontology_owners=len(snapshots['ontology']['sources']), total_terms=len(terms),
+        cache_descriptors=len(found), unique_originals=len(seen), helper_sha256=sha(__file__), maintained_files_edited=False)
+    save('retained/baseline-preparation.json', report)
+    print(json.dumps({key: report[key] for key in ['records', 'total_terms', 'cache_descriptors', 'unique_originals', 'maintained_files_edited']}))
+
+if __name__ == '__main__':
+    main()

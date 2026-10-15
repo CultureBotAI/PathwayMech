@@ -1,0 +1,125 @@
+"""Independently search the full pinned Rhea RDF for exact finite equations."""
+from pathlib import Path
+from collections import defaultdict, Counter
+import csv
+import datetime
+import gzip
+import hashlib
+import json
+import re
+import xml.etree.ElementTree as ET
+
+B = Path('/private/tmp/pathwaymech-next-262-chemistry')
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+OUT = CI / 'rhea-original-independent-replay.json'
+assert not OUT.exists()
+RDF = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+RH = 'http://rdf.rhea-db.org/'
+inventory = json.loads((B / 'complete-input-inventory.json').read_text())
+sources = [x for x in inventory['independent_whole_authority_sources'] if x['path'].endswith(('.rdf.gz', '.tsv'))]
+assert len(sources) == 2
+for source in sources:
+    assert hashlib.sha256(Path(source['path']).read_bytes()).hexdigest() == source['sha256']
+graph = defaultdict(lambda: defaultdict(set))
+fragments = 0
+with gzip.open(next(x['path'] for x in sources if x['path'].endswith('.gz')), 'rb') as stream:
+    for event, element in ET.iterparse(stream, events=['end']):
+        if element.tag != RDF + 'Description':
+            continue
+        subject = element.get(RDF + 'about')
+        assert subject
+        fragments += 1
+        for child in element:
+            name = child.tag.rsplit('}', 1)[-1]
+            if name in {'substrates', 'products', 'contains', 'compound', 'chebi', 'status', 'accession'} or name.startswith('contains'):
+                value = child.get(RDF + 'resource')
+                if value is None:
+                    value = child.text
+                assert value is not None, (subject, name)
+                graph[subject][name].add(value)
+        # Register every original subject even when no equation-relevant fields exist.
+        graph[subject]
+        element.clear()
+
+rows = list(csv.DictReader(Path(next(x['path'] for x in sources if x['path'].endswith('.tsv'))).open(), delimiter='\t'))
+assert len({row['RHEA_ID_MASTER'] for row in rows}) == len(rows)
+coefficient_keys = Counter()
+unresolved = []
+symbolic = []
+equations = []
+
+def one(values, context):
+    assert len(values) == 1, (context, sorted(values))
+    return next(iter(values))
+
+def read_side(side):
+    node = graph[side]
+    participants = node.get('contains', set())
+    assert participants, ('empty side', side)
+    assigned = {}
+    for key, members in node.items():
+        if key == 'contains' or not key.startswith('contains'):
+            continue
+        coefficient_keys[key] += 1
+        coefficient = key.removeprefix('contains')
+        for participant in members:
+            assert participant not in assigned, (side, participant, 'multiple coefficients')
+            assigned[participant] = coefficient
+    assert set(assigned) == participants, (side, 'coefficient coverage')
+    result = []
+    for participant in sorted(participants):
+        compound = one(graph[participant].get('compound', set()), participant)
+        accession = one(graph[compound].get('accession', set()), compound + ' accession')
+        if graph[compound].get('chebi'):
+            chebi = one(graph[compound]['chebi'], compound)
+            match = re.fullmatch(r'http://purl\.obolibrary\.org/obo/CHEBI_(\d+)', chebi)
+            assert match and accession == 'CHEBI:' + match.group(1), (compound, chebi, accession)
+        else:
+            assert re.fullmatch(r'(GENERIC|POLYMER):[0-9]+', accession), (compound, accession)
+        # Preserve whole generic/polymer identity; reactive parts are not free ChEBI molecules.
+        result.append((accession, assigned[participant]))
+    return sorted(result)
+
+for row in rows:
+    for orientation in ['LR', 'RL']:
+        identity = row['RHEA_ID_' + orientation]
+        node = graph[RH + identity]
+        try:
+            left = read_side(one(node.get('substrates', set()), identity + ' substrates'))
+            right = read_side(one(node.get('products', set()), identity + ' products'))
+        except (AssertionError, KeyError) as error:
+            unresolved.append({'id': identity, 'master': row['RHEA_ID_MASTER'], 'error': str(error)})
+            continue
+        if any(not n.isdigit() for _, n in left + right):
+            symbolic.append({'id': identity, 'inputs': left, 'outputs': right})
+        equations.append({'id': identity, 'master': row['RHEA_ID_MASTER'], 'orientation': orientation,
+                          'inputs': left, 'outputs': right, 'status': sorted(node.get('status', []))})
+
+proof = json.loads((B / 'formal-chemistry-proof.json').read_text())
+queries = []
+for step in proof['steps']:
+    left = sorted((x['id'], str(x['coefficient'])) for x in step['inputs'])
+    right = sorted((x['id'], str(x['coefficient'])) for x in step['outputs'])
+    forward = [{k: v for k, v in equation.items() if k not in {'inputs', 'outputs'}}
+               for equation in equations if equation['inputs'] == left and equation['outputs'] == right]
+    reverse = [{k: v for k, v in equation.items() if k not in {'inputs', 'outputs'}}
+               for equation in equations if equation['inputs'] == right and equation['outputs'] == left]
+    queries.append({'step': step['step'], 'native_reaction': step['native_reaction'],
+                    'inputs': left, 'outputs': right, 'forward': forward, 'reverse': reverse,
+                    'matches_author_forward': forward == step['exact_Rhea_forward_candidates'],
+                    'matches_author_reverse': reverse == step['reverse_candidates']})
+result = {'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          'original_sources': sources, 'fragments': fragments, 'subjects': len(graph),
+          'direction_families': len(rows), 'parsed_direction_equations': len(equations),
+          'coefficient_property_counts': dict(coefficient_keys), 'unresolved': unresolved,
+          'symbolic_direction_count': len(symbolic), 'queries': queries,
+          'complete_equation_scan': not unresolved and len(equations) == 2 * len(rows),
+          'limitations': ['Exact finite ChEBI participant/coefficient comparison; symbolic coefficients remain distinct.',
+                          'Pinned Rhea release 142 only; no claim about future or current remote releases.',
+                          'Matching chemistry does not establish biological activity or irreversibility.']}
+OUT.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'receipt': str(OUT), 'sha256': hashlib.sha256(OUT.read_bytes()).hexdigest(),
+                  'fragments': fragments, 'subjects': len(graph), 'families': len(rows),
+                  'equations': len(equations), 'unresolved': len(unresolved),
+                  'unresolved_examples': unresolved[:8], 'symbolic': len(symbolic),
+                  'queries': [{'step': x['step'], 'forward': x['forward'], 'author_agrees': x['matches_author_forward'] and x['matches_author_reverse']} for x in queries]}))

@@ -1,0 +1,23 @@
+from pathlib import Path
+import json,hashlib,gzip,datetime
+O=Path('/private/tmp/pathwaymech-next-262-native')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+compress=['native-full-object-projection.json','native-slot-inventory.json','slot-disposition-ledger.json','prose-claim-context-ledger.json','complete-direct-reference-dispositions.json','complete-nested-reference-dispositions.json','native-prose-link-dispositions.json','source-assertion-proposal.json','formal-activity-closure.json','regulation-assertions.json','biological-relation-context.json','gene-product-identity-context.json','organism-scope-matrix.json','native-chemical-and-location-context.json','protein-feature-context.json','material-slot-structured-projection.json','native-bibliographic-metadata.json','compact-original-source-bindings.json','closure-round-final.json','explicit-prose-boundary-decisions.json']
+compression=[]
+for name in compress:
+ p=O/name;z=O/(name+'.gz');b=p.read_bytes();z.write_bytes(gzip.compress(b,compresslevel=9,mtime=0));assert gzip.decompress(z.read_bytes())==b;compression.append({'original':name,'original_bytes':len(b),'original_sha256':sha(p),'compressed':z.name,'compressed_bytes':z.stat().st_size,'compressed_sha256':sha(z),'lossless_roundtrip_verified':True})
+dump('compression-receipt.json',compression)
+selected=['HANDOFF.md','closure-summary.json','scope-and-open-gaps.json','curated-catalyst-scope-decisions.json','oxidative-conflicts-and-dispositions.json','alternative-catalyst-context.json','oxidative-primary-follow-proposal.json','evidence-code-definitions.json','frozen-discovery-bindings.json','predecessor-decision-bindings.json','predecessor-search-scope.json','compression-receipt.json','requested-initial.json','receipts/closure-execution-observations.json']
+# Complete full-object projection is retained losslessly; redundant inventory/structured projections stay external.
+selected.extend(n+'.gz' for n in compress if n not in ['native-slot-inventory.json','material-slot-structured-projection.json'])
+selected.extend(str(p.relative_to(O)) for d in ['predecessor-decisions','discovery-bindings'] for p in sorted((O/d).glob('*')) if p.is_file())
+selected.extend(['helpers/verify_frozen.py','helpers/project.py','helpers/structure_context.py','helpers/build_dossier.py','helpers/curate_decisions.py','helpers/package_context.py','helpers/closure_queue.py','helpers/acquire_closure.py','helpers/freeze.py'])
+files=[{'path':n,'bytes':(O/n).stat().st_size,'sha256':sha(O/n)} for n in selected];assert len(selected)==len(set(selected))
+dump('compact-retention-manifest.json',{'role':'Source-author retention proposal; root chooses maintained artifacts. No automatic record or graph assertions.','files':files,'file_count':len(files),'bytes':sum(r['bytes'] for r in files),'originals_policy':'343 complete raw originals remain external and hash-bound in compact-original-source-bindings.json.gz. Every compressed ledger roundtrips to its uncompressed filename/hash in compression-receipt.json. Frozen discovery and predecessor interpretation sources remain exact external provenance.','excluded_from_compact':'Redundant uncompressed ledgers, broad cache indexes, intermediate acquisition rounds, raw native originals and redundant reading views remain in complete external artifact manifest.'})
+allfiles=[]
+for p in sorted(O.rglob('*')):
+ if not p.is_file() or p.name=='artifact-manifest.json':continue
+ allfiles.append({'path':str(p.relative_to(O)),'bytes':p.stat().st_size,'sha256':sha(p)})
+dump('artifact-manifest.json',{'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'root':str(O),'role':'External native source-evidence author handoff, no maintained or Git/GitHub writes. Frozen after full-object/closure/provenance/compression checks.','inventory_includes_hidden_ignored':True,'files':allfiles,'file_count':len(allfiles),'bytes':sum(r['bytes'] for r in allfiles),'scientific_limit':'Complete finite native source follow, with explicit primary/chemical/identity conflicts; final review and authority selection remain root-owned.'})
+print(json.dumps({'artifact_manifest_sha256':sha(O/'artifact-manifest.json'),'handoff_sha256':sha(O/'HANDOFF.md'),'compact_manifest_sha256':sha(O/'compact-retention-manifest.json'),'file_count':len(allfiles),'bytes':sum(r['bytes'] for r in allfiles),'compact_file_count':len(files),'compact_bytes':sum(r['bytes'] for r in files)},indent=2))

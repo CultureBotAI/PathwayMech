@@ -1,0 +1,20 @@
+from pathlib import Path
+import sys,json,hashlib,collections
+sys.dont_write_bytecode=True
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity');R=Path('/private/tmp/pathwaymech-next-261-20261014');C=Path('/private/tmp/pathwaymech-next-261-authority-integration/source-cache')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_source_identifier_snapshot import source_terms
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+s=json.loads((R/'data/identifier_authorities/sources.json').read_text());c={x['key']:x for x in json.loads((R/'conf/identifier_sources.json').read_text())};objects=json.loads((B/'complete-biological-object-identity-ledger.json').read_text());ids={r['native_identifier']for r in objects}
+for r in objects:
+ for x in r.get('reference_counterparts',[]):ids.add(x['issued_identifier'])
+ids|={'UniProtKB:Q9KWS2','UniProtKB:Q9KWS4'};groups=collections.defaultdict(list)
+for i in ids:
+ if i in s['terms']:groups[s['terms'][i]['source']].append(i)
+out=[]
+for k,identifiers in groups.items():
+ e=c[k];p=C/e['path'];assert p.is_file(),str(p);assert sha(p)==e['sha256'],str(p);terms={x[0]:x for x in source_terms(e['kind'],p,url=e['url'],version=e['version'])};selected=[]
+ for i in sorted(identifiers):
+  t=terms[i];existing=s['terms'][i];assert t[1]==existing['label'] and sorted(set(t[2]))==existing.get('synonyms',[]),(i,t,existing);selected.append({'identifier':i,'term':existing})
+ out.append({'entry':e,'source':{'path':str(p),'resolved_path':str(p.resolve()),'sha256':sha(p),'bytes':p.stat().st_size},'selected_terms':selected,'status':'Current exact maintained source owner independently hashed and parser-replayed; no owner refresh'})
+(B/'projections/current-existing-owner-replay.json').write_text(json.dumps(out,indent=2)+'\n');print('Verified',len(groups),'current owners for',sum(len(x['selected_terms'])for x in out),'identifiers.')

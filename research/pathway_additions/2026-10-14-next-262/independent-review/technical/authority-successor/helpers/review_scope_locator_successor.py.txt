@@ -1,0 +1,56 @@
+import collections,contextlib,copy,datetime,gzip,hashlib,io,json,pathlib,re,shutil,subprocess,sys
+import yaml
+R=pathlib.Path('/private/tmp/pathwaymech-next-262-20261014');O=pathlib.Path('/private/tmp/pathwaymech-next-262-independent-technical');A=pathlib.Path('/private/tmp/pathwaymech-next-262-authority-integration');P=R/'research/pathway_additions/2026-10-14-next-262';now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat();sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(pathlib.Path(p).read_bytes());read=lambda p:yaml.load(pathlib.Path(p).read_bytes(),Loader=yaml.CSafeLoader)
+started=now();inputs=['research/pathway_additions/2026-10-14-next-262/'+s for s in ['integration/record-integration-scope-successor.json','integration/record-integration.json','integration/integrate_record.py.txt','review-repairs/SCI-F01-repair.json','review-repairs/issue-bindings.json','README.md']]
+command=[sys.executable,'-B','scripts/record_review.py','inspect','--targets',str(O/'targets.initial.yaml')]
+for rel in inputs:command+=['--input',rel]
+proc=subprocess.run(command,cwd=R,capture_output=True);(O/'inspect.scope-locator-successor.json').write_bytes(proc.stdout);(O/'inspect.scope-locator-successor.stderr').write_bytes(proc.stderr);assert proc.returncode==0,proc.stderr.decode()
+current_bytes=(R/'data/pathways/catechol-degradation-ii.yaml').read_bytes();assert sha(current_bytes)=='4931e9a8cc5ae9f55c434d942c70fc65c75ad73a49e878bd34fbcfc4250df110';(O/'record.scope-locator-successor.yaml').write_bytes(current_bytes)
+context=[]
+for rel in inputs:
+ b=(R/rel).read_bytes();out=O/'scope-locator-successor-context'/rel;out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(b);context.append({'path':rel,'sha256':sha(b),'bytes':len(b),'reviewer_copy':str(out)})
+old=read(O/'record.initial-integrated.yaml');new=read(O/'record.scope-locator-successor.yaml');native=read('/private/tmp/pathwaymech-next-262-native-author/native-draft.yaml');scope=load(P/'integration/record-integration-scope-successor.json');repair=load(P/'review-repairs/SCI-F01-repair.json');finding=load(O/'finding-T-F01.initial.json')
+assert sha((P/'integration/record-integration-scope-successor.json').read_bytes())=='1e9849937b82f17b91030f81777e76424434e97f15de9dcc2ab0ffeba8b45747'
+assert sha((P/'review-repairs/SCI-F01-repair.json').read_bytes())=='11a47b8387191d2c78a537060f6a96ec5715f1448b56d85df71c7b0ae6dc14e6'
+for key in ['finding','supersedes_preservation_claim_only','initial_helper_unchanged','current_record','native_author_record','separate_locator_correction']:
+ d=scope[key];b=pathlib.Path(d['path']).read_bytes();assert sha(b)==d['sha256'] and len(b)==d['bytes']
+assert scope['supersedes_preservation_claim_only']['sha256']==finding['owner']['sha256'];assert scope['all_native_triples_and_edge_level_evidence_preserved'] and not scope['graph_changes_for_T_F01'];assert scope['endpoint_qualifier_occurrences_replaced']==finding['exact_eight_occurrences']
+assert (P/'review-repairs/finding-T-F01.initial.json').read_bytes()==(O/'finding-T-F01.initial.json').read_bytes()
+assert gzip.decompress((P/'review-repairs/record.initial-integrated.yaml.gz').read_bytes())==(O/'record.initial-integrated.yaml').read_bytes()
+old_edges={x['id']:x for x in native['mechanistic_edges']};new_edges={x['id']:x for x in new['mechanistic_edges']}
+for edgeid,edge in old_edges.items():
+ target=new_edges[edgeid];assert all(edge[k]==target[k] for k in ['subject','predicate','object']);assert target['evidence'][:len(edge['evidence'])]==edge['evidence']
+assert len(old_edges)==185
+for row in scope['endpoint_qualifier_occurrences_replaced']:
+ a=old_edges[row['edge_id']];b=new_edges[row['edge_id']];assert a['endpoint_qualifiers'][0]['evidence'][0]==row['old_evidence'];assert a['endpoint_qualifiers'][0]['description']==row['old_qualifier_description'];assert b['endpoint_qualifiers']==row['new_qualifiers'];e=row['old_evidence'];same=any(x['reference_id']==e['reference_id'] and x.get('source_locator')==e['source_locator'] for x in b['evidence']);assert same==row['same_native_locator_in_same_current_edge']
+changes=[]
+def diff(a,b,path=''):
+ if type(a)!=type(b):changes.append({'field_path':path,'old':a,'replacement':b});return
+ if isinstance(a,dict):
+  assert a.keys()==b.keys(),path
+  for k in a:diff(a[k],b[k],path+'.'+k if path else k)
+ elif isinstance(a,list):
+  assert len(a)==len(b),path
+  for i,(x,y) in enumerate(zip(a,b)):diff(x,y,f'{path}[{i}]')
+ elif a!=b:changes.append({'field_path':path,'old':a,'replacement':b})
+diff(old,new);assert len(changes)==10 and changes==repair['changed_leaf_values'];assert all(x['field_path'].endswith('.source_locator') for x in changes)
+assert all(old[k]==new[k] for k in ['id','taxa','participants','reactions','references','description'])
+selected=lambda r:{r['id']}|{n['id'] for field in ['taxa','participants','reactions'] for n in r[field]}
+assert selected(old)==selected(new) and len(selected(new))==177
+source=pathlib.Path(repair['source']['path']);body=source.read_bytes();assert sha(body)==repair['source']['sha256'];text=body.decode();lines={int(m[1]):(m[2],m[3]) for m in re.finditer(r'^L(\d+)@P([^:]+): (.*)$',text,re.M)}
+assert '1196–1201' in lines[0][1]
+for number,page in [(76,'1196'),(171,'1197'),(184,'1198'),(284,'1199'),(370,'1200'),(441,'1201')]:assert page in lines[number][1]
+for number,pindex in [(49,'0'),(54,'0'),(63,'0'),(180,'2'),(183,'2'),(184,'2-3'),(189,'3'),(190,'3'),(205,'3'),(235,'3'),(261,'3'),(326,'4'),(328,'4')]:assert lines[number][0]==pindex,(number,lines[number])
+readme=(P/'README.md').read_text();assert 'edge-level evidence arrays' in readme and 'Eight endpoint-qualifier evidence occurrences were replaced' in readme and 'initial receipt remains an unchanged historical observation' in readme and 'All 185 native graph triples' in readme and 'Issue 565' in readme
+issue=next(x for x in load(P/'review-repairs/issue-bindings.json') if x['issue'].endswith('/565'));assert issue['issue_key']==finding['issue_key']
+sys.path[:0]=[str(R/'src'),str(R)];from pathwaymech.schema import validate_record
+validate_record(new)
+shadow=O/'scope-locator-successor-consumer';assert not shadow.exists();shutil.copytree(A/'identifier-verification-root',shadow);(shadow/'data/pathways/catechol-degradation-ii.yaml').write_bytes(current_bytes)
+from pathwaymech.cli import check_identifiers_main
+log=io.StringIO()
+with contextlib.redirect_stdout(log),contextlib.redirect_stderr(log):code=check_identifiers_main([],root=shadow)
+(O/'authority-consumer.scope-locator-successor.log').write_text(log.getvalue());assert code==0,log.getvalue()
+assert (R/'data/pathways/catechol-degradation-ii.yaml').read_bytes()==current_bytes
+for row in context:assert sha((R/row['path']).read_bytes())==row['sha256']
+report={'started_at':started,'finished_at':now(),'role':'Independent technical successor reassessment; prior contribution was bounded262 duplicate-search only. No maintained edits.','initial_record_sha256':sha((O/'record.initial-integrated.yaml').read_bytes()),'current_record_sha256':sha(current_bytes),'canonical_input_capture':{'path':str(O/'inspect.scope-locator-successor.json'),'sha256':sha(proc.stdout),'command':command,'exit_code':proc.returncode},'input_context':context,'finding_disposition':{'finding_id':'T-F01','issue_key':finding['issue_key'],'issue':issue['issue'],'status':'resolved','previous_occurrence':{'kind':'immutable_initial_finding_json_not_canonical_structured_review','path':str(O/'finding-T-F01.initial.json'),'sha256':sha((O/'finding-T-F01.initial.json').read_bytes())},'basis':'Scoped successor preserves initial receipt and helper, narrows assertion to all185 native triples/edge-level arrays, and exactly accounts all8 replaced qualifier evidence occurrences; README uses same distinction. Four matching native ref/locator pairs do not imply same assertion text or all-occurrence preservation.'},'checks':{'initial_finding_receipt_and_helper_preserved':True,'all185_native_triples_and_edge_arrays_preserved':True,'exact8_qualifier_ledger_verified':True,'same_native_locator_on4_activity_edges':True,'only10_locator_leaves_changed':True,'all214_graph_triples_claims_quotes_and177_identifiers_unchanged':True,'printed_page_boundary_mapping_replayed':True,'shape_validation_passed':True,'real259_record_consumer_passed':True,'input_bytes_stable_during_assessment':True},'record_delta':changes,'consumer':{'records':len(list((shadow/'data/pathways').rglob('*.yaml'))),'exit_code':code,'log_sha256':sha(log.getvalue().encode()),'proposed_authorities':{n:sha((shadow/f'data/identifier_authorities/{n}.json').read_bytes()) for n in ['sources','ontology']}},'open_technical_findings':[],'limitations':['The source-page repair is verified as an exact locator-only delta against retained publisher-transformed text; unavailable PDF visuals and typography are not independently validated. Independent scientific review owns SCI-F01 scientific disposition.','This resolves T-F01 only; final maintained authority promotion, generated page/KGX, full repository gates and committed-head binding remain pending.','No canonical initial technical review bundle existed; lineage truthfully references immutable JSON occurrence rather than inventing a saved review.']}
+(O/'scope-locator-successor-replay.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'status':'passed','T-F01':'resolved','record_sha256':sha(current_bytes),'changed_locator_leaves':len(changes),'consumer_records':report['consumer']['records'],'proof_sha256':sha((O/'scope-locator-successor-replay.json').read_bytes())}))

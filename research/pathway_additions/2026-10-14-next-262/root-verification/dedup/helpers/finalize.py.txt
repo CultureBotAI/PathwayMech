@@ -1,0 +1,151 @@
+from pathlib import Path
+import json,hashlib,datetime,subprocess,collections,csv,gzip
+import yaml
+D=Path('/private/tmp/pathwaymech-next-262-discovery');O=Path('/private/tmp/pathwaymech-next-262-dedup-successor')
+ROOTS=[Path('/private/tmp/pathwaymech-next-262-20261014'),Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')]
+HEAD='fbccbdc027f2a86ad4919e9dbbb16a736cc0746a';TREE='72737d598ca6c7d18861f8c3612f50c265a30e08';CAND='MetaCyc:PWY-5420'
+def sha(b):return hashlib.sha256(b).hexdigest()
+def read(p):return json.loads(p.read_text())
+def dump(n,j):(O/n).write_text(json.dumps(j,indent=2,ensure_ascii=False)+'\n')
+def item(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':sha(b),'bytes':len(b)}
+# Correct an un-frozen explanatory typo without altering observations.
+p=O/'helpers/rebind.py';p.write_text(p.read_text().replace('Frozen267','Frozen262'))
+s=read(O/'semantic-record-recheck.json');s['scope']=s['scope'].replace('Frozen267','Frozen262');dump('semantic-record-recheck.json',s)
+prior=[read(D/f'prior-file-dispositions-{i}.json') for i in range(2)]
+prior_by_sha=collections.defaultdict(list)
+for i,rows in enumerate(prior):
+ for r in rows:prior_by_sha[r['sha256']].append({'root_index':i,**r})
+inventories=[read(O/f'root-{i}-file-inventory.json') for i in range(2)]
+unique={x['path']:x for x in inventories[0] if x['sha256'] not in prior_by_sha}
+assert len(unique)==35
+rprefix='./research/pathway_additions/2026-10-14-next-261/'
+reasons={
+ './history/records/catechol-degradation-i/2026-10-15T030443Z-codex-354845.yaml':('history_of_distinct_maintained_route','CREATE history explicitly identifies the complete five-step PWY-5415 hydrolytic route and final record29b073; does not create PWY-5420.'),
+ './history/reports/catechol-degradation-i-verification/2026-10-15T034257Z-codex-e7b85d.yaml':('verification_history','History of the completed PWY-5415 integration report, not a pathway record.'),
+ './pages/browse.html':('generated_corpus_navigation','Current generated navigation contains the merged PWY-5415 page and258-record index; no PWY-5420 page link.'),
+ './pages/downloads/edges.tsv':('generated_existing_graph_edges','Whole-corpus export contains128 PWY-5415 edges and previously maintained routes. Shared chemistry and adjacent context do not create a PWY-5420 graph.'),
+ './pages/downloads/nodes.tsv':('generated_existing_graph_nodes','Whole-corpus export contains PWY-5415 and shared chemistry nodes. No node has exact candidate ID; all source_context record_id values belong to current258 records.'),
+ './pages/pathway_index.json':('generated_current_record_index','Parsed index IDs equal all258 current record IDs; PWY-5420 absent as a top-level index record.'),
+ './pages/records/MetaCyc_PWY-5415.html':('generated_distinct_route_page','Exact previously reviewed hydrolytic route page2d68542…; narrative names oxidative PWY-5420 as adjacent context. The page is not a second maintained route.'),
+ rprefix+'README.md':('distinct_route_dossier','Read complete dossier: five-step hydrolytic PWY-5415 comprises P183-PWY and PWY-5162; explicitly keeps oxidative sibling PWY-5420 separate. Historical original257-record dedup description is correctly scoped to261 acquisition.'),
+ rprefix+'verification.md':('final_distinct_route_report','Read complete final report: binds repaired five-step hydrolytic record and explicitly calls PWY-5420 a separate next candidate requiring post-merge rebind, which this successor supplies.'),
+ rprefix+'verification/verification.before-review-link-correction.md':('historical_report','Archived report before review-link metadata correction; scientific five-step route boundary is identical. It is historical evidence, not another maintained record.'),
+ rprefix+'identifier-selection-final.json':('selected_identifier_inventory','Parsed106 named nodes and79 references belong to repaired PWY-5415. PWY-5420 is not a selected node; shared reaction IDs and PMID references do not add a pathway.'),
+ rprefix+'independent-review/successor/science/later-source-4325686-context-check.json':('later_262_source_context','Read complete dated addendum. Later1086-line publisher transformation belongs to next262 acquisition; it was not backfilled into frozen261 metadata-only reference. Six-step oxidative endpoint and missing acetyl-CoA terminal proof limit262 primary evidence, but do not indicate an existing maintained262 record.'),
+ rprefix+'independent-review/successor/science/final-context-independent-check.json':('261_review_context','The scientific assessment binds final hydrolytic record/report, evidence repair and later-source chronology. Matches are target or retained-addendum references, not a new route.'),
+ rprefix+'independent-review/successor/science/primary-repair-independent-check.json':('261_evidence_repair','Exact primary-source spans repair PWY-5415 evidence representation. PMID overlap is shared evidence, not identity of complete pathways.'),
+ rprefix+'independent-review/successor/science/successor-delta-independent-check.json':('261_bounded_repair','Delta narrows E.coli ADHE-CPLX exclusion and pH wording; all128 graph triples preserved. No route membership extension.'),
+ rprefix+'independent-review/successor/science/target-inspection.final-context.json':('261_canonical_target_inspection','Parsed target is exclusively MetaCyc:PWY-5415 with final record hash.'),
+ rprefix+'independent-review/successor/science/target-inspection.successor.json':('261_canonical_target_inspection','Parsed successor target is exclusively MetaCyc:PWY-5415; no candidate authoring.'),
+ rprefix+'independent-review/successor/technical/final-context-replay.json':('261_review_context','Final context replay targets repaired PWY-5415, its history and later-source addendum; no new biological route.'),
+ rprefix+'independent-review/successor/technical/output-replay.json':('261_generated_output_proof','Page/KGX replay binds exact PWY-5415 outputs, including128 edges and106 node contexts; not candidate authoring.'),
+ rprefix+'independent-review/successor/technical/repair-replay.json':('261_evidence_repair','Replay binds23 evidence-array replacements and narrow descriptions while preserving all triples and formal memberships.'),
+ rprefix+'root-verification/completed-evidence-retention.json':('retention_metadata','Mappings retain261 evidence and later-source addendum; path/reference occurrences are not maintained pathway definitions.'),
+ rprefix+'root-verification/record-history.json':('261_history_receipt','Command receipt explicitly creates PWY-5415 history with five-step route and final29b073 hash.'),
+ rprefix+'verification/full-gates/tested-core-input-hashes.json':('tested_input_inventory','Hash inventory includes existing catechol ortho and newly rendered PWY-5415 pages; no authored candidate record.'),
+ rprefix+'verification/log-retention/completed-evidence-retention.before.json':('historical_retention_metadata','Archived pre-encoding map binds the same261 proofs and later-source addendum; historical metadata is not a pathway.'),
+ rprefix+'verification/log-retention/final-reviewer-evidence-mapping.before.json':('historical_retention_metadata','Archived path map preserves review evidence provenance, including the next262 transformed-text context; no maintained addition.'),
+ rprefix+'verification/stage-before-final-review-save.json':('historical_stage_inventory','Staging receipt lists261 page and retained-source context files; file presence does not assert a PWY-5420 record.'),
+}
+helper_paths={
+ 'independent-review/successor/technical/output_replay.py.txt':'Inert helper selects only PWY-5415 generated output IDs.',
+ 'independent-review/successor/technical/repair_replay.py.txt':'Inert helper checks the PWY-5415 AdhE wording repair.',
+ 'independent-review/successor/technical/verify_completed_gates.py.txt':'Inert helper binds the PWY-5415 page to completed gates.',
+ 'integration/helpers/prepare_final_record_checks.py.txt':'Inert integration helper creates the five-step PWY-5415 history and validation checks.',
+ 'verification/helpers/prepare_completed_verification.py.txt':'Inert report-preparation helper contains the same explicit separate PWY-5420-next-candidate statement as the final report.',
+}
+for p,why in helper_paths.items():reasons[rprefix+p]=('inert_261_reproduction_helper',why+' Retained text is neither executed in this successor nor a maintained pathway.')
+for name,role in [('20261015T035618Z-pwy5415-independent-science-successor','full scientific'),('20261015T035642Z-next261-technical-successor','partial technical')]:
+ for ext in ['yaml','md']:
+  reasons[f'./reviews/structured/{name}/review.{ext}']=('completed_review_of_distinct_route',f'Completed {role} review targets only PWY-5415 final29b073 and resolves its original finding. Shared source and reaction mentions do not review or create PWY-5420. Markdown is the canonical rendering of the same YAML.')
+assert set(reasons)==set(unique),(set(unique)-set(reasons),set(reasons)-set(unique))
+# Fully parse all structured new content; retain exact matched contexts and targeted interpretation per file.
+assess=[]
+for path,x in sorted(unique.items()):
+ b=(ROOTS[0]/path).read_bytes();assert sha(b)==x['sha256']
+ parse=None
+ if path.endswith('.json'):parse=type(json.loads(b)).__name__
+ if path.endswith('.yaml'):parse=type(yaml.load(b,Loader=yaml.CSafeLoader)).__name__
+ kind,reason=reasons[path]
+ assess.append({**x,'disposition':kind,'reason':reason,'structured_parse_type':parse,'read_scope':'Complete structured parse where applicable; exact search-matched lines and enclosing target/summary fields assessed. Full README, final report and later-source addendum read. Generated outputs additionally parsed and compared below.','context_file':'root-0-changed-match-context.json'})
+dump('new-content-assessments.json',{'assessed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'unique_content_files':35,'duplicate_instances_across_roots':70,'assessments':assess})
+# Cross-root inheritance is permitted only for exact same relative path and hash.
+counts=[]
+for i,rows in enumerate(inventories):
+ out=[];counter=collections.Counter()
+ for x in rows:
+  refs=[z for z in prior_by_sha.get(x['sha256'],[]) if z['path']==x['path']]
+  if x['state']=='unchanged':
+   reuse=next(z for z in refs if z['root_index']==i);method='same_root_prior_exact_bytes'
+  elif refs:
+   reuse=refs[0];method='cross_root_prior_exact_bytes'
+  else:reuse=None;method='new_content_successor_assessment'
+  if reuse:
+   row={**x,'method':method,'disposition':reuse['disposition'],'reason':reuse['reason'],'frozen_disposition_path':str(D/f"prior-file-dispositions-{reuse['root_index']}.json"),'frozen_row_path':reuse['path'],'frozen_row_sha256':reuse['sha256']}
+  else:
+   assert x['path'] in unique and x['sha256']==unique[x['path']]['sha256'];kind,why=reasons[x['path']];row={**x,'method':method,'disposition':kind,'reason':why,'successor_assessment':'new-content-assessments.json'}
+  counter[method]+=1;out.append(row)
+ dump(f'root-{i}-final-dispositions.json',out);counts.append(dict(counter))
+assert counts==[{'same_root_prior_exact_bytes':400,'new_content_successor_assessment':35},{'cross_root_prior_exact_bytes':181,'same_root_prior_exact_bytes':221,'new_content_successor_assessment':35}],counts
+# Fresh merged authority copies exactly match the earlier isolated-root frozen assessment.
+authorities=[]
+for p in ['conf/identifier_sources.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json']:
+ b=(ROOTS[0]/p).read_bytes();h=sha(b);previous=[z for z in prior_by_sha[h] if z['path']=='./'+p];assert previous
+ j=json.loads(b);exact_id_count=b.count(CAND.encode());assert exact_id_count==0
+ authorities.append({'path':p,'sha256':h,'bytes':len(b),'same_in_both_current_roots':b==(ROOTS[1]/p).read_bytes(),'frozen_exact_byte_dispositions':previous,'candidate_id_occurrences':exact_id_count,'reason':'Exact issuing identifier registry/config bytes already assessed in frozen isolated-root search; merged presence in original checkout is authority coverage, not a maintained route.'})
+# Generated index and KGX identity/source-context checks use actual current full files.
+corpus=read(O/'corpus-rebind.json');records=corpus['roots'][0]['records'];ids={r['id'] for r in records}
+index=read(ROOTS[0]/'pages/pathway_index.json');assert {r['id'] for r in index['records']}==ids and len(index['records'])==258
+with (ROOTS[0]/'pages/downloads/nodes.tsv').open() as f:nodes=list(csv.DictReader(f,delimiter='\t'))
+with (ROOTS[0]/'pages/downloads/edges.tsv').open() as f:edges=list(csv.DictReader(f,delimiter='\t'))
+assert not any(n['id']==CAND for n in nodes)
+contexts=[c for n in nodes for c in json.loads(n['source_contexts'])];assert all(c['record_id'] in ids for c in contexts)
+assert not any(CAND in [e['subject'],e['object']] for e in edges)
+assert sum(e['id'].startswith('pathwaymech:MetaCyc_PWY-5415_') for e in edges)==128
+browse=(ROOTS[0]/'pages/browse.html').read_text();assert 'MetaCyc_PWY-5420.html' not in browse
+selection=read(ROOTS[0]/'research/pathway_additions/2026-10-14-next-261/identifier-selection-final.json');assert selection['node_count']==106 and all(n['id']!=CAND for n in selection['nodes'])
+dump('authority-and-generated-assessment.json',{'authorities':authorities,'generated':{'index_record_count':len(index['records']),'index_ids_equal_current_corpus':True,'kgx_node_count':len(nodes),'kgx_edge_count':len(edges),'kgx_source_context_count':len(contexts),'all_source_context_record_ids_current':True,'no_candidate_node_or_edge_endpoint':True,'catechol_i_edge_count':128,'no_candidate_navigation_link':True,'final_261_selected_nodes':106,'no_candidate_selected_261_node':True},'limits':'Generated artifacts are corroboration of the maintained258 corpus, not independent scientific pathway definitions. Existing source contexts and shared nodes are not deduplicated as whole routes.'})
+# Per-record semantic disposition; frozen semantic hits are all included.
+semantic_reasons={
+ 'MetaCyc:PWY-2361':'Two-step downstream beta-ketoadipate CoA-transfer/thiolysis module; no oxidative catechol meta-route chemistry.',
+ 'MetaCyc:PWY-5415':'Five-step hydrolytic sibling shares ring cleavage and terminal three steps (4/7), but substitutes hydrolase for the oxidative dehydrogenase/tautomerase/decarboxylase segment. Adjacent oxidative discussion is not formal route membership.',
+ 'MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY':'Four-step intradiol ortho-cleavage module catechol to beta-ketoadipate, distinct from seven-step extradiol oxidative route.',
+ 'WikiPathways:WP178':'Branched-chain amino-acid degradation; oxopentanoate lexical match is not catechol route.',
+ 'MetaCyc:ILEUSYN-PWY':'Branched-chain amino-acid biosynthesis; oxopentanoate lexical match only.',
+ 'MetaCyc:LEUSYN-PWY':'Leucine biosynthesis; oxopentanoate lexical match only.',
+ 'gomodel:YeastPathways_PWY3O-4112':'Leucine degradation; oxopentanoate lexical match only.',
+ 'gomodel:YeastPathways_PWY3O-64':'Methionine salvage pathway; oxopentyl/ribulose-related lexical match is not catechol oxidation.',
+ 'MetaCyc:PWY0-1277':'Distinct complete phenyl/hydroxyphenylpropanoate entry route; shares terminal hydratase/aldolase/acylating-dehydrogenase module (3/7), lacks the catechol oxidative entry definition.',
+ 'MetaCyc:P184-PWY':'Protocatechuate4,5-cleavage composite ends in oxaloacetate/pyruvate and then decarboxylation; none of the seven exact candidate families. Hydroxymuconate terminology alone is insufficient.',
+ 'MetaCyc:PWY-6336':'Protocatechuate2,3-cleavage five-step route shares three oxidative internal families (3/7), but begins with protocatechuate, includes carboxysemialdehyde decarboxylation, and stops at hydroxypentadienoate before terminal module.',
+}
+semantic=[x for x in s['related_records'] if x['root_index']==0];assert {x['id'] for x in semantic}==set(semantic_reasons)
+oldsemantic=read(D/'semantic-corpus-scan.json')['hits'];assert {x['id'] for x in oldsemantic}<={x['id'] for x in semantic}
+dump('semantic-final-dispositions.json',{'frozen_semantic_hits_carried':len(oldsemantic),'current_broader_lexical_hits':len(semantic),'all258records_checked_per_root':True,'rows':[{'path':x['path'],'id':x['id'],'sha256':x['sha256'],'candidate_family_count':x['candidate_family_count'],'disposition':'distinct_route_or_lexical_match','reason':semantic_reasons[x['id']]} for x in semantic],'no_full7family_or_identity_match':True,'scope':'Whole route comparison; no combining different maintained routes into a fictitious duplicate, no child-module counting, no substitute narrow variant.'})
+# End-state verification repeats the ignored-inclusive search and compares semantic match objects,
+# because ripgrep file ordering can change without content changes.
+end=[];search=read(O/'search-summary.pending-dispositions.json')
+def match_objects(raw):
+ out=[]
+ for line in raw.splitlines():
+  j=json.loads(line)
+  if j['type']=='match':
+   x=j['data'];out.append((x['path']['text'],x['line_number'],x['lines']))
+ return sorted(out,key=lambda x:(x[0],x[1],json.dumps(x[2],sort_keys=True)))
+for i,root in enumerate(ROOTS):
+ state={'root':str(root),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=root,text=True).strip(),'status':subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all'],cwd=root,text=True)}
+ assert state['head']==HEAD and state['tree']==TREE and state['status']=='',state
+ for x in inventories[i]:assert sha((root/x['path']).read_bytes())==x['sha256'],x['path']
+ assert {str(p.relative_to(root)) for p in (root/'data/pathways').rglob('*.yaml')}=={x['path'] for x in records}
+ for x in records:assert sha((root/x['path']).read_bytes())==x['sha256']
+ p=subprocess.run(search['scans'][i]['command'],cwd=root,capture_output=True);assert p.returncode==0 and not p.stderr
+ (O/f'root-{i}-end.jsonl').write_bytes(p.stdout);assert match_objects(p.stdout)==match_objects((O/f'root-{i}.jsonl').read_bytes())
+ state.update({'all258record_hashes_unchanged':True,'all_matching_file_hashes_unchanged':True,'same_complete_matching_line_set_on_end_replay':True,'matched_files':len(inventories[i]),'end_search_sha256':sha(p.stdout),'end_search_file':f'root-{i}-end.jsonl','end_search_exit_code':0});end.append(state)
+fmanifest=read(D/'artifact-manifest.json')
+for row in fmanifest['files']:
+ b=(D/row['path']).read_bytes();assert sha(b)==row['sha256'] and len(b)==row['bytes'],row['path']
+dump('end-state-preservation.json',{'checked_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'roots':end,'source_frozen_manifest':item(D/'artifact-manifest.json'),'source_frozen_manifest_files_reverified':len(fmanifest['files']),'no_maintained_or_git_mutations_performed':True})
+common={x['path']:x for x in inventories[0]};other={x['path']:x for x in inventories[1]};assert set(common)<=set(other) and all(common[p]['sha256']==other[p]['sha256'] for p in common)
+dump('final-disposition.json',{'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Bounded duplicate-assessment successor using frozen262 discovery; not a new whole-source discovery or independent scientific approval.','candidate':{'id':CAND,'label':'catechol degradation II (meta-cleavage pathway)','formal_route_steps':7,'full_parent_boundary':'PWY-5419 oxidative four-step entry plus PWY-5162 terminal three-step module','decision':'No exact current maintained whole-route duplicate found within declared two-root scope; proceed262 curation subject to scientific closure and final gates.'},'merged_head':HEAD,'merged_tree':TREE,'record_accounting':{'current_per_root':258,'exact_original_capture_per_root':257,'known_final261_successor_per_root':1,'all258_final_expected_committed_blobs_match':True},'search':{'patterns':84,'pattern_sha256':search['scans'][0]['pattern_sha256'],'roots':search['scans'],'per_root_disposition_counts':counts,'total_file_instances':872,'same_root_prior_exact':621,'cross_root_prior_exact':181,'new_content_instances':70,'unique_new_content':35,'common_current_files_same_sha256':435,'original_only_unchanged_prior_files':sorted(set(other)-set(common)),'new_or_changed_without_disposition':0,'end_search_same_line_sets':True},'semantic':{'exact_candidate_id_record_count':0,'complete7reaction_family_record_count':0,'overlaps':read(O/'candidate-reaction-overlap.json')['overlaps'],'related_record_dispositions':11},'open_findings':[],'limits':search['limits']+['Fixed84-pattern search is not an exhaustive synonym or global source-availability proof.','No new scientific reading of later262 primary source is claimed; later-source chronology is assessed solely for duplicate context.','No new authority builder, renderer, full test suite or canonical scientific review is claimed.','Output is bound to current258-record merged baseline before262 authoring; future core changes require a later rebind.','Raw manuscripts and native originals remain in existing frozen source packages; this successor changes none of them.','Source licensing review remains separately deferred per user instruction.']})
+print(json.dumps({'disposition_counts':counts,'all_end_checks_passed':True,'frozen_source_files_reverified':len(fmanifest['files'])},indent=2))

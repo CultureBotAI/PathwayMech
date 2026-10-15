@@ -1,0 +1,88 @@
+import fs from 'node:fs';
+import {spawn} from 'node:child_process';
+import crypto from 'node:crypto';
+
+const base='/private/tmp/pathwaymech-next-262-ci';
+const profile='/private/tmp/pathwaymech-next-262-cdp-profile';
+const page='/private/tmp/pathwaymech-next-262-20261014/pages/records/MetaCyc_PWY-5420.html';
+const pause=ms=>new Promise(r=>setTimeout(r,ms));
+const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex');
+if(fs.existsSync(profile)||fs.existsSync(base+'/browser-cdp-result.json')) throw new Error('Never overwrite prior browser observation');
+fs.mkdirSync(profile);
+const started=new Date().toISOString();
+const chrome=spawn('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',[
+ '--headless','--disable-gpu','--no-first-run','--no-default-browser-check',
+ '--disable-background-networking','--disable-sync','--remote-debugging-port=0',
+ '--user-data-dir='+profile,'about:blank'],{stdio:['ignore','pipe','pipe']});
+let logs='';chrome.stdout.on('data',b=>logs+=b);chrome.stderr.on('data',b=>logs+=b);
+let cdp;
+try {
+ for(let i=0;i<200&&!fs.existsSync(profile+'/DevToolsActivePort');i++) await pause(100);
+ if(!fs.existsSync(profile+'/DevToolsActivePort')) throw new Error('Chrome did not expose an isolated debugging endpoint');
+ const port=fs.readFileSync(profile+'/DevToolsActivePort','utf8').split('\n')[0];
+ const targets=await (await fetch('http://127.0.0.1:'+port+'/json/list')).json();
+ const tab=targets.find(t=>t.type==='page');if(!tab)throw new Error('No temporary page target');
+ cdp=new WebSocket(tab.webSocketDebuggerUrl);
+ await new Promise((resolve,reject)=>{cdp.addEventListener('open',resolve,{once:true});cdp.addEventListener('error',reject,{once:true});});
+ let next=0;const pending=new Map();const runtimeErrors=[];
+ cdp.addEventListener('message',event=>{
+  const r=JSON.parse(event.data);
+  if(r.id&&pending.has(r.id)){const {resolve,reject,timer}=pending.get(r.id);clearTimeout(timer);pending.delete(r.id);r.error?reject(new Error(JSON.stringify(r.error))):resolve(r.result);}
+  if(r.method==='Runtime.exceptionThrown')runtimeErrors.push(r.params);
+ });
+ const call=(method,params={})=>new Promise((resolve,reject)=>{
+  const id=++next;const timer=setTimeout(()=>{pending.delete(id);reject(new Error('CDP timeout: '+method));},20000);
+  pending.set(id,{resolve,reject,timer});cdp.send(JSON.stringify({id,method,params}));
+ });
+ const evaluate=async(expression)=>{
+  const result=await call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});
+  if(result.exceptionDetails)throw new Error(JSON.stringify(result.exceptionDetails));return result.result.value;
+ };
+ await call('Page.enable');await call('Runtime.enable');
+ await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1080,deviceScaleFactor:1,mobile:false});
+ await call('Page.navigate',{url:'file://'+page});
+ let ready=false;
+ for(let i=0;i<100;i++){
+  ready=await evaluate('document.readyState === "complete" && !!document.querySelector("#pathway-network .graph-tools:not([hidden])")');
+  if(ready)break;await pause(100);
+ }
+ if(!ready)throw new Error('Page or graph enhancement did not initialize');
+ const metrics=()=>evaluate(`(()=>{
+  const section=document.querySelector('#pathway-network');const viewport=document.querySelector('.graph-viewport');const svg=document.querySelector('.pathway-network-svg');
+  const rect=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}};
+  return {readyState:document.readyState,title:document.title,scrollY,innerWidth,innerHeight,
+  section:rect(section),viewport:rect(viewport),svg:svg?rect(svg):null,
+  status:document.querySelector('.graph-status').textContent,
+  graphEdges:document.querySelectorAll('.graph-edge-mechanism').length,
+  graphNodes:document.querySelectorAll('.pathway-network-svg .graph-node').length,
+  toolsVisible:!document.querySelector('.graph-tools').hidden,
+  viewportScroll:{left:viewport.scrollLeft,top:viewport.scrollTop,width:viewport.scrollWidth,height:viewport.scrollHeight},
+  background:getComputedStyle(viewport).backgroundColor};})()`);
+ await evaluate('document.querySelector("#pathway-network").scrollIntoView({block:"start",behavior:"instant"})');
+ await pause(2000);
+ const desktop=await metrics();
+ const desktopCapture=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+ fs.writeFileSync(base+'/graph-desktop-cdp.png',Buffer.from(desktopCapture.data,'base64'));
+ await evaluate('document.querySelector("[data-graph-action=\\"zoom-in\\"]").click()');
+ await pause(300);
+ const zoomed=await metrics();
+ await evaluate('document.querySelector("[data-graph-action=\\"fit\\"]").click()');
+ const picker=await evaluate(`(()=>{const p=document.querySelector('#graph-node-picker');const opt=[...p.options].find(o=>o.value.includes('RHEA:17338'));if(!opt)return null;p.value=opt.value;p.dispatchEvent(new Event('change',{bubbles:true}));return {value:p.value,label:opt.textContent};})()`);
+ await pause(300);
+ const picked=await metrics();
+ await call('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
+ await evaluate('document.querySelector("[data-graph-action=\\"fit\\"]").click();document.querySelector("#pathway-network").scrollIntoView({block:"start",behavior:"instant"})');
+ await pause(2000);
+ const mobile=await metrics();
+ const mobileCapture=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+ fs.writeFileSync(base+'/graph-mobile-cdp.png',Buffer.from(mobileCapture.data,'base64'));
+ const result={started_utc:started,finished_utc:new Date().toISOString(),page,page_sha256:hash(page),
+  runtime_errors:runtimeErrors,desktop,zoomed,picker,picked,mobile,
+  captures:['graph-desktop-cdp.png','graph-mobile-cdp.png'].map(name=>({path:base+'/'+name,sha256:hash(base+'/'+name)})),
+  scope:'Current generated page in isolated headless Chrome via live CDP; desktop/mobile graph rendering, zoom and node-picker smoke checks. Visual inspection is separate.'};
+ fs.writeFileSync(base+'/browser-cdp-result.json',JSON.stringify(result,null,2)+'\n');
+ console.log(JSON.stringify(result,null,2));
+} finally {
+ if(cdp)cdp.close();chrome.kill('SIGTERM');
+ fs.writeFileSync(base+'/browser-cdp.log',logs);
+}

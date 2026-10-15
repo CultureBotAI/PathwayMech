@@ -1,0 +1,16 @@
+from pathlib import Path
+import json,hashlib,datetime,time,sys,urllib.request,urllib.error
+r=Path(__file__).resolve().parents[1];round=sys.argv[1];plan=r/sys.argv[2];dest=r/'originals'/round;dest.mkdir(parents=True,exist_ok=True);out=[]
+for a in json.loads(plan.read_text()):
+ p=dest/a['filename'];assert not p.exists();x={**a,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  req=urllib.request.Request(a['url'],headers={'User-Agent':'PathwayMech public biological identity research'})
+  with urllib.request.urlopen(req,timeout=60) as resp:
+   b=resp.read();x.update(status=resp.status,final_url=resp.url,headers={k.lower():v for k,v in resp.headers.items() if k.lower() in ['content-type','content-length','x-uniprot-release','x-uniprot-release-date','location']})
+  p.write_bytes(b);x.update(path=str(p),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b))
+ except urllib.error.HTTPError as exc:
+  b=exc.read();p.write_bytes(b);x.update(status=exc.code,path=str(p),sha256=hashlib.sha256(b).hexdigest(),bytes=len(b),error=str(exc))
+ except Exception as exc:x['error']=str(exc)
+ x['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();out.append(x);(dest/(p.name+'.receipt.json')).write_text(json.dumps(x,indent=2)+'\n');print(json.dumps({k:x.get(k) for k in ['key','status','bytes','error']}),flush=True);time.sleep(1.5)
+ (r/'receipts'/('acquisition-'+round+'-checkpoint.json')).write_text(json.dumps(out,indent=2)+'\n')
+(r/'receipts'/('acquisition-'+round+'-complete.json')).write_text(json.dumps(out,indent=2)+'\n');print('COMPLETE',len(out))

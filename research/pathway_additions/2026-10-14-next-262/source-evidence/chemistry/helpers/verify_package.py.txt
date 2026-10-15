@@ -1,0 +1,79 @@
+from pathlib import Path
+import json,hashlib,collections,gzip,re,xml.etree.ElementTree as E,sqlite3,sys,csv,os
+from rdkit import Chem
+O=Path(os.environ.get('PATHWAYMECH_CHEMISTRY_ROOT','/private/tmp/pathwaymech-next-262-chemistry'));RH='http://rdf.rhea-db.org/';RDF='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb')as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def load(n):return json.loads((O/n).read_text())
+def atoms(m):return dict(sorted(collections.Counter(x.GetSymbol()for x in Chem.AddHs(m).GetAtoms()).items()))
+def native(f):
+ p=O/'originals'/('META-'+f+'.xml');r=E.parse(p).getroot();assert r.find('metadata/query').text=='META:'+f and r.find('metadata/PGDB').get('version')=='27.0';x=[e for e in r if e.get('frameid')==f and e.get('detail')=='full'];assert len(x)==1;return x[0]
+inv=load('complete-input-inventory.json');structure=load('chemical-structure-closure.json');proof=load('formal-chemistry-proof.json');proj=load('rhea-complete-source-projection.json');fam=load('rhea-family-and-direction-closure.json');scope=load('requested-chemistry-scope.json')
+originals=inv['native_originals']+inv['issuing_chebi_originals'];assert len(originals)==61;assert set(p.name for p in(O/'originals').iterdir()if p.is_file())=={Path(r['path']).name for r in originals}
+for r in originals:
+ p=O/'originals'/Path(r['path']).name;assert p.stat().st_size==r['bytes']and sha(p)==r['sha256'];
+for r in inv['independent_whole_authority_sources']:assert Path(r['path']).stat().st_size==r['bytes']and sha(Path(r['path']))==r['sha256']
+for p,h in [('/private/tmp/pathwaymech-next-262-native/artifact-manifest.json','8d1ad92744d1e6a4e216d0e53e545cb8c5d1a26997afda982f0a04d777af4952'),('/private/tmp/pathwaymech-next-262-discovery/artifact-manifest.json','a98721c8fda99faf54f553b247170f1954599ae529d7bc00094379da4575c569')]:assert sha(Path(p))==h
+for r in inv['native_originals']:
+ e=native(r['frame']);assert len(e)==r['full_direct_slots'];assert E.tostring(E.parse(O/'originals'/Path(r['path']).name).getroot().find('metadata'),encoding='unicode')==r['complete_envelope_metadata_xml']
+cm={r['native_frame']:r for r in structure['native_compounds']};iss=structure['issuing_chebi_compounds'];assert len(cm)==22 and len(iss)==21;computed={}
+for id,row in iss.items():
+ j=json.loads((O/'originals'/('ChEBI-'+id.split(':')[1]+'.json')).read_text());assert j==row['issuing_full_original']and j['chebi_accession']==id and j['is_released'];m=Chem.MolFromSmiles(j['default_structure']['smiles']);counts={a:int(v or 1)for a,v in re.findall(r'([A-Z][a-z]?)(\d*)',j['chemical_data']['formula'])};assert atoms(m)==counts;assert Chem.GetFormalCharge(m)==j['chemical_data']['charge'];assert Chem.MolToInchi(m)==j['default_structure']['standard_inchi'];assert Chem.MolToInchiKey(m)==j['default_structure']['standard_inchi_key'];computed[id]={'elements':atoms(m),'charge':Chem.GetFormalCharge(m)}
+for f,row in cm.items():
+ e=native(f);assert [E.tostring(x,encoding='unicode')for x in e]==row['all_direct_slots_xml'];assert e.findtext('inchi')==row['native_inchi'];nm=Chem.MolFromInchi(row['native_inchi']);assert Chem.MolToInchiKey(nm)==row['native_inchi_key'];c=e.find('cml/molecule');rw=Chem.RWMol();idx={}
+ for a in c.findall('atomArray/atom'):
+  x=Chem.Atom(a.get('elementType').capitalize());x.SetFormalCharge(int(a.get('formalCharge','0')));idx[a.get('id')]=rw.AddAtom(x)
+ for b in c.findall('bondArray/bond'):
+  x,y=b.get('atomRefs').split();rw.AddBond(idx[x],idx[y],{'1':Chem.BondType.SINGLE,'2':Chem.BondType.DOUBLE,'3':Chem.BondType.TRIPLE,'1.5':Chem.BondType.AROMATIC}[b.get('order')])
+ m=rw.GetMol();Chem.SanitizeMol(m);assert atoms(m)==row['native_CML_interpretation']['element_counts'];assert Chem.GetFormalCharge(m)==row['native_CML_charge'];assert atoms(nm)==atoms(m);assert all(row['checks'].values())
+ if row['native_chebi_xref_candidate']:
+  j=iss[row['native_chebi_xref_candidate']];assert row['native_inchi']==j['issuing_structure']['standard_inchi'];assert {'elements':atoms(m),'charge':Chem.GetFormalCharge(m)}==computed[row['native_chebi_xref_candidate']]
+def add(side):
+ c=collections.Counter();q=0
+ for x in side:c.update({k:v*x['coefficient']for k,v in computed[x['id']]['elements'].items()});q+=computed[x['id']]['charge']*x['coefficient']
+ return {'elements':dict(sorted(c.items())),'charge':q}
+net=collections.Counter();nfacts=0
+for i,row in enumerate(proof['steps']):
+ f=row['native_reaction'];e=native(f);s={k:[{'native_compound':x.find('Compound').get('frameid'),'id':cm[x.find('Compound').get('frameid')]['native_chebi_xref_candidate'],'coefficient':int(x.findtext('coefficient','1'))}for x in e.findall(k)]for k in ['left','right']};direction=row['pathway_layout']['direction'];left,right=(s['right'],s['left'])if direction=='R2L'else(s['left'],s['right']);assert e.findtext('reaction-direction')==row['native_direction'];assert [{k:x[k]for k in ['native_compound','id','coefficient']}for x in row['inputs']]==left;assert [{k:x[k]for k in ['native_compound','id','coefficient']}for x in row['outputs']]==right;assert add(left)==add(right)==row['balance']['issuing_ChEBI']['inputs'];nfacts+=len(left)+len(right)
+ for x in left:net[x['native_compound']]-=x['coefficient']
+ for x in right:net[x['native_compound']]+=x['coefficient']
+assert len(proof['steps'])==7 and nfacts==len(proof['material_facts'])==28
+for join,a,b in zip(proof['joins'],proof['steps'],proof['steps'][1:]):
+ x=[p for p in a['outputs']if p['native_compound']==join['native_compound']];y=[p for p in b['inputs']if p['native_compound']==join['native_compound']];assert len(x)==len(y)==1 and x[0]['id']==y[0]['id']==join['chebi']and x[0]['coefficient']==y[0]['coefficient']==join['coefficient']
+assert len(proof['joins'])==6;expected=collections.Counter({x['native_compound']:-x['coefficient']for x in proof['net']['inputs']});expected.update({x['native_compound']:x['coefficient']for x in proof['net']['outputs']});assert dict((k,v)for k,v in net.items()if v)==dict(expected);assert add(proof['net']['inputs'])==add(proof['net']['outputs'])=={'elements':{'C':69,'H':94,'N':21,'O':50,'P':7,'S':1},'charge':-6}
+# Reconstruct all selected RDF subjects from the complete independent issuing bytes.
+rdf=next(r for r in inv['independent_whole_authority_sources']if r['path'].endswith('rhea.rdf.gz'));text=gzip.decompress(Path(rdf['path']).read_bytes()).decode();closed=set(proj['nodes']);frags=collections.defaultdict(list);parsed={};wrap='<root xmlns:rdf="'+RDF+'" xmlns:rh="'+RH+'" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">'
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">[\s\S]*?</rdf:Description>',text):
+ if m[1]not in closed:continue
+ frags[m[1]].append(m[0]);n=E.fromstring(wrap+m[0]+'</root>')[0];props=parsed.setdefault(m[1],{})
+ for x in n:
+  k=x.tag.split('}',1)[1];v=x.get('{'+RDF+'}resource')or x.text
+  if v not in props.setdefault(k,[]):props[k].append(v)
+assert parsed==proj['nodes'];assert dict(frags)==proj['complete_original_fragments'];tsv=next(r for r in inv['independent_whole_authority_sources']if r['path'].endswith('rhea-directions.tsv'));allq=list(csv.DictReader(Path(tsv['path']).open(),delimiter='\t'));assert all(q in allq for q in proj['quartets'])and len(allq)==proj['direction_rows_scanned']
+# Compare all selected ChEBI properties and Rhea label rows with the whole pinned SQL sources.
+for kind,rows in [('chebi',[{'subject':id,'properties':r['pinned_properties']}for id,r in iss.items()]),('rhea',[{'subject':r['id'],'rows':r['pinned_Rhea139_all_SQL_rows']}for q in fam['families']for r in q['members']])]:
+ dbpath=next(r['path']for r in inv['independent_whole_authority_sources']if r['path'].endswith('/'+kind+'.db'));db=sqlite3.connect('file:'+dbpath+'?mode=ro',uri=True)
+ for r in rows:
+  actual=[{'predicate':p,'object':o,'value':v}for p,o,v in db.execute('select predicate,object,value from statements where subject=?',(r['subject'],))]
+  if 'rows'in r:assert actual==r['rows']
+  else:
+   for k,v in r['properties'].items():assert [x['value']for x in actual if x['predicate']==k]==[v]
+ db.close()
+rc=load('rhea-compound-state-checks.json');assert len(rc['compounds'])==20
+for row in rc['compounds']:
+ n=parsed[row['uri']];assert n==row['full_Rhea_properties'];id=n['accession'][0];assert n['formula']==[iss[id]['formula']] and n['charge']==[str(iss[id]['charge'])] and n['chebi']==['http://purl.obolibrary.org/obo/'+id.replace(':','_')]
+compress=0
+for p in O.rglob('*.json.gz'):assert gzip.decompress(p.read_bytes())==Path(str(p)[:-3]).read_bytes();compress+=1
+manifest_checked=False
+if(O/'artifact-manifest.json').exists():
+ m=load('artifact-manifest.json');paths={r['path']for r in m['files']};actual={str(p.relative_to(O))for p in O.rglob('*')if p.is_file()and p.name!='artifact-manifest.json'};assert paths==actual
+ for r in m['files']:
+  p=O/r['path'];assert p.stat().st_size==r['bytes']and sha(p)==r['sha256']
+ manifest_checked=True
+if(O/'compact-retention-manifest.json').exists():
+ for r in load('compact-retention-manifest.json')['files']:
+  p=O/r['path'];assert p.stat().st_size==r['bytes']and sha(p)==r['sha256']
+print(json.dumps({'status':'PASS','role':'Author reproducibility/self-check, not independent scientific review.','originals':61,'native_full_objects':40,'native_compounds':22,'issuing_ChEBI_objects':21,'external_whole_sources_rehashed':4,'formal_steps':7,'material_facts':28,'exact_joins':6,'net_atom_charge':add(proof['net']['inputs']),'Rhea_full_subjects_reconstructed':len(closed),'Rhea_family_members':36,'compression_pairs':compress,'artifact_manifest_checked':manifest_checked,'files_modified_by_verifier':0},indent=2))

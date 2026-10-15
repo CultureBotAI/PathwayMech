@@ -1,0 +1,59 @@
+from pathlib import Path
+import os
+import json,hashlib,xml.etree.ElementTree as E,datetime,sqlite3
+O=Path(os.environ.get('PATHWAYMECH_CHEMISTRY_ROOT','/private/tmp/pathwaymech-next-262-chemistry'));N=Path('/private/tmp/pathwaymech-next-262-native');D=Path('/private/tmp/pathwaymech-next-262-discovery');A=Path('/private/tmp/pathwaymech-curation-authorities');P=Path('/private/tmp/pathwaymech-next-252-native');W=Path('/private/tmp/pathwaymech-next-261-20261014')
+assert not (O/'artifact-manifest.json').exists(), 'Frozen package: replay into a separate external directory instead.'
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+expected={N:'8d1ad92744d1e6a4e216d0e53e545cb8c5d1a26997afda982f0a04d777af4952',D:'a98721c8fda99faf54f553b247170f1954599ae529d7bc00094379da4575c569'}
+for p,h in expected.items():assert sha(p/'artifact-manifest.json')==h
+man=json.loads((N/'artifact-manifest.json').read_text());idx={r['path']:r for r in man['files']};rules=[]
+for n in ['.claude/skills/add-pathway/SKILL.md','docs/CAUSAL_GRAPHS.md','docs/IDENTIFIERS.md']:
+ p=W/n;q=O/'rules'/p.name;q.write_bytes(p.read_bytes());rules.append({'path':str(q),'sha256':sha(q),'source_path':str(p)})
+dump('rules-bindings.json',rules)
+seq=['CATECHOL-23-DIOXYGENASE-RXN','RXN-8527','RXN-8529','4.1.1.77-RXN','2-OXOPENT-4-ENOATE-HYDRATASE-RXN','MHPELY-RXN','ACETALD-DEHYDROG-RXN'];natives={};comp=set();bind=[]
+def take(f):
+ p=N/'originals'/('META-'+f+'.xml');r=idx[str(p.relative_to(N))];assert sha(p)==r['sha256'];q=O/'originals'/p.name;q.write_bytes(p.read_bytes());rt=E.parse(q).getroot();xs=[z for z in rt if z.get('frameid')==f and z.get('detail')=='full' and z.get('orgid')=='META'];assert len(xs)==1 and rt.find('metadata/PGDB').get('version')=='27.0';bind.append({'frame':f,'path':str(q),'sha256':sha(q),'bytes':q.stat().st_size,'source_path':str(p),'source_package':str(N),'source_manifest_sha256':expected[N],'version':'27.0','issuing_url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+f});return xs[0]
+for f in seq+['3.7.1.9-RXN']:
+ e=take(f);natives[f]=e
+ for tag in ['left','right']:comp.update(z.get('frameid') for z in e.findall(tag+'/Compound'))
+formal=set()
+for f in seq:
+ for tag in ['left','right']:formal.update(z.get('frameid') for z in natives[f].findall(tag+'/Compound'))
+comparators={'CPD-13337','CPD-246','CPD-6761','OXOPENTENOATE','CPD-14441'};chebi=set();cpro=[]
+for f in sorted(comp|comparators):
+ e=take(f);links=[s.findtext('dblink-oid') for s in e.findall('dblink') if s.findtext('dblink-db')=='CHEBI'];chebi.update(links);cpro.append({'frame':f,'role':'formal_route' if f in formal else 'explicit_alternative_comparator','native_chebi_links':links,'inchi':e.findtext('inchi'),'inchi_key':e.findtext('inchi-key')})
+for f in ['PWY-5420','PWY-5419','PWY-5162']:take(f)
+dump('native-original-reuse.json',bind)
+# Full issuing ChEBI original reuse is restricted to verified next252 manifest entries.
+pm=json.loads((P/'artifact-manifest.json').read_text());pidx={Path(r['path']).name:r for r in pm['raw_originals_external_only']};reuse=[];chebi.update(['64016','16967','11641'])
+for ch in sorted(chebi):
+ name='ChEBI-'+ch+'.json'
+ if name not in pidx:continue
+ r=pidx[name];p=Path(r['path']);assert sha(p)==r['sha256'];j=json.loads(p.read_text());assert j['chebi_accession']=='CHEBI:'+ch;q=O/'originals'/name;q.write_bytes(p.read_bytes());reuse.append({'id':'CHEBI:'+ch,'path':str(q),'sha256':sha(q),'bytes':q.stat().st_size,'source_path':str(p),'source_manifest_path':str(P/'artifact-manifest.json'),'source_manifest_sha256':sha(P/'artifact-manifest.json'),'url':'https://www.ebi.ac.uk/chebi/backend/api/public/compound/'+ch+'/','scope':'Exact original public API response reused; original acquisition receipt preserved separately; no claim of current reacquisition.'})
+dump('chebi-original-reuse.json',reuse)
+for n in ['chebi-acquisition.json','authority-input-provenance.json']:
+ p=P/n;q=O/'receipts'/('next252-'+n);q.write_bytes(p.read_bytes())
+# Hash and bind full independent source originals; never query curated graph records as authorities.
+inputs=[]
+meta=json.loads((A/'ontology-inputs.json').read_text())
+for f in ['chebi.db','rhea.db']:
+ p=A/f;r=next(x for x in meta if x['cache_path']==str(p));h=sha(p);assert h==r['sha256'];inputs.append({'path':str(p),'sha256':h,'bytes':p.stat().st_size,'issuing_source_metadata':r['metadata'],'scope':'Whole independently acquired Semantic SQL database, queried read-only; not original OWL byte hash.'})
+rm=json.loads((A/'rhea-downloads.json').read_text())
+for r in rm:
+ p=Path(r['path']);assert sha(p)==r['sha256'];inputs.append(dict(r,bytes=p.stat().st_size,scope='Whole unmodified issuing Rhea release142 artifact.'))
+for n in ['rhea-downloads.json','ontology-inputs.json']:
+ q=O/'receipts'/n;q.write_bytes((A/n).read_bytes())
+dump('independent-authority-inputs.json',inputs)
+cs=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True);search=[]
+for r in cpro:
+ if r['native_chebi_links']:continue
+ hits=cs.execute("select subject,predicate,value from statements where predicate in ('chemrof:inchi_string','chemrof:inchi_key_string') and value in (?,?)",(r['inchi'],(r['inchi_key'] or '').removeprefix('InChIKey='))).fetchall();search.append({'frame':r['frame'],'complete_native_inchi':r['inchi'],'complete_native_inchi_key':r['inchi_key'],'exact_query_hits':hits,'scope':'Whole pinned ChEBI255 SQL exact InChI/InChIKey search; no global current-ChEBI absence claim.'})
+ for h in hits:chebi.add(h[0].split(':')[1])
+cs.close();dump('native-unlinked-chebi-search.json',search)
+dump('requested-chemistry-scope.json',{'formal_reactions':seq,'formal_compounds':sorted(formal),'comparator_reactions':['3.7.1.9-RXN'],'native_compounds':cpro,'issuing_chebi_ids':sorted(chebi),'missing_chebi_ids':sorted(chebi-{r['id'].split(':')[1] for r in reuse}),'source_boundaries':'Formal source chemistry plus enol/keto/stereo comparators and hydrolytic alternative; no new maintained authority selection.'})
+print(json.dumps({'native_originals':len(bind),'formal_compounds':len(formal),'native_comparator_compounds':len(comp|comparators)-len(formal),'reused_chebi_originals':len(reuse),'missing_chebi':sorted(chebi-{r['id'].split(':')[1] for r in reuse}),'unlinked_native_search':search},indent=2))

@@ -1,0 +1,59 @@
+from pathlib import Path
+import hashlib,json,collections,datetime,subprocess
+import yaml
+O=Path('/private/tmp/pathwaymech-next-262-discovery');W=Path('/private/tmp/pathwaymech-next-261-20261014')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+# Exact candidate mentions outside current intake were fully read. Other matches are classified as source context, not silently discarded.
+for i in [0,1]:
+ rows=json.loads((O/f'prior-file-matches-{i}.json').read_text());out=[]
+ for r in rows:
+  p=r['path']
+  if p.startswith('./data/pathways/'):
+   category='maintained_record_overlap';reason='Complete corpus inventory and reaction overlap audit identify this record as a different boundary; none has the seven-step candidate. The current catechol I draft shares four steps, phenylpropanoid route shares the three-step tail, para-cleavage shares three internal oxidative steps, and ortho cleavage has distinct chemistry.'
+  elif '/next-261/' in p or '2026-10-14-next-261/' in p:
+   category='current_hydrolytic_route_source_dossier';reason='Current catechol I authoring retains oxidative sibling originals and explicit follow-up lead; it does not create the full oxidative route. Treat this as prior research, not absence.'
+  elif '/2026-10-14-next-252/' in p:
+   category='prior_para_cleavage_source_dossier';reason='Read prior handoffs, curation report, actual PWY6336 record and chemistry closure: three internal oxidative reactions are shared, with exact RHEA33432 replacement and native enol decarboxylase retained. Different entry and endpoint; source dossier is not whole PWY5420 ownership.'
+  elif '/2026-10-14-next-253/' in p:
+   category='prior_GO_or_meta_cleavage_source_context';reason='The inspected GO0019616 stanza cross-references both hydrolytic and oxidative parents and children. Broad concept, not a maintained exact oxidative record or prior rejection.'
+  elif '/2026-10-14-next-248/' in p:
+   category='prior_catechol_ortho_source_dossier';reason='Ortho-route source context. Fixed-string catechol degradation II also matches catechol degradation III; exact original PWY5417 membership establishes different chemistry.'
+  elif '/2026-10-11-next-201/' in p:
+   category='prior_shared_terminal_route';reason='Existing phenylpropanoid pathway and source audits share PWY5162 and three late steps; their entry chemistry differs. Prior keto/enol decisions remain relevant.'
+  elif p.startswith('./reports/'):
+   category='ignored_DRAM_module_support';reason='All12 M00569 rows2404-2415 read from original module_step_form.tsv. Alternative catechol/methylcatechol and hydrolytic/oxidative branches are annotation support, not an exact maintained route or strain assay.'
+  elif p.startswith('./data/identifier_authorities/') or p.startswith('./conf/'):
+   category='identifier_authority_coverage';reason='Existing identifier owner/source metadata establishes individual entity availability, not complete pathway coverage.'
+  elif p.startswith('./pages/') or p.startswith('./output/'):
+   category='generated_existing_record_output';reason='Generated nodes/edges/pages describe existing record owners. Complete maintained-record scope is checked separately; repeated exported source IDs do not add another record.'
+  elif p.startswith('./reviews/') or p.startswith('./history/'):
+   category='immutable_review_or_history_context';reason='Evidence/history for existing source or record scopes, including shared reaction IDs. Not a maintained candidate; exact record identity and complete reaction set are absent from the captured corpus.'
+  else:
+   category='other_prior_source_or_inventory_overlap';reason='Matches concern shared reaction identifiers, source references, previous corpus inventories, authority binding manifests or related pathway context. None contains an exact PWY5420 occurrence outside the separately read GO stanza/current261 dossier; no new rejection is inferred from generic shared hits.'
+  out.append({'path':p,'sha256':r['sha256'],'matching_lines':r['matching_lines'],'patterns':r['patterns'],'disposition':category,'reason':reason})
+ dump(f'prior-file-dispositions-{i}.json',out)
+# Bind the materially relevant existing research read before accepting missing-candidate scope.
+prior=['research/pathway_additions/2026-10-14-next-252/para/preflight/HANDOFF.md','research/pathway_additions/2026-10-14-next-252/para/native/HANDOFF.md','research/pathway_additions/2026-10-14-next-252/para/curation.md','research/pathway_additions/2026-10-14-next-252/para/native/reaction-identity-closure.json','research/pathway_additions/2026-10-14-next-253/meta-cleavage/preflight/go-scope-compact.json','research/pathway_additions/2026-10-14-next-248/catechol/preflight/native-boundary-projection.json','research/pathway_additions/2026-10-14-next-261/source-evidence/discovery/HANDOFF.md','data/pathways/protocatechuate-para-cleavage.yaml']
+dump('prior-research-read-bindings.json',[{'path':p,'root':str(W),'bytes':(W/p).stat().st_size,'sha256':sha(W/p)} for p in prior])
+# Source-family limits: never manufacture accessions to claim a complete negative search.
+dump('source-family-scope.json',{'exact_candidate':'MetaCyc:PWY-5420','reviewed_broader_identifiers':{'GO:0019616':'Meta-cleavage definition includes both variants; pinned stanza names both parents and both children.','KEGG:M00569':'Original current module definition explicitly combines hydrolytic/oxidative and catechol/methylcatechol alternatives.','MetaCyc:PWY-5430':'Broader aromatic meta umbrella contains both complete catechol variants and benzoate conversion.'},'reaction_sources':'Native MetaCyc reactions plus source-issued Rhea/KEGG xrefs and prior independently corrected Rhea33431-family are exact search patterns; native crossrefs are not presumed exact chemical replacements.','no_exact_whole_route_accession_established_in_this_bounded_intake':['gomodel','WikiPathways','MIBiG','Reactome','PathBank','PMN','ModelSEED','BiGG','BV-BRC','VEuPathDB'],'no_provider_wide_exhaustion_claim':True})
+# Fresh successor draft read, because parent legitimately changed its active record during intake.
+p=W/'data/pathways/catechol-degradation-i.yaml';d=yaml.safe_load(p.read_text());aliases=json.loads((O/'corpus-reaction-overlap.json').read_text())['alias_sets'];ids={n['id'] for n in d['reactions']};found={k:sorted(set(v)&ids) for k,v in aliases.items() if set(v)&ids};assert len(found)==4 and d['id']=='MetaCyc:PWY-5415'
+dump('live-draft-successor-check.json',{'read_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size,'record_id':d['id'],'label':d['label'],'reaction_overlap':found,'full_candidate_present':False,'limitation':'Concurrent parent authoring may continue. Final inventory and whole-repository searches must be rebound after next261 actual merge.'})
+# Metadata/abstract inspection, keeping source distinctions and access failures explicit.
+scopes={
+'4325686':('metadata_only','Native parent EV-EXP-IDA cites this 1971 Azotobacter study. Europe PMC has no abstract. Publisher-indexed abstract is a lead; direct PDF returned403. Do not claim full experimental review.'),
+'2681159':('complete_transformed_main_text','Read all644 numbered lines across8 pages from verified prior publisher transformations. No raw PDF or visual figure review. Preserves separate native PaW1 and heterologous preparations, historical mass uncertainties, enzyme association, keto/enol specificity and Mg dependence. Methods reverses xylH/xylI relative to abstract/discussion and1990 mapping; confirm sequence identities before curation. The paper’s spontaneous-product interpretation must be reconciled with later compound distinctions.'),
+'15301547':('complete_original_indexed_abstract','Engineered E109Q/E111Q decarboxylase/hydratase complexes and fluorinated inhibitors. Do not transfer mutant results to unmodified proteins or universal assembly requirements.'),
+'2183008':('complete_original_indexed_abstract','TOL pWW0 operon mapping and E.coli maxicell expression. Historical xylQ/xylT functions explicitly unknown; neither inferred enzyme assignment nor whole-route host occurrence follows.'),
+'22609919':('complete_original_indexed_abstract','Different 2,3-dihydroxybenzoate entry in P.reinekei MT1; shared downstream activities are relevant leads. Whole catechol route is not directly demonstrated by this abstract. EPMC fullTextXML returned500.'),
+'9573204':('indexed_abstract_plus_transient_publisher_body_inspection','Nitrobenzene/2-aminomuconate route, not catechol route. Successful initial web publisher reading covered methods/results/discussion and reported7-min spontaneous conversion; subsequent attempts to retain web response timed out and EPMC XML returned500. Source details are a follow-up lead until reproducibly retained. Do not transfer deaminase cofactors or assembly to tautomerase.'),
+'8419288':('complete_original_indexed_abstract','Native CF600 aldolase/acylating-dehydrogenase complex supports terminal two-step scope. Full main transformation is available in prior261 primary package but not newly read completely in this discovery task.'),
+'7890778':('complete_original_indexed_abstract','Hydrolytic XylF specificity and engineered variant study; adjacent alternative, not oxidative-branch membership.'),
+'7765833':('complete_original_indexed_abstract_review','Review article cited by broadGO definition; not independent primary evidence for this exact route.')}
+rows=[]
+for pm,(scope,note) in scopes.items():
+ p=O/'originals'/('EPMC-'+pm+'.json');r=json.loads(p.read_text())['resultList']['result'][0];rows.append({'pmid':pm,'doi':r.get('doi'),'title':r['title'],'pmcid':r.get('pmcid'),'source':'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:'+pm+'%20AND%20SRC:MED&format=json&resultType=core','original_path':str(p.relative_to(O)),'sha256':sha(p),'read_scope':scope,'disposition':note})
+dump('primary-source-lead-dispositions.json',rows)
+print('Saved complete file-level search dispositions, prior-source bindings, nine primary/reference scopes, and live draft successor.')

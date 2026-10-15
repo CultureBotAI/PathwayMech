@@ -1,0 +1,62 @@
+from pathlib import Path
+import json,hashlib,gzip,re,datetime,difflib,yaml
+R=Path('/private/tmp/pathwaymech-next-262-20261014');Q=R/'research/pathway_additions/2026-10-14-next-262';A=Path('/private/tmp/pathwaymech-next-262-independent-technical');C=Path('/private/tmp/pathwaymech-next-262-ci')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def bind(p):return {'path':str(p),'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size}
+def load(p):return json.loads(p.read_text())
+def decode(b,encoding):
+ assert encoding in ['identity','gzip','gzip_lossless','inert_python_text','inert_code_text'],encoding
+ return gzip.decompress(b) if encoding.startswith('gzip') else b
+prep=load(C/'completed-verification-preparation.json'); m=load(Q/'root-verification/completed-evidence-retention.json')
+assert bind(Q/'verification.md')['sha256']==prep['report_sha256']=='5840244aec7e8704d71231f3810e39d88525aae1b49a403d04f0e1103caf0a4e'
+assert bind(R/prep['history_path'])['sha256']==prep['history_sha256']
+assert bind(Q/'root-verification/completed-evidence-retention.json')['sha256']==prep['retention_receipt_sha256']
+assert len(m['files'])==m['count']==202
+bindings=[];originals=0
+for x in m['files']:
+ p=R/x['retained'];b=p.read_bytes();s=Path(x['source']).read_bytes()
+ assert sha(b)==x['retained_sha256'] and len(b)==x['retained_bytes']
+ assert sha(s)==x['source_sha256'] and len(s)==x['source_bytes']
+ d=decode(b,x['encoding']);assert d==s
+ if 'original_binding' in x:
+  o=x['original_binding'];d=decode(d,o['encoding']);ob=Path(o['original_path']).read_bytes()
+  assert d==ob and sha(d)==o['original_sha256'] and len(d)==o['original_bytes'];originals+=1
+ bindings.append({'retained':x['retained'],'sha256':sha(b),'decoded_source_sha256':sha(s),'original_verified':bool(x.get('original_binding'))})
+manifestchecks=[]
+for name,sub in [('preparation-retention-manifest.json','initial'),('authority-successor-retention-manifest.json','authority-successor'),('output-retention-manifest.json','output')]:
+ x=load(A/name)
+ for row in x['files']:
+  src=Path(row['source_path']); src=src if src.is_absolute() else A/src
+  stored=Path(row['stored_path']);stored=stored if stored.is_absolute() else A/stored
+  retained=Q/'independent-review/technical'/sub/row['retain_as']
+  b=retained.read_bytes();sb=stored.read_bytes();ob=src.read_bytes()
+  assert b==sb and sha(b)==row['stored_sha256'] and len(b)==row['stored_bytes']
+  assert sha(ob)==row['source_sha256'] and len(ob)==row['source_bytes'] and decode(b,row['encoding'])==ob
+ manifestchecks.append({'manifest':bind(A/name),'entries':len(x['files']),'retained_subdirectory':str(Q/'independent-review/technical'/sub),'all_exact':True})
+record=yaml.safe_load((R/'data/pathways/catechol-degradation-ii.yaml').read_text());selected=load(Q/'identifier-selection-final.json');prior=load(Q/'identifier-selection.json')
+assert selected['record_sha256']==sha((R/'data/pathways/catechol-degradation-ii.yaml').read_bytes())
+assert selected['nodes']==prior['nodes'] and selected['reference_ids']==prior['reference_ids']
+nodes=[{'id':record['id'],'label':record['label'],'collection':'pathway'}]
+for collection in ['taxa','participants','reactions']:
+ for node in record[collection]:nodes.append({**{k:node[k] for k in ['id','label','category'] if k in node},'collection':collection})
+assert selected['nodes']==nodes and len(nodes)==selected['selected_count']==177
+assert selected['reference_ids']==sorted(r['id'] for r in record['references']) and len(selected['reference_ids'])==210
+readme=Q/'README.md';b=(A/'README.gate-frozen.md').read_text();a=readme.read_text();diff=''.join(difflib.unified_diff(b.splitlines(True),a.splitlines(True),fromfile='README.tested',tofile='README.current'))
+assert diff==(A/'README-final-status.diff').read_text()
+removed=[l[1:] for l in diff.splitlines() if l.startswith('-') and not l.startswith('---')]; added=[l[1:] for l in diff.splitlines() if l.startswith('+') and not l.startswith('+++')]
+assert len(removed)==len(added)==2
+assert removed[0].split('Independent acceptance, generated')[0]==added[0].split('Both repairs have')[0]
+assert removed[1].split('its original record observation remains immutable')[0]==added[1].split('its original record observation remains immutable')[0]
+assert 'Both repairs have independent acceptance.' in added[0] and 'authority-successor/HANDOFF.md' in added[1]
+links=[]; pending=[]
+for p in [Q/'verification.md',readme]:
+ for url in re.findall(r'\]\(([^)]+)\)',p.read_text()):
+  if '://' in url or url.startswith('#'):continue
+  target=(p.parent/url.split('#')[0]).resolve()
+  if not target.exists():pending.append({'from':str(p.relative_to(R)),'link':url})
+  else:links.append({'from':str(p.relative_to(R)),'link':url})
+assert pending==[{'from':str((Q/'verification.md').relative_to(R)),'link':'verification/canonical-review-persistence.json'}],pending
+hist=yaml.safe_load((R/prep['history_path']).read_text());assert hist['target']['path']==str((Q/'verification.md').relative_to(R))
+assert hist['events'][0]['type']=='AUDIT' and 'Final canonical persistence' in hist['events'][0]['details']
+result={'assessed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent technical narrow post-gate context and retention assessment; not a repeat full scientific review','inputs':[bind(C/'completed-verification-preparation.json'),bind(Q/'root-verification/completed-evidence-retention.json'),bind(Q/'verification.md'),bind(readme),bind(R/prep['history_path']),bind(Q/'identifier-selection-final.json')],'checks':{'all_202_retained_source_copies_exact':True,'all_nested_original_encodings_exact':True,'all_68_selected_technical_artifacts_match_three_original_manifests':True,'both_readme_edits_are_bounded_status_updates':True,'final_selection_matches_all_177_actual_record_nodes_and210_refs':True,'report_metrics_and_gate_boundaries_agree_with_verified_evidence':True,'history_binds_actual_report_and_acknowledges_post_gate_context':True,'all_other_local_report_readme_links_exist':True},'nested_original_bindings':originals,'retained_file_bindings':bindings,'technical_manifest_checks':manifestchecks,'local_links_verified':len(links),'pending_link':pending,'pending_link_explanation':'Stable canonical persistence receipt intentionally written by root only after both canonical saves and global check; report explicitly says it predates saves. Exact committed-head review must verify this receipt and bundles.','post_gate_tested_inputs':{'exact':2135,'readme_status_only':1},'open_findings':[],'limits':['No canonical review persistence claimed at this stage; root must save reviews and perform global review check.','Final working/staged whitespace and committed-head binding remain publication responsibilities.','This checks retained scientific evidence bytes and report metrics, not independent biological adjudication of every scientific assertion.']}
+p=A/'completed-context-replay.json';assert not p.exists();p.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(bind(p)))

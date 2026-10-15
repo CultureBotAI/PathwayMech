@@ -1,0 +1,37 @@
+from pathlib import Path
+import json,hashlib,re,xml.etree.ElementTree as ET
+from sequence_functions import parse_embl,translate,compare,bind
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity');PREV=Path('/private/tmp/pathwaymech-next-261-biological-identities');PRIMARY=Path('/private/tmp/pathwaymech-next-262-primary')
+write=lambda n,d:(B/'projections'/n).write_text(json.dumps(d,indent=2)+'\n')
+up={}
+for p in (B/'originals/public').glob('*.json'):
+ if p.name.endswith('.receipt.json'):continue
+ u=json.loads(p.read_text());assert u['primaryAccession']==p.stem and len(u['sequence']['value'])==u['sequence']['length'];up[u['primaryAccession']]={'source':bind(p),'entry':u}
+write('new-uniprot-full-context.json',list(up.values()))
+paths=[B/'originals/public/AB088043.embl',PRIMARY/'originals/AP3-AB020521.embl',PREV/'sequence-counterparts/originals/EF079106.embl']
+deposits={}
+for p in paths:
+ d=parse_embl(p);deposits[d['accession_version'].split('.')[0]]=d
+p=PRIMARY/'originals/next252-AB505864.xml';e=ET.parse(p).getroot().find('GBSeq');dna=e.findtext('GBSeq_sequence').upper();features=[]
+for f in e.findall('./GBSeq_feature-table/GBFeature'):
+ q={}
+ for z in f.findall('./GBFeature_quals/GBQualifier'):q.setdefault(z.findtext('GBQualifier_name'),[]).append(z.findtext('GBQualifier_value'))
+ features.append({'type':f.findtext('GBFeature_key'),'location':f.findtext('GBFeature_location'),'qualifiers':q,'xml':ET.tostring(f,encoding='unicode')})
+d={'accession_version':e.findtext('GBSeq_accession-version'),'source':bind(p),'dna':dna,'dna_length':len(dna),'dna_sha256':hashlib.sha256(dna.encode()).hexdigest(),'features':features,'source_features':[x for x in features if x['type']=='source'],'all_direct_slots':[{'tag':x.tag,'xml':ET.tostring(x,encoding='unicode')} for x in e]};deposits['AB505864']=d
+write('four-deposit-full-projections.json',list(deposits.values()))
+rows=[]
+for acc,ur in up.items():
+ u=ur['entry']
+ for x in u.get('uniProtKBCrossReferences',[]):
+  if x['database']!='EMBL':continue
+  d=deposits[x['id']];pid={y['key']:y['value'] for y in x['properties']}['ProteinId'];fs=[(i,f) for i,f in enumerate(d['features']) if f['type']=='CDS' and f['qualifiers'].get('protein_id')==[pid]];assert len(fs)==1
+  i,f=fs[0];tr=translate(f,d['dna']);assert tr['status']=='translated' and tr['equals_annotated_translation'] and tr['terminal_stop_present'] and not tr['internal_stop_present'];c=compare(tr['independent_translation'],u['sequence']['value']);assert c['exact_sequence_equality']
+  row={'uniprot':acc,'uniprot_source':ur['source'],'uniprot_names':u.get('genes'),'uniprot_organism':u['organism'],'uniprot_audit':u['entryAudit'],'deposit':d['accession_version'],'deposit_source':d['source'],'deposit_source_features':d['source_features'],'feature_ordinal':i+1,'feature':f,'protein_accession':pid,'translation_check':tr,'comparison':c,'boundary':'Exact current reference sequence correspondence. Historical purified preparation, expression host, assembly identity and function require their own evidence; gene-name disagreement is retained, not silently normalized.'}
+  pp=B/'originals/exact-follow'/(pid+'.xml')
+  if pp.exists():
+   es=ET.parse(pp).getroot().findall('GBSeq');assert len(es)==1;pe=es[0];seq=pe.findtext('GBSeq_sequence').upper();assert pe.findtext('GBSeq_accession-version')==pid and compare(seq,tr['independent_translation'])['exact_sequence_equality']
+   row['ncbi_protein']={'source':bind(pp),'accession_version':pid,'sequence':seq,'comparison':compare(seq,tr['independent_translation']),'all_direct_slots':[{'tag':z.tag,'xml':ET.tostring(z,encoding='unicode')} for z in pe]}
+  rows.append(row)
+write('new-exact-cds-comparisons.json',rows)
+write('deposit-feature-dispositions.json',[{'deposit':d['accession_version'],'feature_ordinal':i+1,'type':f['type'],'location':f['location'],'gene':f['qualifiers'].get('gene'),'protein_accession':f['qualifiers'].get('protein_id'),'disposition':'selected exact UniProt counterpart' if any(r['deposit']==d['accession_version'] and r['feature_ordinal']==i+1 for r in rows) else 'retained source context; not automatically promoted to pathway member'} for d in deposits.values() for i,f in enumerate(d['features'])])
+print(json.dumps({'new_full_uniprot':len(up),'deposits':len(deposits),'comparisons':len(rows),'ncbi_matches':sum('ncbi_protein'in r for r in rows),'sequence_mismatches':sum(not r['comparison']['exact_sequence_equality'] for r in rows),'names':[(r['uniprot'],r['feature']['qualifiers'].get('gene'),r['protein_accession'])for r in rows]},indent=2))

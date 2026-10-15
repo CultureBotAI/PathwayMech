@@ -1,0 +1,16 @@
+from pathlib import Path
+import os
+import urllib.request,datetime,json,hashlib,concurrent.futures
+O=Path(os.environ.get('PATHWAYMECH_CHEMISTRY_ROOT','/private/tmp/pathwaymech-next-262-chemistry'))
+assert not (O/'artifact-manifest.json').exists(), 'Frozen package: replay into a separate external directory instead.'
+def fetch(ch):
+ p=O/'originals'/('ChEBI-'+ch+'.json');assert not p.exists();url='https://www.ebi.ac.uk/chebi/backend/api/public/compound/'+ch+'/';r={'id':'CHEBI:'+ch,'url':url,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech bounded formal chemical source inspection'}),timeout=45)as x:b=x.read();r.update(http_status=x.status,final_url=x.url,content_type=x.headers.get('Content-Type'))
+  p.write_bytes(b);r.update(path=str(p),bytes=len(b),sha256=hashlib.sha256(b).hexdigest());j=json.loads(b);r['exact_requested_identity']=j['chebi_accession']=='CHEBI:'+ch;r['native_modified_on']=j.get('modified_on');r['native_is_released']=j.get('is_released');r['scope']='Complete issuing API body; retrieval snapshot and entry modified_on, not a global release assertion.'
+ except Exception as e:r['error']=repr(e)
+ return r
+ids=json.loads((O/'requested-chemistry-scope.json').read_text())['missing_chebi_ids']
+with concurrent.futures.ThreadPoolExecutor(max_workers=2)as ex:rows=list(ex.map(fetch,ids))
+(O/'receipts/chebi-acquisition.json').write_text(json.dumps(rows,indent=2)+'\n')
+print(json.dumps(rows,indent=2));assert all(r.get('exact_requested_identity')and r.get('native_is_released')for r in rows)

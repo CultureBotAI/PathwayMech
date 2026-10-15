@@ -1,0 +1,15 @@
+from pathlib import Path
+import urllib.request,urllib.error,json,hashlib,datetime,concurrent.futures
+O=Path('/private/tmp/pathwaymech-next-262-discovery')
+frames=['PWY-5431','PWY-5417','CATECHOL-ORTHO-CLEAVAGE-PWY','CPD-13339','CPD-8742']
+requests=[('META-'+f+'.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3A'+f) for f in frames]
+requests += [('EPMC-'+p+'.json','https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:'+p+'%20AND%20SRC:MED&format=json&resultType=core') for p in ['9573204','22609919','2183008','8419288','7890778','7765833']]
+def run(t):
+ n,u=t; row={'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'path':'originals/'+n}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech source inspection','Accept':'application/json' if n.endswith('.json') else '*/*'}),timeout=45) as r:b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+ except urllib.error.HTTPError as e:b=e.read();row.update(status=e.code,error=str(e))
+ except Exception as e:row['error']=str(e);return row
+ (O/row['path']).write_bytes(b);row.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as x: rows=list(x.map(run,requests))
+(O/'acquisition-follow.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))

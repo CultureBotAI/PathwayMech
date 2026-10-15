@@ -1,0 +1,56 @@
+from pathlib import Path
+import os
+import gzip,hashlib,json,re,csv,xml.etree.ElementTree as E,collections,datetime
+O=Path(os.environ.get('PATHWAYMECH_CHEMISTRY_ROOT','/private/tmp/pathwaymech-next-262-chemistry'));A=Path('/private/tmp/pathwaymech-curation-authorities');RH='http://rdf.rhea-db.org/';RDF='http://www.w3.org/1999/02/22-rdf-syntax-ns#';NS={'rh':RH,'rdf':RDF,'rdfs':'http://www.w3.org/2000/01/rdf-schema#'}
+assert not (O/'artifact-manifest.json').exists(), 'Frozen package: replay into a separate external directory instead.'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+scope=json.loads((O/'requested-chemistry-scope.json').read_text());provenance=json.loads((O/'independent-authority-inputs.json').read_text());p=A/'rhea.rdf.gz';assert sha(p)==next(r['sha256'] for r in provenance if r['path']==str(p));t=A/'rhea-directions.tsv';assert sha(t)==next(r['sha256'] for r in provenance if r['path']==str(t))
+raw=gzip.decompress(p.read_bytes()).decode('utf-8');wrap='<root '+' '.join('xmlns:'+k+'="'+v+'"'for k,v in NS.items())+'>';nodes={};fragments={};count=0
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">[\s\S]*?</rdf:Description>',raw):
+ uri=m[1];frag=m[0];count+=1;node=E.fromstring(wrap+frag+'</root>')[0];props=nodes.setdefault(uri,{});fragments.setdefault(uri,[]).append(frag)
+ for c in node:
+  k=c.tag.split('}',1)[1];v=c.get('{'+RDF+'}resource') or c.text
+  if v not in props.setdefault(k,[]):props[k].append(v)
+quartets=list(csv.DictReader(t.open(),delimiter='\t'));family_by_id={v:q for q in quartets for v in q.values()};sidecache={}
+def rhea_side(uri):
+ if uri in sidecache:return sidecache[uri]
+ r=nodes[uri];ans=[]
+ for pred,values in r.items():
+  if not pred.startswith('contains') or pred=='contains':continue
+  for pa in values:
+   assert len(nodes[pa]['compound'])==1;co=nodes[pa]['compound'][0];ch=nodes[co];assert len(ch['accession'])==1
+   ans.append({'id':ch['accession'][0],'coefficient':int(pred[8:]) if pred[8:].isdigit() else pred[8:],'participant_uri':pa,'compound_uri':co,'side_uri':uri,'predicate':pred,'compound_properties':ch})
+ assert len(ans)==len(r.get('contains',[])),uri
+ sidecache[uri]=ans;return ans
+def tuple_side(items):return sorted((x['id'],str(x['coefficient'])) for x in items)
+all_directions=[];unhandled=[]
+for q in quartets:
+ for direction,col in [('LR','RHEA_ID_LR'),('RL','RHEA_ID_RL')]:
+  rid=q[col];n=nodes.get(RH+rid)
+  if not n:unhandled.append({'id':rid,'reason':'No native RDF subject'});continue
+  assert len(n.get('substrates',[]))==len(n.get('products',[]))==1,rid
+  left=rhea_side(n['substrates'][0]);right=rhea_side(n['products'][0]);all_directions.append({'id':rid,'master':q['RHEA_ID_MASTER'],'orientation':direction,'status':n.get('status') or nodes[RH+q['RHEA_ID_MASTER']].get('status'),'left':left,'right':right})
+cs={r['frame']:r['native_chebi_links'][0] if len(r['native_chebi_links'])==1 else None for r in scope['native_compounds']};native=[];selectedfamilies=set();search=[]
+for f in scope['formal_reactions']+scope['comparator_reactions']:
+ pp=O/'originals'/('META-'+f+'.xml');rt=E.parse(pp).getroot();e=next(z for z in rt if z.get('frameid')==f and z.get('detail')=='full');sides={}
+ for tag in ['left','right']:
+  sides[tag]=[{'native_compound':s.find('Compound').get('frameid'),'id':'CHEBI:'+cs[s.find('Compound').get('frameid')],'coefficient':int(s.findtext('coefficient','1')),'coefficient_explicit':s.find('coefficient')is not None,'locator':f'/ptools-xml/Reaction[@frameid="{f}"]/{tag}[{i}]','xml':E.tostring(s,encoding='unicode')}for i,s in enumerate(e.findall(tag),1)]
+ direction=e.findtext('reaction-direction');fluxleft,fluxright=(sides['right'],sides['left']) if direction=='PHYSIOL-RIGHT-TO-LEFT' else(sides['left'],sides['right'])
+ matches=[r for r in all_directions if tuple_side(r['left'])==tuple_side(fluxleft) and tuple_side(r['right'])==tuple_side(fluxright)];back=[r for r in all_directions if tuple_side(r['left'])==tuple_side(fluxright) and tuple_side(r['right'])==tuple_side(fluxleft)]
+ xrefs=[d.findtext('dblink-oid')for d in e.findall('dblink') if d.findtext('dblink-db')=='RHEA'];selectedfamilies.update(family_by_id[x]['RHEA_ID_MASTER'] for x in xrefs);selectedfamilies.update(x['master']for x in matches+back)
+ native.append({'frame':f,'scope':'formal_route'if f in scope['formal_reactions']else'alternative_comparator','original':{'path':str(pp),'sha256':sha(pp)},'native_direction':direction,'native_xrefs':xrefs,'native_left':sides['left'],'native_right':sides['right'],'route_inputs':fluxleft,'route_outputs':fluxright,'chosen_native_traversal':'right_to_left'if direction=='PHYSIOL-RIGHT-TO-LEFT'else'left_to_right','all_direct_slots_xml':[E.tostring(z,encoding='unicode')for z in e]})
+ search.append({'frame':f,'query':'Exact complete ChEBI participant/coefficient sets in both orientations, over every direction row in independently hashed issuing Rhea142 RDF + directions TSV. Native cross-references are candidate identities whose structures are separately verified.','forward_matches':[{'id':r['id'],'master':r['master'],'orientation':r['orientation'],'status':r['status']}for r in matches],'reverse_matches':[{'id':r['id'],'master':r['master'],'orientation':r['orientation'],'status':r['status']}for r in back],'native_xref_families':[family_by_id[x]for x in xrefs]})
+qs=[q for q in quartets if q['RHEA_ID_MASTER'] in selectedfamilies];wanted={RH+v for q in qs for v in q.values()};closed={};follow={'side','substrates','products','substratesOrProducts','contains','compound','reactivePart','underlyingChebi','chebi','status','direction','bidirectionalReaction','directionalReaction'}
+while wanted:
+ u=wanted.pop()
+ if u in closed:continue
+ assert u in nodes,u;closed[u]=nodes[u]
+ for k,vs in nodes[u].items():
+  if k in follow or k.startswith('contains'):
+   for v in vs:
+    if v and v.startswith(RH) and v in nodes:wanted.add(v)
+projection={'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent source query author; no maintained identity selection.','original_inputs':[r for r in provenance if r['path']in[str(p),str(t)]],'native':native,'quartets':qs,'nodes':closed,'complete_original_fragments':{u:fragments[u]for u in sorted(closed)},'rdf_fragment_count_scanned':count,'rdf_unique_subjects_scanned':len(nodes),'direction_rows_scanned':len(quartets),'directional_equations_compared':len(all_directions),'unhandled_direction_rows':unhandled,'symbolic_coefficient_direction_count':sum(any(not isinstance(x['coefficient'],int) for x in r['left']+r['right']) for r in all_directions),'symbolic_coefficients_seen':sorted({str(x['coefficient']) for r in all_directions for x in r['left']+r['right'] if not isinstance(x['coefficient'],int)})}
+assert not unhandled
+dump('rhea-complete-source-projection.json',projection);dump('rhea-exact-candidate-search.json',search)
+print(json.dumps({'native_reactions':len(native),'families_retained':len(qs),'nodes_closed':len(closed),'full_RDF_subjects_scanned':len(nodes),'directional_equations_compared':len(all_directions),'matches':[{k:r[k]for k in ['frame','forward_matches','reverse_matches']}for r in search]},indent=2))

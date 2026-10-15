@@ -1,0 +1,50 @@
+from pathlib import Path
+import re,hashlib
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def bind(p):
+ p=Path(p);return {"path":str(p),"bytes":p.stat().st_size,"sha256":sha(p.read_bytes())}
+def orig_receipt(p):
+ return {"scope":"Exact reused original; original receipt is bound separately in source ledger"}
+
+code={a+b+c:aa for (a,b,c),aa in zip(((a,b,c)for a in 'TCAG' for b in 'TCAG' for c in 'TCAG'),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG')}
+def parse_embl(path):
+    raw=path.read_text();lines=raw.splitlines();h=re.fullmatch(r'ID\s+(\S+); SV (\d+);.* (\d+) BP\.',lines[0]);assert h,lines[0]
+    dna=''.join(re.findall('[a-z]+',raw.split('\nSQ   ')[1].split('\n',1)[1].split('//')[0])).upper();assert len(dna)==int(h[3]);assert raw.rstrip().endswith('//')
+    features=[];current=None
+    for line in lines:
+        if not line.startswith('FT   '):continue
+        key=line[5:21].strip();value=line[21:].strip()
+        if key:current={'type':key,'location':value,'qualifier_lines':[],'raw_lines':[line]};features.append(current)
+        elif current is not None:
+            current['raw_lines'].append(line)
+            if not current['qualifier_lines'] and not value.startswith('/'):current['location']+=value
+            else:current['qualifier_lines'].append(value)
+    for f in features:
+        t=' '.join(f['qualifier_lines']);q={}
+        for m in re.finditer(r'/([a-zA-Z0-9_]+)(?:="([^"]*)"|=([^ /]+))?',t):
+            key,v,unquoted=m.groups();v=v if v is not None else unquoted
+            if key=='translation':v=re.sub(r'\s+','',v)
+            q.setdefault(key,[]).append(v)
+        f['qualifiers']=q
+    return {'accession_version':h[1]+'.'+h[2],'source':bind(path),'request':orig_receipt(path),'dna_length':len(dna),'dna_sha256':sha(dna.encode()),'dna':dna,'header_lines':lines[:next(i for i,l in enumerate(lines) if l.startswith('FT   '))],'features':features,'source_features':[f for f in features if f['type']=='source']}
+
+def translate(f,dna):
+    q=f['qualifiers'];m=re.fullmatch(r'(complement\()?([0-9]+)\.\.([0-9]+)\)?',f['location'])
+    if not m:return {'status':'not translated: partial or complex location preserved','location':f['location']}
+    reverse,start,end=m.groups();nt=dna[int(start)-1:int(end)]
+    if reverse:nt=nt.translate(str.maketrans('ACGT','TGCA'))[::-1]
+    cs=int(q.get('codon_start',['1'])[0]);table=int(q.get('transl_table',['1'])[0]);assert table in [1,11],table
+    nt=nt[cs-1:];assert len(nt)%3==0 and re.fullmatch('[ACGT]+',nt)
+    aa=''.join(code[nt[i:i+3]] for i in range(0,len(nt),3));hasstop=aa.endswith('*');internal='*' in aa[:-1]
+    if hasstop:aa=aa[:-1]
+    start_codon=nt[:3];normalized=False
+    if cs==1 and start_codon in (['ATG','GTG','TTG','CTG','ATT','ATC','ATA'] if table==11 else ['ATG','TTG','CTG']):
+        normalized=aa[0]!='M';aa='M'+aa[1:]
+    annotated=q.get('translation',[None])[0]
+    return {'status':'translated','location':f['location'],'codon_start':cs,'codon_start_explicit':'codon_start' in q,'translation_table':table,'translation_table_explicit':'transl_table' in q,'nucleotide_sequence':nt,'nucleotide_sha256':sha(nt.encode()),'initiator_codon':start_codon,'initiator_methionine_normalized':normalized,'terminal_stop_present':hasstop,'internal_stop_present':internal,'independent_translation':aa,'translation_length':len(aa),'translation_sha256':sha(aa.encode()),'equals_annotated_translation':aa==annotated}
+
+def compare(a,b):
+    result={'exact_sequence_equality':a==b,'left_length':len(a),'right_length':len(b),'left_sha256':sha(a.encode()),'right_sha256':sha(b.encode())}
+    if len(a)==len(b):result['same_index_differing_residues']=[{'position':i+1,'left':x,'right':y} for i,(x,y) in enumerate(zip(a,b)) if x!=y]
+    else:result['alignment_policy']='No alignment-derived equivalence asserted for unequal lengths.'
+    return result

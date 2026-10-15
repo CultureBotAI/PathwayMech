@@ -1,0 +1,47 @@
+from pathlib import Path
+import xml.etree.ElementTree as E,json,hashlib,re,html,collections,datetime
+O=Path('/private/tmp/pathwaymech-next-262-discovery');W=Path('/private/tmp/pathwaymech-next-261-20261014')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+def clean(s):return ' '.join(html.unescape(re.sub('<[^>]+>',' ',s or '')).split())
+native={};inventory=[];slots=[]
+for p in sorted((O/'originals').glob('META-*.xml')):
+ rt=E.parse(p).getroot();f=p.stem[5:];xs=[x for x in rt if x.attrib.get('frameid')==f];assert len(xs)==1; x=xs[0];assert x.attrib.get('detail')=='full';native[f]=x
+ inventory.append({'path':str(p.relative_to(O)),'sha256':sha(p),'bytes':p.stat().st_size,'frame':f,'class':x.tag,'is_class':x.attrib.get('class')=='true','detail':'full','query':rt.findtext('metadata/query'),'pgdb_version':rt.find('metadata/PGDB').attrib.get('version'),'url':rt.attrib.get('{http://www.w3.org/XML/1998/namespace}base'),'direct_slots':len(x)})
+ indexes=collections.Counter()
+ for e in x:
+  indexes[e.tag]+=1; kind=('formal_membership_order_and_selected_flux' if e.tag in ['reaction-list','sub-pathways','reaction-ordering','reaction-layout'] else 'formal_material_side' if e.tag in ['left','right'] else 'complete_narrative_context_read' if e.tag=='comment' else 'source_asserted_taxon_scope_not_automatically_experimental' if e.tag in ['species','taxonomic-range'] else 'native_identity_crossref_requires_independent_resolution' if e.tag in ['dblink','inchi','inchi-key','cml','smiles'] else 'biological_activity_followup_lead' if e.tag=='enzymatic-reaction' else 'complete_source_metadata_or_adjacent_context')
+  slots.append({'frame':f,'slot':e.tag,'occurrence':indexes[e.tag],'locator':f'/ptools-xml/{x.tag}[@frameid="{f}"]/{e.tag}[{indexes[e.tag]}]','source_sha256':sha(p),'disposition':kind,'original_xml':E.tostring(e,encoding='unicode')})
+dump('native-original-verification.json',inventory);dump('complete-native-slot-dispositions.json',slots)
+order=['CATECHOL-23-DIOXYGENASE-RXN','RXN-8527','RXN-8529','4.1.1.77-RXN','2-OXOPENT-4-ENOATE-HYDRATASE-RXN','MHPELY-RXN','ACETALD-DEHYDROG-RXN'];core=['PWY-5420','PWY-5419','PWY-5162'];layouts={};precedence=[]
+for f in core:
+ for e in native[f].findall('reaction-layout'):
+  layouts[list(e)[0].attrib['frameid']]={'direction':e.findtext('direction'),'pathway':f,'locator':f'/ptools-xml/Pathway[@frameid="{f}"]/reaction-layout[{list(e)[0].tag}/@frameid="{list(e)[0].attrib["frameid"]}"]'}
+ for e in native[f].findall('reaction-ordering'):
+  for b in e.findall('predecessor-reactions/*'):precedence.append({'before':b.attrib['frameid'],'after':list(e)[0].attrib['frameid'],'pathway':f,'original_xml':E.tostring(e,encoding='unicode')})
+assert {(r['before'],r['after']) for r in precedence}==set(zip(order,order[1:]));steps=[];count=0;activityleads=[]
+for f in order:
+ x=native[f];sides={}
+ for side in ['left','right']:
+  sides[side]=[{'id':list(e)[0].attrib['frameid'],'coefficient':int(e.findtext('coefficient') or '1'),'coefficient_source':'explicit' if e.find('coefficient') is not None else 'Pathway Tools default unit coefficient','locator':f'/ptools-xml/Reaction[@frameid="{f}"]/{side}[{i}]'} for i,e in enumerate(x.findall(side),1)];count+=len(sides[side])
+ direct=layouts[f]['direction'];ins=sides['left' if direct=='L2R' else 'right'];outs=sides['right' if direct=='L2R' else 'left'];steps.append({'id':f,'source_direction':x.findtext('reaction-direction'),'selected_layout':layouts[f],'sides':sides,'selected_inputs':ins,'selected_outputs':outs})
+ for e in x.findall('enzymatic-reaction/*'):activityleads.append({'reaction':f,'activity_id':e.attrib['frameid'],'embedded_detail':e.attrib.get('detail'),'catalyst_ids':[z.attrib['frameid'] for z in e.findall('enzyme/*')],'original_locator':f'/ptools-xml/Reaction[@frameid="{f}"]/enzymatic-reaction/Enzymatic-Reaction[@frameid="{e.attrib["frameid"]}"]','status':'Follow complete original activity, catalyst, assembly, organism, gene, cofactor, regulation and linked experiment before final graph inclusion; embedded low detail is not full biology closure.'})
+connections=[]
+for a,b in zip(steps,steps[1:]):
+ common={n['id'] for n in a['selected_outputs']}&{n['id'] for n in b['selected_inputs']};assert common;connections.append({'before':a['id'],'after':b['id'],'shared_native_material':sorted(common)})
+net=collections.Counter()
+for s in steps:
+ for n in s['selected_inputs']:net[n['id']]-=n['coefficient']
+ for n in s['selected_outputs']:net[n['id']]+=n['coefficient']
+assert count==28
+proof={'candidate':'MetaCyc:PWY-5420','source_version':'META27.0','full_pathway_members':{f:[e.attrib['frameid'] for e in native[f].findall('reaction-list/*')] for f in core},'ordered_steps':steps,'explicit_precedence':precedence,'material_connections':connections,'formal_steps':len(steps),'material_side_entries':count,'net_native_bookkeeping':{k:v for k,v in sorted(net.items()) if v},'net_limit':'Algebraic sum of selected source sides; not an independently balanced/structurally audited chemistry proof. Complete chemical identity, charge and atom checks remain next-stage work.'}
+dump('native-connectivity-proof.json',proof);dump('next-source-follow-set.json',{'formal_activity_leads':activityleads,'count':len(activityleads),'distinct_activities':len({r['activity_id'] for r in activityleads}),'new_oxidative_activity_leads': [r for r in activityleads if r['reaction'] in order[1:4]],'purpose':'Complete the full seven-step pathway, not merely the three newly distinct oxidative steps. Reuse prior source bytes only after hash and scope verification.'})
+classmembers=[e.attrib['frameid'] for e in native['Catechol-Degradation'].findall('instance/*')];assert len(classmembers)==7;alts=[]
+for f in classmembers+['PWY-5162','PWY-2361','PWY-5430']:
+ x=native[f];alts.append({'id':'MetaCyc:'+f,'label':clean(x.findtext('common-name')),'members':[e.attrib['frameid'] for e in x.findall('reaction-list/*')],'synonyms':[clean(e.text) for e in x.findall('synonym')],'source_path':'originals/META-'+f+'.xml','source_sha256':sha(O/'originals'/('META-'+f+'.xml'))})
+dump('alternative-pathway-boundaries.json',{'scope':'All seven direct members of the complete META27.0 catechol class, plus shared terminal modules and the aromatic meta umbrella. This is a bounded classification, not every possible microbial route or every future release.','class_members':classmembers,'alternatives':alts})
+inv=json.loads((O/'corpus-inventory.json').read_text());end=[]
+for row in inv['records']:
+ p=W/row['path'];h=sha(p);end.append({'path':row['path'],'before':row['sha256'],'after':h,'unchanged':h==row['sha256']})
+dump('corpus-end-check.json',{'records':len(end),'unchanged_count':sum(r['unchanged'] for r in end),'changes':[r for r in end if not r['unchanged']],'baseline_rebind_required_after_next261_merge':True})
+print(json.dumps({'complete_native_objects':len(inventory),'direct_slots':len(slots),'steps':len(steps),'side_entries':count,'low_detail_activity_leads':len(activityleads),'corpus_unchanged':sum(r['unchanged'] for r in end)}))

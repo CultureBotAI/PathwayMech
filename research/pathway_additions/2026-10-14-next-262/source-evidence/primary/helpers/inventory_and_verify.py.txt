@@ -1,0 +1,98 @@
+import json, hashlib, re, sys
+from pathlib import Path
+P=Path('/private/tmp/pathwaymech-next-262-primary')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def read(p):return json.loads(p.read_text())
+def dump(n,d):(P/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+def bind(p):return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+errors=[];checks={}
+def require(ok,msg):
+ if not ok:errors.append(msg)
+intake=read(P/'predecessor-intake.json')
+for row in intake:
+ for key in ['path','source_path']: require(sha(Path(row[key]))==row['sha256'],f'intake hash {key}: {row[key]}')
+checks['predecessor_intake_files']=len(intake)
+receipts=[];provenance={}
+def walk(o,origin):
+ if isinstance(o,dict):
+  if 'path' in o and 'sha256' in o:
+   f=Path(o['path'])
+   if not f.is_absolute():f=origin.parent/f
+   if f.is_file():
+    require(sha(f)==o['sha256'],f'receipt mismatch {f} in {origin}')
+    if any(k in o for k in ['url','final_url','retrieved_utc','source_path','role','method']):provenance.setdefault(str(f),[]).append({'receipt':str(origin.relative_to(P)),**{k:o[k] for k in ['url','final_url','retrieved_utc','source_path','role','method','content_type','status','error'] if k in o}})
+  for v in o.values():walk(v,origin)
+ elif isinstance(o,list):
+  for v in o:walk(v,origin)
+for f in sorted(P.rglob('*.json')):
+ if f.name in ['source-artifact-inventory.json','verification.json','artifact-manifest.json','compact-retention-manifest.json'] or '/predecessor261/' in str(f):continue
+ try:walk(read(f),f)
+ except (ValueError,KeyError):pass
+for row in intake:provenance.setdefault(row['path'],[]).append({'receipt':'predecessor-intake.json','source_path':row['source_path'],'source_manifest':row['source_manifest'],'role':row['role']})
+
+# Verify frozen source packages directly, including hidden/ignored files.
+guards=[]
+for dirname in ['pathwaymech-next-262-discovery','pathwaymech-next-262-native','pathwaymech-next-262-chemistry','pathwaymech-next-261-primary']:
+ root=Path('/private/tmp')/dirname;m=root/'artifact-manifest.json';d=read(m);rows=d if isinstance(d,list) else d['files']
+ for row in rows:
+  f=root/row['path'];require(f.is_file() and sha(f)==row['sha256'],f'frozen source mismatch {f}')
+ guards.append({'manifest':bind(m),'files_verified':len(rows)})
+checks['frozen_inputs']=guards
+for sub in ['pra-supplement','ywhb-supplement','predecessor261']:
+ root=P/sub;d=read(root/'artifact-manifest.json');rows=d if isinstance(d,list) else d['files']
+ for row in rows:require(sha(root/row['path'])==row['sha256'],f'supplement mismatch {sub}/{row["path"]}')
+ checks[sub+'_manifest_files']=len(rows)
+
+# Replay complete1990 transformation exactly from the retained web parts.
+c=read(P/'receipts/PMID2202600-transformation-coverage.json');lines=(P/'derived/PMID2202600-merged-publisher-transformation.txt').read_text().splitlines()
+raw={name:read(P/'receipts'/name) for names in c['line_sources'].values() for name in names}
+seen=[]
+for line in lines:
+ match=re.match(r'L(\d+)@P([^:]+):',line);require(bool(match),'bad transformation line')
+ if match:
+  n=int(match.group(1));seen.append(n);require(any(line in raw[name].splitlines() for name in c['line_sources'][str(n)]),f'unreproduced1990 line {n}')
+require(seen==list(range(918)),'1990 numbered line coverage')
+checks['1990_transformation']={'lines':len(lines),'pages':c['pages'],'all_exactly_reproduced':len(seen)==918}
+
+targets=read(P/'primary-targets.json');coverage=read(P/'source-coverage-and-dispositions.json')
+require({x['pmid'] for x in targets}=={x['pmid'] for x in coverage},'native primary target coverage')
+for row in coverage:
+ for item in row['native_leads']:
+  f=Path('/private/tmp/pathwaymech-next-262-native/originals')/('META-'+item['native_frame']+'.xml')
+  require(sha(f)==item['sha256'],'native lead hash '+item['native_frame'])
+checks['native_targets']=len(targets);checks['native_source_bindings']=sum(len(x['native_leads']) for x in targets)
+ledger=read(P/'material-claim-ledger.json');ids=[c['claim_id'] for c in ledger['claims']]
+require(len(ids)==len(set(ids)),'duplicate claim identifiers')
+checks['new_material_claims']=len(ids);checks['predecessor_dispositions']=len(read(P/'predecessor-claim-dispositions.json'))
+checks['figure_page_images_inspected_parent']=len(read(P/'receipts/author-visual-inspection.json')['images'])
+checks['new_quote_words']=read(P/'quotation-ledger.json')['new_word_count']
+require(checks['new_quote_words']==0,'new direct quote accounting')
+checks['native_targets_with_full_main']=sum(x['pmid'] in {'4325686','7868591','2202600','2681159','8419288','16517619','12620844','9573204','17090920','17902707','19717587'} for x in coverage)
+cross=read(P/'native-primary-coverage-crosswalk.json')
+require(len(cross['activities'])==41 and len(cross['regulations'])==52,'native activity/regulation crosswalk completeness')
+checks['native_activity_crosswalk']=len(cross['activities']);checks['native_regulation_crosswalk']=len(cross['regulations'])
+checks['native_conflicts_dispositioned']=len(read(P/'material-conflicts-and-dispositions.json'))
+
+rejected={
+ 'originals/PMID7868591-PMC.pdf':'Rejected as PDF/full text: HTML download challenge.',
+ 'originals/AP3-2000-springer.pdf':'Rejected as full paper/PDF: HTML subscription preview.',
+ 'originals/ACS-bi9918902-supp.pdf':'Rejected as supporting PDF: zero-byte202 response.',
+ 'originals/PMC176723-1995.html':'Historical PMC abstract/reference landing page, not complete main body.',
+ 'derived/PMC176723-1995-text.txt':'Derived abstract/landing text, not full main body.',
+ 'derived/AP3-2019-text.txt':'Unsuitable first selector extracted sidebar; replaced by wholepage locator.'}
+inventory=[]
+for f in sorted(P.rglob('*')):
+ if not f.is_file():continue
+ rel=str(f.relative_to(P))
+ if not (rel.startswith(('originals/','derived/','receipts/','predecessor261/')) or '/originals/' in rel or '/original-graphics/' in rel):continue
+ if f.suffix in ['.jpg','.png']:role='Original or rendered visual evidence; inspection status is recorded separately.'
+ elif rel.startswith('derived/'):role='Derived reading aid; never raw-original proof.'
+ elif rel.startswith('receipts/'):role='Acquisition/input receipt, possibly containing full transformed source text; exact claim context required.'
+ elif rel.startswith('predecessor261/'):role='Exact predecessor copy; retain original per-source read scopes and current successor dispositions.'
+ else:role='Retained issuing original; accepted source class and actual reading scope are recorded in coverage ledgers.'
+ role=rejected.get(rel,role)
+ inventory.append({'path':rel,'sha256':sha(f),'bytes':f.stat().st_size,'role':role,'provenance':provenance.get(str(f),[]),'full_text_retained_only_external':True})
+dump('source-artifact-inventory.json',{'inventory_method':'Path.rglob recursively includes hidden and ignored files; no Gitignore filtering.','files':inventory,'reading_status_owner':'source-coverage-and-dispositions.json plus supplement reading-coverage and per-source notes; inventory membership alone does not mean read','rejected_or_limited_payloads':rejected})
+dump('verification.json',{'status':'PASS' if not errors else 'FAIL','role':'Author reproducibility verification, not independent review','checks':checks,'errors':errors,'does_not_claim':['Every source is full text','Primary proof of exact modern E/Z from historical names','Complete seven-step pathway demonstrated in every organism','Independent record review or maintained integration']})
+print(json.dumps({'status':'PASS' if not errors else 'FAIL','errors':errors,'checks':{k:v for k,v in checks.items() if k!='frozen_inputs'},'source_artifacts':len(inventory)},indent=2))
+if errors:sys.exit(1)

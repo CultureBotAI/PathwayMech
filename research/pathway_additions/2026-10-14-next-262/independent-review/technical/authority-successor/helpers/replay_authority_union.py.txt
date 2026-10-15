@@ -1,0 +1,97 @@
+import collections,contextlib,datetime,gzip,hashlib,io,json,pathlib,sqlite3,subprocess,sys
+import yaml
+R=pathlib.Path('/private/tmp/pathwaymech-next-262-20261014');A=pathlib.Path('/private/tmp/pathwaymech-next-262-authority-integration');O=pathlib.Path('/private/tmp/pathwaymech-next-262-independent-technical');base='fbccbdc027f2a86ad4919e9dbbb16a736cc0746a'
+sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(pathlib.Path(p).read_bytes());now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat()
+def digest(p):
+ h=hashlib.sha256()
+ with pathlib.Path(p).open('rb') as f:
+  while b:=f.read(8*1024*1024):h.update(b)
+ return h.hexdigest()
+def owned_replay():
+ m=A/'artifact-manifest.json';assert digest(m)=='21d966a875c2b0e79a22611cfa2db672a20cc58c41fbba3fba2dafa9881b1fa9';rows=load(m)['files'];reported=set()
+ for x in rows:
+  p=A/x['path'];assert p.stat().st_size==x['bytes'] and digest(p)==x['sha256'],x['path'];reported.add(x['path'])
+ actual={str(p.relative_to(A)) for p in A.rglob('*') if p.is_file() and not p.is_symlink() and 'source-cache' not in p.parts and p.name!='artifact-manifest.json'}
+ assert actual==reported,(sorted(actual-reported),sorted(reported-actual));return len(rows)
+report={'started_at':now(),'scope':'Independent technical authority replay; no full builder rerun or independent full scientific verdict. Reviewer previously authored only the bounded 262 duplicate-search successor, not these sources, record, primary overlay, or authorities.','baseline_commit':base}
+report['owned_manifest_files_before']=owned_replay()
+compact=load(A/'compact-retention-selection.json')['files'];counts=collections.Counter()
+for r in compact:
+ b=(A/r['retain_path']).read_bytes();assert len(b)==r['bytes'] and sha(b)==r['sha256'];decoded=gzip.decompress(b) if r['encoding']=='gzip_lossless' else b
+ assert len(decoded)==r['original_bytes'] and sha(decoded)==r['original_sha256'] and decoded==(A/r['original_path']).read_bytes();counts[r['encoding']]+=1
+report['compact_encoding_pairs']=dict(counts)
+configs=load(A/'proposal/identifier_sources.json');oldconfig=load(A/'baseline/conf/identifier_sources.json');assert configs[:len(oldconfig)]==oldconfig
+for rel in ['conf/identifier_sources.json','conf/identifier_policy.yaml','conf/rhea_identifier_updates.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json']:
+ expected=subprocess.check_output(['git','show',base+':'+rel],cwd=R);assert (A/'baseline'/rel).read_bytes()==expected,rel
+runtime=load(A/'retained/runtime-bindings.json')
+for row in runtime:
+ b=pathlib.Path(row['path']).read_bytes();assert sha(b)==row['sha256'] and len(b)==row['bytes'] and b==(R/row['relative_path']).read_bytes() and b==subprocess.check_output(['git','show',base+':'+row['relative_path']],cwd=R)
+report['unchanged_runtime_files']=len(runtime)
+oldterms={};newterms={};summaries={};snapshots={}
+for name in ['sources','ontology']:
+ old=load(A/'baseline/data/identifier_authorities'/f'{name}.json');new=load(A/'proposal'/f'{name}.union.json');snapshots[name]=(old,new);assert new['version']==old['version']
+ for kind in ['sources','terms']:assert all(new[kind].get(k)==v for k,v in old[kind].items()),(name,kind)
+ assert not oldterms.keys()&old['terms'].keys();assert not newterms.keys()&new['terms'].keys();oldterms.update(old['terms']);newterms.update(new['terms'])
+ summaries[name]={'old_terms':len(old['terms']),'new_terms':len(new['terms'])-len(old['terms']),'final_terms':len(new['terms']),'old_owners':len(old['sources']),'new_owners':len(new['sources'])-len(old['sources']),'added_ids':sorted(new['terms'].keys()-old['terms'].keys())}
+initial=(O/'record.initial-integrated.yaml').read_bytes();assert sha(initial)=='021069187297588d42fc144e192f572beeb2e9c7415196c9ebd79550c688dd3e';assert initial==(A/'retained/record-selection-observation.yaml').read_bytes()
+record=yaml.load(initial,Loader=yaml.CSafeLoader);selected={record['id']}|{n['id'] for f in ['taxa','participants','reactions'] for n in record[f]}
+assert len(selected)==177 and len(oldterms)==5103 and len(newterms)==5172 and len(oldconfig)==1142
+assert newterms.keys()-oldterms.keys()==selected-oldterms.keys();assert selected<=newterms.keys()
+assert len(summaries['sources']['added_ids'])==63 and len(summaries['ontology']['added_ids'])==6
+report.update(preservation=summaries,selected_identifiers=sorted(selected),configuration_prefix_preserved=len(oldconfig),added_config_entries=len(configs)-len(oldconfig),initial_record_sha256=sha(initial))
+sys.path[:0]=[str(R/'src'),str(R)]
+from scripts.build_source_identifier_snapshot import source_terms
+sourcechecks=[];newentries=configs[len(oldconfig):];sourcebindings={x['entry']['key']:x for x in load(A/'retained/new-source-original-bindings.json')}
+assert len(sourcebindings)==len(newentries)==63
+for entry in newentries:
+ bound=sourcebindings[entry['key']];assert bound['entry']==entry;path=A/'source-cache'/entry['path'];body=path.read_bytes();assert sha(body)==entry['sha256'];assert body==pathlib.Path(bound['original']).read_bytes()
+ terms=list(source_terms(entry['kind'],path,url=entry['url'],version=entry['version'],sha256=entry['sha256']));assert terms;matched=[]
+ for identifier,label,synonyms in terms:
+  if identifier in selected-oldterms.keys():
+   term=newterms[identifier];assert term['source']==entry['key'];assert term['label']==label;assert term['synonyms']==synonyms;matched.append(identifier)
+ assert sorted(matched)==sorted(bound['selected_identifiers']);owner=snapshots['sources'][1]['sources'][entry['key']];assert all(owner[k]==entry[k] for k in ['url','version','license','sha256'])
+ sourcechecks.append({'key':entry['key'],'kind':entry['kind'],'original':str(path.resolve()),'sha256':sha(body),'selected_ids':matched})
+report['new_source_replays']=sourcechecks
+commands=load(A/'retained/canonical-build-commands.json');boundpaths={};inputchecks=[]
+for row in commands['input_bindings']:
+ p=pathlib.Path(row['path']);assert str(p.resolve())==row['resolved'];actual=digest(p);assert actual==row['sha256'],str(p);boundpaths[str(p)]=actual;inputchecks.append({'path':str(p),'sha256':actual})
+report['canonical_build_input_bindings_verified_now']=len(inputchecks)
+cache=load(A/'retained/baseline-original-cache-verification.json');cachechecks=[]
+for row in cache['originals']:
+ p=pathlib.Path(row['path']);assert str(p.resolve())==row['resolved'] and p.stat().st_size==row['bytes'];actual=boundpaths.get(str(p)) or digest(p);assert actual==row['sha256'],str(p);cachechecks.append(str(p))
+symlinks={str(p):str(p.resolve()) for p in (A/'source-cache').rglob('*') if p.is_symlink()}
+covered={str(A/'source-cache'/x['entry']['path']) for x in sourcebindings.values()}|set(cachechecks)
+assert set(symlinks)==covered,(set(symlinks)-covered,covered-set(symlinks))
+report['old_cache_descriptors_verified']=len(cachechecks);report['all_source_cache_symlinks_bound']=len(symlinks)
+bindings={r['owner_key']:r for r in commands['database_bindings']};ontochecks=[]
+for row in bindings.values():
+ p=pathlib.Path(row['path']);st=p.stat();assert str(p.resolve())==row['resolved'] and st.st_size==row['bytes'] and st.st_mtime_ns==row['mtime_ns'];assert snapshots['ontology'][1]['sources'][row['owner_key']]['sha256']==row['sha256']
+for identifier in summaries['ontology']['added_ids']:
+ term=newterms[identifier];row=bindings[term['source']];path=pathlib.Path(row['path'])
+ with sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True) as con:rs=con.execute("SELECT predicate, value FROM statements WHERE subject=? AND predicate IN ('rdfs:label','oio:hasExactSynonym')",(identifier,)).fetchall()
+ labels={v for p,v in rs if p=='rdfs:label' and v};assert labels=={term['label']};syn=sorted({v for p,v in rs if p=='oio:hasExactSynonym' and v and v!=term['label']});assert syn==term['synonyms']
+ ontochecks.append({'identifier':identifier,'owner':term['source'],'label':term['label'],'synonyms':syn,'database_original':str(path.resolve()),'baseline_database_sha256':row['sha256']})
+report['new_ontology_sql_replays']=ontochecks
+for kind in ['source_builder','ontology_builder']:
+ rec=load(A/'retained'/f'{kind}-receipt.json');assert rec['exit_code']==0 and rec['command']==commands[kind] and rec['cwd']==commands['cwd'] and rec['environment']==commands['environment'];assert digest(rec['log_path'])==rec['log_sha256'];assert rec['command_file_sha256']==digest(A/'retained/canonical-build-commands.json')
+preserve=load(A/'retained/build-input-preservation.json');assert preserve['exit_codes']==[0,0] and preserve['all_inputs_unchanged'] and preserve['input_bindings_checked_before']==preserve['input_bindings_checked_after']==len(commands['input_bindings']);assert preserve['command_file_sha256']==digest(A/'retained/canonical-build-commands.json')
+for n in ['sources','ontology']:assert digest(A/'proposal'/f'{n}.union.json')==preserve['outputs'][f'{n}.union.json']
+shadow=A/'identifier-verification-root';recordpaths=sorted((shadow/'data/pathways').rglob('*.yaml'));assert len(recordpaths)==259
+actual_predecessors=load(A/'retained/actual-predecessor-record-bindings.json');assert not actual_predecessors['changed_paths'];oldrecords=[]
+for p in recordpaths:
+ rel=p.relative_to(shadow);b=p.read_bytes()
+ if p.name=='catechol-degradation-ii.yaml':assert b==initial
+ else:
+  expected=subprocess.check_output(['git','show',base+':'+str(rel)],cwd=R);assert b==expected and b==(R/rel).read_bytes();oldrecords.append({'path':str(rel),'sha256':sha(b)})
+assert len(oldrecords)==258
+assert {r['relative_path']:r['current_sha256'] for r in actual_predecessors['records']}=={r['path']:r['sha256'] for r in oldrecords}
+assert (shadow/'conf/identifier_policy.yaml').read_bytes()==(A/'baseline/conf/identifier_policy.yaml').read_bytes()
+for n in ['sources','ontology']:assert (shadow/f'data/identifier_authorities/{n}.json').read_bytes()==(A/f'proposal/{n}.union.json').read_bytes()
+from pathwaymech.cli import check_identifiers_main
+log=io.StringIO()
+with contextlib.redirect_stdout(log),contextlib.redirect_stderr(log):code=check_identifiers_main([],root=shadow)
+(O/'authority-consumer.initial.log').write_text(log.getvalue());assert code==0,log.getvalue()
+report['real_consumer_replay']={'exit_code':code,'actual_records':len(recordpaths),'predecessors_exact_to_git_base':len(oldrecords),'synthetic_selection_record_in_consumer':False,'log_sha256':sha(log.getvalue().encode()),'runtime':'unchanged actual maintained pathwaymech.cli.check_identifiers_main'}
+report['owned_manifest_files_after']=owned_replay();report['finished_at']=now();report['open_findings']=[]
+report['limitations']=['Full pinned ontology SQL files were not independently rehashed again; unchanged canonical builder code and its completed receipts bind complete hashes. Independently verified all four owner digests, resolved database paths, size/mtime, and exact SQL label/synonym rows for all six added terms.','Old source originals were hash-verified and all prior owner/term objects preserved; old biological contents were not reinterpreted.','This replay binds the initial integrated record 021069187297588d42fc144e192f572beeb2e9c7415196c9ebd79550c688dd3e; subsequent locator-only repair and final maintained promotion require separate binding.','Full canonical builders and repository gates were not repeated. Source license/public redistribution suitability is not assessed.']
+(O/'authority-union-replay.initial.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'status':'passed','owned_files':report['owned_manifest_files_after'],'compact_pairs':dict(counts),'runtime':len(runtime),'new_source_terms':len(sourcechecks),'new_ontology_terms':len(ontochecks),'consumer_records':len(recordpaths),'sha256':digest(O/'authority-union-replay.initial.json')}))

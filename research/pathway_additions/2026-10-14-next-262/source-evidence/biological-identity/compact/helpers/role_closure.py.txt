@@ -1,0 +1,25 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,collections,sqlite3,sys
+sys.dont_write_bytecode=True
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity');N=Path('/private/tmp/pathwaymech-next-262-native');R=Path('/private/tmp/pathwaymech-next-261-20261014');sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_ontology_identifier_snapshot import extract_terms
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+bindings=json.loads((N/'compact-original-source-bindings.json').read_text());incoming=collections.defaultdict(list);pathways=[]
+for b in bindings:
+ p=Path(b['path']);assert sha(p)==b['sha256'];e=next(x for x in E.parse(p).getroot()if x.get('frameid')==b['frame']and x.get('detail')=='full');counter=collections.Counter()
+ for s in e:
+  counter[s.tag]+=1
+  for x in s:
+   if x.tag=='Organism' and x.get('frameid'):
+    row={'source_frame':b['frame'],'source_type':e.tag,'slot':s.tag,'organism':x.get('frameid'),'locator':f'/ptools-xml/{e.tag}[@frameid="{b["frame"]}"]/{s.tag}[{counter[s.tag]}]','source_path':b['path'],'source_sha256':b['sha256'],'xml':E.tostring(s,encoding='unicode')};incoming[x.get('frameid')].append(row)
+    if e.tag=='Pathway':pathways.append(row)
+rows=json.loads((B/'projections/native-biological-full-object-intake.json').read_text());out=[]
+for r in rows:
+ if r['type']!='Organism':continue
+ direct=incoming[r['frame']];out.append({'native_frame':r['frame'],'source':{'path':r['path'],'sha256':r['sha256']},'native_names':r['names'],'strain_names':r['strain_names'],'explicit_taxonomy':[x for x in r['dblinks']if x['dblink-db']=='NCBI-TAXONOMY-DB'],'direct_uses':direct,'roles':sorted({('parent pathway annotation'if x['source_frame']=='PWY-5420'else 'module/adjacent pathway annotation')if x['source_type']=='Pathway'else 'native protein donor scope'if x['source_type']=='Protein'and x['slot']=='species'else 'taxonomic/context relation'for x in direct}),'scope':'Only exact direct source slots classified. Nested crossreference copies are excluded from donor/whole-pathway assertions. Database pathway annotations remain distinct from experimental evidence and heterologous expression hosts.'})
+(B/'projections/all33-organism-role-closure.json').write_text(json.dumps(out,indent=2)+'\n');(B/'projections/native-pathway-taxon-bindings.json').write_text(json.dumps(pathways,indent=2)+'\n')
+proof=json.loads((B/'projections/taxon-authority-candidates.json').read_text());db=Path(proof['database']['path']);con=sqlite3.connect('file:'+str(db)+'?mode=ro',uri=True);terms,missing=extract_terms(con,['NCBITaxon:294','NCBITaxon:306'],proof['source_key']);assert not missing
+out=[]
+for ident in ['NCBITaxon:294','NCBITaxon:306']:
+ triples=[dict(zip(['subject','predicate','object','value','datatype','language'],v))for v in con.execute('select subject,predicate,object,value,datatype,language from statements where subject=? order by predicate,object,value',(ident,))];out.append({'identifier':ident,'term':terms[ident],'direct_statements':triples,'scope':'Explicit UniProt/sequence-deposit/structure reference taxon only, not a guessed replacement for historical native KU-7 or exact AP3 tax874293.'})
+con.close();(B/'projections/supplemental-reference-taxon-queries.json').write_text(json.dumps({'database_binding':proof['database'],'full_hash_proof':{'path':str(B/'projections/taxon-authority-candidates.json'),'sha256':sha(B/'projections/taxon-authority-candidates.json')},'rows':out},indent=2)+'\n');print('33 organism roles; parent PWY-5420 species:',[(x['organism'],x['slot'])for x in pathways if x['source_frame']=='PWY-5420']);print('Additional exact reference taxon records:',[(x['identifier'],x['term']['label'])for x in out])

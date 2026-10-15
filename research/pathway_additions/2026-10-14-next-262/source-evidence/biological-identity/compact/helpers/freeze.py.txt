@@ -1,0 +1,31 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib,gzip
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity')
+sha=lambda b:hashlib.sha256(b).hexdigest()
+# Remove only this task's generated Python bytecode, not source or evidence files.
+for d in B.rglob('__pycache__'):
+ for p in d.iterdir():assert p.suffix=='.pyc';p.unlink()
+ d.rmdir()
+assert not (B/'artifact-manifest.json').exists()
+selection=[]
+excluded={'new-uniprot-full-context.json','four-deposit-full-projections.json','native-biological-reading.txt'}
+files=[p for p in B.rglob('*')if p.is_file() and not p.is_relative_to(B/'originals') and not p.is_relative_to(B/'compact') and p.name not in excluded and p.name not in ['compact-retention-manifest.json','artifact-manifest.json']]
+for p in sorted(files):
+ rel=p.relative_to(B);raw=p.read_bytes();compressed=len(raw)>20000;target=B/'compact'/rel
+ if compressed:target=target.with_name(target.name+'.gz');stored=gzip.compress(raw,mtime=0);assert gzip.decompress(stored)==raw
+ else:stored=raw
+ target.parent.mkdir(parents=True,exist_ok=True);assert not target.exists();target.write_bytes(stored)
+ selection.append({'source_path':str(p),'source_relative_path':str(rel),'retained_path':str(target.relative_to(B)),'encoding':'gzip'if compressed else'identity','original_sha256':sha(raw),'original_bytes':len(raw),'stored_sha256':sha(stored),'stored_bytes':len(stored)})
+(B/'compact-retention-manifest.json').write_text(json.dumps({'root':str(B),'role':'biological identity author proposal','selected_files':len(selection),'files':selection,'excluded':'Complete original responses, full UniProt/nucleotide projections and reading aid remain external; all source bindings remain in retained metadata. Native full biological projection/direct-slot facts are retained with lossless compression. This is no license clearance or maintained integration.'},indent=2)+'\n')
+rows=[]
+for p in sorted(B.rglob('*')):
+ if p.is_file():rows.append({'path':str(p.relative_to(B)),'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size})
+manifest={'root':str(B),'candidate':'MetaCyc:PWY-5420','role':'biological identity author; independent review required','frozen_utc':datetime.now(timezone.utc).isoformat(),'inventory_method':'Path.rglob recursive full inventory includes hidden and ignored files. Artifact manifest excludes itself. All files immutable after freeze.','file_count':len(rows),'total_bytes':sum(x['bytes']for x in rows),'files':rows}
+(B/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+# Final manifest replay independent of generating list, plus every retained decoded byte.
+actual={str(p.relative_to(B))for p in B.rglob('*')if p.is_file()and p.name!='artifact-manifest.json'};assert actual=={x['path']for x in rows}
+for r in rows:assert sha((B/r['path']).read_bytes())==r['sha256']
+for r in selection:
+ p=B/r['retained_path'];stored=p.read_bytes();decoded=gzip.decompress(stored)if r['encoding']=='gzip'else stored;assert sha(stored)==r['stored_sha256']and sha(decoded)==r['original_sha256']and decoded==Path(r['source_path']).read_bytes()
+print(json.dumps({'handoff_sha256':sha((B/'HANDOFF.md').read_bytes()),'manifest_sha256':sha((B/'artifact-manifest.json').read_bytes()),'files':len(rows),'compact_files':len(selection),'compact_stored_bytes':sum(x['stored_bytes']for x in selection),'all_checks_passed':True},indent=2))

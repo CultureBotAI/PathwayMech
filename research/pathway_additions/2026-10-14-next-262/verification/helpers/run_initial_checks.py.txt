@@ -1,0 +1,81 @@
+"""Run the first complete catechol integration gates once, preserving exact receipts."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import time
+
+ROOT = Path('/private/tmp/pathwaymech-next-262-20261014')
+OUT = Path('/private/tmp/pathwaymech-next-262-checks-initial')
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-next-262-uv-cache',
+           UV_PROJECT_ENVIRONMENT='/private/tmp/pathwaymech-next-195-20261011/.venv',
+           PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+SCOPE = ['src', 'tests', 'conf', 'data', 'history', 'pages', 'scripts', 'schema', 'docs',
+         'templates', 'reviews', 'curation', '.claude', '.github', 'pyproject.toml', 'uv.lock', 'justfile',
+         'research/pathway_additions/2026-10-14-next-262']
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def inventory():
+    # Without --exclude-standard, git includes ignored untracked files as well.
+    raw = subprocess.check_output(['git', 'ls-files', '-co', '-z', '--', *SCOPE], cwd=ROOT)
+    names = sorted({p.decode() for p in raw.split(b'\0') if p})
+    return {p: sha(ROOT / p) for p in names if (ROOT / p).is_file()
+            and not {'__pycache__', '.pytest_cache', '.ruff_cache'} & set(Path(p).parts)}
+
+
+def main():
+    accepted = Path('/private/tmp/pathwaymech-next-262-ci/accepted-integration-inputs.json')
+    payload = json.loads(accepted.read_text())
+    assert payload['status'] == 'ready_for_initial_full_gates'
+    for path, digest in payload['maintained_hashes'].items():
+        assert sha(ROOT / path) == digest, path
+    assert (ROOT / 'data/pathways/catechol-degradation-ii.yaml').is_file()
+    assert not OUT.exists(), 'Observe or preserve the existing run; never restart it implicitly.'
+    OUT.mkdir()
+    receipts = []
+
+    def run(command):
+        log = OUT / ('-'.join(command) + '.log')
+        start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        clock = time.monotonic()
+        with log.open('w') as stream:
+            process = subprocess.run(command, cwd=ROOT, env=ENV, stdout=stream, stderr=subprocess.STDOUT)
+        receipt = {'command': command, 'cwd': str(ROOT), 'started_utc': start,
+                   'elapsed_seconds': round(time.monotonic() - clock, 2),
+                   'exit_code': process.returncode, 'log_path': str(log), 'log_sha256': sha(log)}
+        receipts.append(receipt)
+        (OUT / 'receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+        print(json.dumps(receipt), flush=True)
+        if process.returncode:
+            print(log.read_text()[-10000:], flush=True)
+            raise SystemExit(process.returncode)
+
+    run(['just', 'render-pages'])
+    before = inventory()
+    (OUT / 'tested-core-input-hashes.json').write_text(json.dumps(before, indent=2) + '\n')
+    (OUT / 'environment.json').write_text(json.dumps({k: ENV[k] for k in
+        ['PYTHONDONTWRITEBYTECODE', 'PYTHONNOUSERSITE', 'UV_NO_SYNC', 'UV_CACHE_DIR',
+         'UV_PROJECT_ENVIRONMENT', 'PYTHONPATH']}, indent=2) + '\n')
+    for command in [['just', 'validate'], ['just', 'test'], ['just', 'lint'],
+                    ['just', 'vendored-check'], ['git', 'diff', '--check'],
+                    ['git', 'diff', '--cached', '--check']]:
+        run(command)
+    after = inventory()
+    assert before == after, 'Core inventory changed while checks were running.'
+    result = {'tested_core_files': len(before), 'all_unchanged': True,
+              'scope': SCOPE, 'ignored_and_hidden_included': True,
+              'excluded_runtime_caches': ['__pycache__', '.pytest_cache', '.ruff_cache'],
+              'record_sha256': sha(ROOT / 'data/pathways/catechol-degradation-ii.yaml')}
+    (OUT / 'final-input-preservation.json').write_text(json.dumps(result, indent=2) + '\n')
+    print('All seven initial commands passed; complete scoped core inventory unchanged.', flush=True)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,74 @@
+from pathlib import Path
+import json,hashlib,sys,collections,copy,xml.etree.ElementTree as ET
+sys.dont_write_bytecode=True
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity');P=Path('/private/tmp/pathwaymech-next-261-biological-identities');N=Path('/private/tmp/pathwaymech-next-262-native');R=Path('/private/tmp/pathwaymech-next-261-20261014')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_source_identifier_snapshot import source_terms
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def rd(p):return json.loads(Path(p).read_text())
+def write(n,d):(B/n).write_text(json.dumps(d,indent=2)+'\n')
+rows=rd(B/'projections/native-biological-full-object-intake.json');objects={r['frame']:r for r in rows};old={r['native_identifier'].split(':',1)[1]:r for r in rd(P/'complete-biological-object-identity-ledger.json')};snap=rd(R/'data/identifier_authorities/sources.json');conf={x['key']:x for x in rd(R/'conf/identifier_sources.json')}
+# Independently replay all predecessor candidate profiles with current unchanged adapter and original bytes.
+replay=[]
+for r in rd(P/'projections/combined-candidate-parser-replay.json'):
+ p=Path(r['source_cache_original']);e=r['entry'];assert sha(p)==e['sha256'];terms=list(source_terms(e['kind'],p,url=e['url'],version=e['version']));t=[x for x in terms if x[0]==r['identifier']];assert len(t)==1 and list(t[0])==r['actual_term']
+ replay.append({'identifier':r['identifier'],'entry':e,'source':bind(p),'term':t[0],'status':'exact original independently replayed with current adapter'})
+write('projections/reused-authority-parser-replay.json',replay)
+profiles=rd(B/'projections/new-authority-parser-replay.json');opts=collections.defaultdict(list)
+for p in profiles:
+ for t in p['terms']:opts[t[0]].append({'term':t,'source':{'path':p['source_path'],'sha256':p['sha256']},'entry':{k:p[k]for k in ['kind','url','version']}})
+for p in replay:opts[p['identifier']].append(p)
+upold=rd(P/'projections/uniprot-full-reference-context.json');upnew=rd(B/'projections/new-uniprot-full-context.json');up={}
+for r in upold:
+ p=Path(r['path']);assert sha(p)==r['sha256'];u=rd(p);up[u['primaryAccession']]={'source':bind(p),'entry':u,'reuse':'exact prior original'}
+for r in upnew:up[r['entry']['primaryAccession']]=r
+scope=rd(N/'curated-catalyst-scope-decisions.json');ledger=[];genes=[];assemblies=[];taxonomy=rd(B/'projections/taxon-authority-candidates.json');taxby={r['identifier']:r for r in taxonomy['candidates']}
+def refs(r,slot):return [z.get('frameid') for s in r['slots'] if s['slot']==slot for z in ET.fromstring(s['xml']) if z.get('frameid')]
+for r in rows:
+ frame=r['frame'];ident='MetaCyc:'+frame;o=old.get(frame);out={'native_identifier':ident,'entity_type':r['type'],'source':bind(r['path']),'native_names':r['names'],'native_synonyms':r['synonyms'],'native_strain_names':r['strain_names'],'direct_slot_count':len(r['slots']),'direct_crossreferences':r['dblinks'],'prior_identity':None,'current_authority':None}
+ if o:
+  assert r['sha256']==o['source']['sha256'];out['prior_identity']={'ledger':bind(P/'complete-biological-object-identity-ledger.json'),'native_identifier':ident,'exact_native_original_sha256':r['sha256'],'previous_disposition':o,'scope':'Exact source reuse. Prior historical preparation, reference-strain, sequence-version, retired-gene and explicit-exclusion limitations remain; current authority owner checked separately.'}
+ if ident in snap['terms']:out['current_authority']={'status':'preserve_existing_owner','term':snap['terms'][ident],'owner':conf[snap['terms'][ident]['source']]};out['canonical_label']=snap['terms'][ident]['label']
+ elif opts[ident]:
+  x=opts[ident][0];out['current_authority']={'status':'exact candidate available','profile':x};out['canonical_label']=x['term'][1]
+ elif r['type'] not in ['Organism','cco']:raise AssertionError((frame,'no resolved native identity'))
+ if r['type']=='Protein':
+  out.update(genes=refs(r,'gene'),organisms=refs(r,'species'),components=[s for s in r['slots']if s['slot']=='component'],component_of=refs(r,'component-of'),preparation_scope=scope.get(frame,'Component/native assembly or named partner context. Overall activity is assigned only to the native formal enzyme frame, not copied to every subunit.'))
+  urefs=[x for x in r['dblinks']if x.get('dblink-db')=='UNIPROT'];out['reference_counterparts']=[]
+  for x in urefs:
+   u=up[x['dblink-oid']];assert u['entry']['primaryAccession']==x['dblink-oid'];out['reference_counterparts'].append({'native_dblink':x,'source':u['source'],'issued_identifier':'UniProtKB:'+u['entry']['primaryAccession'],'organism':u['entry']['organism'],'genes':u['entry'].get('genes'),'entry_audit':u['entry']['entryAudit'],'sequence_length':u['entry']['sequence']['length'],'sequence_sha256':hashlib.sha256(u['entry']['sequence']['value'].encode()).hexdigest(),'scope':'Reference counterpart only; native preparation/host/assembly identity remains scoped. A common accession does not silently equate native and current issuer taxon granularity.'})
+  if out['components'] or out['component_of']:assemblies.append({k:out[k]for k in ['native_identifier','source','components','component_of','preparation_scope']})
+ if r['type']=='Gene':
+  pr=[]
+  for product in refs(r,'product'):
+   z=objects[product];back=refs(z,'gene');assert frame in back
+   pr.append({'product':'MetaCyc:'+product,'protein_source':bind(z['path']),'backpointer':back,'reciprocal':True,'native_species':refs(z,'species')})
+  assert pr;out['product_relations']=pr;out['external_gene_counterpart_policy']='Nucleotide ENTREZ PART-OF/RELATED-TO accessions identify deposited sequence records, not numerical Entrez Gene IDs. New seven genes have no explicit numeric GeneID in native or full UniProt source. Preserve separately verified predecessor Gene counterparts and exclusions.';genes.append(out)
+ if r['type']=='Organism':
+  tax=['NCBITaxon:'+x['dblink-oid']for x in r['dblinks']if x.get('dblink-db')=='NCBI-TAXONOMY-DB'];out['explicit_taxonomy']=[taxby[x]for x in tax];out['identity_limit']='No full-route occurrence inferred from this identity. Native historical strain, reference organism, experimental donor and expression host are distinct.'
+  if not tax:out['identity_limit']+=' No explicit native NCBI taxonomy xref; no guessed taxon mapping.'
+ if r['type']=='cco':out['identity_limit']='Exact reused native compartment and original GO counterpart in predecessor ledger; no bacterial pathway compartment inferred from an adjacent protein.'
+ ledger.append(out)
+write('complete-biological-object-identity-ledger.json',ledger);write('projections/all35-native-gene-product-proof.json',genes);write('projections/all54-protein-assembly-relations.json',assemblies)
+acts=rd(B/'projections/formal-activity-direct-bindings.json');out=[]
+for a in acts:
+ a=copy.deepcopy(a);a['preparation_scope']=scope[a['protein']];a['protein_identity_ledger']='complete-biological-object-identity-ledger.json#MetaCyc:'+a['protein'];a['scope_boundary']='Formal database binding retained with actual evidence-code slots; native annotation does not automatically prove isolated purified enzyme activity, whole pathway occurrence, historical stereochemical purity or host/donor identity.';out.append(a)
+write('projections/all41-formal-activity-identity-dispositions.json',out)
+slots=rd(B/'projections/native-biological-direct-slots.json');out=[]
+for s in slots:
+ t=s['slot']
+ if t in ['common-name','synonym','gene','product','species','strain-name','dblink','component','component-of','parent','cellular-locations']:disp='identity/component/taxon relation retained; exact issuer identity and preparation limits in complete object ledger'
+ elif t in ['comment','documentation']:disp='complete source prose retained externally and scoped in preparation/object ledger; not a primary quotation or structured experimental assertion'
+ elif t in ['citation','credits','data-source','creation-date']:disp='source provenance retained; does not independently prove cited primary claim'
+ elif t in ['features','molecular-weight-kd','molecular-weight-seq','pi','regulates','regulated-by','catalyzes']:disp='source feature/activity/preparation context retained; do not transfer across protein, taxon, sequence version or assay'
+ else:disp='complete native direct fact retained with exact locator; interpretation bounded by object/assembly/activity ledger, no automatic new mechanistic edge'
+ out.append({'native_identifier':'MetaCyc:'+s['frame'],'slot':t,'source_locator':s['source_locator'],'source_path':s['source_path'],'source_sha256':s['source_sha256'],'disposition':disp})
+assert len(out)==1712;write('complete-native-biological-slot-dispositions.json',out)
+# Add replayed predecessor candidates absent from the actual current snapshot, preserving exact prior source owner metadata.
+proposals=rd(B/'source-config-proposals.json');seen={x['identifier']for x in proposals};relevant={x['native_identifier']for x in ledger}|{'UniProtKB:'+a for a in up}
+for x in replay:
+ if x['identifier']in relevant and x['identifier']not in seen and x['identifier']not in snap['terms']:
+  proposals.append({'identifier':x['identifier'],'term':x['term'],'entry':x['entry'],'original':x['source'],'scope':'Exact verified predecessor original; optional candidate only, native historical preparation remains separate from reference sequence.'});seen.add(x['identifier'])
+write('complete-source-config-proposals.json',proposals)
+print(json.dumps({'objects':len(ledger),'types':dict(collections.Counter(x['entity_type']for x in ledger)),'genes':len(genes),'formal_activities':len(acts),'direct_slots':len(slots),'prior_profiles_replayed':len(replay),'complete_optional_candidates':len(proposals)},indent=2))
