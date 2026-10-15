@@ -1,0 +1,127 @@
+"""Author dispositions bind every native endpoint and every frozen primary claim."""
+from pathlib import Path
+import datetime, hashlib, json, sqlite3, xml.etree.ElementTree as ET
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+NATIVE=Path('/private/tmp/pathwaymech-next-261-native')
+PRIMARY=Path('/private/tmp/pathwaymech-next-261-primary')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(name,obj):
+    p=ROOT/'retained'/name;assert not p.exists();p.write_text(json.dumps(obj,indent=2)+'\n')
+nativeproof=json.loads((ROOT/'retained/native-chemistry-check.json').read_text())
+additional=json.loads((ROOT/'retained/additional-chemistry-check-v2.json').read_text());assert additional['all_applicable_checks_pass']
+formalpath=Path('/private/tmp/pathwaymech-next-261-chemistry/formal-chemistry-verification.json');formal=json.loads(formalpath.read_text());assert formal['all_checks_pass']
+issued={**nativeproof['issuing_chebi'],**additional['issuing_chebi']}
+for r in formal['compounds']:issued[r['chebi_id']]={'properties':r['chebi_properties']}
+selections={'ACETALD':'CHEBI:15343','ADENOSINE_DIPHOSPHATE_RIBOSE':'CHEBI:57967','AMP':'CHEBI:456215','BENZALDEHYDE':'CHEBI:17169',
+ 'CO+2':'CHEBI:48828','CPD-10145':'CHEBI:5020','CPD-29':'MetaCyc:CPD-29','CPD-400':'CHEBI:28591','CPD0-1364':'PubChem:90657761',
+ 'FE+2':'CHEBI:29033','FORMATE':'CHEBI:15740','HG+2':'CHEBI:16793','IODOACETATE':'CHEBI:747879','MG+2':'CHEBI:18420','MN+2':'CHEBI:29035',
+ 'N-ETHYLMALEIMIDE':'CHEBI:44485','NAD':'CHEBI:57540','NADH':'CHEBI:57945','OXALATE':'CHEBI:30623','TIRON':'CHEBI:9607','Thiols':'CHEBI:29256','ZN+2':'CHEBI:29105'}
+native_rows=[]
+for row in nativeproof['native_compounds']:
+    frame=row['native_frame'];cid=selections[frame]
+    label=issued[cid]['properties']['rdfs:label'][0] if cid.startswith('CHEBI:') else ('p-chloromercuribenzoate' if frame=='CPD-29' else json.loads((ROOT/'originals/PubChem-90657761-properties.json').read_text())['PropertyTable']['Properties'][0]['Title'])
+    roles=[]
+    for source_role in row['source']['roles']:
+        p=NATIVE/'originals'/('META-'+source_role['source']+'.xml');root=ET.parse(p).getroot();obj=list(root)[1]
+        act=obj.find('regulated-entity/Enzymatic-Reaction') if source_role['slot']=='regulator' else obj
+        activity=act.get('frameid');enzyme=act.find('enzyme/Protein').get('frameid');reaction=act.find('reaction/Reaction').get('frameid')
+        mode=obj.findtext('mode') if source_role['slot']=='regulator' else None
+        disposition='Retain source-scoped cofactor or activity effect on this exact native preparation; no generalization to other enzymes or whole pathway.'
+        suggested='has_cofactor' if source_role['slot']=='cofactor' else ('positively_regulates' if mode=='+' else 'negatively_regulates')
+        if enzyme=='ADHE-CPLX':
+            disposition='Excluded catalyst/adjacent context only: PWY-5162 explicitly lists ADHE-CPLX as enzymes-not-used. Preserve this effect in the ledger; do not transfer it to MhpF, DmpF or the pathway.'
+            suggested=None
+        elif reaction=='4.1.1.77-RXN':
+            disposition='Associated Bordetella decarboxylase context only. This is not a formal hydrolytic-route transformation and the effect must not be transferred to its hydratase partner.'
+            suggested=None
+        if source_role['source']=='REG-5876':
+            disposition='Reject negative sign as accepted biology: full PMID8419288 F10 supports stimulation of native CF600 complex-associated aldolase. Preserve original negative native assertion as a conflict, do not emit native inhibitory edge.'
+            suggested='positively_regulates with primary F10 and complex preparation qualification'
+        elif source_role['source'] in ['REG-5875','REG-5877']:
+            disposition='Retain Zn inhibition/Mn stimulation of native CF600 complex-associated aldolase. Native ALLOSTERIC label is not demonstrated by primary experiments; do not assert direct binding or obligatory removable Mn cofactor.'
+        elif source_role['source']=='REG0-13116':
+            disposition='Retain native acetaldehyde competitive inhibition assertion on MhpF, Ki 265000 micromolar. The inspected primary abstract does not verify the Ki/mode; no primary-main-text claim.'
+        roles.append({'source_frame':source_role['source'],'source_path':str(p),'source_sha256':sha(p),'source_locator':'/ptools-xml/'+obj.tag+'[@frameid="'+source_role['source']+'"]',
+                      'role':source_role['slot'],'native_mode':mode,'target_activity':activity,'target_protein':enzyme,'target_reaction':reaction,
+                      'native_mechanism':[x.text for x in obj.findall('mechanism')],'disposition':disposition,'suggested_relation':suggested})
+    limits=['Chemical identity does not establish assay salt, hydrate or ion exposure concentration. Biological scope is owned by the native/primary source dossiers.']
+    identity='Exact full native InChI/key, CML connectivity, complete atom counts and charge match issuing ChEBI.'
+    proof='native-chemistry-check.json'
+    if row.get('formal_reuse'):identity='Exact original hash reuses the frozen formal chemistry proof.';proof=str(formalpath)
+    if frame=='CPD-29':identity='Exact native original hash and full reconstructed anion reuse next260 proof. CHEBI:28420 is the neutral acid and is rejected as exact identity.';limits.append('Keep MetaCyc:CPD-29. Existing source authority owns the native label; no neutral-acid replacement.')
+    if frame=='IODOACETATE':identity='Full issuing CHEBI:747879 matches native anion; linked CHEBI:74571 is neutral acid and is rejected.';proof='additional-chemistry-check-v2.json';limits.append('Pinned canonical label is the source typo iodoacetacte. Explain iodoacetate in prose without altering the authority label.')
+    if frame=='CPD0-1364':identity='Complete native InChI/key, CML connectivity, atom counts and charge match issuing PubChem:90657761; exact property Title supplies the accepted adapter label.';proof='additional-chemistry-check-v2.json';limits.append('Native object is the specific dinucleotide analogue; not dithiothreitol, NADH or a generic thiol. Excluded AdhE context remains excluded.')
+    if frame=='TIRON':identity='Whole native object explicitly contains two Na+ plus one CPD-13597. Complete separately acquired component structures reconstruct issuing CHEBI:9607 and PubChem:9001 salt exactly.';proof='additional-chemistry-check-v2.json';limits.append('Anhydrous disodium composition only; no hydration or free-ion mechanism is inferred.')
+    if frame=='Thiols':identity='Native explicit class and R-SH drawing agree with issuing CHEBI:29256 thiol class definition. This is a class correspondence, not a molecular exact-InChI proof.';limits.append('Category chemical_entity. Do not replace the class by DTT or one specific thiol; R is a variable substituent. Null or absent InChI comparisons are not identity evidence.')
+    if frame=='AMP':limits.append('Native optional SMILES is truncated and cannot parse. Full native CML and full InChI/key independently establish exact identity; do not repair the original string.')
+    native_rows.append({'native_frame':frame,'selected_id':cid,'selected_label':label,'category':'chemical_entity' if frame=='Thiols' else 'small_molecule',
+                        'identity_disposition':identity,'proof':proof,'source_path':row['source']['source_path'],'source_sha256':row['source']['sha256'],
+                        'source_locators':['/ptools-xml/Compound[@frameid="'+frame+'"]'],'roles':roles,'limits':limits})
+dump('native-chemical-dispositions.json',{'candidate':'MetaCyc:PWY-5415','authorship':'source author, not independent final review','endpoints':native_rows})
+
+# Names here link a claim to identity/context decisions. A retained comparator is not
+# automatically a selected node or a precise assignment of an experimental ion state.
+spec={
+'F01':('preparation_identity',['CHEBI:73143'],'Use explicit S substrate for the stated 1993 preparation; lactone synthesis/concentration assumption and separately stated racemate remain distinct.'),
+'F02':('alternative_substrate_activity',['CHEBI:15343','CHEBI:17153','CHEBI:57392','CHEBI:15539'],'Propanal activity and propionyl-CoA HPLC product support alternative acylating activity. Charged and neutral CoA-product structures are comparators; paper does not measure a specific phosphate protonation state. No extra formal pathway step.'),
+'F03':('internal_source_conflict',['CHEBI:18404','CHEBI:17254','CHEBI:215018','CHEBI:15343','CHEBI:17153'],'Preserve internally inconsistent methylcatechol branch mapping. Do not alter unsubstituted catechol route using isolated p379 sentence.'),
+'F04':('purification_context',['CHEBI:62946'],'Ammonium sulfate is fractionation reagent. Copurification is assembly evidence, not activation by the salt.'),
+'F05':('biological_identity',[],'Protein sequence and composition evidence belongs to biological identity; no added chemical node.'),
+'F06':('biological_assembly',[],'Apparent size and stoichiometry inference are biological context; no chemical identity claim.'),
+'F07':('storage_context',[],'Storage and dilution observations do not establish chemical regulation or exclude dissociation.'),
+'F08':('buffer_condition',['CHEBI:46756','CHEBI:9754'],'Retain HEPES/Tris/phosphate buffer effects and pH range as assay context. Generic buffer pool is not one proven protonation species, and tested increase is not a universal pH optimum.'),
+'F09':('metal_effect_and_negative_controls',['CHEBI:29035','CHEBI:29105','CHEBI:18420','CHEBI:29108'],'Mn stimulation and Zn inhibition are preparation-scoped. Mg/Ca no effect and EDTA dialysis control are retained; no essential removable Mn requirement or DmpG binding mechanism follows.'),
+'F10':('activity_regulation',['CHEBI:57945','CHEBI:57540','CHEBI:29035'],'Positive NADH and weaker NAD+ stimulation of complex-associated aldolase. Delayed-addition controls separate activity effect from LDH reporting; do not turn this into direct nucleotide binding.'),
+'F11':('mechanistic_hypothesis',['CHEBI:57945','CHEBI:57540'],'Allostery and DmpF-to-DmpG transmission remain competing explanations. No demonstrated binding edge.'),
+'F12':('substrate_stability_control',['CHEBI:73143','CHEBI:15361','CHEBI:15343'],'Retain <=77% recovery, >95% control and overalkaline preparation effects. Do not invent identities for degradation products or assert exact equilibrium from this assay.'),
+'F13':('alternative_substrates_and_negative_controls',['CHEBI:15343','CHEBI:17153','CHEBI:15743','CHEBI:48943','CHEBI:16842','CHEBI:58349','CHEBI:18009'],'Keep exact aldehydes/rates, low NADP-dependent rate and clearly legible metal nonstimulation. NADP+ is oxidation-state nomenclature; precise ionic form is a comparator, not measured assay speciation. Missing ion label remains unresolved.'),
+'F14':('alternative_metabolism_limit',['CHEBI:15343'],'Other acetaldehyde fates and assay/expression limits prevent exclusive routing or isolated-DmpG impossibility claims.'),
+'F15':('mechanistic_hypothesis',[],'Unpublished association, channeling, toxicity protection and ATP benefit remain context/proposals; no additional route reaction or proven channeling.'),
+'H01':('historical_substrate_preparation',['CHEBI:231241','CHEBI:37319'],'DL-allylglycine is explicitly racemic synthesis precursor. This does not assign enol geometry; preserve source preparation and single-component hosts.'),
+'H02':('tautomer_and_assay_context',['CHEBI:37319','CHEBI:11641','CHEBI:32599'],'Unspecified enol/keto pools and total-pool absorbance are distinct. MgSO4 delivery does not establish an anhydrous reagent or new sulfate cofactor effect.'),
+'H03':('internal_source_conflict',[],'Keep reversed labels/apparent-mass assignment conflict. Biological function is not identified from the erroneous isolated sentence.'),
+'H04':('oxidative_branch_context',[],'No sixth formal tautomerase reaction. Isomerase oligomer inference is separate from chemical identity.'),
+'H05':('associated_partner_context',[],'Hydratase/decarboxylase assembly is biological context; no extra oxidative-branch reaction in formal route.'),
+'H06':('tautomer_selectivity',['CHEBI:37319','CHEBI:11641','CHEBI:29035','CHEBI:18420'],'Retain preferred enol, resistant keto pool, unidentified decay product and Mn-accelerated spontaneous ketonization. Do not declare a universal substrate impossibility or assign E/Z.'),
+'H07':('assay_kinetics',['CHEBI:37319','CHEBI:32599','CHEBI:9754'],'Keep kinetics under specified buffer/metal regime; no transfer to engineered complex or exact 2Z substrate.'),
+'H08':('preparation_comparison',[],'Single XylJ activity is retained; complex dependence is not generalized from another preparation.'),
+'H09':('oxidative_branch_context',['CHEBI:37319'],'Decarboxylase keto-diacid to predominantly dienol context remains adjacent, not a new hydrolytic-route step; no exact geometry or channeling inference.'),
+'H10':('unresolved_product_identity',['CHEBI:17655','CHEBI:58222'],'Named keto versus enol hydration product remains unresolved experimentally. Historical hydrolase attribution does not identify 2Z product; do not select one measured product from formal chemistry.'),
+'K01':('biological_preparation',[],'Donor DNA and expression-host extract assays belong to biological scope; no chemical identity addition.'),
+'K02':('analytical_preparation',['CHEBI:15740','CHEBI:16842','CHEBI:231241','CHEBI:57945'],'Formaldehyde is analytical reduction product, not a pathway output. Magnesium here is analytical reagent, not evidence of hydrolase Mg2+ cofactor. Synthesized enol/aldolase substrates lack assigned geometry/purity.'),
+'K03':('gene_order_context',[],'Gene mapping adds no chemical identity, no terminal dehydrogenase identity, and no extra oxidative branch steps.'),
+'K04':('induction_and_extract_activity',['CHEBI:15882'],'Phenol induction/complementation is clone-scoped. Preserve measured activity table, detection limits and ND; no direct regulator binding.'),
+'K05':('genetic_regulation',['CHEBI:15882'],'Phenol responsiveness is supported genetically; direct phenol–TbuS binding and promoter occupancy remain model proposals.'),
+'K06':('induction_and_negative_results',['CHEBI:15882','CHEBI:17231','CHEBI:28054','CHEBI:17847','CHEBI:18135','CHEBI:18404','CHEBI:17254'],'Phenol and m-cresol induce in the specified clone assay; other tested compounds do not. Noninduction is neither inhibition nor inability of induced enzyme to metabolize the compounds.'),
+'K07':('alternative_substrate_activity',['CHEBI:18135','CHEBI:18404','CHEBI:17254','CHEBI:15882','CHEBI:17231'],'Retain extract C230 activities and qualified induced-cell growth; no unqualified whole-route host assertion or extra branch completion.'),
+'S01':('biological_assembly',[],'Tetramer/catalytic pair/crystal asymmetric unit distinctions belong to biological identity.'),
+'S02':('crystal_preparation',['CHEBI:57540'],'NAD+ occupancy in native/SeMet crystal differs from NADH activity regulation. PEG and crystal conditions are context, not substrate/cofactor mechanism proof.'),
+'S03':('structural_hypothesis',['CHEBI:15343'],'Tunnel geometry is a channeling proposal; unpublished kinetics and later unaccessed pages remain limits.'),
+'X01':('abstract_substrate_scope',[],'3-alkyl catechol ring-cleavage products remain a source-level class; no invented exact compound, initial enol E/Z or quantitative assay from abstract.'),
+'X02':('engineered_construct',[],'F108M thermostability/preference is construct-scoped; unnamed preference change does not create chemical identity.'),
+'E01':('engineered_construct',[],'Engineered E109Q/E111Q complex activity remains construct-scoped; metal ligand candidates do not prove native metal chemistry.'),
+'E02':('engineered_inhibitor_context',[],'Retain separately named E/Z fluoropent-en-ynoate inhibitors and competitive mode only on the engineered preparation. No exact issuing structure match established in bounded pinned-name search; no CURIE minted, no native inhibition edge, and contradictory Ki comparison remains unrepaired.'),
+'Y01':('off_route_side_activity',['CHEBI:37319'],'YwhB in-vitro activity and mutants do not establish native catechol-route function; no named dienol E/Z inference.'),
+'Y02':('off_route_isotope_context',[],'Retain D2O-dependent 3R/3S and racemic deuterated products as named assay context. Do not attach nonisotopic CURIEs or infer native 2Z route biology; exact isotope products not selected.'),
+'O01':('historical_genetics',[],'Operon gene order and apparent masses provide no new chemical identity or retrospective xylQ assignment.'),
+'D01':('abstract_substrate_class',[],'Linear-alkyl/4-chlorocatechol cleavage product classes and ketone preference remain abstract-limited. No invented product isomer or exact early enol assignment.'),
+'R01':('historical_genetics',[],'Gene order similarity is not the missing hydrolase product chemistry paper.'),
+'R02':('unread_primary_gap',[],'Bibliographic metadata without an abstract supplies no new chemical-mechanistic assertion.'),
+'M01':('biological_preparation',[],'MhpF monomer activity and kinetic-mechanism conclusion remain abstract-scoped; no transfer of CF600 complex requirements.'),
+'M02':('native_primary_scope_gap',['CHEBI:15343'],'Native acetaldehyde Ki/mode is a native assertion, absent from inspected primary abstract. Preserve primary scope gap.'),
+'H11':('off_route_buffer_and_salt_context',['CHEBI:37319','CHEBI:32588','CHEBI:26710','CHEBI:9754','CHEBI:39074'],'Off-route isomerase ketonization, phosphate/Tris/MOPS and chloride-salt effects remain exact assay context. CaCl2 table/OCR conflict stays unresolved; no transfer to XylJ or DmpG.'),
+'H12':('associated_partner_kinetics',['CHEBI:18420'],'Keto-substrate preparation and Mg requirement belong to decarboxylase, not DmpG; no sixth formal route step.'),
+'K08':('gene_promoter_context',[],'Promoter deletion, trans controls and yellow intermediate accumulation add no exact new chemical identity or direct regulator-binding proof.')}
+claims_path=PRIMARY/'material-claim-ledger.json';claims=json.loads(claims_path.read_text())['claims']
+assert len(claims)==50 and set(spec)=={x['claim_id'] for x in claims}
+rows=[]
+for claim in claims:
+    category,cids,decision=spec[claim['claim_id']]
+    rows.append({'claim_id':claim['claim_id'],'claim_source_path':str(claims_path),'claim_source_sha256':sha(claims_path),
+                 'claim_source_json_pointer':'/claims/'+str(claims.index(claim)),'reference':claim['reference'],'source_locator':claim['source_locator'],
+                 'original_author_disposition':claim['disposition'],'chemical_disposition_category':category,'chemical_identity_or_context_ids':cids,
+                 'chemical_disposition':decision,'inherited_preparation_scope':claim.get('preparation_scope'),'inherited_limits':claim.get('limits',[]),
+                 'original_claim':claim})
+dump('primary-claim-chemical-dispositions.json',{'candidate':'MetaCyc:PWY-5415','claim_count':50,'reference_metadata':{'path':str(PRIMARY/'reference-metadata.json'),'sha256':sha(PRIMARY/'reference-metadata.json')},
+ 'interpretation':'Identity/context IDs do not automatically become graph nodes. Native route chemicals, side substrates, controls and unresolved historical pools remain separately scoped.','claims':rows})
+print(json.dumps({'native_endpoints':len(native_rows),'native_role_associations':sum(len(r['roles']) for r in native_rows),'primary_claims':len(rows)},indent=2))

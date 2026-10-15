@@ -1,0 +1,84 @@
+import datetime,gzip,hashlib,json,shutil
+from pathlib import Path
+repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+root=repo/'research/pathway_additions/2026-10-14-next-261'
+out=root/'source-evidence'
+assert not out.exists(), 'Refuse to overwrite retained frozen evidence'
+plans=[
+ ('discovery','discovery','compact-retention-manifest.json','files','5d8fc0141eec3e6f32e25a98e3ad0ec87790e19a3e254a4fba06fd05089b535e'),
+ ('native','native','compact-retention-manifest.json','files','46dc794a2a162f3fe41f3a8e84a2a13aa080f231fc3f299120c2ed58b10554b4'),
+ ('chemistry','formal-chemistry','compact-retention-manifest.json','files','a8d9185640cc2c68003ee025fa758c4e7060035b13e16c79907a9a707f534d54'),
+ ('primary','primary','compact-retention-manifest.json','recommended_retained_files','f9634f7afdc55dba765364f83f5176908b4b0bc2d5fe914734fa2b6215f26e14'),
+ ('biological-identities','biological-identities','compact-retention-proposal.json','core_files','ea4d0a0b2be12abf7cf48607c2c988f83c9ae68ed9e17d1ea53015063ece818c'),
+ ('participant-authorities','chemical-participants','compact-retention-manifest.json','files','24e249d3eb0d01e8fecc71c4f8ccee4f496b53d81a0b079acc89c48b3d7b5a2a'),
+]
+def h(b): return hashlib.sha256(b).hexdigest()
+def rel(row): return row.get('relative_path',row['path'])
+def dump(p,d):
+ p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(d,indent=2)+'\n')
+checks=[]
+for source,dest,compact,key,expected in plans:
+ p=Path('/private/tmp/pathwaymech-next-261-'+source)
+ manifest=p/'artifact-manifest.json'; assert h(manifest.read_bytes())==expected
+ m=json.loads(manifest.read_text()); files=m['files']; missing=[];changed=[]
+ for row in files:
+  q=p/rel(row)
+  if not q.is_file(): missing.append(rel(row));continue
+  data=q.read_bytes()
+  if h(data)!=row['sha256'] or len(data)!=row['bytes']:changed.append(rel(row))
+ actual={str(q.relative_to(p)) for q in p.rglob('*') if q.is_file()}
+ listed={rel(r) for r in files}
+ extras=sorted(actual-listed-{'artifact-manifest.json'})
+ assert not missing and not changed,(source,missing,changed)
+ # A compact-selection descriptor can postdate the artifact freeze; bind it separately.
+ assert set(extras)<= {compact},(source,extras)
+ c=json.loads((p/compact).read_text())
+ for row in c[key]:
+  b=(p/rel(row)).read_bytes();assert h(b)==row['sha256'] and len(b)==row['bytes']
+  if row.get('encoding')=='gzip':
+   raw=gzip.decompress(b); assert h(raw)==row['original_sha256'] and len(raw)==row['original_bytes']
+ checks.append({'source':str(p),'destination':dest,'artifact_manifest_sha256':expected,'verified_file_count':len(files),'verified_bytes':sum(r['bytes'] for r in files),'extra_metadata':extras,'compact_manifest':compact,'compact_manifest_sha256':h((p/compact).read_bytes()),'all_listed_files_unchanged':True,'inventory_includes_hidden_and_ignored':True})
+# Complete all verification before any repository writes.
+receipts=[]
+for (source,dest,compact,key,expected),check in zip(plans,checks):
+ p=Path('/private/tmp/pathwaymech-next-261-'+source); target=out/dest
+ c=json.loads((p/compact).read_text())
+ selections=[(rel(r),r.get('retain_as',rel(r)),r) for r in c[key]]
+ selections.extend([(n,n,{}) for n in ['artifact-manifest.json',compact] if n not in {s[0] for s in selections}])
+ for source_rel,dest_rel,row in selections:
+  assert not Path(source_rel).is_absolute() and '..' not in Path(source_rel).parts
+  assert not Path(dest_rel).is_absolute() and '..' not in Path(dest_rel).parts
+  if dest_rel.endswith('.py'): dest_rel += '.txt'
+  b=(p/source_rel).read_bytes(); q=target/dest_rel
+  q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(b)
+  assert q.read_bytes()==b
+  entry={'source':str(p/source_rel),'retained_path':str(q.relative_to(root)),'bytes':len(b),'sha256':h(b),'copy':'byte-identical'}
+  for k in ['encoding','original_path','original_bytes','original_sha256','lossless_decompression_verified']:
+   if k in row:entry[k]=row[k]
+  receipts.append(entry)
+ if source=='biological-identities':
+  for row in c['complete_accounting_external_files']:
+   source_rel=rel(row); raw=(p/source_rel).read_bytes()
+   assert len(raw)==row['bytes'] and h(raw)==row['sha256']
+   encoded=gzip.compress(raw,compresslevel=9,mtime=0)
+   assert gzip.decompress(encoded)==raw
+   q=target/'complete-accounting'/(source_rel+'.gz');q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(encoded)
+   receipts.append({'source':str(p/source_rel),'retained_path':str(q.relative_to(root)),'bytes':len(encoded),'sha256':h(encoded),'encoding':'gzip','original_bytes':len(raw),'original_sha256':h(raw),'lossless_decompression_verified':True})
+# Retain root's current-merge duplicate rebind with full raw matching output losslessly compressed.
+dedup=Path('/private/tmp/pathwaymech-next-261-ci/dedup-successor')
+for p in sorted(dedup.rglob('*')):
+ if not p.is_file():continue
+ raw=p.read_bytes(); q=root/'root-verification'/'dedup'/p.name
+ encoded=raw; entry={'source':str(p),'original_bytes':len(raw),'original_sha256':h(raw)}
+ if p.suffix=='.jsonl':
+  encoded=gzip.compress(raw,compresslevel=9,mtime=0);q=Path(str(q)+'.gz')
+  assert gzip.decompress(encoded)==raw;entry.update({'encoding':'gzip','lossless_decompression_verified':True})
+ q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(encoded)
+ entry.update({'retained_path':str(q.relative_to(root)),'bytes':len(encoded),'sha256':h(encoded)})
+ receipts.append(entry)
+for name in ['rebind_dedup.py','retain_frozen_sources.py']:
+ p=Path('/private/tmp/pathwaymech-next-261-ci')/name;b=p.read_bytes();q=root/'root-verification'/'helpers'/(name+'.txt');q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(b)
+ receipts.append({'source':str(p),'retained_path':str(q.relative_to(root)),'bytes':len(b),'sha256':h(b),'copy':'byte-identical inert helper'})
+dump(root/'root-verification/frozen-source-integrity.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'packages':checks,'role':'integration author verification; not independent review'})
+dump(root/'root-verification/source-retention-receipt.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':receipts,'count':len(receipts),'bytes':sum(r['bytes'] for r in receipts),'scope':'Compact source-authored decisions, complete biological accounting and exact root dedup. External original bodies remain bound by retained full manifests.'})
+print(json.dumps({'root':str(root),'packages':len(checks),'verified_external_files':sum(r['verified_file_count'] for r in checks),'retained_files':len(receipts),'retained_bytes':sum(r['bytes'] for r in receipts)},indent=2))

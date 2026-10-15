@@ -1,0 +1,24 @@
+{
+  "observed_utc": "2026-10-15T01:38:09.874430+00:00",
+  "checks": [
+    {
+      "command": "python3 -B extract_formal_sources.py",
+      "exit_code": 0,
+      "output": "formal-source-projection.json"
+    },
+    {
+      "command": "/private/tmp/npmech-rdkit-2026.03.5/bin/python3.13 -B verify_formal_chemistry.py",
+      "exit_code": 1,
+      "log": "verify-formal-chemistry.log",
+      "scope": "Failed before scientific calculations: incomplete external environment lacks rdkit.RDPaths; no result written."
+    },
+    {
+      "command": "UV_CACHE_DIR=/private/tmp/pathwaymech-next-261-chemistry-uv-cache PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 uv run --no-project --python /usr/local/bin/python3.11 --with rdkit==2024.03.5 --with numpy==1.26.4 python -B verify_formal_chemistry.py",
+      "exit_code": 0,
+      "log": "verify-formal-chemistry-isolated.log",
+      "scope": "Pinned isolated environment; all16structure,5reaction and overall balance checks pass."
+    }
+  ],
+  "cached_source_version_observation": "Nine initially inspected next201 common-compound originals were META22.5. They were not used in final verification. Selected complete originals are all META27.0: seven newly acquired, NAD/NADH/FORMATE reused from next261 native, six from next261 discovery.",
+  "environment_search_limit": "A broad /private/tmp filename search for rdkit was deliberately terminated before completion; no absence claim follows. The incomplete external runtime was not modified."
+}

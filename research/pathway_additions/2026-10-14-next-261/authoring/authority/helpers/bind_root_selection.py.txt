@@ -1,0 +1,35 @@
+"""Compare root's selection receipt to the already frozen record-derived IDs."""
+from pathlib import Path
+import hashlib, json
+
+B = Path(__file__).resolve().parents[1]
+R = Path('/private/tmp/pathwaymech-next-261-20261014/research/pathway_additions/2026-10-14-next-261')
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def main():
+    path = R / 'identifier-selection.json'
+    original = path.read_bytes()
+    record = json.loads(original)
+    freeze = json.loads((B / 'retained/selection-freeze.json').read_text())
+    assert record['record_sha256'] == freeze['record_sha256']
+    identifiers = {row['id'] for row in record['nodes']}
+    assert identifiers == set(freeze['selected_identifiers'])
+    assert len(identifiers) == record['node_count'] == freeze['count']
+    observation = B / 'retained/root-identifier-selection-observation.json'
+    assert not observation.exists()
+    observation.write_bytes(original)
+    receipt = dict(status='passed', original_path=str(path), original_sha256=sha(path), observation_path=str(observation),
+        observation_sha256=sha(observation), root_and_record_derived_ids_exact=True, count=len(identifiers),
+        initially_supplied_path=str(R / 'integration/identifier-selection.json'),
+        initial_read='FileNotFoundError for the supplied exact path; no scientific content was inferred.',
+        recovery='rg --files --no-ignore --hidden over the complete next261 research subtree found identifier-selection.json at the package root; ignored and hidden paths included, no exclusions.',
+        helper_sha256=sha(Path(__file__)))
+    target = B / 'retained/root-selection-receipt-binding.json'
+    assert not target.exists()
+    target.write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps(dict(status=receipt['status'], count=receipt['count'], exact=True)))
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,18 @@
+from pathlib import Path
+import datetime,hashlib,json
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+rows=[]
+for directory,expected in [('/private/tmp/pathwaymech-next-261-native','46dc794a2a162f3fe41f3a8e84a2a13aa080f231fc3f299120c2ed58b10554b4'),
+                           ('/private/tmp/pathwaymech-next-261-primary','f9634f7afdc55dba765364f83f5176908b4b0bc2d5fe914734fa2b6215f26e14'),
+                           ('/private/tmp/pathwaymech-next-261-chemistry','a8d9185640cc2c68003ee025fa758c4e7060035b13e16c79907a9a707f534d54')]:
+    base=Path(directory);manifest=base/'artifact-manifest.json';assert sha(manifest)==expected
+    data=json.loads(manifest.read_text());entries=data['files'];verified=[]
+    for r in entries:
+        p=base/r['path'];assert sha(p)==r['sha256'] and p.stat().st_size==r['bytes'],p
+        verified.append({'path':r['path'],'bytes':r['bytes'],'sha256':r['sha256']})
+    actual={str(p.relative_to(base)) for p in base.rglob('*') if p.is_file() and p!=manifest}
+    assert actual=={r['path'] for r in entries},(actual-{r['path'] for r in entries},{r['path'] for r in entries}-actual)
+    rows.append({'directory':directory,'manifest_sha256':expected,'verified_files':len(entries),'verified_bytes':sum(r['bytes'] for r in entries),'all_originals_unchanged':True})
+p=ROOT/'retained/input-package-integrity.json';assert not p.exists();p.write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'inventory_includes_hidden_and_ignored':True,'packages':rows},indent=2)+'\n')
+print(json.dumps(rows,indent=2))

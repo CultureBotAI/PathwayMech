@@ -1,0 +1,50 @@
+import datetime,difflib,hashlib,json,pathlib,re
+
+R=pathlib.Path('/private/tmp/pathwaymech-next-261-20261014')
+O=pathlib.Path('/private/tmp/pathwaymech-next-261-independent-technical')
+G=pathlib.Path('/private/tmp/pathwaymech-next-261-checks-initial')
+P='research/pathway_additions/2026-10-14-next-261/'
+README=P+'README.md'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+read=lambda p:json.loads(pathlib.Path(p).read_bytes())
+receipts=read(G/'receipts.json')
+required=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check'],['git','diff','--cached','--check']]
+checks=[]
+for command in required:
+    matches=[x for x in receipts if x['command']==command]
+    assert len(matches)==1,(command,len(matches))
+    row=matches[0]
+    assert row['exit_code']==0 and row['cwd']==str(R)
+    b=pathlib.Path(row['log_path']).read_bytes()
+    assert sha(b)==row['log_sha256']
+    checks.append({'command':command,'exit_code':0,'elapsed_seconds':row['elapsed_seconds'],'log_path':row['log_path'],'log_sha256':sha(b),'log_bytes':len(b)})
+preservation=read(G/'final-input-preservation.json')
+test_log=(G/'just-test.log').read_text()
+test_match=re.search(r'(\d+) passed, (\d+) skipped[^\n]*',test_log)
+assert test_match is not None
+test_summary={'passed':int(test_match.group(1)),'skipped':int(test_match.group(2)),'summary':test_match.group(0)}
+inventory=read(G/'tested-core-input-hashes.json')
+assert len(inventory)==2087
+changes=[]
+for name,original in inventory.items():
+    p=R/name;assert p.is_file(),name
+    current=sha(p.read_bytes())
+    if current!=original:changes.append({'path':name,'tested_sha256':original,'current_sha256':current})
+assert [x['path'] for x in changes]==[README],changes
+before=(O/'README-before-final-status.md').read_bytes();after=(R/README).read_bytes()
+assert sha(before)==inventory[README]
+old='Final successor reviews, generated page/KGX inspection, and full repository gates remain in progress.'
+assert before.decode().count(old)==1
+prefix,suffix=before.decode().split(old)
+assert after.decode().startswith(prefix) and after.decode().endswith(suffix)
+replacement=after.decode()[len(prefix):len(after.decode())-len(suffix)]
+assert replacement and old not in replacement
+diff=''.join(difflib.unified_diff(before.decode().splitlines(True),after.decode().splitlines(True),fromfile='README tested by full gates',tofile='README final status'))
+(O/'README-final-status.diff').write_text(diff)
+page=R/'pages/records/MetaCyc_PWY-5415.html'
+record=R/'data/pathways/catechol-degradation-i.yaml'
+assert sha(page.read_bytes())=='2d68542be9be4cbc440cc78bd560927a8a48d1620661a8f40b52d8b3cd2cdd46'
+assert sha(record.read_bytes())=='29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c'
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'all_gate_logs_and_final_input_bytes_verified':True,'required_root_gates':checks,'test_summary':test_summary,'root_receipts_sha256':sha((G/'receipts.json').read_bytes()),'root_final_preservation_sha256':sha((G/'final-input-preservation.json').read_bytes()),'root_final_preservation':preservation,'tested_inventory':str(G/'tested-core-input-hashes.json'),'tested_inventory_sha256':sha((G/'tested-core-input-hashes.json').read_bytes()),'tested_input_count':len(inventory),'unchanged_tested_input_count':len(inventory)-len(changes),'bounded_post_gate_changes':changes,'readme_replaced_sentence':old,'readme_replacement':replacement,'readme_diff_sha256':sha(diff.encode()),'record_sha256':sha(record.read_bytes()),'page_sha256':sha(page.read_bytes()),'limits':'Full gates ran before one exact README status sentence was replaced and new receipts/report were retained. All other 2,086 tested files remain byte-identical. New documentation/report contents and focused follow-up checks are independently inspected separately before final review.'}
+(O/'completed-gate-replay.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'gates':len(checks),'tested_files':len(inventory),'unchanged':len(inventory)-len(changes),'changed':changes,'record_sha256':report['record_sha256']}))

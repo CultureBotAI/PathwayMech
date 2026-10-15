@@ -1,0 +1,20 @@
+import datetime,hashlib,json,os,subprocess,sys
+from pathlib import Path
+import yaml
+root=Path('/private/tmp/pathwaymech-next-261-20261014');ci=Path('/private/tmp/pathwaymech-next-261-ci')
+p=Path(sys.argv[1]);expected=sys.argv[2]
+assert hashlib.sha256(p.read_bytes()).hexdigest()==expected
+r=yaml.safe_load(p.read_text());assert r['completion']=='partial' and r['verdict']=='needs_curation' and r['findings']
+name=r['review_id'];out=ci/(name+'-persistence.json');assert not out.exists()
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1',PYTHONPATH=str(root/'src')+':'+str(root))
+python='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+receipt={'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'input':str(p),'input_sha256':expected,'review_id':name,'commands':[]}
+for tail in [['validate',str(p)],['save','--content',str(p)],['check','--base','62b8798b0044f422a59f1527b0801ff09a27d368','--require-reviews']]:
+ args=[python,'-B','scripts/record_review.py',*tail]
+ proc=subprocess.run(args,cwd=root,env=env,capture_output=True,text=True)
+ receipt['commands'].append({'command':args,'exit_code':proc.returncode,'stdout':proc.stdout,'stderr':proc.stderr})
+ out.write_text(json.dumps(receipt,indent=2)+'\n')
+ print(json.dumps({'command':tail[0],'exit_code':proc.returncode,'stdout':proc.stdout,'stderr':proc.stderr}),flush=True)
+ assert proc.returncode==0
+ if tail[0]=='save': receipt['saved']=json.loads(proc.stdout)
+receipt['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();out.write_text(json.dumps(receipt,indent=2)+'\n')

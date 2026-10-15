@@ -1,0 +1,162 @@
+"""Freeze a selected-only authority union from root's actual integrated record."""
+from pathlib import Path
+import argparse, datetime, hashlib, json, sqlite3, sys
+import yaml
+
+B = Path(__file__).resolve().parents[1]
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+PREFIXES = {'GO', 'CHEBI', 'NCBITaxon', 'RHEA'}
+inputs = {}
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+def bind(path, digest=None):
+    path = Path(path)
+    row = dict(path=str(path), resolved=str(path.resolve()), sha256=digest or sha(path))
+    assert str(path) not in inputs or inputs[str(path)] == row
+    inputs[str(path)] = row
+    return row
+
+def load(path):
+    bind(path)
+    return json.loads(Path(path).read_text())
+
+def save(relative, value):
+    path = B / relative
+    assert not path.exists(), ('preserve existing attempt', path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+    bind(path)
+    return path
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--record', type=Path, required=True)
+    parser.add_argument('--record-sha256', required=True)
+    args = parser.parse_args()
+    assert sha(args.record) == args.record_sha256
+    base = load(B / 'retained/baseline-preparation.json')
+    frozen_inputs = load(B / 'retained/frozen-author-package-inputs.json')
+    assert frozen_inputs['status'] == 'passed' and frozen_inputs['source_plan_observations_match_frozen']
+    for package in frozen_inputs['packages']:
+        assert sha(package['manifest']) == package['manifest_sha256']
+        bind(package['manifest'], package['manifest_sha256'])
+    for row in base['baseline_files']:
+        assert sha(row['path']) == row['sha256'] == sha(row['maintained_path'])
+        bind(row['path'], row['sha256'])
+    old_manifest = load(B / 'baseline/conf/identifier_sources.json')
+    old_ontology = load(B / 'baseline/data/identifier_authorities/ontology.json')
+    retained = set(load(B / 'retained/retained-authority-identifiers.json'))
+    record_bytes = args.record.read_bytes()
+    record = yaml.safe_load(record_bytes)
+    assert hashlib.sha256(record_bytes).hexdigest() == args.record_sha256
+    selected = {record['id']} | {node['id'] for field in ['taxa', 'participants', 'reactions', 'gene_clusters'] for node in record.get(field, [])}
+    new_ids = selected - retained
+    sys.path[:0] = [str(B / 'runtime/src'), str(B / 'runtime/scripts')]
+    from build_source_identifier_snapshot import source_terms
+    from build_ontology_identifier_snapshot import extract_terms, walk_identifiers
+    assert walk_identifiers(record, PREFIXES) <= selected, 'Undeclared nested ontology node'
+    observation = B / 'retained/record-selection-observation.yaml'
+    assert not observation.exists()
+    observation.write_bytes(record_bytes)
+    bind(observation)
+    freeze = save('retained/selection-freeze.json', dict(
+        role='Authority integration author; no independent scientific approval',
+        utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), record_source=str(args.record),
+        record_sha256=args.record_sha256, observation=str(observation),
+        selected_identifiers=sorted(selected), count=len(selected), baseline_terms=len(retained),
+        new_identifiers=sorted(new_ids)))
+    inventory = load(B / 'retained/candidate-source-inventory.json')
+    candidates = {}
+    for row in inventory['new_entries']:
+        for identifier in row['identifiers']:
+            candidates.setdefault(identifier, []).append(row)
+    chosen, source_previews, source_bindings = {}, [], []
+    for identifier in sorted(new_ids):
+        if identifier.partition(':')[0] in PREFIXES:
+            continue
+        options = candidates.get(identifier, [])
+        assert len(options) == 1, (identifier, 'requires exactly one explicit issuing original candidate', len(options))
+        row = options[0]
+        entry = row['entry']
+        original = Path(row['cache_original']['path'])
+        assert sha(original) == entry['sha256'] == row['cache_original']['sha256']
+        terms = list(source_terms(entry['kind'], original, url=entry['url'], version=entry['version'], sha256=entry['sha256']))
+        matched = [term for term in terms if term[0] == identifier]
+        assert len(matched) == 1
+        assert entry['key'] not in chosen or chosen[entry['key']] == row
+        chosen[entry['key']] = row
+        source_previews.append(dict(identifier=identifier, parsed_term=matched[0], candidate_scope=row['scope'], source_plan=row['source_plan']))
+        bind(original)
+    additions = []
+    for key, row in sorted(chosen.items()):
+        entry = row['entry']
+        relative = Path(entry['path'])
+        assert not relative.is_absolute() and '..' not in relative.parts
+        target = B / 'source-cache' / relative
+        original = Path(row['cache_original']['path']).resolve()
+        assert not target.exists() and not target.is_symlink(), ('new source cache collision', target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.symlink_to(original)
+        bind(target)
+        additions.append(entry)
+        source_bindings.append(dict(entry=entry, original=str(original), selected_identifiers=sorted(set(row['identifiers']) & new_ids)))
+    assert len({entry['key'] for entry in old_manifest + additions}) == len(old_manifest + additions)
+    ontology_previews, databases = [], []
+    for prefix, name in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+        path = Path('/private/tmp/pathwaymech-curation-authorities') / (name + '.db')
+        owners = [(key, value) for key, value in old_ontology['sources'].items() if key.startswith(name + '-') and value.get('sha256_scope') == 'uncompressed_semantic_sql_database']
+        assert len(owners) == 1
+        key, owner = owners[0]
+        requested = sorted(identifier for identifier in new_ids if identifier.startswith(prefix + ':'))
+        with sqlite3.connect(path.resolve().as_uri() + '?mode=ro', uri=True) as connection:
+            terms, missing = extract_terms(connection, requested, key)
+        assert not missing, (prefix, missing, 'requires independent closure; no silent omission')
+        ontology_previews.append(dict(prefix=prefix, source=key, terms=terms))
+        stat = path.stat()
+        databases.append(dict(path=str(path), resolved=str(path.resolve()), bytes=stat.st_size, mtime_ns=stat.st_mtime_ns,
+            sha256=owner['sha256'], owner_key=key, verification='Canonical ontology builder hashes complete database; final verifier requires exact baseline owner.'))
+    for row in load(B / 'retained/baseline-original-cache-verification.json')['originals']:
+        assert sha(row['path']) == row['sha256']
+        bind(row['path'], row['sha256'])
+    for name in ['baseline-record-bindings.json', 'runtime-bindings.json']:
+        for row in load(B / 'retained' / name):
+            assert sha(row['path']) == row['sha256']
+            bind(row['path'], row['sha256'])
+    selector = B / 'records/planned-authority-selection.yaml'
+    assert not selector.exists()
+    selector.write_text(yaml.safe_dump({'id':record['id'], 'participants':[{'id':identifier} for identifier in sorted(retained | selected)]}, sort_keys=False))
+    bind(selector)
+    save('proposal/identifier_sources.json', old_manifest + additions)
+    save('retained/proposed-source-additions.json', additions)
+    save('retained/new-source-original-bindings.json', source_bindings)
+    save('retained/selected-source-identity-previews.json', source_previews)
+    save('retained/selected-ontology-identity-previews.json', ontology_previews)
+    save('retained/planned-identifiers.json', sorted(selected))
+    for name in ['prepare_union.py', 'run_union_builds.py', 'verify_union.py']:
+        bind(B / 'helpers' / name)
+    runtime = B / 'runtime'
+    commands = dict(cwd=str(runtime), baseline_commit=base['baseline_commit'],
+        created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), frozen_identifier_selection=True,
+        output_scope='external_candidates_only_no_promotion', maintained_edits=False,
+        environment={'PYTHONDONTWRITEBYTECODE':'1', 'PYTHONNOUSERSITE':'1', 'PYTHONPATH':str(runtime / 'src') + ':' + str(runtime)},
+        source_builder=[PYTHON, '-B', 'scripts/build_source_identifier_snapshot.py', '--manifest', str(B / 'proposal/identifier_sources.json'), '--cache-dir', str(B / 'source-cache'), '--records', str(B / 'records'), '--output', str(B / 'proposal/sources.union.json')],
+        ontology_builder=[PYTHON, '-B', 'scripts/build_ontology_identifier_snapshot.py'],
+        input_bindings=list(inputs.values()), database_bindings=databases,
+        selection=dict(file=str(freeze), sha256=sha(freeze), record_count=base['records'], selected_identifier_count=len(selected), new_identifiers=len(new_ids)))
+    for prefix, name in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+        commands['ontology_builder'] += ['--source', prefix + '=/private/tmp/pathwaymech-curation-authorities/' + name + '.db']
+    commands['ontology_builder'] += ['--rhea-updates', str(B / 'baseline/conf/rhea_identifier_updates.json'), '--cache-dir', str(B / 'source-cache'), '--corpus', str(B / 'records')]
+    for identifier in ['GO:0008150', 'GO:0006096', 'GO:0005975']:
+        commands['ontology_builder'] += ['--include-id', identifier]
+    commands['ontology_builder'] += ['--output', str(B / 'proposal/ontology.union.json')]
+    save('retained/canonical-build-commands.json', commands)
+    print(json.dumps(dict(status='selected_union_prepared', selected=len(selected), new_terms=len(new_ids), new_sources=len(additions), new_ontology_terms=sum(len(row['terms']) for row in ontology_previews))))
+
+if __name__ == '__main__':
+    main()

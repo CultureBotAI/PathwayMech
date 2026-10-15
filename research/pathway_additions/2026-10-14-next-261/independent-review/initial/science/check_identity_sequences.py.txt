@@ -1,0 +1,9 @@
+import re,json,hashlib,xml.etree.ElementTree as E
+from pathlib import Path
+p=Path('/private/tmp/pathwaymech-next-261-primary-integration/originals');out=Path('/private/tmp/pathwaymech-next-261-independent-science')
+bases='TCAG';amino='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG';codons={a+b+c:aa for (a,b,c),aa in zip(((a,b,c) for a in bases for b in bases for c in bases),amino)}
+checks=[]
+for gb,protein,up,gene,start,end in [('U20258','AAC13787.1','Q59220','tbuE',608,1552),('M98806','AAA25992.1','Q01551','tbuD',83,2098)]:
+ g=p/f'NCBI-{gb}.gb';x=p/f'NCBI-{protein}.xml';u=p/f'UniProt-{up}.json';t=g.read_text();seq=re.sub('[^a-z]','',t.split('ORIGIN')[1].split('//')[0]).upper();cds=seq[start-1:end];trans=''.join(codons[cds[i:i+3]] for i in range(0,len(cds),3));xml=E.parse(x);nseq=xml.findtext('.//GBSeq_sequence').upper();js=json.loads(u.read_text());useq=js['sequence']['value'];feature=re.search(r'     CDS\s+'+str(start)+r'\.\.'+str(end)+r'\n(.*?)(?=\n     \w|\nORIGIN)',t,re.S).group(1);ann=re.search(r'/translation="([^"]+)"',feature,re.S).group(1);ann=re.sub(r'\s','',ann)
+ checks.append({'gene':gene,'genbank':gb+'.1','cds':f'{start}..{end}','CDS_gencode11_translation_equals_annotation':trans[:-1]==ann,'terminal_stop':trans[-1],'annotation_equals_NCBIProtein':ann==nseq,'annotation_equals_UniProt':ann==useq,'length':len(ann),'protein_accession':xml.findtext('.//GBSeq_accession-version'),'uniprot_accession':js['primaryAccession'],'issuing_protein_name':js['proteinDescription'],'source_hashes':{str(z):hashlib.sha256(z.read_bytes()).hexdigest() for z in [g,x,u]},'matching_gene_qualifier':f'/gene="{gene}"' in feature,'matching_protein_qualifier':f'/protein_id="{protein}"' in feature})
+(out/'identity-sequences-independent-check.json').write_text(json.dumps(checks,indent=2)+'\n');print(json.dumps(checks,indent=2))

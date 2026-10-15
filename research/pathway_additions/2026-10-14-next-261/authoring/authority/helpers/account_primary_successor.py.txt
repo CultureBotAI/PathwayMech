@@ -1,0 +1,51 @@
+"""Record selected-only authority scope for the separate native TbuE successor."""
+from pathlib import Path
+import hashlib, json
+
+B = Path(__file__).resolve().parents[1]
+N = Path('/private/tmp/pathwaymech-next-261-native-foundation')
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def main():
+    selection = set(json.loads((B / 'retained/planned-identifiers.json').read_text()))
+    additions = {row['entry']['key']:row for row in json.loads((B / 'retained/new-source-original-bindings.json').read_text())}
+    proposals = json.loads((N / 'complete-new-source-proposals.json').read_text())
+    ids = {'MetaCyc:MONOMER-11210', 'MetaCyc:G-8728', 'MetaCyc:ENZRXN-11552', 'MetaCyc:ENZRXN-26223'}
+    rows = []
+    for row in proposals:
+        if row['identifier'] not in ids:
+            continue
+        selected = row['identifier'] in selection
+        retained = row['entry']['key'] in additions
+        assert selected == retained
+        rows.append(dict(identifier=row['identifier'], selected=selected, new_source_appended=retained,
+            source_descriptor=row['entry'], scope='Separate primary-context TbuE native successor, not an added formal route reaction.'))
+    assert len(rows) == 4
+    assert ids & selection == {'MetaCyc:MONOMER-11210', 'MetaCyc:ENZRXN-11552', 'MetaCyc:ENZRXN-26223'}
+    projection = N / 'primary-native-successor-full-projection.json'
+    objects = json.loads(projection.read_text())
+    originals = []
+    for item in objects:
+        path = Path(item['file'])
+        assert sha(path) == item['sha256']
+        originals.append(dict(frame=item['frame'], native_type=item['type'], path=str(path), sha256=item['sha256'], slots=len(item['slots'])))
+    context_only = ['MetaCyc:CATECHOL-2-3-DIOXYGENASE-RXN', 'MetaCyc:RXN-11219',
+        'MetaCyc:CPD-111', 'MetaCyc:4-METHYLCATECHOL', 'MetaCyc:CPD-8781', 'MetaCyc:CPD-8782',
+        'CHEBI:18404', 'CHEBI:17254', 'CHEBI:144490', 'CHEBI:142983', 'UniProtKB:Q59220', 'NCBIProtein:AAC13787.1']
+    assert not selection & set(context_only)
+    report = dict(status='passed', role='Authority integration author scope check; not independent chemistry or biology review',
+        scope='Primary TbuE catalyst and exact source activity identity retained separately. Native methylcatechol activity mapping remains explicit context and does not establish formal catechol equivalence.',
+        candidate_proposals_sha256=sha(N / 'complete-new-source-proposals.json'),
+        projection_path=str(projection), projection_sha256=sha(projection), native_originals=originals,
+        selected_source_decisions=rows, unselected_context_only_identifiers=context_only,
+        no_optional_reference_sequence_or_methylcatechol_endpoint_promoted=True,
+        helper_sha256=sha(Path(__file__)))
+    target = B / 'retained/primary-successor-selection-accounting.json'
+    assert not target.exists()
+    target.write_text(json.dumps(report, indent=2) + '\n')
+    print(json.dumps(dict(status='passed', selected_sources=3, scoped_originals=len(originals), context_ids_unselected=len(context_only))))
+
+if __name__ == '__main__':
+    main()

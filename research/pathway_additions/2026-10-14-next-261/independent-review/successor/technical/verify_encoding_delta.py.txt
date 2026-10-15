@@ -1,0 +1,85 @@
+import copy,datetime,gzip,hashlib,json,os,pathlib
+
+R=pathlib.Path('/private/tmp/pathwaymech-next-261-20261014')
+O=pathlib.Path('/private/tmp/pathwaymech-next-261-independent-technical')
+P=R/'research/pathway_additions/2026-10-14-next-261'
+L=P/'verification/log-retention'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+read=lambda p:json.loads(pathlib.Path(p).read_bytes())
+receipt=read(L/'encoding-successor.json')
+assert sha((L/'encoding-successor.json').read_bytes())=='ad5805e8703e6cfeb8a73f2bf0a35fff1f812d9eb739e7b2ec1b2ca44cfd7916'
+verified=[]
+for row in receipt['files']:
+    p=R/row['retained_path'];raw=p.read_bytes();decoded=gzip.decompress(raw);original=pathlib.Path(row['source']).read_bytes()
+    assert decoded==original and sha(decoded)==row['source_sha256']==row['decoded_sha256']
+    assert sha(raw)==row['retained_sha256'] and len(raw)==row['retained_bytes'] and len(decoded)==row['source_bytes']
+    assert gzip.compress(original,mtime=0)==raw
+    assert not (R/row['prior_retained_path']).exists()
+    verified.append(row)
+for row in receipt['prior_active_metadata_archives']:
+    assert sha((R/row['archived']).read_bytes())==row['sha256']
+for row in receipt['active_metadata']:
+    assert sha((R/row['path']).read_bytes())==row['sha256']
+old=read(L/'source-retention-receipt.before.json');new=read(P/'root-verification/source-retention-receipt.json')
+before=copy.deepcopy(old);after=copy.deepcopy(new)
+assert len(old['files'])==len(new['files'])==206
+changed=[i for i,(a,b) in enumerate(zip(old['files'],new['files'])) if a!=b];assert changed==[184]
+assert new['bytes']==old['bytes']-5086+1125
+assert new['encoding_successor']['receipt']=='verification/log-retention/encoding-successor.json'
+before['files'][184]=after['files'][184];before['bytes']=after['bytes'];before['encoding_successor']=after['encoding_successor'];assert before==after
+assert set(new['files'][184])-set(old['files'][184])=={'decoded_sha256','source_sha256','source_bytes'}
+for row in new['files']:
+    retained=(P/row['retained_path']).read_bytes();source=pathlib.Path(row['source']).read_bytes()
+    assert sha(retained)==row['sha256'] and len(retained)==row['bytes']
+    assert retained==source or gzip.decompress(retained)==source
+old2=read(L/'completed-evidence-retention.before.json');new2=read(P/'root-verification/completed-evidence-retention.json')
+assert len(old2['files'])==len(new2['files'])==26
+changed2=[i for i,(a,b) in enumerate(zip(old2['files'],new2['files'])) if a!=b];assert changed2==[6]
+assert new2['encoding_successor']['receipt']=='verification/log-retention/encoding-successor.json'
+before=copy.deepcopy(old2);before['files'][6]=new2['files'][6];before['encoding_successor']=new2['encoding_successor'];before['reviewer_evidence_mapping']=new2['reviewer_evidence_mapping'];assert before==new2
+key='/private/tmp/pathwaymech-next-261-checks-initial/just-test.log'
+oldmap=old2['reviewer_evidence_mapping'];newmap=new2['reviewer_evidence_mapping']
+assert oldmap.keys()==newmap.keys()
+assert [k for k in oldmap if oldmap[k]!=newmap[k]]==[key]
+assert oldmap[key]['decoded_sha256']==newmap[key]['decoded_sha256']
+for row in new2['files']:
+    raw=(P/row['retained']).read_bytes();decoded=gzip.decompress(raw) if row['encoding']=='gzip_lossless' else raw
+    assert sha(raw)==row['retained_sha256'] and len(raw)==row['retained_bytes']
+    assert decoded==pathlib.Path(row['source']).read_bytes() and sha(decoded)==row['source_sha256']
+mapping=read('/private/tmp/pathwaymech-next-261-ci/final-reviewer-evidence-mapping.json')
+for key,row in mapping.items():
+    raw=(R/row['path']).read_bytes();decoded=gzip.decompress(raw) if row['encoding']=='gzip_lossless' else raw
+    assert sha(raw)==row['sha256'] and sha(decoded)==row['decoded_sha256']
+    assert decoded==pathlib.Path(key).read_bytes()
+inventory=read('/private/tmp/pathwaymech-next-261-checks-initial/tested-core-input-hashes.json')
+changes=[];unchanged=0
+for name,digest in inventory.items():
+    p=R/name;now=sha(p.read_bytes()) if p.is_file() else None
+    if now==digest:unchanged+=1
+    else:changes.append({'path':name,'before':digest,'after':now})
+assert unchanged==2084 and len(changes)==3
+assert {x['path'] for x in changes}==set(receipt['tested_input_dispositions'])
+for x in changes:
+    expected=receipt['tested_input_dispositions'][x['path']]
+    assert x['before']==expected['before'] and x['after']==expected['after']
+assert sha((P/'verification.md').read_bytes())=='645ca7f8330f11d96a70a238d64eeb27175611f2f5a489cf793aac19faa31b96'
+assert sha((P/'README.md').read_bytes())=='3dafa8d3ecd0cbbc9e4e8eb87527c4d4c642bf123ce31ce07c326b47e0017b48'
+terms=[b'native-chemistry-check-offline.log',b'verification/full-gates/just-test.log']
+hits=[];scanned=0;gzip_files=0;excluded=[];nontext=[]
+for folder,dirs,files in os.walk(R,followlinks=False):
+    dirs[:]=[d for d in dirs if d not in {'.git','__pycache__','.pytest_cache','.ruff_cache'}]
+    for name in files:
+        p=pathlib.Path(folder)/name;rel=str(p.relative_to(R))
+        if rel=='.git':continue
+        if p.is_symlink():excluded.append(rel);continue
+        raw=p.read_bytes();scanned+=1
+        if raw[:2]==b'\x1f\x8b':raw=gzip.decompress(raw);gzip_files+=1
+        if any(t in raw for t in terms):
+            try:text=raw.decode()
+            except UnicodeDecodeError:nontext.append(rel);continue
+            for i,line in enumerate(text.splitlines(),1):
+                if any(t.decode() in line for t in terms):hits.append({'path':rel,'line':i,'text':line})
+failure=read(L/'initial-staged-diff-failure.json');assert failure['exit_code']==2 and failure['command']==['git','diff','--cached','--check']
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'encoding_receipt_sha256':sha((L/'encoding-successor.json').read_bytes()),'two_logs_verified':verified,'all_archived_metadata_hashes_match':True,'source_retention_rows_verified':206,'completed_retention_rows_verified':26,'current_evidence_mapping_rows_verified':len(mapping),'exact_metadata_change_scope':{'source_retention_only_row':184,'completed_retention_only_row':6,'reviewer_mapping_only_key':'/private/tmp/pathwaymech-next-261-checks-initial/just-test.log'},'tested_input_exact_matches':unchanged,'tested_input_changes':changes,'record_and_runtime_and_generated_outputs_unchanged':True,'report_and_readme_unchanged_from_pre_encoding_observation':True,'reference_search':{'scope':'Complete current worktree including hidden/ignored files, gzip decoded, root Git metadata/runtime caches and symlink targets excluded; explicit symlink exclusions retained.','files_scanned':scanned,'gzip_files_decoded':gzip_files,'symlink_exclusions':excluded,'nontext_hits':nontext,'hits':hits},'reference_disposition':'Current root-owned retention maps and reviewer evidence map resolve all active entries to exact/losslessly decoded originals. Remaining raw-path mentions are frozen external author manifests/proposals, historical reviewer/gate observations, archived prior maps, or explicit encoding history; they are not silently rewritten as if the old storage never existed. Canonical review input inspection will capture current maps and explicit successor receipt.','initial_staged_failure':{'path':str((L/'initial-staged-diff-failure.json').relative_to(R)),'sha256':sha((L/'initial-staged-diff-failure.json').read_bytes()),'exit_code':2},'remaining_gate':'Root must restage the complete owned change and repeat actual staged whitespace check after this representation change; no staged pass is invented here.','all_lossless_content_and_reference_checks_passed':True}
+(O/'encoding-delta-replay.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'verified_logs':2,'source_rows':206,'retained_rows':26,'mapping_rows':len(mapping),'exact_tested_inputs':unchanged,'bounded_changes':len(changes),'scanned_paths':scanned,'reference_hits':len(hits),'new_proof_sha256':sha((O/'encoding-delta-replay.json').read_bytes())}))

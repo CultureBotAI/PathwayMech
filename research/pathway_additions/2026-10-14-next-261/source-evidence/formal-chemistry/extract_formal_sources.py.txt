@@ -1,0 +1,115 @@
+"""Read exact native originals and issuing Rhea families; no maintained writes."""
+from pathlib import Path
+import csv
+import datetime
+import gzip
+import hashlib
+import json
+import re
+import xml.etree.ElementTree as ET
+
+OUT = Path('/private/tmp/pathwaymech-next-261-chemistry')
+INTAKE = Path('/private/tmp/pathwaymech-next-261-discovery')
+AUTH = Path('/private/tmp/pathwaymech-curation-authorities')
+REACTIONS = ['CATECHOL-23-DIOXYGENASE-RXN', '3.7.1.9-RXN',
+             '2-OXOPENT-4-ENOATE-HYDRATASE-RXN', 'MHPELY-RXN',
+             'ACETALD-DEHYDROG-RXN']
+NS = {'rh': 'http://rdf.rhea-db.org/',
+      'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+      'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    assert not (OUT / 'formal-source-projection.json').exists()
+    bindings = []
+    metadata_path = AUTH / 'rhea-downloads.json'
+    metadata = json.loads(metadata_path.read_text())
+    for path in [AUTH / 'rhea.rdf.gz', AUTH / 'rhea-directions.tsv']:
+        descriptor = next(x for x in metadata if x['path'] == str(path))
+        actual = sha(path)
+        assert actual == descriptor['sha256']
+        bindings.append({'path': str(path), 'sha256': actual,
+                         'acquisition_descriptor': descriptor})
+    native = []
+    xrefs = set()
+    for frame in REACTIONS:
+        p = INTAKE / 'originals' / ('META-' + frame + '.xml')
+        root = ET.parse(p).getroot()
+        objs = [e for e in root.iter('Reaction')
+                if e.get('frameid') == frame and e.get('detail') == 'full']
+        assert len(objs) == 1, (frame, len(objs))
+        obj = objs[0]
+        def side(tag):
+            values = []
+            for slot in obj.findall(tag):
+                molecules = slot.findall('Compound')
+                assert len(molecules) == 1
+                coefficient = slot.findtext('coefficient') or '1'
+                values.append({'native_compound': molecules[0].get('frameid'),
+                               'coefficient': coefficient,
+                               'exact_slot_xml': ET.tostring(slot, encoding='unicode')})
+            return values
+        refs = [d.findtext('dblink-oid') for d in obj.findall('dblink')
+                if d.findtext('dblink-db') == 'RHEA']
+        assert len(refs) == 1
+        xrefs.update(refs)
+        native.append({'frame': frame, 'path': str(p), 'sha256': sha(p),
+                       'native_direction': obj.findtext('reaction-direction'),
+                       'left': side('left'), 'right': side('right'),
+                       'rhea_native_xrefs': refs,
+                       'all_direct_slots_xml': [ET.tostring(e, encoding='unicode') for e in obj]})
+    quartets = []
+    for row in csv.DictReader((AUTH / 'rhea-directions.tsv').open(), delimiter='\t'):
+        if xrefs.intersection(row.values()):
+            quartets.append(row)
+    assert len(quartets) == 5 and xrefs <= {v for q in quartets for v in q.values()}
+    raw = gzip.decompress((AUTH / 'rhea.rdf.gz').read_bytes()).decode()
+    starts = {}
+    for match in re.finditer(r'<rdf:Description rdf:about="([^"]+)">', raw):
+        starts.setdefault(match[1], []).append(match.start())
+    wrapper = '<root ' + ' '.join(f'xmlns:{k}="{v}"' for k, v in NS.items()) + '>'
+    wanted = {NS['rh'] + v for q in quartets for v in q.values()}
+    nodes = {}
+    fragments = {}
+    follow = {'side', 'substrates', 'products', 'contains', 'compound',
+              'reactivePart', 'chebi', 'underlyingChebi'}
+    while wanted:
+        uri = min(wanted)
+        wanted.remove(uri)
+        if uri in nodes:
+            continue
+        assert uri in starts, uri
+        properties = {}
+        fragments[uri] = []
+        for start in starts[uri]:
+            end = raw.index('</rdf:Description>', start) + len('</rdf:Description>')
+            fragment = raw[start:end]
+            fragments[uri].append(fragment)
+            node = ET.fromstring(wrapper + fragment + '</root>')[0]
+            for child in node:
+                key = child.tag.split('}', 1)[1]
+                value = child.get('{' + NS['rdf'] + '}resource') or child.text
+                if value not in properties.setdefault(key, []):
+                    properties[key].append(value)
+                if key in follow and value and value.startswith(NS['rh']):
+                    wanted.add(value)
+        nodes[uri] = properties
+    assert all(sha(Path(x['path'])) == x['sha256'] for x in bindings)
+    result = {'read_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'scope': 'Five formal reactions and complete issuing family/material closure; not final direction selection or biological evidence review.',
+              'original_bindings': bindings, 'native': native,
+              'rhea_quartets': quartets, 'rhea_nodes': nodes,
+              'rhea_original_fragments': fragments}
+    (OUT / 'formal-source-projection.json').write_text(json.dumps(result, indent=2) + '\n')
+    for item in native:
+        q = next(q for q in quartets if item['rhea_native_xrefs'][0] in q.values())
+        print(json.dumps({'native': item['frame'], 'native_direction': item['native_direction'],
+                          'quartet': q, 'master': nodes[NS['rh'] + q['RHEA_ID_MASTER']]}, indent=2), flush=True)
+
+
+if __name__ == '__main__':
+    main()

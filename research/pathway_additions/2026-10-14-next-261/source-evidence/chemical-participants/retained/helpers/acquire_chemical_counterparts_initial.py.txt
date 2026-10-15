@@ -1,0 +1,30 @@
+from pathlib import Path
+import datetime, hashlib, json, sys, time, urllib.request, urllib.parse, xml.etree.ElementTree as ET
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+receipt=ROOT/'retained'/('counterpart-acquisition-'+sys.argv[1]+'.json')
+assert not receipt.exists()
+requests=[('META-NA+.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+urllib.parse.quote('META:NA+',safe=''),'native','NA+'),
+          ('META-CPD-13597.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+urllib.parse.quote('META:CPD-13597',safe=''),'native','CPD-13597'),
+          ('PubChem-90657761.json','https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/90657761/JSON','pubchem',90657761),
+          ('PubChem-90657761-properties.json','https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/90657761/property/Title/JSON','property',90657761),
+          ('PubChem-9001.json','https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/9001/JSON','pubchem',9001)]
+rows=[]
+for filename,url,kind,identity in requests:
+    path=ROOT/'originals'/filename
+    if path.exists():
+        rows.append({'path':str(path),'sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'disposition':'Already acquired original, no overwrite or request.'});continue
+    row={'requested_url':url,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'identity':identity,'kind':kind}
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech-source-research/1.0'}),timeout=55) as response:
+            body=response.read();row.update(status=response.status,final_url=response.url,headers=dict(response.headers))
+        with path.open('xb') as f:f.write(body)
+        row.update(path=str(path),bytes=len(body),sha256=hashlib.sha256(body).hexdigest())
+        if kind=='native':
+            root=ET.fromstring(body);full=root.find('Compound');assert full.get('frameid')==identity and full.get('detail')=='full'
+            row['pgdb']=dict(root.find('metadata/PGDB').attrib);assert row['pgdb']=={'orgid':'META','version':'27.0'}
+        elif kind=='pubchem':assert json.loads(body)['PC_Compounds'][0]['id']['id']['cid']==identity
+        else:assert json.loads(body)['PropertyTable']['Properties'][0]['CID']==identity
+        row['identity_valid']=True
+    except Exception as exc:row['error']=repr(exc)
+    rows.append(row);receipt.write_text(json.dumps(rows,indent=2)+'\n');print(filename,row.get('status'),row.get('identity_valid'),row.get('error'),flush=True)
+    time.sleep(1.5)

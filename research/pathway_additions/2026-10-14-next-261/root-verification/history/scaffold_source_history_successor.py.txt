@@ -1,0 +1,20 @@
+import datetime,hashlib,json,os,subprocess
+from pathlib import Path
+repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+ci=Path('/private/tmp/pathwaymech-next-261-ci')
+python='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1',PYTHONPATH=str(repo/'src')+':'+str(repo))
+commands=[]
+def run(args,name):
+ start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ r=subprocess.run(args,cwd=repo,env=env,capture_output=True,text=True)
+ log=ci/name; log.write_text(r.stdout+r.stderr)
+ commands.append({'command':args,'cwd':str(repo),'utc':start,'exit_code':r.returncode,'log':str(log),'log_sha256':hashlib.sha256(log.read_bytes()).hexdigest()})
+ assert r.returncode==0,r.stdout+r.stderr
+ return r.stdout
+text=run([python,'-B','scripts/new_history_record.py','--kind','report','--slug','catechol-degradation-i-source-dossier','--path','research/pathway_additions/2026-10-14-next-261/README.md','--event','EDIT','--outcome','changed','--summary','Record native and primary integration and clarify compact source retention','--actor-name','codex','--model','gpt-6','--agent-tool','codex','--details','Successor to history/reports/catechol-degradation-i-source-dossier/2026-10-15T022256Z-codex-ee2820.yaml. Updated the report to the integrated draft with 8 source-annotated taxa, 60 participants, 37 reaction/activity/module nodes, 128 edges and 79 references. Retained 29 primary author files after verifying all 72 package files, and 67 native author files after verifying all 257 package files. The integration receipt binds the exact draft, all 58 primary claim dispositions, 21 formal material facts and five-step order. Resolved the six initial integration-author findings in a separate hash-bound receipt. Corrected the prior event/report overstatement that all raw downloads remain external: the compact chemical package includes six small original chemical counterpart responses. Full papers, larger source bodies, sequence archives and pinned databases remain external. Independent reviews, final authorities, generated pages and full repository gates are still in progress; this is not scientific approval.'],'source-history-successor-create.log')
+path=text.strip().splitlines()[-1]
+run([python,'-B','scripts/validate_history.py',path],'source-history-successor-validate.log')
+receipt={'commands':commands,'history_path':path,'history_sha256':hashlib.sha256((repo/path).read_bytes()).hexdigest()}
+(ci/'source-history-successor-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps({'history':path,'checks_pass':True},indent=2))

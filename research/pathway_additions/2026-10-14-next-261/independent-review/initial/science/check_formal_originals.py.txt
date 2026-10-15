@@ -1,0 +1,42 @@
+from pathlib import Path
+import hashlib,json,datetime,xml.etree.ElementTree as E,gzip,sqlite3,csv
+out=Path('/private/tmp/pathwaymech-next-261-independent-science');auth=Path('/private/tmp/pathwaymech-curation-authorities')
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  while b:=f.read(8*1024*1024):h.update(b)
+ return h.hexdigest()
+masters={'14549','17337','22580','22624','23288'}
+rdffile=auth/'rhea.rdf.gz'; dfile=auth/'rhea-directions.tsv'; chebifile=auth/'chebi.db'
+rows=[r for r in csv.DictReader(dfile.open(),delimiter='\t') if r['RHEA_ID_MASTER'] in masters]
+selected={v for r in rows for v in r.values()};rdfbase='http://rdf.rhea-db.org/'
+R='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'; A=R+'about';S=R+'resource'
+def scan(ids=None):
+ result={}
+ with gzip.open(rdffile,'rb') as f:
+  for event,e in E.iterparse(f,events=['end']):
+   if e.tag!=R+'Description': continue
+   uri=e.get(A,''); short=uri.removeprefix(rdfbase)
+   accept=short in selected or short.removesuffix('_L').removesuffix('_R') in masters or any(short.startswith('Participant_'+m+'_') for m in masters)
+   if ids is not None:accept=uri in ids
+   if accept:
+    result.setdefault(uri,[]).extend([{'predicate':s.tag,'resource':s.get(S),'text':s.text,'attributes':dict(s.attrib)} for s in e])
+   e.clear()
+ return result
+nodes=scan();links={r['resource'] for rs in nodes.values() for r in rs if r['predicate']=='{'+rdfbase+'}compound'};nodes.update(scan(links))
+pinned=json.loads(Path('/private/tmp/pathwaymech-next-261-chemistry/formal-source-projection.json').read_text())
+miss=set(pinned['rhea_nodes'])-nodes.keys()
+results={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'rhea_sha256':sha(rdffile),'directions_sha256':sha(dfile),'chebi_sha256':sha(chebifile),'quartets':rows,'rhea_nodes':nodes,'missing_from_author_selected_nodes':sorted(miss),'compounds':[]}
+conn=sqlite3.connect('file:'+str(chebifile)+'?mode=ro',uri=True)
+checks=json.loads(Path('/private/tmp/pathwaymech-next-261-chemistry/formal-chemistry-verification.json').read_text())
+for c in checks['compounds']:
+ p=Path(c['path']);root=E.parse(p).getroot();e=next(e for e in root if e.get('frameid')==c['native_frame']);native={s.tag:s.text for s in e if s.tag in ['inchi','inchi-key','common-name']}; props={}
+ for predicate,value in conn.execute('select predicate,value from statements where subject=? and value is not null',(c['chebi_id'],)):
+  if predicate.startswith('chemrof:') or predicate=='rdfs:label':props.setdefault(predicate,[]).append(value)
+ results['compounds'].append({'path':str(p),'sha256':sha(p),'native_frame':c['native_frame'],'chebi_id':c['chebi_id'],'native':native,'issuing_properties':props,'matches_author_properties':{k:sorted(props.get(k,[]))==sorted(v) for k,v in c['chebi_properties'].items()}})
+(out/'formal-originals-independent-check.json').write_text(json.dumps(results,indent=2)+'\n')
+print(json.dumps({k:v for k,v in results.items() if k not in ['rhea_nodes','compounds']},indent=2))
+for uri,ps in nodes.items():
+ if uri.removeprefix(rdfbase) in selected:
+  print(uri,[(r['predicate'].split('}')[-1],r['resource'] or r['text']) for r in ps if r['predicate'].split('}')[-1] in ['subClassOf','direction','equation','substrates','products']])
+print('Compounds',len(results['compounds']),'all independent SQL properties agree',all(all(c['matches_author_properties'].values()) for c in results['compounds']))

@@ -1,0 +1,116 @@
+import argparse,collections,copy,datetime,hashlib,json,sys
+from pathlib import Path
+import yaml
+from jsonschema import Draft7Validator,FormatChecker
+repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+sys.path[:0]=[str(repo/'src'),str(repo)]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import json_schema
+parser=argparse.ArgumentParser();parser.add_argument('--native-manifest-sha',required=True);args=parser.parse_args()
+research=repo/'research/pathway_additions/2026-10-14-next-261'
+nroot=Path('/private/tmp/pathwaymech-next-261-native-foundation')
+proot=Path('/private/tmp/pathwaymech-next-261-primary-integration')
+def h(b):return hashlib.sha256(b).hexdigest()
+def read_bound(root,name,expected_manifest):
+ manifest=root/'artifact-manifest.json'; assert h(manifest.read_bytes())==expected_manifest
+ data=json.loads(manifest.read_text()); row=next(r for r in data['files'] if r.get('relative_path',r['path'])==name)
+ b=(root/name).read_bytes();assert h(b)==row['sha256'] and len(b)==row['bytes']
+ return yaml.safe_load(b),{'path':str(root/name),'bytes':len(b),'sha256':h(b),'artifact_manifest_sha256':expected_manifest}
+n,nb=read_bound(nroot,'native-foundation.yaml',args.native_manifest_sha)
+p,pb=read_bound(proot,'primary-fragment.yaml','56deb81e440c2922a738566975d9a0b9ba48522625799df3c54f6de64d7b92db')
+assert n['id']==p['id']=='MetaCyc:PWY-5415'
+assert not n['taxa'] and not p['taxa']
+record=copy.deepcopy(n);normalizations=[]
+index={r['id']:(section,r) for section in ['participants','reactions'] for r in record[section]}
+assert len(index)==len(record['participants'])+len(record['reactions'])
+for section in ['participants','reactions']:
+ for row in p[section]:
+  identifier=row['id']
+  if identifier in index:
+   owner,existing=index[identifier]
+   assert not (row.get('category') and existing.get('category') and row['category']!=existing['category'] and identifier!='CHEBI:29035')
+   if owner!=section or row!=existing:
+    normalizations.append({'id':identifier,'fragment_section':section,'retained_section':owner,'fragment_declaration':row,'retained_declaration':existing,'reason':'One native canonical declaration per identifier; exact native reaction direction and distinct source-supported cofactor role are preserved.'})
+  else:
+   record[section].append(copy.deepcopy(row));index[identifier]=(section,record[section][-1])
+record['mechanistic_edges'].extend(copy.deepcopy(p['mechanistic_edges']))
+ref_ids={r['id'] for r in record['references']};assert not ref_ids & {r['id'] for r in p['references']}
+record['references'].extend(copy.deepcopy(p['references']))
+taxa=json.loads((research/'root-verification/taxon-integration-selection.json').read_text())
+record['taxa']=copy.deepcopy(taxa['taxa'])
+intro,body=p['description'].split('\n\n',1)
+assert intro.startswith('Catechol degradation I is represented as one connected five-step hydrolytic meta-cleavage route.')
+record['description']=n['description'].strip()+'\n\n'+taxa['description_addition']+'\n\n'+body
+blocks=json.loads((proot/'description-context-additions.json').read_text())['blocks']
+assert len(blocks)==54 and all(b['text'] in record['description'] for b in blocks)
+edge_ids={e['id'] for e in record['mechanistic_edges']}
+assert len(edge_ids)==len(record['mechanistic_edges'])
+coverage=json.loads((proot/'claim-to-record-coverage.json').read_text());assert len(coverage['claims'])==50
+claim_checks=[]
+contexts={b['context_id']:b for b in blocks}
+for row in coverage['claims']:
+ for target in row['record_targets']:
+  if target['field']=='description':assert target['text'] in record['description']
+  elif target['field']=='mechanistic_edges':assert target['edge_id'] in edge_ids
+  else:raise AssertionError(target)
+ claim_checks.append({'claim_id':row['claim_id'],'all_declared_targets_preserved':True})
+successor=json.loads((proot/'successor-material-claim-ledger.json').read_text())
+assert len(successor['claims'])==8
+for row in successor['claims']:
+ for target in row['record_targets']:
+  if target['field']=='description':assert contexts[target['context_id']]['text'] in record['description']
+  elif target['field']=='mechanistic_edges':assert target['edge_id'] in edge_ids
+  else:raise AssertionError(target)
+ claim_checks.append({'claim_id':row['claim_id'],'all_declared_targets_preserved':True})
+validate_record(record)
+errors=[str(e) for e in Draft7Validator(json.loads(json_schema()),format_checker=FormatChecker()).iter_errors(record)];assert not errors,errors
+# Replay the actual integrated formal material graph against the source author's exact facts.
+chemroot=Path('/private/tmp/pathwaymech-next-261-chemistry')
+proof=json.loads((chemroot/'formal-chemistry-verification.json').read_text())
+facts=json.loads((chemroot/'material-facts.json').read_text())['facts'];assert len(facts)==21
+refs={r['id']:r for r in record['references']}
+formal_checks=[]
+for fact in facts:
+ rxn=fact['selected_reaction'];compound=fact['selected_compound']
+ expected=(compound,'consumes',rxn) if fact['role']=='input' else (rxn,'produces',compound)
+ hits=[e for e in record['mechanistic_edges'] if (e['subject'],e['predicate'],e['object'])==expected]
+ assert len(hits)==1,(fact['fact_id'],hits)
+ e=hits[0]
+ evidence=[v for v in e['evidence'] if v.get('source_assertion')==fact['source_assertion'] and v.get('source_locator')==fact['source_locator']]
+ assert evidence,(fact['fact_id'],'source fact changed')
+ assert any(refs[v['reference_id']]['source_sha256']==fact['source_sha256'] for v in evidence)
+ assert h(Path(fact['source_path']).read_bytes())==fact['source_sha256']
+ formal_checks.append({'fact_id':fact['fact_id'],'edge_id':e['id'],'selected_reaction':rxn,'compound':compound,'role':fact['role'],'coefficient':fact['coefficient'],'exact_source_assertion_locator_and_original_hash_preserved':True})
+reaction_index={r['id']:r for r in record['reactions']}
+formal_ids={s['proposed_formal_id'] for s in proof['steps']}
+for step in proof['steps']:assert reaction_index[step['proposed_formal_id']]['direction']==step['selected_direction']
+reachable=set();todo=[record['id']]
+while todo:
+ node=todo.pop()
+ for edge in record['mechanistic_edges']:
+  if edge['subject']!=node or edge['predicate']!='has_part':continue
+  child=edge['object'];kind=reaction_index.get(child,{}).get('category')
+  if kind=='pathway' and child not in reachable:reachable.add(child);todo.append(child)
+  elif kind=='molecular_activity':reachable.add(child)
+assert {i for i in reachable if reaction_index[i]['category']=='molecular_activity'}==formal_ids
+order=[s['proposed_formal_id'] for s in proof['steps']]
+for left,right in zip(order,order[1:]):assert any(e['subject']==left and e['predicate']=='precedes' and e['object']==right for e in record['mechanistic_edges'])
+assert 'RHEA:14552' not in reaction_index and 'MetaCyc:ADHE-CPLX' not in index
+assert 'native-n046' not in edge_ids
+# Preserve all existing maintained records; the dedup scope had257 exact hashes.
+old=json.loads((research/'source-evidence/discovery/complete-corpus-record-inventory.json').read_text())
+assert len(old)==257
+for row in old:assert h((repo/row['path']).read_bytes())==row['sha256'],row['path']
+target=repo/'data/pathways/catechol-degradation-i.yaml';assert not target.exists()
+assert h((nroot/'native-foundation.yaml').read_bytes())==nb['sha256']
+assert h((proot/'primary-fragment.yaml').read_bytes())==pb['sha256']
+serialized=yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100)
+assert yaml.safe_load(serialized)==record
+target.write_text(serialized)
+assert yaml.safe_load(target.read_text())==record
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'root integration author, not independent review','inputs':{'native':nb,'primary':pb},'record':{'path':str(target.relative_to(repo)),'sha256':h(target.read_bytes()),'counts':{k:len(record[k]) for k in ['taxa','participants','reactions','mechanistic_edges','references']}},'normalizations':normalizations,'primary_fragment_workflow_intro_omitted':intro,'primary_context_blocks_preserved':54,'claim_target_checks':claim_checks,'all_native_edges_preserved':all(e in record['mechanistic_edges'] for e in n['mechanistic_edges']),'all_primary_edges_preserved':all(e in record['mechanistic_edges'] for e in p['mechanistic_edges']),'source_taxa_selection':'root-verification/taxon-integration-selection.json','all257_predecessor_records_byte_identical':True,'focused_python_and_closed_schema_pass':True,'formal_material_graph_replay':formal_checks,'formal_reaction_members':order,'net_source_proof':proof['net'],'formal_proof_sha256':h((chemroot/'formal-chemistry-verification.json').read_bytes())}
+q=research/'integration/record-integration.json';q.parent.mkdir(parents=True,exist_ok=True);q.write_text(json.dumps(report,indent=2)+'\n')
+ids=[{'id':record['id'],'label':record['label'],'collection':'pathway'}]+[dict(r,collection=k) for k in ['taxa','participants','reactions'] for r in record[k]]
+assert len({r['id'] for r in ids})==len(ids)
+(research/'identifier-selection.json').write_text(json.dumps({'record_sha256':report['record']['sha256'],'nodes':sorted(ids,key=lambda r:r['id']),'node_count':len(ids),'reference_ids':sorted(refs),'reference_count':len(refs),'authority_additions':'Pending final selected union and preservation verification.'},indent=2)+'\n')
+print(json.dumps(report['record'],indent=2))

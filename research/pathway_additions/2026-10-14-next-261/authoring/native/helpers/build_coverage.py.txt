@@ -1,0 +1,114 @@
+from pathlib import Path
+import json,hashlib,collections,re,sys
+import yaml
+R=Path(__file__).resolve().parents[1];N=Path('/private/tmp/pathwaymech-next-261-native');B=Path('/private/tmp/pathwaymech-next-261-biological-identities');C=Path('/private/tmp/pathwaymech-next-261-chemistry')
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(p,x):(R/p).write_text(json.dumps(x,indent=2)+'\n')
+def binding(p):return {'path':str(p),'sha256':sha(p),'bytes':Path(p).stat().st_size}
+r=yaml.safe_load((R/'native-foundation.yaml').read_text());edges=r['mechanistic_edges'];ids={a['id'] for s in ['participants','reactions','taxa'] for a in r[s]}|{r['id']}
+objects=read(N/'native-full-object-projection.json');successor=read(R/'primary-native-successor-full-projection.json');full={a['frame']:a for a in objects+successor}
+formal={a['native_reaction']:a['proposed_formal_id'] for a in read(C/'formal-chemistry-verification.json')['steps']}
+chem={a['native_frame']:a['chebi_id'] for a in read(C/'formal-chemistry-verification.json')['compounds']}
+chem.update({a['native_frame']:a['selected_id'] for a in read('/private/tmp/pathwaymech-next-261-participant-authorities/retained/native-chemical-dispositions.json')['endpoints']})
+ccos={'CCO-CYTOSOL':'GO:0005829','CCO-CHLOROPLAST':'GO:0009507','CCO-MEMBRANE':'GO:0016020'}
+def nid(f):return formal.get(f) or chem.get(f) or ccos.get(f) or 'MetaCyc:'+f
+sourceedges=collections.defaultdict(list)
+for e in edges:
+ for v in e['evidence']+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]:
+  sourceedges[v['reference_id'].removeprefix('MetaCyc:')].append((v['source_locator'],e['id']))
+scopes=read(R/'readable-catalyst-scopes.json')
+selection=read(R/'foundation-selection-decisions.json')
+oldslots=read(N/'slot-disposition-ledger.json');oldmap={(a['frame'],a['source_locator']):a for a in oldslots}
+
+def object_context(frame):
+ a=full[frame];kind=a['type']
+ if frame in scopes:return scopes[frame]
+ if kind=='Gene':return 'Exact reciprocal gene/product, nomenclature, coordinates and reference-strain identity are retained as identity context. The schema has no encodes predicate; no substitute causal relationship is invented.'
+ if kind=='Organism':return 'Exact native organism identity, rank, strain and NCBI cross-reference are retained. Parent-pathway species annotations are distinguished from component donors, sequence reference taxa and expression hosts.'
+ if kind=='Regulation':
+  if frame=='REG-5876':return 'Native negative NADH regulation is rejected as accepted biology because PMID8419288 reports stimulation of complex-associated DmpG. Full native object and mechanism annotation remain conflict context.'
+  if frame in selection['retained_native_regulators']:return 'Effect retained only at the exact native ENZRXN activity. Native allosteric or kinetic annotation is not an independently verified binding mechanism.'
+  return 'Complete adjacent or explicitly excluded regulation context; the regulated activity is outside the selected five-step graph. Chemical identities and exact native target/effect are retained without transfer to route catalysts.'
+ if kind=='Enzymatic-Reaction':
+  if 'MetaCyc:'+frame in ids:return 'Source-specific activity interface, evidence codes, preparation and native reaction assignment retained. Quantitative kinetics, alternatives and assay conditions remain located source context and are not generalized to other catalysts.'
+  return 'Complete adjacent or explicitly excluded activity context. Its alternative substrates, evidence codes, kinetics and regulator roster are retained without adding its transformation to the five-step route.'
+ if kind=='Reaction':
+  if frame in formal:return 'Formal chemistry is retained through the exact native/Rhea selection and complete native/ChEBI structure proof. Non-selected pathways, enzyme catalogues and bibliographic metadata remain source context.'
+  return 'Adjacent reaction definition retained in full source context; it is not an additional transformation of PWY-5415.'
+ if kind=='Compound':return 'Exact full native chemical identity and structure context; selected graph identities follow frozen chemistry or participant-authority proofs. A cross-reference alone does not prove exact structural equivalence.'
+ if kind=='Pathway':
+  if frame in ['PWY-5415','P183-PWY','PWY-5162']:return 'Native parent/module boundary, formal sequence and pathway prose retained; source species annotations have separate parent-level accounting. Shared terminal chemistry does not merge the oxidative sibling.'
+  return 'Oxidative sibling/module definition remains adjacent context and establishes the alternative route boundary; no duplicate aggregate is created.'
+ if kind=='Protein':return 'Native physical component or adjacent protein context, with complete component, sequence-reference, preparation and gene-product identity evidence retained.'
+ if kind=='cco':return 'Exact cellular-component identity; location claims attach to source proteins and do not locate the entire pathway.'
+ raise ValueError((frame,kind))
+
+slotledger=[]
+for a in objects+successor:
+ frame=a['frame']
+ for s in a['slots']:
+  graph=sorted({edge for loc,edge in sourceedges[frame] if s['locator'] in loc.replace('[@detail="full"]','')})
+  old=oldmap.get((frame,s['locator']),{})
+  if graph:disposition='graph_evidence_with_remaining_slot_context';reason='The exact slot is cited by the listed edges. Any additional nested metadata remains source context; edge citation does not promote all nested facts.'
+  elif s['slot'] in ['common-name','synonym','abbrev-name','dblink'] and 'MetaCyc:'+frame in ids:disposition='selected_identity_or_cross_reference_context';reason='Selected node identity uses an independently parsed canonical authority. This slot and its relationships remain identity context; no related cross-reference is silently unified.'
+  elif s['slot']=='species' and frame=='PWY-5415':disposition='parent_species_annotation_handoff';reason='Source-annotated whole-pathway association is retained in parent-pathway-species-annotation-accounting.json for root taxon integration, with exact per-slot evidence limitations.'
+  elif s['slot'] in ['gene','product']:disposition='gene_product_identity_context';reason='Reciprocal gene/product identity is preserved in the frozen biological identity ledger; the graph schema provides no encodes predicate.'
+  elif s['slot']=='has-feature':disposition='sequence_feature_context';reason='Complete feature coordinates, variants, ligands and inference codes are preserved in feature accounting. No sequence-model ligand annotation is promoted to an experimental cofactor requirement.'
+  elif s['slot'] in ['comment','physiologically-relevant','alternative-substrates','km','vmax','kcat','specific-activity','temperature-opt','ph-opt','equilibrium-constant','mechanism']:disposition='material_source_context';reason=object_context(frame)
+  else:disposition='source_context';reason=object_context(frame)
+  slotledger.append({'frame':frame,'object_type':a['type'],'slot':s['slot'],'ordinal':s['ordinal'],'source_original':a['file'],'source_sha256':a['sha256'],'source_version':a['version'],'source_locator':s['locator'],'full_slot_xml':s['xml'],'full_slot_text':s['plain_text'],'native_author_disposition':old.get('disposition','successor full object'),'native_author_scope':old.get('scope','primary-native TbuE successor'),'foundation_disposition':disposition,'reason':reason,'graph_edges':graph,'context_owner':'native-source-context.md; full-source-slot-coverage.json; frozen native/biological ledgers','record_fields':['mechanistic_edges[id='+x+']' for x in graph]})
+assert len(slotledger)==2986+153
+save('full-source-slot-coverage.json',slotledger)
+
+cand=[]
+for i,a in enumerate(read(N/'mechanism-assertion-proposal.json'),1):
+ pred=a['predicate'];subject=nid(a['subject']);obj=nid(a['object']);matches=[];reason='';status=''
+ if pred=='catalyzes':
+  matches=[e['id'] for e in edges if e['subject']==subject and e['predicate']==pred and e['object'] in [obj,'MetaCyc:'+a['native_object']]]
+ elif pred in ['inhibits','activates']:
+  matches=[e['id'] for e in edges if e['subject']==subject and e['predicate']==pred and e['object']=='MetaCyc:'+a['regulated_activity']]
+ elif pred=='part_of':matches=[e['id'] for e in edges if e['predicate']=='has_part' and e['subject']==obj and e['object']==subject]
+ else:matches=[e['id'] for e in edges if e['subject']==subject and e['predicate']==pred and e['object']==obj]
+ if matches:
+  status='selected_graph' if pred!='part_of' else 'selected_inverse_without_duplicate_edge'
+  reason='Exact native source assertion retained with current identity and preparation limits. Full evidence and qualifiers on the selected edges govern scope.'
+  if pred in ['inhibits','activates']:reason='Regulation targets the exact ENZRXN activity from the complete native object, not an isolated free subunit. Mechanism annotations remain source context.'
+  if a['native_object']=='ENZRXN-16329':status='native_assignment_only_formal_catalysis_rejected';reason='Only the native activity assignment is selected. The exact unchlorinated formal assignment is rejected because the complete protein comment supports chlorinated coexpression chemistry; see rejected-formal-assignment.json.'
+ elif a['native_object']=='REG-5876':status='rejected_conflicting_sign';reason='Native inhibition is contradicted by directly read primary NADH stimulation. Source sign and native allosteric label remain explicit conflict context; primary integration supplies the positive activity edge.'
+ elif a['scope']=='explicitly_excluded_AdhE_context':status='excluded_AdhE_context';reason='PWY-5162 explicitly lists ADHE-CPLX in enzymes-not-used. Complete AdhE activities, components, uncertain coefficient, locations, cofactors and regulators remain exclusion context.'
+ elif a['scope'] in ['adjacent_activity_context','oxidative_sibling_boundary_context'] or a['subject'] in ['PWY-5419','PWY-5420']:status='adjacent_context';reason='This assertion belongs to an adjacent activity, physical partner or oxidative sibling. Complete source details are retained; no additional material reaction or unrelated regulatory effect is inserted into the five-step route.'
+ else:
+  status='unselected_context';reason=object_context(a['native_object'])
+ row={'candidate_number':i,'native_candidate':a,'foundation_disposition':status,'reason':reason,'selected_edges':matches,'context_owner':'native-source-context.md; full-source-slot-coverage.json'}
+ cand.append(row)
+save('all132-native-candidate-dispositions.json',cand)
+
+prose=[]
+for a in read(N/'prose-claim-context-ledger.json'):
+ frame=a['frame'];eids=sorted({x for _,x in sourceedges[frame]})
+ prose.append({**a,'foundation_disposition':'located_source_context_with_scoped_record_summary','scope_decision':object_context(frame),'related_record_edges':eids,'coverage_limit':'The full paragraph remains source context. Listed edges are related source-instance summaries, not a claim that every sentence of the paragraph is a graph assertion.','context_location':'native-source-context.md#'+a['id']})
+save('all165-native-prose-dispositions.json',prose)
+features=[]
+for a in read(N/'protein-feature-context.json'):
+ features.append({**a,'foundation_disposition':'complete_sequence_feature_context','reason':'Preserve full native variant/ligand/feature and its original inference codes. No experimental cofactor, wild-type construct or catalytic mechanism is inferred merely from an imported sequence-model feature.','selected_protein':'MetaCyc:'+a['protein'] in ids,'identity_owner':str(B/'complete-biological-object-identity-ledger.json')})
+save('all80-native-feature-dispositions.json',features)
+
+context=['# Native source context for PWY-5415','This is a retained author context appendix, not an additional set of accepted graph assertions. Every paragraph below preserves the source fact and the disposition that bounds its use. The YAML contains the selected graph and concise summaries; this appendix keeps kinetics, alternative substrates, historical preparations, organism scopes and hypotheses reviewable.','The original 132 candidate assertions were author proposals. Their final dispositions are in all132-native-candidate-dispositions.json. Full 3,139 direct slots, including all 153 new TbuE-successor slots, are retained in full-source-slot-coverage.json.','## Explicit decisions','CNB-1 CnbE: the native unchlorinated activity pointer is retained as a curated source assignment, but exact unchlorinated RHEA:22582 catalysis is excluded because the described coexpression experiment used a chlorinated substrate.','AdhE: the E. coli ADHE-CPLX is explicitly excluded by the native terminal pathway. Its alternatives, regulators and localization remain context. This exclusion does not apply by name alone to other organisms’ independently characterized enzymes called AdhE.','DmpG: the native negative NADH regulator conflicts with directly read primary stimulation. Native allosteric labels for metal effects do not establish allosteric binding. The enzyme preparation contains DmpFG; effect edges target the activity.','Parent species: all nine explicit native species annotations are retained in the dedicated parent accounting file. Their individual experimental support is not supplied by the parent’s single PKO1 evidence slot. Root owns final taxa selection.','Genes: reciprocal product identity and sequence counterpart proofs are preserved in the biological dossier. This schema has no encodes predicate; identity facts are not recast as a different causal relation.','## Complete native prose accounting']
+for a in prose:
+ context += ['### '+a['id'],a['claim_text'],'Disposition: '+a['scope_decision'],'Original: '+full[a['frame']]['file']+'; SHA-256 '+a['source_sha256']+'; '+a['source_locator']]
+context+=['## TbuE successor context']
+for a in successor:
+ for s in a['slots']:
+  if s['slot']=='comment':context += ['### '+a['frame']+' '+s['slot']+' '+str(s['ordinal']),s['plain_text'],'Disposition: '+object_context(a['frame']),'Original: '+a['file']+'; SHA-256 '+a['sha256']+'; '+s['locator']]
+(R/'native-source-context.md').write_text('\n\n'.join(context)+'\n')
+
+sourceledger=[]
+for a in objects+successor:
+ assert sha(a['file'])==a['sha256'],a['frame']
+ sourceledger.append({'frame':a['frame'],'type':a['type'],'path':a['file'],'sha256':a['sha256'],'source_version':a['version'],'direct_slots':len(a['slots']),'selected_node':'MetaCyc:'+a['frame'] in ids,'selected_evidence_edges':sorted({e for _,e in sourceedges[a['frame']]}),'scope':object_context(a['frame'])})
+save('complete-original-object-dispositions.json',sourceledger)
+formalproof={'owner':'root-authored frozen formal chemistry; exact source authority fields are not replaced by native cross-reference guesses','formal_chemistry_verification':binding(C/'formal-chemistry-verification.json'),'formal_source_projection':binding(C/'formal-source-projection.json'),'material_facts':binding(C/'material-facts.json'),'selected_five_steps':read(C/'formal-chemistry-verification.json')['steps'],'all_formal_compound_proofs':read(C/'formal-chemistry-verification.json')['compounds'],'edge_to_formal_fact':[x for x in read(R/'native-edge-source-coverage.json') if x['source_keys'][0].startswith('formal:')]}
+save('formal-identity-and-structure-bindings.json',formalproof)
+summary={'native_objects':len(objects),'successor_objects':len(successor),'native_direct_slots':len(oldslots),'successor_direct_slots':sum(len(a['slots']) for a in successor),'complete_slot_coverage':len(slotledger),'native_candidate_assertions':len(cand),'candidate_dispositions':dict(collections.Counter(a['foundation_disposition'] for a in cand)),'native_prose_paragraphs':len(prose),'native_features':len(features),'selected_edges':len(edges),'selected_nodes':len(ids),'unresolved_chemical_scope':'Native formal enol and parent keto/2E prose remain distinct; historical assay stereochemistry is not inferred. TbuE methyl-product native xrefs do not by themselves establish issuing structure identity.','unresolved_biology_scope':'Primary TbuS/TbuR/operon/construct identity successor remains owned by primary integration. Source-only gene/product identity is not dropped or converted to an unsupported schema predicate.','coverage_scope':'The YAML is a selected native graph. Complete unselected material facts remain explicit retained context, not accepted graph assertions or claimed absent source facts.'}
+save('coverage-summary.json',summary);print(json.dumps(summary,indent=2))

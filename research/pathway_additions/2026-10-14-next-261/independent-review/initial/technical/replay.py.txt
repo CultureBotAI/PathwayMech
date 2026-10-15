@@ -1,0 +1,67 @@
+import collections, datetime, gzip, hashlib, json, pathlib, re, subprocess, sys
+import yaml
+from lxml import etree
+REPO=pathlib.Path('/private/tmp/pathwaymech-next-261-20261014'); R=REPO/'research/pathway_additions/2026-10-14-next-261'; OUT=pathlib.Path('/private/tmp/pathwaymech-next-261-independent-technical')
+sha=lambda b:hashlib.sha256(b).hexdigest()
+target=REPO/'data/pathways/catechol-degradation-i.yaml'; b=target.read_bytes(); d=yaml.safe_load(b)
+assert sha(b)=='38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255'
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target_sha256':sha(b),'scope':'Independent reviewer checks; no full repository gate or new biological experiment implied.'}
+roots=['discovery','native','chemistry','primary','biological-identities','participant-authorities','native-foundation','primary-integration']; index=collections.defaultdict(list); manifests=[]
+for suffix in roots:
+ root=pathlib.Path('/private/tmp/pathwaymech-next-261-'+suffix); m=root/'artifact-manifest.json'; data=json.loads(m.read_bytes()); rows=data['files']; n=0
+ for row in rows:
+  p=root/row['path']; body=p.read_bytes(); digest=sha(body)
+  assert digest==row['sha256'],(str(p),'hash'); assert len(body)==row['bytes'],(str(p),'bytes'); index[digest].append(str(p)); n+=1
+ manifests.append({'root':str(root),'manifest_sha256':sha(m.read_bytes()),'verified_files':n})
+result['manifest_replays']=manifests
+retentions=[]
+for filename in ['source-retention-receipt.json','native-author-retention.json','primary-author-retention.json']:
+ receipt=R/'root-verification'/filename; j=json.loads(receipt.read_bytes()); checked=[]
+ for row in j['files']:
+  p=R/row['retained_path']; body=p.read_bytes(); assert sha(body)==row['sha256'];assert len(body)==row['bytes']
+  original=pathlib.Path(row['source']).read_bytes()
+  if p.name.endswith('.gz') and (row.get('encoding')=='gzip' or row.get('original_sha256') or row.get('copy')=='lossless gzip'):
+   decompressed=gzip.decompress(body);assert body==original or decompressed==original
+   if row.get('original_sha256'):assert sha(decompressed)==row['original_sha256']
+  else:assert body==original,(p,row)
+  checked.append({'path':row['retained_path'],'sha256':sha(body)})
+ retentions.append({'receipt':str(receipt.relative_to(REPO)),'receipt_sha256':sha(receipt.read_bytes()),'verified_rows':len(checked),'files':checked})
+result['retention_replays']=retentions
+refs={r['id']:r for r in d['references']};assert len(refs)==len(d['references']); orig={}; reference_rows=[]
+for r in d['references']:
+ matches=index[r['source_sha256']];assert matches,r['id'];p=pathlib.Path(matches[0]);body=p.read_bytes();assert sha(body)==r['source_sha256']; orig[r['id']]=p
+ reference_rows.append({'reference_id':r['id'],'source_sha256':r['source_sha256'],'matched_original':str(p)})
+result['reference_originals']=reference_rows
+nodes=[{'id':d['id'],'category':'pathway'}]+d['taxa']+d['participants']+d['reactions']; ids=[n['id'] for n in nodes];assert len(set(ids))==len(ids)
+edges={e['id']:e for e in d['mechanistic_edges']};assert len(edges)==len(d['mechanistic_edges']);locators=[]; nonxml=[]
+for e in d['mechanistic_edges']:
+ assert e['subject'] in ids and e['object'] in ids
+ for scope,evs in [('edge',e['evidence'])]+[(q['endpoint'],q['evidence']) for q in e.get('endpoint_qualifiers',[])]:
+  for ev in evs:
+   assert ev['reference_id'] in refs
+   if ev['reference_id'].startswith('MetaCyc:'):
+    body=orig[ev['reference_id']].read_bytes(); doc=etree.fromstring(body,etree.XMLParser(resolve_entities=False,no_network=True)); pieces=[x.strip() for x in ev['source_locator'].split(';')]
+    fragments=[]
+    for xp in pieces:
+     matches=doc.xpath(xp);assert len(matches)==1,(e['id'],scope,xp,len(matches)); fragments.append(etree.tostring(matches[0],encoding='unicode'))
+    locators.append({'edge_id':e['id'],'scope':scope,'reference_id':ev['reference_id'],'assertion':ev.get('source_assertion'),'locator':ev['source_locator'],'original_sha256':refs[ev['reference_id']]['source_sha256'],'fragments':fragments})
+   else:nonxml.append({'edge_id':e['id'],'scope':scope,**ev})
+result['native_locator_replays']=locators; result['nonxml_evidence']=nonxml
+native=yaml.safe_load((R/'authoring/native/native-foundation.yaml').read_bytes());primary=yaml.safe_load((R/'authoring/primary/primary-fragment.yaml').read_bytes())
+for frag in (native,primary):
+ for e in frag['mechanistic_edges']:assert edges[e['id']]==e,e['id']
+ for r in frag['references']:assert refs[r['id']]==r,r['id']
+for collection in ['participants','reactions']:
+ actual={n['id']:n for n in d[collection]}
+ for n in native[collection]:assert actual[n['id']]==n,n['id']
+blocks=json.loads((R/'authoring/primary/description-context-additions.json').read_bytes())['blocks'];assert all(b['text'] in d['description'] for b in blocks)
+result['integration_preservation']={'native_edges':len(native['mechanistic_edges']),'primary_edges':len(primary['mechanistic_edges']),'primary_context_blocks':len(blocks),'native_nodes_unchanged':True,'all_source_references_preserved':True}
+receipt=json.loads((R/'integration/record-integration.json').read_bytes());assert receipt['record']['sha256']==sha(b)
+for name,count in receipt['record']['counts'].items():assert len(d[name])==count
+base=subprocess.check_output(['git','rev-parse','HEAD'],cwd=REPO,text=True).strip(); files=subprocess.check_output(['git','ls-tree','-r','--name-only',base,'data/pathways'],cwd=REPO,text=True).splitlines(); unchanged=[]
+for name in files:
+ body=subprocess.check_output(['git','show',base+':'+name],cwd=REPO);assert body==(REPO/name).read_bytes(),name;unchanged.append({'path':name,'sha256':sha(body)})
+result['predecessors']={'git_base':base,'files':unchanged}
+result['counts']={k:len(d[k]) for k in ['taxa','participants','reactions','mechanistic_edges','references']};result['unique_declared_ids']=len(ids);result['native_evidence_items']=len(locators);result['primary_evidence_items']=len(nonxml)
+(OUT/'replay.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'target_sha256':sha(b),'manifest_files':sum(x['verified_files'] for x in manifests),'retained_files':sum(x['verified_rows'] for x in retentions),'reference_originals':len(reference_rows),'native_evidence_items':len(locators),'primary_evidence_items':len(nonxml),'predecessor_records':len(unchanged),'counts':result['counts'],'result':'pass'}))

@@ -1,0 +1,35 @@
+from pathlib import Path
+from collections import Counter
+import xml.etree.ElementTree as E,json,re,hashlib,datetime
+out=Path('/private/tmp/pathwaymech-next-261-independent-science'); original=json.loads((out/'formal-originals-independent-check.json').read_text());compounds={c['native_frame']:c for c in original['compounds']}
+def formula(s):
+ toks=re.findall(r'([A-Z][a-z]?)(\d*)',s)
+ assert ''.join(a+n for a,n in toks)==s
+ return Counter({a:int(n or '1') for a,n in toks})
+checks=[]
+for c in compounds.values():
+ assert c['native']['inchi']==c['issuing_properties']['chemrof:inchi_string'][0]
+ assert c['native']['inchi-key'].removeprefix('InChIKey=')==c['issuing_properties']['chemrof:inchi_key_string'][0]
+root=Path('/private/tmp/pathwaymech-next-261-native/originals')
+steps=[('CATECHOL-23-DIOXYGENASE-RXN','L2R'),('3.7.1.9-RXN','L2R'),('2-OXOPENT-4-ENOATE-HYDRATASE-RXN','R2L'),('MHPELY-RXN','L2R'),('ACETALD-DEHYDROG-RXN','L2R')]
+net=Counter()
+for frame,flux in steps:
+ p=root/f'META-{frame}.xml';e=next(e for e in E.parse(p).getroot() if e.get('frameid')==frame)
+ sides={}
+ for side in ['left','right']:
+  sides[side]=Counter()
+  for s in e.findall(side):
+   cs=s.findall('Compound');assert len(cs)==1
+   sides[side][cs[0].get('frameid')]+=int(s.findtext('coefficient') or '1')
+ def totals(side):
+  atoms=Counter();charge=0
+  for f,n in side.items():
+   row=compounds[f]['issuing_properties'];form=formula(row['chemrof:generalized_empirical_formula'][0])
+   atoms.update({a:ct*n for a,ct in form.items()});charge+=n*int(row['chemrof:charge'][0])
+  return dict(sorted(atoms.items())),charge
+ assert totals(sides['left'])==totals(sides['right'])
+ substrate,product=('left','right') if flux=='L2R' else ('right','left')
+ net.subtract(sides[substrate]);net.update(sides[product])
+ checks.append({'frame':frame,'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'native_direction':e.findtext('reaction-direction'),'selected_flux':flux,'sides':{k:dict(v) for k,v in sides.items()},'atom_totals_both_sides':totals(sides['left'])[0],'charge_both_sides':totals(sides['left'])[1]})
+result={'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'steps':checks,'net_coefficient':{k:v for k,v in sorted(net.items()) if v},'all_five_atom_charge_balances_pass':True,'native_and_issuing_full_inchi_and_key_equal_for_all_16':True}
+(out/'material-balance-independent-check.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

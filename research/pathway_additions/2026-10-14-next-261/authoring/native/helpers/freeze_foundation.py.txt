@@ -1,0 +1,90 @@
+from pathlib import Path
+import json,hashlib,datetime,collections
+R=Path(__file__).resolve().parents[1]
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(p,x):(R/p).write_text(json.dumps(x,indent=2)+'\n')
+def bind(p):return {'path':str(p),'bytes':Path(p).stat().st_size,'sha256':sha(p)}
+assert not (R/'artifact-manifest.json').exists(),'Frozen package must not be rewritten'
+checks=read(R/'receipts/focused-foundation-checks.json');assert checks['status']=='passed' and checks['draft']['sha256']==sha(R/'native-foundation.yaml')
+extras=[a for p in read(R/'receipts/frozen-predecessor-verification.json') for a in p['unlisted_additional_files']]
+assert len(extras)==1 and extras[0]['sha256']=='9b95ee5290a98b2c6f3669a4d1cf981658f00b59e60520e380a655fede857e6a'
+save('receipts/chemistry-successor-metadata-observation.json',{'additional_file':extras[0],'root_confirmation':'Root confirmed compact-retention-manifest.json was authorized metadata created after the frozen 18-file chemistry inventory; root independently verified all 18 hashes and separately bound this metadata.','root_receipt':'/private/tmp/pathwaymech-next-261-20261014/research/root-verification/frozen-source-integrity.json','disposition':'Observed separately; frozen source manifest and all its listed original files remain unchanged. The first checker rejection was an overstrict inventory expectation, not altered source bytes.'})
+# Bind exact primary successor handoff without re-reading or duplicating full text.
+p=Path('/private/tmp/pathwaymech-next-261-primary-integration/HANDOFF.md')
+save('primary-integration-successor-binding.json',{'handoff':bind(p),'scope':'Separate primary author integration owns all original 50 primary claims, the newly read 1996 TbuE study, and PKO1 regulator/gene/construct identity follow-up. This native foundation does not claim independent primary approval.','merge_convention':'Keep native-nNNN and primary-pNNN edge namespaces; unify exact activity nodes under reactions with canonical labels from selected-identifiers.json. Parent/root selects final taxon annotations.'})
+receipts=[];statuses=collections.Counter()
+for p in sorted((R/'receipts').glob('acquisition-*-complete.json')):
+ rows=read(p);receipts.append({'receipt':bind(p),'requests':len(rows),'rows':[{'key':a.get('key'),'url':a['url'],'status':a.get('status'),'path':a.get('path'),'sha256':a.get('sha256'),'bytes':a.get('bytes'),'final_url':a.get('final_url')} for a in rows]})
+ for a in rows:statuses[str(a.get('status'))]+=1
+save('acquisition-accounting.json',{'complete_rounds':receipts,'status_counts':dict(statuses),'source_safe_sequence':'Each acquisition helper used sequential public requests and pacing; original statuses, final URLs, response headers, timestamps, bytes and hashes are in receipts. No inaccessible response was relabeled as an original authority.','rejected_endpoint_bodies':['NEW-IMAGE activity pilot is a short JavaScript redirect to a protein, not the requested activity original.','Two /pathway?orgid=META&id= requests returned 404; the actual NEW-IMAGE pathway pages were subsequently acquired and parsed.'],'accepted_authority_source_count':52,'full_TbuE_native_successor_objects':10,'frozen_original_reuse':'Every reused original keeps exact hash/version/preparation provenance through the frozen input ledgers. No frozen source package was edited.'})
+(R/'HANDOFF.md').write_text('''# Frozen native foundation for MetaCyc:PWY-5415
+
+This is an external author deliverable, not an independent scientific review or approval. No maintained record, identifier configuration, parser, schema, Git or GitHub state was written. Frozen predecessor source packages were read only. Repository inputs are bound to the current `/private/tmp/pathwaymech-next-261-20261014` context.
+
+## Deliverables and merge interface
+
+`native-foundation.yaml` is a selected native-source foundation for the complete five-transformation catechol meta-cleavage route. It contains 60 participants, 37 reaction/activity/module nodes, 112 edges and 64 source references. Its 98 named IDs are in `selected-identifiers.json`. Edges use `native-nNNN`; `native-n046` is deliberately absent following the explicit CNB-1 exclusion. Primary integration uses `primary-pNNN` and is separately bound by `primary-integration-successor-binding.json`.
+
+The five formal transformations remain RHEA:17338, MetaCyc:3.7.1.9-RXN, RHEA:22582, RHEA:22625 and RHEA:23289. The record preserves P183-PWY and PWY-5162 module boundaries, 21 material assertions and four explicit predecessor transitions. Native activity interfaces retain source-specific catalysts, evidence codes and assay scope. Their labels do not prove historical substrate stereochemistry.
+
+`selected-identifiers.json` and `complete-new-source-proposals.json` are the stable identity interface for the authority author. The 52 new source descriptors all replay through the unchanged existing adapters. All 98 selected IDs resolve against existing owners or exact candidate originals; the sole label difference is the policy-supported contextual display of MetaCyc:3.7.1.9-RXN. No participant-label exemption was invented. Existing CPLX0-7951, PWY-5162 and other previously owned authorities remain unchanged. The authority author's availability observation is hash-bound, not represented as an independent biological approval.
+
+## Complete source disposition
+
+`full-source-slot-coverage.json` preserves every one of 3,139 direct slots: all 2,986 slots from the 217 frozen native objects and all 153 slots from 10 complete TbuE-successor objects. Each slot retains the original/hash/version, exact locator, full XML/text, previous author disposition, final graph/context disposition and related record fields. `complete-original-object-dispositions.json` binds every complete object and its scope.
+
+`all132-native-candidate-dispositions.json` accounts for every original mechanism proposal: 59 selected graph assertions, 10 inverse equivalents represented without duplicate edges, 35 adjacent-context assertions, 26 explicit AdhE exclusions, one native CnbE activity-only assignment with formal catalysis rejected, and one rejected native NADH sign. No original proposal is automatically approved merely because it was in the native dossier.
+
+`all165-native-prose-dispositions.json`, `all80-native-feature-dispositions.json` and `native-source-context.md` retain all native prose and imported feature context. The appendix preserves full source paragraphs, exact preparation and identity limits, alternative substrates, kinetics, model-based ligand annotations and mechanistic hypotheses. Related graph edges are summaries, not a claim that each paragraph sentence became a graph assertion. Unsupported exact identities and effects remain explicit context rather than disappearing.
+
+`formal-identity-and-structure-bindings.json` binds the root-authored frozen formal chemistry and all exact structure proofs. `native-edge-source-coverage.json` provides the reverse edge-to-source map. The native hydrolase Rhea cross-reference specifies keto chemistry and is not substituted for the selected 2Z-enol reaction. Parent keto/2E prose and formal 2Z chemistry remain distinct. The historical assays do not independently establish every formal stereochemical label.
+
+## Scope corrections and preparation limits
+
+CNB-1 CnbE's complete protein comment describes coexpression with cnbF in E. coli, a chlorinated conversion, and no purified proteins. Exact unchlorinated RHEA:22582 catalysis was removed. The native ENZRXN-16329 assignment remains explicitly a database assignment with a construct qualifier. `rejected-formal-assignment.json` preserves the rejected edge and source basis.
+
+Bilophila His-tagged recombinant AdhE has subject experimental-construct qualification on both native activity and formal assignment edges, bound to its complete protein comment. The pH 8 result, no observed reaction at pH 7.5, nucleotide preference and purified-versus-partially-purified source-code discrepancy remain explicit. Other explicitly cloned/heterologous source preparations also retain construct qualifications; native DmpF/G, Bordetella hydratase and XylJ complex association has molecular-state qualification.
+
+All five native regulation effects target exact ENZRXN activities from their full native regulation objects. DmpG Mn/Zn effects do not imply direct effects on purified free DmpG. Native NADH inhibition REG-5876 is rejected against primary stimulation. Native allosteric labels are not upgraded to established binding mechanisms; MhpF competitive inhibition and its Ki remain native annotations beyond the inspected abstract. E. coli ADHE-CPLX is explicitly excluded by PWY-5162, with all its adjacent activities, regulators, locations and uncertain assembly coefficient retained as context. This source-specific exclusion is not applied to all unrelated proteins called AdhE.
+
+## Parent taxa and gene-product boundaries
+
+The empty `taxa` array is an integration boundary, not a claim that parent species annotations are absent or rejected. `parent-pathway-species-annotation-accounting.json` preserves all nine PWY-5415 species slots, every full organism binding and exact identity decisions. The parent has one EV-EXP-IDA evidence slot citing the PKO1 study PMID1856161; individual species slots do not supply individual evidence/citations. No inspected native contradiction specifically rejects Saccharolobus solfataricus 98/2. Root may preserve source-annotated pathway scope with these limits. Historical native mt-2 remains ORG-5948, not an automatically inferred modern strain alias. Expression hosts and component-only donor taxa are kept separate.
+
+All reciprocal native gene/product identities and the complete sequence counterpart closure remain bound to the frozen biological dossier. This schema has no encodes predicate; gene identity is not converted into another causal relation. PKO1 tbu operon, TbuS, upstream TbuR/TbuD, constructs and promoter/control mechanisms belong to the primary integration successor; no invented TbuS accession or binding edge is supplied by this foundation.
+
+## TbuE successor and acquisition
+
+The new successor closes full MONOMER-11210, G-8728, ENZRXN-11552, ENZRXN-26223, their two complete reaction objects and four complete compound objects. TbuE's native UniProt cross-reference is Q59220; native gene U20258 is PART-OF, not a protein accession. Issuing UniProt/NCBI and CDS/construct proof belongs to primary integration. Native subunit composition is unreported.
+
+ENZRXN-11552 has a catechol enzyme label but its current complete reaction pointer is 3-methylcatechol chemistry; ENZRXN-26223 is 4-methylcatechol chemistry. Only native activity interfaces are added. Neither adjacent methyl reaction replaces a formal catechol step. Complete native methyl-product structure/xref objects remain context; this role does not assert unverified exact ChEBI equivalence. Native suicide-inactivation/ferredoxin repair prose is retained as annotation without inventing an identified ferredoxin endpoint or claiming a newly read primary paper.
+
+`acquisition-accounting.json` binds actual request receipts and all failed/redirect responses. A short activity NEW-IMAGE redirect and two pathway 404 responses remain rejected endpoint bodies. Successful activity `/compound` object pages, successful pathway NEW-IMAGE pages and complete getxml objects were parsed as their actual originals. There is no reacquisition of the seven primary full texts and no placeholder original.
+
+## Validation and frozen predecessors
+
+`receipts/focused-foundation-checks.json` records passing custom and closed/null-free schema checks, complete original-XPath resolution, all evidence hashes, endpoint and qualifier checks, source disposition counts, actual 52-source parser replay and 98-ID availability. `receipts/strict-schema-check.json` binds the exact draft bytes. The first locator checker compared only top-level projection strings and was corrected to evaluate full XML paths; the original formal locators and evidence were unchanged. This check correction is retained explicitly.
+
+Every manifest-listed file of the five frozen predecessors was reverified. Native, biological, primary and chemical-participant inventories match their manifests exactly. Formal chemistry's 18 listed files match; its authorized later compact-retention metadata is separately observed with SHA-256 `9b95ee5290a98b2c6f3669a4d1cf981658f00b59e60520e380a655fede857e6a`, as confirmed by root. The original chemistry manifest was not changed or represented as enumerating the extra file.
+
+The focused author checks do not replace integrated-record gates, source replay against the final authority union, publication checks, or independent scientific review. Final record selection, taxa, source owners and combined primary/native scope remain root integration responsibilities.
+
+## Retention
+
+The full `artifact-manifest.json` inventories every file including hidden/ignored paths and source-cache symlinks by target bytes; it excludes only itself. `compact-retention-manifest.json` selects all new originals, receipts, source descriptors, coverage ledgers, draft, helper scripts and handoff, omitting redundant source-cache copies and runtime copies. Frozen input packages remain explicit dependencies; their large originals are not mislabeled as new acquisitions or silently duplicated in the compact core.
+''')
+# Compact core includes all real new payloads; source-cache aliases and runtime copies
+# are redundant with exact originals and bound repository inputs.
+core=[]
+for p in sorted(R.rglob('*')):
+ if not p.is_file() or p.name in ['artifact-manifest.json','compact-retention-manifest.json']:continue
+ rel=p.relative_to(R)
+ if rel.parts[0] in ['source-cache','runtime']:continue
+ core.append({'path':rel.as_posix(),'bytes':p.stat().st_size,'sha256':sha(p)})
+save('compact-retention-manifest.json',{'scope':'Exact new author core; frozen original source packages remain bound dependencies. Excludes redundant cache/runtime copies, not original source payloads.','file_count':len(core),'bytes':sum(a['bytes'] for a in core),'files':core})
+files=[]
+for p in sorted(R.rglob('*')):
+ if p.is_file() and p.name!='artifact-manifest.json':files.append({'path':p.relative_to(R).as_posix(),'bytes':p.stat().st_size,'sha256':sha(p)})
+save('artifact-manifest.json',{'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'root':str(R),'role':'native foundation author, not independent reviewer','inventory_includes_hidden_and_ignored':True,'file_count':len(files),'bytes':sum(a['bytes'] for a in files),'files':files})
+print(json.dumps({'root':str(R),'HANDOFF':bind(R/'HANDOFF.md'),'manifest':bind(R/'artifact-manifest.json'),'draft':bind(R/'native-foundation.yaml'),'file_count':len(files),'bytes':sum(a['bytes'] for a in files),'compact_core_files':len(core),'compact_core_bytes':sum(a['bytes'] for a in core)},indent=2))

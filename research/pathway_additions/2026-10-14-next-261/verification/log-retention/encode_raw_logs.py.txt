@@ -1,0 +1,63 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import json, gzip, hashlib, subprocess
+ROOT=Path('/private/tmp/pathwaymech-next-261-20261014'); CI=Path('/private/tmp/pathwaymech-next-261-ci')
+R=ROOT/'research/pathway_additions/2026-10-14-next-261'; D=R/'verification/log-retention'; D.mkdir(parents=True,exist_ok=True)
+OUT=D/'encoding-successor.json'; assert not OUT.exists()
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def dump(p,x): p.write_text(json.dumps(x,indent=2)+'\n')
+core=json.loads((CI.parent/'pathwaymech-next-261-checks-initial/tested-core-input-hashes.json').read_text())
+old_paths=['source-evidence/chemical-participants/retained/native-chemistry-check-offline.log','verification/full-gates/just-test.log']
+originals=[Path('/private/tmp/pathwaymech-next-261-participant-authorities/retained/native-chemistry-check-offline.log'),Path('/private/tmp/pathwaymech-next-261-checks-initial/just-test.log')]
+failed=subprocess.run(['git','diff','--cached','--check'],cwd=ROOT,capture_output=True,text=True)
+assert failed.returncode!=0 and all(p in failed.stdout for p in old_paths)
+dump(D/'initial-staged-diff-failure.json',{'observed_utc':datetime.now(timezone.utc).isoformat(),'command':['git','diff','--cached','--check'],'exit_code':failed.returncode,'stdout':failed.stdout,'stderr':failed.stderr,'classification':'Verbatim tool-output whitespace, not scientific-data change. Preserve raw bytes via deterministic lossless encoding; do not trim or suppress checks.'})
+# Enumerate tracked and all untracked files, including ignored files; decode gzip for literal-reference auditing.
+paths=set(p.decode() for p in subprocess.check_output(['git','ls-files','--cached','--others','-z'],cwd=ROOT).split(b'\0') if p)
+hits=[]; binary=[]; caches=[]
+for path in sorted(paths):
+ p=ROOT/path
+ if {'__pycache__','.pytest_cache','.ruff_cache'}.intersection(p.parts): caches.append(path); continue
+ if not p.is_file(): continue
+ raw=p.read_bytes(); decoded=gzip.decompress(raw) if p.suffix=='.gz' else raw
+ try: text=decoded.decode('utf-8')
+ except UnicodeDecodeError: binary.append(path); continue
+ for i,line in enumerate(text.splitlines(),1):
+  if any(n in line for n in ['native-chemistry-check-offline.log','verification/full-gates/just-test.log']):
+   hits.append({'path':path,'line':i,'text':line,'sha256':sha(p),'encoding':'gzip_lossless' if p.suffix=='.gz' else 'identity'})
+dump(D/'reference-audit.before.json',{'scope':'Complete tracked and ignored-inclusive untracked worktree inventory; gzip decoded, runtime caches excluded and binary nontext files listed.','searched_paths':len(paths),'runtime_cache_paths':caches,'nontext_paths':binary,'hits':hits})
+archives=[]
+for source,name in [(R/'root-verification/source-retention-receipt.json','source-retention-receipt.before.json'),(R/'root-verification/completed-evidence-retention.json','completed-evidence-retention.before.json'),(CI/'final-reviewer-evidence-mapping.json','final-reviewer-evidence-mapping.before.json')]:
+ dst=D/name;assert not dst.exists();dst.write_bytes(source.read_bytes());archives.append({'active':str(source),'archived':str(dst.relative_to(ROOT)),'sha256':sha(dst)})
+rows=[]
+for rel,source in zip(old_paths,originals):
+ p=R/rel; raw=p.read_bytes(); assert raw==source.read_bytes(); out=p.with_name(p.name+'.gz');assert not out.exists();out.write_bytes(gzip.compress(raw,mtime=0)); assert gzip.decompress(out.read_bytes())==raw
+ rows.append({'source':str(source),'source_sha256':sha(source),'source_bytes':len(raw),'prior_retained_path':str(p.relative_to(ROOT)),'retained_path':str(out.relative_to(ROOT)),'retained_sha256':sha(out),'retained_bytes':out.stat().st_size,'encoding':'gzip_lossless','decoded_sha256':hashlib.sha256(raw).hexdigest(),'was_tested_input':str(p.relative_to(ROOT)) in core})
+# Update root-owned active retention maps; frozen author proposals and historical observations remain unchanged and archived.
+p=R/'root-verification/source-retention-receipt.json'; m=json.loads(p.read_text()); row=next(x for x in m['files'] if x['retained_path']==old_paths[0]); e=rows[0]
+row.update(retained_path=old_paths[0]+'.gz',bytes=e['retained_bytes'],sha256=e['retained_sha256'],copy='gzip_lossless',source_bytes=e['source_bytes'],source_sha256=e['source_sha256'],decoded_sha256=e['decoded_sha256'])
+m['bytes']=sum(x['bytes'] for x in m['files']);m['encoding_successor']={'receipt':'verification/log-retention/encoding-successor.json','previous_receipt':'verification/log-retention/source-retention-receipt.before.json','updated_utc':datetime.now(timezone.utc).isoformat()};dump(p,m)
+p=R/'root-verification/completed-evidence-retention.json';m=json.loads(p.read_text());row=next(x for x in m['files'] if x['retained']==old_paths[1]); e=rows[1]
+row.update(retained=old_paths[1]+'.gz',retained_sha256=e['retained_sha256'],retained_bytes=e['retained_bytes'],encoding='gzip_lossless')
+key=str(originals[1]);mapping=m['reviewer_evidence_mapping'][key];mapping.update(path=e['retained_path'],sha256=e['retained_sha256'],encoding='gzip_lossless',decoded_sha256=e['source_sha256']);m['encoding_successor']={'receipt':'verification/log-retention/encoding-successor.json','previous_receipt':'verification/log-retention/completed-evidence-retention.before.json','updated_utc':datetime.now(timezone.utc).isoformat()};dump(p,m)
+external=json.loads((CI/'final-reviewer-evidence-mapping.json').read_text());external[key]=mapping;dump(CI/'final-reviewer-evidence-mapping.json',external)
+for rel in old_paths:
+ p=R/rel;assert p.read_bytes()==gzip.decompress(p.with_name(p.name+'.gz').read_bytes());p.unlink()
+# These files were new in the staged change, not present in the base commit.
+for rel in old_paths:
+ path=str((R/rel).relative_to(ROOT));base=subprocess.run(['git','cat-file','-e','HEAD:'+path],cwd=ROOT,capture_output=True);assert base.returncode!=0
+ subprocess.run(['git','rm','--cached','--',path],cwd=ROOT,check=True,capture_output=True)
+changed={}
+for path,digest in core.items():
+ p=ROOT/path
+ if not p.exists():
+  e=next(x for x in rows if x['prior_retained_path']==path);assert hashlib.sha256(gzip.decompress((ROOT/e['retained_path']).read_bytes())).hexdigest()==digest
+  changed[path]={'before':digest,'after':None,'representation':e['retained_path'],'decoded_sha256':digest}
+ elif sha(p)!=digest: changed[path]={'before':digest,'after':sha(p)}
+expected={'research/pathway_additions/2026-10-14-next-261/'+x for x in ['README.md','root-verification/source-retention-receipt.json',old_paths[0]]}
+assert set(changed)==expected
+for original in originals: assert sha(original)==next(x['source_sha256'] for x in rows if x['source']==str(original))
+receipt={'completed_utc':datetime.now(timezone.utc).isoformat(),'scope':'Lossless storage successor for two verbatim machine logs; current root-owned retention maps updated, prior maps archived; source-author frozen manifests and historical independent observations remain unchanged.','reason':'Actual staged whitespace gate failure; no whitespace trimming, scientific correction, source mutation or check suppression.','files':rows,'prior_active_metadata_archives':archives,'active_metadata':[{'path':str(p.relative_to(ROOT)),'sha256':sha(p)} for p in [R/'root-verification/source-retention-receipt.json',R/'root-verification/completed-evidence-retention.json']],'tested_input_dispositions':changed,'unchanged_tested_files':len(core)-len(changed),'tested_files':len(core),'all_source_content_preserved':True,'report_and_readme_unchanged_from_preparation':True,'initial_full_run_remains_valid_for_original_frozen_inputs':True,'script_sha256':sha(__file__)}
+prep=json.loads((CI/'completed-verification-preparation.json').read_text());assert sha(R/'verification.md')==prep['report_sha256'];assert sha(R/'README.md')==prep['post_gate_changed_tested_inputs'][str((R/'README.md').relative_to(ROOT))]['after']
+dump(OUT,receipt);(D/'encode_raw_logs.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({'receipt':str(OUT),'sha256':sha(OUT),'encoded_logs':len(rows),'unchanged_tested_files':receipt['unchanged_tested_files'],'tested_dispositions':changed},indent=2))

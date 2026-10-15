@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,hashlib,sys
+R=Path(__file__).resolve().parents[1]
+REPO=Path('/private/tmp/pathwaymech-next-261-20261014')
+sys.path[:0]=[str(REPO/'scripts'),str(REPO/'src')]
+from build_source_identifier_snapshot import source_terms
+def rd(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+receipts=rd(R/'receipts/acquisition-activity-second-complete.json')+rd(R/'receipts/acquisition-activity-labels-complete.json')
+native={a['frame']:a for a in rd('/private/tmp/pathwaymech-next-261-native/native-full-object-projection.json')}
+rows=[]
+for a in receipts:
+ assert a['status']==200 and sha(a['path'])==a['sha256']
+ terms=list(source_terms('metacyc-html',Path(a['path']),url=a['url'],version='27.0'))
+ assert len(terms)==1 and terms[0][0]=='MetaCyc:'+a['key'],(a['key'],terms)
+ n=native[a['key']];assert n['type']=='Enzymatic-Reaction'
+ rows.append({'identifier':terms[0][0],'canonical_label':terms[0][1],'synonyms':terms[0][2],
+ 'source_original':a,'native_typed_object':{'path':n['file'],'sha256':n['sha256'],'version':n['version']},
+ 'entry':{'key':'meta261-activity-'+a['key'],'kind':'metacyc-html','path':'meta261-activity/'+Path(a['path']).name,
+ 'url':a['url'],'version':'27.0','license':'BioCyc source terms; redistribution not assessed','sha256':a['sha256']},
+ 'scope':'Exact native activity identity/name. Full typed XML, not the generic endpoint page class, establishes Enzymatic-Reaction type. No activity/reaction/preparation equivalence inferred by the label.'})
+assert len(rows)==45
+(R/'activity-authority-candidates.json').write_text(json.dumps(rows,indent=2)+'\n')
+print({'accepted_activity_authorities':len(rows),'redirect_body':'The separate NEW-IMAGE pilot identifies a protein redirect and was not used as activity authority.'})

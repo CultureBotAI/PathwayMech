@@ -1,0 +1,19 @@
+# Next261 selected authority union — author handoff
+
+The external authority union is ready for root inspection and independent review. This package is authority integration authorship, not an independent scientific verdict. No maintained file, Git state, source adapter or policy was changed.
+
+Root's integrated record selected 106 identifiers. The canonical proposal adds exactly 80 terms: 70 source terms and 10 ontology terms. All 5,023 prior terms, all 891 source owners, all five ontology owners, and the entire 1,072-entry source configuration prefix are unchanged as JSON objects. Final total: 5103 terms. Only actual selected identifiers are added; the optional 165-source candidate pool is not promoted.
+
+Both existing canonical builders passed from copied, hash-bound runtime bytes. Complete pinned SQL hashes match the existing owners, and all bound inputs were verified before and after execution. The unchanged real offline identifier CLI passed on 258 actual records: 257 predecessor observations plus the supplied integrated record. The synthetic old-term retention selector was used only to retain snapshot coverage and was not passed to the real consumer. Every predecessor named ID, label and category is preserved. This bounded authority check does not replace full repository validation or scientific review.
+
+Final record binding: `38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255` at `/private/tmp/pathwaymech-next-261-20261014/data/pathways/catechol-degradation-i.yaml`. Exact proposed file paths and hashes are in `retained/author-handoff.json`; root owns maintained promotion.
+
+Native TbuE sources are separately scoped successor originals; methylcatechol activity labels do not make them formal catechol reaction equivalents. Optional TbuE sequence/reference sources and other unselected candidates remain evidence context. Existing CPLX0-7951, PWY-5162 and previously retained protein owners remain exact. Formal chemistry and chemical assay identity proof remain in their unchanged frozen source-author packages; this integration does not repeat chemical closure or promote optional buffer/reagent identities.
+
+An auxiliary TbuE accounting probe initially expected two selected successor IDs. The actual record also selects ENZRXN-26223 as source-scoped methylcatechol activity context, so the corrected accounting verifies all three selected sources. The initial failed helper and receipt are retained. The canonical selection and builders already contained the correct three sources and were not changed or rerun for this auxiliary correction.
+
+The provisional 98-ID native availability check copied its exact mutable-author observation before parsing. It is explicitly provisional and is superseded by the final root record binding. No labels were taken from that observation to create authority facts. Full issuing originals supply every new source term; pinned independent databases supply ontology labels.
+
+The selected union retains the pinned production Rhea Semantic SQL authority and existing explicit Rhea update manifest. Original Rhea 142 chemistry evidence is separate and does not silently replace older source owners. No parser extension, ontology release refresh or source fallback is proposed.
+
+Compact retention excludes baseline corpora, complete proposed authority outputs, copied runtime and external full authorities. The three exact proposed files are available under `proposal/` for root promotion. All retained checks, selection/source bindings and compact observations are selected with deterministic lossless gzip for larger files and inert `.py.txt` helper copies. `compact-retention-selection.json` binds encoded and original bytes; `artifact-manifest.json` binds all regular owned files. External cache originals remain bound by the input and cache verification receipts rather than duplicated into this package.

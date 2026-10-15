@@ -1,0 +1,1106 @@
+# Independent whole-record scientific successor: catechol degradation I
+
+- Review: 20261015T035618Z-pwy5415-independent-science-successor
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-15T03:03:19Z
+- Finished UTC: 2026-10-15T03:56:18Z
+- Reviewer: Codex /root/next261_science_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+Independent whole-record scientific review resolves SCI-F01 on maintained record SHA256 29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c. All source-to-graph and graph-to-source coverage is accounted for. Actual shared repository gates passed, and final report, source-access chronology and lossless log successors were inspected. Formal chemistry, preparation and taxon boundaries, assembly, regulation and corrected evidence representation are supported within the stated source-access limits. No open scientific findings remain.
+
+## Scope And Provenance
+
+Independent whole-record source-to-graph and graph-to-source scientific review, including exact-byte successor remediation of SCI-F01 and the three narrow description clarifications.
+
+Selection: Same complete maintained PWY5415 record after evidence and scope repairs, verified by canonical inspect and independent structural delta.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 62b8798b0044f422a59f1527b0801ff09a27d368.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-5415 | data/pathways/catechol-degradation-i.yaml | maintained | catechol degradation I (meta-cleavage pathway) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical successor inspect and exact-byte reassessment | passed | True | MetaCyc:PWY-5415 | Canonical final-context inspect exited 0. Actual successor hash, final report, README and report history match the inspected inputs. All record properties match the independently verified repair candidate except the three expected, scientifically checked descriptions. |
+| Issuing/native/primary source replay and full scientific coverage | passed | True | MetaCyc:PWY-5415 | Whole target originally read and successor exact deltas checked. Actual227native objects/3139directslots,all50+8primaryclaim groups,54contexts,132candidate dispositions and80features accounted. Actual Rhea/ChEBI chemistry and5balances passed;8taxonlabels and2completeCDS/protein identity chains independently verified. |
+| Complete primary evidence repair original-byte verification | passed | True | MetaCyc:PWY-5415 | All18excerptspans,6table statements and23array replacements independently checked;35initial occurrences fully covered. Final maintained repair matches verified source-bound entries exactly. |
+| just render-pages | passed | True | MetaCyc:PWY-5415 | Regenerated all 258 pathway pages and corpus downloads. Executed by parent; actual receipt and log independently inspected. |
+| just validate | passed | True | MetaCyc:PWY-5415 | Corpus validation passed for 258 maintained records, closed schema, identifiers and labels, 19,129 evidence blocks, 460 history records, 30 sources and current generated pages. Executed by parent; actual receipt and log independently inspected. |
+| just test | passed | True | MetaCyc:PWY-5415 | Full repository suite: 5,255 passed, 3 skipped, 7 warnings; pytest reported 1594.72 seconds. Executed by parent; actual receipt and log independently inspected. |
+| just lint | passed | True | MetaCyc:PWY-5415 | Full repository Ruff lint passed. Executed by parent; actual receipt and log independently inspected. |
+| just vendored-check | passed | True | MetaCyc:PWY-5415 | Pinned vendored consistency gate passed. Executed by parent; actual receipt and log independently inspected. |
+| git diff --check | passed | True | MetaCyc:PWY-5415 | Working-tree whitespace gate passed on the frozen full-run inputs. Executed by parent; actual receipt and log independently inspected. |
+| git diff --cached --check | passed | True | MetaCyc:PWY-5415 | Staged whitespace gate passed during the frozen run. Later actual staging exposed two verbatim log whitespace issues; their lossless encoding successor is separately inspected. Executed by parent; actual receipt and log independently inspected. |
+| Whole-corpus KGX export | passed | True | MetaCyc:PWY-5415 | Parent export exited 0 for 258 records; this reviewer independently verified both output hashes, while the independent technical reviewer checked complete graph payload preservation. |
+| Final report, retained evidence and lossless encoding successor | passed | True | MetaCyc:PWY-5415 | Actual final documentation and history were inspected, all 59 current retained proof objects were compared with original decoded bytes, and both log encoding successors were verified. No additional scientific defect. |
+| Post-encoding working and staged whitespace checks | passed | True | MetaCyc:PWY-5415 | Actual parent receipt reports 501 staged owned files, working bytes matched, and both whitespace checks exited 0 after the log storage correction. Canonical review bundles are saved subsequently. |
+| Actual completion timestamp and stable persistence-link metadata | passed | True | MetaCyc:PWY-5415 | Independently inspected exact report paragraph delta, archived prior bytes and all five successful focused command receipts. This review ID is generated from its actual finished_at, without backdating or preallocated identifier. Canonical persistence remains subsequent. |
+
+## Scientific And Domain Assessments
+
+### Exact whole-pathway boundary and formal chemistry
+
+identity: supported. Targets: MetaCyc:PWY-5415.
+
+Parent PWY5415 comprises P183-PWY plus PWY5162 and exactly five selected transformations. Four directed issuing Rhea IDs match actual source sides; hydratase is22582 right-to-left in the issuing family while plotted chemistry runs enol hydration. Native hydrolase remains native because its Rhea cross-reference substitutes keto for the native2Z enol. Oxidative7-step PWY5420 is adjacent context. Formal stereoisomers/protonation and atom/charge balances are supported.
+
+### Taxon and preparation boundaries
+
+scope: supported. Targets: MetaCyc:PWY-5415.
+
+Eight taxa retain original parent database annotations, with exact species/strain labels checked in actual NCBI issuing SQL. The parent PKO1 assay citation is not per-taxon whole-route proof; historical mt-2 remains ungrounded strain context. Component catalysts, E.coli/yeast/P.aeruginosa expression hosts and shared MhpD/E/F modules are not promoted to whole-route occurrences. Heterologous, tagged, partially purified, complex-associated and inference-only activity scopes are retained.
+
+### Catalysis, assembly and regulatory scope
+
+graph: supported. Targets: MetaCyc:PWY-5415.
+
+DmpFG biological assembly is two DmpF plus two DmpG, distinct from a catalytic pair and crystallographic asymmetric unit. XylE four-subunit and MhpD five-subunit native coefficients are retained; unspecified XylI/J/Bordetella internal coefficients are not invented. CF600 Mn/Zn and NADH/NAD+ activity effects do not imply identified binding sites or universal metal necessity. NADH positive primary effect overrides the conflicting native negative assertion. CNB-1 chlorinated coexpression is not formal unchlorinated catalysis; TbuE native methylcatechol pointers do not become exact catechol Rhea identity.
+
+### Gene-product and regulator identity boundaries
+
+grounding: supported. Targets: MetaCyc:PWY-5415.
+
+Actual GenBank CDS translations match both NCBIProtein and UniProt for TbuE and upstream TbuD. TbuS genetic trans-complementation remains named context without a fabricated molecular identifier. The 1996 map names tbuT,tbuR,tbuS separately; the 1998 upstream TbuT result does not prove TbuR=TbuT. Promoter/deletion/ANR host effects do not establish direct regulator binding or a PKO1 ANR identity.
+
+### Whole source-to-record and graph-to-source coverage
+
+completeness: supported. Targets: MetaCyc:PWY-5415.
+
+All128 maintained edges,60 participants,37reaction/activity/module nodes,8taxa,79references and the complete description were reviewed. Independently verified227original objects and3139directslots; retained dispositions cover132native candidates,165prose contexts,80features,54primary description blocks and50+8claim groups. Native exclusions, adjacent branches, alternative substrates, preparation conflicts and inaccessible-source gaps remain explicit. The initial evidence-format finding concerns35primary evidence items; it does not justify dropping supported scientific coverage.
+
+### Primary source access and experimental inference limits
+
+evidence: supported. Targets: MetaCyc:PWY-5415.
+
+For the frozen record source versions, Scientific claims were checked against actual publisher transformed text or original indexed abstract/authority records. No raw PDF or figure visual inspection is claimed. Sources8419288,2681159,1856161 and8633871 supply material methods/results/discussion;12764229 is limited to6992–6993;7890778,15301547,17902707,2183008,3481421,23237860,1400204,9451833 are abstract-only;4325686 is metadata-only and Duggleby1986 publisher abstract only. Historical OCR/units/product nomenclature and construction conflicts are retained rather than silently normalized. Later acquisition of the 1971 transformed text is assessed separately in SCI-A09 and is not backfilled into the initial review.
+
+### Successor evidence and scope repair
+
+representation: supported. Targets: MetaCyc:PWY-5415.
+
+All35initial narrative source_assertion occurrences are remediated through23exact array replacements. Narrative support now uses18distinct source-verified short excerpts; structured support names6actual original tables with precise cells and footnotes. No author claim ledger acts as upstream authority. pRO1985 enzyme assays remain separate from pRO1996 growth; 1996partial-purification and 1991crude-extract scopes remain separate. Exact AdhE instance scope and native pH-opt/primary tested-range limits are now local to their fields.
+
+### Later 1971 source acquisition and frozen-source chronology
+
+scope: supported. Targets: MetaCyc:PWY-5415.
+
+The complete later publisher-transformed PMID:4325686 text was independently read after the frozen review. Its Azotobacter findings do not contradict the maintained hydrolytic route: there are no Azotobacter occurrence or catalyst claims, formal route identity is distinct from taxon proof, and the oxidative sibling is adjacent context. The metadata-only reference and unread-lead wording describe the frozen next261 acquisition state. Later oxidative-branch curation must preserve six-step endpoint, unresolved enzymes and historical stereochemical limits.
+
+### Shared gates and final retained context
+
+completeness: supported. Targets: MetaCyc:PWY-5415.
+
+All seven actual shared repository gates passed on the frozen inputs; the whole-corpus KGX export also succeeded. Final report and README scope correctly distinguish later documentation from tested scientific inputs. Two verbatim log encodings preserve decoded content, with archived prior maps and explicit successor accounting. The maintained scientific record remains unchanged.
+
+## Findings
+
+### SCI-F01: Primary narrative paraphrases are stored as structured-source assertions
+
+major / resolved / confirmed; issue key: pwy5415-primary-evidence-representation.
+
+The initial35primary evidence occurrences used narrative paraphrases as structured-source assertions. The actual maintained successor now uses verified short excerpts or exact native table statements, preserving all scientific claims and endpoint-preparation scope. The complete repair covers all23arrays and35old occurrences.
+
+Disposition: Resolved after independent verification of all 18 source excerpt byte spans, all 6 table facts and all 23 array replacements against original sources, followed by exact integration into maintained successor 29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c. Whole-record scientific coverage and all required shared gates are complete. Later context and lossless log storage changes do not alter the scientific repair.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| EV-rule | docs/CAUSAL_GRAPHS.md; lines 95–110 | supports | Evidence must use either a short verbatim quote or a faithful inspected structured source statement with locator for its native triple/object/JSON path/XML element. A generated sentence is not a quotation. |
+| EV-target | research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/reviewed-record.initial.yaml.gz; mechanistic_edges primary-p001–primary-p016, all 35 primary evidence items including 7 qualifier evidence occurrences; lossless gzip, decoded SHA256 38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255 | supports | Historical initial target evidence: All primary evidence items use source_assertion. Locators are publisher page/extraction lines, indexed abstract descriptions and author claim-ledger anchors. Several statements have genuine table support, but none currently identifies a native structured statement; many are purely narrative paraphrases. Full 3018-line target read. |
+| EV-23237860 | https://pubmed.ncbi.nlm.nih.gov/23237860/; PubMed indexed abstract | supports | Historical initial-target assessment: The actual indexed abstract supports active monomeric MhpF; p014 edge and qualifier nevertheless paraphrase it as source_assertion with no native field locator. |
+| EV-7890778 | https://pubmed.ncbi.nlm.nih.gov/7890778/; indexed abstract sentences 1–5 | supports | Historical initial-target assessment: Actual indexed abstract supports XylF 3-alkylcatechol-product hydrolysis; p013 paraphrases narrative abstract. |
+| EV-8419288 | https://journals.asm.org/doi/pdf/10.1128/jb.175.2.377-385.1993?download=true; publisher transformed text pp377–385; Table1, Table2, Fig2/Fig6 captions, results/discussion | supports | Scientific claims were independently checked in original publisher transformed text. F01,F06,F09,F10,F11,F13 are narrative; F04/F05 have actual table data that can support more precise structured assertions. |
+| EV-2681159 | https://journals.asm.org/doi/pdf/10.1128/jb.171.11.6251-6258.1989?download=true; publisher transformed text pp6252,6256–6257 | supports | H01/H08 are narrative methods/results statements, not identified native structured objects. |
+| EV-1856161 | https://journals.asm.org/doi/pdf/10.1128/jb.173.15.4587-4594.1991?download=true; publisher transformed text p4588 methods; p4590 Fig3/results; p4592 Table5 and following prose | supports | K02/K03 are narrative synthesis. K07 combines pRO1985 table activities with a distinct pRO1996 growth report; separate table support from prose. |
+| EV-12764229 | https://www.pnas.org/doi/pdf/10.1073/pnas.1236794100; publisher transformed text p6993 L94–115 | supports | S01 biological tetramer/catalytic-pair conclusion occurs in narrative structural description, not a native structured field. |
+| EV-8633871 | https://journals.asm.org/doi/pdf/10.1128/aem.62.5.1728-1740.1996?download=true; publisher transformed text p1729 methods L113–119; p1732 Tables2–3 L390–415 | supports | Partial-purification and construct identity come from methods prose; kinetic tables provide separate actual structured facts. |
+| EV-formal-independent | research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/formal-originals-independent-check.json.gz; actual complete issuing Rhea RDF/directions and ChEBI SQL replay; all 20 direction-family members and 16 chemical comparators; lossless gzip, decoded SHA256 8313dabce4312722ee48b6c3a2c26c293ea6e0322aa603d29977858d5e6bf7f5 | supports | Independently iterparsed issuing Rhea RDF including duplicate subject descriptions and actual direction TSV; queried actual ChEBI structures, InChIs, charges and labels. Full native structures match selected formal chemical IDs. Hydrolase Rhea14552/master14549 has keto CHEBI11641 whereas native3.7.1.9-RXN yields 2Z enol CHEBI67152. |
+| EV-balance-independent | research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/material-balance-independent-check.json; five exact native equations and whole-route net equation | supports | Independent atom/charge balance passes all five transformations and whole route, with issuing directions17338,22582,22625,23289 and native3.7.1.9-RXN. Net consumes catechol,O2,2H2O,CoA(4-),NAD(1-) and yields formate,pyruvate,acetyl-CoA(4-),NADH(2-),3hydron. |
+| EV-native-coverage | research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/integrated-source-coverage-independent-check.json; 227 original native objects;3139 direct slots; all graph-linked slot references | supports | Every disposition slot was independently parsed from its bound original XML and checked against its full retained XML. No hash/slot mismatches or missing graph references. Eight retained taxa independently agree with original parent species slots and issuing NCBI SQL labels/ranks; none of nine species slots has individual evidence. |
+| EV-coverage-dispositions | research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/complete-coverage-disposition-check.json; 132 candidate dispositions;165 prose contexts;80 sequence features;112 native edges;54 description blocks;50+8 primary claim groups | supports | Complete retained disposition and target-reference accounting has no missing edges or description blocks. This mechanical accounting was combined with independent original-source reading; it is not itself experimental proof. |
+| EV-CDS-independent | research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/identity-sequences-independent-check.json; actual original U20258.1 CDS608..1552 and M98806.1 CDS83..2098, NCBI protein XML and UniProt JSON | supports | Independent translation of actual GenBank nucleotide CDS agrees with deposited annotations and both protein issuers: TbuE314aa AAC13787.1/Q59220; TbuD671aa AAA25992.1/Q01551. Full original hashes and exact accession checks retained. |
+| EV-native-limits | /private/tmp/pathwaymech-next-261-native/originals; PWY-5162/enzymes-not-used; MONOMER14738/comment; ENZRXN16329/reaction; REG5876/mode; ENZRXN13574/ph-opt | supports | Actual original native objects establish exact E.coli ADHE-CPLX exclusion, CNB-1 only chlorinated coexpression experiment despite unchlorinated ENZRXN assignment, and native NADH negative sign conflicting with primary stimulation. Record preserves these limits and excludes formal CNB-1 and negative NADH claims. Native pH-opt8.5 is separately limited by primary tested range. |
+| EV-prior | reviews/structured/20261015T025017Z-pwy5415-independent-science-initial/review.yaml; SCI-F01 / pwy5415-primary-evidence-representation | supports | Saved immutable initial partial needs_curation observation identifies35primary evidence occurrences and exact acceptance criteria. This successor preserves issue identity and finding lineage. |
+| EV-repair-independent | research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/primary-repair-independent-check.json; all18excerpt byte spans,6table statements,23evidence-array replacements | supports | Independent original-byte replay confirms all18short excerpts with only declared extraction-prefix/whitespace/discretionary-break normalization. All6remaining structured statements are actual original table facts with precise cells/footnotes. All35old occurrences are covered and42new occurrences are source-bound. |
+| EV-successor-delta | data/pathways/catechol-degradation-i.yaml; all128edges;primary-p001–primary-p016;description;native-n079/native-n080 descriptions | supports | Actual final maintained bytes exactly contain all independently verified evidence arrays. Only three additional prose fields differ from the verified repair candidate: exact E.coliADHE-CPLX exclusion scope and two native-ph-opt versus primary-tested-range clarifications. All nodes,triples,reference metadata,54primary description contexts and preparation qualifiers are preserved. |
+| EV-full-gate-01 | research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-render-pages.log; Actual terminal log for just render-pages | supports | Regenerated all 258 pathway pages and corpus downloads. |
+| EV-full-gate-02 | research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-validate.log; Actual terminal log for just validate | supports | Corpus validation passed for 258 maintained records, closed schema, identifiers and labels, 19,129 evidence blocks, 460 history records, 30 sources and current generated pages. |
+| EV-full-gate-03 | research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-test.log.gz; Actual terminal log for just test; lossless gzip, decoded SHA256 a0a203c34a24a2d59f2eaebf2eef7670f6cc20069e9e702092e07aed939e52c5 | supports | Full repository suite: 5,255 passed, 3 skipped, 7 warnings; pytest reported 1594.72 seconds. |
+| EV-full-gate-04 | research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-lint.log; Actual terminal log for just lint | supports | Full repository Ruff lint passed. |
+| EV-full-gate-05 | research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-vendored-check.log; Actual terminal log for just vendored-check | supports | Pinned vendored consistency gate passed. |
+| EV-full-gate-06 | research/pathway_additions/2026-10-14-next-261/verification/full-gates/git-diff---check.log; Actual terminal log for git diff --check | supports | Working-tree whitespace gate passed on the frozen full-run inputs. |
+| EV-full-gate-07 | research/pathway_additions/2026-10-14-next-261/verification/full-gates/git-diff---cached---check.log; Actual terminal log for git diff --cached --check | supports | Staged whitespace gate passed during the frozen run. Later actual staging exposed two verbatim log whitespace issues; their lossless encoding successor is separately inspected. |
+| EV-shared-gates | research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/shared-gates-independent-inspection.json; complete retained artifact | supports | All seven terminal log hashes match their receipts. Root terminal preservation accounts all 2,087 scoped inputs; seven critical record, authority and guidance inputs were independently rehashed. This does not claim the reviewer independently rehashed all 2,087 files. |
+| EV-final-context | research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/final-context-independent-check.json; complete retained artifact | supports | Complete final report, README and report history read. All 59 then-current retained proof copies matched their original decoded bytes, the README change was exact, and actual focused receipts and KGX output hashes were checked. This is an immutable pre-encoding observation; EV-log-encoding records the later storage successor. |
+| EV-log-encoding | research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/log-encoding-successor-independent-check.json; complete retained artifact | supports | Both compressed logs decode exactly to original bytes; current retained mapping and archived prior maps verify. Root metadata changes are limited to explicit encoding successors. At the encoding observation, record, report and README remained unchanged; the subsequent report-link metadata correction is separately inspected. Terminal 2,087-file preservation is distinct from the subsequent 2,084 exact paths and three bounded dispositions. |
+| EV-encoding-receipt | research/pathway_additions/2026-10-14-next-261/verification/log-retention/encoding-successor.json; complete retained artifact | supports | Explicit root-owned lossless encoding successor for two verbatim machine logs; prior active metadata is archived. No scientific source content was altered. |
+| EV-final-report | research/pathway_additions/2026-10-14-next-261/verification.md; complete retained artifact | supports | Final report accurately separates full-run inputs, later documentation, retained source and evidence limits, later PMID:4325686 access, and pending canonical persistence/publication. |
+| EV-kgx-export | research/pathway_additions/2026-10-14-next-261/verification/kgx-export-receipt.json; complete retained artifact | supports | Actual whole-corpus KGX export succeeded for 258 records; both exported TSV hashes were independently replayed. Earlier wrong-recipe attempt is explicitly retained. |
+| EV-post-encoding-stage | research/pathway_additions/2026-10-14-next-261/verification/stage-before-final-review-save.json; complete retained artifact | supports | Actual parent staging receipt for 501 owned files reports both working and staged whitespace checks passed after lossless log encoding; this is the pre-successor-save stage, not a claim about later canonical bundles. |
+| EV-later-4325686-assessment | research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/later-source-4325686-context-check.json; complete retained artifact | supports | Dated separate assessment of later next262 acquisition. No material contradiction to frozen next261 assertions; metadata-only record source and earlier access history remain explicit. |
+| EV-later-4325686-source | /private/tmp/pathwaymech-next-262-root-primary-intake/PMID4325686-merged-publisher-transformation.txt; All 1086 transformed-text lines, with material comparisons located in the dated addendum; no raw PDF or visual figure inspection. | supports | Later publisher-transformed text reports a six-step oxidative route ending at acetaldehyde and pyruvate, very low noninducible hydrolytic activity, and unresolved decarboxylase/hydratase preparations. It does not prove the seventh acylating step or the current exact formal stereochemistry. |
+| EV-review-link-correction | research/pathway_additions/2026-10-14-next-261/verification/review-link-correction.json; complete retained artifact | supports | Independent exact old/new comparison confirms only the planned timestamp-dependent review-link paragraph was replaced by the stable persistence-receipt link. Actual focused checks passed. Prior report and initial failed metadata validation remain historical; scientific source and record bytes are unchanged. |
+
+## Limits And Additional Notes
+
+- No raw PDF or visual figure inspection is claimed. Publisher-transformed text can retain OCR defects; abstract-only and otherwise inaccessible source versions remain explicitly limited.
+- Material scientific claims were independently verified; every bibliography citation was not separately read as a complete paper.
+- NCBI taxon identities were queried from the actual pinned readonly SQL, but this reviewer did not rehash the entire 14 GB database.
+- Full repository gates were executed by the parent. Their actual terminal logs and receipts were independently inspected; subsequent documentation and log representation changes received bounded inspection and explicit provenance.
+- The full test run reported 3 skipped tests and 7 warnings. No independent browser or visual PDF inspection was performed by this reviewer.
+- The record retains its original metadata-only PMID:4325686 source version. A later complete transformed-text acquisition was assessed separately, without silently rewriting the earlier access history.
+- The source quotation budget counts 18 distinct excerpts; repeated rendered occurrences are separately enumerated in the retained quotation ledger.
+- No maintained record, Git or GitHub mutations were performed by this reviewer. Canonical persistence, publication and issue closure are parent-owned subsequent actions.
+- Initial whole-record source review and unchanged scientific fields carry forward through an exact structural comparison; the actual successor assessment began at 2026-10-15T03:03:19Z.
+- The pre-encoding final-context proof is historical. Current citations use compressed log representations with stored and decoded hashes; archived prior maps preserve the previous observation.
+- SCI-F01 resolves exactly the named prior occurrence and GitHub issue identity. This completed scientific disposition does not itself close the GitHub issue or claim the successor bundle has already been persisted.
+- The initial external completed draft failed only the canonical timestamp-prefix rule. It remains unchanged; the final record uses its actual finished timestamp as its ID prefix. Final report link metadata is explicitly corrected through EV-review-link-correction, with the prior report archived.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261015T035618Z-pwy5415-independent-science-successor
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Independent whole-record scientific successor: catechol degradation I'
+started_at: '2026-10-15T03:03:19Z'
+finished_at: '2026-10-15T03:56:18Z'
+reviewer:
+  identity: Codex /root/next261_science_review
+  kind: agent
+  independence: independent
+  independence_basis: Did not author or modify maintained record or source integration;
+    independently read original native XML, Rhea RDF/directions, ChEBI SQL and bounded
+    primary source text before inspecting actual integrated target.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: true
+summary: Independent whole-record scientific review resolves SCI-F01 on maintained
+  record SHA256 29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c.
+  All source-to-graph and graph-to-source coverage is accounted for. Actual shared
+  repository gates passed, and final report, source-access chronology and lossless
+  log successors were inspected. Formal chemistry, preparation and taxon boundaries,
+  assembly, regulation and corrected evidence representation are supported within
+  the stated source-access limits. No open scientific findings remain.
+source:
+  git_revision: 62b8798b0044f422a59f1527b0801ff09a27d368
+  state: working_tree
+  inputs:
+  - path: data/pathways/catechol-degradation-i.yaml
+    sha256: 29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: history/reports/catechol-degradation-i-verification/2026-10-15T034257Z-codex-e7b85d.yaml
+    sha256: 3342c1008f4f57c91ef3e4a1cd977b7d46617ab922c9d609863c2e1b5f84bf0a
+    role: context
+  - path: history/reports/catechol-degradation-i-verification/2026-10-15T035508Z-codex-9a35d5.yaml
+    sha256: 8e3a9f04d646b35d4c342ffe246174e239e9b6a3e8a7dbed99035226cefb1451
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-261/README.md
+    sha256: 3dafa8d3ecd0cbbc9e4e8eb87527c4d4c642bf123ce31ce07c326b47e0017b48
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-261/verification.md
+    sha256: 99b83b4804a5296a79f428b15648a0b0c6fc0efae4a01c54f49e8d3d3ba4b7fc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-261/verification/review-link-correction.json
+    sha256: 9b09be163784d7a73459b98dc6a9ea68bc3985b76cbd8e486a3f9e565594a286
+    role: context
+  - path: reviews/structured/20261015T025017Z-pwy5415-independent-science-initial/review.yaml
+    sha256: d2b60625ffe3ab7aa4f3b8021e0775c048c3822b9922fa74c4c60b1de8b2c9e6
+    role: prior_review
+  - path: research/pathway_additions/2026-10-14-next-261/verification/log-retention/encoding-successor.json
+    sha256: ad5805e8703e6cfeb8a73f2bf0a35fff1f812d9eb739e7b2ec1b2ca44cfd7916
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-261/root-verification/final-review-evidence-retention.json
+    sha256: 4adffb725cdcdb19678ebe2f5310fb1e7f5db5b6396f99359ee2033a4102f4a2
+    role: context
+scope:
+  description: Independent whole-record source-to-graph and graph-to-source scientific
+    review, including exact-byte successor remediation of SCI-F01 and the three narrow
+    description clarifications.
+  selection: Same complete maintained PWY5415 record after evidence and scope repairs,
+    verified by canonical inspect and independent structural delta.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-5415
+targets:
+- target_id: MetaCyc:PWY-5415
+  path: data/pathways/catechol-degradation-i.yaml
+  label: catechol degradation I (meta-cleavage pathway)
+  kind: maintained
+  ownership_note: Maintained YAML record; generated page is owned by the pathway renderer.
+checks:
+- check_id: successor-inspection
+  name: Canonical successor inspect and exact-byte reassessment
+  status: passed
+  required: true
+  summary: Canonical final-context inspect exited 0. Actual successor hash, final
+    report, README and report history match the inspected inputs. All record properties
+    match the independently verified repair candidate except the three expected, scientifically
+    checked descriptions.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python
+    -B scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-261-independent-science/targets.yaml
+    --input docs/CAUSAL_GRAPHS.md --input research/pathway_additions/2026-10-14-next-261/verification.md
+    --input research/pathway_additions/2026-10-14-next-261/README.md --input history/reports/catechol-degradation-i-verification/2026-10-15T034257Z-codex-e7b85d.yaml
+    --input history/reports/catechol-degradation-i-verification/2026-10-15T035508Z-codex-9a35d5.yaml
+    --input research/pathway_additions/2026-10-14-next-261/verification/review-link-correction.json
+  exit_code: 0
+  evidence_ids:
+  - EV-successor-delta
+  - EV-final-context
+- check_id: originals-replay
+  name: Issuing/native/primary source replay and full scientific coverage
+  status: passed
+  required: true
+  summary: Whole target originally read and successor exact deltas checked. Actual227native
+    objects/3139directslots,all50+8primaryclaim groups,54contexts,132candidate dispositions
+    and80features accounted. Actual Rhea/ChEBI chemistry and5balances passed;8taxonlabels
+    and2completeCDS/protein identity chains independently verified.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-formal-independent
+  - EV-balance-independent
+  - EV-native-coverage
+  - EV-coverage-dispositions
+  - EV-CDS-independent
+- check_id: repair-originals
+  name: Complete primary evidence repair original-byte verification
+  status: passed
+  required: true
+  summary: All18excerptspans,6table statements and23array replacements independently
+    checked;35initial occurrences fully covered. Final maintained repair matches verified
+    source-bound entries exactly.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-repair-independent
+  - EV-successor-delta
+- check_id: full-gate-01
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Regenerated all 258 pathway pages and corpus downloads. Executed by parent;
+    actual receipt and log independently inspected.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: just render-pages
+  exit_code: 0
+  evidence_ids:
+  - EV-full-gate-01
+  - EV-shared-gates
+- check_id: full-gate-02
+  name: just validate
+  status: passed
+  required: true
+  summary: Corpus validation passed for 258 maintained records, closed schema, identifiers
+    and labels, 19,129 evidence blocks, 460 history records, 30 sources and current
+    generated pages. Executed by parent; actual receipt and log independently inspected.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: just validate
+  exit_code: 0
+  evidence_ids:
+  - EV-full-gate-02
+  - EV-shared-gates
+- check_id: full-gate-03
+  name: just test
+  status: passed
+  required: true
+  summary: 'Full repository suite: 5,255 passed, 3 skipped, 7 warnings; pytest reported
+    1594.72 seconds. Executed by parent; actual receipt and log independently inspected.'
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: just test
+  exit_code: 0
+  evidence_ids:
+  - EV-full-gate-03
+  - EV-shared-gates
+- check_id: full-gate-04
+  name: just lint
+  status: passed
+  required: true
+  summary: Full repository Ruff lint passed. Executed by parent; actual receipt and
+    log independently inspected.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: just lint
+  exit_code: 0
+  evidence_ids:
+  - EV-full-gate-04
+  - EV-shared-gates
+- check_id: full-gate-05
+  name: just vendored-check
+  status: passed
+  required: true
+  summary: Pinned vendored consistency gate passed. Executed by parent; actual receipt
+    and log independently inspected.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: just vendored-check
+  exit_code: 0
+  evidence_ids:
+  - EV-full-gate-05
+  - EV-shared-gates
+- check_id: full-gate-06
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Working-tree whitespace gate passed on the frozen full-run inputs. Executed
+    by parent; actual receipt and log independently inspected.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: git diff --check
+  exit_code: 0
+  evidence_ids:
+  - EV-full-gate-06
+  - EV-shared-gates
+- check_id: full-gate-07
+  name: git diff --cached --check
+  status: passed
+  required: true
+  summary: Staged whitespace gate passed during the frozen run. Later actual staging
+    exposed two verbatim log whitespace issues; their lossless encoding successor
+    is separately inspected. Executed by parent; actual receipt and log independently
+    inspected.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: git diff --cached --check
+  exit_code: 0
+  evidence_ids:
+  - EV-full-gate-07
+  - EV-shared-gates
+- check_id: shared-kgx-export
+  name: Whole-corpus KGX export
+  status: passed
+  required: true
+  summary: Parent export exited 0 for 258 records; this reviewer independently verified
+    both output hashes, while the independent technical reviewer checked complete
+    graph payload preservation.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: just kgx-export --output-dir /private/tmp/pathwaymech-next-261-checks-kgx
+  exit_code: 0
+  evidence_ids:
+  - EV-kgx-export
+  - EV-final-context
+- check_id: final-context-and-encoding
+  name: Final report, retained evidence and lossless encoding successor
+  status: passed
+  required: true
+  summary: Actual final documentation and history were inspected, all 59 current retained
+    proof objects were compared with original decoded bytes, and both log encoding
+    successors were verified. No additional scientific defect.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-final-context
+  - EV-final-report
+  - EV-log-encoding
+  - EV-encoding-receipt
+- check_id: post-encoding-stage
+  name: Post-encoding working and staged whitespace checks
+  status: passed
+  required: true
+  summary: Actual parent receipt reports 501 staged owned files, working bytes matched,
+    and both whitespace checks exited 0 after the log storage correction. Canonical
+    review bundles are saved subsequently.
+  target_ids:
+  - MetaCyc:PWY-5415
+  command: git diff --check; git diff --cached --check
+  exit_code: 0
+  evidence_ids:
+  - EV-post-encoding-stage
+  - EV-log-encoding
+- check_id: review-link-metadata
+  name: Actual completion timestamp and stable persistence-link metadata
+  status: passed
+  required: true
+  summary: Independently inspected exact report paragraph delta, archived prior bytes
+    and all five successful focused command receipts. This review ID is generated
+    from its actual finished_at, without backdating or preallocated identifier. Canonical
+    persistence remains subsequent.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-review-link-correction
+  - EV-final-report
+evidence:
+- evidence_id: EV-rule
+  kind: record_content
+  reference: docs/CAUSAL_GRAPHS.md
+  locator: lines 95–110
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: Evidence must use either a short verbatim quote or a faithful inspected
+    structured source statement with locator for its native triple/object/JSON path/XML
+    element. A generated sentence is not a quotation.
+  snapshot_sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+- evidence_id: EV-target
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/reviewed-record.initial.yaml.gz
+  locator: mechanistic_edges primary-p001–primary-p016, all 35 primary evidence items
+    including 7 qualifier evidence occurrences; lossless gzip, decoded SHA256 38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: 'Historical initial target evidence: All primary evidence items use source_assertion.
+    Locators are publisher page/extraction lines, indexed abstract descriptions and
+    author claim-ledger anchors. Several statements have genuine table support, but
+    none currently identifies a native structured statement; many are purely narrative
+    paraphrases. Full 3018-line target read.'
+  snapshot_sha256: e7ed31a5026b43fdf9b6cff0214244587a240ea578b09f35cf0cc2f43f5ea518
+- evidence_id: EV-23237860
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/23237860/
+  locator: PubMed indexed abstract
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: 'Historical initial-target assessment: The actual indexed abstract supports
+    active monomeric MhpF; p014 edge and qualifier nevertheless paraphrase it as source_assertion
+    with no native field locator.'
+  snapshot_sha256: aa060f8fc9db83b948edd3a1909932720ddc3671b88648f273c5d82d1c0aa862
+- evidence_id: EV-7890778
+  kind: primary_source
+  reference: https://pubmed.ncbi.nlm.nih.gov/7890778/
+  locator: indexed abstract sentences 1–5
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: 'Historical initial-target assessment: Actual indexed abstract supports
+    XylF 3-alkylcatechol-product hydrolysis; p013 paraphrases narrative abstract.'
+  snapshot_sha256: 04d7c2181d93fc4eda6dcbe37e56045811e66fe7b820a6efcd5fa43dbc42c355
+- evidence_id: EV-8419288
+  kind: primary_source
+  reference: https://journals.asm.org/doi/pdf/10.1128/jb.175.2.377-385.1993?download=true
+  locator: publisher transformed text pp377–385; Table1, Table2, Fig2/Fig6 captions,
+    results/discussion
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: Scientific claims were independently checked in original publisher transformed
+    text. F01,F06,F09,F10,F11,F13 are narrative; F04/F05 have actual table data that
+    can support more precise structured assertions.
+  snapshot_sha256: 5393894d821b69e824408098aa702f2da2a84422be7c4682b1afc2455511c8ad
+- evidence_id: EV-2681159
+  kind: primary_source
+  reference: https://journals.asm.org/doi/pdf/10.1128/jb.171.11.6251-6258.1989?download=true
+  locator: publisher transformed text pp6252,6256–6257
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: H01/H08 are narrative methods/results statements, not identified native
+    structured objects.
+  snapshot_sha256: 0392ce2bf76757f72132a0be2b0bcc4fd24af531286e06362535299034a7a0c1
+- evidence_id: EV-1856161
+  kind: primary_source
+  reference: https://journals.asm.org/doi/pdf/10.1128/jb.173.15.4587-4594.1991?download=true
+  locator: publisher transformed text p4588 methods; p4590 Fig3/results; p4592 Table5
+    and following prose
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: K02/K03 are narrative synthesis. K07 combines pRO1985 table activities
+    with a distinct pRO1996 growth report; separate table support from prose.
+  snapshot_sha256: 581fdcf0cd875066952b2c0a10f2ef971e99c0841471f062f39fe26c1a77133e
+- evidence_id: EV-12764229
+  kind: primary_source
+  reference: https://www.pnas.org/doi/pdf/10.1073/pnas.1236794100
+  locator: publisher transformed text p6993 L94–115
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: S01 biological tetramer/catalytic-pair conclusion occurs in narrative structural
+    description, not a native structured field.
+  snapshot_sha256: 7d7a4d836066c5596ab60f06f4f6f6009337aecf8391269b3a0d2ac83620d0cc
+- evidence_id: EV-8633871
+  kind: primary_source
+  reference: https://journals.asm.org/doi/pdf/10.1128/aem.62.5.1728-1740.1996?download=true
+  locator: publisher transformed text p1729 methods L113–119; p1732 Tables2–3 L390–415
+  accessed_at: '2026-10-15T02:50:17Z'
+  support: supports
+  summary: Partial-purification and construct identity come from methods prose; kinetic
+    tables provide separate actual structured facts.
+  snapshot_sha256: a26e4f7f7c7f3dfc1da2bd415b7d9a053c864d79944700f50e73c48b5b633426
+- evidence_id: EV-formal-independent
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/formal-originals-independent-check.json.gz
+  locator: actual complete issuing Rhea RDF/directions and ChEBI SQL replay; all 20
+    direction-family members and 16 chemical comparators; lossless gzip, decoded SHA256
+    8313dabce4312722ee48b6c3a2c26c293ea6e0322aa603d29977858d5e6bf7f5
+  accessed_at: '2026-10-15T02:56:17Z'
+  support: supports
+  summary: Independently iterparsed issuing Rhea RDF including duplicate subject descriptions
+    and actual direction TSV; queried actual ChEBI structures, InChIs, charges and
+    labels. Full native structures match selected formal chemical IDs. Hydrolase Rhea14552/master14549
+    has keto CHEBI11641 whereas native3.7.1.9-RXN yields 2Z enol CHEBI67152.
+  snapshot_sha256: eb3760877e4171a621650329ef91029089f0308c27b9653dbbe5e86e36669c12
+- evidence_id: EV-balance-independent
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/material-balance-independent-check.json
+  locator: five exact native equations and whole-route net equation
+  accessed_at: '2026-10-15T02:56:17Z'
+  support: supports
+  summary: Independent atom/charge balance passes all five transformations and whole
+    route, with issuing directions17338,22582,22625,23289 and native3.7.1.9-RXN. Net
+    consumes catechol,O2,2H2O,CoA(4-),NAD(1-) and yields formate,pyruvate,acetyl-CoA(4-),NADH(2-),3hydron.
+  snapshot_sha256: ba44fa8c54cb9eb9f68b38dbc138485a818db72fa3ceaa35e6728d7d568b3ae5
+- evidence_id: EV-native-coverage
+  kind: database
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/integrated-source-coverage-independent-check.json
+  locator: 227 original native objects;3139 direct slots; all graph-linked slot references
+  accessed_at: '2026-10-15T02:56:17Z'
+  support: supports
+  summary: Every disposition slot was independently parsed from its bound original
+    XML and checked against its full retained XML. No hash/slot mismatches or missing
+    graph references. Eight retained taxa independently agree with original parent
+    species slots and issuing NCBI SQL labels/ranks; none of nine species slots has
+    individual evidence.
+  snapshot_sha256: cf77d6fd56003aac8d58bd265ab98419e73f6dc80a1d00ae860890e6cdbc9135
+- evidence_id: EV-coverage-dispositions
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/complete-coverage-disposition-check.json
+  locator: 132 candidate dispositions;165 prose contexts;80 sequence features;112
+    native edges;54 description blocks;50+8 primary claim groups
+  accessed_at: '2026-10-15T02:56:17Z'
+  support: supports
+  summary: Complete retained disposition and target-reference accounting has no missing
+    edges or description blocks. This mechanical accounting was combined with independent
+    original-source reading; it is not itself experimental proof.
+  snapshot_sha256: e6f1d75bba941b7429bad2a15c46fa09f34bac5ea973b49e59f45995a7259064
+- evidence_id: EV-CDS-independent
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/initial/science/identity-sequences-independent-check.json
+  locator: actual original U20258.1 CDS608..1552 and M98806.1 CDS83..2098, NCBI protein
+    XML and UniProt JSON
+  accessed_at: '2026-10-15T02:56:17Z'
+  support: supports
+  summary: 'Independent translation of actual GenBank nucleotide CDS agrees with deposited
+    annotations and both protein issuers: TbuE314aa AAC13787.1/Q59220; TbuD671aa AAA25992.1/Q01551.
+    Full original hashes and exact accession checks retained.'
+  snapshot_sha256: 7dda83bfebb8ef5c8ab77daf390e449bf0863f0ebd09c8f9b15651bf329e6c38
+- evidence_id: EV-native-limits
+  kind: database
+  reference: /private/tmp/pathwaymech-next-261-native/originals
+  locator: PWY-5162/enzymes-not-used; MONOMER14738/comment; ENZRXN16329/reaction;
+    REG5876/mode; ENZRXN13574/ph-opt
+  accessed_at: '2026-10-15T02:56:17Z'
+  support: supports
+  summary: Actual original native objects establish exact E.coli ADHE-CPLX exclusion,
+    CNB-1 only chlorinated coexpression experiment despite unchlorinated ENZRXN assignment,
+    and native NADH negative sign conflicting with primary stimulation. Record preserves
+    these limits and excludes formal CNB-1 and negative NADH claims. Native pH-opt8.5
+    is separately limited by primary tested range.
+- evidence_id: EV-prior
+  kind: prior_review
+  reference: reviews/structured/20261015T025017Z-pwy5415-independent-science-initial/review.yaml
+  locator: SCI-F01 / pwy5415-primary-evidence-representation
+  accessed_at: '2026-10-15T03:05:00Z'
+  support: supports
+  summary: Saved immutable initial partial needs_curation observation identifies35primary
+    evidence occurrences and exact acceptance criteria. This successor preserves issue
+    identity and finding lineage.
+  snapshot_sha256: d2b60625ffe3ab7aa4f3b8021e0775c048c3822b9922fa74c4c60b1de8b2c9e6
+- evidence_id: EV-repair-independent
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/primary-repair-independent-check.json
+  locator: all18excerpt byte spans,6table statements,23evidence-array replacements
+  accessed_at: '2026-10-15T03:05:00Z'
+  support: supports
+  summary: Independent original-byte replay confirms all18short excerpts with only
+    declared extraction-prefix/whitespace/discretionary-break normalization. All6remaining
+    structured statements are actual original table facts with precise cells/footnotes.
+    All35old occurrences are covered and42new occurrences are source-bound.
+  snapshot_sha256: bbf3a2b180401bcdcb9324d39fd2bf14330686e8f27040cabc609edd81a9992c
+- evidence_id: EV-successor-delta
+  kind: record_content
+  reference: data/pathways/catechol-degradation-i.yaml
+  locator: all128edges;primary-p001–primary-p016;description;native-n079/native-n080
+    descriptions
+  accessed_at: '2026-10-15T03:05:00Z'
+  support: supports
+  summary: 'Actual final maintained bytes exactly contain all independently verified
+    evidence arrays. Only three additional prose fields differ from the verified repair
+    candidate: exact E.coliADHE-CPLX exclusion scope and two native-ph-opt versus
+    primary-tested-range clarifications. All nodes,triples,reference metadata,54primary
+    description contexts and preparation qualifiers are preserved.'
+  snapshot_sha256: 29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c
+- evidence_id: EV-full-gate-01
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-render-pages.log
+  locator: Actual terminal log for just render-pages
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Regenerated all 258 pathway pages and corpus downloads.
+  snapshot_sha256: 46ad84c5c2150a3db5c34e0ae8882e484a33b6c777f4591244107dc96a95c7a3
+- evidence_id: EV-full-gate-02
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-validate.log
+  locator: Actual terminal log for just validate
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Corpus validation passed for 258 maintained records, closed schema, identifiers
+    and labels, 19,129 evidence blocks, 460 history records, 30 sources and current
+    generated pages.
+  snapshot_sha256: bc6bf55d9c4693ef9b965b4da9f50cb87baa45564b99d3abf368b3acae2c7489
+- evidence_id: EV-full-gate-03
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-test.log.gz
+  locator: Actual terminal log for just test; lossless gzip, decoded SHA256 a0a203c34a24a2d59f2eaebf2eef7670f6cc20069e9e702092e07aed939e52c5
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: 'Full repository suite: 5,255 passed, 3 skipped, 7 warnings; pytest reported
+    1594.72 seconds.'
+  snapshot_sha256: d9a010cbba2ec9a8772951bbff75b1f4ba8298e5366348317d095bb68ba42cc6
+- evidence_id: EV-full-gate-04
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-lint.log
+  locator: Actual terminal log for just lint
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Full repository Ruff lint passed.
+  snapshot_sha256: df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41
+- evidence_id: EV-full-gate-05
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/full-gates/just-vendored-check.log
+  locator: Actual terminal log for just vendored-check
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Pinned vendored consistency gate passed.
+  snapshot_sha256: b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6
+- evidence_id: EV-full-gate-06
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/full-gates/git-diff---check.log
+  locator: Actual terminal log for git diff --check
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Working-tree whitespace gate passed on the frozen full-run inputs.
+  snapshot_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- evidence_id: EV-full-gate-07
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/full-gates/git-diff---cached---check.log
+  locator: Actual terminal log for git diff --cached --check
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Staged whitespace gate passed during the frozen run. Later actual staging
+    exposed two verbatim log whitespace issues; their lossless encoding successor
+    is separately inspected.
+  snapshot_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- evidence_id: EV-shared-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/shared-gates-independent-inspection.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: All seven terminal log hashes match their receipts. Root terminal preservation
+    accounts all 2,087 scoped inputs; seven critical record, authority and guidance
+    inputs were independently rehashed. This does not claim the reviewer independently
+    rehashed all 2,087 files.
+  snapshot_sha256: b2a1fe90d1f057bc12167ab36c0376538a95d5bc9ad422ed74d9de800eafa05d
+- evidence_id: EV-final-context
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/final-context-independent-check.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Complete final report, README and report history read. All 59 then-current
+    retained proof copies matched their original decoded bytes, the README change
+    was exact, and actual focused receipts and KGX output hashes were checked. This
+    is an immutable pre-encoding observation; EV-log-encoding records the later storage
+    successor.
+  snapshot_sha256: 0bfd0e65903d186d7fcd25a68b707d04f93576a819856feca2128e1a7b065eca
+- evidence_id: EV-log-encoding
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/log-encoding-successor-independent-check.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Both compressed logs decode exactly to original bytes; current retained
+    mapping and archived prior maps verify. Root metadata changes are limited to explicit
+    encoding successors. At the encoding observation, record, report and README remained
+    unchanged; the subsequent report-link metadata correction is separately inspected.
+    Terminal 2,087-file preservation is distinct from the subsequent 2,084 exact paths
+    and three bounded dispositions.
+  snapshot_sha256: e98db8fe941ffc58ce286272c8ee504d46924df24613b37cc85cfba419ed4ddd
+- evidence_id: EV-encoding-receipt
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/log-retention/encoding-successor.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Explicit root-owned lossless encoding successor for two verbatim machine
+    logs; prior active metadata is archived. No scientific source content was altered.
+  snapshot_sha256: ad5805e8703e6cfeb8a73f2bf0a35fff1f812d9eb739e7b2ec1b2ca44cfd7916
+- evidence_id: EV-final-report
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-261/verification.md
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Final report accurately separates full-run inputs, later documentation,
+    retained source and evidence limits, later PMID:4325686 access, and pending canonical
+    persistence/publication.
+  snapshot_sha256: 99b83b4804a5296a79f428b15648a0b0c6fc0efae4a01c54f49e8d3d3ba4b7fc
+- evidence_id: EV-kgx-export
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/kgx-export-receipt.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Actual whole-corpus KGX export succeeded for 258 records; both exported
+    TSV hashes were independently replayed. Earlier wrong-recipe attempt is explicitly
+    retained.
+  snapshot_sha256: 4f94a7047548c438dedd76048057b2ffe0ca2843766a81db84a2509ed306278d
+- evidence_id: EV-post-encoding-stage
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/stage-before-final-review-save.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Actual parent staging receipt for 501 owned files reports both working
+    and staged whitespace checks passed after lossless log encoding; this is the pre-successor-save
+    stage, not a claim about later canonical bundles.
+  snapshot_sha256: 6f6f46e0b77193668c2201d92e545ebc379098fe617fd9a6dcc64285b22498ff
+- evidence_id: EV-later-4325686-assessment
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/independent-review/successor/science/later-source-4325686-context-check.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Dated separate assessment of later next262 acquisition. No material contradiction
+    to frozen next261 assertions; metadata-only record source and earlier access history
+    remain explicit.
+  snapshot_sha256: 1c0a41b44296524cebcd4eeaf05927816e8fd45e06c20a717cefc4ac5db144a6
+- evidence_id: EV-later-4325686-source
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-262-root-primary-intake/PMID4325686-merged-publisher-transformation.txt
+  locator: All 1086 transformed-text lines, with material comparisons located in the
+    dated addendum; no raw PDF or visual figure inspection.
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Later publisher-transformed text reports a six-step oxidative route ending
+    at acetaldehyde and pyruvate, very low noninducible hydrolytic activity, and unresolved
+    decarboxylase/hydratase preparations. It does not prove the seventh acylating
+    step or the current exact formal stereochemistry.
+  snapshot_sha256: c9720f75cfbb8b7b39df1a770b7801d1338d9219c381cbc5493cda4e718d7ded
+- evidence_id: EV-review-link-correction
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-261/verification/review-link-correction.json
+  locator: complete retained artifact
+  accessed_at: '2026-10-15T03:56:18Z'
+  support: supports
+  summary: Independent exact old/new comparison confirms only the planned timestamp-dependent
+    review-link paragraph was replaced by the stable persistence-receipt link. Actual
+    focused checks passed. Prior report and initial failed metadata validation remain
+    historical; scientific source and record bytes are unchanged.
+  snapshot_sha256: 9b09be163784d7a73459b98dc6a9ea68bc3985b76cbd8e486a3f9e565594a286
+assessments:
+- assessment_id: SCI-A02
+  area: identity
+  topic: Exact whole-pathway boundary and formal chemistry
+  outcome: supported
+  summary: Parent PWY5415 comprises P183-PWY plus PWY5162 and exactly five selected
+    transformations. Four directed issuing Rhea IDs match actual source sides; hydratase
+    is22582 right-to-left in the issuing family while plotted chemistry runs enol
+    hydration. Native hydrolase remains native because its Rhea cross-reference substitutes
+    keto for the native2Z enol. Oxidative7-step PWY5420 is adjacent context. Formal
+    stereoisomers/protonation and atom/charge balances are supported.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-formal-independent
+  - EV-balance-independent
+  dimensions:
+  - name: formal_route_steps
+    value: '5'
+    definition: Complete hydrolytic meta-cleavage route.
+    evidence_ids:
+    - EV-formal-independent
+    - EV-balance-independent
+  - name: historical_stereochemistry
+    value: not upgraded
+    definition: Historical substrate preparations do not establish all current formal
+      stereochemical assignments.
+    evidence_ids:
+    - EV-formal-independent
+    - EV-balance-independent
+- assessment_id: SCI-A03
+  area: scope
+  topic: Taxon and preparation boundaries
+  outcome: supported
+  summary: Eight taxa retain original parent database annotations, with exact species/strain
+    labels checked in actual NCBI issuing SQL. The parent PKO1 assay citation is not
+    per-taxon whole-route proof; historical mt-2 remains ungrounded strain context.
+    Component catalysts, E.coli/yeast/P.aeruginosa expression hosts and shared MhpD/E/F
+    modules are not promoted to whole-route occurrences. Heterologous, tagged, partially
+    purified, complex-associated and inference-only activity scopes are retained.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-native-coverage
+  - EV-native-limits
+  - EV-8419288
+  - EV-2681159
+  - EV-1856161
+  - EV-8633871
+- assessment_id: SCI-A04
+  area: graph
+  topic: Catalysis, assembly and regulatory scope
+  outcome: supported
+  summary: DmpFG biological assembly is two DmpF plus two DmpG, distinct from a catalytic
+    pair and crystallographic asymmetric unit. XylE four-subunit and MhpD five-subunit
+    native coefficients are retained; unspecified XylI/J/Bordetella internal coefficients
+    are not invented. CF600 Mn/Zn and NADH/NAD+ activity effects do not imply identified
+    binding sites or universal metal necessity. NADH positive primary effect overrides
+    the conflicting native negative assertion. CNB-1 chlorinated coexpression is not
+    formal unchlorinated catalysis; TbuE native methylcatechol pointers do not become
+    exact catechol Rhea identity.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-native-limits
+  - EV-native-coverage
+  - EV-8419288
+  - EV-12764229
+  - EV-2681159
+  - EV-1856161
+  - EV-8633871
+- assessment_id: SCI-A05
+  area: grounding
+  topic: Gene-product and regulator identity boundaries
+  outcome: supported
+  summary: Actual GenBank CDS translations match both NCBIProtein and UniProt for
+    TbuE and upstream TbuD. TbuS genetic trans-complementation remains named context
+    without a fabricated molecular identifier. The 1996 map names tbuT,tbuR,tbuS separately;
+    the 1998 upstream TbuT result does not prove TbuR=TbuT. Promoter/deletion/ANR
+    host effects do not establish direct regulator binding or a PKO1 ANR identity.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-CDS-independent
+  - EV-1856161
+  - EV-8633871
+- assessment_id: SCI-A06
+  area: completeness
+  topic: Whole source-to-record and graph-to-source coverage
+  outcome: supported
+  summary: All128 maintained edges,60 participants,37reaction/activity/module nodes,8taxa,79references
+    and the complete description were reviewed. Independently verified227original
+    objects and3139directslots; retained dispositions cover132native candidates,165prose
+    contexts,80features,54primary description blocks and50+8claim groups. Native exclusions,
+    adjacent branches, alternative substrates, preparation conflicts and inaccessible-source
+    gaps remain explicit. The initial evidence-format finding concerns35primary evidence
+    items; it does not justify dropping supported scientific coverage.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-native-coverage
+  - EV-coverage-dispositions
+  - EV-formal-independent
+  - EV-balance-independent
+  - EV-CDS-independent
+- assessment_id: SCI-A07
+  area: evidence
+  topic: Primary source access and experimental inference limits
+  outcome: supported
+  summary: For the frozen record source versions, Scientific claims were checked against
+    actual publisher transformed text or original indexed abstract/authority records.
+    No raw PDF or figure visual inspection is claimed. Sources8419288,2681159,1856161
+    and8633871 supply material methods/results/discussion;12764229 is limited to6992–6993;7890778,15301547,17902707,2183008,3481421,23237860,1400204,9451833
+    are abstract-only;4325686 is metadata-only and Duggleby1986 publisher abstract
+    only. Historical OCR/units/product nomenclature and construction conflicts are
+    retained rather than silently normalized. Later acquisition of the 1971 transformed
+    text is assessed separately in SCI-A09 and is not backfilled into the initial
+    review.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-8419288
+  - EV-2681159
+  - EV-1856161
+  - EV-8633871
+  - EV-12764229
+  - EV-7890778
+  - EV-23237860
+- assessment_id: SCI-A08
+  area: representation
+  topic: Successor evidence and scope repair
+  outcome: supported
+  summary: All35initial narrative source_assertion occurrences are remediated through23exact
+    array replacements. Narrative support now uses18distinct source-verified short
+    excerpts; structured support names6actual original tables with precise cells and
+    footnotes. No author claim ledger acts as upstream authority. pRO1985 enzyme assays
+    remain separate from pRO1996 growth; 1996partial-purification and 1991crude-extract
+    scopes remain separate. Exact AdhE instance scope and native pH-opt/primary tested-range
+    limits are now local to their fields.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-rule
+  - EV-prior
+  - EV-repair-independent
+  - EV-successor-delta
+- assessment_id: SCI-A09
+  area: scope
+  topic: Later 1971 source acquisition and frozen-source chronology
+  outcome: supported
+  summary: 'The complete later publisher-transformed PMID:4325686 text was independently
+    read after the frozen review. Its Azotobacter findings do not contradict the maintained
+    hydrolytic route: there are no Azotobacter occurrence or catalyst claims, formal
+    route identity is distinct from taxon proof, and the oxidative sibling is adjacent
+    context. The metadata-only reference and unread-lead wording describe the frozen
+    next261 acquisition state. Later oxidative-branch curation must preserve six-step
+    endpoint, unresolved enzymes and historical stereochemical limits.'
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-later-4325686-assessment
+  - EV-later-4325686-source
+  - EV-final-report
+- assessment_id: SCI-A10
+  area: completeness
+  topic: Shared gates and final retained context
+  outcome: supported
+  summary: All seven actual shared repository gates passed on the frozen inputs; the
+    whole-corpus KGX export also succeeded. Final report and README scope correctly
+    distinguish later documentation from tested scientific inputs. Two verbatim log
+    encodings preserve decoded content, with archived prior maps and explicit successor
+    accounting. The maintained scientific record remains unchanged.
+  target_ids:
+  - MetaCyc:PWY-5415
+  evidence_ids:
+  - EV-shared-gates
+  - EV-kgx-export
+  - EV-final-context
+  - EV-log-encoding
+  - EV-encoding-receipt
+findings:
+- finding_id: SCI-F01
+  issue_key: pwy5415-primary-evidence-representation
+  category: representation
+  severity: major
+  status: resolved
+  certainty: confirmed
+  title: Primary narrative paraphrases are stored as structured-source assertions
+  description: The initial35primary evidence occurrences used narrative paraphrases
+    as structured-source assertions. The actual maintained successor now uses verified
+    short excerpts or exact native table statements, preserving all scientific claims
+    and endpoint-preparation scope. The complete repair covers all23arrays and35old
+    occurrences.
+  target_ids:
+  - MetaCyc:PWY-5415
+  field_paths:
+  - mechanistic_edges[112].evidence[0]
+  - mechanistic_edges[112].evidence[1]
+  - mechanistic_edges[113].evidence[0]
+  - mechanistic_edges[113].evidence[1]
+  - mechanistic_edges[113].evidence[2]
+  - mechanistic_edges[114].evidence[0]
+  - mechanistic_edges[114].evidence[1]
+  - mechanistic_edges[114].endpoint_qualifiers[0].evidence[0]
+  - mechanistic_edges[115].evidence[0]
+  - mechanistic_edges[115].evidence[1]
+  - mechanistic_edges[116].evidence[0]
+  - mechanistic_edges[117].evidence[0]
+  - mechanistic_edges[118].evidence[0]
+  - mechanistic_edges[119].evidence[0]
+  - mechanistic_edges[119].evidence[1]
+  - mechanistic_edges[119].evidence[2]
+  - mechanistic_edges[120].evidence[0]
+  - mechanistic_edges[120].evidence[1]
+  - mechanistic_edges[120].evidence[2]
+  - mechanistic_edges[121].evidence[0]
+  - mechanistic_edges[121].evidence[1]
+  - mechanistic_edges[121].endpoint_qualifiers[0].evidence[0]
+  - mechanistic_edges[122].evidence[0]
+  - mechanistic_edges[122].evidence[1]
+  - mechanistic_edges[122].endpoint_qualifiers[0].evidence[0]
+  - mechanistic_edges[123].evidence[0]
+  - mechanistic_edges[123].evidence[1]
+  - mechanistic_edges[123].endpoint_qualifiers[0].evidence[0]
+  - mechanistic_edges[124].evidence[0]
+  - mechanistic_edges[125].evidence[0]
+  - mechanistic_edges[125].endpoint_qualifiers[0].evidence[0]
+  - mechanistic_edges[126].evidence[0]
+  - mechanistic_edges[126].endpoint_qualifiers[0].evidence[0]
+  - mechanistic_edges[127].evidence[0]
+  - mechanistic_edges[127].endpoint_qualifiers[0].evidence[0]
+  evidence_ids:
+  - EV-rule
+  - EV-prior
+  - EV-repair-independent
+  - EV-successor-delta
+  rule_id: docs/CAUSAL_GRAPHS.md:97–102
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/catechol-degradation-i.yaml
+    role: maintained scientific record
+  disposition_reason: Resolved after independent verification of all 18 source excerpt
+    byte spans, all 6 table facts and all 23 array replacements against original sources,
+    followed by exact integration into maintained successor 29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c.
+    Whole-record scientific coverage and all required shared gates are complete. Later
+    context and lossless log storage changes do not alter the scientific repair.
+  previous_occurrences:
+  - repository: CultureBotAI/PathwayMech
+    review_id: 20261015T025017Z-pwy5415-independent-science-initial
+    finding_id: SCI-F01
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/562
+actions: []
+limitations:
+- No raw PDF or visual figure inspection is claimed. Publisher-transformed text can
+  retain OCR defects; abstract-only and otherwise inaccessible source versions remain
+  explicitly limited.
+- Material scientific claims were independently verified; every bibliography citation
+  was not separately read as a complete paper.
+- NCBI taxon identities were queried from the actual pinned readonly SQL, but this
+  reviewer did not rehash the entire 14 GB database.
+- Full repository gates were executed by the parent. Their actual terminal logs and
+  receipts were independently inspected; subsequent documentation and log representation
+  changes received bounded inspection and explicit provenance.
+- The full test run reported 3 skipped tests and 7 warnings. No independent browser
+  or visual PDF inspection was performed by this reviewer.
+- The record retains its original metadata-only PMID:4325686 source version. A later
+  complete transformed-text acquisition was assessed separately, without silently
+  rewriting the earlier access history.
+- The source quotation budget counts 18 distinct excerpts; repeated rendered occurrences
+  are separately enumerated in the retained quotation ledger.
+- No maintained record, Git or GitHub mutations were performed by this reviewer. Canonical
+  persistence, publication and issue closure are parent-owned subsequent actions.
+notes:
+- Initial whole-record source review and unchanged scientific fields carry forward
+  through an exact structural comparison; the actual successor assessment began at
+  2026-10-15T03:03:19Z.
+- The pre-encoding final-context proof is historical. Current citations use compressed
+  log representations with stored and decoded hashes; archived prior maps preserve
+  the previous observation.
+- SCI-F01 resolves exactly the named prior occurrence and GitHub issue identity. This
+  completed scientific disposition does not itself close the GitHub issue or claim
+  the successor bundle has already been persisted.
+- The initial external completed draft failed only the canonical timestamp-prefix
+  rule. It remains unchanged; the final record uses its actual finished timestamp
+  as its ID prefix. Final report link metadata is explicitly corrected through EV-review-link-correction,
+  with the prior report archived.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261015T025017Z-pwy5415-independent-science-initial
+  relationship: successor disposition resolving SCI-F01 after full scientific review
+```

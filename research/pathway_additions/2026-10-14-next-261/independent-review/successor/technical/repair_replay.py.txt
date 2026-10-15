@@ -1,0 +1,27 @@
+import copy,datetime,hashlib,json,pathlib,re,yaml
+R=pathlib.Path('/private/tmp/pathwaymech-next-261-20261014');O=pathlib.Path('/private/tmp/pathwaymech-next-261-independent-technical');A=pathlib.Path('/private/tmp/pathwaymech-next-261-primary-evidence-repair');P=R/'research/pathway_additions/2026-10-14-next-261';sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(pathlib.Path(p).read_bytes())
+old=yaml.safe_load((O/'record-initial.yaml').read_bytes());raw=(R/'data/pathways/catechol-degradation-i.yaml').read_bytes();assert sha(raw)=='29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c';new=yaml.safe_load(raw)
+expected=copy.deepcopy(old);ed={e['id']:e for e in expected['mechanistic_edges']};arrays=load(A/'evidence-array-replacements.json')['replacements']
+for x in arrays:
+ owner=ed[x['edge_id']] if x['field']=='evidence' else ed[x['edge_id']]['endpoint_qualifiers'][0];assert owner['evidence']==x['before'];owner['evidence']=x['after']
+receipt=load(P/'integration/review-repair-integration.json')
+for c in receipt['description_clarifications']:
+ owner=expected if c['field']=='description' and 'edge_id' not in c else ed[c['edge_id']];assert owner['description'].count(c['before'])==1;owner['description']=owner['description'].replace(c['before'],c['after'])
+assert expected==new
+assert new['description'].count('E. coli ADHE-CPLX is explicitly excluded by PWY-5162')==1
+assert 'this exclusion does not apply to unrelated proteins named AdhE' in new['description']
+spans=load(A/'exact-source-span-normalization-receipt.json')['spans'];checks=[]
+for row in spans:
+ p=pathlib.Path(row['source']['path']);b=p.read_bytes();assert len(b)==row['source']['bytes'] and sha(b)==row['source']['sha256'];i,j=row['source_byte_span_zero_based_half_open'];part=b[i:j];assert sha(part)==row['source_span_sha256'];s=part.decode();normalized=' '.join(re.sub(r'^L\d+@P[0-9-]+: ?','',s,flags=re.M).replace('\x02','').split());assert normalized==row['normalized_excerpt'];checks.append({'key':row['key'],'source_sha256':sha(b),'source_span_sha256':sha(part),'excerpt':normalized})
+cat=load(A/'source-bound-evidence-catalog.json');seen=[];refs={x['id']:x for x in new['references']}
+for e in new['mechanistic_edges']:
+ if not e['id'].startswith('primary-'):continue
+ for scope,evs in [('edge',e['evidence'])]+[(q['endpoint'],q['evidence']) for q in e.get('endpoint_qualifiers',[])]:
+  for ev in evs:
+   matches=[(k,row) for k,row in cat.items() if row['evidence']==ev];assert len(matches)==1,(e['id'],ev);key,row=matches[0];assert row['source']['sha256']==refs[ev['reference_id']]['source_sha256'];seen.append({'edge':e['id'],'scope':scope,'catalog_key':key,'reference_id':ev['reference_id']})
+assert len(seen)==42 and len(spans)==18 and len(arrays)==23
+blocks=load(P/'authoring/primary/description-context-additions.json')['blocks'];assert all(x['text'] in new['description'] for x in blocks)
+# Recheck actual local source-control/authority identity inputs without rerunning full gates.
+for name,proposal in [('conf/identifier_sources.json','identifier_sources.json'),('data/identifier_authorities/sources.json','sources.union.json'),('data/identifier_authorities/ontology.json','ontology.union.json')]:assert (R/name).read_bytes()==(pathlib.Path('/private/tmp/pathwaymech-next-261-authority-integration/proposal')/proposal).read_bytes()
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'before_sha256':sha((O/'record-initial.yaml').read_bytes()),'after_sha256':sha(raw),'exact_expected_delta':True,'changed_evidence_arrays':len(arrays),'source_span_checks':checks,'primary_evidence_occurrences':seen,'all54_primary_context_blocks_preserved':True,'all128_triples_nodes_references_and_qualifier_scopes_preserved':True,'initial_F1_resolution':{'review_id':'20261015T024904Z-next261-technical-initial','finding_id':'F1','issue_key':'catechol-i-adhe-exclusion-instance-scope','external_issue':'https://github.com/CultureBotAI/PathwayMech/issues/561','status':'resolved_in_inspected_bytes_pending_canonical_successor'},'scope':'Independent technical delta, source-byte and artifact-binding review. Primary table interpretation belongs to the separate scientific reviewer; final page/KGX and root-owned full gates remain pending.'}
+(O/'repair-replay.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n');print(json.dumps({'record_sha256':sha(raw),'exact_delta':True,'arrays':len(arrays),'exact_source_spans':len(spans),'primary_evidence_occurrences':len(seen),'F1':'resolved in current bytes'}))

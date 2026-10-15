@@ -1,0 +1,187 @@
+"""Retain completed gates and prepare bounded final review context after the freeze."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import os
+import re
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-261-20261014')
+CI = Path('/private/tmp/pathwaymech-next-261-ci')
+GATES = Path('/private/tmp/pathwaymech-next-261-checks-initial')
+RESEARCH = ROOT / 'research/pathway_additions/2026-10-14-next-261'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+RECORD_HASH = '29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c'
+SCIENCE_ID = '20261015T030500Z-pwy5415-independent-science-successor'
+TECHNICAL_ID = '20261015T031902Z-next261-technical-successor'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    out = CI / 'completed-verification-preparation.json'
+    assert not out.exists()
+    preservation = json.loads((GATES / 'final-input-preservation.json').read_text())
+    assert preservation['all_unchanged'] and preservation['record_sha256'] == RECORD_HASH
+    core = json.loads((GATES / 'tested-core-input-hashes.json').read_text())
+    assert len(core) == preservation['tested_core_files'] == 2087
+    for path, digest in core.items():
+        assert sha(ROOT / path) == digest, path
+    receipts = json.loads((GATES / 'receipts.json').read_text())
+    expected = [['just', x] for x in ['render-pages', 'validate', 'test', 'lint', 'vendored-check']]
+    expected += [['git', 'diff', '--check'], ['git', 'diff', '--cached', '--check']]
+    assert [r['command'] for r in receipts] == expected
+    for receipt in receipts:
+        assert receipt['exit_code'] == 0
+        assert sha(Path(receipt['log_path'])) == receipt['log_sha256']
+    tests = (GATES / 'just-test.log').read_text()
+    match = re.search(r'(\d+) passed, (\d+) skipped', tests)
+    assert match is not None
+    passed, skipped = map(int, match.groups())
+    assert passed == 5255 and skipped == 3
+    output = json.loads(Path('/private/tmp/pathwaymech-next-261-independent-technical/output-replay.json').read_text())
+    assert output['record_sha256'] == RECORD_HASH
+    assert sha(Path(output['page']['path'])) == output['page']['sha256']
+    assert output['page']['all_edge_endpoints_predicates_links_and_complete_qualifiers_preserved']
+    assert output['kgx']['all128_complete_evidence_qualifier_and_reference_payloads_preserved']
+    for kind in ['nodes', 'edges']:
+        assert sha(Path(output['kgx'][kind + '_path'])) == output['kgx'][kind + '_sha256']
+    retained = []
+
+    def retain(source, destination, compress=False):
+        source, destination = Path(source), RESEARCH / destination
+        assert not destination.exists(), destination
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        raw = source.read_bytes()
+        encoded = gzip.compress(raw, mtime=0) if compress else raw
+        destination.write_bytes(encoded)
+        assert (gzip.decompress(destination.read_bytes()) if compress else destination.read_bytes()) == raw
+        retained.append({'source': str(source), 'source_sha256': sha(source), 'source_bytes': len(raw),
+                         'retained': str(destination.relative_to(RESEARCH)), 'retained_sha256': sha(destination),
+                         'retained_bytes': len(encoded), 'encoding': 'gzip_lossless' if compress else 'identity'})
+
+    for path in sorted(GATES.iterdir()):
+        assert path.is_file()
+        retain(path, 'verification/full-gates/' + path.name)
+    for name in ['kgx-export-receipt.json', 'browser-availability.json']:
+        retain(CI / name, 'verification/' + name)
+    for name in ['run_initial_checks.py', 'prepare_completed_verification.py']:
+        retain(CI / name, 'verification/helpers/' + name + '.txt')
+    choices = {
+        'science': ['primary-repair-independent-check.json', 'successor-delta-independent-check.json',
+                    'target-inspection.successor.json', 'check_primary_repair.py',
+                    'later-source-4325686-context-check.json'],
+        'technical': ['repair-replay.json', 'output-replay.json', 'successor-retention-replay.json',
+                      'frozen-input-replay.json', 'repair_replay.py', 'output_replay.py'],
+    }
+    for role, names in choices.items():
+        source_root = Path('/private/tmp/pathwaymech-next-261-independent-' + role)
+        for name in names:
+            suffix = '.txt' if name.endswith('.py') else ''
+            retain(source_root / name, 'independent-review/successor/' + role + '/' + name + suffix)
+    old = json.loads((RESEARCH / 'root-verification/initial-review-evidence-retention.json').read_text())['files']
+    for row in old:
+        encoded = (RESEARCH / row['retained']).read_bytes()
+        decoded = gzip.decompress(encoded) if row['encoding'] == 'gzip_lossless' else encoded
+        assert hashlib.sha256(decoded).hexdigest() == row['source_sha256']
+        assert sha(Path(row['source'])) == row['source_sha256']
+    mapping = {row['source']: {'path': str((RESEARCH / row['retained']).relative_to(ROOT)),
+                             'sha256': row['retained_sha256'], 'encoding': row['encoding'],
+                             'decoded_sha256': row['source_sha256']}
+               for row in old + retained}
+    retention = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'files': retained,
+                 'reviewer_evidence_mapping': mapping, 'initial_reviewer_proofs_reverified': len(old)}
+    (RESEARCH / 'root-verification/completed-evidence-retention.json').write_text(json.dumps(retention, indent=2) + '\n')
+    (CI / 'final-reviewer-evidence-mapping.json').write_text(json.dumps(mapping, indent=2) + '\n')
+
+    report = f'''# Catechol degradation I: completed integration checks
+
+The maintained [MetaCyc:PWY-5415 record](../../../data/pathways/catechol-degradation-i.yaml) represents the complete five-step hydrolytic catechol meta-cleavage route. Its SHA-256 is `{RECORD_HASH}`. It contains 8 source-annotated taxa, 60 participants, 37 reaction/activity/module nodes, 128 edges, 79 references and 54 primary context blocks. The [source dossier](README.md) retains route, preparation, taxon, stereochemical and source-access boundaries. The [complete identifier selection](identifier-selection-final.json) lists all 106 named identifiers, 79 references and the 80 authority additions; all 5,023 previous authority terms and owners remain intact.
+
+The independent initial reviews identified a [minor AdhE exclusion ambiguity](../../../reviews/structured/20261015T024904Z-next261-technical-initial/review.md) and [major primary-evidence representation defect](../../../reviews/structured/20261015T025017Z-pwy5415-independent-science-initial/review.md). The [repair receipt](integration/review-repair-integration.json) and [independent scientific repair check](independent-review/successor/science/primary-repair-independent-check.json) account for all 35 old evidence occurrences through 23 array replacements. Eighteen distinct source-verified excerpts and six actual table statements preserve all scientific claims. Exact E. coli ADHE-CPLX wording and the native-versus-tested pH distinction are local to the relevant fields. All 128 graph triples and all 54 primary context blocks remain unchanged.
+
+The successor observation locations are [scientific review](../../../reviews/structured/{SCIENCE_ID}/review.md) and [technical review](../../../reviews/structured/{TECHNICAL_ID}/review.md). Their canonical bundles are the authority for completion, limitations and the exact resolved predecessor occurrences; this report does not substitute for saving and validating them. GitHub [issue 561](https://github.com/CultureBotAI/PathwayMech/issues/561) and [issue 562](https://github.com/CultureBotAI/PathwayMech/issues/562) remain open until publication and merge close them.
+
+| Check | Actual result |
+| --- | --- |
+| `just render-pages` | Passed; regenerated 258 pathway pages and corpus downloads. |
+| `just validate` | Passed: 258 native and closed-schema records, identifier/label checks, 19,129 evidence blocks, 460 history records, 30 sources, and current pages. |
+| `just test` | {passed:,} passed, {skipped} skipped. |
+| `just lint` | Passed. |
+| `just vendored-check` | Passed against the pinned canonical revision. |
+| Working and staged `git diff --check` | Passed during the full run; the staged check will also be repeated on the actual final staged change. |
+| `just kgx-export --output-dir …` | Passed for 258 records; separate whole-corpus TSVs retained externally. |
+
+The [actual command receipts](verification/full-gates/receipts.json) bind the retained logs. All [2,087 tested input hashes](verification/full-gates/tested-core-input-hashes.json) stayed fixed through the [completed run](verification/full-gates/final-input-preservation.json), including hidden and ignored files within its declared scope. This final report, retained proof copies, its history event, and the README status sentence are subsequent documentation changes. They receive bounded link/history/documentation checks and independent inspection; they are not falsely represented as having existed during the full suite. Scientific YAML, authority snapshots, code, schemas, policy and generated outputs remain identical to the tested bytes.
+
+The [independent output replay](independent-review/successor/technical/output-replay.json) verified all 128 SVG edges and 128 evidence rows, 98 base graph nodes plus 29 qualified display instances, all 29 quotation occurrences and 175 structured assertions. Complete qualifiers, evidence and reference payloads survive in all 128 KGX edges and 106 node contexts. The [export receipt](verification/kgx-export-receipt.json) binds the actual TSVs and preserves an earlier corrected recipe-name invocation. The output comparison is structural; no browser surface was available for visual inspection.
+
+The [retention map](root-verification/completed-evidence-retention.json) links each proof copy to its original bytes. Independent source review includes actual complete native objects and their direct slots, issuing chemistry and identity authorities, available primary texts and explicit access limitations. Abstract-only sources, inaccessible raw PDFs and uninspected figures remain limited evidence. Parent taxon annotations are not eight independent demonstrations of the whole route. Historical tautomer/stereoisomer names, preparation-specific activity effects, and native-source conflicts remain explicit. Data licensing review remains deferred to the separately authorized public-release stage.
+
+The [dated later-source assessment](independent-review/successor/science/later-source-4325686-context-check.json) independently checks the subsequently recovered publisher-transformed text of PMID:4325686 against this frozen record. The record's metadata-only reference and unread-lead wording describe its original acquisition state; later next262 access is a separate source version and is not backfilled into this record or its initial review. The later source introduces no material contradiction to the maintained assertions. Its six-step oxidative endpoint, unresolved enzyme preparations and unproven modern stereochemical assignments remain limits for next262 curation.
+
+This batch adds one pathway. The oxidative sibling, MetaCyc:PWY-5420, is a separate next candidate whose discovery baseline must be rebound after this batch merges; additional pathways remain to be curated.
+'''
+    target = RESEARCH / 'verification.md'
+    assert not target.exists()
+    target.write_text(report)
+    readme = RESEARCH / 'README.md'
+    before = readme.read_text()
+    old_sentence = 'Final successor reviews, generated page/KGX inspection, and full repository gates remain in progress.'
+    new_sentence = 'Generated page/KGX inspection and all full repository gates have passed; the [verification report](verification.md) binds the results and successor review locations. Canonical review persistence, publication and issue closure remain separate recorded steps.'
+    assert before.count(old_sentence) == 1
+    (CI / 'README.before-completed-verification.md').write_text(before)
+    readme.write_text(before.replace(old_sentence, new_sentence))
+    executions = []
+
+    def run(command):
+        proc = subprocess.run(command, cwd=ROOT, env=ENV, capture_output=True, text=True)
+        executions.append({'command': command, 'exit_code': proc.returncode, 'stdout': proc.stdout, 'stderr': proc.stderr})
+        (CI / 'completed-verification-focused-checks.json').write_text(json.dumps(executions, indent=2) + '\n')
+        assert proc.returncode == 0, proc.stdout + proc.stderr
+        return proc.stdout
+
+    history = run([PYTHON, '-B', 'scripts/new_history_record.py', '--kind', 'report',
+                   '--slug', 'catechol-degradation-i-verification', '--path', str(target.relative_to(ROOT)),
+                   '--event', 'CREATE', '--outcome', 'changed', '--actor-name', 'codex', '--model', 'gpt-6',
+                   '--agent-tool', 'codex', '--issue', '561', '--issue', '562',
+                   '--summary', 'Record completed catechol degradation I integration gates and retained review evidence',
+                   '--details', 'Retained actual render, validation, test, lint, vendored and diff receipts, with all 2087 scoped input hashes unchanged during the full run. The record remains SHA256 ' + RECORD_HASH + '. Tests: 5255 passed, 3 skipped. Independent DOM/SVG/KGX replay preserves all128 edges and complete qualifier/evidence payloads. Added final verification report and narrow README status successor; retained initial reviews and exact finding lineage. Final canonical successor persistence, PR publication and merge remain separate steps; this event does not claim completed GitHub issue closure.']).strip().splitlines()[-1]
+    run([PYTHON, '-B', 'scripts/validate_history.py', history])
+    run([PYTHON, '-B', 'scripts/check_docs.py'])
+    run([PYTHON, '-B', '-c', 'from pathwaymech.cli import deep_research_contract_main; raise SystemExit(deep_research_contract_main())'])
+    run(['git', 'diff', '--check'])
+    changed = {p: {'before': digest, 'after': sha(ROOT / p)} for p, digest in core.items() if sha(ROOT / p) != digest}
+    assert set(changed) == {str(readme.relative_to(ROOT))}
+    assert readme.read_text() == before.replace(old_sentence, new_sentence)
+    future = {ROOT / 'reviews/structured' / rid / 'review.md' for rid in [SCIENCE_ID, TECHNICAL_ID]}
+    checked_links, pending_links = [], []
+    for doc in [target, readme]:
+        for href in re.findall(r'\[[^\]]*\]\(([^)]+)\)', doc.read_text()):
+            if href.startswith(('https://', 'http://', '#')):
+                continue
+            linked = (doc.parent / href.split('#')[0]).resolve()
+            if linked in future and not linked.exists():
+                pending_links.append(str(linked.relative_to(ROOT)))
+            else:
+                assert linked.is_file(), (doc, href)
+                checked_links.append(str(linked.relative_to(ROOT)))
+    result = {'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'record_sha256': RECORD_HASH, 'tested_inputs': len(core),
+              'post_gate_changed_tested_inputs': changed, 'exact_readme_status_replacement_only': True,
+              'retained_new_proofs': len(retained), 'history_path': history, 'history_sha256': sha(ROOT / history),
+              'focused_commands': executions, 'checked_local_links': checked_links,
+              'pending_canonical_review_links': sorted(set(pending_links)),
+              'report_sha256': sha(target), 'retention_map_sha256': sha(RESEARCH / 'root-verification/completed-evidence-retention.json')}
+    out.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({k: result[k] for k in ['finished_utc', 'tested_inputs', 'retained_new_proofs', 'history_path', 'pending_canonical_review_links']}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,41 @@
+import collections, datetime, hashlib, json, subprocess
+from pathlib import Path
+repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+src=Path('/private/tmp/pathwaymech-next-261-discovery')
+out=Path('/private/tmp/pathwaymech-next-261-ci/dedup-successor')
+out.mkdir(exist_ok=True)
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(n,d): (out/n).write_text(json.dumps(d,indent=2)+'\n')
+old=json.loads((src/'complete-corpus-record-inventory.json').read_text())
+rows=[]
+for row in old:
+ p=repo/row['path']; rows.append({'path':row['path'],'prior_sha256':row['sha256'],'current_sha256':sha(p),'equal':sha(p)==row['sha256']})
+actual={str(p.relative_to(repo)) for p in (repo/'data/pathways').rglob('*.yaml')}
+expected={r['path'] for r in old}
+assert actual==expected and all(r['equal'] for r in rows)
+save('corpus-rebind.json',{'records':rows,'count':len(rows),'exact_record_set_unchanged':True,'all_hashes_equal':True})
+roots=[repo,Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')]
+scans=[]
+for idx,root in enumerate(roots):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(src/'complete-dedup-patterns.txt'),'.','-g','!/.git','-g','!/.git/**','-g','!/.venv','-g','!/.venv/**']
+ log=out/f'root-{idx}.jsonl'; err=out/f'root-{idx}.stderr'
+ with log.open('wb') as stdout,err.open('wb') as stderr: r=subprocess.run(cmd,cwd=root,stdout=stdout,stderr=stderr)
+ assert r.returncode in (0,1), err.read_text()
+ bypath=collections.defaultdict(list)
+ for line in log.read_text().splitlines():
+  x=json.loads(line)
+  if x['type']=='match':
+   d=x['data']; bypath[d['path']['text']].append({'line_number':d['line_number'],'text':d['lines']['text'],'terms':[s['match']['text'] for s in d['submatches']]})
+ prior={r['path']:r for r in json.loads((src/f'prior-file-dispositions-root-{idx}.json').read_text())}
+ inventory=[]; changed=[]
+ for path,matches in sorted(bypath.items()):
+  h=sha(root/path); prev=prior.get(path)
+  row={'path':path,'sha256':h,'match_lines':len(matches),'same_as_previously_dispositioned_file':bool(prev and prev['sha256']==h)}
+  if row['same_as_previously_dispositioned_file']: row['prior_disposition']=prev['disposition']
+  else: changed.append({'path':path,'sha256':h,'previous_sha256':prev['sha256'] if prev else None,'matches':matches})
+  inventory.append(row)
+ save(f'root-{idx}-file-inventory.json',inventory)
+ save(f'root-{idx}-changed-match-context.json',changed)
+ scans.append({'root':str(root),'command':cmd,'exit_code':r.returncode,'match_lines':sum(len(x) for x in bypath.values()),'matched_files':len(bypath),'stdout_sha256':sha(log),'changed_or_new_matched_files':len(changed),'same_dispositioned_files':sum(r['same_as_previously_dispositioned_file'] for r in inventory)})
+save('summary.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=repo,text=True).strip(),'pattern_sha256':sha(src/'complete-dedup-patterns.txt'),'pattern_count':len((src/'complete-dedup-patterns.txt').read_text().splitlines()),'ignored_and_hidden_included':True,'limits':['root .git and .venv excluded','default rg binary handling','symlink directories not followed','archives not unpacked','external caches not globally searched'],'corpus_count':len(rows),'maintained_corpus_byte_identical_to_prior_semantic_review':True,'scans':scans,'status':'Corpus rebind passed; newly matched research/authority files require successor disposition before final absence conclusion.'})
+print(json.dumps({'records_verified':len(rows),'scans':scans},indent=2))

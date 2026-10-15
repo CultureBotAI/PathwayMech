@@ -1,0 +1,75 @@
+from pathlib import Path
+import json,hashlib,sys,collections,shutil,datetime
+import yaml
+import xml.etree.ElementTree as E
+R=Path(__file__).resolve().parents[1];repo=Path('/private/tmp/pathwaymech-next-261-20261014');sys.path[:0]=[str(repo/'src'),str(repo/'scripts')]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+from build_source_identifier_snapshot import source_terms
+
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(p,x):(R/p).write_text(json.dumps(x,indent=2)+'\n')
+def bind(p):return {'path':str(p),'bytes':Path(p).stat().st_size,'sha256':sha(p)}
+r=yaml.safe_load((R/'native-foundation.yaml').read_text());validate_record(r)
+errors=strict_errors([R/'native-foundation.yaml'],repo);assert not errors,errors
+save('receipts/strict-schema-check.json',{'draft_sha256':sha(R/'native-foundation.yaml'),'validator':'current repository pathwaymech.strict.strict_errors; closed, null-free LinkML JSON schema','errors':errors,'status':'passed'})
+nodeids={a['id'] for s in ['participants','reactions','taxa'] for a in r[s]}|{r['id']};edges=r['mechanistic_edges'];byid={a['id']:a for a in edges};refs={a['id']:a for a in r['references']}
+assert len(edges)==112 and len(nodeids)==98 and 'native-n046' not in byid
+assert not {'MetaCyc:ADHE-CPLX','MetaCyc:ADHE-MONOMER'}&nodeids
+assert sum(a['predicate'] in ['consumes','produces'] for a in edges)==21
+assert sum(a['predicate']=='precedes' for a in edges)==4
+assert not any(a['predicate']=='encodes' for a in edges)
+full={a['frame']:a for a in read('/private/tmp/pathwaymech-next-261-native/native-full-object-projection.json')+read(R/'primary-native-successor-full-projection.json')}
+for ref,a in refs.items():assert sha(full[ref.removeprefix('MetaCyc:')]['file'])==a['source_sha256']
+for e in edges:
+ assert e['subject'] in nodeids and e['object'] in nodeids
+ for v in e['evidence']+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]:
+  assert len(v['source_assertion'])<=400 and v['reference_id'] in refs
+  source=full[v['reference_id'].removeprefix('MetaCyc:')]
+  for loc in v['source_locator'].split('; '):
+   assert loc.startswith('/ptools-xml/'), (e['id'],loc)
+   assert E.parse(source['file']).getroot().findall('./'+loc.removeprefix('/ptools-xml/')), (e['id'],loc)
+for e in edges:
+ if e['predicate'] in ['activates','inhibits']:
+  assert e['object'].startswith('MetaCyc:ENZRXN') or e['object'].startswith('MetaCyc:MHP'),e
+  reg=full[e['evidence'][0]['reference_id'].removeprefix('MetaCyc:')]
+  target=next(s for s in reg['slots'] if s['slot']=='regulated-entity')['direct_children'][0]['frameid']
+  assert e['object']=='MetaCyc:'+target
+for x in ['native-n087','native-n088']:
+ e=byid[x];q=e['endpoint_qualifiers'][0];assert q['endpoint']=='subject' and q['kind']=='experimental_construct' and 'His tag' in q['description']
+assert not any(e['subject']=='MetaCyc:MONOMER-14738' and e['object']=='RHEA:22582' for e in edges)
+assert all(a['foundation_disposition']!='unselected_context' for a in read(R/'all132-native-candidate-dispositions.json'))
+assert len(read(R/'full-source-slot-coverage.json'))==3139
+assert len(read(R/'all165-native-prose-dispositions.json'))==165
+assert len(read(R/'all80-native-feature-dispositions.json'))==80
+assert len(read(R/'all132-native-candidate-dispositions.json'))==132
+assert not any(x in r['description']+' '.join(e.get('description','') for e in edges) for x in ['retain_exact_','native_ALLOSTERIC_','the2Z','reactionpH','Bordetella10d'])
+# Actual unchanged parser replay of every new foundation source, no invented parser behavior.
+profiles=[]
+for a in read(R/'complete-new-source-proposals.json'):
+ e=a['entry'];p=R/'source-cache'/e['path'];assert sha(p)==e['sha256']
+ terms=list(source_terms(e['kind'],p,url=e['url'],version=e['version']));t=next(t for t in terms if t[0]==a['identifier']);assert t[1]==a['canonical_label'];profiles.append({'identifier':a['identifier'],'source':bind(p),'kind':e['kind'],'canonical_label':t[1],'source_key':e['key']})
+assert len(profiles)==52
+save('receipts/actual-source-parser-replay.json',{'parser':bind(repo/'scripts/build_source_identifier_snapshot.py'),'sources':profiles,'count':52,'status':'passed'})
+# Bind and validate the independent authority author's availability observation, not an approval.
+pre=Path('/private/tmp/pathwaymech-next-261-authority-integration/retained/native-selection-provisional-preflight.json');obs=read(pre)
+assert obs['observation_sha256']==sha(R/'selected-identifiers.json') and not obs['missing']
+assert [a['id'] for a in obs['label_differences']]==['MetaCyc:3.7.1.9-RXN']
+shutil.copyfile(pre,R/'receipts/authority-availability-observation.json')
+save('selected-identifier-resolution.json',{'selection':bind(R/'selected-identifiers.json'),'scope':'Author availability/identity resolution only; final authority promotion belongs to root authority integration. Existing owners remain unchanged.','observation':bind(R/'receipts/authority-availability-observation.json'),'canonical_resolved_labels':obs['resolved_labels'],'contextual_reaction_label':{'identifier':'MetaCyc:3.7.1.9-RXN','authority_label':'3.7.1.9-RXN','selected_label':next(a['label'] for a in r['reactions'] if a['id']=='MetaCyc:3.7.1.9-RXN'),'policy':'Existing reaction source-context display label support; no participant label exemption is inferred.'}})
+# Frozen predecessors are verified read-only; rglob includes hidden and ignored files.
+verified=[]
+for name in ['native','biological-identities','chemistry','primary','participant-authorities']:
+ root=Path('/private/tmp/pathwaymech-next-261-'+name);mp=root/'artifact-manifest.json';m=read(mp);expected=set();total=0
+ for a in m['files']:
+  rel=a.get('relative_path') or a['path'];p=Path(rel) if Path(rel).is_absolute() else root/rel
+  assert p.is_relative_to(root);expected.add(p.relative_to(root).as_posix());assert sha(p)==a['sha256'],p;assert p.stat().st_size==a['bytes'];total+=a['bytes']
+ actual={p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file() and p!=mp}
+ assert not expected-actual,(name,expected-actual)
+ extras=[bind(root/x) for x in sorted(actual-expected)]
+ verified.append({'package':str(root),'manifest':bind(mp),'files':len(expected),'bytes':total,'all_manifest_listed_files_hash_exact':True,'hidden_ignored_inclusive_inventory_exact':actual==expected,'unlisted_additional_files':extras,'scope':'All declared original bytes verified. Additional files, if present, are explicit successor metadata observations and are not retrospectively added to the frozen manifest.'})
+save('receipts/frozen-predecessor-verification.json',verified)
+checks={'checked_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'native foundation author, not independent reviewer','draft':bind(R/'native-foundation.yaml'),'checks':['custom schema and closed/null-free LinkML validation','all graph endpoints and evidence references resolve','all 64 evidence source hashes bind complete inspected originals','all evidence slot locators resolve exactly, including construct qualifiers','all five native regulator edges target exact native activity objects','Bilophila His-tagged construct qualification present on both activity and formal assignment','CNB-1 exact unchlorinated formal catalysis excluded, with explicit disposition','21 formal material assertions and four ordered transitions retained','all 3,139 direct slots, 132 candidate assertions, 165 paragraphs and 80 features dispositioned','52 new source descriptors replayed through unchanged source adapter','98 selected IDs resolve; only supported contextual native reaction label differs','every manifest-listed file of five frozen predecessors remains hash exact; any additional metadata is separately recorded'], 'counts':{'participants':len(r['participants']),'reactions':len(r['reactions']),'edges':len(edges),'references':len(refs),'selected_ids':len(nodeids)},'status':'passed','not_claimed':'No integrated record test, publication gate, maintained write, independent scientific approval, whole-route experimental proof for every native species, or unperformed primary reading is claimed.'}
+save('receipts/focused-foundation-checks.json',checks)
+print(json.dumps(checks,indent=2))

@@ -1,0 +1,53 @@
+import csv,datetime,gzip,hashlib,json,pathlib,re,yaml
+
+R=pathlib.Path('/private/tmp/pathwaymech-next-261-20261014')
+O=pathlib.Path('/private/tmp/pathwaymech-next-261-independent-technical')
+C=pathlib.Path('/private/tmp/pathwaymech-next-261-ci')
+P=R/'research/pathway_additions/2026-10-14-next-261'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+read=lambda p:json.loads(pathlib.Path(p).read_bytes())
+receipt=read(C/'completed-verification-preparation.json')
+assert receipt['exact_readme_status_replacement_only'] is True
+assert receipt['record_sha256']=='29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c'
+report=P/'verification.md';history=R/receipt['history_path'];retention=P/'root-verification/completed-evidence-retention.json'
+assert sha(report.read_bytes())==receipt['report_sha256']
+assert sha(history.read_bytes())==receipt['history_sha256']
+assert sha(retention.read_bytes())==receipt['retention_map_sha256']
+rows=read(retention)['files'];verified=[]
+for row in rows:
+    encoded=(P/row['retained']).read_bytes()
+    decoded=gzip.decompress(encoded) if row['encoding']=='gzip_lossless' else encoded
+    original=pathlib.Path(row['source']).read_bytes()
+    assert sha(encoded)==row['retained_sha256'] and len(encoded)==row['retained_bytes']
+    assert decoded==original and sha(decoded)==row['source_sha256'] and len(decoded)==row['source_bytes']
+    verified.append({'path':row['retained'],'sha256':sha(encoded),'source_sha256':sha(original),'encoding':row['encoding']})
+commands=receipt['focused_commands']
+assert commands and all(x['exit_code']==0 for x in commands)
+assert any('scripts/validate_history.py' in x['command'] for x in commands)
+assert any('scripts/check_docs.py' in x['command'] for x in commands)
+assert any('deep_research_contract_main' in ' '.join(x['command']) for x in commands)
+assert any(x['command']==['git','diff','--check'] for x in commands)
+future={R/'reviews/structured'/rid/'review.md' for rid in ['20261015T030500Z-pwy5415-independent-science-successor','20261015T031902Z-next261-technical-successor']}
+links=[];pending=[]
+for doc in [P/'README.md',report]:
+    for href in re.findall(r'\[[^\]]*\]\(([^)]+)\)',doc.read_text()):
+        if href.startswith(('http://','https://','#')):continue
+        p=(doc.parent/href.split('#')[0]).resolve()
+        if p in future and not p.exists():pending.append(str(p.relative_to(R)))
+        else:assert p.is_file(),(doc,href)
+        links.append({'document':str(doc.relative_to(R)),'href':href,'resolved':str(p.relative_to(R))})
+assert set(pending)<=set(receipt['pending_canonical_review_links'])
+binding=read(O/'completed-gate-replay.json')
+assert binding['record_sha256']==receipt['record_sha256']
+record=yaml.safe_load((R/'data/pathways/catechol-degradation-i.yaml').read_bytes())
+nodes=pathlib.Path('/private/tmp/pathwaymech-next-261-checks-kgx/nodes.tsv')
+assert sha(nodes.read_bytes())=='24b57d917e6ab518897927dc0cc77c4ace95ffed95acae8482d2efe20b0264d0'
+rootrows=[x for x in csv.DictReader(nodes.open(),delimiter='\t') if x['id']==record['id']]
+assert len(rootrows)==1
+rootrow=rootrows[0]
+expected={'record_id':record['id'],'collection':'pathway','label':record['label']}
+assert json.loads(rootrow['source_contexts'])==[expected]
+assert rootrow['name']==record['label'] and rootrow['category']=='biolink:Pathway' and rootrow['provided_by']=='infores:pathwaymech'
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'root_receipt':str(C/'completed-verification-preparation.json'),'root_receipt_sha256':sha((C/'completed-verification-preparation.json').read_bytes()),'report_path':str(report.relative_to(R)),'report_sha256':sha(report.read_bytes()),'history_path':str(history.relative_to(R)),'history_sha256':sha(history.read_bytes()),'retention_map_sha256':sha(retention.read_bytes()),'verified_retained_new_proofs':verified,'focused_root_commands':commands,'local_links':links,'kgx_root_context':expected,'kgx_root_label_category_and_provider_match':True,'pending_planned_canonical_review_links':sorted(set(pending)),'all_passed':True,'limitations':['The two planned successor links become live when root canonically saves the already assigned review IDs; this observation does not pretend those bundles already existed.','The staged final diff check and repository-wide canonical review check are performed by root after saving; this proof reports the actual existing focused command results.']}
+(O/'final-context-replay.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'retained_files':len(verified),'focused_commands':len(commands),'links':len(links),'pending_links':sorted(set(pending)),'all_passed':True}))

@@ -1,0 +1,107 @@
+"""Complete source-author identity reconstruction; mismatches are retained, not waived."""
+from pathlib import Path
+from collections import Counter
+import datetime, hashlib, json, sqlite3, xml.etree.ElementTree as ET
+from rdkit import Chem, rdBase
+from rdkit.Chem import rdMolDescriptors
+
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+NATIVE=Path('/private/tmp/pathwaymech-next-261-native')
+FORMAL=Path('/private/tmp/pathwaymech-next-261-chemistry/formal-chemistry-verification.json')
+PRIOR=Path('/private/tmp/pathwaymech-next-260-participant-authorities/retained/native-reagent-chemistry-check.json')
+DB=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+OUT=ROOT/'retained/native-chemistry-check.json'
+assert not OUT.exists()
+def sha(p):
+    h=hashlib.sha256()
+    with p.open('rb') as stream:
+        while b:=stream.read(8*1024*1024): h.update(b)
+    return h.hexdigest()
+def describe(m):
+    if m is None:return {'parse_error':True}
+    unstereo=Chem.Mol(m);Chem.RemoveStereochemistry(unstereo)
+    return {'smiles':Chem.MolToSmiles(m,isomericSmiles=True),'connectivity_smiles':Chem.MolToSmiles(Chem.RemoveHs(unstereo),isomericSmiles=False),
+            'inchi':Chem.MolToInchi(m),'key':Chem.MolToInchiKey(m),'formula':rdMolDescriptors.CalcMolFormula(m),
+            'charge':Chem.GetFormalCharge(m),'atoms':dict(Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms())),
+            'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True)}
+def cml_mol(cml):
+    rw=Chem.RWMol();amap={};case=[]
+    for a in cml.findall('atomArray/atom'):
+        raw=a.get('elementType');symbol=raw[0].upper()+raw[1:].lower()
+        if raw!=symbol:case.append({'atom':a.get('id'),'source':raw,'interpreted':symbol})
+        atom=Chem.Atom(symbol);atom.SetFormalCharge(int(a.get('formalCharge','0')))
+        amap[a.get('id')]=rw.AddAtom(atom)
+    for b in cml.findall('bondArray/bond'):
+        a,z=b.get('atomRefs').split()
+        rw.AddBond(amap[a],amap[z],{'1':Chem.BondType.SINGLE,'2':Chem.BondType.DOUBLE,'3':Chem.BondType.TRIPLE,'A':Chem.BondType.AROMATIC,'1.5':Chem.BondType.AROMATIC}[b.get('order')])
+    m=rw.GetMol();Chem.SanitizeMol(m)
+    return m,case
+digest=sha(DB)
+assert digest=='26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+db=sqlite3.connect('file:'+str(DB)+'?mode=ro',uri=True)
+predicates=['rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:smiles_string','chemrof:charge','chemrof:generalized_empirical_formula']
+def issued(curie):
+    triples=db.execute('select predicate,object,value from statements where subject=?',(curie,)).fetchall()
+    fields={p:[v if v is not None else o for pp,o,v in triples if pp==p] for p in predicates}
+    if not fields['rdfs:label']:return {'missing':True}
+    reps={}
+    if fields['chemrof:smiles_string']:reps['smiles']=describe(Chem.MolFromSmiles(fields['chemrof:smiles_string'][0]))
+    if fields['chemrof:inchi_string']:reps['inchi']=describe(Chem.MolFromInchi(fields['chemrof:inchi_string'][0]))
+    return {'properties':fields,'representations':reps,'triples':triples}
+formal=json.loads(FORMAL.read_text());assert formal['all_checks_pass']
+formalrows={x['native_frame']:x for x in formal['compounds']}
+prior=json.loads(PRIOR.read_text());old29=prior['native_direct_reconstruction']['CPD-29']
+endpoints=json.loads((NATIVE/'chemical-endpoint-handoff.json').read_text())
+rows=[];authorities={}
+for entry in endpoints:
+    frame=entry['frame'];path=Path(entry['source_path']);assert sha(path)==entry['sha256']
+    root=ET.parse(path).getroot();assert root.find('metadata/PGDB').get('version')=='27.0'
+    full=root.find('Compound');assert full.get('frameid')==frame and full.get('detail')=='full'
+    ids=['CHEBI:'+x['dblink-oid'] for x in entry['xrefs'] if x['dblink-db']=='CHEBI']
+    row={'native_frame':frame,'source':entry,'native_name':full.findtext('common-name'),'native_class':full.get('class')=='true',
+         'native_inchi':full.findtext('inchi'),'native_key':(full.findtext('inchi-key') or '').removeprefix('InChIKey='),'native_chebi_xrefs':ids}
+    if frame in formalrows:
+        proof=formalrows[frame]
+        row['formal_reuse']={'path':str(FORMAL),'sha256':sha(FORMAL),'selected_id':proof['chebi_id'],'original_hash_equal':entry['sha256']==proof['sha256'],
+                            'complete_compound_xml_equal':ET.tostring(full)==ET.tostring(ET.parse(proof['path']).getroot().find('Compound')),
+                            'all_checks_pass':all(proof['checks'].values())}
+        assert row['formal_reuse']['original_hash_equal'] and row['formal_reuse']['all_checks_pass']
+        rows.append(row);print(frame,'formal reuse',flush=True);continue
+    reps={};cml=full.find('cml/molecule');m=None
+    if cml is not None:
+        m,case=cml_mol(cml);reps['cml']=describe(m)
+        row['cml']={'attributes':dict(cml.attrib),'atoms':[dict(x.attrib) for x in cml.findall('atomArray/atom')],
+                    'bonds':[dict(x.attrib) for x in cml.findall('bondArray/bond')],'case_interpretations':case,
+                    'formula_attributes':dict(cml.find('formula').attrib) if cml.find('formula') is not None else None}
+        row['cml_total_charge_check']=int(cml.get('formalCharge'))==reps['cml']['charge']
+    if row['native_inchi']:reps['inchi']=describe(Chem.MolFromInchi(row['native_inchi']))
+    smi=full.findtext('cml/molecule/string[@title="smiles"]');row['native_smiles']=smi
+    if smi and '[R]' not in smi:reps['smiles']=describe(Chem.MolFromSmiles(smi))
+    row['representations']=reps
+    row['pinned_exact_key_matches']=[x[0] for x in db.execute("select subject from statements where predicate='chemrof:inchi_key_string' and value=?",(row['native_key'],))] if row['native_key'] else []
+    row['comparisons']={}
+    for cid in ids:
+        auth=authorities.setdefault(cid,issued(cid));f=auth['properties'];rr=auth['representations']
+        c={'full_inchi_exact':row['native_inchi']==(f['chemrof:inchi_string'][0] if f['chemrof:inchi_string'] else None),
+           'full_key_exact':row['native_key']==(f['chemrof:inchi_key_string'][0] if f['chemrof:inchi_key_string'] else None)}
+        if m is not None and rr.get('smiles') and not rr['smiles'].get('parse_error'):
+            c.update({'cml_connectivity':reps['cml']['connectivity_smiles']==rr['smiles']['connectivity_smiles'],
+                      'cml_charge':reps['cml']['charge']==int(f['chemrof:charge'][0]),'cml_atoms':reps['cml']['atoms']==rr['smiles']['atoms']})
+        row['comparisons'][cid]=c
+    if frame=='CPD-29':
+        row['prior_reuse']={'path':str(PRIOR),'sha256':sha(PRIOR),'original_hash_equal':entry['sha256']==old29['native_sha256'],
+                            'structure_reconstruction_equal':reps['cml']['inchi']==old29['representations']['native_full_cml']['inchi'],
+                            'disposition':'Native anion is not CHEBI:28420 neutral acid. Preserve MetaCyc:CPD-29 if an adjacent-context node is selected.'}
+        assert row['prior_reuse']['original_hash_equal'] and row['prior_reuse']['structure_reconstruction_equal']
+    rows.append(row);print(frame,row['pinned_exact_key_matches'],row['comparisons'],flush=True)
+after=sha(DB);assert after==digest
+result={'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'authorship':'chemical participant source author, not independent review',
+        'rdkit_version':rdBase.rdkitVersion,'pinned_sql':{'path':str(DB),'resolved_path':str(DB.resolve()),'bytes':DB.stat().st_size,'sha256_before':digest,'sha256_after':after,
+        'versions':db.execute("select subject,predicate,object,value from statements where predicate in ('owl:versionIRI','owl:versionInfo')").fetchall()},
+        'native_compounds':rows,'issuing_chebi':authorities,
+        'limitations':['Atom connectivity comparisons deliberately omit stereo; full source-issued InChI and key comparisons retain stereo.',
+                      'Standard InChI may disconnect metal bonds or normalize charge locations. Native CML and issuing SMILES remain separately retained.',
+                      'Exact chemical identity does not prove a preparation used a particular salt, hydrate or ion speciation.',
+                      'All false comparisons remain visible for explicit source adjudication.']}
+OUT.write_text(json.dumps(result,indent=2)+'\n')
+print('complete',len(rows),len(authorities),flush=True)

@@ -1,0 +1,72 @@
+"""Replay optional issuing originals without selecting or promoting identifiers."""
+from pathlib import Path
+import datetime, hashlib, json, shutil, sys
+
+B = Path(__file__).resolve().parents[1]
+BIO = Path('/private/tmp/pathwaymech-next-261-biological-identities')
+NATIVE = Path('/private/tmp/pathwaymech-next-261-native-foundation')
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def save(relative, value):
+    path = B / relative
+    assert not path.exists(), ('preserve previous attempt', path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+def observe(path, name):
+    target = B / 'retained/candidate-observations' / name
+    assert not target.exists()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(path, target)
+    assert sha(path) == sha(target)
+    return json.loads(target.read_text()), dict(source_path=str(path), observed_path=str(target), sha256=sha(target))
+
+def main():
+    sys.path[:0] = [str(B / 'runtime/src'), str(B / 'runtime/scripts')]
+    from build_source_identifier_snapshot import source_terms
+    biological, bio_binding = observe(BIO / 'scoped-candidate-authority-plan.json', 'biological-plan.json')
+    native, native_binding = observe(NATIVE / 'complete-new-source-proposals.json', 'native-foundation-plan.json')
+    chemical_path = Path('/private/tmp/pathwaymech-next-261-participant-authorities/retained/authority-integration-plan-v2.json')
+    chemical, chemical_binding = observe(chemical_path, 'chemical-plan-v2.json')
+    rows = []
+    groups = ['new_protein_and_optional_reference_sources', 'new_gene_sources_and_exact_external_counterparts', 'optional_sequence_reference_sources']
+    for group in groups:
+        rows.extend((row, BIO, bio_binding, group) for row in biological[group])
+    rows.append((biological['optional_historical_native_organism'], BIO, bio_binding, 'optional_historical_native_organism'))
+    rows.extend((row, NATIVE, native_binding, 'native_foundation_successor') for row in native)
+    candidates, keys = [], set()
+    for row, package, binding, scope in rows:
+        entry = row['entry']
+        assert entry['key'] not in keys, ('duplicate candidate key', entry['key'])
+        keys.add(entry['key'])
+        path = package / 'source-cache' / entry['path']
+        assert path.is_file() and sha(path) == entry['sha256'], path
+        terms = list(source_terms(entry['kind'], path, url=entry['url'], version=entry['version'], sha256=entry['sha256']))
+        assert terms, ('no parsed original terms', path)
+        declared = set(row.get('identifiers', [row['identifier']] if 'identifier' in row else []))
+        assert declared <= {term[0] for term in terms}, (path, declared, terms)
+        candidates.append(dict(entry=entry, cache_original=dict(path=str(path), resolved=str(path.resolve()), sha256=sha(path), bytes=path.stat().st_size),
+            identifiers=[term[0] for term in terms], parsed_terms=terms, declared_candidate_ids=sorted(declared),
+            source_plan=binding, scope=scope, selection='optional candidate only; no source configuration or snapshot added'))
+    old = {}
+    for name in ['sources', 'ontology']:
+        old.update(json.loads((B / 'baseline/data/identifier_authorities' / (name + '.json')).read_text())['terms'])
+    candidates_by_id = {}
+    for row in candidates:
+        for identifier in row['identifiers']:
+            candidates_by_id.setdefault(identifier, []).append(row['entry']['key'])
+    report = dict(role='Authority-integration author candidate inventory; not independent review', utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        new_entries=candidates, source_bindings=[bio_binding, native_binding, chemical_binding],
+        candidate_source_count=len(candidates), candidate_identifier_count=len(candidates_by_id),
+        candidate_identifiers_already_retained=sorted(set(candidates_by_id) & old.keys()),
+        identifiers_with_multiple_candidate_sources={key:value for key,value in candidates_by_id.items() if len(value)>1},
+        chemical_source_plan='Use existing pinned ontology extraction for actual selected ChEBI IDs. CPD-29 owner already retained. PubChem:90657761 is verified but adjacent excluded context and remains unselected; no new descriptor invented.',
+        final_selection_status='awaiting actual integrated selected record from root', maintained_files_edited=False,
+        parser_sha256=sha(B / 'runtime/scripts/build_source_identifier_snapshot.py'))
+    save('retained/candidate-source-inventory.json', report)
+    print(json.dumps({key:report[key] for key in ['candidate_source_count','candidate_identifier_count','candidate_identifiers_already_retained','identifiers_with_multiple_candidate_sources','final_selection_status']}))
+
+if __name__ == '__main__':
+    main()

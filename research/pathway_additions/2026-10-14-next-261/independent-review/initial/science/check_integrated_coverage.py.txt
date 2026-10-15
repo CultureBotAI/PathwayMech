@@ -1,0 +1,33 @@
+from pathlib import Path
+import hashlib,json,yaml,sqlite3,xml.etree.ElementTree as E,collections,datetime
+out=Path('/private/tmp/pathwaymech-next-261-independent-science'); n=Path('/private/tmp/pathwaymech-next-261-native-foundation');p=Path('/private/tmp/pathwaymech-next-261-primary-integration')
+r=yaml.safe_load((out/'reviewed-record.initial.yaml').read_text());edges={e['id']:e for e in r['mechanistic_edges']}; slots=json.loads((n/'full-source-slot-coverage.json').read_text());cache={};errors=[]
+for row in slots:
+ path=Path(row['source_original'])
+ if path not in cache:
+  b=path.read_bytes();root=E.fromstring(b); ent=next(e for e in root if e.get('frameid')==row['frame']);cache[path]=(hashlib.sha256(b).hexdigest(),ent)
+ sha,ent=cache[path]
+ if sha!=row['source_sha256']:errors.append(['source_hash',str(path)])
+ matches=[e for e in ent if e.tag==row['slot']]
+ s=matches[row['ordinal']-1]
+ if E.tostring(s,encoding='unicode')!=row['full_slot_xml']:errors.append(['slot_bytes',row['source_locator']])
+ for eid in row['graph_edges']:
+  if eid not in edges:errors.append(['edge_missing',row['source_locator'],eid])
+ if not row['foundation_disposition'] or not row['reason']:errors.append(['disposition_missing',row['source_locator']])
+primary=json.loads((p/'claim-to-record-coverage.json').read_text());primary_errors=[]
+for c in primary['claims']:
+ for target in c['record_targets']:
+  if target['field']=='description' and target['text'] not in r['description']:primary_errors.append([c['claim_id'],'description_not_exact'])
+  if target['field']=='mechanistic_edges' and target['edge_id'] not in edges:primary_errors.append([c['claim_id'],'edge_missing',target['edge_id']])
+root=E.parse('/private/tmp/pathwaymech-next-261-native/originals/META-PWY-5415.xml').getroot();native=next(e for e in root if e.get('frameid')=='PWY-5415');taxa=[]
+con=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db?mode=ro',uri=True)
+for node in native.findall('species/Organism'):
+ oid=next((d.findtext('dblink-oid') for d in node.findall('dblink') if d.findtext('dblink-db')=='NCBI-TAXONOMY-DB'),None)
+ curie='NCBITaxon:'+oid if oid else None
+ queried=list(con.execute('select subject,predicate,object,value from statements where subject=? and (predicate in (\'rdfs:label\',\'owl:deprecated\',\'obo:ncbitaxon#has_rank\'))',(curie,))) if curie else []
+ taxa.append({'native_frame':node.get('frameid'),'native_name':node.findtext('common-name'),'native_strain':node.findtext('strain-name'),'curie':curie,'actual_SQL_issuing_rows':queried,'retained':next((t for t in r['taxa'] if t['id']==curie),None),'species_evidence_entries':len(node.findall('evidence'))})
+for t in r['taxa']:
+ row=next(x for x in taxa if x['curie']==t['id']);labels=[x[3] for x in row['actual_SQL_issuing_rows'] if x[1]=='rdfs:label']
+ if t['label'] not in labels:errors.append(['taxon_label',t['id'],labels])
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target_sha256':hashlib.sha256((out/'reviewed-record.initial.yaml').read_bytes()).hexdigest(),'native_originals_replayed':len(cache),'native_direct_slots_replayed':len(slots),'native_disposition_counts':dict(collections.Counter(x['foundation_disposition'] for x in slots)),'native_slot_or_graph_errors':errors,'primary_frozen_claims':len(primary['claims']),'primary_coverage_errors':primary_errors,'record_counts':{k:len(r[k]) for k in ['taxa','participants','reactions','mechanistic_edges','references']},'taxa':taxa,'native_parent_evidence_xml':[E.tostring(e,encoding='unicode') for e in native.findall('evidence')],'limits':'Coverage replay verifies complete original native slots and their explicit dispositions plus retained primary claim targets. It is not itself proof of causal truth; source reading and independent scientific judgment are recorded separately. NCBI taxonomy queried from actual readonly issuing SQLite; complete database hash not rehashed here.'}
+(out/'integrated-source-coverage-independent-check.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items() if k not in ['taxa','native_parent_evidence_xml']},indent=2));print(json.dumps(taxa,indent=2))
