@@ -1,0 +1,96 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import collections,gzip,hashlib,json,subprocess,sys,unicodedata,yaml
+R=Path('/private/tmp/pathwaymech-next-265-final-technical-review');W=Path('/private/tmp/pathwaymech-next-265-20261015');BASE='39b84c79eb9997fb6785ef040f571bad498846e7';T='data/pathways/benzoyl-coa-degradation-i-aerobic.yaml';P='research/pathway_additions/2026-10-15-next-265'
+def h(b):return hashlib.sha256(b).hexdigest()
+def j(p):return json.loads(p.read_bytes())
+def out(name,d):(R/name).write_text(json.dumps(d,indent=2)+'\n')
+def git(*args):return subprocess.check_output(['git',*args],cwd=W)
+assert git('rev-parse','HEAD').decode().strip()==BASE
+assert git('rev-parse',BASE+'^{tree}').decode().strip()=='e5c455667499283021774a6c3d5138cc8293f28e'
+ins=j(R/'initial-inspect.json');inputrows=[]
+for row in ins['source']['inputs']:
+ b=(W/row['path']).read_bytes();assert h(b)==row['sha256'];p=R/'inputs'/row['path'];p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(b);inputrows.append(row)
+out('stable-core-input-copies.json',inputrows)
+paths=git('ls-tree','-r','--name-only','-z',BASE).decode().split('\0');paths=[x for x in paths if x]
+recordpaths=[x for x in paths if x.startswith('data/pathways/') and x.endswith('.yaml')];assert len(recordpaths)==261
+owners=['data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json','conf/identifier_sources.json']
+protected=[x for x in paths if x.startswith(('src/','scripts/','schema/','.claude/','.github/','docs/','conf/')) or x in {'pyproject.toml','uv.lock','justfile','CLAUDE.md'}]
+protected=[x for x in protected if x not in owners]
+selected=sorted(set(recordpaths+owners+protected));query=''.join(BASE+':'+x+'\n' for x in selected).encode();raw=git('cat-file','--batch') if False else subprocess.run(['git','cat-file','--batch'],cwd=W,input=query,capture_output=True,check=True).stdout
+bodies={};pos=0
+for path in selected:
+ end=raw.index(b'\n',pos);hdr=raw[pos:end].split();assert hdr[1]==b'blob';n=int(hdr[2]);pos=end+1;b=raw[pos:pos+n];pos+=n;assert raw[pos:pos+1]==b'\n';pos+=1;bodies[path]=b
+assert pos==len(raw)
+oldrecords=[]
+for path in recordpaths:
+ current=(W/path).read_bytes();assert current==bodies[path];oldrecords.append({'path':path,'sha256':h(current),'bytes':len(current)})
+actualrecordpaths={str(p.relative_to(W)) for p in (W/'data/pathways').rglob('*.yaml')};assert actualrecordpaths==set(recordpaths)|{T}
+policyproof=[]
+for path in protected:
+ b=(W/path).read_bytes();assert b==bodies[path],path;policyproof.append({'path':path,'sha256':h(b),'bytes':len(b)})
+out('baseline-and-policy-preservation.json',{'result':'pass','base':BASE,'tree':git('rev-parse',BASE+'^{tree}').decode().strip(),'unchanged_baseline_records':oldrecords,'only_new_record':T,'tracked_policy_schema_code_contract_files_unchanged':policyproof,'scope':'All 261 tracked baseline records plus recursive current record inventory, and all tracked protected paths in the declared code/config/schema/contract groups. Generated pages and new research/history are assessed separately.'})
+record=yaml.safe_load((W/T).read_bytes());nodes=[{'id':record['id'],'label':record['label'],'section':'record'}]+[{**n,'section':section} for section in ['taxa','participants','reactions'] for n in record[section]];ids={n['id'] for n in nodes};assert len(ids)==len(nodes)==47
+refs={r['id']:r for r in record['references']};assert len(refs)==68
+for edge in record['mechanistic_edges']:
+ assert edge['subject'] in ids and edge['object'] in ids
+ for evidence in edge['evidence']+[e for q in edge.get('endpoint_qualifiers',[]) for e in q['evidence']]:assert evidence['reference_id'] in refs
+out('record-representation.json',{'record_sha256':h((W/T).read_bytes()),'nodes':nodes,'edges':record['mechanistic_edges'],'references':record['references'],'counts':{'named_nodes':len(nodes),'taxa':len(record['taxa']),'participants':len(record['participants']),'reactions':len(record['reactions']),'edges':len(record['mechanistic_edges']),'qualifiers':sum(len(e.get('endpoint_qualifiers',[])) for e in record['mechanistic_edges']),'references':len(refs),'evidence_occurrences':sum(len(e['evidence'])+sum(len(q['evidence']) for q in e.get('endpoint_qualifiers',[])) for e in record['mechanistic_edges'])},'scientific_review':False})
+# Direct baseline union comparison; source-authored identity interpretations are excluded.
+current={};unionproof=[];termnew=set()
+for path in owners:
+ old=json.loads(bodies[path]);new=j(W/path);current[path]=new
+ p=R/'baseline'/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(bodies[path])
+ expected=Path('/private/tmp/pathwaymech-next-265-authority/final-successor/proposed')/path;assert (W/path).read_bytes()==expected.read_bytes()
+ if isinstance(old,list):
+  assert new[:len(old)]==old and len(new)==len(old)+16
+  proof={'path':path,'old_rows':len(old),'new_rows':len(new),'old_ordered_prefix_exact':True,'added_rows':new[len(old):]}
+ else:
+  assert old['version']==new['version'];parts={}
+  for key in ['terms','sources']:
+   assert all(k in new[key] and v==new[key][k] for k,v in old[key].items());added={k:v for k,v in new[key].items() if k not in old[key]};parts[key]={'old_count':len(old[key]),'new_count':len(new[key]),'additions':added}
+   if key=='terms':termnew.update(added);assert set(added)<=ids
+  proof={'path':path,'preserved':parts}
+ proof.update({'baseline_sha256':h(bodies[path]),'current_sha256':h((W/path).read_bytes()),'equals_exact_accepted_proposal':True});unionproof.append(proof)
+assert len(termnew)==32
+terms={**current[owners[0]]['terms'],**current[owners[1]]['terms']}
+norm=lambda s:' '.join(unicodedata.normalize('NFKC',s).split()).casefold()
+labels=[]
+for node in nodes:
+ term=terms[node['id']];names=[term['label']]+term.get('synonyms',[]);assert norm(node['label']) in {norm(x) for x in names},node
+ labels.append({'node':node,'actual_authority_term':term,'canonical_or_exact_synonym':True})
+rx=next(n for n in nodes if n['id']=='MetaCyc:RXN-2424');assert rx['category']=='molecular_activity' and terms[rx['id']]['entity_type']=='reaction' and terms[rx['id']]['label_kind']=='source_context'
+out('actual-authority-union-comparison.json',{'result':'pass','owners':unionproof,'all47_selected_nodes':labels,'new_selected_terms':sorted(termnew),'scope':'Technical exact integration, baseline preservation and actual-label matching. Issuing source claims authored earlier are not independently scientifically accepted here; independent authority acceptance remains separately bound.'})
+# Reconstruct only the 60 source bodies directly referenced by the actual record.
+roots=[W/P/x for x in ['evidence-retention','evidence-extension']];maps=[j(x/'content-map.json') for x in roots];occurrences=collections.defaultdict(list)
+for root in roots:
+ for source_map in sorted((root/'packages').glob('*/source-map.json')):
+  for row in j(source_map)['source_occurrences']:
+   occurrences[row['sha256']].append({'source_map':str(source_map.relative_to(W)),'package':row['package'],'path':row['path'],'bytes':row['bytes']})
+cache={};sourceproof=[]
+for ref in record['references']:
+ digest=ref['source_sha256'];found=[(root,content[digest]) for root,content in zip(roots,maps) if digest in content];assert found,ref['id'];root,row=found[0]
+ if digest not in cache:
+  storage=row['storage'];path=(root if storage['kind']=='new_retention_object' else W)/storage['path'];b=path.read_bytes();assert h(b)==storage['stored_sha256'] and len(b)==storage['stored_bytes']
+  for step in row['decode_steps']:
+   assert step['encoding']=='gzip' and h(b)==step['input_sha256'];b=gzip.decompress(b);assert h(b)==step['output_sha256'] and len(b)==step['output_bytes']
+  assert h(b)==digest and len(b)==row['source_bytes'];cache[digest]=b
+ sourceproof.append({'reference':ref,'verified_original_sha256':digest,'verified_original_bytes':len(cache[digest]),'retention_content_map':str((root/'content-map.json').relative_to(W)),'exact_storage_and_decode_row':row,'source_occurrences':occurrences[digest]})
+assert len(cache)==60
+out('actual-reference-retention-closure.json',{'result':'pass','references':68,'unique_original_bodies':60,'source_ownership':sourceproof,'scope':'Exact bytes and ownership of actual reference digests, not scientific interpretation of originals.'})
+# Applied issue583: exact successor and historical owner verification, without rerunning full scopes.
+adopt=j(Path('/private/tmp/pathwaymech-next-265-ci/helper-formatting-integration.json'));assert adopt['status']=='adopted_and_verified';ops=[]
+for row in adopt['exact_write_set']:
+ b=(W/row['destination']).read_bytes();assert h(b)==row['new_sha256'] and len(b)==row['new_bytes'];ops.append(row)
+helper_packages=[]
+for root in roots:
+ cur=j(root/'artifact-manifest.json');bridge=j(root/'helper-formatting/successor.json');old=j(root/bridge['original_manifest_historical_owner']);changes={x['original_package_path']:x for x in bridge['changed_original_rows']};newrows={x['path']:x for x in cur['files']};oldrows={x['path']:x for x in old['files']}
+ assert {str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}==set(newrows)|{'artifact-manifest.json'}
+ for path,row in newrows.items():b=(root/path).read_bytes();assert h(b)==row['sha256'] and len(b)==row['bytes']
+ for path,row in oldrows.items():
+  hist=changes[path]['historical_owner'] if path in changes else path;b=(root/hist).read_bytes();assert h(b)==row['sha256'] and len(b)==row['bytes']
+  if path not in changes:assert row==newrows[path]
+ helper_packages.append({'path':str(root.relative_to(W)),'current_manifest_sha256':h((root/'artifact-manifest.json').read_bytes()),'original_manifest_sha256':h((root/bridge['original_manifest_historical_owner']).read_bytes()),'current_rows':len(newrows),'historical_rows':len(oldrows),'unchanged_row_objects':len(oldrows)-3})
+out('actual-helper583-integration.json',{'result':'pass','integration_receipt_sha256':h(Path('/private/tmp/pathwaymech-next-265-ci/helper-formatting-integration.json').read_bytes()),'exact20operations':ops,'packages':helper_packages,'independent_original_acceptance_manifest':'64993cfbd7c690534384cb55975d183686f2e87ca467ac24e48f840ae9b3cbbc','scope':'Actual adopted bytes and complete current/historical inventory verification; prior independent behavior proof unchanged.'})
+out('pre-gate-integration-summary.json',{'utc':datetime.now(timezone.utc).isoformat(),'result':'pass','base':BASE,'record_sha256':h((W/T).read_bytes()),'old_records_unchanged':261,'protected_files_unchanged':len(protected),'authority_added_terms':32,'selected_nodes':47,'references':68,'reference_original_bodies':60,'current_helper_adoption_exact':True,'generated_outputs_and_gates_pending':True,'scientific_review':False})
+print((R/'pre-gate-integration-summary.json').read_text())

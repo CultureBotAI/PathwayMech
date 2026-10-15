@@ -1,0 +1,92 @@
+"""Verify every report file against the actual index and six physical inventories."""
+import argparse
+import datetime
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-265-20261015')
+REPORT = 'research/pathway_additions/2026-10-15-next-265/'
+PACKAGES = ('browser', 'final-documentation', 'final-gates', 'final-scientific-review',
+            'final-technical-review', 'independent-extension-review')
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    assert not args.output.exists(), 'Keep previous observations intact.'
+    raw_index = subprocess.check_output(['git', 'ls-files', '--stage', '-z'], cwd=ROOT)
+    index = {}
+    for item in raw_index.split(b'\0'):
+        if not item:
+            continue
+        metadata, encoded_path = item.split(b'\t', 1)
+        mode, object_id, stage = metadata.decode().split()
+        assert stage == '0', 'Unmerged index entry'
+        name = encoded_path.decode()
+        if name.startswith(REPORT):
+            assert mode in ('100644', '100755')
+            index[name] = {'mode': mode, 'object_id': object_id}
+    current = {}
+    for path in (ROOT / REPORT).rglob('*'):
+        assert not path.is_symlink(), path
+        if path.is_file():
+            current[path.relative_to(ROOT).as_posix()] = path
+    assert set(current) == set(index), {
+        'missing_from_index': sorted(set(current) - set(index)),
+        'index_without_current_file': sorted(set(index) - set(current)),
+    }
+    verified = []
+    with subprocess.Popen(['git', 'cat-file', '--batch'], cwd=ROOT,
+                          stdin=subprocess.PIPE, stdout=subprocess.PIPE) as process:
+        for name, path in sorted(current.items()):
+            object_id = index[name]['object_id']
+            process.stdin.write((object_id + '\n').encode())
+            process.stdin.flush()
+            header = process.stdout.readline().decode().split()
+            assert header[0] == object_id and header[1] == 'blob'
+            size = int(header[2])
+            body = process.stdout.read(size)
+            assert process.stdout.read(1) == b'\n'
+            assert body == path.read_bytes(), name
+            verified.append({'path': name, 'sha256': sha(body), 'bytes': len(body),
+                             'index_object_id': object_id, 'mode': index[name]['mode']})
+        process.stdin.close()
+        assert process.wait() == 0
+    packages = []
+    for name in PACKAGES:
+        package = ROOT / REPORT / 'verification' / name
+        manifest_path = package / 'physical-artifact-manifest.json'
+        manifest = json.loads(manifest_path.read_bytes())
+        rows = manifest['files']
+        actual = {p.relative_to(package).as_posix() for p in package.rglob('*') if p.is_file()}
+        assert actual == {r['path'] for r in rows} | {'physical-artifact-manifest.json'}
+        for row in rows:
+            path = package / row['path']
+            body = path.read_bytes()
+            assert sha(body) == row['sha256'] and len(body) == row['bytes']
+            assert path.relative_to(ROOT).as_posix() in index
+        assert manifest_path.relative_to(ROOT).as_posix() in index
+        packages.append({'package': name, 'current_physical_files': len(actual),
+                         'manifest_sha256': sha(manifest_path.read_bytes()), 'all_index_blobs_exact': True})
+    result = {
+        'observed_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'scope': 'Every regular next265 research report file, including hidden and ignored, '
+                 'and every exact staged blob under that prefix; plus all six current physical inventories.',
+        'index_snapshot_sha256': sha(raw_index), 'all_current_files_indexed_exactly': True,
+        'no_extra_staged_report_paths': True, 'report_files': len(verified),
+        'physical_package_files': sum(p['current_physical_files'] for p in packages),
+        'packages': packages, 'files': verified,
+    }
+    args.output.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({k: v for k, v in result.items() if k not in ('files', 'packages')}), flush=True)
+
+
+if __name__ == '__main__':
+    main()

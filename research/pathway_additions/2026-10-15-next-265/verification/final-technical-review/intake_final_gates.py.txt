@@ -1,0 +1,72 @@
+import datetime
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+
+root=Path('/private/tmp/pathwaymech-next-265-20261015')
+out=Path('/private/tmp/pathwaymech-next-265-final-technical-review')
+r=root/'research/pathway_additions/2026-10-15-next-265'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+manifest_rows=[]
+for name,expected in [('final-gates','953d209141efbf92885e3dbc6bf714cbea29ccf30d1841778bda8f5cfc45d75f'),('browser','b8622528170168263b7f763a7bfbd000eb79eb9683a1027b34ce4a125a75f77a')]:
+    folder=r/'verification'/name
+    m=folder/'artifact-manifest.json'
+    assert sha(m.read_bytes())==expected
+    data=json.loads(m.read_text())
+    actual={p.relative_to(folder).as_posix() for p in folder.rglob('*') if p.is_file()}
+    assert actual=={x['path'] for x in data['files']}|{'artifact-manifest.json'}
+    for row in data['files']:
+        b=(folder/row['path']).read_bytes()
+        assert sha(b)==row['sha256'] and len(b)==row['bytes']
+    manifest_rows.append({'path':m.relative_to(root).as_posix(),'sha256':expected,'verified_files':len(data['files'])})
+retention=json.loads((r/'verification/final-gate-evidence-retention.json').read_text())
+for row in retention['files']:
+    b=(root/row['path']).read_bytes()
+    assert sha(b)==row['sha256'] and len(b)==row['bytes']
+    assert b==Path(row['source']).read_bytes()
+gates=r/'verification/final-gates'
+initial=json.loads((gates/'initial/receipts.json').read_text())
+tail=json.loads((gates/'network-tail/receipts.json').read_text())
+preservation=json.loads((gates/'network-tail/final-input-preservation.json').read_text())
+assert len(initial)==5 and [x['exit_code'] for x in initial]==[0,0,0,0,1]
+assert len(tail)==3 and all(x['exit_code']==0 for x in tail)
+assert preservation['all_unchanged'] and preservation['successful_commands']==initial[:4]+tail
+assert preservation['initial_network_failure_preserved']==initial[-1]
+logrows=[]
+for phase,items in [('initial',initial),('network-tail',tail)]:
+    for row in items:
+        p=gates/phase/Path(row['log_path']).name
+        assert sha(p.read_bytes())==row['log_sha256']
+        assert p.read_bytes()==Path(row['log_path']).read_bytes()
+        logrows.append({'phase':phase,'path':p.relative_to(root).as_posix(),**row})
+assert 'nodename nor servname provided, or not known' in (gates/'initial/just-vendored-check.log').read_text()
+assert '5255 passed, 3 skipped, 7 warnings in 895.02s' in (gates/'initial/just-test.log').read_text()
+assert '22' in (gates/'network-tail/just-vendored-check.log').read_text()
+before=json.loads((gates/'initial/tested-core-input-hashes.json').read_text())
+assert len(before)==4030==preservation['tested_core_files']
+changed=[]
+for rel,digest in before.items():
+    actual=sha((root/rel).read_bytes())
+    if actual!=digest:
+        changed.append({'path':rel,'tested_sha256':digest,'current_sha256':actual})
+report='research/pathway_additions/2026-10-15-next-265/README.md'
+assert [x['path'] for x in changed]==[report], changed
+assert changed[0]['current_sha256']=='1c62fb1ff6c917017509c2980cf8651747b3c9b1d3df41a5d9936c04a08567a0'
+raw=subprocess.check_output(['git','ls-files','-co','-z','--',*preservation['scope']],cwd=root)
+current={p.decode() for p in raw.split(b'\0') if p and (root/p.decode()).is_file() and not {'__pycache__','.pytest_cache','.ruff_cache'}&set(Path(p.decode()).parts)}
+assert set(before)<=current
+added=sorted(current-set(before))
+assert all(x.startswith('research/pathway_additions/2026-10-15-next-265/verification/') for x in added)
+initial_inspect=json.loads((out/'initial-inspect.json').read_text())
+for row in initial_inspect['source']['inputs']:
+    assert sha((root/row['path']).read_bytes())==row['sha256']
+old_history=json.loads((out/'history-and-review-preservation.json').read_text())
+for row in old_history['prior_files']:
+    assert sha((root/row['path']).read_bytes())==row['sha256']
+for row in old_history['new_paths_at_observation']:
+    assert sha((root/row['path']).read_bytes())==row['sha256']
+(out/'final-report.md').write_bytes((root/report).read_bytes())
+proof={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'result':'PASS','manifest_inventories':manifest_rows,'all29_retained_originals_exact':len(retention['files']),'command_observations':logrows,'successful_required_commands':preservation['successful_commands'],'failed_historical_attempt':preservation['initial_network_failure_preserved'],'tested_inputs':4030,'unchanged_tested_inputs_at_review':len(before)-len(changed),'post_gate_changed_inputs':changed,'post_gate_added_paths':added,'all_initial16_core_inputs_unchanged':True,'all_prior851_history_review_files_and_initial4_new_events_unchanged':True,'report_assessment':'Complete final README read. Gate counts, failed-DNS/retry distinction, graph/export counts, exact target/authority scope and historical correction notices agree with inspected evidence. Scientific narrative is outside this technical acceptance. The existing 13:23 report event remains a truthful historical pending-gate observation; it was not rewritten. Current report links stable reviews directory without a future fabricated review ID.','limits':'4030 inputs were unchanged through gate completion according to exact runner before/after inventory; this reviewer independently rehashed all4030 after retention and found only the deliberately updated final report. New retained proof files were not part of the earlier broad suite and require the root-owned bounded documentation/review checks.'}
+(out/'final-gate-acceptance.json').write_text(json.dumps(proof,indent=2)+'\n')
+print(json.dumps({'result':'PASS','retained_originals':len(retention['files']),'tested':4030,'unchanged_now':4029,'post_gate_report_only_delta':True,'added_verification_paths':len(added),'required_commands':7,'historical_failed_attempts':1}))

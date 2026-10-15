@@ -1,0 +1,11 @@
+# Archival storage correction
+
+Issues [584](https://github.com/CultureBotAI/PathwayMech/issues/584) and [585](https://github.com/CultureBotAI/PathwayMech/issues/585) cover the actual staged whitespace failure and39 ignored evidence logs omitted from the initial index. The first seven-path proposal was not accepted or adopted. Its complete bytes, independent rejection and original failures are preserved inside the expanded proposal.
+
+[proposal.tar.gz](proposal.tar.gz) retains the complete accepted expanded source-author package and its original manifest. [independent-acceptance.tar.gz](independent-acceptance.tar.gz) retains the complete independent pre-adoption assessment. Both archives reproduce every original member exactly. [root-acceptance.json](root-acceptance.json) binds their manifests.
+
+[actual-adoption.json](actual-adoption.json) records55 new physical files and46 exact raw-path removals, performed only after all owners verified. The six packages retain all523 original physical files and431 prior compact logical entries. Their532 current physical files include notices, exact relocation maps and separate physical inventories. Original manifests and saved canonical review pairs remain byte-identical.
+
+Each affected package has `STORAGE_SUCCESSOR.md`, `storage-successor.json` and `physical-artifact-manifest.json`: browser, final-documentation, final-gates, final-scientific-review, final-technical-review and independent-extension-review. Original manifests are historical reconstruction inventories. Copy unchanged originals and decompress mapped owners into a separate directory before replaying historical helpers, compact maps or evidence locators. Do not rewrite the retained packages.
+
+The exact guarded writer and full staged-blob verifier are retained as inert text. The latter enumerates hidden and ignored report files, compares every actual index blob and validates every current physical inventory. Its execution and the bounded technical successor are separate observations, retained by the subsequent verification package and canonical review. This package establishes guarded adoption, not a completed PR or merge. No pathway science, source bytes or repository policy changed.

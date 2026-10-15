@@ -1,0 +1,112 @@
+"""Independent bounded realization replay; reads actual maintained owners only."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import xml.etree.ElementTree as ET
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-265-20261015')
+OUT = Path('/private/tmp/pathwaymech-next-265-canonical-scientific-preparation')
+RET = ROOT / 'research/pathway_additions/2026-10-15-next-265/evidence-retention'
+sha = lambda value: hashlib.sha256(value).hexdigest()
+mapping = json.loads((RET / 'content-map.json').read_bytes())
+decoded = {}
+bindings = []
+
+def decode(digest):
+    if digest in decoded:
+        return decoded[digest]
+    row = mapping[digest]
+    storage = row['storage']
+    path = (RET if storage['kind'] == 'new_retention_object' else ROOT) / storage['path']
+    body = path.read_bytes()
+    assert sha(body) == storage['stored_sha256'] and len(body) == storage['stored_bytes']
+    for step in row['decode_steps']:
+        assert step['encoding'] == 'gzip' and sha(body) == step['input_sha256']
+        body = gzip.decompress(body)
+        assert sha(body) == step['output_sha256'] and len(body) == step['output_bytes']
+    assert sha(body) == digest == row['source_sha256'] and len(body) == row['source_bytes']
+    decoded[digest] = body
+    bindings.append(row)
+    return body
+
+def artifact(package, name):
+    rows = json.loads((RET / 'packages' / package / 'source-map.json').read_bytes())['source_occurrences']
+    found = [r for r in rows if r['path'] == name]
+    assert len(found) == 1
+    body = decode(found[0]['sha256'])
+    path = OUT / 'maintained-decoded-packages' / package / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(body)
+    return body
+
+def main():
+    body = (ROOT / 'data/pathways/benzoyl-coa-degradation-i-aerobic.yaml').read_bytes()
+    record = yaml.load(body, Loader=yaml.CSafeLoader)
+    assert sha(body) == 'b2fc0cca6ac455fcc1820766caeb49a13beea64e49477bb774d3893e8bde3fff'
+    assert body == artifact('locator-successor', 'pathway-record-draft.yaml')
+    assert record == json.loads(artifact('locator-successor', 'pathway-record-draft.json'))
+    edges = json.loads(artifact('locator-successor', 'complete-edge-evidence-selection-ledger.json'))
+    assert record['mechanistic_edges'] == [r['selected_edge'] for r in edges]
+    node_ledger = json.loads(artifact('locator-successor', 'node-selection-ledger.json'))
+    nodes = record['participants'] + record['reactions'] + record['taxa']
+    assert {n['id']: n for n in nodes} == {r['id']: r['selected_node'] for r in node_ledger}
+    local_ids = {record['id'], *(n['id'] for n in nodes)}
+    refs = {r['id']: r for r in record['references']}
+    assert len(local_ids) == 47 and len(refs) == 68
+    for ref in refs.values():
+        raw = decode(ref['source_sha256'])
+        path = OUT / 'maintained-decoded-reference-originals' / ref['source_sha256']
+        path.parent.mkdir(exist_ok=True)
+        path.write_bytes(raw)
+    evidence = []
+    qualifiers = []
+    for index, edge in enumerate(record['mechanistic_edges']):
+        assert edge['subject'] in local_ids and edge['object'] in local_ids
+        for ev in edge.get('evidence', []):
+            assert ev['reference_id'] in refs
+            evidence.append({'edge': edge['id'], 'context': 'edge', **ev})
+        for qualifier in edge.get('endpoint_qualifiers', []):
+            qualifiers.append({'edge': edge['id'], 'qualifier': qualifier})
+            for ev in qualifier.get('evidence', []):
+                assert ev['reference_id'] in refs
+                evidence.append({'edge': edge['id'], 'context': 'endpoint_qualifier', **ev})
+    assert len(evidence) == 127 and len(qualifiers) == 8
+    # Complete native objects retained; no source-author projection is used as a substitute.
+    native_rows = json.loads((RET / 'packages/native/source-map.json').read_bytes())['source_occurrences']
+    native = [r for r in native_rows if r['path'].startswith('originals/') and r['path'].endswith('.xml')]
+    assert len(native) == 76
+    for row in native:
+        ET.fromstring(artifact('native', row['path']))
+    # Actual taxonomy issuer originals, including aliases, define adapter applicability.
+    tax = []
+    for package, name in [('taxonomy', 'ncbi-taxonomy-original.xml'), ('biological-identities', 'originals/NCBI-taxonomy-CIB.xml')]:
+        root = ET.fromstring(artifact(package, name))
+        for item in root.findall('Taxon'):
+            taxid = 'NCBITaxon:' + item.findtext('TaxId')
+            if taxid in {r['id'] for r in record['taxa']}:
+                tax.append({'id': taxid, 'scientific_name': item.findtext('ScientificName'), 'rank': item.findtext('Rank'), 'aliases': [n.text for n in item.findall('OtherNames/Synonym')] + [n.text for n in item.findall('OtherNames/Includes')] + [n.text for n in item.findall('OtherNames/Name/DispName')], 'source_package': package, 'source_artifact': name})
+    assert {r['id'] for r in tax} == {r['id'] for r in record['taxa']}
+    datasets = json.loads((OUT / 'imodulondb-datasets-normalized.json').read_bytes())
+    no_matches = all(not any(alias.casefold() in d['name'].casefold() or d['name'].casefold() in alias.casefold() for d in datasets for alias in [t['scientific_name']] + t['aliases']) for t in tax)
+    assert no_matches
+    result = {
+        'accessed_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'actual_record_sha256': sha(body), 'actual_yaml_equals_accepted_corrected_yaml_and_json': True,
+        'full_edge_ledger_equality': len(edges), 'node_ledger_equality': len(nodes),
+        'all_node_identities_including_pathway': len(local_ids), 'references': len(refs),
+        'unique_reference_originals': len({r['source_sha256'] for r in refs.values()}),
+        'evidence_occurrences': len(evidence), 'endpoint_qualifiers': len(qualifiers),
+        'complete_native_xml_objects': len(native), 'taxonomy_issuer_rows': tax,
+        'imodulondb_inventory': {'organisms': len(datasets), 'datasets': sum(len(d['datasets']) for d in datasets), 'actual_taxa_match': False, 'disposition': 'Not applicable to the four actual donor/context taxa; E. coli coverage is not transferable from recombinant assay hosts. No negative pathway inference.'},
+        'decode_bindings': bindings,
+        'scope': 'Independent actual maintained realization. Exact scientific input reuse is recorded separately; no repeated whole-corpus Rhea/SQL scan and no broad gates.'
+    }
+    (OUT / 'actual-maintained-replay.json').write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({k: v for k, v in result.items() if k not in ['decode_bindings', 'taxonomy_issuer_rows']}, indent=2))
+    print(json.dumps(tax, indent=2))
+
+if __name__ == '__main__':
+    main()

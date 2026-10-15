@@ -1,0 +1,52 @@
+"""Resume only the network-failed gate and unrun tail; preserve first run."""
+import datetime
+import importlib.util
+import json
+import subprocess
+import time
+from pathlib import Path
+
+CI = Path('/private/tmp/pathwaymech-next-265-ci')
+spec = importlib.util.spec_from_file_location('initial', CI / 'run_initial_checks.py')
+initial = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(initial)
+OUT = Path('/private/tmp/pathwaymech-next-265-checks-network-tail')
+assert not OUT.exists()
+before = json.loads((initial.OUT / 'tested-core-input-hashes.json').read_bytes())
+assert initial.inventory() == before, 'Tested inputs changed before network retry'
+prior = json.loads((initial.OUT / 'receipts.json').read_bytes())
+assert len(prior) == 5 and all(r['exit_code'] == 0 for r in prior[:4])
+assert prior[-1]['command'] == ['just', 'vendored-check'] and prior[-1]['exit_code'] == 1
+for r in prior:
+    assert initial.sha(Path(r['log_path'])) == r['log_sha256']
+OUT.mkdir()
+receipts = []
+for command in [['just', 'vendored-check'], ['git', 'diff', '--check'],
+                ['git', 'diff', '--cached', '--check']]:
+    log = OUT / ('-'.join(command) + '.log')
+    start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    clock = time.monotonic()
+    with log.open('w') as stream:
+        proc = subprocess.run(command, cwd=initial.ROOT, env=initial.ENV,
+                              stdout=stream, stderr=subprocess.STDOUT)
+    receipt = {'command': command, 'cwd': str(initial.ROOT), 'started_utc': start,
+               'elapsed_seconds': round(time.monotonic() - clock, 2),
+               'exit_code': proc.returncode, 'log_path': str(log),
+               'log_sha256': initial.sha(log)}
+    receipts.append(receipt)
+    (OUT / 'receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    print(json.dumps(receipt), flush=True)
+    if proc.returncode:
+        print(log.read_text()[-10000:], flush=True)
+        raise SystemExit(proc.returncode)
+assert initial.inventory() == before, 'Tested inputs changed through gate completion'
+result = {'tested_core_files': len(before), 'all_unchanged': True,
+          'scope': initial.SCOPE, 'ignored_and_hidden_included': True,
+          'excluded_runtime_caches': ['__pycache__', '.pytest_cache', '.ruff_cache'],
+          'record_sha256': initial.sha(initial.ROOT / 'data/pathways/benzoyl-coa-degradation-i-aerobic.yaml'),
+          'initial_receipts_sha256': initial.sha(initial.OUT / 'receipts.json'),
+          'network_tail_receipts_sha256': initial.sha(OUT / 'receipts.json'),
+          'successful_commands': prior[:4] + receipts,
+          'initial_network_failure_preserved': prior[-1]}
+(OUT / 'final-input-preservation.json').write_text(json.dumps(result, indent=2) + '\n')
+print('All seven logical gates passed; initial DNS failure preserved; inputs unchanged.', flush=True)

@@ -1,0 +1,3 @@
+# Issuing identities of the native pathway taxa
+
+Source-author preparation: the complete issuing NCBI Taxonomy response verifies native pathway links59406 (Aromatoleum evansii, species),1422 (Geobacillus stearothermophilus, species),266265 (Paraburkholderia xenovorans LB400, strain). The complete response and retrieval receipt are retained. This identity check does not demonstrate the complete pathway experimentally in each organism, identify a primary Geobacillus-like isolate exactly, or transfer CIB regulatory results to A.evansii. No maintained record or authority changed. Final biological/design acceptance remains separate.

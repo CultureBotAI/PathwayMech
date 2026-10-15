@@ -1,0 +1,38 @@
+{
+  "stable_key": "NEXT265-RETENTION-COMPACT-MANIFEST-COVERAGE-01",
+  "severity": "moderate",
+  "status": "open",
+  "scope": "Frozen 24-package v4 retention audit claims, not scientific sources or established data loss",
+  "finding": "Three package-owned compact/storage-manifest.json files are silently skipped by default-path lookup; all declared-pair completeness is overstated.",
+  "evidence": [
+    {
+      "package": "native",
+      "actual_manifest": "compact/storage-manifest.json",
+      "actual_manifest_sha256": "e0cf4672a73bd62b419b4c38ea073fa862079779f70607a4851da20dad9fb10c",
+      "actual_pairs": 128,
+      "claimed_pairs": 0,
+      "specification_compact_manifest": "compact-retention-manifest.json"
+    },
+    {
+      "package": "cofactor-identities",
+      "actual_manifest": "compact/storage-manifest.json",
+      "actual_manifest_sha256": "aea0523742ac48120dd1b1190db80cbce03a4c3cdea75a64f3a94fbc81a4b10f",
+      "actual_pairs": 78,
+      "claimed_pairs": 0,
+      "specification_compact_manifest": "compact-retention-manifest.json"
+    },
+    {
+      "package": "independent-cofactor-review",
+      "actual_manifest": "compact/storage-manifest.json",
+      "actual_manifest_sha256": "6222a4ef921446622d7a1d8f1c71cbbdc8a3403380e7f36771851c0c97534d98",
+      "actual_pairs": 114,
+      "claimed_pairs": 0,
+      "specification_compact_manifest": "compact-retention-manifest.json"
+    }
+  ],
+  "claimed_pair_total": 5095,
+  "actual_pair_total": 5415,
+  "omitted_pairs": 320,
+  "independent_missing_pair_result": "All320 omitted pairs independently decode exactly, so no missing bytes were observed from this defect.",
+  "required_fix": "Preserve frozen v4. Bind these three actual compact manifests in an explicit immutable successor; validate and retain all5415 pairs, correct package inventories and complete-coverage claims, and reverify the actual chosen payload and copy plan."
+}

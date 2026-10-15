@@ -1,0 +1,40 @@
+import datetime
+import gzip
+import hashlib
+import json
+import tarfile
+from pathlib import Path
+
+root=Path('/private/tmp/pathwaymech-next-265-20261015')
+out=Path('/private/tmp/pathwaymech-next-265-final-technical-review')
+r=root/'research/pathway_additions/2026-10-15-next-265'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+ext=r/'evidence-extension'
+source_map=json.loads((ext/'packages/independent-authority-review/source-map.json').read_text())
+row=next(x for x in source_map['source_occurrences'] if x['path']=='HANDOFF.md')
+content=json.loads((ext/'content-map.json').read_text())[row['sha256']]
+stored=ext/content['storage']['path']
+blob=stored.read_bytes()
+assert sha(blob)==content['storage']['stored_sha256']
+for step in content['decode_steps']:
+    assert sha(blob)==step['input_sha256']
+    assert step['encoding']=='gzip'
+    blob=gzip.decompress(blob)
+    assert sha(blob)==step['output_sha256'] and len(blob)==step['output_bytes']
+assert sha(blob)==row['sha256']
+assert blob==Path(row['source']).read_bytes()
+(out/'independent-authority-HANDOFF.decoded.md').write_bytes(blob)
+archive=r/'verification/helper-formatting/independent-review.tar.gz'
+package=Path('/private/tmp/pathwaymech-next-265-independent-helper-formatting-review')
+rows=[]
+with tarfile.open(archive,'r:gz') as tf:
+    for member in tf.getmembers():
+        assert member.isfile(), member.name
+        body=tf.extractfile(member).read()
+        assert body==(package/member.name).read_bytes(),member.name
+        rows.append({'member':member.name,'sha256':sha(body),'bytes':len(body)})
+expected={p.relative_to(package).as_posix() for p in package.rglob('*') if p.is_file()}
+assert {x['member'] for x in rows}==expected
+proof={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'authority_independent_acceptance':{'original_sha256':row['sha256'],'retained_path':stored.relative_to(root).as_posix(),'stored_sha256':sha(stored.read_bytes()),'source_map':(ext/'packages/independent-authority-review/source-map.json').relative_to(root).as_posix(),'original_equal':True},'helper583_independent_acceptance':{'retained_archive':archive.relative_to(root).as_posix(),'archive_sha256':sha(archive.read_bytes()),'all_members_equal':True,'members':rows},'scope':'Rebind independently authored authority acceptance and independently reviewed helper correction to exact actual retained bodies. This is not scientific self-acceptance of reviewer-authored authority sources.'}
+(out/'accepted-review-retention-rebinding.json').write_text(json.dumps(proof,indent=2)+'\n')
+print(json.dumps({'authority_handoff_equal':True,'helper583_archive_members_equal':len(rows)}))

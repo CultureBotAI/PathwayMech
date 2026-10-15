@@ -1,0 +1,252 @@
+"""Verify frozen inputs and build an EXTERNAL lossless, deduplicated retention rehearsal.
+
+No maintained promotion entry point exists. Source packages are never changed.
+All source occurrences, including original and compact bytes, have explicit maps.
+"""
+from pathlib import Path
+from collections import defaultdict
+import argparse
+import datetime
+import gzip
+import hashlib
+import io
+import json
+import os
+import subprocess
+
+HERE=Path(__file__).resolve().parent
+REPO=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+PREVIOUS='research/pathway_additions/2026-10-15-next-264'
+FUTURE='research/pathway_additions/2026-10-15-next-265/evidence-retention'
+
+def sha(b):return hashlib.sha256(b).hexdigest()
+def jread(p):return json.loads(p.read_bytes())
+def write(root,name,obj):
+ p=root/name;assert not p.exists(),p;p.parent.mkdir(parents=True,exist_ok=True)
+ p.write_text(json.dumps(obj,indent=2,ensure_ascii=False)+'\n')
+def safe(root,name):
+ p=Path(name);assert not p.is_absolute() and '..' not in p.parts,(root,name)
+ out=root/p;assert out.resolve().is_relative_to(root.resolve()) and not out.is_symlink(),out
+ return out
+def gzip_identity(b):
+ h=hashlib.sha256();size=0
+ with gzip.GzipFile(fileobj=io.BytesIO(b)) as f:
+  while chunk:=f.read(1024*1024):h.update(chunk);size+=len(chunk)
+ return h.hexdigest(),size
+
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--output',type=Path,required=True);ap.add_argument('--specification',type=Path,required=True);args=ap.parse_args()
+ out=args.output.resolve();assert out.is_relative_to(HERE) and out!=HERE and not out.exists()
+ specs=jread(args.specification)
+ proof=jread(HERE/'control-inputs/merge-verified.json')
+ head=proof['merge_commit'];assert head=='39b84c79eb9997fb6785ef040f571bad498846e7'
+ assert proof['merged_tree']==proof['reviewed_tree']=='e5c455667499283021774a6c3d5138cc8293f28e'
+ def git(*argv):return subprocess.check_output(['git',*argv],cwd=REPO)
+ assert git('rev-parse',head+'^{tree}').decode().strip()==proof['merged_tree']
+ merge_receipt=Path(proof['receipt']).read_bytes();assert sha(merge_receipt)==proof['receipt_sha256']
+ assert json.loads(merge_receipt)['status']=='merged and integrity verified'
+ assert sha(Path(proof['integrity_report']).read_bytes())==proof['integrity_sha256']
+
+ blobs={};origins=defaultdict(list);edges=defaultdict(set);occurrences=[];packages=[];pair_checks=[]
+ gzip_checks={};existing={};generated=[];source_manifest_checks=[]
+ def add(body,origin=None):
+  digest=sha(body)
+  if digest in blobs:assert blobs[digest]==body
+  else:blobs[digest]=body
+  if origin:origins[digest].append(origin)
+  return digest
+ def occurrence(package,path,source,body):
+  digest=add(body,{'package':package,'path':path,'source':str(source)})
+  occurrences.append({'package':package,'path':path,'source':str(source),'sha256':digest,'bytes':len(body)})
+  return digest
+ def normal_pair(root,pair):
+  raw=next(pair[k] for k in ['original_path','original','raw','source'] if k in pair)
+  stored=next(pair[k] for k in ['stored_path','stored','gzip','compact','path'] if k in pair)
+  raw_digest=next(pair[k] for k in ['original_sha256','raw_sha256'] if k in pair)
+  stored_digest=next(pair[k] for k in ['stored_sha256','gzip_sha256','compact_sha256'] if k in pair)
+  enc=pair.get('encoding',pair.get('method',pair.get('codec','gzip')))
+  assert enc in {'identity','gzip','gzip_lossless'},pair
+  raw_path=safe(root,raw);stored_path=safe(root,stored)
+  rb=raw_path.read_bytes();sb=stored_path.read_bytes()
+  assert sha(rb)==raw_digest and sha(sb)==stored_digest
+  for key in ['original_bytes','raw_bytes']:
+   if key in pair:assert pair[key]==len(rb)
+  for key in ['stored_bytes','gzip_bytes','compact_bytes']:
+   if key in pair:assert pair[key]==len(sb)
+  decoded=sb if enc=='identity' else gzip.decompress(sb)
+  assert decoded==rb
+  if 'decoded_sha256' in pair:assert sha(decoded)==pair['decoded_sha256']
+  add(rb);add(sb)
+  if enc!='identity':edges[raw_digest].add(stored_digest)
+  if pair.get('source_is_already_gzip'):
+   payload=gzip_identity(sb)
+   assert payload==(pair['payload_sha256'],pair['payload_bytes'])
+  return {'original_path':raw,'stored_path':stored,'original_sha256':raw_digest,'original_bytes':len(rb),'stored_sha256':stored_digest,'stored_bytes':len(sb),'encoding':enc,'exact_decoding':True}
+
+ for spec in specs['packages']:
+  root=Path(spec['root']);mb=(root/'artifact-manifest.json').read_bytes();assert sha(mb)==spec['manifest_sha256']
+  manifest=json.loads(mb);rows=manifest.get('files',manifest.get('artifacts'));assert isinstance(rows,list)
+  actual=list(root.rglob('*'));assert not any(p.is_symlink() for p in actual),root
+  names={str(p.relative_to(root)) for p in actual if p.is_file()}
+  listed={r['path'] for r in rows};assert len(listed)==len(rows)
+  assert names==listed|{'artifact-manifest.json'},(root,names-listed,listed-names)
+  for r in rows:
+   p=safe(root,r['path']);body=p.read_bytes();assert sha(body)==r['sha256'] and len(body)==r['bytes']
+   occurrence(spec['name'],r['path'],p,body)
+  occurrence(spec['name'],'artifact-manifest.json',root/'artifact-manifest.json',mb)
+  compact=safe(root,spec.get('compact_manifest','compact-retention-manifest.json'));pairs=[]
+  if 'compact_manifest_sha256' in spec:assert sha(compact.read_bytes())==spec['compact_manifest_sha256']
+  if compact.exists():
+   c=jread(compact);pr=next(c[k] for k in ['pairs','files','rows','artifacts'] if k in c)
+   pairs=[normal_pair(root,p) for p in pr]
+  for p in pairs:
+   assert p['original_path'] in names and p['stored_path'] in names
+   pair_checks.append({'package':spec['name'],**p})
+  packages.append({**spec,'artifact_count_excluding_manifest':len(rows),'artifact_occurrences_including_manifest':len(rows)+1,'compact_pairs':len(pairs),'manifest_schema':'files' if 'files' in manifest else 'artifacts','compact_schema':list(jread(compact)) if compact.exists() else None,'all_inventory_hashes_sizes_and_pairs_verified':True})
+  source_manifest_checks.append((root,spec['manifest_sha256']))
+
+ # Selected operation records are exact snapshots, not a claim to freeze the live CI directory.
+ for r in specs['selected_root_evidence']:
+  p=Path(r['source']);b=p.read_bytes();assert sha(b)==r['sha256'] and len(b)==r['bytes']
+  occurrence('root-intake-and-issue-evidence',r['name'],p,b)
+ packages.append({'name':'root-intake-and-issue-evidence','root':None,'artifact_occurrences_including_manifest':len(specs['selected_root_evidence']),'compact_pairs':0,'scope':'Explicit exact selected snapshots; live CI directory is not inventoried or accepted as a frozen package.'})
+
+ print(json.dumps({'phase':'package inventories and compact pairs verified','packages':len(packages),'occurrences':len(occurrences),'pairs':len(pair_checks)}),flush=True)
+ # Validate every gzip body, including precompressed corpus/match snapshots.
+ # Decoded payloads already present as source artifacts can reuse this exact encoded body.
+ for digest,body in list(blobs.items()):
+  if body.startswith(b'\x1f\x8b'):
+   payload,size=gzip_identity(body);gzip_checks[digest]={'payload_sha256':payload,'payload_bytes':size}
+   if payload in blobs:
+    assert len(blobs[payload])==size;edges[payload].add(digest)
+
+ # Reuse exact bytes already retained in the actual merged predecessor tree.
+ # Historical storage corrections are resolved before any owner path is accepted.
+ initial_path=PREVIOUS+'/root-verification/initial-source-retention.json'
+ successor_path=PREVIOUS+'/root-verification/native-xml-storage-successor.json'
+ initial_bytes=git('show',head+':'+initial_path);initial=json.loads(initial_bytes)
+ successor_bytes=git('show',head+':'+successor_path);successor=json.loads(successor_bytes)
+ relocations={r['historical_retained_path']:r for r in successor['files']}
+ candidate_owners=[]
+ for pkg in initial['packages']:
+  for r in pkg['copied_files']:
+   if r['sha256'] in blobs:
+    rel=r['path']
+    if rel in relocations:
+     q=relocations[rel];candidate_owners.append({'raw':q['original_sha256'],'stored':q['stored_sha256'],'path':PREVIOUS+'/'+q['new_retained_path'],'stored_bytes':q['stored_bytes'],'encoding':'gzip'})
+    else:candidate_owners.append({'raw':r['sha256'],'stored':r['sha256'],'path':PREVIOUS+'/'+rel,'stored_bytes':r['bytes'],'encoding':'identity'})
+  for r in pkg['decoded_source_mappings']:
+   if r['original_sha256'] in blobs or r['stored_sha256'] in blobs:
+    rel=r['retained']
+    if rel in relocations:
+     q=relocations[rel];candidate_owners.append({'raw':q['original_sha256'],'stored':q['stored_sha256'],'path':PREVIOUS+'/'+q['new_retained_path'],'stored_bytes':q['stored_bytes'],'encoding':'gzip'})
+    else:candidate_owners.append({'raw':r['original_sha256'],'stored':r['stored_sha256'],'path':PREVIOUS+'/'+rel,'stored_bytes':r['stored_bytes'],'encoding':r['encoding']})
+ # Batch exact blob reads instead of spawning one Git process per owner.
+ owner_paths=sorted({r['path'] for r in candidate_owners})
+ batch=subprocess.run(['git','cat-file','--batch'],cwd=REPO,input=''.join(head+':'+p+'\n' for p in owner_paths).encode(),capture_output=True,check=True).stdout
+ owner_bodies={};offset=0
+ for path in owner_paths:
+  end=batch.index(b'\n',offset);header=batch[offset:end].split();assert header[1]==b'blob',(path,header)
+  size=int(header[2]);offset=end+1;owner_bodies[path]=batch[offset:offset+size];offset+=size
+  assert batch[offset:offset+1]==b'\n';offset+=1
+ assert offset==len(batch)
+ owner_checks=[];seen_owners=set()
+ for r in sorted(candidate_owners,key=lambda x:(x['path'],x['raw'])):
+  key=(r['path'],r['raw']);
+  if key in seen_owners:continue
+  seen_owners.add(key)
+  sb=owner_bodies[r['path']];assert sha(sb)==r['stored'] and len(sb)==r['stored_bytes']
+  raw=sb if r['encoding']=='identity' else gzip.decompress(sb)
+  assert sha(raw)==r['raw']
+  if r['raw'] in blobs:assert raw==blobs[r['raw']]
+  add(sb)
+  existing.setdefault(r['stored'],{'kind':'existing_repository','path':r['path'],'git_commit':head,'git_tree':proof['merged_tree'],'stored_sha256':r['stored'],'stored_bytes':len(sb)})
+  if r['encoding']!='identity' and r['raw'] in blobs:edges[r['raw']].add(r['stored'])
+  owner_checks.append({**r,'verified_exact':True})
+
+ print(json.dumps({'phase':'existing merged owners verified','owners':len(owner_checks)}),flush=True)
+ # Uncovered material receives an explicit successor storage representation.
+ # Compress all uncovered non-gzip objects, so no new raw XML or trailing whitespace enters Git.
+ for digest,body in list(blobs.items()):
+  if digest not in existing and not edges[digest] and not body.startswith(b'\x1f\x8b'):
+   encoded=gzip.compress(body,compresslevel=9,mtime=0);target=add(encoded)
+   assert gzip.decompress(encoded)==body;edges[digest].add(target)
+   generated.append({'original_sha256':digest,'original_bytes':len(body),'stored_sha256':target,'stored_bytes':len(encoded),'encoding':'gzip','mtime':0,'compression_level':9,'original_source_bytes_unchanged':True,'source_occurrences':origins[digest]})
+
+ resolutions={};visiting=set();new_objects={}
+ def resolve(digest):
+  if digest in resolutions:return resolutions[digest]
+  assert digest not in visiting,'Cycle in exact storage encodings';visiting.add(digest)
+  if digest in existing:result={'storage':existing[digest],'decode_steps':[]}
+  elif edges[digest]:
+   candidates=[]
+   for child in sorted(edges[digest]):
+    sub=resolve(child)
+    step={'encoding':'gzip','input_sha256':child,'output_sha256':digest,'output_bytes':len(blobs[digest])}
+    candidates.append({'storage':sub['storage'],'decode_steps':sub['decode_steps']+[step]})
+   result=min(candidates,key=lambda r:(r['storage']['kind']!='existing_repository',r['storage']['stored_bytes'],len(r['decode_steps']),r['storage']['path']))
+  else:
+   body=blobs[digest];assert body.startswith(b'\x1f\x8b')
+   result={'storage':{'kind':'new_retention_object','path':'objects/'+digest[:2]+'/'+digest+'.gz','stored_sha256':digest,'stored_bytes':len(body)},'decode_steps':[]}
+  visiting.remove(digest);resolutions[digest]=result;return result
+
+ for r in occurrences:resolve(r['sha256'])
+ # Store only endpoints actually referenced by a source occurrence; rejected candidates are never copied.
+ content_map={}
+ for r in occurrences:
+  digest=r['sha256'];res=resolve(digest)
+  assert len(res['decode_steps'])<=8
+  content_map[digest]={'source_sha256':digest,'source_bytes':r['bytes'],**res}
+  if res['storage']['kind']=='new_retention_object':new_objects[res['storage']['stored_sha256']]=res['storage']
+ out.mkdir()
+ for digest,r in new_objects.items():
+  p=safe(out,r['path']);p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(blobs[digest]);assert sha(p.read_bytes())==digest
+ for digest,row in content_map.items():
+  body=blobs[row['storage']['stored_sha256']]
+  for step in row['decode_steps']:
+   assert sha(body)==step['input_sha256'];body=gzip.decompress(body)
+   assert sha(body)==step['output_sha256'] and len(body)==step['output_bytes']
+  assert body==blobs[digest]
+ # No physical raw body is copied alongside a compact encoding of that body.
+ assert not any(child in new_objects and parent in new_objects for parent,children in edges.items() for child in children)
+ write(out,'content-map.json',content_map)
+ write(out,'source-package-inventory.json',packages)
+ write(out,'verified-compact-pairs.json',pair_checks)
+ write(out,'existing-owner-verification.json',{'commit':head,'tree':proof['merged_tree'],'initial_receipt':{'path':initial_path,'sha256':sha(initial_bytes)},'storage_successor':{'path':successor_path,'sha256':sha(successor_bytes)},'verified_owner_rows':owner_checks,'scope':'Exact matching owners discovered in the predecessor initial retention receipt with explicit XML storage successor. No universal search for all historical repository byte duplicates is claimed.'})
+ write(out,'new-storage-successor-mappings.json',generated)
+ write(out,'gzip-payload-verification.json',gzip_checks)
+ write(out,'pending-packages.json',specs['pending'])
+ write(out,'merged-baseline-binding.json',proof)
+ write(out,'selected-extra-inputs.json',specs['selected_root_evidence'])
+
+ by_package=defaultdict(list)
+ for r in occurrences:by_package[r['package']].append(r)
+ for name,rows in sorted(by_package.items()):
+  write(out,'packages/'+name+'/source-map.json',{'package':name,'source_occurrences':rows,'content_map':'../../content-map.json','reconstruction_rule':'Resolve each exact source SHA256 through content-map, verify stored bytes, apply decode_steps in order, and verify final source bytes. Duplicate source paths remain distinct mapped occurrences.'})
+  handoff=next((r for r in rows if r['path']=='HANDOFF.md'),None)
+  text=f'# {name}: retained evidence index\n\nThis is a readable storage index, not a rewritten source handoff or scientific acceptance. Every source occurrence is preserved in the [source map](source-map.json); resolve its digest using the [content map](../../content-map.json).\n\n'
+  if handoff:text+=f'Original HANDOFF.md: `{handoff["sha256"]}` ({handoff["bytes"]} bytes). Display its exact text with `python decode_retained.py --root <retention-root> --repo <repository> --package {name} --artifact HANDOFF.md`.\n\n'
+  text+='Original relative links refer to the original package layout. Reconstruct the complete package in a new external directory with the decoder to use those links unchanged. Source originals and all unsuccessful attempts remain immutable.\n'
+  (out/'packages'/name/'README.md').write_text(text)
+ for root,digest in source_manifest_checks:assert sha((root/'artifact-manifest.json').read_bytes())==digest
+ for r in occurrences:
+  b=Path(r['source']).read_bytes();assert sha(b)==r['sha256'] and len(b)==r['bytes']
+ handoffs=[r for r in occurrences if r['path']=='HANDOFF.md']
+ raw_xml=[r for r in occurrences if r['path'].lower().endswith('.xml')]
+ summary={'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Lossless storage rehearsal only; no scientific acceptance or maintained promotion.',
+  'verified_merged_commit':head,'verified_merged_tree':proof['merged_tree'],'proposed_repository_root':FUTURE,
+  'frozen_package_count':len(specs['packages']),'selected_root_evidence_count':len(specs['selected_root_evidence']),
+  'source_artifact_occurrences_including_manifests':len(occurrences),'source_occurrence_bytes':sum(r['bytes'] for r in occurrences),
+  'unique_source_byte_objects':len(content_map),'verified_compact_pairs':len(pair_checks),'verified_existing_owner_rows':len(owner_checks),
+  'source_occurrences_resolved_to_existing_repository':[r['sha256'] for r in occurrences if content_map[r['sha256']]['storage']['kind']=='existing_repository'].__len__(),
+  'new_physical_objects':len(new_objects),'new_physical_bytes':sum(r['stored_bytes'] for r in new_objects.values()),
+  'new_physical_objects_are_all_gzip':True,'physical_raw_and_compact_duplicates':0,'generated_storage_successors':len(generated),
+  'all_source_occurrences_reconstructed_exactly':True,'all_source_originals_unchanged_at_completion':True,
+  'original_handoffs_preserved':len(handoffs),'raw_xml_occurrences_losslessly_mapped':len(raw_xml),
+  'maximum_decode_depth':max(len(r['decode_steps']) for r in content_map.values()),
+  'retention_coverage_limit':'All artifacts in the pinned frozen manifests, every manifest itself, and the explicit root evidence snapshots. External multi-GB databases referenced by frozen ledgers are not silently promoted or claimed as bundled artifacts.',
+  'pending':specs['pending'],'actual_promotion_performed':False}
+ write(out,'dry-run-verification.json',summary)
+ print(json.dumps({k:v for k,v in summary.items() if k!='pending'},indent=2),flush=True)
+
+if __name__=='__main__':main()

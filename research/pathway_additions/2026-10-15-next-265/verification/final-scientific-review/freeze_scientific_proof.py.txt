@@ -1,0 +1,77 @@
+"""Freeze the complete independently assessed scientific preparation once."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+
+ROOT = Path('/private/tmp/pathwaymech-next-265-canonical-scientific-preparation')
+RECEIPT = Path('/private/tmp/pathwaymech-next-265-canonical-scientific-freeze.json')
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+def write(path, obj):
+    path.write_text(json.dumps(obj, indent=2)+'\n')
+
+assert not (ROOT/'artifact-manifest.json').exists()
+assert not (ROOT/'compact-retention-manifest.json').exists()
+assert not RECEIPT.exists()
+(ROOT/'freeze_scientific_proof.py.txt').write_bytes(Path(__file__).read_bytes())
+files = sorted(p for p in ROOT.rglob('*') if p.is_file())
+rows = []
+for p in files:
+    assert not p.is_symlink()
+    logical = str(p.relative_to(ROOT))
+    raw = p.read_bytes()
+    retained = logical
+    encoding = 'identity'
+    if p.suffix == '.py':
+        retained += '.txt'
+        target = ROOT/retained
+        assert not target.exists()
+        target.write_bytes(raw)
+        p.unlink()
+    elif logical.startswith(('initial-inputs/', 'maintained-decoded-', 'context-before-format-successor/', 'final-context/')) and len(raw) > 4096 and not raw.startswith(b'\x1f\x8b'):
+        retained += '.gz'
+        target = ROOT/retained
+        assert not target.exists()
+        compressed = gzip.compress(raw, compresslevel=9, mtime=0)
+        assert gzip.decompress(compressed) == raw
+        target.write_bytes(compressed)
+        p.unlink()
+        encoding = 'gzip'
+    body = (ROOT/retained).read_bytes()
+    row = {'original_path': logical, 'original_sha256': sha(raw), 'original_bytes': len(raw),
+           'stored_path': retained, 'stored_sha256': sha(body), 'stored_bytes': len(body), 'encoding': encoding}
+    if encoding == 'identity' and raw.startswith(b'\x1f\x8b'):
+        decoded = gzip.decompress(raw)
+        row.update(existing_gzip_preserved=True, decoded_sha256=sha(decoded), decoded_bytes=len(decoded))
+    rows.append(row)
+compact = ROOT/'compact-retention-manifest.json'
+write(compact, {'scope':'Every original logical file before this final freeze, including hidden/ignored. Root compact/artifact manifests are controls, not self-mapped. Inert .py.txt paths retain exact original bytes.', 'artifacts':rows})
+manifest = ROOT/'artifact-manifest.json'
+physical=[]
+for p in sorted(ROOT.rglob('*')):
+    if p.is_file():
+        body=p.read_bytes()
+        physical.append({'path':str(p.relative_to(ROOT)), 'sha256':sha(body), 'bytes':len(body)})
+write(manifest, {'scope':'All physical files including hidden/ignored, excluding only this artifact-manifest.json. Complete logical reconstruction is in compact-retention-manifest.json.', 'files':physical})
+for row in physical:
+    body=(ROOT/row['path']).read_bytes()
+    assert len(body)==row['bytes'] and sha(body)==row['sha256']
+for row in rows:
+    body=(ROOT/row['stored_path']).read_bytes()
+    decoded=gzip.decompress(body) if row['encoding']=='gzip' else body
+    assert len(decoded)==row['original_bytes'] and sha(decoded)==row['original_sha256']
+assert {str(p.relative_to(ROOT)) for p in ROOT.rglob('*') if p.is_file()}=={r['path'] for r in physical}|{'artifact-manifest.json'}
+assert not list(ROOT.rglob('*.py'))
+result={'frozen_at':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),
+        'package':str(ROOT),'artifact_manifest_sha256':sha(manifest.read_bytes()),'physical_artifacts':len(physical),
+        'compact_manifest_path':str(compact),'compact_manifest_sha256':sha(compact.read_bytes()),
+        'compact_logical_rows':len(rows),'gzip_pairs':sum(r['encoding']=='gzip' for r in rows),
+        'existing_gzip_payload_bindings':sum(r.get('existing_gzip_preserved',False) for r in rows),
+        'handoff_sha256':sha((ROOT/'HANDOFF.md').read_bytes()),
+        'conclusion':'Independent scientific acceptance with explicit limits; zero unresolved record findings. Native final inspection, candidate validation and coordinated canonical save remain separate.'}
+write(RECEIPT,result)
+print(json.dumps(result,indent=2))

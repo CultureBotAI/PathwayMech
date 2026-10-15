@@ -1,0 +1,84 @@
+"""Check added review/history/evidence without repeating unchanged scientific gates."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import time
+
+ROOT = Path('/private/tmp/pathwaymech-next-265-20261015')
+OUT = Path('/private/tmp/pathwaymech-next-265-checks-final-documentation')
+INITIAL = Path('/private/tmp/pathwaymech-next-265-checks-initial')
+BASE = '39b84c79eb9997fb6785ef040f571bad498846e7'
+PYTHON = '/private/tmp/pathwaymech-next-263-verified-venv/bin/python'
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-next-265-uv-cache',
+           UV_PROJECT_ENVIRONMENT='/private/tmp/pathwaymech-next-263-verified-venv',
+           PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT), RECORD_REVIEW_BASE=BASE)
+REPORT = 'research/pathway_additions/2026-10-15-next-265/'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def inventory():
+    scope = json.loads(Path('/private/tmp/pathwaymech-next-265-checks-network-tail/final-input-preservation.json').read_bytes())['scope']
+    raw = subprocess.check_output(['git', 'ls-files', '-co', '-z', '--', *scope], cwd=ROOT)
+    names = sorted({p.decode() for p in raw.split(b'\0') if p})
+    return {p: sha(ROOT / p) for p in names if (ROOT / p).is_file()
+            and not {'__pycache__', '.pytest_cache', '.ruff_cache'} & set(Path(p).parts)}
+
+
+def main():
+    assert not OUT.exists(), 'Observe existing run instead of restarting.'
+    original = json.loads((INITIAL / 'tested-core-input-hashes.json').read_bytes())
+    current = inventory()
+    removed = sorted(set(original) - set(current))
+    changed = sorted(p for p in original.keys() & current.keys() if original[p] != current[p])
+    added = sorted(set(current) - set(original))
+    assert not removed
+    assert changed == [REPORT + 'README.md'], changed
+    allowed = (REPORT, 'reviews/structured/')
+    assert all(p.startswith(allowed) for p in added), [p for p in added if not p.startswith(allowed)]
+    bundles = sorted({str(Path(p).parent) for p in added if p.startswith('reviews/structured/')})
+    assert len(bundles) == 2, bundles
+    assert all((ROOT / p / 'review.yaml').is_file() and (ROOT / p / 'review.md').is_file() for p in bundles)
+    OUT.mkdir()
+    accounting = {'original_tested_files': len(original), 'deleted': removed,
+                  'changed': changed, 'added': added, 'review_bundles': bundles,
+                  'all_tested_data_authority_code_schema_and_pages_unchanged': True,
+                  'ignored_and_hidden_included': True}
+    (OUT / 'delta-accounting.json').write_text(json.dumps(accounting, indent=2) + '\n')
+    (OUT / 'checked-input-hashes.json').write_text(json.dumps(current, indent=2) + '\n')
+    receipts = []
+    commands = [
+        [PYTHON, '-B', 'scripts/record_review.py', 'check', '--base', BASE],
+        [PYTHON, '-B', 'scripts/validate_history.py', 'history'],
+        ['uv', 'run', 'pathwaymech-check-docs'],
+        ['uv', 'run', 'pathwaymech-deep-research-contract'],
+        ['git', 'diff', '--check'], ['git', 'diff', '--cached', '--check'],
+    ]
+    for i, command in enumerate(commands):
+        log = OUT / f'{i + 1:02d}.log'
+        start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        clock = time.monotonic()
+        with log.open('w') as stream:
+            result = subprocess.run(command, cwd=ROOT, env=ENV, stdout=stream, stderr=subprocess.STDOUT)
+        row = {'command': command, 'started_utc': start, 'elapsed_seconds': round(time.monotonic() - clock, 2),
+               'exit_code': result.returncode, 'log_path': str(log), 'log_sha256': sha(log)}
+        receipts.append(row)
+        (OUT / 'receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+        print(json.dumps(row), flush=True)
+        if result.returncode:
+            print(log.read_text()[-8000:], flush=True)
+            raise SystemExit(result.returncode)
+    assert current == inventory(), 'Documentation inputs changed during checking.'
+    (OUT / 'final-input-preservation.json').write_text(json.dumps(
+        {'all_unchanged': True, 'checked_files': len(current), 'review_bundles': bundles}, indent=2) + '\n')
+    print('All final documentation/review checks passed; scientific inputs unchanged.', flush=True)
+
+
+if __name__ == '__main__':
+    main()

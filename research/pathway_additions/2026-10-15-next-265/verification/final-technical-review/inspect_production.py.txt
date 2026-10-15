@@ -1,0 +1,109 @@
+from pathlib import Path
+from html.parser import HTMLParser
+from datetime import datetime,timezone
+import collections,csv,hashlib,html,io,json,re,yaml
+R=Path('/private/tmp/pathwaymech-next-265-final-technical-review');W=Path('/private/tmp/pathwaymech-next-265-20261015');C=Path('/private/tmp/pathwaymech-next-265-ci')
+def h(b):return hashlib.sha256(b).hexdigest()
+def out(name,v):(R/name).write_text(json.dumps(v,indent=2)+'\n')
+def norm(s):return ' '.join(str(s).split())
+record=yaml.safe_load((W/'data/pathways/benzoyl-coa-degradation-i-aerobic.yaml').read_bytes());assert h((W/'data/pathways/benzoyl-coa-degradation-i-aerobic.yaml').read_bytes())=='b2fc0cca6ac455fcc1820766caeb49a13beea64e49477bb774d3893e8bde3fff'
+class Node:
+ def __init__(self,tag,attrs):self.tag=tag;self.attrs=dict(attrs);self.children=[]
+ def descendants(self):
+  for c in self.children:
+   if isinstance(c,Node):yield c;yield from c.descendants()
+ def text(self):return ''.join(c.text() if isinstance(c,Node) else c for c in self.children)
+class Parser(HTMLParser):
+ def __init__(self):super().__init__(convert_charrefs=True);self.root=Node('root',[]);self.stack=[self.root]
+ def handle_starttag(self,tag,attrs):
+  n=Node(tag,attrs);self.stack[-1].children.append(n)
+  if tag not in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}:self.stack.append(n)
+ def handle_endtag(self,tag):
+  for i in range(len(self.stack)-1,0,-1):
+   if self.stack[i].tag==tag:self.stack=self.stack[:i];return
+ def handle_startendtag(self,tag,attrs):self.stack[-1].children.append(Node(tag,attrs))
+ def handle_data(self,d):self.stack[-1].children.append(d)
+page=W/'pages/records/MetaCyc_PWY-1361.html';b=page.read_bytes();assert h(b)=='940c219b1e93543e6e944e69fc09e7ec23e94c6ae2054ce03c55dfe6613ffc63';(R/'production-page.html').write_bytes(b)
+p=Parser();p.feed(b.decode());allnodes=list(p.root.descendants());ident=[n for n in allnodes if 'id' in n.attrs];assert len(ident)==len({n.attrs['id'] for n in ident});byid={n.attrs['id']:n for n in ident}
+cls=lambda n,c:c in n.attrs.get('class','').split()
+links=[n for n in allnodes if n.tag=='a'];graph_edges=[n for n in links if cls(n,'graph-edge')];graph_nodes=[n for n in links if cls(n,'graph-node')];assert len(graph_edges)==67 and len(graph_nodes)==51
+edgebyhref={n.attrs['href']:n for n in graph_edges};nodebykey={n.attrs['data-node-id']:n for n in graph_nodes};assert len(edgebyhref)==67 and len(nodebykey)==51
+expected_base_ids={n['id'] for section in ['participants','reactions'] for n in record[section]}|{record['id']};assert len(expected_base_ids)==43
+expected_qualified={};edgeproof=[];evidence_count=0
+refs={x['id']:x for x in record['references']};refanchors={x['id']:f'reference-{i}' for i,x in enumerate(record['references'],1)}
+context={'part_of','has_part','occurs_in','located_in','has_cofactor'}
+def inspect_evidence(container,ev):
+ txt=norm(container.text());assert norm(ev.get('quote',ev.get('source_assertion',''))) in txt
+ if 'source_assertion' in ev:assert 'Source assertion:' in txt and not any(n.tag=='blockquote' for n in container.descendants())
+ if ev.get('source_locator'):assert norm(ev['source_locator']) in txt
+ assert any(n.tag=='a' and n.attrs.get('href')=='#'+refanchors[ev['reference_id']] for n in container.descendants())
+for i,e in enumerate(record['mechanistic_edges'],1):
+ n=edgebyhref[f'#mechanism-edge-{i}'];a=n.attrs;row=byid[f'mechanism-edge-{i}'];cells=[x for x in row.children if isinstance(x,Node) and x.tag=='td'];assert len(cells)==4
+ assert a['data-predicate']==e['predicate'] and norm(e['description']) in norm(a['aria-label'])
+ assert e['subject'] in cells[0].text() and e['object'] in cells[2].text() and norm(e['description']) in norm(cells[1].text())
+ qbyrole={q['endpoint']:q for q in e.get('endpoint_qualifiers',[])}
+ for role in ['subject','object']:
+  if role in qbyrole:
+   q=qbyrole[role];key=f'qualified-endpoint-{i}-{role}';expected_qualified[key]=e[role];assert a[f'data-{role}']==key and a[f'data-{role}-id']==e[role]
+   displayed=nodebykey[key];assert displayed.attrs['data-base-node-id']==e[role] and displayed.attrs['data-qualified']=='true'
+   assert norm(q['description']) in norm(displayed.attrs['aria-label']) and norm(q['description']) in norm(a['aria-label'])
+   qelement=byid[f'mechanism-edge-{i}-qualifier-{role}'];assert qelement in list(cells[0 if role=='subject' else 2].descendants())
+   assert norm(q['description']) in norm(qelement.text())
+   for ev in q['evidence']:
+    inspect_evidence(qelement,ev);assert norm(ev.get('quote',ev.get('source_assertion',''))) in norm(displayed.attrs['aria-label']);assert norm(ev.get('source_locator','')) in norm(displayed.attrs['aria-label']);evidence_count+=1
+  else:assert a[f'data-{role}']==e[role]
+ for ev in e['evidence']:inspect_evidence(cells[3],ev);evidence_count+=1
+ kind='context' if e['predicate'] in context else 'mechanism';assert cls(n,'graph-edge-'+kind)
+ paths=[x for x in n.descendants() if x.tag=='path' and cls(x,'graph-edge-line')];assert len(paths)==1
+ assert bool(paths[0].attrs.get('stroke-dasharray'))==(kind=='context') and 'marker-end' in paths[0].attrs
+ edgeproof.append({'edge_id':e['id'],'row':f'mechanism-edge-{i}','subject':e['subject'],'predicate':e['predicate'],'object':e['object'],'class':kind,'full_description_preserved':True,'full_evidence_and_qualifiers_preserved':True,'qualifier_roles':sorted(qbyrole)})
+assert set(nodebykey)==expected_base_ids|set(expected_qualified) and len(expected_qualified)==8 and evidence_count==127
+for reaction in record['reactions']:assert 'Source reaction direction: '+reaction['direction'] in nodebykey[reaction['id']].attrs['aria-label']
+for x in record['references']:
+ n=byid[refanchors[x['id']]];txt=norm(n.text())
+ for field in ['id','title','source_version']:assert norm(x[field]) in txt,(x['id'],field)
+ assert any(y.tag=='a' and y.attrs.get('href')==x['url'] for y in n.descendants()),x['id']
+for n in graph_edges+graph_nodes:assert n.attrs['href'][1:] in byid
+# Every source ID is displayed in the page; four unconnected taxa remain in the taxon table, not invented graph edges.
+for section in ['taxa','participants','reactions']:
+ for n in record[section]:assert n['id'] in p.root.text()
+out('production-page-fidelity.json',{'result':'pass','page_sha256':h(b),'source_nodes':47,'rendered_base_nodes':43,'unconnected_taxa_in_taxon_table':4,'qualified_display_instances':8,'rendered_total_nodes':51,'mechanistic_edges':sum(x['class']=='mechanism' for x in edgeproof),'context_edges':sum(x['class']=='context' for x in edgeproof),'total_edges':67,'all127evidence_occurrences_preserved':True,'all68reference_titles_versions_urls_preserved':True,'all_links_resolve':True,'reaction_directions_preserved_as_metadata':True,'edge_checks':edgeproof,'qualified_nodes':expected_qualified,'scope':'Independent actual HTML/SVG and table fidelity to YAML, not scientific acceptance.'})
+# Actual native export and production downloads must be byte-identical.
+kgx_receipt=json.loads((C/'kgx-export-receipt.json').read_bytes());assert kgx_receipt['exit_code']==0
+outputs={}
+for row in kgx_receipt['outputs']:
+ original=Path(row['path']).read_bytes();assert h(original)==row['sha256'] and len(original)==row['bytes'];page_download=(W/'pages/downloads'/Path(row['path']).name).read_bytes();assert original==page_download
+ outputs[Path(row['path']).name]={'sha256':h(original),'bytes':len(original),'native_and_page_download_equal':True}
+edge_rows=list(csv.DictReader(io.StringIO((C/'kgx-export/edges.tsv').read_text()),delimiter='\t'));node_rows={r['id']:r for r in csv.DictReader(io.StringIO((C/'kgx-export/nodes.tsv').read_text()),delimiter='\t')}
+predicate={'provides_input_for':'RO:0002413','part_of':'BFO:0000050','has_part':'BFO:0000051','located_in':'RO:0001025'}
+selected=[r for r in edge_rows if r['id'].startswith('pathwaymech:MetaCyc_PWY-1361_')];assert len(selected)==67
+byedge={r['id']:r for r in selected};kept=[]
+for e in record['mechanistic_edges']:
+ qs=e.get('endpoint_qualifiers',[]);identity=record['id']+'\0'+e['id']
+ if qs:identity+='\0'+json.dumps(sorted(qs,key=lambda x:x['endpoint']),ensure_ascii=False,sort_keys=True)
+ edgeid='pathwaymech:'+re.sub('[^A-Za-z0-9._-]+','_',record['id']+'_'+e['id']).strip('_')+'_'+h(identity.encode())[:12];r=byedge[edgeid]
+ assert (r['subject'],r['predicate'],r['object'])==(e['subject'],predicate.get(e['predicate'],'pathwaymech:'+e['predicate']),e['object'])
+ assert r['description']==e['description'] and json.loads(r['evidence'])==e['evidence'] and (json.loads(r['endpoint_qualifiers']) if r['endpoint_qualifiers'] else [])==qs
+ cited=sorted({v['reference_id'] for v in e['evidence']+[v for q in qs for v in q['evidence']]});assert r['source_records']=='|'.join(cited) and json.loads(r['reference_metadata'])==[refs[k] for k in cited]
+ kept.append(r)
+# Reconstruct all source contexts for the 47 target IDs across the actual 262-record corpus.
+allids={record['id']}|{n['id'] for s in ['taxa','participants','reactions'] for n in record[s]};contexts=collections.defaultdict(list)
+for path in sorted((W/'data/pathways').rglob('*.yaml')):
+ rec=yaml.safe_load(path.read_bytes());declared=[(rec['id'],{'record_id':rec['id'],'collection':'pathway','label':rec['label']})]+[(n['id'],{'record_id':rec['id'],'collection':section,**n}) for section in ['taxa','participants','reactions'] for n in rec.get(section,[])]
+ for identifier,ctx in declared:
+  if identifier in allids and ctx not in contexts[identifier]:contexts[identifier].append(ctx)
+nodeproof=[]
+category={'cofactor':'biolink:ChemicalEntity','small_molecule':'biolink:SmallMolecule','protein':'biolink:Protein','gene':'biolink:Gene','complex':'biolink:MacromolecularComplex','cellular_component':'biolink:CellularComponent','molecular_activity':'biolink:MolecularActivity'}
+for identifier in sorted(allids):
+ r=node_rows[identifier];actual=json.loads(r['source_contexts']);assert sorted(actual,key=lambda x:json.dumps(x,sort_keys=True))==sorted(contexts[identifier],key=lambda x:json.dumps(x,sort_keys=True))
+ directions={v['direction'] for v in actual if v.get('direction')};assert r['direction']==(next(iter(directions)) if len(directions)==1 else '')
+ local=[x for x in actual if x['record_id']==record['id']];assert len(local)==1;ctx=local[0]
+ if ctx.get('category'):assert ctx['category'] in r['source_category'].split('|') and category[ctx['category']] in r['category'].split('|')
+ nodeproof.append(r)
+out('production-kgx-fidelity.json',{'result':'pass','native_export_receipt_sha256':h((C/'kgx-export-receipt.json').read_bytes()),'actual_downloads':outputs,'target_edges':kept,'target_nodes_with_complete_cross_record_context':nodeproof,'counts':{'target_edges':67,'target_nodes':47,'qualifiers':8},'scope':'Every actual target edge description, evidence item, qualifier, reference metadata, node category and full source contexts independently compared with YAML. Native export predates helper-only adoption; source corpus and generator bytes unchanged.'})
+# Bind root's actual browser observation and independently viewed screenshots.
+browser=json.loads((C/'browser-cdp-result.json').read_bytes());assert browser['page_sha256']==h(b) and browser['runtime_errors']==[]
+for capture in browser['captures']:assert h(Path(capture['path']).read_bytes())==capture['sha256']
+out('browser-independent-visual-assessment.json',{'utc':datetime.now(timezone.utc).isoformat(),'page_sha256':h(b),'browser_receipt_sha256':h((C/'browser-cdp-result.json').read_bytes()),'screenshots':browser['captures'],'viewed_both':True,'desktop':'Dark-theme overview is dense at 27% fit width. Controls/legend and graph viewport are visible, with scrolling for the lower construct instances. The overview is a navigation aid, not a claim that small labels are readable at fit width.','mobile':'At 390px, controls wrap, picker/status and legend remain visible, and the graph remains inside its viewport. The 10% overview requires zoom/picker for readable labels.','interaction_scope':'Root live CDP receipt independently read: no runtime errors, zoom change, RHEA48313 picker reaches100% with10 connected relationships. This reviewer did not rerun the browser.','count_reconciliation':'47 source IDs =43 displayed base nodes +4 unconnected taxa in the table; 8 qualified display instances produce51 graph nodes. 48 solid mechanism +19 dashed context =67 total directed links.'})
+out('production-summary.json',{'utc':datetime.now(timezone.utc).isoformat(),'result':'pass','record_sha256':h((W/'data/pathways/benzoyl-coa-degradation-i-aerobic.yaml').read_bytes()),'page_sha256':h(b),'counts':{'source_ids':47,'base_display_nodes':43,'qualified_display_instances':8,'total_display_nodes':51,'mechanism_edges':48,'context_edges':19,'total_edges':67,'evidence_occurrences':127,'references':68},'kgx_downloads':outputs,'full_required_gates_pending':True,'scientific_review':False})
+print((R/'production-summary.json').read_text())

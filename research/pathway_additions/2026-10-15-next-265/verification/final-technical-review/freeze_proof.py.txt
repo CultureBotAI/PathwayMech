@@ -1,0 +1,49 @@
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+
+root=Path('/private/tmp/pathwaymech-next-265-final-technical-review')
+sha=lambda x:hashlib.sha256(x).hexdigest()
+assert (root/'final-gate-acceptance.json').is_file(), 'Final gates must be inspected first'
+assert (root/'HANDOFF.md').is_file(), 'Complete handoff must exist first'
+assert not (root/'artifact-manifest.json').exists(), 'Do not overwrite a frozen package'
+rows=[]
+for p in sorted(root.rglob('*')):
+    assert not p.is_symlink()
+    if not p.is_file():
+        continue
+    rel=p.relative_to(root).as_posix()
+    raw=p.read_bytes()
+    # Exact source snapshots use lossless storage; small readable review results remain direct.
+    compressed=rel.startswith('inputs/') or rel.startswith('baseline/') or rel=='production-page.html'
+    if compressed:
+        dest=root/'compact'/Path(rel+'.gz')
+        dest.parent.mkdir(parents=True,exist_ok=True)
+        blob=gzip.compress(raw,mtime=0)
+        assert gzip.decompress(blob)==raw
+        dest.write_bytes(blob)
+        stored=dest.relative_to(root).as_posix()
+        p.unlink()
+        method='gzip'
+    else:
+        stored=rel
+        blob=raw
+        method='identity'
+    rows.append({'original':rel,'original_sha256':sha(raw),'original_bytes':len(raw),'stored':stored,'stored_sha256':sha(blob),'stored_bytes':len(blob),'method':method})
+(root/'compact-retention-manifest.json').write_text(json.dumps({'scope':'All original proof files before compact storage; source/code snapshots and production HTML are losslessly compressed. Manifests are generated afterward and the external freeze receipt is excluded to avoid circularity.','files':rows},indent=2)+'\n')
+files=[]
+for p in sorted(root.rglob('*')):
+    if p.is_file():
+        blob=p.read_bytes()
+        files.append({'path':p.relative_to(root).as_posix(),'sha256':sha(blob),'bytes':len(blob)})
+(root/'artifact-manifest.json').write_text(json.dumps({'scope':'All physical files including hidden/ignored, except this root artifact manifest itself. No unlisted internal freeze receipt.','files':files},indent=2)+'\n')
+for row in rows:
+    blob=(root/row['stored']).read_bytes()
+    assert sha(blob)==row['stored_sha256']
+    raw=gzip.decompress(blob) if row['method']=='gzip' else blob
+    assert sha(raw)==row['original_sha256'] and len(raw)==row['original_bytes']
+receipt={'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'package':str(root),'manifest_sha256':sha((root/'artifact-manifest.json').read_bytes()),'compact_manifest_sha256':sha((root/'compact-retention-manifest.json').read_bytes()),'handoff_sha256':sha((root/'HANDOFF.md').read_bytes()),'listed_artifacts':len(files),'retention_rows':len(rows),'gzip_rows':sum(x['method']=='gzip' for x in rows),'identity_rows':sum(x['method']=='identity' for x in rows),'all_pairs_verified':True}
+Path('/private/tmp/pathwaymech-next-265-final-technical-freeze.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps(receipt,indent=2))

@@ -1,0 +1,32 @@
+"""Freeze this external review; never write outside this review directory."""
+from pathlib import Path
+import gzip,hashlib,json
+root=Path(__file__).resolve().parent
+sha=lambda b:hashlib.sha256(b).hexdigest()
+assert root==Path('/private/tmp/pathwaymech-next-265-independent-extension-review')
+assert not (root/'artifact-manifest.json').exists()
+originals=sorted(p for p in root.rglob('*') if p.is_file())
+assert not any(p.is_symlink() for p in root.rglob('*'))
+pairs=[];objects={}
+for p in originals:
+ b=p.read_bytes();digest=sha(b);rel='compact/'+digest[:2]+'/'+digest+'.gz'
+ if digest not in objects:
+  encoded=gzip.compress(b,compresslevel=9,mtime=0);out=root/rel;assert not out.exists()
+  out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(encoded);objects[digest]=encoded
+ else:encoded=objects[digest]
+ assert gzip.decompress(encoded)==b
+ pairs.append({'original':str(p.relative_to(root)),'original_sha256':digest,'original_bytes':len(b),'stored':rel,'stored_sha256':sha(encoded),'stored_bytes':len(encoded),'method':'gzip'})
+compact={'scope':'Lossless storage copies of every original reviewer artifact, including both helper attempts and exact retained control/lineage snapshots. Original files remain unchanged.','files':pairs,'original_files':len(pairs),'unique_stored_files':len(objects)}
+(root/'compact-retention-manifest.json').write_text(json.dumps(compact,indent=2)+'\n')
+rows=[]
+for p in sorted(root.rglob('*')):
+ if p.is_file():
+  b=p.read_bytes();rows.append({'path':str(p.relative_to(root)),'sha256':sha(b),'bytes':len(b)})
+manifest={'scope':'Complete frozen independent extension technical review inventory, including hidden and ignored files; excludes only this manifest.','files':rows}
+(root/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+actual={str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}
+assert actual=={r['path'] for r in rows}|{'artifact-manifest.json'}
+for r in rows:
+ b=(root/r['path']).read_bytes();assert sha(b)==r['sha256'] and len(b)==r['bytes']
+for r in pairs:assert gzip.decompress((root/r['stored']).read_bytes())==(root/r['original']).read_bytes()
+print(json.dumps({'status':'frozen','root':str(root),'artifact_manifest_sha256':sha((root/'artifact-manifest.json').read_bytes()),'compact_manifest_sha256':sha((root/'compact-retention-manifest.json').read_bytes()),'handoff_sha256':sha((root/'HANDOFF.md').read_bytes()),'listed_artifacts':len(rows),'compact_originals':len(pairs),'compact_objects':len(objects)},indent=2))

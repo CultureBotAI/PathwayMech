@@ -1,0 +1,83 @@
+"""Rebind prior independent science to exact maintained originals and owners."""
+import datetime
+from html.parser import HTMLParser
+import json
+from pathlib import Path
+from replay_maintained_realization import ROOT, OUT, RET, sha, artifact, decode
+
+class Node:
+    def __init__(self, tag, attrs, parent):
+        self.tag, self.attrs, self.parent, self.children = tag, dict(attrs), parent, []
+    def text(self):
+        return ''.join(c if isinstance(c, str) else c.text() for c in self.children)
+    def ids(self):
+        node, result = self, []
+        while node:
+            if node.attrs.get('id'):
+                result.append(node.attrs['id'])
+            node = node.parent
+        return result
+
+class Document(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.stack = [Node('root', [], None)]
+        self.units = []
+    def handle_starttag(self, tag, attrs):
+        node = Node(tag, attrs, self.stack[-1])
+        self.stack[-1].children.append(node)
+        if tag in ['p', 'figcaption']:
+            self.units.append(node)
+        if tag not in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}:
+            self.stack.append(node)
+    def handle_data(self, text):
+        self.stack[-1].children.append(text)
+    def handle_endtag(self, tag):
+        for index in range(len(self.stack)-1, 0, -1):
+            if self.stack[index].tag == tag:
+                del self.stack[index:]
+                break
+    def handle_startendtag(self, tag, attrs):
+        self.handle_starttag(tag, attrs)
+        self.handle_endtag(tag)
+
+inventory = json.loads((RET / 'source-package-inventory.json').read_bytes())
+reuse = []
+for package in inventory:
+    if not package['name'].startswith('independent-'):
+        continue
+    manifest = artifact(package['name'], 'artifact-manifest.json')
+    handoff = artifact(package['name'], 'HANDOFF.md')
+    external = Path(package['root'])
+    assert sha(manifest) == package['manifest_sha256']
+    assert manifest == (external / 'artifact-manifest.json').read_bytes()
+    assert handoff == (external / 'HANDOFF.md').read_bytes()
+    reuse.append({'package': package['name'], 'manifest_sha256': sha(manifest), 'handoff_sha256': sha(handoff), 'external_frozen_acceptance_exact': True, 'role': 'Prior independent acceptance, separate from source authors. Full-science scope and its limits are retained; not an earlier canonical maintained-record review.'})
+
+units = json.loads(artifact('locator-successor', 'primary-edge-unit-bindings.json'))
+parsed, checked = {}, []
+for unit in units:
+    digest = unit['original_sha256']
+    if digest not in parsed:
+        parser = Document()
+        parser.feed(decode(digest).decode())
+        parsed[digest] = parser
+    matches = [i for i, node in enumerate(parsed[digest].units) if node.tag == unit['kind'] and ' '.join(node.text().split()) == unit['text'] and node.ids() == unit['dom_ids']]
+    assert len(matches) == 1
+    assert sha(unit['text'].encode()) == unit['text_sha256']
+    checked.append({k: unit[k] for k in ['reference_id','unit','kind','dom_ids','text_sha256','original_sha256']} | {'unique_original_DOM_match': True, 'independent_document_unit_index': matches[0]})
+assert len(checked) == 41
+for citation, number in [('PMID:11222587', 93), ('PMID:20452977', 53)]:
+    assert any(u['reference_id'] == citation and u['unit'] == number for u in checked)
+
+authorities = json.loads(artifact('authority', 'successful-authority-output-bindings.json'))
+authority_checks = []
+for row in authorities['files']:
+    owner = row['path'].split('/proposed/', 1)[1]
+    body = (ROOT / owner).read_bytes()
+    assert sha(body) == row['sha256'] and len(body) == row['bytes']
+    authority_checks.append({'path': owner, 'sha256': sha(body), 'bytes': len(body), 'accepted_authority_output_exact': True})
+
+result = {'accessed_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'status': 'passed', 'prior_independent_acceptances': reuse, 'actual_maintained_authorities': authority_checks, 'all_41_selected_primary_units_freshly_reconstructed': checked, 'reading_scope': 'All actual record content read. These 41 selected paragraphs/captions were freshly reconstructed from complete maintained originals and matched against previously independently read text. The prior full primary reading, figures/tables, structures, equations, native closure and sequence evidence are reused by exact package bindings; no new full primary/figure rereading or repeated whole-corpus chemical scan is claimed.'}
+(OUT / 'bound-scientific-input-replay.json').write_text(json.dumps(result, indent=2)+'\n')
+print(json.dumps({'status': result['status'], 'prior_independent_acceptances': len(reuse), 'selected_primary_units': len(checked), 'full_primary_originals': len(parsed), 'authority_owners': len(authority_checks)}))

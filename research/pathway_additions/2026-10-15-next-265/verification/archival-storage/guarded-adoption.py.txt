@@ -1,0 +1,128 @@
+"""Adopt the independently accepted archival storage plan with exact guards."""
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-265-20261015')
+CI = Path('/private/tmp/pathwaymech-next-265-ci')
+PROPOSAL = Path('/private/tmp/pathwaymech-next-265-archival-storage-proposal-v2')
+REPORT = 'research/pathway_additions/2026-10-15-next-265/'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    receipt = CI / 'archival-storage-v2-adoption.json'
+    assert not receipt.exists(), 'Observe completed/partial adoption before any retry'
+    accepted = json.loads((CI / 'accepted-archival-storage-v2.json').read_bytes())
+    assert accepted['status'] == 'independently_accepted'
+    assert sha(PROPOSAL / 'artifact-manifest.json') == accepted['proposal_manifest_sha256']
+    review = Path(accepted['independent_review_root'])
+    assert sha(review / 'artifact-manifest.json') == accepted['independent_manifest_sha256']
+    for package in [PROPOSAL, review]:
+        manifest = json.loads((package / 'artifact-manifest.json').read_bytes())
+        rows = manifest.get('files', manifest.get('artifacts'))
+        for row in rows:
+            path = package / row['path']
+            assert path.is_file() and not path.is_symlink()
+            assert sha(path) == row['sha256'] and path.stat().st_size == row['bytes']
+    original_report = json.loads((PROPOSAL / 'original-report-inventory.json').read_bytes())['files']
+    report_root = ROOT / REPORT
+    assert {p.relative_to(report_root).as_posix() for p in report_root.rglob('*') if p.is_file()} == {r['path'] for r in original_report}
+    for row in original_report:
+        path = report_root / row['path']
+        assert not path.is_symlink() and sha(path) == row['sha256'] and path.stat().st_size == row['bytes']
+    plan = json.loads((PROPOSAL / 'adoption-plan.json').read_bytes())
+    inventories = json.loads((PROPOSAL / 'original-package-inventories.json').read_bytes())
+    for package_name, rows in inventories.items():
+        package = ROOT / REPORT / 'verification' / package_name
+        assert {p.relative_to(package).as_posix() for p in package.rglob('*') if p.is_file()} == {r['path'] for r in rows}
+        for row in rows:
+            path = package / row['path']
+            assert not path.is_symlink() and sha(path) == row['sha256'] and path.stat().st_size == row['bytes']
+    baseline = json.loads(Path('/private/tmp/pathwaymech-next-265-checks-initial/tested-core-input-hashes.json').read_bytes())
+    protected = {p: h for p, h in baseline.items() if not p.startswith(REPORT)}
+    protected.update(plan['preserve_saved_reviews'])
+    for path, digest in protected.items():
+        assert sha(ROOT / path) == digest, path
+    for row in plan['writes']:
+        target = ROOT / row['path']
+        assert not target.exists() and not target.is_symlink()
+        assert sha(PROPOSAL / row['payload']) == row['sha256']
+    for row in plan['remove_physical_originals']:
+        target = ROOT / row['path']
+        assert not target.is_symlink() and sha(target) == row['sha256'] and target.stat().st_size == row['bytes']
+    actions = []
+    result = {'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'status': 'adopting', 'proposal_manifest_sha256': accepted['proposal_manifest_sha256'],
+              'independent_manifest_sha256': accepted['independent_manifest_sha256'],
+              'actions': actions}
+    receipt.write_text(json.dumps(result, indent=2) + '\n')
+    # All compressed owners and controls must exist and verify before any raw copy is removed.
+    for row in plan['writes']:
+        target = ROOT / row['path']
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open('xb') as stream:
+            stream.write((PROPOSAL / row['payload']).read_bytes())
+        assert sha(target) == row['sha256']
+        actions.append({'operation': 'write', 'path': row['path'], 'sha256': row['sha256']})
+        receipt.write_text(json.dumps(result, indent=2) + '\n')
+    for package_name in inventories:
+        package = ROOT / REPORT / 'verification' / package_name
+        successor = json.loads((package / 'storage-successor.json').read_bytes())
+        for mapping in successor['mappings']:
+            body = (package / mapping['stored_path']).read_bytes()
+            assert hashlib.sha256(body).hexdigest() == mapping['stored_sha256']
+            raw = gzip.decompress(body)
+            assert raw == (package / mapping['original_path']).read_bytes()
+    for row in plan['remove_physical_originals']:
+        target = ROOT / row['path']
+        assert sha(target) == row['sha256']
+        target.unlink()
+        actions.append({'operation': 'remove_exact_raw_copy', 'path': row['path'], 'sha256': row['sha256']})
+        receipt.write_text(json.dumps(result, indent=2) + '\n')
+    proofs = []
+    for package_name, originals in inventories.items():
+        package = ROOT / REPORT / 'verification' / package_name
+        physical = json.loads((package / 'physical-artifact-manifest.json').read_bytes())['files']
+        assert {p.relative_to(package).as_posix() for p in package.rglob('*') if p.is_file()} == {r['path'] for r in physical} | {'physical-artifact-manifest.json'}
+        for row in physical:
+            path = package / row['path']
+            assert sha(path) == row['sha256'] and path.stat().st_size == row['bytes']
+        mappings = {m['original_path']: m for m in json.loads((package / 'storage-successor.json').read_bytes())['mappings']}
+        reconstruction = CI / 'archival-storage-v2-original-reconstruction' / package_name
+        assert not reconstruction.exists()
+        for row in originals:
+            if row['path'] in mappings:
+                body = gzip.decompress((package / mappings[row['path']]['stored_path']).read_bytes())
+            else:
+                body = (package / row['path']).read_bytes()
+            assert hashlib.sha256(body).hexdigest() == row['sha256'] and len(body) == row['bytes']
+            target = reconstruction / row['path']
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open('xb') as stream:
+                stream.write(body)
+        proofs.append({'package': package_name, 'current_physical_files': len(physical) + 1,
+                       'original_files_exactly_reconstructed': len(originals),
+                       'reconstruction': str(reconstruction)})
+    removed = {r['path'] for r in plan['remove_physical_originals']}
+    for row in original_report:
+        if REPORT + row['path'] not in removed:
+            path = report_root / row['path']
+            assert sha(path) == row['sha256'] and path.stat().st_size == row['bytes']
+    for path, digest in protected.items():
+        assert sha(ROOT / path) == digest, path
+    result.update(status='adopted_and_verified', proofs=proofs,
+                  protected_input_count=len(protected), protected_inputs_unchanged=True,
+                  finished_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  actual_staged_whitespace_check='pending restaging')
+    receipt.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({k: v for k, v in result.items() if k != 'actions'}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

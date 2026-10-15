@@ -1,0 +1,156 @@
+"""Integrate the exact reviewed PWY-1361 draft and additive authority owners."""
+from pathlib import Path
+import argparse
+import csv
+import datetime
+import hashlib
+import io
+import json
+import subprocess
+
+import yaml
+
+W = Path('/private/tmp/pathwaymech-next-265-20261015')
+C = Path('/private/tmp/pathwaymech-next-265-ci')
+A = Path('/private/tmp/pathwaymech-next-265-authority')
+D = Path('/private/tmp/pathwaymech-next-265-locator-successor')
+BASE = '39b84c79eb9997fb6785ef040f571bad498846e7'
+SLUG = 'benzoyl-coa-degradation-i-aerobic'
+RECORD = 'data/pathways/' + SLUG + '.yaml'
+REPORT = 'research/pathway_additions/2026-10-15-next-265'
+DRAFT_SHA = 'b2fc0cca6ac455fcc1820766caeb49a13beea64e49477bb774d3893e8bde3fff'
+OWNERS = {
+    'data/identifier_authorities/sources.json': '54b2d7ccc7a5394409f7c26ec09645f3af0097ae5aa837f34d4085474419fa7b',
+    'data/identifier_authorities/ontology.json': '055b8caab15d6da2f1e72236353bad8d3c471f1503ec8b556568f105f1793b10',
+    'conf/identifier_sources.json': '45425726a9d40fac529aee1bf6c53d40dab0793601727761881ca1c2122814ad',
+}
+
+
+def digest(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+
+def git(*args):
+    return subprocess.check_output(['git', *args], cwd=W)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--execute', action='store_true')
+    args = parser.parse_args()
+    assert git('rev-parse', 'HEAD').decode().strip() == BASE
+    assert not (W / RECORD).exists() and not (W / RECORD).is_symlink()
+    assert digest((D / 'pathway-record-draft.yaml').read_bytes()) == DRAFT_SHA
+    assert digest((D / 'artifact-manifest.json').read_bytes()) == '9149f20f62418361af8ca6922a7717fcec58939adf1656ffad5b6f0ce60480b6'
+    assert digest((A / 'artifact-manifest.json').read_bytes()) == '9981eecd3174af1db88ff0dbe4eef74a3ce02e6759e77387384951e8461af6cb'
+    draft = yaml.safe_load((D / 'pathway-record-draft.yaml').read_bytes())
+    assert draft == read(D / 'pathway-record-draft.json')
+    assert draft['id'] == 'MetaCyc:PWY-1361'
+    assert [len(draft[k]) for k in ['participants', 'reactions', 'taxa', 'mechanistic_edges', 'references']] == [35, 7, 4, 67, 68]
+    selected = {draft['id']} | {n['id'] for k in ['participants', 'reactions', 'taxa'] for n in draft[k]}
+    assert len(selected) == 47
+    binding = read(Path('/private/tmp/pathwaymech-next-265-independent-authority-review/final-locator-successor-authority-binding.json'))
+    assert binding['result'] == 'pass' and binding['yaml_sha256'] == DRAFT_SHA
+    assert set(binding['source_builder_selection_ids_unchanged']) == selected
+    assert binding['actual_full_corpus_consumer']['records'] == 262
+    assert binding['actual_full_corpus_consumer']['errors'] == []
+
+    names = git('ls-tree', '-rz', '--name-only', BASE, '--', 'data/pathways').split(b'\0')
+    names = sorted(n.decode() for n in names if n and n.decode().endswith('.yaml'))
+    assert len(names) == 261
+    actual = {str(p.relative_to(W)) for p in (W / 'data/pathways').rglob('*.yaml')}
+    assert actual == set(names), 'Check includes all hidden/ignored matching files.'
+    prior = {}
+    for name in names:
+        body = (W / name).read_bytes()
+        assert body == git('show', BASE + ':' + name)
+        assert yaml.safe_load(body)['id'] != draft['id']
+        prior[name] = digest(body)
+
+    writes = {RECORD: (D / 'pathway-record-draft.yaml').read_bytes()}
+    owner_plan, added = [], set()
+    for relative, expected in OWNERS.items():
+        source = A / 'final-successor/proposed' / relative
+        before, after = (W / relative).read_bytes(), source.read_bytes()
+        assert before == git('show', BASE + ':' + relative)
+        assert digest(after) == expected
+        old, new = json.loads(before), json.loads(after)
+        if relative.startswith('conf/'):
+            assert len(old) == 1306 and len(new) == 1322 and new[:len(old)] == old
+            assert len({r['key'] for r in new}) == len(new)
+        else:
+            assert old['version'] == new['version']
+            for field in ['terms', 'sources']:
+                assert all(new[field].get(k) == v for k, v in old[field].items())
+            added_here = set(new['terms']) - set(old['terms'])
+            assert added_here <= selected
+            added |= added_here
+        writes[relative] = after
+        owner_plan.append({'path': relative, 'before_sha256': digest(before), 'after_sha256': expected})
+    assert len(added) == 32
+
+    stream = io.StringIO(newline='')
+    writer = csv.writer(stream, delimiter='\t', lineterminator='\n')
+    writer.writerow(['section', 'id', 'label_or_title'])
+    writer.writerow(['pathway', draft['id'], draft['label']])
+    for field in ['taxa', 'participants', 'reactions', 'references']:
+        for row in draft[field]:
+            writer.writerow([field, row['id'], row.get('label', row.get('title', ''))])
+    assert len(list(csv.reader(io.StringIO(stream.getvalue()), delimiter='\t'))) == 116
+    writes[REPORT + '/verification/identifier-and-reference-register.tsv'] = stream.getvalue().encode()
+    writes[REPORT + '/README.md'] = (C / 'research-report-draft.md').read_bytes()
+    for relative in writes:
+        target = W / relative
+        assert not target.is_symlink()
+        assert all(not parent.is_symlink() for parent in target.parents if parent != W.parent)
+        if relative not in OWNERS:
+            assert not target.exists(), relative
+    result = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'mode': 'execute' if args.execute else 'read-only preparation',
+        'base': BASE, 'record_sha256': DRAFT_SHA,
+        'prior_record_hashes': prior, 'prior_record_count': 261,
+        'old_authority_terms_owners_and_ordered_manifest_prefix_preserved': True,
+        'added_selected_ids': sorted(added), 'authority_plan': owner_plan,
+        'planned_writes': {p: {'sha256': digest(b), 'bytes': len(b)} for p, b in writes.items()},
+    }
+    if args.execute:
+        ready_path = C / 'accepted-pre-integration-reviews.json'
+        ready = read(ready_path)
+        assert ready['status'] == 'accepted_for_exact_maintained_integration'
+        assert ready['base'] == BASE and ready['record_sha256'] == DRAFT_SHA
+        assert set(ready['required_review_packages']) == {'merged-discovery', 'retention-successor'}
+        for row in ready['required_review_packages'].values():
+            assert digest(Path(row['manifest_path']).read_bytes()) == row['manifest_sha256']
+            assert digest(Path(row['acceptance_path']).read_bytes()) == row['acceptance_sha256']
+        receipt = C / 'record-and-authority-integration.json'
+        assert not receipt.exists()
+        # All eligibility and byte-preservation checks precede maintained writes.
+        for relative, body in writes.items():
+            target = W / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if relative in OWNERS:
+                target.write_bytes(body)
+            else:
+                with target.open('xb') as out:
+                    out.write(body)
+            assert digest(target.read_bytes()) == digest(body)
+        assert all(digest((W / p).read_bytes()) == h for p, h in prior.items())
+        result['readiness_receipt_sha256'] = digest(ready_path.read_bytes())
+        result['all_261_prior_records_unchanged'] = True
+        result['maintained_integration_performed'] = True
+        receipt.write_text(json.dumps(result, indent=2) + '\n')
+    else:
+        result['maintained_integration_performed'] = False
+        output = C / 'record-and-authority-preflight.json'
+        assert not output.exists()
+        output.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({k: v for k, v in result.items() if k != 'prior_record_hashes'}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,61 @@
+import csv
+import datetime
+import hashlib
+import io
+import json
+import subprocess
+from pathlib import Path
+
+root = Path('/private/tmp/pathwaymech-next-265-20261015')
+out = Path('/private/tmp/pathwaymech-next-265-final-technical-review')
+base = '39b84c79eb9997fb6785ef040f571bad498846e7'
+target = 'MetaCyc:PWY-1361'
+sha = lambda b: hashlib.sha256(b).hexdigest()
+proof = {'observed_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'base': base, 'target': target, 'inputs': {}, 'scope': 'Exact prior export row preservation against actual Git base; no scientific reassessment.'}
+exports = {}
+for name in ('edges', 'nodes'):
+    rel = 'pages/downloads/' + name + '.tsv'
+    old = subprocess.run(['git', 'show', base + ':' + rel], cwd=root, check=True, capture_output=True).stdout
+    new = (root / rel).read_bytes()
+    old_rows = list(csv.DictReader(io.StringIO(old.decode()), delimiter='\t'))
+    new_rows = list(csv.DictReader(io.StringIO(new.decode()), delimiter='\t'))
+    a = {r['id']: r for r in old_rows}
+    b = {r['id']: r for r in new_rows}
+    assert len(a) == len(old_rows) and len(b) == len(new_rows)
+    assert a.keys() <= b.keys()
+    exports[name] = (a, b)
+    proof['inputs'][rel] = {'base_sha256': sha(old), 'current_sha256': sha(new), 'base_rows': len(a), 'current_rows': len(b), 'added_ids': sorted(b.keys() - a.keys())}
+a, b = exports['edges']
+assert all(a[k] == b[k] for k in a)
+assert len(b.keys() - a.keys()) == 67
+assert all(k.startswith('pathwaymech:MetaCyc_PWY-1361_') for k in b.keys() - a.keys())
+proof['all_13546_prior_edges_byte_value_equal'] = True
+a, b = exports['nodes']
+changed = []
+for k, old in a.items():
+    new = b[k]
+    if old == new:
+        continue
+    changes = {f: [old[f], new[f]] for f in old if old[f] != new[f]}
+    assert set(changes) == {'source_contexts'}, (k, changes)
+    old_contexts = json.loads(old['source_contexts'])
+    new_contexts = json.loads(new['source_contexts'])
+    assert len(new_contexts) == len(old_contexts) + 1
+    for ctx in old_contexts:
+        assert ctx in new_contexts
+    additions = [ctx for ctx in new_contexts if ctx not in old_contexts]
+    assert len(additions) == 1
+    assert additions[0]['record_id'] == target
+    changed.append({'id': k, 'changed_fields': sorted(changes), 'retained_prior_contexts': len(old_contexts), 'added_context': additions[0]})
+proof['prior_node_contexts_preserved'] = True
+proof['changed_existing_nodes'] = changed
+proof['unchanged_existing_node_rows'] = len(a) - len(changed)
+manifest = json.loads((root / 'pages/downloads/manifest.json').read_text())
+assert manifest['pathway_records'] == 262
+for name in ('edges', 'nodes'):
+    assert manifest['files'][name + '.tsv']['sha256'] == proof['inputs']['pages/downloads/' + name + '.tsv']['current_sha256']
+    assert manifest['files'][name + '.tsv']['rows'] == len(exports[name][1])
+proof['download_manifest_exact'] = True
+proof['download_manifest_sha256'] = sha((root / 'pages/downloads/manifest.json').read_bytes())
+(out / 'prior-kgx-preservation.json').write_text(json.dumps(proof, indent=2) + '\n')
+print(json.dumps({'status': 'PASS', 'prior_edges': 13546, 'added_edges': 67, 'changed_nodes': len(changed), 'added_nodes': len(exports['nodes'][1]) - len(a), 'manifest_exact': True}))

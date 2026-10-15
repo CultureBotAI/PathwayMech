@@ -1,0 +1,40 @@
+import datetime
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+import yaml
+
+root=Path('/private/tmp/pathwaymech-next-265-20261015')
+out=Path('/private/tmp/pathwaymech-next-265-final-technical-review')
+base='39b84c79eb9997fb6785ef040f571bad498846e7'
+sha=lambda b:hashlib.sha256(b).hexdigest()
+paths=subprocess.check_output(['git','ls-tree','-r','--name-only',base,'--','history','reviews/structured'],cwd=root).decode().splitlines()
+payload=''.join(base+':'+p+'\n' for p in paths).encode()
+raw=subprocess.run(['git','cat-file','--batch'],input=payload,cwd=root,check=True,capture_output=True).stdout
+pos=0
+rows=[]
+for rel in paths:
+    end=raw.index(b'\n',pos)
+    header=raw[pos:end].decode().split()
+    assert header[1]=='blob'
+    size=int(header[2])
+    body=raw[end+1:end+1+size]
+    assert raw[end+1+size:end+2+size]==b'\n'
+    pos=end+2+size
+    actual=(root/rel).read_bytes()
+    assert actual==body, rel
+    rows.append({'path':rel,'base_blob':header[0],'sha256':sha(body),'bytes':len(body)})
+assert pos==len(raw)
+current={p.relative_to(root).as_posix() for folder in ('history','reviews/structured') for p in (root/folder).rglob('*') if p.is_file()}
+new=sorted(current-set(paths))
+new_rows=[]
+for rel in new:
+    blob=(root/rel).read_bytes()
+    entry={'path':rel,'sha256':sha(blob),'bytes':len(blob)}
+    if rel.startswith('history/') and rel.endswith('.yaml'):
+        entry['record']=yaml.safe_load(blob)
+    new_rows.append(entry)
+proof={'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base':base,'scope':'All tracked baseline history and canonical review bodies compared exactly; new history content read. Current filesystem scan includes hidden/ignored files by Path.rglob. This is technical history preservation, not predecessor fabrication or scientific reapproval.','prior_files':rows,'all_prior_bytes_unchanged':True,'new_paths_at_observation':new_rows}
+(out/'history-and-review-preservation.json').write_text(json.dumps(proof,indent=2,default=str)+'\n')
+print(json.dumps({'prior_files':len(paths),'prior_history':sum(x.startswith('history/') for x in paths),'prior_review_files':sum(x.startswith('reviews/structured/') for x in paths),'new_paths':new,'all_prior_bytes_unchanged':True}))
