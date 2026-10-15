@@ -1,0 +1,21 @@
+{
+  "key": "NEXT264-PAGE-HISTORY-01",
+  "severity": "major",
+  "status": "confirmed",
+  "scope": "Generated page stale after record-history addition; no renderer defect found",
+  "target": "pages/records/MetaCyc_PWY-2503.html",
+  "head": "e6da46ca8515c27d81ed528a13ed839a2bec797f",
+  "cause": "A new record-targeted REVIEW history entry was appended after the successful native render and full gates. The later documentation-only check explicitly permitted this new history input but omitted the generated-site check. The page necessarily depends on record-targeted history.",
+  "code_path": [
+    "src/pathwaymech/cli.py:344 passes load_site_history(root) into render_site",
+    "src/pathwaymech/cli.py:206 passes target sessions into _record_page",
+    "src/pathwaymech/cli.py:1204 includes history_html(record, sessions or [])",
+    "src/pathwaymech/site_display.py:71-78 loads history/records/*/*.yaml and groups by recorded target path",
+    "src/pathwaymech/site_display.py:88 renders every session into a history list entry"
+  ],
+  "proof": "Native current-history rendering differs from the committed HTML by exactly one 1299-byte review-history list entry. Removing only the later history input reproduces the committed page byte-for-byte. Entire graph region is identical.",
+  "minimal_fix": "Append required record history first; rerun native just render-pages and current-site gate; refresh independent acceptance for the changed generated page, and push corrected PR head. Preserve existing history and reviews.",
+  "regression": "The existing tests/test_render_pages.py::test_the_committed_site_is_current is the meaningful regression and already caught this defect. Re-run it against final page/history inputs. No renderer change, unit-test addition, seed pinning, tolerance weakening, or merge-check bypass is justified.",
+  "limits": "Independent bounded one-record native _record_page reproduction, three hash seeds on existing macOS Python3.13.12, no Linux execution. Root full site render/validation and GitHub CI remain needed. This diagnosis is not a final fix acceptance.",
+  "successor_note": "Corrects two informational source line numbers after direct rg -n verification; cause, reproduced bytes, finding, and recommended fix unchanged. Original finding.json and manifest.json retained."
+}
