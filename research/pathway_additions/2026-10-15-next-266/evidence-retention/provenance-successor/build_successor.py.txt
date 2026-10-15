@@ -1,0 +1,165 @@
+"""Create an explicit external successor, preserving the frozen predecessor."""
+
+import copy
+import hashlib
+import json
+import shutil
+import subprocess
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-successor")
+OLD = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+REPO = Path("/private/tmp/pathwaymech-next-266-20261015")
+BASE = "dd780ef273323efd638eacd63625963062e0b105"
+TREE = "93edcbf621df2ca0551830151be39eed5ce21232"
+STALE = "e5c455667499283021774a6c3d5138cc8293f28e"
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def dump(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x") as stream:
+        stream.write(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def files(root):
+    paths = list(root.rglob("*"))
+    assert not any(p.is_symlink() for p in paths)
+    return {str(p.relative_to(root)): p for p in paths if p.is_file()}
+
+
+def verify_manifest(root, digest, extras):
+    body = (root / "artifact-manifest.json").read_bytes()
+    assert sha(body) == digest
+    rows = json.loads(body)["files"]
+    assert set(files(root)) == {r["path"] for r in rows} | set(extras)
+    for row in rows:
+        body = (root / row["path"]).read_bytes()
+        assert sha(body) == row["sha256"] and len(body) == row["bytes"]
+    return len(rows)
+
+
+def main():
+    assert (
+        subprocess.check_output(["git", "rev-parse", BASE + "^{tree}"], cwd=REPO).decode().strip()
+        == TREE
+    )
+    assert (
+        verify_manifest(
+            OLD,
+            "85aba0de3c3702eefc5f48d46f5e9b2ca6f0e3297ebcca9ae0c56b524bcf5d02",
+            ["artifact-manifest.json", "freeze-proof.json"],
+        )
+        == 3355
+    )
+    assert (
+        verify_manifest(
+            OLD / "payload",
+            "7240d8b0ea50e77018330a3ff67c3d7acda65878c23d33b034fe6ff7aaaa49ae",
+            ["artifact-manifest.json"],
+        )
+        == 3233
+    )
+    old_inventory = []
+    for relative, path in sorted(files(OLD).items()):
+        body = path.read_bytes()
+        old_inventory.append({"path": relative, "sha256": sha(body), "bytes": len(body)})
+    dump(ROOT / "original-preparation-inventory.json", {"files": old_inventory})
+    out = ROOT / "payload"
+    shutil.copytree(OLD / "payload", out)
+    (out / "artifact-manifest.json").unlink()
+    content = json.loads((out / "content-map.json").read_bytes())
+    original = copy.deepcopy(content)
+    affected = []
+    for digest, row in content.items():
+        endpoint = row["storage"]
+        if endpoint["kind"] == "existing_repository":
+            assert endpoint["git_commit"] == BASE
+            if "git_tree" in endpoint:
+                assert endpoint["git_tree"] == STALE
+                affected.append(
+                    {
+                        "source_sha256": digest,
+                        "storage_path": endpoint["path"],
+                        "before": STALE,
+                        "after": TREE,
+                    }
+                )
+                endpoint["git_tree"] = TREE
+    assert len(affected) == 586 and len({r["storage_path"] for r in affected}) == 301
+    assert sum(r["storage"]["kind"] == "existing_repository" for r in content.values()) == 836
+    reverse = copy.deepcopy(content)
+    for row in affected:
+        reverse[row["source_sha256"]]["storage"]["git_tree"] = STALE
+    assert reverse == original
+    (out / "content-map.json").write_text(json.dumps(content, indent=2, sort_keys=True) + "\n")
+    overlay = out / "provenance-successor"
+    overlay.mkdir()
+    dump(
+        overlay / "correction.json",
+        {
+            "finding": "N266-RET-PROV-01",
+            "original_content_map_sha256": sha((OLD / "payload/content-map.json").read_bytes()),
+            "corrected_content_map_sha256": sha((out / "content-map.json").read_bytes()),
+            "verified_git_commit": BASE,
+            "verified_git_tree": TREE,
+            "changed_fields": affected,
+            "changed_fields_count": len(affected),
+            "distinct_affected_storage_paths": 301,
+            "inherited_content_rows": 836,
+            "optional_tree_omissions_preserved": 250,
+            "all_other_content_map_fields_and_keys_unchanged": True,
+            "source_occurrences": 7337,
+            "compact_only_logical_occurrences": 1334,
+            "declared_compact_rows": 4339,
+            "scope": (
+                "Only existing optional tree fields are corrected. Source owners, stored and "
+                "decoded bytes, paths, sizes, hashes, decode steps, source metadata, package "
+                "cutoff and role separation remain unchanged."
+            ),
+        },
+    )
+    finding = Path(
+        "/private/tmp/pathwaymech-next-266-independent-retention-review/finding-N266-RET-PROV-01.json"
+    )
+    shutil.copyfile(finding, overlay / finding.name)
+    source = (OLD / "prepare_retention.py").read_text()
+    needle = '            endpoint["git_commit"] = BASE\n'
+    assert source.count(needle) == 1
+    fixed = source.replace(
+        needle,
+        needle
+        + '            if "git_tree" in endpoint:\n                endpoint["git_tree"] = TREE\n',
+    )
+    (ROOT / "prepare_retention_corrected.py").write_text(fixed)
+    (overlay / "prepare_retention_corrected.py.txt").write_text(fixed)
+    dump(
+        overlay / "generator-change.json",
+        {
+            "original_sha256": sha(source.encode()),
+            "corrected_sha256": sha(fixed.encode()),
+            "change": (
+                "When inherited endpoint git_commit is rebound to BASE, rebind its optional "
+                "git_tree to the already independently verified TREE. Preserve absent optional "
+                "tree fields."
+            ),
+            "original_generator_retained": "proof/prepare_retention.py.txt",
+            "corrected_generator": "provenance-successor/prepare_retention_corrected.py.txt",
+        },
+    )
+    dump(
+        ROOT / "build-receipt.json",
+        {
+            "status": "bounded successor drafted",
+            "original_files_verified": len(old_inventory),
+            "original_payload_files": 3234,
+            "originals_modified": False,
+        },
+    )
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,99 @@
+"""Finish the proposed payload documentation and exact physical inventory."""
+
+import gzip
+import hashlib
+import json
+import shutil
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+PAYLOAD = ROOT / "payload"
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def dump(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+stats = json.loads((PAYLOAD / "dry-run-verification.json").read_bytes())
+assert (
+    json.loads((ROOT / "physical-standalone-verification.stdout").read_bytes())["status"]
+    == "passed"
+)
+assert (
+    json.loads((ROOT / "compact-standalone-verification.stdout").read_bytes())["status"] == "passed"
+)
+for path in ["all-helper-ruff-check.final.stdout", "all-helper-ruff-format.final.stdout"]:
+    assert "passed" in (ROOT / path).read_text() or "already formatted" in (ROOT / path).read_text()
+observations = []
+for path in sorted(ROOT.iterdir()):
+    if path.is_file() and path.suffix in (".stdout", ".stderr"):
+        body = path.read_bytes()
+        stored = gzip.compress(body, mtime=0)
+        target = PAYLOAD / "proof/preparation-observations" / (path.name + ".gz")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(stored)
+        observations.append(
+            {
+                "original_path": path.name,
+                "original_sha256": sha(body),
+                "original_bytes": len(body),
+                "stored_path": str(target.relative_to(PAYLOAD)),
+                "stored_sha256": sha(stored),
+                "stored_bytes": len(stored),
+                "encoding": "gzip",
+            }
+        )
+dump(PAYLOAD / "proof/preparation-observations.json", observations)
+for name in [
+    "prepare_retention.py",
+    "configure_sources.py",
+    "finalize_specification.py",
+    "account_storage.py",
+    "rehearse_retention.py",
+    "finish_payload.py",
+]:
+    shutil.copyfile(ROOT / name, PAYLOAD / "proof" / (name + ".txt"))
+for name in ["physical-standalone-verification", "compact-standalone-verification"]:
+    dump(
+        PAYLOAD / "verification" / (name + ".json"),
+        json.loads((ROOT / (name + ".stdout")).read_bytes()),
+    )
+readme = (ROOT / "README-template.md").read_text()
+(PAYLOAD / "README.md").write_text(readme)
+shutil.copyfile(ROOT / "README-template.md", PAYLOAD / "proof/README-template.md.txt")
+paths = list(PAYLOAD.rglob("*"))
+assert not any(path.is_symlink() for path in paths)
+rows = []
+for path in sorted(paths):
+    if path.is_file():
+        body = path.read_bytes()
+        assert len(body) < 100 * 1024 * 1024
+        rows.append(
+            {"path": str(path.relative_to(PAYLOAD)), "sha256": sha(body), "bytes": len(body)}
+        )
+assert not (PAYLOAD / "artifact-manifest.json").exists()
+dump(
+    PAYLOAD / "artifact-manifest.json",
+    {
+        "scope": (
+            "Every proposed physical payload file except this self-manifest, "
+            "including hidden and ignored files."
+        ),
+        "files": rows,
+    },
+)
+print(
+    json.dumps(
+        {
+            "payload_manifest_sha256": sha((PAYLOAD / "artifact-manifest.json").read_bytes()),
+            "listed_files": len(rows),
+            "physical_files": len(rows) + 1,
+            "all_new_payload_blobs_below_100_MiB": True,
+        }
+    )
+)

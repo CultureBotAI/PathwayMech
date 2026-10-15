@@ -1,0 +1,98 @@
+"Account for new retained blobs and resolve the largest discovery snapshots."
+
+import collections
+import gzip
+import json
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+payload = ROOT / "payload"
+contents = json.loads((payload / "content-map.json").read_bytes())
+occurrences = collections.defaultdict(list)
+for source_map in (payload / "packages").glob("*/source-map.json"):
+    for row in json.loads(source_map.read_bytes())["source_occurrences"]:
+        binding = contents[row["sha256"]]
+        endpoint = binding["storage"]
+        if endpoint["kind"] == "new_retention_object":
+            occurrences[endpoint["path"]].append(
+                {
+                    "package": source_map.parent.name,
+                    "path": row["path"],
+                    "source_bytes": row["bytes"],
+                    "source_sha256": row["sha256"],
+                    "decode_steps": binding["decode_steps"],
+                }
+            )
+source = Path("/private/tmp/pathwaymech-next-266-merged-discovery")
+compact = json.loads((source / "compact-artifact-manifest.json").read_bytes())["rows"]
+scan_rows = []
+scan_bindings = []
+for name in ["scans/merged262.occurrences.json", "scans/original258.occurrences.json"]:
+    row = next(r for r in compact if r["original_path"] == name)
+    body = (source / row["stored_path"]).read_bytes()
+    body = gzip.decompress(body) if row["codec"] == "gzip" else body
+    scan_rows.extend(json.loads(body))
+    scan_bindings.append(row)
+endpoints = []
+for path in (payload / "objects").rglob("*.gz"):
+    relative = str(path.relative_to(payload))
+    endpoint = {
+        "path": relative,
+        "bytes": path.stat().st_size,
+        "source_occurrences": occurrences[relative],
+    }
+    contexts = []
+    for occurrence in endpoint["source_occurrences"]:
+        if occurrence["package"] != "merged-discovery":
+            continue
+        for row in scan_rows:
+            for key in ["retained_original", "retained_payload"]:
+                if row.get(key, {}).get("path") == occurrence["path"]:
+                    contexts.append(
+                        {
+                            "scan_root": row["root"],
+                            "source_path": row["path"],
+                            "original_sha256": row["original_sha256"],
+                            "original_bytes": row["original_bytes"],
+                            "payload_sha256": row["payload_sha256"],
+                            "payload_bytes": row["payload_bytes"],
+                            "retained_role": key,
+                            "retained_binding": row[key],
+                        }
+                    )
+    endpoint["discovery_original_owners"] = contexts
+    endpoints.append(endpoint)
+endpoints.sort(key=lambda row: (-row["bytes"], row["path"]))
+assert all(row["bytes"] < 100 * 1024 * 1024 for row in endpoints)
+value = {
+    "scope": (
+        "New distinct physical endpoints; occurrences sharing endpoints are not summed twice. "
+        "Inherited lookup is bounded to both next265 merged content maps plus their physical "
+        "artifact manifests. No exhaustive historical deduplication claim."
+    ),
+    "all_new_blobs_below_100_MiB": True,
+    "new_endpoint_bytes": sum(row["bytes"] for row in endpoints),
+    "new_endpoint_count": len(endpoints),
+    "largest_new_endpoints": endpoints[:30],
+    "merged_discovery_scan_bindings": scan_bindings,
+    "main_contributors": (
+        "The primary independent review retains both its exact source tar.gz and a separately "
+        "frozen gzip representation of that archive. They are distinct original compressed "
+        "objects. The chemistry independent review retains its complete source archive. "
+        "Several complete merged discovery snapshots contribute 8–9 MB each. No scientific "
+        "input or compressed representation was dropped to reduce storage."
+    ),
+}
+(payload / "storage-size-accounting.json").write_text(
+    json.dumps(value, indent=2, sort_keys=True) + "\n"
+)
+print(
+    json.dumps(
+        {
+            "new_endpoint_bytes": value["new_endpoint_bytes"],
+            "new_endpoint_count": value["new_endpoint_count"],
+            "largest_new_endpoint_bytes": endpoints[0]["bytes"],
+            "all_below_100_MiB": True,
+        }
+    )
+)

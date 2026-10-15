@@ -6,6 +6,9 @@ license and sha256. Paths are relative to --cache-dir; supported kinds are enzym
 gocam-tar, mibig-tar, uniprot, gpml, biopax, pathbank-biopax, pathbank-biopax-zip,
 pathbank-context-biopax, metacyc-html,
 metacyc-protein-xml, metacyc-reaction-xml, metacyc-carrier-class-xml,
+metacyc-heteromer-activity-xml, metacyc-ferredoxin-reaction-xml,
+metacyc-ferredoxin-class-xml, metacyc-hydrolytic-composite-xml
+(separate constituent_sources originals), metacyc-named-reaction-xml,
 ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, rhea-polymer-rdf,
@@ -50,6 +53,13 @@ from pathwaymech.biocyc_aceto import (
     aceto_metadata,
     aceto_term,
     validate_aceto_assertions,
+)
+from pathwaymech.biocyc_benzoyl import (
+    BENZOYL_KINDS,
+    HYDROLYTIC_KIND,
+    benzoyl_metadata,
+    benzoyl_term,
+    validate_benzoyl_assertions,
 )
 from pathwaymech.biocyc_carrier import (
     CARRIER_CLASS_KIND,
@@ -1833,9 +1843,17 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for index, entry in enumerate(entries)
     }
     validate_gene_assertions(gene_sources)
-    # Validate complete carrier-reaction assertions and request-only downgrade
-    # claims before any source contributes a selected term. Keep ordinary owner
-    # serialization unchanged; this temporary inventory is not persisted.
+    # Validate complete bounded-native and carrier-reaction assertions, including
+    # request-only downgrade claims, before any source contributes a selected
+    # term. Keep ordinary owner serialization unchanged; these inventories are
+    # temporary and are not persisted.
+    benzoyl_sources = {
+        index: benzoyl_metadata(entry, cache_dir)
+        if entry["kind"] in BENZOYL_KINDS
+        else entry
+        for index, entry in enumerate(entries)
+    }
+    validate_benzoyl_assertions(benzoyl_sources, [])
     carrier_sources = {
         index: carrier_reaction_metadata(entry, cache_dir)
         if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND
@@ -1861,7 +1879,14 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     }
     for entry_index, entry in enumerate(entries):
         for native_kind, companion_field in COMPANION_FIELDS.items():
-            if companion_field in entry and entry["kind"] != native_kind:
+            if (
+                companion_field in entry
+                and entry["kind"] != native_kind
+                and not (
+                    companion_field == "constituent_sources"
+                    and entry["kind"] == HYDROLYTIC_KIND
+                )
+            ):
                 raise ValueError("companion source field requires its matching native kind")
         if "counterpart_source" in entry and entry["kind"] != ECOCYC_STATE_KIND:
             raise ValueError(
@@ -1877,7 +1902,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
-        if entry["kind"] in ACETO_KINDS | {
+        if entry["kind"] in ACETO_KINDS | BENZOYL_KINDS | {
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
             ELECTRON_TRANSFER_KIND,
@@ -1936,6 +1961,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     if "/" not in identifier
                 ],
             )
+        elif entry["kind"] in BENZOYL_KINDS:
+            metadata = benzoyl_sources[entry_index]
+            identifier, typed_term = benzoyl_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in ACETO_KINDS:
             metadata = aceto_metadata(entry, cache_dir)
             identifier, typed_term = aceto_term(metadata, key)
@@ -2256,6 +2285,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = context_term(identifier, context_projections[entry_index], key)
             if entry["kind"] in GENE_KINDS:
                 terms[identifier] = gene_term(metadata, key)[1]
+            if entry["kind"] in BENZOYL_KINDS:
+                terms[identifier] = benzoyl_term(metadata, key)[1]
             if entry["kind"] in ACETO_KINDS:
                 terms[identifier] = aceto_term(metadata, key)[1]
             if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND:
@@ -2284,6 +2315,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             ):
                 terms[identifier]["label_kind"] = "source_context"
             sources[key] = metadata
+    validate_benzoyl_assertions(all_aceto_sources, all_aceto_claims)
     validate_aceto_assertions(all_aceto_sources, all_aceto_claims)
     validate_named_complex_graph(named_assemblies)
     for source, metadata in sources.items():

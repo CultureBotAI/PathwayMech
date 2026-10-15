@@ -654,6 +654,57 @@ protein redox states; ChEBI reactive parts do not replace those proteins. Native
 Protein and Compound class references preserve both events of a carrier cycle,
 including the generic-client reaction when it lacks an exact Rhea mapping.
 
+## Bounded anaerobic benzoyl source shapes
+
+Five separate MetaCyc 27.0 source kinds retain complete native objects that do
+not fit the older homomer, carrier, acyl-transfer or unnamed-reaction profiles.
+Their manifest fields are `key`, `kind`, `path`, `url`, `version`, `license` and
+`sha256`; URLs are literal HTTPS `getxml?id=META:<frame>` requests to the pinned
+issuing mirror. The existing profiles and their restrictions remain unchanged.
+
+| Source kind | Accepted native scope | Term scope |
+| --- | --- | --- |
+| `metacyc-heteromer-activity-xml` | Unnamed CPLX-1341, four distinct Bcr components with coefficient one, exact ENZRXN-1821 enzyme/reaction links, full species and ancillary context | `protein_complex`, canonical linked activity name; participants/category complex |
+| `metacyc-ferredoxin-reaction-xml` | 1.3.99.15-RXN, PHYSIOL-R2L native direction, exact Compound/Protein equation and coefficients, both activities and EC-1.3.7.8 context | `reaction`, frame-token contextual display; reactions/category molecular_activity |
+| `metacyc-ferredoxin-class-xml` | Both complete Reduced-/Oxidized-ferredoxins classes, exact Ferredoxins parent sets, generic cluster-unit names, state links, members and all equation/context slots | `protein_class`, native canonical/synonym names; participants/category protein |
+| `metacyc-hydrolytic-composite-xml` | Reversible OAHTHAUERA-RXN, EC-3.7.1.21, two-water net equation and two complete constituent originals | `reaction`, frame-token contextual display; reactions/category molecular_activity |
+| `metacyc-named-reaction-xml` | RXN-8032 with its direct native common-name, complete reversible equation and embedded PimB activity context | `reaction`, direct canonical name; reactions/category molecular_activity |
+
+Closed `native_benzoyl` metadata retains each exact original UTF-8 XML body,
+including envelope and every native slot, together with its independently
+computed typed projection. The offline consumer hashes the full original body
+against source provenance and re-parses/re-projects it before accepting terms.
+Malformed envelopes, release/identity mismatches, incomplete slot inventories,
+wrong component or material types, altered coefficients, activity back-reference
+errors and metadata edits fail closed. This does not establish authenticity of
+an arbitrary replacement response: acquisition receipts and pinned source hashes
+remain the provenance evidence. No source body is generated from curated labels.
+
+The hydrolytic composite additionally requires `constituent_sources`, an ordered
+list of two closed `path`, `url`, `version`, `license`, `sha256` descriptors for
+RXN-15012 and RXN-15013. Each full original is hashed independently and retained
+in `native_benzoyl.companions`. Exact member identities/order, both native
+composite backlinks and the signed sum of both equations are checked. CPD-15900
+must cancel, and the resulting net must equal the original two-water composite.
+Separate ordinary constituent owners remain valid only with identical original
+URL/release/hash provenance. The first selected owner remains unchanged.
+
+All six top-level identities are protected from a downgrade to legacy source
+kinds even when no typed owner or term is selected. Complete-owner conflicts,
+request-only competing claims and companion provenance conflicts fail before
+corpus filtering, in either source order. Selected terms must exactly equal their
+complete owner projection. Canonical native reaction names are checked before
+namespace contextual-label exemptions, as are complex and carrier names.
+
+These authorities do not add pathway membership or catalytic evidence. Oah is
+an auxiliary net activity without an eighth selected route membership; formal
+constituents do not prove a free released intermediate or separate assays.
+Ferredoxin coefficient two denotes two native generic cluster redox units, not
+two whole two-cluster proteins. The direct RXN-8032 name does not turn predicted
+PimB annotation or operon-level evidence into purified individual-enzyme proof.
+Full original context, preparation limitations and conflicting scientific claims
+remain separately assessed when curating a record.
+
 ## Native electron transfer, named complexes and chemical classes
 
 Four explicit source kinds support complete electron-transfer route identities.

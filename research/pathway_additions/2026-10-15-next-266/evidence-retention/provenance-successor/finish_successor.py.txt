@@ -1,0 +1,193 @@
+"""Preserve all predecessor controls and freeze the exact successor payload."""
+
+import gzip
+import hashlib
+import json
+import shutil
+import subprocess
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-successor")
+OLD = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+PAYLOAD = ROOT / "payload"
+OVERLAY = PAYLOAD / "provenance-successor"
+REPO = Path("/private/tmp/pathwaymech-next-266-20261015")
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def dump(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x") as stream:
+        stream.write(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def main():
+    for name in ["generator-replay-proof.json", "build-receipt.json"]:
+        shutil.copyfile(ROOT / name, OVERLAY / name)
+    for name in ["provenance-check", "physical-check", "compact-check"]:
+        result = json.loads((ROOT / (name + ".stdout")).read_bytes())
+        assert result["status"] == "passed"
+        dump(OVERLAY / (name + ".json"), result)
+    for name in ["build_successor.py", "replay_generator.py", "finish_successor.py"]:
+        shutil.copyfile(ROOT / name, OVERLAY / (name + ".txt"))
+    root_inputs = []
+    for name in [
+        "retention-provenance-finding-root-verification.json",
+        "retention-provenance-issue.md",
+        "review-findings-all-state-20261015.json",
+        "issue-591-creation.json",
+    ]:
+        path = Path("/private/tmp/pathwaymech-next-266-ci") / name
+        body = path.read_bytes()
+        stored = gzip.compress(body, mtime=0)
+        dest = OVERLAY / "issue-591" / (name + ".gz")
+        dest.parent.mkdir(exist_ok=True)
+        dest.write_bytes(stored)
+        root_inputs.append(
+            {
+                "source": str(path),
+                "original_sha256": sha(body),
+                "original_bytes": len(body),
+                "retained_path": str(dest.relative_to(PAYLOAD)),
+                "stored_sha256": sha(stored),
+                "stored_bytes": len(stored),
+                "encoding": "gzip",
+            }
+        )
+    dump(
+        OVERLAY / "issue-591.json",
+        {
+            "url": "https://github.com/CultureBotAI/PathwayMech/issues/591",
+            "root_inputs": root_inputs,
+            "status": "Correction authored; independent acceptance and publication pending.",
+        },
+    )
+    observations = []
+    for path in sorted(ROOT.iterdir()):
+        if path.is_file() and path.suffix in (".stdout", ".stderr"):
+            body = path.read_bytes()
+            stored = gzip.compress(body, mtime=0)
+            dest = OVERLAY / "author-observations" / (path.name + ".gz")
+            dest.parent.mkdir(exist_ok=True)
+            dest.write_bytes(stored)
+            observations.append(
+                {
+                    "original_path": path.name,
+                    "original_sha256": sha(body),
+                    "original_bytes": len(body),
+                    "retained_path": str(dest.relative_to(PAYLOAD)),
+                    "stored_sha256": sha(stored),
+                    "stored_bytes": len(stored),
+                    "encoding": "gzip",
+                }
+            )
+    dump(OVERLAY / "author-observations.json", observations)
+    (PAYLOAD / "README.md").write_text((ROOT / "README-successor.md").read_text())
+    history = []
+    old_inventory = json.loads((ROOT / "original-preparation-inventory.json").read_bytes())["files"]
+    for row in old_inventory:
+        body = (OLD / row["path"]).read_bytes()
+        assert sha(body) == row["sha256"] and len(body) == row["bytes"]
+        same = None
+        if row["path"].startswith("payload/"):
+            candidate = PAYLOAD / row["path"][8:]
+            if candidate.is_file() and candidate.read_bytes() == body:
+                same = candidate
+        if same:
+            endpoint, encoding, stored = same, "identity", body
+        else:
+            stored = gzip.compress(body, mtime=0)
+            endpoint = OVERLAY / "history-objects" / (sha(stored) + ".gz")
+            endpoint.parent.mkdir(exist_ok=True)
+            if endpoint.exists():
+                assert endpoint.read_bytes() == stored
+            else:
+                endpoint.write_bytes(stored)
+            encoding = "gzip"
+        history.append(
+            {
+                "original_path": row["path"],
+                "original_sha256": sha(body),
+                "original_bytes": len(body),
+                "retained_path": str(endpoint.relative_to(PAYLOAD)),
+                "stored_sha256": sha(stored),
+                "stored_bytes": len(stored),
+                "encoding": encoding,
+            }
+        )
+    assert len(history) == 3357
+    dump(
+        OVERLAY / "predecessor-map.json",
+        {
+            "original_outer_manifest_sha256": (
+                "85aba0de3c3702eefc5f48d46f5e9b2ca6f0e3297ebcca9ae0c56b524bcf5d02"
+            ),
+            "original_payload_manifest_sha256": (
+                "7240d8b0ea50e77018330a3ff67c3d7acda65878c23d33b034fe6ff7aaaa49ae"
+            ),
+            "scope": (
+                "Complete original frozen preparation, including all original controls, source "
+                "payload, failed probes, helpers and final freeze proof. Unchanged payload bytes "
+                "are reused; changed controls and outer files are losslessly gzipped. Separate "
+                "from unchanged scientific source cutoff."
+            ),
+            "files": history,
+        },
+    )
+    rows = []
+    for path in sorted(PAYLOAD.rglob("*")):
+        assert not path.is_symlink()
+        if path.is_file():
+            body = path.read_bytes()
+            assert len(body) < 100 * 1024 * 1024
+            rows.append(
+                {"path": str(path.relative_to(PAYLOAD)), "sha256": sha(body), "bytes": len(body)}
+            )
+    dump(
+        PAYLOAD / "artifact-manifest.json",
+        {
+            "scope": (
+                "Every physical successor payload file, including hidden and ignored files, "
+                "except this manifest. Scientific source cutoff unchanged; provenance "
+                "correction/history separate."
+            ),
+            "files": rows,
+        },
+    )
+    manifest = (PAYLOAD / "artifact-manifest.json").read_bytes()
+    rows.append({"path": "artifact-manifest.json", "sha256": sha(manifest), "bytes": len(manifest)})
+    destination = "research/pathway_additions/2026-10-15-next-266/evidence-retention/"
+    result = subprocess.run(
+        ["git", "check-ignore", "--stdin"],
+        cwd=REPO,
+        input="".join(destination + r["path"] + "\n" for r in rows).encode(),
+        capture_output=True,
+    )
+    assert result.returncode == 1 and result.stdout == b"" and result.stderr == b""
+    dump(
+        ROOT / "payload-freeze.json",
+        {
+            "status": "frozen",
+            "payload_manifest_sha256": sha(manifest),
+            "physical_files": len(rows),
+            "all_files_unignored": True,
+            "max_blob_bytes": max(r["bytes"] for r in rows),
+            "independent_acceptance_pending": True,
+        },
+    )
+    dump(
+        ROOT / "promotion-files.json",
+        {
+            "create_only": True,
+            "destination_root": destination,
+            "files": rows,
+            "payload_manifest_sha256": sha(manifest),
+        },
+    )
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,80 @@
+"""Replay the corrected original builder with the exact original input cutoff."""
+
+import hashlib
+import importlib.util
+import json
+import shutil
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-successor")
+OLD = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def main():
+    replay = ROOT / "generator-replay"
+    assert not replay.exists()
+    replay.mkdir()
+    shutil.copytree(OLD / "baseline", replay / "baseline")
+    for name in [
+        "source-specification.final.json",
+        "baseline-capture.json",
+        "verify_compact.py",
+        "configure_sources.py",
+        "finalize_specification.py",
+    ]:
+        shutil.copyfile(OLD / name, replay / name)
+    shutil.copyfile(ROOT / "prepare_retention_corrected.py", replay / "prepare_retention.py")
+    spec = importlib.util.spec_from_file_location(
+        "corrected_generator", replay / "prepare_retention.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    module.ROOT = replay
+    module.main()
+    replay_files = sorted(p for p in (replay / "payload").rglob("*") if p.is_file())
+    checked = []
+    for path in replay_files:
+        relative = str(path.relative_to(replay / "payload"))
+        original = OLD / "payload" / relative
+        if relative == "content-map.json":
+            expected = ROOT / "payload/content-map.json"
+        elif relative == "proof/prepare_retention.py.txt":
+            expected = ROOT / "prepare_retention_corrected.py"
+        else:
+            expected = original
+        body = path.read_bytes()
+        assert body == expected.read_bytes(), relative
+        checked.append(
+            {
+                "path": relative,
+                "sha256": sha(body),
+                "bytes": len(body),
+                "expected_owner": str(expected),
+            }
+        )
+    result = {
+        "status": "passed",
+        "replayed_files": len(checked),
+        "files": checked,
+        "scope": (
+            "Complete corrected original generator replay. Every generated file is "
+            "byte-identical to the predecessor except the exact corrected content map and "
+            "corrected generator proof. The source cutoff, metadata, raw originals, distinct "
+            "gzip bodies, source inventories and all owner bytes are identical."
+        ),
+        "runtime_root_override": str(replay),
+        "frozen_predecessor_modified": False,
+    }
+    (ROOT / "generator-replay-proof.json").write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n"
+    )
+    # The complete replay is byte-accounted above. Remove only this owned rehearsal tree.
+    shutil.rmtree(replay)
+
+
+if __name__ == "__main__":
+    main()

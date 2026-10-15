@@ -1,0 +1,169 @@
+"""Pin immutable source inventories before preparing lossless retention."""
+
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def dump(path, value):
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+NAMES = [
+    "discovery",
+    "independent-discovery-review",
+    "chemistry",
+    "independent-chemistry-review",
+    "primary",
+    "independent-primary-review",
+    "native",
+    "independent-native-review",
+    "design",
+    "independent-design-review",
+    "authority-implementation",
+    "independent-authority-review",
+    "authority",
+    "merged-discovery",
+    "independent-merged-discovery-review",
+    "merged-discovery-successor",
+]
+MAPS = {
+    "discovery": [("compact-manifest.json", "pairs", "gzip_pair")],
+    "independent-discovery-review": [("compact-artifact-manifest.json", "files", "path_encoding")],
+    "chemistry": [("compact-manifest.json", "pairs", "gzip_pair")],
+    "independent-chemistry-review": [("compact-manifest.json", "pairs", "gzip_pair")],
+    "primary": [("compact-originals-manifest.json", "rows", "raw_encoding")],
+    "independent-primary-review": [("compact-review-manifest.json", "rows", "raw_implicit_gzip")],
+    "native": [("compact/storage-manifest.json", "files", "path_encoding")],
+    "independent-native-review": [
+        ("compact/storage-manifest.json", "files", "path_encoding"),
+        ("compact/storage-manifest.final.json", "files", "path_encoding"),
+    ],
+    "merged-discovery": [("compact-artifact-manifest.json", "rows", "path_codec")],
+    "merged-discovery-successor": [("compact-artifact-manifest.json", "rows", "path_codec")],
+}
+packages = []
+for name in NAMES:
+    source = Path("/private/tmp/pathwaymech-next-266-" + name)
+    manifest_name = (
+        "artifact-manifest.final.json"
+        if name == "independent-native-review"
+        else "artifact-manifest.json"
+    )
+    manifest = source / manifest_name
+    obj = json.loads(manifest.read_bytes())
+    key = "files" if "files" in obj else "artifacts"
+    listed = {row["path"] for row in obj[key]}
+    actual = {str(p.relative_to(source)) for p in source.rglob("*") if p.is_file()}
+    maps = []
+    for path, array, schema in MAPS.get(name, []):
+        body = (source / path).read_bytes()
+        content = json.loads(body)
+        maps.append(
+            {
+                "path": path,
+                "sha256": sha(body),
+                "bytes": len(body),
+                "array": array,
+                "schema": schema,
+                "expected_rows": len(content[array]),
+                "top_level_keys": sorted(content),
+                "row_key_sets": sorted({tuple(sorted(r)) for r in content[array]}),
+            }
+        )
+    packages.append(
+        {
+            "name": name,
+            "source_root": str(source),
+            "manifest": manifest_name,
+            "manifest_sha256": sha(manifest.read_bytes()),
+            "manifest_array": key,
+            "listed_artifacts": len(listed),
+            "explicit_physical_extras": sorted(actual - listed),
+            "physical_artifacts": len(actual),
+            "compact_maps": maps,
+            "compact_disposition": (
+                "All named package-owned map versions explicitly bound; "
+                "nested source copies remain immutable source artifacts."
+            )
+            if maps
+            else (
+                "No package-owned compact map in the full "
+                "hidden/ignored-inclusive source inventory; all source "
+                "artifacts retained directly through the retention content "
+                "map."
+            ),
+        }
+    )
+extra_paths = []
+ci265 = Path("/private/tmp/pathwaymech-next-265-ci")
+ci266 = Path("/private/tmp/pathwaymech-next-266-ci")
+for n in [
+    "next266-chemistry-root-intake.json",
+    "next266-discovery-and-review-root-intake.json",
+    "next266-independent-chemistry-root-intake.json",
+    "next266-independent-native-root-intake.json",
+    "next266-independent-primary-root-intake.json",
+    "next266-native-root-intake.json",
+    "next266-primary-root-intake.json",
+    "merge-verified.json",
+]:
+    extra_paths.append(ci265 / n)
+merge = json.loads((ci265 / "merge-verified.json").read_bytes())
+extra_paths += [Path(merge["receipt"]), Path(merge["integrity_report"])]
+for n in [
+    "authored-design-root-intake.json",
+    "independent-design-root-intake.json",
+    "authority-implementation-root-intake.json",
+    "independent-authority-root-intake.json",
+    "merged-discovery-root-intake.json",
+    "independent-merged-discovery-root-intake.json",
+    "current-identifier-owner-preflight.json",
+    "issue-deduplication-all-state.json",
+    "merged-discovery-provenance-issue.md",
+    "merged-discovery-provenance-root-verification.json",
+    "provenance-issue-creation.json",
+]:
+    extra_paths.append(ci266 / n)
+extra_paths.append(Path("/private/tmp/pathwaymech-next-266-merged-discovery-freeze-proof.json"))
+extra_paths.append(
+    Path("/private/tmp/pathwaymech-next-266-integration-preparation/record-serialization.json")
+)
+extras = []
+for path in extra_paths:
+    body = path.read_bytes()
+    extras.append(
+        {
+            "source": str(path),
+            "path": path.parent.name + "/" + path.name,
+            "sha256": sha(body),
+            "bytes": len(body),
+        }
+    )
+dump(
+    ROOT / "source-specification.initial.json",
+    {
+        "packages": packages,
+        "selected_root_snapshots": extras,
+        "pending_packages": ["independent-merged-discovery-successor-review"],
+        "scope": (
+            "Explicit frozen package inventories and selected exact root "
+            "snapshots. No whole mutable CI directory is declared frozen."
+        ),
+    },
+)
+print(
+    json.dumps(
+        {
+            "packages": len(packages),
+            "selected_snapshots": len(extras),
+            "compact_maps": sum(len(p["compact_maps"]) for p in packages),
+        }
+    )
+)
