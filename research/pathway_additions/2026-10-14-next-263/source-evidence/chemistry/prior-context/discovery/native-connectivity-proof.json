@@ -1,0 +1,226 @@
+{
+  "candidate": "MetaCyc:PWY-5417",
+  "children": [
+    "CATECHOL-ORTHO-CLEAVAGE-PWY",
+    "PWY-2361"
+  ],
+  "steps": [
+    {
+      "reaction": "MetaCyc:CATECHOL-12-DIOXYGENASE-RXN",
+      "native_direction": "PHYSIOL-LEFT-TO-RIGHT",
+      "selected_layout_direction": "L2R",
+      "inputs": [
+        {
+          "id": "CATECHOL",
+          "coefficient": 1
+        },
+        {
+          "id": "OXYGEN-MOLECULE",
+          "coefficient": 1
+        }
+      ],
+      "outputs": [
+        {
+          "id": "PROTON",
+          "coefficient": 2
+        },
+        {
+          "id": "CIS-CIS-MUCONATE",
+          "coefficient": 1
+        }
+      ],
+      "source": "originals/META-CATECHOL-12-DIOXYGENASE-RXN.xml",
+      "sha256": "2f165e3aadc1a8e0753970890a7785b41814c9bee15edc43b4a6574e779c5425"
+    },
+    {
+      "reaction": "MetaCyc:MUCONATE-CYCLOISOMERASE-RXN",
+      "native_direction": "RIGHT-TO-LEFT",
+      "selected_layout_direction": "R2L",
+      "inputs": [
+        {
+          "id": "PROTON",
+          "coefficient": 1
+        },
+        {
+          "id": "CIS-CIS-MUCONATE",
+          "coefficient": 1
+        }
+      ],
+      "outputs": [
+        {
+          "id": "CPD-15124",
+          "coefficient": 1
+        }
+      ],
+      "source": "originals/META-MUCONATE-CYCLOISOMERASE-RXN.xml",
+      "sha256": "9cb3379a2f32529e122911fd50dbd953e43d738f22e77f52ecebabc7946d3f6e"
+    },
+    {
+      "reaction": "MetaCyc:MUCONOLACTONE-DELTA-ISOMERASE-RXN",
+      "native_direction": "LEFT-TO-RIGHT",
+      "selected_layout_direction": "L2R",
+      "inputs": [
+        {
+          "id": "CPD-15124",
+          "coefficient": 1
+        }
+      ],
+      "outputs": [
+        {
+          "id": "3-OXOADIPATE-ENOL-LACTONE",
+          "coefficient": 1
+        }
+      ],
+      "source": "originals/META-MUCONOLACTONE-DELTA-ISOMERASE-RXN.xml",
+      "sha256": "9a82fb5795aa6b125c9f010d7c0f53afd817806c441f2b267cadac0e4832b8fd"
+    },
+    {
+      "reaction": "MetaCyc:3-OXOADIPATE-ENOL-LACTONASE-RXN",
+      "native_direction": "PHYSIOL-LEFT-TO-RIGHT",
+      "selected_layout_direction": "L2R",
+      "inputs": [
+        {
+          "id": "WATER",
+          "coefficient": 1
+        },
+        {
+          "id": "3-OXOADIPATE-ENOL-LACTONE",
+          "coefficient": 1
+        }
+      ],
+      "outputs": [
+        {
+          "id": "PROTON",
+          "coefficient": 1
+        },
+        {
+          "id": "3-KETO-ADIPATE",
+          "coefficient": 1
+        }
+      ],
+      "source": "originals/META-3-OXOADIPATE-ENOL-LACTONASE-RXN.xml",
+      "sha256": "7a438bdff84971939300f99d5202a19abccaee11ea2a909a931ccd9edfc902be"
+    },
+    {
+      "reaction": "MetaCyc:3-OXOADIPATE-COA-TRANSFERASE-RXN",
+      "native_direction": "REVERSIBLE",
+      "selected_layout_direction": "L2R",
+      "inputs": [
+        {
+          "id": "SUC-COA",
+          "coefficient": 1
+        },
+        {
+          "id": "3-KETO-ADIPATE",
+          "coefficient": 1
+        }
+      ],
+      "outputs": [
+        {
+          "id": "SUC",
+          "coefficient": 1
+        },
+        {
+          "id": "3-KETO-ADIPYL-COA",
+          "coefficient": 1
+        }
+      ],
+      "source": "originals/META-3-OXOADIPATE-COA-TRANSFERASE-RXN.xml",
+      "sha256": "9de6ecfb99056a6c2ad2c4ef99ce7499b672d4564416317434c6ccff49196154"
+    },
+    {
+      "reaction": "MetaCyc:RXN-3641",
+      "native_direction": "REVERSIBLE",
+      "selected_layout_direction": "R2L",
+      "inputs": [
+        {
+          "id": "3-KETO-ADIPYL-COA",
+          "coefficient": 1
+        },
+        {
+          "id": "CO-A",
+          "coefficient": 1
+        }
+      ],
+      "outputs": [
+        {
+          "id": "SUC-COA",
+          "coefficient": 1
+        },
+        {
+          "id": "ACETYL-COA",
+          "coefficient": 1
+        }
+      ],
+      "source": "originals/META-RXN-3641.xml",
+      "sha256": "252c53260b5566712aa23a640710bbd3184d15dd033bf457765f58b218b422c3"
+    }
+  ],
+  "joins": [
+    {
+      "predecessor": "CATECHOL-12-DIOXYGENASE-RXN",
+      "successor": "MUCONATE-CYCLOISOMERASE-RXN",
+      "primary_material": "CIS-CIS-MUCONATE",
+      "all_shared_materials": [
+        "CIS-CIS-MUCONATE",
+        "PROTON"
+      ],
+      "ordering_owner": "CATECHOL-ORTHO-CLEAVAGE-PWY"
+    },
+    {
+      "predecessor": "MUCONATE-CYCLOISOMERASE-RXN",
+      "successor": "MUCONOLACTONE-DELTA-ISOMERASE-RXN",
+      "primary_material": "CPD-15124",
+      "all_shared_materials": [
+        "CPD-15124"
+      ],
+      "ordering_owner": "CATECHOL-ORTHO-CLEAVAGE-PWY"
+    },
+    {
+      "predecessor": "MUCONOLACTONE-DELTA-ISOMERASE-RXN",
+      "successor": "3-OXOADIPATE-ENOL-LACTONASE-RXN",
+      "primary_material": "3-OXOADIPATE-ENOL-LACTONE",
+      "all_shared_materials": [
+        "3-OXOADIPATE-ENOL-LACTONE"
+      ],
+      "ordering_owner": "CATECHOL-ORTHO-CLEAVAGE-PWY"
+    },
+    {
+      "predecessor": "3-OXOADIPATE-ENOL-LACTONASE-RXN",
+      "successor": "3-OXOADIPATE-COA-TRANSFERASE-RXN",
+      "primary_material": "3-KETO-ADIPATE",
+      "all_shared_materials": [
+        "3-KETO-ADIPATE"
+      ],
+      "ordering_owner": "PWY-5417"
+    },
+    {
+      "predecessor": "3-OXOADIPATE-COA-TRANSFERASE-RXN",
+      "successor": "RXN-3641",
+      "primary_material": "3-KETO-ADIPYL-COA",
+      "all_shared_materials": [
+        "3-KETO-ADIPYL-COA"
+      ],
+      "ordering_owner": "PWY-2361"
+    }
+  ],
+  "reaction_count": 6,
+  "material_side_entries": 21,
+  "net_inputs": {
+    "CATECHOL": 1,
+    "OXYGEN-MOLECULE": 1,
+    "WATER": 1,
+    "CO-A": 1
+  },
+  "net_outputs": {
+    "PROTON": 2,
+    "SUC": 1,
+    "ACETYL-COA": 1
+  },
+  "notes": [
+    "Native parent explicitly joins enol-lactone hydrolysis to CoA transfer; selected boundary is all six reactions, not a title-only juxtaposition.",
+    "Native R2L orientation applies to muconate cycloisomerase and thiolase; reversible reaction direction remains distinct from selected physiological layout.",
+    "The last reaction forms succinyl-CoA and acetyl-CoA, while the preceding CoA-transfer consumes succinyl-CoA and produces succinate. Summing the complete selected route cancels the recycled succinyl-CoA and leaves net succinate plus acetyl-CoA.",
+    "Net coefficients are original-native bookkeeping, not a newly completed independent atom/charge/structure audit."
+  ]
+}

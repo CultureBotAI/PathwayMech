@@ -1,0 +1,40 @@
+from pathlib import Path
+from collections import Counter
+import datetime,gzip,hashlib,json,xml.etree.ElementTree as ET,yaml
+R=Path('/private/tmp/pathwaymech-next-263-20261014');P=R/'research/pathway_additions/2026-10-14-next-263/record-author';N=Path('/private/tmp/pathwaymech-next-263-native/originals');O=Path('/private/tmp/pathwaymech-next-263-independent-technical');sha=lambda b:hashlib.sha256(b).hexdigest()
+def load(p):
+ p=Path(p);b=p.read_bytes();return json.loads(gzip.decompress(b) if p.suffix=='.gz' else b)
+r=yaml.safe_load((R/'data/pathways/catechol-degradation-iii.yaml').read_text());edges={x['id']:x for x in r['mechanistic_edges']};slots={};objects={};sourcefiles=[]
+for p in sorted(N.rglob('*')):
+ if not p.is_file() or not p.name.startswith('META-') or p.suffix!='.xml':continue
+ b=p.read_bytes();doc=ET.fromstring(b);rows=[x for x in doc if x.tag!='metadata'];assert len(rows)==1;obj=rows[0];frame=obj.attrib['frameid'];assert frame not in objects;objects[frame]=obj;counts=Counter()
+ for x in obj:
+  counts[x.tag]+=1;loc=f'/ptools-xml/{obj.tag}[@frameid="{frame}"]/{x.tag}[{counts[x.tag]}]';slots[(frame,loc)]={'object_type':obj.tag,'slot':x.tag,'source_sha256':sha(b)}
+ sourcefiles.append({'path':str(p),'sha256':sha(b),'bytes':len(b),'frame':frame,'direct_slots':sum(counts.values())})
+ledger=load(P/'source-to-graph-native-slots.json.gz');assert len(ledger)==len(slots)==3252;assert len(objects)==247;assert {(x['frame'],x['locator']) for x in ledger}==set(slots)
+for row in ledger:
+ orig=slots[(row['frame'],row['locator'])];assert all(row[k]==v for k,v in orig.items())
+ for eid in row['edge_ids']+row['related_edges']:assert eid in edges
+ assert row['disposition'] and row['reason']
+formal=load(P/'drafts/formal-activity-dispositions.json');nativeactivities=set()
+for rid in ['CATECHOL-12-DIOXYGENASE-RXN','MUCONATE-CYCLOISOMERASE-RXN','MUCONOLACTONE-DELTA-ISOMERASE-RXN','3-OXOADIPATE-ENOL-LACTONASE-RXN','3-OXOADIPATE-COA-TRANSFERASE-RXN','RXN-3641']:
+ for x in objects[rid].findall('enzymatic-reaction/Enzymatic-Reaction'):nativeactivities.add(x.attrib['frameid'])
+assert {x['activity'] for x in formal}==nativeactivities and len(nativeactivities)==20
+for row in formal:
+ obj=objects[row['activity']];assert obj.find('enzyme/Protein').attrib['frameid']==row['enzyme'];assert obj.find('reaction/Reaction').attrib['frameid']==row['native_reaction']
+ a=edges[row['activity_edge']];f=edges[row['formal_edge']];assert a['subject']==f['subject']=='MetaCyc:'+row['enzyme'];assert a['object']=='MetaCyc:'+row['activity'];assert f['object']==row['formal_reaction'];assert a['predicate']==f['predicate']==row['predicate']
+organisms=load(P/'parent-organism-record-dispositions.json');raworg=[x.attrib['frameid'] for x in objects['PWY-5417'].findall('species/Organism')];assert len(organisms)==len(raworg)==11;assert {x['native_organism'] for x in organisms}==set(raworg);selected=set()
+for row in organisms:
+ ids=[x.findtext('dblink-oid') for x in objects[row['native_organism']].findall('dblink') if x.findtext('dblink-db')=='NCBI-TAXONOMY-DB'];chosen=row['selected_taxon']
+ if chosen:assert ids==[chosen.split(':')[1]];selected.add(chosen)
+ else:assert ids==[]
+assert selected=={x['id'] for x in r['taxa']}
+claims=load(P/'source-to-record-primary-claims.json');sourceclaims=load(R/'research/pathway_additions/2026-10-14-next-263/source-evidence/primary/source-supported-claims.json');assert {x['claim_id'] for x in claims}=={x['id'] for x in sourceclaims} and len(claims)==63
+for row in claims:
+ for eid in row['evidence_edges']+row['context_activity_edges']:assert eid in edges
+ assert row['disposition']
+retmap=load(P/'retention-map.json')
+for row in retmap['files']:
+ b=(R/row['repository_path']).read_bytes();h=row.get('stored_sha256',row.get('sha256'));n=row.get('stored_bytes',row.get('bytes'));assert sha(b)==h and len(b)==n;dec=gzip.decompress(b) if row['encoding'].startswith('gzip') else b;assert sha(dec)==row['original_sha256'] and len(dec)==row['original_bytes'];assert dec==Path(row['original_path']).read_bytes()
+res={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':sha((R/'data/pathways/catechol-degradation-iii.yaml').read_bytes()),'native_originals':len(objects),'direct_native_slots':len(slots),'slot_dispositions_exact_population':True,'slot_disposition_categories':dict(Counter(x['disposition'] for x in ledger)),'native_formal_activities':len(nativeactivities),'native_formal_catalysts':len({x['enzyme'] for x in formal}),'all_formal_activity_and_rhea_edges_match_source_assignments':True,'parent_organism_rows':len(organisms),'selected_direct_taxon_xrefs':len(selected),'ungrounded_native_rows':[x['native_organism'] for x in organisms if not x['selected_taxon']],'primary_claim_dispositions':len(claims),'record_author_retention_pairs':len(retmap['files']),'source_files':sourcefiles,'limits':['Population/locator/graph disposition integrity is independently verified; this is not independent agreement with every scientific interpretation in a disposition.','Full biological sufficiency is the separate independent science review.'],'failures':[]}
+(O/'source-coverage-replay.json').write_text(json.dumps(res,indent=2)+'\n');print(json.dumps({k:v for k,v in res.items() if k!='source_files'},indent=2))

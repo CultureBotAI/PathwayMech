@@ -1,0 +1,97 @@
+"""Replay the unchanged canonical ontology CLI on the exact selected draft."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+import sys
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-authority-integration')
+REPO = Path('/private/tmp/pathwaymech-next-263-20261014')
+AUTHOR = Path('/private/tmp/pathwaymech-next-263-authority-author')
+EXPECTED_RECORD = '0ad615b268d0f63ff253287401b4a978d4c7d1603157717e7e57eab5e1816ec6'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def bind(path):
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)}
+
+
+def emit(path, value):
+    assert not path.exists(), path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+
+def main():
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    original = ROOT / 'record-observation.yaml'
+    assert sha(original) == EXPECTED_RECORD
+    corpus = ROOT / 'ontology-replay-corpus'
+    corpus.mkdir()
+    (corpus / 'actual-record.yaml').write_bytes(original.read_bytes())
+    hash_receipt = AUTHOR / 'receipts/pinned-database-complete-hashes.json'
+    pinned = json.loads(hash_receipt.read_text())['databases']
+    before = []
+    sources = {}
+    for row in pinned:
+        path = Path(row['path'])
+        stat = path.stat()
+        assert str(path.resolve()) == row['resolved']
+        assert stat.st_size == row['bytes'] and stat.st_mtime_ns == row['mtime_ns']
+        prefix = {'chebi.db': 'CHEBI', 'ncbitaxon.db': 'NCBITaxon', 'rhea.db': 'RHEA'}[path.name]
+        sources[prefix] = path
+        before.append({**row, 'current_size_matches': True, 'current_mtime_ns_matches': True})
+    script = REPO / 'scripts/build_ontology_identifier_snapshot.py'
+    assert sha(script) == sha(AUTHOR / 'baseline/scripts/build_ontology_identifier_snapshot.py')
+    command = [sys.executable, '-B', str(script)]
+    for prefix, path in sorted(sources.items()):
+        command.extend(['--source', prefix + '=' + str(path)])
+    output = ROOT / 'ontology-replay/selected-ontology.snapshot.json'
+    command.extend(['--corpus', str(corpus), '--output', str(output)])
+    log = ROOT / 'logs/canonical-selected-ontology.log'
+    log.parent.mkdir(parents=True, exist_ok=True)
+    emit(ROOT / 'receipts/ontology-replay-start.json', {
+        'started_utc': started,
+        'command': command,
+        'canonical_builder': bind(script),
+        'record': bind(original),
+        'complete_prior_database_hash_receipt': bind(hash_receipt),
+        'pinned_database_stat_checks': before,
+        'scope': 'Exact final-draft ontology projection only; no legacy authority migration or whole-union regeneration.',
+        'prior_hashes_reused_for_preflight_only': True,
+        'unmodified_cli_rehashes_complete_databases': True,
+    })
+    with log.open('xb') as stream:
+        result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT, check=False)
+    after = []
+    for row in pinned:
+        path = Path(row['path'])
+        stat = path.stat()
+        assert str(path.resolve()) == row['resolved']
+        assert stat.st_size == row['bytes'] and stat.st_mtime_ns == row['mtime_ns']
+        after.append({'path': str(path), 'bytes': stat.st_size, 'mtime_ns': stat.st_mtime_ns, 'unchanged': True})
+    receipt = {
+        'started_utc': started,
+        'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'exit_code': result.returncode,
+        'command': command,
+        'log': bind(log),
+        'record': bind(original),
+        'pinned_database_stats_after': after,
+        'scope': 'Unchanged canonical CLI on exact final draft, configured only for its CHEBI, NCBITaxon, and RHEA selection.',
+        'full_legacy_ontology_union_rebuilt': False,
+        'maintained_writes': False,
+    }
+    if output.is_file():
+        receipt['snapshot'] = bind(output)
+    emit(ROOT / 'receipts/ontology-canonical-cli.json', receipt)
+    assert result.returncode == 0, receipt
+    print(json.dumps(receipt, indent=2))
+
+
+if __name__ == '__main__':
+    main()

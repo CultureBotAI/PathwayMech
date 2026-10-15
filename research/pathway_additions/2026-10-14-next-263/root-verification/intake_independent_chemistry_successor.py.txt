@@ -1,0 +1,94 @@
+"""Read-only intake of frozen next263 source and independent chemistry packages."""
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+
+CI = Path('/private/tmp/pathwaymech-next-263-ci')
+PACKAGES = [
+    {
+        'name': 'biological-identity',
+        'role': 'source_author',
+        'root': '/private/tmp/pathwaymech-next-263-biological-identity',
+        'manifest_sha256': '44a3c1a89f03da64e3cfcaa61d82a572e629dfffd2fb8386dd86eb0edf183cbd',
+        'compact_manifest': 'compact-retention-manifest.json',
+        'compact_manifest_sha256': '2165106dcf43a1855c4702ece8402b6a1dadfb09d811af79983ed625348fb6a9',
+        'compact_root': 'compact-retained',
+    },
+    {
+        'name': 'independent-chemistry',
+        'role': 'independent_source_chemistry_adjudication_not_integrated_record_review',
+        'root': '/private/tmp/pathwaymech-next-263-independent-chemistry',
+        'manifest_sha256': '2edd58ead30815680306036b0f8989cee08a3e9da9466037253edd5a26bb8d8d',
+        'compact_manifest': 'retention/artifact-manifest.json',
+        'compact_manifest_sha256': 'b47179ee88c593a7a5c8070264d19b12222cfc50e03cfd81bfadd162296c4220',
+        'compact_root': 'retention',
+    },
+]
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def checked_bytes(path, digest, length=None):
+    data = path.read_bytes()
+    assert sha(data) == digest, path
+    if length is not None:
+        assert len(data) == length, path
+    return data
+
+
+for spec in PACKAGES[1:]:
+    root = Path(spec['root'])
+    manifest_path = root / 'artifact-manifest.json'
+    manifest = json.loads(checked_bytes(manifest_path, spec['manifest_sha256']))
+    rows = manifest['files']
+    expected = {row['path'] for row in rows}
+    assert len(expected) == len(rows)
+    actual = {str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()}
+    assert not any(p.is_symlink() for p in root.rglob('*'))
+    assert actual == expected | {'artifact-manifest.json'}, (actual - expected, expected - actual)
+    total = 0
+    for row in rows:
+        total += len(checked_bytes(root / row['path'], row['sha256'], row['bytes']))
+    compact = json.loads(checked_bytes(root / spec['compact_manifest'], spec['compact_manifest_sha256']))
+    compact_rows = compact['files']
+    compact_root = root / spec['compact_root']
+    gzip_count = 0
+    stored_total = 0
+    for row in compact_rows:
+        stored = checked_bytes(compact_root / row['path'], row['sha256'], row['bytes'])
+        stored_total += len(stored)
+        encoding = row['encoding']
+        assert encoding in {'identity', 'inert_python_text', 'gzip', 'gzip_lossless'}, encoding
+        decoded = gzip.decompress(stored) if encoding in {'gzip', 'gzip_lossless'} else stored
+        gzip_count += encoding in {'gzip', 'gzip_lossless'}
+        if spec['name'] == 'biological-identity':
+            source_path, source_sha, source_length = row['original_path'], row['original_sha256'], row['original_bytes']
+        else:
+            source_path, source_sha, source_length = row['source_path'], row['decoded_sha256'], row['decoded_bytes']
+        original = checked_bytes(Path(source_path), source_sha, source_length)
+        assert decoded == original, row['path']
+        assert not row['path'].endswith('.py'), row['path']
+    result = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'package': spec['root'],
+        'role': spec['role'],
+        'manifest_sha256': spec['manifest_sha256'],
+        'manifest_files_verified': len(rows),
+        'manifest_bytes_verified': total,
+        'exact_inventory_includes_hidden_and_ignored': True,
+        'compact_manifest_sha256': spec['compact_manifest_sha256'],
+        'compact_files_verified': len(compact_rows),
+        'compact_stored_bytes': stored_total,
+        'lossless_gzip_pairs': gzip_count,
+        'all_decoded_original_pairs_verified': True,
+        'no_active_python_helpers_in_compact': True,
+        'limits': 'Integrity intake only; not a scientific assessment or integrated-record review.',
+    }
+    destination = CI / (spec['name'] + '-integrity-intake.json')
+    assert not destination.exists(), destination
+    destination.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({'receipt': str(destination), 'sha256': sha(destination.read_bytes()), **result}))

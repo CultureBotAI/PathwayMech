@@ -1,0 +1,82 @@
+"""Rerun the full test suite that failed after environment loss, plus remaining gates."""
+from pathlib import Path
+import datetime
+import hashlib
+import importlib.util
+import json
+import os
+import subprocess
+import time
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-20261014')
+CI = Path('/private/tmp/pathwaymech-next-263-ci')
+OUT = Path('/private/tmp/pathwaymech-next-263-checks-recovered')
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           UV_NO_SYNC='1', UV_CACHE_DIR='/private/tmp/pathwaymech-next-263-uv-cache',
+           UV_PROJECT_ENVIRONMENT='/private/tmp/pathwaymech-next-263-verified-venv',
+           PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    prep = json.loads((CI / 'recovery-preparation.json').read_text())
+    assert prep['recovery_status'] == 'ready_for_successor_test_and_remaining_gates'
+    assert prep['all_other_initial_inputs_unchanged']
+    environment_hashes = prep['environment_recovery']['critical_file_hashes']
+    for path, digest in environment_hashes.items():
+        assert sha(Path(path)) == digest, path
+    assert not OUT.exists(), 'Observe the existing run instead of restarting it.'
+    spec = importlib.util.spec_from_file_location('initial_gate_runner', CI / 'run_initial_checks.py')
+    initial = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(initial)
+    expected = json.loads((initial.OUT / 'tested-core-input-hashes.json').read_text())
+    for path, change in prep['changed_initial_inputs'].items():
+        assert change['after'] is None
+        del expected[path]
+    expected.update(prep['added_inputs'])
+    before = initial.inventory()
+    assert before == expected
+    OUT.mkdir()
+    (OUT / 'tested-core-input-hashes.json').write_text(json.dumps(before, indent=2) + '\n')
+    (OUT / 'environment.json').write_text(json.dumps({k: ENV[k] for k in [
+        'PYTHONDONTWRITEBYTECODE', 'PYTHONNOUSERSITE', 'UV_NO_SYNC', 'UV_CACHE_DIR',
+        'UV_PROJECT_ENVIRONMENT', 'PYTHONPATH']}, indent=2) + '\n')
+    receipts = []
+    for command in [['just', 'test'], ['just', 'lint'], ['just', 'vendored-check'],
+                    ['git', 'diff', '--check'], ['git', 'diff', '--cached', '--check']]:
+        log = OUT / ('-'.join(command) + '.log')
+        start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        clock = time.monotonic()
+        with log.open('w') as stream:
+            run = subprocess.run(command, cwd=ROOT, env=ENV, stdout=stream, stderr=subprocess.STDOUT)
+        receipt = {'command': command, 'cwd': str(ROOT), 'started_utc': start,
+                   'elapsed_seconds': round(time.monotonic() - clock, 2),
+                   'exit_code': run.returncode, 'log_path': str(log), 'log_sha256': sha(log)}
+        receipts.append(receipt)
+        (OUT / 'receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+        print(json.dumps(receipt), flush=True)
+        if run.returncode:
+            print(log.read_text()[-12000:], flush=True)
+            raise SystemExit(run.returncode)
+    after = initial.inventory()
+    assert before == after, 'Inputs changed during successor verification.'
+    for path, digest in environment_hashes.items():
+        assert sha(Path(path)) == digest, path
+    result = {'tested_core_files': len(before), 'all_unchanged': True,
+              'scope': initial.SCOPE, 'ignored_and_hidden_included': True,
+              'excluded_runtime_caches': ['__pycache__', '.pytest_cache', '.ruff_cache'],
+              'record_sha256': sha(ROOT / 'data/pathways/catechol-degradation-iii.yaml'),
+              'initial_render_and_validate_receipts': str(initial.OUT / 'receipts.json'),
+              'carry_forward_basis': str(CI / 'recovery-preparation.json'),
+              'initial_failed_test_preserved': True,
+              'critical_environment_files_unchanged': environment_hashes,
+              'all_required_commands_passed_across_recorded_runs': True}
+    (OUT / 'final-input-preservation.json').write_text(json.dumps(result, indent=2) + '\n')
+    print('Recovered full test suite and remaining gates passed; complete scoped inputs unchanged.', flush=True)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,187 @@
+"""Add source-bounded primary evidence to external draft; no maintained writes."""
+import os,json,hashlib,sys,copy,re,html
+from pathlib import Path
+import yaml
+sys.dont_write_bytecode=True
+B=Path(os.environ.get('PATHWAY_AUTHOR_OUTPUT','/private/tmp/pathwaymech-next-263-record-author'));P=Path('/private/tmp/pathwaymech-next-263-primary');I=Path('/private/tmp/pathwaymech-next-263-biological-identity');R=Path('/private/tmp/pathwaymech-next-263-20261014')
+sys.path.insert(0,str(R/'src'));from pathwaymech.schema import validate_record
+rd=lambda p:json.loads(Path(p).read_text());sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(n,v):(B/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+r=rd(B/'drafts/native-base.json');edges=r['mechanistic_edges'];refs={x['id']:x for x in r['references']};claims=rd(P/'source-supported-claims.json');access={x['pmid']:x for x in rd(P/'source-access-and-reading-ledger.json')};quoted=[];tables=[];newedges=[];bindings=[]
+# The reference digest explicitly names its exact retained artifact; other pages/originals remain separately bound.
+for pm,a in access.items():
+ artifact=a.get('reading_artifact',a['metadata']);path=P/artifact['path'];assert sha(path)==artifact['sha256']
+ refs['PMID:'+pm]={'id':'PMID:'+pm,'title':a['title'],'url':'https://pubmed.ncbi.nlm.nih.gov/'+pm+'/','source_version':'Frozen source access '+a['access_scope']+'. Digest covers '+artifact['path']+'. '+a['reading_scope'],'source_sha256':artifact['sha256']}
+ bindings.append({'reference_id':'PMID:'+pm,'digest_artifact':str(path),'sha256':artifact['sha256'],'access':a['access_scope'],'reading_scope':a['reading_scope']})
+def quote(pm,text,locator,path=None):
+ a=access[pm];p=P/(path or a.get('reading_artifact',a['metadata'])['path']);raw=p.read_text();at=raw.find(text)
+ m=re.search(r'retained text line (\d+)',locator)
+ if m:
+  lines=raw.splitlines(keepends=True);lineno=int(m.group(1));at=sum(len(x) for x in lines[:lineno-1])+lines[lineno-1].find(text);assert text in lines[lineno-1],(pm,lineno,text)
+ if at<0:raise ValueError(('quote not exact',pm,text,str(p)))
+ row={'pmid':pm,'quote':text,'path':str(p),'sha256':sha(p),'character_span':[at,at+len(text)],'byte_span':[len(raw[:at].encode()),len(raw[:at+len(text)].encode())],'locator':locator,'normalization':'none; exact retained source text substring'}
+ quoted.append(row);return {'reference_id':'PMID:'+pm,'quote':text,'source_locator':locator+'; retained '+(str(p.relative_to(P)) if p.is_relative_to(P) else str(p))}
+def abstract(pm,text):return quote(pm,text,'Complete issuing metadata abstract, resultList.result[0].abstractText','originals/metadata-'+pm+'.json')
+def table(pm,text,locator,path=None):
+ assert len(text)<=400
+ p=P/(path or access[pm]['reading_artifact']['path']);tables.append({'pmid':pm,'source_assertion':text,'source_locator':locator,'path':str(p),'sha256':sha(p),'kind':'actual original table/footnote facts; not prose paraphrase'})
+ return {'reference_id':'PMID:'+pm,'source_assertion':text,'source_locator':locator+'; retained '+(str(p.relative_to(P)) if p.is_relative_to(P) else str(p))}
+def attach(activity,evidence,qual=None):
+ targets=[e for e in edges if any(a['activity']==activity and e['id'] in [a['activity_edge'],a['formal_edge']] for a in rd(B/'drafts/formal-activity-dispositions.json'))]
+ assert len(targets)==2,(activity,len(targets))
+ for e in targets:
+  e['evidence']+=copy.deepcopy(evidence)
+  if qual:e['endpoint_qualifiers']=[{'endpoint':'subject','kind':qual[0],'description':qual[1],'evidence':copy.deepcopy(evidence)}]
+ return targets
+# MT1 actual Tables 1 and 2 plus short Methods fragments distinguish native preparations.
+catA=table('17172348','Table 1: CatA catechol Km 0.8 ± 0.2 micromolar and kcat 8.7 ± 1.4 per second; 4-methylcatechol Km 9.9 ± 2.7 micromolar. Footnote a: target protein 41 ± 2%.','Table 1, CatA rows and footnote a; L268–292')
+salD=table('17172348','Table 1: SalD catechol kcat/Km 1, versus 12.2 for 4-methylcatechol (per second per micromolar). Footnote a: target protein 57 ± 3%.','Table 1, SalD rows and footnote a; L281–292')
+catB=table('17172348','Table 2: CatB muconate kcat/Km 6.00, versus 2.50 for 3-methylmuconate (per second per micromolar). Footnote a: target protein 80 ± 5%.','Table 2, CatB rows and footnote a; L299–323')
+salC=table('17172348','Table 2: SalC muconate kcat/Km 0.07, versus 8.13 for 3-methylmuconate (per second per micromolar); purity greater than 99%. Muconate data cite the 2003 study.','Table 2, SalC rows and footnotes a/c; L312–331')
+native=quote('17172348','protein from salicylate-grown cells','Methods, purification of CatA/SalD and CatB; L122–123')
+salcprep=quote('17172348','purified from 5-chlorosalicylate-grown cells','Methods, SalC preparation; L128')
+pred=quote('17172348','two ORFs with high sequence similarity','Results, sequence-based CatC/CatB assignment; L192')
+attach('ENZRXN-16126',[catA,native],('molecular_state','Partially purified native MT1 CatA from salicylate-grown cells, with 41 ± 2% target protein. Escherichia coli cloning strains are not the kinetic assay preparation.'))
+attach('ENZRXN-16125',[salD,native],('molecular_state','Partially purified native MT1 SalD from salicylate-grown cells, with 57 ± 3% target protein. Its methylcatechol preference is distinct from CatA.'))
+attach('ENZRXN-16128',[catB,native],('molecular_state','Native MT1 CatB from salicylate-grown cells, with 80 ± 5% target protein. The neighboring SalC preparation has a separate growth condition and substrate preference.'))
+for act in ['ENZRXN-16127','ENZRXN-21371']:attach(act,[salC,salcprep],('molecular_state','Native MT1 SalC purified from 5-chlorosalicylate-grown cells; greater than 99% target protein. The two source activity IDs do not establish two enzyme preparations.'))
+attach('ENZRXN-16130',[pred])
+# Historical/preparation evidence remains beside native assignment rather than replacing its identity.
+attach('ENZRXN-3369',[abstract('6780551','alpha 2 beta 2 oligomeric structure'),table('1624453','Table 1 separates donor PRS2000, mutant PRS2241, pcaJ::Tn5 mutant PRS3004 and oppositely oriented pHRP110/pHRP111 inserts. Table 2 reports complementation and crude-extract transferase activities.','Printed pages 4659–4660, Tables 1–2; original scan pages 3–4','derived/PMC206261-page-4-ocr.txt')])
+attach('ENZRXN-3368',[abstract('7391022','a trimer composed of identical 11,000-dalton subunits')])
+attach('ENZRXN-3585',[abstract('7646060','amino acid (98%) and the DNA sequences (97%)')])
+attach('ENZRXN-3586',[abstract('3609743','P. putida PRS2015 harboring the cloned catB gene'),abstract('3999146','the enzyme is an octamer with D4 symmetry')])
+attach('ENZRXN-3587',[abstract('2926818','ten 96 amino acid subunits')])
+attach('ENZRXN-16147',[abstract('8647072','a decameric structure involving a single 10.100-kDa subunit')])
+attach('ENZRXN-15727',[table('12218011','Table 2, unsubstituted muconate: Km 239 micromolar; kcat 78 per minute. These are kinetic measurements for the purified PS12 cycloisomerase.','Table 2, muconate row; retained text lines 246–299')])
+attach('ENZRXN-5295',[quote('7961399','Thiolase activity for PRS2000 was 16.1 and 111.0','Printed page 6485, Results prose, original scan page 7','derived/PMC197001-page-7-ocr.txt'),quote('7961399','thiolase activity was 13.9 and 19.5','Printed page 6485, Results prose, original scan page 7','derived/PMC197001-page-7-ocr.txt')])
+attach('ENZRXN-30674',[table('34731045','Table 2 assigns H16_B0198 to pcaI, H16_B0199 to pcaJ and H16_B0200 to pcaF; the first two are transferase subunits, and pcaF is the thiolase candidate.','Table 2, H16_B0198–H16_B0200 rows; L213–219')])
+attach('ENZRXN-30626',[abstract('26189483','β-ketothiolase (Tfu_0875)'),abstract('29625225','reconstructed in Escherichia coli BL21 (DE3)')])
+attach('ENZRXN-18274',[abstract('17259607','the paaE gene encodes the beta-ketoadipyl-CoA thiolase')])
+# Three database target errors are repaired only through the primary transferase statement.
+b13='derived/PMC134768-pmc-text.txt'
+inhib=quote('11741862','inhibitors of the transferase reaction','Results, conversion of substituted 3-oxoadipates; retained text line 316',b13)
+uncompetitive=quote('11741862','uncompetitive type of inhibition','Same paragraph; retained text line 316',b13)
+cu=quote('11741862','CuSO4 (1 mM) was 10%','Thiolase inhibition/activation; retained text line 301',b13)
+zn=quote('11741862','ZnCl2 (1 mM) brought about 46% inhibition','Thiolase inhibition/activation; retained text line 301',b13)
+nadh=quote('11741862','NADH','Thiolase inhibition; retained text line 303',b13)
+nadhtransfer=quote('11741862','NADH','Transferase inhibition; retained text line 248',b13)
+a2b2=quote('11741862','A2B2','Transferase structural properties; retained text line 242',b13)
+a4=quote('11741862','homotetramer','Thiolase structural properties; retained text line 297',b13)
+attach('ENZRXN-31095',[a2b2]);attach('ENZRXN-13636',[a4])
+for e in edges:
+ if e['subject']=='CHEBI:29036' and e['object']=='MetaCyc:ENZRXN-13636':e['evidence'].append(copy.deepcopy(cu));e['description']+=' The assay retained 10% of activity.'
+ if e['subject']=='CHEBI:29105' and e['object']=='MetaCyc:ENZRXN-13636':e['evidence'].append(copy.deepcopy(zn));e['description']+=' The assay showed 46% inhibition.'
+lookup={x['id']:x for x in rd(B/'plans/name-category-lookup.final.snapshot.json')['rows']}
+for ident in ['CHEBI:16810','CHEBI:17128']:lookup[ident]={'canonical_label':rd(R/'data/identifier_authorities/ontology.json')['terms'][ident]['label']}
+extra={x['native_frame']:x for x in rd(B/'plans/root-additional-chemical-selections.json')}
+def node(ident,category='small_molecule'):
+ if not any(n['id']==ident for n in r['participants']):r['participants'].append({'id':ident,'label':lookup[ident]['canonical_label'],'category':category})
+def newedge(subject,predicate,obj,desc,evidence,qual=None):
+ eid='p'+str(len(newedges)+1).zfill(3);e={'id':eid,'subject':subject,'predicate':predicate,'object':obj,'description':desc,'evidence':copy.deepcopy(evidence)}
+ if qual:e['endpoint_qualifiers']=copy.deepcopy(qual)
+ edges.append(e);newedges.append(e);return eid
+for f in ['CPD-8828','CPD-621','CPD-8827']:
+ ident=extra[f]['selected_id'];node(ident);newedge(ident,'inhibits','MetaCyc:ENZRXN-31095','The primary B13 transferase assay reports this analog as an uncompetitive inhibitor (underlying data not shown). Native REG-5831 through REG-5833 incorrectly name the thiolase and are not asserted as thiolase inhibition. The exact normalized structure has unspecified stereochemistry and does not establish assay solution protonation.',[inhib,uncompetitive])
+node(extra['NADH']['selected_id'])
+for target,desc in [('ENZRXN-13636','B13 thiolase retained 90% activity at 0.4 mM NADH and 58% at 0.8 mM.'),('ENZRXN-31095','B13 transferase retained 72% activity at 0.8 mM NADH, reported as minor inhibition.')]:newedge(extra['NADH']['selected_id'],'inhibits','MetaCyc:'+target,desc+' These are in vitro assay effects, not demonstrated physiological regulation; NADH(2-) is the exact normalized chemical identity, not a measured protonation-state claim.',[nadh if target=='ENZRXN-13636' else nadhtransfer])
+# CatB metal requirement and adjacent CcaC reconstitution are separate primary preparations.
+mn=abstract('3612800','the manganese ion that is essential for catalytic activity')
+for e in edges:
+ if e['predicate']=='has_cofactor' and e['subject']=='MetaCyc:CPLX-2843':e['evidence'].append(copy.deepcopy(mn))
+cc=abstract('18789896','The inactive metal-free apoenzyme could be reactivated by Zn(2+) or Mn(2+).')
+for e in edges:
+ if e['predicate']=='has_cofactor' and e['subject']=='MetaCyc:CPLX-7717':e['evidence'].append(copy.deepcopy(cc))
+newedge('CHEBI:29035','activates','MetaCyc:CPLX-7717','Manganese reactivates metal-free adjacent MT1 CcaC/trans-DLH in the accessible primary abstract. The native and recombinant preparations contained two zinc atoms per subunit and variable manganese. No activation of SalC or core PcaD is inferred.',[cc],[{'endpoint':'object','kind':'molecular_state','description':'Inactive metal-free CcaC/trans-dienelactone hydrolase apoenzyme; the accessible abstract does not resolve exact recombinant construct details.','evidence':[cc]}])
+# Expression edges target exact genes and never imply direct allostery.
+qind=abstract('8376330','requires beta-ketoadipate or its nonmetabolizable analog, adipate')
+qreg=abstract('8376330','pcaR regulatory gene for induction')
+qpcaF=abstract('8522507','the pathway intermediate beta-ketoadipate induces both genes')
+qnot=abstract('8522507','expression of pcaK, but not pcaF, is repressed by benzoate')
+for gene in ['G-2290','G-2291']:newedge('CHEBI:15775','regulates','MetaCyc:'+gene,'Beta-ketoadipate-dependent induction of the pcaIJ operon was measured using reporter constructs in Pseudomonas putida. The gene-level relation represents expression control, not direct activation of transferase catalysis or a ligand-binding measurement.',[qind,qreg])
+newedge('CHEBI:15775','regulates','MetaCyc:G-2292','Beta-ketoadipate induces pcaF expression in the tested PRS2000 system. Benzoate represses pcaK but explicitly does not repress pcaF in PMID8522507. No direct catalytic activation or inhibition is inferred.',[qpcaF,qnot])
+node('UniProtKB:Q52154','protein')
+qpcaR=abstract('8083169','possessed a specific affinity for the pcaIJ promoter region')
+def visual_quote(text, page, locator):
+    proof=B/'plans/pcar-visual-excerpt-recheck.json'
+    v=quote('8083169',text,locator,str(proof))
+    original=P/'originals'/page
+    assert any(x['original_path']==str(original) and text in x['quotes'] and x['sha256']==sha(original) for x in rd(proof))
+    quoted[-1].update({'normalization':'Exact short manual transcription from visually inspected original page; the byte span locates the retained transcription receipt, not original page pixels.', 'original_image_path':str(original),'original_image_sha256':sha(original),'reading_mode':'actual page image visual inspection'})
+    v['source_locator']=locator+'; original page image originals/'+page+'; exact manual transcription and image digest retained in author visual-reading receipt'
+    return v
+qhost1=visual_quote('K38(pHS104)','PMC196781-image-3.png','Printed page 5773, Methods PcaR protein extracts')
+qhost2=visual_quote('DH5α(pHS104)','PMC196781-image-6.png','Printed page 5776, Figure 6 caption')
+qtrunc=visual_quote('pHS105 (carrying the truncated pcaR gene)','PMC196781-image-6.png','Printed page 5776, Results PcaR promoter binding')
+for gene in ['G-2290','G-2291']:
+ newedge('UniProtKB:Q52154','regulates','MetaCyc:'+gene,'This edge records PcaR-dependent pcaIJ gene expression. A separate binding assay used the full pHS104 construct; Methods names Escherichia coli K38, while Figure 6 names DH5alpha. The truncated pHS105 control did not bind; these binding preparations are not assigned the separate gene-expression result. Beta-ketoadipate did not change complex migration (data not shown), so direct ligand binding is not asserted. The exact deposited Q52154/L33795 sequence leaves the native initiator uncertain among Met-1, Met-23 and Met-45.',[qreg,qpcaR,qhost1,qhost2,qtrunc])
+# Two separately reconciled context chemicals do not change the six-step material route.
+for c in rd(B/'plans/context-chemical-identity.snapshot.json')['chemicals']:
+    path=Path('/private/tmp/pathwaymech-next-263-context-chemistry')/c['native_source_path'];assert sha(path)==c['native_source_sha256'];node(c['recommended_id'])
+alpha=abstract('3612800','an inhibitor, alpha-ketoglutarate')
+newedge('CHEBI:16810','inhibits','MetaCyc:CPLX-2843','The historical Pseudomonas putida muconate lactonizing enzyme structural report locates alpha-ketoglutarate as an inhibitor. This is a structural preparation context, not a physiological regulation measurement or an assignment to every engineered CatB variant. The normalized dianion structure does not establish measured assay protonation.',[alpha])
+for gene in ['G-2290','G-2291']:
+    newedge('CHEBI:17128','regulates','MetaCyc:'+gene,'Adipate, the nonmetabolizable beta-ketoadipate analog, induces pcaIJ reporter expression in the tested Pseudomonas putida constructs. This is gene expression control, not direct activation of transferase catalysis. The normalized dianion structure is not a measured solution-speciation claim.',[qind,qreg])
+# Exact modern compound identities remain separate from primary reagent/assay assertions.
+chemical_specs=[]
+for native,c in rd('/private/tmp/pathwaymech-next-263-independent-chemistry/checks/independent-route.json')['chemicals'].items():
+    source=c['issuing'];chemical_specs.append({'id':c['id'],'name':c['name'],'source':source,'url':'https://www.ebi.ac.uk/chebi/backend/api/public/compound/'+c['id'].split(':')[1]+'/','scope':'Complete original ChEBI JSON; formal structure independently reconciled with the native original.'})
+for c in rd('/private/tmp/pathwaymech-next-263-additional-chemistry/verification.json')['checks']:
+    chemical_specs.append({'id':c['identifier'],'name':c['issuing_label'],'source':c['issuing_original'],'url':c['issuing_original']['url'],'scope':'Complete original issuing JSON; full native InChI and key match. No assay solution protonation inferred.'})
+for c in chemical_specs:
+    assert sha(c['source']['path'])==c['source']['sha256'];refs[c['id']]={'id':c['id'],'title':c['id']+' issuing chemical identity','url':c['url'],'source_version':'Frozen 2026-10 source. '+c['scope'],'source_sha256':c['source']['sha256']}
+for c in rd(B/'plans/context-chemical-identity.snapshot.json')['chemicals']:
+    ident=c['recommended_id'];owner=c['issuing_sql_owner'];refs[ident]={'id':ident,'title':ident+' issuing ChEBI structure','url':'https://www.ebi.ac.uk/chebi/searchId.do?chebiId='+ident,'source_version':'ChEBI 255. Digest identifies the complete uncompressed Semantic SQL database; exact subject rows and native structural originals are retained in the context-chemistry dossier.','source_sha256':owner['sha256']}
+
+# Exact native gene/product and donor relations accompany their affected protein edges.
+N=Path('/private/tmp/pathwaymech-next-263-native')
+full={x['frame']:x for x in rd(N/'native-full-object-projection.json')}
+for e in edges:
+    endpoint=e['object'] if e['predicate']=='has_part' else e['subject']
+    if not endpoint.startswith('MetaCyc:'):continue
+    f=endpoint.split(':',1)[1]
+    if f not in full or full[f]['type']!='Protein':continue
+    gene_slots=[x for x in full[f]['slots'] if x['slot']=='gene']
+    genes=[c['frameid'] for x in gene_slots for c in x['direct_children'] if c.get('type')=='Gene']
+    if genes:
+        e['description']+=' Exact native gene context: '+', '.join('MetaCyc:'+g for g in genes)+'; this binding does not establish expression or isolated-subunit function.'
+        for g in genes:
+            for slot in full[g]['slots']:
+                if slot['slot']=='product' and f in [c.get('frameid') for c in slot['direct_children']]:
+                    e['evidence'].append({'reference_id':'MetaCyc:'+g,'source_assertion':g+' explicitly lists protein product '+f+'.','source_locator':slot['locator']})
+# Place historical assembly support on component relations as well as activity assignments.
+assembly_evidence={
+ 'MetaCyc:CPLX-2722':abstract('6780551','alpha 2 beta 2 oligomeric structure'),
+ 'MetaCyc:CPLX-2761':abstract('7391022','a trimer composed of identical 11,000-dalton subunits'),
+ 'MetaCyc:CPLX-85407':a2b2,'MetaCyc:CPLX-7260':a4,
+ 'MetaCyc:CPLX-2843':abstract('3999146','the enzyme is an octamer with D4 symmetry'),
+ 'MetaCyc:CPLX-2844':abstract('2926818','ten 96 amino acid subunits'),
+ 'MetaCyc:CPLX-7802':abstract('8647072','a decameric structure involving a single 10.100-kDa subunit')}
+for e in edges:
+    if e['predicate']=='has_part' and e['subject'] in assembly_evidence:e['evidence'].append(copy.deepcopy(assembly_evidence[e['subject']]))
+
+# Every bound primary and native claim receives an explicit disposition, including access limits.
+claimdisp=[]
+for c in claims:
+ if c['id']=='P263-C48':status='corrected author summary; pcaF is not benzoate repressed';loc=[];note='Issue https://github.com/CultureBotAI/PathwayMech/issues/567; see plans/frozen-primary-summary-correction.json and exact abstract.'
+ else:status='retained as source-qualified context or explicit exclusion';loc=[];note=c['limits']
+ relevant=[e['id'] for e in edges if ('PMID:'+c['pmid']) in {v['reference_id'] for v in e['evidence']}]
+ claimdisp.append({'claim_id':c['id'],'pmid':c['pmid'],'source_claim':c['assertion'],'disposition':status,'evidence_edges':relevant,'record_context':'activity descriptions / bounded parent description / source-access limitation ledger','limit':note})
+# Add exact issuing reference objects used for the identity/context interpretation.
+for path in sorted((I/'originals').glob('UniProt-*.json')):
+ d=rd(path);ident=d.get('primaryAccession')
+ if not ident:continue
+ refs['UniProtKB:'+ident]={'id':'UniProtKB:'+ident,'title':'UniProtKB '+ident+' issuing sequence and annotation snapshot','url':'https://rest.uniprot.org/uniprotkb/'+ident+'.json','source_version':'Retrieved 2026-10-15; complete issuing JSON, with preparation/sequence limits retained in the biological identity dossier','source_sha256':sha(path)}
+for path in sorted((I/'originals').glob('PDB-*-entry.json')):
+ d=rd(path);ids=[x['pdbx_DOI'] for x in d.get('database_2',[]) if x.get('database_id')=='PDB' and x.get('pdbx_DOI')];assert len(ids)==1
+ ident='DOI:'+ids[0];entry=d['entry']['id'];refs[ident]={'id':ident,'title':'PDB '+entry+' issuing structure entry and preparation metadata','url':'https://data.rcsb.org/rest/v1/core/entry/'+entry,'source_version':'Retrieved 2026-10-15; digest covers original RCSB entry JSON. Polymer/assembly originals are separately hash-bound in the identity dossier; no visual structure inspection inferred.','source_sha256':sha(path)}
+# Bound complete original evidence and tables, without duplicating long primary text.
+counts={}
+for pm in sorted({x['pmid'] for x in quoted}):
+ unique=sorted({x['quote'] for x in quoted if x['pmid']==pm});count=sum(len(q.split()) for q in unique);assert count<=25,(pm,count,unique);counts[pm]={'unique_excerpt_words':count,'excerpts':unique}
+r['references']=list(refs.values());validate_record(r)
+write('drafts/primary-quote-span-ledger.json',quoted);write('drafts/primary-table-fact-ledger.json',tables);write('drafts/primary-quotation-counts.json',counts);write('drafts/primary-reference-bindings.json',bindings);write('drafts/primary-claim-dispositions.json',claimdisp);write('drafts/primary-additions.json',newedges)
+class Dumper(yaml.SafeDumper):
+ def ignore_aliases(self,data):return True
+out=B/'drafts/catechol-degradation-iii.yaml';out.write_text(yaml.dump(r,Dumper=Dumper,sort_keys=False,allow_unicode=True,width=100));write('drafts/selected-identifiers.json',{'record_path':str(out),'record_sha256':sha(out),'selection':'Complete external author candidate; maintained integration and independent final review remain pending','nodes':[{'section':'record','id':r['id'],'label':r['label']}]+[dict(section=section,**node) for section in ['taxa','participants','reactions'] for node in r[section]]})
+print(json.dumps({'record_sha256':sha(out),'taxa':len(r['taxa']),'participants':len(r['participants']),'reactions':len(r['reactions']),'edges':len(edges),'references':len(refs),'primary_quote_sources':len(counts),'status':'schema passed; author final coverage/identity proofs pending'}))

@@ -1,0 +1,40 @@
+"""Independent exact native locator and structural/chemical graph replay."""
+import collections,datetime,gzip,hashlib,json,pathlib,re,xml.etree.ElementTree as E,yaml
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-canonical-science')
+T=pathlib.Path('/private/tmp/pathwaymech-next-263-record-author/drafts/catechol-degradation-iii.yaml')
+N=pathlib.Path('/private/tmp/pathwaymech-next-263-native/originals')
+C=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-chemistry/checks/independent-route.json')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+assert bind(T)['sha256']=='0ad615b268d0f63ff253287401b4a978d4c7d1603157717e7e57eab5e1816ec6'
+record=yaml.safe_load(T.read_text());refs={r['id']:r for r in record['references']};rows=[];native={};raw=[]
+for edge in record['mechanistic_edges']:
+ groups=[('evidence',edge['evidence'])]+[(f'endpoint_qualifiers[{i}].evidence',q['evidence']) for i,q in enumerate(edge.get('endpoint_qualifiers',[]))]
+ for group,evs in groups:
+  for index,ev in enumerate(evs):
+   rid=ev['reference_id']
+   if not rid.startswith('MetaCyc:'):continue
+   frame=rid.split(':',1)[1];p=N/f'META-{frame}.xml'
+   if frame not in native:native[frame]=E.parse(p).getroot()
+   assert bind(p)['sha256']==refs[rid]['source_sha256']
+   locs=ev['source_locator'].split('; ');selected=[]
+   for loc in locs:
+    assert loc.startswith('/ptools-xml/'),loc
+    found=native[frame].findall(loc.removeprefix('/ptools-xml/'));assert found,(edge['id'],loc)
+    for node in found:
+     selected.append({'locator':loc,'tag':node.tag,'text':' '.join((node.text or '').split()),'attributes':node.attrib,'direct_children':[{'tag':x.tag,'text':' '.join((x.text or '').split()),'attributes':x.attrib} for x in node]})
+     raw.append({'edge':edge['id'],'group':group,'evidence_index':index,'locator':loc,'xml':E.tostring(node,encoding='unicode')})
+   statement=ev['source_assertion'];joined=' '.join(x['xml'] for x in raw[-sum(len(native[frame].findall(l.removeprefix('/ptools-xml/'))) for l in locs):])
+   ids=re.findall(r'\b(?:ENZRXN\d*-[A-Z0-9-]+|CPLX\d*-[A-Z0-9-]+|MONOMER-[0-9]+|G-[0-9]+|G6718(?:-MONOMER)?|EV-[A-Z0-9-]+|REG-[0-9]+)\b',statement)
+   assert all(x==frame or x in joined for x in ids),(edge['id'],statement,ids)
+   rows.append({'edge':edge['id'],'group':group,'evidence_index':index,'source':bind(p),'statement':statement,'selected':selected,'identifier_tokens_resolved':ids})
+route=json.loads(C.read_text());formal=[]
+for r in route['reactions']:
+ rid=r.get('rhea') or r.get('id');formal.append({'source':r})
+nodes=[record]+record['taxa']+record['participants']+record['reactions'];ids=[n['id'] for n in nodes];assert len(ids)==len(set(ids))==123
+assert all(e['subject'] in ids and e['object'] in ids for e in record['mechanistic_edges'])
+predicates=collections.Counter(e['predicate'] for e in record['mechanistic_edges'])
+report={'executed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':bind(T),'source_note':'Exact initial maintained bytes independently bound by canonical inspect; immutable author copy used for this initial replay.','native_evidence_occurrences':len(rows),'unique_native_objects':len(native),'rows':rows,'edge_count':len(record['mechanistic_edges']),'node_count':len(ids),'predicate_counts':dict(predicates),'chemical_assessment_binding':bind(C),'scope':'Exact referenced native slots and graph endpoints; this replay alone does not adjudicate primary scope or scientific completeness.'}
+(O/'checks/native-evidence-initial.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+(O/'inspection/native-locator-full-elements.json.gz').write_bytes(gzip.compress((json.dumps(raw,indent=2)+'\n').encode(),mtime=0))
+print(json.dumps({k:report[k] for k in ['native_evidence_occurrences','unique_native_objects','edge_count','node_count','predicate_counts']},indent=2))

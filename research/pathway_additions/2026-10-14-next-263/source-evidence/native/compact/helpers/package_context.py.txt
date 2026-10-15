@@ -1,0 +1,88 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,re,collections,datetime
+O=Path('/private/tmp/pathwaymech-next-263-native');D=Path('/private/tmp/pathwaymech-next-263-discovery');R=Path('/private/tmp/pathwaymech-next-262-20261014')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(n):return json.loads((O/n).read_text())
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+rs=load('native-full-object-projection.json');objs={r['frame']:r for r in rs}
+def binds(frames,slots=None):
+ return [{'frame':f,'path':objs[f]['file'],'sha256':objs[f]['sha256'],'locators':[s['locator'] for s in objs[f]['slots'] if slots is None or s['slot'] in slots]} for f in frames]
+conf=[]
+def add(k,frames,status,issue,decision,slots=None,leads=None):conf.append({'id':k,'status':status,'issue':issue,'disposition':decision,'native_bindings':binds(frames,slots),'primary_follow_pmids':leads or [],'scope':'Native-source author observation, not independent final record review.'})
+add('N263-01',['PWY-5417','PWY-2361','CATECHOL-ORTHO-CLEAVAGE-PWY'],'confirmed_rejected_citation','PMID761399 linked as Chan79 for pathway organization resolves to human amniotic-fluid polyamine research.','Exclude this citation as pathway evidence. Original EuropePMC result identity/abstract inspected and retained; no replacement guessed.',['comment'],['761399'])
+conf[-1]['issuing_metadata_binding']=load('receipts/rejected-publication-original-binding.json')
+add('N263-02',['PWY-5417','MONOMER-12813','CPLX-7260'],'confirmed_native_link_scope_conflict','Parent P.putida induction sentence links to P.knackmussii thiolase MONOMER-12813.','Preserve prose/source link discrepancy; do not transfer P.putida induction to P.knackmussii solely via hyperlink.',['comment','species','component-of'],['5916393'])
+add('N263-03',['MONOMER-14642','MONOMER-14435','ENZRXN-16126'],'confirmed_native_internal_conflict','CatA prose prefers catechol then appends cloned-E.coli text preferring4-methylcatechol; source evidence says purified nonheterologous.','No automatic host/preference assignment from contradictory tail. Compare full PMID17172348 preparation and exact sequence/construct; SalD resemblance is a hypothesis.',['comment','evidence','gene','species'],['17172348'])
+add('N263-04',['MONOMER-21977','G-107723','G-107719','G-107720'],'confirmed_native_name_link_conflict','Thiolase directgeneG-107723 is pcaF/H16_B0200; its comment labels linkedG-107720/pcaJ as thiolase.','Keep exact IDs and names as distinct source facts. Expression/remaining mutant growth does not prove catalytic function or necessity.',['comment','gene','common-name','accession-1','product'],['34731045'])
+add('N263-05',['MONOMER-14645','ENZRXN-16130'],'confirmed_prediction_scope','CatC not purified/characterized and source code is sequence homology.','Retain predicted activity/enables scope; not demonstrated catalysis.',['comment','evidence'],['17172348'])
+add('N263-06',['CPLX-7712','MONOMER-14423'],'confirmed_unresolved_identity','PS12 cycloisomerase gene unidentified and one component has no coefficient.','No guessed gene, sequence or total oligomer count. Separate purified, partial and crude preparation evidence among its distinct native activities.',['comment','component','gene'],['12218011','15774876','11526005'])
+add('N263-07',['CPLX-2761','MONOMER-3221','G-2289'],'confirmed_native_preparation_identity_tension','Historical33kDa trimer/11kDa subunit coexists with28.6kDa sequence andQ88N36 pointer.','Do not equate historical subunit preparation with three modern Q88N36 molecules. Independent issuer/primary reconciliation remains required.',['comment','component','molecular-weight-exp','molecular-weight-seq','dblink'],['7391022'])
+add('N263-08',['CPLX-2842','MONOMER-3422','G-2485'],'prior_identity_lead_preserved','Native CatA Q9AEQ0 pointer, C-1 isozyme prose and predecessor reported deleted accession/PDB preparation.','Native pointer inspected here; current deletion and PDB mapping not independently re-adjudicated. Follow exact issuing records; no homolog substitution by name.',['comment','component','dblink'],['7646060','2280696'])
+add('N263-09',['CPLX-2722','ENZRXN-3369','MONOMER-3190','MONOMER-3191'],'confirmed_native_preparation_scope','Native says enzyme not purified yet activity has purified-protein code; alpha2beta2 historical complex differs from predecessor reported current heterodimer annotation.','Retain chronological preparation scopes and native2+2 coefficients; do not turn genetic report into purified assembly evidence. Current issuing annotation conflict needs exact later review.',['comment','evidence','component','molecular-weight-exp'],['1624453','6780551'])
+add('N263-10',['CPLX-2722','ENZRXN-3369','PWY-5417','PWY-2361'],'confirmed_expression_scope','Beta-ketoadipate/PcaR induction appears in source prose, with no explicit PcaR native frame.','Expression induction is not direct ligand binding/allostery. No PcaR frame/accession inferred from bare name. Prior PRS2000/PRS1/KT2440 sequence/expression contexts require original-source reassessment.',['comment'],['8376330','5916393'])
+add('N263-11',['CPLX-2746','ENZRXN-5295'],'confirmed_mutant_scope','P.putida PcaF tetramer is native annotation/review prose; activity evidence is mutant phenotype.','Keep catalytic and assembly evidence levels distinct; genetic PMID7961399 is not direct tetramer measurement.',['comment','component','evidence'],['7961399','8905091'])
+add('N263-12',['G6718-MONOMER','MONOMER-15952','MONOMER-21927','ORG-57106'],'confirmed_adjacent_and_engineered_scope','Terminal reaction includes phenylacetate PaaJ proteins and engineered Thermobifida B6/E.coli adipate contexts.','Do not assign whole catechol parent to these donor/host organisms from generic thiolase membership. B6 engineered strain differs from natural species.',['comment','species','gene'],['20660314','17259607','29625225'])
+add('N263-13',['PWY-5417','TAX-384','TAX-386','ORG-5948','ORG-6005'],'confirmed_taxon_scope_limit','Eleven parent rows include two same-name Rhizobium objects with different IDs and two ungrounded strain frames.','Preserve all eleven exact rows; no guessed strain NCBITaxon or sequence joins. Species parent cannot silently replace missing strain identity.',['species','rank','strain-name','dblink','common-name'])
+add('N263-14',['MUCONATE-CYCLOISOMERASE-RXN','MUCONOLACTONE-DELTA-ISOMERASE-RXN','CPD-15124','CPD-741'],'confirmed_native_stereo_scope','Formal route uses CPD-15124 S-muconolactone; prose/kinetics often link broaderCPD-741; crosslinks includeRhea30033 andKEGGR03959.','Do not equate stereospecific route compound with broad protonation/stereochemistry forms by label. Issuing chemistry/atom-charge closure is a separate task; retain fullnative CML/InChI/SMILES and limitations.',['left','right','dblink','common-name','inchi','inchi-key','smiles','cml','comment'])
+add('N263-15',['MUCONATE-CYCLOISOMERASE-RXN','3-OXOADIPATE-COA-TRANSFERASE-RXN','RXN-3641','PWY-5417','PWY-2361'],'confirmed_direction_and_net_scope','Cycloisomerase written R2L; CoAtransfer/thiolase reversible but route traverses L2R/R2L. Succinyl-CoA produced terminally is consumed upstream.','Preserve each native source direction and activity direction separately from route traversal. Net products succinate+acetylCoA; no net succinylCoA production claim.',['reaction-direction','left','right','reaction-layout','reaction-ordering'])
+add('N263-16',['REG-5831','REG-5832','REG-5833','REG-5834','REG-5835','REG-5836','ENZRXN-13636'],'confirmed_activity_local_regulation','Six native inhibitors target P.knackmussii thiolase activity, including three uncompetitive mechanisms and metals/cyanide.','Preserve exact regulator compound and local conditions/evidence. Do not infer essential metal cofactor, physiological inhibition or whole-route effect.',['mode','regulator','mechanism','regulated-entity','evidence','km','ph-opt'],['11741862'])
+add('N263-17',['MONOMER-14436','ENZRXN-16127','ENZRXN-21371'],'confirmed_two_source_activity_instances','Two distinct native activity IDs link the same SalC enzyme/formal reaction.','Retain individual evidence/source identities; duplicate endpoint chemistry is not evidence of two route steps.',['enzyme','reaction','evidence','common-name'])
+add('N263-18',['CPLX-9719','MONOMER-21973','MONOMER-21974','G-107719','G-107720'],'confirmed_adjacent_native_name_function_conflict','The H16 adjacent complex has pcaI/pcaJ direct components, but prose calls pcaF/pcaI two thiolase subunits and its common name is adipate--CoA ligase.','Preserve complete conflicting native names, exact components and adjacent reaction; do not repair by label or transfer this adipate activation to the parent oxoadipate transferase step.',['comment','common-name','component','gene','product','accession-1'],['34731045'])
+dump('native-conflicts-and-dispositions.json',conf)
+# Every prose link omitted from closure is explicitly bounded, not silently discarded.
+missing={}
+for r in load('native-prose-link-dispositions.json'):
+ t=r['target']
+ if not t or t in objs:continue
+ if t.startswith('EC-'):reason='Enzyme-class reference only; not an exact catalyst/chemical mapping.'
+ elif t.startswith('['):reason='Native citation token, not a biological frame. Metadata/primary follow only.'
+ elif t in ['PWY-5430','PWY-5431','PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY','PWY0-321']:reason='Alternative/adjacent pathway boundary; no recursive route expansion. Exact catechol/protocatechuate alternatives retained in frozen discovery; no new baseline absence assertion.'
+ elif t in ['TPI-MONOMER','MONOMER-4886','MONOMER-3206','ACETOACETYL-COA-TRANSFER-CPLX']:reason='Structural/sequence comparator, not a selected route catalyst; no comparator properties transferred.'
+ else:reason='Adjacent chemical/taxon/nomenclature/background reference; no assertion of standalone inspection or route participation.'
+ missing.setdefault(t,{'target':t,'sources':[],'disposition':reason})['sources'].append({'frame':r['source'],'locator':r['locator'],'sha256':r['source_sha256']})
+dump('explicit-prose-boundary-decisions.json',list(missing.values()))
+# Bibliographic leads from candidate/module/formal activities/catalysts and their components: metadata only.
+selected=set(load('requested-initial.json')['pathways']+load('requested-initial.json')['formal_reactions'])
+for a in load('formal-activity-closure.json'):selected.update([a['activity'],a['enzyme']]);selected.update(a['native_genes'])
+selected.update(r['frame'] for r in rs if r['type']=='Protein')
+pmids={}
+for r in rs:
+ if r['frame'] not in selected:continue
+ for s in r['slots']:
+  ids=set(re.findall(r'pubmed/(\d+)',s['text'])) if s['slot']=='comment' else set()
+  if s['slot'] in ['evidence','citation']:ids.update(z['frameid'][4:] for z in s['references'] if z['type']=='Publication' and z['frameid'].startswith('PUB-') and z['frameid'][4:].isdigit())
+  for pm in ids:pmids.setdefault(pm,[]).append({'frame':r['frame'],'slot':s['slot'],'locator':s['locator'],'sha256':r['sha256']})
+leads=[]
+for pm,ss in sorted(pmids.items()):
+ qs=[r['issue'] for r in conf if pm in r['primary_follow_pmids']]
+ leads.append({'pmid':pm,'native_sources':ss,'follow_questions':qs or ['Assess exact native claim, preparation, taxon/host and primary experimental scope.'],'disposition':'Rejected unrelated original metadata; do not follow as pathway evidence or guess replacement.' if pm=='761399' else 'Native bibliography/prose lead only; no new full primary text or figure read in this task. Prior reading/access limits remain separately bound.'})
+dump('primary-follow-ledger.json',leads)
+# Explicit parent rows, source-specific NCBI cross-links, and no inferred strain normalization.
+parent=objs['PWY-5417'];prows=[]
+for s in parent['slots']:
+ if s['slot']!='species':continue
+ f=s['direct_children'][0]['frameid'];r=objs[f];xref=[]
+ for sl in r['slots']:
+  if sl['slot']=='dblink':
+   e=E.fromstring(sl['xml']);xref.append({'database':e.findtext('dblink-db'),'id':e.findtext('dblink-oid'),'relationship':e.findtext('dblink-relationship'),'locator':sl['locator']})
+ prows.append({'native_organism':f,'parent_locator':s['locator'],'parent_sha256':parent['sha256'],'names':[x['plain_text'] for x in r['slots'] if x['slot']=='common-name'],'rank':[x['plain_text'] for x in r['slots'] if x['slot']=='rank'],'strain':[x['plain_text'] for x in r['slots'] if x['slot']=='strain-name'],'xref':xref,'source':binds([f])[0],'scope':'Native parent annotation only, no independent whole-route experiment or current issuing taxon identity asserted.'})
+assert len(prows)==11
+dump('parent-organism-annotations.json',prows)
+contract=[]
+for n in ['.claude/skills/add-pathway/SKILL.md','CLAUDE.md','docs/CAUSAL_GRAPHS.md','docs/CURATION.md','docs/HARMONIZATION.md']:
+ p=R/n;contract.append({'path':str(p),'sha256':sha(p),'role':'Current contract read; not a maintained-corpus comparison or post262 merged baseline.'})
+dump('contract-read-bindings.json',contract)
+dump('frozen-discovery-bindings.json',[{'path':str(p),'predecessor_path':str(D/p.name),'sha256':sha(p),'predecessor_manifest_sha256':sha(D/'artifact-manifest.json'),'role':'Exact frozen discovery context; stale corpus baseline remains explicitly un-rebound.'} for p in sorted((O/'discovery-bindings').iterdir())])
+dump('scope-and-open-gaps.json',{
+ 'candidate':'MetaCyc:PWY-5417, full six-step catechol ortho route with two child modules; no maintained authoring.',
+ 'role':'External native source authoring, not an independent record review, authoritative identifier selection, or primary scientific verdict.',
+ 'source_version':'Complete MetaCyc META27.0 source objects at public bf2i-artsymbiocyc mirror. No latest-official-release claim.',
+ 'finite_closure':'All20formal activities and19 catalysts; recursive direct enzyme/component/component-of/gene/product/species/location/cofactor/regulated-by/regulator/regulated-entity/catalyzes/reaction context; all selected formal and adjacent reaction sides; explicit biological-source kinetic and prose chemical contrasts; exact three name/conflict biological links; source host/taxon prose identities. Global chemical incidence, taxonomy ancestry, unrelated pathways and comparator protein families are bounded, not recursively ingested.',
+ 'source_limit':'Native evidence codes, native prose, independent issuing identity and primary experiments are separate evidence layers. Complete direct slots/nested context retained; bibliographic metadata is not full-paper reading.',
+ 'unresolved_native_names':['PcaR appears as a bare gene name without an exact frame in selected complete native prose; no frame or sequence identity invented.','PS12 cycloisomerase native source explicitly says gene unidentified; absent component coefficient does not establish total assembly stoichiometry.'],
+ 'identity_follow':['Direct native xrefs are preserved as reported, not accepted current issuing identities.','ParentORG-5948 mt-2 andORG-6005 Rm2011 lack directNCBIxref; no guessed strain/accession joins.','Prior CatA deletion, PcaD historical-versus-modern sequence, PcaIJ assembly andPRS lineages remain explicit primary/issuing follow-up leads.'],
+ 'chemistry_follow':['FormalS-muconolactone and broadCPD-741 prose/kinetic references require exact chemistry comparison.','NativeRhea/KEGG links are leads, not exact directional equivalences.','Native21side entries/5joins and net arithmetic replayed, not independent atom/charge audit.'],
+ 'scientific_follow':'18explicit conflict/scope decisions and complete primary-lead ledger remain author inputs; root owns final primary adjudication/identifier authority selection/record integration and independent reviews.',
+ 'baseline':'Discovery pre262 baseline is stale. No new corpus absence or duplicate-exclusion claim. Root must rebind after262merge before maintained authoring.',
+ 'no_maintained_or_git_writes':True,'no_primary_fulltext_acquisition':True,'no_source_exhaustion_claim':True})
+print(json.dumps({'conflicts':len(conf),'parent_rows':len(prows),'unfollowed_prose_targets':len(missing),'primary_leads':len(leads)},indent=2))

@@ -1,0 +1,31 @@
+from pathlib import Path
+import datetime,hashlib,json,sqlite3
+O=Path('/private/tmp/pathwaymech-next-263-context-chemistry');R=Path('/private/tmp/pathwaymech-next-263-20261014');sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(Path(p).read_bytes());rows=[]
+def save(p,obj):p.parent.mkdir(exist_ok=True,parents=True);assert not p.exists();p.write_text(json.dumps(obj,indent=2)+'\n')
+def cp(root,rel,to=None,manifest=None):
+ p=Path(root)/rel;b=p.read_bytes();h=sha(b)
+ if manifest:
+  ent=next(x for x in manifest['files']if x['path']==rel);assert ent['sha256']==h and ent['bytes']==len(b)
+ q=O/(to or rel);q.parent.mkdir(exist_ok=True,parents=True);assert not q.exists();q.write_bytes(b)
+ row={'original_path':str(p),'original_sha256':h,'original_bytes':len(b),'stored_path':q.relative_to(O).as_posix(),'stored_sha256':sha(q.read_bytes()),'stored_bytes':q.stat().st_size,'encoding':'identity'};rows.append(row);return row
+packages={}
+for label,root in [('native263','/private/tmp/pathwaymech-next-263-native'),('native262','/private/tmp/pathwaymech-next-262-native'),('issuer260','/private/tmp/pathwaymech-next-260-participant-authorities'),('authority263','/private/tmp/pathwaymech-next-263-authority-author')]:
+ manifest=load(Path(root)/'artifact-manifest.json');cp(root,'artifact-manifest.json',f'prior-context/{label}-artifact-manifest.json');packages[label]=(Path(root),manifest)
+assert rows[-1]['original_sha256']=='19bad7f652f5c61233b1e4fecbb6023455af267edfca78e44fa0f2bcdcee0f8e'
+for label,rel,to in [('native263','originals/META-ADIPATE.xml','originals/META-ADIPATE.xml'),('native262','originals/META-2-KETOGLUTARATE.xml','originals/META-2-KETOGLUTARATE.xml'),('native263','receipts/acquisition-round8-complete.json','prior-context/native263-acquisition-round8-complete.json'),('native262','receipts/acquisition-round3-complete.json','prior-context/native262-acquisition-round3-complete.json'),('issuer260','originals/CHEBI-16810.json','originals/CHEBI-16810.json'),('issuer260','retained/issuing-acquisition-public-primary-1.json','prior-context/issuer260-issuing-acquisition-public-primary-1.json'),('authority263','receipts/pinned-database-complete-hashes.json','prior-context/pinned-database-complete-hashes.json')]:
+ root,m=packages[label];cp(root,rel,to,m)
+assert sha((O/'originals/CHEBI-16810.json').read_bytes())=='cf558f730bee143d869e9843ee616346125110fe1b22551e4877ee3ae1d5878c'
+for label,frame in [('native263','ADIPATE'),('native262','2-KETOGLUTARATE')]:
+ receipt=load(O/f'prior-context/{label}-acquisition-round'+('8'if label=='native263'else'3')+'-complete.json') if False else load(O/('prior-context/'+label+'-acquisition-round'+('8'if label=='native263'else'3')+'-complete.json'))
+ a=next(x for x in receipt if x['frame']==frame);b=(O/f'originals/META-{frame}.xml').read_bytes();assert a['verified_exact_full_original']and a['status']==200 and a['sha256']==sha(b)and a['bytes']==len(b)
+iss=next(x for x in load(O/'prior-context/issuer260-issuing-acquisition-public-primary-1.json')if x['requested_id']=='CHEBI:16810');b=(O/'originals/CHEBI-16810.json').read_bytes();assert iss['sha256']==sha(b)and iss['bytes']==len(b)and iss['identity_exact']and iss['status']==200
+ont=load(R/'data/identifier_authorities/ontology.json');owner=ont['sources']['chebi-255'];complete=next(x for x in load(O/'prior-context/pinned-database-complete-hashes.json')['databases']if x['source_owner']=='chebi-255');p=Path(complete['path']);st=p.stat();assert str(p.resolve())==complete['resolved']and st.st_size==complete['bytes']and st.st_mtime_ns==complete['mtime_ns']and complete['sha256']==owner['sha256']and complete['complete_original_database_rehashed']and complete['matches_current_owner']
+# No API request or global absence search: selected pinned original is available and read-only.
+db=sqlite3.connect(p.resolve().as_uri()+'?mode=ro&immutable=1',uri=True);db.row_factory=sqlite3.Row;schema=[dict(x)for x in db.execute("SELECT name,sql FROM sqlite_master WHERE type='table' AND name='statements'")];query='SELECT stanza,subject,predicate,object,value,datatype,language,graph FROM statements WHERE subject=? ORDER BY predicate,object,value,datatype,language,graph';exports={}
+for id in ['CHEBI:16810','CHEBI:17128']:
+ exports[id]=[dict(x)for x in db.execute(query,(id,))];assert exports[id]
+post=p.stat();assert st.st_size==post.st_size and st.st_mtime_ns==post.st_mtime_ns and st.st_ino==post.st_ino
+save(O/'originals/chebi-255-selected-complete-subject-rows.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Exact complete outgoing issuing semantic SQL rows; selected subjects only, not full ontology copy','database':complete,'source_owner':owner,'query':query,'schema':schema,'rows':exports,'stat_before_after_equal':True,'database_identity_limit':'Full DB hash is reused from separately frozen263 authority author receipt after verifying current resolved path/size/mtime/inode; this bounded task did not independently rehash 4GB again.'})
+save(O/'authority-owner-binding.json',{'current_ontology_path':str(R/'data/identifier_authorities/ontology.json'),'current_ontology_sha256':sha((R/'data/identifier_authorities/ontology.json').read_bytes()),'owner':owner,'terms':{id:ont['terms'][id]for id in exports},'complete_hash_receipt_sha256':sha((O/'prior-context/pinned-database-complete-hashes.json').read_bytes()),'database_current_stat':{'resolved':str(p.resolve()),'bytes':st.st_size,'mtime_ns':st.st_mtime_ns,'inode':st.st_ino},'complete_hash_receipt_reuse_verified':True})
+save(O/'input-bindings.json',{'prepared_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Two context-chemical source author supplement, not independent review','scope':['2-KETOGLUTARATE -> CHEBI:16810','ADIPATE -> CHEBI:17128'],'files':rows,'selected_sql_rows_sha256':sha((O/'originals/chebi-255-selected-complete-subject-rows.json').read_bytes()),'issuing_api_16810':iss,'no_new_network_acquisition':True,'no_frozen_package_or_maintained_mutation':True})
+print(json.dumps({'copied_originals_and_provenance':len(rows),'sql_row_counts':{k:len(v)for k,v in exports.items()},'input_bindings_sha256':sha((O/'input-bindings.json').read_bytes())},indent=2))

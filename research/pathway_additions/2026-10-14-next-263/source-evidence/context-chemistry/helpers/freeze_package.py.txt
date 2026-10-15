@@ -1,0 +1,42 @@
+from pathlib import Path
+import datetime,gzip,hashlib,json
+O=Path('/private/tmp/pathwaymech-next-263-context-chemistry');sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(Path(p).read_bytes());now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat();assert not(O/'artifact-manifest.json').exists()
+inputs=load(O/'input-bindings.json');proof=load(O/'chemical-identity-replay.json');assert len(proof['chemicals'])==2
+for x in inputs['files']:
+ b=(O/x['stored_path']).read_bytes();assert b==Path(x['original_path']).read_bytes()and sha(b)==x['original_sha256']and len(b)==x['original_bytes']
+owner=load(O/'authority-owner-binding.json');current=load(owner['current_ontology_path']);assert current['sources']['chebi-255']==owner['owner'];assert {id:current['terms'][id]for id in owner['terms']}==owner['terms'];db=Path(owner['database_current_stat']['resolved']);st=db.stat();assert {'resolved':str(db.resolve()),'bytes':st.st_size,'mtime_ns':st.st_mtime_ns,'inode':st.st_ino}==owner['database_current_stat']
+limits=['This is source-author work, not independent scientific or independent-author review.','Exactly two context endpoint identities; no biological claim, formal route reaction, stoichiometric coefficient, eight-chemical supplement or maintained file was changed.','The whole ChEBI SQL database is not copied here. Exact complete outgoing rows for only16810/17128 plus schema/query are retained. Whole original hash is reused from frozen authority author complete-hash receipt, after current stat/owner equality; not independently rehashed again.','No claim of paper-measured protonation, counterions or free species. Effect/target/preparation evidence remains with primary-source record author.','No API fetch, global cache-absence search or expanded chemistry discovery.']
+(O/'final-reuse-recheck.json').write_text(json.dumps({'utc':now(),'all11_source_original_copies_equal_current_frozen_originals':True,'current_ontology_selected_terms_and_owner_equal':True,'original_chebi_database_path_size_mtime_inode_unchanged':True,'reconstructed_chemical_count':2,'all_reconstruction_checks_true':all(all(x['checks'].values())for x in proof['chemicals']),'no_frozen_prior_package_or_maintained_mutations':True,'limits':limits},indent=2)+'\n')
+(O/'HANDOFF.md').write_text('''# Two additional context chemicals for PWY-5417
+
+Both requested endpoints are ready for record-author use as canonical chemical identities:
+
+| Native identity | Existing exact ID and authority label | Formula; charge | Full InChIKey |
+| --- | --- | --- | --- |
+| 2-KETOGLUTARATE | CHEBI:16810 — 2-oxoglutarate(2-) | C5H4O5; -2 | KPGXRSRHYNQIFN-UHFFFAOYSA-L |
+| ADIPATE | CHEBI:17128 — adipate(2-) | C6H8O4; -2 | WNLRTRBMVRJNCN-UHFFFAOYSA-L |
+
+`chemical-identity-replay.json` contains the exact full InChI strings, all native CML atoms and bonds, formula/charge checks, exact source locators and source hashes. RDKit2026.03.5 independently reconstructed both complete CML graphs; their canonical connectivity, full standard InChI layers and complete InChIKeys match the issuing structures. There are no unresolved stereocentres. These are source-author calculations, not an independent scientific review.
+
+The complete native ADIPATE XML is reused from frozen263 native inputs (SHA309935e81d0cfb42fd4cc2fbb5d51cba6980bb812f9183634abda58ea79c4466). Complete native2-KETOGLUTARATE XML is reused from frozen262 inputs (SHA23246fa1176f753df61d4d23211e7a177f0929c80c17afa03a7f8398732c2f6a). Their exact complete-object acquisition receipts and source-package manifest entries are retained and replayed. CHEBI16810 issuing API JSON (SHAcf558f730bee143d869e9843ee616346125110fe1b22551e4877ee3ae1d5878c) and its original260 acquisition/manifest also match.
+
+For both IDs, all outgoing exact subject rows were selected from pinned ChEBI255 semantic SQL (41 rows for16810;29 for17128). `originals/chebi-255-selected-complete-subject-rows.json` retains actual query, schema, complete selected rows and source owner. The4,137,340,928-byte database SHA is26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f. Its full hash is reused from the separately frozen263 authority-author receipt, which fully hashed the original at2026-10-15T06:37:02–06:37:18Z. This task verifies unchanged resolved path, size, mtime, inode and exact current owner; it does not repeat the4GB hash or copy the entire database. This later complete-hash receipt supersedes the authority author's earlier preliminary no-rehash note. No new network retrieval was needed.
+
+Representation boundaries:
+
+- Native2-KETOGLUTARATE SMILES is the generic/incomplete `C([R])(=O)C([O-])=O`. It was intentionally not used for exact identity. The complete native CML/formula/charge/full InChI and both issuing SQL/API structures agree.
+- Native ADIPATE SMILES is complete and reproduces the exact structure.
+- RDKit's retained “Proton(s) added/removed” warnings concern standard InChI normalization. Both resulting full InChI strings explicitly retain `/p-2`; this is not a measurement of biological protonation.
+- PMID3612800 CatB inhibition and PMID8376330 pcaIJ expression induction are the requested context scopes, supplied by the primary-source author. This task did not independently review those paper effects, targets or preparations. Expression induction must not become direct enzyme activation.
+- Neither endpoint asserts that these papers measured dianionic protonation, free species, counterions or direct binding. The IDs provide canonical dianion structures with that explicit limit.
+
+This package is separate from the frozen eight-chemical supplement and formal six-step route. It adds no formal reaction or coefficient and changes no maintained file, Git or GitHub state. `input-bindings.json` supplies all11 original/copy bindings; `final-reuse-recheck.json` checks them again. `compact-retention-manifest.json` records uniform original/stored hashes, byte counts and encoding; raw logs and larger JSON use lossless gzip, and helpers are inert `.py.txt`. Predecessor manifests and issuing originals remain unchanged. `artifact-manifest.json` freezes every package file except itself.
+''')
+items=[]
+for p in sorted(x for x in O.rglob('*')if x.is_file()and 'compact-retained'not in x.relative_to(O).parts):
+ rel=p.relative_to(O).as_posix();b=p.read_bytes();enc='gzip'if p.suffix=='.log'or (p.suffix=='.json'and len(b)>50000)else'identity';stored=gzip.compress(b,mtime=0)if enc=='gzip'else b;q=O/'compact-retained'/(rel+('.gz'if enc=='gzip'else''));q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(stored);raw=gzip.decompress(q.read_bytes())if enc=='gzip'else q.read_bytes();assert raw==b
+ items.append({'original_path':str(p),'original_relative_path':rel,'original_sha256':sha(b),'original_bytes':len(b),'stored_path':q.relative_to(O).as_posix(),'stored_sha256':sha(stored),'stored_bytes':len(stored),'encoding':enc})
+(O/'compact-retention-manifest.json').write_text(json.dumps({'utc':now(),'schema':'exact-original-and-stored-files-v1','root':str(O),'role':'Finite two-context-chemical source author retention','files':items},indent=2)+'\n')
+files=[{'path':p.relative_to(O).as_posix(),'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size}for p in sorted(O.rglob('*'))if p.is_file()]
+(O/'artifact-manifest.json').write_text(json.dumps({'frozen_utc':now(),'root':str(O),'role':'Source author supplement, not independent review','scope':['MetaCyc:2-KETOGLUTARATE -> CHEBI:16810','MetaCyc:ADIPATE -> CHEBI:17128'],'files':files,'excludes':['artifact-manifest.json'],'limits':limits},indent=2)+'\n')
+print(json.dumps({'files':len(files),'compact_files':len(items),'compact_bytes':sum(x['stored_bytes']for x in items),'artifact_manifest_sha256':sha((O/'artifact-manifest.json').read_bytes()),'compact_manifest_sha256':sha((O/'compact-retention-manifest.json').read_bytes()),'handoff_sha256':sha((O/'HANDOFF.md').read_bytes()),'identity_proof_sha256':sha((O/'chemical-identity-replay.json').read_bytes())},indent=2))

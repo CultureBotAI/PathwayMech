@@ -1,0 +1,86 @@
+from pathlib import Path
+import json, hashlib, xml.etree.ElementTree as E, ast
+P=Path('/private/tmp/pathwaymech-next-263-biological-identity');O=P/'originals';R=Path('/private/tmp/pathwaymech-next-263-primary');N=Path('/private/tmp/pathwaymech-next-263-native')
+sha=lambda b:hashlib.sha256(b).hexdigest();bind=lambda p:{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())}
+def read(n):return json.loads((P/n).read_text())
+def save(n,d):(P/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+def normalize(v):
+ if isinstance(v,list):
+  for x in v:normalize(x)
+ elif isinstance(v,dict):
+  if 'path' in v and 'sha256' in v and 'locators' in v:
+   p=Path(v['path']);b=p.read_bytes();assert sha(b)==v['sha256'];v['bytes']=len(b)
+   if p.suffix=='.json':
+    j=json.loads(b);absent=[];actual=[]
+    for x in v['locators']:
+     if x.startswith('/') and x.count('/')==1:
+      (actual if x[1:] in j else absent).append(x)
+     else:actual.append(x)
+    v['locators']=actual
+    if absent:v['inspected_absent_top_level_properties']=absent
+   elif p.name.startswith('META-'):
+    root=E.fromstring(b);frame=p.stem[5:];obj=next(x for x in root if x.get('frameid')==frame and x.get('detail')=='full');actual=[];absent=[]
+    for x in v['locators']:
+     leaf=x.rsplit('/',1)[-1]
+     if '[' not in leaf:
+      items=obj.findall(leaf)
+      if not items:absent.append(x)
+      for i in range(len(items)):actual.append(x+f'[{i+1}]')
+     else:actual.append(x)
+    v['locators']=actual
+    if absent:v['inspected_absent_direct_slots']=absent
+  for x in list(v.values()):normalize(x)
+for name in ['issuing-identity-projection.json','biological-identity-decision-ledger.json','historical-and-context-source-bindings.json']:
+ j=read(name);normalize(j);save(name,j)
+# Load only the audited parser function plus its required definitions; no builder top-level side effects.
+s=ast.parse((P/'helpers/project_sequences.final.py.txt').read_text());head=[]
+for node in s.body:
+ if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='nucleotides' for t in node.targets):break
+ head.append(node)
+ns={};exec(compile(ast.Module(body=head,type_ignores=[]),'<deposited-parser-definitions>','exec'),ns);parse=ns['parse']
+cds=read('deposited-cds-projection.final.json')['cds_rows'];seq=read('sequence-cross-source-comparisons.final.json');used={r['protein'] for r in seq['current_uniprot_to_first_deposited_protein_pairs']};extra=[]
+for p in sorted(O.glob('NCBI-protein-*.gb')):
+ ref=p.name[13:-3]
+ if ref in used:continue
+ pr=parse(p);matches=[r for r in cds if r['qualifiers'].get('protein_id')==[ref]]
+ if ref=='NP_415915.1':
+  up=json.loads((O/'UniProt-P0C7L2.json').read_text());expected=up['sequence']['value'];binding=bind(O/'UniProt-P0C7L2.json');purpose='Exact native RefSeq pointer resolves to MG1655 source. Broader K12 UniProt references do not erase this native taxon scope.'
+ else:
+  assert len(matches)==1;expected=matches[0]['translated_sequence'];binding=matches[0]['source'];purpose='Second issuing view of exact cloned CDS translation; preparation/function inference remains limited.'
+ assert pr['sequence']==expected
+ extra.append({'protein':ref,'original':bind(p),'source_features':[f for f in pr['features'] if f['key']=='source'],'exact_sequence_equal':True,'sequence_length':len(expected),'sequence_sha256':sha(expected.encode()),'counterpart':binding,'purpose':purpose})
+assert len(extra)==6
+# Actual deposited paaJ in this historical clone is a different protein, not the thiolase accession.
+paaE=next(r for r in cds if r['qualifiers'].get('protein_id')==['CAD76924.1']);paaJ=next(r for r in cds if r['qualifiers'].get('protein_id')==['CAD76935.1']);assert paaE['qualifiers']['gene']==['paaE'] and paaJ['qualifiers']['gene']==['paaJ'] and paaE['translated_sequence']!=paaJ['translated_sequence']
+cat=next(r for r in cds if r['qualifiers'].get('protein_id')==['AAK33066.1']);pdb=next(r for r in read('issuing-structure-projection.json')['structures'] if r['pdb']=='2AZQ');up=json.loads((O/'UniProt-Q51433.json').read_text());assert cat['translated_sequence']!=pdb['polymer_sequence'] and cat['translated_sequence']!=up['sequence']['value']
+save('additional-exact-identity-bindings.json',{'six_additional_NCBI_proteins':extra,'Y2_distinct_deposited_gene_names':{'thiolase_CDS':paaE,'different_paaJ_CDS':paaJ,'decision':'CAD76924.1/Q845J8 sequence is deposited paaE; native later naming paaJ must not be joined to the distinct CAD76935.1 solely by name.'},'native_CatA_clone_vs_C1_structure':{'native_linked_clone_CDS':cat,'C1_PDB_source_bindings':pdb['source_bindings'],'Q51433':bind(O/'UniProt-Q51433.json'),'exact_clone_equals_PDB_chain':False,'exact_clone_equals_current_Q51433':False,'decision':'Distinct exact sequences; no deleted-Q9AEQ0 replacement or native preparation equivalence inferred.'},'comparison_scope':'Exact deposited strings and qualifiers only; no sequence-similarity inference.'})
+h=read('historical-and-context-source-bindings.json');r=next(r for r in json.loads((R/'web-transformation-bindings.json').read_text()) if r['pmid']=='7391022');assert sha((R/r['derived']).read_bytes())==r['sha256']
+for t in r['receipts']:assert sha((R/t['path']).read_bytes())==t['sha256']
+h['historical_PcaD']['actual_primary_transformation_binding_row']=r;save('historical-and-context-source-bindings.json',h)
+# Every original gets a precise finite usage route, including already acquired counterpart views.
+idx=read('issuing-original-provenance-index.json');uses=[]
+for row in idx['originals']:
+ name=Path(row['original']['path']).name
+ if name.startswith('UniProt-'):dest='issuing-identity-projection.json#/uniprot';role='native accession or explicitly separate Q51433/PcaR context'
+ elif name.startswith('PDB-'):dest='issuing-structure-projection.json#/structures';role='exact entry, polymer, biological assembly or mmCIF cross-check'
+ elif name.startswith('NCBI-taxonomy-'):dest='issuing-identity-projection.json#/taxonomy';role='direct native taxon pointer or explicit KT2440 countercontext'
+ elif name.startswith('NCBI-gene-'):dest='issuing-identity-projection.json#/gene_statuses';role='four exact historical gene status checks and Q88N36 current-xref countercontext'
+ elif name.startswith('NCBI-protein-'):dest='sequence-cross-source-comparisons.final.json#/current_uniprot_to_first_deposited_protein_pairs' if name[13:-3] in used else 'additional-exact-identity-bindings.json#/six_additional_NCBI_proteins';role='exact accession, source qualifier, full-sequence counterpart comparison'
+ else:dest='deposited-cds-projection.final.json#/cds_rows';role='complete direct deposited CDS translation and gene/product qualifiers'
+ uses.append({'original':row['original'],'usage':dest,'scope':role})
+save('issuing-original-usage-ledger.json',{'originals':uses,'count':len(uses),'limits':'The records are finite leads from native pointers and explicitly necessary countercontexts. This is not a global issuing-database search or exhaustive functional literature review.'})
+# Referenced native originals and primary transformations are finite external dependencies, already frozen by their owners.
+refs={}
+def deps(v):
+ if isinstance(v,list):
+  for x in v:deps(x)
+ elif isinstance(v,dict):
+  if isinstance(v.get('path'),str) and v.get('sha256'):
+   q=Path(v['path'])
+   if q.is_absolute() and not q.is_relative_to(P) and q.is_file():
+    assert sha(q.read_bytes())==v['sha256'];refs[str(q)]=bind(q)
+  for x in v.values():deps(x)
+for name in ['native-biological-selection.json','biological-identity-decision-ledger.json','native-conflict-identity-dispositions.json','historical-and-context-source-bindings.json','receipts/native-intake.json','issuing-original-provenance-index.json']:deps(read(name))
+for t in r['receipts']:refs[str(R/t['path'])]=bind(R/t['path'])
+save('external-frozen-source-dependencies.json',{'files':[refs[k] for k in sorted(refs)],'scope':'Exact external frozen native/primary and predecessor provenance dependencies. Issuing originals have byte-identical copies in this package; native and primary originals remain owned by their source packages. Retain their original manifests alongside this compact package.'})
+print(json.dumps({'additional_exact_protein_pairs':len(extra),'original_usage_count':len(uses),'external_frozen_dependencies':len(refs)}))

@@ -1,0 +1,60 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,sys,urllib.request,urllib.parse,datetime,collections,time
+O=Path('/private/tmp/pathwaymech-next-263-native');D=Path('/private/tmp/pathwaymech-next-263-discovery');R=Path('/private/tmp/pathwaymech-next-262-20261014')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+def inspect(p,frame=None):
+ try:
+  rt=E.parse(p).getroot()
+  if rt.tag!='ptools-xml':return None
+  xs=[x for x in rt if x.attrib.get('detail')=='full' and x.attrib.get('orgid')=='META' and (frame is None or x.attrib.get('frameid')==frame)]
+  if len(xs)!=1:return None
+  x=xs[0];return {'frame':x.attrib['frameid'],'class':x.tag,'version':rt.find('metadata/PGDB').attrib.get('version'),'source_query':rt.findtext('metadata/query'),'source_base':rt.attrib.get('{http://www.w3.org/XML/1998/namespace}base'),'element':x}
+ except (E.ParseError,AttributeError,KeyError):return None
+manifests=[D/'artifact-manifest.json',Path('/private/tmp/pathwaymech-next-262-native/artifact-manifest.json'),R/'research/pathway_additions/2026-10-14-next-248/catechol/native/provenance-manifest.json',R/'research/pathway_additions/2026-10-14-next-249/oxoadipate/native/source-manifest.json',R/'research/pathway_additions/2026-10-14-next-250/protocatechuate/native/source-manifest.json']
+def candidates(x):
+ if isinstance(x,dict):
+  if isinstance(x.get('path'),str) and x.get('sha256'):yield x
+  for v in x.values():yield from candidates(v)
+ elif isinstance(x,list):
+  for v in x:yield from candidates(v)
+if sys.argv[1]=='prepare':
+ cache={};scopes=[];excluded=[]
+ for i,mp in enumerate(manifests):
+  m=json.loads(mp.read_text());mh=sha(mp);(O/'predecessor-manifests'/f'{i:02d}-{mp.name}').write_bytes(mp.read_bytes());n=0
+  for row in candidates(m):
+   p=Path(row['path']);p=p if p.is_absolute() else mp.parent/p
+   if p.suffix!='.xml':continue
+   assert p.is_file(),str(p)
+   assert sha(p)==row['sha256'],str(p)
+   it=inspect(p)
+   if not it:continue
+   n+=1;v={k:v for k,v in it.items() if k!='element'};v.update(path=str(p),sha256=row['sha256'],bytes=p.stat().st_size,manifest=str(mp),manifest_sha256=mh)
+   if it['version']!='27.0':excluded.append(v);continue
+   cache.setdefault(it['frame'],[]).append(v)
+  scopes.append({'manifest':str(mp),'sha256':mh,'full_native_original_count':n})
+ # Complete frozen discovery integrity, no interpretation of its stale corpus baseline.
+ dm=json.loads((D/'artifact-manifest.json').read_text());assert all(sha(D/x['path'])==x['sha256'] for x in dm['files'])
+ for name in ['HANDOFF.md','next-source-follow-set.json','native-connectivity-proof.json','primary-source-lead-dispositions.json','source-family-scope.json','alternative-pathway-boundaries.json']:(O/'discovery-bindings'/name).write_bytes((D/name).read_bytes())
+ dump('predecessor-search-scope.json',{'manifests':scopes,'includes_manifest_listed_hidden_ignored':True,'scope_limit':'Explicit complete frozen source manifests only, not global cache or maintained-corpus absence. Full discovery manifest verified.','excluded_versions':excluded})
+ dump('verified-predecessor-index.json',cache)
+ follows=json.loads((D/'next-source-follow-set.json').read_text());leads=[{'activity_id':r['frame'],'reaction':r['reaction'].removeprefix('MetaCyc:'),'catalyst_ids':r['enzymes']} for r in follows['formal_activity_leads']];steps=json.loads((D/'native-connectivity-proof.json').read_text())['steps'];formal=[s['reaction'].removeprefix('MetaCyc:') for s in steps];pathways=['PWY-5417','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361'];wanted=set(pathways+formal+[x['frame'] for x in follows['parent_taxon_annotations']])
+ for a in leads:wanted.add(a['activity_id']);wanted.update(a['catalyst_ids'])
+ dump('requested-initial.json',{'formal_activity_leads':leads,'formal_reactions':formal,'pathways':pathways,'parent_taxa':follows['parent_taxon_annotations'],'wanted':sorted(wanted)})
+ print(json.dumps({'verified_cache_frames':len(cache),'wanted':len(wanted),'excluded_versions':len(excluded)}));sys.exit()
+cache=json.loads((O/'verified-predecessor-index.json').read_text());label=sys.argv[1];wanted=json.loads((O/('requested-initial.json' if label=='initial' else sys.argv[2])).read_text())['wanted' if label=='initial' else 'missing'];receipts=[]
+for frame in wanted:
+ out=O/'originals'/('META-'+frame+'.xml')
+ if out.exists():
+  assert inspect(out,frame) and inspect(out,frame)['version']=='27.0';continue
+ if frame in cache:
+  r=cache[frame][0];p=Path(r['path']);assert sha(p)==r['sha256'];out.write_bytes(p.read_bytes());row={k:v for k,v in r.items() if k!='path'};row.update(mode='exact_frozen_original_reuse',path=str(out),reused_from=str(p));receipts.append(row);continue
+ url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3A'+urllib.parse.quote(frame,safe='');row={'frame':frame,'mode':'public_original_acquisition','requested_url':url,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech bounded native source closure'}),timeout=45) as r:b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+  it=None;out.write_bytes(b);it=inspect(out,frame);row.update(path=str(out),sha256=sha(out),bytes=len(b),verified_exact_full_original=bool(it))
+  if it:row.update({k:v for k,v in it.items() if k!='element'})
+ except Exception as e:row['error']=str(e)
+ receipts.append(row);print(json.dumps(row),flush=True);dump('receipts/acquisition-'+label+'-progress.json',receipts);time.sleep(.5)
+dump('receipts/acquisition-'+label+'-complete.json',receipts)
+print(json.dumps({'requested':len(wanted),'processed':len(receipts),'reuses':sum(r['mode']=='exact_frozen_original_reuse' for r in receipts),'new':sum(r['mode']=='public_original_acquisition' for r in receipts),'failures':[r for r in receipts if r.get('error') or r.get('verified_exact_full_original') is False]},indent=2))

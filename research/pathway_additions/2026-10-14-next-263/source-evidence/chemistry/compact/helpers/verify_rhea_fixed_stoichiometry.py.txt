@@ -1,0 +1,101 @@
+import collections,csv,datetime,gzip,hashlib,json,pathlib,re,sqlite3,xml.etree.ElementTree as E
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry');P=O/'originals';sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(pathlib.Path(p).read_bytes());now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat();started=now();manifest=load(O/'input-manifest.json')
+for r in manifest['files']:assert sha((O/r['stored_path']).read_bytes())==r['sha256'] and (O/r['stored_path']).stat().st_size==r['bytes']
+closures=[load(O/f'prior-context/next{n}/chemical-identity-closure.json') for n in [248,249]];spec={}
+for old in closures:
+ for frame,c in old['chemicals'].items():
+  if frame in spec:assert spec[frame]['native_inchi']==c['native_inchi'] and spec[frame]['recommended_id']==c['recommended_id']
+  spec[frame]=c
+assert len(spec)==13
+for row in manifest['database_bindings']:
+ p=pathlib.Path(row['path']);st=p.stat();assert str(p.resolve())==row['resolved'] and st.st_size==row['bytes'] and st.st_mtime_ns==row['mtime_ns']
+rs=sqlite3.connect(pathlib.Path(manifest['database_bindings'][1]['resolved']).as_uri()+'?mode=ro',uri=True)
+def props(db,id):return {p:o or v for p,o,v in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(id,))}
+structure_replay=load(O/'chemical-structure-replay.json');chem=structure_replay['chemicals'];assert len(chem)==13
+rdfns='http://www.w3.org/1999/02/22-rdf-syntax-ns#';rh='http://rdf.rhea-db.org/';nodes={};descriptions=0
+# Parse the complete issuing RDF; retain every side/participant/compound/reaction property needed for a whole-family equation search.
+keep={'equation','label','status','isChemicallyBalanced','substrates','products','side','compound','chebi','accession','formula','charge','directionalReaction','bidirectionalReaction','underlyingChebi'}
+with gzip.open(P/'rhea.rdf.gz','rb') as stream:
+ for event,el in E.iterparse(stream,events=('end',)):
+  if el.tag!='{'+rdfns+'}Description':continue
+  descriptions+=1;uri=el.get('{'+rdfns+'}about');d={}
+  for c in el:
+   key=c.tag.split('}',1)[-1]
+   if key in keep or key.startswith('contains'):
+    value=c.get('{'+rdfns+'}resource') or c.text
+    if value not in d.setdefault(key,[]):d[key].append(value)
+  if d:
+   dest=nodes.setdefault(uri,{})
+   for k,vs in d.items():dest[k]=list(dict.fromkeys(dest.get(k,[])+vs))
+  el.clear()
+directions={};familyof={}
+for row in csv.DictReader((P/'rhea-directions.tsv').open(),delimiter='\t'):
+ values=list(row.values());master=values[0];directions[master]=dict(zip(['master','left_to_right','right_to_left','bidirectional'],values))
+ for id in values:familyof[id]=master
+
+excluded_reasons=collections.Counter()
+def excluded(reason):excluded_reasons[reason]+=1;return None
+def sides(uri):
+ r=nodes[uri];out={}
+ for side in ['substrates','products']:
+  if side not in r:return excluded('missing_directional_side')
+  if len(r[side])!=1:return excluded('multiple_side_pointers')
+  su=r[side][0]
+  if su not in nodes:return excluded('missing_complete_side')
+  if any(k.startswith('contains') and k!='contains' and not re.fullmatch('contains[0-9]+',k) for k in nodes[su]):return excluded('symbolic_polymer_stoichiometry')
+  parts=[]
+  for pred,participants in nodes[su].items():
+   if not re.fullmatch('contains[0-9]+',pred):continue
+   for pu in participants:
+    if pu not in nodes or len(nodes[pu].get('compound',[]))!=1:return excluded('non_single_compound_participant')
+    cu=nodes[pu]['compound'][0]
+    if cu not in nodes:return excluded('missing_compound_identity')
+    cp=nodes[cu];ids=cp.get('accession',[])
+    if len(ids)!=1:return excluded('non_single_accession')
+    charge=cp.get('charge',[None])[0]
+    if charge is not None and re.fullmatch(r'[+-]?\d+',charge):charge=int(charge)
+    parts.append({'id':ids[0],'coefficient':int(pred[8:]),'formula':cp.get('formula',[None])[0],'charge':charge,'side_uri':su,'participant_uri':pu,'compound_uri':cu,'coefficient_predicate':rh+pred})
+  if not parts:return excluded('no_explicit_integer_coefficient_members')
+  out[side]=parts
+ return out
+signature=lambda sides:tuple(tuple(sorted((x['id'],x['coefficient']) for x in sides[s])) for s in ['substrates','products'])
+all_equations={};skipped=0
+for uri,node in nodes.items():
+ if 'substrates' in node and 'products' in node:
+  ss=sides(uri)
+  if ss is None:skipped+=1
+  else:all_equations[uri]=signature(ss)
+proof=load(O/'prior-context/discovery/native-connectivity-proof.json');nativepaths={n:E.parse(P/f'META-{n}.xml').getroot().find('Pathway') for n in ['PWY-5417','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361']};assert {e.get('frameid') for e in nativepaths['PWY-5417'].findall('reaction-list/Pathway')}=={'CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361'}
+reactions=[];net=collections.Counter();prior_reactions={r['native_id']:r for c in closures for r in c['reactions']}
+def total(parts):
+ out=collections.Counter({'charge':0})
+ for p in parts:
+  c=chem[p['native_frame']]
+  for el,n in c['elements'].items():out[el]+=p['coefficient']*n
+  out['charge']+=p['coefficient']*c['charge']
+ return dict(out)
+for step in proof['steps']:
+ frame=step['reaction'].split(':',1)[1];r=E.parse(P/f'META-{frame}.xml').getroot().find('Reaction');assert r.get('detail')=='full';owner='CATECHOL-ORTHO-CLEAVAGE-PWY' if len(reactions)<4 else 'PWY-2361';layout=next(x for x in nativepaths[owner].findall('reaction-layout') if x.find('Reaction').get('frameid')==frame);direction=layout.findtext('direction');assert direction==step['selected_layout_direction'] and r.findtext('reaction-direction')==step['native_direction']
+ written={s:[{'native_frame':e.find('Compound').get('frameid'),'coefficient':int(e.findtext('coefficient','1'))} for e in r.findall(s)] for s in ['left','right']};selected={'substrates':written['left' if direction=='L2R' else 'right'],'products':written['right' if direction=='L2R' else 'left']}
+ for s,field in [('substrates','inputs'),('products','outputs')]:
+  assert [{'id':x['native_frame'],'coefficient':x['coefficient']} for x in selected[s]]==step[field]
+  for p in selected[s]:p['id']=chem[p['native_frame']]['id'];net[p['native_frame']]+=p['coefficient']*(1 if s=='products' else -1)
+ rid=prior_reactions[step['reaction']]['recommended_id'].split(':')[1];actual=sides(rh+rid);assert signature(selected)==signature(actual)
+ for s in actual:
+  for p in actual[s]:
+   native=next(c for c in chem.values() if c['id']==p['id']);assert p['formula']==native['native_formula'] and p['charge']==native['charge']
+ totals={s:total(selected[s]) for s in selected};assert totals['substrates']==totals['products']
+ matches=[uri for uri,eq in all_equations.items() if eq==signature(selected) or eq==signature(selected)[::-1]];families=sorted({familyof[uri.removeprefix(rh)] for uri in matches if uri.removeprefix(rh) in familyof});assert families==[familyof[rid]],(frame,families)
+ orient=next(k for k,v in directions[familyof[rid]].items() if v==rid);assert orient==prior_reactions[step['reaction']]['recommended_record_direction'];assert props(rs,'RHEA:'+rid)['rdfs:label']==nodes[rh+rid]['label'][0]
+ reactions.append({'order':len(reactions)+1,'native_id':step['reaction'],'selected_id':'RHEA:'+rid,'source_reaction_direction':r.findtext('reaction-direction'),'selected_native_layout':direction,'issuing_rhea_direction':orient,'complete_written_sides':written,'complete_selected_sides':selected,'issuing_rhea_sides':actual,'equation':nodes[rh+rid]['equation'][0],'element_charge_totals':totals,'balanced':True,'equivalent_family_search':{'exact_families':families,'matching_directional_ids':[x.removeprefix(rh) for x in matches],'family':directions[familyof[rid]]},'source_xml_sha256':sha((P/f'META-{frame}.xml').read_bytes())})
+joins=[]
+for j in proof['joins']:
+ owner=nativepaths[j['ordering_owner']];matches=[x for x in owner.findall('reaction-ordering') if x.find('Reaction').get('frameid')==j['successor'] and any(p.get('frameid')==j['predecessor'] for p in x.findall('predecessor-reactions/Reaction'))];assert len(matches)==1
+ a=next(r for r in reactions if r['native_id']=='MetaCyc:'+j['predecessor']);b=next(r for r in reactions if r['native_id']=='MetaCyc:'+j['successor']);shared={p['native_frame'] for p in a['complete_selected_sides']['products']}&{p['native_frame'] for p in b['complete_selected_sides']['substrates']};assert shared==set(j['all_shared_materials']) and j['primary_material'] in shared
+ c=chem[j['primary_material']];joins.append({**j,'chemical_id':c['id'],'full_inchi':c['inchi'],'charge':c['charge'],'native_ordering_xml':E.tostring(matches[0],encoding='unicode'),'exact_structural_join':True})
+net={f:n for f,n in net.items() if n};inputs=[{'native_frame':f,'id':chem[f]['id'],'coefficient':-n} for f,n in net.items() if n<0];outputs=[{'native_frame':f,'id':chem[f]['id'],'coefficient':n} for f,n in net.items() if n>0];assert {p['native_frame']:p['coefficient'] for p in inputs}==proof['net_inputs'];assert {p['native_frame']:p['coefficient'] for p in outputs}==proof['net_outputs'];assert total(inputs)==total(outputs)
+report={'started_at':started,'finished_at':now(),'role':'Next263 chemical source author; independently replayed issuing original bytes, not independent final263 scientific review','candidate':'MetaCyc:PWY-5417','input_manifest_sha256':sha((O/'input-manifest.json').read_bytes()),'structure_replay_sha256':sha((O/'chemical-structure-replay.json').read_bytes()),'reaction_count':len(reactions),'material_entries':sum(len(r['complete_selected_sides'][s]) for r in reactions for s in ['substrates','products']),'rhea_complete_parse':{'description_elements':descriptions,'relevant_nodes':len(nodes),'directional_equations_compared':len(all_equations),'equations_with_nonfixed_or_unresolved_identity_skipped':skipped,'exclusion_reasons':dict(excluded_reasons),'limit':'Exact full-side compound/coefficient family equality in complete retained Rhea142. Symbolic polymer stoichiometry and participant forms that lack one exact compound identity are excluded explicitly, not treated as exact small-molecule equivalents.'},'reactions':reactions,'joins':joins,'net_equation':{'substrates':inputs,'products':outputs,'element_charge_totals':total(inputs),'balanced':True,'succinyl_CoA_cancels': 'SUC-COA' not in net,'scope':'Calculated sum of six source-defined steps; not a new elementary reaction or empirical flux observation.'},'post262_merged_baseline_rebind_required':True,'scope_limits':['No organism, catalyst, preparation, regulation or primary-paper claims upgraded.','No new record authored; no current pathway absence/duplicate verdict or authority upgrade asserted.','Native incomplete SMILES, pinned cis,cis-muconate stereochemistry omission, and CoA InChI microstate limitations remain explicit in chemical-structure-replay.json.']}
+assert report['material_entries']==21 and len(joins)==5
+(O/'whole-route-chemistry-replay.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':'passed','chemicals':len(chem),'steps':len(reactions),'entries':report['material_entries'],'joins':len(joins),'net_totals':total(inputs),'rhea_equations':len(all_equations),'proof_sha256':sha((O/'whole-route-chemistry-replay.json').read_bytes())}))

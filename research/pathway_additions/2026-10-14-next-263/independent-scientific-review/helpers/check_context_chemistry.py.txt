@@ -1,0 +1,36 @@
+import collections,datetime,gzip,hashlib,json,os,pathlib,re,sqlite3,sys,xml.etree.ElementTree as ET
+from rdkit import Chem,rdBase
+B=pathlib.Path('/private/tmp/pathwaymech-next-263-context-chemistry');O=pathlib.Path('/private/tmp/pathwaymech-next-263-canonical-science')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+owner=json.loads((B/'authority-owner-binding.json').read_text());receipt=B/'prior-context/pinned-database-complete-hashes.json';assert bind(receipt)['sha256']==owner['complete_hash_receipt_sha256']
+db=pathlib.Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');st=db.stat();stat={'resolved':str(db.resolve()),'bytes':st.st_size,'mtime_ns':st.st_mtime_ns,'inode':st.st_ino};assert stat==owner['database_current_stat']
+connection=sqlite3.connect('file:'+str(db.resolve())+'?mode=ro',uri=True);connection.row_factory=sqlite3.Row
+query='SELECT stanza,subject,predicate,object,value,datatype,language,graph FROM statements WHERE subject=? ORDER BY predicate,object,value,datatype,language,graph'
+retained=json.loads((B/'originals/chebi-255-selected-complete-subject-rows.json').read_text());checks=[];allrows={}
+def elements(m):return dict(sorted(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms()).items()))
+def charge(m):return sum(a.GetFormalCharge() for a in m.GetAtoms())
+def graph(m):return Chem.MolToSmiles(Chem.RemoveHs(m),isomericSmiles=False)
+for native,cid in [('2-KETOGLUTARATE','CHEBI:16810'),('ADIPATE','CHEBI:17128')]:
+ rows=[dict(r) for r in connection.execute(query,(cid,))];assert rows==retained['rows'][cid];allrows[cid]=rows
+ def val(pred):
+  found=[r['value'] for r in rows if r['predicate']==pred];assert len(found)==1,(cid,pred,found);return found[0]
+ label=val('rdfs:label');formula=val('chemrof:generalized_empirical_formula');q=int(val('chemrof:charge'));inchi=val('chemrof:inchi_string');key=val('chemrof:inchi_key_string');smiles=val('chemrof:smiles_string')
+ ip=Chem.MolFromSmiles(smiles);ii=Chem.MolFromInchi(inchi);assert ip and ii;assert Chem.MolToInchi(ip)==inchi and Chem.MolToInchiKey(ip)==key
+ np=B/'originals'/f'META-{native}.xml';x=ET.parse(np).getroot().find('Compound');assert x.get('frameid')==native and x.get('detail')=='full';cml=x.find('cml/molecule');rw=Chem.RWMol();indices={}
+ for a in cml.findall('atomArray/atom'):
+  atom=Chem.Atom(a.get('elementType').capitalize());atom.SetFormalCharge(int(a.get('formalCharge','0')));indices[a.get('id')]=rw.AddAtom(atom)
+ for b in cml.findall('bondArray/bond'):
+  l,r=b.get('atomRefs').split();rw.AddBond(indices[l],indices[r],{'1':Chem.BondType.SINGLE,'2':Chem.BondType.DOUBLE,'3':Chem.BondType.TRIPLE}[b.get('order')])
+ nm=rw.GetMol();Chem.SanitizeMol(nm);nf=cml.find('formula').get('concise').split();nf={a.capitalize():int(n) for a,n in zip(nf[::2],nf[1::2])};ef={a:int(n or 1) for a,n in re.findall(r'([A-Z][a-z]?)([0-9]*)',formula)}
+ assert elements(nm)==elements(ip)==elements(ii)==nf==ef;assert charge(nm)==charge(ip)==q==int(cml.get('formalCharge'));assert graph(nm)==graph(ip)==graph(ii)
+ assert x.findtext('inchi')==inchi and x.findtext('inchi-key').removeprefix('InChIKey=')==key
+ assert not Chem.FindMolChiralCenters(ip,includeUnassigned=True)
+ api=None
+ if cid=='CHEBI:16810':
+  ap=B/'originals/CHEBI-16810.json';j=json.loads(ap.read_text());s=j['default_structure'];assert j['id']==16810 and s['standard_inchi']==inchi and s['standard_inchi_key']==key and graph(Chem.MolFromSmiles(s['smiles']))==graph(ip);api=bind(ap)
+ checks.append({'id':cid,'native':native,'label':label,'formula':formula,'charge':q,'inchi':inchi,'inchi_key':key,'canonical_smiles':graph(ip),'native':bind(np),'complete_sql_rows':len(rows),'fresh_direct_SQL_equal_retained_complete_subject_rows':True,'full_CML_graph_formula_charge_matches_issuer':True,'full_native_InChI_key_matches_issuer':True,'api_reuse':api,'native_SMILES':x.findtext('smiles'),'scope':'Chemical identity only; neither assay speciation nor activity interpretation.'})
+connection.close()
+raw=json.dumps(allrows,indent=2,sort_keys=True).encode()+b'\n';p=O/'inspection/context-chemistry-independent-SQL-rows.json.gz';p.write_bytes(gzip.compress(raw,mtime=0))
+r={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'software':{'python':sys.version,'executable':sys.executable,'rdkit':rdBase.rdkitVersion,'RDBASE':os.environ.get('RDBASE')},'database_stat':stat,'complete_hash_receipt_reused':bind(receipt),'whole_database_independently_rehashed_by_this_check':False,'owner_sha256':owner['owner']['sha256'],'query':query,'SQL_rows':{'stored':bind(p),'decoded_sha256':hashlib.sha256(raw).hexdigest(),'decoded_bytes':len(raw)},'checks':checks,'limitations':['Reuses recent full-database hash receipt only after exact resolved path/size/mtime/inode comparison; fresh complete outgoing subject rows independently queried read-only.','Native 2-KETOGLUTARATE SMILES contains [R] and cannot establish exact identity; complete CML and full InChI/key do.','No assay protonation, inhibitor mechanism, enzyme preparation, or gene-expression conclusions follow from this identity check.']}
+(O/'checks/context-chemistry-independent.json').write_text(json.dumps(r,indent=2,sort_keys=True)+'\n');print(json.dumps({'checked':len(checks),'SQL_rows':[c['complete_sql_rows'] for c in checks],'identities_pass':True,'rdkit':rdBase.rdkitVersion}))

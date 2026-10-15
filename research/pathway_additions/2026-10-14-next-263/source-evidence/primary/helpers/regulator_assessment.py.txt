@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+import hashlib,json,xml.etree.ElementTree as ET
+from pathlib import Path
+P=Path(__file__).resolve().parents[1]
+N=Path('/private/tmp/pathwaymech-next-263-native/originals')
+def h(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+rows=[]
+for id in ['REG-5831','REG-5832','REG-5833','REG-5834','REG-5835','REG-5836']:
+ p=N/('META-'+id+'.xml');e=ET.parse(p).getroot().find('Regulation')
+ regulator=e.find('regulator')[0].attrib['frameid'];target=e.find('regulated-entity')[0].attrib['frameid']
+ cp=N/('META-'+regulator+'.xml');ce=ET.parse(cp).getroot().find('Compound')
+ assert target=='ENZRXN-13636'
+ wrong=id in ['REG-5831','REG-5832','REG-5833']
+ rows.append({'native_regulation':id,'native_original':{'path':str(p),'sha256':h(p)},'native_locators':[f'/ptools-xml/Regulation[@frameid="{id}"]/{x}[1]' for x in ['regulator','regulated-entity','mode','mechanism','citation']], 'native_regulator':regulator,'native_regulator_name':ce.findtext('common-name'),'native_regulator_original':{'path':str(cp),'sha256':h(cp)},'native_target_activity':target,'native_mechanism':e.findtext('mechanism'),'primary_pmid':'11741862','primary_artifact':{'path':'derived/PMC134768-pmc-text.txt','sha256':h(P/'derived/PMC134768-pmc-text.txt')},'primary_locator':'line316 with context314–318' if wrong else 'lines300–303','primary_supported_target':'B13 3-oxoadipate:succinyl-CoA transferase (native separate ENZRXN-31095/CPLX-85407 association)' if wrong else 'B13 3-oxoadipyl-CoA thiolase preparation','decision':'Reject native target as primary-supported; preserve source disagreement. Primary mechanism is reported with underlying data not shown.' if wrong else 'Retain only reagent-specific in vitro effect with1mM condition; source salt is ZnCl2/NaCN/CuSO4, not an independently verified free-ion or HCN assay.','claim_id':'P263-C11' if wrong else 'P263-C12'})
+(P/'regulator-target-and-reagent-assessment.json').write_text(json.dumps(rows,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'regulators':len(rows),'wrong_native_targets':3,'reagent_qualified':3}))

@@ -1,0 +1,40 @@
+import pathlib,hashlib,json,datetime,sqlite3
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry');D=pathlib.Path('/private/tmp/pathwaymech-next-263-discovery');R=pathlib.Path('/private/tmp/pathwaymech-next-262-20261014');sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(pathlib.Path(p).read_bytes());rows=[]
+def retain(source,relative,expected=None,metadata=None):
+ p=pathlib.Path(source);b=p.read_bytes();h=sha(b)
+ if expected:assert h==expected,(p,h,expected)
+ t=O/relative;t.parent.mkdir(parents=True,exist_ok=True)
+ if t.exists():assert t.read_bytes()==b
+ else:t.write_bytes(b)
+ row={'source_path':str(p),'stored_path':relative,'sha256':h,'bytes':len(b)}
+ if metadata:row['historical_source_metadata']=metadata
+ if row not in rows:rows.append(row)
+ return row
+m=load(D/'artifact-manifest.json');assert sha((D/'artifact-manifest.json').read_bytes())=='4f54300e62b22beb94244e41668cb4235352a12ccb0c8efbeb3a85cc95e385bf'
+for x in m['files']:assert sha((D/x['path']).read_bytes())==x['sha256'] and (D/x['path']).stat().st_size==x['bytes']
+for name in ['artifact-manifest.json','HANDOFF.md','native-connectivity-proof.json']:retain(D/name,'prior-context/discovery/'+name)
+for name in ['PWY-5417','PWY-2361','CATECHOL-ORTHO-CLEAVAGE-PWY']:retain(D/f'originals/META-{name}.xml',f'originals/META-{name}.xml',next(x['sha256'] for x in m['files'] if x['path']==f'originals/META-{name}.xml'))
+closures={};expected_closure={248:'967ce9265b26876edf3fab03481b880baeeb29c5e9471a16559bc6e344ad2611',249:'f6e5be085d00fbd8b86d933ff8a30a270e5f22390a78d47256ae94b69ed485e3'}
+for batch in [248,249]:
+ root=pathlib.Path(f'/private/tmp/pathwaymech-next-{batch}-chemistry-20261014');closure=load(root/'chemical-identity-closure.json');closures[batch]=closure
+ for name in ['chemical-identity-closure.json','artifact-manifest.json','rhea-original-projection.json','author-handoff.json','acquisition.json','acquisition-followup.json']:
+  retain(root/name,f'prior-context/next{batch}/'+name,expected_closure[batch] if name=='chemical-identity-closure.json' else None)
+ for c in closure['chemicals'].values():
+  for descriptor in [c['source'],c['live_chebi']['source']]:retain(descriptor['path'],'originals/'+pathlib.Path(descriptor['path']).name,descriptor['sha256'],descriptor)
+ for r in closure['reactions']:
+  descriptor=r['source'];p=D/'originals'/pathlib.Path(descriptor['path']).name;retain(p,'originals/'+p.name,descriptor['sha256'],descriptor)
+ def recurse(v):
+  if isinstance(v,dict):
+   if 'path' in v and 'sha256' in v:retain(v['path'],'originals/'+pathlib.Path(v['path']).name,v['sha256'],v)
+   else:
+    for x in v.values():recurse(x)
+  elif isinstance(v,list):
+   for x in v:recurse(x)
+ recurse(closure['kegg_distinction'])
+for k,name in [('rhea_142_rdf','rhea.rdf.gz'),('rhea_directions','rhea-directions.tsv'),('rhea_release_original','rhea-rhea-release.properties')]:
+ descriptor=closures[249]['authority_sources'][k];retain(descriptor['path'],'originals/'+name,descriptor['sha256'],descriptor)
+ontology=load(R/'data/identifier_authorities/ontology.json');dbs=[]
+for name,owner in [('chebi','chebi-255'),('rhea','rhea-139')]:
+ p=pathlib.Path('/private/tmp/pathwaymech-curation-authorities')/(name+'.db');s=p.stat();assert ontology['sources'][owner]==closures[249]['authority_sources'][name+'_255' if name=='chebi' else 'rhea_139'];dbs.append({'path':str(p),'resolved':str(p.resolve()),'bytes':s.st_size,'mtime_ns':s.st_mtime_ns,'pinned_owner':ontology['sources'][owner],'limit':'Read-only SQL rows; entire multi-GB database not rehashed in this bounded source preparation.'})
+report={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Next263 chemical source author input preservation; not independent final review of263 and not a maintained record addition','candidate':'MetaCyc:PWY-5417','context_commit': 'fbccbdc027f2a86ad4919e9dbbb16a736cc0746a','post262_merged_baseline_rebind_required':True,'discovery_manifest_files_reverified':len(m['files']),'files':rows,'database_bindings':dbs,'limits':['Prior completed chemistry assessments are leads; current helper will independently parse exact original structures/equations.','No new acquisition, primary-paper assessment, organism/catalyst inference, record authoring, or whole-route duplicate/absence judgment.','Prior author historical availability fields are not current authority absence claims.']}
+(O/'input-manifest.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'copied_bindings':len(rows),'unique_stored_files':len({x['stored_path'] for x in rows}),'manifest_sha256':sha((O/'input-manifest.json').read_bytes())}))

@@ -1,0 +1,121 @@
+"""Independent CML, ChEBI, and complete KEGG MOL-body reconstruction."""
+import collections
+import datetime
+import hashlib
+import json
+import os
+import pathlib
+import re
+import sys
+import xml.etree.ElementTree as ET
+from rdkit import Chem, rdBase
+
+BASE = pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry/originals')
+OUT = pathlib.Path('/private/tmp/pathwaymech-next-263-independent-chemistry')
+started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+route = json.loads((OUT/'checks/independent-route.json').read_text())
+def bind(p):
+    b=p.read_bytes(); return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+def elements(m): return dict(sorted(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms()).items()))
+def plain(m): return Chem.MolToSmiles(m,isomericSmiles=False)
+def charge(m): return sum(a.GetFormalCharge() for a in m.GetAtoms())
+def atom_formula(s): return {a:int(n or 1) for a,n in re.findall(r'([A-Z][a-z]?)([0-9]*)',s)}
+chem, maps = [], {}
+for name, data in route['chemicals'].items():
+    obj = ET.parse(BASE/f'META-{name}.xml').getroot().find('Compound')
+    cml = obj.find('cml/molecule')
+    rw=Chem.RWMol(); at={}
+    for x in cml.findall('atomArray/atom'):
+        a=Chem.Atom(x.get('elementType'));a.SetFormalCharge(int(x.get('formalCharge','0')))
+        at[x.get('id')]=rw.AddAtom(a)
+    for x in cml.findall('bondArray/bond'):
+        a,b=x.get('atomRefs').split()
+        rw.AddBond(at[a],at[b],{'1':Chem.BondType.SINGLE,'2':Chem.BondType.DOUBLE,'3':Chem.BondType.TRIPLE}[x.get('order')])
+    mol=rw.GetMol();Chem.SanitizeMol(mol)
+    c=json.loads((BASE/f"ChEBI-{data['id'].split(':')[1]}.json").read_text())
+    issued=Chem.MolFromSmiles(c['default_structure']['smiles'])
+    assert issued is not None
+    expected=atom_formula(data['formula'])
+    native_formula_tokens=cml.find('formula').get('concise').split()
+    native_formula={k:int(v) for k,v in zip(native_formula_tokens[::2],native_formula_tokens[1::2])}
+    assert elements(mol)==elements(issued)==expected==native_formula,name
+    assert charge(mol)==charge(issued)==data['charge'],name
+    assert plain(mol)==plain(issued),name
+    assert Chem.MolToInchi(issued)==data['inchi'],name
+    assert Chem.MolToInchiKey(issued)==c['default_structure']['standard_inchi_key'],name
+    native_smiles=cml.findtext("string[@title='smiles']")
+    generic=bool(native_smiles and '[R]' in native_smiles)
+    if native_smiles and not generic:
+        ns=Chem.MolFromSmiles(native_smiles)
+        native_smiles_result={'complete_parse':ns is not None,'connectivity_matches':ns is not None and plain(ns)==plain(issued),'inchi_matches':ns is not None and Chem.MolToInchi(ns)==data['inchi']}
+    else: native_smiles_result={'complete_parse':False,'reason':'Native [R] placeholder is not a complete structure; exact CML and full InChI remain available.'}
+    maps[data['id']]=issued
+    chem.append({'native':name,'chebi':data['id'],'native_formula':native_formula,'issuing_elements':expected,'charge':data['charge'],'issuing_inchi':Chem.MolToInchi(issued),'issuing_chiral_centers':Chem.FindMolChiralCenters(issued,includeUnassigned=True),'issuing_rings':[len(x) for x in issued.GetRingInfo().AtomRings()],'native_CML_connectivity_charge_equal_issuing':True,'CML_stereochemistry_claimed':False,'native_smiles':native_smiles,'native_smiles_assessment':native_smiles_result,'native_binding':bind(BASE/f'META-{name}.xml'),'issuing_binding':bind(BASE/f"ChEBI-{data['id'].split(':')[1]}.json")})
+
+assert Chem.FindMolChiralCenters(maps['CHEBI:58736'])==[(4,'S')]
+assert Chem.FindMolChiralCenters(maps['CHEBI:58425'])==[]
+assert sorted(len(x) for x in maps['CHEBI:58736'].GetRingInfo().AtomRings())==[5]
+muconate=maps['CHEBI:32379']
+stereobonds=[str(b.GetStereo()) for b in muconate.GetBonds() if b.GetStereo()!=Chem.BondStereo.STEREONONE]
+assert sorted(stereobonds)==['STEREOZ','STEREOZ']
+
+expected_map={'C00010':'CHEBI:57287','C00024':'CHEBI:57288','C00042':'CHEBI:30031','C00091':'CHEBI:57292','C00846':'CHEBI:15775','C02232':'CHEBI:57348','C02480':'CHEBI:32379','C14610':'CHEBI:58736'}
+kegg=[];kmols={};normalized={}
+for p in sorted(BASE.glob('KEGG-*.mol')):
+    code=p.stem.removeprefix('KEGG-')
+    original=Chem.MolFromMolFile(str(p),removeHs=True)
+    assert original is not None
+    fields={}
+    for line in (BASE/f'KEGG-{code}.txt').read_text().splitlines():
+        if line[:12].strip(): fields[line[:12].strip()]=line[12:].strip()
+    assert fields['ENTRY'].split()[0]==code
+    assert elements(original)==atom_formula(fields['FORMULA'])
+    assert charge(original)==0
+    m=Chem.Mol(original);removed=[]
+    for a in m.GetAtoms():
+        if a.GetAtomicNum()!=8 or a.GetFormalCharge()!=0 or a.GetTotalNumHs()!=1 or a.GetDegree()!=1: continue
+        nbr=a.GetNeighbors()[0]
+        if nbr.GetAtomicNum() not in {6,15}: continue
+        if not any(b.GetBondType()==Chem.BondType.DOUBLE and b.GetOtherAtom(nbr).GetAtomicNum()==8 for b in nbr.GetBonds()): continue
+        a.SetFormalCharge(-1);a.SetNumExplicitHs(0);a.SetNoImplicit(True);removed.append(a.GetIdx())
+    Chem.SanitizeMol(m)
+    normalized[code]=m;kmols[code]=original
+    target=expected_map.get(code)
+    if target:
+        assert Chem.MolToInchi(m)==Chem.MolToInchi(maps[target]),code
+        assert elements(m)==elements(maps[target]) and charge(m)==charge(maps[target])
+    else:
+        assert code=='C04105'
+        assert plain(m)==plain(maps['CHEBI:58736'])
+        assert Chem.MolToInchi(m)!=Chem.MolToInchi(maps['CHEBI:58736'])
+        assert any(tag=='?' for _,tag in Chem.FindMolChiralCenters(m,includeUnassigned=True))
+    kegg.append({'id':code,'original_inchi':Chem.MolToInchi(original),'original_formula':fields['FORMULA'],'original_charge':charge(original),'original_chiral_centers':Chem.FindMolChiralCenters(original,includeUnassigned=True),'controlled_acidic_O_deprotonation_atom_indices':removed,'deprotonated_inchi':Chem.MolToInchi(m),'deprotonated_charge':charge(m),'exact_target_after_deprotonation':target,'scope':'Stereochemically unspecified broader muconolactone; not an exact S mapping.' if not target else 'Exact structure after explicit acidic-O deprotonation; source neutral entity retained as distinct.','source_mol':bind(p),'source_entry':bind(BASE/f'KEGG-{code}.txt')})
+
+def kside(text):
+    result=collections.Counter()
+    for t in text.split(' + '):
+        v=t.strip().split();result[v[-1]]+=int(v[0]) if len(v)==2 else 1
+    return result
+def ktot(side,molecules):
+    t=collections.Counter()
+    for code,n in side.items():
+        for a,c in elements(molecules[code]).items(): t[a]+=n*c
+        t['charge']+=n*charge(molecules[code])
+    return dict(t)
+eqs=[]
+for code in ['R03959','R06989','R02990','R00829']:
+    p=BASE/f'KEGG-{code}.txt'
+    equation=next(x[12:].strip() for x in p.read_text().splitlines() if x.startswith('EQUATION'))
+    a,b=(kside(s) for s in equation.split('<=>'))
+    assert ktot(a,kmols)==ktot(b,kmols)
+    eqs.append({'id':code,'complete_original_equation':equation,'left':dict(a),'right':dict(b),'original_neutral_equation_balanced':True,'native_route_direction':'right_to_left' if code in {'R03959','R00829'} else 'left_to_right','source':bind(p)})
+expected_tail = route['reactions'][4:]
+for r,code in zip(expected_tail,['R02990','R00829']):
+    eq=next(e for e in eqs if e['id']==code)
+    a,b=eq['left'],eq['right']
+    if code=='R00829':a,b=b,a
+    assert {expected_map[k]:v for k,v in a.items()}==r['inputs']
+    assert {expected_map[k]:v for k,v in b.items()}==r['outputs']
+report={'started_utc':started,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'independence':'Original CML, issuing JSON, KEGG MOL and complete reaction-body reconstruction; no author helper reused.','software':{'python':sys.version,'executable':sys.executable,'rdkit':rdBase.rdkitVersion,'RDBASE':os.environ.get('RDBASE'),'configuration':'Installed RDConfig.py explicitly supports RDBASE; existing share/RDKit/Data selected to bypass missing optional RDPaths module. No module shim or package mutation.'},'chemicals':chem,'cis_cis_geometry':stereobonds,'kegg_structures':kegg,'kegg_equations':eqs,'limits':['Native CML connectivity/charge alone does not prove stereochemistry; exact full InChI and issuing stereochemical SMILES supply that identity.','Standard InChI includes mobile-hydrogen normalization; no empirical protonation-state claim.','R03959 unspecified stereo is not exact identity; R06989 is S-specific but uses neutral compounds.','These source checks neither establish enzyme preparation nor whole-organism pathway evidence.']}
+(OUT/'checks/independent-structures.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'chemicals':len(chem),'kegg_full_structures':len(kegg),'kegg_full_equations':len(eqs),'cis_cis_geometry':stereobonds,'rdkit':rdBase.rdkitVersion},indent=2))

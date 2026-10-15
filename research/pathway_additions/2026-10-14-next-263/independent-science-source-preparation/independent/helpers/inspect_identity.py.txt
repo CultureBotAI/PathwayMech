@@ -1,0 +1,43 @@
+"""Read issuing protein, deposit, and PDB bodies independently; no author projection imported."""
+import datetime,difflib,hashlib,json,pathlib,re
+B=pathlib.Path('/private/tmp/pathwaymech-next-263-biological-identity/originals')
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-science/checks')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def parse_protein(p):
+ text=p.read_text();assert '\nORIGIN' in text and '\n//' in text
+ s=text.split('\nORIGIN',1)[1].split('\n//',1)[0];return re.sub('[^A-Za-z]','',s).upper()
+proteins=[];sources={}
+for p in sorted(B.glob('UniProt-*.json')):
+ j=json.loads(p.read_text());acc=j['primaryAccession'];sources[acc]=j
+ d={'accession':acc,'entry_type':j['entryType'],'binding':bind(p)}
+ if j['entryType']=='Inactive':d['inactive_reason']=j['inactiveReason'];proteins.append(d);continue
+ s=j['sequence']['value'];d.update(sequence_length=len(s),sequence_sha256=hashlib.sha256(s.encode()).hexdigest(),organism=j['organism'],genes=j.get('genes'),protein_existence=j.get('proteinExistence'),cautions=[c for c in j.get('comments',[]) if c.get('commentType')=='CAUTION'])
+ em=[x for x in j['uniProtKBCrossReferences'] if x['database']=='EMBL'];d['EMBL_identifiers']=em
+ if em:
+  ids=[z['value'] for z in em[0].get('properties',[]) if z['key']=='ProteinId'];pid=ids[0] if ids else None
+  pp=B/f'NCBI-protein-{pid}.gb'
+  if pp.exists():
+   dep=parse_protein(pp);d['first_deposit']={'protein_id':pid,'nucleotide_id':em[0]['id'],'binding':bind(pp),'length':len(dep),'exact_sequence_equal':s==dep}
+   if s!=dep:
+    conflicts=[f for f in j.get('features',[]) if f['type']=='Sequence conflict' and re.search(r'\b'+re.escape(pid.split('.')[0])+r'\b',f.get('description',''))]
+    reconstructed=s
+    for f in sorted(conflicts,key=lambda f:f['location']['start']['value'],reverse=True):
+     a=f['location']['start']['value']-1;z=f['location']['end']['value'];alt=f.get('alternativeSequence',{}).get('alternativeSequences',[])
+     assert len(alt)==1,(acc,f)
+     assert s[a:z]==f['alternativeSequence']['originalSequence']
+     reconstructed=reconstructed[:a]+alt[0]+reconstructed[z:]
+    d['first_deposit'].update(issuer_conflict_features=conflicts,exact_after_declared_conflicts=reconstructed==dep,raw_alignment=[{'operation':tag,'current_span_zero_based':[a,b],'deposit_span_zero_based':[c,z],'current':s[a:b],'deposit':dep[c:z]} for tag,a,b,c,z in difflib.SequenceMatcher(a=s,b=dep,autojunk=False).get_opcodes() if tag!='equal'])
+  else:d['first_deposit']={'protein_id':pid,'status':'No retained protein-body file for this first EMBL pointer; no match claimed.'}
+ proteins.append(d)
+pdb=[]
+for code in ['1MUC','2MUC','3MUC','1MLI','2AZQ','7VTR']:
+ pp=B/f'PDB-{code}-polymer1.json';ap=B/f'PDB-{code}-assembly1.json';ep=B/f'PDB-{code}-entry.json'
+ p=json.loads(pp.read_text());a=json.loads(ap.read_text());e=json.loads(ep.read_text());s=p['entity_poly']['pdbx_seq_one_letter_code_can'];refs=p['rcsb_polymer_entity_container_identifiers'].get('uniprot_ids',[])
+ row={'pdb':code,'polymer_binding':bind(pp),'assembly_binding':bind(ap),'entry_binding':bind(ep),'polymer_length':len(s),'entity':p['rcsb_polymer_entity'],'natural_source':p.get('entity_src_nat'),'engineered_source':p.get('entity_src_gen'),'assembly':a['pdbx_struct_assembly'],'assembly_generation':a['pdbx_struct_assembly_gen'],'source_matches':[]}
+ for acc in refs:
+  us=sources[acc]['sequence']['value'];row['source_matches'].append({'accession':acc,'issuing_length':len(us),'exact_sequence_equal':s==us,'alignment_differences':[{'operation':tag,'uniprot_span_zero_based':[x,y],'pdb_span_zero_based':[z,w],'uniprot':us[x:y],'pdb':s[z:w]} for tag,x,y,z,w in difflib.SequenceMatcher(a=us,b=s,autojunk=False).get_opcodes() if tag!='equal']})
+ pdb.append(row)
+report={'executed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'proteins':proteins,'pdb':pdb,'scope':'Issuing source identity/preparation assessment only, not a record verdict. Sequence/assembly matches do not confer experimental activity or full-route evidence.'}
+(O/'identity-independent.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'proteins':len(proteins),'active':sum(x['entry_type']!='Inactive' for x in proteins),'deposit_checks':[{'accession':x['accession'],**{k:v for k,v in x.get('first_deposit',{}).items() if k in {'protein_id','exact_sequence_equal','exact_after_declared_conflicts','status','raw_alignment'}}} for x in proteins],'pdb':[{k:r[k] for k in ['pdb','polymer_length','assembly','source_matches']} for r in pdb]},indent=2))

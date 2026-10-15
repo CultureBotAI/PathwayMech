@@ -1,0 +1,129 @@
+version: 1
+# Every configured namespace has an independently sourced authority snapshot.
+# Unknown or not-yet-snapshotted identifiers fail; there are no ignored prefixes.
+namespaces:
+  GO:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical
+  CHEBI:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical_or_synonym
+  NCBITaxon:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical
+  RHEA:
+    snapshot: data/identifier_authorities/ontology.json
+    policy: canonical_or_synonym
+  RHEA-COMP:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical
+  metanetx.chemical:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical
+  KEGG:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical
+  BiGG:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical
+  PubChem:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical
+  EC:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  MIBiG:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  NCBIProtein:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  Entrez:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  PathBank:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  EcoCyc:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  MetaCyc:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  Reactome:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  SGD:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  UniProtKB:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  WikiPathways:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+  gomodel:
+    snapshot: data/identifier_authorities/sources.json
+    policy: canonical_or_synonym
+contextual_labels:
+  - namespace: CHEBI
+    sections: [participants]
+    record_prefixes: [MetaCyc]
+    reason: Curated pathway steps preserve biochemical display names and formulas from reaction descriptions; the ChEBI identifier fixes the exact charge and stereochemical form.
+  - namespace: CHEBI
+    sections: [participants]
+    record_prefixes: [WikiPathways]
+    reason: GPML diagram labels preserve source display text after chemical cross-reference mapping.
+  - namespace: CHEBI
+    sections: [participants]
+    record_prefixes: [Reactome, PathBank]
+    reason: BioPAX display names preserve biochemical shorthand while ChEBI IDs specify the grounded chemical form.
+  - namespace: EC
+    sections: [participants]
+    record_prefixes: [MetaCyc]
+    reason: Pathway enzyme-step descriptions preserve activity and gene-context names rather than assert the current IUBMB recommended enzyme name.
+  - namespace: RHEA
+    sections: [reactions]
+    record_prefixes: [MetaCyc, PathBank]
+    reason: Curated pathway step labels describe enzyme function; the Rhea authority labels reaction equations.
+  - namespace: SGD
+    sections: [participants]
+    record_prefixes: [gomodel, WikiPathways]
+    reason: Source diagrams preserve gene symbols and organism or activity qualifiers such as Scer.
+  - namespace: UniProtKB
+    sections: [participants]
+    record_prefixes: [MetaCyc, Reactome, WikiPathways, PathBank]
+    reason: Pathway diagrams use gene symbols or enzyme-step names rather than the recommended protein name.
+  - namespace: gomodel
+    sections: [record, participants, reactions]
+    record_prefixes: [gomodel]
+    reason: GO-CAM records use curated pathway titles, native molecular instance descriptions, and activity descriptions; display cleanup removes import annotations and diagram markup without changing native graph IDs. Untyped native instances retain identity without asserting an external chemical identity.
+  - namespace: WikiPathways
+    sections: [participants, reactions]
+    record_prefixes: [WikiPathways]
+    reason: GPML interactions and diagram entities have native GraphIds; pathway records preserve their source-context descriptions without claiming an unresolved external chemical identity or canonical reaction name.
+  - namespace: PathBank
+    sections: [participants, reactions]
+    record_prefixes: [PathBank]
+    reason: Native BioPAX graph objects are scoped by their independently asserted SMPDB pathway accession; curated descriptions preserve chemical, complex or reaction context without making an external identity or canonical-name claim. The pathway title itself remains canonical.
+  - namespace: PathBank
+    sections: [participants]
+    record_prefixes: [MetaCyc]
+    reason: A MetaCyc pathway may cite an independently verified PathBank physical participant whose native identity preserves an assembly or molecular state. Its label describes that source object; biological membership and role require separate edge evidence. This rule preserves identifier existence and does not cover pathway titles or reaction labels.
+  - namespace: MIBiG
+    sections: [record]
+    record_prefixes: [MIBiG]
+    reason: A pathway record describes the biosynthetic gene cluster rather than asserting a product name as the canonical cluster title.
+  - namespace: MetaCyc
+    sections: [record, reactions]
+    record_prefixes: [MetaCyc]
+    reason: Curated titles and enzyme-step descriptions preserve the record's scoped presentation; the independently accessible native release verifies frame identity, not current preferred pathway naming.
+  - namespace: MetaCyc
+    sections: [reactions]
+    record_prefixes: [GO]
+    authority_entity_types: [reaction]
+    reason: An exact GO biological-process pathway may retain an independently typed native MetaCyc reaction when no exact external equation matches its chemical scope. Contextual descriptions require reaction authority and molecular_activity placement; pathway interface labels remain canonical.
+  - namespace: Reactome
+    sections: [record, reactions]
+    record_prefixes: [Reactome]
+    reason: Curated pathway and reaction titles add organism or enzyme context to native BioPAX display names.

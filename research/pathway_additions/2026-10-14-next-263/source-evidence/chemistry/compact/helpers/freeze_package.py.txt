@@ -1,0 +1,29 @@
+from pathlib import Path
+import json,gzip,hashlib,datetime
+A=Path('/private/tmp/pathwaymech-next-263-chemistry');sha=lambda b:hashlib.sha256(b).hexdigest();now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat()
+assert not (A/'artifact-manifest.json').exists() and not(A/'compact').exists()
+inputs=json.loads((A/'input-manifest.json').read_text())
+for x in inputs['files']:
+ b=(A/x['stored_path']).read_bytes();assert sha(b)==x['sha256']and len(b)==x['bytes']
+files=sorted(p for p in A.rglob('*') if p.is_file()); rows=[]
+for p in files:
+ rel=p.relative_to(A).as_posix()
+ if rel=='originals/rhea.rdf.gz':continue
+ b=p.read_bytes();encoding='identity';q=p
+ if p.suffix=='.py':q=A/'compact'/Path(rel+'.txt');encoding='inert_python_text';stored=b
+ elif p.suffix in ['.xml','.mol','.log','.tsv'] or len(b)>20000:q=A/'compact'/Path(rel+'.gz');encoding='gzip';stored=gzip.compress(b,mtime=0)
+ else:stored=b
+ if q!=p:q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(stored)
+ assert(gzip.decompress(stored)if encoding=='gzip'else stored)==b
+ rows.append({'source':rel,'path':q.relative_to(A).as_posix(),'sha256':sha(stored),'bytes':len(stored),'encoding':encoding,'decoded_sha256':sha(b),'decoded_bytes':len(b),'promotion_hint':'inert helper evidence' if encoding=='inert_python_text'else 'retain exact bytes and declared original bindings'})
+compact={'created_utc':now(),'candidate':'MetaCyc:PWY-5417','role':'Chemical source author, not independent final review','scope':'Every authored proof/helper and all unique copied source/context files except the full8.3MBRheaRDF; all compressed representations decode to exact originals. FullRheaoriginal remains within frozen package and is artifact-manifest-bound.','count':len(rows),'files':rows,'excluded_bulk_originals':[{'path':'originals/rhea.rdf.gz','sha256':sha((A/'originals/rhea.rdf.gz').read_bytes()),'bytes':(A/'originals/rhea.rdf.gz').stat().st_size,'reason':'Complete issuing release kept externally; full parse and exact family comparison retained, no replacement by projection claimed.'}]}
+(A/'compact-retention-manifest.json').write_text(json.dumps(compact,indent=2)+'\n')
+files=[]
+for p in sorted(A.rglob('*')):
+ if p.is_file():b=p.read_bytes();files.append({'path':p.relative_to(A).as_posix(),'bytes':len(b),'sha256':sha(b)})
+m={'frozen_utc':now(),'candidate':'MetaCyc:PWY-5417','role':'Chemical source author preparation, not independent scientific review or maintained record authoring','context_commit':'fbccbdc027f2a86ad4919e9dbbb16a736cc0746a','post262_merged_rebind_required':True,'scope':'Every current file in external package except this self-referential manifest. Future work must append separately, leaving frozen package unchanged.','count':len(files),'files':files}
+(A/'artifact-manifest.json').write_text(json.dumps(m,indent=2)+'\n')
+for x in files:assert sha((A/x['path']).read_bytes())==x['sha256']and(A/x['path']).stat().st_size==x['bytes']
+for x in rows:
+ b=(A/x['path']).read_bytes();assert sha(b)==x['sha256']and len(b)==x['bytes'];d=gzip.decompress(b)if x['encoding']=='gzip'else b;assert sha(d)==x['decoded_sha256']and len(d)==x['decoded_bytes']and d==(A/x['source']).read_bytes()
+print(json.dumps({'artifact_manifest_sha256':sha((A/'artifact-manifest.json').read_bytes()),'artifact_files':len(files),'compact_manifest_sha256':sha((A/'compact-retention-manifest.json').read_bytes()),'compact_entries':len(rows),'compact_bytes':sum(x['bytes']for x in rows),'handoff_sha256':sha((A/'HANDOFF.md').read_bytes())},indent=2))

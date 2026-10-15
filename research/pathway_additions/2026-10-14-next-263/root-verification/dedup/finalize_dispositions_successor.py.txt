@@ -1,0 +1,103 @@
+from pathlib import Path
+import collections,csv,datetime,gzip,hashlib,json,os,re,subprocess,yaml
+O=Path('/private/tmp/pathwaymech-next-263-ci/dedup-final');S=O/'predecessor-scan';D=O/'prior-discovery';sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(Path(p).read_bytes());roots=[Path('/private/tmp/pathwaymech-next-263-20261014'),Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')]
+started=datetime.datetime.now(datetime.timezone.utc).isoformat();summary=load(S/'summary.json');chem=load('/private/tmp/pathwaymech-next-263-chemistry/whole-route-chemistry-replay.json');family={r['selected_id']:{'RHEA:'+v for v in r['equivalent_family_search']['family'].values()} for r in chem['reactions']};native={r['selected_id']:r['native_id']for r in chem['reactions']};assert len(family)==6
+primary=load(O/'primary-alias-inputs/source-access-and-reading-ledger.json');priorsem=load(D/'semantic-record-dispositions.json'); prior_by_path={x['path']:x for x in priorsem['records']};rootrebind=load(S/'corpus-rebind.json');expected={x['path']:x['sha256']for x in rootrebind['records']}
+# Reuse completed full YAML parse only after current recursive inventory/hash and state equality.
+corpusproof=load(O/'complete-corpus-and-boundary-rebind.json');corpora=corpusproof['roots'];records_by_root=[]
+for i,R in enumerate(roots):
+ current={p.relative_to(R).as_posix():sha(p.read_bytes()) for p in sorted((R/'data/pathways').rglob('*.yaml'))}
+ assert current=={x['path']:x['sha256'] for x in corpora[i]['records']}
+ state={'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=R,text=True).strip(),'status':subprocess.check_output(['git','status','--porcelain=v1'],cwd=R,text=True)}
+ assert state==corpora[i]['state']
+ records_by_root.append({x['id']:x for x in corpora[i]['records']})
+(O/'corpus-recursive-replay.json').write_text(json.dumps({'utc':started,'prior_corpus_sha256':sha((O/'complete-corpus-and-boundary-rebind.json').read_bytes()),'all_records_recursive_current_hashes_and_head_state_match':True,'counts':[len(x['records'])for x in corpora]},indent=2)+'\n')
+# Read entire changed/additive files, preserving complete snapshots; structured projections expose every relevant scalar rather than only text matches.
+snapshots={};inspection=[];all_dispositions=[];explicit=[]
+def preserve(R,rel):
+ p=R/rel;b=p.read_bytes();h=sha(b);q=O/'inspected-full-files'/f'{h}.gz';q.parent.mkdir(exist_ok=True)
+ if not q.exists():q.write_bytes(gzip.compress(b,mtime=0))
+ assert gzip.decompress(q.read_bytes())==b
+ snapshots[h]={'original_sha256':h,'original_bytes':len(b),'stored_path':q.relative_to(O).as_posix(),'stored_sha256':sha(q.read_bytes()),'stored_bytes':q.stat().st_size,'encoding':'gzip','original_paths':sorted(set(snapshots.get(h,{}).get('original_paths',[])+[str(p)]))}
+ return b
+# Explicit human-assessed scope summaries used only after the actual file and its matching fields are read.
+def classify(path,text,terms,obj=None):
+ if path.startswith('data/pathways/'):
+  return 'maintained_record','Exact top-level identity and complete declared reaction families checked in current corpus. ENZRXN-3641 is the gallate/CHA activity reference for RXN-2464, not the formal RXN-3641 thiolase; these records contain zero candidate families.'
+ if path.startswith('pages/'):
+  return 'generated_projection','Generated browse/index/record/KGX data reflect existing child, tail, sibling or gallate records. Full record/context fields were parsed; neither a pathway node mention nor a shared reference establishes a maintained six-step parent.'
+ if path=='conf/identifier_sources.json' or path.startswith('data/identifier_authorities/'):
+  return 'identifier_authority','Exact existing module interfaces and six reaction terms; authority/config declarations do not constitute a pathway record. No PWY-5417 selected term or configuration entry exists in these exact files.'
+ if path.endswith('2010-claims.json'):
+  return 'prior_primary_claims','A1501 predicted map includes the broader pathway, but experimental items are genetic growth/rescue, cotranscription and expression context. It is a source dossier for the four-step child, not a maintained parent; HPLC internal peak-label conflict and no P.putida identity transfer remain explicit.'
+ if 'sequence-lineage-reconciliation.json'in path:
+  return 'prior_lineage_context','PMID8083169 distinguishes PRS2000 derivative from PRS1/ATCC12633, exact translation equality from whole-strain identity and modern KT2440. No additional pathway record or new identity inference.'
+ if path.startswith('reviews/'):
+  return 'immutable_scoped_review','Saved248 scientific review scopes A1501 evidence as genotype/phenotype context and retains HPLC inconsistency; it reviews the maintained four-step child, not a six-step parent.'
+ if '-next-262/'in path:
+  if path.endswith('verification.md'):return 'explicit_future_candidate','The completed262 report explicitly names PWY-5417 as a separate next candidate requiring merged-baseline rebind, not another maintained addition.'
+  if 'alternative-pathway-boundaries.json'in path or path.endswith('/HANDOFF.md'):return 'explicit_source_boundary','Native discovery distinguishes PWY-5417 parent containing the four-step child and PWY-2361 tail from PWY-5420 oxidative meta and PWY-5431 branch umbrella. Source definition is a candidate lead, not a maintained record.'
+  if 'semantic' in path or 'overlap'in path or 'assessment'in path or 'dispositions'in path:return 'prior_duplicate_assessment','Earlier262 duplicate/semantic assessment recognizes existing four-step ortho child, two-step tail and candidate parent; current259-record comparison supersedes its older corpus baseline.'
+  return 'source_acquisition_or_reproduction_metadata','Matched source URLs, object inventories, cache manifests, search patterns or inert helper text bind discovery of the native parent/modules. They are not maintained record declarations or evidence that ingestion already occurred.'
+ if '-next-259/'in path or '-next-260/'in path:
+  if 'RXN-3641'in terms and all(t=='RXN-3641'for t in terms):return 'gallate_activity_substring','All matched reaction tokens are ENZRXN-3641 activity/provenance paths in the gallate/CHA branch, not exact RXN-3641 formal thiolase. Full parsed source/proposal contexts retain RXN-2464 assignment. Research drafts, reviews and caches are not maintained parent records.'
+  if 'GO-substrate-specific-search'in path:return 'broader_go_and_sibling_context','GO:0042952 explicitly combines catechol and protocatechuate branches plus tail; GO:0019618 is the maintained protocatechuate ortho sibling. Neither is an exact six-step catechol parent identity.'
+  if 'identity-annotation-sequence-package'in path:return 'protein_sibling_annotation','Protein beta-ketoadipate annotations here describe protocatechuate 3,4-cleavage to carboxymuconate, a sibling branch; protein annotations are not complete pathway records.'
+  if 'native-narrative-index'in path or 'reference-reading-and-disposition-ledger'in path:return 'bibliographic_sibling_context','Shared beta-ketoadipate review PMID8905091 and protocatechuate-ortho links occur in adjacent gallate source context; no complete candidate record is asserted.'
+  if 'complete-direct-slot-ledger'in path:return 'native_crossreference_and_activity_context','Complete native object slots contain ENZRXN-3641 activity plus related catechol enzyme crossreferences. These are ancillary object annotations, not six formal reactions declared in a maintained gallate route.'
+  return 'prior_corpus_authority_or_review_metadata','Current exact file contains earlier whole-corpus inventories, authority-cache descriptors or historical validation inputs for existing modules/sibling routes; no new maintained PWY-5417 record.'
+ if '-next-261/'in path:return 'prior_corpus_metadata','Earlier261 corpus/review inputs enumerate existing four-step child and two-step tail. Complete current corpus comparison, not their textual occurrence, decides duplicate status.'
+ if '-next-250/'in path and '/integration-review/'in path:return 'historical_source_hash_audit','Historical integration/review hash manifest binds PMID5916391 metadata; no maintained pathway declaration or primary full-text upgrade.'
+ if path.endswith('source-provenance.json'):return 'prior_original_source_binding','Existing child source-provenance inventory binds primary URLs and bytes; no maintained whole-parent declaration.'
+ if 'rhea-original-projection'in path:return 'issuing_reaction_citation','Rhea reaction original cites historical PMID5330966 within existing child/sibling chemistry; source bibliography is not a maintained whole-parent record.'
+ if '/primary/'in path:return 'prior_primary_reading_or_acquisition','Prior248/249/250 paper acquisition, source-hash and reading-scope ledger. Historical papers and methods/gene/preparation contexts are prior research, not an additional maintained record. Actual access limits remain those of each ledger.'
+ if 'native-catalyst-coverage'in path:return 'native_activity_literature','Existing child catalyst literature includes historical PMID5330966; no sixth-step parent record or whole-route experiment follows from this citation.'
+ if 'fresh-dedup-bridge'in path:return 'prior_search_metadata','Earlier248 query/search bridge, not a maintained record. Fresh additive search now covers its previously missing primary identifiers.'
+ if '-next-258/'in path:return 'adjacent_source_bibliography','Shikimate-II retained native source projection contains PUB-5916391 metadata only; the current shikimate record has zero candidate reaction families.'
+ raise AssertionError(('unclassified',path,terms))
+for i,R in enumerate(roots):
+ inv=load(S/f'root-{i}-file-inventory.json');changed={x['path']:x for x in load(S/f'root-{i}-changed-context.json')};adds={x['path']:x for x in load(O/f'additive-root-{i}-contexts.json')};prior=load(D/f'prior-file-dispositions-{i}.json');old={x['path']:x for x in prior['files']};priorhash=sha((D/f'prior-file-dispositions-{i}.json').read_bytes());rows=[]
+ # Check every matched file hash, including ignored source and all unchanged reuses.
+ for x in inv:
+  assert sha((R/x['path']).read_bytes())==x['sha256']
+  if x['same_prior_file']:assert old[x['path']]['sha256']==x['sha256']
+ for rel in sorted(set(x['path']for x in inv)|set(adds)):
+  iv=next((x for x in inv if x['path']==rel),None);ar=adds.get(rel);ch=changed.get(rel);ms=(ch['matches']if ch else[])+(ar['matches']if ar else[]);needs=ch is not None or ar is not None
+  if not needs:
+   assert iv['same_prior_file'];rows.append({'path':rel,'sha256':iv['sha256'],'group':old[rel]['group'],'disposition':old[rel]['disposition'],'basis':'Exact prior file hash and prior authored disposition reused','prior_disposition_manifest_sha256':priorhash,'matching_lines':iv['matching_lines']});continue
+  b=preserve(R,rel);text=b.decode();h=sha(b);assert h==(ch or ar)['sha256'];terms=sorted({p for m in ms for p in m.get('terms',m.get('patterns',[]))});path=rel.removeprefix('./');obj=None;structure={'read_scope':'Complete actual file bytes parsed/read; all matched lines and relevant structured values retained, not a biological reassessment.'}
+  if path.endswith('.json'):obj=json.loads(text);structure.update(format='json',top_level= list(obj)if isinstance(obj,dict)else 'list',top_level_count=len(obj))
+  elif path.endswith('.yaml'):obj=yaml.load(text,Loader=yaml.CSafeLoader);structure.update(format='yaml',top_level=list(obj)if isinstance(obj,dict)else 'list')
+  elif path.endswith('.tsv'):
+   obj=list(csv.DictReader(text.splitlines(),delimiter='\t'));structure.update(format='tsv',rows=len(obj),columns=list(obj[0])if obj else[])
+   if path.endswith('nodes.tsv'):
+    assert not any(x['id']=='MetaCyc:PWY-5417'for x in obj);structure['candidate_top_level_node_count']=0
+   if path.endswith('edges.tsv'):
+    recordids=set()
+    for x in obj:
+     values=[v for v in x['source_records'].split('|') if v];recordids.update(values)
+    structure['evidence_reference_ids']=sorted(recordids);structure['source_records_semantics']='Pipe-separated evidence reference IDs, not pathway declarations';assert not any(x['id'].startswith('pathwaymech:MetaCyc_PWY-5417_')for x in obj);structure['candidate_origin_edge_count']=0
+  else:structure.update(format='text',lines=len(text.splitlines()))
+  if path.startswith('data/identifier_authorities/'):
+   assert 'MetaCyc:PWY-5417'not in obj['terms'];structure['candidate_authority_term_present']=False;structure['selected_related_terms']=[{ 'id':k,'term':v}for k,v in obj['terms'].items()if k in {'MetaCyc:PWY-2361','MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY',*family}]
+  if path=='conf/identifier_sources.json':assert 'PWY-5417'not in text;structure['candidate_config_entry_present']=False
+  if path=='pages/pathway_index.json':assert not any(x['id']=='MetaCyc:PWY-5417'for x in obj['records']);structure['record_count']=len(obj['records'])
+  group,disposition=classify(path,text,terms,obj)
+  # Every explicit candidate line is preserved with actual exact source hash, not inferred from broad words.
+  for ln,line in enumerate(text.splitlines(),1):
+   if re.search(r'PWY-5417|catechol degradation III',line,re.I):explicit.append({'root_index':i,'path':rel,'sha256':h,'line':ln,'text':line,'group':group,'disposition':disposition})
+  tokens=sorted(set(re.findall(r'(?<![A-Za-z0-9])(?:ENZ)?RXN-3641\d*',text)))
+  row={'path':rel,'sha256':h,'group':group,'disposition':disposition,'basis':'Current changed/new matched context read and dispositioned','matching_contexts':ms,'matched_terms':terms,'reaction_tokens_in_full_file':tokens,'inspection':structure,'snapshot':snapshots[h]['stored_path'],'predecessor_scan_changed':ch is not None,'additive_alias_match':ar is not None};rows.append(row);inspection.append({'root_index':i,**row})
+ all_dispositions.append({'root_index':i,'root':str(R),'files':rows,'file_count':len(rows),'reused_exact_dispositions':sum(x['basis'].startswith('Exact')for x in rows),'fresh_contexts_assessed':sum(x['basis'].startswith('Current')for x in rows),'all_matched_files_dispositioned':True})
+(O/'all-file-dispositions.json').write_text(json.dumps({'roots':all_dispositions},indent=2)+'\n');(O/'changed-and-additive-file-inspections.json').write_text(json.dumps(inspection,indent=2)+'\n');(O/'explicit-candidate-mentions.json').write_text(json.dumps(explicit,indent=2)+'\n');(O/'inspected-file-snapshot-manifest.json').write_text(json.dumps({'role':'Complete changed/additive file snapshots for offline replay; each original hash and losslessstoredbytes bound','files':list(snapshots.values())},indent=2)+'\n')
+# Aggregate raw predecessor/additive matches by actual file+line, without falsely counting overlapping aliases twice.
+union=[]
+for i in [0,1]:
+ matches=set()
+ for f in [S/f'root-{i}.jsonl',O/f'additive-root-{i}.jsonl']:
+  for line in f.read_bytes().splitlines():
+   row=json.loads(line)
+   if row['type']=='match':d=row['data'];matches.add((d['path']['text'],d['line_number']))
+ union.append({'root_index':i,'matched_files':len({p for p,n in matches}),'matched_lines':len(matches)})
+final={'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Bounded duplicate-search author successor; not independent scientific review','candidate':'MetaCyc:PWY-5417','current_head':corpora[0]['state']['head'],'current_tree':corpora[0]['state']['tree'],'current_corpus_count':259,'original_checkout':{'root':str(roots[1]),**corpora[1]['state'],'record_count':258},'checks':{'all259_current_and258_original_records_bound':True,'all258_original_equal_merged_subset':True,'all13_prior_semantic_dispositions_reused_only_with_exact_bytes':True,'new_PWY5420_has_zero_of_six_candidate_families':True,'exact_4step_child_and2step_tail_remain_distinct_modules':True,'no_current_top_level_PWY5417_or_individual_complete_six_family_record':True,'all112_changed_predecessor_context_files_assessed':True,'all34_additive_file_contexts_assessed':True,'all_prior_file_dispositions_reused_only_after_hash_comparison':True,'ignored_and_hidden_files_included':True,'explicit_candidate_mentions_are_source_or_future_candidate_context':True,'gallate_substrings_not_misclassified_as_thiolase':True},'search_union':union,'prior_patterns':148,'additive_patterns':104,'all_primary_source_aliases':48,'native_primary_leads':42,'bounded_primary_follows':6,'readiness':'Duplicate/boundary gate permits authoring one complete source-defined six-step parent at the stated merged baseline, while preserving existing4step and2step child records; native/primary conflicts, exact identity/chemical closure, authorities, validation and independent final review remain separately required.','conclusion':'No maintained individual record in the exact259-record merged corpus or258-record original checkout has the candidate parent identity or all six defining reaction families. Ignored-inclusive retained research and generated/authority matches were assessed as explicit source leads, module/sibling context or metadata. This is a bounded repository conclusion, not global database or world absence.','limits':['Root .git/.venv excluded; default rg binary handling; compressed archives not searched internally by rg.','Directory symlinks and external caches are not recursively traversed. Frozen263 primary aliases and selected source/native/chemistry originals are separately bound, not a global archive search.','All current record identities, descriptions and reaction/participant declarations are parsed; original258 scientific findings are not independently rereviewed.','Source citations and generated records do not establish an experimentally complete route; prior paper access/assay limits remain explicit.','No maintained files, Git or GitHub mutations. Later maintained additions require a new baseline delta check.']}
+(O/'final-disposition-summary.json').write_text(json.dumps(final,indent=2)+'\n');print(json.dumps({'summary':final,'fresh_contexts':len(inspection),'unique_full_file_snapshots':len(snapshots),'explicit_mentions':len(explicit)},indent=2))

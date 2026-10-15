@@ -1,0 +1,78 @@
+"""Read an exact supplied draft and write a selected-only authority union externally.
+
+No maintained files are changed. Candidate selection fixtures are resolver inputs,
+not pathway records. A new output directory is required for every attempt.
+"""
+from pathlib import Path
+import argparse, copy, hashlib, json, sys
+import yaml
+P=Path(__file__).resolve().parents[1]
+R=Path('/private/tmp/pathwaymech-next-263-20261014')
+sys.path[:0]=[str(R/'src'),str(R/'scripts')]
+from build_source_identifier_snapshot import build_snapshot
+from pathwaymech.identifiers import _load_authority,identifier_errors
+sha=lambda b:hashlib.sha256(b).hexdigest()
+def load(p):return json.loads(p.read_text())
+def bind(p):return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())}
+def emit(p,v):
+ assert not p.exists(),p;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+def descriptors(v):
+ if isinstance(v,dict):
+  if isinstance(v.get('path'),str) and isinstance(v.get('sha256'),str):yield v
+  for x in v.values():yield from descriptors(x)
+ elif isinstance(v,list):
+  for x in v:yield from descriptors(x)
+def plan(selected,old_source,old_ontology,lookup):
+ old_ids=set(old_source['terms'])|set(old_ontology['terms']);new=selected-old_ids;entries={};source_terms={};source_owners={};ontology_terms={};ontology_owners={}
+ for ident in sorted(new):
+  assert ident in lookup,('Concrete selected ID lacks prepared authority candidate',ident)
+  row=lookup[ident];assert row['status']=='candidate_addition_pending_selection',('Selected ID unavailable/inactive/ungrounded',ident,row['status']);term=row['term'];key=term['source'];entry=row.get('source_manifest_entry')
+  if entry:
+   original=Path(row['original']['path']);assert sha(original.read_bytes())==entry['sha256']==row['original']['sha256'];assert key not in old_source['sources'];assert entry['key']==key
+   assert key not in entries or entries[key]==entry;entries[key]=entry;source_terms[ident]=term;source_owners[key]=row['source_metadata']
+  else:
+   assert ident.startswith(('CHEBI:','RHEA:','NCBITaxon:','GO:'));ontology_terms[ident]=term
+   if key in old_ontology['sources']:assert old_ontology['sources'][key]==row['source_metadata']
+   else:ontology_owners[key]=row['source_metadata']
+ out_source=copy.deepcopy(old_source);out_source['terms'].update(source_terms);out_source['sources'].update(source_owners);out_ontology=copy.deepcopy(old_ontology);out_ontology['terms'].update(ontology_terms);out_ontology['sources'].update(ontology_owners)
+ for name,old,new_snapshot in [('sources',old_source,out_source),('ontology',old_ontology,out_ontology)]:
+  for section in ['terms','sources']:
+   assert all(new_snapshot[section].get(k)==v for k,v in old[section].items()),(name,section)
+ assert (set(out_source['terms'])|set(out_ontology['terms']))-old_ids==new
+ return {'new_ids':sorted(new),'source_entries':[entries[k] for k in sorted(entries)],'sources':out_source,'ontology':out_ontology}
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--record',type=Path);ap.add_argument('--record-sha256');ap.add_argument('--output',type=Path);ap.add_argument('--self-test',action='store_true');a=ap.parse_args()
+ old_source=load(P/'baseline/data/identifier_authorities/sources.json');old_ontology=load(P/'baseline/data/identifier_authorities/ontology.json');old_manifest=load(P/'baseline/conf/identifier_sources.json');lookup=load(P/'candidate-lookup.final.json')['candidates'];baseline_ids=set(old_source['terms'])|set(old_ontology['terms'])
+ if a.self_test:
+  synthetic={'MetaCyc:PWY-5417','MetaCyc:G-2289','NCBITaxon:386','CHEBI:18135'};v=plan(synthetic,old_source,old_ontology,lookup);assert set(v['new_ids'])==synthetic-baseline_ids;assert len(v['source_entries'])==2
+  try:plan({'UniProtKB:Q9AEQ0'},old_source,old_ontology,lookup)
+  except AssertionError:pass
+  else:raise AssertionError('Inactive ID accepted')
+  try:plan({'MetaCyc:ORG-5948'},old_source,old_ontology,lookup)
+  except AssertionError:pass
+  else:raise AssertionError('Ungrounded identity accepted')
+  assert len(plan(set(),old_source,old_ontology,lookup)['source_entries'])==0
+  print(json.dumps({'result':'pass','scope':'Synthetic pure preservation/selection guards only; no record draft or final selected IDs inferred.','old_terms_retained':len(baseline_ids),'existing_owner_rows_exact':True,'only_requested_missing_ids_added':True,'inactive_and_ungrounded_selection_rejected':True,'empty_selection_no_additions':True},indent=2));return
+ assert a.record and a.record_sha256 and a.output,'Exact record path/hash and new external output required'
+ output=a.output.resolve();assert output.is_relative_to(Path('/private/tmp')) and not output.exists(),'Output must be a new directory under /private/tmp';raw=a.record.read_bytes();assert sha(raw)==a.record_sha256;record=yaml.safe_load(raw);assert record['id']=='MetaCyc:PWY-5417';selected={record['id']}|{r['id'] for field in ['taxa','participants','reactions','gene_clusters'] for r in record.get(field,[])}
+ intake=load(P/'receipts/baseline-and-package-intake.json')
+ for row in intake['baseline_files']:
+  assert sha(Path(row['path']).read_bytes())==row['sha256'];assert sha(Path(row['source_path']).read_bytes())==row['sha256'],('Maintained authority/runtime context changed; explicit rebind required',row['source_path'])
+ result=plan(selected,old_source,old_ontology,lookup);output.mkdir();(output/'record-observation.yaml').write_bytes(raw);emit(output/'selection.json',{'actual_draft':bind(a.record),'observed_copy':bind(output/'record-observation.yaml'),'selected_ids':sorted(selected),'new_ids':result['new_ids'],'role':'Authority source integration author, not independent scientific verdict'})
+ entries=old_manifest+result['source_entries'];assert len({r['key'] for r in entries})==len(entries);assert entries[:len(old_manifest)]==old_manifest;emit(output/'conf/identifier_sources.json',entries)
+ cache=output/'source-cache';cache.mkdir();old_cache=Path('/private/tmp/pathwaymech-next-262-authority-integration/source-cache');newkeys={x['key'] for x in result['source_entries']};bindings=[];seen={}
+ for entry in entries:
+  for d in descriptors(entry):
+   rel=Path(d['path']);assert not rel.is_absolute() and '..' not in rel.parts;src=(P/'source-cache'/rel if entry['key'] in newkeys else old_cache/rel).resolve();assert src.is_file();digest=seen.get(str(src))
+   if digest is None:digest=sha(src.read_bytes());seen[str(src)]=digest
+   assert digest==d['sha256'];dst=cache/rel;dst.parent.mkdir(parents=True,exist_ok=True)
+   if dst.is_symlink():assert dst.resolve()==src
+   else:assert not dst.exists();dst.symlink_to(src)
+   bindings.append({'entry':entry['key'],'original':str(src),'cache_path':str(dst),'sha256':digest})
+ selector=output/'resolver-selection-fixture';selector.mkdir();(selector/'selector.yaml').write_text(yaml.safe_dump({'id':record['id'],'participants':[{'id':i} for i in sorted(baseline_ids|selected)]},sort_keys=False));canonical=build_snapshot(output/'conf/identifier_sources.json',selector,cache);assert canonical==result['sources'],'Canonical builder differs from exact preserved owner union'
+ emit(output/'data/identifier_authorities/sources.json',canonical);emit(output/'data/identifier_authorities/ontology.json',result['ontology']);(output/'conf/identifier_policy.yaml').write_bytes((P/'baseline/conf/identifier_policy.yaml').read_bytes());records=output/'data/pathways';records.mkdir();(records/'actual-record.yaml').write_bytes(raw)
+ for name in ['sources','ontology']:_load_authority(output/'data/identifier_authorities'/f'{name}.json')
+ errors=identifier_errors(output);emit(output/'identifier-consumer-receipt.json',{'errors':errors,'scope':'Exact supplied draft against selected-only union; whole maintained corpus checks remain root gates.'});assert not errors,errors
+ emit(output/'preservation-accounting.json',{'result':'pass','old_source_terms':len(old_source['terms']),'old_ontology_terms':len(old_ontology['terms']),'old_source_owners':len(old_source['sources']),'old_ontology_owners':len(old_ontology['sources']),'old_manifest_rows':len(old_manifest),'all_old_terms_and_owner_rows_exact':True,'old_manifest_prefix_exact':True,'new_ids':result['new_ids'],'new_source_entries':len(result['source_entries']),'selected_only_additions':True,'canonical_source_builder_replayed':True,'actual_draft_identifier_consumer':'pass','source_original_bindings':bindings,'maintained_writes':False})
+ print(json.dumps({'result':'pass','output':str(output),'selected_ids':len(selected),'new_ids':len(result['new_ids']),'new_source_entries':len(result['source_entries']),'maintained_writes':False}))
+if __name__=='__main__':main()

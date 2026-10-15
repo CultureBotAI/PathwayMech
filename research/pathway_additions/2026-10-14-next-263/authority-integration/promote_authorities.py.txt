@@ -1,0 +1,127 @@
+"""Verify frozen selected authority inputs and promote their exact union."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import subprocess
+import sys
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-20261014')
+SOURCE = Path('/private/tmp/pathwaymech-next-263-authority-integration')
+DEST = ROOT / 'research/pathway_additions/2026-10-14-next-263/authority-integration'
+CI = Path('/private/tmp/pathwaymech-next-263-ci')
+sys.path[:0] = [str(ROOT / 'src'), str(ROOT)]
+from pathwaymech.identifiers import identifier_errors
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def read(path):
+    return json.loads(path.read_text())
+
+manifest_raw = (SOURCE / 'artifact-manifest.json').read_bytes()
+assert sha(manifest_raw) == '660ae4b83b2ee4d8586036485d9f036d3d2d9331af50f8615e8c64627babd379'
+manifest = json.loads(manifest_raw)
+rows = manifest['files']
+assert len(rows) == 126
+actual = {str(p.relative_to(SOURCE)) for p in SOURCE.rglob('*')
+          if p.is_file() and 'source-cache' not in p.relative_to(SOURCE).parts}
+assert actual == {x['path'] for x in rows} | {'artifact-manifest.json'}
+for x in rows:
+    p = SOURCE / x['path']
+    assert not p.is_symlink() and p.resolve().is_relative_to(SOURCE)
+    b = p.read_bytes()
+    assert sha(b) == x['sha256'] and len(b) == x['bytes'], str(p)
+
+compact_raw = (SOURCE / 'compact-retention-manifest.json').read_bytes()
+assert sha(compact_raw) == '87e3063d2e5cbef43d0e5dde682693e6907025fe2284843968bab9fa3288f964'
+compact = json.loads(compact_raw)['files']
+assert len(compact) == 104
+for x in compact:
+    b = (SOURCE / 'compact-retained' / x['path']).read_bytes()
+    assert sha(b) == x['sha256'] and len(b) == x['bytes']
+    assert x['encoding'] in {'identity', 'gzip_lossless'}
+    decoded = gzip.decompress(b) if x['encoding'] == 'gzip_lossless' else b
+    assert sha(decoded) == x['original_sha256'] and len(decoded) == x['original_bytes']
+    assert decoded == Path(x['original_path']).read_bytes()
+
+record_path = ROOT / 'data/pathways/catechol-degradation-iii.yaml'
+record_raw = record_path.read_bytes()
+assert sha(record_raw) == '67ef6c751c2cafb9f183d1a24aefa767265ac7e10fc7b0ba4c554dccc8e4c2b2'
+record = yaml.safe_load(record_raw)
+old_record = yaml.safe_load((SOURCE / 'record-observation.yaml').read_bytes())
+assert {k: v for k, v in record.items() if k != 'references'} == {
+    k: v for k, v in old_record.items() if k != 'references'}
+selected = {record['id']} | {x['id'] for k in ['taxa', 'participants', 'reactions'] for x in record[k]}
+assert len(selected) == 123
+verification = read(SOURCE / 'final-verification.json')
+assert verification['result'] == 'pass'
+assert verification['selected_ontology_projection']['all_selected_terms_and_source_owners_equal_union']
+assert verification['selected_ontology_projection']['count'] == 37
+base = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+assert base == '46ee133770039e8b21d1563166dec50eecd2c411'
+promotions = []
+added = set()
+for x in verification['promotable_files']:
+    source = Path(x['path'])
+    relative = source.relative_to(SOURCE)
+    target = ROOT / relative
+    before = target.read_bytes()
+    assert before == subprocess.check_output(['git', 'show', base + ':' + str(relative)], cwd=ROOT)
+    after = source.read_bytes()
+    assert sha(after) == x['sha256'] and len(after) == x['bytes']
+    old, new = json.loads(before), json.loads(after)
+    if str(relative) == 'conf/identifier_sources.json':
+        assert len(old) == 1205 and len(new) == 1275 and new[:len(old)] == old
+        assert len({r['key'] for r in new}) == len(new)
+    else:
+        for section in ['terms', 'sources']:
+            assert all(new[section].get(k) == v for k, v in old[section].items())
+        new_ids = set(new['terms']) - set(old['terms'])
+        assert new_ids <= selected
+        added |= new_ids
+    promotions.append({'path': str(relative), 'before_sha256': sha(before), 'after_sha256': sha(after)})
+assert len(promotions) == 3 and len(added) == 77
+assert (ROOT / 'conf/identifier_policy.yaml').read_bytes() == (SOURCE / 'conf/identifier_policy.yaml').read_bytes()
+
+assert not DEST.exists()
+DEST.mkdir()
+retained = []
+for x in compact:
+    p = DEST / x['path']
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_bytes((SOURCE / 'compact-retained' / x['path']).read_bytes())
+    retained.append({**x, 'repository_path': str(p.relative_to(ROOT))})
+(DEST / 'source-package-artifact-manifest.json').write_bytes(manifest_raw)
+(DEST / 'source-compact-retention-manifest.json').write_bytes(compact_raw)
+for x in promotions:
+    (ROOT / x['path']).write_bytes((SOURCE / x['path']).read_bytes())
+errors = identifier_errors(ROOT)
+receipt = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Root exact authority promotion and corrected-record consumer rebind',
+    'frozen_package_manifest_sha256': sha(manifest_raw),
+    'owned_package_files_verified': 126,
+    'original_stored_pairs_verified': 104,
+    'ignored_and_hidden_included': True,
+    'external_source_cache_scope': manifest['excluded_scope'],
+    'authority_builder_input_sha256': verification['actual_record']['sha256'],
+    'corrected_maintained_record_sha256': sha(record_raw),
+    'rebind_reason': 'Issue 568 changes one reference source_version phrase only; selected nodes, labels, graph and authority snapshots are unchanged.',
+    'old_terms_and_owners_preserved': True,
+    'new_selected_terms': sorted(added),
+    'promoted_files': promotions,
+    'actual_maintained_corpus_identifier_errors': errors,
+    'actual_maintained_corpus_records': 260,
+    'retained': retained,
+    'remaining': ['Full repository gates', 'Independent final reviews', 'Generated graph inspection'],
+}
+(DEST / 'root-promotion-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+(DEST / 'promote_authorities.py.txt').write_bytes(Path(__file__).read_bytes())
+(CI / 'authority-promotion-observation.json').write_text(json.dumps({k:v for k,v in receipt.items() if k != 'retained'}, indent=2) + '\n')
+assert not errors, errors
+print(json.dumps({'result': 'pass', 'selected_ids': 123, 'added_ids': 77,
+                  'record_sha256': sha(record_raw), 'promoted': promotions,
+                  'maintained_corpus_identifier_check': 'pass'}, indent=2))

@@ -1,0 +1,74 @@
+from pathlib import Path
+import json, hashlib, xml.etree.ElementTree as E, ast, sys, re, difflib, itertools
+P=Path(sys.argv[1]) if len(sys.argv)>1 else Path('/private/tmp/pathwaymech-next-263-biological-identity')
+O=P/'originals';N=Path('/private/tmp/pathwaymech-next-263-native');sha=lambda b:hashlib.sha256(b).hexdigest()
+def read(n):return json.loads((P/n).read_text())
+def verify_binding(r):
+ p=Path(r['path']);b=p.read_bytes();assert sha(b)==r['sha256'],p
+ if 'bytes' in r:assert len(b)==r['bytes'],p
+idx=read('issuing-original-provenance-index.json')['originals'];actual={str(p) for p in O.rglob('*') if p.is_file()};assert actual=={r['original']['path'] for r in idx} and len(actual)==98
+for r in idx:verify_binding(r['original']);verify_binding(r['acquisition_receipt'])
+for r in read('external-frozen-source-dependencies.json')['files']:verify_binding(r)
+sel=read('native-biological-selection.json');objects={r['frame']:r for r in sel['native_biological_objects']};formal=sel['formal_activities'];ledger=read('biological-identity-decision-ledger.json');assert len(objects)==59 and len(formal)==20 and len({r['enzyme'] for r in formal})==19
+seen=set();relations=0
+for p in (N/'originals').glob('META-*.xml'):
+ for e in E.parse(p).getroot():
+  if e.tag in ['Protein','Gene'] and e.get('detail')=='full':seen.add(e.get('frameid'))
+assert seen==set(objects)
+for f,r in objects.items():
+ verify_binding(r['original']);e=next(x for x in E.parse(r['original']['path']).getroot() if x.get('frameid')==f and x.get('detail')=='full');assert e.tag==r['type'];assert [x.text for x in e.findall('common-name')]==r['names'];assert [x.text for x in e.findall('comment')]==r['comments']
+ for key,tag in [('species','species'),('genes','gene'),('products','product'),('component_of','component-of')]:assert [x.get('frameid') for x in e.findall(tag+'/*')]==r[key],(f,key)
+ assert [{'frame':x[0].get('frameid'),'coefficient':x.findtext('coefficient'),'native_xml':E.tostring(x,encoding='unicode')} for x in e.findall('component')]==r['components']
+ assert [{'database':x.findtext('dblink-db'),'id':x.findtext('dblink-oid'),'relationship':x.findtext('dblink-relationship')} for x in e.findall('dblink')]==r['xrefs']
+ for target in r['genes']+r['products']+[x['frame'] for x in r['components']]:assert target in objects;relations+=1
+for r in formal:
+ p=Path(r['activity_original']['path']);verify_binding(r['activity_original']);e=next(x for x in E.parse(p).getroot() if x.get('frameid')==r['activity']);assert e.find('enzyme/*').get('frameid')==r['enzyme'] and e.find('reaction/*').get('frameid')==r['reaction']
+assert {r['frame'] for r in ledger['object_dispositions']}==set(objects);assert {r['activity'] for r in ledger['formal_activity_dispositions']}=={r['activity'] for r in formal};assert len(ledger['parent_organism_dispositions'])==11
+native=E.parse(N/'originals/META-PWY-5417.xml').getroot();pathway=next(x for x in native if x.get('frameid')=='PWY-5417');assert [x.get('frameid') for x in pathway.findall('species/*')]==[r['native_organism'] for r in ledger['parent_organism_dispositions']]
+for r in ledger['parent_organism_dispositions']:
+ e=next(x for x in E.parse(r['source']['path']).getroot() if x.get('frameid')==r['native_organism']);ids=[x.findtext('dblink-oid') for x in e.findall('dblink') if x.findtext('dblink-db')=='NCBI-TAXONOMY-DB']
+ if ids:
+  issuer=r['issuer'];t=E.parse(issuer['source']['path']).getroot().find('Taxon');assert t.findtext('TaxId')==ids[0]==issuer['taxon_id'];assert t.findtext('Rank')==issuer['rank'] and t.findtext('ScientificName')==issuer['scientific_name']
+ else:assert r['issuer'] is None
+# Independent direct GB/EMBL full-sequence extraction; no fetch or writes.
+def sequence(p):
+ lines=p.read_text().splitlines();start=next(i for i,l in enumerate(lines) if l.startswith('SQ ' if p.suffix=='.embl' else 'ORIGIN'))
+ return ''.join(re.sub('[^A-Za-z]','',l) for l in lines[start+1:] if not l.startswith('//')).upper()
+code=dict(zip((''.join(x) for x in itertools.product('TCAG',repeat=3)),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'))
+def dna_for(seq,loc):
+ if loc.startswith('complement('):return dna_for(seq,loc[11:-1]).translate(str.maketrans('ACGT','TGCA'))[::-1]
+ if loc.startswith('join('):return ''.join(dna_for(seq,x) for x in loc[5:-1].split(','))
+ a,b=map(int,loc.replace('<','').replace('>','').split('..'));return seq[a-1:b]
+dep=read('deposited-cds-projection.final.json');assert dep['original_nucleotide_count']==9 and len(dep['cds_rows'])==45
+for r in dep['cds_rows']:
+ verify_binding(r['source']);p=Path(r['source']['path']);s=sequence(p);loc=r['location'];d=dna_for(s,loc);assert len(d)==r['nucleotide_length'];offset=int(r['qualifiers'].get('codon_start',['1'])[0])-1;d=d[offset:];a=''.join(code[d[i:i+3]] for i in range(0,len(d)-2,3)).removesuffix('*')
+ if r['table11_initiator_normalized']:assert d[:3] in ['GTG','TTG','CTG'];a='M'+a[1:]
+ assert a==r['deposited_translation']==r['translated_sequence'] and r['translation_exact'];assert '/protein_id="'+r['qualifiers']['protein_id'][0]+'"' in p.read_text()
+seq=read('sequence-cross-source-comparisons.final.json');pairs=seq['current_uniprot_to_first_deposited_protein_pairs'];assert len(pairs)==18
+for r in pairs:
+ us=json.loads(Path(r['uniprot_original']['path']).read_text())['sequence']['value'];ps=sequence(Path(r['protein_original']['path']));assert (us==ps)==r['exact_sequence'];recon=us
+ for f in sorted(r['annotated_sequence_conflicts'],key=lambda f:f['location']['start']['value'],reverse=True):
+  a=f['location']['start']['value']-1;b=f['location']['end']['value'];alt=f['alternativeSequence'];assert us[a:b]==alt['originalSequence'];recon=recon[:a]+alt['alternativeSequences'][0]+recon[b:]
+ assert recon==ps and r['issuer_conflict_reconstruction_matches']
+assert sum(r['exact_sequence'] for r in pairs)==16
+for r in seq['native_cloned_cds_to_current_uniprot']:
+ c=next(x for x in dep['cds_rows'] if x['qualifiers'].get('protein_id')==[r['deposited_protein']]);u=json.loads((O/f'UniProt-{r["uniprot"]}.json').read_text())['sequence']['value'];assert (c['translated_sequence']==u)==r['exact_sequence'];assert sha(u.encode())==r['current_sequence_sha256']
+extra=read('additional-exact-identity-bindings.json')['six_additional_NCBI_proteins'];assert len(extra)==6
+for r in extra:assert sha(sequence(Path(r['original']['path'])).encode())==r['sequence_sha256'] and r['exact_sequence_equal']
+# Parse actual mmCIF with the frozen parser definitions, then compare each field to separately retrieved JSON views.
+module=ast.parse((P/'helpers/project_structures.py.txt').read_text());defs=[]
+for node in module.body:
+ if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='rows' for t in node.targets):break
+ defs.append(node)
+ns={};exec(compile(ast.Module(body=defs,type_ignores=[]),'<CIF-parser-definitions>','exec'),ns);cifparse=ns['cif_parse'];structures=read('issuing-structure-projection.json')['structures'];assert len(structures)==6
+for r in structures:
+ k=r['pdb'];c=cifparse(O/f'PDB-{k}.cif');pol=json.loads((O/f'PDB-{k}-polymer1.json').read_text());ass=json.loads((O/f'PDB-{k}-assembly1.json').read_text());s=c['_entity_poly'][0]['values']['_entity_poly.pdbx_seq_one_letter_code_can'].replace('\n','');assert s==pol['entity_poly']['pdbx_seq_one_letter_code_can'].replace('\n','')==r['polymer_sequence'];assert int(c['_pdbx_struct_assembly'][0]['values']['_pdbx_struct_assembly.oligomeric_count'])==ass['pdbx_struct_assembly']['oligomeric_count']==r['assembly']['oligomeric_count']
+ for name,value in r['cif_context_tables'].items():assert value==c.get(name,[])
+ assert r['canonical_sequence_equal']==(s==json.loads((O/f'UniProt-{r["mapped_uniprot"]}.json').read_text())['sequence']['value'])
+a={r['pdb']:r for r in structures};base=a['1MUC']['polymer_sequence'];assert a['2MUC']['polymer_sequence']==base[:328]+'I'+base[329:];assert a['3MUC']['polymer_sequence']==(base[:53]+'V'+base[54:])[3:-1]
+assert [a[k]['assembly']['oligomeric_count'] for k in ['1MUC','2MUC','3MUC','1MLI','2AZQ','7VTR']]==[8,8,8,10,2,4]
+identity=read('issuing-identity-projection.json');assert len(identity['uniprot'])==21 and len(identity['taxonomy'])==16 and len(identity['gene_statuses'])==5
+assert {r['gene_id'] for r in identity['gene_statuses'] if r['status_attribute']=='discontinued'}=={'1042540','3610096','57646078','57646079'}
+assert json.loads((O/'UniProt-Q9AEQ0.json').read_text())['inactiveReason']['inactiveReasonType']=='DELETED';assert 'sequence' not in json.loads((O/'UniProt-Q9AEQ0.json').read_text())
+assert len(read('native-conflict-identity-dispositions.json')['rows'])==18 and len(read('issuing-original-usage-ledger.json')['originals'])==98
+print(json.dumps({'result':'pass','role':'Source-author self-check, not independent scientific review.','read_only':True,'network_requests':0,'counts':ledger['counts'],'native_direct_gene_product_component_relations':relations,'current_protein_pairs':18,'current_pairs_exact':16,'nonexact_pairs_explained_by_issuer_conflicts':2,'additional_protein_pairs_exact':6,'cloned_CDS_comparisons':len(seq['native_cloned_cds_to_current_uniprot']),'all_CDS_translations_reproduced':45,'PDB_sequences_assemblies_CIF_metadata_replayed':6,'hidden_ignored_original_inventory_checked':True,'native_source_manifest':sha((N/'artifact-manifest.json').read_bytes())},indent=2))

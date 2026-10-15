@@ -1,0 +1,29 @@
+import datetime,gzip,hashlib,json,pathlib,sys
+R=pathlib.Path('/private/tmp/pathwaymech-next-263-20261014');B=R/'research/pathway_additions/2026-10-14-next-263';O=pathlib.Path('/private/tmp/pathwaymech-next-263-review-completion')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def bind(p):return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+receipts=json.loads((B/'verification/full-gates/successful-receipts.json').read_text())['receipts'];commands=[]
+for row in receipts:
+ assert row['exit_code']==0;p=pathlib.Path(row['log_path']);assert sha(p)==row['log_sha256'];group='initial' if 'checks-initial' in str(p) else 'recovered';stored=B/'verification/full-gates'/group/(p.name+'.gz');assert gzip.decompress(stored.read_bytes())==p.read_bytes();commands.append({'command':row['command'],'exit_code':0,'log':bind(p),'retained_log':bind(stored)})
+failed=json.loads((B/'verification/full-gates/initial/receipts.json').read_text());f=[x for x in failed if x['command']==['just','test']];assert len(f)==1 and f[0]['exit_code']==1;fp=pathlib.Path(f[0]['log_path']);assert sha(fp)==f[0]['log_sha256'];assert gzip.decompress((B/'verification/full-gates/initial/just-test.log.gz').read_bytes())==fp.read_bytes();assert '102 failed, 4975 passed, 3 skipped' in fp.read_text() and '178 errors' in fp.read_text();test=pathlib.Path([x['log_path'] for x in receipts if x['command']==['just','test']][0]);assert '5255 passed, 3 skipped, 7 warnings' in test.read_text() and '793.34s' in test.read_text()
+initial=json.loads((B/'verification/full-gates/initial/tested-core-input-hashes.json').read_text());recovered=json.loads((B/'verification/full-gates/recovered/tested-core-input-hashes.json').read_text());assert len(initial)==2972 and len(recovered)==3178
+readme=str((B/'README.md').relative_to(R));oldadipate=str((B/'source-evidence/context-chemistry/originals/META-ADIPATE.xml').relative_to(R));old_diffs=[];new_diffs=[]
+for p,h in initial.items():
+ current=R/p
+ if not current.is_file() or sha(current)!=h:old_diffs.append(p)
+for p,h in recovered.items():
+ current=R/p
+ if not current.is_file() or sha(current)!=h:new_diffs.append(p)
+assert set(old_diffs)=={readme,oldadipate};assert new_diffs==[readme]
+adipate=gzip.decompress((R/(oldadipate+'.gz')).read_bytes());assert hashlib.sha256(adipate).hexdigest()==initial[oldadipate]=='309935e81d0cfb42fd4cc2fbb5d51cba6980bb812f9183634abda58ea79c4466'
+preparation=json.loads(pathlib.Path('/private/tmp/pathwaymech-next-263-ci/completed-verification-preparation.json').read_text());assert preparation['post_gate_changed_tested_inputs'][readme]['before']==recovered[readme] and preparation['post_gate_changed_tested_inputs'][readme]['after']==sha(R/readme)
+preserve=json.loads((B/'verification/full-gates/recovered/final-input-preservation.json').read_text());runtime=[]
+for p,h in preserve['critical_environment_files_unchanged'].items():assert sha(pathlib.Path(p))==h;runtime.append({'path':p,'sha256':h})
+browser=json.loads((B/'verification/browser/browser-cdp-result.json').read_text());assert not browser['runtime_errors'];assert sha(pathlib.Path(browser['page']))==browser['page_sha256'];captures=[]
+for cap in browser['captures']:
+ p=B/'verification/browser'/pathlib.Path(cap['path']).name;assert sha(p)==cap['sha256'];captures.append(bind(p))
+kgx=json.loads((B/'verification/kgx-export-receipt.json').read_text());assert kgx['exit_code']==0;assert sha(pathlib.Path(kgx['log_path']))==kgx['log_sha256'];exports=[]
+for x in kgx['outputs']:
+ p=pathlib.Path(x['path']);page=R/'pages/downloads'/p.name;assert sha(p)==sha(page)==x['sha256'];assert p.stat().st_size==x['bytes'];exports.append({'external':bind(p),'retained_download':bind(page)})
+assert sha(R/'data/pathways/catechol-degradation-iii.yaml')=='b30573a380b358a9b0228f8e3e2689943ecf828aa01ae790f281ba3fe617e603'
+out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'executable':sys.executable,'commands':commands,'initial_failed_test':f[0],'initial_tested_inputs':2972,'recovered_tested_inputs':3178,'initial_current_differences':old_diffs,'recovered_current_differences':new_diffs,'delta_disposition':'One exact lossless ADIPATE storage relocation and one bounded post-suite README status change; all other original and recovered inputs remain exact. Added proofs/report/history were not claimed as prior suite inputs.','critical_runtime_files':runtime,'browser_captures':captures,'visual_assessment':'Reviewer viewed both exact retained screenshots. Controls, legend and graph render in desktop and mobile; fit-width labels are dense and require zoom or node selection. No claim of independent live-browser interactions.','KGX_export_equality':exports,'target_unchanged':True,'initial_failure_scope':'The shared environment lost files; deletion actor remains unknown. Exact failed observations are retained, including two traces whose initial cause is not established. Successful full rerun does not redefine those failures.'};(O/'completed-production-bindings.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n');print(json.dumps({'successful_commands':len(commands),'initial_failures_retained':True,'recovered_inputs_checked':len(recovered),'runtime_files_checked':len(runtime),'production_bindings':'pass'}))

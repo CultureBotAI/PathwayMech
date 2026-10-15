@@ -1,0 +1,22 @@
+from pathlib import Path
+import json,xml.etree.ElementTree as E,hashlib,re,html,urllib.parse,collections
+O=Path('/private/tmp/pathwaymech-next-263-native');objs={}
+for p in (O/'originals').glob('*.xml'):
+ f=p.stem[5:];x=next(z for z in E.parse(p).getroot() if z.get('frameid')==f and z.get('detail')=='full');objs[f]=(x,p)
+chem=[];bio=[];cache=json.loads((O/'verified-predecessor-index.json').read_text())
+kinetic={'alternative-substrate','km','kcat','specific-activity','ki','cofactor','prosthetic-group','cofactor-binding-comment','comment'}
+for f,(x,p) in objs.items():
+ if x.tag not in ['Protein','Gene','Enzymatic-Reaction','Regulation']:continue
+ counts=collections.Counter()
+ for s in x:
+  counts[s.tag]+=1;loc=f'/ptools-xml/{x.tag}[@frameid="{f}"]/{s.tag}[{counts[s.tag]}]'
+  if s.tag not in kinetic:continue
+  for z in s.iter('Compound'):
+   if z.get('frameid'):chem.append({'source':f,'locator':loc,'target':z.get('frameid'),'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'role':'Exact native kinetic/alternate-substrate/cofactor compound context; no normalized authority identity inferred.'})
+  if s.tag in ['comment','cofactor-binding-comment']:
+   for url in re.findall('href="([^"]+)"',s.text or ''):
+    u=urllib.parse.urlparse(html.unescape(url));q=urllib.parse.parse_qs(u.query);t=(q.get('id') or q.get('object') or [None])[0]
+    if not t:continue
+    if u.path=='/compound' or t.startswith(('CPD-','CPD0-')) or any(v['class']=='Compound' for v in cache.get(t,[])):chem.append({'source':f,'locator':loc,'target':t,'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'role':'Native prose chemical contrast retained, not a structured activity assertion.'})
+    if t in ['MONOMER-14437','G-107719','G-107720'] or t.startswith(('TAX-','ORG-')):bio.append({'source':f,'locator':loc,'target':t,'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'role':'Prose biological/preparation or name-conflict context. Exact native organism only, no experimental whole-route inference.'})
+rows=chem+bio;missing=sorted({r['target'] for r in rows}-set(objs));(O/'material-and-prose-expansion.json').write_text(json.dumps({'missing':missing,'chemical_rows':chem,'biological_rows':bio,'scope':'Finite selected biological source comments/kinetic fields only; no generic chemical or taxonomy global incidence expansion.'},indent=2)+'\n');print(json.dumps({'missing':missing,'chem_rows':len(chem),'bio_rows':len(bio)},indent=2))

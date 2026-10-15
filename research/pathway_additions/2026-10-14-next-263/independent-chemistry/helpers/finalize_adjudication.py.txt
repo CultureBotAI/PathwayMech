@@ -1,0 +1,77 @@
+import csv
+import datetime
+import gzip
+import hashlib
+import json
+import pathlib
+import subprocess
+import xml.etree.ElementTree as ET
+
+OUT=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-chemistry')
+CHEM=pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry')
+NATIVE=pathlib.Path('/private/tmp/pathwaymech-next-263-native')
+REPO=pathlib.Path('/private/tmp/pathwaymech-next-263-20261014')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':sha(b),'bytes':len(b)}
+def write(rel,obj):(OUT/rel).write_text(json.dumps(obj,indent=2,sort_keys=True)+'\n')
+
+route=json.loads((OUT/'checks/independent-route.json').read_text())
+structures=json.loads((OUT/'checks/independent-structures.json').read_text())
+assert len(route['reactions'])==6 and len(structures['chemicals'])==13
+assert json.loads((OUT/'checks/route-run-1.json').read_text())['exit_code']==0
+assert json.loads((OUT/'checks/structures-run-1.json').read_text())['exit_code']==1
+assert json.loads((OUT/'checks/structures-run-2.json').read_text())['exit_code']==0
+
+native_manifest=NATIVE/'artifact-manifest.json'
+assert sha(native_manifest.read_bytes())=='302c4e494f3bfc92f4062e223f5bf7316451e29bc1e4ca52e97b32d70671abcc'
+inventory=json.loads(native_manifest.read_text())['files']
+actual={p.relative_to(NATIVE).as_posix() for p in NATIVE.rglob('*') if p.is_file()}
+assert actual=={r['path'] for r in inventory}|{'artifact-manifest.json'}
+for row in inventory:
+ b=(NATIVE/row['path']).read_bytes();assert sha(b)==row['sha256'] and len(b)==row['bytes']
+cross=[]
+for p in sorted((CHEM/'originals').glob('META-*.xml')):
+ q=NATIVE/'originals'/p.name
+ assert p.read_bytes()==q.read_bytes()
+ cross.append({'chemistry':bind(p),'native':bind(q),'byte_equal':True})
+assert len(cross)==22
+write('checks/native-original-binding.json',{'native_manifest':bind(native_manifest),'full_native_inventory_verified':len(inventory),'inventory_includes_hidden_ignored':True,'relevant_originals':cross})
+
+compact=json.loads((CHEM/'compact-retention-manifest.json').read_text())
+for row in compact['files']:
+ b=(CHEM/row['path']).read_bytes();assert sha(b)==row['sha256'] and len(b)==row['bytes']
+ decoded=gzip.decompress(b) if row['encoding']=='gzip' else b
+ assert sha(decoded)==row['decoded_sha256'] and len(decoded)==row['decoded_bytes']
+ assert decoded==(CHEM/row['source']).read_bytes()
+write('checks/chemical-compact-binding.json',{'manifest':bind(CHEM/'compact-retention-manifest.json'),'lossless_pairs_verified':len(compact['files'])})
+
+directions=list(csv.DictReader((CHEM/'originals/rhea-directions.tsv').open(),delimiter='\t'))
+selected={r['rhea_directional_accession'].split(':')[1] for r in route['reactions']}
+chosen=[r for r in directions if set(r.values())&selected]
+assert len(chosen)==6
+wanted={'http://rdf.rhea-db.org/'+v for r in chosen for v in r.values()}
+rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';parts=[];masters={}
+for _,e in ET.iterparse(gzip.open(CHEM/'originals/rhea.rdf.gz'),events=('end',)):
+ if e.tag!=rdf+'Description':continue
+ if e.get(rdf+'about') in wanted:
+  parts.append(ET.tostring(e,encoding='unicode'))
+  vals={}
+  for x in e: vals.setdefault(x.tag.split('}')[-1],[]).append(x.get(rdf+'resource',x.text or ''))
+  if 'http://rdf.rhea-db.org/Reaction' in vals.get('subClassOf',[]):masters[e.get(rdf+'about')]=vals
+ e.clear()
+assert len(masters)==6
+assert all(m['status']==['http://rdf.rhea-db.org/Approved'] and m['isChemicallyBalanced']==['true'] for m in masters.values())
+(OUT/'sources/rhea-family-original-elements.xml').write_text('<independent-source-projection>\n'+''.join(parts)+'</independent-source-projection>\n')
+write('checks/rhea-family-directions.json',{'directions_original':bind(CHEM/'originals/rhea-directions.tsv'),'rdf_original':bind(CHEM/'originals/rhea.rdf.gz'),'families':chosen,'selected_family_status':masters,'scope':'Six issuing families and all four directional/bidirectional IDs read from exact issuing TSV and original RDF. Element projection serialization preserves element contents, not original raw XML whitespace bytes.'})
+
+docs=['.claude/skills/add-pathway/SKILL.md','.claude/skills/review-yaml-record/SKILL.md','CLAUDE.md','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md']
+base=subprocess.run(['git','rev-parse','HEAD'],cwd=REPO,capture_output=True,text=True,check=True).stdout.strip()
+assert base=='46ee133770039e8b21d1563166dec50eecd2c411'
+write('checks/context-bindings.json',{'repository':str(REPO),'post262_base':base,'rubrics':[bind(REPO/f) for f in docs],'scope':'Chemical-source adjudication before maintained curation. No corpus duplicate conclusion, final record review, pipeline test result, identifier-promotion approval, enzyme/preparation/organism or regulator verdict.'})
+
+# Preserve exploratory failures and the successful supported environment choice.
+write('checks/environment-resolution.json',{'recorded_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'failed_full_rdkit_import':{'interpreter':'/private/tmp/npmech-rdkit-2026.03.5/bin/python','error':'ModuleNotFoundError: rdkit.RDPaths','exit_code':1},'resolution':{'RDBASE':'/private/tmp/npmech-rdkit-2026.03.5/share/RDKit','mechanism':'Installed RDConfig.py supports explicit RDBASE and existing Data directory. No source/package module changed.','rdkit':'2026.03.5','author_version':'2025.03.6','independent_structure_replay_exit_code':0},'exploratory_iterparse_error':{'error':"ValueError: unknown event 'e'",'cause':"A string 'end' was supplied instead of tuple ('end',) in an exploratory structure display command.",'disposition':'Corrected display probe; no scientific result counted from the failed invocation.'}})
+
+write('adjudication.json',{'started_utc':route['started_utc'],'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'reviewer':'/root/next263_chemistry_review','independence':'Did not author chemical or native packages. Independently reconstructed from complete original sources using new helper code.','kind':'bounded_source_adjudication_not_canonical_record_review','candidate':'MetaCyc:PWY-5417','verdict':'accepted_with_explicit_source_limits','findings_requiring_source_or_curated_fix':[],'accepted_reaction_mappings':[{'native':r['native_reaction'],'rhea':r['rhea_directional_accession'],'source_relative_direction':r['pathway_direction'],'equation':r['rhea_equation']} for r in route['reactions']],'accepted_chemical_mappings':[{'native':r['native'],'chebi':r['chebi']} for r in structures['chemicals']],'coverage':{'formal_chemicals':13,'complete_directional_equations':6,'material_side_entries':21,'explicit_primary_material_joins':5,'complete_kegg_mol_structures':9,'complete_kegg_equations':4,'byte_identical_native_and_chemical_originals':22},'net':route['net'],'source_boundaries':[{'key':'stereospecific_muconolactone','disposition':'CPD-15124 and CHEBI58736 are the S five-membered lactone. CHEBI58425 is the downstream enol-lactone lacking that chiral center; the equal formula does not establish identity.'},{'key':'kegg_broader_cross_reference','disposition':'Native R03959 points to KEGG C04105 with unspecified stereo. Preserve as broader source cross-reference, never exact S identity. KEGG R06989/C14610 retains S stereo after explicitly recorded neutral-to-anion normalization.'},{'key':'source_direction_scope','disposition':'Native cycloisomerase and thiolase layouts are R2L; native transferase and thiolase are globally REVERSIBLE. Selected Rhea directional equations display route flow. Retain these separate semantics.'},{'key':'native_smiles_limits','disposition':'cis,cis-muconate,3-oxoadipate and3-oxoadipoyl-CoA native CML SMILES contain [R] placeholders. Their complete CML structures and exact full InChIs support identity; generic SMILES alone do not.'},{'key':'explicit_source_protonation','disposition':'Native and ChEBI formal formulas/charges match. Nine KEGG MOL files are neutral; eight stereospecific counterparts match after controlled acidic-O deprotonation. This is chemical normalization, not measured pH/speciation.'},{'key':'carrier_and_net','disposition':'Succinyl-CoA appears in two opposite steps and cancels; net products are succinate and acetyl-CoA. The sum is bookkeeping, not a new elementary reaction or experimental flux claim.'},{'key':'whole_rhea_scan_scope','disposition':'326097 RDF descriptions parsed;37068 fixed-integer directional equations compared;154 symbolic/polymer equations excluded explicitly. Uniqueness is finite exact CHEBI/stoichiometry matching, not universal reaction equivalence.'}],'replay_implementation_observations':[{'key':'water_explicit_hydrogen','disposition':'First structure run failed on explicit native H versus implicit issuing H. Both H2O formula/charge agreed. Corrected canonicalization removes explicit H symmetrically; failed helper and log retained.'},{'key':'rdkit_version','disposition':'Independent2026.03.5 reproduces author2025.03.6 chemical conclusions; newer toolkit configuration documented.'}],'excluded_review_domains':['Protein/enzyme/taxon/regulator identities and primary assay evidence','Pinned multi-GB authority SQL snapshots and corpus authority promotion','Maintained record completeness, edge evidence placement, generated pages/KGX and full software gates','Final post-merge duplicate or absence decision'],'unverified_primary_lead':{'path':'/private/tmp/pathwaymech-next-263-chemistry-successor-context.json','disposition':'Read as unverified assay/regulator lead. Does not enter this formal six-reaction chemical approval.'},'proofs':[bind(OUT/p) for p in ['checks/independent-route.json','checks/independent-structures.json','checks/native-original-binding.json','checks/chemical-compact-binding.json','checks/rhea-family-directions.json','checks/context-bindings.json']]})
+print(json.dumps({'verdict':'accepted_with_explicit_source_limits','native_files':len(inventory),'chemical_compact_pairs':len(compact['files']),'source_family_count':len(masters),'post262_base':base},indent=2))

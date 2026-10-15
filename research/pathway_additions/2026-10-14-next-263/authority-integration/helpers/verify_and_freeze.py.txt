@@ -1,0 +1,229 @@
+"""Verify the exact selected union and freeze a finite, inert evidence package."""
+from pathlib import Path
+import collections
+import datetime
+import gzip
+import hashlib
+import json
+import subprocess
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-authority-integration')
+AUTHOR = Path('/private/tmp/pathwaymech-next-263-authority-author')
+PRELIMINARY = Path('/private/tmp/pathwaymech-next-263-authority-preliminary-1')
+REPO = Path('/private/tmp/pathwaymech-next-263-20261014')
+RECORD_AUTHOR = Path('/private/tmp/pathwaymech-next-263-record-author')
+EXPECTED_RECORD = '0ad615b268d0f63ff253287401b4a978d4c7d1603157717e7e57eab5e1816ec6'
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def read(path):
+    return json.loads(path.read_text())
+
+
+def bind(path):
+    raw = path.read_bytes()
+    return {'path': str(path), 'bytes': len(raw), 'sha256': sha(raw)}
+
+
+def emit(path, value):
+    assert not path.exists(), path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+
+def main():
+    selection = read(ROOT / 'selection.json')
+    raw = (ROOT / 'record-observation.yaml').read_bytes()
+    assert sha(raw) == EXPECTED_RECORD
+    assert (RECORD_AUTHOR / 'drafts/catechol-degradation-iii.yaml').read_bytes() == raw
+    selected_list = read(RECORD_AUTHOR / 'drafts/selected-identifiers.json')
+    assert selected_list['record_sha256'] == EXPECTED_RECORD
+    selected = set(selection['selected_ids'])
+    assert selected == {node['id'] for node in selected_list['nodes']}
+    record = yaml.safe_load(raw)
+    assert selected == {record['id']} | {
+        row['id'] for field in ('taxa', 'participants', 'reactions', 'gene_clusters')
+        for row in record.get(field, [])
+    }
+    assert len(selected) == 123
+    baseline_sources = read(AUTHOR / 'baseline/data/identifier_authorities/sources.json')
+    baseline_ontology = read(AUTHOR / 'baseline/data/identifier_authorities/ontology.json')
+    baseline_manifest = read(AUTHOR / 'baseline/conf/identifier_sources.json')
+    sources = read(ROOT / 'data/identifier_authorities/sources.json')
+    ontology = read(ROOT / 'data/identifier_authorities/ontology.json')
+    manifest = read(ROOT / 'conf/identifier_sources.json')
+    baseline_ids = set(baseline_sources['terms']) | set(baseline_ontology['terms'])
+    union_ids = set(sources['terms']) | set(ontology['terms'])
+    assert not set(sources['terms']) & set(ontology['terms'])
+    assert union_ids - baseline_ids == selected - baseline_ids == set(selection['new_ids'])
+    assert len(union_ids - baseline_ids) == 77
+    preserved = []
+    for name, old, new in (('sources', baseline_sources, sources), ('ontology', baseline_ontology, ontology)):
+        for field in ('terms', 'sources'):
+            assert all(new[field].get(key) == value for key, value in old[field].items())
+            preserved.append({'snapshot': name, 'field': field, 'rows': len(old[field]), 'all_old_rows_exact': True})
+    assert manifest[:len(baseline_manifest)] == baseline_manifest
+    assert len(manifest) - len(baseline_manifest) == 70
+    assert len({row['key'] for row in manifest}) == len(manifest)
+    preliminary = read(PRELIMINARY / 'selection.json')
+    assert selection['new_ids'] == preliminary['new_ids']
+    assert selected - set(preliminary['selected_ids']) == {'CHEBI:16810', 'CHEBI:17128'}
+    assert set(preliminary['selected_ids']) <= selected
+    for relative in ('conf/identifier_sources.json', 'data/identifier_authorities/sources.json', 'data/identifier_authorities/ontology.json'):
+        assert (ROOT / relative).read_bytes() == (PRELIMINARY / relative).read_bytes()
+    accounting = read(ROOT / 'preservation-accounting.json')
+    assert accounting['result'] == 'pass' and accounting['canonical_source_builder_replayed'] is True
+    assert read(ROOT / 'identifier-consumer-receipt.json')['errors'] == []
+    for row in read(AUTHOR / 'receipts/baseline-and-package-intake.json')['baseline_files']:
+        assert sha(Path(row['source_path']).read_bytes()) == row['sha256']
+        assert sha(Path(row['path']).read_bytes()) == row['sha256']
+    cli = read(ROOT / 'receipts/ontology-canonical-cli.json')
+    assert cli['exit_code'] == 0
+    replay = read(ROOT / 'ontology-replay/selected-ontology.snapshot.json')
+    ontology_selected = {identifier for identifier in selected if identifier in ontology['terms']}
+    assert len(ontology_selected) == 37
+    assert set(replay['terms']) == ontology_selected
+    assert replay['terms'] == {identifier: ontology['terms'][identifier] for identifier in ontology_selected}
+    owners = {row['source'] for row in replay['terms'].values()}
+    assert set(replay['sources']) == owners
+    assert replay['sources'] == {owner: ontology['sources'][owner] for owner in owners}
+    updates = read(AUTHOR / 'baseline/conf/rhea_identifier_updates.json')
+    assert not ontology_selected & set(updates['ids'])
+    new_ontology = set(ontology['terms']) - set(baseline_ontology['terms'])
+    assert new_ontology == {'CHEBI:149587', 'CHEBI:57712', 'NCBITaxon:358', 'NCBITaxon:384', 'NCBITaxon:386', 'NCBITaxon:5554', 'NCBITaxon:65741'}
+    source_lookup = read(AUTHOR / 'candidate-lookup.final.json')['candidates']
+    new_sources = set(sources['terms']) - set(baseline_sources['terms'])
+    original_bindings = []
+    for identifier in sorted(new_sources):
+        row = source_lookup[identifier]
+        path = Path(row['original']['path'])
+        assert sha(path.read_bytes()) == row['original']['sha256'] == row['source_manifest_entry']['sha256']
+        assert sources['terms'][identifier] == row['term']
+        original_bindings.append({'identifier': identifier, 'source_key': row['term']['source'], **bind(path)})
+    assert len(original_bindings) == 70
+    summary = {
+        'result': 'pass',
+        'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'role': 'Authority integration source-author, not an independent scientific review.',
+        'actual_record': bind(ROOT / 'record-observation.yaml'),
+        'author_selected_identifier_list': bind(RECORD_AUTHOR / 'drafts/selected-identifiers.json'),
+        'selected_identifier_count': len(selected),
+        'new_identifier_count': len(selection['new_ids']),
+        'new_source_terms_and_manifest_rows': len(new_sources),
+        'new_ontology_terms': sorted(new_ontology),
+        'selected_ontology_projection': {
+            'identifiers': sorted(ontology_selected),
+            'count': len(ontology_selected),
+            'namespace_counts': dict(collections.Counter(identifier.split(':')[0] for identifier in ontology_selected)),
+            'canonical_cli_replayed': True,
+            'all_selected_terms_and_source_owners_equal_union': True,
+            'complete_databases_rehashed_by_unmodified_cli': True,
+            'current_rhea_update_manifest_intersection': [],
+            'full_legacy_ontology_union_rebuilt': False,
+            'scope_reason': 'Canonical build_snapshot emits only its corpus selection and has no preservation mode. The exact draft selects three pinned owners; none of its six Rhea IDs uses the current override manifest. Passing the complete override manifest would fail its selected-ID subset requirement. Existing GO and Rhea-RDF owners and every unselected old term are retained verbatim, without attempting migration or a global refresh.',
+        },
+        'all_prior_rows': preserved,
+        'old_manifest_prefix_exact': True,
+        'preliminary_comparison': {
+            'selection_receipt': bind(PRELIMINARY / 'selection.json'),
+            'new_ids_exact': True,
+            'source_manifest_and_both_snapshot_bytes_exact': True,
+            'later_already_owned_endpoints': ['CHEBI:16810', 'CHEBI:17128'],
+        },
+        'final_counts': {'source_terms': len(sources['terms']), 'source_owners': len(sources['sources']), 'ontology_terms': len(ontology['terms']), 'ontology_owners': len(ontology['sources']), 'manifest_rows': len(manifest)},
+        'promotable_files': [bind(ROOT / relative) for relative in ('conf/identifier_sources.json', 'data/identifier_authorities/sources.json', 'data/identifier_authorities/ontology.json')],
+        'policy_bytes_unchanged': (ROOT / 'conf/identifier_policy.yaml').read_bytes() == (AUTHOR / 'baseline/conf/identifier_policy.yaml').read_bytes(),
+        'actual_draft_identifier_consumer': 'pass',
+        'selected_source_original_bindings': original_bindings,
+        'whole_corpus_gates': 'Root responsibility after maintained integration; not run in this bounded source-author package.',
+        'maintained_writes': False,
+    }
+    emit(ROOT / 'final-verification.json', summary)
+    handoff = '''# Next263 selected authority integration
+
+This external source-author successor binds the exact 123-identifier catechol degradation III draft, SHA-256 `0ad615b268d0f63ff253287401b4a978d4c7d1603157717e7e57eab5e1816ec6`. It is not a scientific review. No maintained files were written.
+
+Promote only `conf/identifier_sources.json`, `data/identifier_authorities/sources.json`, and `data/identifier_authorities/ontology.json`, whose exact hashes are in `final-verification.json`. The policy is an unchanged observation, not a proposed policy change. The two snapshots contain 5,249 terms: 3,091 source terms and 2,158 ontology terms. There are 1,094 source owners, five ontology owners, and 1,275 manifest rows.
+
+All 5,172 old terms, 1,029 old source-owner rows, and the 1,205-row manifest prefix are preserved exactly. The 77 additions comprise 70 source terms and seven ontology terms. The manifest and both snapshots are byte-identical to the preliminary-1 union; the later CHEBI:16810 and CHEBI:17128 endpoints already had owners. Selection, final draft, original bindings, and actual consumer results are retained separately so preliminary checks are not misrepresented as final checks.
+
+The frozen canonical source-union helper was run on the actual final draft and replayed the unchanged source builder against all old and selected source originals, including nested descriptors. The actual draft identifier consumer passed. The unchanged canonical ontology CLI separately read the exact final draft and rehashed all three complete pinned databases. Its complete output of 37 terms (22 ChEBI, nine taxa, six Rhea) and three owners exactly equals the corresponding union projection, including all seven additions.
+
+The ontology CLI result is deliberately a bounded final-draft projection. It does not rebuild the entire legacy union: the builder emits its selected terms and has no preservation mode. None of this draft's Rhea IDs intersects the current RDF override manifest, whose complete IDs would violate its subset-selection guard here. Every unselected old term and the existing GO and Rhea-RDF owners remain verbatim. No owner migration, ontology upgrade, policy change, scientific claim, or broader corpus validation is inferred from this check. Root performs the maintained corpus gates and independent review after integration.
+
+`compact-retention-manifest.json` lists a finite evidence package. Every stored row has an actual original path, original byte count and SHA-256, plus stored path, byte count, SHA-256 and encoding. Compression is deterministic and lossless; helpers are inert `.py.txt`, and YAML observations are archived as `.yaml.txt.gz`. The selected 70 source originals are included; the full older cache remains external, with all exact descriptors and original paths retained in preservation-accounting. Existing broader source-author packages remain frozen and separately bound. The compact archive is evidence, not an executable standalone source cache.
+
+Any changed record bytes or authority baseline require a new external successor and an actual consumer rerun. Do not overwrite this package or infer final scientific approval from it.
+'''
+    (ROOT / 'HANDOFF.md').write_text(handoff)
+    own_files = [path for path in ROOT.rglob('*') if path.is_file() and 'source-cache' not in path.relative_to(ROOT).parts and 'compact-retained' not in path.relative_to(ROOT).parts]
+    external_files = [
+        (AUTHOR / 'helpers/prepare_selected_authority_union.py.txt', 'frozen-inputs/prepare_selected_authority_union.py.txt'),
+        (AUTHOR / 'candidate-lookup.final.json', 'frozen-inputs/candidate-lookup.final.json.gz'),
+        (AUTHOR / 'artifact-manifest.json', 'frozen-inputs/authority-author-artifact-manifest.json.gz'),
+        (AUTHOR / 'receipts/pinned-database-complete-hashes.json', 'frozen-inputs/pinned-database-complete-hashes.json'),
+        (AUTHOR / 'receipts/baseline-and-package-intake.json', 'frozen-inputs/baseline-and-package-intake.json.gz'),
+        (AUTHOR / 'baseline/conf/rhea_identifier_updates.json', 'frozen-inputs/rhea_identifier_updates.json'),
+        (AUTHOR / 'baseline/data/identifier_authorities/sources.json', 'frozen-inputs/baseline-sources.json.gz'),
+        (AUTHOR / 'baseline/data/identifier_authorities/ontology.json', 'frozen-inputs/baseline-ontology.json.gz'),
+        (AUTHOR / 'baseline/conf/identifier_sources.json', 'frozen-inputs/baseline-identifier_sources.json.gz'),
+        (AUTHOR / 'baseline/scripts/build_source_identifier_snapshot.py', 'frozen-inputs/build_source_identifier_snapshot.py.txt'),
+        (AUTHOR / 'baseline/scripts/build_ontology_identifier_snapshot.py', 'frozen-inputs/build_ontology_identifier_snapshot.py.txt'),
+        (RECORD_AUTHOR / 'drafts/selected-identifiers.json', 'frozen-inputs/author-selected-identifiers.json'),
+        (PRELIMINARY / 'selection.json', 'frozen-inputs/preliminary-1-selection.json'),
+    ]
+    retain = []
+    for path in sorted(own_files):
+        relative = str(path.relative_to(ROOT))
+        if path.suffix == '.yaml':
+            relative += '.txt.gz'
+        elif path.suffix == '.log' or (path.suffix == '.json' and path.stat().st_size > 25000):
+            relative += '.gz'
+        retain.append((path, relative))
+    retain.extend(external_files)
+    for row in original_bindings:
+        path = Path(row['path'])
+        relative = 'selected-source-originals/' + path.name
+        if path.suffix.lower() in ('.xml', '.html'):
+            relative += '.gz'
+        retain.append((path, relative))
+    assert len({relative for _, relative in retain}) == len(retain)
+    compact = ROOT / 'compact-retained'
+    compact.mkdir()
+    rows = []
+    for original, relative in retain:
+        data = original.read_bytes()
+        encoding = 'gzip_lossless' if relative.endswith('.gz') else 'identity'
+        stored = gzip.compress(data, mtime=0) if encoding == 'gzip_lossless' else data
+        path = compact / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(stored)
+        assert (gzip.decompress(stored) if encoding == 'gzip_lossless' else stored) == data
+        rows.append({'original_path': str(original), 'original_bytes': len(data), 'original_sha256': sha(data), 'path': relative, 'bytes': len(stored), 'sha256': sha(stored), 'encoding': encoding})
+    assert all(path.suffix != '.py' for path in compact.rglob('*') if path.is_file())
+    assert {str(path.relative_to(compact)) for path in compact.rglob('*') if path.is_file()} == {row['path'] for row in rows}
+    whitespace = []
+    for row in rows:
+        path = compact / row['path']
+        result = subprocess.run(['git', 'diff', '--no-index', '--check', '--', '/dev/null', str(path)], capture_output=True, text=True, check=False)
+        assert result.returncode in (0, 1) and not result.stdout and not result.stderr, (str(path), result.stdout, result.stderr)
+        whitespace.append({'path': row['path'], 'exit_code': result.returncode})
+    manifest = {'version': 1, 'role': 'Finite lossless authority-integration evidence retention', 'files': rows, 'file_count': len(rows), 'stored_bytes': sum(row['bytes'] for row in rows), 'original_bytes': sum(row['original_bytes'] for row in rows), 'all_original_and_stored_hashes_verified': True, 'all_decoded_bytes_equal_original': True, 'inventory_includes_hidden_and_ignored_files': True, 'no_active_python_sources': True, 'whitespace_checks': whitespace}
+    emit(ROOT / 'compact-retention-manifest.json', manifest)
+    artifacts = []
+    for path in sorted(ROOT.rglob('*')):
+        if path.is_file() and 'source-cache' not in path.relative_to(ROOT).parts and path.name != 'artifact-manifest.json':
+            artifacts.append({'path': str(path.relative_to(ROOT)), 'bytes': path.stat().st_size, 'sha256': sha(path.read_bytes())})
+    emit(ROOT / 'artifact-manifest.json', {'version': 1, 'files': artifacts, 'excluded_scope': {'path': 'source-cache', 'reason': 'External symlink cache; complete source descriptor bindings preserved in preservation-accounting.json. Selected new originals retained in finite compact package.'}, 'file_count': len(artifacts), 'inventory_includes_hidden_and_ignored_files': True})
+    freeze = {'result': 'pass', 'package': str(ROOT), 'record_sha256': EXPECTED_RECORD, 'artifact_manifest': bind(ROOT / 'artifact-manifest.json'), 'handoff': bind(ROOT / 'HANDOFF.md'), 'verification': bind(ROOT / 'final-verification.json'), 'compact_retention_manifest': bind(ROOT / 'compact-retention-manifest.json'), 'compact_files': len(rows), 'compact_stored_bytes': manifest['stored_bytes'], 'promotable_files': summary['promotable_files'], 'maintained_writes': False}
+    emit(Path('/private/tmp/pathwaymech-next-263-authority-integration-freeze.json'), freeze)
+    print(json.dumps(freeze, indent=2))
+
+
+if __name__ == '__main__':
+    main()

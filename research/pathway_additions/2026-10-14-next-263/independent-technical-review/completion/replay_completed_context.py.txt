@@ -1,0 +1,111 @@
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import re
+import yaml
+
+W = Path('/private/tmp/pathwaymech-next-263-20261014')
+O = Path('/private/tmp/pathwaymech-next-263-independent-technical')
+R = W / 'research/pathway_additions/2026-10-14-next-263'
+H = lambda data: hashlib.sha256(data).hexdigest()
+bindings = {}
+
+def read(path):
+    path = Path(path)
+    data = path.read_bytes()
+    bindings[str(path)] = {'sha256': H(data), 'bytes': len(data)}
+    return data
+
+def obj(path):
+    return json.loads(read(path))
+
+inspection = obj(O / 'inspect.final-context.json')
+assert inspection['source']['git_revision'] == '46ee133770039e8b21d1563166dec50eecd2c411'
+for item in inspection['source']['inputs']:
+    assert H(read(W / item['path'])) == item['sha256'], item['path']
+target = W / 'data/pathways/catechol-degradation-iii.yaml'
+record = yaml.safe_load(read(target))
+assert H(read(target)) == 'b30573a380b358a9b0228f8e3e2689943ecf828aa01ae790f281ba3fe617e603'
+
+retention = obj(R / 'root-verification/completed-evidence-retention.json')
+assert len(retention['files']) == retention['count'] == 46
+for item in retention['files']:
+    source, stored = read(item['source']), read(W / item['retained'])
+    assert H(source) == item['source_sha256'] and len(source) == item['source_bytes']
+    assert H(stored) == item['retained_sha256'] and len(stored) == item['retained_bytes']
+    decoded = gzip.decompress(stored) if item['encoding'] == 'gzip_lossless' else stored
+    assert decoded == source, item['retained']
+
+packages = {}
+for part, count in [('integration', 31), ('output', 12), ('recovery', 14)]:
+    root = R / 'independent-technical-review' / part
+    external = O / (part + '-review-retention')
+    manifest = obj(root / 'artifact-manifest.json')
+    assert read(root / 'artifact-manifest.json') == read(external / 'artifact-manifest.json')
+    assert len(manifest['files']) == count
+    expected = {'artifact-manifest.json'}
+    for item in manifest['files']:
+        expected.add(item['path'])
+        data = read(root / item['path'])
+        assert data == read(external / item['path'])
+        assert H(data) == item['sha256'] and len(data) == item['bytes']
+        decoded = gzip.decompress(data) if item['encoding'] == 'gzip_lossless' else data
+        assert H(decoded) == item['original_sha256'] and len(decoded) == item['original_bytes']
+        assert decoded == read(item['original_path'])
+    assert {str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()} == expected
+    packages[part] = count
+
+inventory = obj(R / 'identifier-selection-final.json')
+expected_nodes = [{'id': record['id'], 'label': record['label'], 'kind': 'pathway'}]
+for key in ['taxa', 'participants', 'reactions']:
+    expected_nodes.extend(dict(n, kind=key) for n in record[key])
+assert inventory['selected_nodes'] == expected_nodes and len(expected_nodes) == 123
+assert inventory['references'] == record['references'] and len(record['references']) == 211
+assert inventory['record_sha256'] == H(read(target))
+
+wording = obj(R / 'root-verification/verification-wording-successor.json')
+stored = read(W / wording['prior_report_storage'])
+prior, report = gzip.decompress(stored), read(R / 'verification.md')
+assert H(stored) == wording['stored_sha256']
+assert H(prior) == wording['before_sha256']
+assert H(report) == wording['after_sha256'] == '746c877f07487182fa50965d841e577dbfa59ecdf2e1fe0305d1493fe22202f2'
+assert prior.count(wording['old_phrase'].encode()) == 1
+assert prior.replace(wording['old_phrase'].encode(), wording['new_phrase'].encode()) == report
+preparation = obj('/private/tmp/pathwaymech-next-263-ci/completed-verification-preparation.json')
+assert preparation['report_sha256'] == H(report)
+assert H(read(preparation['previous_preparation']['path'])) == preparation['previous_preparation']['sha256']
+history = yaml.safe_load(read(W / preparation['history_path']))
+assert H(read(W / preparation['history_path'])) == preparation['history_sha256']
+assert history['target']['path'] == str((R / 'verification.md').relative_to(W))
+assert '5255 passed, 3 skipped, 7 warnings' in history['events'][0]['details']
+
+links = []
+for title, href in re.findall(r'\[([^\]]+)\]\(([^)]+)\)', report.decode()):
+    if href.startswith(('http:', 'https:', '#')):
+        continue
+    path = (R / href.split('#', 1)[0]).resolve()
+    planned = path == (R / 'verification/canonical-review-persistence.json')
+    assert path.is_file() or planned, href
+    links.append({'label': title, 'relative': href, 'exists': path.is_file(), 'planned_canonical_save_receipt': planned})
+
+result = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'record_sha256': H(read(target)), 'report_sha256': H(report),
+    'canonical_inspected_inputs_rechecked': len(inspection['source']['inputs']),
+    'completed_root_retention_pairs': 46, 'independent_packages_rechecked': packages,
+    'current_identifier_nodes_exact': 123, 'current_reference_payloads_exact': 211,
+    'report_delta': 'Exactly one terminology correction: resolving reference fragments to resolving internal fragment links.',
+    'report_links': links,
+    'history_target_and_completed_gate_scope_verified': True,
+    'source_binding_count': len(bindings),
+    'limitations': [
+        'The report, current identifier inventory, its report history, proof additions and README status changes follow the successful suite; the independent completed-gate replay separately verifies the exact bounded README delta and all other tested inputs.',
+        'Canonical persistence is a later root-owned action. Its explicitly planned report link is not evidence that a review was already saved.',
+        'Local retained bytes and external source copies are checked here; this finalization is not a new remote-access or biological review.'
+    ], 'failures': []
+}
+(O / 'completed-context-replay.json').write_text(json.dumps(result, indent=2) + '\n')
+(O / 'completed-context-input-bindings.json').write_text(json.dumps(bindings, indent=2) + '\n')
+print(json.dumps(result, indent=2))

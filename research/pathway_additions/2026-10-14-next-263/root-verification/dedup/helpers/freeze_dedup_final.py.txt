@@ -1,0 +1,70 @@
+from pathlib import Path
+import datetime,gzip,hashlib,json,subprocess,shutil
+O=Path('/private/tmp/pathwaymech-next-263-ci/dedup-final'); sha=lambda b:hashlib.sha256(b).hexdigest();load=lambda p:json.loads(Path(p).read_bytes());now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat()
+assert not (O/'artifact-manifest.json').exists()
+B=[]
+def copy(src,rel,expected=None):
+ src=Path(src);b=src.read_bytes();h=sha(b)
+ if expected:assert h==expected
+ p=O/rel;p.parent.mkdir(parents=True,exist_ok=True);assert not p.exists();p.write_bytes(b)
+ B.append({'original_path':str(src),'original_sha256':h,'original_bytes':len(b),'stored_path':rel,'stored_sha256':sha(p.read_bytes()),'stored_bytes':p.stat().st_size,'encoding':'identity'})
+P=Path('/private/tmp/pathwaymech-next-263-primary');D=Path('/private/tmp/pathwaymech-next-263-discovery');C=Path('/private/tmp/pathwaymech-next-263-chemistry')
+for a in load(O/'alias-input-accounting.json')['aliases']:
+ m=a['metadata'];copy(P/m['path'],'primary-alias-inputs/'+m['path'],m['sha256'])
+copy(C/'whole-route-chemistry-replay.json','route-comparison-inputs/whole-route-chemistry-replay.json',load(O/'complete-corpus-and-boundary-rebind.json')['formal_source_proof_sha256'])
+copy(D/'native-connectivity-proof.json','route-comparison-inputs/native-connectivity-proof.json')
+for rel in ['originals/META-PWY-5417.xml','originals/META-CATECHOL-ORTHO-CLEAVAGE-PWY.xml','originals/META-PWY-2361.xml']:
+ copy(D/rel,'route-comparison-inputs/'+rel)
+for row in load(D/'native-connectivity-proof.json')['steps']:copy(D/row['source'],'route-comparison-inputs/'+row['source'],row['sha256'])
+copy('/private/tmp/pathwaymech-next-263-20261014/src/pathwaymech/kgx.py','route-comparison-inputs/kgx.py.txt',load(O/'helper-runtime-correction.json')['exporter']['sha256'])
+copy('/private/tmp/pathwaymech-next-263-ci/freeze_dedup_final.py','helpers/freeze_dedup_final.py.txt')
+(O/'additional-input-bindings.json').write_text(json.dumps({'utc':now(),'role':'Exact existing originals copied for offline duplicate-comparison replay; not new paper/source discovery or biological reassessment','files':B},indent=2)+'\n')
+S=load(O/'final-disposition-summary.json');F=load(O/'all-file-dispositions.json');corpus=load(O/'complete-corpus-and-boundary-rebind.json');snapshots=load(O/'inspected-file-snapshot-manifest.json')['files'];fresh=load(O/'changed-and-additive-file-inspections.json')
+assert len(fresh)==146 and len(snapshots)==121
+assert [len(r['files'])for r in F['roots']]==[370,349]
+assert sum(r['reused_exact_dispositions']for r in F['roots'])==573
+assert sum(x['predecessor_scan_changed']for x in fresh)==112 and sum(x['additive_alias_match']for x in fresh)==34
+states=[]
+for i,r in enumerate(corpus['roots']):
+ R=Path(r['root']);state={'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=R,text=True).strip(),'status':subprocess.check_output(['git','status','--porcelain=v1'],cwd=R,text=True)};assert state==r['state']
+ rec={p.relative_to(R).as_posix():sha(p.read_bytes())for p in (R/'data/pathways').rglob('*.yaml')};assert rec=={x['path']:x['sha256']for x in r['records']}
+ for f in F['roots'][i]['files']:assert sha((R/f['path']).read_bytes())==f['sha256']
+ states.append({'root':str(R),**state,'record_count':len(rec),'all_current_record_hashes_equal_complete_parse':True,'all_matched_files_current_hash_equal':True,'matched_files':len(F['roots'][i]['files'])})
+for f in snapshots:
+ b=(O/f['stored_path']).read_bytes();raw=gzip.decompress(b);assert sha(b)==f['stored_sha256']and len(b)==f['stored_bytes']and sha(raw)==f['original_sha256']and len(raw)==f['original_bytes']
+for b in load(O/'predecessor-input-bindings.json')['files']:
+ assert sha((O/b['stored']).read_bytes())==b['sha256']
+(O/'final-current-state-recheck.json').write_text(json.dumps({'utc':now(),'roots':states,'full_file_snapshots_verified':len(snapshots),'fresh_contexts_verified':len(fresh),'original_source_and_predecessor_bindings_unchanged':True,'no_maintained_git_or_github_mutations':True},indent=2)+'\n')
+(O/'HANDOFF.md').write_text('''# PWY-5417 merged-baseline duplicate author handoff
+
+**Ready to author one complete six-step catechol degradation III (ortho) parent at merged head `46ee133770039e8b21d1563166dec50eecd2c411`, tree `6dc181ad99e020fb3dade28304a31ba1a3177adc`.** This closes the duplicate/boundary gate only. It is a discovery-author/technical successor, not an independent scientific review or a record-authoring result.
+
+The current worktree contains 259 maintained pathway YAMLs. The original checkout remains at `fbccbdc027f2a86ad4919e9dbbb16a736cc0746a`, tree `72737d598ca6c7d18861f8c3612f50c265a30e08`, with 258. Both were clean and all matched file hashes were rechecked at freeze; all 258 original records equal the corresponding merged records. Recursive, ignore-independent current YAML inventories equal the complete parsed corpus.
+
+No individual maintained record in either corpus has exact parent identity MetaCyc:PWY-5417 or all six defining reaction families. The existing four-step CATECHOL-ORTHO-CLEAVAGE-PWY and two-step PWY-2361 are exactly the two children of the complete native parent, and must remain separately scoped existing modules. The new PWY-5420 is a distinct seven-step oxidative meta route and shares zero of the six ortho families. PWY-5415 is the hydrolytic meta alternative. The protocatechuate ortho sibling shares only the hydrolase family. Thirteen prior related-record dispositions were reused only after exact byte equality; the new262 record received a specific successor disposition.
+
+Search scope was the frozen 148-pattern predecessor plus only 104 missing aliases from the finite 48-source ledger (42 native leads and six bounded follows: PMID8083169, PMID8522507, PMID20137101, PMID5330966, PMID5916391 and PMID11526005). No exploratory source expansion was performed. The requested-literature subset contains five follows; the final source-reading ledger adds PMID11526005. All 48 original metadata objects are retained with hashes. PMID20137101 concerns Pseudomonas stutzeri A1501, not a KT2440 experimental preparation. Existing source-access and assay limits remain unchanged.
+
+Both searches used `rg --no-ignore --hidden --json -i -F` and included ignored research/support data. Their union contains 370 files/3,793 unique matched lines in the merged worktree and 349 files/3,676 lines in the original checkout. All 719 root/file occurrences have dispositions: 573 exact-hash prior reuses and 146 fresh contexts (112 changed/new predecessor files plus 34 additive alias contexts). The two additive scans each add one new file, the existing248 A1501 primary claim dossier. All 121 distinct complete fresh files are losslessly retained as gzip snapshots. The 35 explicit PWY-5417 mentions in fresh files are source definitions, prior scope exclusions, search/reproduction metadata or a future-candidate statement. Generated pages/KGX, authority terms, source reports, historical drafts and child-module evidence are not maintained parent records.
+
+The RXN-3641 gallate matches were checked in exact fields: ENZRXN-3641 is a gallate/CHA activity reference associated with RXN-2464; it is not the formal RXN-3641 thiolase. Generated KGX `source_records` fields are pipe-separated evidence reference IDs, not pathway declarations. The first local inspection helper incorrectly assumed JSON; that failed attempt and its corrected successor are retained. A preceding syntax-only helper failure is also preserved. Neither failure altered maintained files or expanded the source scope.
+
+Reproduction evidence is in `complete-corpus-and-boundary-rebind.json`, `corpus-recursive-replay.json`, `all-file-dispositions.json`, `changed-and-additive-file-inspections.json`, `explicit-candidate-mentions.json`, the predecessor/additive JSONL receipts and `final-current-state-recheck.json`. Exact selected native parent/child/reaction originals, the previously frozen formal family projection and the primary alias metadata are included in `route-comparison-inputs/` and `primary-alias-inputs/`. This reuses prior source interpretation solely to compare boundaries; it does not independently reconfirm its biology.
+
+`compact-retention-manifest.json` uniformly records source/original and stored SHA256, byte counts and encoding for every retained input. Logs and large JSON are losslessly gzip stored; helpers have inert `.py.txt` names. Existing gzip snapshots are copied byte-for-byte as storage objects, with their decoded original binding supplied by `inspected-file-snapshot-manifest.json`. `artifact-manifest.json` freezes all files except itself, including compact copies; it is the final immutable package inventory.
+
+Limits: root `.git` and `.venv` were excluded, rg used default binary handling, archive interiors were not searched, directory symlinks and external caches were not recursively traversed. Selected native originals and primary metadata were separately bound; there is no global archive search or database/world-exhaustion claim. A new maintained record or changed baseline requires another bounded delta check. No maintained files, Git or GitHub were changed. Authoring must still resolve native/primary conflicts and exact identity/chemical scope, build authorities, validate final bytes and obtain independent final scientific/technical review; this handoff grants none of those later conclusions.
+''')
+# Uniform exact-byte compact copies; large files and raw logs compressed, executable helpers inert.
+items=[]
+for p in sorted(x for x in O.rglob('*')if x.is_file() and 'compact'not in x.relative_to(O).parts):
+ rel=p.relative_to(O).as_posix();b=p.read_bytes();target=rel+'.txt'if rel.endswith('.py')else rel
+ encode='gzip'if (p.suffix in {'.jsonl','.log','.stderr'} or (p.suffix=='.json'and len(b)>50000))else'identity'
+ if encode=='gzip':target+='.gz';stored=gzip.compress(b,mtime=0)
+ else:stored=b
+ q=O/'compact'/target;q.parent.mkdir(parents=True,exist_ok=True);assert not q.exists();q.write_bytes(stored);decoded=gzip.decompress(q.read_bytes())if encode=='gzip'else q.read_bytes();assert decoded==b
+ items.append({'original_path':str(p),'original_relative_path':rel,'original_sha256':sha(b),'original_bytes':len(b),'stored_path':q.relative_to(O).as_posix(),'stored_sha256':sha(stored),'stored_bytes':len(stored),'encoding':encode})
+(O/'compact-retention-manifest.json').write_text(json.dumps({'schema':'exact-original-and-stored-files-v1','utc':now(),'root':str(O),'note':'Original means exact external package file bytes. Pre-existing gzip snapshots are identity copies; their decoded source binding is separately complete in inspected-file-snapshot-manifest.json. This manifest and final artifact inventory exclude themselves from compact copying.','files':items},indent=2)+'\n')
+allfiles=[{'path':p.relative_to(O).as_posix(),'sha256':sha(p.read_bytes()),'bytes':p.stat().st_size}for p in sorted(O.rglob('*'))if p.is_file()]
+(O/'artifact-manifest.json').write_text(json.dumps({'utc':now(),'role':'Frozen discovery-author merged-baseline duplicate/boundary successor; not independent scientific review','root':str(O),'files':allfiles,'excludes':['artifact-manifest.json'],'head':S['current_head'],'tree':S['current_tree'],'record_count':259,'ready_for_single_complete_parent_authoring':True,'no_global_exhaustion_claim':True},indent=2)+'\n')
+print(json.dumps({'file_count':len(allfiles),'compact_count':len(items),'compact_bytes':sum(x['stored_bytes']for x in items),'artifact_sha256':sha((O/'artifact-manifest.json').read_bytes()),'compact_manifest_sha256':sha((O/'compact-retention-manifest.json').read_bytes()),'handoff_sha256':sha((O/'HANDOFF.md').read_bytes()),'final_recheck_sha256':sha((O/'final-current-state-recheck.json').read_bytes())},indent=2))

@@ -1,0 +1,14 @@
+from pathlib import Path
+import datetime,gzip,hashlib,json
+R=Path('/private/tmp/pathwaymech-next-263-20261014');O=Path('/private/tmp/pathwaymech-next-263-independent-technical');p=R/'research/pathway_additions/2026-10-14-next-263/root-verification/dedup-retention-map.json';sha=lambda b:hashlib.sha256(b).hexdigest();rows=json.loads(p.read_text())['files'];verified=[]
+for r in rows:
+ b=(R/r['repository_path']).read_bytes();h=r.get('repository_stored_sha256',r.get('stored_sha256',r.get('sha256')));n=r.get('repository_stored_bytes',r.get('stored_bytes',r.get('bytes')));assert sha(b)==h and len(b)==n
+ outer=r.get('repository_storage_encoding')
+ if outer:
+  assert outer=='gzip_lossless_over_frozen_stored_bytes';b=gzip.decompress(b);assert sha(b)==r['stored_sha256'] and len(b)==r['stored_bytes']
+ if r.get('encoding','').startswith('gzip'):b=gzip.decompress(b)
+ assert sha(b)==r['original_sha256'] and len(b)==r['original_bytes'];original=Path(r['original_path']).read_bytes();assert original==b
+ verified.append({'path':r['repository_path'],'outer_encoding':outer,'original_sha256':sha(b),'original_bytes':len(b)})
+prior=O/'preparation-audit.json';d=json.loads(prior.read_text());assert len(d['failures'])==4 and all(x['item'].removeprefix('decoded ').endswith(('META-PWY-2361.xml.gz','META-PWY-5417.xml.gz')) for x in d['failures'])
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent technical preparation successor, not final record review','prior_audit_sha256':sha(prior.read_bytes()),'prior_helper_failures_disposition':'Four comparisons were false failures from reviewer helper ignoring the explicit repository_storage_encoding and repository_stored_* outer gzip layer on two native XMLs. Both frozen and repository storage layers verify exactly; this successor does not change their maps or any source. All other prior audit checks passed.','map_sha256':sha(p.read_bytes()),'verified_entries':len(verified),'entries':verified,'failures':[],'preparation_status':'Finite baseline/source-storage preparation complete; actual final target, final authority selection, generated outputs, gate evidence and canonical review remain pending.'}
+(O/'preparation-storage-successor.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='entries'},indent=2))

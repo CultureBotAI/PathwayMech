@@ -1,0 +1,110 @@
+"""Compare eight requested native chemicals with exact issuing structures."""
+import datetime
+import hashlib
+import json
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+from rdkit import Chem, rdBase
+from rdkit.Chem import rdMolDescriptors
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-additional-chemistry')
+NATIVE = Path('/private/tmp/pathwaymech-next-263-native')
+native_manifest = json.loads((NATIVE / 'artifact-manifest.json').read_text())
+native_index = {r['path']: r for r in native_manifest['files']}
+SPECS = [
+    ('MN+2', 'CHEBI:29035'), ('ZN+2', 'CHEBI:29105'), ('CU+2', 'CHEBI:29036'),
+    ('NADH', 'CHEBI:57945'), ('CPD-621', 'CHEBI:57712'), ('CPD-8827', 'CHEBI:149587'),
+    ('EDTA', 'CHEBI:64755'), ('CPD-8828', 'PubChem:25240959'),
+]
+
+
+def sha(b):
+    return hashlib.sha256(b).hexdigest()
+
+
+def cml_molecule(element):
+    molecule = element.find('cml/molecule')
+    assert molecule is not None
+    rw = Chem.RWMol()
+    indices = {}
+    for atom in molecule.findall('atomArray/atom'):
+        symbol = atom.attrib['elementType'].title()
+        obj = Chem.Atom(symbol)
+        obj.SetFormalCharge(int(atom.attrib.get('formalCharge', '0')))
+        if 'isotopeNumber' in atom.attrib:
+            obj.SetIsotope(int(atom.attrib['isotopeNumber']))
+        indices[atom.attrib['id']] = rw.AddAtom(obj)
+    bond_types = {'1': Chem.BondType.SINGLE, '2': Chem.BondType.DOUBLE, '3': Chem.BondType.TRIPLE}
+    for bond in molecule.findall('bondArray/bond'):
+        left, right = bond.attrib['atomRefs'].split()
+        rw.AddBond(indices[left], indices[right], bond_types[bond.attrib['order']])
+    mol = rw.GetMol()
+    Chem.SanitizeMol(mol)
+    assert Chem.GetFormalCharge(mol) == int(molecule.attrib['formalCharge'])
+    return mol
+
+
+def connectivity(mol):
+    return Chem.MolToSmiles(Chem.RemoveHs(mol), isomericSmiles=False)
+
+
+rows = []
+for frame, identifier in SPECS:
+    relative = 'originals/META-' + frame + '.xml'
+    native_path = (ROOT if frame == 'NADH' else NATIVE) / relative
+    native_bytes = native_path.read_bytes()
+    if frame != 'NADH':
+        assert sha(native_bytes) == native_index[relative]['sha256']
+    native = next(c for c in ET.fromstring(native_bytes) if c.attrib.get('frameid') == frame)
+    assert native.tag == 'Compound' and native.attrib['orgid'] == 'META'
+    if identifier.startswith('CHEBI:'):
+        original = ROOT / 'originals' / ('ChEBI-' + identifier.split(':')[1] + '.json')
+        issuing = json.loads(original.read_text())
+        assert issuing['chebi_accession'] == identifier
+        structure = issuing['default_structure']
+        inchi, key = structure['standard_inchi'], structure['standard_inchi_key']
+        mol = Chem.MolFromSmiles(structure['smiles'])
+        label, formula, charge = issuing['name'], issuing['chemical_data']['formula'], issuing['chemical_data']['charge']
+        url = 'https://www.ebi.ac.uk/chebi/backend/api/public/compound/' + identifier.split(':')[1] + '/'
+    else:
+        original = ROOT / 'originals/PubChem-25240959.json'
+        properties = json.loads(original.read_text())['PropertyTable']['Properties']
+        assert len(properties) == 1 and properties[0]['CID'] == 25240959
+        issuing = properties[0]
+        inchi, key = issuing['InChI'], issuing['InChIKey']
+        mol = Chem.MolFromInchi(inchi)
+        label, formula, charge = issuing['IUPACName'], issuing['MolecularFormula'], issuing['Charge']
+        url = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/25240959/property/InChI,InChIKey,MolecularFormula,IUPACName,Charge/JSON'
+    assert mol is not None
+    assert native.findtext('inchi') == inchi
+    assert native.findtext('inchi-key').removeprefix('InChIKey=') == key
+    assert Chem.MolToInchi(mol) == inchi
+    assert Chem.MolToInchiKey(mol) == key
+    assert Chem.GetFormalCharge(mol) == charge
+    native_mol = cml_molecule(native)
+    assert connectivity(native_mol) == connectivity(mol), frame
+    calculated = rdMolDescriptors.CalcMolFormula(mol)
+    native_formula = rdMolDescriptors.CalcMolFormula(native_mol)
+    assert calculated == native_formula
+    # ChEBI formula fields omit the charge suffix while PubChem includes it.
+    without_charge = calculated
+    if charge:
+        suffix = ('+' if charge > 0 else '-') + (str(abs(charge)) if abs(charge) > 1 else '')
+        assert calculated.endswith(suffix), (frame, calculated, suffix)
+        without_charge = calculated[:-len(suffix)]
+    assert formula == (calculated if identifier.startswith('PubChem:') else without_charge), (frame, formula, calculated)
+    rows.append({
+        'native_frame': frame, 'identifier': identifier, 'issuing_label': label,
+        'native_original': {'path': str(native_path), 'sha256': sha(native_bytes), 'bytes': len(native_bytes)},
+        'issuing_original': {'path': str(original), 'sha256': sha(original.read_bytes()), 'bytes': original.stat().st_size, 'url': url},
+        'inchi': inchi, 'inchi_key': key, 'formula_without_charge': without_charge, 'formal_charge': charge,
+        'full_native_inchi_and_key_equal_issuing': True,
+        'native_cml_connectivity_formula_charge_equal_issuing_structure': True,
+        'limits': 'Native CML establishes connectivity/formula/charge, not independently inferred stereochemistry. Full native InChI is compared separately. Defined protonation does not establish measured assay solution speciation; salts and target enzymes retain primary assay scope.',
+    })
+result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'role': 'Root source-author supplementary chemical identity check, not independent review', 'rdkit_version': rdBase.rdkitVersion, 'checks': rows, 'count': len(rows), 'limits': 'Eight requested enzyme-context chemicals only; neither new formal route steps nor an inhibition-sign/assay-target judgement.'}
+out = ROOT / 'verification.json'
+assert not out.exists()
+out.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'path': str(out), 'sha256': sha(out.read_bytes()), 'count': len(rows), 'identifiers': [r['identifier'] for r in rows]}))

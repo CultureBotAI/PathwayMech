@@ -1,0 +1,65 @@
+from pathlib import Path
+import datetime as dt, gzip, hashlib, io, json, subprocess, tarfile
+R=Path('/private/tmp/pathwaymech-next-263-20261014'); O=Path('/private/tmp/pathwaymech-next-263-independent-technical'); P=R/'research/pathway_additions/2026-10-14-next-263'; A=Path('/private/tmp/pathwaymech-next-263-authority-author')
+BASE='46ee133770039e8b21d1563166dec50eecd2c411'
+seen={}; failures=[]
+def sha(b):return hashlib.sha256(b).hexdigest()
+def read(p):
+ p=Path(p);b=p.read_bytes();seen[str(p)]={'bytes':len(b),'sha256':sha(b)};return b
+def j(p):return json.loads(read(p))
+def check(b,h,n,label):
+ if h!=sha(b) or (n is not None and len(b)!=n):failures.append({'item':label,'actual_sha256':sha(b),'actual_bytes':len(b),'expected_sha256':h,'expected_bytes':n})
+def command(args):return subprocess.check_output(args,cwd=R).decode().strip()
+assert command(['git','rev-parse','HEAD'])==BASE
+start=dt.datetime.now(dt.timezone.utc).isoformat()
+tracked=command(['git','ls-tree','-r','--name-only',BASE,'--','data/pathways']).splitlines()
+records=[]
+for f in tracked:
+ b=read(R/f); expected=subprocess.check_output(['git','show',f'{BASE}:{f}'],cwd=R);check(b,sha(expected),len(expected),f)
+ records.append({'path':f,'sha256':sha(b),'bytes':len(b),'is_pathway_yaml':f.endswith('.yaml')})
+# Authority preparation exact hidden-inclusive inventory and all entries.
+m=j(A/'artifact-manifest.json'); check(read(A/'artifact-manifest.json'),'19bad7f652f5c61233b1e4fecbb6023455af267edfca78e44fa0f2bcdcee0f8e',None,'authority package manifest')
+actual={str(p.relative_to(A)) for p in A.rglob('*') if p.is_file() and p.name!='artifact-manifest.json'}
+assert actual=={r['path'] for r in m['files']},(actual-{r['path'] for r in m['files']},{r['path'] for r in m['files']}-actual)
+for r in m['files']:check(read(A/r['path']),r['sha256'],r['bytes'],'authority/'+r['path'])
+cm=j(A/'compact-retention-manifest.json')
+for r in cm['files']:
+ b=read(A/'compact-retained'/r['path']);check(b,r['sha256'],r['bytes'],'authority compact '+r['path'])
+ decoded=gzip.decompress(b) if r['encoding'].startswith('gzip') else b
+ check(decoded,r['original_sha256'],r['original_bytes'],'authority decoded '+r['path']);check(read(r['original_path']),r['original_sha256'],r['original_bytes'],'authority original '+r['path'])
+# Main six-package retention: verify root storage map and source bytes exactly.
+rootmap=j(P/'root-verification/source-retention-manifest.json')
+for r in rootmap['files']:
+ b=read(R/r['repository_path']);check(b,r['stored_sha256'],r['stored_bytes'],r['repository_path'])
+ source=read(r['source_path']);check(source,r['source_sha256'],r['source_bytes'],r['source_path'])
+ decoded=gzip.decompress(b) if 'gzip_lossless_for_source_whitespace' in r['transformations'] else b
+ if decoded!=source:failures.append({'item':r['repository_path'],'failure':'decoded storage differs from mapped source'})
+# Current maps, explicitly excluding immutable old dedup map from destination-existence claim.
+mapfiles=sorted(P.rglob('retention-map.json'))+[P/'root-verification/dedup-retention-map.json']
+mapcounts={}
+for f in mapfiles:
+ rows=j(f)['files']; mapcounts[str(f.relative_to(P))]=len(rows)
+ for r in rows:
+  b=read(R/r['repository_path']);check(b,r.get('stored_sha256',r.get('sha256')),r.get('stored_bytes',r.get('bytes')),r['repository_path'])
+  decoded=gzip.decompress(b) if r.get('encoding','').startswith('gzip') else b
+  check(decoded,r['original_sha256'],r['original_bytes'],'decoded '+r['repository_path'])
+  check(read(r['original_path']),r['original_sha256'],r['original_bytes'],'external '+r['original_path'])
+# Archives contain exactly the declared regular files; decode without extracting paths.
+pm=j(P/'source-evidence/primary/source-compact-retention-manifest.json'); members=0
+for a in pm['archives']:
+ matches=[r for r in rootmap['files'] if r['package']=='primary' and r['source_path'].endswith('/'+a['path'])];assert len(matches)==1;f=R/matches[0]['repository_path'];b=read(f);check(b,a['sha256'],a['bytes'],str(f))
+ with tarfile.open(fileobj=io.BytesIO(b),mode='r:gz') as tf:
+  ts=tf.getmembers();assert all(x.isfile() and not x.name.startswith('/') and '..' not in Path(x.name).parts for x in ts)
+  assert {x.name for x in ts}=={x['path'] for x in a['members']}
+  assert len(ts)==len(a['members'])
+  for r in a['members']:check(tf.extractfile(r['path']).read(),r['decoded_sha256'],r['decoded_bytes'],'primary archive '+r['path']);members+=1
+# Snapshot all source research files (including hidden/ignored); no global absence assertion.
+researchfiles=[]
+for f in sorted(P.rglob('*')):
+ if f.is_file():
+  b=read(f); researchfiles.append({'path':str(f.relative_to(R)),'sha256':sha(b),'bytes':len(b)})
+activehelpers=[r['path'] for r in researchfiles if Path(r['path']).suffix=='.py']
+if activehelpers:failures.append({'item':'new research files','active_python_helpers':activehelpers})
+result={'started_utc':start,'finished_utc':dt.datetime.now(dt.timezone.utc).isoformat(),'role':'independent technical preparation; no final maintained target, no canonical verdict','base':BASE,'tree':command(['git','rev-parse',BASE+'^{tree}']),'baseline_pathway_yaml_count':sum(r['is_pathway_yaml'] for r in records),'baseline_pathway_files':records,'all_baseline_pathway_bytes_unchanged':not any(f.get('item','').startswith('data/pathways') for f in failures),'authority_source_artifacts_verified':len(m['files']),'authority_compact_original_pairs':len(cm['files']),'main_retained_pairs':len(rootmap['files']),'current_additional_retention_maps':mapcounts,'primary_archive_members':members,'research_inventory':researchfiles,'active_python_helpers':activehelpers,'failures':failures,'limits':['Finite provenance and baseline invariants only. No final record integrated at review start.','Source summaries are author interpretation, not scientific approval; independent final science review remains separate.','Current retention map governs destination paths; superseded dedup map remains immutable historical evidence.']}
+(O/'preparation-audit.json').write_text(json.dumps(result,indent=2)+'\n');(O/'preparation-input-bindings.json').write_text(json.dumps(seen,indent=2)+'\n')
+print(json.dumps({k:v for k,v in result.items() if k not in ['baseline_pathway_files','research_inventory']},indent=2));assert not failures

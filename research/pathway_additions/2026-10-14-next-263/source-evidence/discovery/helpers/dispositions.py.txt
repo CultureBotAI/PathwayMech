@@ -1,0 +1,62 @@
+from pathlib import Path
+import json,hashlib,subprocess,re,collections,datetime
+import yaml
+O=Path('/private/tmp/pathwaymech-next-263-discovery');R=Path('/private/tmp/pathwaymech-next-261-20261014');M=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def dump(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+inv=json.loads((O/'corpus-inventory.json').read_text());over=json.loads((O/'corpus-reaction-overlap.json').read_text());aliases={k:set(v) for k,v in over['aliases'].items()};base={r['id']:r for r in inv['records']};main=[]
+for p in sorted((M/'data/pathways').rglob('*.yaml')):
+ b=p.read_bytes();y=yaml.load(b,Loader=yaml.CSafeLoader);ids={n['id'] for n in y.get('reactions',[])};found={f:sorted(v&ids) for f,v in aliases.items() if v&ids};assert len(found)<6 and y['id']!='MetaCyc:PWY-5417'
+ main.append({'path':str(p.relative_to(M)),'sha256':sha(b),'id':y['id'],'label':y['label'],'all_reactions':y.get('reactions',[]),'candidate_family_coverage':len(found),'found':found,'matches_current_committed_record':y['id'] in base and base[y['id']]['sha256']==sha(b)})
+dump('original-checkout-corpus-scan.json',{'root':str(M),'hidden_and_ignored_yaml_included':True,'selection':'pathlib recursive *.yaml inventory under data/pathways; no Git ignore filtering','record_count':len(main),'records':main,'exact_candidate_identity_matches':[],'full_six_reaction_matches':[],'differences_from_committed_current':[r for r in main if not r['matches_current_committed_record']]})
+contexts=[];read_bindings=[];groups=collections.Counter();unknown=[]
+for idx,root in enumerate([R,M]):
+ rows=json.loads((O/f'prior-file-matches-{idx}.json').read_text());dispositions=[]
+ for row in rows:
+  path=row['path'];p=root/path;b=p.read_bytes();assert sha(b)==row['sha256'];t=b.decode('utf-8',errors='replace');group=None
+  if path.startswith('./data/pathways/'):group='maintained pathway record';reason='Exact top-level and all declared reaction identities checked in whole-corpus overlap/semantic scan. Source-reference substring matches do not add formal reactions.'
+  elif path.startswith('./pages/'):group='generated projection';reason='Generated HTML/JSON/KGX reflects maintained record data; complete corpus inventory, rather than textual occurrence, defines duplicate status.'
+  elif path.startswith('./reviews/'):group='immutable scoped prior review';reason='Historical module or adjacent-route review; no new complete PWY-5417 record. Separate prior verdicts are not adopted as final review of this proposal.'
+  elif path.startswith('./tests/'):group='test fixture';reason='Identifier-policy test fixture contains the existing PWY-2361 downstream pathway interface; not a maintained pathway or new source claim.'
+  elif path.startswith('./history/'):group='history metadata';reason='Curation event/source metadata for existing module or adjacent route; no new mechanism record.'
+  elif path.startswith(('./data/identifier_authorities/','./conf/')):group='identifier authority or selection';reason='Exact term/name/source ownership is not a maintained pathway record or proof of whole-route scope.'
+  elif path.startswith('./research/'):
+   group='retained research context';reason='Prior source objects, projections, searches, chemistry/biology claims or proof metadata; exact candidate mentions and relevant module findings are separately read and bound in prior-research-read-bindings.json.'
+  elif '/dram/' in path:group='ignored DRAM support';reason='Five M00568 step rows represent the four-step catechol-to-3-oxoadipate KEGG module, including alternate enol-lactonase KO; no full parent or new record.'
+  elif '/seed/' in path:group='ignored SEED discovery list';reason='Subsystem title beta-ketoadipate pathway is a reusable-source lead. It does not establish complete ordered single-catechol route or a maintained record.'
+  else:unknown.append(path);group='unclassified';reason='Requires manual disposition before freezing.'
+  d={**row,'group':group,'disposition':reason};dispositions.append(d);groups[group]+=1
+  if p.suffix=='.md' and path.startswith('./research/'):
+   read_bindings.append({'root':str(root),'path':path,'sha256':sha(b),'bytes':len(b),'read_scope':'Complete file bytes loaded; relevant pathway-scope, chemistry/evidence-boundary and acceptance context inspected. No new final scientific acceptance inferred.'})
+  if path.startswith('./research/') and ('PWY-5417' in row['patterns'] or 'GO:0019615' in row['patterns']):
+   contexts.append({'root':str(root),'path':path,'sha256':sha(b),'exact_parent_or_go_matches':[{ 'line':n+1,'text':line} for n,line in enumerate(t.splitlines()) if 'PWY-5417' in line or 'GO:0019615' in line]})
+ dump(f'prior-file-dispositions-{idx}.json',{'root':str(root),'matched_file_count':len(rows),'files':dispositions})
+assert not unknown,unknown
+# Prior canonical biological/chemistry boundaries, independently read as earlier scoped reviews, not new approval.
+review_context=[]
+for path in sorted((R/'reviews/structured').glob('*/review.yaml')):
+ if not any(key in path.parent.name for key in ['catechol248','oxoadipate249','protocatechuate-independent','shikimate-ii-initial-independent']):continue
+ b=path.read_bytes();j=yaml.load(b,Loader=yaml.CSafeLoader);review_context.append({'path':str(path.relative_to(R)),'sha256':sha(b),'review_id':j['review_id'],'summary':j.get('summary'),'scope':j.get('scope'),'findings':j.get('findings'),'limitations':j.get('limitations')})
+dump('prior-canonical-review-context.json',review_context)
+dump('prior-research-read-bindings.json',{'read_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'report_bindings':read_bindings,'exact_prior_parent_mentions':contexts,'semantic_dispositions':[
+ {'source':'next248 catechol/curation.md, chemistry/HANDOFF.md, native/HANDOFF.md and canonical review','disposition':'Existing four-step upstream module explicitly excludes downstream CoA transfer/thiolysis and explicitly names PWY-5417 as larger complete parent. Exact S-muconolactone/Rhea30033 chemistry and nonexact R03959 cross-reference remain preserved; deleted CatA UniProt crossref, C-1 isozymes, historical PcaD size/sequence mismatch must not be silently merged.'},
+ {'source':'next249 oxoadipate/curation.md and canonical review','disposition':'Existing two-step tail excludes upstream branches; net succinate/acetyl-CoA with succinyl-CoA regenerated. Rejected native PMID761399; PRS2000/PRS1 lineage, assembly disagreements, PcaR regulation versus ligand binding and metadata/abstract access limits are future full-parent evidence obligations.'},
+ {'source':'next250 protocatechuate curation/HANDOFFs/canonical reviews; next258 supplemental-search/HANDOFF.md','disposition':'Maintained GO0019618 is exactly the four-step protocatechuate-to-3-oxoadipate sibling. Sharing hydrolase or broader GO0042952 does not identify the full catechol route. Do not create duplicate native interface for GO0019618; PcaB stereochemical mapping and PcaD historical identity limits remain explicit.'},
+ {'source':'next260 verification and matched native activity context','disposition':'Gallate route is a five-step gallate-to-pyruvate/oxaloacetate route. RXN-3641 fixed-string hits in ENZRXN-3641 are lexical substrings, not formal thiolase nodes; unrelated biological activity and retained primary references do not establish candidate coverage.'},
+ {'source':'original checkout ignored DRAM and SEED support','disposition':'Read all ten matched original/ingested M00568 rows across both DRAM files and the one matching SEED list line containing separate catechol-branch and protocatechuate-branch subsystem titles. These are known narrow-module/umbrella discovery leads, not existing accepted full-parent data.'}
+]})
+# Fully resolve the bounded class; no source-universe exhaustion claim.
+proj=json.loads((O/'native-projections.json').read_text());by={r['id'].split(':',1)[1]:r for r in proj};class_ids=['PWY-5420','PWY-5415','PWY-5431','PWY-5417','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-5419','P183-PWY'];disp={
+'PWY-5420':'Actively researched next262: distinct complete seven-step oxidative meta route; not reselected.',
+'PWY-5415':'Maintained complete five-step hydrolytic meta route in258 baseline; duplicate rejected.',
+'PWY-5431':'Combines catechol and protocatechuate branches plus tail; broader multi-entry umbrella rejected for this single-route addition.',
+'PWY-5417':'Select complete six-step ortho route with explicit parent intermodule join. No individual maintained record covers its complete defined boundary; all six chemistries are already present across two different module records.',
+'CATECHOL-ORTHO-CLEAVAGE-PWY':'Maintained upstream four-step child; duplicate and narrower than selected full route.',
+'PWY-5419':'Four-step oxidative child of planned262; cannot count as an extra complete pathway.',
+'P183-PWY':'Two-step hydrolytic child of maintained261; cannot count as an extra complete pathway.',
+'PWY-5162':'Shared three-step meta terminal module; part of261/262, not a new full-catechol route.',
+'PWY-2361':'Maintained two-step tail; include within selected full route, not a second new module record.',
+'PWY-5430':'Broader benzoate/meta alternative umbrella; no single exact catechol-route identity.',
+'PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY':'Already maintained as exact GO0019618 four-step sibling; different substrate and upstream chemistry, no new record for this native synonym.'}
+dump('alternative-pathway-boundaries.json',{'class_members':class_ids,'all_direct_class_members_reviewed':True,'scope':'All seven direct META27.0 Catechol-Degradation members plus shared modules, meta umbrella and protocatechuate sibling. This is not a global pathway-universe inventory.','alternatives':[{'id':by[f]['id'],'label':by[f]['name'],'members':by[f]['members'],'source':by[f]['file'],'sha256':by[f]['sha256'],'disposition':reason} for f,reason in disp.items()]})
+print(json.dumps({'original_checkout_records':len(main),'original_diff_records':[r['id'] for r in main if not r['matches_current_committed_record']],'file_disposition_counts':dict(groups),'report_bindings':len(read_bindings),'exact_parent_context_files':len(contexts),'prior_scoped_reviews':len(review_context)},indent=2))

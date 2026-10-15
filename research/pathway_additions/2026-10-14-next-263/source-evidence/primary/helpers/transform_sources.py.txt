@@ -1,0 +1,38 @@
+from pathlib import Path
+from html.parser import HTMLParser
+import json,re,hashlib,xml.etree.ElementTree as ET,subprocess,concurrent.futures
+O=Path('/private/tmp/pathwaymech-next-263-primary')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+class P(HTMLParser):
+ def __init__(self):super().__init__();self.skip=0;self.out=[]
+ def handle_starttag(self,t,a):
+  if t in ['script','style']:self.skip+=1
+  if t in ['p','div','section','h1','h2','h3','h4','li','tr','br']:self.out.append('\n')
+  if t in ['td','th']:self.out.append(' | ')
+ def handle_endtag(self,t):
+  if t in ['script','style']:self.skip=max(0,self.skip-1)
+  if t in ['p','div','section','h1','h2','h3','h4','li','tr']:self.out.append('\n')
+ def handle_data(self,d):
+  if not self.skip:self.out.append(d)
+rows=[]
+for p in sorted((O/'originals').glob('*.html')):
+ s=p.read_text(errors='replace')
+ if len(s)<25000:continue
+ x=P();x.feed(s);ss='\n'.join(re.sub(r'\s+',' ',x).strip() for x in ''.join(x.out).splitlines() if x.strip())
+ q=O/'derived'/(p.stem+'-text.txt');q.write_text(ss+'\n');rows.append({'source':str(p.relative_to(O)),'source_sha256':sha(p),'derived':str(q.relative_to(O)),'sha256':sha(q),'transform':'stdlib HTMLParser skip script/style; linebreak block/table row; pipe table cells; whitespace normalized','figures_visually_read':False})
+for pmid in ['17172348','34731045']:
+ lines={};receipts=[]
+ for p in sorted((O/'receipts').glob('web-'+pmid+'-*.json')):
+  s=json.loads(p.read_text())['result'];ms=list(re.finditer(r'\bL(\d+):',s));receipts.append({'path':str(p.relative_to(O)),'sha256':sha(p)})
+  for i,m in enumerate(ms):
+   n=int(m[1]);t=s[m.end():ms[i+1].start() if i+1<len(ms) else len(s)].strip();lines[n]=t
+ q=O/'derived'/f'{pmid}-publisher-transformed.txt';q.write_text('\n'.join(f'L{k}: {v}' for k,v in sorted(lines.items()))+'\n')
+ rows.append({'pmid':pmid,'derived':str(q.relative_to(O)),'sha256':sha(q),'receipts':receipts,'transform':'merge unchanged web-rendered line content by L-number, last captured occurrence; tool citation markup retained','missing_lines':[i for i in range(min(lines),max(lines)+1) if i not in lines],'figures_visually_read':False})
+(O/'text-transformations.json').write_text(json.dumps(rows,indent=2)+'\n')
+def ocr(p):
+ q=O/'derived'/(p.stem+'-ocr');r=subprocess.run(['tesseract',str(p),str(q),'--psm','3'],capture_output=True,text=True);t=q.with_suffix('.txt')
+ return {'source':str(p.relative_to(O)),'source_sha256':sha(p),'derived':str(t.relative_to(O)),'sha256':sha(t),'exit_code':r.returncode,'stderr':r.stderr,'transform':'tesseract --psm 3; machine OCR not visual reading'}
+ps=sorted((O/'originals').glob('*.png'))
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:ors=list(ex.map(ocr,ps))
+(O/'ocr-transformations.json').write_text(json.dumps(ors,indent=2)+'\n')
+print(json.dumps({'html_web_transforms':len(rows),'ocr_pages':len(ors),'failures':[r for r in ors if r['exit_code']]}))

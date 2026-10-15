@@ -1,0 +1,107 @@
+from pathlib import Path
+import json,hashlib,collections,re,html,urllib.parse,xml.etree.ElementTree as E
+O=Path('/private/tmp/pathwaymech-next-263-native');D=Path('/private/tmp/pathwaymech-next-263-discovery')
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+rows=json.loads((O/'native-full-object-projection.json').read_text());objs={r['frame']:r for r in rows}
+init=json.loads((O/'requested-initial.json').read_text());formalrxns=set(init['formal_reactions']);acts={a['activity_id']:a['reaction'] for a in init['formal_activity_leads']};formalproteins={p for a in init['formal_activity_leads'] for p in a['catalyst_ids']}
+route={'PWY-5417','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361'};alternative=set();excluded=set()
+pol=json.loads((O/'closure-round-final.json').read_text())['finite_policy'];dec=json.loads((O/'curated-catalyst-scope-decisions.json').read_text())
+def slots(r,k):return [s for s in r['slots'] if s['slot']==k]
+def refs(r,k):return [d['frameid'] for s in slots(r,k) for d in s['direct_children'] if d.get('frameid')]
+def texts(r,k):return [s['plain_text'] for s in slots(r,k)]
+def ev(r):return [{'locator':s['locator'],'codes':[d['frameid'] for d in s['direct_children'] if d['type']=='Evidence-Code'],'publications':[d['frameid'] for d in s['direct_children'] if d['type']=='Publication'],'native_xml':s['xml']} for s in slots(r,'evidence')]
+def binding(r):return {'frame':r['frame'],'path':r['file'],'sha256':r['sha256'],'version':r['version']}
+def scope(f):
+ r=objs[f]
+ if f in route:return 'complete_candidate_or_nested_module_definition'
+ if f in formalrxns:return 'formal_six_step_reaction'
+ if f in acts:return 'formal_reaction_activity_association_not_whole_route_demonstration'
+ if f in formalproteins:return 'formal_catalyst_source_account_not_whole_route_demonstration'
+ if r['type']=='Enzymatic-Reaction':return 'adjacent_activity_context'
+ if r['type']=='Reaction':return 'adjacent_reaction_chemical_context'
+ if r['type']=='Protein':return 'biological_component_or_assembly_context'
+ if r['type']=='Regulation':return 'activity_specific_regulation_context'
+ return 'identity_or_provenance_context'
+activity=[]
+for a,rxn in acts.items():
+ r=objs[a];ps=refs(r,'enzyme');assert len(ps)==1;p=objs[ps[0]];assert refs(r,'reaction')==[rxn]
+ activity.append({'activity':a,'reaction':rxn,'enzyme':ps[0],'native_names':texts(p,'common-name'),'native_genes':refs(p,'gene'),'native_organisms':refs(p,'species'),'activity_evidence':ev(r),'source_direction':texts(r,'reaction-direction'),'source_phys_relevance':texts(r,'physiologically-relevant'),'source_cofactor_slots':slots(r,'cofactor'),'source_regulators':refs(r,'regulated-by'),'scope':scope(a),'proposal':'Qualified source association only; source-author assessment is below, final maintained assertion requires root adjudication.','source_author_assessment':dec[ps[0]],'activity_original':binding(r),'enzyme_original':binding(p),'native_activity_full_slot_count':len(r['slots']),'enzyme_comments':texts(p,'comment')})
+dump('formal-activity-closure.json',activity)
+ledger=[];claims=[];refsledger=[];proselinks=[];assertions=[];orgrows=[];genes=[];chem=[];regulations=[];bio=[];pubs={}
+metadata={'credits','citation','synonym','dblink','common-name','parent','accession-1','accession-2','names','systematic-name','abbrev-name','rank','strain-name','data-source'}
+kinetics={'km','kcat','specific-activity','ph-opt','temperature-opt','temperature-optimum','pi','molecular-weight-exp','molecular-weight-seq','gibbs-0','alternative-substrate','kinetic-mechanism','ki'}
+for r in rows:
+ f=r['frame'];ty=r['type'];sc=scope(f)
+ if ty=='Organism':orgrows.append({'original':binding(r),'names':texts(r,'common-name'),'rank':texts(r,'rank'),'strain':texts(r,'strain-name'),'dblink_slots':slots(r,'dblink'),'direct_species_assignment_sources':[x['frame'] for x in rows if f in refs(x,'species')],'disposition':'Source organism identity only. A catalyst species or nested taxonomic citation is not a complete pathway assay or modern sequence/strain identity.'})
+ if ty=='Gene':genes.append({'original':binding(r),'native_names':texts(r,'common-name'),'products':refs(r,'product'),'species':refs(r,'species'),'dblink_slots':slots(r,'dblink'),'comments':texts(r,'comment'),'disposition':'Gene-product source identity with source organism; no unsupported encodes edge or independent modern accession mapping.'})
+ if ty in ['Compound','cco']:chem.append({'original':binding(r),'native_names':texts(r,'common-name'),'identity_slots':[s for s in r['slots'] if s['slot'] in ['common-name','synonym','dblink','inchi','inchi-key','chemical-formula','smiles','monoisotopic-mw','molecular-weight','charge','cml','comment','definition','goid','parent']],'disposition':'Native identity/contrast context. No final ChEBI/Rhea/GO authority choice or automatic cross-reference equivalence is made by this dossier.'})
+ for s in r['slots']:
+  st=s['slot'];dis='Preserve complete source context; no automatic maintained assertion.'
+  if st in metadata:dis='Identity, citation or source provenance context.'
+  elif st in kinetics:dis='Exact kinetic, alternate-substrate or preparation context, including nested evidence; do not generalize across catalysts/preparations.'
+  elif st=='enzymes-not-used':dis='Explicit native catalyst exclusion from this pathway/module.'
+  elif st in ['species','taxonomic-range']:dis='Source taxonomic scope; not independent whole-route experimental evidence.'
+  elif st=='evidence':dis='Attach native evidence code and preparation level to the exact source assertion, preserving conflicts.'
+  elif st in ['gene','product']:dis='Gene/product identity context only.'
+  elif st in ['has-feature','has-go-term']:dis='Preserve nested annotation evidence; no broader biochemical inference.'
+  elif ty in ['Compound','cco'] and st in ['appears-in-left-side-of','appears-in-right-side-of','cofactors-of','regulates','instance']:dis='Global chemical/compartment incidence preserved; finite closure does not follow unrelated database-wide objects.'
+  elif st in pol.get(ty,[]):dis='Required direct native context followed to complete current META27 object; source scope still applies.'
+  ledger.append({'frame':f,'object_type':ty,'slot':st,'ordinal':s['ordinal'],'locator':s['locator'],'source_sha256':r['sha256'],'scope':sc,'disposition':dis,'plain_source_text':s['plain_text'],'direct_references':[d.get('frameid') for d in s['direct_children'] if d.get('frameid')]})
+  if st in ['comment','cofactor-binding-comment','definition']:
+   for i,part in enumerate(re.split(r'<(?:p|br)\s*/?>',s['text'],flags=re.I),1):
+    plain=re.sub(r'\s+',' ',html.unescape(re.sub('<[^>]+>',' ',part))).strip()
+    if plain:claims.append({'id':f'{f}:{st}:{s["ordinal"]}:paragraph{i}','frame':f,'text':plain,'native_html':part,'locator':s['locator']+f'/text() paragraph {i}','source_sha256':r['sha256'],'scope':sc,'disposition':'Source prose with exact preparation and historical scope; see catalyst/conflict decisions. Chemical identity prose is not automatically accepted reaction equivalence.'})
+   for url in re.findall(r'href="([^"]+)"',s['text']):
+    parsed=urllib.parse.urlparse(html.unescape(url));q=urllib.parse.parse_qs(parsed.query);target=(q.get('id') or q.get('object') or [None])[0]
+    dis2='Bibliographic or external link retained; primary contents are not implied read.'
+    if target:dis2='Complete selected original available; link is contextual, not by itself a mechanism assertion.' if target in objs else 'Explicit adjacent/prose reference boundary; no full-object claim or automatic source expansion.'
+    proselinks.append({'source':f,'locator':s['locator'],'source_sha256':r['sha256'],'url':html.unescape(url),'target':target,'disposition':dis2})
+  for j,d in enumerate(s['direct_children'],1):
+   if not d.get('frameid'):continue
+   t=d['frameid'];required=st in pol.get(ty,[]);dis2='Full original available; relevant assertions retain exact source scope.' if t in objs else 'Explicit finite boundary: no claim of inspecting this referenced object.'
+   if d.get('detail')=='full' and t not in objs:dis2='Complete embedded source context retained in containing original; no standalone object acquisition claimed.'
+   if d['type'] in ['Publication','Evidence-Code']:dis2='Embedded bibliographic/evidence metadata retained; publication metadata is not full primary experimental evidence.'
+   if required and t not in objs:dis2='REQUIRED_MISSING'
+   refsledger.append({'source':f,'source_type':ty,'slot':st,'target':t,'target_type':d['type'],'locator':s['locator']+f'/{d["type"]}[@frameid="{t}"]','source_sha256':r['sha256'],'required_follow':required,'disposition':dis2})
+  if ty=='Protein' and st in ['component','component-of','location','gene','species']:
+   bio.append({'source':f,'slot':st,'source_locator':s['locator'],'source_sha256':r['sha256'],'source_xml':s['xml'],'references':[d['frameid'] for d in s['direct_children'] if d.get('frameid')],'scope':sc,'disposition':'Preserve coefficients if explicit; absent coefficient is not inferred one or total stoichiometry. Gene/species relations are identities, not whole-route or encoding predicate assertions.'})
+  if ty in ['Protein','Enzymatic-Reaction','Pathway'] and st in ['component','component-of','location','enzyme','reaction','cofactor','sub-pathways','reaction-list','enzymes-not-used']:
+   assertions.append({'native_object':f,'native_type':ty,'slot':st,'source_locator':s['locator'],'source_sha256':r['sha256'],'native_xml':s['xml'],'scope':sc,'role':'Candidate source statement only; final graph selection and supported predicate remain root-owned.','native_evidence':ev(r) if ty=='Enzymatic-Reaction' else []})
+ if ty=='Regulation':
+  targets=refs(r,'regulated-entity');regulators=refs(r,'regulator');modes=texts(r,'mode');preps=[]
+  for t in targets:
+   if t in objs:preps.append({'activity':t,'enzyme':refs(objs[t],'enzyme'),'activity_evidence':ev(objs[t]),'reaction':refs(objs[t],'reaction'),'native_comments':texts(objs[t],'comment')})
+  regdis='Exact activity-specific source effect; no universal protein/whole-pathway or allosteric/physiological inference. Primary adjudication remains root-owned.'
+  regulations.append({'original':binding(r),'regulators':regulators,'regulated_activities':targets,'native_modes':modes,'native_full_slots':r['slots'],'activity_preparations':preps,'disposition':regdis})
+ # Full embedded bibliographic objects are metadata, not primary paper contents.
+ rt=E.parse(r['file']).getroot()
+ for pub in rt.iter('Publication'):
+  if pub.get('detail')!='full':continue
+  k=pub.get('frameid');entry={'id':k,'fields':{tag:[x.text or '' for x in pub.findall(tag)] for tag in sorted({x.tag for x in pub})},'contained_original':binding(r),'scope':'Complete native bibliographic metadata only; primary reading is separately bound in discovery/predecessor dossiers.'}
+  pubs.setdefault(k,entry)
+assert not any(x['disposition']=='REQUIRED_MISSING' for x in refsledger)
+for n,v in [('slot-disposition-ledger.json',ledger),('prose-claim-context-ledger.json',claims),('complete-direct-reference-dispositions.json',refsledger),('native-prose-link-dispositions.json',proselinks),('source-assertion-proposal.json',assertions),('organism-scope-matrix.json',orgrows),('gene-product-identity-context.json',genes),('native-chemical-and-location-context.json',chem),('regulation-assertions.json',regulations),('biological-relation-context.json',bio),('native-bibliographic-metadata.json',list(pubs.values()))]:dump(n,v)
+# Every nested reference is also accounted for, including full embedded features/evidence and global chemical incidence.
+allrefs=[]
+for r in rows:
+ for s in r['slots']:
+  for i,d in enumerate(s['references'],1):
+   t=d['frameid'];reason='Selected full original available; no automatic role transfer.' if t in objs else 'Finite adjacent/incidence/class/metadata reference; complete containing source preserved, no standalone inspection claimed.'
+   if d.get('detail')=='full':reason='Full embedded context retained; follow exact containing original locator for native field/evidence scope.'
+   allrefs.append({'source':r['frame'],'slot':s['slot'],'source_slot_locator':s['locator'],'nested_reference_ordinal':i,'target':t,'type':d['type'],'native_detail':d.get('detail'),'disposition':reason})
+dump('complete-nested-reference-dispositions.json',allrefs)
+# Provenance and source receipt accounting.
+selected_receipts=sorted((O/'receipts').glob('acquisition-*-complete.json'));rec={}
+for p in selected_receipts:
+ for a in json.loads(p.read_text()):
+  if a.get('error') or a.get('verified_exact_full_original') is False:continue
+  if a['frame'] in rec:assert rec[a['frame']]['sha256']==a['sha256']
+  rec[a['frame']]=dict(a,receipt_file=str(p.relative_to(O)))
+originals=[]
+for r in rows:
+ f=r['frame'];a=rec[f];assert sha(Path(r['file']))==a['sha256'];rt=E.parse(r['file']).getroot();assert rt.find('metadata/PGDB').get('version')=='27.0'
+ originals.append({**binding(r),'bytes':Path(r['file']).stat().st_size,'source_type':r['type'],'source_query':rt.findtext('metadata/query'),'issuing_url':a.get('requested_url') or 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3A'+urllib.parse.quote(f,safe=''),'metadata_xml':E.tostring(rt.find('metadata'),encoding='unicode'),'acquisition':a,'full_direct_slots':len(r['slots'])})
+dump('compact-original-source-bindings.json',originals)
+summary={'objects':len(rows),'object_types':dict(collections.Counter(r['type'] for r in rows)),'formal_activities':len(activity),'formal_reactions':len(formalrxns),'native_direct_slots':len(ledger),'prose_paragraphs':len(claims),'direct_references':len(refsledger),'all_nested_references':len(allrefs),'prose_links':len(proselinks),'required_follow_rows':json.loads((O/'closure-round-final.json').read_text())['required_follow_rows'],'required_missing':[],'native_regulations':len(regulations),'formal_catalyst_source_decisions':len(dec),'raw_original_bytes':sum(r['bytes'] for r in originals),'reused_originals':sum(r['acquisition']['mode']=='exact_frozen_original_reuse' for r in originals),'new_acquisitions':sum(r['acquisition']['mode']=='public_original_acquisition' for r in originals),'raw_original_unique_paths':len({r['path'] for r in originals}),'standalone_objects_are_complete_META27':True,'bibliographic_records':len(pubs)}
+dump('closure-summary.json',summary);print(json.dumps(summary,indent=2))

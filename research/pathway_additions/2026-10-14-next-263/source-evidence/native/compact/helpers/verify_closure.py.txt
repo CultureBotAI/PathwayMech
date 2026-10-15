@@ -1,0 +1,86 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,collections,gzip,datetime,sys
+O=Path(__file__).resolve().parents[1]
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(n):return json.loads((O/n).read_text())
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+rs=load('native-full-object-projection.json');idx={r['frame']:r for r in rs};bs=load('compact-original-source-bindings.json');summary=load('closure-summary.json');assert len(idx)==len(rs)==len(bs)==summary['objects'];originals={};slot_count=0;fullcodes={};allcodes=set();fullpubs=set()
+for b in bs:
+ p=Path(b['path']);assert sha(p)==b['sha256'];rt=E.parse(p).getroot();xs=[z for z in rt if z.get('frameid')==b['frame'] and z.get('detail')=='full' and z.get('orgid')=='META'];assert len(xs)==1 and rt.find('metadata/PGDB').get('version')=='27.0';e=xs[0];originals[b['frame']]=e;slots=idx[b['frame']]['slots'];assert len(e)==len(slots);counts=collections.Counter()
+ for s,pr in zip(e,slots):
+  counts[s.tag]+=1;assert pr['slot']==s.tag and pr['ordinal']==counts[s.tag] and pr['xml']==E.tostring(s,encoding='unicode');assert pr['text']==(s.text or '');assert pr['direct_children']==[dict(type=v.tag,**v.attrib,text=v.text or '') for v in s];slot_count+=1
+ for c in rt.iter('Evidence-Code'):
+  allcodes.add(c.get('frameid'))
+  if c.get('detail')=='full':fullcodes[c.get('frameid')]=True
+ for p1 in rt.iter('Publication'):
+  if p1.get('detail')=='full':fullpubs.add(p1.get('frameid'))
+ a=b['acquisition'];assert a['sha256']==b['sha256']
+ if a['mode']=='exact_frozen_original_reuse':assert sha(Path(a['reused_from']))==b['sha256'] and sha(Path(a['manifest']))==a['manifest_sha256']
+assert slot_count==summary['native_direct_slots']==len(load('slot-disposition-ledger.json'))
+assert set(load('evidence-code-definitions.json'))==set(fullcodes)
+assert not allcodes-set(fullcodes),(allcodes-set(fullcodes))
+init=load('requested-initial.json');acts=load('formal-activity-closure.json');assert len(acts)==20 and len({a['activity'] for a in acts})==20 and len({a['enzyme'] for a in acts})==19
+for a in acts:
+ e=originals[a['activity']];assert [z.get('frameid') for z in e.findall('reaction/Reaction')]==[a['reaction']];assert [z.get('frameid') for z in e.findall('enzyme/Protein')]==[a['enzyme']]
+# Check formal leads are precisely every direct native enzymatic-reaction association in the six full originals.
+actual_leads=[]
+for f in init['formal_reactions']:
+ for s in originals[f]:
+  for z in s:
+   if z.tag=='Enzymatic-Reaction':actual_leads.append((f,z.get('frameid')))
+assert set(actual_leads)=={(a['reaction'],a['activity']) for a in acts} and len(actual_leads)==20
+cl=load('closure-round-final.json');assert cl['missing']==[] and cl['objects']==len(idx)
+for r in cl['leads']:
+ assert r['source'] in originals and r['target'] in originals
+ assert any(z.get('frameid')==r['target'] for s in originals[r['source']].findall(r['slot']) for z in s)
+ assert r['source_sha256']==idx[r['source']]['sha256']
+assert load('material-and-prose-expansion.json')['missing']==[]
+# Reconstruct exact native orientation and primary material ordering without using protein or name inference.
+disc=load('discovery-bindings/native-connectivity-proof.json');layout={};orders={}
+for f in init['pathways']:
+ e=originals[f]
+ for i,s in enumerate(e.findall('reaction-layout'),1):
+  z=s.find('Reaction')
+  if z is not None:layout[z.get('frameid')]={'direction':s.findtext('direction'),'owner':f,'locator':f'/ptools-xml/Pathway[@frameid="{f}"]/reaction-layout[{i}]'}
+ for i,s in enumerate(e.findall('reaction-ordering'),1):
+  succ=s.find('Reaction').get('frameid')
+  for z in s.findall('predecessor-reactions/Reaction'):orders[(z.get('frameid'),succ)]={'owner':f,'locator':f'/ptools-xml/Pathway[@frameid="{f}"]/reaction-ordering[{i}]'}
+proof=[];net=collections.Counter();mat=0
+for s in disc['steps']:
+ f=s['reaction'].removeprefix('MetaCyc:');e=originals[f];direction=e.findtext('reaction-direction');assert direction==s['native_direction'];assert layout[f]['direction']==s['selected_layout_direction'];sides={}
+ for side in ['left','right']:
+  entries=[]
+  for i,v in enumerate(e.findall(side),1):
+   z=v.find('Compound');c=v.findtext('coefficient');entries.append({'id':z.get('frameid'),'coefficient':int(c) if c is not None else 1,'explicit_coefficient':c,'locator':f'/ptools-xml/Reaction[@frameid="{f}"]/{side}[{i}]'});mat+=1
+  sides[side]=entries
+ inputs=sides['left' if layout[f]['direction']=='L2R' else 'right'];outputs=sides['right' if layout[f]['direction']=='L2R' else 'left']
+ assert [{k:x[k] for k in ['id','coefficient']} for x in inputs]==s['inputs'];assert [{k:x[k] for k in ['id','coefficient']} for x in outputs]==s['outputs']
+ for x in inputs:net[x['id']]-=x['coefficient']
+ for x in outputs:net[x['id']]+=x['coefficient']
+ proof.append({'reaction':f,'source_sha256':idx[f]['sha256'],'native_direction':direction,'route_layout':layout[f],'native_sides':sides,'route_inputs':inputs,'route_outputs':outputs})
+assert mat==21 and len(proof)==6
+joins=[]
+for j in disc['joins']:
+ key=(j['predecessor'],j['successor']);assert key in orders;pre=next(x for x in proof if x['reaction']==key[0]);suc=next(x for x in proof if x['reaction']==key[1]);shared={x['id'] for x in pre['route_outputs']}&{x['id'] for x in suc['route_inputs']};assert j['primary_material'] in shared and shared==set(j['all_shared_materials']);assert orders[key]['owner']==j['ordering_owner'];joins.append({**j,'ordering_original':orders[key],'ordering_source_sha256':idx[orders[key]['owner']]['sha256']})
+assert len(joins)==5
+assert {k:-v for k,v in net.items() if v<0}==disc['net_inputs'] and {k:v for k,v in net.items() if v>0}==disc['net_outputs']
+assert [z.get('frameid') for s in originals['PWY-5417'].findall('species') for z in s]==[r['native_organism'] for r in load('parent-organism-annotations.json')]
+assert len(load('parent-organism-annotations.json'))==11
+# All original source bytes, including discovery input bindings, must remain unchanged.
+for b in load('frozen-discovery-bindings.json'):assert sha(Path(b['path']))==b['sha256']==sha(Path(b['predecessor_path']))
+for b in load('contract-read-bindings.json'):assert sha(Path(b['path']))==b['sha256']
+rb=load('receipts/rejected-publication-original-binding.json');assert sha(O/rb['path'])==rb['sha256']==sha(Path(rb['reused_from']));assert sha(Path(rb['manifest']))==rb['manifest_sha256']
+metadata=load('originals/europepmc-761399.json')['resultList']['result'];assert len(metadata)==1 and metadata[0]['pmid']=='761399' and 'amniotic fluid' in metadata[0]['title'].lower()
+result={'status':'PASS','finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Finite complete native closure and exact projections/relations/native route replay. Not independent full primary science, issuing chemistry, or baseline dedup.','objects':len(idx),'all_direct_slots':slot_count,'formal_reactions':6,'formal_activities':20,'formal_catalysts':19,'parent_organisms':11,'material_entries':21,'primary_joins':5,'required_relation_rows':len(cl['leads']),'missing_required_relations':0,'native_evidence_codes':len(fullcodes),'full_embedded_publications':len(fullpubs),'complete_original_binding_count':len(bs),'hidden_ignored_inventory':'Path.rglob/complete explicit manifests; no ignore filtering.','new_corpus_absence_claim':False}
+if '--write' in sys.argv:
+ assert not (O/'artifact-manifest.json').exists(),'Frozen package cannot mutate'
+ dump('native-route-replay.json',{'steps':proof,'joins':joins,'net_inputs':disc['net_inputs'],'net_outputs':disc['net_outputs'],'scope':'Original native bookkeeping only; no independent atom/charge/stereochemical normalization.'});dump('verification.json',result)
+if (O/'compression-receipt.json').exists():
+ for r in load('compression-receipt.json'):
+  assert sha(O/r['original'])==r['original_sha256'] and sha(O/r['compressed'])==r['compressed_sha256'];assert gzip.decompress((O/r['compressed']).read_bytes())==(O/r['original']).read_bytes()
+if (O/'artifact-manifest.json').exists():
+ m=load('artifact-manifest.json');actual={str(p.relative_to(O)) for p in O.rglob('*') if p.is_file() and p.name!='artifact-manifest.json'};assert actual=={r['path'] for r in m['files']}
+ for row in m['files']:assert sha(O/row['path'])==row['sha256'] and (O/row['path']).stat().st_size==row['bytes']
+ for row in load('compact-retention-manifest.json')['files']:assert sha(O/row['path'])==row['sha256']
+ result.update(frozen_manifest_sha256=sha(O/'artifact-manifest.json'),handoff_sha256=sha(O/'HANDOFF.md'),compact_manifest_sha256=sha(O/'compact-retention-manifest.json'))
+print(json.dumps(result,indent=2))

@@ -1,0 +1,41 @@
+from pathlib import Path
+import xml.etree.ElementTree as E,html,re,json,hashlib,collections
+O=Path('/private/tmp/pathwaymech-next-263-discovery')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def dump(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+def clean(s):return html.unescape(re.sub('<[^>]+>','',s or''))
+rows=[];slots=[];objects={}
+for p in sorted((O/'originals').glob('META-*.xml')):
+ b=p.read_bytes();r=E.fromstring(b);x=next(n for n in r if n.tag!='metadata');assert x.attrib['detail']=='full';f=x.attrib['frameid'];objects[f]=x
+ row={'id':'MetaCyc:'+f,'file':str(p.relative_to(O)),'sha256':sha(b),'kind':x.tag,'version':r.find('metadata/PGDB').attrib['version'],'name':clean(x.findtext('common-name')),'synonyms':[clean(n.text) for n in x.findall('synonym')],'comment':clean(x.findtext('comment')),'members':[n.attrib['frameid'] for n in x.findall('reaction-list/*')],'direction':x.findtext('reaction-direction'),'xrefs':[{'db':n.findtext('dblink-db'),'id':n.findtext('dblink-oid'),'relationship':n.findtext('dblink-relationship')} for n in x.findall('dblink')],'pmids':sorted(set(re.findall(r'pubmed/(\d+)',x.findtext('comment')or'')+[n.text for n in x.findall('citation/Publication/pubmed-id')]+[n.text for n in x.findall('evidence/Publication/pubmed-id')])),'species':[{'frame':n.attrib['frameid'],'name':clean(n.findtext('common-name')),'rank':n.findtext('rank'),'strain':n.findtext('strain-name'),'xrefs':[{'db':z.findtext('dblink-db'),'id':z.findtext('dblink-oid')} for z in n.findall('dblink')]} for n in x.findall('species/Organism')],'activities':[{'frame':n.attrib['frameid'],'detail':n.attrib.get('detail'),'name':clean(n.findtext('common-name')),'enzymes':[e.attrib['frameid'] for e in n.findall('enzyme/Protein')]} for n in x.findall('enzymatic-reaction/Enzymatic-Reaction')]}
+ row['order']=[{'reaction':n.find('Reaction').attrib['frameid'],'predecessors':[z.attrib['frameid'] for z in n.findall('predecessor-reactions/Reaction')]} for n in x.findall('reaction-ordering')]
+ row['layout']=[{'member':next(iter(n)).attrib['frameid'],'direction':n.findtext('direction'),'left_primaries':[z.attrib['frameid'] for z in n.findall('left-primaries/*')],'right_primaries':[z.attrib['frameid'] for z in n.findall('right-primaries/*')]} for n in x.findall('reaction-layout')]
+ for side in ['left','right']:row[side]=[{'id':next(iter(n)).attrib['frameid'],'coefficient':int(n.findtext('coefficient')or'1')} for n in x.findall(side)]
+ rows.append(row);counts=collections.Counter()
+ for n in x:
+  counts[n.tag]+=1;locator='/ptools-xml/'+x.tag+'/'+n.tag+'['+str(counts[n.tag])+']';raw=E.tostring(n,encoding='unicode')
+  disposition=('identity and full boundary mechanism used in candidate classification' if n.tag in ['common-name','parent','instance','reaction-list','reaction-ordering','sub-pathways','reaction-layout','left','right','reaction-direction','synonym'] else 'source narrative/papers: boundary and evidence leads retained; no new biological claim without primary reassessment' if n.tag in ['comment','evidence','citation'] else 'source taxon annotation only; full-route experimental context and current issuing identities remain to be checked' if n.tag in ['species','taxonomic-range'] else 'future biological closure lead; nested low-detail activity is not a complete catalyst object' if n.tag=='enzymatic-reaction' else 'search cross-reference only; no unverified identity equivalence' if n.tag=='dblink' else 'native computation, administrative metadata or adjacent-pathway context preserved; no new mechanism assertion')
+  slots.append({'source':str(p.relative_to(O)),'source_sha256':sha(b),'locator':locator,'tag':n.tag,'xml':raw,'xml_sha256':sha(raw.encode()),'disposition':disposition})
+dump('native-projections.json',rows);dump('complete-native-slot-dispositions.json',{'objects':len(rows),'direct_slots':len(slots),'scope':'Every direct slot retained with full serialized subtree, including nested credits, taxa, low-detail activities and original bibliographic metadata. Discovery disposition is not final biological curation.','slots':slots})
+by={r['id'].split(':',1)[1]:r for r in rows}
+route=['CATECHOL-12-DIOXYGENASE-RXN','MUCONATE-CYCLOISOMERASE-RXN','MUCONOLACTONE-DELTA-ISOMERASE-RXN','3-OXOADIPATE-ENOL-LACTONASE-RXN','3-OXOADIPATE-COA-TRANSFERASE-RXN','RXN-3641']
+children=['CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361'];parent=by['PWY-5417'];assert set(parent['members'])==set(children)
+assert set(route)==set(by[children[0]]['members'])|set(by[children[1]]['members'])
+layout={l['member']:l for c in children for l in by[c]['layout']};oriented=[]
+for f in route:
+ row=by[f];d=layout[f]['direction'];assert d in ['L2R','R2L'];ins=row['left' if d=='L2R' else 'right'];outs=row['right' if d=='L2R' else 'left'];oriented.append({'reaction':'MetaCyc:'+f,'native_direction':row['direction'],'selected_layout_direction':d,'inputs':ins,'outputs':outs,'source':row['file'],'sha256':row['sha256']})
+orders=[(p,r['reaction'],owner) for owner in ['PWY-5417',*children] for r in by[owner]['order'] for p in r['predecessors']];joins=[]
+for prev,nxt in zip(oriented,oriented[1:]):
+ a=prev['reaction'].split(':',1)[1];b=nxt['reaction'].split(':',1)[1];supports=[c for c in orders if c[:2]==(a,b)];assert len(supports)==1
+ shared=sorted({x['id'] for x in prev['outputs']}&{x['id'] for x in nxt['inputs']})
+ prim_out=layout[a]['right_primaries' if layout[a]['direction']=='L2R' else 'left_primaries'];prim_in=layout[b]['left_primaries' if layout[b]['direction']=='L2R' else 'right_primaries'];primary=sorted(set(prim_out)&set(prim_in));assert len(primary)==1 and primary[0] in shared
+ joins.append({'predecessor':a,'successor':b,'primary_material':primary[0],'all_shared_materials':shared,'ordering_owner':supports[0][2]})
+net=collections.Counter()
+for row in oriented:
+ for x in row['inputs']:net[x['id']]-=x['coefficient']
+ for x in row['outputs']:net[x['id']]+=x['coefficient']
+proof={'candidate':'MetaCyc:PWY-5417','children':children,'steps':oriented,'joins':joins,'reaction_count':len(route),'material_side_entries':sum(len(x['inputs'])+len(x['outputs']) for x in oriented),'net_inputs':{k:-v for k,v in net.items() if v<0},'net_outputs':{k:v for k,v in net.items() if v>0},'notes':['Native parent explicitly joins enol-lactone hydrolysis to CoA transfer; selected boundary is all six reactions, not a title-only juxtaposition.','Native R2L orientation applies to muconate cycloisomerase and thiolase; reversible reaction direction remains distinct from selected physiological layout.','The last reaction forms succinyl-CoA and acetyl-CoA, while the preceding CoA-transfer consumes succinyl-CoA and produces succinate. Summing the complete selected route cancels the recycled succinyl-CoA and leaves net succinate plus acetyl-CoA.','Net coefficients are original-native bookkeeping, not a newly completed independent atom/charge/structure audit.']}
+dump('native-connectivity-proof.json',proof)
+leads=[{'reaction':r['id'],**a} for r in rows if r['id'].split(':',1)[1] in route for a in r['activities']]
+dump('next-source-follow-set.json',{'formal_activity_leads':leads,'count':len(leads),'parent_taxon_annotations':parent['species'],'limits':'Full native activities/proteins/complexes/genes/regulation plus issuing identities and primary evidence remain required. Eleven parent species rows do not establish eleven whole-route experimental demonstrations.'})
+print(json.dumps({'objects':len(rows),'slots':len(slots),'steps':len(route),'joins':len(joins),'material_entries':proof['material_side_entries'],'net_inputs':proof['net_inputs'],'net_outputs':proof['net_outputs'],'activity_leads':len(leads),'parent_taxon_rows':len(parent['species'])},indent=2))

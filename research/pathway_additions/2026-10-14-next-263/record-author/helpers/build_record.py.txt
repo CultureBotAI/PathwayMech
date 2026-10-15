@@ -1,0 +1,177 @@
+"""Reproduce external PWY-5417 author draft; never writes the maintained repository."""
+import os,json, hashlib, html, re, sys, copy, xml.etree.ElementTree as ET
+from pathlib import Path
+import yaml
+sys.dont_write_bytecode=True
+B=Path(os.environ.get('PATHWAY_AUTHOR_OUTPUT','/private/tmp/pathwaymech-next-263-record-author')); R=Path('/private/tmp/pathwaymech-next-263-20261014')
+N=Path('/private/tmp/pathwaymech-next-263-native'); P=Path('/private/tmp/pathwaymech-next-263-primary'); I=Path('/private/tmp/pathwaymech-next-263-biological-identity'); C=Path('/private/tmp/pathwaymech-next-263-independent-chemistry')
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.schema import validate_record
+rd=lambda p:json.loads(Path(p).read_text())
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(name,v):(B/name).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+full={x['frame']:x for x in rd(N/'native-full-object-projection.json')};bindings={x['frame']:x for x in rd(N/'compact-original-source-bindings.json')}
+for f,v in full.items():
+ assert sha(v['file'])==v['sha256']==bindings[f]['sha256']
+ root=ET.parse(v['file']).getroot(); obj=root.find(v['type']); assert obj is not None and obj.get('frameid')==f
+ assert len(obj)==len(v['slots'])
+ for el,s in zip(obj,v['slots']):assert ET.tostring(el,encoding='unicode')==s['xml']
+def slots(f,n):return [s for s in full[f]['slots'] if s['slot']==n]
+def direct(f,n):return [c['frameid'] for s in slots(f,n) for c in s['direct_children'] if c.get('frameid')]
+def texts(f,n):return [s['plain_text'] for s in slots(f,n)]
+def plain(s):return re.sub(r'<[^>]+>','',html.unescape(html.unescape(s)))
+authority={**rd(R/'data/identifier_authorities/ontology.json')['terms'],**rd(R/'data/identifier_authorities/sources.json')['terms']}
+for row in rd(B/'plans/name-category-lookup.snapshot.json')['rows']:authority[row['id']]={'label':row['canonical_label']}
+route=rd(C/'checks/independent-route.json'); nroute=rd(N/'native-route-replay.json'); acts=rd(N/'formal-activity-closure.json'); contexts=rd(B/'plans/activity-contexts.json')
+bio=rd(I/'native-biological-selection.json')['native_biological_objects']; idec=rd(I/'biological-identity-decision-ledger.json'); decisions={x['native_anchor']:x for x in idec['decisions']}
+formal={x['native_reaction']:x['rhea_directional_accession'] for x in route['reactions']}
+dirs={'PHYSIOL-LEFT-TO-RIGHT':'left_to_right','LEFT-TO-RIGHT':'left_to_right','PHYSIOL-RIGHT-TO-LEFT':'right_to_left','RIGHT-TO-LEFT':'right_to_left','REVERSIBLE':'reversible'}
+rdirs={'RHEA:23853':'left_to_right','RHEA:30033':'right_to_left','RHEA:12349':'left_to_right','RHEA:10185':'left_to_right','RHEA:12049':'left_to_right','RHEA:19483':'right_to_left'}
+nodes={}; reactions={}; refs={}; edges=[]; coverage=[]; dispositions=[]; refbindings=[]; unresolved=[]
+def ref(f):
+ ident='MetaCyc:'+f; o=full[f];refs.setdefault(ident,{'id':ident,'title':'MetaCyc '+o['type']+' '+f+' complete original','url':bindings[f]['issuing_url'],'source_version':'MetaCyc 27.0','source_sha256':o['sha256']});return ident
+def ev(f,text,loc):
+ assert 0<len(text)<=400,(f,text);assert '/comment' not in loc,'Primary/native prose cannot masquerade as structured evidence'
+ return {'reference_id':ref(f),'source_assertion':text,'source_locator':loc}
+def rel(f,n,text):
+ ss=slots(f,n);assert ss,(f,n);return ev(f,text,'; '.join(s['locator'] for s in ss))
+def edge(sub,pred,obj,desc,evidence,keys,qual=None):
+ eid='n'+str(len(edges)+1).zfill(3);e={'id':eid,'subject':sub,'predicate':pred,'object':obj,'description':desc,'evidence':copy.deepcopy(evidence)}
+ if qual:e['endpoint_qualifiers']=copy.deepcopy(qual)
+ edges.append(e);coverage.append({'edge_id':eid,'source_keys':keys});return eid
+chem={f:{'id':a['id'],'label':authority.get(a['id'],{}).get('label',a['name']),'category':'small_molecule'} for f,a in route['chemicals'].items()}
+extra=B/'plans/root-additional-chemical-selections.json'
+if extra.exists():
+ for a in rd(extra):
+  assert sha(a['native_original_path'])==a['native_sha256']
+  chem[a['native_frame']]={'id':a['selected_id'],'label':a['selected_label'],'category':a.get('category','small_molecule')}
+def cnode(f,cofactor=False):
+ if f not in chem:unresolved.append({'native_frame':f,'reason':'Root issuing identity selection pending'});return None
+ o=copy.deepcopy(chem[f]);
+ if cofactor:o['category']='cofactor'
+ if o['id'] not in nodes:nodes[o['id']]=o
+ elif cofactor:nodes[o['id']]['category']='cofactor'
+ return o['id']
+for f in chem:
+ if f in route['chemicals']:cnode(f)
+for a in bio:
+ f=a['frame'];ident='MetaCyc:'+f;assert ident in authority,ident
+ cat='gene' if a['type']=='Gene' else ('complex' if 'Protein-Complexes' in direct(f,'parent') else 'protein')
+ nodes[ident]={'id':ident,'label':authority[ident]['label'],'category':cat};ref(f)
+for a in route['reactions']:
+ ident=a['rhea_directional_accession'];reactions[ident]={'id':ident,'label':authority[ident]['label'],'category':'molecular_activity','direction':rdirs[ident]}
+ assert authority[ident]['label']==a['rhea_equation']
+ refs[ident]={'id':ident,'title':ident+' directional equation in official Rhea RDF','url':'https://www.rhea-db.org/rhea/'+ident.split(':')[1],'source_version':'Rhea 142; digest covers the complete official gzip RDF, not a per-reaction page','source_sha256':route['rhea_scan']['original']['sha256']}
+for a in acts:
+ f=a['activity'];ident='MetaCyc:'+f;reactions[ident]={'id':ident,'label':plain(texts(f,'common-name')[0]),'category':'molecular_activity'}
+ if texts(f,'reaction-direction'):reactions[ident]['direction']=dirs[texts(f,'reaction-direction')[0]]
+for f in ['CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361']:
+ reactions['MetaCyc:'+f]={'id':'MetaCyc:'+f,'label':authority['MetaCyc:'+f]['label'],'category':'pathway'}
+for step,s in enumerate(nroute['steps'],1):
+ f=s['reaction'];ident=formal[f]
+ for side,pred in [('route_inputs','consumes'),('route_outputs','produces')]:
+  for m in s[side]:
+   c=cnode(m['id']);sub,obj=(c,ident) if pred=='consumes' else (ident,c)
+   evidence=[ev(f,'Native '+('left' if '/left[' in m['locator'] else 'right')+' side lists '+m['id']+' with '+('explicit coefficient '+str(m['coefficient']) if m['explicit_coefficient'] is not None else 'one occurrence and no explicit coefficient')+'.',m['locator']),rel(f,'reaction-direction','The native reaction direction is '+s['native_direction']+'.'),{'reference_id':ident,'source_assertion':'The issuing directional equation is '+route['reactions'][step-1]['rhea_equation']+'.','source_locator':'RDF subject http://rdf.rhea-db.org/'+ident.split(':')[1]+'; rh:equation'}]
+   edge(sub,pred,obj,'Formal route step '+str(step)+', coefficient '+str(m['coefficient'])+'. Native layout traversal '+s['route_layout']['direction']+' is separate from native direction '+s['native_direction']+' and from the chosen Rhea node direction. Exact formal stereochemistry does not identify every historical assay substrate.',evidence,['material:'+f+':'+m['locator']])
+for module in ['CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361']:
+ s=next(s for s in slots('PWY-5417','reaction-list') if module in [x.get('frameid') for x in s['direct_children']])
+ edge('MetaCyc:PWY-5417','has_part','MetaCyc:'+module,'This child module forms part of the complete six-step parent. Its existing narrower record remains separately scoped.',[ev('PWY-5417','The parent reaction-list includes child pathway '+module+'.',s['locator'])],['module:'+module])
+ for s in slots(module,'reaction-list'):
+  for x in s['direct_children']:
+   f=x.get('frameid')
+   if f in formal:edge('MetaCyc:'+module,'has_part',formal[f],'Native module membership, represented by the exact formal reaction without asserting an exactMatch between an undirected native object and a directional Rhea entity.',[ev(module,'The native reaction-list includes '+f+'.',s['locator'])],['membership:'+module+':'+f])
+for j in route['joins']:
+ u=next(s for s in nroute['steps'] if s['reaction']==j['source']);v=next(s for s in nroute['steps'] if s['reaction']==j['target']);a=next(m for m in u['route_outputs'] if m['id']==j['material']);b=next(m for m in v['route_inputs'] if m['id']==j['material'])
+ edge(formal[j['source']],'provides_input_for',formal[j['target']],'Direct material transfer through '+j['chebi']+', the same exact formal intermediate on both sides. This join does not assert thermodynamic irreversibility.',[ev(j['source'],'The upstream selected reaction side lists '+j['material']+'.',a['locator']),ev(j['target'],'The downstream selected reaction side lists '+j['material']+'.',b['locator'])],['join:'+j['source']+':'+j['target']])
+for f in ['PWY-5417','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361']:
+ for s in slots(f,'reaction-ordering'):
+  el=ET.fromstring(s['xml']);child=el.find('Reaction');pred=el.find('predecessor-reactions/Reaction')
+  if child is None or pred is None:continue
+  a,b=pred.get('frameid'),child.get('frameid');u=formal.get(a,'MetaCyc:'+a);v=formal.get(b,'MetaCyc:'+b)
+  if u in reactions and v in reactions:edge(u,'precedes',v,'Explicit native predecessor order, independently preserved from material transfer and reaction direction.',[ev(f,a+' is listed as predecessor of '+b+'.',s['locator'])],['ordering:'+f+':'+s['locator']])
+weak={'ENZRXN-16130','ENZRXN0-2607','ENZRXN-18274','ENZRXN-5295','ENZRXN-30626','ENZRXN-30674'}
+for a in acts:
+ f=a['activity'];p=a['enzyme'];codes=sorted({c for x in a['activity_evidence'] for c in x['codes']});pred='enables' if f in weak else 'catalyzes'
+ evs=[rel(f,'enzyme',f+' assigns enzyme '+p+'.'),rel(f,'reaction',f+' assigns reaction '+a['reaction']+'.')]
+ if codes:evs.append(ev(f,'Native evidence annotations: '+', '.join(codes)+'. These are source annotations, not independent primary readings.','; '.join(x['locator'] for x in a['activity_evidence'])))
+ facts=[]
+ for s in full[f]['slots']:
+  name=s['slot'];el=ET.fromstring(s['xml']);value=None
+  if name in ['reaction-direction','physiologically-relevant','ph-opt','temperature-opt']:value=name+' = '+str(el.text).strip()
+  elif name in ['km','kcat','specific-activity']:
+   v=el.find('value');sub=el.find('substrate/Compound');value=name+' = '+str(v.text)+' '+plain(v.get('units',''))+(' for '+sub.get('frameid') if sub is not None else '')
+  elif name=='alternative-substrate':
+   sub=el.find('substrate/Compound');alt=el.find('alternate/Compound')
+   if sub is not None and alt is not None:value='alternative-substrate slot '+sub.get('frameid')+' to '+alt.get('frameid')+' (source assay context, not a new balanced equation)'
+  if value:facts.append(value);evs.append(ev(f,'Native structured '+value+'.',s['locator']))
+ genes=direct(p,'gene')
+ if genes:evs.append(rel(p,'gene',p+' has direct native gene link '+', '.join(genes)+'.'))
+ desc=contexts[f]
+ if facts:desc+=' Structured database annotations, separately scoped to their cited preparations: '+ '; '.join(facts)+'.'
+ qual=None
+ if 'HH' in ' '.join(codes):qual=[{'endpoint':'subject','kind':'experimental_construct','description':'The native activity marks a heterologous-host preparation. Exact donor, expression host, construct and purification limits are described beside this edge; the annotation is not independent confirmation of an unresolved primary preparation.','evidence':[ev(f,'Native evidence annotations include '+', '.join(c for c in codes if 'HH' in c)+'.','; '.join(x['locator'] for x in a['activity_evidence']))]}]
+ e1=edge('MetaCyc:'+p,pred,'MetaCyc:'+f,desc,evs,['activity:'+f],qual)
+ e2=edge('MetaCyc:'+p,pred,formal[a['reaction']],'Formal chemistry assignment through native activity '+f+'. '+contexts[f],[rel(f,'enzyme','Native enzyme '+p+'.'),rel(f,'reaction','Native reaction '+a['reaction']+'.')],['formal-assignment:'+f],qual)
+ dispositions.append({'activity':f,'enzyme':p,'native_reaction':a['reaction'],'formal_reaction':formal[a['reaction']],'predicate':pred,'activity_edge':e1,'formal_edge':e2,'scope':contexts[f]})
+for a in bio:
+ f=a['frame']
+ for s in slots(f,'component'):
+  el=ET.fromstring(s['xml']);p=el.find('Protein');assert p is not None;child=p.get('frameid');co=el.findtext('coefficient');assert 'MetaCyc:'+child in nodes
+  scope=decisions.get(f,{}).get('decision','')
+  scope=re.sub(r'(?<=\w)(?=\d)', ' ',scope) if False else scope
+  desc=('The native source explicitly specifies '+co+' copies of this component. ' if co else 'The native source gives a component relation without a coefficient; no total oligomer count is inferred. ')
+  if f in ['CPLX-7717','CPLX-9719']:desc+='This is adjacent substituted-substrate or adipate context, not an additional formal route catalyst. '
+  if f=='CPLX-2761':desc+='The historical trimer applies to the 11 kDa preparation, not to modern Q88N36. '
+  if f=='CPLX-2746':desc+='This four-copy assembly is a source annotation; the genetic study did not measure purified stoichiometry. '
+  if f=='CPLX-2722':desc+='Historical two-alpha/two-beta stoichiometry remains distinct from current heterodimer annotation. '
+  if f=='CPLX-7712':desc+='A single listed component does not establish a monomeric enzyme. '
+  if f=='CPLX-9719':desc+='Direct pcaI and pcaJ gene/product links identify the two transferase subunits. The native adipate--CoA ligase name and prose calling pcaF/pcaI thiolase subunits do not establish ligase chemistry or transfer these components to the formal 3-oxoadipate transferase step. '
+  if f=='CPLX-7260':desc+='The primary mass estimate supports an inferred tetramer, with two minor bands still present. '
+  desc+='Membership does not give the isolated subunit the overall catalytic activity.'
+  edge('MetaCyc:'+f,'has_part','MetaCyc:'+child,desc,[ev(f,f+' lists component '+child+(' with coefficient '+co if co else ' without a coefficient')+'.',s['locator'])],['component:'+f+':'+child])
+for a in acts:
+ for s in slots(a['activity'],'cofactor'):
+  for x in s['direct_children']:
+   f=x.get('frameid')
+   if not f:continue
+   c=cnode(f,True)
+   if c:edge('MetaCyc:'+a['enzyme'],'has_cofactor',c,'Native activity-specific cofactor annotation. The corresponding CatB structural preparation remains distinct from engineered variants; no apoenzyme test is inferred from an assay buffer.',[ev(a['activity'],a['activity']+' lists '+f+' as a cofactor.',s['locator'])],['cofactor:'+a['activity']])
+# Bounded CcaC context is retained to prevent conflation with SalC and formal PcaD.
+for f in ['ENZRXN-15760','ENZRXN-15761']:
+ reactions['MetaCyc:'+f]={'id':'MetaCyc:'+f,'label':plain(texts(f,'common-name')[0]),'category':'molecular_activity'}
+ edge('MetaCyc:CPLX-7717','catalyzes','MetaCyc:'+f,'Adjacent MT1 CcaC/trans-dienelactone hydrolase annotation for a substituted substrate. It is a separate enzyme in the SalC coupled assay and is not assigned the formal enol-lactone hydrolysis step. The 2003 unstable intermediate was proposed from coupled products; the 2008 abstract supplies separate native/recombinant metal observations.',[rel(f,'enzyme',f+' names CPLX-7717.'),rel(f,'reaction',f+' names reaction '+', '.join(direct(f,'reaction'))+'.')],['adjacent-activity:'+f])
+ for s in slots(f,'cofactor'):
+  for x in s['direct_children']:
+   if not x.get('frameid'):continue
+   c=cnode(x.get('frameid'),True)
+   if c:edge('MetaCyc:CPLX-7717','has_cofactor',c,'Adjacent CcaC cofactor annotation only. PMID18789896 reports two zinc atoms per subunit in native and recombinant preparations and reactivation of metal-free enzyme by zinc or manganese; those facts do not apply to SalC or core PcaD.',[ev(f,f+' lists '+x['frameid']+' as cofactor.',s['locator'])],['adjacent-cofactor:'+f])
+regdisp=[]
+for a in rd(N/'regulation-assertions.json'):
+ f=a['original']['frame'];target=a['regulated_activities'][0];reg=a['regulators'][0]
+ if f in ['REG-5831','REG-5832','REG-5833']:
+  regdisp.append({'native_regulation':f,'disposition':'reject thiolase target; primary transferase edge to be authored','target':target,'regulator':reg});ref(f);continue
+ if f=='REG-5835':
+  regdisp.append({'native_regulation':f,'disposition':'reject HCN-specific assay transfer; primary tested sodium cyanide','target':target,'regulator':reg});ref(f);continue
+ c=cnode(reg)
+ if not c:continue
+ desc='Native negative regulation annotation for this exact activity. '
+ if f in ['REG-12414','REG-12415']:desc+='This is adjacent CcaC context; the accessible primary abstract does not mention EDTA, so the inhibition claim remains explicitly database-only and is not extended to SalC or PcaD.'
+ else:desc+='The primary B13 assay used '+('zinc chloride' if reg=='ZN+2' else 'copper sulfate')+' at 1 mM. This ion endpoint identifies the reagent-derived ion; salt, concentration and in vitro preparation remain essential context, not physiological regulation.'
+ eid=edge(c,'inhibits','MetaCyc:'+target,desc,[rel(f,'regulator',f+' identifies regulator '+reg+'.'),rel(f,'regulated-entity',f+' names regulated activity '+target+'.'),rel(f,'mode','The native mode is negative (-).')],['regulation:'+f]);regdisp.append({'native_regulation':f,'disposition':'qualified native effect retained','edge':eid})
+taxa=[]
+for a in rd(N/'parent-organism-annotations.json'):
+ xr=[x for x in a['xref'] if x['database']=='NCBI-TAXONOMY-DB']
+ if not xr:continue
+ ident='NCBITaxon:'+xr[0]['id'];taxa.append({'id':ident,'label':authority[ident]['label']});f=a['native_organism']
+ desc='Native parent organism annotation only; it is not an experimental demonstration of all six steps in every strain. Protein donors and expression hosts are separately qualified.'
+ if ident=='NCBITaxon:386':desc+=' Current issuing rank is no rank for Rhizobium leguminosarum bv. trifolii, despite the native strain label.'
+ ref(f); ref('PWY-5417')
+# Primary metadata/body declarations and additions are generated separately from exact retained sources.
+record={'id':'MetaCyc:PWY-5417','label':authority['MetaCyc:PWY-5417']['label'],'description':(B/'plans/record-description.txt').read_text().strip(),'pathway_type':'aromatic-compound-degradation','taxa':taxa,'participants':list(nodes.values()),'reactions':list(reactions.values()),'mechanistic_edges':edges,'references':list(refs.values())}
+write('drafts/native-base.json',record);write('drafts/native-coverage.json',coverage);write('drafts/formal-activity-dispositions.json',dispositions);write('drafts/native-regulation-dispositions.json',regdisp);write('drafts/unresolved-chemical-needs.json',unresolved)
+validate_record(record)
+class Dumper(yaml.SafeDumper):
+ def ignore_aliases(self,data):return True
+(B/'drafts/native-base.yaml').write_text(yaml.dump(record,Dumper=Dumper,sort_keys=False,allow_unicode=True,width=100))
+print(json.dumps({'status':'native base schema passed; primary evidence integration still pending','taxa':len(taxa),'participants':len(nodes),'reactions':len(reactions),'edges':len(edges),'refs':len(refs),'unresolved_chemical_occurrences':len(unresolved)}))

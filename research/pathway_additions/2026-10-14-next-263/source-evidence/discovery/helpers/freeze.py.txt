@@ -1,0 +1,57 @@
+from pathlib import Path
+import hashlib,json,gzip,datetime,re,collections
+O=Path('/private/tmp/pathwaymech-next-263-discovery');sha=lambda b:hashlib.sha256(b).hexdigest()
+def dump(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+semantic=json.loads((O/'semantic-corpus-scan.json').read_text());dispositions=[]
+for r in semantic['matched_records']:
+ id=r['id']
+ if id=='MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY':why='Maintained exact upstream4-step module; explicit description stops before CoA transfer/thiolysis; broader parent is not this module identity.'
+ elif id=='MetaCyc:PWY-2361':why='Maintained exact downstream2-step module; starts at3-oxoadipate, lacks catechol ring opening and3upstream reactions.'
+ elif id=='GO:0019618':why='Four-step protocatechuate ortho branch with different entry and3defining reactions; only enol-lactone hydrolase is shared.'
+ elif id=='MetaCyc:PWY-5415':why='Complete5-step hydrolytic meta-cleavage route; ring opens adjacent to hydroxyls, different intermediates and all defining reaction families.'
+ elif id=='MetaCyc:PWY0-1277':why='Complete phenylpropanoate/hydroxyphenylpropanoate degradation with carboxyethylcatechol meta chemistry; no candidate reaction family.'
+ elif id=='MetaCyc:PWY-6419':why='Two-step shikimate-to-protocatechuate route; downstream GO0019618 is an interface, not internal full catechol chemistry.'
+ elif id in ['MetaCyc:P184-PWY','MetaCyc:PWY-6336']:why='Protocatechuate meta/para route with different initial substrate, ring cleavage and products; no candidate defining reaction family.'
+ elif 'GALLATE-DEGRADATION' in id:why='Gallate route to pyruvate/oxaloacetate through oxalomesaconate/CHA; oxoadipate-name or catechol-activity context is not the candidate six-step route.'
+ elif 'LYSINE' in id:why='Lysine biosynthesis through2-oxoadipate; positional-isomer word match, not3-oxoadipate/catechol degradation.'
+ elif 'PWY-5651' in id or 'PWY-5653' in id:why='Tryptophan/NAD route involving amino-carboxymuconate semialdehyde; shared substring does not establish catechol ortho chemistry.'
+ else:raise AssertionError(id)
+ dispositions.append({'id':id,'path':r['path'],'sha256':r['sha256'],'family_coverage':r['coverage'],'disposition':why})
+assert len(dispositions)==13;dump('semantic-record-dispositions.json',{'all258_records_semantically_scanned':True,'all13_related_matches_dispositioned':True,'records':dispositions})
+# Source-specific reconstruction instructions and actual evidence assertions.
+search=json.loads((O/'search-execution-receipt.json').read_text());assert search['patterns']==75 and len(search['roots'])==2 and all(r['exit_code']==0 and r['ignored_and_hidden_included'] for r in search['roots'])
+matched=0
+for i,r in enumerate(search['roots']):
+ assert sha((O/r['raw_file']).read_bytes())==r['raw_sha256'];j=json.loads((O/f'prior-file-dispositions-{i}.json').read_text());assert len(j['files'])==r['matched_files'];matched+=len(j['files']);assert all(x['group']!='unclassified' for x in j['files'])
+assert matched==621
+ov=json.loads((O/'corpus-reaction-overlap.json').read_text());assert ov['all_records_compared']==258 and not ov['exact_identity_matches'] and not ov['whole_six_reaction_matches'] and not ov['planned262_comparison']['shared_reaction_ids']
+assert sha(Path(ov['planned262_comparison']['path']).read_bytes())==ov['planned262_comparison']['sha256']
+initial=json.loads((O/'initial-dedup/search-execution-receipt.json').read_text());assert initial['patterns']==74
+end=json.loads((O/'corpus-end-check.json').read_text());assert all(x['same_head_and_status_as_start'] for x in end['root_states'])
+dump('freeze-verification.json',{'verified_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'all75patterns_and_raw_logs_hash_verified':True,'all621file_dispositions_checked':True,'initial74pattern_observation_preserved':True,'all13semantic_record_dispositions_checked':True,'planned262_candidate_original_hash_verified':True,'both_root_head_and_status_unchanged':True,'baseline':'0c9a2dc2de7022e08f975e3828b6c98c32932fd2','post262_merged_rebind_required':True,'source_access':'No full primary-paper scientific reassessment in this candidate-discovery task.'})
+# Exact deterministic gzip copies for large ledgers, not lossy summaries.
+(O/'compact').mkdir(exist_ok=True);compressed=[]
+for p in sorted(O.rglob('*')):
+ if not p.is_file() or p.suffix not in ['.json','.jsonl'] or p.stat().st_size<65000 or any(z in p.parts for z in ['compact','originals']):continue
+ b=p.read_bytes();rel=p.relative_to(O);q=O/'compact'/Path(str(rel)+'.gz');q.parent.mkdir(parents=True,exist_ok=True);enc=gzip.compress(b,mtime=0);assert gzip.decompress(enc)==b;q.write_bytes(enc);compressed.append({'source':str(rel),'source_bytes':len(b),'source_sha256':sha(b),'retained_path':str(q.relative_to(O)),'retained_bytes':len(enc),'retained_sha256':sha(enc),'encoding':'gzip_lossless'})
+dump('compact-compression-receipt.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':compressed,'original_bytes_unchanged':True})
+compressed_by={r['source']:r for r in compressed};selection=[]
+# Compact handoff excludes raw original bodies; their complete external files are in artifact manifest.
+for p in sorted(O.rglob('*')):
+ if not p.is_file():continue
+ rel=str(p.relative_to(O))
+ if rel.startswith(('originals/','compact/')) or rel in ['artifact-manifest.json','compact-retention-manifest.json']:continue
+ if rel.startswith('initial-dedup/') and rel not in ['initial-dedup/complete-dedup-patterns.txt','initial-dedup/search-execution-receipt.json']:continue
+ if rel.startswith('reused-manifests/'):continue
+ b=p.read_bytes()
+ if rel in compressed_by:
+  row=compressed_by[rel];selection.append({'source':rel,'path':row['retained_path'],'sha256':row['retained_sha256'],'encoding':'gzip_lossless','decoded_sha256':row['source_sha256'],'bytes':row['retained_bytes']})
+ else:selection.append({'source':rel,'path':rel,'sha256':sha(b),'encoding':'identity','decoded_sha256':sha(b),'bytes':len(b),'promotion_hint':'store as inert .py.txt helper' if p.suffix=='.py' else 'retain exact bytes'})
+dump('compact-retention-manifest.json',{'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Compact discovery handoff/proofs; all complete original bodies and source acquisition manifests remain in external artifact-manifest. Compressed ledgers decode to exact originals. No promoted record or authority mutation.','count':len(selection),'files':selection})
+files=[]
+for p in sorted(O.rglob('*')):
+ if p.is_file() and p.name!='artifact-manifest.json':
+  b=p.read_bytes();files.append({'path':str(p.relative_to(O)),'bytes':len(b),'sha256':sha(b)})
+dump('artifact-manifest.json',{'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'candidate':'MetaCyc:PWY-5417','baseline_commit':'0c9a2dc2de7022e08f975e3828b6c98c32932fd2','post262_merged_rebind_required':True,'scope':'Every current file in this external package except this self-referential manifest. Subsequent work must append successor evidence without rewriting this frozen package.','count':len(files),'files':files})
+for row in files:assert sha((O/row['path']).read_bytes())==row['sha256']
+print(json.dumps({'manifest':str(O/'artifact-manifest.json'),'manifest_sha256':sha((O/'artifact-manifest.json').read_bytes()),'file_count':len(files),'handoff_sha256':sha((O/'HANDOFF.md').read_bytes()),'compact_manifest_sha256':sha((O/'compact-retention-manifest.json').read_bytes()),'compact_count':len(selection),'compressed_ledgers':len(compressed)},indent=2))

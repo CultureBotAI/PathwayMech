@@ -1,0 +1,34 @@
+import collections,datetime,hashlib,json,pathlib,re,xml.etree.ElementTree as E,yaml
+R=pathlib.Path('/private/tmp/pathwaymech-next-263-20261014');O=pathlib.Path('/private/tmp/pathwaymech-next-263-canonical-science');A=pathlib.Path('/private/tmp/pathwaymech-next-263-record-author');N=pathlib.Path('/private/tmp/pathwaymech-next-263-native/originals');P=R/'data/pathways/catechol-degradation-iii.yaml';d=yaml.safe_load(P.read_text());edges={e['id']:e for e in d['mechanistic_edges']}
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+objects={};bindings={}
+for p in N.glob('*.xml'):
+ root=E.parse(p).getroot()
+ for child in root:
+  if child.get('frameid') and child.get('detail')=='full':objects[child.get('frameid')]=(root,child);bindings[child.get('frameid')]=bind(p)
+slots=json.loads((A/'source-to-graph-native-slots.json').read_text());selected=[]
+for row in slots:
+ frame=row['frame'];assert frame in objects;root,obj=objects[frame];assert bindings[frame]['sha256']==row['source_sha256'];loc=row['locator'];assert loc.startswith('/ptools-xml/');matches=root.findall(loc[len('/ptools-xml/'):]);assert matches,(frame,loc)
+ for eid in row['edge_ids']+row['related_edges']:assert eid in edges
+ selected.append({'frame':frame,'locator':loc,'selected_xml':[E.tostring(e,encoding='unicode') for e in matches],'author_disposition':row['disposition'],'author_edges':row['edge_ids'],'author_related_edges':row['related_edges']})
+parent=objects['PWY-5417'][1];species=[list(e)[0].get('frameid') for e in parent.findall('species')];tax=[]
+for sid in species:
+ obj=objects[sid][1];cross=[e.findtext('dblink-oid') for e in obj.findall('dblink') if e.findtext('dblink-db') in ['NCBI-TAXONOMY','NCBI-TAXON','NCBITAXON']];tax.append({'native':sid,'full_original':bindings[sid],'name':obj.findtext('common-name'),'db_links':[E.tostring(e,encoding='unicode') for e in obj.findall('dblink')],'taxon_pointer':cross})
+assert len(species)==11
+activity=[]
+for e in edges.values():
+ if e['object'].startswith('MetaCyc:ENZRXN-') and e['predicate'] in ['catalyzes','enables']:
+  aid=e['object'].split(':',1)[1];obj=objects[aid][1];enzyme=obj.find('enzyme');assert list(enzyme)[0].get('frameid')==e['subject'].split(':',1)[1];activity.append({'edge':e['id'],'native_activity':aid,'native_enzyme':e['subject'],'native_reaction':list(obj.find('reaction'))[0].get('frameid'),'predicate':e['predicate'],'full_original':bindings[aid]})
+# PMID bibliographic identity and full exact title, distinct from paper interpretation.
+metadata=[]
+for ref in d['references']:
+ if ref['id'].startswith('PMID:'):
+  pm=ref['id'].split(':')[1];p=pathlib.Path('/private/tmp/pathwaymech-next-263-primary/originals/metadata-'+pm+'.json');j=json.loads(p.read_text())['resultList']['result'];assert len(j)==1 and j[0]['pmid']==pm;assert j[0]['title']==ref['title'];assert ref['url']=='https://pubmed.ncbi.nlm.nih.gov/'+pm+'/';metadata.append({'pmid':pm,'title':j[0]['title'],'doi':j[0].get('doi'),'original':bind(p)})
+# Current selected authorities: exact union ownership, no label-near-match acceptance.
+auth=[json.loads((R/('data/identifier_authorities/'+s+'.json')).read_text()) for s in ['sources','ontology']];ids=[d]+d['taxa']+d['participants']+d['reactions'];authority=[]
+for node in ids:
+ matches=[(a['terms'][node['id']],a['sources']) for a in auth if node['id'] in a['terms']];assert len(matches)==1;term,sources=matches[0];owner=sources[term['source']];label_exact=node['label'] in [term['label']]+term.get('synonyms',[]);authority.append({'id':node['id'],'record_label':node['label'],'label_exact_canonical_or_synonym':label_exact,'term':term,'owner':owner})
+import gzip
+raw=json.dumps(selected,indent=2,sort_keys=True).encode()+b'\n';stored=O/'inspection/native-source-slot-replay.json.gz';stored.write_bytes(gzip.compress(raw,mtime=0))
+out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':bind(P),'native_complete_objects':len(objects),'source_slot_count':len(slots),'source_slot_frames':len(set(row['frame'] for row in slots)),'slots':{'stored':bind(stored),'decoded_bytes':len(raw),'decoded_sha256':hashlib.sha256(raw).hexdigest()},'activity_assignments':activity,'parent_organisms':tax,'PMID_metadata':metadata,'selected_authorities':authority,'authority_inputs':[bind(R/p) for p in ['conf/identifier_sources.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json']],'limitations':['Author source-disposition classifications remain leads; direct locator/hash replay is not proof every biological interpretation is correct. Human adjudication independently assesses all record assertions and finite source conflicts.','Activity assignment replay verifies native local enzyme pointers; enables versus catalyzes semantics are reviewed using direct primary preparations and stated evidence scope.','Canonical native species annotation does not imply every step experimentally demonstrated for every listed taxon.']};(O/'checks/source-coverage-authority-replay.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n');print(json.dumps({'slot_count':len(slots),'activity_assignments':len(activity),'PMIDs':len(metadata),'authorities':len(authority),'result':'pass'}))

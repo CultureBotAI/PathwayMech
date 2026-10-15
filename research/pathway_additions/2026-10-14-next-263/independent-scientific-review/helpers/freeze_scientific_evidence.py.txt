@@ -1,0 +1,17 @@
+import datetime,gzip,hashlib,json,pathlib,shutil
+B=pathlib.Path('/private/tmp/pathwaymech-next-263-canonical-science');O=B/'retention';assert not O.exists();O.mkdir();rows=[]
+def digest(b):return hashlib.sha256(b).hexdigest()
+def retain(p,relative):
+ raw=p.read_bytes();out=O/relative;encoding='identity';stored=raw
+ if not p.name.endswith('.gz') and (p.suffix=='.log' or (p.suffix=='.json' and len(raw)>40000)):
+  out=pathlib.Path(str(out)+'.gz');stored=gzip.compress(raw,mtime=0);encoding='gzip'
+ out.parent.mkdir(parents=True,exist_ok=True);out.write_bytes(stored);assert (gzip.decompress(stored) if encoding=='gzip' else stored)==raw
+ rows.append({'source_path':str(p),'path':str(out.relative_to(O)),'encoding':encoding,'original_bytes':len(raw),'original_sha256':digest(raw),'stored_bytes':len(stored),'stored_sha256':digest(stored)})
+for p in sorted(B.rglob('*')):
+ if p.is_file() and not p.is_relative_to(O):retain(p,p.relative_to(B))
+child=pathlib.Path('/private/tmp/pathwaymech-next-263-primary-edge-independent/retention');m=json.loads((child/'artifact-manifest.json').read_text())
+for row in m['artifacts']:
+ p=child/row['path'];stored=p.read_bytes();assert len(stored)==row['stored_bytes'] and digest(stored)==row['stored_sha256'];decoded=gzip.decompress(stored) if row['encoding']=='gzip' else stored;assert len(decoded)==row['original_bytes'] and digest(decoded)==row['original_sha256'];original=pathlib.Path(row['source_path']).read_bytes();assert decoded==original
+for p in sorted(child.rglob('*')):
+ if p.is_file():retain(p,pathlib.Path('primary-edge-audit')/p.relative_to(child))
+manifest={'role':'Frozen independent scientific review evidence; canonical gate verdict/save remains separate','frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'inventory_includes_hidden_ignored':True,'target_sha256':'b30573a380b358a9b0228f8e3e2689943ecf828aa01ae790f281ba3fe617e603','artifacts':rows,'artifact_count':len(rows),'stored_bytes':sum(r['stored_bytes'] for r in rows),'reuse_limits':'Previously frozen independent chemistry and science-source preparation remain separate exact packages. This package records actual maintained-target assessment and bounded delegated primary sources; no final production gate success inferred.'};p=O/'artifact-manifest.json';p.write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n');print(json.dumps({'manifest':str(p),'sha256':digest(p.read_bytes()),'files':len(rows),'stored_bytes':manifest['stored_bytes']}))
