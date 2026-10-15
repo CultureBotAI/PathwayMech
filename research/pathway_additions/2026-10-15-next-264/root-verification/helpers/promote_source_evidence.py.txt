@@ -1,0 +1,132 @@
+"""Retain verified finite source packages without duplicating raw/compact bodies."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import shutil
+import subprocess
+
+W = Path('/private/tmp/pathwaymech-next-264-20261015')
+DEST = W / 'research/pathway_additions/2026-10-15-next-264'
+CI = Path('/private/tmp/pathwaymech-next-264-ci')
+SPECS = [
+    ('discovery', 'source-evidence/discovery', '599a450dc47e2dfabb6e6ae83a56436883f30abe5766efe80f8e9857d4196a67'),
+    ('native', 'source-evidence/native', 'e113d8152611a1da47b6ba67a6d970ec4d84b21e2b4c5827295dc998a8d1627a'),
+    ('primary', 'source-evidence/primary', '42248e5363c16520c7be6975cb63f76ca416cb0a88b91f9180cba889e59ce184'),
+    ('chemistry', 'source-evidence/chemistry', 'e2a9e10f046d91df978b64e52e81c07c297af5a0fc14fec9c317544f049e8406'),
+    ('biological-identity', 'source-evidence/biological-identity', '20318962c343b5c3f39896361cec0aba03526125e6040d0fa6f4cae2a292c8bd'),
+    ('assembly-title', 'source-evidence/assembly-title', 'bc2221efb425d67790e8e3eb86343f6984422701a67e9ad8c0ec1c745dfd1e0e'),
+    ('chemistry-symbolic-successor', 'source-evidence/chemistry-symbolic-successor', '867dac4e78076b10447b042a278ed8d2bac1a90b30a3307cfb061347e606adbf'),
+    ('record-design', 'record-design', '1068a2dd732be906335a19e36010fae4ed6d9fa367a5766acc42342b54f3d8f2'),
+    ('record-design/corrections/identity-locator-successor', 'source-evidence/biological-locator-successor', 'f6c61d15694db000494b9dbb8f698f7598f368071903e578ac173593fa5637bd'),
+    ('postmerge-rebind', 'root-verification/postmerge-rebind', 'a9e14b170562af7762764b4d5e5bd4b8142ce2360004ae40fd61af5546a87630'),
+    ('independent-chemistry', 'independent-chemistry', '389c1697c42743ec720aa4c757674a7f409160b5b3467ea3ccede7c169e2c8ed'),
+    ('independent-primary', 'independent-primary', 'c3d4178c07d6c46033da890dbf1a0683d0aca27231a5d3199247ffec05cc4247'),
+    ('independent-technical/retention', 'independent-technical-source-preparation', '756398abe28f866476df7cb8a3791cd41cd9b9020e7945fb475cc81102afffb8'),
+    ('independent-chemistry-successor-acceptance', 'independent-chemistry-successor-acceptance', '62e876f24a23010c33dc8b6b81f369bb80a7b195712850bc13c76921ac81abf7'),
+    ('independent-bio-locator-acceptance', 'independent-bio-locator-acceptance', '88c04711f964627fbbbf1e264450a1a8ab5ea4f1f217494e6f93ecbdcb0a7151'),
+]
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def read_verified(path, digest, size=None):
+    data = path.read_bytes()
+    assert sha(data) == digest, path
+    assert size is None or len(data) == size, path
+    return data
+
+def main():
+    assert not DEST.exists() and not (CI / 'source-promotion.json').exists()
+    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=W, text=True).strip() == '3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb'
+    assert subprocess.check_output(['git', 'status', '--porcelain=v1', '-uall'], cwd=W, text=True) == ''
+    plans = []
+    for suffix, relative, digest in SPECS:
+        root = Path('/private/tmp/pathwaymech-next-264-' + suffix)
+        manifest = root / 'artifact-manifest.json'
+        rows = json.loads(read_verified(manifest, digest))['files']
+        for row in rows:
+            read_verified(root / row['path'], row['sha256'], row['bytes'])
+        compact = root / 'compact-retention-manifest.json'
+        if not compact.exists():
+            compact = root / 'retention/artifact-manifest.json'
+        compact_obj = json.loads(compact.read_bytes())
+        pairs = compact_obj.get('files', compact_obj.get('artifacts'))
+        selected = {}
+        covered = set()
+        mappings = []
+        for pair in pairs:
+            if 'stored_path' in pair:
+                stored = root / pair['stored_path']
+            elif compact.parent.name == 'retention':
+                stored = compact.parent / pair['path']
+            elif pair['path'].startswith('compact/'):
+                stored = root / pair['path']
+            else:
+                stored = root / 'compact' / pair['path']
+            assert stored.resolve().is_relative_to(root)
+            raw_source = pair.get('original_relative_path', pair.get('source_relative_path', pair.get('original_path', pair.get('source_path', pair.get('source')))))
+            source = Path(raw_source)
+            if not source.is_absolute():
+                source = root / source
+            body = read_verified(stored, pair['stored_sha256'], pair['stored_bytes'])
+            assert pair['encoding'] in {'identity', 'gzip', 'gzip_lossless'}
+            raw = body if pair['encoding'] == 'identity' else gzip.decompress(body)
+            assert sha(raw) == pair['original_sha256'] and len(raw) == pair['original_bytes']
+            assert source.read_bytes() == raw
+            stored_rel = stored.relative_to(root).as_posix()
+            covered.add(stored_rel)
+            if source.is_relative_to(root):
+                covered.add(source.relative_to(root).as_posix())
+            selected[stored_rel] = stored
+            mappings.append({'source': str(source), 'original_sha256': sha(raw), 'original_bytes': len(raw),
+                             'retained': relative + '/' + stored_rel, 'stored_sha256': sha(body),
+                             'stored_bytes': len(body), 'encoding': pair['encoding']})
+        # Every frozen artifact is either decoded above, retained above, or copied exactly.
+        for row in rows:
+            if row['path'] not in covered:
+                selected[row['path']] = root / row['path']
+        selected[compact.relative_to(root).as_posix()] = compact
+        selected['frozen-source-artifact-manifest.json'] = manifest
+        selected['HANDOFF.md'] = root / 'HANDOFF.md'
+        if (root / 'CORRECTIONS.md').exists():
+            selected['CORRECTIONS.md'] = root / 'CORRECTIONS.md'
+        plans.append((root, relative, digest, rows, pairs, selected, mappings))
+
+    # All sources are validated before any maintained write.
+    inventories = []
+    for root, relative, digest, rows, pairs, selected, mappings in plans:
+        output = DEST / relative
+        copies = []
+        for rel, source in sorted(selected.items()):
+            target = output / rel
+            assert not target.exists()
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
+            data = target.read_bytes()
+            assert data == source.read_bytes()
+            copies.append({'path': target.relative_to(DEST).as_posix(), 'sha256': sha(data), 'bytes': len(data)})
+        inventories.append({'source': str(root), 'retained_root': relative, 'frozen_source_manifest_sha256': digest,
+                            'frozen_artifacts_accounted': len(rows), 'verified_storage_pairs': len(pairs),
+                            'copied_files': copies, 'decoded_source_mappings': mappings})
+    checks = []
+    for p in sorted(CI.glob('*root-intake.json')):
+        target = DEST / 'root-verification/intake' / p.name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(p, target)
+        checks.append({'path': target.relative_to(DEST).as_posix(), 'sha256': sha(target.read_bytes())})
+    helper = DEST / 'root-verification/helpers/promote_source_evidence.py.txt'
+    helper.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(Path(__file__), helper)
+    result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'base': '3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb',
+              'scope': 'Lossless finite source retention. Frozen manifests describe original external packages; this explicit map describes maintained compact storage. No maintained pathway, authority or final-review acceptance is claimed.',
+              'packages': inventories, 'root_intakes': checks,
+              'pending': ['PMID20137101 A1501 follow-up', 'full record authoring', 'selected authority integration', 'rendering and gates', 'final independent reviews and publication']}
+    receipt = DEST / 'root-verification/initial-source-retention.json'
+    receipt.write_text(json.dumps(result, indent=2) + '\n')
+    (CI / 'source-promotion.json').write_text(json.dumps({'utc': result['utc'], 'maintained_receipt': str(receipt), 'sha256': sha(receipt.read_bytes()), 'packages': len(inventories), 'copied_files': sum(len(x['copied_files']) for x in inventories), 'original_source_artifacts_accounted': sum(x['frozen_artifacts_accounted'] for x in inventories), 'all_stored_bytes_rechecked': True}, indent=2) + '\n')
+    print((CI / 'source-promotion.json').read_text())
+
+if __name__ == '__main__':
+    main()

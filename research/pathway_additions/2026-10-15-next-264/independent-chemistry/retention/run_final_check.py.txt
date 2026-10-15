@@ -1,0 +1,4 @@
+import datetime,hashlib,json,pathlib,subprocess,sys
+O=pathlib.Path('/private/tmp/pathwaymech-next-264-independent-chemistry');cmd=[sys.executable,'-B',str(O/'final_check.py.txt')];start=datetime.datetime.now(datetime.timezone.utc).isoformat();p=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+(O/'final-check.stdout.log').write_bytes(p.stdout);(O/'final-check.stderr.log').write_bytes(p.stderr)
+(O/'final-check-receipt.json').write_text(json.dumps({'started_utc':start,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':cmd,'exit_code':p.returncode,'stdout_sha256':hashlib.sha256(p.stdout).hexdigest(),'stderr_sha256':hashlib.sha256(p.stderr).hexdigest(),'adjudication_sha256':hashlib.sha256((O/'adjudication.json').read_bytes()).hexdigest()},indent=2)+'\n');print(p.stdout.decode(),end='');print(p.stderr.decode(),end='',file=sys.stderr);sys.exit(p.returncode)

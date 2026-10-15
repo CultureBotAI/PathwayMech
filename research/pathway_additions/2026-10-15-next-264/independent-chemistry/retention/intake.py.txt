@@ -1,0 +1,21 @@
+import datetime,gzip,hashlib,json,pathlib,sqlite3
+P=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry'); O=pathlib.Path('/private/tmp/pathwaymech-next-264-independent-chemistry')
+def sha(b):return hashlib.sha256(b).hexdigest()
+m=json.loads((P/'artifact-manifest.json').read_text()); c=json.loads((P/'compact-retention-manifest.json').read_text())
+actual={str(p.relative_to(P)) for p in P.rglob('*') if p.is_file()};expected={r['path'] for r in m['files']}|{'artifact-manifest.json'};assert actual==expected,(actual-expected,expected-actual)
+for r in m['files']:
+ b=(P/r['path']).read_bytes();assert len(b)==r['bytes'] and sha(b)==r['sha256'],r['path']
+for r in c['files']:
+ b=(P/r['path']).read_bytes();raw=gzip.decompress(b) if r['encoding']=='gzip_lossless' else b
+ assert len(b)==r['stored_bytes'] and sha(b)==r['stored_sha256'];assert len(raw)==r['original_bytes'] and sha(raw)==r['original_sha256'];assert raw==(P/r['source']).read_bytes(),r['path']
+sourcebindings=[]
+for p in sorted((P/'originals').iterdir()):sourcebindings.append({'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())})
+i=json.loads((P/'input-manifest.json').read_text());db=[]
+for d in i['database_bindings']:
+ p=pathlib.Path(d['path']); s=p.stat(); assert s.st_size==d['bytes'] and s.st_mtime_ns==d['mtime_ns'];assert str(p.resolve())==d['resolved']
+ db.append({**d,'independent_scope':'Recent source-author full database hash receipt reused only after exact resolved path, size and nanosecond mtime match. Reviewer independently queries selected complete outgoing rows; reviewer did not rehash the multi-GB database.'})
+selected={'chebi':['CHEBI:'+x for x in ['16150','60129','18135','57540','57945','15378','15379','16526','57692','33739','49601']], 'rhea':['RHEA:'+str(x) for x in list(range(11560,11564))+list(range(12633,12637))]}
+for name,ids in selected.items():
+ con=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/'+name+'.db?mode=ro',uri=True);cols=[r[1] for r in con.execute('pragma table_info(statements)')]; rows={curie:[dict(zip(cols,r)) for r in con.execute('select * from statements where subject=? order by predicate, object, value, datatype, language, graph',(curie,))] for curie in ids};assert all(rows.values());(O/('sql-'+name+'-complete-subject-rows.json')).write_text(json.dumps(rows,indent=2)+'\n');con.close()
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent preparatory source review; no maintained next264 record assessed','package_manifest_sha256':sha((P/'artifact-manifest.json').read_bytes()),'source_author_handoff_sha256':sha((P/'HANDOFF.md').read_bytes()),'artifact_count_verified':len(m['files']),'compact_count_verified':len(c['files']),'inventory_includes_hidden_and_ignored':True,'input_manifest_sha256':sha((P/'input-manifest.json').read_bytes()),'database_bindings':db,'originals':sourcebindings,'software':'Python stdlib in verified263 environment; no modifications'}
+(O/'intake.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'artifact_count':len(m['files']),'compact_pairs':len(c['files']),'originals':len(sourcebindings),'status':'passed'}))

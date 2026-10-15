@@ -1,0 +1,21 @@
+import datetime,gzip,hashlib,json,pathlib
+O=pathlib.Path('/private/tmp/pathwaymech-next-264-independent-chemistry');P=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry');D=O/'retention';assert not D.exists();D.mkdir()
+selected=[(p,p.name) for p in sorted(O.iterdir()) if p.is_file()]
+selected.extend((p,'source-originals/'+p.name) for p in sorted((P/'originals').iterdir()) if p.is_file() and p.name!='rhea.rdf.gz')
+for name in ['HANDOFF.md','artifact-manifest.json','compact-retention-manifest.json','input-manifest.json','acquisition.json','context-cofactor-acquisition.json','whole-route-chemistry-replay.json','rhea-equivalence-search-exclusions.json','helpers/verify_chemistry.py.txt']:
+ selected.append((P/name,'source-author/'+name))
+items=[]
+for source,name in selected:
+ original=source.read_bytes();compact=not name.endswith('.py.txt') or len(original)>6000 or name.startswith('source-author/')
+ if compact:name+='.gz'
+ stored=gzip.compress(original,mtime=0) if compact else original;dest=D/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(stored)
+ assert (gzip.decompress(stored) if compact else stored)==original
+ items.append({'path':name,'source_path':str(source),'encoding':'gzip' if compact else 'identity','original_bytes':len(original),'original_sha256':hashlib.sha256(original).hexdigest(),'stored_bytes':len(stored),'stored_sha256':hashlib.sha256(stored).hexdigest()})
+manifest={'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'candidate':'MetaCyc:PWY-2503','role':'Independent preparatory source review; issue 572 remains open. This frozen package predates reading any source-author successor.','artifact_count':len(items),'stored_bytes':sum(x['stored_bytes'] for x in items),'original_bulk_RDF':{'path':str(P/'originals/rhea.rdf.gz'),'bytes':(P/'originals/rhea.rdf.gz').stat().st_size,'sha256':hashlib.sha256((P/'originals/rhea.rdf.gz').read_bytes()).hexdigest(),'retention':'Exact full original remains external in frozen chemistry source package. Independent original byte fragments and full compressed/decompressed hashes are retained here.'},'artifacts':items}
+(D/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+allfiles=[]
+for p in sorted(O.rglob('*')):
+ if p.is_file():allfiles.append({'path':str(p.relative_to(O)),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+outer={'frozen_utc':manifest['frozen_utc'],'scope':'Every file in independent source-review workspace except this manifest. Hidden and ignored files are included by rglob. No source-author successor has been read.','count':len(allfiles),'files':allfiles}
+(O/'artifact-manifest.json').write_text(json.dumps(outer,indent=2)+'\n')
+print(json.dumps({'source_review_directory':str(O),'source_review_manifest_sha256':hashlib.sha256((O/'artifact-manifest.json').read_bytes()).hexdigest(),'source_review_artifact_count':len(allfiles),'compact_directory':str(D),'compact_manifest_sha256':hashlib.sha256((D/'artifact-manifest.json').read_bytes()).hexdigest(),'compact_count':len(items),'stored_bytes':manifest['stored_bytes'],'adjudication_sha256':hashlib.sha256((O/'adjudication.json').read_bytes()).hexdigest()},indent=2))

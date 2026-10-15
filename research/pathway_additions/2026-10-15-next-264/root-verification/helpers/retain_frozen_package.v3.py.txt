@@ -1,0 +1,83 @@
+"""Losslessly retain a complete frozen package with an explicit compact map."""
+from pathlib import Path
+import argparse
+import datetime
+import gzip
+import hashlib
+import json
+import shutil
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def checked(path, digest, size=None):
+    data = path.read_bytes()
+    assert sha(data) == digest, path
+    assert size is None or len(data) == size, path
+    return data
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--manifest-sha256', required=True)
+    parser.add_argument('--destination', type=Path, required=True)
+    parser.add_argument('--receipt', type=Path, required=True)
+    parser.add_argument('--default-encoding', choices=['identity', 'gzip'])
+    args = parser.parse_args()
+    root, dest = args.source.resolve(), args.destination.resolve()
+    assert not dest.exists() and not args.receipt.exists()
+    manifest = root / 'artifact-manifest.json'
+    obj = json.loads(checked(manifest, args.manifest_sha256))
+    rows = obj.get('files', obj.get('artifacts'))
+    assert isinstance(rows, list) and rows
+    for row in rows:
+        checked(root / row['path'], row['sha256'], row['bytes'])
+    storage = root / 'compact-retention-manifest.json'
+    compact = json.loads(storage.read_bytes())
+    pairs = compact.get('pairs', compact.get('files', compact.get('artifacts', compact.get('rows'))))
+    assert isinstance(pairs, list) and pairs
+    selected, covered, mappings = {}, set(), []
+    for pair in pairs:
+        stored = root / pair['stored_path']
+        original = root / pair['original_path']
+        assert stored.resolve().is_relative_to(root) and original.resolve().is_relative_to(root)
+        data = checked(stored, pair['stored_sha256'], pair['stored_bytes'])
+        encoding = pair.get('encoding', args.default_encoding)
+        assert encoding in {'identity', 'gzip', 'gzip_lossless'}
+        raw = data if encoding == 'identity' else gzip.decompress(data)
+        assert sha(raw) == pair['original_sha256'] and len(raw) == pair['original_bytes']
+        assert original.read_bytes() == raw
+        covered.update([stored.relative_to(root).as_posix(), original.relative_to(root).as_posix()])
+        selected[stored.relative_to(root).as_posix()] = stored
+        mappings.append({**pair, "encoding": encoding})
+    for row in rows:
+        if row['path'] not in covered:
+            selected[row['path']] = root / row['path']
+    selected['frozen-source-artifact-manifest.json'] = manifest
+    selected['compact-retention-manifest.json'] = storage
+    selected['HANDOFF.md'] = root / 'HANDOFF.md'
+    # All original and storage checks precede maintained writes.
+    copies = []
+    for name, source in sorted(selected.items()):
+        target = dest / name
+        assert target.resolve().is_relative_to(dest) and not target.exists()
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
+        data = target.read_bytes()
+        assert data == source.read_bytes()
+        copies.append({'path': name, 'sha256': sha(data), 'bytes': len(data)})
+    receipt = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'scope': 'Lossless evidence retention and byte-integrity checks; no scientific acceptance is implied.',
+        'source_root': str(root), 'retained_root': str(dest),
+        'source_manifest_sha256': args.manifest_sha256,
+        'explicit_default_storage_encoding': args.default_encoding,
+        'frozen_artifacts_accounted': len(rows), 'verified_storage_pairs': len(pairs),
+        'copied_files': copies, 'decoded_source_mappings': mappings,
+    }
+    args.receipt.parent.mkdir(parents=True, exist_ok=True)
+    args.receipt.write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps({'receipt': str(args.receipt), 'sha256': sha(args.receipt.read_bytes()), 'artifacts': len(rows), 'pairs': len(pairs), 'copies': len(copies)}, indent=2))
+
+if __name__ == '__main__':
+    main()

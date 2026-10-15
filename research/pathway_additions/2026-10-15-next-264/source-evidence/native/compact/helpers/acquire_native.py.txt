@@ -1,0 +1,45 @@
+"""Acquire a finite, explicit batch of public complete META source objects."""
+from pathlib import Path
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import re
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as E
+
+P=Path('/private/tmp/pathwaymech-next-264-native')
+batch=sys.argv[1]
+assert re.fullmatch(r'[a-z0-9-]+',batch)
+frames=json.loads((P/'requests'/f'{batch}.json').read_text())
+assert 0<len(frames)<=50 and len(set(frames))==len(frames)
+assert not (P/'receipts'/f'acquisition-{batch}.json').exists()
+def now():return datetime.datetime.now(datetime.timezone.utc).isoformat()
+def run(frame):
+    assert re.fullmatch(r'[A-Za-z0-9_.+~-]+',frame),frame
+    url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+urllib.parse.quote('META:'+frame,safe='')
+    row={'requested_frame':frame,'requested_url':url,'started_utc':now()}
+    body=None
+    try:
+        req=urllib.request.Request(url,headers={'User-Agent':'PathwayMech bounded native source research'})
+        with urllib.request.urlopen(req,timeout=55)as r:
+            body=r.read();row.update(http_status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'),response_headers=dict(r.headers))
+    except urllib.error.HTTPError as e:
+        body=e.read();row.update(http_status=e.code,final_url=e.url,content_type=e.headers.get('Content-Type'),response_headers=dict(e.headers),error=repr(e))
+    except Exception as e:row['error']=repr(e)
+    if body is not None:
+        f=P/'originals'/f'META-{frame}.xml';assert not f.exists();f.write_bytes(body)
+        row.update(path=str(f.relative_to(P)),sha256=hashlib.sha256(body).hexdigest(),bytes=len(body))
+        try:
+            t=E.fromstring(body);ns=[n for n in t if n.get('frameid')==frame]
+            assert len(ns)==1 and ns[0].get('detail')=='full'
+            pg=t.find('metadata/PGDB');assert pg is not None
+            row.update(exact_full_native_object=True,object_type=ns[0].tag,object_attributes=ns[0].attrib,source_pgdb=pg.attrib,direct_slots=len(ns[0]))
+        except Exception as e:row['parse_error']=repr(e)
+    row['finished_utc']=now();return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=3)as pool:rows=list(pool.map(run,frames))
+(P/'receipts'/f'acquisition-{batch}.json').write_text(json.dumps(rows,indent=2)+'\n')
+print(json.dumps([{k:r.get(k)for k in ['requested_frame','http_status','bytes','sha256','object_type','direct_slots','exact_full_native_object','error','parse_error']}for r in rows],indent=2))

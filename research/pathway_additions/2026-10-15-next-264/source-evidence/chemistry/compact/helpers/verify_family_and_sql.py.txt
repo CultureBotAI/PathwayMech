@@ -1,0 +1,28 @@
+import csv,hashlib,json,pathlib,sqlite3,xml.etree.ElementTree as E
+O=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry');load=lambda p:json.loads(pathlib.Path(p).read_bytes());sha=lambda p:hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest();rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#';rh='http://rdf.rhea-db.org/'
+projection=load(O/'derived/rhea-selected-complete-descriptions.json');assert projection['original_sha256']==sha(O/'originals/rhea.rdf.gz')
+nodes={}
+for fragment in projection['descriptions']:
+ e=E.fromstring(fragment);uri=e.get('{'+rdf+'}about');d=nodes.setdefault(uri,{})
+ for ch in e:
+  k=ch.tag.split('}')[-1];v=ch.get('{'+rdf+'}resource') or ch.text
+  if v not in d.setdefault(k,[]):d[k].append(v)
+table={r['RHEA_ID_MASTER']:r for r in csv.DictReader((O/'originals/rhea-directions.tsv').open(),delimiter='\t')}
+families=[]
+for master in ['12633','11560']:
+ row=table[master];lr=row['RHEA_ID_LR'];rl=row['RHEA_ID_RL'];bi=row['RHEA_ID_BI'];m=nodes[rh+master];l=rh+master+'_L';r=rh+master+'_R'
+ assert set(m['directionalReaction'])=={rh+lr,rh+rl} and m['bidirectionalReaction']==[rh+bi]
+ assert set(m['side'])=={l,r};assert nodes[rh+lr]['substrates']==[l] and nodes[rh+lr]['products']==[r]
+ assert nodes[rh+rl]['substrates']==[r] and nodes[rh+rl]['products']==[l]
+ assert set(nodes[rh+bi]['substratesOrProducts'])=={l,r}
+ for i in [master,lr,rl,bi]:assert nodes[rh+i]['status']==[rh+'Approved'] and nodes[rh+i]['isChemicallyBalanced']==['true']
+ families.append({'master':master,'left_to_right':lr,'right_to_left':rl,'bidirectional':bi,'master_and_bidirectional_sides':[l,r],'directions_table_agrees_complete_RDF':True,'all_four_approved_and_chemically_balanced':True,'selected_direction':'left_to_right','citation_leads_only':m.get('citation',[])})
+db=load(O/'input-manifest.json')['database_bindings'][1];p=pathlib.Path(db['resolved']);s=p.stat();assert s.st_size==db['bytes'] and s.st_mtime_ns==db['mtime_ns'];c=sqlite3.connect(p.as_uri()+'?mode=ro',uri=True)
+ids=['RHEA:'+str(i) for i in list(range(12633,12637))+list(range(11560,11564))]
+rows={i:[dict(zip(['subject','predicate','object','value','datatype','language'],r)) for r in c.execute('select subject,predicate,object,value,datatype,language from statements where subject=? order by predicate,object,value',(i,))] for i in ids}
+for reaction in load(O/'whole-route-chemistry-replay.json')['reactions']:
+ labels=[q['value'] for q in rows[reaction['selected_id']] if q['predicate']=='rdfs:label'];assert labels==[reaction['selected_label']]
+sql={'database_binding':db,'rows':rows,'selected_labels_equal_issuing_RDF_142':True,'scope':'All outgoing SQL statements for the eight family IDs. SQL139 labels for the selected two directional equations agree exactly with issuing RDF142; full structural equivalence is proven from RDF and ChEBI originals, not this label check.'}
+prior=load(O/'derived/rhea-selected-complete-subject-rows.json');assert prior==sql
+(O/'rhea-family-orientation-verification.json').write_text(json.dumps({'source_rdf_sha256':sha(O/'originals/rhea.rdf.gz'),'selected_complete_description_projection_sha256':sha(O/'derived/rhea-selected-complete-descriptions.json'),'directions_tsv_sha256':sha(O/'originals/rhea-directions.tsv'),'sql_rows_sha256':sha(O/'derived/rhea-selected-complete-subject-rows.json'),'families':families,'labels_compatible_with_pinned_sql139':True,'boundary':'Family directions describe issuing reaction side conventions. No empirical irreversibility or physiological feasibility is inferred from RDF family existence.'},indent=2)+'\n')
+print(json.dumps({'status':'passed','families':len(families),'all_family_IDs':len(rows),'sql_statements':sum(map(len,rows.values()))}))

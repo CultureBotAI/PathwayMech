@@ -1,0 +1,1082 @@
+# Independent technical integration review of aerobic benzoate degradation I
+
+- Review: 20261015T101912Z-next264-independent-technical
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-15T09:41:42.092352Z
+- Finished UTC: 2026-10-15T10:19:12.135073Z
+- Reviewer: Codex independent technical reviewer /root/next263_chemistry_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+No unresolved technical findings in the exact maintained aerobic benzoate degradation I record. The selected authority union, preservation of all prior records and authority values, production graph and complete KGX payloads are supported by independent checks. All seven required integration commands passed, with 5,255 tests passed, 3 skipped and 7 warnings. The minor source-inventory locator issue 574 was corrected by a separate author and independently accepted before this first canonical review. Scientific acceptance is outside this technical review, including the A1501 primary evidence authored by this reviewer.
+
+## Scope And Provenance
+
+One complete maintained target reviewed for technical integration, authority provenance and rendered/exported fidelity; scientific correctness excluded.
+
+Selection: Exact maintained next264 target MetaCyc:PWY-2503, SHA256 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-2503 | data/pathways/benzoate-degradation-i-aerobic.yaml | maintained | benzoate degradation I (aerobic) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Independent authority and baseline replay | passed | False | MetaCyc:PWY-2503 | Actual replay exited0; all prior values and selected additions accounted. |
+| Single-target schema and serialization audit | passed | False | MetaCyc:PWY-2503 | Internal APIs exercised for the exact target; this is supplementary evidence, not an invented project one-record validation command. |
+| Independent issue574 one-leaf successor acceptance | passed | False | MetaCyc:PWY-2503 | Exact original source field and all unaffected bytes independently checked. |
+| Independent actual page and native KGX comparison | passed | False | MetaCyc:PWY-2503 | Production page/downloads and Git-base exports compared without regenerating or modifying maintained files. |
+| just render-pages | passed | True | MetaCyc:PWY-2503 | Rendered all 261 pathway records; the exact target page was subsequently compared with the independently inspected rendering. |
+| just validate | passed | True | MetaCyc:PWY-2503 | Full repository validation passed: 261 pathway records and closed-schema/identifier checks, 20,211 evidence blocks, 480 valid history records, 30 source records and current generated pages. |
+| just test | passed | True | MetaCyc:PWY-2503 | Full suite passed: 5,255 passed, 3 skipped and 7 warnings in 846.73 seconds of pytest execution; root command elapsed 850.19 seconds. |
+| just lint | passed | True | MetaCyc:PWY-2503 | Ruff reported all checks passed. |
+| just vendored-check | passed | True | MetaCyc:PWY-2503 | All 22 governed artifacts match the pinned CLAW revision. |
+| git diff --check | passed | True | MetaCyc:PWY-2503 | Tracked unstaged diff whitespace check passed with no output. |
+| git diff --cached --check | passed | True | MetaCyc:PWY-2503 | Staged diff whitespace check passed with no output. |
+| Final retained input and gate acceptance | passed | True | MetaCyc:PWY-2503 | Verified all 13 gate-retention pairs, all 4,403 tested inputs and both immutable technical packages, without rerunning the full suite. |
+| Actual full-corpus native KGX export | passed | True | MetaCyc:PWY-2503 | Root executed the native export; this reviewer verified actual output hashes, published byte equality, complete target payloads and prior contribution preservation. |
+
+## Scientific And Domain Assessments
+
+### Complete target structure and local references
+
+schema: supported. Targets: MetaCyc:PWY-2503.
+
+The entire maintained target passes semantic and closed schema checks. All named nodes, 54 triples, 12 qualifiers and 101 declared references are structurally accounted for. This does not establish scientific truth.
+
+### Selected issuing authority integration
+
+grounding: supported. Targets: MetaCyc:PWY-2503.
+
+All 51 new terms are selected by the actual target. Complete selected source originals reproduce 45 source terms; independent SQL queries confirm 22 ontology selections. All labels and typed source-owner bindings pass the current 261-record consumer.
+
+### Existing records and authority values
+
+consistency: supported. Targets: MetaCyc:PWY-2503.
+
+All 260 prior maintained YAMLs are exact at the actual base. Existing 3,091 source terms and 1,094 owners, 2,158 ontology terms and 5 owners, and the 1,275-row source manifest prefix are preserved. Only 45 selected source terms, 6 ontology terms and 31 original source entries are added.
+
+### Production graph and KGX fidelity
+
+representation: supported. Targets: MetaCyc:PWY-2503.
+
+The actual published page equals the independently checked rendering byte for byte. All 54 new edges retain complete evidence, qualifiers and cited reference metadata; all 67 target node contexts and all prior graph contributions survive full-corpus export. The 71 display nodes include 12 qualified display instances without minting biological IDs.
+
+### Bounded desktop and mobile inspection
+
+graph: supported. Targets: MetaCyc:PWY-2503.
+
+Exact browser observations and independent screenshot inspection support controls, zoom and node selection. The 54 arrows comprise 38 mechanism and 16 context links. Captures cover finite viewports; the tall graph and small fit-width text require the provided zoom and scroll controls.
+
+### Issue574 prior JSON finding and append-only correction
+
+provenance: supported. Targets: MetaCyc:PWY-2503.
+
+NEXT264-KEGG-LOC-01 was a minor frozen source-owner inventory field-label defect. The independently accepted one-leaf successor correctly uses SYMBOL benA and preserves all other bytes. The initial observation was JSON, not a canonical review; no previous_occurrences or resolved canonical finding is invented.
+
+### Required gates and exact tested inputs
+
+consistency: supported. Targets: MetaCyc:PWY-2503.
+
+All seven required integration commands and the separate native KGX export passed. Retained original/log hashes and the complete 4,403-file tested inventory were independently verified. Final inspection binds the actual maintained target, authority snapshots, generated outputs and retained technical/gate evidence.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| E-RECORD | data/pathways/benzoate-degradation-i-aerobic.yaml; Complete maintained YAML | supports | Complete target read; exact record has 67 named IDs, 54 edges, 12 endpoint qualifiers and 101 reference declarations. |
+| E-AUTH-INTEGRITY | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/authority-package-integrity.json.gz; gzip-decoded complete JSON | supports | Independent verification of 687 physical artifacts, 343 lossless pairs and 31 complete selected original source-cache links. |
+| E-BASELINE | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/authority-baseline-preservation.json.gz; gzip-decoded snapshots, prior_records and new_ids | supports | All 260 prior YAMLs and every existing authority term, owner and manifest prefix match actual Git base. Exactly 51 selected missing terms added. |
+| E-SOURCE | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/selected-source-replay.json.gz; gzip-decoded projection.terms and projection.sources | supports | Independent execution of unchanged canonical source parser reproduces 45 selected terms and 31 source owners exactly. |
+| E-SQL | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/selected-ontology-sql.json.gz; gzip-decoded terms and databases | supports | Independent direct SQL query confirms all 22 selected ontology labels, exact synonyms, releases and licenses. Recent author whole-database hash receipt is linked to unchanged files; no new complete database hash is claimed. |
+| E-CONSUMER | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/maintained-identifier-consumer.json.gz; gzip-decoded complete JSON | supports | Actual maintained 261-record identifier consumer completed without errors; all 67 target labels match issuing authority labels or exact synonyms. |
+| E-SERIAL | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/serialization-proof.json.gz; gzip-decoded edge_details and outputs | supports | Closed and semantic schema checks plus independent single-target rendering preserve every edge, qualifier, cited reference and per-record node context. |
+| E-LOC-OBS | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/finding-NEXT264-KEGG-LOC-01.json.gz; gzip-decoded complete original observation | supports | Minor issue 574 source-locator defect independently confirmed: the original inventory uses NAME benA while the exact issuing KEGG entry uses SYMBOL benA. The maintained YAML has no faulty locator. |
+| E-LOC-FIX | research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/acceptance.json.gz; gzip-decoded complete acceptance | supports | Separate author successor independently accepted: only one JSON leaf and byte phrase change NAME to SYMBOL. All 101 reference objects and owner bindings, exact target and all 237 original author artifacts remain unchanged. |
+| E-PRODUCTION | research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/production-proof.json.gz; Complete gzip-decoded independent production comparison | supports | Actual page equals the independently checked prototype. Native KGX equals published downloads; all 13,492 prior edges remain exact, exactly 54 are added, and all prior node contexts plus all 67 target contexts survive. |
+| E-VISUAL | research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/independent-visual-assessment.json.gz; Complete gzip-decoded independent visual assessment | supports | Both root-produced desktop/mobile captures independently viewed; controls and legend render and viewport limits are explicitly recorded. |
+| E-BROWSER | research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/browser-cdp-result.json.gz; gzip-decoded desktop, zoomed, picker, picked, mobile and runtime_errors | supports | Root executed browser interactions; this reviewer inspected the exact script, receipt and images. No runtime exceptions were captured; zoom and the exact node picker operate. The browser count of 38 is mechanism-only; actual HTML adds 16 context links for 54 total. |
+| E-GATE-1 | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-render-pages.log.gz; Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json | supports | Rendered all 261 pathway records; the exact target page was subsequently compared with the independently inspected rendering. |
+| E-GATE-2 | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-validate.log.gz; Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json | supports | Full repository validation passed: 261 pathway records and closed-schema/identifier checks, 20,211 evidence blocks, 480 valid history records, 30 source records and current generated pages. |
+| E-GATE-3 | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-test.log.gz; Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json | supports | Full suite passed: 5,255 passed, 3 skipped and 7 warnings in 846.73 seconds of pytest execution; root command elapsed 850.19 seconds. |
+| E-GATE-4 | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-lint.log.gz; Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json | supports | Ruff reported all checks passed. |
+| E-GATE-5 | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-vendored-check.log.gz; Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json | supports | All 22 governed artifacts match the pinned CLAW revision. |
+| E-GATE-6 | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---check.log.gz; Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json | supports | Tracked unstaged diff whitespace check passed with no output. |
+| E-GATE-7 | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---cached---check.log.gz; Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json | supports | Staged diff whitespace check passed with no output. |
+| E-GATE-RECEIPTS | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json; All seven ordered command receipts | supports | All seven actual commands exited zero. Original log hashes match retained lossless bodies and command scope is the full integration worktree. |
+| E-GATE-PRESERVATION | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/final-input-preservation.json; tested_core_files, all_unchanged, scope and record_sha256 | supports | All 4,403 scoped inputs were unchanged during the complete gate run. This reviewer independently rehashed those files after retention and found them unchanged; 255 additions at that observation were confined to new next264 research evidence. |
+| E-GATE-MANIFEST | research/pathway_additions/2026-10-15-next-264/verification/initial-gates/retention-manifest.json; All 13 original/stored mappings | supports | All retained gate files decode exactly to the actual originals. Execution environment uses the verified 263 virtual environment with UV_NO_SYNC=1. |
+| E-KGX-RECEIPT | research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/kgx-export-receipt.json.gz; Complete gzip-decoded native export receipt | supports | Native just kgx-export completed with exit zero. Complete edges and nodes files equal published downloads byte for byte, with hashes independently verified. |
+
+## Limits And Additional Notes
+
+- This is a technical review with scientific_review false. The reviewer authored the A1501 primary-source supplement and excludes its scientific self-acceptance. Separate independent scientific review owns biological, chemical, primary-evidence and iModulon rubric conclusions.
+- Other maintained pathways are checked for byte and graph-contribution preservation only, not scientifically reassessed.
+- Independent ontology checks queried selected labels, exact synonyms and release/license metadata. Complete database hashes are linked to the recent author CLI receipt and unchanged files, not independently rehashed.
+- Selected source replay is bounded to 31 complete originals. Unselected historical source originals are not rebuilt; previous authority values are preserved against the actual base.
+- Browser interactions were executed by root. This reviewer independently inspected the script, receipt, actual page and two exact screenshots. Captures cover finite viewports; fit-width labels are small, especially on mobile.
+- The full suite reported 3 skipped tests and 7 dependency deprecation warnings. Canonical persistence and the final global review-check remain root-owned publication steps after this validated content is delivered.
+- No maintained files, runtime environments, Git or GitHub objects were changed by this reviewer.
+- Issue 574 started as a retained JSON observation. Its separately authored correction and independent acceptance are accounted for in assessments and evidence, without fabricated canonical lineage.
+- ReviewTarget.kind is maintained; review.kind is record. Initial inspect metadata used record as target kind; the exact same target was re-inspected with corrected enum before production assessment.
+- No repository record status or scientific promotion follows from this technical review.
+- All required integration checks are terminal and passed. Later evidence/report/history or canonical-review additions require the root-owned bounded checks; no duplicate broad suite was run by this reviewer.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261015T101912Z-next264-independent-technical
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent technical integration review of aerobic benzoate degradation I
+started_at: '2026-10-15T09:41:42.092352Z'
+finished_at: '2026-10-15T10:19:12.135073Z'
+reviewer:
+  identity: Codex independent technical reviewer /root/next263_chemistry_review
+  kind: agent
+  independence: independent
+  independence_basis: Reviewer did not author the maintained record, authority integration,
+    generator or issue574 repair and performed no maintained, Git or GitHub writes.
+    Reviewer authored the A1501 primary-source supplement; its scientific acceptance
+    is explicitly excluded and belongs to the separate scientific reviewer. This review
+    assesses technical integration, provenance, preservation and representation only.
+skill: .claude/skills/review-yaml-record/SKILL.md, bounded to independent technical
+  scope under docs/record-reviews.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: No unresolved technical findings in the exact maintained aerobic benzoate
+  degradation I record. The selected authority union, preservation of all prior records
+  and authority values, production graph and complete KGX payloads are supported by
+  independent checks. All seven required integration commands passed, with 5,255 tests
+  passed, 3 skipped and 7 warnings. The minor source-inventory locator issue 574 was
+  corrected by a separate author and independently accepted before this first canonical
+  review. Scientific acceptance is outside this technical review, including the A1501
+  primary evidence authored by this reviewer.
+source:
+  git_revision: 3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_policy.yaml
+    sha256: f57137cbec6ee2ffb4abc1c2e448dd93766e37edac9b07c43cab24c5809d27f7
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 7de3e405cb14f101a70bc78d5331689e13b575c6f2839865aff1e90803248d12
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: e74f68f186cb3ad41b0f19c0e23802f3e0fa824ebd2f3ad06b34fbf85235c98b
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 692034749d1a6d834f8cea79e1a9b066cb8d339fccb37c4eb9337b838aab6bac
+    role: context
+  - path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    sha256: 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 7cc031991312843431ebf1f9531d66d90533f1e8bc08af7dad32ff58bfa49350
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 06e093dea2bf37c92c1461eaf6eff3ca3e909624ee439c41a619a0328c1878ce
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 3c8b36ff333620752b861557ae8508940caef871926c67ec08a7800a9c5bc643
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 7299fb7a76be01922c9629074c48f7a73dd1cf74ef96510f8dcb9517f4bf863e
+    role: context
+  - path: pages/records/MetaCyc_PWY-2503.html
+    sha256: 98e5b35bd640e5292c70a7ea05412078e321ba0e19451a66e8c6e118f853544e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/authority-integration/compact-retention-manifest.json
+    sha256: 33173caf411e661a815dddf9aeb6c994d572bd75a9b9a386938170fb98d80019
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/authority-integration/frozen-source-artifact-manifest.json
+    sha256: d095522834ded9e014abcd4e585c94b0e9e717b95f1616bbd28c6df9ae9b5d3b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/HANDOFF.md
+    sha256: e79d83e0190e8874c423419522666c5ce55caa70a10169b1962349753342a30f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact-retention-manifest.json
+    sha256: f3d7b3702b61df683f62323ca7caaea967265bbee276578ff1517abb3fe09880
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/PRE_GATE_HANDOFF.md.gz
+    sha256: e18b31debdff43cd6c227bf794c5f7eab6199eabdb767e50d4690fec950d322e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/canonical/inspect-authorities.json.gz
+    sha256: ea294c7015601cd92ce9c6588e04e487f815a9d03a17149fbeebfd90718f394a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/canonical/inspect-authorities.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/canonical/inspect-initial.json.gz
+    sha256: 6b3b80be5dab064c794c665ee1ee2c3d9acf9837bb877671db93ab15cc1b0217
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/canonical/inspect-initial.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/canonical/targets.yaml.gz
+    sha256: 1d127ef25bd0cba80dbcd335cc17cc55c107c4e2ae6ca11ede85bc0f823f7005
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/generated-prototype/edges.tsv.gz
+    sha256: d3739b05ba17a5f8ababeaef1e2c39cff0ae4132f6a82ea1e738863cac4e0646
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/generated-prototype/nodes.tsv.gz
+    sha256: 3a448e34cca9b6b4016c7c4c77f067ffd05a169c976e1d23d469a1ecf9f48dc1
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/generated-prototype/record.html.gz
+    sha256: 5021b15adffa3ee40e0c3bac0897e436e853343e51c886c3107f1819a79b3f00
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/helpers/accept_kegg_locator.py.txt.gz
+    sha256: f7ed33b51c30e25aa4a4bdf22e2d359fab8e66040434c1f851e65fd873c44512
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/helpers/review_authority.py.txt.gz
+    sha256: 4d1283fd65dc1caea6c1cefa9010a9cb988e007f07d387cd8825af20fd2d2ba2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/helpers/review_serialization.py.txt.gz
+    sha256: 7d5a6a4530ca726c9d903e5d962cb3fc84dd5b817277798e04cb0fd9e4b23e1e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/acceptance.json.gz
+    sha256: 0a3a7876f9ed350d00236dd2853203ce6d93920b7a9a2ec823f78a4d03ba340c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/author-HANDOFF.md.gz
+    sha256: bcbda88b8b7101d176f4ea03b587dcbfbc279bbae8fe6b330c1e71e88e287ebb
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/author-artifact-manifest.json.gz
+    sha256: 41fbb6c4563304b1700808f5465a4d8bdc856b269530a7845f6dfcd7e841e901
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/author-compact-retention-manifest.json.gz
+    sha256: a56559e9d6e7a71764aff950b6e4f19aa594d33b8daa1fc1eb9bd4dfba4e1518
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/complete-KEGG-original.txt.gz
+    sha256: fccc34721297a000df42681ecab86ac52c7e368d571ded4742cd0305fe848961
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/original-inventory.json.gz
+    sha256: b3627d0fb040e5ee76d973c8edde43f29ab63c51debaa6fefb23ca1da315cbf0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/successor-inventory.json.gz
+    sha256: 11521184ad37d1602a03fbf1eb8ed70dba4ba83b03b814c027420d8628a97325
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/KEGG-psa-PST_1667.original.txt.gz
+    sha256: fccc34721297a000df42681ecab86ac52c7e368d571ded4742cd0305fe848961
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/authority-baseline-preservation.json.gz
+    sha256: dc0b29cb64cd4dff45ccacb6b4d89bb68bdc72475ccb6090a17c8d92d998c2d5
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/authority-package-integrity.json.gz
+    sha256: cc62b43fc97205d5436f3a53c28da85cdd6fc96edd07d08c6b19e03e96dbc9c9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/authority-replay.log.gz
+    sha256: ded8f136143a246ecfc981275874541e057d3211f32401d75dddb033cc196abe
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/finding-NEXT264-KEGG-LOC-01.json.gz
+    sha256: c3b074e4ba6c17e4e5dfc62c736aa36e80ec857efe87448eaf5f59058a1e7bb9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/issue-574-acceptance.log.gz
+    sha256: 0a3a7876f9ed350d00236dd2853203ce6d93920b7a9a2ec823f78a4d03ba340c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/maintained-identifier-consumer.json.gz
+    sha256: d452cf14695066ba9dc49f38868e8a3b9e67a7af97455368648cb96f0af95353
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/record-initial.yaml.gz
+    sha256: 3f10399465ef1bf789b43f56b2efe9310f04310211e3231fa35f1f27123f6140
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/reference-owner-inventory.initial.json.gz
+    sha256: b3627d0fb040e5ee76d973c8edde43f29ab63c51debaa6fefb23ca1da315cbf0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/selected-ontology-sql.json.gz
+    sha256: 78b7627d3137ba514c0a486631ab6ac96ee132cf858e20845f311a9f3a19a357
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/selected-source-replay.json.gz
+    sha256: 41db80c8d88c8ee12db43e308817cc3dd82836e8bc3187edf77a883473fb5dda
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/serialization-proof.json.gz
+    sha256: 15d7815f493bc98fdef6090d712b3dc4dfb8fb042dbccd04d91cc7a7cc841c4b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/serialization.log.gz
+    sha256: a9726db356ca37c1edaf56c67e2636f8380cc65369d7111972452fef88774d53
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/start.json.gz
+    sha256: 909cabd3a1138721d12fd795ef5c211dd2bee695b648600d0ef968619891725d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/pre-gate-check-accounting.json.gz
+    sha256: fb3c835fafe50f97a9381b4f483d1da911cfbc0eaa1d1a9bcf9a7c35aced8316
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/frozen-source-artifact-manifest.json
+    sha256: 52780ca9419af0b6ee679c7979b1d306eb80a78046bf20ea3a22c428012070d0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/HANDOFF.md
+    sha256: 14197ba4d5309dd4a3c3d606d65f65478661ca7b48f68216ce7d0db243745faa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact-retention-manifest.json
+    sha256: 115162cb7f079ddc2a09ee668eb213dd6c6951bcc5776965d6cf30269aa64ea0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/HANDOFF.md.gz
+    sha256: 569c7e954be11a3fbbc24b479390b51dba23acaea340fea5b89b796242e4cfe8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/browser-cdp-result.json.gz
+    sha256: f1f4a37a467d7ddbdeb8c885112842777fbfb120615ba58c25b2a46c0533d2f4
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/browser-visual-assessment.json.gz
+    sha256: 270229c288b9c4414aceca7a593a1d9ed0b6911eb378af1cbc37e318c466d7bb
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/canonical/inspect-maintained.json.gz
+    sha256: 7a10533c5561c91e80440caf054ffa9b14a5308c4343687f614eafd79581c223
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/canonical/inspect-maintained.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/canonical/inspect-production.json.gz
+    sha256: 38dd77abfd4fe6fda771a2087136ecb78ea8440f94d9eee78b72f4721e67c4bf
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/canonical/inspect-production.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/canonical/target-kind-accounting.json.gz
+    sha256: ca4f570be849d3fcc0e702bb87401baa008593d7ec621d9796a5e5fcc99599c5
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/canonical/targets-maintained.yaml.gz
+    sha256: 1aca37fbdb76332d35e17fe3aafb9c589437b48ef4558019c009518996d5a7e0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/check_browser_graph.mjs.txt.gz
+    sha256: 5cc68b4228f2a15c5e04ac5169de8b2df14aedcdad61a78d3fa04400c84fb083
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/graph-desktop-cdp.png.gz
+    sha256: fcf846b99f64f75a774f99b3e4b36fdc7c708a8893a2f6427c7efd02e4998ae0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/graph-mobile-cdp.png.gz
+    sha256: 3fe14870285c76a98d99f3b21589364f03057750eab2e9b17ae12ac9344949e3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/helpers/review_production.py.txt.gz
+    sha256: 7fbc9a9ea4f0e350af22b2dcb87fa08f77289bb059fefda7e4b33e50936cd2bf
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/independent-visual-assessment.json.gz
+    sha256: 953ca05395dd67fb2bc9267c55ac1a0ec2642979da6417af519287c12cfcffb0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/kgx-export-receipt.json.gz
+    sha256: e2e67fef2ba34cb3492989f5b3799aaa2af6acdfa4340ae85ac2d4852a4eec26
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/kgx-export.log.gz
+    sha256: 33fce3ab32e505792bc996b55c85349e20843cfb9597b9344dd15c9a4b9d1aa5
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/observations/production-review.log.gz
+    sha256: 29de02cad1d9047d4f68c49a35527deab0ae2373637d58dfe1fe1dba1adab0aa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/production-proof.json.gz
+    sha256: 573acc151c77978edb3b7d1081a07b1fdfcc4b80f5fff3d0142f47fbaba1065f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/target-production-edges.json.gz
+    sha256: 7c6e11eda0df7fb5076b6780326db5d2cf46432737a98926c2b5ea53b69a28f2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/target-production-node-contexts.json.gz
+    sha256: 9375dd7586e9b1e609ddabf4a05ce6114c40cedf7ee15fdd7a182bddb9cb7dc2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/frozen-source-artifact-manifest.json
+    sha256: 422a6620e39f04b1119834de5e4d90582a9c447062caffc34d2b9c452786ca80
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/environment.json
+    sha256: 1cb0544b2e033a2900e814576877fef1d1f0d470afcec3412eed1e4560ff08c6
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/final-input-preservation.json
+    sha256: 8945e8c0504a0f5728f623a1a466a04b21600ca9037a06e0fb27eeec03604623
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---cached---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-lint.log.gz
+    sha256: fab45d94cd260329cc1940f54b6e6a31ba66e94a424a4fbc2606aa0d9ba4b658
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-render-pages.log.gz
+    sha256: adb168cc3a127978c276154a637cea16b76945336c8ca3831c252733011053f1
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-test.log.gz
+    sha256: 55e33f5c378d180a4bb8031ff2476cc95d52a6d2b15384c63e928fd18bdd0b67
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-validate.log.gz
+    sha256: efaadcc3ec9f793168c8f56ec028a62b2aee331a0706099a02039ccfb38d7c0c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-vendored-check.log.gz
+    sha256: 91d8ac9e5d634985562a4ca1ee1310c19ad13f688acccbf3bc82806484abcd5e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+    sha256: 0a45e6c53305b1900090512f0afefcfc4bd15bb3cfb1c518ff8f451379e6f2aa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/retain_completed_gates.py.gz
+    sha256: a17142254d0409f387eb9c772f9828962eb6772394b8fa8e73ae955e60ca55af
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/retention-manifest.json
+    sha256: 881d6e16a47404ca4d3418dcab45d867e823b7c8bb3e9484293463bc30c89f1a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/run_initial_checks.py.gz
+    sha256: 17177d3767206672628d2e277c3f4d8bf29cb3589512b1691f79adecec048629
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/tested-core-input-hashes.json.gz
+    sha256: 49c35dcbd28153f21dff8023c2e50fbf4881ea9acee28353fffa59b3cece06fd
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 8e2b5b05406c87214ad69f97907e4d57bbf90d9ddc034eed145a7c78f1662a48
+    role: context
+  - path: src/pathwaymech/cli.py
+    sha256: a170e60e3c398755a21e1304e3bec9e2af743af46ca62de3bbb47ea878ca0b7e
+    role: context
+  - path: src/pathwaymech/edge_identity.py
+    sha256: b34e62a1d427b78b3719ded2c6f6a61d70b5b0bd13d02f26ed61862374f38ccb
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 45bbedd4459f21d4189e3eeb35504ff71ba664e975f4cdde7250a61e9ae3215b
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+  - path: src/pathwaymech/strict.py
+    sha256: 2f6a7edf501952ee4aaa41be2f9512d20e1edb2dd87a22b6add6d26928c0dc84
+    role: context
+scope:
+  description: One complete maintained target reviewed for technical integration,
+    authority provenance and rendered/exported fidelity; scientific correctness excluded.
+  selection: Exact maintained next264 target MetaCyc:PWY-2503, SHA256 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-2503
+  exclusions:
+  - target: Scientific interpretation of all pathway claims, including reviewer-authored
+      A1501 primary evidence
+    reason: Separate independent scientific reviewer owns biological, chemical, primary-evidence
+      and iModulon rubric acceptance.
+  - target: Scientific reassessment of the other 260 maintained pathways and complete
+      historical source-cache rebuild
+    reason: Old record bytes, authority values and graph contributions are checked
+      for preservation only. Selected source replay is bounded to 31 complete originals.
+targets:
+- target_id: MetaCyc:PWY-2503
+  path: data/pathways/benzoate-degradation-i-aerobic.yaml
+  label: benzoate degradation I (aerobic)
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    role: maintained pathway YAML
+checks:
+- check_id: C-AUTH
+  name: Independent authority and baseline replay
+  status: passed
+  required: false
+  summary: Actual replay exited0; all prior values and selected additions accounted.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-independent-final-technical/helpers/review_authority.py.txt
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-AUTH-INTEGRITY
+  - E-BASELINE
+  - E-SOURCE
+  - E-SQL
+  - E-CONSUMER
+- check_id: C-SERIAL
+  name: Single-target schema and serialization audit
+  status: passed
+  required: false
+  summary: Internal APIs exercised for the exact target; this is supplementary evidence,
+    not an invented project one-record validation command.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-independent-final-technical/helpers/review_serialization.py.txt
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-SERIAL
+- check_id: C-LOC
+  name: Independent issue574 one-leaf successor acceptance
+  status: passed
+  required: false
+  summary: Exact original source field and all unaffected bytes independently checked.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-independent-final-technical/helpers/accept_kegg_locator.py.txt
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-LOC-OBS
+  - E-LOC-FIX
+- check_id: C-PRODUCTION
+  name: Independent actual page and native KGX comparison
+  status: passed
+  required: false
+  summary: Production page/downloads and Git-base exports compared without regenerating
+    or modifying maintained files.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-independent-final-technical/helpers/review_production.py.txt
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-PRODUCTION
+  - E-BROWSER
+  - E-VISUAL
+- check_id: C-GATE-1
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Rendered all 261 pathway records; the exact target page was subsequently
+    compared with the independently inspected rendering.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-1
+  - E-GATE-RECEIPTS
+  scope_note: Actual root-executed integration gate in the exact worktree; receipts
+    and complete retained log bytes independently verified. No duplicate full gate
+    run.
+- check_id: C-GATE-2
+  name: just validate
+  status: passed
+  required: true
+  summary: 'Full repository validation passed: 261 pathway records and closed-schema/identifier
+    checks, 20,211 evidence blocks, 480 valid history records, 30 source records and
+    current generated pages.'
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-2
+  - E-GATE-RECEIPTS
+  scope_note: Actual root-executed integration gate in the exact worktree; receipts
+    and complete retained log bytes independently verified. No duplicate full gate
+    run.
+- check_id: C-GATE-3
+  name: just test
+  status: passed
+  required: true
+  summary: 'Full suite passed: 5,255 passed, 3 skipped and 7 warnings in 846.73 seconds
+    of pytest execution; root command elapsed 850.19 seconds.'
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-3
+  - E-GATE-RECEIPTS
+  scope_note: Actual root-executed integration gate in the exact worktree; receipts
+    and complete retained log bytes independently verified. No duplicate full gate
+    run.
+- check_id: C-GATE-4
+  name: just lint
+  status: passed
+  required: true
+  summary: Ruff reported all checks passed.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-4
+  - E-GATE-RECEIPTS
+  scope_note: Actual root-executed integration gate in the exact worktree; receipts
+    and complete retained log bytes independently verified. No duplicate full gate
+    run.
+- check_id: C-GATE-5
+  name: just vendored-check
+  status: passed
+  required: true
+  summary: All 22 governed artifacts match the pinned CLAW revision.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-5
+  - E-GATE-RECEIPTS
+  scope_note: Actual root-executed integration gate in the exact worktree; receipts
+    and complete retained log bytes independently verified. No duplicate full gate
+    run.
+- check_id: C-GATE-6
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Tracked unstaged diff whitespace check passed with no output.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-6
+  - E-GATE-RECEIPTS
+  scope_note: Actual root-executed integration gate in the exact worktree; receipts
+    and complete retained log bytes independently verified. No duplicate full gate
+    run.
+- check_id: C-GATE-7
+  name: git diff --cached --check
+  status: passed
+  required: true
+  summary: Staged diff whitespace check passed with no output.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-7
+  - E-GATE-RECEIPTS
+  scope_note: Actual root-executed integration gate in the exact worktree; receipts
+    and complete retained log bytes independently verified. No duplicate full gate
+    run.
+- check_id: C-FINAL-RETENTION
+  name: Final retained input and gate acceptance
+  status: passed
+  required: true
+  summary: Verified all 13 gate-retention pairs, all 4,403 tested inputs and both
+    immutable technical packages, without rerunning the full suite.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-independent-final-technical/helpers/final_gate_intake.py.txt
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-RECEIPTS
+  - E-GATE-PRESERVATION
+  - E-GATE-MANIFEST
+- check_id: C-KGX-EXPORT
+  name: Actual full-corpus native KGX export
+  status: passed
+  required: true
+  summary: Root executed the native export; this reviewer verified actual output hashes,
+    published byte equality, complete target payloads and prior contribution preservation.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just kgx-export --output-dir /private/tmp/pathwaymech-next-264-ci/kgx-export
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-KGX-RECEIPT
+  - E-PRODUCTION
+  scope_note: Full-corpus native export; independent technical comparison covers the
+    new target and exact preservation of prior contributions.
+evidence:
+- evidence_id: E-RECORD
+  kind: record_content
+  reference: data/pathways/benzoate-degradation-i-aerobic.yaml
+  locator: Complete maintained YAML
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: Complete target read; exact record has 67 named IDs, 54 edges, 12 endpoint
+    qualifiers and 101 reference declarations.
+  snapshot_sha256: 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696
+- evidence_id: E-AUTH-INTEGRITY
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/authority-package-integrity.json.gz
+  locator: gzip-decoded complete JSON
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: Independent verification of 687 physical artifacts, 343 lossless pairs
+    and 31 complete selected original source-cache links.
+  snapshot_sha256: cc62b43fc97205d5436f3a53c28da85cdd6fc96edd07d08c6b19e03e96dbc9c9
+- evidence_id: E-BASELINE
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/authority-baseline-preservation.json.gz
+  locator: gzip-decoded snapshots, prior_records and new_ids
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: All 260 prior YAMLs and every existing authority term, owner and manifest
+    prefix match actual Git base. Exactly 51 selected missing terms added.
+  snapshot_sha256: dc0b29cb64cd4dff45ccacb6b4d89bb68bdc72475ccb6090a17c8d92d998c2d5
+- evidence_id: E-SOURCE
+  kind: authority
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/selected-source-replay.json.gz
+  locator: gzip-decoded projection.terms and projection.sources
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: Independent execution of unchanged canonical source parser reproduces 45
+    selected terms and 31 source owners exactly.
+  snapshot_sha256: 41db80c8d88c8ee12db43e308817cc3dd82836e8bc3187edf77a883473fb5dda
+- evidence_id: E-SQL
+  kind: authority
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/selected-ontology-sql.json.gz
+  locator: gzip-decoded terms and databases
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: Independent direct SQL query confirms all 22 selected ontology labels,
+    exact synonyms, releases and licenses. Recent author whole-database hash receipt
+    is linked to unchanged files; no new complete database hash is claimed.
+  snapshot_sha256: 78b7627d3137ba514c0a486631ab6ac96ee132cf858e20845f311a9f3a19a357
+- evidence_id: E-CONSUMER
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/maintained-identifier-consumer.json.gz
+  locator: gzip-decoded complete JSON
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: Actual maintained 261-record identifier consumer completed without errors;
+    all 67 target labels match issuing authority labels or exact synonyms.
+  snapshot_sha256: d452cf14695066ba9dc49f38868e8a3b9e67a7af97455368648cb96f0af95353
+- evidence_id: E-SERIAL
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/serialization-proof.json.gz
+  locator: gzip-decoded edge_details and outputs
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: Closed and semantic schema checks plus independent single-target rendering
+    preserve every edge, qualifier, cited reference and per-record node context.
+  snapshot_sha256: 15d7815f493bc98fdef6090d712b3dc4dfb8fb042dbccd04d91cc7a7cc841c4b
+- evidence_id: E-LOC-OBS
+  kind: record_content
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/observations/finding-NEXT264-KEGG-LOC-01.json.gz
+  locator: gzip-decoded complete original observation
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: 'Minor issue 574 source-locator defect independently confirmed: the original
+    inventory uses NAME benA while the exact issuing KEGG entry uses SYMBOL benA.
+    The maintained YAML has no faulty locator.'
+  snapshot_sha256: c3b074e4ba6c17e4e5dfc62c736aa36e80ec857efe87448eaf5f59058a1e7bb9
+- evidence_id: E-LOC-FIX
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/compact/issue-574-acceptance/acceptance.json.gz
+  locator: gzip-decoded complete acceptance
+  accessed_at: '2026-10-15T10:10:02.907618Z'
+  support: supports
+  summary: 'Separate author successor independently accepted: only one JSON leaf and
+    byte phrase change NAME to SYMBOL. All 101 reference objects and owner bindings,
+    exact target and all 237 original author artifacts remain unchanged.'
+  snapshot_sha256: 0a3a7876f9ed350d00236dd2853203ce6d93920b7a9a2ec823f78a4d03ba340c
+- evidence_id: E-PRODUCTION
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/production-proof.json.gz
+  locator: Complete gzip-decoded independent production comparison
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Actual page equals the independently checked prototype. Native KGX equals
+    published downloads; all 13,492 prior edges remain exact, exactly 54 are added,
+    and all prior node contexts plus all 67 target contexts survive.
+  snapshot_sha256: 573acc151c77978edb3b7d1081a07b1fdfcc4b80f5fff3d0142f47fbaba1065f
+- evidence_id: E-VISUAL
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/independent-visual-assessment.json.gz
+  locator: Complete gzip-decoded independent visual assessment
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Both root-produced desktop/mobile captures independently viewed; controls
+    and legend render and viewport limits are explicitly recorded.
+  snapshot_sha256: 953ca05395dd67fb2bc9267c55ac1a0ec2642979da6417af519287c12cfcffb0
+- evidence_id: E-BROWSER
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/browser-cdp-result.json.gz
+  locator: gzip-decoded desktop, zoomed, picker, picked, mobile and runtime_errors
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Root executed browser interactions; this reviewer inspected the exact script,
+    receipt and images. No runtime exceptions were captured; zoom and the exact node
+    picker operate. The browser count of 38 is mechanism-only; actual HTML adds 16
+    context links for 54 total.
+  snapshot_sha256: f1f4a37a467d7ddbdeb8c885112842777fbfb120615ba58c25b2a46c0533d2f4
+- evidence_id: E-GATE-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-render-pages.log.gz
+  locator: Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Rendered all 261 pathway records; the exact target page was subsequently
+    compared with the independently inspected rendering.
+  snapshot_sha256: adb168cc3a127978c276154a637cea16b76945336c8ca3831c252733011053f1
+- evidence_id: E-GATE-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-validate.log.gz
+  locator: Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: 'Full repository validation passed: 261 pathway records and closed-schema/identifier
+    checks, 20,211 evidence blocks, 480 valid history records, 30 source records and
+    current generated pages.'
+  snapshot_sha256: efaadcc3ec9f793168c8f56ec028a62b2aee331a0706099a02039ccfb38d7c0c
+- evidence_id: E-GATE-3
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-test.log.gz
+  locator: Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: 'Full suite passed: 5,255 passed, 3 skipped and 7 warnings in 846.73 seconds
+    of pytest execution; root command elapsed 850.19 seconds.'
+  snapshot_sha256: 55e33f5c378d180a4bb8031ff2476cc95d52a6d2b15384c63e928fd18bdd0b67
+- evidence_id: E-GATE-4
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-lint.log.gz
+  locator: Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Ruff reported all checks passed.
+  snapshot_sha256: fab45d94cd260329cc1940f54b6e6a31ba66e94a424a4fbc2606aa0d9ba4b658
+- evidence_id: E-GATE-5
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-vendored-check.log.gz
+  locator: Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: All 22 governed artifacts match the pinned CLAW revision.
+  snapshot_sha256: 91d8ac9e5d634985562a4ca1ee1310c19ad13f688acccbf3bc82806484abcd5e
+- evidence_id: E-GATE-6
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---check.log.gz
+  locator: Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Tracked unstaged diff whitespace check passed with no output.
+  snapshot_sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+- evidence_id: E-GATE-7
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---cached---check.log.gz
+  locator: Complete gzip-decoded command log; execution receipt in research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Staged diff whitespace check passed with no output.
+  snapshot_sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+- evidence_id: E-GATE-RECEIPTS
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+  locator: All seven ordered command receipts
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: All seven actual commands exited zero. Original log hashes match retained
+    lossless bodies and command scope is the full integration worktree.
+  snapshot_sha256: 0a45e6c53305b1900090512f0afefcfc4bd15bb3cfb1c518ff8f451379e6f2aa
+- evidence_id: E-GATE-PRESERVATION
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/final-input-preservation.json
+  locator: tested_core_files, all_unchanged, scope and record_sha256
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: All 4,403 scoped inputs were unchanged during the complete gate run. This
+    reviewer independently rehashed those files after retention and found them unchanged;
+    255 additions at that observation were confined to new next264 research evidence.
+  snapshot_sha256: 8945e8c0504a0f5728f623a1a466a04b21600ca9037a06e0fb27eeec03604623
+- evidence_id: E-GATE-MANIFEST
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/retention-manifest.json
+  locator: All 13 original/stored mappings
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: All retained gate files decode exactly to the actual originals. Execution
+    environment uses the verified 263 virtual environment with UV_NO_SYNC=1.
+  snapshot_sha256: 881d6e16a47404ca4d3418dcab45d867e823b7c8bb3e9484293463bc30c89f1a
+- evidence_id: E-KGX-RECEIPT
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/kgx-export-receipt.json.gz
+  locator: Complete gzip-decoded native export receipt
+  accessed_at: '2026-10-15T10:19:12.135073Z'
+  support: supports
+  summary: Native just kgx-export completed with exit zero. Complete edges and nodes
+    files equal published downloads byte for byte, with hashes independently verified.
+  snapshot_sha256: e2e67fef2ba34cb3492989f5b3799aaa2af6acdfa4340ae85ac2d4852a4eec26
+assessments:
+- assessment_id: A-SCHEMA
+  area: schema
+  topic: Complete target structure and local references
+  outcome: supported
+  summary: The entire maintained target passes semantic and closed schema checks.
+    All named nodes, 54 triples, 12 qualifiers and 101 declared references are structurally
+    accounted for. This does not establish scientific truth.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-RECORD
+  - E-SERIAL
+- assessment_id: A-AUTHORITY
+  area: grounding
+  topic: Selected issuing authority integration
+  outcome: supported
+  summary: All 51 new terms are selected by the actual target. Complete selected source
+    originals reproduce 45 source terms; independent SQL queries confirm 22 ontology
+    selections. All labels and typed source-owner bindings pass the current 261-record
+    consumer.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-SOURCE
+  - E-SQL
+  - E-CONSUMER
+- assessment_id: A-PRESERVATION
+  area: consistency
+  topic: Existing records and authority values
+  outcome: supported
+  summary: All 260 prior maintained YAMLs are exact at the actual base. Existing 3,091
+    source terms and 1,094 owners, 2,158 ontology terms and 5 owners, and the 1,275-row
+    source manifest prefix are preserved. Only 45 selected source terms, 6 ontology
+    terms and 31 original source entries are added.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-BASELINE
+  - E-AUTH-INTEGRITY
+- assessment_id: A-OUTPUT
+  area: representation
+  topic: Production graph and KGX fidelity
+  outcome: supported
+  summary: The actual published page equals the independently checked rendering byte
+    for byte. All 54 new edges retain complete evidence, qualifiers and cited reference
+    metadata; all 67 target node contexts and all prior graph contributions survive
+    full-corpus export. The 71 display nodes include 12 qualified display instances
+    without minting biological IDs.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-SERIAL
+  - E-PRODUCTION
+- assessment_id: A-BROWSER
+  area: graph
+  topic: Bounded desktop and mobile inspection
+  outcome: supported
+  summary: Exact browser observations and independent screenshot inspection support
+    controls, zoom and node selection. The 54 arrows comprise 38 mechanism and 16
+    context links. Captures cover finite viewports; the tall graph and small fit-width
+    text require the provided zoom and scroll controls.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-BROWSER
+  - E-VISUAL
+  - E-PRODUCTION
+- assessment_id: A-LOCATOR
+  area: provenance
+  topic: Issue574 prior JSON finding and append-only correction
+  outcome: supported
+  summary: NEXT264-KEGG-LOC-01 was a minor frozen source-owner inventory field-label
+    defect. The independently accepted one-leaf successor correctly uses SYMBOL benA
+    and preserves all other bytes. The initial observation was JSON, not a canonical
+    review; no previous_occurrences or resolved canonical finding is invented.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-LOC-OBS
+  - E-LOC-FIX
+- assessment_id: A-GATES
+  area: consistency
+  topic: Required gates and exact tested inputs
+  outcome: supported
+  summary: All seven required integration commands and the separate native KGX export
+    passed. Retained original/log hashes and the complete 4,403-file tested inventory
+    were independently verified. Final inspection binds the actual maintained target,
+    authority snapshots, generated outputs and retained technical/gate evidence.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-GATE-RECEIPTS
+  - E-GATE-PRESERVATION
+  - E-GATE-MANIFEST
+  - E-KGX-RECEIPT
+  dimensions:
+  - name: technical_scope
+    value: One complete target; partial coverage of scientific dimensions
+    definition: This completed technical review does not claim a scientific review
+      or full-corpus scientific acceptance.
+    evidence_ids:
+    - E-RECORD
+    - E-SERIAL
+findings: []
+actions: []
+limitations:
+- This is a technical review with scientific_review false. The reviewer authored the
+  A1501 primary-source supplement and excludes its scientific self-acceptance. Separate
+  independent scientific review owns biological, chemical, primary-evidence and iModulon
+  rubric conclusions.
+- Other maintained pathways are checked for byte and graph-contribution preservation
+  only, not scientifically reassessed.
+- Independent ontology checks queried selected labels, exact synonyms and release/license
+  metadata. Complete database hashes are linked to the recent author CLI receipt and
+  unchanged files, not independently rehashed.
+- Selected source replay is bounded to 31 complete originals. Unselected historical
+  source originals are not rebuilt; previous authority values are preserved against
+  the actual base.
+- Browser interactions were executed by root. This reviewer independently inspected
+  the script, receipt, actual page and two exact screenshots. Captures cover finite
+  viewports; fit-width labels are small, especially on mobile.
+- The full suite reported 3 skipped tests and 7 dependency deprecation warnings. Canonical
+  persistence and the final global review-check remain root-owned publication steps
+  after this validated content is delivered.
+notes:
+- No maintained files, runtime environments, Git or GitHub objects were changed by
+  this reviewer.
+- Issue 574 started as a retained JSON observation. Its separately authored correction
+  and independent acceptance are accounted for in assessments and evidence, without
+  fabricated canonical lineage.
+- ReviewTarget.kind is maintained; review.kind is record. Initial inspect metadata
+  used record as target kind; the exact same target was re-inspected with corrected
+  enum before production assessment.
+- No repository record status or scientific promotion follows from this technical
+  review.
+- All required integration checks are terminal and passed. Later evidence/report/history
+  or canonical-review additions require the root-owned bounded checks; no duplicate
+  broad suite was run by this reviewer.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/574
+tags:
+- next264
+- technical
+- authority
+- graph
+- kgx
+```
