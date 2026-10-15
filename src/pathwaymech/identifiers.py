@@ -24,6 +24,15 @@ from pathwaymech.biocyc_aceto import (
     validate_aceto_assertions,
     validate_aceto_metadata,
 )
+from pathwaymech.biocyc_benzoyl import (
+    BENZOYL_KINDS,
+    benzoyl_term,
+    validate_benzoyl_assertions,
+    validate_benzoyl_metadata,
+)
+from pathwaymech.biocyc_benzoyl import (
+    FIELD as BENZOYL_FIELD,
+)
 from pathwaymech.biocyc_carrier import CARRIER_CLASS_KIND, class_term, validate_class_metadata
 from pathwaymech.biocyc_chemical_class import (
     CHEMICAL_CLASS_KIND,
@@ -164,6 +173,7 @@ def _native_assertion_kinds(
         PATHWAY_KIND: "native_pathway",
         PROTEIN_CARRIER_REACTION_KIND: "native_protein_carrier_reaction",
     }
+    fields.update({kind: BENZOYL_FIELD for kind in BENZOYL_KINDS})
     assertions = {}
     claims = []
 
@@ -224,6 +234,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_chemical_class",
                 "native_named_complex",
                 "native_aceto",
+                BENZOYL_FIELD,
                 "native_pathway",
                 "native_gene",
                 "native_pathbank_context",
@@ -247,6 +258,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_chemical_class",
                 "native_named_complex",
                 "native_aceto",
+                BENZOYL_FIELD,
                 "native_pathway",
                 "native_gene",
                 "native_pathbank_context",
@@ -262,7 +274,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             raise ValueError(f"source {source}: expected a public source URL")
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
-        if "kind" in metadata and metadata["kind"] not in ACETO_KINDS | {
+        if "kind" in metadata and metadata["kind"] not in ACETO_KINDS | BENZOYL_KINDS | {
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
             PATHBANK_CONTEXT_KIND,
@@ -309,6 +321,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 raise ValueError(f"source {source}: invalid selected PathBank pathway identities")
         elif "archive" in metadata or "pathway_accessions" in metadata:
             raise ValueError(f"source {source}: archive provenance requires typed PathBank ZIP")
+        if metadata.get("kind") in BENZOYL_KINDS:
+            validate_benzoyl_metadata(metadata)
+        elif BENZOYL_FIELD in metadata:
+            raise ValueError("bounded native metadata requires its matching source kind")
         if metadata.get("kind") in ACETO_KINDS:
             validate_aceto_metadata(metadata)
         elif "native_aceto" in metadata:
@@ -364,6 +380,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             # Check internal request/identity consistency. Original XML bytes
             # and their agreement with the request remain the builder's remit.
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
+    validate_benzoyl_assertions(data["sources"], [])
     validate_aceto_assertions(data["sources"], [])
     validate_gene_assertions(data["sources"])
     carrier_reaction_ids = validate_carrier_reaction_assertions(data["sources"])
@@ -449,7 +466,13 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 or "entity_type" in term
             ):
                 raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
-        if source_kind in ACETO_KINDS:
+        if source_kind in BENZOYL_KINDS:
+            expected_id, expected_term = benzoyl_term(
+                data["sources"][term["source"]], term["source"]
+            )
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid bounded native authority projection")
+        elif source_kind in ACETO_KINDS:
             expected_id, expected_term = aceto_term(data["sources"][term["source"]], term["source"])
             if identifier != expected_id or term != expected_term:
                 raise ValueError(f"{identifier}: invalid typed aceto authority projection")
@@ -506,6 +529,9 @@ def _load_authority(path: Path) -> dict[str, Any]:
             ):
                 raise ValueError(f"{identifier}: invalid typed native reaction authority")
     validate_aceto_assertions(
+        data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
+    )
+    validate_benzoyl_assertions(
         data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
     )
     return data["terms"]
@@ -615,6 +641,18 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                     f"{where}: ENTITY_TYPE_MISMATCH {identifier!r}; "
                     "typed native reaction requires reactions/category molecular_activity"
                 )
+                continue
+            if term.get("entity_type") == "reaction" and term.get("label_kind") == "canonical":
+                labels = [term["label"]]
+                if entry["policy"] == "canonical_or_synonym":
+                    labels += term["synonyms"]
+                if _normalize(label) not in {_normalize(value) for value in labels}:
+                    errors.append(
+                        f"{where}: LABEL_MISMATCH {identifier!r}: {label!r}; "
+                        f"authority label is {term['label']!r}"
+                    )
+                # A native direct name remains canonical even in namespaces
+                # that permit contextual displays for unnamed reactions.
                 continue
             if (
                 term.get("entity_type") == "protein_complex"

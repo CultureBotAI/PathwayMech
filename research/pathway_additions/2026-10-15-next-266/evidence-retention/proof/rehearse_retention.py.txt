@@ -1,0 +1,266 @@
+"""Guarded external copy and exact source-layout reconstruction rehearsal."""
+
+import hashlib
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+PAYLOAD = ROOT / "payload"
+REPO = Path("/private/tmp/pathwaymech-next-266-20261015")
+COPY = ROOT / "guarded-copy"
+RECONSTRUCTION = ROOT / "reconstructed-sources"
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def dump(path, value):
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def files(root):
+    paths = list(root.rglob("*"))
+    assert not any(p.is_symlink() for p in paths)
+    return {str(p.relative_to(root)): p for p in paths if p.is_file()}
+
+
+def run(name, args, expected=0):
+    result = subprocess.run([sys.executable, "-B", *args], capture_output=True)
+    (ROOT / (name + ".stdout")).write_bytes(result.stdout)
+    (ROOT / (name + ".stderr")).write_bytes(result.stderr)
+    if expected == 0:
+        assert result.returncode == 0, (name, result.stderr.decode())
+    else:
+        assert result.returncode != 0, name
+    return {
+        "name": name,
+        "argv": [sys.executable, "-B", *args],
+        "returncode": result.returncode,
+        "stdout_sha256": sha(result.stdout),
+        "stderr_sha256": sha(result.stderr),
+    }
+
+
+assert not COPY.exists() and not RECONSTRUCTION.exists()
+manifest_bytes = (PAYLOAD / "artifact-manifest.json").read_bytes()
+manifest = json.loads(manifest_bytes)
+expected = {r["path"]: r for r in manifest["files"]}
+expected["artifact-manifest.json"] = {
+    "path": "artifact-manifest.json",
+    "sha256": sha(manifest_bytes),
+    "bytes": len(manifest_bytes),
+}
+assert set(files(PAYLOAD)) == set(expected)
+COPY.mkdir()
+for relative, row in expected.items():
+    body = (PAYLOAD / relative).read_bytes()
+    assert sha(body) == row["sha256"] and len(body) == row["bytes"]
+    destination = COPY / relative
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("xb") as stream:
+        stream.write(body)
+    assert destination.read_bytes() == body
+assert set(files(COPY)) == set(expected)
+commands = []
+commands.append(
+    run(
+        "copied-physical-verification",
+        [
+            str(COPY / "decode_retained.py"),
+            "--root",
+            str(COPY),
+            "--repo",
+            str(REPO),
+            "--verify-all",
+            "--compare-originals",
+        ],
+    )
+)
+commands.append(
+    run(
+        "copied-compact-verification",
+        [str(COPY / "verify_compact.py"), "--root", str(COPY), "--repo", str(REPO), "--verify-all"],
+    )
+)
+RECONSTRUCTION.mkdir()
+package_results = []
+for source_map in sorted((COPY / "packages").glob("*/source-map.json")):
+    name = source_map.parent.name
+    target = RECONSTRUCTION / name
+    commands.append(
+        run(
+            "materialize-" + name,
+            [
+                str(COPY / "decode_retained.py"),
+                "--root",
+                str(COPY),
+                "--repo",
+                str(REPO),
+                "--package",
+                name,
+                "--materialize",
+                str(target),
+            ],
+        )
+    )
+    rows = json.loads(source_map.read_bytes())["source_occurrences"]
+    assert set(files(target)) == {r["path"] for r in rows}
+    for row in rows:
+        body = (target / row["path"]).read_bytes()
+        assert sha(body) == row["sha256"] and len(body) == row["bytes"]
+        assert body == Path(row["source"]).read_bytes()
+    package_results.append(
+        {
+            "package": name,
+            "physical_files": len(rows),
+            "physical_bytes": sum(r["bytes"] for r in rows),
+            "all_original_relative_paths_and_bytes_exact": True,
+        }
+    )
+    shutil.rmtree(target)
+logical = json.loads((COPY / "logical-originals.json").read_bytes())
+logical_results = []
+for name in sorted({r["package"] for r in logical}):
+    target = RECONSTRUCTION / (name + "-logical-only")
+    commands.append(
+        run(
+            "materialize-logical-" + name,
+            [
+                str(COPY / "verify_compact.py"),
+                "--root",
+                str(COPY),
+                "--repo",
+                str(REPO),
+                "--package",
+                name,
+                "--materialize-logical",
+                str(target),
+            ],
+        )
+    )
+    selected = [r for r in logical if r["package"] == name]
+    assert set(files(target)) == {r["original_path"] for r in selected}
+    for row in selected:
+        body = (target / row["original_path"]).read_bytes()
+        assert sha(body) == row["original_sha256"] and len(body) == row["original_bytes"]
+    logical_results.append(
+        {
+            "package": name,
+            "logical_occurrences": len(selected),
+            "distinct_original_paths": len(files(target)),
+            "all_original_relative_paths_and_bytes_exact": True,
+        }
+    )
+    shutil.rmtree(target)
+commands.append(
+    run(
+        "negative-directory-traversal",
+        [
+            str(COPY / "decode_retained.py"),
+            "--root",
+            str(COPY),
+            "--repo",
+            str(REPO),
+            "--package",
+            "../../outside",
+            "--artifact",
+            "unknown",
+        ],
+        expected=1,
+    )
+)
+commands.append(
+    run(
+        "negative-stage-manifest",
+        [
+            str(COPY / "plan_promotion.py"),
+            "--stage",
+            str(COPY),
+            "--expected-stage-manifest-sha256",
+            "0" * 64,
+            "--target-repo",
+            str(REPO),
+        ],
+        expected=1,
+    )
+)
+contents = json.loads((COPY / "content-map.json").read_bytes())
+sample = next(
+    r
+    for r in json.loads(
+        (COPY / "packages/root-intake-and-issue-evidence/source-map.json").read_bytes()
+    )["source_occurrences"]
+    if contents[r["sha256"]]["storage"]["kind"] == "new_retention_object"
+)
+endpoint = COPY / contents[sample["sha256"]]["storage"]["path"]
+original = endpoint.read_bytes()
+endpoint.write_bytes(original[:-1] + bytes([original[-1] ^ 1]))
+commands.append(
+    run(
+        "negative-storage-corruption",
+        [
+            str(COPY / "decode_retained.py"),
+            "--root",
+            str(COPY),
+            "--repo",
+            str(REPO),
+            "--package",
+            "root-intake-and-issue-evidence",
+            "--artifact",
+            sample["path"],
+        ],
+        expected=1,
+    )
+)
+endpoint.write_bytes(original)
+assert endpoint.read_bytes() == original
+for relative, row in expected.items():
+    body = (COPY / relative).read_bytes()
+    assert sha(body) == row["sha256"] and len(body) == row["bytes"]
+receipt = {
+    "status": "passed",
+    "payload_manifest_sha256": sha(manifest_bytes),
+    "copied_physical_files": len(expected),
+    "copied_bytes": sum(r["bytes"] for r in expected.values()),
+    "copy_operations": (
+        "Every source hash and size checked before "
+        "exclusive-create copy and exact readback; target must "
+        "be absent."
+    ),
+    "physical_reconstruction": package_results,
+    "compact_only_logical_reconstruction": logical_results,
+    "commands": commands,
+    "all_source_files_including_hidden_and_ignored_reconstructed": True,
+    "all_compact_only_logical_originals_reconstructed": True,
+    "all_original_compressed_representations_preserved": True,
+    "transient_copy_disposition": (
+        "Exact copied payload and reconstructed layouts were "
+        "verified, then removed only from this owned preparation"
+        " root. Complete originals remain reconstructible from "
+        "the unchanged final payload and pinned Git owners."
+    ),
+    "maintained_promotion_performed": False,
+    "source_packages_modified": False,
+}
+dump(ROOT / "guarded-copy-and-reconstruction.json", receipt)
+dump(ROOT / "guarded-copy-file-bindings.json", list(expected.values()))
+shutil.rmtree(RECONSTRUCTION)
+shutil.rmtree(COPY)
+print(
+    json.dumps(
+        {
+            "status": "passed",
+            "physical_packages": len(package_results),
+            "logical_packages": len(logical_results),
+            "physical_files_reconstructed": sum(r["physical_files"] for r in package_results),
+            "logical_occurrences_reconstructed": sum(
+                r["logical_occurrences"] for r in logical_results
+            ),
+            "payload_manifest_sha256": sha(manifest_bytes),
+        }
+    )
+)

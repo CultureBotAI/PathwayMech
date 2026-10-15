@@ -1,0 +1,122 @@
+"""Produce a read-only copy plan; never mutate a target checkout or Git state."""
+
+import argparse
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def safe(root, name):
+    relative = Path(name)
+    assert not relative.is_absolute() and ".." not in relative.parts
+    path = root / relative
+    assert path.resolve().is_relative_to(root.resolve()) and not path.is_symlink()
+    return path
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--stage", type=Path, required=True)
+    parser.add_argument("--expected-stage-manifest-sha256", required=True)
+    parser.add_argument("--target-repo", type=Path, required=True)
+    args = parser.parse_args()
+    stage, repo = args.stage.resolve(), args.target_repo.resolve()
+    manifest_bytes = (stage / "artifact-manifest.json").read_bytes()
+    assert sha(manifest_bytes) == args.expected_stage_manifest_sha256
+    manifest = json.loads(manifest_bytes)
+    files = manifest["files"]
+    expected = {row["path"] for row in files}
+    assert len(expected) == len(files)
+    inventory = list(stage.rglob("*"))
+    assert not any(path.is_symlink() for path in inventory)
+    assert {str(path.relative_to(stage)) for path in inventory if path.is_file()} == expected | {
+        "artifact-manifest.json"
+    }
+    for row in files:
+        body = safe(stage, row["path"]).read_bytes()
+        assert sha(body) == row["sha256"] and len(body) == row["bytes"]
+
+    def git(*argv):
+        return subprocess.check_output(["git", *argv], cwd=repo).decode().strip()
+
+    assert Path(git("rev-parse", "--show-toplevel")).resolve() == repo
+    receipt = json.loads((stage / "dry-run-verification.json").read_bytes())
+    baseline = receipt["verified_merged_commit"]
+    assert git("rev-parse", baseline + "^{tree}") == receipt["verified_merged_tree"]
+    head = git("rev-parse", "HEAD")
+    subprocess.run(["git", "merge-base", "--is-ancestor", baseline, head], cwd=repo, check=True)
+    destination = safe(repo, receipt["proposed_repository_root"])
+    assert not destination.exists(), (
+        "Destination already exists; create an explicit successor/extension plan."
+    )
+    provenance_result = subprocess.run(
+        [
+            sys.executable,
+            "-B",
+            str(stage / "verify_inherited_provenance.py"),
+            "--root",
+            str(stage),
+            "--repo",
+            str(repo),
+        ],
+        capture_output=True,
+        check=True,
+    )
+    provenance = json.loads(provenance_result.stdout)
+    assert provenance["status"] == "passed"
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-B",
+            str(stage / "decode_retained.py"),
+            "--root",
+            str(stage),
+            "--repo",
+            str(repo),
+            "--verify-all",
+            "--working-tree-owners",
+        ],
+        capture_output=True,
+        check=True,
+    )
+    verified = json.loads(result.stdout)
+    assert verified["status"] == "passed"
+    copies = files + [
+        {
+            "path": "artifact-manifest.json",
+            "bytes": len(manifest_bytes),
+            "sha256": sha(manifest_bytes),
+        }
+    ]
+    print(
+        json.dumps(
+            {
+                "status": "read-only copy plan verified",
+                "promotion_performed": False,
+                "independent_acceptance_still_required": True,
+                "source": str(stage),
+                "destination": str(destination),
+                "stage_manifest_sha256": sha(manifest_bytes),
+                "observed_target_head": head,
+                "verified_merged_ancestor": baseline,
+                "working_tree_owner_and_all_artifact_check": verified,
+                "inherited_commit_tree_and_blob_check": provenance,
+                "copy_exact_relative_paths": copies,
+                "scope": (
+                    "Copy only this frozen payload after independent acceptance. "
+                    "Never add earlier rehearsal directories or silently include pending packages."
+                ),
+            },
+            indent=2,
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

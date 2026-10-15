@@ -1,0 +1,727 @@
+# Independent partial technical follow-up: lossless CENT benzoyl authority fixtures
+
+- Review: 20261015T183417Z-next266-fixture-storage-independent-technical
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-15T18:30:07.314767Z
+- Finished UTC: 2026-10-15T18:34:17.889730Z
+- Reviewer: Codex independent reviewer /root/next267_native_acceptance (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+The independent partial technical follow-up accepts the lossless fixture-storage correction for GitHub issue 593. All eight gzip fixtures recover the exact indexed and retained native originals; original manifest/acquisition bytes remain unchanged. The changed loader passed 153 independent checks and 66 rejection probes plus the complete-original producer/consumer roundtrip. Author 234-test and repository Ruff receipts are verified. The full 66-member maintained correction archive and dated report/history additions passed 97 current integration checks. The maintained CENT record, production code, authority snapshots, generated page and both prior canonical reviews are unchanged. No supported defect remains in this scope. Actual successor staging and publication remain root-owned future actions; the prior 5,489-pass full suite is historical.
+
+## Scope And Provenance
+
+Partial technical follow-up for the maintained CENTBENZCOA-PWY record, confined to eight losslessly stored native XML test fixtures, the storage map and loader, exact predecessor/successor byte ownership, retained correction evidence, dated report/history context and preservation of prior reviewed record/technical surfaces.
+
+Selection: Exact maintained MetaCyc:CENTBENZCOA-PWY target and complete eight-fixture correction; no sampling within fixture or 66-member archive scope.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base dd780ef273323efd638eacd63625963062e0b105.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:CENTBENZCOA-PWY | data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml | maintained | benzoyl-CoA degradation II (anaerobic) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Native current input inspection | passed | True | MetaCyc:CENTBENZCOA-PWY | Inspect succeeded against the exact maintained target plus 38 current context inputs; no target was substituted. |
+| Independent indexed-original and loader replay | passed | True | MetaCyc:CENTBENZCOA-PWY | 153 checks and 66 negative probes passed, plus the actual complete-original producer/consumer, companion and first-owner test. Eight gzip objects preserve all 106,540 original bytes and both native-source copies per object. |
+| Retained first storage-review harness attempt | failed | False | MetaCyc:CENTBENZCOA-PWY | The reviewer list-order comparison failed with zero added, removed or changed protected files. Corrected sorting of both inventory lists passed; this failed attempt is retained, not an implementation finding. |
+| Current maintained archive and context replay | passed | True | MetaCyc:CENTBENZCOA-PWY | 97 checks passed across the full 66-member archive, exact successor files, unchanged prior review pairs and current technical/target owners; report/history additions were read and assessed. |
+| Retained first current-integration harness attempt | failed | False | MetaCyc:CENTBENZCOA-PWY | After 91 successful checks, the reviewer treated an integer inventory count as a list. The original failure and all files remain; corrected count handling completed 97 checks. No source changed. |
+| Author full affected test module after correction | passed | True | MetaCyc:CENTBENZCOA-PWY | Author receipt reports 234 passed in 7.65s after the corrected loader. Stream hashes, exact safe-runtime invocation and current source hashes were verified. |
+| Author full repository Ruff after correction | passed | True | MetaCyc:CENTBENZCOA-PWY | Author no-cache repository Ruff passed; its complete log and current byte scope were verified. |
+| Independent working-tree whitespace check | passed | True | MetaCyc:CENTBENZCOA-PWY | The exact reviewed working-tree diff passes; gzip fixture bodies preserve raw source whitespace. This does not imply the unchanged raw predecessor index passes. |
+| Actual unchanged predecessor index whitespace check | failed | False | MetaCyc:CENTBENZCOA-PWY | Exit 2 confirms the still-staged raw originals retain their six upstream trailing-whitespace lines. Root must stage the accepted successor and rerun before commit. This is a publication prerequisite, not an unresolved defect in the reviewed working-tree successor. |
+| Fresh whole-corpus tests and validation | skipped | False | MetaCyc:CENTBENZCOA-PWY | Not rerun for this bounded test-fixture correction. The 5,489-pass full suite remains explicitly historical before the loader change; 234 affected tests, Ruff and independent probes cover the new technical scope. |
+| Fresh literature and biological reassessment | not_applicable | False | MetaCyc:CENTBENZCOA-PWY | This partial technical review does not reassess scientific truth; the record bytes and original scientific review are unchanged. |
+
+## Scientific And Domain Assessments
+
+### Eight exact native fixture originals survive the storage change
+
+representation: supported. Targets: MetaCyc:CENTBENZCOA-PWY.
+
+All 106,540 raw bytes, including upstream trailing spaces, are preserved. The eight gzip objects total 22,555 bytes and reproduce deterministically with zero mtime and no embedded filename. Actual index, both retained native owners, original manifest/acquisition and decoded storage metadata all agree. The unchanged maintained CENT target remains bound to its prior accepted bytes.
+
+### Changed fixture loader preserves the actual authority-test contract
+
+consistency: supported. Targets: MetaCyc:CENTBENZCOA-PWY.
+
+The loader verifies both storage and original payload hashes/sizes, exact logical-key coverage and deep-copy entry behavior. All 66 corruption/missing-object/map probes reject, and the actual complete-original producer/consumer and first-owner roundtrip passes. Twenty other function bodies remain AST-identical. Author full affected module and Ruff pass after the correction.
+
+### Complete correction evidence and historical failures remain available
+
+provenance: supported. Targets: MetaCyc:CENTBENZCOA-PWY.
+
+The actual maintained archive contains all 42 author, 15 independent-review, eight root and one helper files, matching every original owner. Frozen manifests, original staged failure and reviewer harness failures remain exact. The dated report preserves its prior indexed body and correctly separates earlier gates, later correction checks and pending publication actions. New history describes the same scope.
+
+### Verified concrete correction for the GitHub-only publication defect
+
+scope: supported. Targets: MetaCyc:CENTBENZCOA-PWY.
+
+GitHub issue 593 is addressed in the reviewed working-tree implementation by lossless gzip storage and its verified loader. This is a positive assessment of a concrete correction, not a fabricated resolved structured finding. Prior scientific and technical reviews remain unchanged and linked. Root still needs actual successor staging, the fresh staged whitespace check and publication verification.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| E-independent | research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz; independent-review/ASSESSMENT.md; replay-result.json; command-receipt.json; manifest d812d6355f870c57517a432542f0fb9c25ce2b63af45cc65d84cfe36ff546307; freeze 470ec83851360c5e38a88a4209a0f99a80ad3ae6071967045bac309ed4de0d7b | supports | This reviewer independently executed the complete bounded storage review: all eight actual indexed originals, sixteen retained native source-owner copies, 153 checks, 66 rejection probes and the complete-original producer/consumer, companion and first-owner test. All 979 protected files and the actual index remained unchanged. The frozen packet is preserved byte-for-byte in the maintained archive. |
+| E-author | research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz; author/command-receipts.json, affected-tests.stdout, lint.stdout, result-proof.json and complete before/after snapshots; manifest 7ff5be1ae8237d40531b183d8bcca345f23e4c9418e841e15ababb7f5e8be0e1; freeze 0a4d34da84e415c5c9059cd3cd3c81c22a83b9101782df8d31b53e301504c59c | supports | Author full affected-module run passed 234 tests in 7.65 seconds and repository Ruff passed after the loader change. Exact commands, environment, times, exit codes and stream hashes are retained and independently checked. These are author executions, not additional reviewer full-module or full-suite executions. |
+| E-archive | research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz; all 66 regular members, source-file-manifest.json and artifact-manifest.json; independent replay /private/tmp/pathwaymech-next-266-fixture-canonical-review/current-proof.json | supports | After native inspection, 97 current-input/archive checks passed: exact four-file archive layout; all 66 member bytes match all source owners; complete author42, independent15, root8 and helper1 groups; frozen controls and inventories; thirteen actual successor files; unchanged target, production, authority and page owners; immutable prior review pairs; exact prior report prefix with dated append. |
+| E-inspect | /private/tmp/pathwaymech-next-266-fixture-canonical-review/inspect.stdout; native record_review.py inspect result and inspect-receipt.json | supports | Native inspection captured the current Git base, exact maintained CENT target and 38 explicit context inputs after archive/report/history readiness. All 39 hashes were independently rechecked before this assessment. |
+| E-stage-failure | research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz; root/actual-staged-whitespace.json; independent-review/replay-result.json commands: git diff --cached --check | supports | The original staged whitespace failure is retained byte-for-byte. The reviewer replay still returned 2 for the unchanged raw-XML predecessor index. This is the expected historical/current-index boundary, not a claim that successor staging has passed. Root must stage and rerun before publication. |
+| E-reviewer-attempts | research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz; independent-review/attempt-1-* and initial-replay-diagnosis.json; separate current construction /private/tmp/pathwaymech-next-266-fixture-canonical-review/attempt-1-* | supports | Two reviewer-only harness failures are preserved: initial inventory list ordering, despite zero file-set/hash differences; later treating the root inventory integer count as a list. Their original code, stdout, stderr, partial proofs and receipts remain. Corrected bounded and current-integration runs passed. Neither is an implementation finding. |
+| E-target | data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml; entire raw YAML bytes; target id MetaCyc:CENTBENZCOA-PWY | supports | The exact maintained target hash e43e6ad5563c38af738e8f1c7b733510072b531196ce435395896b62951c6ab9 is unchanged from both prior accepted review contexts. This is byte-preservation evidence, not a new judgment on the biological statements. |
+| E-storage-history | history/infrastructure/benzoyl-authority-profiles/2026-10-15T182221Z-Codex-a35d5f.yaml; complete history event, issue593 link and preserved historical pending statements | supports | Native infrastructure history records the exact lossless storage/loader correction, original provenance preservation and post-change 234-test/Ruff evidence. It explicitly retains the previous full suite as historical and leaves independent acceptance/staging to subsequent observations. |
+| E-report | research/pathway_additions/2026-10-15-next-266/README.md; dated 2026-10-15T18:28:59Z append; history/other/benzoyl-coa-anaerobic-research/2026-10-15T182901Z-Codex-e059db.yaml | supports | The report is an exact indexed-predecessor prefix plus a dated append that distinguishes the saved prior reviews, original staged failure, accepted storage correction, historical full suite and pending canonical/publication actions. The new history retains those same boundaries. |
+| E-prior-science | reviews/structured/20261015T175945Z-centbenzcoa-pwy-scientific/review.yaml; whole scope, verdict, limitations, source inputs and immutable YAML/Markdown pair | supports | Prior full scientific review covers the unchanged complete CENT record with pass_with_limitations and no findings. This partial technical follow-up neither repeats nor broadens its scientific acceptance. |
+| E-prior-technical | reviews/structured/20261015T180105Z-next266-independent-technical/review.yaml; whole declared technical scope, source hashes, historical gates and immutable YAML/Markdown pair | supports | Prior technical integration review remains unchanged. Its 5,489-pass full-suite result predates the test-loader correction. The present review supplies a bounded later observation for storage, loader and retained correction evidence only. |
+
+## Limits And Additional Notes
+
+- Partial technical scope only; no fresh scientific, primary-literature or full record-claim assessment. The target is bound by exact unchanged bytes to the separate scientific review.
+- The author executed the full affected 234-test module and repository Ruff; this reviewer checked its retained receipts and exact byte scope, then independently executed the changed loader probes and main producer/consumer roundtrip.
+- No fresh whole-corpus run was performed. The earlier 5,489-pass full suite predates the loader correction and is historical; deterministic byte comparisons do not turn it into a current full-suite result.
+- The actual unchanged predecessor index still fails git diff --cached --check. This review accepts the successor working tree; root must stage it and obtain a passing actual staged check before commit. No remote CI, merge or GitHub issue closure is asserted.
+- Both initial reviewer harness errors remain retained with actual failed exit codes and corrected successful successors. Neither justified an implementation issue.
+- The 979-file unchanged inventory covers src/data/conf/pages/reviews at bounded-review time. Later root report/history/archive additions are separately assessed; the inventory does not claim an absence of unrelated authorized edits outside those roots.
+- Canonical save and subsequent report/history/review checks are root-owned steps after this external authored-and-validated document. The full test receipts do not claim to validate their own later review artifacts.
+- No structured predecessor finding exists for GitHub-only issue 593. Therefore findings remains empty and no previous_occurrences lineage is fabricated; the correction is positively assessed with the external issue link.
+- The initial bounded review is frozen and reused without rewriting it. This separate observation binds the maintained archival/report successor and current native inspection inputs.
+- No source exhaustion, public-release licensing decision or scientific status promotion follows from this technical assessment.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261015T183417Z-next266-fixture-storage-independent-technical
+kind: record
+repository: CultureBotAI/PathwayMech
+title: 'Independent partial technical follow-up: lossless CENT benzoyl authority fixtures'
+started_at: '2026-10-15T18:30:07.314767Z'
+finished_at: '2026-10-15T18:34:17.889730Z'
+reviewer:
+  identity: Codex independent reviewer /root/next267_native_acceptance
+  kind: agent
+  independence: independent
+  independence_basis: Did not author the next266 pathway, authority implementation,
+    fixture storage/loader correction, root archive or report/history changes. Authored
+    only the independent external bounded review, its helpers and this canonical technical
+    follow-up. Reuses own explicitly identified frozen review; author tests and root
+    archival/publication evidence are attributed separately. No maintained files,
+    source packets, Git index, shared runtime or GitHub objects were changed by this
+    reviewer.
+skill: .claude/skills/review-yaml-record/SKILL.md (native structured output contract;
+  bounded technical scope only)
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: The independent partial technical follow-up accepts the lossless fixture-storage
+  correction for GitHub issue 593. All eight gzip fixtures recover the exact indexed
+  and retained native originals; original manifest/acquisition bytes remain unchanged.
+  The changed loader passed 153 independent checks and 66 rejection probes plus the
+  complete-original producer/consumer roundtrip. Author 234-test and repository Ruff
+  receipts are verified. The full 66-member maintained correction archive and dated
+  report/history additions passed 97 current integration checks. The maintained CENT
+  record, production code, authority snapshots, generated page and both prior canonical
+  reviews are unchanged. No supported defect remains in this scope. Actual successor
+  staging and publication remain root-owned future actions; the prior 5,489-pass full
+  suite is historical.
+source:
+  git_revision: dd780ef273323efd638eacd63625963062e0b105
+  state: working_tree
+  inputs:
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 1341614e5e3f32aacbb8944c072f2c0e32f7c7a96dd3a1b2c81c0b5d7b6808c3
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: e501a8e36a50b033a38c0c9fdae10ebc723b47900ca003c5c6e8fc97da660400
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 3e46be7991c9b77597eb078a40e7bd388d102dcca9adadea8152faae14d93c62
+    role: context
+  - path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+    sha256: e43e6ad5563c38af738e8f1c7b733510072b531196ce435395896b62951c6ab9
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/infrastructure/benzoyl-authority-profiles/2026-10-15T182221Z-Codex-a35d5f.yaml
+    sha256: c7fb64d99d94131f4db9be8be4c2d8dc3dea0e73538adcbcda95653d6dfa0875
+    role: context
+  - path: history/other/benzoyl-coa-anaerobic-research/2026-10-15T182901Z-Codex-e059db.yaml
+    sha256: ec9e96db5a4c1c0704cb27aacf700ad146ac2ce7078cb11c6389d058029436d6
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/MetaCyc_CENTBENZCOA-PWY.html
+    sha256: 6789b560b92bb439230cccd31a4d6493633241edc944bb3effb3e990cfc659d4
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-266/README.md
+    sha256: c559e49aba526ca529e57e5e167fa44c0ca264ecb8afe3d35b32af754418652f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/README.md
+    sha256: 640748c9c1e99cb79832f21a79ac77b10fca0e18c1c190229b3a1795c6d2c2d5
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/artifact-manifest.json
+    sha256: 5a26f2e72ffeeb65e02bed98ee1817d235d9f97b40eaa2d06ba29009d5d19640
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz
+    sha256: 47d26a5da9808503b7caa55f3980c6be8c2a4239509343345c1a24c8e8515a0d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/source-file-manifest.json
+    sha256: c2f2c3f9e1055af342246a043f59b82575ed6491c5414ba813858392b124d3a9
+    role: context
+  - path: reviews/structured/20261015T175945Z-centbenzcoa-pwy-scientific/review.md
+    sha256: b86ed1a4ecd2d7362373c561282938f7f7e7becc428f8c1b6dcdc1796838958c
+    role: context
+  - path: reviews/structured/20261015T175945Z-centbenzcoa-pwy-scientific/review.yaml
+    sha256: 7a57b7723d202ad3aba9c6b0db8e3e68f6c42257afeb671756ab3756fddd446e
+    role: context
+  - path: reviews/structured/20261015T180105Z-next266-independent-technical/review.md
+    sha256: f1f6860adf418994829c5645dc3ef3e4a0b5036b6951d8bd2bb07e5aeaa4f0a1
+    role: context
+  - path: reviews/structured/20261015T180105Z-next266-independent-technical/review.yaml
+    sha256: befd4fe76353852a70167ee5bcf052045f5d7e4ce684e0fb8d01cf43f6eff6ff
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 3df369e92b52ec21a07fd2a284467cc40c9e53314c8e0ca131b73caa9df47363
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/biocyc_benzoyl.py
+    sha256: a5cc54963510351113c2470587f0bf270c49e403e261f681837d7281c3862367
+    role: context
+  - path: src/pathwaymech/identifiers.py
+    sha256: 904c961666a639cc53ce33b031b89d442f827224e648e3aeffd9d0b2a50011ab
+    role: context
+  - path: tests/fixtures/benzoyl_authority/1.3.99.15-RXN.xml.gz
+    sha256: 293bd88390943dcd0e8faad75a7bc3eb6375d54c434d8c923a243d5fd866f68d
+    role: context
+  - path: tests/fixtures/benzoyl_authority/CPLX-1341.xml.gz
+    sha256: 697ac4ef824edc411da2be0b2ad5c558a01be6d147b6fb8f0fd642c718edb5fc
+    role: context
+  - path: tests/fixtures/benzoyl_authority/OAHTHAUERA-RXN.xml.gz
+    sha256: 3a723bbeeeece34a994bebe59c4d975695ea5ca4ad3a91e0f35e75bc8c9fd7a5
+    role: context
+  - path: tests/fixtures/benzoyl_authority/Oxidized-ferredoxins.xml.gz
+    sha256: 1ead9cac029a0fb08c86cb3227a28059d82b3c1efeb855f6c86b62c015c75ddb
+    role: context
+  - path: tests/fixtures/benzoyl_authority/README.md
+    sha256: 86d4d045cadfac8f9c0c7975f5eb155b832c2de83923354677f9aaab3c6959b4
+    role: context
+  - path: tests/fixtures/benzoyl_authority/RXN-15012.xml.gz
+    sha256: dda53852dde6cf8756aa2978c6324d9adc53e2a3f1a69d1459c472281911b2d5
+    role: context
+  - path: tests/fixtures/benzoyl_authority/RXN-15013.xml.gz
+    sha256: 338bcca037eeeb524772e0e36207cbedb0fffe82c6249e2713305796d9cd823f
+    role: context
+  - path: tests/fixtures/benzoyl_authority/RXN-8032.xml.gz
+    sha256: 0ae4b6084e5cf61833f621ba836e344474d30d53587a9881dd4a5bb96b4f861b
+    role: context
+  - path: tests/fixtures/benzoyl_authority/Reduced-ferredoxins.xml.gz
+    sha256: 1a50c89a2a5c7ca325445970ced674d24916d991c6a1d949700031e44b442958
+    role: context
+  - path: tests/fixtures/benzoyl_authority/acquisition.json
+    sha256: abbd3da561afd89d83c08911e8f43e2f9e6a1e8d880164e4afe7ca7df93b6a3c
+    role: context
+  - path: tests/fixtures/benzoyl_authority/manifest.json
+    sha256: 1b2e516a944e3221c2a71e702077eaa0f9192e4f653a1d451806e7b11c6c2b1a
+    role: context
+  - path: tests/fixtures/benzoyl_authority/storage.json
+    sha256: 9bfc6a80874325bf27a81b3470ef6a35c3c33825478b9805ebf42537e538d50a
+    role: context
+  - path: tests/test_benzoyl_authority.py
+    sha256: 55c46e7a9d950540cac8c2f82594c7de7fc385e069a3c09f2507b0a5b8f4b5bd
+    role: context
+targets:
+- target_id: MetaCyc:CENTBENZCOA-PWY
+  path: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+  label: benzoyl-CoA degradation II (anaerobic)
+  kind: maintained
+  ownership_note: Maintained pathway YAML owns scientific claims, which are unchanged
+    and not reassessed here. Fixture storage and loader owners are tests/fixtures/benzoyl_authority
+    and tests/test_benzoyl_authority.py; this partial technical follow-up assesses
+    their exact preservation and evidence.
+scope:
+  description: Partial technical follow-up for the maintained CENTBENZCOA-PWY record,
+    confined to eight losslessly stored native XML test fixtures, the storage map
+    and loader, exact predecessor/successor byte ownership, retained correction evidence,
+    dated report/history context and preservation of prior reviewed record/technical
+    surfaces.
+  selection: Exact maintained MetaCyc:CENTBENZCOA-PWY target and complete eight-fixture
+    correction; no sampling within fixture or 66-member archive scope.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  exclusions:
+  - target: Fresh pathway science, literature completeness, enzyme/chemical identity
+      and biological conclusions
+    reason: The unchanged full scientific review remains linked; this observation
+      verifies technical preservation and makes no new biological acceptance claim.
+  - target: Fresh whole-corpus testing, final successor staged index, remote PR checks,
+      merge and issue closure
+    reason: The previous full suite is historical. This bounded review verifies the
+      post-change affected module/Ruff receipts and independent probes; root owns
+      later staging, current publication gates and remote workflow.
+checks:
+- check_id: C-inspect
+  name: Native current input inspection
+  status: passed
+  required: true
+  summary: Inspect succeeded against the exact maintained target plus 38 current context
+    inputs; no target was substituted.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-inspect
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B scripts/record_review.py
+    inspect --targets /private/tmp/pathwaymech-next-266-fixture-canonical-review/targets.yaml
+    --input .claude/skills/review-yaml-record/SKILL.md --input conf/identifier_sources.json
+    --input conf/record_review.yaml --input data/identifier_authorities/ontology.json
+    --input data/identifier_authorities/sources.json --input docs/record-review-profile.md
+    --input docs/record-reviews.md --input history/infrastructure/benzoyl-authority-profiles/2026-10-15T182221Z-Codex-a35d5f.yaml
+    --input history/other/benzoyl-coa-anaerobic-research/2026-10-15T182901Z-Codex-e059db.yaml
+    --input justfile --input pages/records/MetaCyc_CENTBENZCOA-PWY.html --input research/pathway_additions/2026-10-15-next-266/README.md
+    --input research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/README.md
+    --input research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/artifact-manifest.json
+    --input research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz
+    --input research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/source-file-manifest.json
+    --input reviews/structured/20261015T175945Z-centbenzcoa-pwy-scientific/review.md
+    --input reviews/structured/20261015T175945Z-centbenzcoa-pwy-scientific/review.yaml
+    --input reviews/structured/20261015T180105Z-next266-independent-technical/review.md
+    --input reviews/structured/20261015T180105Z-next266-independent-technical/review.yaml
+    --input schema/record_review.yaml --input scripts/build_source_identifier_snapshot.py
+    --input scripts/record_review.py --input src/pathwaymech/biocyc_benzoyl.py --input
+    src/pathwaymech/identifiers.py --input tests/fixtures/benzoyl_authority/1.3.99.15-RXN.xml.gz
+    --input tests/fixtures/benzoyl_authority/CPLX-1341.xml.gz --input tests/fixtures/benzoyl_authority/OAHTHAUERA-RXN.xml.gz
+    --input tests/fixtures/benzoyl_authority/Oxidized-ferredoxins.xml.gz --input tests/fixtures/benzoyl_authority/README.md
+    --input tests/fixtures/benzoyl_authority/RXN-15012.xml.gz --input tests/fixtures/benzoyl_authority/RXN-15013.xml.gz
+    --input tests/fixtures/benzoyl_authority/RXN-8032.xml.gz --input tests/fixtures/benzoyl_authority/Reduced-ferredoxins.xml.gz
+    --input tests/fixtures/benzoyl_authority/acquisition.json --input tests/fixtures/benzoyl_authority/manifest.json
+    --input tests/fixtures/benzoyl_authority/storage.json --input tests/test_benzoyl_authority.py
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: C-storage
+  name: Independent indexed-original and loader replay
+  status: passed
+  required: true
+  summary: 153 checks and 66 negative probes passed, plus the actual complete-original
+    producer/consumer, companion and first-owner test. Eight gzip objects preserve
+    all 106,540 original bytes and both native-source copies per object.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-independent
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-266-fixture-independent-review/replay.py.txt
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: C-storage-attempt
+  name: Retained first storage-review harness attempt
+  status: failed
+  required: false
+  summary: The reviewer list-order comparison failed with zero added, removed or changed
+    protected files. Corrected sorting of both inventory lists passed; this failed
+    attempt is retained, not an implementation finding.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-reviewer-attempts
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-266-fixture-independent-review/replay.py.txt
+    (original attempt-1 version, before correction)
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: C-current
+  name: Current maintained archive and context replay
+  status: passed
+  required: true
+  summary: 97 checks passed across the full 66-member archive, exact successor files,
+    unchanged prior review pairs and current technical/target owners; report/history
+    additions were read and assessed.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-archive
+  - E-report
+  - E-storage-history
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-266-fixture-canonical-review/check-current.py.txt
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: C-current-attempt
+  name: Retained first current-integration harness attempt
+  status: failed
+  required: false
+  summary: After 91 successful checks, the reviewer treated an integer inventory count
+    as a list. The original failure and all files remain; corrected count handling
+    completed 97 checks. No source changed.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-reviewer-attempts
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-266-fixture-canonical-review/check-current.py.txt
+    (original attempt-1 version, before correction)
+  exit_code: 1
+  expected_exit_code: 0
+- check_id: C-author-tests
+  name: Author full affected test module after correction
+  status: passed
+  required: true
+  summary: Author receipt reports 234 passed in 7.65s after the corrected loader.
+    Stream hashes, exact safe-runtime invocation and current source hashes were verified.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-author
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B -m pytest
+    tests/test_benzoyl_authority.py -q -p no:cacheprovider --basetemp=/private/tmp/pathwaymech-next-266-fixture-storage-test-tmp
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: C-author-lint
+  name: Author full repository Ruff after correction
+  status: passed
+  required: true
+  summary: Author no-cache repository Ruff passed; its complete log and current byte
+    scope were verified.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-author
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B -m ruff check
+    . --no-cache
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: C-worktree-whitespace
+  name: Independent working-tree whitespace check
+  status: passed
+  required: true
+  summary: The exact reviewed working-tree diff passes; gzip fixture bodies preserve
+    raw source whitespace. This does not imply the unchanged raw predecessor index
+    passes.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-independent
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+- check_id: C-predecessor-staged-whitespace
+  name: Actual unchanged predecessor index whitespace check
+  status: failed
+  required: false
+  summary: Exit 2 confirms the still-staged raw originals retain their six upstream
+    trailing-whitespace lines. Root must stage the accepted successor and rerun before
+    commit. This is a publication prerequisite, not an unresolved defect in the reviewed
+    working-tree successor.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-stage-failure
+  command: git diff --cached --check
+  exit_code: 2
+  expected_exit_code: 0
+- check_id: C-full-suite
+  name: Fresh whole-corpus tests and validation
+  status: skipped
+  required: false
+  summary: Not rerun for this bounded test-fixture correction. The 5,489-pass full
+    suite remains explicitly historical before the loader change; 234 affected tests,
+    Ruff and independent probes cover the new technical scope.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-author
+  - E-prior-technical
+- check_id: C-science
+  name: Fresh literature and biological reassessment
+  status: not_applicable
+  required: false
+  summary: This partial technical review does not reassess scientific truth; the record
+    bytes and original scientific review are unchanged.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-target
+  - E-prior-science
+evidence:
+- evidence_id: E-independent
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz
+  locator: independent-review/ASSESSMENT.md; replay-result.json; command-receipt.json;
+    manifest d812d6355f870c57517a432542f0fb9c25ce2b63af45cc65d84cfe36ff546307; freeze
+    470ec83851360c5e38a88a4209a0f99a80ad3ae6071967045bac309ed4de0d7b
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: 'This reviewer independently executed the complete bounded storage review:
+    all eight actual indexed originals, sixteen retained native source-owner copies,
+    153 checks, 66 rejection probes and the complete-original producer/consumer, companion
+    and first-owner test. All 979 protected files and the actual index remained unchanged.
+    The frozen packet is preserved byte-for-byte in the maintained archive.'
+  snapshot_sha256: 57ea28feb9a39e2f7e8735e2fd0ccd8fbb38ec8955f1bf9a9e466d83bdaceab8
+- evidence_id: E-author
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz
+  locator: author/command-receipts.json, affected-tests.stdout, lint.stdout, result-proof.json
+    and complete before/after snapshots; manifest 7ff5be1ae8237d40531b183d8bcca345f23e4c9418e841e15ababb7f5e8be0e1;
+    freeze 0a4d34da84e415c5c9059cd3cd3c81c22a83b9101782df8d31b53e301504c59c
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: Author full affected-module run passed 234 tests in 7.65 seconds and repository
+    Ruff passed after the loader change. Exact commands, environment, times, exit
+    codes and stream hashes are retained and independently checked. These are author
+    executions, not additional reviewer full-module or full-suite executions.
+- evidence_id: E-archive
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz
+  locator: all 66 regular members, source-file-manifest.json and artifact-manifest.json;
+    independent replay /private/tmp/pathwaymech-next-266-fixture-canonical-review/current-proof.json
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: 'After native inspection, 97 current-input/archive checks passed: exact
+    four-file archive layout; all 66 member bytes match all source owners; complete
+    author42, independent15, root8 and helper1 groups; frozen controls and inventories;
+    thirteen actual successor files; unchanged target, production, authority and page
+    owners; immutable prior review pairs; exact prior report prefix with dated append.'
+  snapshot_sha256: 47d26a5da9808503b7caa55f3980c6be8c2a4239509343345c1a24c8e8515a0d
+- evidence_id: E-inspect
+  kind: validation
+  reference: /private/tmp/pathwaymech-next-266-fixture-canonical-review/inspect.stdout
+  locator: native record_review.py inspect result and inspect-receipt.json
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: Native inspection captured the current Git base, exact maintained CENT
+    target and 38 explicit context inputs after archive/report/history readiness.
+    All 39 hashes were independently rechecked before this assessment.
+  snapshot_sha256: 2a42093ba9ef4f5091b7a6773cfd51e47f5ab0e8f56effc31c54aaeefc642ffe
+- evidence_id: E-stage-failure
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz
+  locator: 'root/actual-staged-whitespace.json; independent-review/replay-result.json
+    commands: git diff --cached --check'
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: The original staged whitespace failure is retained byte-for-byte. The reviewer
+    replay still returned 2 for the unchanged raw-XML predecessor index. This is the
+    expected historical/current-index boundary, not a claim that successor staging
+    has passed. Root must stage and rerun before publication.
+- evidence_id: E-reviewer-attempts
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-266/verification/fixture-storage/files.tar.gz
+  locator: independent-review/attempt-1-* and initial-replay-diagnosis.json; separate
+    current construction /private/tmp/pathwaymech-next-266-fixture-canonical-review/attempt-1-*
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: 'Two reviewer-only harness failures are preserved: initial inventory list
+    ordering, despite zero file-set/hash differences; later treating the root inventory
+    integer count as a list. Their original code, stdout, stderr, partial proofs and
+    receipts remain. Corrected bounded and current-integration runs passed. Neither
+    is an implementation finding.'
+- evidence_id: E-target
+  kind: record_content
+  reference: data/pathways/benzoyl-coa-degradation-ii-anaerobic.yaml
+  locator: entire raw YAML bytes; target id MetaCyc:CENTBENZCOA-PWY
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: The exact maintained target hash e43e6ad5563c38af738e8f1c7b733510072b531196ce435395896b62951c6ab9
+    is unchanged from both prior accepted review contexts. This is byte-preservation
+    evidence, not a new judgment on the biological statements.
+  snapshot_sha256: e43e6ad5563c38af738e8f1c7b733510072b531196ce435395896b62951c6ab9
+- evidence_id: E-storage-history
+  kind: record_content
+  reference: history/infrastructure/benzoyl-authority-profiles/2026-10-15T182221Z-Codex-a35d5f.yaml
+  locator: complete history event, issue593 link and preserved historical pending
+    statements
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: Native infrastructure history records the exact lossless storage/loader
+    correction, original provenance preservation and post-change 234-test/Ruff evidence.
+    It explicitly retains the previous full suite as historical and leaves independent
+    acceptance/staging to subsequent observations.
+  snapshot_sha256: c7fb64d99d94131f4db9be8be4c2d8dc3dea0e73538adcbcda95653d6dfa0875
+- evidence_id: E-report
+  kind: record_content
+  reference: research/pathway_additions/2026-10-15-next-266/README.md
+  locator: dated 2026-10-15T18:28:59Z append; history/other/benzoyl-coa-anaerobic-research/2026-10-15T182901Z-Codex-e059db.yaml
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: The report is an exact indexed-predecessor prefix plus a dated append that
+    distinguishes the saved prior reviews, original staged failure, accepted storage
+    correction, historical full suite and pending canonical/publication actions. The
+    new history retains those same boundaries.
+  snapshot_sha256: c559e49aba526ca529e57e5e167fa44c0ca264ecb8afe3d35b32af754418652f
+- evidence_id: E-prior-science
+  kind: prior_review
+  reference: reviews/structured/20261015T175945Z-centbenzcoa-pwy-scientific/review.yaml
+  locator: whole scope, verdict, limitations, source inputs and immutable YAML/Markdown
+    pair
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: Prior full scientific review covers the unchanged complete CENT record
+    with pass_with_limitations and no findings. This partial technical follow-up neither
+    repeats nor broadens its scientific acceptance.
+  snapshot_sha256: 7a57b7723d202ad3aba9c6b0db8e3e68f6c42257afeb671756ab3756fddd446e
+- evidence_id: E-prior-technical
+  kind: prior_review
+  reference: reviews/structured/20261015T180105Z-next266-independent-technical/review.yaml
+  locator: whole declared technical scope, source hashes, historical gates and immutable
+    YAML/Markdown pair
+  accessed_at: '2026-10-15T18:34:17.889730Z'
+  support: supports
+  summary: Prior technical integration review remains unchanged. Its 5,489-pass full-suite
+    result predates the test-loader correction. The present review supplies a bounded
+    later observation for storage, loader and retained correction evidence only.
+  snapshot_sha256: befd4fe76353852a70167ee5bcf052045f5d7e4ce684e0fb8d01cf43f6eff6ff
+assessments:
+- assessment_id: A-preservation
+  area: representation
+  topic: Eight exact native fixture originals survive the storage change
+  outcome: supported
+  summary: All 106,540 raw bytes, including upstream trailing spaces, are preserved.
+    The eight gzip objects total 22,555 bytes and reproduce deterministically with
+    zero mtime and no embedded filename. Actual index, both retained native owners,
+    original manifest/acquisition and decoded storage metadata all agree. The unchanged
+    maintained CENT target remains bound to its prior accepted bytes.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-independent
+  - E-target
+  - E-author
+  dimensions:
+  - name: evidence-scope
+    value: Technical byte preservation; scientific_review false
+    definition: Original-byte and representation validation does not independently
+      prove source assertions or pathway biology.
+    evidence_ids:
+    - E-independent
+    - E-prior-science
+- assessment_id: A-loader
+  area: consistency
+  topic: Changed fixture loader preserves the actual authority-test contract
+  outcome: supported
+  summary: The loader verifies both storage and original payload hashes/sizes, exact
+    logical-key coverage and deep-copy entry behavior. All 66 corruption/missing-object/map
+    probes reject, and the actual complete-original producer/consumer and first-owner
+    roundtrip passes. Twenty other function bodies remain AST-identical. Author full
+    affected module and Ruff pass after the correction.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-independent
+  - E-author
+- assessment_id: A-retention
+  area: provenance
+  topic: Complete correction evidence and historical failures remain available
+  outcome: supported
+  summary: The actual maintained archive contains all 42 author, 15 independent-review,
+    eight root and one helper files, matching every original owner. Frozen manifests,
+    original staged failure and reviewer harness failures remain exact. The dated
+    report preserves its prior indexed body and correctly separates earlier gates,
+    later correction checks and pending publication actions. New history describes
+    the same scope.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-archive
+  - E-stage-failure
+  - E-reviewer-attempts
+  - E-report
+  - E-storage-history
+- assessment_id: A-issue593
+  area: scope
+  topic: Verified concrete correction for the GitHub-only publication defect
+  outcome: supported
+  summary: GitHub issue 593 is addressed in the reviewed working-tree implementation
+    by lossless gzip storage and its verified loader. This is a positive assessment
+    of a concrete correction, not a fabricated resolved structured finding. Prior
+    scientific and technical reviews remain unchanged and linked. Root still needs
+    actual successor staging, the fresh staged whitespace check and publication verification.
+  target_ids:
+  - MetaCyc:CENTBENZCOA-PWY
+  evidence_ids:
+  - E-independent
+  - E-stage-failure
+  - E-prior-science
+  - E-prior-technical
+findings: []
+actions: []
+limitations:
+- Partial technical scope only; no fresh scientific, primary-literature or full record-claim
+  assessment. The target is bound by exact unchanged bytes to the separate scientific
+  review.
+- The author executed the full affected 234-test module and repository Ruff; this
+  reviewer checked its retained receipts and exact byte scope, then independently
+  executed the changed loader probes and main producer/consumer roundtrip.
+- No fresh whole-corpus run was performed. The earlier 5,489-pass full suite predates
+  the loader correction and is historical; deterministic byte comparisons do not turn
+  it into a current full-suite result.
+- The actual unchanged predecessor index still fails git diff --cached --check. This
+  review accepts the successor working tree; root must stage it and obtain a passing
+  actual staged check before commit. No remote CI, merge or GitHub issue closure is
+  asserted.
+- Both initial reviewer harness errors remain retained with actual failed exit codes
+  and corrected successful successors. Neither justified an implementation issue.
+- The 979-file unchanged inventory covers src/data/conf/pages/reviews at bounded-review
+  time. Later root report/history/archive additions are separately assessed; the inventory
+  does not claim an absence of unrelated authorized edits outside those roots.
+- Canonical save and subsequent report/history/review checks are root-owned steps
+  after this external authored-and-validated document. The full test receipts do not
+  claim to validate their own later review artifacts.
+notes:
+- No structured predecessor finding exists for GitHub-only issue 593. Therefore findings
+  remains empty and no previous_occurrences lineage is fabricated; the correction
+  is positively assessed with the external issue link.
+- The initial bounded review is frozen and reused without rewriting it. This separate
+  observation binds the maintained archival/report successor and current native inspection
+  inputs.
+- No source exhaustion, public-release licensing decision or scientific status promotion
+  follows from this technical assessment.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261015T175945Z-centbenzcoa-pwy-scientific
+  relationship: Unchanged full scientific acceptance of the exact record; this follow-up
+    is technical only.
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261015T180105Z-next266-independent-technical
+  relationship: Unchanged earlier technical integration observation; this partial
+    follow-up adds the later fixture-storage correction and preserves historical gate
+    attribution.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/593
+tags:
+- technical-followup
+- fixture-storage
+- provenance-retention
+```

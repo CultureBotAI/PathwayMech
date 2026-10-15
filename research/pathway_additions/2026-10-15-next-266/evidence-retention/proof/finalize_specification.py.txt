@@ -1,0 +1,93 @@
+"""Append the final independently accepted provenance successor and exact root receipts."""
+
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+spec = json.loads((ROOT / "source-specification.initial.json").read_bytes())
+source = Path("/private/tmp/pathwaymech-next-266-independent-merged-successor-review")
+body = (source / "artifact-manifest.json").read_bytes()
+assert sha(body) == "528fb53c043a7bcbc49650bf2198ffb8c91a4d81e2a2dbe84e9f8545156ead72"
+manifest = json.loads(body)
+key = "files" if "files" in manifest else "artifacts"
+listed = {r["path"] for r in manifest[key]}
+physical = {str(p.relative_to(source)) for p in source.rglob("*") if p.is_file()}
+spec["packages"].append(
+    {
+        "name": "independent-merged-successor-review",
+        "source_root": str(source),
+        "manifest": "artifact-manifest.json",
+        "manifest_sha256": sha(body),
+        "manifest_array": key,
+        "listed_artifacts": len(listed),
+        "explicit_physical_extras": sorted(physical - listed),
+        "physical_artifacts": len(physical),
+        "compact_maps": [],
+        "compact_disposition": (
+            "No package-owned compact map in full hidden/ignored-inclusive inventory."
+        ),
+    }
+)
+for package in spec["packages"]:
+    for compact in package["compact_maps"]:
+        obj = json.loads((Path(package["source_root"]) / compact["path"]).read_bytes())
+        compact["auxiliary_arrays"] = (
+            [
+                {
+                    "array": "already_compressed_originals",
+                    "expected_rows": len(obj["already_compressed_originals"]),
+                    "row_key_sets": sorted(
+                        {tuple(sorted(r)) for r in obj["already_compressed_originals"]}
+                    ),
+                }
+            ]
+            if "already_compressed_originals" in obj
+            else []
+        )
+for path in [
+    Path("/private/tmp/pathwaymech-next-266-ci/merged-discovery-successor-root-intake.json"),
+    Path("/private/tmp/pathwaymech-next-266-ci/independent-merged-successor-root-intake.json"),
+    *[
+        Path("/private/tmp/pathwaymech-next-266-integration-preparation") / name
+        for name in [
+            "identifier-and-reference-register.tsv",
+            "closed-schema-preflight.json",
+            "closed-schema-preflight.log",
+        ]
+    ],
+]:
+    body = path.read_bytes()
+    spec["selected_root_snapshots"].append(
+        {
+            "source": str(path),
+            "path": path.parent.name + "/" + path.name,
+            "sha256": sha(body),
+            "bytes": len(body),
+        }
+    )
+spec["pending_packages"] = []
+spec["scope"] = (
+    "Seventeen frozen source/author/reviewer packages, including accepted issue590 successor, "
+    "plus exact selected root snapshots. All later maintained integration and production "
+    "observations belong in separate verification evidence; no circular future-review "
+    "dependency or global source exhaustion is claimed."
+)
+(ROOT / "source-specification.final.json").write_text(
+    json.dumps(spec, indent=2, sort_keys=True) + "\n"
+)
+print(
+    json.dumps(
+        {
+            "packages": len(spec["packages"]),
+            "snapshots": len(spec["selected_root_snapshots"]),
+            "pending_source_packages": spec["pending_packages"],
+        }
+    )
+)

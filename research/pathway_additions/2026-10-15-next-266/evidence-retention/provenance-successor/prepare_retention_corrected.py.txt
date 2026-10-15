@@ -1,0 +1,602 @@
+"""Prepare a lossless external retention payload; never edit a maintained checkout."""
+
+import gzip
+import hashlib
+import json
+import shutil
+import subprocess
+from pathlib import Path
+
+ROOT = Path("/private/tmp/pathwaymech-next-266-retention-preparation")
+REPO = Path("/private/tmp/pathwaymech-next-266-20261015")
+BASE = "dd780ef273323efd638eacd63625963062e0b105"
+TREE = "93edcbf621df2ca0551830151be39eed5ce21232"
+DEST = "research/pathway_additions/2026-10-15-next-266/evidence-retention"
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def dump(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def safe(root, relative):
+    p = Path(relative)
+    assert not p.is_absolute() and ".." not in p.parts
+    path = root / p
+    assert path.resolve().is_relative_to(root.resolve()) and not path.is_symlink()
+    return path
+
+
+def check(body, digest, size):
+    assert sha(body) == digest and len(body) == size, (digest, size, sha(body), len(body))
+
+
+def inventory(root):
+    paths = list(root.rglob("*"))
+    assert not any(p.is_symlink() for p in paths), root
+    return {str(p.relative_to(root)): p for p in paths if p.is_file()}
+
+
+def normalize(row, schema):
+    if schema == "gzip_pair":
+        return {
+            "original_path": row["path"],
+            "original_sha256": row["sha256"],
+            "original_bytes": row["bytes"],
+            "stored_path": row["gzip_path"],
+            "stored_sha256": row["gzip_sha256"],
+            "stored_bytes": row["gzip_bytes"],
+            "encoding": "gzip",
+        }
+    if schema.startswith("raw_"):
+        return {
+            "original_path": row["original"],
+            "original_sha256": row["raw_sha256"],
+            "original_bytes": row["raw_bytes"],
+            "stored_path": row["stored"],
+            "stored_sha256": row["stored_sha256"],
+            "stored_bytes": row["stored_bytes"],
+            "encoding": row["encoding"] if schema == "raw_encoding" else "gzip",
+        }
+    assert schema in ("path_encoding", "path_codec")
+    return {
+        **{
+            k: row[k]
+            for k in (
+                "original_path",
+                "original_sha256",
+                "original_bytes",
+                "stored_path",
+                "stored_sha256",
+                "stored_bytes",
+            )
+        },
+        "encoding": row["encoding" if schema == "path_encoding" else "codec"],
+    }
+
+
+def main():
+    spec = json.loads((ROOT / "source-specification.final.json").read_bytes())
+    out = ROOT / "payload"
+    assert not out.exists()
+    out.mkdir()
+    assert (
+        subprocess.check_output(["git", "rev-parse", BASE + "^{tree}"], cwd=REPO).decode().strip()
+        == TREE
+    )
+    all_contents = {}
+    packages = []
+    compact_pairs = []
+    logical = []
+    map_audits = []
+    gzip_checks = {}
+    source_compact = {}
+
+    def add_occurrence(row):
+        body = Path(row["source"]).read_bytes()
+        check(body, row["sha256"], row["bytes"])
+        all_contents.setdefault(row["sha256"], row)
+        if body.startswith(b"\x1f\x8b") and row["sha256"] not in gzip_checks:
+            inner = body
+            steps = []
+            while inner.startswith(b"\x1f\x8b"):
+                before = sha(inner)
+                inner = gzip.decompress(inner)
+                steps.append(
+                    {
+                        "input_sha256": before,
+                        "encoding": "gzip",
+                        "output_sha256": sha(inner),
+                        "output_bytes": len(inner),
+                    }
+                )
+                assert len(steps) < 16
+            gzip_checks[row["sha256"]] = {
+                "source_sha256": row["sha256"],
+                "source_bytes": row["bytes"],
+                "decode_steps": steps,
+                "scope": (
+                    "Exact original compressed representation remains "
+                    "independently retained; all successive gzip payload layers "
+                    "verified."
+                ),
+            }
+
+    for package in spec["packages"]:
+        root = Path(package["source_root"])
+        physical = inventory(root)
+        manifest = safe(root, package["manifest"]).read_bytes()
+        assert sha(manifest) == package["manifest_sha256"]
+        records = json.loads(manifest)[package["manifest_array"]]
+        assert len(records) == package["listed_artifacts"]
+        expected = {r["path"] for r in records}
+        assert len(expected) == len(records)
+        assert set(physical) == expected | set(package["explicit_physical_extras"])
+        assert len(physical) == package["physical_artifacts"]
+        for row in records:
+            check(safe(root, row["path"]).read_bytes(), row["sha256"], row["bytes"])
+        occurrences = []
+        for relative, path in sorted(physical.items()):
+            body = path.read_bytes()
+            row = {"path": relative, "source": str(path), "sha256": sha(body), "bytes": len(body)}
+            add_occurrence(row)
+            occurrences.append(row)
+        packages.append(
+            {
+                "name": package["name"],
+                "source_root": str(root),
+                "source_occurrences": occurrences,
+                "source_manifest": package["manifest"],
+                "source_manifest_sha256": package["manifest_sha256"],
+                "physical_inventory_includes_hidden_and_ignored": True,
+            }
+        )
+        discovered_maps = set()
+        candidates = []
+        for relative, path in sorted(physical.items()):
+            parts = Path(relative).parts
+            if not (
+                len(parts) == 1 or (len(parts) == 2 and parts[0] in ("compact", "compact-review"))
+            ):
+                continue
+            if "manifest" not in path.name or path.suffix != ".json":
+                continue
+            body = path.read_bytes()
+            obj = json.loads(body)
+            candidates.append(
+                {
+                    "path": relative,
+                    "sha256": sha(body),
+                    "bytes": len(body),
+                    "keys": sorted(obj) if isinstance(obj, dict) else "array",
+                }
+            )
+            if isinstance(obj, dict):
+                for values in obj.values():
+                    if isinstance(values, list) and values and isinstance(values[0], dict):
+                        if any(k in values[0] for k in ("gzip_path", "stored_path", "stored")):
+                            discovered_maps.add(relative)
+        assert discovered_maps == {m["path"] for m in package["compact_maps"]}, (
+            package["name"],
+            discovered_maps,
+        )
+        map_audits.append(
+            {
+                "package": package["name"],
+                "full_physical_paths": sorted(physical),
+                "package_owned_manifest_candidates": candidates,
+                "explicit_maps": package["compact_maps"],
+                "disposition": package["compact_disposition"],
+                "boundary": (
+                    "Package root and immediate compact/compact-review manifest "
+                    "owners inspected. Nested inherited source-control maps "
+                    "remain exact source artifacts and are not misrepresented as "
+                    "this package owner."
+                ),
+            }
+        )
+        for compact in package["compact_maps"]:
+            body = safe(root, compact["path"]).read_bytes()
+            check(body, compact["sha256"], compact["bytes"])
+            obj = json.loads(body)
+            rows = obj[compact["array"]]
+            assert (
+                len(rows) == compact["expected_rows"] and sorted(obj) == compact["top_level_keys"]
+            )
+            assert sorted({tuple(sorted(r)) for r in rows}) == [
+                tuple(r) for r in compact["row_key_sets"]
+            ]
+            for index, declared in enumerate(rows):
+                normalized = normalize(declared, compact["schema"])
+                stored = safe(root, normalized["stored_path"]).read_bytes()
+                check(stored, normalized["stored_sha256"], normalized["stored_bytes"])
+                encoding = normalized["encoding"]
+                assert encoding in ("identity", "gzip")
+                original = gzip.decompress(stored) if encoding == "gzip" else stored
+                check(original, normalized["original_sha256"], normalized["original_bytes"])
+                raw = safe(root, normalized["original_path"])
+                present = raw.is_file()
+                if present:
+                    assert raw.read_bytes() == original
+                preserved_payload = []
+                for hash_key, size_key in [
+                    ("existing_gzip_decoded_sha256", "existing_gzip_decoded_bytes"),
+                    ("original_gzip_inner_decoded_sha256", "original_gzip_inner_decoded_bytes"),
+                    ("original_inner_decoded_sha256", "original_inner_decoded_bytes"),
+                ]:
+                    if hash_key in declared:
+                        inner = gzip.decompress(original)
+                        check(inner, declared[hash_key], declared[size_key])
+                        preserved_payload.append(
+                            {"sha256": sha(inner), "bytes": len(inner), "binding": hash_key}
+                        )
+                if "decoded_sha256" in declared:
+                    inner = (
+                        gzip.decompress(original)
+                        if declared.get("existing_gzip_preserved")
+                        else original
+                    )
+                    assert sha(inner) == declared["decoded_sha256"]
+                    if "decoded_bytes" in declared:
+                        assert len(inner) == declared["decoded_bytes"]
+                    if declared.get("existing_gzip_preserved"):
+                        preserved_payload.append(
+                            {
+                                "sha256": sha(inner),
+                                "bytes": len(inner),
+                                "binding": "existing_gzip_preserved",
+                            }
+                        )
+                result = {
+                    "package": package["name"],
+                    "compact_map": compact["path"],
+                    "compact_map_sha256": compact["sha256"],
+                    "index": index,
+                    **normalized,
+                    "original_physically_present": present,
+                    "declared_row": declared,
+                    "preserved_original_gzip_payloads": preserved_payload,
+                    "verification": (
+                        "Exact stored bytes, decoded logical original, any available "
+                        "physical original and all declared inner payload "
+                        "hashes/sizes verified."
+                    ),
+                }
+                compact_pairs.append(result)
+                if not present:
+                    logical.append(result)
+                if (
+                    encoding == "gzip"
+                    and normalized["original_sha256"] != normalized["stored_sha256"]
+                ):
+                    source_compact.setdefault(normalized["original_sha256"], []).append(normalized)
+            for auxiliary in compact["auxiliary_arrays"]:
+                values = obj[auxiliary["array"]]
+                assert len(values) == auxiliary["expected_rows"]
+                assert sorted({tuple(sorted(r)) for r in values}) == [
+                    tuple(r) for r in auxiliary["row_key_sets"]
+                ]
+            for index, declared in enumerate(obj.get("already_compressed_originals", [])):
+                body = safe(root, declared["path"]).read_bytes()
+                check(body, declared["sha256"], declared["bytes"])
+                assert body.startswith(b"\x1f\x8b")
+                inner = gzip.decompress(body)
+                if "decoded_sha256" in declared:
+                    check(inner, declared["decoded_sha256"], declared["decoded_bytes"])
+                compact_pairs.append(
+                    {
+                        "package": package["name"],
+                        "compact_map": compact["path"],
+                        "compact_map_sha256": compact["sha256"],
+                        "array": "already_compressed_originals",
+                        "index": index,
+                        "declared_row": declared,
+                        "original_path": declared["path"],
+                        "original_sha256": declared["sha256"],
+                        "original_bytes": declared["bytes"],
+                        "stored_path": declared["path"],
+                        "stored_sha256": declared["sha256"],
+                        "stored_bytes": declared["bytes"],
+                        "encoding": "identity",
+                        "original_physically_present": True,
+                        "preserved_original_gzip_payloads": [
+                            {
+                                "sha256": sha(inner),
+                                "bytes": len(inner),
+                                "binding": "already_compressed_originals",
+                            }
+                        ],
+                    }
+                )
+        print("verified source", package["name"], len(physical), flush=True)
+    extras = []
+    for row in spec["selected_root_snapshots"]:
+        add_occurrence(row)
+        extras.append(row)
+    packages.append(
+        {
+            "name": "root-intake-and-issue-evidence",
+            "source_occurrences": extras,
+            "scope": (
+                "Only these exact individually hashed snapshots; "
+                "no whole mutable source directory freeze."
+            ),
+        }
+    )
+
+    inherited = {}
+    inherited_inputs = []
+    for kind in ("evidence-retention", "evidence-extension"):
+        prefix = "research/pathway_additions/2026-10-15-next-265/" + kind
+        content = json.loads((ROOT / "baseline" / prefix / "content-map.json").read_bytes())
+        inherited_inputs.append(
+            {
+                "root": prefix,
+                "git_commit": BASE,
+                "content_map_sha256": sha(
+                    (ROOT / "baseline" / prefix / "content-map.json").read_bytes()
+                ),
+            }
+        )
+        for digest, row in content.items():
+            endpoint = dict(row["storage"])
+            if endpoint["kind"] == "new_retention_object":
+                endpoint["path"] = prefix + "/" + endpoint["path"]
+            else:
+                assert endpoint["kind"] == "existing_repository"
+            endpoint["kind"] = "existing_repository"
+            endpoint["git_commit"] = BASE
+            if "git_tree" in endpoint:
+                endpoint["git_tree"] = TREE
+            inherited.setdefault(
+                digest,
+                {**row, "storage": endpoint, "inherited_content_map": prefix + "/content-map.json"},
+            )
+        manifest = json.loads((ROOT / "baseline" / prefix / "artifact-manifest.json").read_bytes())
+        for row in manifest["files"]:
+            inherited.setdefault(
+                row["sha256"],
+                {
+                    "source_sha256": row["sha256"],
+                    "source_bytes": row["bytes"],
+                    "storage": {
+                        "kind": "existing_repository",
+                        "path": prefix + "/" + row["path"],
+                        "git_commit": BASE,
+                        "stored_sha256": row["sha256"],
+                        "stored_bytes": row["bytes"],
+                    },
+                    "decode_steps": [],
+                    "inherited_content_map": prefix + "/artifact-manifest.json",
+                },
+            )
+    contents = {}
+    owner_cache = {}
+    owner_proof = []
+    storage_proof = []
+    batch = subprocess.Popen(
+        ["git", "cat-file", "--batch"], cwd=REPO, stdin=subprocess.PIPE, stdout=subprocess.PIPE
+    )
+
+    def read_owner(endpoint):
+        key = endpoint["path"]
+        if key in owner_cache:
+            return owner_cache[key]
+        batch.stdin.write((BASE + ":" + key + "\n").encode())
+        batch.stdin.flush()
+        header = batch.stdout.readline().split()
+        assert len(header) == 3 and header[1] == b"blob", (key, header)
+        body = batch.stdout.read(int(header[2]))
+        assert batch.stdout.read(1) == b"\n"
+        check(body, endpoint["stored_sha256"], endpoint["stored_bytes"])
+        owner_cache[key] = body
+        owner_proof.append(
+            {
+                "git_commit": BASE,
+                "git_tree": TREE,
+                "path": key,
+                "git_blob": header[0].decode(),
+                "sha256": sha(body),
+                "bytes": len(body),
+            }
+        )
+        return body
+
+    def map_content(digest):
+        if digest in contents:
+            return contents[digest]
+        row = all_contents[digest]
+        body = Path(row["source"]).read_bytes()
+        check(body, digest, row["bytes"])
+        if digest in inherited:
+            selected = inherited[digest]
+            decoded = read_owner(selected["storage"])
+            for step in selected["decode_steps"]:
+                assert step["encoding"] == "gzip" and sha(decoded) == step["input_sha256"]
+                decoded = gzip.decompress(decoded)
+                check(decoded, step["output_sha256"], step["output_bytes"])
+            assert decoded == body
+            result = {
+                k: selected[k] for k in ("source_sha256", "source_bytes", "storage", "decode_steps")
+            }
+            result["inherited_binding"] = selected["inherited_content_map"]
+        elif not body.startswith(b"\x1f\x8b") and digest in source_compact:
+            candidates = sorted(
+                source_compact[digest], key=lambda r: (r["stored_bytes"], r["stored_sha256"])
+            )
+            selected = next(r for r in candidates if r["stored_sha256"] in all_contents)
+            owner = map_content(selected["stored_sha256"])
+            result = {
+                "source_sha256": digest,
+                "source_bytes": len(body),
+                "storage": owner["storage"],
+                "decode_steps": owner["decode_steps"]
+                + [
+                    {
+                        "encoding": "gzip",
+                        "input_sha256": selected["stored_sha256"],
+                        "output_sha256": digest,
+                        "output_bytes": len(body),
+                    }
+                ],
+                "reuse": (
+                    "Exact package-owned compact representation already retained "
+                    "as a separate physical source object."
+                ),
+            }
+        else:
+            already_gzip = body.startswith(b"\x1f\x8b")
+            stored = body if already_gzip else gzip.compress(body, compresslevel=6, mtime=0)
+            stored_digest = sha(stored)
+            relative = f"objects/{stored_digest[:2]}/{stored_digest}.gz"
+            path = out / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            if path.exists():
+                assert path.read_bytes() == stored
+            else:
+                path.write_bytes(stored)
+            steps = (
+                []
+                if already_gzip
+                else [
+                    {
+                        "encoding": "gzip",
+                        "input_sha256": stored_digest,
+                        "output_sha256": digest,
+                        "output_bytes": len(body),
+                    }
+                ]
+            )
+            result = {
+                "source_sha256": digest,
+                "source_bytes": len(body),
+                "storage": {
+                    "kind": "new_retention_object",
+                    "path": relative,
+                    "stored_sha256": stored_digest,
+                    "stored_bytes": len(stored),
+                },
+                "decode_steps": steps,
+            }
+            storage_proof.append(
+                {
+                    "source_sha256": digest,
+                    "source_bytes": len(body),
+                    "stored_path": relative,
+                    "stored_sha256": stored_digest,
+                    "stored_bytes": len(stored),
+                    "encoding": "identity_existing_gzip" if already_gzip else "gzip",
+                    "raw_original_modified": False,
+                }
+            )
+        contents[digest] = result
+        return result
+
+    for digest in sorted(all_contents):
+        map_content(digest)
+    batch.stdin.close()
+    assert batch.wait() == 0
+    for package in packages:
+        target = out / "packages" / package["name"]
+        dump(target / "source-map.json", package)
+        (target / "README.md").write_text(
+            "# "
+            + package["name"]
+            + (
+                "\n\nThis source map preserves each original physical path and "
+                "exact byte identity. Use the top-level decoder with "
+                "`--package "
+            )
+            + package["name"]
+            + (
+                "` to read or reconstruct this source package. Logical "
+                "originals absent from the physical inventory are separately "
+                "bound by `logical-originals.json` and the complete "
+                "compact-pair verification. Author and independent-review "
+                "packages remain distinct.\n"
+            )
+        )
+    dump(out / "content-map.json", contents)
+    dump(out / "source-specification.json", spec)
+    dump(
+        out / "source-package-inventory.json",
+        [
+            {
+                "name": p["name"],
+                "physical_occurrences": len(p["source_occurrences"]),
+                "source_bytes": sum(r["bytes"] for r in p["source_occurrences"]),
+            }
+            for p in packages
+        ],
+    )
+    dump(out / "explicit-package-compact-audit.json", map_audits)
+    dump(out / "verified-compact-pairs.json", compact_pairs)
+    dump(out / "logical-originals.json", logical)
+    dump(out / "gzip-payload-verification.json", list(gzip_checks.values()))
+    dump(out / "existing-owner-verification.json", owner_proof)
+    dump(out / "inherited-baseline-inputs.json", inherited_inputs)
+    dump(out / "new-storage-successor-mappings.json", storage_proof)
+    dump(out / "selected-extra-inputs.json", spec["selected_root_snapshots"])
+    dump(
+        out / "pending-packages.json",
+        {
+            "pending_frozen_source_packages": spec["pending_packages"],
+            "pending_work": [
+                "Independent retention review and acceptance",
+                "Maintained guarded adoption",
+                "Canonical record reviews, production gates and publication",
+            ],
+            "scope": "No global exhaustion or final maintained-record approval is claimed.",
+        },
+    )
+    baseline = ROOT / "baseline/research/pathway_additions/2026-10-15-next-265/evidence-retention"
+    for helper in ("decode_retained.py", "plan_promotion.py"):
+        shutil.copyfile(baseline / helper, out / helper)
+    shutil.copyfile(ROOT / "verify_compact.py", out / "verify_compact.py")
+    shutil.copyfile(
+        "/private/tmp/pathwaymech-next-265-ci/merge-verified.json",
+        out / "merged-baseline-binding.json",
+    )
+    proof = out / "proof"
+    proof.mkdir()
+    shutil.copyfile(ROOT / "prepare_retention.py", proof / "prepare_retention.py.txt")
+    shutil.copyfile(ROOT / "configure_sources.py", proof / "configure_sources.py.txt")
+    shutil.copyfile(ROOT / "finalize_specification.py", proof / "finalize_specification.py.txt")
+    shutil.copyfile(ROOT / "baseline-capture.json", proof / "baseline-capture.json")
+    stats = {
+        "status": "source preparation verified",
+        "verified_merged_commit": BASE,
+        "verified_merged_tree": TREE,
+        "proposed_repository_root": DEST,
+        "frozen_packages": len(spec["packages"]),
+        "selected_snapshots": len(extras),
+        "source_occurrences": sum(len(p["source_occurrences"]) for p in packages),
+        "unique_source_contents": len(contents),
+        "source_occurrence_bytes": sum(
+            r["bytes"] for p in packages for r in p["source_occurrences"]
+        ),
+        "compact_map_count": sum(len(p["compact_maps"]) for p in spec["packages"]),
+        "verified_compact_pairs": len(compact_pairs),
+        "compact_only_logical_original_occurrences": len(logical),
+        "distinct_preserved_gzip_sources": len(gzip_checks),
+        "existing_storage_owners": len(owner_proof),
+        "new_storage_objects": len(list((out / "objects").rglob("*.gz"))),
+        "new_storage_bytes": sum(p.stat().st_size for p in (out / "objects").rglob("*.gz")),
+        "physical_inventory_includes_hidden_and_ignored": True,
+        "copy_rehearsal": (
+            "The final full payload copy and standalone reconstruction "
+            "are separately recorded in the outer immutable report; this "
+            "receipt records source verification and destination "
+            "contract."
+        ),
+    }
+    dump(out / "dry-run-verification.json", stats)
+    print(json.dumps(stats, indent=2), flush=True)
+
+
+if __name__ == "__main__":
+    main()
