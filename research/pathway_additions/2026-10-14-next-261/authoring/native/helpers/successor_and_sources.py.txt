@@ -1,0 +1,61 @@
+from pathlib import Path
+import json,hashlib,sys,xml.etree.ElementTree as E,collections
+R=Path(__file__).resolve().parents[1];repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+sys.path[:0]=[str(repo/'scripts'),str(repo/'src')]
+from build_source_identifier_snapshot import source_terms
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(p,a):(R/p).write_text(json.dumps(a,indent=2)+'\n')
+objects=[]
+for folder in ['primary-native-successor','primary-native-follows','primary-native-chemical']:
+ for p in sorted((R/'originals'/folder).glob('*.xml')):
+  rt=E.parse(p).getroot();o=list(rt)[1];assert o.get('detail')=='full'
+  counts=collections.Counter();slots=[]
+  for c in o:
+   counts[c.tag]+=1
+   slots.append({'slot':c.tag,'ordinal':counts[c.tag],'locator':f'/ptools-xml/{o.tag}[@frameid="{o.get("frameid")}"]/{c.tag}[{counts[c.tag]}]',
+                 'xml':E.tostring(c,encoding='unicode'),'plain_text':' '.join(' '.join(c.itertext()).split()),
+                 'direct_children':[{'type':x.tag,**x.attrib,'text':x.text or ''} for x in c]})
+  objects.append({'frame':o.get('frameid'),'type':o.tag,'file':str(p),'sha256':sha(p),'version':rt.find('metadata/PGDB').get('version'),'slots':slots})
+assert len(objects)==10
+save('primary-native-successor-full-projection.json',objects)
+profiles=[]
+for receiptname in ['acquisition-primary-native-follows-complete.json','acquisition-pathway-authorities-fallback-complete.json']:
+ for a in read(R/'receipts'/receiptname):
+  if a['kind']!='metacyc-html':continue
+  terms=list(source_terms('metacyc-html',Path(a['path']),url=a['url'],version='27.0'))
+  wanted=a['key'].removesuffix('-html');assert terms[0][0]=='MetaCyc:'+wanted
+  profiles.append({'identifier':'MetaCyc:'+wanted,'canonical_label':terms[0][1],'synonyms':terms[0][2],'original':a,
+   'entry':{'key':'meta261-foundation-'+wanted,'kind':'metacyc-html','path':'meta261-foundation/'+Path(a['path']).name,'url':a['url'],'version':'27.0','license':'BioCyc source terms; redistribution not assessed','sha256':a['sha256']}})
+for frame,kind,p in [('MONOMER-11210','metacyc-protein-xml',R/'originals/primary-native-successor/META-MONOMER-11210.xml'),
+                      ('3.7.1.9-RXN','metacyc-reaction-xml',Path('/private/tmp/pathwaymech-next-261-discovery/originals/META-3.7.1.9-RXN.xml'))]:
+ url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame
+ terms=list(source_terms(kind,p,url=url,version='27.0'));assert terms[0][0]=='MetaCyc:'+frame
+ entry={'key':'meta261-foundation-'+frame,'kind':kind,'path':'meta261-foundation/'+p.name,'url':url,'version':'27.0','license':'BioCyc source terms; redistribution not assessed','sha256':sha(p)}
+ profiles.append({'identifier':'MetaCyc:'+frame,'canonical_label':terms[0][1],'synonyms':terms[0][2],
+ 'original':{'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size},'entry':entry})
+save('successor-and-pathway-authority-candidates.json',profiles)
+sourceplans=read(R/'activity-authority-candidates.json')+profiles
+for a in sourceplans:
+ p=Path((a.get('source_original') or a['original'])['path']);dest=R/'source-cache'/a['entry']['path'];dest.parent.mkdir(parents=True,exist_ok=True)
+ if not dest.exists():dest.symlink_to(p)
+ assert sha(dest)==a['entry']['sha256']
+save('complete-new-source-proposals.json',sourceplans)
+native={a['frame']:a for a in objects}
+slots=[{'frame':a['frame'],'type':a['type'],'source_path':a['file'],'source_sha256':a['sha256'],'slot':s,
+        'disposition':'TbuE primary-native successor context; exact gene/protein/activity identities can be selected. The two methylcatechol reactions and four compounds remain adjacent and do not replace or expand the five formal pathway reactions.'}
+       for a in objects for s in a['slots']]
+save('primary-native-successor-slot-dispositions.json',slots)
+save('primary-native-successor-disposition.json',{
+ 'protein':'MetaCyc:MONOMER-11210','gene':'MetaCyc:G-8728','reference_protein':'UniProtKB:Q59220','native_gene_sequence_relation':'ENTREZ U20258 PART-OF; reciprocal native product MONOMER-11210.',
+ 'activity_interfaces':['MetaCyc:ENZRXN-11552','MetaCyc:ENZRXN-26223'],
+ 'formal_conflict':'ENZRXN-11552 is named catechol2,3-dioxygenase but points to CATECHOL-2-3-DIOXYGENASE-RXN, whose substrate CPD-111 is 3-methylcatechol and product CPD-8782 is methyl ring-cleavage material. Do not equate it to CATECHOL-23-DIOXYGENASE-RXN/RHEA17338.',
+ 'other_reaction':'ENZRXN-26223/RXN-11219 uses4-methylcatechol and product CPD-8781; adjacent substrate scope.',
+ 'native_prose_context':'ENZRXN-11552 reports crude cloned-host assays, partial purification evidence, and4-methylcatechol suicide inactivation with a [2Fe-2S] ferredoxin repair system reducing enzymeFe(III) toFe(II). This is native annotation citing PMID10986264/15006807, not newly inspected primary evidence or a verified specific ferredoxin protein endpoint.',
+ 'native_evidence_codes':['EV-EXP-IDA-UNPURIFIED-PROTEIN','EV-EXP-IDA-PART-PURIFIED-PROTEIN','EV-EXP-IDA-PART-PURIFIED-PROTEIN-NH'],
+ 'gene_symbol':'tbuE','subunit_scope':'Native protein says subunit composition unknown; do not infer homotetramer from another catechol enzyme.',
+ 'closure':'All10 full objects and every direct slot inspected. OrganismTAX329 and common O2/proton originals exactly reuse frozen native/formal bindings. Other catalyst/pathway/class references of the adjacent methyl reactions are context boundaries, not a new unrelated catalytic follow set.',
+ 'primary_owner':'/private/tmp/pathwaymech-next-261-primary-integration',
+ 'chemical_scope':'CPD111/4-METHYLCATECHOL xrefs and complete structures retained; CPD8781/8782 exact equivalence to ChEBI is not asserted by this biology role. No new formal material nodes selected.',
+})
+print({'new_activity_profiles':45,'additional_profiles':len(profiles),'total_source_candidates':len(sourceplans),'successor_full_objects':len(objects),'successor_direct_slots':len(slots)})

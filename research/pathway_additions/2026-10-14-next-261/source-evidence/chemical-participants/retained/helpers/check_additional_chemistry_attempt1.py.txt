@@ -1,0 +1,107 @@
+"""Issuing identities and explicit paper-to-structure limits; no maintained writes."""
+from pathlib import Path
+from collections import Counter
+import datetime, hashlib, json, sqlite3, xml.etree.ElementTree as ET
+from rdkit import Chem, rdBase
+from rdkit.Chem import rdMolDescriptors
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+OUT=ROOT/'retained/additional-chemistry-check.json'
+assert not OUT.exists()
+DB=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+def sha(p):
+    h=hashlib.sha256()
+    with p.open('rb') as s:
+        while b:=s.read(8*1024*1024):h.update(b)
+    return h.hexdigest()
+def describe(m):
+    if m is None:return {'parse_error':True}
+    n=Chem.Mol(m);Chem.RemoveStereochemistry(n)
+    generic=any(a.GetAtomicNum()==0 for a in m.GetAtoms())
+    return {'smiles':Chem.MolToSmiles(m),'connectivity_smiles':Chem.MolToSmiles(Chem.RemoveHs(n),isomericSmiles=False),
+            'inchi':None if generic else Chem.MolToInchi(m),'key':None if generic else Chem.MolToInchiKey(m),
+            'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),
+            'atoms':dict(Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms())),
+            'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True),'generic_variable_atom':generic}
+def cml_mol(cml):
+    r=Chem.RWMol();ids={}
+    for a in cml.findall('atomArray/atom'):
+        raw=a.get('elementType');atom=Chem.Atom(raw[0].upper()+raw[1:].lower());atom.SetFormalCharge(int(a.get('formalCharge','0')));ids[a.get('id')]=r.AddAtom(atom)
+    for b in cml.findall('bondArray/bond'):
+        a,z=b.get('atomRefs').split();r.AddBond(ids[a],ids[z],{'1':Chem.BondType.SINGLE,'2':Chem.BondType.DOUBLE,'3':Chem.BondType.TRIPLE}[b.get('order')])
+    m=r.GetMol();Chem.SanitizeMol(m);return m
+db=sqlite3.connect('file:'+str(DB)+'?mode=ro',uri=True)
+ids=[747879,9607,29256,17153,15743,48943,16842,57392,15539,58349,18009,15882,17231,28054,17847,18404,17254,215018,29108,37319,17655,231241,231976,46756,42334,39074,44115,9754,4735,64755,18320,41218,32599,749300,26710,32588,62946,16236,30089,17234,28971,28795,17824,17790,38472,27777]
+fields=['rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:smiles_string','chemrof:charge','chemrof:generalized_empirical_formula','IAO:0000115']
+authorities={}
+for number in ids:
+    cid='CHEBI:'+str(number);triples=db.execute('select predicate,object,value from statements where subject=?',(cid,)).fetchall()
+    props={p:[v if v is not None else o for pr,o,v in triples if pr==p] for p in fields}
+    assert len(props['rdfs:label'])==1
+    reps={};checks={}
+    for name,field in [('smiles','chemrof:smiles_string'),('inchi','chemrof:inchi_string')]:
+        if props[field]:reps[name]=describe(Chem.MolFromSmiles(props[field][0]) if name=='smiles' else Chem.MolFromInchi(props[field][0]))
+    for name,rep in reps.items():
+        if rep.get('generic_variable_atom'):continue
+        assert not rep.get('parse_error'),cid
+        if props['chemrof:inchi_key_string']:checks[name+'_key_exact']=rep['key']==props['chemrof:inchi_key_string'][0]
+        if props['chemrof:charge']:checks[name+'_charge_exact']=rep['charge']==int(props['chemrof:charge'][0])
+    authorities[cid]={'properties':props,'representations':reps,'checks':checks,'complete_issuing_triples':triples}
+expected={17153:'CCC=O',15743:'CCCC=O',48943:'CC(C)C=O',16842:'C=O',15882:'Oc1ccccc1',17231:'Cc1cccc(O)c1',
+          28054:'Cc1ccccc1O',17847:'Cc1ccc(O)cc1',18404:'Cc1cccc(O)c1O',17254:'Cc1ccc(O)c(O)c1',
+          215018:'Cc1ccc(O)c(O)c1C',29108:'[Ca+2]',37319:'C=CC=C(O)C(=O)[O-]',747879:'O=C([O-])CI'}
+name_checks=[]
+for number,smi in expected.items():
+    cid='CHEBI:'+str(number);calculated=describe(Chem.MolFromSmiles(smi));target=authorities[cid]['representations']['smiles']
+    checks={k:calculated[k]==target[k] for k in ['key','atoms','charge','connectivity_smiles']}
+    name_checks.append({'id':cid,'interpretation':'Author interpretation of the explicitly named chemical connectivity, checked against full issuing representations. Does not assign unspecified assay stereo or speciation.',
+                        'interpreted_smiles':smi,'calculated':calculated,'checks':checks})
+native=json.loads((ROOT/'retained/native-chemistry-check.json').read_text());byframe={x['native_frame']:x for x in native['native_compounds']}
+iodo=byframe['IODOACETATE'];ic=authorities['CHEBI:747879'];ip=ic['properties'];ir=ic['representations']['smiles']
+iodo_checks={'full_inchi_exact':iodo['native_inchi']==ip['chemrof:inchi_string'][0],'full_key_exact':iodo['native_key']==ip['chemrof:inchi_key_string'][0],
+             'connectivity_exact':iodo['representations']['cml']['connectivity_smiles']==ir['connectivity_smiles'],
+             'atoms_exact':iodo['representations']['cml']['atoms']==ir['atoms'],'charge_exact':iodo['representations']['cml']['charge']==ir['charge']}
+formalpath=Path('/private/tmp/pathwaymech-next-261-chemistry/formal-chemistry-verification.json');formal=json.loads(formalpath.read_text())
+enol=authorities['CHEBI:37319']['representations']['smiles'];stereos=[]
+for f in ['CPD-14447','CPD-6761']:
+    row=next(x for x in formal['compounds'] if x['native_frame']==f);m=Chem.MolFromSmiles(row['chebi_properties']['chemrof:smiles_string'][0]);r=describe(m)
+    stereos.append({'formal_frame':f,'formal_chebi':row['chebi_id'],'unspecified_enol':'CHEBI:37319',
+                    'same_connectivity':r['connectivity_smiles']==enol['connectivity_smiles'],'distinct_full_key':r['key']!=enol['key'],
+                    'disposition':'A stereounspecified class-level chemical description is not evidence of either geometrical isomer or of a racemic mixture.'})
+components=[];joined=None
+for frame,coeff in [('NA+',2),('CPD-13597',1)]:
+    p=ROOT/'originals'/('META-'+frame+'.xml');full=ET.parse(p).getroot().find('Compound');m=cml_mol(full.find('cml/molecule'));rep=describe(m)
+    components.append({'frame':frame,'coefficient':coeff,'path':str(p),'sha256':sha(p),'source_cml':ET.tostring(full.find('cml'),encoding='unicode'),
+                       'source_inchi':full.findtext('inchi'),'source_key':full.findtext('inchi-key'),'representation':rep})
+    for _ in range(coeff):joined=m if joined is None else Chem.CombineMols(joined,m)
+salt=describe(joined);target=authorities['CHEBI:9607']['representations']['smiles']
+tiron_checks={k:salt[k]==target[k] for k in ['key','atoms','charge','connectivity_smiles']}
+tiron={'source_path':byframe['TIRON']['source']['source_path'],'source_sha256':byframe['TIRON']['source']['sha256'],'native_components':components,
+       'reconstructed_disconnected_salt':salt,'issuing_id':'CHEBI:9607','checks':tiron_checks,'scope':'Two sodium cations plus one native disulfonate anion establish this anhydrous salt composition. No hydrate or free-ion exposure concentration is inferred.'}
+pubchecks=[]
+for cid,frame in [(90657761,'CPD0-1364'),(9001,'TIRON')]:
+    p=ROOT/'originals'/('PubChem-'+str(cid)+'.json');obj=json.loads(p.read_text())['PC_Compounds'][0]
+    props={(x['urn']['label'],x['urn'].get('name','')):x['value'].get('sval') for x in obj['props']}
+    smiles=props.get(('SMILES','Absolute')) or props.get(('SMILES','Isomeric'));assert smiles
+    rr=describe(Chem.MolFromSmiles(smiles));nr=byframe[frame]
+    checks={'cid_exact':obj['id']['id']['cid']==cid,'issuing_smiles_key':rr['key']==props[('InChIKey','Standard')],'issuing_inchi_key':describe(Chem.MolFromInchi(props[('InChI','Standard')]))['key']==rr['key']}
+    if frame=='CPD0-1364':checks.update({'native_full_inchi':nr['native_inchi']==props[('InChI','Standard')],'native_full_key':nr['native_key']==props[('InChIKey','Standard')],
+                                       'native_connectivity':nr['representations']['cml']['connectivity_smiles']==rr['connectivity_smiles'],
+                                       'native_atoms':nr['representations']['cml']['atoms']==rr['atoms'],'native_charge':nr['representations']['cml']['charge']==rr['charge']})
+    else:checks.update({'reconstructed_salt_key':salt['key']==rr['key'],'reconstructed_salt_atoms':salt['atoms']==rr['atoms'],'reconstructed_salt_charge':salt['charge']==rr['charge']})
+    pubchecks.append({'id':'PubChem:'+str(cid),'native_frame':frame,'path':str(p),'sha256':sha(p),'issuing_properties':[{'label':a,'name':b,'value':v} for (a,b),v in props.items()],
+                      'issuing_charge':obj['charge'],'reconstruction':rr,'checks':checks})
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'author_role':'chemical identity source author','rdkit_version':rdBase.rdkitVersion,
+        'pinned_sql':native['pinned_sql'],'native_proof':{'path':str(ROOT/'retained/native-chemistry-check.json'),'sha256':sha(ROOT/'retained/native-chemistry-check.json')},
+        'formal_proof':{'path':str(formalpath),'sha256':sha(formalpath)},'issuing_chebi':authorities,'explicit_name_connectivity_checks':name_checks,
+        'iodoacetate_correction':{'chosen':'CHEBI:747879','rejected_neutral_xref':'CHEBI:74571','checks':iodo_checks},'historical_enol_resolution':stereos,
+        'tiron_salt':tiron,'pubchem_checks':pubchecks,
+        'limitations':['Paper redox names NAD+/NADP+ do not by themselves report net phosphate protonation or salt identity.',
+                      'Generic HEPES/MOPS classes, DL mixture and thiol R-SH class are not forced into one molecular structure.',
+                      'Buffers, synthesis reagents, media and assay reporters remain context rather than new causal pathway nodes.',
+                      'Issuing identity does not upgrade abstract-only experimental evidence or resolve a missing historical stereochemical assignment.']}
+result['all_applicable_checks_pass']=all(all(a['checks'].values()) for a in list(authorities.values())+name_checks+pubchecks) and all(iodo_checks.values()) and all(tiron_checks.values()) and all(r['same_connectivity'] and r['distinct_full_key'] for r in stereos)
+OUT.write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'issuing_chebi_count':len(authorities),'name_checks':len(name_checks),'pubchem_count':len(pubchecks),'all_applicable_checks_pass':result['all_applicable_checks_pass'],
+                  'failed_authorities':{k:v['checks'] for k,v in authorities.items() if not all(v['checks'].values())},'failed_names':[x for x in name_checks if not all(x['checks'].values())],
+                  'iodoacetate':iodo_checks,'tiron':tiron_checks,'pubchem':[{k:v for k,v in x.items() if k in ['id','checks']} for x in pubchecks]},indent=2),flush=True)
+assert result['all_applicable_checks_pass']

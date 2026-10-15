@@ -1,0 +1,49 @@
+"""Bind and verify the frozen dossiers supplying optional authority originals."""
+from pathlib import Path
+import hashlib, json
+
+B = Path(__file__).resolve().parents[1]
+PACKAGES = {
+    'biological-identities': 'ea4d0a0b2be12abf7cf48607c2c988f83c9ae68ed9e17d1ea53015063ece818c',
+    'native-foundation': '42510f7339d0ee22773fadf82da86dd1cac61011c2d37661ed1c0268546d8823',
+    'participant-authorities': '24e249d3eb0d01e8fecc71c4f8ccee4f496b53d81a0b079acc89c48b3d7b5a2a',
+}
+
+def sha(path):
+    h = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+def main():
+    packages = []
+    for name, digest in PACKAGES.items():
+        root = Path('/private/tmp/pathwaymech-next-261-' + name)
+        manifest = root / 'artifact-manifest.json'
+        assert sha(manifest) == digest
+        data = json.loads(manifest.read_text())
+        verified = []
+        for row in data['files']:
+            path = Path(row['path'])
+            if not path.is_absolute():
+                path = root / path
+            assert path.is_relative_to(root), path
+            assert path.is_file() and sha(path) == row['sha256'] and path.stat().st_size == row['bytes'], path
+            verified.append(dict(path=str(path), sha256=row['sha256'], bytes=row['bytes']))
+        packages.append(dict(root=str(root), manifest=str(manifest), manifest_sha256=digest, count=len(verified), files=verified))
+    inventory = json.loads((B / 'retained/candidate-source-inventory.json').read_text())
+    for row in inventory['source_bindings']:
+        assert sha(Path(row['source_path'])) == row['sha256'] == sha(Path(row['observed_path']))
+    selection = B / 'retained/candidate-observations/native-selection-provisional.json'
+    assert sha(selection) == sha(Path('/private/tmp/pathwaymech-next-261-native-foundation/selected-identifiers.json'))
+    report = dict(status='passed', scope='Complete manifest-selected original file verification, including hidden/ignored originals listed by their author inventories; no filesystem absence claims outside these bounded packages.',
+        packages=packages, checked_files=sum(row['count'] for row in packages), source_plan_observations_match_frozen=True,
+        native_selection_observation_matches_frozen=True, helper_sha256=sha(Path(__file__)))
+    output = B / 'retained/frozen-author-package-inputs.json'
+    assert not output.exists()
+    output.write_text(json.dumps(report, indent=2) + '\n')
+    print(json.dumps({key:report[key] for key in ['status', 'checked_files', 'source_plan_observations_match_frozen', 'native_selection_observation_matches_frozen']}))
+
+if __name__ == '__main__':
+    main()

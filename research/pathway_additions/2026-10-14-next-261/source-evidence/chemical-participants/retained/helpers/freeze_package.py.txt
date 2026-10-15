@@ -1,0 +1,38 @@
+from pathlib import Path
+import datetime,gzip,hashlib,json,shutil
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+assert not (ROOT/'artifact-manifest.json').exists()
+verification=json.loads((ROOT/'retained/final-verification.json').read_text());assert all(verification['checks'].values())
+assert 'all_complete_results_reproduced' in (ROOT/'retained/name-search-replay.log').read_text()
+inert=ROOT/'retained/helpers';inert.mkdir(exist_ok=True)
+for p in sorted((ROOT/'helpers').glob('*.py')):
+    out=inert/(p.name+'.txt');assert not out.exists();shutil.copyfile(p,out);assert sha(p)==sha(out)
+compressed=[]
+for relative in ['retained/targeted-chemical-name-candidates.json','retained/additional-chemistry-check.json']:
+    source=ROOT/relative;out=ROOT/(relative+'.gz');assert not out.exists()
+    data=source.read_bytes();out.write_bytes(gzip.compress(data,mtime=0));assert gzip.decompress(out.read_bytes())==data
+    compressed.append({'path':str(out.relative_to(ROOT)),'bytes':out.stat().st_size,'sha256':sha(out),'encoding':'gzip','original_path':relative,'original_bytes':len(data),'original_sha256':sha(source),'lossless_decompression_verified':True})
+excluded={'retained/targeted-chemical-name-candidates.json','retained/additional-chemistry-check.json'}
+selection=[]
+for p in sorted(ROOT.rglob('*')):
+    if not p.is_file():continue
+    relative=str(p.relative_to(ROOT))
+    if relative.startswith('helpers/') or relative in excluded:continue
+    item={'path':relative,'bytes':p.stat().st_size,'sha256':sha(p)}
+    if relative in {x['path'] for x in compressed}:item=next(x for x in compressed if x['path']==relative)
+    selection.append(item)
+compact={'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Portable source-author identity/disposition evidence and all executed-check logs; not a final independent review.',
+         'file_count':len(selection),'bytes':sum(x['bytes'] for x in selection),'files':selection,
+         'external_dependencies':['The unchanged pinned issuing ChEBI SQL (full digest in final-verification).','The 580 manifest-bound frozen native, primary and formal files (integrity proof retained).','Existing MetaCyc CPD-29 source owner and unchanged source-native anion predecessor proof (exact bindings retained).'],
+         'instructions':'Copy each selected path byte-identically. Two .gz entries are lossless compact copies; original and encoded digests are distinct and both supplied. Inert .py.txt helpers preserve exact executable-author bytes. Keep originals and failed attempts named distinctly.'}
+(ROOT/'compact-retention-manifest.json').write_text(json.dumps(compact,indent=2)+'\n')
+files=[]
+for p in sorted(ROOT.rglob('*')):
+    if p.is_file():files.append({'path':str(p.relative_to(ROOT)),'bytes':p.stat().st_size,'sha256':sha(p)})
+manifest={'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'chemical source author, not independent review','inventory_includes_hidden_and_ignored':True,'file_count':len(files),'bytes':sum(x['bytes'] for x in files),'files':files}
+(ROOT/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+assert all(sha(ROOT/x['path'])==x['sha256'] and (ROOT/x['path']).stat().st_size==x['bytes'] for x in files)
+print(json.dumps({'handoff_path':str(ROOT/'HANDOFF.md'),'handoff_sha256':sha(ROOT/'HANDOFF.md'),'artifact_manifest_sha256':sha(ROOT/'artifact-manifest.json'),
+                  'artifact_files':len(files),'artifact_bytes':manifest['bytes'],'compact_manifest_sha256':sha(ROOT/'compact-retention-manifest.json'),
+                  'compact_files':len(selection),'compact_bytes':compact['bytes']},indent=2),flush=True)

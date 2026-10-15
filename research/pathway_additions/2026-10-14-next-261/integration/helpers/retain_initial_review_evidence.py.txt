@@ -1,0 +1,21 @@
+from pathlib import Path
+import datetime,gzip,hashlib,json
+repo=Path('/private/tmp/pathwaymech-next-261-20261014');research=repo/'research/pathway_additions/2026-10-14-next-261'
+plans={
+'science':['formal-originals-independent-check.json','material-balance-independent-check.json','integrated-source-coverage-independent-check.json','identity-sequences-independent-check.json','complete-coverage-disposition-check.json','input-integrity.json','foundation-integrity.json','source-preparation-notes.json','primary-evidence-item-audit.initial.json','full-scientific-assessment-handoff.initial.json','target-inspection.json','targets.yaml','initial-observation-validation.json','reviewed-record.initial.yaml','check_formal_originals.py','check_material_balance.py','check_integrated_coverage.py','check_identity_sequences.py'],
+ 'technical':['replay.json','slot-replay.json','replay.log','slot-replay.log','replay-attempt1.log','inspect-final.json','targets.yaml','review-validate-final.log','authority-replay.json','authority-promotion-check.json','authority-consumer.log','AUTHORITY-REVIEW.md','replay.py','slot_replay.py','authority_replay.py']}
+sha=lambda b:hashlib.sha256(b).hexdigest()
+rows=[];output=research/'independent-review/initial';assert not output.exists()
+for role,names in plans.items():
+ srcroot=Path('/private/tmp/pathwaymech-next-261-independent-'+role)
+ for name in names:
+  src=srcroot/name;raw=src.read_bytes();relative=name+('.txt' if name.endswith('.py') else '.gz' if len(raw)>100000 else '')
+  dst=output/role/relative;dst.parent.mkdir(parents=True,exist_ok=True)
+  encoded=gzip.compress(raw,mtime=0) if relative.endswith('.gz') else raw
+  dst.write_bytes(encoded);decoded=gzip.decompress(dst.read_bytes()) if relative.endswith('.gz') else dst.read_bytes();assert decoded==raw
+  rows.append({'role':role,'source':str(src),'source_sha256':sha(raw),'source_bytes':len(raw),'retained':str(dst.relative_to(research)),'retained_sha256':sha(encoded),'retained_bytes':len(encoded),'encoding':'gzip_lossless' if relative.endswith('.gz') else 'inert_python_text' if name.endswith('.py') else 'identity'})
+assert sha((Path('/private/tmp/pathwaymech-next-261-independent-science')/'reviewed-record.initial.yaml').read_bytes())=='38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255'
+receipt={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'root retention of independent reviewer artifacts; does not alter reviewer findings','files':rows,'file_count':len(rows),'total_retained_bytes':sum(r['retained_bytes'] for r in rows),'initial_review_ids':['20261015T024904Z-next261-technical-initial','20261015T025017Z-pwy5415-independent-science-initial'],'original_record_sha256':'38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255'}
+(research/'root-verification/initial-review-evidence-retention.json').write_text(json.dumps(receipt,indent=2)+'\n')
+(research/'integration/helpers/retain_initial_review_evidence.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({k:receipt[k] for k in ['file_count','total_retained_bytes','initial_review_ids']},indent=2))

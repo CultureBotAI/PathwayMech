@@ -1,0 +1,224 @@
+from pathlib import Path
+import json,hashlib,sys,xml.etree.ElementTree as E,collections
+import yaml
+R=Path(__file__).resolve().parents[1];N=Path('/private/tmp/pathwaymech-next-261-native');B=Path('/private/tmp/pathwaymech-next-261-biological-identities');C=Path('/private/tmp/pathwaymech-next-261-chemistry');repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+sys.path[:0]=[str(repo/'src')]
+from pathwaymech.schema import validate_record
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(p,a):(R/p).write_text(json.dumps(a,indent=2)+'\n')
+full={a['frame']:a for a in read(N/'native-full-object-projection.json')}
+full.update({a['frame']:a for a in read(R/'primary-native-successor-full-projection.json')})
+def slots(frame,name):return [s for s in full[frame]['slots'] if s['slot']==name]
+def refs(frame,name):return [c['frameid'] for s in slots(frame,name) for c in s['direct_children'] if c.get('frameid')]
+def textslot(frame,name):return [s['plain_text'] for s in slots(frame,name)]
+bio={a['native_identifier']:a for a in read(B/'projections/all43-protein-identity-dispositions.json')}
+auth={a['identifier']:a for a in read(R/'complete-new-source-proposals.json')}
+snap=read(repo/'data/identifier_authorities/sources.json')['terms']
+chem=read(C/'formal-chemistry-verification.json');rheap=read(C/'formal-source-projection.json')
+chems={a['native_frame']:{'id':a['chebi_id'],'label':a['chebi_properties']['rdfs:label'][0],'category':'small_molecule'} for a in chem['compounds']}
+extra=read('/private/tmp/pathwaymech-next-261-participant-authorities/retained/native-chemical-dispositions.json')
+for a in extra['endpoints']:
+ chems[a['native_frame']]={'id':a['selected_id'],'label':a['selected_label'],'category':a['category']}
+steps={a['native_reaction']:a for a in chem['steps']}
+formal={k:v['proposed_formal_id'] for k,v in steps.items()}
+activities=read(N/'formal-activity-closure.json')
+selected=[a for a in activities if a['scope']!='explicitly_excluded_AdhE_context']
+assert len(selected)==28
+proteins={a['enzyme'] for a in selected}
+# Follow exact component and component-of relations to include catalytic assemblies
+# and their necessary physical partner context, without importing adjacent catalysis.
+changed=True
+while changed:
+ before=set(proteins)
+ for p in list(proteins):proteins.update(refs(p,'component'));proteins.update(refs(p,'component-of'))
+ changed=before!=proteins
+assert 'ADHE-CPLX' not in proteins and 'ADHE-MONOMER' not in proteins
+proteins.add('MONOMER-11210')
+nodes={};reactions={};references={};edges=[];coverage=[]
+def native_ref(frame):
+ a=full[frame];identifier='MetaCyc:'+frame
+ references.setdefault(identifier,{'id':identifier,'title':'MetaCyc '+a['type']+' '+frame+' complete original','url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame,'source_version':a['version'],'source_sha256':a['sha256']})
+ return identifier
+def evidence(frame,assertion,locator):
+ assert len(assertion)<=400,(frame,len(assertion),assertion)
+ return {'reference_id':native_ref(frame),'source_assertion':assertion,'source_locator':locator}
+def edge(subject,predicate,obj,description,ev,source_keys):
+ ident='native-n'+str(len(edges)+1).zfill(3)
+ row={'id':ident,'subject':subject,'predicate':predicate,'object':obj,'description':description,'evidence':ev}
+ edges.append(row)
+ coverage.append({'edge_id':ident,'source_keys':source_keys,'subject':subject,'predicate':predicate,'object':obj,'description':description})
+ return ident
+def protein(p):
+ ident='MetaCyc:'+p
+ if ident in bio:label=bio[ident]['canonical_label'];kind=bio[ident]['native_type']
+ else:label=auth[ident]['canonical_label'];kind='protein'
+ nodes[ident]={'id':ident,'label':label,'category':kind}
+def chemical(frame,cofactor=False):
+ row=dict(chems[frame])
+ if cofactor:row['category']='cofactor'
+ nodes.setdefault(row['id'],row)
+ return row['id']
+for p in sorted(proteins):protein(p)
+for s in chem['steps']:
+ ident=s['proposed_formal_id']
+ label=rheap['rhea_nodes']['http://rdf.rhea-db.org/'+ident.split(':')[1]]['label'][0] if ident.startswith('RHEA:') else '2-hydroxymuconate semialdehyde hydrolysis to the formal (2Z)-2-hydroxypenta-2,4-dienoate'
+ reactions[ident]={'id':ident,'label':label,'category':'molecular_activity','direction':s['selected_direction']}
+for a in selected:
+ ident='MetaCyc:'+a['activity'];reactions[ident]={'id':ident,'label':auth[ident]['canonical_label'],'category':'molecular_activity'}
+for frame in ['ENZRXN-11552','ENZRXN-26223']:
+ ident='MetaCyc:'+frame;reactions[ident]={'id':ident,'label':auth[ident]['canonical_label'],'category':'molecular_activity'}
+for frame in ['P183-PWY','PWY-5162']:
+ ident='MetaCyc:'+frame;label=snap.get(ident,{}).get('label') or auth[ident]['canonical_label']
+ reactions[ident]={'id':ident,'label':label,'category':'pathway'}
+
+# The five formal material transformations use independently checked current structures.
+for a in read(C/'material-facts.json')['facts']:
+ frame=next(k for k,v in chems.items() if v['id']==a['selected_compound'])
+ ident=chemical(frame);rxn=a['selected_reaction']
+ subj,obj=(ident,rxn) if a['role']=='input' else (rxn,ident)
+ edge(subj,'consumes' if a['role']=='input' else 'produces',obj,
+      f"Coefficient {a['coefficient']} in the selected formal direction. Exact current native/ChEBI structure identity is independently checked; historical assay stereochemistry remains preparation-specific.",
+      [evidence(a['source_native_reaction'],a['source_assertion'],a['source_locator'])],['formal:'+a['fact_id']])
+
+# Actual pathway hierarchy and ordering, rather than a shared-reaction aggregate.
+for module in ['P183-PWY','PWY-5162']:
+ s=next(s for s in slots('PWY-5415','reaction-list') if any(c.get('frameid')==module for c in s['direct_children']))
+ edge('MetaCyc:PWY-5415','has_part','MetaCyc:'+module,'Native definition includes this complete child module.',
+      [evidence('PWY-5415','The pathway reaction-list contains child pathway '+module+'.',s['locator'])],['PWY-5415:'+s['locator']])
+for module in ['P183-PWY','PWY-5162']:
+ for s in slots(module,'reaction-list'):
+  for child in s['direct_children']:
+   f=child.get('frameid')
+   if f in formal:
+    edge('MetaCyc:'+module,'has_part',formal[f],'This formal transformation belongs to the native child module; exact selected chemical forms and direction are retained.',
+         [evidence(module,'The module reaction-list contains '+f+'.',s['locator'])],['module:'+s['locator']])
+for a in read(N/'ordering-and-module-boundaries.json')['ordering']:
+ if a['scope']!='formal_route':continue
+ el=E.fromstring(a['xml']);current=el.find('Reaction').get('frameid');previous=el.find('predecessor-reactions/Reaction').get('frameid')
+ edge(formal[previous],'precedes',formal[current],'Explicit native predecessor order for the five-step route. This is pathway order, not a claim of thermodynamic irreversibility.',
+      [evidence(a['pathway'],previous+' is listed as a predecessor of '+current+'.',a['locator'])],['order:'+a['locator']])
+
+scopes=read(R/'readable-catalyst-scopes.json')
+for a in selected:
+ frame=a['activity'];p=a['enzyme'];ev=[]
+ codes=sorted({c for e in a['activity_evidence'] for c in e['codes']})
+ assertion=frame+' links enzyme '+p+' to reaction '+a['reaction']+'.'
+ ev.append(evidence(frame,assertion,a['enzyme_locator']+'; '+a['reaction_locator']))
+ if codes:
+  ev.append(evidence(frame,'Native evidence codes: '+', '.join(codes)+'. A database citation is not an independent primary reading.', '; '.join(e['locator'] for e in a['activity_evidence'])))
+ scope=scopes.get(p,'Exact native catalytic activity and assembly/preparation scope; no full-route taxon or isolated-subunit activity inference.')
+ edge('MetaCyc:'+p,'catalyzes','MetaCyc:'+frame,scope,ev,['activity:'+frame])
+ edge('MetaCyc:'+p,'catalyzes',formal[a['reaction']],
+      'Current curated formal reaction assignment through '+frame+'. '+scope+' The historical assay preparation does not independently establish every stated enol geometry or absolute configuration.',
+      [evidence(frame,assertion+' This is the native curated assignment; historical assay chemistry is separately scoped.',a['enzyme_locator']+'; '+a['reaction_locator'])],['formal-assignment:'+frame])
+
+# TbuE's current native reaction pointer is methylcatechol, so only native activity
+# interfaces are added. Primary catechol assays remain separately attributed.
+for frame in ['ENZRXN-11552','ENZRXN-26223']:
+ s=slots(frame,'enzyme')[0];rxn=refs(frame,'reaction')[0]
+ edge('MetaCyc:MONOMER-11210','catalyzes','MetaCyc:'+frame,
+      'PKO1 TbuE source activity. ENZRXN-11552 has a catechol enzyme name but its current reaction pointer is 3-methylcatechol chemistry; ENZRXN-26223 is 4-methylcatechol cleavage. Native methyl reactions are adjacent context, and primary catechol assays retain their exact preparation. Subunit composition is unreported.',
+      [evidence(frame,frame+' names MONOMER-11210 as enzyme and '+rxn+' as reaction. The complete reaction side objects preserve methylcatechol scope.',s['locator']+'; '+slots(frame,'reaction')[0]['locator'])],['successor-activity:'+frame])
+
+for a in read(N/'assembly-assertions.json'):
+ if a['slot']!='component' or a['frame'] not in proteins:continue
+ el=E.fromstring(a['xml']);child=el.find('Protein').get('frameid');assert child in proteins
+ coefficient=el.findtext('coefficient');detail='Native component coefficient '+coefficient+'.' if coefficient else 'No component coefficient is supplied; absolute stoichiometry is not inferred.'
+ if a['frame']=='CPLX-7250':detail+=' Native coefficients are two DmpG plus two DmpF; heterodimer wording refers to a catalytic pair, not a different biological stoichiometry.'
+ if a['frame']=='CPLX-8452':detail+=' The native prose reports a 470 kDa preparation and a 1:1 ratio, without a determined subunit count.'
+ if a['frame']=='CPLX-7241':detail+=' This coefficient counts the named native subassembly; its internal polypeptide coefficient is separately unspecified.'
+ edge('MetaCyc:'+a['frame'],'has_part','MetaCyc:'+child,detail+' Complex membership does not assign overall catalysis to every isolated subunit.',
+      [evidence(a['frame'],a['frame']+' lists '+child+' as component'+(' with coefficient '+coefficient if coefficient else ' without a coefficient')+'.',a['locator'])],['assembly:'+a['locator']])
+
+# Explicit native cofactors of retained formal-linked catalysts; adjacent and
+# excluded cofactors remain in the complete source dispositions.
+for a in read(N/'cofactor-assertions.json'):
+ if a['slot']!='cofactor' or a['activity'] not in {x['activity'] for x in selected}:continue
+ el=E.fromstring(a['xml']);f=el.find('Compound').get('frameid');p=a['enzyme'][0]
+ edge('MetaCyc:'+p,'has_cofactor',chemical(f,True),'Native cofactor annotation is specific to this enzyme activity and source preparation; no shared metal requirement is assigned to other catalysts.',
+      [evidence(a['activity'],a['activity']+' explicitly lists '+f+' as a cofactor of '+p+'.',a['locator'])],['cofactor:'+a['locator']])
+
+retained_regulators={'REG-13667','REG-5875','REG-5877','REG0-11274','REG0-13116'}
+for a in read(N/'regulation-assertions.json'):
+ if a['frame'] not in retained_regulators:continue
+ f=a['regulator'][0];p=a['enzyme'][0][0];sign='inhibits' if a['mode']==['-'] else 'activates'
+ desc='The complete native regulation object assigns this effect to the specified enzyme activity and source preparation.'
+ if a['frame']=='REG-13667':desc+=' The target is the Bordetella hydratase; other inhibitors assigned to its decarboxylase partner remain adjacent context.'
+ if a['frame'] in ['REG-5875','REG-5877']:desc+=' Native ALLOSTERIC text is not retained as an established mechanism; primary assays use the DmpFG preparation.'
+ if a['frame']=='REG0-13116':desc+=' Native competitive inhibition and Ki of 265,000 µM are database annotations; the inspected primary abstract does not verify the mode or value.'
+ edge(chemical(f),sign,'MetaCyc:'+a['regulated_activity'][0],desc,
+      [evidence(a['frame'],a['frame']+' names regulator '+f+', mode '+a['mode'][0]+', and regulated activity '+a['regulated_activity'][0]+'.','; '.join(slots(a['frame'],field)[0]['locator'] for field in ['regulator','mode','regulated-entity']))],['regulation:'+a['frame']])
+
+ccos={'CCO-CYTOSOL':('GO:0005829','cytosol'),'CCO-CHLOROPLAST':('GO:0009507','chloroplast'),'CCO-MEMBRANE':('GO:0016020','membrane')}
+for a in read(N/'compact-location-assertions.json'):
+ if a['frame'] not in proteins:continue
+ for f in a['targets']:
+  ident,label=ccos[f];nodes[ident]={'id':ident,'label':label,'category':'cellular_component'}
+  edge('MetaCyc:'+a['frame'],'located_in',ident,'Native physical protein localization; this does not localize the complete pathway or imply exclusive localization.',
+       [evidence(a['frame'],a['frame']+' has native location '+f+'.',a['locator'])],['location:'+a['locator']])
+
+# Explicitly reject a formal-chemistry promotion whose cited experiment is chlorinated.
+rejected=[a for a in edges if a['id']=='native-n046']
+assert len(rejected)==1 and rejected[0]['subject']=='MetaCyc:MONOMER-14738'
+save('rejected-formal-assignment.json',{'former_edge':rejected[0],'disposition':'Excluded from the selected graph. The native activity pointer is preserved as a database assignment through ENZRXN-16329, but the complete protein comment reports coexpression of cnbEF and a chlorinated conversion only. This does not support exact unchlorinated RHEA:22582 catalysis.','source':full['MONOMER-14738']['file'],'sha256':full['MONOMER-14738']['sha256'],'locator':slots('MONOMER-14738','comment')[0]['locator']})
+edges=[a for a in edges if a['id']!='native-n046']
+coverage=[a for a in coverage if a['edge_id']!='native-n046']
+# Qualify supported recombinant preparations at the actual biological endpoint.
+constructs={
+ 'MONOMER-20853':('Bilophila wadsworthia adhE was expressed with a His tag in E. coli and the recombinant protein was purified. The native activity code says partially purified heterologous-host protein; the complete protein comment says purified. Construct sequence and tag boundaries are not supplied.','The adhE gene was cloned with a His tag, expressed in E. coli, and recombinant protein was purified; acetyl-CoA formed at pH 8 but no reaction was seen at pH 7.5.'),
+ 'MONOMER-14738':('E. coli coexpressing CNB-1 cnbE and cnbF; neither protein was purified. The observed conversion used a chlorinated substrate. The ENZRXN-16329 link remains a database assignment, without a direct isolated-enzyme or exact unchlorinated assay claim.','cnbE and cnbF were coexpressed in E. coli, which converted (3Z)-2-chloro-5-oxohex-3-enedioate to 5-chloro-4-hydroxy-2-oxopentanoate; neither protein was purified.'),
+ 'MONOMER-11390':('E. coli carrying a plasmid expressing the F1 todFC1C2BADEG gene cluster. Accumulation of a hydroxyoxopentanoate was the experimental observation; isolated TodG catalysis was not directly assayed.','A plasmid expressing the todFC1C2BADEG gene cluster in E. coli accumulated (S)-4-hydroxy-2-oxopentanoate.'),
+ 'MONOMER-11225':('Unpurified extracts from a P. aeruginosa mutant carrying the PKO1 degradation gene cluster and subclones. This is a heterologous cluster assay with a historically prepared substrate, not an isolated native TbuJ assay.','A PKO1 gene cluster was expressed in P. aeruginosa, and hydratase activity was measured in unpurified extracts; subcloning associated it with tbuJ.'),
+ 'MONOMER-11226':('Unpurified extracts from a P. aeruginosa mutant carrying the PKO1 degradation gene cluster. Aldolase activity used an indirect pyruvate/LDH assay and a chemically prepared substrate, not purified isolated TbuK.','A PKO1 cluster was expressed in P. aeruginosa; activity was measured in unpurified extracts through pyruvate-dependent NADH oxidation with excess lactate dehydrogenase.'),
+ 'MONOMER-3404':('The source combines transposon mapping with expression of the cloned meta-cleavage genes in E. coli maxicells. It does not supply an isolated native XylK preparation or exact construct sequence.','Transposon mutants located xylK between xylJ and xylI; cloned meta-cleavage genes expressed in E. coli maxicells showed xylK-associated aldolase activity.'),
+ 'G7285-MONOMER':('Heterologous EutE expression in several yeast preparations, as described by the native protein comment. Specific construct boundaries are not supplied by this native source; the engineered hosts are not complete catechol-route taxa.','Heterologous expression of EutE in various yeasts increases cellular acetylating acetaldehyde dehydrogenase activity and has been used for metabolic engineering.')
+}
+for a in edges:
+ frame=a['subject'].removeprefix('MetaCyc:')
+ if a['predicate']=='catalyzes' and frame in constructs:
+  detail,assertion=constructs[frame]
+  a['endpoint_qualifiers']=[{'endpoint':'subject','kind':'experimental_construct','description':detail,'evidence':[evidence(frame,assertion,slots(frame,'comment')[0]['locator'])]}]
+ if a['id']=='native-n045':
+  a['description']='The native ENZRXN-16329 object assigns CnbE hydratase activity, but its cited protein comment reports only a chlorinated conversion by coexpressed cnbE/cnbF. Retained as a database activity assignment; exact unchlorinated RHEA:22582 catalysis is excluded.'
+states={
+ 'MONOMER-12778':('DmpG associated with DmpF in the native DmpFG preparation. The complete biological assembly contains two F/G pairs. This edge does not assert purified free DmpG activity.','The complete protein comment describes a bifunctional aldolase-dehydrogenase association and the component-of slot points to CPLX-7250.'),
+ 'MONOMER-12780':('DmpF associated with DmpG in the native DmpFG preparation. The complete biological assembly contains two F/G pairs. Separate recombinant DmpF assays are handled by primary integration.','The complete protein comment describes a bifunctional aldolase-dehydrogenase association and the component-of slot points to CPLX-7250.'),
+ 'MONOMER-17215':('Bordetella strain 10d hydratase co-purified with decarboxylase in an apparent 470 kDa preparation. The reported molar ratio is 1:1; absolute subunit counts were not established.','The hydratase and decarboxylase co-purified in a 470 kDa complex and resolved to 27 and 29 kDa bands; the molar ratio was 1:1.'),
+ 'CPLX-7240':('The native hydratase assembly associates with decarboxylase in CPLX-7241. Its internal polypeptide coefficient is unspecified; the complex conversion does not imply isolated-subunit catalysis.','The complete hydratase comment describes association with 2-oxo-3-hexenedioate decarboxylase and conversion through a hydroxypentadienoate intermediate.')
+}
+for a in edges:
+ frame=a['subject'].removeprefix('MetaCyc:')
+ if a['predicate'] in ['catalyzes','has_cofactor'] and frame in states:
+  detail,assertion=states[frame]
+  assert not a.get('endpoint_qualifiers')
+  a['endpoint_qualifiers']=[{'endpoint':'subject','kind':'molecular_state','description':detail,'evidence':[evidence(frame,assertion,slots(frame,'comment')[0]['locator']+'; '+slots(frame,'component-of')[0]['locator'])]}]
+for a in coverage:
+ a['description']=next(e['description'] for e in edges if e['id']==a['edge_id'])
+
+description=(
+ 'The complete five-transformation catechol meta-cleavage route comprises P183-PWY and PWY-5162. Catechol ring cleavage and hydrolysis yield formate and a five-carbon intermediate; hydration and aldol cleavage yield pyruvate and acetaldehyde, followed by acetyl-CoA formation. '
+ 'Formal chemistry retains the (2Z,4E) ring-cleavage product, the 2Z enol hydratase substrate and the S aldolase substrate. Native parent prose also describes keto/2E forms; historical assay preparations do not independently establish these exact formal stereochemical assignments. The native hydrolase Rhea cross-reference specifies a keto product and is not an exact replacement for the selected native enol reaction. '
+ 'Enzyme activity nodes preserve individual microbial source preparations and evidence codes. Their component activities do not establish the entire route in every source organism. Native activity interfaces and curated formal reaction assignments remain distinct, with expression hosts, partial purification, complexes and sequence-reference limitations attached to their evidence. E. coli MhpD/E/F are a shared terminal module; their inclusion does not assign the complete catechol route to E. coli. '
+ 'XylE is tetrameric and the MhpD native assembly pentameric. DmpFG contains two F/G catalytic pairs; heterodimer wording denotes a pair. XylI/J and Bordetella decarboxylase/hydratase partners retain their native assembly boundaries, with unspecified coefficients left unspecified. Oxidative-branch catalysis and its separate PWY-5420 route remain adjacent context. AdhE is explicitly excluded by PWY-5162 and its regulators are retained only in source context. '
+ 'Native NADH inhibition of DmpG conflicts with primary stimulation and is excluded as an accepted inhibitory claim. Native Mn/Zn allosteric labels do not establish a binding mechanism. PKO1 TbuE has independently reported catechol activity but its current native ENZRXN pointer is methylcatechol chemistry; those material reactions are not added to the five-step route. Gene-product identities, additional substrates, kinetics, source organism catalogues and regulatory identity gaps remain explicitly dispositioned with source locators.'
+)
+record={'id':'MetaCyc:PWY-5415','label':auth['MetaCyc:PWY-5415']['canonical_label'],'description':description,
+ 'pathway_type':'aromatic-compound-degradation','taxa':[], 'participants':list(nodes.values()),'reactions':list(reactions.values()),'mechanistic_edges':edges,'references':list(references.values())}
+validate_record(record)
+(R/'native-foundation.yaml').write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=110))
+save('native-edge-source-coverage.json',coverage)
+selectedids=[{'section':s,**a} for s in ['taxa','participants','reactions'] for a in record[s]]
+selectedids.insert(0,{'section':'record','id':record['id'],'label':record['label']})
+save('selected-identifiers.json',selectedids)
+save('foundation-selection-decisions.json',{
+ 'formal_activity_candidates':29,'selected_non_AdhE_formal_linked_activities':28,'added_primary_native_TbuE_activities':2,
+ 'protein_component_closure':sorted(proteins),'retained_native_regulators':sorted(retained_regulators),
+ 'rejected_native_NADH_inhibition':'REG-5876 retained as a conflict, not an inhibitory graph edge; primary author owns corrected stimulation.',
+ 'adjacent_or_excluded_context':'All16 old adjacent activity leads,17AdhE regulators,8Bordetella decarboxylase inhibitors, and adjacent cofactor/compartment facts retain explicit source-context dispositions instead of automatic graph promotion.',
+ 'gene_product_scope':'Complete28 reciprocal native gene-product proofs plus newG8728/TbuE proof are identity context. No unsupported encodes relation or replacement predicate is invented; actual gene/activity regulation belongs to primary integration.',
+ 'taxa_scope':'The parent explicitly annotates nine pathway species. Exact slots, full organism identities and the single parent EV-EXP-IDA/PMID1856161 evidence slot are in parent-pathway-species-annotation-accounting.json. Empty taxa leaves final source-annotated selection to root integration; it is not rejection or absence of the source associations. Species annotations must not be described as nine independently verified whole-route experiments.',
+ 'authority_scope':'Selected identifiers reference frozen biological/chemical candidates plus exact foundation activity/pathway/TbuE originals. No maintained authority union was written by this author.',
+ 'counts':{'participants':len(nodes),'reactions':len(reactions),'edges':len(edges),'references':len(references)},
+})
+print({'participants':len(nodes),'reactions':len(reactions),'edges':len(edges),'references':len(references),'selected_identifiers':len(selectedids),'schema_shape':'custom validate_record passed'})

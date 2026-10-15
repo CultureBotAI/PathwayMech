@@ -1,0 +1,27 @@
+from pathlib import Path
+import hashlib,json,sqlite3
+from rdkit import Chem
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+db=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+rows=[]
+for cid in ['CHEBI:58222','CHEBI:17655','CHEBI:73143','CHEBI:231241','CHEBI:231976']:
+    triples=db.execute('select predicate,object,value from statements where subject=?',(cid,)).fetchall()
+    props={p:v for p,o,v in triples if p.startswith('chemrof:') or p in ['rdfs:label','IAO:0000115']}
+    checks={}
+    if props.get('chemrof:smiles_string'):
+        m=Chem.MolFromSmiles(props['chemrof:smiles_string']);assert m is not None
+        checks['smiles_key']=Chem.MolToInchiKey(m)==props['chemrof:inchi_key_string']
+        checks['charge']=Chem.GetFormalCharge(m)==int(props['chemrof:charge'])
+        checks['inchi_key']=Chem.MolToInchiKey(Chem.MolFromInchi(props['chemrof:inchi_string']))==props['chemrof:inchi_key_string']
+        centers=Chem.FindMolChiralCenters(m,includeUnassigned=True)
+    else:centers=[]
+    rows.append({'id':cid,'issuing_properties':props,'complete_triples':triples,'checks':checks,'chiral_centers':centers})
+by={r['id']:r for r in rows}
+uns=by['CHEBI:58222'];s=by['CHEBI:73143']
+pair={'unassigned_ion':'CHEBI:58222','S_ion':'CHEBI:73143','same_formula':uns['issuing_properties']['chemrof:generalized_empirical_formula']==s['issuing_properties']['chemrof:generalized_empirical_formula'],
+      'same_charge':uns['issuing_properties']['chemrof:charge']==s['issuing_properties']['chemrof:charge'],'different_stereo_keys':uns['issuing_properties']['chemrof:inchi_key_string']!=s['issuing_properties']['chemrof:inchi_key_string'],
+      'scope':'CHEBI:58222 leaves the 4-hydroxy stereocenter unspecified. It does not assert racemate. CHEBI:17655 is its neutral acid comparator; CHEBI:73143 explicitly carries S stereo. Historical unresolved keto/enol product cannot be replaced by any one of these measured products.'}
+mixture={'racemate':'CHEBI:231241','stereounspecified_molecule':'CHEBI:231976','scope':'Issuing CHEBI:231241 explicitly defines equimolar D/L allylglycine; it is a mixture without a single InChI. CHEBI:231976 unassigned stereo does not by itself encode a racemate. Both remain preparation context, not pathway substrate nodes.'}
+assert all(all(r['checks'].values()) for r in rows) and pair['same_formula'] and pair['same_charge'] and pair['different_stereo_keys']
+p=ROOT/'retained/historical-form-check.json';assert not p.exists();p.write_text(json.dumps({'issuing_chebi':rows,'hydroxyketovalerate':pair,'allylglycine':mixture,'all_applicable_checks_pass':True},indent=2)+'\n')
+print('All historical form, charge, stereo and mixture distinctions pass.')

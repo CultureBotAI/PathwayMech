@@ -1,0 +1,147 @@
+"""Verify old owners, selected-only additions and the real offline consumer."""
+from pathlib import Path
+import argparse, contextlib, datetime, hashlib, io, json, shutil, sys
+import yaml
+
+B = Path(__file__).resolve().parents[1]
+R = Path('/private/tmp/pathwaymech-next-261-20261014')
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+def load(path):
+    return json.loads(Path(path).read_text())
+
+def save(relative, value):
+    path = B / 'retained' / relative
+    assert not path.exists(), ('preserve previous receipt', path)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+    return path
+
+def identity_projection(record):
+    return [('record', record['id'], record['label'], record.get('category'))] + [
+        (field, node['id'], node['label'], node.get('category'))
+        for field in ['taxa', 'participants', 'reactions', 'gene_clusters']
+        for node in record.get(field, [])]
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--record', type=Path, required=True)
+    parser.add_argument('--record-sha256', required=True)
+    args = parser.parse_args()
+    assert sha(args.record) == args.record_sha256
+    commands = load(B / 'retained/canonical-build-commands.json')
+    preservation = load(B / 'retained/build-input-preservation.json')
+    base = load(B / 'retained/baseline-preparation.json')
+    assert preservation['status'] == 'passed' and preservation['all_inputs_unchanged']
+    assert preservation['command_file_sha256'] == sha(B / 'retained/canonical-build-commands.json')
+    for key in ['source_builder', 'ontology_builder']:
+        receipt = load(B / 'retained' / (key + '-receipt.json'))
+        assert receipt['exit_code'] == 0 and receipt['command'] == commands[key]
+        assert receipt['command_file_sha256'] == preservation['command_file_sha256']
+        assert sha(receipt['log_path']) == receipt['log_sha256']
+    selected = set(load(B / 'retained/planned-identifiers.json'))
+    retained = set(load(B / 'retained/retained-authority-identifiers.json'))
+    freeze = load(B / 'retained/selection-freeze.json')
+    record = yaml.safe_load(args.record.read_text())
+    actual = {record['id']} | {node['id'] for field in ['taxa', 'participants', 'reactions', 'gene_clusters'] for node in record.get(field, [])}
+    assert actual == selected == set(freeze['selected_identifiers'])
+    report = dict(status='author_verification_pending_real_consumer', role='Authority integration author; no independent scientific verdict',
+        utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), baseline_commit=base['baseline_commit'],
+        baseline_identifier_count=len(retained), selected_identifier_count=len(selected), snapshots={}, maintained_files_edited=False)
+    old_terms, new_terms = {}, {}
+    for name in ['sources', 'ontology']:
+        old_path = B / 'baseline/data/identifier_authorities' / (name + '.json')
+        new_path = B / 'proposal' / (name + '.union.json')
+        old, new = load(old_path), load(new_path)
+        assert sha(new_path) == preservation['outputs'][name + '.union.json']
+        assert old['version'] == new['version']
+        for section in ['terms', 'sources']:
+            changed = [key for key, value in old[section].items() if new[section].get(key) != value]
+            assert not changed, (name, section, changed)
+        assert not new_terms.keys() & new['terms'].keys()
+        old_terms.update(old['terms'])
+        new_terms.update(new['terms'])
+        report['snapshots'][name] = dict(before_sha256=sha(old_path), after_sha256=sha(new_path),
+            baseline_terms=len(old['terms']), final_terms=len(new['terms']), baseline_owners=len(old['sources']),
+            final_owners=len(new['sources']), all_baseline_objects_exact=True,
+            new_terms=sorted(new['terms'].keys() - old['terms'].keys()), new_owners=sorted(new['sources'].keys() - old['sources'].keys()))
+    assert set(old_terms) == retained and len(retained) == 5023
+    assert selected <= new_terms.keys() and set(new_terms) - retained == selected - retained
+    old_manifest = load(B / 'baseline/conf/identifier_sources.json')
+    new_manifest = load(B / 'proposal/identifier_sources.json')
+    additions = load(B / 'retained/proposed-source-additions.json')
+    assert new_manifest[:len(old_manifest)] == old_manifest and new_manifest[len(old_manifest):] == additions
+    assert {entry['key'] for entry in additions} == set(report['snapshots']['sources']['new_owners'])
+    assert not report['snapshots']['ontology']['new_owners']
+    report['manifest'] = dict(baseline_entries=len(old_manifest), new_entries=len(additions), final_entries=len(new_manifest),
+        baseline_entry_prefix_exact=True, sha256=sha(B / 'proposal/identifier_sources.json'))
+    for row in commands['database_bindings']:
+        path = Path(row['path'])
+        stat = path.stat()
+        assert str(path.resolve()) == row['resolved'] and stat.st_size == row['bytes'] and stat.st_mtime_ns == row['mtime_ns']
+        assert load(B / 'proposal/ontology.union.json')['sources'][row['owner_key']]['sha256'] == row['sha256']
+    report['pinned_databases'] = dict(count=4, canonical_complete_database_hashes_match_baseline=True, size_and_mtime_unchanged=True)
+    shadow = B / 'identifier-verification-root'
+    assert not shadow.exists()
+    (shadow / 'conf').mkdir(parents=True)
+    (shadow / 'data/identifier_authorities').mkdir(parents=True)
+    shutil.copyfile(B / 'baseline/conf/identifier_policy.yaml', shadow / 'conf/identifier_policy.yaml')
+    for name in ['sources', 'ontology']:
+        shutil.copyfile(B / 'proposal' / (name + '.union.json'), shadow / 'data/identifier_authorities' / (name + '.json'))
+    predecessor_rows = []
+    for row in load(B / 'retained/baseline-record-bindings.json'):
+        assert sha(row['path']) == row['sha256']
+        current = R / row['relative_path']
+        current_bytes = current.read_bytes()
+        current_sha = hashlib.sha256(current_bytes).hexdigest()
+        assert identity_projection(yaml.safe_load(Path(row['path']).read_text())) == identity_projection(yaml.safe_load(current_bytes)), ('Predecessor identity selection changed', row['relative_path'])
+        target = shadow / row['relative_path']
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(current_bytes)
+        predecessor_rows.append(dict(relative_path=row['relative_path'], current_path=str(current), current_sha256=current_sha,
+            baseline_sha256=row['sha256'], bytes_changed=current_sha != row['sha256'], identity_slots_preserved=True))
+    destination = shadow / 'data/pathways' / args.record.name
+    assert not destination.exists()
+    shutil.copyfile(args.record, destination)
+    expected_count = len(predecessor_rows) + 1
+    assert len(list((shadow / 'data/pathways').rglob('*.yaml'))) == expected_count
+    sys.path.insert(0, str(B / 'runtime/src'))
+    from pathwaymech.cli import check_identifiers_main
+    log = io.StringIO()
+    with contextlib.redirect_stdout(log), contextlib.redirect_stderr(log):
+        exit_code = check_identifiers_main([], root=shadow)
+    log_path = B / 'retained/identifier-consumer.log'
+    assert not log_path.exists()
+    log_path.write_text(log.getvalue())
+    for row in predecessor_rows:
+        assert sha(row['current_path']) == row['current_sha256']
+    save('actual-predecessor-record-bindings.json', dict(records=predecessor_rows, changed_paths=[row['relative_path'] for row in predecessor_rows if row['bytes_changed']]))
+    consumer = dict(status='passed' if exit_code == 0 else 'failed', exit_code=exit_code, records_checked=expected_count,
+        authority_terms=len(new_terms), record_sha256=args.record_sha256, policy_sha256=sha(B / 'baseline/conf/identifier_policy.yaml'),
+        canonical_consumer='pathwaymech.cli.check_identifiers_main([], root=isolated_shadow_root)',
+        log_path=str(log_path), log_sha256=sha(log_path),
+        scope='Actual 257 predecessor records plus root-supplied record, no synthetic selection record passed to consumer. Offline identity, name and native type checks only; not full repository or scientific validation.')
+    save('identifier-policy-verification.json', consumer)
+    assert exit_code == 0, log.getvalue()
+    for row in base['baseline_files']:
+        assert sha(row['path']) == row['sha256'] == sha(row['maintained_path'])
+    for row in load(B / 'retained/runtime-bindings.json'):
+        assert sha(row['path']) == row['sha256'] == sha(row['maintained_path'])
+    assert sha(args.record) == args.record_sha256
+    report.update(status='author_verification_passed_pending_independent_review', final_record=dict(path=str(args.record), sha256=args.record_sha256),
+        final_authority_terms=len(new_terms), new_identifiers=sorted(selected - retained), records_checked=expected_count,
+        identifier_policy_passed=True, predecessor_bytes_changed_from_baseline=[row['relative_path'] for row in predecessor_rows if row['bytes_changed']],
+        all_predecessor_identity_slots_preserved=True)
+    save('final-record-selection-binding.json', dict(final_record_path=str(args.record), final_record_sha256=args.record_sha256,
+        initial_selection_observation=freeze, selected_identifiers=sorted(selected), count=len(selected), exact_selected_ids_preserved=True))
+    save('planned-authority-labels.json', {identifier:new_terms[identifier] for identifier in sorted(selected)})
+    save('union-preservation-verification.json', report)
+    print(json.dumps(dict(status=report['status'], final_terms=len(new_terms), new_terms=len(selected - retained), new_owners=len(additions), records_checked=expected_count)))
+
+if __name__ == '__main__':
+    main()

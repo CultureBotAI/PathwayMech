@@ -1,0 +1,99 @@
+"""Freeze completed external authority author outputs and compact retention."""
+from pathlib import Path
+import datetime, gzip, hashlib, json
+
+B = Path(__file__).resolve().parents[1]
+
+def sha(path):
+    h = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b''):
+            h.update(block)
+    return h.hexdigest()
+
+def save(relative, value):
+    path = B / relative
+    assert not path.exists(), ('preserve frozen artifact', path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+def binding(path):
+    return dict(path=str(path), sha256=sha(path), bytes=path.stat().st_size)
+
+def main():
+    report = json.loads((B / 'retained/union-preservation-verification.json').read_text())
+    assert report['status'] == 'author_verification_passed_pending_independent_review'
+    original_record = Path(report['final_record']['path'])
+    assert sha(original_record) == report['final_record']['sha256']
+    outputs = [binding(B / 'proposal' / name) for name in ['identifier_sources.json', 'sources.union.json', 'ontology.union.json']]
+    source_report, ontology_report = report['snapshots']['sources'], report['snapshots']['ontology']
+    handoff = dict(role='Authority integration author; pending root inspection and independent review',
+        utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), baseline_commit=report['baseline_commit'],
+        final_record=report['final_record'], selected_identifiers=report['selected_identifier_count'],
+        new_terms=len(report['new_identifiers']), final_terms=report['final_authority_terms'],
+        new_source_terms=len(source_report['new_terms']), new_ontology_terms=len(ontology_report['new_terms']),
+        old_terms_preserved=5023, old_source_owners_preserved=891, old_ontology_owners_preserved=5,
+        outputs=outputs, verification=binding(B / 'retained/union-preservation-verification.json'),
+        maintained_writes=False, independent_approval=False)
+    save('retained/author-handoff.json', handoff)
+    content = f'''# Next261 selected authority union — author handoff
+
+The external authority union is ready for root inspection and independent review. This package is authority integration authorship, not an independent scientific verdict. No maintained file, Git state, source adapter or policy was changed.
+
+Root's integrated record selected {report['selected_identifier_count']} identifiers. The canonical proposal adds exactly {len(report['new_identifiers'])} terms: {len(source_report['new_terms'])} source terms and {len(ontology_report['new_terms'])} ontology terms. All 5,023 prior terms, all 891 source owners, all five ontology owners, and the entire 1,072-entry source configuration prefix are unchanged as JSON objects. Final total: {report['final_authority_terms']} terms. Only actual selected identifiers are added; the optional 165-source candidate pool is not promoted.
+
+Both existing canonical builders passed from copied, hash-bound runtime bytes. Complete pinned SQL hashes match the existing owners, and all bound inputs were verified before and after execution. The unchanged real offline identifier CLI passed on {report['records_checked']} actual records: 257 predecessor observations plus the supplied integrated record. The synthetic old-term retention selector was used only to retain snapshot coverage and was not passed to the real consumer. Every predecessor named ID, label and category is preserved. This bounded authority check does not replace full repository validation or scientific review.
+
+Final record binding: `{report['final_record']['sha256']}` at `{report['final_record']['path']}`. Exact proposed file paths and hashes are in `retained/author-handoff.json`; root owns maintained promotion.
+
+Native TbuE sources are separately scoped successor originals; methylcatechol activity labels do not make them formal catechol reaction equivalents. Optional TbuE sequence/reference sources and other unselected candidates remain evidence context. Existing CPLX0-7951, PWY-5162 and previously retained protein owners remain exact. Formal chemistry and chemical assay identity proof remain in their unchanged frozen source-author packages; this integration does not repeat chemical closure or promote optional buffer/reagent identities.
+
+An auxiliary TbuE accounting probe initially expected two selected successor IDs. The actual record also selects ENZRXN-26223 as source-scoped methylcatechol activity context, so the corrected accounting verifies all three selected sources. The initial failed helper and receipt are retained. The canonical selection and builders already contained the correct three sources and were not changed or rerun for this auxiliary correction.
+
+The provisional 98-ID native availability check copied its exact mutable-author observation before parsing. It is explicitly provisional and is superseded by the final root record binding. No labels were taken from that observation to create authority facts. Full issuing originals supply every new source term; pinned independent databases supply ontology labels.
+
+The selected union retains the pinned production Rhea Semantic SQL authority and existing explicit Rhea update manifest. Original Rhea 142 chemistry evidence is separate and does not silently replace older source owners. No parser extension, ontology release refresh or source fallback is proposed.
+
+Compact retention excludes baseline corpora, complete proposed authority outputs, copied runtime and external full authorities. The three exact proposed files are available under `proposal/` for root promotion. All retained checks, selection/source bindings and compact observations are selected with deterministic lossless gzip for larger files and inert `.py.txt` helper copies. `compact-retention-selection.json` binds encoded and original bytes; `artifact-manifest.json` binds all regular owned files. External cache originals remain bound by the input and cache verification receipts rather than duplicated into this package.
+'''
+    path = B / 'HANDOFF.md'
+    assert not path.exists()
+    path.write_text(content)
+    selection = []
+    for original in [path, *sorted((B / 'retained').rglob('*')), *sorted((B / 'helpers').glob('*.py'))]:
+        if not original.is_file() or original.is_symlink():
+            continue
+        relative = original.relative_to(B)
+        if relative.parts[0] == 'helpers':
+            target = B / 'compact' / (str(relative) + '.txt')
+            encoded, encoding = original.read_bytes(), 'inert_python_text'
+        elif original.stat().st_size > 100000 or original.suffix in {'.log', '.yaml'}:
+            target = B / 'compact' / (str(relative) + '.gz')
+            encoded, encoding = gzip.compress(original.read_bytes(), mtime=0), 'gzip_lossless'
+        else:
+            target = original
+            encoded, encoding = None, 'identity'
+        if target != original:
+            assert not target.exists()
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(encoded)
+        row = dict(retain_path=str(target.relative_to(B)), original_path=str(relative), encoding=encoding,
+            sha256=sha(target), bytes=target.stat().st_size, original_sha256=sha(original), original_bytes=original.stat().st_size)
+        if encoding == 'gzip_lossless':
+            assert gzip.decompress(target.read_bytes()) == original.read_bytes()
+        elif encoding == 'inert_python_text':
+            assert target.read_bytes() == original.read_bytes()
+        selection.append(row)
+    save('compact-retention-selection.json', dict(scope='Compact author checks/evidence references, not independent review or authority promotion',
+        root=str(B), files=selection, count=len(selection), bytes=sum(row['bytes'] for row in selection),
+        excluded=['baseline corpus and snapshots', 'copied runtime', 'proposal full outputs for separate promotion', 'external source-cache originals']))
+    files = [dict(path=str(path.relative_to(B)), sha256=sha(path), bytes=path.stat().st_size)
+             for path in sorted(B.rglob('*')) if path.is_file() and not path.is_symlink() and path.name != 'artifact-manifest.json']
+    save('artifact-manifest.json', dict(scope='Frozen external authority integration author package; source-cache symlinks are externally hash-bound by build receipts',
+        files=files, count=len(files), bytes=sum(row['bytes'] for row in files)))
+    print(json.dumps(dict(status='frozen_author_handoff', handoff_sha256=sha(B / 'HANDOFF.md'),
+        artifact_manifest_sha256=sha(B / 'artifact-manifest.json'), compact_selection_sha256=sha(B / 'compact-retention-selection.json'),
+        compact_files=len(selection), compact_bytes=sum(row['bytes'] for row in selection))))
+
+if __name__ == '__main__':
+    main()

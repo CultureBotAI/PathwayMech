@@ -1,0 +1,33 @@
+import datetime,hashlib,json
+from pathlib import Path
+import yaml
+repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+research=repo/'research/pathway_additions/2026-10-14-next-261'
+record_path=repo/'data/pathways/catechol-degradation-i.yaml'
+record=yaml.safe_load(record_path.read_text())
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+assert sha(record_path)=='38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255'
+initial_path=research/'root-verification/initial-draft-findings.json'
+initial=json.loads(initial_path.read_text());edges={e['id']:e for e in record['mechanistic_edges']}
+reactions={n['id']:n for n in record['reactions']}
+findings=[]
+def add(key,checks,reason):
+ assert all(checks.values()),(key,checks)
+ findings.append({'id':key,'disposition':'resolved in integrated draft','acceptance_checks':checks,'interpretation':reason})
+qualifiers=[q for eid in ['native-n087','native-n088'] for q in edges[eid].get('endpoint_qualifiers',[])]
+add('integration-001',{'both_edges_qualified':len(qualifiers)==2,'subject_experimental_construct':all(q['endpoint']=='subject' and q['kind']=='experimental_construct' for q in qualifiers),'His_tag_and_host_explicit':all('His tag' in q['description'] and 'E. coli' in q['description'] for q in qualifiers),'native_protein_comment_located':all(any(e['reference_id']=='MetaCyc:MONOMER-20853' and e['source_locator'].endswith('/comment[1]') for e in q['evidence']) for q in qualifiers)},'Both Bilophila claims preserve the tagged recombinant host preparation and the purified/partially-purified native evidence discrepancy.')
+reg_edges=[edges[f'native-n{i:03d}'] for i in range(104,109)]
+add('integration-002',{'all5_native_regulation_targets_are_declared_activities':all(reactions.get(e['object'],{}).get('category')=='molecular_activity' for e in reg_edges),'both_DmpG_targets_are_ENZRXN13575':all(edges[e]['object']=='MetaCyc:ENZRXN-13575' for e in ['native-n105','native-n106']),'native_source_locator_preserved':all(any('regulated-entity' in v['source_locator'] for v in e['evidence']) for e in reg_edges)},'Native regulation now targets exact activity interfaces; no independent free-DmpG effect or allosteric mechanism is asserted.')
+e=edges['native-n045']
+add('integration-003',{'formal_edge_n046_removed':'native-n046' not in edges,'CnbE_no_exact_Rhea_hydratase_edge':not any(x['subject']=='MetaCyc:MONOMER-14738' and x['object']=='RHEA:22582' for x in edges.values()),'native_activity_assignment_kept':e['object']=='MetaCyc:ENZRXN-16329','chlorinated_construct_limitation_explicit':any('chlorinated' in q['description'] and 'coexpressing' in q['description'] for q in e['endpoint_qualifiers'])},'Retains the database activity assignment with a chlorinated coexpression qualifier, while excluding the unsupported exact unchlorinated formal reaction assignment.')
+old=yaml.safe_load(Path('/private/tmp/pathwaymech-next-261-ci/native-draft-observation.yaml').read_text());oldedges={e['id']:e for e in old['mechanistic_edges']}
+tokens=['retain_exact_native_effect_and_preparation_scope','adjacent_regulation_does_not_expand_complete_route','effect_supported','native_ALLOSTERIC_label_unestablished_by_cited1993_primary']
+add('integration-004',{'all4_extraction_tokens_removed_from_descriptions':all(not any(t in e.get('description','') for t in tokens) for e in edges.values()),'five_regulation_descriptions_rewritten':all(oldedges[e['id']]['description']!=e['description'] for e in reg_edges)},'Replaced extraction tokens with readable source/preparation explanations; source codes and identifiers remain where scientifically relevant.')
+p15=edges['primary-p015'];p16=edges['primary-p016'];q15=p15['endpoint_qualifiers'][0];q16=p16['endpoint_qualifiers'][0]
+add('integration-005',{'two_distinct_preparation_edges':p15['id']!=p16['id'],'1991_crude_pRO1985':'1991' in q15['description'] and 'crude' in q15['description'] and 'pRO1985' in q15['description'],'1996_partial_pRO1986_pRO2345':all(t in q16['description'] for t in ['1996','partially purified','pRO1986','pRO2345']),'separate_source_references':{v['reference_id'] for v in q15['evidence']}=={'PMID:1856161'} and {v['reference_id'] for v in q16['evidence']}=={'PMID:8633871'}},'Preparation and source attribution are now separated. This acceptance does not settle the independent ongoing review of primary evidence representation.')
+taxa=json.loads((research/'root-verification/taxon-integration-selection.json').read_text())
+add('integration-006',{'eight_exact_selected_taxa':record['taxa']==taxa['taxa'] and len(record['taxa'])==8,'annotation_limits_in_record':taxa['description_addition'] in record['description'],'no_invented_occurrence_edges':not any(e['predicate']=='occurs_in' and e['object'] in {t['id'] for t in record['taxa']} for e in edges.values())},'Eight exact native parent species annotations retain issuing labels and explicit source scope. Historical mt-2, broad taxonomic range, component taxa and expression hosts are not promoted by inference.')
+output={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'root integration author reassessment, not independent scientific review','previous_findings':{'path':str(initial_path.relative_to(repo)),'sha256':sha(initial_path)},'record':{'path':str(record_path.relative_to(repo)),'sha256':sha(record_path)},'findings':findings,'limitations':['This resolves only the six initial author-inspection findings against the first integrated draft. Independent scientific and technical review and full repository gates remain pending.','Original source interpretation is bound by retained source/author packages; these focused assertions are not a substitute for reading those originals.']}
+out=research/'root-verification/initial-draft-findings-resolution.json';assert not out.exists();out.write_text(json.dumps(output,indent=2)+'\n')
+helper=Path(__file__);retained=research/'integration/helpers/reassess_initial_author_findings.py.txt';retained.write_bytes(helper.read_bytes())
+print(json.dumps({'resolved_author_findings':len(findings),'record_sha256':sha(record_path),'receipt':str(out)},indent=2))

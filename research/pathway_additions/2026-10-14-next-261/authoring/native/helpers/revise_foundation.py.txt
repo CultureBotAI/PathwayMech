@@ -1,0 +1,47 @@
+from pathlib import Path
+import json
+R=Path(__file__).resolve().parents[1];p=R/'helpers/build_foundation.py';s=p.read_text()
+s=s.replace("scopes=read(N/'curated-catalyst-scope-decisions.json')", "scopes=read(R/'readable-catalyst-scopes.json')")
+s=s.replace("desc='Native regulation of the specified source activity only. '+a['disposition']+'.'", "desc='The complete native regulation object assigns this effect to the specified enzyme activity and source preparation.'")
+s=s.replace("edge(chemical(f),sign,'MetaCyc:'+p,desc,", "edge(chemical(f),sign,'MetaCyc:'+a['regulated_activity'][0],desc,")
+s=s.replace("a['locator']+'/regulator; mode; regulated-entity'", "'; '.join(slots(a['frame'],field)[0]['locator'] for field in ['regulator','mode','regulated-entity'])")
+s=s.replace('Ki265000µM','Ki of 265,000 µM').replace('a470kDa preparation and1:1 ratio','a 470 kDa preparation and a 1:1 ratio').replace('the2Z enol','the 2Z enol')
+# Preserve stable edge IDs while rejecting unsupported exact unchlorinated catalysis.
+needle="description=(\n"
+insert="""# Explicitly reject a formal-chemistry promotion whose cited experiment is chlorinated.
+rejected=[a for a in edges if a['id']=='native-n046']
+assert len(rejected)==1 and rejected[0]['subject']=='MetaCyc:MONOMER-14738'
+save('rejected-formal-assignment.json',{'former_edge':rejected[0],'disposition':'Excluded from the selected graph. The native activity pointer is preserved as a database assignment through ENZRXN-16329, but the complete protein comment reports coexpression of cnbEF and a chlorinated conversion only. This does not support exact unchlorinated RHEA:22582 catalysis.','source':full['MONOMER-14738']['file'],'sha256':full['MONOMER-14738']['sha256'],'locator':slots('MONOMER-14738','comment')[0]['locator']})
+edges=[a for a in edges if a['id']!='native-n046']
+coverage=[a for a in coverage if a['edge_id']!='native-n046']
+# Qualify supported recombinant preparations at the actual biological endpoint.
+constructs={
+ 'MONOMER-20853':('Bilophila wadsworthia adhE was expressed with a His tag in E. coli and the recombinant protein was purified. The native activity code says partially purified heterologous-host protein; the complete protein comment says purified. Construct sequence and tag boundaries are not supplied.','The adhE gene was cloned with a His tag, expressed in E. coli, and recombinant protein was purified; acetyl-CoA formed at pH 8 but no reaction was seen at pH 7.5.'),
+ 'MONOMER-14738':('E. coli coexpressing CNB-1 cnbE and cnbF; neither protein was purified. The observed conversion used a chlorinated substrate. The ENZRXN-16329 link remains a database assignment, without a direct isolated-enzyme or exact unchlorinated assay claim.','cnbE and cnbF were coexpressed in E. coli, which converted (3Z)-2-chloro-5-oxohex-3-enedioate to 5-chloro-4-hydroxy-2-oxopentanoate; neither protein was purified.'),
+ 'MONOMER-11390':('E. coli carrying a plasmid expressing the F1 todFC1C2BADEG gene cluster. Accumulation of a hydroxyoxopentanoate was the experimental observation; isolated TodG catalysis was not directly assayed.','A plasmid expressing the todFC1C2BADEG gene cluster in E. coli accumulated (S)-4-hydroxy-2-oxopentanoate.'),
+ 'MONOMER-11225':('Unpurified extracts from a P. aeruginosa mutant carrying the PKO1 degradation gene cluster and subclones. This is a heterologous cluster assay with a historically prepared substrate, not an isolated native TbuJ assay.','A PKO1 gene cluster was expressed in P. aeruginosa, and hydratase activity was measured in unpurified extracts; subcloning associated it with tbuJ.'),
+ 'MONOMER-11226':('Unpurified extracts from a P. aeruginosa mutant carrying the PKO1 degradation gene cluster. Aldolase activity used an indirect pyruvate/LDH assay and a chemically prepared substrate, not purified isolated TbuK.','A PKO1 cluster was expressed in P. aeruginosa; activity was measured in unpurified extracts through pyruvate-dependent NADH oxidation with excess lactate dehydrogenase.'),
+ 'MONOMER-3404':('The source combines transposon mapping with expression of the cloned meta-cleavage genes in E. coli maxicells. It does not supply an isolated native XylK preparation or exact construct sequence.','Transposon mutants located xylK between xylJ and xylI; cloned meta-cleavage genes expressed in E. coli maxicells showed xylK-associated aldolase activity.'),
+ 'G7285-MONOMER':('Heterologous EutE expression in several yeast preparations, as described by the native protein comment. Specific construct boundaries are not supplied by this native source; the engineered hosts are not complete catechol-route taxa.','Heterologous expression of EutE in various yeasts increases cellular acetylating acetaldehyde dehydrogenase activity and has been used for metabolic engineering.')
+}
+for a in edges:
+ frame=a['subject'].removeprefix('MetaCyc:')
+ if a['predicate']=='catalyzes' and frame in constructs:
+  detail,assertion=constructs[frame]
+  a['endpoint_qualifiers']=[{'endpoint':'subject','kind':'experimental_construct','description':detail,'evidence':[evidence(frame,assertion,slots(frame,'comment')[0]['locator'])]}]
+ if a['id']=='native-n045':
+  a['description']='The native ENZRXN-16329 object assigns CnbE hydratase activity, but its cited protein comment reports only a chlorinated conversion by coexpressed cnbE/cnbF. Retained as a database activity assignment; exact unchlorinated RHEA:22582 catalysis is excluded.'
+for a in coverage:
+ a['description']=next(e['description'] for e in edges if e['id']==a['edge_id'])
+
+"""
+s=s.replace(needle,insert+needle)
+s=s.replace("'taxa_scope':'No whole-route taxon assertion is inferred from the native species list. Taxa is intentionally empty in this source foundation; all native organism/preparation contexts remain on activity descriptions and source ledgers. Primary/root integration selects any supported whole-record taxon scope.',", "'taxa_scope':'The parent explicitly annotates nine pathway species. Exact slots, full organism identities and the single parent EV-EXP-IDA/PMID1856161 evidence slot are in parent-pathway-species-annotation-accounting.json. Empty taxa leaves final source-annotated selection to root integration; it is not rejection or absence of the source associations. Species annotations must not be described as nine independently verified whole-route experiments.',")
+p.write_text(s)
+scopes=json.loads(Path('/private/tmp/pathwaymech-next-261-native/curated-catalyst-scope-decisions.json').read_text())
+fix={'Km85 versus13.6uM':'Km values of 85 and 13.6 µM','formal2Z':'formal 2Z','2Z/former2E':'2Z versus former 2E','Bordetella10d':'Bordetella strain 10d','470kDa':'470 kDa','complex,29/27kDa bands,1:1':'complex, 29 and 27 kDa bands, and a 1:1','substrate3E-keto':'substrate described as a 3E keto form','formal2Z-dienol':'formal 2Z dienol','classI':'class I','Keq17M':'equilibrium constant of 17 M','Current27.0':'Current version 27.0','features15/197/199':'features at positions 15, 197 and 199','DmpFG2+2':'DmpFG 2+2','Primary8419288':'PMID 8419288','by1993':'by the 1993','Ki265000µM':'Ki of 265,000 µM','pH8':'pH 8','reactionpH7.5':'reaction at pH 7.5','optimum8.5':'optimum of 8.5','ATCC824':'ATCC 824','TAX303':'TAX-303','coefficient40':'coefficient of 40','exact HH/unpurified evidence':'heterologous-host, unpurified evidence','stereospecific class I':'stereospecific class I'}
+for k,v in scopes.items():
+ for x,y in fix.items():v=v.replace(x,y)
+ scopes[k]=v
+scopes['MONOMER-14738']='CNB-1 CnbE has a native hydratase activity assignment. Its complete protein comment reports coexpression of cnbE and cnbF in E. coli and a chlorinated substrate conversion; neither protein was purified. Exact unchlorinated catalysis is excluded from the formal-reaction graph.'
+(R/'readable-catalyst-scopes.json').write_text(json.dumps(scopes,indent=2)+'\n')

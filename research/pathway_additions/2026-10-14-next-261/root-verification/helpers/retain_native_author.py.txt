@@ -1,0 +1,30 @@
+import datetime,gzip,hashlib,json
+from pathlib import Path
+source=Path('/private/tmp/pathwaymech-next-261-native-foundation')
+repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+root=repo/'research/pathway_additions/2026-10-14-next-261';target=root/'authoring/native'
+assert not target.exists()
+def h(b):return hashlib.sha256(b).hexdigest()
+manifest=source/'artifact-manifest.json';assert h(manifest.read_bytes())=='42510f7339d0ee22773fadf82da86dd1cac61011c2d37661ed1c0268546d8823'
+m=json.loads(manifest.read_text())
+for r in m['files']:
+ b=(source/r['path']).read_bytes();assert len(b)==r['bytes'] and h(b)==r['sha256'],r['path']
+actual={str(p.relative_to(source)) for p in source.rglob('*') if p.is_file()}
+assert actual=={r['path'] for r in m['files']}|{'artifact-manifest.json'}
+compact=source/'compact-retention-manifest.json';assert h(compact.read_bytes())=='53bccfee0d16a7af6a1bbf3f0bac20a8a5042d4d1c9a03cb7ceb11cf026242ba'
+c=json.loads(compact.read_text()); selected=[r['path'] for r in c['files'] if not r['path'].startswith('originals/')]
+for name in ['artifact-manifest.json','compact-retention-manifest.json']:
+ if name not in selected:selected.append(name)
+rows=[]
+for name in selected:
+ p=source/name;b=p.read_bytes();encoded=b;dest=name;extra={}
+ if name.endswith('.py'):dest+='.txt'
+ elif name.endswith('.json') and len(b)>262144:
+  dest+='.gz';encoded=gzip.compress(b,compresslevel=9,mtime=0);assert gzip.decompress(encoded)==b
+  extra={'encoding':'gzip','original_bytes':len(b),'original_sha256':h(b),'lossless_decompression_verified':True}
+ q=target/dest;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(encoded)
+ rows.append({'source':str(p),'retained_path':str(q.relative_to(root)),'bytes':len(encoded),'sha256':h(encoded),**extra})
+receipt={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'root integration author verification, not independent review','artifact_manifest_sha256':h(manifest.read_bytes()),'verified_external_files':len(m['files']),'inventory_includes_hidden_and_ignored':True,'retained_files':len(rows),'retained_bytes':sum(r['bytes'] for r in rows),'files':rows,'selection_adjustment':'Keep all authored coverage, complete source-slot/prose/feature dispositions, receipts, descriptors and inert helpers. The126 complete new original response files remain external and are bound by full manifests and acquisition receipts. Redundant runtime/cache copies also remain external. Large JSON ledgers use verified lossless gzip; no scientific content is removed.'}
+q=root/'root-verification/native-author-retention.json';q.write_text(json.dumps(receipt,indent=2)+'\n')
+(root/'root-verification/helpers/retain_native_author.py.txt').write_bytes(Path(__file__).read_bytes())
+print(json.dumps({k:v for k,v in receipt.items() if k!='files'},indent=2))

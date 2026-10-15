@@ -1,0 +1,154 @@
+from pathlib import Path
+import copy, hashlib, json, re, sys, datetime
+import yaml
+
+ROOT=Path('/private/tmp/pathwaymech-next-261-primary-evidence-repair')
+REPO=Path('/private/tmp/pathwaymech-next-261-20261014')
+P=Path('/private/tmp/pathwaymech-next-261-primary')
+I=Path('/private/tmp/pathwaymech-next-261-primary-integration')
+target=REPO/'data/pathways/catechol-degradation-i.yaml'
+expected='38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255'
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+def bind(p): return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def save(n,o): (ROOT/n).write_text(json.dumps(o,indent=2,ensure_ascii=False)+'\n')
+assert sha(target)==expected
+old=yaml.safe_load(target.read_text()); new=copy.deepcopy(old)
+(ROOT/'reviewed-baseline.yaml').write_bytes(target.read_bytes())
+sources={
+ 'PMID:8419288':P/'derived/PMID8419288-merged-web-extraction.txt',
+ 'PMID:2681159':P/'derived/PMID2681159-merged-web-extraction.txt',
+ 'PMID:1856161':P/'derived/PMID1856161-merged-web-extraction.txt',
+ 'PMID:12764229':P/'derived/PMID12764229-partial-web-extraction.txt',
+ 'PMID:7890778':P/'originals/EPMC-PMID-7890778.json',
+ 'PMID:23237860':P/'originals/PMID23237860-web-abstract-and-access.json',
+ 'PMID:8633871':I/'derived/PMID8633871-merged-web-extraction.txt',
+}
+refs={r['id']:r for r in old['references']}
+for rid,p in sources.items(): assert sha(p)==refs[rid]['source_sha256'],(rid,sha(p))
+def text(rid):
+ p=sources[rid]
+ if rid=='PMID:7890778': return json.loads(p.read_text())['resultList']['result'][0]['abstractText']
+ if rid=='PMID:23237860':
+  s=json.loads(p.read_text());return s.split('## Abstract\n\n',1)[1].split('\n\n## MeSH terms',1)[0]
+ return p.read_text()
+def normalized(s):
+ return ' '.join(re.sub(r'^L\d+@P[0-9-]+: ?', '', s, flags=re.M).replace('\x02','').split())
+catalog={}; quote_ledger=[]
+def q(key,rid,quote,locator,lines=None):
+ s=text(rid)
+ if lines:
+  chosen=[line for line in s.splitlines() if (m:=re.match(r'L(\d+)@P',line)) and lines[0]<=int(m[1])<=lines[1]]
+  raw='\n'.join(chosen)
+ else: raw=s
+ assert quote in normalized(raw),(key,quote,normalized(raw))
+ ev={'reference_id':rid,'quote':quote,'source_locator':locator}
+ catalog[key]={'evidence':ev,'source':bind(sources[rid]),'kind':'verbatim_excerpt','source_lines':lines,
+  'exact_normalized_substring':True,'normalization':'Strip extraction line/page prefixes, join whitespace, remove U+0002 discretionary word-break only; preserve all spelling, numbers and NAD prime typography.',
+  'raw_original_retained_externally':True,'raw_support_sha256':hashlib.sha256(raw.encode()).hexdigest()}
+ quote_ledger.append({'key':key,'reference_id':rid,'quote':quote,'words':len(quote.split()),'characters':len(quote),'source':bind(sources[rid]),'locator':locator,'source_lines':lines})
+ return ev
+def table(key,rid,assertion,locator,lines,cell_checks):
+ s=text(rid);chosen=[line for line in s.splitlines() if (m:=re.match(r'L(\d+)@P',line)) and lines[0]<=int(m[1])<=lines[1]]
+ raw='\n'.join(chosen)
+ for c in cell_checks: assert c in normalized(raw),(key,c)
+ ev={'reference_id':rid,'source_assertion':assertion,'source_locator':locator}
+ catalog[key]={'evidence':ev,'source':bind(sources[rid]),'kind':'original_table_cells','source_lines':lines,'checked_native_cells':cell_checks,'reading_limit':'Inspected publisher-transformed table text; no raw-PDF visual inspection claimed.'}
+ return ev
+
+f_table=table('F-T1','PMID:8419288','Table 1, final Matrex Gel Green A fraction: 15 mg protein, 63 U aldolase and 47 U acylating dehydrogenase; activity ratio 1.34, aldolase specific activity 4.2 U/mg and yield 28%. These are the same purification fraction, not recombinant isolated DmpF.','p381, Table 1, Matrex Gel Green A row and HOA/ADA column definitions (L335–345).',(335,345),['Matrex Gel Green A 9.6 15 63 47 1.34 4.2 28','HOA, 4-hydroxy-2-ketovalerate aldolase; ADA, aldehyde dehydrogenase (acylating)'])
+f_product=q('F-Q-product','PMID:8419288','CoA esters are formed','p379, Results, CoA ester formation: L222–235; excerpt L228–229. Acetaldehyde/propionaldehyde products, dmpF-expressing pVI1311A and dmpQ control are specified in this paragraph.',(228,229))
+f_construct=q('F-Q-construct','PMID:8419288','pVI1311A, which expresses dmpF','p379, Results, L224–227 (E. coli crude extracts, pVI1311A/dmpF and pVI1300A/dmpQ); Methods p378 L85–91 gives host growth conditions.',(225,225))
+f_nad=q('F-Q-NAD','PMID:8419288',"stimulated by NADH or, much less efficiently, by NAD'.",'p384, Discussion L710; compare Results p382 L514–535 and assay description p383 L556–568. U+0002 discretionary break within stimulated removed; the source NAD prime typography is preserved.',(710,710))
+f_mn=q('F-Q-Mn','PMID:8419288','Mn2+ (1 mM) stimulated','p382, Results, aldolase properties L508–513; full passage specifies 6–8-fold stimulation of purified aldolase and EDTA control. Excerpt L508.',(508,508))
+f_zn=q('F-Q-Zn','PMID:8419288','Zn2+ was strongly inhibitory','p382, Results, aldolase properties L508–513; excerpt L510. This is the same purified CF600 preparation; no direct binding or generalized host inhibition is established.',(510,510))
+f_composition=table('F-T2','PMID:8419288','Table 2 footnote b reports best-fit quantities of 219 pmol DmpF and 182 pmol DmpG. This is approximate composition evidence; the biological tetramer assignment additionally uses the inspected 2003 structural report.','p382, Table 2, footnote b (L454–456); residue-count columns DmpF/DmpG and measured amino-acid composition in L435–453.',(435,456),['DmpF DmpG','219 pmol; DmpG, 182'])
+s_assembly=q('S-Q-assembly','PMID:12764229','The active biological unit of DmpFG is a 140-kDa tetramer consisting of two DmpFG heterodimers','p6993, Results and Discussion, Structure Solution L94–97; biological unit distinguished from two tetramers in the crystal asymmetric unit. Only pp6992–6993 were accessed.',(94,95))
+h_active=q('H-Q-active','PMID:2681159','the hydratase was active as a single component;','p6257, Discussion L543–547; recombinant single-XylJ experiment and measured activities are in Results L506–513.',(543,543))
+h_construct=q('H-Q-construct','PMID:2681159','pGSH2829 carries xylJ, the structural gene for 2-oxopent-4-enoate hydratase.','p6252, Methods L115–116; same Methods section L109–127 specifies lambda PL vector, K-12 host and temperature induction.',(115,116))
+h_host=q('H-Q-host','PMID:2681159','E. coli K12AtrpAH1(pGSH2829)','p6257, Results L506–513, single-component hydratase purification; excerpt L507. Methods L117–127 supplies the full host background and temperature induction.',(507,507))
+k_genej=q('K-Q-tbuJ','PMID:1856161','tbuJ, the gene encoding OEH','p4590, deletion mapping L311–314; tbuJ hydratase placement remains less precise than other genes.',(311,312))
+k_genek=q('K-Q-tbuK','PMID:1856161','tbuK, which encodes HOA','p4590, deletion mapping L298–301, XhoI and EcoRV deletion comparison.',(300,300))
+k_dl=q('K-Q-hydratase-method','PMID:1856161','enzymatically from DL-allylglycine','p4588, Methods, hydratase assay L119–123; substrate precursor does not establish exact stereochemistry.',(122,122))
+k_lactone=q('K-Q-aldolase-method','PMID:1856161','prepared by mild alkaline hydrolysis','p4588, Methods, aldolase assay L124–130; the hydrolyzed substrate precursor is 4-methyl-2-oxobutyrolactone.',(127,127))
+k_readout=q('K-Q-aldolase-readout','PMID:1856161','rate of oxidation of NADH','p4588, Methods, aldolase assay L124–126; pyruvate production is coupled to excess lactate dehydrogenase.',(125,125))
+k_host=table('K-T1-host','PMID:1856161','Table 1 identifies PAO1.93 as a P. aeruginosa catA strain. This is the recombinant assay host; PKO1 supplies the cloned DNA.','p4589, Table 1, P. aeruginosa strains, PAO1.93 row (L175–180); donor provenance in Methods p4587 L38–44.',(175,180),['P. aeruginosa strains','PAO1.93 catA 18'])
+k_activity=table('K-T2-activities','PMID:1856161','Table 2, PAO1.93 carrying pRO1996 plus pRO2345 with phenol: OEH activity 601 and HOA activity 20 mU/mg protein. The corresponding uninduced values are below 10 and 0.1, respectively. These are clone-extract measurements.','p4591, Table 2, pRO1996/pRO2345 pair, None/Phenol rows and OEH/HOA columns (L385–409); units and conditions in footnote a.',(385,409),['pRO1996, pRO2345 None ND <10 <0.1 <0.1 <10 <0.1 <10 <0.1','Phenol ND 250 14 20 567 72 601 20'])
+k_table5=table('K-T5-substrates','PMID:1856161','Table 5, PAO1.93(pRO1985): catechol/3-methylcatechol/4-methylcatechol C23O activities are 254/245/248 mU/mg after phenol induction and 244/235/240 after m-cresol induction. At least three determinations underlie each value. The separate pRO1996 growth observation is not this assay.','p4592, Table 5, title, inducer/substrate rows and C23O activity column, footnote a (L477–488).',(477,488),['PA01.93(pRO1985)','Phenol Catechol 254','3-Methylcatechol 245','4-Methylcatechol 248','m-Cresol Catechol 244','3-Methylcatechol 235','4-Methylcatechol 240'])
+x_activity=q('X-Q-substrate','PMID:7890778','the hydrolysis of a carbon-carbon bond in its substrate, the ring-fission product of 3-alkyl-substituted catechols.','Indexed abstract, first sentence; EPMC resultList.result[0].abstractText. Abstract-only access; no unsubstituted catechol assay or exact initial enol-isomer assignment.')
+m_active=q('M-Q-monomer','PMID:23237860','the aldehyde dehydrogenase, MhpF, is active as a monomer','PubMed indexed abstract, kinetic-data sentence (fourth sentence); retained retrieval block headed PMID:23237860, Abstract. Exact construct and full methods were inaccessible.')
+t_construct=q('T-Q-construct','PMID:8633871','P. aeruginosa PAO1.93 carrying recombinant plasmids pRO1986 and pRO2345 in trans','p1729, Methods L115–119; PKO1 TbuE donor and PAO1.93 expression preparation. This is separate from 1991 pRO1985.',(116,117))
+t_partial=q('T-Q-partial','PMID:8633871','Partial purification and assay of C23Os.','p1729, Methods heading L90; preparation protocol L90–119 (not a claim of purified-to-homogeneity enzyme).',(90,90))
+t_table=table('T-T3-kinetics','PMID:8633871','Table 3, PKO1 row, lists Vmax estimates (SE): catechol 847 (22), 3-methylcatechol 560 (34), 4-methylcatechol 108 (5). The extracted unit typography remains ambiguous and is not normalized. The host and partial-purification scope come from Methods.','p1732, Table 3, PKO1 row and catechol/3-methylcatechol/4-methylcatechol columns, footnote a (L390–402).',(390,402),['Oxygen Catechol 3-Methylcatechol 4-Methylcatechol','PKO1 110 (6) 847 (22) 560 (34) 108 (5)'])
+
+arrays={
+ 'primary-p001':[f_table], 'primary-p002':[f_table],
+ 'primary-p003':[f_product,f_construct],
+ 'primary-p004':[f_nad], 'primary-p005':[f_nad],
+ 'primary-p006':[f_mn], 'primary-p007':[f_zn],
+ 'primary-p008':[f_composition,s_assembly], 'primary-p009':[f_composition,s_assembly],
+ 'primary-p010':[h_active,h_construct,h_host],
+ 'primary-p011':[k_genej,k_activity,k_dl],
+ 'primary-p012':[k_genek,k_activity,k_lactone,k_readout],
+ 'primary-p013':[x_activity], 'primary-p014':[m_active],
+ 'primary-p015':[k_table5], 'primary-p016':[t_table,t_construct,t_partial],
+}
+quals={
+ 'primary-p003':[f_construct], 'primary-p010':[h_construct,h_host],
+ 'primary-p011':[k_host,k_activity,k_dl],
+ 'primary-p012':[k_host,k_activity,k_lactone,k_readout],
+ 'primary-p014':[m_active], 'primary-p015':[k_table5],
+ 'primary-p016':[t_construct,t_partial],
+}
+patches=[]
+for e in new['mechanistic_edges']:
+ if e['id'] not in arrays: continue
+ before=copy.deepcopy(e['evidence']);e['evidence']=copy.deepcopy(arrays[e['id']])
+ patches.append({'edge_id':e['id'],'field':'evidence','before':before,'after':e['evidence']})
+ if e['id'] in quals:
+  assert len(e['endpoint_qualifiers'])==1
+  ql=e['endpoint_qualifiers'][0];before=copy.deepcopy(ql['evidence']);ql['evidence']=copy.deepcopy(quals[e['id']])
+  patches.append({'edge_id':e['id'],'field':'endpoint_qualifiers[0].evidence','before':before,'after':ql['evidence']})
+
+audit=json.loads(Path('/private/tmp/pathwaymech-next-261-independent-science/primary-evidence-item-audit.initial.json').read_text())
+blocks=json.loads((I/'description-context-additions.json').read_text())['blocks']
+context_for={'F01':0,'F02':1,'F04':3,'F13':12,'F10':9,'F11':10,'F09':8,'F05':4,'F06':5,'S01':32,'H08':22,'H01':15,'K03':27,'K02':26,'X01':35,'M01':45,'K07':31}
+coverage=[]
+for a in audit:
+ e=next(e for e in new['mechanistic_edges'] if e['id']==a['edge_id'])
+ after=e['endpoint_qualifiers'][0]['evidence'] if 'endpoint_qualifiers' in a['path'] else e['evidence']
+ cid=a['source_locator'].split('#')[-1] if '#' in a['source_locator'] else 'PKO96-01'
+ ci=context_for.get(cid,53)
+ assert blocks[ci]['text'] in old['description'] and blocks[ci]['text'] in new['description']
+ coverage.append({**a,'original_claim_id':cid,'retained_context_id':blocks[ci]['context_id'],'retained_context_text_sha256':hashlib.sha256(blocks[ci]['text'].encode()).hexdigest(),'retained_context_exactly_unchanged':True,'disposition':'Replaced the entire affected evidence array with original table facts and/or short source-verified excerpts. Detailed source-located narrative synthesis remains in the specifically identified unchanged primary context; no biological claim or edge removed.','successor_evidence':after})
+
+for key,obj in catalog.items():
+ ev=obj['evidence']; assert len(ev.get('quote',ev.get('source_assertion','')))<=400
+ assert ('quote' in ev) != ('source_assertion' in ev)
+totals={}
+for x in quote_ledger: totals[x['reference_id']]=totals.get(x['reference_id'],0)+x['words']
+assert all(n<=25 for n in totals.values()),totals
+# Check every property outside the authorized evidence arrays remains identical.
+back=copy.deepcopy(new)
+for i,e in enumerate(back['mechanistic_edges']):
+ if e['id'] in arrays:
+  e['evidence']=old['mechanistic_edges'][i]['evidence']
+  if e['id'] in quals:e['endpoint_qualifiers'][0]['evidence']=old['mechanistic_edges'][i]['endpoint_qualifiers'][0]['evidence']
+assert back==old
+assert len(blocks)==54 and all(b['text'] in new['description'] for b in blocks)
+sys.path[:0]=[str(REPO/'src'),str(REPO)]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import json_schema
+from jsonschema import Draft7Validator, FormatChecker
+validate_record(new)
+errors=list(Draft7Validator(json.loads(json_schema()),format_checker=FormatChecker()).iter_errors(new));assert not errors,[str(x) for x in errors]
+(ROOT/'proposed-successor.yaml').write_text(yaml.safe_dump(new,sort_keys=False,allow_unicode=True,width=88))
+save('evidence-array-replacements.json',{'target':bind(target),'scope':'Evidence-array-only patch; root may apply to successor with separately reviewed description correction only if before-arrays exactly match.','replacements':patches})
+save('source-bound-evidence-catalog.json',catalog)
+save('all35-occurrence-dispositions.json',coverage)
+rendered={}
+for e in new['mechanistic_edges']:
+ for ev in e['evidence']+[ev for ql in e.get('endpoint_qualifiers',[]) for ev in ql['evidence']]:
+  if 'quote' in ev:rendered[ev['reference_id']]=rendered.get(ev['reference_id'],0)+len(ev['quote'].split())
+save('quote-ledger.json',{'scope':'New repaired record and this remediation package; each distinct exact excerpt counted once, reused evidence points to that same excerpt. Historical frozen source-dossier excerpts are unchanged. Repeated rendered occurrences are separately counted below and are not represented as new distinct excerpts.','unique_excerpts':quote_ledger,'unique_quoted_words_by_source':totals,'rendered_occurrence_words_by_source':rendered,'max_distinct_words_per_source':25})
+save('focused-verification.json',{'role':'Remediation author, not independent reviewer','target':bind(target),'successor':bind(ROOT/'proposed-successor.yaml'),'checks':{'all35_old_occurrences_accounted':len(coverage)==35,'arrays_replaced':len(patches),'affected_edges':len(arrays),'unchanged_edge_count':len(new['mechanistic_edges']),'all_non_evidence_properties_byte_value_unchanged':back==old,'all54_contexts_unchanged':True,'participants':len(new['participants']),'reactions':len(new['reactions']),'references':len(new['references']),'python_schema':'pass','closed_json_schema_with_format_checker':'pass','all_original_source_hashes_equal_declared_references':True,'short_excerpt_replay':'pass','unique_quoted_words_by_source':totals,'no_visual_figure_claims':True},'limits':['Narrative details retained in descriptions are source-located synthesis, not structured native assertions.','PMID12764229 limited to pages6992–6993; PMID7890778 and23237860 abstract-only; publisher-transformed text is not raw-PDF visual review.','PMID8633871 table unit typography remains unnormalized.','U+0002 removal is explicit extraction-break normalization; no OCR spelling or chemistry correction.','No full repository gates or independent review claimed.']})
+print(json.dumps({'successor':bind(ROOT/'proposed-successor.yaml'),'arrays':len(patches),'old_occurrences':len(coverage),'quote_totals':totals},indent=2))

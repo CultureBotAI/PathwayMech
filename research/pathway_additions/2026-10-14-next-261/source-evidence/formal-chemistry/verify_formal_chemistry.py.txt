@@ -1,0 +1,199 @@
+"""Exact native/ChEBI structures and five-step formal-route comparison."""
+from pathlib import Path
+from collections import Counter
+import datetime
+import hashlib
+import json
+import re
+import sqlite3
+import xml.etree.ElementTree as ET
+from rdkit import Chem, rdBase
+
+OUT = Path('/private/tmp/pathwaymech-next-261-chemistry')
+DISC = Path('/private/tmp/pathwaymech-next-261-discovery')
+OLD = Path('/private/tmp/pathwaymech-next-201-evidence/aromatic')
+DB = Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+NS = 'http://rdf.rhea-db.org/'
+
+
+def sha(path):
+    h = hashlib.sha256()
+    with path.open('rb') as stream:
+        while chunk := stream.read(8 * 1024 * 1024):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def formula_counts(formula):
+    tokens = re.findall(r'([A-Z][a-z]?)(\d*)', formula)
+    assert ''.join(a + n for a, n in tokens) == formula
+    return {a: int(n or '1') for a, n in tokens}
+
+
+def no_stereo_smiles(mol):
+    mol = Chem.Mol(mol)
+    Chem.RemoveStereochemistry(mol)
+    return Chem.MolToSmiles(Chem.RemoveHs(mol), isomericSmiles=False)
+
+
+def main():
+    output = OUT / 'formal-chemistry-verification.json'
+    assert not output.exists()
+    digest = sha(DB)
+    assert digest == '26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+    paths = [DISC / 'originals' / ('META-' + frame + '.xml') for frame in
+             ['CATECHOL', 'HYDROXYMUCONATE-SALD', 'CPD-14447', 'CPD-6761',
+              'OXOPENTENOATE', '4-HYDROXY-2-KETOVALERATE']]
+    paths += [OUT / 'originals' / ('META-' + frame + '.xml') for frame in
+              ['ACETALD', 'ACETYL-COA', 'CO-A', 'OXYGEN-MOLECULE', 'PROTON', 'PYRUVATE', 'WATER']]
+    paths += [Path('/private/tmp/pathwaymech-next-261-native/originals') / ('META-' + frame + '.xml')
+              for frame in ['NAD', 'NADH', 'FORMATE']]
+    connection = sqlite3.connect('file:' + str(DB) + '?mode=ro', uri=True)
+    rows = []
+    for path in paths:
+        root = ET.parse(path).getroot()
+        pgdb = dict(root.find('metadata/PGDB').attrib)
+        assert pgdb['orgid'] == 'META' and pgdb['version'] == '27.0'
+        full = [x for x in root.iter('Compound') if x.get('detail') == 'full']
+        assert len(full) == 1, path
+        obj = full[0]
+        links = [d for d in obj.findall('dblink') if d.findtext('dblink-db') == 'CHEBI']
+        assert len(links) == 1
+        curie = 'CHEBI:' + links[0].findtext('dblink-oid')
+        triples = list(connection.execute('select predicate,object,value from statements where subject=?', (curie,)))
+        fields = ['rdfs:label', 'chemrof:inchi_string', 'chemrof:inchi_key_string',
+                  'chemrof:smiles_string', 'chemrof:charge', 'chemrof:generalized_empirical_formula']
+        properties = {key: [v for p, o, v in triples if p == key] for key in fields}
+        assert all(len(values) == 1 for values in properties.values()), curie
+        cml = obj.find('cml/molecule')
+        assert cml is not None
+        atoms = [dict(x.attrib) for x in cml.findall('atomArray/atom')]
+        bonds = [dict(x.attrib) for x in cml.findall('bondArray/bond')]
+        rw = Chem.RWMol()
+        atom_map = {}
+        for atom in atoms:
+            a = Chem.Atom(atom['elementType'])
+            a.SetFormalCharge(int(atom.get('formalCharge', '0')))
+            atom_map[atom['id']] = rw.AddAtom(a)
+        for bond in bonds:
+            a, b = bond['atomRefs'].split()
+            kind = {'1': Chem.BondType.SINGLE, '2': Chem.BondType.DOUBLE,
+                    '3': Chem.BondType.TRIPLE, '1.5': Chem.BondType.AROMATIC,
+                    'A': Chem.BondType.AROMATIC}[bond['order']]
+            rw.AddBond(atom_map[a], atom_map[b], kind)
+        mol = rw.GetMol()
+        Chem.SanitizeMol(mol)
+        issued = Chem.MolFromSmiles(properties['chemrof:smiles_string'][0])
+        assert issued is not None
+        actual_atoms = dict(Counter(a.GetSymbol() for a in Chem.AddHs(mol).GetAtoms()))
+        expected_atoms = formula_counts(properties['chemrof:generalized_empirical_formula'][0])
+        checks = {
+            'full_inchi_exact': obj.findtext('inchi') == properties['chemrof:inchi_string'][0],
+            'full_inchi_key_exact': obj.findtext('inchi-key').removeprefix('InChIKey=') == properties['chemrof:inchi_key_string'][0],
+            'cml_connectivity_matches_issuing_smiles': no_stereo_smiles(mol) == no_stereo_smiles(issued),
+            'complete_atom_counts_match': actual_atoms == expected_atoms,
+            'cml_molecule_charge_matches_atoms': int(cml.get('formalCharge')) == Chem.GetFormalCharge(mol),
+            'charge_matches_issuing_chebi': Chem.GetFormalCharge(mol) == int(properties['chemrof:charge'][0])}
+        rows.append({'native_frame': obj.get('frameid'), 'path': str(path), 'sha256': sha(path), 'pgdb': pgdb,
+                     'native_name': obj.findtext('common-name'), 'native_inchi': obj.findtext('inchi'),
+                     'native_inchi_key': obj.findtext('inchi-key'),
+                     'native_chebi_link': ET.tostring(links[0], encoding='unicode'),
+                     'native_cml': {'attributes': dict(cml.attrib), 'atoms': atoms, 'bonds': bonds,
+                                    'formula': dict(cml.find('formula').attrib)},
+                     'chebi_id': curie, 'chebi_properties': properties,
+                     'cml_atom_counts': actual_atoms, 'checks': checks,
+                     'scope': 'Full structure, charge and source-issued stereo identifiers; no historical assay stereochemistry inferred.'})
+    by_native = {r['native_frame']: r for r in rows}
+    by_chebi = {r['chebi_id']: r for r in rows}
+    source = json.loads((OUT / 'formal-source-projection.json').read_text())
+    rhea = source['rhea_nodes']
+    def rhea_side(uri):
+        side = rhea[uri]
+        counts = Counter()
+        for key, participants in side.items():
+            if not re.fullmatch(r'contains\d+', key):
+                continue
+            coefficient = int(key.removeprefix('contains'))
+            for participant in participants:
+                compounds = rhea[participant]['compound']
+                assert len(compounds) == 1
+                compound = rhea[compounds[0]]
+                ids = compound['accession']
+                assert len(ids) == 1 and ids[0] in by_chebi
+                assert compound['formula'][0] == by_chebi[ids[0]]['chebi_properties']['chemrof:generalized_empirical_formula'][0]
+                assert compound['charge'][0] == by_chebi[ids[0]]['chebi_properties']['chemrof:charge'][0]
+                counts[ids[0]] += coefficient
+        assert sum(len(values) for key, values in side.items() if re.fullmatch(r'contains\d+', key)) == len(side['contains'])
+        return counts
+    def native_side(values):
+        return Counter({by_native[x['native_compound']]['chebi_id']: int(x['coefficient']) for x in values})
+    def composition(counts):
+        atoms = Counter()
+        charge = 0
+        for curie, coefficient in counts.items():
+            p = by_chebi[curie]['chebi_properties']
+            atoms.update({a: n * coefficient for a, n in formula_counts(p['chemrof:generalized_empirical_formula'][0]).items()})
+            charge += int(p['chemrof:charge'][0]) * coefficient
+        return {'atoms': dict(sorted(atoms.items())), 'charge': charge}
+    selections = ['17338', None, '22582', '22625', '23289']
+    steps = []
+    total = Counter()
+    for item, selected in zip(source['native'], selections):
+        left, right = native_side(item['left']), native_side(item['right'])
+        if item['native_direction'] == 'PHYSIOL-RIGHT-TO-LEFT':
+            left, right = right, left
+        for curie, n in left.items():
+            total[curie] -= n
+        total.update(right)
+        checks = {'element_and_charge_balance': composition(left) == composition(right)}
+        if selected is not None:
+            chosen = rhea[NS + selected]
+            checks['exact_selected_rhea_substrates'] = rhea_side(chosen['substrates'][0]) == left
+            checks['exact_selected_rhea_products'] = rhea_side(chosen['products'][0]) == right
+        steps.append({'native_reaction': item['frame'], 'native_direction': item['native_direction'],
+                      'proposed_formal_id': 'RHEA:' + selected if selected else 'MetaCyc:' + item['frame'],
+                      'selected_direction': 'right_to_left' if selected == '22582' else 'left_to_right',
+                      'inputs': dict(left), 'outputs': dict(right),
+                      'input_composition': composition(left), 'output_composition': composition(right), 'checks': checks})
+    hydro = steps[1]
+    keto = rhea[NS + '14550']
+    keto_left, keto_right = rhea_side(keto['substrates'][0]), rhea_side(keto['products'][0])
+    assert keto_left == Counter(hydro['inputs'])
+    expected_keto_right = Counter(hydro['outputs'])
+    assert expected_keto_right.pop('CHEBI:67152') == 1
+    expected_keto_right['CHEBI:11641'] = 1
+    assert keto_right == expected_keto_right
+    net_inputs = {k: -v for k, v in total.items() if v < 0}
+    net_outputs = {k: v for k, v in total.items() if v > 0}
+    final_digest = sha(DB)
+    result = {'completed_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'author_role': 'root chemistry author, not independent final reviewer',
+              'rdkit_version': rdBase.rdkitVersion,
+              'chebi_original': {'path': str(DB), 'bytes': DB.stat().st_size, 'sha256_before': digest,
+                                  'sha256_after': final_digest, 'unchanged': digest == final_digest},
+              'formal_source_projection_sha256': sha(OUT / 'formal-source-projection.json'),
+              'compounds': rows, 'steps': steps,
+              'material_side_entries': sum(len(x['inputs']) + len(x['outputs']) for x in steps),
+              'net': {'inputs': net_inputs, 'outputs': net_outputs,
+                      'input_composition': composition(net_inputs), 'output_composition': composition(net_outputs),
+                      'balanced': composition(net_inputs) == composition(net_outputs)},
+              'xref_conflict': {'native': 'MetaCyc:3.7.1.9-RXN', 'native_product': 'CHEBI:67152',
+                                'linked_rhea': 'RHEA:14552', 'rhea_family_master': 'RHEA:14549',
+                                'rhea_product': 'CHEBI:11641', 'exact_identity': False,
+                                'disposition': 'Retain native reaction ID for formal 2Z-enol route. Rhea family is keto-product context; do not silently replace chemical identity.'},
+              'limits': ['Formal source identities and material calculations do not assign every historical preparation a stereochemical form.',
+                         'Native reversible annotations are preserved separately from selected forward route traversal.',
+                         'This covers formal chemicals plus E/keto comparators, not all assay reagents/regulators.',
+                         'Common-metabolite inverse reaction/regulation incidence is not evidence of membership in this exact pathway.']}
+    result['all_checks_pass'] = (all(all(x['checks'].values()) for x in rows + steps)
+                                and result['net']['balanced'] and digest == final_digest)
+    output.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({'compounds': len(rows), 'steps': len(steps),
+                      'all_checks_pass': result['all_checks_pass'], 'net': result['net'],
+                      'failed_checks': [{'object': x.get('native_frame', x.get('native_reaction')), 'checks': x['checks']}
+                                        for x in rows + steps if not all(x['checks'].values())]}, indent=2), flush=True)
+    assert result['all_checks_pass']
+
+
+if __name__ == '__main__':
+    main()

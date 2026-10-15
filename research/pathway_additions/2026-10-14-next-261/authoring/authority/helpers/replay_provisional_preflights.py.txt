@@ -1,0 +1,63 @@
+"""Reproduce provisional availability receipts from preserved observation bytes."""
+from pathlib import Path
+import hashlib, json, sqlite3, sys
+
+B = Path(__file__).resolve().parents[1]
+sys.path[:0] = [str(B / 'runtime/src'), str(B / 'runtime/scripts')]
+from build_ontology_identifier_snapshot import extract_terms
+
+def sha(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def load(path):
+    return json.loads(Path(path).read_text())
+
+def main():
+    report = load(B / 'retained/native-selection-provisional-preflight.json')
+    observation = Path(report['observation_path'])
+    assert sha(observation) == report['observation_sha256']
+    rows = load(observation)
+    selected = {row['id'] for row in rows}
+    baseline = {}
+    for name in ['sources', 'ontology']:
+        baseline.update(load(B / 'baseline/data/identifier_authorities' / (name + '.json'))['terms'])
+    candidates = {term[0]:term for row in load(B / 'retained/candidate-source-inventory.json')['new_entries'] for term in row['parsed_terms']}
+    resolved = {identifier:baseline[identifier] for identifier in selected & baseline.keys()}
+    for identifier in selected - baseline.keys():
+        if identifier in candidates:
+            resolved[identifier] = dict(label=candidates[identifier][1], synonyms=candidates[identifier][2], source='optional-candidate-only')
+    for prefix, name in [('GO', 'go'), ('CHEBI', 'chebi'), ('NCBITaxon', 'ncbitaxon'), ('RHEA', 'rhea')]:
+        requested = sorted(identifier for identifier in selected - resolved.keys() if identifier.startswith(prefix + ':'))
+        if requested:
+            database = Path('/private/tmp/pathwaymech-curation-authorities') / (name + '.db')
+            with sqlite3.connect(database.resolve().as_uri() + '?mode=ro', uri=True) as connection:
+                terms, missing = extract_terms(connection, requested, 'pinned-source-preflight')
+            assert not missing
+            resolved.update(terms)
+    missing = sorted(selected - resolved.keys())
+    differences = [dict(id=row['id'], proposed=row['label'], authority=resolved[row['id']]['label']) for row in rows
+                   if row['id'] in resolved and row['label'] != resolved[row['id']]['label'] and row['label'] not in resolved[row['id']]['synonyms']]
+    assert report['resolved_labels'] == resolved and report['missing'] == missing and report['label_differences'] == differences
+    assert report['count'] == len(selected) and report['previously_owned'] == len(selected & baseline.keys())
+    taxon_report = load(B / 'retained/root-taxon-preflight.json')
+    taxon_observation = Path(taxon_report['observation_path'])
+    assert sha(taxon_observation) == taxon_report['observation_sha256']
+    taxa = load(taxon_observation)['taxa']
+    database = Path('/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db')
+    with sqlite3.connect(database.resolve().as_uri() + '?mode=ro', uri=True) as connection:
+        terms, missing = extract_terms(connection, sorted(row['id'] for row in taxa), 'ncbitaxon-2026-07-12')
+    assert not missing and terms == taxon_report['terms']
+    assert all(row['label'] == terms[row['id']]['label'] for row in taxa)
+    result = dict(status='passed', scope='Exact replay of preserved provisional observations, not final record selection or scientific approval',
+        native_receipt_sha256=sha(B / 'retained/native-selection-provisional-preflight.json'),
+        taxon_receipt_sha256=sha(B / 'retained/root-taxon-preflight.json'),
+        candidate_inventory_sha256=sha(B / 'retained/candidate-source-inventory.json'),
+        native_observation_sha256=sha(observation), taxon_observation_sha256=sha(taxon_observation),
+        native_count=len(selected), taxon_count=len(taxa), helper_sha256=sha(__file__))
+    target = B / 'retained/provisional-preflight-replay.json'
+    assert not target.exists()
+    target.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps(result))
+
+if __name__ == '__main__':
+    main()

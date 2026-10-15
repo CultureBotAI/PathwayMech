@@ -1,0 +1,18 @@
+import json,urllib.request,urllib.parse,pathlib,datetime,hashlib,time
+R=pathlib.Path('/private/tmp/pathwaymech-next-261-primary-integration')
+jobs=[('UniProt-Q59220.json','https://rest.uniprot.org/uniprotkb/Q59220.json'),('UniProt-Q01551.json','https://rest.uniprot.org/uniprotkb/Q01551.json'),('NCBI-M98806.gb','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=M98806&rettype=gbwithparts&retmode=text'),('NCBI-AAC13787.1.xml','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAC13787.1&rettype=gb&retmode=xml'),('NCBI-AAA25992.1.xml','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAA25992.1&rettype=gb&retmode=xml')]
+for gene in ['tbuS','tbuR','phiR','phiA']:
+ q='('+gene+'[All Fields]) AND (pickettii[Organism] OR PKO1[All Fields])'
+ for db in ['protein','nuccore','gene']:
+  jobs.append(('NCBI-'+db+'-broad-'+gene+'.json','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?'+urllib.parse.urlencode({'db':db,'term':q,'retmode':'json','retmax':100})))
+for pmid in ['9451833','1400204','8633871']:
+ jobs.append(('EPMC-PMID-'+pmid+'.json','https://www.ebi.ac.uk/europepmc/webservices/rest/search?'+urllib.parse.urlencode({'query':'EXT_ID:'+pmid+' AND SRC:MED','resultType':'core','format':'json'})))
+out=[]
+for name,url in jobs:
+ d={'requested_url':url,'artifact':name,'requested_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech evidence research'}),timeout=40) as f:
+   b=f.read();(R/'originals'/name).write_bytes(b);d.update(status=f.status,final_url=f.url,content_type=f.headers.get('Content-Type'),bytes=len(b),sha256=hashlib.sha256(b).hexdigest(),total_results=f.headers.get('x-total-results'),link=f.headers.get('Link'))
+ except Exception as e:d['error']=str(e)
+ out.append(d);time.sleep(.4);(R/'identity-acquisition-receipts2.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps(out,indent=2))

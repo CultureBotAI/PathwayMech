@@ -1,0 +1,67 @@
+import datetime,gzip,hashlib,json,shutil
+from pathlib import Path
+import yaml
+repo=Path('/private/tmp/pathwaymech-next-261-20261014');package=Path('/private/tmp/pathwaymech-next-261-authority-integration')
+research=repo/'research/pathway_additions/2026-10-14-next-261'
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+mp=package/'artifact-manifest.json';assert sha(mp)=='27a75cb1ce935cf26efb52bb14841f8d472357edf4c1e40e95f4518830aaab9d'
+manifest=json.loads(mp.read_text());assert len(manifest['files'])==716
+for row in manifest['files']:
+ p=package/row['path'];assert p.is_file() and p.stat().st_size==row['bytes'] and sha(p)==row['sha256'],row['path']
+cp=package/'compact-retention-selection.json';assert sha(cp)=='af26644cfb46f6696d6efc476f24d3489988f186e7e02a937660c9d31096f3fb'
+compact=json.loads(cp.read_text());assert len(compact['files'])==56
+handoff=json.loads((package/'retained/author-handoff.json').read_text())
+record=repo/'data/pathways/catechol-degradation-i.yaml';assert sha(record)==handoff['final_record']['sha256']
+r=yaml.safe_load(record.read_text());selected={r['id']}|{n['id'] for key in ['taxa','participants','reactions'] for n in r[key]};assert len(selected)==106
+pairs=[('conf/identifier_sources.json','identifier_sources.json'),('data/identifier_authorities/sources.json','sources.union.json'),('data/identifier_authorities/ontology.json','ontology.union.json')]
+for dst,source in pairs:
+ assert (repo/dst).read_bytes()==(package/'baseline'/dst).read_bytes(),dst
+ binding=next(row for row in handoff['outputs'] if Path(row['path']).name==source)
+ assert sha(package/'proposal'/source)==binding['sha256']
+a=json.loads((repo/pairs[0][0]).read_text());b=json.loads((package/'proposal'/pairs[0][1]).read_text());assert len(a)==1072 and b[:len(a)]==a and len(b)==1142
+snapshots=[];old_ids=set();new_ids=set()
+for dst,source in pairs[1:]:
+ old=json.loads((repo/dst).read_text());new=json.loads((package/'proposal'/source).read_text())
+ assert old['version']==new['version']
+ assert all(new['terms'].get(k)==v for k,v in old['terms'].items())
+ assert all(new['sources'].get(k)==v for k,v in old['sources'].items())
+ additions=set(new['terms'])-set(old['terms']);assert additions<=selected
+ old_ids.update(old['terms']);new_ids.update(additions)
+ snapshots.append({'path':dst,'old_terms':len(old['terms']),'new_terms':len(new['terms']),'old_owners':len(old['sources']),'new_owners':len(new['sources']),'all_old_terms_and_owners_unchanged':True,'added_ids':sorted(additions)})
+assert len(old_ids)==5023 and len(new_ids)==80 and new_ids==selected-old_ids
+assert len(old_ids|new_ids)==5103
+bindings=json.loads((package/'retained/new-source-original-bindings.json').read_text());assert len(bindings)==70
+assert [x['entry'] for x in bindings]==b[len(a):]
+for row in bindings:
+ entry=row['entry'];original=Path(row['original']);cached=package/'source-cache'/entry['path']
+ assert sha(original)==sha(cached)==entry['sha256']
+ assert set(row['selected_identifiers'])<=new_ids
+verification=json.loads((package/'retained/union-preservation-verification.json').read_text())
+assert verification['records_checked']==258 and verification['identifier_policy_passed'] and verification['all_predecessor_identity_slots_preserved']
+assert sha(package/'retained/union-preservation-verification.json')==handoff['verification']['sha256']
+# Decode every compact file before writing any maintained authority.
+copyplan=[]
+for row in compact['files']:
+ src=package/row['retain_path'];original=package/row['original_path'];encoded=src.read_bytes()
+ assert sha(src)==row['sha256'] and len(encoded)==row['bytes']
+ decoded=gzip.decompress(encoded) if row['encoding']=='gzip_lossless' else encoded
+ assert decoded==original.read_bytes() and hashlib.sha256(decoded).hexdigest()==row['original_sha256'] and len(decoded)==row['original_bytes']
+ relative=Path(row['retain_path']);relative=relative.relative_to('compact') if relative.parts[0]=='compact' else relative
+ copyplan.append((src,relative,row))
+out=research/'authoring/authority';assert not out.exists();out.mkdir(parents=True)
+retained=[]
+for src,relative,row in copyplan:
+ dst=out/relative;dst.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(src,dst);assert sha(dst)==row['sha256']
+ retained.append(dict(row,retained_path=str(dst.relative_to(research))))
+for name in ['artifact-manifest.json','compact-retention-selection.json']:
+ src=package/name;dst=out/name
+ if not dst.exists():shutil.copyfile(src,dst)
+ assert sha(src)==sha(dst)
+promoted=[]
+for target,source in pairs:
+ dst=repo/target;before=sha(dst);shutil.copyfile(package/'proposal'/source,dst)
+ promoted.append({'path':target,'before_sha256':before,'after_sha256':sha(dst),'source':str(package/'proposal'/source)})
+receipt={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'root authority promotion verification, not independent review','record_path':str(record.relative_to(repo)),'record_sha256':sha(record),'artifact_manifest_sha256':sha(mp),'manifest_files_verified':716,'manifest_bytes_verified':sum(x['bytes'] for x in manifest['files']),'compact_files_verified_and_retained':56,'compact_selection_sha256':sha(cp),'existing_config_entries_preserved':1072,'new_source_originals_independently_rehashed':70,'all_new_terms_exactly_selected':True,'old_terms_preserved':5023,'added_terms':80,'final_terms':5103,'snapshots':snapshots,'promoted_files':promoted,'retained_files':retained,'author_real_consumer_records':258,'independent_review':'pending','full_repository_gates':'pending'}
+(research/'root-verification/authority-promotion.json').write_text(json.dumps(receipt,indent=2)+'\n')
+helper=Path(__file__);(research/'integration/helpers/promote_authority_union.py.txt').write_bytes(helper.read_bytes())
+print(json.dumps({k:receipt[k] for k in ['manifest_files_verified','compact_files_verified_and_retained','old_terms_preserved','added_terms','final_terms','promoted_files']},indent=2))

@@ -1,0 +1,46 @@
+from pathlib import Path
+import re,json,hashlib,datetime
+R=Path('/private/tmp/pathwaymech-next-261-primary-evidence-repair')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def bind(p):return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def save(n,o):(R/n).write_text(json.dumps(o,indent=2,ensure_ascii=False)+'\n')
+ledger=json.loads((R/'quote-ledger.json').read_text());spans=[]
+for q in ledger['unique_excerpts']:
+ p=Path(q['source']['path']);s=p.read_text();assert sha(p)==q['source']['sha256']
+ if p.suffix=='.json':
+  start=s.index(q['quote']);end=start+len(q['quote']);normalized=q['quote']
+ else:
+  # Map normalized characters back to source characters, preserving exact byte locations.
+  skip=set()
+  for m in re.finditer(r'^L\d+@P[0-9-]+: ?',s,re.M):skip.update(range(m.start(),m.end()))
+  chars=[];index=[]
+  for i,c in enumerate(s):
+   if i in skip or c=='\x02':continue
+   if c.isspace():
+    if chars and chars[-1]!=' ':chars.append(' ');index.append(i)
+   else:chars.append(c);index.append(i)
+  ns=''.join(chars);nstart=ns.index(q['quote']);nend=nstart+len(q['quote'])
+  start=index[nstart];end=index[nend-1]+1;normalized=ns[nstart:nend]
+ raw=s[start:end];raw_bytes=raw.encode()
+ normalized_raw=' '.join(re.sub(r'^L\d+@P[0-9-]+: ?','',raw,flags=re.M).replace('\x02','').split())
+ assert normalized_raw==q['quote'],(q['key'],repr(normalized_raw))
+ bstart=len(s[:start].encode());bend=len(s[:end].encode())
+ assert p.read_bytes()[bstart:bend]==raw_bytes
+ spans.append({'key':q['key'],'reference_id':q['reference_id'],'source':bind(p),'source_byte_span_zero_based_half_open':[bstart,bend],'source_span_sha256':hashlib.sha256(raw_bytes).hexdigest(),'normalized_excerpt':normalized,'normalization_removals':{'U+0002_count':raw.count('\x02'),'line_page_prefix_count':len(re.findall(r'^L\d+@P[0-9-]+: ?',raw,re.M))},'no_other_character_substitution':True})
+save('exact-source-span-normalization-receipt.json',{'scope':'Byte-level replay of every distinct proposed evidence excerpt; complete original source artifacts remain externally retained at the bound paths. No source image or visual access is implied.','spans':spans})
+verified=[]
+for dirname in ['pathwaymech-next-261-primary','pathwaymech-next-261-primary-integration']:
+ d=Path('/private/tmp')/dirname;m=d/'artifact-manifest.json';rows=json.loads(m.read_text())['files']
+ for row in rows:
+  p=d/row['path'];assert sha(p)==row['sha256'],p
+ verified.append({'root':str(d),'manifest':bind(m),'listed_files_unchanged':len(rows)})
+save('frozen-source-verification.json',{'predecessors':verified,'maintained_record_still_original':sha(Path('/private/tmp/pathwaymech-next-261-20261014/data/pathways/catechol-degradation-i.yaml'))==sha(R/'reviewed-baseline.yaml'),'role':'External remediation author; no maintained writes or Git operations.'})
+for p in R.rglob('*'):
+ if p.is_file() and p.name not in {'artifact-manifest.json','HANDOFF.md'} and p.suffix not in {'.bin'}:
+  assert p.stat().st_size<3000000
+files=[]
+for p in sorted(R.rglob('*')):
+ if p.is_file() and p.name not in {'artifact-manifest.json','HANDOFF.md'}:
+  files.append({'path':str(p.relative_to(R)),'sha256':sha(p),'bytes':p.stat().st_size})
+save('artifact-manifest.json',{'purpose':'Frozen external evidence-format remediation for SCI-F01; not independent review','created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':files})
+print(json.dumps({'manifest':bind(R/'artifact-manifest.json'),'files':len(files),'excerpt_spans':len(spans),'frozen_predecessors':verified},indent=2))

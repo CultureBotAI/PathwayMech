@@ -1,0 +1,36 @@
+from pathlib import Path
+import datetime,hashlib,importlib.util,json,sys
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+REPO=Path('/private/tmp/pathwaymech-next-261-20261014')
+sys.path.insert(0,str(REPO/'src'))
+path=REPO/'scripts/build_source_identifier_snapshot.py'
+spec=importlib.util.spec_from_file_location('next261_source_adapter',path);mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+short=ROOT/'originals/PubChem-90657761-properties.json';full=ROOT/'originals/PubChem-90657761-authority-properties.json'
+shorturl='https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/90657761/property/Title/JSON'
+url='https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/90657761/property/Title,IUPACName,MolecularFormula,InChIKey/JSON'
+try:mod._pubchem_record(short,shorturl)
+except ValueError as exc:short_result={'rejected_as_expected':True,'reason':str(exc)}
+else:raise AssertionError('Incomplete Title-only request unexpectedly accepted')
+accepted=mod._pubchem_record(full,url);assert accepted==('PubChem:90657761','3-Pyridinecarboxaldehyde adenine dinucleotide',[])
+body=json.loads(full.read_text())['PropertyTable']['Properties'][0]
+proof=json.loads((ROOT/'retained/additional-chemistry-check-v2.json').read_text());struct=next(x for x in proof['pubchem_checks'] if x['id']=='PubChem:90657761')
+checks={'property_key_matches_complete_issuing_structure':body['InChIKey']==struct['reconstruction']['key'],
+        'property_formula_matches_complete_issuing_structure':body['MolecularFormula']=='C21H26N6O14P2',
+        'property_formula_atom_counts':struct['reconstruction']['atoms']=={'C':21,'H':26,'N':6,'O':14,'P':2}}
+assert all(checks.values())
+out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'repo':str(REPO),'repo_merge_base':'62b8798b0044f422a59f1527b0801ff09a27d368',
+     'adapter_path':str(path),'adapter_sha256':sha(path),'scope':'Existing actual _pubchem_record parser executed read-only; this is not a whole-authority build or final record gate.',
+     'preliminary_title_only':{'path':str(short),'sha256':sha(short),'url':shorturl,**short_result},
+     'accepted_authority':{'path':str(full),'sha256':sha(full),'url':url,'native_properties':body,'emitted_term':accepted},'structure_binding_checks':checks}
+p=ROOT/'retained/authority-adapter-preflight.json';assert not p.exists();p.write_text(json.dumps(out,indent=2)+'\n')
+old=ROOT/'retained/authority-integration-plan.json';plan=json.loads(old.read_text())
+plan['supersedes']={'path':str(old),'sha256':sha(old),'reason':'Adapter preflight requires the exact four-property request. The preliminary Title-only response supplies a matching label but is not an accepted source original.'}
+for row in plan['native_identity_plan']:
+    if row['id']=='PubChem:90657761':
+        row['source_original']={'path':str(full),'sha256':sha(full),'url':url,'version':'PubChem PUG REST CID 90657761 property snapshot retrieved 2026-10-15'}
+        row['authority_plan']='Existing pubchem-compound-property-json parser passed with the exact four-property original; Title supplies canonical label, full CID JSON independently proves chemical structure.'
+plan['adapter_preflight']={'path':str(p),'sha256':sha(p)}
+plan['integration_constraints']=[x.replace('The accepted pubchem-compound-property-json adapter uses Title only; preserve its exact acquisition bytes and whole CID structure proof. No adapter change is needed.','The accepted pubchem-compound-property-json adapter requires Title,IUPACName,MolecularFormula,InChIKey in the exact request and response. Only Title becomes the label. Preserve accepted four-property bytes and complete CID structure proof; no adapter change is needed.') for x in plan['integration_constraints']]
+p=ROOT/'retained/authority-integration-plan-v2.json';assert not p.exists();p.write_text(json.dumps(plan,indent=2)+'\n')
+print(json.dumps({'accepted_term':accepted,'checks':checks,'superseding_plan':str(p)},indent=2))

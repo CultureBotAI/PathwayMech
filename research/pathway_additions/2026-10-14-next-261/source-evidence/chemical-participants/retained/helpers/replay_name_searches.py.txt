@@ -1,0 +1,16 @@
+"""Reproduce complete pinned-name searches without relying on truncated tool output."""
+from pathlib import Path
+import json,sqlite3
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+db=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+first=json.loads((ROOT/'retained/primary-chemical-name-candidates.json').read_text())
+keys=sorted({x.lower() for x in first['search_terms']})
+q="select subject,predicate,value from statements where predicate in ('rdfs:label','oio:hasExactSynonym','oio:hasRelatedSynonym') and lower(value) in ("+','.join('?'*len(keys))+")"
+actual=db.execute(q,keys).fetchall()
+expected=[(x['id'],x['predicate'],x['matched']) for x in first['matches']]
+assert sorted(actual)==sorted(expected)
+second=json.loads((ROOT/'retained/targeted-chemical-name-candidates.json').read_text())
+for row in second['searches']:
+    actual=db.execute("select subject,predicate,value from statements where predicate in ('rdfs:label','oio:hasExactSynonym','oio:hasRelatedSynonym') and lower(value) like ?",(row['query'],)).fetchall()
+    assert sorted(actual)==sorted(tuple(x) for x in row['matches'])
+print(json.dumps({'complete_exact_name_rows':len(expected),'wildcard_queries':len(second['searches']),'all_complete_results_reproduced':True}))

@@ -1,0 +1,62 @@
+from pathlib import Path
+import datetime,hashlib,json,sqlite3
+ROOT=Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+def sha(p):
+    h=hashlib.sha256()
+    with p.open('rb') as stream:
+        while b:=stream.read(8*1024*1024):h.update(b)
+    return h.hexdigest()
+native=json.loads((ROOT/'retained/native-chemical-dispositions.json').read_text())['endpoints']
+claims=json.loads((ROOT/'retained/primary-claim-chemical-dispositions.json').read_text())['claims']
+primary_path=Path('/private/tmp/pathwaymech-next-261-primary/material-claim-ledger.json');original=json.loads(primary_path.read_text())['claims']
+assert len(native)==22 and len({r['native_frame'] for r in native})==22
+assert len(claims)==50 and {r['claim_id'] for r in claims}=={r['claim_id'] for r in original}
+assert all(c['original_claim']==original[int(c['claim_source_json_pointer'].split('/')[-1])] for c in claims)
+bindings={}
+for r in native:
+    p=Path(r['source_path']);assert sha(p)==r['source_sha256'];bindings[str(p)]=r['source_sha256']
+    for role in r['roles']:
+        p=Path(role['source_path']);assert sha(p)==role['source_sha256'];bindings[str(p)]=role['source_sha256']
+contexts=json.loads((ROOT/'retained/assay-context-dispositions.json').read_text())['entries']
+for r in contexts:
+    p=Path(r['source']['path']);assert sha(p)==r['source']['sha256'];bindings[str(p)]=r['source']['sha256']
+    assert r['source_locator'] and len(r['source_assertion'])<=400
+checks=json.loads((ROOT/'retained/additional-chemistry-check-v2.json').read_text());assert checks['all_applicable_checks_pass']
+historical=json.loads((ROOT/'retained/historical-form-check.json').read_text());assert historical['all_applicable_checks_pass']
+preflight=json.loads((ROOT/'retained/authority-adapter-preflight.json').read_text());assert all(preflight['structure_binding_checks'].values())
+plan=json.loads((ROOT/'retained/authority-integration-plan-v2.json').read_text())
+assert plan['adapter_preflight']['sha256']==sha(ROOT/'retained/authority-adapter-preflight.json')
+pub=next(r for r in plan['native_identity_plan'] if r['id']=='PubChem:90657761')
+assert pub['source_original']['path']==preflight['accepted_authority']['path']
+ids={r['selected_id'] for r in native}|{c for r in claims for c in r['chemical_identity_or_context_ids']}
+dbpath=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');db=sqlite3.connect('file:'+str(dbpath)+'?mode=ro',uri=True)
+identity_checks={}
+for cid in sorted(ids):
+    if cid.startswith('CHEBI:'):
+        labels=[r[0] for r in db.execute("select value from statements where subject=? and predicate='rdfs:label'",(cid,))];assert len(labels)==1
+        for row in native:
+            if row['selected_id']==cid:assert row['selected_label']==labels[0]
+        identity_checks[cid]={'issuing_label':labels[0],'exists':True}
+    elif cid=='PubChem:90657761':identity_checks[cid]={'exists':True,'actual_adapter_passed':True}
+    elif cid=='MetaCyc:CPD-29':
+        owners=json.loads((ROOT/'retained/existing-authority-owners.json').read_text());assert cid in owners['existing_terms']
+        identity_checks[cid]={'exists':True,'owner':owners['existing_terms'][cid]['term']['source']}
+    else:raise AssertionError(cid)
+digest=sha(dbpath);assert digest=='26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+late={'authority_property_successor':'The exact four-property URL and original were acquired after the first Title-only response. Existing adapter accepted the successor and intentionally rejects Title-only.',
+      'adapter_preflight_first_calculation':'Actual adapter parsing succeeded, but a hand-written expected formula omitted PubChem/RDKit charge suffix -2. The corrected check compares full original formula to full reconstructed formula, preserving original failed log/helper.',
+      'no_chemical_source_changed':True,'new_successful_public_acquisitions':6,'retained_failed_sandbox_requests':5,
+      'formal_geometry_representation_limit':'Full issuing InChI/key establishes the formal E/Z distinction. The pinned SMILES contain insufficient direction marks; the probe failure is retained, not used to collapse distinct entities.'}
+out={'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'candidate':'MetaCyc:PWY-5415','authorship':'source-author dossier, not independent final review',
+     'native_endpoints':len(native),'native_role_associations':sum(len(r['roles']) for r in native),'primary_claims':len(claims),'supplemental_assay_contexts':len(contexts),
+     'selected_or_context_identity_count':len(ids),'identity_checks':identity_checks,'source_binding_count':len(bindings),'source_bindings':bindings,
+     'pinned_sql_final_sha256':digest,'pinned_sql_unchanged_after_all_queries':True,'late_execution_observations':late,
+     'checks':{'native_coverage_complete':True,'primary_claim_coverage_and_exact_copy':True,'source_hashes_match':True,'all_context_assertions_within_400_chars':True,
+               'additional_structure_checks_pass':True,'historical_forms_distinguished':True,'actual_pubchem_adapter_pass':True,'selected_native_labels_exact':True,'all_selected_or_context_identifiers_resolve':True,
+               'all_source_queries_read_only':True,'no_maintained_or_git_mutations':True},
+     'unresolved_limits':['Abstract-only engineered fluorinated inhibitors and isotopic YwhB products remain named contextual chemicals; exact CURIEs are not minted.',
+                         'Historical assay E/Z, hydration-product tautomer, unassigned versus racemic material and assay salt/hydrate/speciation limitations remain explicit.',
+                         'Native MhpF Ki/mode lacks main-text primary verification; native NADH inhibitory sign is rejected by full primary evidence.',
+                         'No final record or authority promotion, whole-corpus gate, independent final review or publication is performed by this role.']}
+p=ROOT/'retained/final-verification.json';assert not p.exists();p.write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({k:v for k,v in out.items() if k in ['native_endpoints','native_role_associations','primary_claims','supplemental_assay_contexts','selected_or_context_identity_count','source_binding_count','checks']},indent=2),flush=True)

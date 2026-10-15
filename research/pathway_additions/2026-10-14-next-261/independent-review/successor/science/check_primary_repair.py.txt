@@ -1,0 +1,32 @@
+from pathlib import Path
+import json,yaml,re,hashlib,copy,datetime
+out=Path('/private/tmp/pathwaymech-next-261-independent-science');p=Path('/private/tmp/pathwaymech-next-261-primary-evidence-repair');baseline=yaml.safe_load((out/'reviewed-record.initial.yaml').read_text());proposed=yaml.safe_load((p/'proposed-successor.yaml').read_text());changes=json.loads((p/'evidence-array-replacements.json').read_text());cat=json.loads((p/'source-bound-evidence-catalog.json').read_text());spans=json.loads((p/'exact-source-span-normalization-receipt.json').read_text());errors=[];checked=[]
+def sha(b):return hashlib.sha256(b).hexdigest()
+def norm(t):return ' '.join(re.sub(r'L\d+@P[\d-]+:\s*','',t).replace('\x02','').split())
+for x in spans['spans']:
+ b=Path(x['source']['path']).read_bytes();s,e=x['source_byte_span_zero_based_half_open'];raw=b[s:e];normalized=norm(raw.decode())
+ ok=sha(b)==x['source']['sha256'] and sha(raw)==x['source_span_sha256'] and normalized==x['normalized_excerpt'] and normalized==cat[x['key']]['evidence']['quote']
+ checked.append({'key':x['key'],'original_path':x['source']['path'],'raw_byte_span':[s,e],'normalized_exact_match':ok})
+ if not ok:errors.append(['excerpt',x['key']])
+for key,x in cat.items():
+ b=Path(x['source']['path']).read_bytes()
+ if sha(b)!=x['source']['sha256']:errors.append(['sourcehash',key])
+ if x['kind']=='original_table_cells':
+  raw=norm(b.decode());checks=[c in raw for c in x['checked_native_cells']]
+  checked.append({'key':key,'table_source_cells_present':checks})
+  if not all(checks):errors.append(['tablecells',key])
+patched=copy.deepcopy(baseline);emap={e['id']:e for e in patched['mechanistic_edges']};nbefore=0;nafter=0
+for ch in changes['replacements']:
+ e=emap[ch['edge_id']]
+ if ch['field']=='evidence':owner=e
+ else:owner=e['endpoint_qualifiers'][ch.get('qualifier_index',0)]
+ if owner['evidence']!=ch['before']:errors.append(['before_mismatch',ch['edge_id'],ch['field']])
+ nbefore+=len(ch['before']);nafter+=len(ch['after']);owner['evidence']=ch['after']
+ for item in ch['after']:
+  if not any(item==v['evidence'] for v in cat.values()):errors.append(['new_unbound_item',ch['edge_id']])
+if patched!=proposed:errors.append(['proposed_not_only_patch'])
+m=json.loads((p/'artifact-manifest.json').read_text());merrors=[]
+for f in m['files']:
+ if sha((p/f['path']).read_bytes())!=f['sha256']:merrors.append(f['path'])
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'candidate_only':True,'maintained_successor_not_yet_inspected':True,'baseline_sha256':sha((out/'reviewed-record.initial.yaml').read_bytes()),'proposed_sha256':sha((p/'proposed-successor.yaml').read_bytes()),'repair_manifest_sha256':sha((p/'artifact-manifest.json').read_bytes()),'manifest_files_verified':len(m['files']),'manifest_errors':merrors,'replacement_arrays':len(changes['replacements']),'old_items_covered':nbefore,'new_items':nafter,'source_item_checks':checked,'errors':errors,'scientific_table_adjudication':'All six table statements reviewed against actual original table headings/cells/footnotes and surrounding source. Approximate composition is not independent proof of2+2; PNAS quotation supplies biological assembly. K07 pRO1985 assays separated from pRO1996 growth; 1996units remain unnormalized.','normalization_limit':'Only source prefix stripping, whitespace joining and explicit U+0002 discretionary break removal; no spelling/chemical substitution or visual PDF claims.'}
+(out/'primary-repair-independent-check.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items() if k!='source_item_checks'},indent=2))

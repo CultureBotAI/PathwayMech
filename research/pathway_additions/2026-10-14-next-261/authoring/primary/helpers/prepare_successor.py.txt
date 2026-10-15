@@ -1,0 +1,48 @@
+from pathlib import Path
+import json,re,hashlib,xml.etree.ElementTree as ET
+ROOT=Path('/private/tmp/pathwaymech-next-261-primary-integration')
+def save(name,x):
+ p=ROOT/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+parts=sorted((ROOT/'originals').glob('PMID8633871-web-main-*.json'))
+lines={};conflicts=[]
+for p in parts:
+ s=json.loads(p.read_text())
+ for n,page,txt in re.findall(r'L(\d+)@P([^:]+): ([^\n]*)',s):
+  n=int(n);v=f'L{n}@P{page}: {txt}'
+  if n in lines and lines[n]!=v: conflicts.append({'line':n,'first':lines[n],'other':v})
+  lines.setdefault(n,v)
+missing=sorted(set(range(884))-lines.keys())
+assert not missing,(missing,conflicts)
+assert not conflicts,conflicts
+p=ROOT/'derived/PMID8633871-merged-web-extraction.txt';p.parent.mkdir(exist_ok=True)
+p.write_text('\n'.join(lines[n] for n in sorted(lines)))
+save('successor-read-coverage.json',{'reference':'PMID:8633871','source_url':'https://journals.asm.org/doi/pdf/10.1128/aem.62.5.1728-1740.1996?download=true','kind':'complete publisher PDF transformed text, not raw PDF','web_reference':'turn1756view0','pages':13,'line_range':[0,883],'missing_lines':missing,'conflicting_lines':conflicts,'extraction_parts':[bind(x) for x in parts],'merged':bind(p),'personally_read':'all transformed main-text pages, methods, results, discussion, references, extracted tables and figure captions','raw_pdf_acquired':False,'visual_figures_read':False,'supplement_read':False,'limitations':['Figure image content is not available from transformed text. No separately available supplement was established.','Tables 2–3 micro-unit symbols are OCR-ambiguous; preserve numeric values without silently normalizing units. Figure 8 numeric table is not extracted.','Screenshot probe of page5 returned TimeoutError; page10 returned an empty citation without image, so neither counts as visual inspection.'],'no_bioc_retry':True})
+# Translation: bacterial code11 internal codons equal standard code; initiator ATG here.
+bases='TCAG';aa='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+codons=dict(zip((a+b+c for a in bases for b in bases for c in bases),aa))
+translations=[]
+for nt,pr,up,start,end in [('U20258','AAC13787.1','Q59220',608,1552),('M98806','AAA25992.1','Q01551',83,2098)]:
+ gb=(ROOT/f'originals/NCBI-{nt}.gb').read_text();seq=re.sub('[^acgt]','',gb.split('ORIGIN')[1].split('//')[0]);cds=seq[start-1:end].upper();translated=''.join(codons[cds[i:i+3]] for i in range(0,len(cds),3))
+ xml=ET.parse(ROOT/f'originals/NCBI-{pr}.xml');prot=xml.findtext('.//GBSeq_sequence').upper();uni=json.loads((ROOT/f'originals/UniProt-{up}.json').read_text())['sequence']['value']
+ assert translated.endswith('*') and translated[:-1]==prot==uni
+ translations.append({'nucleotide_accession':nt+'.1','CDS_location':f'{start}..{end}','translation_table':11,'protein_accession':pr,'uniprot':up,'donor_strain':'PKO1','taxonomy_id':329,'protein_length':len(prot),'exact_three_way_match':True,'terminal_stop_removed':True,'protein_sha256':hashlib.sha256(prot.encode()).hexdigest(),'originals':[bind(ROOT/f'originals/NCBI-{nt}.gb'),bind(ROOT/f'originals/NCBI-{pr}.xml'),bind(ROOT/f'originals/UniProt-{up}.json')]})
+save('identity-sequence-checks.json',translations)
+receipts=json.loads((ROOT/'identity-acquisition-receipts.json').read_text())+json.loads((ROOT/'identity-acquisition-receipts2.json').read_text())
+searches=[]
+for x in receipts:
+ p=ROOT/'originals'/x['artifact']
+ if 'search' in p.name or '-broad-' in p.name:
+  d=json.loads(p.read_text());results=d.get('results');count=len(results) if results is not None else int(d['esearchresult']['count'])
+  searches.append({'url':x['requested_url'],'count':count,'result_accessions':([v['primaryAccession'] for v in results] if results is not None else d['esearchresult']['idlist']),'original':bind(p),'bounded_zero_result_only':count==0})
+save('issuing-search-results.json',{'queries':searches,'absence_scope':'Only the exact issuing queries recorded here. Local search separately used rg --no-ignore --hidden in four explicit roots; no global identifier absence is asserted.','tbuD_disambiguation':'Nine UniProt exact-gene hits; only Q01551 is donor PKO1. Eight unrelated-taxon hits excluded; no protein/gene synonym was assigned from name alone.'})
+groups=[
+ {'group':'TbuS and pRO2345 trans complementation','status':'named primary regulatory locus retained; no verified issuing regulator/plasmid CURIE','accepted':'1991 complementation supports a trans-acting meta-operon regulator distinct from upstream PHH regulation. 1996 states regulator sequencing/purification still underway.','locators':['PMID1856161 p4589 L227–248; p4591 Table2; p4592–4593 discussion','PMID8633871 p1737 L588–604'],'limits':['No direct TbuS binding, isolated protein activity, sequence accession or exact regulatory protein identity.','1991 Table1 derives pRO2345 from pRO2346 whereas results derive the 1.3kb PstI subclone from pRO2347; both assertions retained, no reconstructed exact insert.','1991 Table1 resistance marker versus 1996 Table1 marker differs; no marker transfer inferred.']},
+ {'group':'TbuR/phiR and upstream TbuD/phiA','status':'TbuD exact identity closed; TbuR/phiR named-only','accepted':'1991 explicitly renames phiA to tbuD and phiR to tbuR. TbuD Q01551/AAA25992.1 is the upstream PKO1 phenol hydroxylase. It is not a five-step catechol-route catalyst.','locators':['PMID1856161 p4589 L210–211, L227–248','NCBI M98806.1 CDS83..2098; UniProt Q01551 gene/reference','PMID1400204 abstract; PMID9451833 abstract; PMID8633871 Fig3 L463–468'],'limits':['1998 tbuD regulation by TbuT and promoter 2.5kb upstream does not establish TbuR=TbuT; 1996 Fig3 lists all three regulatory loci separately.','K01 frozen shorthand no enzyme activities is corrected to measured meta-cleavage activities in PAO1.93; pRO1959 still carries upstream PHH.','No TbuR substitution for TbuS.']},
+ {'group':'tbuEFGIH, operon and promoter','status':'TbuE issuing identity closed; F/G/I/H and whole operon named-only','accepted':'TbuE Q59220/AAC13787.1 has exact U20258.1 CDS608..1552 translation. 1996 identifies upstream tbuW, revising 1991 promoter-proximal E interpretation to tbuWEFGKIHJ.','locators':['PMID1856161 Fig3 and p4592 L499–504','PMID8633871 p1731 L300–327; p1737 L554–604; Fig8','NCBI U20258.1 features'],'limits':['1996 tbuW physiological contribution remained under investigation; ferredoxin-like sequence does not prove repair mechanism.','Promoter candidates have consensus/spacing discrepancies; direct TbuS or ANR binding is unproved. NCBI putative binding feature says bound moiety unknown.','U20258.1 current tbuW ATG225 differs paper transcript-map numbering; source coordinates not silently unified.','Native TbuE ENZRXN11552 has methylcatechol reaction pointer, not exact formal catechol reaction identity.']},
+ {'group':'donor, host and construct boundaries','status':'closed as named experimental context, no fabricated clone identifiers','accepted':'PKO1 chromosomal donor DNA in PAO1.93 catA host supplies 1991 genetics. 1996 PKO1 enzyme purification uses PAO1.93(pRO1986+pRO2345); PaW1 comparator uses PAO4032(pRO1940).','locators':['PMID1856161 methods/Table1; Tables2–5','PMID8633871 p1729 L113–119; Fig7 L620–627'],'limits':['No complete catechol-route occurrence inferred for P. aeruginosa expression hosts.','Single enzyme or operon-fragment assays do not identify the terminal PKO1 acylating dehydrogenase.','Native hypoxic whole-cell comparison across six strains is a separate experiment from recombinant TbuE purification.']}
+]
+save('primary-regulatory-identity-successor-dispositions.json',{'groups':groups,'sequence_checks':'identity-sequence-checks.json','issuer_queries':'issuing-search-results.json','local_ignored_inclusive_search':'regulatory-local-search.json','upstream_sources_read_scope':{'PMID1400204':'indexed abstract only','PMID9451833':'indexed abstract only'},'no_gene_curie_fabricated':True})
+save('successor-acquisition-attempts.json',{'new_complete_source':'successor-read-coverage.json','sequence_and_search_attempts':['identity-acquisition-receipts.json','identity-acquisition-receipts2.json'],'web_originals':['originals/regulatory-issuing-web-search.json','originals/PKO1-source-follow-web.json'],'screenshots':[{'page':5,'result':'TimeoutError','web_reference':'turn1760view0'},{'page':10,'result':'empty citation, no image returned','web_reference':'turn1760view1'}],'unchanged_frozen_access_limits':'/private/tmp/pathwaymech-next-261-primary/reference-metadata.json','bioC_429_retried':False})
+print(json.dumps({'lines':len(lines),'missing':missing,'translation_matches':len(translations),'searches':len(searches)}))

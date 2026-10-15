@@ -1,0 +1,20 @@
+import datetime,hashlib,json,os,subprocess
+from pathlib import Path
+repo=Path('/private/tmp/pathwaymech-next-261-20261014')
+ci=Path('/private/tmp/pathwaymech-next-261-ci')
+python='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1',PYTHONPATH=str(repo/'src')+':'+str(repo))
+commands=[]
+def run(args,name):
+ start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ r=subprocess.run(args,cwd=repo,env=env,capture_output=True,text=True)
+ log=ci/name; log.write_text(r.stdout+r.stderr)
+ commands.append({'command':args,'cwd':str(repo),'utc':start,'exit_code':r.returncode,'log':str(log),'log_sha256':hashlib.sha256(log.read_bytes()).hexdigest()})
+ assert r.returncode==0,r.stdout+r.stderr
+ return r.stdout
+text=run([python,'-B','scripts/new_history_record.py','--kind','report','--slug','catechol-degradation-i-source-dossier','--path','research/pathway_additions/2026-10-14-next-261/README.md','--event','CREATE','--outcome','changed','--summary','Preserve verified catechol degradation I source dossiers and current-merge duplicate assessment','--actor-name','codex','--model','gpt-6','--agent-tool','codex','--details','Prepared one five-step MetaCyc:PWY-5415 route for integration after PR560 merged. Verified1223 manifest-bound files across six frozen author source packages including ignored and hidden files, then retained206 compact or losslessly compressed artifacts with exact copy receipts and inert helper provenance. Rebound all257 maintained record hashes and329 matched file hashes to prior semantic duplicate dispositions using a fresh ignored-inclusive search. Full original papers, raw downloads and pinned ontology databases remain external and hash-bound. This event records source retention only: the maintained pathway, selected authority union, generated page, final independent reviews and full repository gates are still pending.'],'source-history-create.log')
+path=text.strip().splitlines()[-1]
+run([python,'-B','scripts/validate_history.py',path],'source-history-validate.log')
+receipt={'commands':commands,'history_path':path,'history_sha256':hashlib.sha256((repo/path).read_bytes()).hexdigest()}
+(ci/'source-history-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps({'history':path,'checks_pass':True},indent=2))

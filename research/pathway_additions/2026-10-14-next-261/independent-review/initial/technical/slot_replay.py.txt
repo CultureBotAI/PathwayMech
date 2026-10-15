@@ -1,0 +1,16 @@
+import collections,datetime,gzip,hashlib,json,pathlib
+from lxml import etree
+R=pathlib.Path('/private/tmp/pathwaymech-next-261-20261014/research/pathway_additions/2026-10-14-next-261/authoring/native');O=pathlib.Path('/private/tmp/pathwaymech-next-261-independent-technical')
+rows=json.loads(gzip.decompress((R/'full-source-slot-coverage.json.gz').read_bytes())); docs={}; keys=set();byobj=collections.Counter();out=[]
+def semantic(x):return (x.tag,tuple(sorted(x.attrib.items())),x.text or '',tuple(semantic(y) for y in x))
+for row in rows:
+ p=pathlib.Path(row['source_original']);h=row['source_sha256']
+ if str(p) not in docs:
+  body=p.read_bytes();assert hashlib.sha256(body).hexdigest()==h;docs[str(p)]=etree.fromstring(body)
+ doc=docs[str(p)]; hits=doc.xpath(row['source_locator']);assert len(hits)==1,(row['source_locator'],len(hits)); original=hits[0];projection=etree.fromstring(row['full_slot_xml'].encode());assert semantic(original)==semantic(projection),row['source_locator']
+ key=(str(p),row['frame'],row['slot'],row['ordinal']);assert key not in keys;keys.add(key);byobj[(str(p),row['frame'])]+=1
+ out.append({'frame':row['frame'],'slot':row['slot'],'ordinal':row['ordinal'],'source_sha256':h,'projection_replay':'pass','graph_edges':row['graph_edges']})
+for (p,frame),n in byobj.items():
+ hits=docs[p].xpath('/ptools-xml/*[@frameid="'+frame+'"][ @detail="full"]');assert len(hits)==1;(obj,)=hits;assert len(obj)==n,(frame,len(obj),n)
+report={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'direct_slots':len(rows),'whole_objects':len(byobj),'scope':'Every direct selected source-object child is accounted for with exact attributes, text and descendant structure; this checks completeness of the retained projection, not adequacy of biological curation.','objects':[{'source':p,'frame':f,'slots':n} for (p,f),n in byobj.items()],'slots':out}
+(O/'slot-replay.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:report[k] for k in ['direct_slots','whole_objects','scope']}))
