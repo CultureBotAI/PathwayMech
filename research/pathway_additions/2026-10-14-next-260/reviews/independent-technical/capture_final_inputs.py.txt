@@ -1,0 +1,64 @@
+"""Capture the final bounded technical review and attest actual completed receipts."""
+from pathlib import Path
+import datetime, hashlib, json, os, subprocess
+ROOT=Path('/private/tmp/pathwaymech-next-260-20261014')
+OUT=Path('/private/tmp/pathwaymech-next-260-independent-technical')
+GATES=Path('/private/tmp/pathwaymech-next-260-checks-completed')
+RESEARCH=Path('research/pathway_additions/2026-10-14-next-260')
+PYTHON='/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(p):return json.loads(p.read_text())
+def write(name,data):
+ p=OUT/name;assert not p.exists(),p;p.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+started=datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')
+records=[('MetaCyc:GALLATE-DEGRADATION-I-PWY','gallate-degradation-ii','Gallate degradation II'),('MetaCyc:GALLATE-DEGRADATION-II-PWY','gallate-degradation-i','Gallate degradation I'),('MetaCyc:P184-PWY','protocatechuate-meta-cleavage','Protocatechuate meta-cleavage')]
+targets=[{'target_id':id,'path':f'data/pathways/{stem}.yaml','label':label,'kind':'maintained','record_class':'Pathway','owner_paths':[{'repository':'CultureBotAI/PathwayMech','path':f'data/pathways/{stem}.yaml','role':'Maintained pathway graph, evidence and direction metadata'}]} for id,stem,label in records]
+write('canonical-targets.json',{'targets':targets})
+# Include every actual changed batch file, all corpus records used in the export,
+# all explicitly audited production files, and the existing retained proof tree.
+paths=set(subprocess.check_output(['git','diff','--name-only','HEAD','-z'],cwd=ROOT).decode().strip('\0').split('\0'))
+paths.update(str(p.relative_to(ROOT)) for p in (ROOT/RESEARCH).rglob('*') if p.is_file())
+paths.update(str(p.relative_to(ROOT)) for p in (ROOT/'data/pathways').rglob('*.yaml'))
+paths.update(p['path'] for p in load(OUT/'production-scope-ignored-inclusive.json')['observed'])
+paths.update(['schema/record_review.yaml','docs/record-reviews.md','docs/record-review-profile.md','docs/CURATION.md','docs/CAUSAL_GRAPHS.md','docs/IDENTIFIERS.md','conf/record_review.yaml'])
+command=[PYTHON,'-B','scripts/record_review.py','inspect','--targets',str(OUT/'canonical-targets.json')]
+for p in sorted(paths):command+=['--input',p]
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
+result=subprocess.run(command,cwd=ROOT,env=env,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+assert result.returncode==0,result.stderr.decode()
+inspection=json.loads(result.stdout)
+write('canonical-inspection.json',inspection)
+write('canonical-inspection-receipt.json',{'started_utc':started,'command':command,'exit_code':result.returncode,'stderr':result.stderr.decode(),'output_sha256':sha(OUT/'canonical-inspection.json'),'input_count':len(inspection['source']['inputs'])})
+assert inspection['source']['git_revision']=='b2590dfd2385c83fe4f028ecd5309a0407739838'
+receipts=load(GATES/'receipts.json')
+expected=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['just','vendored-check'],['git','diff','--check'],['git','diff','--cached','--check']]
+assert [r['command'] for r in receipts]==expected
+assert [r['exit_code'] for r in receipts]==[0,0,0,0,1,0,0,0]
+for r in receipts:assert sha(Path(r['log_path']))==r['log_sha256']
+assert 'nodename nor servname provided' in Path(receipts[4]['log_path']).read_text()
+assert 'OK: 22 governed artifacts match the pinned claw revision' in Path(receipts[5]['log_path']).read_text()
+assert '5255 passed, 3 skipped, 7 warnings' in Path(receipts[2]['log_path']).read_text()
+preservation=load(GATES/'final-input-preservation.json');tested=load(GATES/'tested-core-input-hashes.json')
+assert preservation['all_unchanged'] and len(tested)==2026
+assert all(sha(ROOT/p)==h for p,h in tested.items())
+# Verify actual gate proof retention losslessly, not merely the root's summary.
+retention=load(ROOT/RESEARCH/'reviews/verification/retention-manifest.json')
+write('gate-retention-shape.json',retention)
+reports=['integration-replay-1.json','kgx-replay-1.json','authority-replay-1.json','pages-replay-2.json','kgx-category-replay.json','production-scope-ignored-inclusive.json','promotion-and-scope-1.json']
+for n in reports[:5]:assert load(OUT/n)['failed']==0
+pages=load(OUT/'pages-replay-2.json')
+for p,h in pages['bindings'].items():assert sha(ROOT/p)==h
+au=load(OUT/'authority-replay-1.json')
+for k in ['sources','ontology']:assert sha(ROOT/f'data/identifier_authorities/{k}.json')==au['snapshots'][k]['sha256']
+assert sha(ROOT/'conf/identifier_sources.json')==au['bindings']['/private/tmp/pathwaymech-next-260-authority-integration-successor/proposal/identifier_sources.json']
+for n in ['integration-replay-1.json','authority-replay-1.json']:
+ for p,h in load(OUT/n)['bindings'].items():assert sha(Path(p))==h,(n,p)
+for i in load(OUT/'provisional/provisional-artifact-manifest.json')['files']:
+ assert sha(OUT/'provisional'/i['path'])==i['sha256']
+assert sha(OUT/'provisional/provisional-artifact-manifest.json')=='da40a443e1315cd5ee32de27b8a4124f0052ae943ab1b33d396acc288ab3cabe'
+issue=Path('/private/tmp/pathwaymech-next-260-ci/locator-issue-publication.json')
+assert load(issue)['issue']['number']==559
+proof=ROOT/RESEARCH/'integration/erratum-locator-clarification.json'
+assert sha(proof)=='1c21cfe824e8f700c2fd13485e816ccbc113f9e3130e80fe056b0e0d284b65b6'
+write('gate-final-attestation.json',{'started_utc':started,'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),'base_commit':inspection['source']['git_revision'],'status':'all_required_gates_passed_with_original_dns_failure_preserved','command_attempts':8,'required_command_successes':7,'receipts':receipts,'test_counts':{'passed':5255,'skipped':3,'warnings':7},'tested_core_files':len(tested),'tested_core_inputs_all_unchanged':True,'canonical_input_count':len(inspection['source']['inputs']),'reviewed_record_and_page_bindings':pages['bindings'],'gate_files':{str(p):sha(p) for p in GATES.iterdir() if p.is_file()},'report_bindings':{n:sha(OUT/n) for n in reports},'frozen_provisional_manifest_sha256':sha(OUT/'provisional/provisional-artifact-manifest.json'),'locator_issue_publication':{'path':str(issue),'sha256':sha(issue),'url':'https://github.com/CultureBotAI/PathwayMech/issues/559'},'limitations':['Original required vendored attempt failed on sandbox DNS. It is retained as a failed attempt; the sole bounded retry passed.','No full suite or canonical build was repeated by this reviewer.','Final commit-tree attestation remains a later check; this attests the current working-tree inputs.']})
+print(json.dumps({'inspection':str(OUT/'canonical-inspection.json'),'inputs':len(inspection['source']['inputs']),'attestation_sha256':sha(OUT/'gate-final-attestation.json')}))

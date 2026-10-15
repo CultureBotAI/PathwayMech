@@ -1,0 +1,87 @@
+"""External source inventory; no maintained files or authority output."""
+from pathlib import Path
+from lxml import etree, html
+from html import unescape
+import collections, hashlib, json, re
+ROOT=Path('/private/tmp/pathwaymech-next-260-native')
+manifest=json.loads((ROOT/'retained/selected-native-manifest.json').read_text())
+formal={'RXN-11861','RXN-2462','RXN-9983','RXN-2463','RXN-2464'}
+selected={r['frame'] for r in manifest['objects']}
+def sha(b):return hashlib.sha256(b).hexdigest()
+def txt(e):return ' '.join(''.join(e.itertext()).split())
+def scalar(e):return {c.tag:[txt(x) for x in e.findall(c.tag)] for c in e if not c.get('frameid') and not list(c)}
+def refs(e):return [{'type':x.tag,'frame':x.get('frameid'),'attrs':dict(x.attrib)} for x in e.iter() if x.get('frameid')]
+def plain(s):
+ try:return ' '.join(html.fromstring('<div>'+unescape(s)+'</div>').text_content().split())
+ except Exception:return ' '.join(s.split())
+def disposition(frame,typ,tag):
+ if frame=='TCA':return ('context-only','Direct downstream interface identity; internal TCA reactions, organism assertions and mechanism are outside this exact five-member pathway.')
+ if typ=='Compound':
+  if tag in ('cml','inchi','inchi-key','dblink','common-name','synonym','systematic-name','molecular-weight','monoisotopic-mw','parent','component','instance','abbrev-name'):return ('chemistry-reconnaissance','Preserve native identity, structure and exact xref relationship for separate chemistry reconciliation; no equivalence or assayed microspecies inferred here.')
+  if tag in ('appears-in-left-side-of','appears-in-right-side-of','component-of','regulates','cofactors-of'):return ('context-only','Inverse incidence; do not expand unrelated pathways or infer biological activity from chemical occurrence.')
+  if tag=='comment':return ('source-context','Native chemical narrative; distinguish formal enol isomers and generic thiol-reactivity background from preparation-specific evidence.')
+  return ('source-metadata','Chemical thermodynamic, attribution or bibliographic metadata; not a causal effect.')
+ if typ=='Reaction':
+  if tag in ('left','right','reaction-direction','spontaneous','physiologically-relevant','ec-number','enzymatic-reaction'):
+   return ('formal-reaction-candidate' if frame in formal else 'adjacent-activity-context','Retain exact written direction, stoichiometry and native attachment; chemistry and preparation correspondence require independent acceptance. Adjacent reactions are not extra pathway members.')
+  if tag=='dblink':return ('identity-candidate','Exact native database xref only; require complete equation/structure reconciliation before crosswalk.')
+  if tag in ('comment','citation'):return ('source-context','Retain native scientific context and publication attribution; historical R-HMG specificity does not assign CHA absolute stereochemistry.')
+  return ('source-metadata','Native reaction classification, database incidence, thermodynamics or attribution; no extra pathway membership inferred.')
+ if typ=='Pathway':
+  if tag in ('reaction-list','reaction-ordering','reaction-layout'):return ('formal-boundary','Exactly five route members; native layout direction and order are retained rather than deriving membership from unrelated comments.')
+  if tag in ('species','taxonomic-range'):return ('whole-pathway-source-scope','Native whole-pathway scope only; P. putida PDC extract evidence and broad bacterial range do not establish every component assay or strain.')
+  if tag=='pathway-link':return ('downstream-interface','Oxaloacetate connects to the source-native TCA object; no TCA organism or reaction population transferred.')
+  if tag=='comment':return ('source-context-with-conflict','Read native narrative including PDC route evidence, background alternatives and Z,Z prose versus E,E formal graph; do not treat prose as a structured assay statement.')
+  if tag=='evidence':return ('evidence-tier','Preserve source-native pathway evidence code and cited publication; not proof of direct assay for each modern intermediate.')
+  if tag=='dblink':return ('context-only','KEGG MAP00360 is a broad map, not an exact pathway identity.')
+  return ('source-metadata','Source identity, synonyms, class or attribution; no new causal relation.')
+ if typ=='Enzymatic-Reaction':
+  if tag in ('enzyme','reaction','physiologically-relevant','reaction-direction','evidence'):return ('activity-candidate','Keep catalyst/activity/reaction and native evidence tier together; manual activity ledger determines preparation and exact-substrate limits.')
+  if tag in ('cofactor','regulated-by','alternative-substrate'):return ('mechanism-candidate','Preserve explicit structured cofactor, perturbation or alternative-substrate relation with its own citation; no transfer between different turnover assays.')
+  if tag in ('km','vmax','ph-opt','temperature-opt'):return ('assay-context','Retain exact nested substrate, value and source; historical preparations and GalB substrate-orientation conflict require manual qualification.')
+  if tag=='comment':return ('source-context','Scientific native prose; manual activity ledger retains exact scope and conflicts. Not a primary-paper quotation.')
+  return ('source-metadata','Native activity identity, synonym or citation, retained without evidence upgrading.')
+ if typ=='Protein':
+  if tag in ('component','component-of'):return ('assembly-candidate','Source-native subunit incidence and explicit coefficient; mixed historical preparations and alternative oligomers remain separately qualified.')
+  if tag in ('catalyzes','gene','species'):return ('identity-and-activity-candidate','Native attachment only; later gene crossrefs do not establish sequence equivalence of historical purified preparations, or whole-pathway occurrence.')
+  if tag=='location':return ('computational-location-candidate','GalB monomer has explicit CCO-CYTOSOL; matched GO:0005829 evidence is EV-COMP-AINF/PMID26602691. No direct localization assay or whole-pathway compartment inferred.')
+  if tag=='has-go-term':return ('annotation-context','Retain every GO assertion and its evidence; only explicit preparation-relevant statements may be selected later. Automated annotations do not become direct experiments.')
+  if tag=='has-feature':return ('sequence-annotation-context','Full inline feature and position retained; zinc/magnesium/substrate sites are sequence inference, Pfam intervals automated. Not measured residue perturbation or universal construct numbering.')
+  if tag=='comment':return ('source-context-with-preparation-bounds','Full native scientific narrative inspected; detailed manual object/activity dispositions retain historical/native/recombinant scope, identity and stereochemistry conflicts.')
+  if tag in ('molecular-weight-exp','molecular-weight-seq','pi'):return ('physical-property-context','Source-native measurement or calculated value; evidence and exact preparation must remain attached. Do not infer subunit count solely from approximate mass.')
+  if tag=='dblink':return ('identity-candidate','Preserve exact database accession and relationship; current issuing sequence/strain reconciliation needed before cross-source unification.')
+  return ('source-metadata','Source classification, label, synonym, attribution or bibliography; preserve without inferring biological effect.')
+ if typ=='Regulation':return ('perturbation-candidate','Full native mode, mechanism, regulator, activity target, physiological flag and citation retained together; manual regulator ledger limits effect to its assayed activity/preparation.')
+ if typ=='Gene':
+  if tag in ('product','accession-1','dblink','common-name','synonym','left-end-position','right-end-position','transcription-direction'):return ('gene-identity-context','Exact native gene/product/locus assertion only; RELATED-TO/PART-OF sequence links and historical sample identity are not equivalent. No gene regulation inferred.')
+  return ('source-metadata','Native gene attribution, class or bibliographic context retained; no whole-pathway organism transfer.')
+ if typ=='Organism':return ('taxon-identity-context','Native taxon identity and rank/strain context only; component organism attachments do not establish whole-route occurrence.')
+ if typ=='cco':return ('compartment-identity','Source-native cytosol label and GO:0005829 identity for the explicit computational GalB monomer annotation.')
+ return ('source-metadata','Complete bounded native source inventory; no unsupported biological promotion.')
+slots=[];objects=[];embedded=[];pubs=collections.defaultdict(list);narr=[];unexpanded=[];bio=[]
+for row in manifest['objects']:
+ p=Path(row['path']);raw=p.read_bytes();assert sha(raw)==row['sha256']
+ tree=etree.ElementTree(etree.fromstring(raw)); root=tree.getroot(); frame=row['frame'];o=next(x for x in root if x.get('frameid')==frame and x.get('detail')=='full')
+ base=f"/ptools-xml/{o.tag}[@frameid='{frame}']";counter=collections.Counter()
+ objects.append({'frame':frame,'type':o.tag,'source_path':str(p),'source_sha256':row['sha256'],'query':row.get('source_receipt',{}).get('query','META:'+frame),'pgdb_version':'27.0','scope_role':row['scope_role'],'direct_slot_count':len(o),'attributes':dict(o.attrib),'all_inclusion_reasons':row['all_inclusion_reasons']})
+ if o.tag in ('Protein','Enzymatic-Reaction','Regulation','Gene','cco'):
+  bio.append({'frame':frame,'type':o.tag,'source_sha256':row['sha256'],'slots':[{'tag':s.tag,'text':txt(s),'refs':refs(s),'xml':etree.tostring(s,encoding='unicode')} for s in o]})
+ for s in o:
+  counter[s.tag]+=1;loc=f'{base}/{s.tag}[{counter[s.tag]}]';status,reason=disposition(frame,o.tag,s.tag)
+  slots.append({'frame':frame,'object_type':o.tag,'slot':s.tag,'ordinal':counter[s.tag],'source_locator':loc,'source_path':str(p),'source_sha256':row['sha256'],'source_line':s.sourceline,'slot_serialization_sha256':sha(etree.tostring(s)),'attributes':dict(s.attrib),'direct_text':s.text,'text_content':txt(s),'references':refs(s),'xml_projection':etree.tostring(s,encoding='unicode'),'disposition':status,'reason':reason})
+  if s.tag=='comment':
+   body=unescape(''.join(s.itertext()));parsed=html.fromstring('<div>'+body+'</div>')
+   narr.append({'frame':frame,'source_locator':loc,'source_sha256':row['sha256'],'plain_text':plain(body),'links':[{'href':a.get('href'),'text':a.text_content()} for a in parsed.findall('.//a')],'disposition':status,'reason':reason})
+ for e in o.iter():
+  if e is o:continue
+  if e.get('detail')=='full' and e.get('frameid'):
+   er={'frame':e.get('frameid'),'type':e.tag,'parent_frame':frame,'source_path':str(p),'source_sha256':row['sha256'],'source_locator':tree.getpath(e),'source_line':e.sourceline,'scalars':scalar(e),'direct_slots':[{'tag':s.tag,'text':txt(s),'refs':refs(s),'xml':etree.tostring(s,encoding='unicode')} for s in e]}
+   embedded.append(er)
+   if e.tag=='Publication':pubs[e.get('frameid')].append(er)
+  if e.get('frameid') and e.get('frameid') not in selected and e.get('detail')!='full':
+   unexpanded.append({'owner':frame,'type':e.tag,'frame':e.get('frameid'),'locator':tree.getpath(e),'resource':e.get('resource'),'reason':'Publication/evidence/local reference, generic parent, inverse incidence, inline parent taxonomy, or context-only TCA boundary; exact cases classified in boundary ledger.'})
+for filename,data in [('native-object-inventory.json',objects),('native-slot-disposition-ledger.json',slots),('embedded-full-object-inventory.json',embedded),('native-narrative-index.json',narr),('native-publication-index.json',[{'frame':k,'occurrences':v} for k,v in sorted(pubs.items())]),('unexpanded-reference-inventory.json',unexpanded),('biological-review-projection.json',bio)]:
+ (ROOT/'projections'/filename).write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+summary={'standalone_objects':len(objects),'direct_slots':len(slots),'object_types':dict(collections.Counter(x['type'] for x in objects)),'dispositions':dict(collections.Counter(x['disposition'] for x in slots)),'embedded_full_occurrences':len(embedded),'embedded_types':dict(collections.Counter(x['type'] for x in embedded)),'publications':len(pubs),'narratives':len(narr),'unexpanded_reference_occurrences':len(unexpanded),'serialization_note':'Slot XML and its digest are lxml projections, not byte spans. Original path and SHA bind the actual complete response bytes. XPath/direct ordinal locators are source-specific.','scope_note':'All root direct slots and all inline full objects retained. This is bounded graph traversal, not exhaustion of MetaCyc or primary literature.'}
+(ROOT/'projections/inventory-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+print(json.dumps(summary,indent=2))

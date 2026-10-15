@@ -1,0 +1,32 @@
+from pathlib import Path
+import collections,datetime,hashlib,json
+from rdkit import Chem
+ROOT=Path('/private/tmp/pathwaymech-next-260-participant-authorities');OUT=ROOT/'retained/salt-and-alternative-balance-check.json';assert not OUT.exists()
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+ap=ROOT/'retained/additional-authority-check.json';a=json.loads(ap.read_text());fp=Path('/private/tmp/pathwaymech-next-260-chemistry-root/retained/chemical-equation-check-v2.json');f=json.loads(fp.read_text())
+def rep(cid):
+ if cid.startswith('PubChem:'):return a['pubchem_authorities'][cid.split(':')[1]]['reconstructed']['smiles']
+ if cid in a['issuing_authorities']:return a['issuing_authorities'][cid]['reconstructed']['issuing_smiles']
+ return next(v['representations']['issuing_smiles'] for v in f['chemicals'].values() if v['id']==cid)
+expect=[('CHEBI:6636',{'Mg':1,'Cl':2}),('CHEBI:63041',{'Mn':1,'Cl':2}),('CHEBI:35696',{'Co':1,'Cl':2}),('CHEBI:49976',{'Zn':1,'Cl':2}),('CHEBI:35456',{'Cd':1,'Cl':2}),('CHEBI:62843',{'Be':1,'Cl':2}),('CHEBI:3312',{'Ca':1,'Cl':2}),('CHEBI:34887',{'Ni':1,'Cl':2}),('CHEBI:63317',{'Ba':1,'Cl':2}),('CHEBI:31823',{'Hg':1,'Cl':2}),('CHEBI:747199',{'Sr':1,'S':1,'O':4}),('CHEBI:53351',{'Cr':1,'Cl':3}),('CHEBI:30808',{'Fe':1,'Cl':3}),('CHEBI:75832',{'Fe':1,'S':1,'O':4}),('CHEBI:64205',{'Ca':1,'N':2,'O':6}),('PubChem:25251',{'Fe':1,'N':3,'O':9}),('CHEBI:131527',{'K':2,'H':1,'P':1,'O':4}),('CHEBI:63036',{'K':1,'H':2,'P':1,'O':4}),('CHEBI:32139',{'Na':1,'H':1,'C':1,'O':3}),('PubChem:6098323',{'Li':1,'K':1,'C':2,'H':3,'O':5,'P':1})]
+salts=[]
+for cid,atoms in expect:
+ r=rep(cid);salts.append({'id':cid,'expected_formula_atoms':atoms,'issuing_reconstructed_atoms':r['atoms'],'formal_charge':r['charge'],'formula_exact':atoms==r['atoms'],'net_charge_zero':r['charge']==0})
+assemblies=[]
+for component,ions,salt in [('CHEBI:43474',['[K+]','[K+]'],'CHEBI:131527'),('CHEBI:39745',['[K+]'],'CHEBI:63036'),('CHEBI:17544',['[Na+]'],'CHEBI:32139'),('CHEBI:22191',['[Li+]','[K+]'],'PubChem:6098323')]:
+ m=Chem.MolFromSmiles(rep(component)['smiles'])
+ for ion in ions:m=Chem.CombineMols(m,Chem.MolFromSmiles(ion))
+ assemblies.append({'component':component,'monatomic_ions':ions,'issuing_salt':salt,'calculated_key':Chem.MolToInchiKey(m),'issuing_key':rep(salt)['key'],'exact_key':Chem.MolToInchiKey(m)==rep(salt)['key']})
+def total(side):
+ c=collections.Counter()
+ for cid,n in side:
+  r=rep(cid)
+  for k,v in r['atoms'].items():c[k]+=n*v
+  c['charge']+=n*r['charge']
+ return dict(c)
+equations=[]
+for name,left,right in [('generic-HMG-cleavage',[('CHEBI:58276',1)],[('CHEBI:15361',2)]),('generic-HG-cleavage',[('CHEBI:17742',1)],[('CHEBI:15361',1),('CHEBI:36655',1)]),('oxaloacetate-decarboxylation',[('CHEBI:16452',1),('CHEBI:15378',1)],[('CHEBI:15361',1),('CHEBI:16526',1)])]:
+ l=total(left);r=total(right);equations.append({'name':name,'left':left,'right':right,'left_sum':l,'right_sum':r,'balanced':l==r})
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Chemical author calculation, not direct biological evidence','source_proofs':[{'path':str(p),'sha256':sha(p)} for p in [ap,fp]],'salts':salts,'component_assemblies':assemblies,'alternative_equations':equations,'all_checks_pass':all(x['formula_exact'] and x['net_charge_zero'] for x in salts) and all(x['exact_key'] for x in assemblies) and all(x['balanced'] for x in equations),'scope':['No water of hydration was added to any selected formula-level delivery identity; unknown physical hydration remains explicit.','Salt composition or formal oxidation state does not establish free ion abundance, coordination or physiologic cofactor use.','Alternative balances are bookkeeping for explicitly separate in vitro activities, not new required gallate-II steps.','The proton in normalized oxaloacetate decarboxylation follows elemental/charge balance; it is not an independently measured proton-consumption claim.','Generic HMG/HG formulas do not assign an absolute stereoisomer or imply every isomer is a substrate.']}
+with OUT.open('x') as stream:json.dump(result,stream,indent=2);stream.write('\n')
+print(json.dumps({'output':str(OUT),'all_checks_pass':result['all_checks_pass'],'salts':len(salts),'assemblies':len(assemblies),'alternative_equations':len(equations)}));assert result['all_checks_pass']

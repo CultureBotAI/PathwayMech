@@ -1,0 +1,397 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-primary')
+AUTHOR = ROOT / 'author'
+AUTHOR.mkdir(exist_ok=True)
+
+def save(name, value):
+    (AUTHOR / name).write_text(json.dumps(value, indent=2, ensure_ascii=False) + '\n')
+
+def binding(path):
+    p = Path(path)
+    data = p.read_bytes()
+    return {'path': str(p), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+claims = []
+
+def claim(paper, page, locus, topic, observation, scope, disposition, reason, evidence='primary prose; research paraphrase, not schema source_assertion'):
+    serial = sum(x['reference'] == paper for x in claims) + 1
+    pmc, first = ('PMC221622', 1154) if paper == 'PMID:7142106' else ('PMC236050', 1374)
+    item = {'claim_id': ('K82' if first == 1154 else 'S75') + f'-{serial:03d}', 'reference': paper,
+            'source': binding(ROOT / 'originals' / f'{pmc}-page-{page-first+1}.png'),
+            'locator': f'printed p.{page}; {locus}', 'topic': topic,
+            'observation': observation, 'experimental_scope': scope,
+            'disposition': disposition, 'reason': reason, 'evidence_kind': evidence}
+    claims.append(item)
+    return item['claim_id']
+
+K = 'PMID:7142106'
+S = 'PMID:1194238'
+
+claim(K,1155,'Figure 1 and caption','five-member boundary',
+      'The historical scheme connects PDC to three open-chain keto/enol forms, hydrated intermediate and pyruvate plus oxaloacetate. Figure 1 labels the hydration and aldol cleavage enzymes; its open-chain isomers V, VI and VII were not individually characterized.',
+      'Proposed P. testosteroni pathway diagram; not a reconstitution of every modern member in P. putida PDC.',
+      'retain boundary and chemistry limitation','Do not turn historical drawings into proof of each modern E/Z or absolute stereochemical assignment.', 'inspected structured figure topology with a separate prose-caption limitation')
+claim(K,1156,'left column, PDC preparation and spectral properties','PDC authentic standard',
+      'Synthetic PDC was recrystallized before analysis; melting point 233–234°C. At pH 7.2 its absorption maximum was 310 nm with extinction coefficient 6500; pH 1.0 gave 312 nm and 6200. Strong base changed the spectrum, consistent with ring opening.',
+      'Chemical authentic standard; not a biological reaction or physiological pH claim.',
+      'retain analytical context','This is the reference material behind product identification, not modern atom-mapped chemistry.')
+claim(K,1156,'left column lower half, base opening and derivatization','product identification limitation',
+      'At pH 12.3 the PDC peak disappeared and one DNPH derivative matched a derivative of the gallate/4,5-dioxygenase product; earlier strong-alkali treatment could produce three DNPH derivatives. The reported Rf values for the keto-form derivative were 0.24 and 0.46 in the two solvent systems.',
+      'Chemical hydrolysis and chromatographic comparison; tautomer/isomer-specific identity remains limited.',
+      'retain identification and limitation','Distinct derivatization conditions cannot establish a single pure physiological microspecies.')
+claim(K,1156,'right column, Purification of PDC hydrolase','native hydrolase preparation',
+      'PDC hydrolase was purified from the previously used P. testosteroni strain, grown with forced aeration and 1 g/L 4-hydroxybenzoate; another 1 g/L was added after 12 h and cells harvested 3 h later. No recombinant construct is described.',
+      'Native P. testosteroni enzyme; the paper does not give a collection accession here.',
+      'retain exact preparation; identity follow-up','Must not be assigned to the unpurified P. putida PDC hydrolase MONOMER-10723.')
+claim(K,1156,'right column and Table 1','purification and assay',
+      'Frozen cells were broken by Hughes press, then ammonium sulfate, DEAE-Sephacel, Sephacryl S-200, phenyl Sepharose and second DEAE-Sephacel steps were used. Initial activity was measured with 0.1 µmol PDC in 1 ml 0.05 M Tris-HCl pH 8.0 from the 310-nm decrease.',
+      'Native P. testosteroni purified preparation; Table 1 numeric rows are projected separately.',
+      'retain preparation and actual table evidence','Table cells support purification stage and measured activity, not an invented recombinant identity.')
+claim(K,1157,'left column, Properties of purified PDC hydrolase','hydrolase assembly',
+      'Gel filtration estimated 42,800 molecular weight; SDS-PAGE yielded one band of about 37,200. The abstract summarizes a single 37,700 subunit. These estimates support a single-subunit preparation, with the differing reported values preserved.',
+      'Native purified P. testosteroni hydrolase; no sequence or exact accession supplied.',
+      'retain with measurement discrepancy','Do not silently replace the abstract mass with the Results value or infer a recombinant sequence.')
+for ion in ['Zn2+','Cu2+','Mn2+','Co2+']:
+    claim(K,1157,'left column, second paragraph under Properties of purified PDC hydrolase','hydrolase inhibition',
+          f'{ion} at 1 mM strongly inhibited the purified hydrolase under the reported assay conditions. The passage supplies no quantitative residual activity or counterion.',
+          'Native purified P. testosteroni PDC hydrolase; no claim of physiological regulation.',
+          'retain effect; exact chemical authority pending','Use a verified named ion identity while preserving unspecified salt and assay context.')
+claim(K,1157,'left column, same inhibition paragraph','conditional negative effects',
+      'Neither Mg2+ nor EDTA activated or inhibited hydrolase under the tested conditions. EDTA stabilized diluted solutions; 0.1 mM EDTA in 0.05 M Tris pH 8 was suitable for dilution and measurements were less reproducible without it.',
+      'Native purified P. testosteroni hydrolase; the no-effect passage does not independently state Mg2+ concentration.',
+      'retain conditional negatives and stabilization','Do not infer metal independence, EDTA as a physiological cofactor, or a measured catalytic activation edge.')
+claim(K,1157,'left column, DTNB treatment paragraph','DTNB inhibition',
+      '0.1 mM DTNB abolished activity measured using 10 µg hydrolase in 0.2 ml EDTA-Tris pH 8 after the reported treatment.',
+      'Native purified P. testosteroni hydrolase, chemically treated in vitro.',
+      'retain treatment-specific inhibition','Do not generalize to endogenous regulation or locate the modified residue.')
+claim(K,1157,'left column, end of DTNB paragraph','glutathione protection',
+      '5 mM reduced glutathione present during the 15-min incubation with DTNB preserved measured activity.',
+      'Protection during co-incubation; not recovery after completed inactivation.',
+      'retain conditional protection','Use an effect on the treated preparation only; not unconditional activation or proven direct binding.')
+claim(K,1157,'left column, inhibition interpretation','catalytic thiol hypothesis',
+      'The authors interpreted metal/DTNB effects as suggesting a functional catalytic sulfhydryl group.',
+      'Inference from chemical perturbation; no residue-level substitution or structure.',
+      'retain inference only','Do not assign a specific cysteine, catalytic mechanism or stoichiometric thiol occupancy.')
+claim(K,1157,'left bottom and right top, reversibility experiments','hydrolase catalysis and equilibrium',
+      'With 0.1 µmol PDC in 1 ml Tris pH 8, the reaction approached an equilibrium leaving about 56% PDC. Product DNPH Rf matched the keto-form derivative. Starting from a gallate/4,5-dioxygenase product and adding hydrolase gave about 53% conversion to PDC; some starting material remained open.',
+      'Purified P. testosteroni hydrolase; reverse substrate generated with pure 4,5-dioxygenase for 5 min.',
+      'retain reversible catalysis and analytical scope','Do not assert all open-chain isomers are independently proven substrates.')
+claim(K,1157,'right column, pH experiments; Figure 2 on p.1158','pH dependence',
+      'Maximum initial hydrolysis rate was pH 8.4–8.8; half-rate at pH 7.5 and 9.7. Equilibrium was about 90% PDC at pH 6.8 and 10% at pH 8.8. No nonenzymatic hydrolysis was detected under these assay conditions.',
+      '0.05 M Tris plus N-(2-acetamido)iminodiacetic acid for pH 5.5–7 and Tris plus cyclohexylaminopropanesulfonic acid for pH 7.5–11.',
+      'retain assay dependence','Separate thermodynamic equilibrium, initial rates and physiological direction. Nonenzymatic negative is bounded to these conditions.')
+claim(K,1157,'right column, rates and substrate-range paragraphs','hydrolase kinetics',
+      'Hydrolysis assays with 0.15 µg enzyme and 0.044–0.27 µmol PDC in 1 ml Tris pH 8 gave an apparent Km of 90 µM.',
+      'Purified native P. testosteroni enzyme.',
+      'retain kinetic context','Does not identify a rate for the P. putida PDC enzyme.')
+claim(K,1157,'right column, substrate-range paragraph','hydrolase substrate exclusions',
+      '2-pyrone-6-carboxylic acid and 2-pyrone-5-carboxylic acid (coumalic acid) were neither substrates nor inhibitors. Practical-grade coumalic acid contained an inhibitory impurity removed by recrystallization.',
+      'Purified native P. testosteroni hydrolase; tested-compound purity mattered.',
+      'retain conditional negatives','Do not attribute impurity inhibition to pure coumalate or claim a comprehensive substrate screen.')
+claim(K,1157,'top of left column, Protocatechuate dioxygenases methods continued','entry preparation',
+      'The crystalline 3,4-dioxygenase was from Brevibacterium fuscum grown on 4-hydroxybenzoate, homogeneous by electrophoresis and free of the other known 4-hydroxybenzoate-catabolic activities. Stock: 5 mg/ml, 50 U/mg, 50 mM MOPS pH 7.0.',
+      'Native purified B. fuscum enzyme; exact strain/accession absent from this passage.',
+      'retain entry catalyst; exact endpoint pending','Do not substitute P. putida CPLX-2721 or one of its assemblies without independent preparation identity.')
+claim(K,1157,'top of left column, dioxygenase stock description','alternative-route preparation',
+      'The crystalline P. testosteroni 4,5-dioxygenase was electrophoretically homogeneous. Stock contained 8 mg/ml enzyme, 250 U/mg, 50 mM MOPS pH 8.0, 10% glycerol, 1 mM L-cysteine and 100 µM ferrous ammonium sulfate as stabilizers.',
+      'Native purified P. testosteroni 4,5-dioxygenase; distinct from the 3,4 entry enzyme.',
+      'retain comparator context','A stock stabilizer is not by itself evidence for a cofactor edge on the 3,4 entry catalyst.')
+claim(K,1157,'right bottom, gallate assay; p.1158 Figure 3 and text','entry PDC formation',
+      'B. fuscum 3,4-dioxygenase converted gallate principally to PDC: 0.1 µmol gallate in 1 ml 0.1 M K/Na phosphate pH 7.2, started with 2 µl enzyme stock, spectra every minute. The 310-nm signal corresponded to about 70% of complete PDC conversion.',
+      'Purified B. fuscum native enzyme, in vitro.',
+      'retain direct entry catalysis','The major product is not a 100% exclusive product, nor a full-pathway growth demonstration.')
+claim(K,1158,'left column under Figure 2; Figure 3','entry product analytical basis',
+      'TLC found an open-chain DNPH derivative matching the keto-form reference and another spot also seen after base opening. PDC, the main product, did not form a hydrazone and was located by UV. The 3,4 enzyme did not act on 3-O-methylgallate.',
+      'Same B. fuscum enzyme; comparison against authentic PDC and chemically opened material.',
+      'retain product proof and substrate negative','Preserve minor open-chain products and analytical limitations.')
+claim(K,1161,'left column, isosbestic discussion','entry mechanistic interpretation',
+      'Spectral changes had an isosbestic point at 284 nm; authors interpreted this as compatible with direct PDC formation without released intermediates.',
+      'Spectroscopic interpretation, not observation of every enzyme-bound intermediate.',
+      'retain inference only','Do not infer a fully established intramolecular sequence or exclusion of transient bound species.')
+claim(K,1160,'right column, P. aeruginosa repetition','second entry preparation',
+      'The authors repeated the experiment with purified 3,4-dioxygenase from a fluorescent P. aeruginosa preparation, obtaining about 80% PDC.',
+      'Historical species attribution; strain, sequence and detailed preparation not supplied here.',
+      'retain corroboration; identity follow-up','Do not silently equate a later reclassified strain or native composite complex with this unnamed sample.')
+claim(K,1158,'left bottom/right top, pure 4,5-dioxygenase comparisons','alternative gallate entry',
+      'Pure P. testosteroni 4,5-dioxygenase consumed gallate with no detectable PDC and gave one open-chain product matching keto OMA or an isomer. With 3-O-methylgallate, about 75% became PDC and the remainder an open-chain product.',
+      'Purified P. testosteroni comparator, substrate dependent.',
+      'retain alternative-route context','Gallate 4,5 cleavage belongs to the direct open-chain route; methylgallate-to-PDC is a separate entry substrate.')
+claim(K,1158,'right column, PDC-isolate paragraph continuing p.1159','PDC isolate and culture',
+      'A P. putida PDC isolate was selected from garden soil in St Paul for PDC use. Growth was aerated at 30°C with 0.05 g/L Casamino Acids, 0.05 g/L yeast extract and 0.5 g/L major carbon substrate (PDC or 4-hydroxybenzoate). Gallate/PCA adaptation used pH 6 medium with 1 g/L succinate plus 0.5 g/L gallate or PCA.',
+      'P. putida PDC soil isolate; no accession or genome supplied.',
+      'retain physiological scope and supplements','Do not recast gallate adaptation as gallate-only growth or generic P. putida physiology.')
+claim(K,1159,'Table 2, P. putida PDC rows and footnotes','induction',
+      'PDC-grown extract had PDC hydrolase 200, gallate oxygen consumption 1264, 3-O-methylgallate <5 and PCA 32 nmol/min/mg. Succinate+gallate values were 30,332,<5,33; succinate+PCA <2,41,<5,1400; 4-hydroxybenzoate <2,47,<5,1600.',
+      'Crude extracts; hydrolase is 310-nm disappearance and dioxygenase readout is oxygen consumption.',
+      'retain actual table-supported activity changes','Do not infer named regulator binding, specific transcription targets or exact entry enzyme identity from extract rates.', 'inspected Table 2 cells and footnotes')
+claim(K,1159,'Table 2, P. testosteroni rows and footnotes','shared downstream induction',
+      'P. testosteroni PDC-grown values were 1150,1700,705,3060; 4-hydroxybenzoate values 1230,2210,688,3290; succinate 46,158,183,85 for hydrolase/gallate/3-O-methylgallate/PCA activities respectively.',
+      'Extract activity in the historical P. testosteroni strain; units nmol/min/mg.',
+      'retain source-scoped shared component context','Does not establish the gallate-to-PDC 3,4 entry in this organism.', 'inspected Table 2 cells and footnotes')
+claim(K,1159,'Table 2, P. putida TMC rows','alternative route induction',
+      'P. putida TMC after 4-hydroxybenzoate gave <2,75,<5,2640; after syringate <2,1080,1310,<5 for hydrolase/gallate/3-O-methylgallate/PCA activities respectively.',
+      'P. putida TMC extract, distinct from PDC isolate.',
+      'retain negative boundary','High gallate/methylgallate oxygen consumption without measurable PDC hydrolase is not a complete candidate-route assignment.', 'inspected Table 2 cells and footnotes')
+claim(K,1158,'right column, other species paragraph','P. acidovorans corroboration',
+      'Similar PDC-use and induction results were reported for P. acidovorans ATCC 17455, without its own numerical Table 2 row.',
+      'Historical P. acidovorans ATCC 17455; comparison to P. testosteroni meta pathway.',
+      'retain comparative context','Do not invent missing rates or infer the 3,4 entry route.')
+claim(K,1159,'left bottom to right top, time-course experiment','downstream time course',
+      'PDC-grown P. putida PDC extract (1.1 mg protein) was added to 1 µmol PDC in 5 ml 0.05 M Tris pH 8. Samples at 2,5,10,20,30 min were acidified and DNPH derivatives chromatographed; spots matched keto OMA, pyruvate and oxaloacetate and appeared/disappeared consistently with the proposed sequence.',
+      'Crude extract time course, not purification or direct assays of every intermediate-specific catalyst.',
+      'retain route-supporting observation and inference tier','No individual temporal concentration table or separately characterized V/VI/VII isomer is supplied.')
+claim(K,1159,'left column, beta-ketoadipate and 3-O-methylgallate statements','PDC-isolate pathway choice',
+      'P. putida PDC grown on 4-hydroxybenzoate used ortho PCA degradation to beta-ketoadipate and lacked detectable hydrolase in Table 2; no tested PDC-isolate extract acted on 3-O-methylgallate.',
+      'Condition-specific extract phenotypes, not gene deletion experiments.',
+      'retain conditional exclusions','Do not assign P184 or methylgallate pathways merely because some downstream reactions are shared.')
+claim(K,1159,'right column methyl-labeled experiment, continuing p.1160','methylgallate comparator isotope result',
+      '4-hydroxybenzoate-grown P. testosteroni cells (80 mg wet) consumed 10 µmol methyl-13C-labeled 3-O-methylgallate in 5 ml phosphate pH 7.2 at 30°C within 15 min. The methanol derivative shifted molecular ion 226 to 227, while its major 195 ion remained unchanged; label enrichment matched substrate.',
+      'Whole-cell methylgallate conversion and mass-spectral product comparison.',
+      'retain comparator, not candidate member','Supports methanol elimination for methylgallate; does not add methanol to gallate-to-PDC stoichiometry.')
+claim(K,1160,'Figure 4 and caption','route distinctions',
+      'Figure 4 distinguishes gallate-to-PDC by enzyme 2 (3,4-dioxygenase), gallate-to-open-chain by enzyme 1 (4,5-dioxygenase), and methylgallate alternatives, with downstream pyruvate/oxaloacetate.',
+      'A source pathway diagram integrating separate assays, not one-strain proof.',
+      'retain figure-supported topology','Never transfer the methylgallate branch or enzyme-1 product to the five-member gallate-II entry.', 'inspected structured figure arrows and numbered catalyst key')
+claim(K,1161,'left column top, PDC-isolate discussion','downstream physiological interpretation',
+      'Authors infer that P. putida PDC uses hydratase/aldolase activities associated with meta cleavage to metabolize PDC even though its PCA catabolism is ortho.',
+      'Inference from extract metabolites and induction, without exact gene/protein identification.',
+      'retain inference with identity gap','Do not give the isolate modern GalB/GalC genes or an exact CHM/KCH enzyme automatically.')
+claim(K,1161,'right column and Figure 5','methylgallate mechanistic proposal',
+      'Authors propose ring-fission product isomerization via keto tautomers followed by methanol elimination while retained on 4,5-dioxygenase.',
+      'Proposed mechanism for methylgallate; not directly observed intermediates.',
+      'context only','Outside exact gallate-II member boundary; preserve as a hypothesis rather than proven protein-level events.')
+claim(K,1162,'left column first two paragraphs','dilution-dependent PDC accumulation',
+      'Diluting P. testosteroni extract allowed PDC accumulation from gallate, interpreted via reversible downstream enzymes and selective hydratase loss. Diluted P. putida TMC extracts produced some PDC from methylgallate despite no PDC hydrolase; altered dioxygenase conformation was suggested.',
+      'Crude-extract dilution observations and hypotheses; no purified conformational measurement.',
+      'retain context and hypothesis','Do not treat dilution-dependent PDC as proof that native 4,5 cleavage directly yields PDC from gallate.')
+claim(K,1162,'whole paper read scope','compartments and molecular identities',
+      'No localization assay, cloned gene, engineered construct sequence, named transcriptional regulator or exact modern protein accession was reported for the new PDC-isolate hydrolase or entry preparations.',
+      'Bounded to the complete nine-page paper read here.',
+      'record source limit','Do not infer cytosol from cell extraction, or global absence from the lack of such evidence in this paper.')
+
+claim(S,1375,'Materials and Methods, Organisms and cell extracts','organism scopes',
+      'P. acidovorans was ATCC 17455 / NCIB 10013. P. putida was a prior syringate-selected isolate; this paper gives no accession or strain suffix for it.',
+      'Two organisms in one paper; P. acidovorans homoprotocatechuate experiments are separate from gallate assays.',
+      'retain scopes; identity follow-up','Do not silently identify this P. putida isolate as 1982 PDC or TMC.')
+claim(S,1375,'right column, media and extraction','growth and preparation',
+      'Cultures were aerated at 30°C; carbon additions were succinate1 g/L or aromatic substrates0.5 g/L. P. putida extracts used 80 mM phosphate pH7 with 20% glycerol and 5 mM L-cysteine-HCl as dioxygenase stabilizers.',
+      'Native crude extracts; no recombinant constructs.',
+      'retain preparation','Stabilizers do not establish catalytic cofactor requirements.')
+claim(S,1375,'Induction of enzymes, continued p.1376','induction protocol',
+      'Succinate-grown 1-L cultures at A540 0.4 received 0.3 g/L gallate or PCA and were shaken3h at30°C; homoprotocatechuate adaptation used6.5h. Succinate exhaustion was inferred nearA5400.6 and added substrate gave about0.3 additional absorbance.',
+      'Adaptation experiment, not uninterrupted growth solely on gallate.',
+      'retain induction conditions','Preserve carbon co-supply and timing.')
+claim(S,1376,'left column, enzyme assays and gift statement','crystalline preparation provenance',
+      'Pure crystalline protocatechuate3,4-dioxygenase was supplied by J. D. Lipscomb. No source organism, strain, purification reference or sequence is assigned to that gift here.',
+      'Separate pure enzyme from the study P. putida crude extracts.',
+      'retain provenance gap; exact endpoint pending','Native ENZRXN18362 attribution to CPLX2721 does not resolve the primary preparation identity by itself.')
+claim(S,1376,'left column, oxygen-electrode and pyruvate assays','assay scope',
+      'Dioxygenase assays used0.1–0.3µmol substrate in1.5ml0.05M Tris-HCl pH8, oxygen electrode, with extract added. The same electrode served crystalline-enzyme kinetics. Pyruvate formation was a separate coupled readout using NADH loss at340nm.',
+      'Oxygen consumption is not product identification; pyruvate is downstream product evidence.',
+      'retain measurement distinctions','Do not map every oxygen-consuming fraction to a precise Rhea product.')
+claim(S,1377,'Table2 and footnotes','P. putida induction table',
+      'Syringate and succinate+gallate conditions strongly raised gallate activities and pyruvate formation; PCA/4-hydroxybenzoate instead induced3,4-dioxygenase and carboxymuconate lactonizing activity. Full numeric cells are projected separately.',
+      'Crude extracts of unnamed prior P. putida isolate.',
+      'retain actual table and route distinction','Cannot infer a specific regulator or complete PDC route from these induction assays.', 'inspected Table2 cells and footnotes')
+claim(S,1378,'left column first paragraph','conditional pyruvate formation',
+      'Only extracts of syringate-grown or gallate-adapted cells degraded gallate to pyruvate under these tests. Syringate-grown extracts also oxidized3-O-methylgallate, unlike gallate-adapted ones.',
+      'Condition-specific crude-extract activities.',
+      'retain alternative-route context','The gallate-to-pyruvate result here belongs to separate induced enzymes, not the slow3,4 entry activity.')
+claim(S,1378,'Gallic acid as substrate and inhibitor paragraph','slow entry-related activity',
+      '4-hydroxybenzoate-grown P. putida extracts oxidized gallate slowly without pyruvate and accumulated a product whose spectrum matched the product of pure crystalline enzyme; the paper did not establish it as PDC.',
+      'Extract/pure-enzyme spectral comparison; historical product interpretation.',
+      'retain assay and product uncertainty','Use1982 PDC identification separately rather than attributing it to this1975 assay.')
+claim(S,1378,'Figure3 and caption','pH-dependent activities',
+      'Gallate oxidation in4-hydroxybenzoate-grown extract increased across approximatelypH7–9; gallate-adapted extract peaked nearpH7.6 and declined. Figure3 distinguishes preparations by growth condition.',
+      'Two crude extracts, not purified enzyme-specific pH constants.',
+      'retain qualitative curve comparison','No digitized exact rate series is claimed.', 'inspected Figure3 axes, symbols and curve shapes')
+claim(S,1378,'left column, crystalline-enzyme kinetics','entry-related kinetic constants',
+      'Apparent Km values: gallate17µM, PCA23µM. Vmax values: gallate0.4 and PCA12.0µmol/min/mg enzyme.',
+      'Pure crystalline3,4-dioxygenase gift of unresolved organism; oxygen-electrode kinetics.',
+      'retain constants with preparation gap','Do not attach constants unqualified to P. putida CPLX2721 or infer PDC yield from oxygen uptake.')
+claim(S,1378,'left column inhibition paragraph and Figure4','gallate competitive inhibition',
+      'Gallate competitively inhibited PCA oxidation with reported Ki5µM. Figure4 inhibitor concentrations are13.3,26.7,53.3,66.7µM plus zero. Authors state these data do not prove gallate occupies the PCA binding site in this two-substrate reaction.',
+      'Pure crystalline3,4-dioxygenase gift; PCA activity is the inhibited readout.',
+      'retain narrowly scoped inhibition; endpoint pending','Do not label gallate self-inhibition of gallate turnover or infer direct shared-site binding.')
+claim(S,1378,'bottom columns, fractionation protocol','separate gallate oxygenases',
+      'Syringate-grown P. putida extract was brought to60% ammonium sulfate and chromatographed through serial UltrogelAcA34 columns in phosphate pH7 with20% glycerol and5mM L-cysteine-HCl.',
+      'Fractionated native extract, not homogeneous proteins.',
+      'retain alternative enzyme preparation','No sequence or native named-gene identification is supplied.')
+claim(S,1379,'Figure5 and left text','fraction substrate specificity',
+      'Fractions56–64 oxidized gallate alone, while67–72 oxidized gallate and3-O-methylgallate. Neither separate enzyme was found to attack PCA.',
+      'Two fractionated P. putida enzyme activities induced by syringate.',
+      'retain alternative-route specificity','Do not conflate these with protocatechuate3,4-dioxygenase or identify them as modern GalA/DesZ without evidence.')
+claim(S,1379,'left column, heat and iron paragraph','alternative enzyme heat effects',
+      'After53°C for3min, the gallate-only fraction retained92% activity; the other fraction had<1% of its3-O-methylgallate activity.',
+      'Fractionated extract preparations with distinct assay substrates.',
+      'retain context only','This does not measure thermal stability of the candidate3,4 entry or PDC hydrolase.')
+claim(S,1379,'left column, end of heat and iron paragraph','alternative enzyme iron effect',
+      'Ferrous ammonium sulfate increased measured activity of both fractions, but was omitted from assays because Fe2+ also increased extract oxygen uptake without substrate.',
+      'Fractionated gallate oxygenase assay; background oxygen consumption confounds interpretation.',
+      'retain qualified effect and background','Not a cofactor claim for3,4-dioxygenase, and not direct proof of physiological Fe activation.')
+claim(S,1377,'Figure2 and caption','route diagram boundary',
+      'The historical Figure2 separates syringate/gallate meta-like degradation from PCA ortho cleavage and includes terminal oxaloacetate decarboxylation. It does not draw the modern gallate-to-PDC five-member route.',
+      'Integrated pathway diagram for the source P. putida assays; dotted reactions refer to other organisms.',
+      'retain boundary contrast','Do not import the sixth decarboxylation step into the exact current candidate.', 'inspected Figure2 topology and numbered assay arrows')
+claim(S,1376,'Table1; Figure1 on p.1375; results first subsection','outside-pathway assays',
+      'Homoprotocatechuate/homogentisate induction and enzyme assays in P. acidovorans occupy a separate route. All Table1 cells and Figure1 were read.',
+      'P. acidovorans ATCC17455/NCIB10013, not the gallate experimental organism.',
+      'outside exact pathway','No gallate-II mechanism or organism assignment is derived from this experimental section.', 'inspected Table1/Figure1 plus separate source prose')
+claim(S,1380,'Discussion across pp.1379–1380','evolution and extracellular hypotheses',
+      'The discussion suggests evolutionary recruitment of gallate/PCA pathways and extracellular oxygenases in lignin breakdown.',
+      'Speculative evolutionary/ecological explanation; no localization experiment in this study.',
+      'context only, no mechanistic edge','Do not treat this discussion as evidence that any assayed candidate enzyme is extracellular.')
+claim(S,1381,'complete eight-page source read','molecular identity and compartment limits',
+      'The paper supplies no gene sequence, engineered protein construct, cellular-localization experiment, PDC hydrolase assay, or PDC product identification for its3,4-dioxygenase kinetics.',
+      'Bounded to this inspected primary source, not a global absence claim.',
+      'retain source limitations','These endpoints require other evidence, not inference from enzyme names or extract production.')
+
+save('claim-ledger.json', claims)
+
+tables = {
+ 'Kersten1982_Table1': {'source':binding(ROOT/'originals/PMC221622-page-3.png'),'locator':'printed p.1156, Table1; all six rows and unit footnote',
+   'columns':['fraction','volume_ml','protein_mg','total_activity_U','specific_activity_U_per_mg','fold_purification','yield_percent'],
+   'rows':[['Crude extract',146,5256,8042,1.53,1,100],['Ammonium sulfate (40 to 70% saturation)',74,1998,5690,2.85,1.9,71],['DEAE-Sephacel',78,86,3980,46.4,30,50],['Sephacryl S-200',9,24,3040,125,81,38],['Phenyl Sepharose',55,10.2,2040,200,130,25],['DEAE-Sephacel',29,5.2,778,149,97,10]],
+   'unit_note':'U = µmol PDC hydrolyzed per minute. Fraction names identify ordered preparations; two DEAE rows are distinct. Species/preparation attribution is in adjacent methods prose, not a Table1 cell.'},
+ 'Kersten1982_Table2': {'source':binding(ROOT/'originals/PMC221622-page-6.png'),'locator':'printed p.1159, Table2; all nine rows and all three footnotes',
+   'columns':['organism','growth_substrate','PDC_hydrolase','gallate_O2_activity','3_O_methylgallate_O2_activity','PCA_O2_activity'],
+   'rows':[['P. putida PDC','PDC',200,1264,'<5',32],['P. putida PDC','Succinate plus gallate',30,332,'<5',33],['P. putida PDC','Succinate plus protocatechuate','<2',41,'<5',1400],['P. putida PDC','4-Hydroxybenzoate','<2',47,'<5',1600],['P. testosteroni','PDC',1150,1700,705,3060],['P. testosteroni','4-Hydroxybenzoate',1230,2210,688,3290],['P. testosteroni','Succinate',46,158,183,85],['P. putida TMC','4-Hydroxybenzoate','<2',75,'<5',2640],['P. putida TMC','Syringate','<2',1080,1310,'<5']],
+   'unit_note':'nmol/min/mg protein. Extracts of adapted cells. Hydrolase: PDC disappearance at310nm. Dioxygenase: O2 consumption. Less-than signs are assay limits, not zero.'},
+ 'Sparnins1975_Table2': {'source':binding(ROOT/'originals/PMC236050-page-4.png'),'locator':'printed p.1377, Table2; all five rows, all five conditions, all three footnotes',
+   'columns':['enzyme_or_readout','succinate','succinate_plus_gallate','syringate','4_hydroxybenzoate','succinate_plus_PCA'],
+   'rows':[['3-O-Me-gallate dioxygenase',3,3,360,3,3],['Gallate dioxygenase',6,718,2030,50,17],['Pyruvate from gallate',1,100,392,'<1','<1'],['Protocatechuate3,4-dioxygenase',23,22,11,1400,800],['Carboxymuconate-lactonizing enzyme',72,77,83,1100,410]],
+   'unit_note':'nmol/min/mg protein. Gallate values50 and17 carry footnote c assigning those activities to3,4-dioxygenase. Oxygen uptake alone does not identify the product.'},
+ 'Sparnins1975_Table1': {'source':binding(ROOT/'originals/PMC236050-page-3.png'),'locator':'printed p.1376, Table1; all five rows',
+   'columns':['enzyme','succinate','succinate_plus_HPC','4_HPA'],
+   'rows':[['Homogentisate1,2-dioxygenase',2.3,'≤2.3',200],['Isomerase',1.6,0.8,13],['HPC2,3-dioxygenase',0.2,25,0.2],['Dehydrogenase',0.2,24,0.8],['Aldolase',0.7,15,1.3]],
+   'unit_note':'nmol/min/mg protein in P. acidovorans. Outside exact gallate-II route; retained to make full-paper coverage explicit.'}}
+save('table-projections.json',tables)
+
+# Short quotation bank, not duplicated into claim text. Prospective placements
+# are counted, including repeated uses, before any later record assembly.
+quotes = [
+ {'quote_id':'K82-entry','reference':K,'quote':'converted gallate into PDC','locator':'p.1157 right column, first gallate assay sentence','source_page':4,'prospective_placements':1,'purpose':'entry PDC product observation'},
+ {'quote_id':'K82-reversible','reference':K,'quote':'freely reversible','locator':'p.1154 abstract, hydrolytic activity sentence','source_page':1,'prospective_placements':1,'purpose':'hydrolase reversibility'},
+ {'quote_id':'K82-metal','reference':K,'quote':'strongly inhibited','locator':'p.1157 left column, metal-effects paragraph','source_page':4,'prospective_placements':4,'purpose':'one each for Zn2+, Cu2+, Mn2+, Co2+; four, not five ions'},
+ {'quote_id':'K82-dtnb','reference':K,'quote':'completely abolished the activity','locator':'p.1157 left column, DTNB paragraph','source_page':4,'prospective_placements':1,'purpose':'DTNB chemical inactivation'},
+ {'quote_id':'K82-protection','reference':K,'quote':'fully preserved','locator':'p.1157 left column, end of DTNB paragraph','source_page':4,'prospective_placements':1,'purpose':'glutathione protection during DTNB incubation'},
+ {'quote_id':'K82-timecourse','reference':K,'quote':'pyruvate, and oxaloacetate','locator':'p.1159 right column top, time-course continuation','source_page':6,'prospective_placements':1,'purpose':'crude-extract downstream product observation'},
+ {'quote_id':'S75-inhibition','reference':S,'quote':'competitive inhibitor','locator':'p.1378 left column, kinetic paragraph','source_page':5,'prospective_placements':1,'purpose':'gallate inhibits PCA turnover'},
+ {'quote_id':'S75-crystalline','reference':S,'quote':'pure, crystalline','locator':'p.1376 left column, gift statement','source_page':3,'prospective_placements':1,'purpose':'preparation qualification; organism unresolved'},
+ {'quote_id':'S75-turnover','reference':S,'quote':'oxidize gallate','locator':'p.1378 left column, first assay paragraph','source_page':5,'prospective_placements':1,'purpose':'extract oxidation observation; no PDC product identity'}]
+for q in quotes:
+    pmc = 'PMC221622' if q['reference']==K else 'PMC236050'
+    q['source'] = binding(ROOT/'originals'/f'{pmc}-page-{q["source_page"]}.png')
+    q['word_count'] = len(q['quote'].split())
+    q['prospective_total_words'] = q['word_count']*q['prospective_placements']
+    q['verified'] = 'visually matched on original PNG; OCR is auxiliary only'
+totals={ref:sum(q['prospective_total_words'] for q in quotes if q['reference']==ref) for ref in [K,S]}
+assert all(x<=25 for x in totals.values())
+save('quote-budget.json',{'quotes':quotes,'totals':totals,'rule':'Paper-wide budget includes repeated prospective placements. This is not permission to repeat each excerpt in more qualifiers/edges. Research claims are paraphrases, not schema Evidence. No additional body quotations appear elsewhere in the authored dossier.'})
+
+page_topics = {
+ 'PMC221622': [
+   'Title, abstract, introduction; hydrolase summary and earlier PDC hypothesis.',
+   'Figure1 complete scheme/caption, main introduction, standard synthesis methods.',
+   'PDC standard/spectra/derivatization, complete purification methods, Table1.',
+   'Dioxygenase source/preparation, all hydrolase properties/inhibitors/reversibility/pH/Km/negative substrates, gallate assay.',
+   'Figures2 and3 with captions, product analyses, 4,5 comparator, PDC isolate and growth methods.',
+   'Complete Table2 and footnotes, PDC-isolate time course, isotope/methanol experiment.',
+   'Isotope result, comparative discussion and complete Figure4/caption.',
+   'Remaining discussion, PDC-isolate inference, isosbestic interpretation, Figure5 proposal.',
+   'Dilution-dependent PDC observations, discussion, acknowledgments and all16 references.'],
+ 'PMC236050': [
+   'Title, abstract and introduction.',
+   'Organisms/cultures/extraction/induction methods; complete Figure1 and caption.',
+   'Remaining methods including pure enzyme provenance, assays, initial results, complete Table1.',
+   'Complete Figure2 and caption; complete Table2 and footnotes.',
+   'All gallate/PCA kinetics and inhibition prose, Figures3/4 and captions, fractionation methods.',
+   'Figure5 and caption, fraction specificity/heat/iron effects, discussion.',
+   'Remaining discussion, acknowledgments, references1–18.',
+   'Remaining references19–25.']}
+readledger=[]
+for pmc,topics in page_topics.items():
+    for n,topic in enumerate(topics,1):
+        readledger.append({'source':binding(ROOT/'originals'/f'{pmc}-page-{n}.png'),'printed_page':(1153 if pmc=='PMC221622' else 1373)+n,'reading':'complete visual page reading at original image resolution','coverage':topic})
+save('reading-ledger.json',readledger)
+
+save('identity-and-boundary-ledger.json',[
+ {'item':'five-member pathway','native_id':'MetaCyc:GALLATE-DEGRADATION-I-PWY','display_label':'gallate degradation II','members':['RXN-11861','RXN-2462','RXN-9983','RXN-2463','RXN-2464'],'disposition':'Exact candidate boundary from frozen preflight; no new whole-pathway taxon assignment.'},
+ {'item':'1975 gifted crystalline3,4-dioxygenase','candidate_native_id':'MetaCyc:CPLX-2721','disposition':'Not proved equivalent by1975. Preserve native attribution separately; seek exact historical provenance before primary kinetic transfer.'},
+ {'item':'1982 B. fuscum entry3,4-dioxygenase','disposition':'Species explicit, strain/accession not supplied. Requires a distinct issuing endpoint or source-native exact preparation identity; do not substitute CPLX2721.'},
+ {'item':'1982 P. aeruginosa entry3,4-dioxygenase','disposition':'Historical species explicit, no strain. Later P. putida reclassification of a3,4 enzyme cannot be imported without demonstrating sample linkage.'},
+ {'item':'1982 purified P. testosteroni PDC hydrolase','candidate_native_id':'MetaCyc:MONOMER-3463','activity_id':'MetaCyc:ENZRXN-3623','disposition':'The exact native object explicitly cites Kersten1982 for native purification and mass estimates; its species synonym includes Pseudomonas testosteroni. This is a source-native endpoint candidate. Its later PmdD/G-2543/Q93PS7 mappings do not prove that historical purified enzyme was sequence-identical. MONOMER-10723 is the separate unpurified P. putida PDC enzyme.'},
+ {'item':'1982 P. putida PDC hydrolase','candidate_native_id':'MetaCyc:MONOMER-10723','disposition':'Native object explicitly says activity measured, enzyme unpurified. Compatible with primary extract observations; no sequence or modern gene inferred.'},
+ {'item':'P. putida isolates across papers','disposition':'1975 unnamed syringate isolate,1982 PDC soil isolate,1982 TMC strain are separate until demonstrated equivalent. Names and old collection references alone do not prove sequence identity.'},
+ {'item':'1982 open-chain forms','disposition':'Figure1 V/VI/VII explicitly not individually characterized; modern E,E/Z,Z and KCH-versus-CHM mappings require separate chemistry closure.'},
+ {'item':'PDC hydrolase inhibition chemicals','disposition':'Four inhibitory divalent ions Zn,Cu,Mn,Co; DTNB and reduced glutathione protection. Exact issuing structures/forms still need identity closure. EDTA and Mg are conditional non-effects; EDTA stabilizes dilution.'},
+ {'item':'compartments','disposition':'No localization experiments in these papers. Cell extraction does not prove cytosol; extracellular evolutionary discussion does not establish a location edge.'},
+ {'item':'regulation','disposition':'Induction tables show enzyme activity changes after culture conditions, not a named regulator, direct binding or gene-specific transcription.'},
+ {'item':'whole-route evidence','disposition':'P. putida PDC extract time course supports a proposed route but does not directly characterize all five modern member reactions or one exact native entry enzyme. Source-assigned native taxa require later review, not automatic promotion.'}])
+
+external=[
+ '/private/tmp/pathwaymech-next-260-preflight/HANDOFF.md',
+ '/private/tmp/pathwaymech-next-260-preflight/artifact-manifest.json',
+ '/private/tmp/pathwaymech-next-260-preflight/native-boundary-projection.json',
+ '/private/tmp/pathwaymech-next-260-preflight/baseline-bindings.json',
+ '/private/tmp/pathwaymech-next-260-preflight/current-corpus-bindings.json',
+ '/private/tmp/pathwaymech-next-253-native/originals/META-MONOMER-10723.xml',
+ '/private/tmp/pathwaymech-next-253-native/originals/META-RXN-2462.xml',
+ '/private/tmp/pathwaymech-next-253-native/originals/META-MONOMER-3463.xml',
+ '/private/tmp/pathwaymech-next-253-native/originals/META-ENZRXN-3623.xml',
+ '/private/tmp/pathwaymech-next-259-native/originals/ENZRXN-18362.xml',
+ '/private/tmp/pathwaymech-next-259-native/originals/CPLX-2721.xml',
+ '/private/tmp/pathwaymech-next-253-primary/HANDOFF.md',
+ '/private/tmp/pathwaymech-next-253-primary/component-evidence-ledger.json',
+ '/private/tmp/pathwaymech-next-259-primary/HANDOFF.md',
+ '/private/tmp/pathwaymech-next-259-chemistry/HANDOFF.md']
+save('external-source-bindings.json',[binding(x) for x in external])
+save('source-catalog.json',[
+ {'reference_id':K,'doi':'10.1128/jb.152.3.1154-1162.1982','pmcid':'PMC221622','title':'2-Pyrone-4,6-Dicarboxylic Acid, a Catabolite of Gallic Acids in Pseudomonas Species','read_scope':'All9 original page PNGs, all5 figures, both tables, complete main text and references. Original page images reused with successful byte/hash checks and original CDN receipts.','limits':'No independent modern stereochemical or exact protein identity closure. The historical filename PMC221622.pdf is a known challenge response and was not copied or used as primary evidence. No extra supplement is linked in the inspected original PMC landing page; scanned-pages section is the article itself.'},
+ {'reference_id':S,'doi':'10.1128/jb.124.3.1374-1381.1975','pmcid':'PMC236050','title':'Alternative Routes of Aromatic Catabolism in Pseudomonas acidovorans and Pseudomonas putida: Gallic Acid as a Substrate and Inhibitor of Dioxygenases','read_scope':'All8 original CDN page PNGs, all5 figures, both tables, complete main text and references. Fresh public PMC HTML supplies exact image URLs.','limits':'The EuropePMC fullTextXML endpoint returnedHTTP500; retained error body is not biological evidence. A web tool PMC fetch returned403, while the normal public HTTP acquisition succeeded. No PDF was needed or claimed. The scanned-pages section is not separate SI; no separate supplementary attachment was found among this exact article HTML links.'}])
+
+save('source-to-claim-dispositions.json',{
+ 'scope':'Complete main-paper coverage for the two requested sources; not an exhaustive literature review or all native attached sources.',
+ 'by_paper':[{ 'reference':ref, 'claim_ids':[c['claim_id'] for c in claims if c['reference']==ref], 'all_main_figures_read':5,'all_main_tables_read':2} for ref in [K,S]],
+ 'shared_downstream_sources':[
+   {'source':'PMID:4342601 and related Tack1972 work','disposition':'Primary cited by historical downstream route; existing dossiers are leads only here. This task did not freshly acquire/read the complete original. Native attachment and exact preparation/chemistry must be reviewed before use.'},
+   {'source':'PMID:21219457, Nogales2011','disposition':'Existing next259 primary/identity/chemistry dossiers record main-text/table/caption access and figure/SI limits. They concern KT2440/KTGAL GalD/GalB/GalC constructs, not historical PDC isolate proteins. Reuse only after exact source and claim reconciliation.'},
+   {'source':'2016 GalB/PmdE and shared modern hydrolase/tautomerase/aldolase studies','disposition':'Use frozen next259 and next253 source-specific dossiers for later complete native closure. No new transfer of exact isomer or construct from pathway membership is made here.'}],
+ 'remaining_work':[
+   'Fresh ignored-inclusive maintained dedup after gallate-I merge; this primary dossier relies on preflight snapshot only.',
+   'Complete native five-member catalyst/component/source traversal and primary follow-up for all attached sources.',
+   'Identify each historical purified preparation separately, especially1975 gifted enzyme and1982 hydrolase; no species/name-only equivalence.',
+   'Verify all chemicals, reaction equations, water/proton orientation and structures independently; preserve historical isomer uncertainty.',
+   'Resolve source-supported regulator/inhibitor endpoints without dropping observations; keep in-vitro/conditional scopes.',
+   'Before graph insertion, select exact evidence placements and re-audit combined quotation budget with any reused source quotes. Table projections are actual source cells; generic research paraphrases are not schema source_assertions.',
+   'Independent source-science review and canonical authority verification remain required. This is author research, not approval.']})
+
+print(json.dumps({'claims':len(claims),'per_paper':{r:sum(c['reference']==r for c in claims) for r in [K,S]},'quote_totals':totals,'pages':len(readledger)},indent=2))
+
+# Normalize only authored prose, preserving identifiers, URLs, quotations,
+# source filenames and exact numeric source cells.
+import re
+prose_keys = {'observation','experimental_scope','reason','disposition','read_scope','limits','unit_note','item','remaining_work','scope','purpose','coverage','reading','rule','locator'}
+replacements = {
+ 'nearA5400.6':'near A540 0.6', 'approximatelypH':'approximately pH ', 'nearpH':'near pH ',
+ 'UltrogelAcA34':'Ultrogel AcA 34', 'ENZRXN18362':'ENZRXN-18362', 'CPLX2721':'CPLX-2721', 'MONOMER10723':'MONOMER-10723',
+ 'returnedHTTP500':'returned HTTP 500', 'had<1%':'had <1%', 'in1.5ml0.05M':'in 1.5 ml 0.05 M',
+ '3h':'3 h','5h':'5 h','6.5h':'6.5 h','3min':'3 min','310nm':'310 nm','340nm':'340 nm',
+ '90µM':'90 µM','17µM':'17 µM','23µM':'23 µM','5µM':'5 µM','66.7µM':'66.7 µM',
+ '0.3µmol':'0.3 µmol','12.0µmol':'12.0 µmol','5mM':'5 mM',
+ 'ATCC17455':'ATCC 17455','NCIB10013':'NCIB 10013'}
+words = ['Figure','Figures','Table','references','all','All','and','succinate','substrates','shaken','at','used','about','protocatechuate','induced','oxidized','slow','Use','this','in','gallate','PCA','crystalline','Ki','are','to','with','Fractions','while','After','for','retained','its','candidate','especially','by','entry','returned']
+def normalize(v,k=''):
+ if isinstance(v,dict):return {a:normalize(b,a) for a,b in v.items()}
+ if isinstance(v,list):return [normalize(b,k) for b in v]
+ if isinstance(v,str) and k in prose_keys:
+  for a,b in replacements.items():v=v.replace(a,b)
+  for w in words:v=re.sub(r'\b'+re.escape(w)+r'(?=\d)',w+' ',v)
+  v=re.sub(r'\bpH(?=\d)','pH ',v)
+ return v
+for p in AUTHOR.glob('*.json'):
+ data=normalize(json.loads(p.read_text()));p.write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')

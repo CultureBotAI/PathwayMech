@@ -1,0 +1,24 @@
+"""Prepare a separate selected-build attempt without modifying its cancelled predecessor."""
+from pathlib import Path
+import datetime,hashlib,json,shutil
+OLD=Path('/private/tmp/pathwaymech-next-260-authority-integration')
+B=Path(__file__).resolve().parents[1]
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+for name in ['retained','proposal','records']: (B/name).mkdir(exist_ok=True)
+for name in ['baseline','runtime','source-cache']:
+ p=B/name;assert not p.exists() and not p.is_symlink();p.symlink_to(OLD/name,target_is_directory=True)
+rows=load(OLD/'retained/baseline-record-bindings.json')
+for row in rows:
+ original=Path(row['path']);assert sha(original)==row['sha256']
+ target=B/'records'/row['git_path'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(original,target)
+ assert sha(target)==row['sha256']
+rebound=[]
+for name in ['baseline-preparation.json','baseline-original-cache-verification.json','baseline-record-bindings.json','runtime-bindings.json','retained-authority-identifiers.json']:
+ p=OLD/'retained'/name;raw=p.read_text();content=raw.replace(str(OLD)+'/baseline/',str(B)+'/baseline/').replace(str(OLD)+'/records/',str(B)+'/records/').replace(str(OLD)+'/runtime/',str(B)+'/runtime/').replace(str(OLD)+'/source-cache/',str(B)+'/source-cache/')
+ target=B/'retained'/name;assert not target.exists();target.write_text(content)
+ rebound.append(dict(prior_path=str(p),prior_sha256=sha(p),successor_path=str(target),successor_sha256=sha(target),scope='Only external path rebinding; original bytes in baseline/runtime/cache/record copies remain exact'))
+for name in ['prepare_union.py','run_union_builds.py','verify_union.py']:
+ target=B/'helpers'/name;assert not target.exists();shutil.copyfile(OLD/'helpers'/name,target)
+report=dict(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),scope='Separate attempt workspace only; no final source selection or builder execution yet',prior_attempt=str(OLD),prior_terminal_receipt_sha256=sha(OLD/'retained/superseded-attempt-terminal.json'),path_rebindings=rebound,baseline_records_copied=len(rows),old_rejected_selector_copied=False,old_selection_RHEA18172_carried_forward=False,helper_sha256=sha(__file__),prior_helper_bytes_preserved=True)
+p=B/'retained/successor-workspace-preparation.json';assert not p.exists();p.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(dict(status='separate_successor_ready',records=len(rows),selection_pending=True)))

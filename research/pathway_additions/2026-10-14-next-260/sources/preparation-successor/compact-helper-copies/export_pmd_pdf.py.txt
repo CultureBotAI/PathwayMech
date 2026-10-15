@@ -1,0 +1,14 @@
+from pathlib import Path
+from lxml import html
+from urllib.parse import urljoin,urlencode
+import urllib.request,urllib.error,json,hashlib,datetime
+r=Path('/private/tmp/pathwaymech-next-260-preparation-successor');p=r/'originals/Pmd2001-publisher.html';t=html.parse(str(p));f=t.xpath('//form[contains(@action,"1472157a.pdf")]')[0]
+fields={x.get('name'):x.get('value','') for x in f.xpath('.//input[@name]')};url=urljoin('https://www.microbiologyresearch.org',f.get('action'));out=r/'originals/Pmd2001-pdf.response';assert not out.exists();receipt=r/'acquisition-pmd-pdf.json';assert not receipt.exists()
+row={'operation':'Submit observed public Download PDF form only; no login or data mutation','source_html_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'form_action':f.get('action'),'fields':fields,'attempt_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+try:
+ req=urllib.request.Request(url,data=urlencode(fields).encode(),headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded','Referer':'https://www.microbiologyresearch.org/content/journal/micro/10.1099/00221287-147-8-2157'})
+ with urllib.request.urlopen(req,timeout=45) as response:data=response.read();row.update(status=response.status,content_type=response.headers.get('content-type'),final_url=response.url)
+except urllib.error.HTTPError as e:data=e.read();row.update(status=e.code,error=str(e),content_type=e.headers.get('content-type'))
+except Exception as e:data=None;row['error']=repr(e)
+if data is not None:out.write_bytes(data);row.update(path=str(out),bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
+receipt.write_text(json.dumps(row,indent=2)+'\n');print(json.dumps(row,indent=2))

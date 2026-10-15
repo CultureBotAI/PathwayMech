@@ -1,0 +1,75 @@
+"""Freeze the independent technical report only after actual gate completion."""
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+ROOT=Path('/private/tmp/pathwaymech-next-260-20261014')
+OUT=Path('/private/tmp/pathwaymech-next-260-independent-technical')
+GATES=Path('/private/tmp/pathwaymech-next-260-checks-initial')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(p):return json.loads(p.read_text())
+
+gate_receipts=load(GATES/'receipts.json')
+expected=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check'],['git','diff','--cached','--check']]
+assert [r['command'] for r in gate_receipts]==expected,'All seven gates must actually have completed.'
+assert all(r['exit_code']==0 and sha(Path(r['log_path']))==r['log_sha256'] for r in gate_receipts)
+preservation=load(GATES/'final-input-preservation.json')
+assert preservation['all_unchanged']
+tested=load(GATES/'tested-core-input-hashes.json')
+changed_bound=[p for p,h in tested.items() if not (ROOT/p).is_file() or sha(ROOT/p)!=h]
+assert not changed_bound,changed_bound
+
+reports=['integration-replay-1.json','kgx-replay-1.json','authority-replay-1.json','pages-replay-2.json','kgx-category-replay.json','production-scope-ignored-inclusive.json','promotion-and-scope-1.json']
+bindings={p:{'sha256':sha(OUT/p),'bytes':(OUT/p).stat().st_size} for p in reports}
+for name in reports[:5]:assert load(OUT/name)['failed']==0
+assert not load(OUT/'production-scope-ignored-inclusive.json')['changes']
+pages=load(OUT/'pages-replay-2.json')
+for path,h in pages['bindings'].items():assert sha(ROOT/path)==h,path
+authority=load(OUT/'authority-replay-1.json')
+for kind in ['sources','ontology']:
+    assert sha(ROOT/'data/identifier_authorities'/f'{kind}.json')==authority['snapshots'][kind]['sha256']
+assert sha(ROOT/'conf/identifier_sources.json')==authority['bindings']['/private/tmp/pathwaymech-next-260-authority-integration-successor/proposal/identifier_sources.json']
+
+readme=ROOT/'research/pathway_additions/2026-10-14-next-260/README.md'
+review={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Fresh independent adversarial technical reviewer, separate from source and integration authors','base_commit':'b2590dfd2385c83fe4f028ecd5309a0407739838','verdict':'No unresolved technical findings in the reviewed batch','scope':['Exact frozen source/author package hashes and retention','Independent native plus primary assembly and documented normalization','Bounded two-predecessor direction/prose corrections','Exact authority union, preservation of baseline objects and issuing-source checks for all additions','Full-corpus KGX export and complete changed-record evidence, qualifiers, contexts and source direction','Generated-page graph relationships, evidence links, qualifiers and published exports','Ignored-inclusive production/governance scope and actual full-gate receipts'],
+ 'record_and_generated_bindings':pages['bindings'],'authority_snapshots':authority['snapshots'],'report_bindings':bindings,'checks':{p:load(OUT/p)['passed'] for p in reports[:5]},
+ 'resolved_findings':[{'finding':'The S75-003 successor erratum named entry-primary/author/claim-ledger.json instead of the retained sources/primary/author/claim-ledger.json.','status':'Resolved by append-only locator clarification','proof_path':'research/pathway_additions/2026-10-14-next-260/integration/erratum-locator-clarification.json','proof_sha256':sha(ROOT/'research/pathway_additions/2026-10-14-next-260/integration/erratum-locator-clarification.json'),'scope':'Supporting provenance locator; no graph claim changed.'}],
+ 'open_findings':[],
+ 'review_process_corrections':[{'prior_report':'authority-source-replay-1.json','successor':'authority-source-count-clarification.json','description':'Reviewer initially conflated 1077 total cached descriptors with 1062 identifier_sources.json entries. All baseline manifest entries were unchanged; the final replay uses the correct scope.'},{'prior_report':'pages-replay-1.json','successor':'pages-replay-2.json','description':'Reviewer initially required unconnected taxon scope metadata in SVG. Existing contract preserves all participants/reactions and asserted endpoints; complete unconnected taxon metadata is correctly retained in tables. Corrected replay verifies that explicitly.'}],
+ 'gate_receipts':gate_receipts,'gate_binding_files':{name:{'path':str(GATES/name),'sha256':sha(GATES/name)} for name in ['receipts.json','tested-core-input-hashes.json','final-input-preservation.json','environment.json']},'tested_core_files_unchanged_at_review_freeze':len(tested),'readme_sha256':sha(readme),
+ 'limits':['This is a technical/integration review. The separately performed original-source scientific review supplies the scientific verdict.','HTML DOM, accessible text and serialized graph payloads were inspected. No browser screenshot or interactive-control visual approval is claimed.','No duplicate full test suite or canonical authority build was run by this reviewer.']}
+assert not (OUT/'technical-review.json').exists()
+(OUT/'technical-review.json').write_text(json.dumps(review,indent=2,ensure_ascii=False)+'\n')
+lines=['# Independent adversarial technical review: next260','',review['verdict']+'.','',
+ 'Reviewed the new gallate degradation II record plus the bounded gallate I and protocatechuate direction corrections against base `'+review['base_commit']+'`. Source and integration authors were separate from this reviewer.','',
+ '- Frozen package and integration replay: 2,120 checks passed. All 179 primary fact dispositions and 88 added/replacement-edge mappings resolve; all endpoint qualifications and all non-HG evidence arrays survive unchanged.',
+ '- Authority review: 184 checks passed. All 4,989 old terms and prior owners remain exact; 34 actual selected additions were checked against their issuing files or pinned SQL. All 1,062 prior manifest entries remain the exact prefix of 1,072 entries.',
+ '- KGX replay: 3,096 payload checks and 268 explicit-category checks passed. The complete 257-record export contains 4,676 nodes and 13,033 edges. Every changed-record edge preserves evidence, cited metadata, qualifiers, source context and direction; distinct biological kinds and source roles survive.',
+ '- Page replay: 3,684 checks passed. Every asserted relationship, native endpoint, evidence-row anchor and qualification survives. Published downloads equal the independent export exactly.',
+ '- Ignored-inclusive production scan: all 283 non-cache files match the Git base. No production code, governed files, existing history or existing reviews were modified in the observed scope.',
+ '- All seven actual project commands completed successfully, with bound logs and unchanged tested core inputs. No duplicate suite was run by this reviewer.','',
+ 'The sole minor technical finding was a supporting erratum locator typo, resolved by an append-only clarification. Two incorrect expectations in the reviewer’s initial probes were preserved and explicitly corrected; they were not repository defects.','',
+ 'Exact record, authority, page, report and gate hashes are in `technical-review.json`. The separate scientific review supplies the original-source scientific verdict. Browser visual/interactive approval is not claimed.','',
+ 'Full external artifacts are indexed by `artifact-manifest.json`. `compact-retention-manifest.json` selects lossless report copies and inert helper text; duplicate KGX TSVs remain external because the same bytes are published under `pages/downloads/`.']
+(OUT/'HANDOFF.md').write_text('\n'.join(lines)+'\n')
+
+# Preserve complete originals; make compact copies independently hashable.
+compact=OUT/'compact';assert not compact.exists();compact.mkdir()
+selected=[]
+for p in sorted(OUT.iterdir()):
+    if not p.is_file() or p.name in ['artifact-manifest.json','compact-retention-manifest.json']:continue
+    if p.suffix=='.json' and p.stat().st_size>15000 and p.name!='technical-review.json':
+        destination=compact/(p.name+'.gz');destination.write_bytes(gzip.compress(p.read_bytes(),mtime=0));encoding='gzip'
+    elif p.suffix=='.py':
+        destination=compact/(p.name+'.txt');destination.write_bytes(p.read_bytes());encoding='identity'
+    else:
+        destination=compact/p.name;destination.write_bytes(p.read_bytes());encoding='identity'
+    selected.append({'source_path':str(p),'source_sha256':sha(p),'source_bytes':p.stat().st_size,'retained_name':destination.name,'copy_from':str(destination),'retained_sha256':sha(destination),'retained_bytes':destination.stat().st_size,'encoding':encoding})
+selection={'scope':'Independent technical reviewer compact retention, not author artifacts. Compression is lossless and helpers are inert text copies. The external KGX outputs are byte-identical to published downloads.','files':selected,'file_count':len(selected),'retained_bytes':sum(x['retained_bytes'] for x in selected)}
+(OUT/'compact-retention-manifest.json').write_text(json.dumps(selection,indent=2)+'\n')
+manifest={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Immutable external independent technical package; no maintained writes or GitHub mutations performed','files':[{'path':str(p.relative_to(OUT)),'sha256':sha(p),'bytes':p.stat().st_size} for p in sorted(OUT.rglob('*')) if p.is_file() and p.name!='artifact-manifest.json']}
+(OUT/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+print(json.dumps({'handoff':str(OUT/'HANDOFF.md'),'handoff_sha256':sha(OUT/'HANDOFF.md'),'review_sha256':sha(OUT/'technical-review.json'),'manifest_sha256':sha(OUT/'artifact-manifest.json'),'compact_retention_sha256':sha(OUT/'compact-retention-manifest.json'),'retained_files':selection['file_count'],'retained_bytes':selection['retained_bytes']}))

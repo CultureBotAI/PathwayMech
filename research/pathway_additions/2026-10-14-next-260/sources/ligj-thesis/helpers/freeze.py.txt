@@ -1,0 +1,35 @@
+"""Verify and freeze a bounded access result; never access the network."""
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+def digest(path):
+    data = path.read_bytes()
+    return {'sha256': hashlib.sha256(data).hexdigest(), 'bytes': len(data)}
+def write(path, value):
+    path.write_text(json.dumps(value, indent=2) + '\n')
+
+context = json.loads((ROOT / 'receipts/context-bindings.json').read_text())
+for row in context['files']:
+    assert digest(Path(row['path'])) == {key: row[key] for key in ('sha256', 'bytes')}, row['path']
+receipt = json.loads((ROOT / 'receipts/public-content.json').read_text())
+body = ROOT / receipt['path']
+assert digest(body) == {key: receipt[key] for key in ('sha256', 'bytes')}
+assert receipt['status'] == 403 and not receipt['is_pdf']
+assert receipt['headers']['Cf-Mitigated'] == 'challenge'
+assert not body.read_bytes().startswith(b'%PDF-')
+assert all(key.lower() not in {'set-cookie', 'cookie', 'authorization', 'proxy-authorization'} for key in receipt['headers'])
+write(ROOT / 'verification.json', {'status': 'passed', 'scope': 'Byte binding and correct failed-access classification only; no full-text scientific validation.', 'context_files_rehashed': len(context['files']), 'response_hash_verified': receipt['sha256'], 'http_status': receipt['status'], 'pdf_acquired': False, 'dissertation_pages_read': 0, 'transport_session_headers_in_public_receipt': False})
+rows = []
+for path in sorted(ROOT.rglob('*')):
+    if path.is_file() and path.name not in {'artifact-manifest.json', 'compact-retention-manifest.json'}:
+        rows.append({'path': str(path.relative_to(ROOT)), **digest(path)})
+write(ROOT / 'artifact-manifest.json', {'scope': 'Separate bounded dissertation public-access dossier; originals remain external.', 'files': rows})
+selected = []
+for row in rows + [{'path': 'artifact-manifest.json', **digest(ROOT / 'artifact-manifest.json')}]:
+    if row['path'].startswith('originals/'):
+        continue
+    selected.append({'copy_from': str(ROOT / row['path']), 'retained_name': row['path'] + ('.txt' if row['path'].endswith('.py') else ''), 'sha256': row['sha256'], 'bytes': row['bytes']})
+write(ROOT / 'compact-retention-manifest.json', {'status': 'frozen', 'omitted': ['originals/public-content.response: challenge HTML; externally bound by exact SHA-256'], 'files': selected})
+print(json.dumps({'verification': digest(ROOT / 'verification.json'), 'handoff': digest(ROOT / 'HANDOFF.md'), 'artifact_manifest': digest(ROOT / 'artifact-manifest.json'), 'compact_retention_manifest': digest(ROOT / 'compact-retention-manifest.json'), 'compact_files': len(selected)}, indent=2))

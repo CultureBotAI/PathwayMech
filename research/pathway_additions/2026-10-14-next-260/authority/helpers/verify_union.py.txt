@@ -1,0 +1,80 @@
+"""Verify exact selected union and unchanged baseline; never promote candidates."""
+from pathlib import Path
+import argparse,datetime,hashlib,json,shutil,sys
+import yaml
+B=Path(__file__).resolve().parents[1]
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb') as f:
+  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+def save(name,obj):
+ p=B/'retained'/name;assert not p.exists(),f'Preserve prior verification attempt: {p}'
+ p.write_text(json.dumps(obj,indent=2,ensure_ascii=False)+'\n');return p
+def main():
+ parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path,required=True);parser.add_argument('--record-sha256',required=True);args=parser.parse_args()
+ assert sha(args.record)==args.record_sha256
+ commands=load(B/'retained/canonical-build-commands.json');preservation=load(B/'retained/build-input-preservation.json');base=load(B/'retained/baseline-preparation.json')
+ assert preservation['status']=='passed' and preservation['all_inputs_unchanged']
+ assert preservation['command_file_sha256']==sha(B/'retained/canonical-build-commands.json')
+ for key in ['source_builder','ontology_builder']:
+  r=load(B/'retained'/(key+'-receipt.json'));assert r['exit_code']==0 and r['command']==commands[key] and r['command_file_sha256']==preservation['command_file_sha256'];assert sha(r['log_path'])==r['log_sha256']
+ planned=set(load(B/'retained/planned-identifiers.json'));retained=set(load(B/'retained/retained-authority-identifiers.json'));freeze=load(B/'retained/selection-freeze.json')
+ assert set(freeze['selected_identifiers'])==planned
+ record=yaml.safe_load(args.record.read_text());actual={record['id']}|{n['id'] for field in ['taxa','participants','reactions','gene_clusters'] for n in record.get(field,[])}
+ assert actual==planned,(sorted(actual-planned),sorted(planned-actual))
+ report=dict(status='author_verification_passed_pending_independent_review',role='Authority-integration author; no independent scientific verdict',utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),baseline_commit=base['baseline_commit'],baseline_identifier_count=len(retained),selected_identifier_count=len(planned),snapshots={},maintained_files_edited=False)
+ oldterms={};newterms={}
+ for name in ['sources','ontology']:
+  oldpath=B/'baseline/data/identifier_authorities'/(name+'.json');newpath=B/'proposal'/(name+'.union.json');old=load(oldpath);new=load(newpath)
+  assert sha(newpath)==preservation['outputs'][name+'.union.json'];assert old['version']==new['version']
+  for section in ['terms','sources']:
+   changed=[key for key,value in old[section].items() if new[section].get(key)!=value];assert not changed,(name,section,changed)
+  assert not newterms.keys()&new['terms'].keys();newterms.update(new['terms']);oldterms.update(old['terms'])
+  report['snapshots'][name]=dict(before_sha256=sha(oldpath),after_sha256=sha(newpath),baseline_terms=len(old['terms']),final_terms=len(new['terms']),baseline_owners=len(old['sources']),final_owners=len(new['sources']),all_baseline_objects_exact=True,new_terms=sorted(new['terms'].keys()-old['terms'].keys()),new_owners=sorted(new['sources'].keys()-old['sources'].keys()))
+ assert set(oldterms)==retained and len(retained)==4989
+ assert planned<=newterms.keys() and set(newterms)-retained==planned-retained
+ oldmanifest=load(B/'baseline/conf/identifier_sources.json');newmanifest=load(B/'proposal/identifier_sources.json');adds=load(B/'retained/proposed-source-additions.json')
+ assert newmanifest[:len(oldmanifest)]==oldmanifest and newmanifest[len(oldmanifest):]==adds
+ assert {e['key'] for e in adds}==set(report['snapshots']['sources']['new_owners'])
+ assert not report['snapshots']['ontology']['new_owners']
+ report['manifest']=dict(baseline_entries=len(oldmanifest),new_entries=len(adds),final_entries=len(newmanifest),baseline_entry_prefix_exact=True,sha256=sha(B/'proposal/identifier_sources.json'))
+ for row in commands['database_bindings']:
+  p=Path(row['path']);stat=p.stat();assert stat.st_size==row['bytes'] and stat.st_mtime_ns==row['mtime_ns'];assert str(p.resolve())==row['resolved']
+  assert load(B/'proposal/ontology.union.json')['sources'][row['owner_key']]['sha256']==row['sha256']
+ report['pinned_databases']=dict(count=4,canonical_complete_database_hashes_match_baseline=True,size_and_mtime_unchanged=True)
+ shadow=B/'identifier-verification-root';assert not shadow.exists();(shadow/'conf').mkdir(parents=True);(shadow/'data/identifier_authorities').mkdir(parents=True)
+ shutil.copyfile(B/'baseline/conf/identifier_policy.yaml',shadow/'conf/identifier_policy.yaml')
+ for name in ['sources','ontology']:shutil.copyfile(B/'proposal'/(name+'.union.json'),shadow/'data/identifier_authorities'/(name+'.json'))
+ rows=load(B/'retained/baseline-record-bindings.json');current_bindings=[]
+ current_root=Path('/private/tmp/pathwaymech-next-260-20261014')
+ def identity_projection(value):
+  result=[('record',value['id'],value['label'],value.get('category'))]
+  for field in ['taxa','participants','reactions']:
+   result.extend((field,n['id'],n['label'],n.get('category')) for n in value[field])
+  return result
+ for row in rows:
+  assert sha(row['path'])==row['sha256']
+  current=current_root/row['git_path'];current_bytes=current.read_bytes();current_sha=hashlib.sha256(current_bytes).hexdigest()
+  assert identity_projection(yaml.safe_load(Path(row['path']).read_text()))==identity_projection(yaml.safe_load(current_bytes)),('Predecessor identity selection changed',row['git_path'])
+  dest=shadow/row['git_path'];dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(current_bytes)
+  current_bindings.append(dict(git_path=row['git_path'],current_path=str(current),current_sha256=current_sha,baseline_sha256=row['sha256'],bytes_changed=current_sha!=row['sha256'],identity_slots_preserved=True))
+ destination=shadow/'data/pathways/gallate-degradation-ii.yaml';assert not destination.exists();shutil.copyfile(args.record,destination)
+ assert len(list((shadow/'data/pathways').rglob('*.yaml')))==len(rows)+1
+ sys.path.insert(0,str(B/'runtime/src'))
+ from pathwaymech.identifiers import identifier_errors
+ errors=identifier_errors(shadow)
+ for row in current_bindings:assert sha(row['current_path'])==row['current_sha256']
+ save('actual-predecessor-record-bindings.json',dict(scope='Current maintained predecessor bytes used in identity consumer; bounded direction/prose corrections may differ from baseline, while named ID/label/category slots are exact',records=current_bindings,changed_paths=[r['git_path'] for r in current_bindings if r['bytes_changed']]))
+ save('identifier-policy-verification.json',dict(status='passed' if not errors else 'failed',errors=errors,records_checked=len(rows)+1,authority_terms=len(newterms),record_sha256=args.record_sha256,policy_sha256=sha(B/'baseline/conf/identifier_policy.yaml'),scope='Canonical offline identity/name/native entity typing consumer on 256 current predecessor observations and the supplied final new record; not full repository validation or scientific approval'))
+ assert not errors,errors
+ for row in base['baseline_files']:assert sha(row['path'])==row['sha256']==sha(row['maintained_path'])
+ for row in load(B/'retained/runtime-bindings.json'):assert sha(row['path'])==row['sha256']
+ assert sha(args.record)==args.record_sha256
+ report.update(final_record=dict(path=str(args.record),sha256=args.record_sha256),final_authority_terms=len(newterms),new_identifiers=sorted(planned-retained),records_checked=len(rows)+1,identifier_policy_passed=True,predecessor_bytes_changed_from_baseline=[r['git_path'] for r in current_bindings if r['bytes_changed']],all_predecessor_identity_slots_preserved=True)
+ save('final-record-selection-binding.json',dict(final_record_path=str(args.record),final_record_sha256=args.record_sha256,initial_selection_observation=freeze,selected_identifiers=sorted(planned),count=len(planned),exact_selected_ids_preserved=True))
+ save('planned-authority-labels.json',{i:newterms[i] for i in sorted(planned)})
+ save('union-preservation-verification.json',report)
+ print(json.dumps(dict(status=report['status'],final_terms=len(newterms),new_terms=len(planned-retained),new_owners=len(adds),records_checked=len(rows)+1)))
+if __name__=='__main__':main()

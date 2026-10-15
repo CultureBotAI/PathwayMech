@@ -1,0 +1,22 @@
+from pathlib import Path
+import datetime,json,re,sqlite3
+ROOT=Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+OUT=ROOT/'retained/additional-exact-label-candidates.json'
+assert not OUT.exists()
+patterns={
+ 'metal_salts':r'^(manganese|barium|chromium|magnesium|calcium|nickel|cobalt|zinc|cadmium|mercury|beryllium|iron|strontium).{0,12}(chloride|sulfate)$',
+ 'metal_ions':r'^(cadmium|beryllium|calcium|nickel|barium|strontium|chromium)\([23]\+\)$',
+ 'phosphate_delivery':r'^(dipotassium hydrogenphosphate|potassium dihydrogen phosphate|potassium dihydrogenphosphate|phosphate\(3-\)|hydrogenphosphate|dihydrogenphosphate|phosphoric acid|diphosphate\(4-\)|diphosphoric acid|pyrophosphate|sodium pyrophosphate|tetrasodium diphosphate)$',
+ 'positive_additives':r'^(phosphorous acid|phosphonic acid|hydrogencarbonate|sodium hydrogencarbonate|acetyl phosphate|acetyl phosphate\([12]-\)|thiamine\s*diphosphate|thiamine\s*diphosphate\([123]-\)|ATP|ATP\(4-\)|ADP|ADP\(3-\)|arsenate ion|arsenate\([123]-\)|sodium arsenate|disodium hydrogenarsenate|sodium dihydrogen arsenate)$',
+ 'thiols':r'^(dithiothreitol|2-mercaptoethanol|iodoacetamide|iodoacetic acid|iodoacetate|iodacetate|potassium cyanide|reduced glutathione|glutathione|glutathione\(1-\)|L-cysteine|L-cysteine hydrochloride|L-cysteine zwitterion)$',
+ 'competitive_substrates':r'^.{0,6}(4-hydroxy-2-oxobutan(oic acid|oate)|4-hydroxy-2-oxopentan(oic acid|oate)|4-hydroxy-2-oxovaler(ate|ic acid)|2-oxobutan(oic acid|oate)|2-oxoadip(ate|ic acid)|citrate\(3-\)|citric acid|2-oxoglutarate).{0,7}$',
+ 'nonactivating':r'^(phosphinic acid|sodium acetate|sodium borate|perchloric acid|sodium sulfate|sodium sulfite|potassium nitrate|potassium iodide|potassium bromide|oxalate\(2-\)|malonate\(2-\)|succinate\(2-\)|AMP|adenosine 5\x27-monophosphate|NAD\(\+\)|NADP\(\+\)|NAD|NADP|O-phosphoethanolamine|phosphoethanolamine|D-glucose 6-phosphate|D-fructose 1,6-bisphosphate|potassium chloride)$'
+}
+db=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+query="select subject,value from statements where predicate='rdfs:label'"
+found={k:[] for k in patterns}
+for cid,label in db.execute(query):
+ for k,pattern in patterns.items():
+  if re.fullmatch(pattern,label,re.I):found[k].append({'id':cid,'label':label})
+with OUT.open('x') as stream:json.dump({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'query':query,'patterns':patterns,'found':found},stream,indent=2);stream.write('\n')
+print(json.dumps(found,indent=2))

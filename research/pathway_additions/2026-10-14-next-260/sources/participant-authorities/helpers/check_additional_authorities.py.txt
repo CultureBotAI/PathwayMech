@@ -1,0 +1,58 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,re,sqlite3
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+ROOT=Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+OUT=ROOT/'retained/additional-authority-check.json'
+assert not OUT.exists()
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(8*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+def desc(m):
+ if m is None:return {'parse_error':True}
+ Chem.AssignStereochemistry(m,cleanIt=True,force=True)
+ return {'smiles':Chem.MolToSmiles(m,isomericSmiles=True),'inchi':Chem.MolToInchi(m),'key':Chem.MolToInchiKey(m),'charge':Chem.GetFormalCharge(m),'formula':rdMolDescriptors.CalcMolFormula(m),'atoms':dict(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms())),'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True),'charged_atoms':[(a.GetSymbol(),a.GetFormalCharge()) for a in m.GetAtoms() if a.GetFormalCharge()]}
+def formula_atoms(formula):
+ result=collections.Counter()
+ for component in formula.split('.'):
+  match=re.match(r'^(\d+)(.*)$',component)
+  scale=int(match[1]) if match else 1;component=match[2] if match else component
+  tokens=re.findall(r'([A-Z][a-z]?)([0-9]*)',component)
+  assert ''.join(a+b for a,b in tokens)==component,formula
+  for atom,n in tokens:result[atom]+=scale*int(n or 1)
+ return dict(result)
+sql=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');digest=sha(sql)
+assert digest=='26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+db=sqlite3.connect('file:'+str(sql)+'?mode=ro',uri=True)
+priorpath=ROOT/'retained/native-reagent-chemistry-check.json';prior=json.loads(priorpath.read_text())
+selected={};warnings=[];checks=[]
+for p in sorted((ROOT/'originals').glob('CHEBI-*.json')):
+ j=json.loads(p.read_text());cid=j['chebi_accession'];rows=db.execute('select predicate,object,value from statements where subject=?',(cid,)).fetchall()
+ chemical=j.get('chemical_data') or {};structure=j.get('default_structure') or {}
+ fields={pred:obj or value for pred,obj,value in rows if pred in ['rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string','IAO:0000115']}
+ r={'path':str(p),'sha256':sha(p),'id':cid,'label':j['ascii_name'],'chemical_data':chemical,'structure':structure,'pinned_fields':fields,'pinned_synonyms':[{'predicate':a,'value':c} for a,b,c in rows if 'Synonym' in a]}
+ c={'exact_requested_id':cid=='CHEBI:'+p.stem.split('-')[1],'pinned_label_equal':fields.get('rdfs:label')==j['ascii_name']}
+ if structure.get('smiles') and structure.get('standard_inchi'):
+  sm=desc(Chem.MolFromSmiles(structure['smiles']));im=desc(Chem.MolFromInchi(structure['standard_inchi']))
+  r['reconstructed']={'issuing_smiles':sm,'issuing_inchi':im}
+  c.update({'pinned_inchi_equal':fields.get('chemrof:inchi_string')==structure['standard_inchi'],'pinned_key_equal':fields.get('chemrof:inchi_key_string')==structure['standard_inchi_key'],'pinned_formula_equal':fields.get('chemrof:generalized_empirical_formula')==chemical.get('formula'),'pinned_charge_equal':str(fields.get('chemrof:charge'))==str(chemical.get('charge')),'smiles_key_equal':sm.get('key')==structure['standard_inchi_key'],'inchi_key_equal':im.get('key')==structure['standard_inchi_key'],'smiles_charge_equal':sm.get('charge')==chemical.get('charge'),'inchi_charge_equal':im.get('charge')==chemical.get('charge'),'smiles_formula_equal':sm.get('atoms')==formula_atoms(chemical['formula']),'inchi_formula_equal':im.get('atoms')==formula_atoms(chemical['formula'])})
+  r['type']='structure-bearing issuing entry'
+ else:
+  r['type']='class or representation-limited issuing entry; no exact molecular-structure claim'
+  r['missing_structure_scope']='No complete SMILES/InChI pair supplied; label/definition/ontology class checked without inventing a molecular graph.'
+ r['checks']=c;checks.extend(c.values());selected[cid]=r
+ if not all(c.values()):warnings.append({'id':cid,'label':j['ascii_name'],'false_checks':[k for k,v in c.items() if not v]})
+ print(cid,j['ascii_name'],all(c.values()),flush=True)
+pubs={}
+for p in sorted((ROOT/'originals').glob('PubChem-[0-9]*.json')):
+ j=json.loads(p.read_text())['PC_Compounds'][0];v={(x['urn']['label'],x['urn'].get('name','')):x['value'].get('sval') for x in j['props']}
+ smi=v.get(('SMILES','Absolute')) or v.get(('SMILES','Canonical')) or v.get(('SMILES','Connectivity'))
+ sm=desc(Chem.MolFromSmiles(smi));im=desc(Chem.MolFromInchi(v[('InChI','Standard')]))
+ c={'exact_requested_cid':j['id']['id']['cid']==int(p.stem.split('-')[1]),'smiles_key_equal':sm['key']==v[('InChIKey','Standard')],'inchi_key_equal':im['key']==v[('InChIKey','Standard')],'smiles_charge_equal':sm['charge']==j.get('charge',0),'inchi_charge_equal':im['charge']==j.get('charge',0)}
+ pubs[str(j['id']['id']['cid'])]={'path':str(p),'sha256':sha(p),'iupac_name':v.get(('IUPAC Name','Preferred')),'formula':v[('Molecular Formula','')],'charge':j.get('charge',0),'inchi':v[('InChI','Standard')],'key':v[('InChIKey','Standard')],'smiles':smi,'reconstructed':{'smiles':sm,'inchi':im},'pinned_exact_key_matches':db.execute("select subject from statements where predicate='chemrof:inchi_key_string' and value=?",(v[('InChIKey','Standard')],)).fetchall(),'checks':c};checks.extend(c.values())
+ if not all(c.values()):warnings.append({'pubchem_cid':j['id']['id']['cid'],'false_checks':[k for k,v in c.items() if not v]})
+output={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'next260 reagent source author, not independent biological reviewer','rdkit_version':rdBase.rdkitVersion,'pinned_database':{'path':str(sql),'sha256':digest,'bytes':sql.stat().st_size},'prior_native_proof':{'path':str(priorpath),'sha256':sha(priorpath),'earlier_issuing_count':len(prior['issuing_and_pinned'])},'issuing_authorities':selected,'pubchem_authorities':pubs,'all_machine_checks_pass':all(checks),'warnings':warnings,'limitations':['Candidate closure verifies identity of a cited issuing entry, not that the experiment specified that charge, tautomer, hydrate or salt. Selection requires the source-to-identity disposition ledger.','SMILES and standard InChI may represent proton positions and metal disconnection differently; atom charges and both graphs are retained.','An unassigned chiral center is not evidence of a racemate unless the primary source itself reports a racemic preparation.']}
+with OUT.open('x') as f:json.dump(output,f,indent=2);f.write('\n')
+print(json.dumps({'output':str(OUT),'issuing_count':len(selected),'pubchem_count':len(pubs),'all_checks_pass':all(checks),'warnings':warnings}),flush=True)

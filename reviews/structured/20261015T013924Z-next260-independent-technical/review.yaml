@@ -1,0 +1,3542 @@
+schema_version: 1.0.0
+review_id: 20261015T013924Z-next260-independent-technical
+kind: batch
+repository: CultureBotAI/PathwayMech
+title: Independent technical integration review of next260 gallate batch
+started_at: '2026-10-15T01:37:47.933071Z'
+finished_at: '2026-10-15T01:39:24.612398Z'
+reviewer:
+  identity: Codex independent technical reviewer /root/next260_technical_review
+  kind: agent
+  independence: independent
+  independence_basis: Reviewer is separate from source, native, primary, authority
+    and integration authors; performed no maintained edits or GitHub writes. Reviewed
+    frozen exact input hashes and independently replayed integration, exports, source
+    additions and rendered payloads.
+skill: Manual adversarial technical review through docs/record-reviews.md and docs/record-review-profile.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: No unresolved technical findings in the exact three-record batch. Frozen
+  source integration, bounded predecessor direction corrections, retained provenance,
+  authority union, full-corpus exports, generated page payloads and required project
+  gates are supported. The advance locator issue was fixed append-only before this
+  first canonical review. Scientific literature assessment belongs to the separate
+  independent scientific reviewer.
+source:
+  git_revision: b2590dfd2385c83fe4f028ecd5309a0407739838
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/cross-mech-protein-links/SKILL.md
+    sha256: 3476e98344de4dc6c0cf47ff303f141ec3da5c329785ee32c140fc9a35a13142
+    role: context
+  - path: .claude/skills/pathwaymech-discover-sources/SKILL.md
+    sha256: b51b7dad09612ab21420a9883b7f56c633a3d38ca3ef45b8f5ca040e05ec2130
+    role: context
+  - path: .claude/skills/pathwaymech-resolve-reviews/SKILL.md
+    sha256: 3d3b9d3b9e56cc782cf4ff63d491c5b589e9bdcde71438a695384b228edc4aea
+    role: context
+  - path: .claude/skills/review-open-issues/SKILL.md
+    sha256: d335b16aa12e36a46614f92b4440d6d5bd43d12978ebdca21f9e79642f87f4fb
+    role: context
+  - path: .claude/skills/review-pathway-sources/SKILL.md
+    sha256: 61797d1b6b4fb45b2748d2da48b1664a8600fd1eebcad5be6e3f0bdec5a908f0
+    role: context
+  - path: .claude/skills/review-yaml-category/SKILL.md
+    sha256: 6b407a3b3f3c4679e49b14843d274e95693a23a6cb3916062a8d3ad07bb13c76
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: .claude/skills/source-triage/SKILL.md
+    sha256: 06bc31ec06a74ed5a803730b6dd51a5054ffc66ea4881a730e21c64a087ab362
+    role: context
+  - path: .github/workflows/main.yaml
+    sha256: 09bdf8c9135e5696658e14fea56ddf0961f15f9e7ba31c6780ffb9952ac22f20
+    role: context
+  - path: .github/workflows/merge-queue-admission.yaml
+    sha256: 3a1fd0320ccb4e056b9733edaf107fd9c3c3e9728291ac7095601bfbb6e0f598
+    role: context
+  - path: .github/workflows/pages.yaml
+    sha256: 67253589daa2d38f1084632cc10fa67704bb0c354a3625f4f459333a33f47e28
+    role: context
+  - path: .github/workflows/pr-shepherd.yml
+    sha256: 3230756053abfa76afb6f65c3615106617273246a00598758d1b37ded82d687b
+    role: context
+  - path: .github/workflows/vendored-sync.yaml
+    sha256: 53467d20d15435956340cb00c6d9e7cd7be9a301265927456d47e78ac4b0ff37
+    role: context
+  - path: .github/workflows/verify-merge-integrity.yaml
+    sha256: eace81f16c9e29aa2139ac4b750620fea6d33ab97182dc502c3dc52d0a3e3b50
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 8e7647a5b1bd4b2c7ad6a349ddffbc5479609c2e17b6fe823b18e7d180161acb
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: curation/decisions.tsv
+    sha256: f103b9b7510030f901fffd8e8deb758a35e6e0c6490bf55c7f63ff3f314a00ea
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: 64daef8b4d05707fac49a19bd12b2f25c31fb47a42be9c4160cb343b18cb3eb3
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: f7d6ddc77b1a6877b9b3e37ad30bde283f7b878c5b2cf45658b1aba3f99821bb
+    role: context
+  - path: data/pathways/2-3-dihydroxybenzoate-biosynthesis.yaml
+    sha256: bdb60326e2ffa5db8e15939ce29bf57a12b992c1f2e56899c1cec3ecf01e2859
+    role: context
+  - path: data/pathways/2-methylcitrate-cycle-i.yaml
+    sha256: 0ccbcbcee61777f9f3265f5dec8c19ad5ce2ccf6051b54afe36fd1ed3bde40b7
+    role: context
+  - path: data/pathways/2-phenylethanol-biosynthesis.yaml
+    sha256: cf1fc7347b88c2ecb1139564b24bd64018e0fc65793314061f3cf22eed5fd5ef
+    role: context
+  - path: data/pathways/3-oxoadipate-degradation.yaml
+    sha256: 214ef2d38ede4bb4e919f6f53699491e7c53b8d9b5b858c6ba80084e5b067032
+    role: context
+  - path: data/pathways/4-aminobenzoate-biosynthesis-i.yaml
+    sha256: b0150b47850d17acbbe560a7d40a82d49a2f976a92ea15ab43c44df1a83c4b91
+    role: context
+  - path: data/pathways/4-aminobutyrate-degradation.yaml
+    sha256: dc220e2a4d394750d7adc8bbaa1a7060082c28daeaa077fb6e9c1f94f2168173
+    role: context
+  - path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-i.yaml
+    sha256: 74516388c180b8832fbaf1f8a24a3e8f71ff737a4812191b8c3807dfd91ec250
+    role: context
+  - path: data/pathways/5-aminoimidazole-ribonucleotide-biosynthesis-ii.yaml
+    sha256: 324c587f1e7943d75cc48d6958fdf5f9e8b37d7427e2e132507192e670ba5ec9
+    role: context
+  - path: data/pathways/5-prime-deoxyadenosine-degradation-i.yaml
+    sha256: c8ae12061fd62a5ff8c6861b6665e3ac6938b0fe611b9e3d8d6a1e11f33199a5
+    role: context
+  - path: data/pathways/5-prime-deoxyadenosine-degradation-ii.yaml
+    sha256: a367fac8ac036416baaabc9d64ae1d9927e66e87ad1bb96e2883725fd14ce68b
+    role: context
+  - path: data/pathways/6-hydroxymethyl-dihydropterin-diphosphate-biosynthesis-i.yaml
+    sha256: e5f0507a6060dab794ffc5b0b11b125f23677a9d54c5b5440a07eb05c48a72a9
+    role: context
+  - path: data/pathways/7-cyano-7-deazaguanine-biosynthesis.yaml
+    sha256: bbcf3f41f8c8996e045827f21672281f8f3040c2e51357eafb74e14fc050d4a6
+    role: context
+  - path: data/pathways/acetate-and-atp-formation-from-acetyl-coa-i.yaml
+    sha256: 98fa4218caba0e95fbee8fc6ce63d97166499afb3609391db88ab6f82a1f4e22
+    role: context
+  - path: data/pathways/acetoacetate-degradation.yaml
+    sha256: 7b11ec62ac5121cef00cadfcea79114d080c9d989a5dcdb3a1c585a946b3116b
+    role: context
+  - path: data/pathways/acetogenesis.yaml
+    sha256: 355b97b8d2c45e437b853c2447bfb14900507b40923991d49d0b68e9e7d3d54a
+    role: context
+  - path: data/pathways/adenine-and-adenosine-salvage-i.yaml
+    sha256: b8c745da81f095ee1ec00a78ec4d04e16b25de4990d02ec3be79489cc5e42da5
+    role: context
+  - path: data/pathways/adenine-and-adenosine-salvage-ii.yaml
+    sha256: 8b8eb42ace01b8d663ecff30a85e47d6de7b25e7cde785b268655ab281153157
+    role: context
+  - path: data/pathways/adenine-and-adenosine-salvage-iii.yaml
+    sha256: 26f0adf56c04ed8e45b615e2a9fe73da42469775d66ad27df7e4d37f5e9b1249
+    role: context
+  - path: data/pathways/adenosine-deoxyribonucleotides-de-novo-biosynthesis-ii.yaml
+    sha256: 3cd2f4ba0bdbd27028fad8814a024a16cdca397bc09764ecba2597826bfc0625
+    role: context
+  - path: data/pathways/adenosine-nucleotides-degradation-ii.yaml
+    sha256: b7f837be8676b08c9a8a0f417ca17a695664e8614b30e7847f4f7e05c845cbf6
+    role: context
+  - path: data/pathways/adenosine-ribonucleotides-de-novo-biosynthesis.yaml
+    sha256: 3840e82b7a5d9809e754222ac412b4321f3b99e73e085a3efdb9fbe6b402c9ef
+    role: context
+  - path: data/pathways/adenosylcobalamin-biosynthesis-from-adenosylcobinamide-gdp-i.yaml
+    sha256: 8453146fc5cc438fd95be5acc623ba0f6fbe52e647ad21f1fa2dc535ee619184
+    role: context
+  - path: data/pathways/adenosylcobinamide-gdp-salvage-i.yaml
+    sha256: 2e4943a2b36d529ef076e8a8ee561c120e65dc2e8e9c6c4452e2544a180645cd
+    role: context
+  - path: data/pathways/adp-l-glycero-beta-d-manno-heptose-biosynthesis.yaml
+    sha256: affa9eb37e5575d895dc7ae93173037ff18019e2a5e74012139b6aacb6febaf3
+    role: context
+  - path: data/pathways/aerobactin-biosynthesis.yaml
+    sha256: 3e4e50965749a9fa9dfe6319fd1462cc8329c10b7f4ab5363e7b486f2f32e3d4
+    role: context
+  - path: data/pathways/aerobic-glycerol-degradation.yaml
+    sha256: 6541509e6b50f5a7f462010541a7953ddcafa82c49959ffcbf7658a00b5e92fb
+    role: context
+  - path: data/pathways/allantoin-degradation-iv-anaerobic.yaml
+    sha256: bd9c6c24677b6852478f2dd9e2846ade22d13dd722951a50acfb8b4516f1a8fb
+    role: context
+  - path: data/pathways/allantoin-degradation-to-glyoxylate-i.yaml
+    sha256: 4d8f1c7aee53baaf61885814f0e6870ae480759cb825037725bfa39395921ac2
+    role: context
+  - path: data/pathways/allantoin-degradation-to-glyoxylate-iii.yaml
+    sha256: 1fe731570ceb2038b0b153686be184c99afbd82ab6ba9a9516694b2277de1b37
+    role: context
+  - path: data/pathways/allantoin-degradation-to-ureidoglycolate-i.yaml
+    sha256: adb71534db0d3300a6757b499b757a2d17f901910cc2417d99ad6f7f510fdc31
+    role: context
+  - path: data/pathways/amino-sugar-superpathway.yaml
+    sha256: fc436f537303f50121c472a4ece19249f3e6eb74d7304933fbafb37e04a61978
+    role: context
+  - path: data/pathways/aspartate-biosynthesis.yaml
+    sha256: 8c26f4bd655f7b13db25c70e817db9cb6b4232ccc941bf890bcbff54b25a180e
+    role: context
+  - path: data/pathways/assimilatory-sulfate-reduction.yaml
+    sha256: 64aa47bf9da9d04d1e53d164f44d2ec4fb42adede455ea5dbbaa351917b398bc
+    role: context
+  - path: data/pathways/bacillibactin-biosynthesis.yaml
+    sha256: aaf46730530dc9ae86fd18f8b382baebbcf0f37b79342b7eebf18e0e64ebeafa
+    role: context
+  - path: data/pathways/baesr-two-component-signal-transduction.yaml
+    sha256: 1cf9262a0df376a19517b3f55ccaac67dacc8af8ce58bd8a1b2046e93a951824
+    role: context
+  - path: data/pathways/beta-alanine-biosynthesis-iv.yaml
+    sha256: f12c8f6ea8a7b774c0e596fec3c141de4a5ae60049aee7caec8018f2827aa2ee
+    role: context
+  - path: data/pathways/biotin-biosynthesis-i.yaml
+    sha256: b95b35d22f813ecb167b068554b4cee9e44bdb2d0ce4765338e82ecd84df0dff
+    role: context
+  - path: data/pathways/calvin-cycle.yaml
+    sha256: e5b770e60e481068b847e7dfe60b3f85681e36f25952f2c4308f82b0133d05a9
+    role: context
+  - path: data/pathways/carbon-fixation-by-3-hydroxypropionate-cycle.yaml
+    sha256: 34df3c9f0c29e7a61a3e687139c9dde7f98f48ad4ceec65b3d3168ea9f41776d
+    role: context
+  - path: data/pathways/carnitine-shuttle.yaml
+    sha256: e7c9ab47f1cb65dd2ab0c467436da840f77e592fa9ca72293014350820cdb6af
+    role: context
+  - path: data/pathways/catechol-degradation-to-beta-ketoadipate.yaml
+    sha256: 39ca1eedee87cb3ee01d9d698359bdfdee505b1fa05e160154e976fa6514e6c6
+    role: context
+  - path: data/pathways/chitin-biosynthesis.yaml
+    sha256: b7ab2d44d5694a1c1f56d15474c5d59ef66e7a0df36516e3325ea605b6c98c43
+    role: context
+  - path: data/pathways/chorismate-biosynthesis-i.yaml
+    sha256: dc5c2fa8d319b3e1909f59982d6891e0de76eecc00bd3850da469507f0a1875a
+    role: context
+  - path: data/pathways/chromobacterium-violaceum-violacein-biosynthetic-gene-cluster.yaml
+    sha256: a2c389bdea0ba8574ded73b47ae67cc5011105f4579401661197ffcb0e689d0a
+    role: context
+  - path: data/pathways/citrate-lyase-activation.yaml
+    sha256: c76b50f65ef43e599ca16a9789144840660b52a4dc1d9adcd46fb8c5fecdd450
+    role: context
+  - path: data/pathways/citrulline-biosynthesis.yaml
+    sha256: bf40044ef709ce95ef9faafef7a724efbdac7764cce18fdd263520f0593f1924
+    role: context
+  - path: data/pathways/coenzyme-a-biosynthesis-i-prokaryotic.yaml
+    sha256: bdca4a5ea4688a5a4f4ab4f18e93dc3501b40e0bfe00eb7fa1621998295f438d
+    role: context
+  - path: data/pathways/curcumin-degradation.yaml
+    sha256: 814e063d50371068e9a7f3d6238b0f6ad76e172f6072c59b570cafdba0cb407b
+    role: context
+  - path: data/pathways/cyanate-degradation.yaml
+    sha256: 7972d75389eb8cc316ff268467d6846351fc313850aa165ae51983bf87ed717f
+    role: context
+  - path: data/pathways/d-arabinose-degradation-i.yaml
+    sha256: e4c05a00929557b8cabcdc26f057f7ac788d85ae82de515828806a79dd98f886
+    role: context
+  - path: data/pathways/d-galactarate-degradation-i.yaml
+    sha256: 6f637a08b7bb39df952c27a96313c60883ae53ff15fd9597972ded54bf31bc26
+    role: context
+  - path: data/pathways/d-galactonate-degradation.yaml
+    sha256: 51e71bf9bd2d0888f6f3e56f98eb4b4fab32034266bfe8dfeeb375529afc3f84
+    role: context
+  - path: data/pathways/d-galacturonate-degradation-i.yaml
+    sha256: dafcc96c28d5d1e9c36f38a9b9701217e64b32cebffcb7fd4516bb1557a5d562
+    role: context
+  - path: data/pathways/d-glucarate-degradation-i.yaml
+    sha256: c48cbb09d6b97812ea6d84a3229eae34400a68bccc38192553fff2d376ba4ad1
+    role: context
+  - path: data/pathways/d-xylose-degradation-i.yaml
+    sha256: 4faccd4d9a05d6132f6f24e06d481e0c1be1386f4914cecd8abcab6e23c50ce2
+    role: context
+  - path: data/pathways/desferrioxamine-b-biosynthesis.yaml
+    sha256: ab6b7808c564fc2bbddaa1fea159f0927e2ec2f73b9890e7ab360c5e3718a9dd
+    role: context
+  - path: data/pathways/dicarboxylate-hydroxybutyrate-cycle.yaml
+    sha256: bf5316958e94eae4e2e09a864dca8e45d8997b041d7e26c991c9633f24449209
+    role: context
+  - path: data/pathways/dolichyl-glucosyl-phosphate-biosynthesis.yaml
+    sha256: 3d4489e00bc5bc9d7c5160d1ad3e7ed4a8c64e1722ef80b562740a6699febe5b
+    role: context
+  - path: data/pathways/dolichyl-phosphate-d-mannose-biosynthesis.yaml
+    sha256: acc8b361993a1db31e3bf253e05526b2998b7a91c0cf3b0e6628aaf530adb688
+    role: context
+  - path: data/pathways/dtdp-l-rhamnose-biosynthesis.yaml
+    sha256: 75ec1f4ffa088e6647182cde01b7959df161261cb03d48cd471609b2a9b42de9
+    role: context
+  - path: data/pathways/ectoine-biosynthesis.yaml
+    sha256: 9f9d3c2c3de5ca5a3c59df1c3cb056fdf8cd60c0fb922feb902d5549151478dc
+    role: context
+  - path: data/pathways/entner-doudoroff-pathway.yaml
+    sha256: 548eba1d34a081dd293db6d8bf0e00a0e620973e8f843dafa75bcded6a74e4af
+    role: context
+  - path: data/pathways/epoxysqualene-biosynthesis.yaml
+    sha256: c6bf14ce9e385df8aab07fb667d4aaecffcc53495d4b7372b02ea183f3898ccd
+    role: context
+  - path: data/pathways/ergosterol-biosynthesis-i.yaml
+    sha256: 0439f963e2bcbb3e5e781df1338549c8963929747a721c72171cf533030344c5
+    role: context
+  - path: data/pathways/ergothioneine-biosynthesis-i.yaml
+    sha256: 238df68728e041e3afe989e226cecf689924db2318fc51dd700b9028f6920527
+    role: context
+  - path: data/pathways/ethanol-degradation.yaml
+    sha256: d9df81a6d31bb732e2077798277c3b840c71596a482366603a93d22285aa6f84
+    role: context
+  - path: data/pathways/ethylene-glycol-degradation.yaml
+    sha256: c247d9c205fc14ac5bb0d1e6de57c54d06aca5a484eb99b9e8e694c9d6f2e6de
+    role: context
+  - path: data/pathways/ethylmalonyl-coa-pathway.yaml
+    sha256: 1c58f2d1b27fd7a8a3928971a49311a742e004a1b28f349b9331b8fe0f369912
+    role: context
+  - path: data/pathways/fatty-acid-elongation.yaml
+    sha256: 2da686ea5b62f2e43585967a23b1739d819a42dfcf19d0492cef55c944137120
+    role: context
+  - path: data/pathways/fatty-acid-oxidation-pathway.yaml
+    sha256: 2dcd1db7489ee7695bd99461bbee5c59064e15853b3ab3c413ea6b6118aefe36
+    role: context
+  - path: data/pathways/flavin-biosynthesis-i.yaml
+    sha256: 417d94b49af861613f07f76e2f4dc0d6b4d44123a57547a1c05c2aca91e2a025
+    role: context
+  - path: data/pathways/folate-interconversions.yaml
+    sha256: 6774526812ae134d049d2bd6f36941ff0d4453558aa68259a790e93149278d6a
+    role: context
+  - path: data/pathways/formaldehyde-oxidation-ii-glutathione-dependent.yaml
+    sha256: e100dd411c9dc79be86d86d0b2ee76f9a0c228d673ecb4d4b8343b264cfaa054
+    role: context
+  - path: data/pathways/fructoselysine-and-psicoselysine-degradation.yaml
+    sha256: 3e5b25fc917a30aca70b1dbdce4c70cb7b2d69f595b1f0f13d391812b7cdcb93
+    role: context
+  - path: data/pathways/fructoselysine-catabolic-process.yaml
+    sha256: e9e80038a8671da109e8453523439ed921fe7810bb96b24f55dc532b4dd6ca5f
+    role: context
+  - path: data/pathways/galactose-degradation.yaml
+    sha256: 3d1cd470853a62a3373ee876e18ba1c49f1aec17b858acb929c49af89c4296ee
+    role: context
+  - path: data/pathways/gallate-degradation-i.yaml
+    sha256: a6e0e8f52880ccb651e02526dbd627240ec7e46a637d2eabfd790846156d21b0
+    role: target
+  - path: data/pathways/gallate-degradation-ii.yaml
+    sha256: 72e4685f14ff3a6a9d5cd5c7b9cd27d5fa54592355a5191fa5cf821d07a19353
+    role: target
+  - path: data/pathways/gentisate-degradation-i.yaml
+    sha256: 272e475b3bb872475bba938c5e5016b52b63e21dc8c9dea772e25ba78524c064
+    role: context
+  - path: data/pathways/gluconeogenesis-i.yaml
+    sha256: 365e9c29df8a62dd3dd5d4a3a190e530f6e3beae4a8e159be04ec9e4a9a952ba
+    role: context
+  - path: data/pathways/glutamate-degradation-i.yaml
+    sha256: a518e6f42cee9d981d3a2876da0aa0ba9ed1612b90163f69cbbac1d8b1be28c0
+    role: context
+  - path: data/pathways/glutathione-biosynthesis.yaml
+    sha256: e6b762e025742ca9cf0766d8d2d8b3f15e1c2b0078e7af2ab21bab1a43d8dba7
+    role: context
+  - path: data/pathways/glutathione-degradation.yaml
+    sha256: f8f06c4612ab0c7e38f3b46378454ba449231a013816902262ef6bddcc4cf2e4
+    role: context
+  - path: data/pathways/glutathione-glutaredoxin-redox-reaction.yaml
+    sha256: 670795c76c89c998d015e40536a5aba90acccb1430e7b4649aef2f738bad5e1b
+    role: context
+  - path: data/pathways/glycerol-biosynthesis.yaml
+    sha256: 07b3f629ede35b4c42441295f1a3596a45ecbe776f9667633b3739c19bf742a6
+    role: context
+  - path: data/pathways/glycerol-degradation-v.yaml
+    sha256: 17004e2911d28d42612c2010bf28d3339dc7f5f8a5af1e49b94cb4bae98ab2ba
+    role: context
+  - path: data/pathways/glycine-cleavage.yaml
+    sha256: 14313c0e3e8c3af451b0946c2b7d8d20545af13e8e27c5441cea62648899a524
+    role: context
+  - path: data/pathways/glycogen-catabolism.yaml
+    sha256: fc91636aa102a87bcb65d173ff28b2acbb356ea67beb831e00e7a93d9ae52aa4
+    role: context
+  - path: data/pathways/glycolysis-i-from-glucose-6-phosphate.yaml
+    sha256: ce99470da6b66a527a1a7ffe4e46e059afa4af75496a8fca96f2831049410be6
+    role: context
+  - path: data/pathways/glyoxylate-assimilation.yaml
+    sha256: 218feaba4c438ac1f7dff5765e5993153040fa1b0cc80b135440ad4ece8622ea
+    role: context
+  - path: data/pathways/glyoxylate-cycle.yaml
+    sha256: bd5793fee6b8af7da1e67eece20ebfd65004a48bdfe4d4afbbfb3d544c8138b9
+    role: context
+  - path: data/pathways/guanine-and-guanosine-salvage.yaml
+    sha256: 7133352b12d3cd8579acc128b2896b9247dd8503f06c339d2526e137eb17e58e
+    role: context
+  - path: data/pathways/guanosine-ribonucleotides-de-novo-biosynthesis.yaml
+    sha256: 65c619b8dfdd73062ad25ec9757f617da2a1a5739502ea44004be38e20897df0
+    role: context
+  - path: data/pathways/heme-biosynthesis-i-aerobic.yaml
+    sha256: 0b59dea7ec3eb1b01ba4b147d7532f7a395ef1d6d4128eb7f6be7e6a7cf8dcc3
+    role: context
+  - path: data/pathways/hexaprenyl-diphosphate-biosynthesis.yaml
+    sha256: d72784cfaf3d8bf0e30f226b687177eaf269358a3317327aaa2ca12686c7b1ff
+    role: context
+  - path: data/pathways/homocysteine-and-cysteine-interconversion.yaml
+    sha256: 548a2a31db077211819e31504c16f45e3ce711858ef8bafc992d142e50fe095a
+    role: context
+  - path: data/pathways/homogentisate-degradation.yaml
+    sha256: a833e707d3dbd92ff09194e1d19b7c419aa3e2c4c45d3a53064c8915a2d755d2
+    role: context
+  - path: data/pathways/hydroxypropionate-hydroxybutyrate-cycle.yaml
+    sha256: 6a85a549351ff95acd904261afac28bfe5712e553efbd41b3e4bd40ebbcb080a
+    role: context
+  - path: data/pathways/inosine-5-phosphate-biosynthesis-i.yaml
+    sha256: 74e4cd1621fc270ba365ef411b3079692de075024264f7e8866f6b0d9442938e
+    role: context
+  - path: data/pathways/inosine-5-phosphate-biosynthesis-ii.yaml
+    sha256: d676ccc1740fc538486cc7c9664bd5e3e2c89cc2aadd74bcffd586cce6aa7b97
+    role: context
+  - path: data/pathways/inositol-phosphate-biosynthesis.yaml
+    sha256: add22f805f7a14a195c64a04e8b070f98c68626b30e768898e843213e7809fcc
+    role: context
+  - path: data/pathways/isoleucine-degradation.yaml
+    sha256: 50585e2d8674b369b4aa5271ba78c57c18ea7556138e16e55140d77c42aa935e
+    role: context
+  - path: data/pathways/l-ara4n-modified-lipid-a-biosynthesis.yaml
+    sha256: 6c9f87fc7a7b6ae411092a5e34330df52f18bb574a09b25eae79fc48182d3955
+    role: context
+  - path: data/pathways/l-arabinose-degradation-i.yaml
+    sha256: 37cfa161adf3d8ab8b4b01a018d387d60b33817bd5908b0d1dc73c91ee7d001e
+    role: context
+  - path: data/pathways/l-arginine-biosynthesis-i.yaml
+    sha256: bf299cc075fee4f21e6cb76b71cdcddc70c06dbd8db17ab9448144f95dd7535c
+    role: context
+  - path: data/pathways/l-arginine-biosynthesis-ii-acetyl-cycle.yaml
+    sha256: fa54ce93a653642b1fe2e0d9a1a02654ca238723ca6191a113c4f105ee1e07fe
+    role: context
+  - path: data/pathways/l-arginine-degradation-ii-ast-pathway.yaml
+    sha256: fe02deb131bfe53eedb770ed50278885955e7a67d97859184142aea6ae35c86b
+    role: context
+  - path: data/pathways/l-arginine-degradation-iv.yaml
+    sha256: e9769441139f7047c2d2c83338b03deffc61bc3ec7b84990e0487e4f5e8eaa92
+    role: context
+  - path: data/pathways/l-arginine-degradation-v.yaml
+    sha256: 869563ce5c7be07d5d4bd976ff53030082e518f913822b09f2c01033aee801df
+    role: context
+  - path: data/pathways/l-ascorbate-degradation-i.yaml
+    sha256: daf2a8db6988c442aeae2dc094071b8d26d6c4e0ebb81a7b3a94f134d9870083
+    role: context
+  - path: data/pathways/l-asparagine-biosynthesis-i.yaml
+    sha256: 766ba43c30ea3c6568779592c48aa667dd38880b0023a091979df2705161bb16
+    role: context
+  - path: data/pathways/l-asparagine-degradation.yaml
+    sha256: 7df30c94062629ad64c6ed7d137a637f904a1f7428d2b530fde78b78bc5df5c2
+    role: context
+  - path: data/pathways/l-carnitine-degradation-i.yaml
+    sha256: b007e4f9bf0d67c08c0c2262a46b6ddf4cbbc37d05ade639725f74bb008be767
+    role: context
+  - path: data/pathways/l-cysteine-biosynthesis-i.yaml
+    sha256: 54fe6a258f21f5866d4051ad8b756f347191a9fe3a154b3749c8393367157476
+    role: context
+  - path: data/pathways/l-cysteine-biosynthesis-iii-from-l-homocysteine.yaml
+    sha256: acb2ce1d623b40d939a091bdbb3f9ce5d118a00aff3ebb873752ea323722de46
+    role: context
+  - path: data/pathways/l-fucose-degradation-i.yaml
+    sha256: a00b36d76e86e0102822cd1d280e686310aa0ff1603d0f4e53a8ed7286b3dc9a
+    role: context
+  - path: data/pathways/l-histidine-biosynthesis.yaml
+    sha256: d4f67cf6d398a8ed42fcd7a83588f93c0f81ee22ddc94308d8027a9aa39e6c58
+    role: context
+  - path: data/pathways/l-homocysteine-biosynthesis.yaml
+    sha256: 5f4f330c4cee30dfe0ee244331adb501776c4e34c4f34811f428379cc99380e5
+    role: context
+  - path: data/pathways/l-homoserine-biosynthesis.yaml
+    sha256: 2ba55d5db3be34827890a544718c9759c4a606e464b0e46d3c263bf4dcff30d1
+    role: context
+  - path: data/pathways/l-isoleucine-biosynthesis-i-from-threonine.yaml
+    sha256: 6f478576730ca9224f355d5f04730464a7a7fa4e4dcca9a16c206b21669d8445
+    role: context
+  - path: data/pathways/l-leucine-biosynthesis.yaml
+    sha256: 7c11ab8c3970d6ac699b9a6d55bcfb8e31fa936fd8be9a8cffec49cb0f63bc1d
+    role: context
+  - path: data/pathways/l-lysine-biosynthesis-i.yaml
+    sha256: f9e140eb9a5d886b826e5b77d03b44ad9bbad4b46dac54cdd676ad067e68705e
+    role: context
+  - path: data/pathways/l-lysine-biosynthesis-iv.yaml
+    sha256: 7f6375da56c7c53b27a336f385c71564c46ad7700e397063915bf6d6bdd18530
+    role: context
+  - path: data/pathways/l-lyxose-degradation.yaml
+    sha256: 8ca651dc70a0dda2620ba09719a4e6861517d39f1736ca1971f283900accc121
+    role: context
+  - path: data/pathways/l-methionine-biosynthesis-i.yaml
+    sha256: d3f600b8cf7da3ca2d5027327097c08e11bf562bbdceea90b1c5e9e7faaf2e89
+    role: context
+  - path: data/pathways/l-ornithine-biosynthesis-i.yaml
+    sha256: 922abf2efb71d2ba60e3913a9c0827bdcf419bd8800d900d66d4b8752e075d7f
+    role: context
+  - path: data/pathways/l-phenylalanine-biosynthesis-i.yaml
+    sha256: 9b816a653a709e59bd9cd25b249d0e8e0ad58fcb90d072c981bd8c2748811d88
+    role: context
+  - path: data/pathways/l-proline-biosynthesis-i-from-l-glutamate.yaml
+    sha256: e812af6b8f5879d39859ff0203088ddb6c298f1df13167d4e76f39f98f4da252
+    role: context
+  - path: data/pathways/l-proline-degradation.yaml
+    sha256: 47625a371cab68efdf3f6e5deda9a982d8c309bda00f74827b03f0ae164ec49d
+    role: context
+  - path: data/pathways/l-rhamnose-degradation-i.yaml
+    sha256: f7afcfa11188882427f316b02209fcb4fe4544c1e45c0290259858a5c28ed970
+    role: context
+  - path: data/pathways/l-serine-biosynthesis-i.yaml
+    sha256: b8fd90eb060911cf62737caa12f9b4899cc89119a2369aa3281bc700a64313a9
+    role: context
+  - path: data/pathways/l-threonine-biosynthesis.yaml
+    sha256: e277951647e3da86c7ad92ac40a3e8d795c36f1550d67825898927540fe5dfa3
+    role: context
+  - path: data/pathways/l-threonine-degradation-iii.yaml
+    sha256: 5e003a44a1519e0a121a39819b334e57feee397e033d6db2ccec01399898daa7
+    role: context
+  - path: data/pathways/l-tryptophan-biosynthesis.yaml
+    sha256: 92206dbd7e6e9aba6fee6e9f866e3eb3fe019cd6b832a0ac6586cbcc65ce6dcc
+    role: context
+  - path: data/pathways/l-tryptophan-degradation-to-2-amino-3-carboxymuconate-semialdehyde.yaml
+    sha256: 435fa7b9e72cb017859159a7eb2ba3c078248638810272043fb23a22e27a67ea
+    role: context
+  - path: data/pathways/l-tyrosine-biosynthesis-i.yaml
+    sha256: e61553cc86414476cc4bc593114c2c0820b01246225450edffdef55910efe376
+    role: context
+  - path: data/pathways/l-tyrosine-degradation-iii.yaml
+    sha256: 2ab3d77be1a21b236beb89a4b6c316c37f37bac708741ca496b552318ee96b7e
+    role: context
+  - path: data/pathways/l-valine-biosynthesis.yaml
+    sha256: 9b58c4c2bdd0b065c6227492dda5c6bc998902739848ab4f2dc1f070e7bd9c19
+    role: context
+  - path: data/pathways/leucine-degradation.yaml
+    sha256: b11427a45a2f33becfda49dee1e4a636844f2c1d8febf8042e0e5daf10892d6d
+    role: context
+  - path: data/pathways/linearmycin-biosynthetic-gene-cluster.yaml
+    sha256: a5a908285f06357add5292777ea7be2226263c1448097361f9b3d87be0001cbe
+    role: context
+  - path: data/pathways/lipid-iva-biosynthesis.yaml
+    sha256: 5fdcc02a40f15844d1ba8a2ca67979afd58bd34781af21d8e2380a46df7faad5
+    role: context
+  - path: data/pathways/lipoate-biosynthesis-and-incorporation-i.yaml
+    sha256: 917b7a976e9fad4d84e43e5497105ac58670ccd419f09dc147aa8ebd93fc2e2e
+    role: context
+  - path: data/pathways/mannose-degradation.yaml
+    sha256: dd4237f6d08801e661b2089644fcfb4c46fbbd1f65868d6853d51cae84293251
+    role: context
+  - path: data/pathways/mannosylglycerate-degradation.yaml
+    sha256: b73c407b4315efc45a30ed7121cb3797945cf0a4e86ab010bf5554b276b0e0a6
+    role: context
+  - path: data/pathways/methionine-salvage-pathway.yaml
+    sha256: 2220e5618ddc3f993788bf772fd20c560350c3752885a9d7bb07eb7e297d7b3c
+    role: context
+  - path: data/pathways/methylerythritol-phosphate-pathway-i.yaml
+    sha256: 868d6af5bb463ac41869ed65820b0e87fadb1de7ccb018fb26170ffe423b2fea
+    role: context
+  - path: data/pathways/methylglyoxal-catabolism.yaml
+    sha256: 4e0655e6c340986dbb79f846b237550d6d793e7ae5781d576df4fbd6fa5f1ba1
+    role: context
+  - path: data/pathways/methylglyoxal-degradation-i.yaml
+    sha256: d714bf32e64b16682b2c451e90732644dcf4fae7453150a53f3d490316550f3f
+    role: context
+  - path: data/pathways/methylglyoxal-degradation-iii.yaml
+    sha256: 904a0f1aabfc7ba215fa1c933357715414a0f0cbed8ec130f84420b07812a688
+    role: context
+  - path: data/pathways/methylphosphonate-degradation-i.yaml
+    sha256: 204b86bef2371a61586a7c9b4c0a33880e23c8999620fdeefb575900f5ddfdbe
+    role: context
+  - path: data/pathways/methylthiopropanoate-degradation-i.yaml
+    sha256: 7810e21c690b17fe781fd249ea6fc0ec86220913a55947df75ec29c15cffe5dd
+    role: context
+  - path: data/pathways/mevalonate-pathway.yaml
+    sha256: 25a739d9e28a0dfaabc31f59bcaa98179ca4377f501a0f8a8a869039b786afdb
+    role: context
+  - path: data/pathways/molybdenum-cofactor-biosynthesis.yaml
+    sha256: 84a67af129e307b0f67a8eb4aed8027a6b12733467e61c66249e1a8a9d751cc3
+    role: context
+  - path: data/pathways/mycobacterium-cysteine-synthesis-from-o-acetylserine.yaml
+    sha256: cdbfd2cae9e281dc1a1722f65b2f019841b0a84b6e53e755bce049d495ed7f44
+    role: context
+  - path: data/pathways/mycobacterium-cysteine-synthesis-from-o-phosphoserine.yaml
+    sha256: 99b0c6d3e04ab2d3c310bbe8099cd5fa716f251632e5320ba83444bd7ebff82d
+    role: context
+  - path: data/pathways/mycobacterium-sulfate-assimilation.yaml
+    sha256: aecb344e6ec330b48884cafd9bab879f5e3c623f66e315d90ad93910da12f931
+    role: context
+  - path: data/pathways/mycobacterium-trehalose-biosynthesis.yaml
+    sha256: 7c3915665fbbe8cfe1d695354f471a1c832ccf972d2302c0910a96144ec1cd49
+    role: context
+  - path: data/pathways/mycothiol-biosynthesis.yaml
+    sha256: 35dfb77de4fcc447aeb649bb478c6a840e78ab39f5921469a154ec3768c32f4f
+    role: context
+  - path: data/pathways/mycothiol-catabolism.yaml
+    sha256: 9d1f2496015cee969712712da363456ac0cac63dcd5cb46cfa5ace763f8388b1
+    role: context
+  - path: data/pathways/myo-inositol-biosynthesis.yaml
+    sha256: f1131912336cddeb1e79f27e4c0087e7188d97ad775583fbef65b7056086a5e5
+    role: context
+  - path: data/pathways/myxochelin-a-and-b-biosynthesis.yaml
+    sha256: 5331f505f0942d877904faa74c8c4944887f0e61e7e4cbf95a042490796e72e2
+    role: context
+  - path: data/pathways/n-acetylglucosamine-degradation-i.yaml
+    sha256: 1ddbabfa3bad2292e49add564ee94283ff622c5dae55902f78aa5b4b1d6908b8
+    role: context
+  - path: data/pathways/nad-biosynthesis-from-2-amino-3-carboxymuconate-semialdehyde.yaml
+    sha256: d9712d9291fdec2d7188a31d3eabf54dc198b880c996f39be3e5ada28c4684dc
+    role: context
+  - path: data/pathways/nad-de-novo-biosynthesis-i-from-aspartate.yaml
+    sha256: 36b0c2675cf844a236ee4e20a9f89874f137726026b1a713618cb6b4a51a280a
+    role: context
+  - path: data/pathways/nad-phosphorylation-and-dephosphorylation.yaml
+    sha256: 2da6fc3e5d1c1e5ce4b4d0c8a9d1857b1f234c4c872cdf73d364f1c73ad87cb2
+    role: context
+  - path: data/pathways/nad-salvage-pathway-i-pnc-vi-cycle.yaml
+    sha256: dc3a803eb1890953f16cf92fe012d9f780aa5e376ec30cfa2fc467cd80645885
+    role: context
+  - path: data/pathways/nad-salvage-pathway-iv-from-nicotinamide-riboside.yaml
+    sha256: f41413a4a24571ece2b3e2d93490f778a1e8b9619c948fc4d6d1825db58d579a
+    role: context
+  - path: data/pathways/nad-salvage-pathway-v.yaml
+    sha256: 5714f5fe02a834e4b4836d61524835501f8eeaa6241d7da5be3f6242ca572d5a
+    role: context
+  - path: data/pathways/nicotine-degradation-ii.yaml
+    sha256: 59d1a699b4e40ce680715afa958f8a659feae11b6b1786a5867f25733b83d36c
+    role: context
+  - path: data/pathways/nitrate-reduction-i-denitrification.yaml
+    sha256: 7c5b3ca9714dd9968901921b54bb82f44b08f85da322cb5527453ac685568ecd
+    role: context
+  - path: data/pathways/nitrate-reduction-viii.yaml
+    sha256: 019deb06b1b58ae9c378b209a9e3815b6357685e13e6e3345b8be01aaf13f5de
+    role: context
+  - path: data/pathways/oleate-biosynthesis.yaml
+    sha256: 3dcf719e913158bb23184d8ac68a8b6bce55f7f7ef0c69bee8c71a997d2cce2e
+    role: context
+  - path: data/pathways/palmitoleate-biosynthesis.yaml
+    sha256: 47ad28d2b5f793ae9916a213e5b9522248d24e1415c32640f35c4908b6383b9e
+    role: context
+  - path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-i.yaml
+    sha256: 4fa7115243982e1fc30e5f492f66ab43225152be9e14cf114d5c67857af6032f
+    role: context
+  - path: data/pathways/pentose-phosphate-pathway-non-oxidative-branch-ii.yaml
+    sha256: 20541f677f9228b670aac99a94e4d19ef89b5c20e0f6fdbb288d18ec7a9d98f5
+    role: context
+  - path: data/pathways/pentose-phosphate-pathway-oxidative-branch-i.yaml
+    sha256: 37f5e7f93e971f867f00890b758411f59e84117ce1f9a76f310e64e82c5393e8
+    role: context
+  - path: data/pathways/peptidoglycan-cytoplasmic-synthesis-and-recycling-pathways.yaml
+    sha256: 41137e969f7960cddb59b6452079b9424b87b0bfaa8402172969c230965cb36a
+    role: context
+  - path: data/pathways/periplasmic-nad-degradation.yaml
+    sha256: 0bba116121063c695033713548f5be6e79a09c875c08754785a86da58fdb7741
+    role: context
+  - path: data/pathways/petrobactin-biosynthesis.yaml
+    sha256: 7d0737b9f0bb3a4673e7341e53c5763c80e4fb46fb2944db8c2199a6e66d645a
+    role: context
+  - path: data/pathways/phenylalanine-biosynthesis.yaml
+    sha256: d83bf9681c328942b0da0101d675687d2772f8017e236df3e813272fe59927d7
+    role: context
+  - path: data/pathways/phenylethylamine-degradation-i.yaml
+    sha256: 3bdb2e4ae2eacefe5abf1611f89a58099f47b3264e58bc4195a55404833fe7f8
+    role: context
+  - path: data/pathways/phenylethylamine-degradation-ii.yaml
+    sha256: 8ea61243fca5d7d4a1974cf6b6eb8c9663a1c43a4f182709a7910eb56256d299
+    role: context
+  - path: data/pathways/phenylpropanoate-and-hydroxyphenylpropanoate-degradation.yaml
+    sha256: ff78d0911bb6ebe9e9780a8dce4fd11943228d67639ef44f63daf1cd7c362745
+    role: context
+  - path: data/pathways/phosphatidate-biosynthesis-i-the-dihydroxyacetone-pathway.yaml
+    sha256: 5d41048d73ffc521a1d8aeaf79f9ff7ecffd80dffb6bd8915a2e7d512342b455
+    role: context
+  - path: data/pathways/phosphatidate-biosynthesis-ii-the-glycerol-3-phosphate-pathway.yaml
+    sha256: f0fb3e3b3a323efe8e435ecff37c2e870f208f0e05dae61c4d417e61a8bac720
+    role: context
+  - path: data/pathways/phosphatidylcholine-biosynthesis-i.yaml
+    sha256: 9707f0bd75a5ade7eff2b25d0d8f8b7953b7749e2cdf2878156c09b9eb1d9d63
+    role: context
+  - path: data/pathways/phosphatidylethanolamine-biosynthesis-i.yaml
+    sha256: c1d5c378d7fff51a6ba181570520d299898891226f4f00662d30b4be6313be9c
+    role: context
+  - path: data/pathways/phosphatidylinositol-phosphate-biosynthesis.yaml
+    sha256: 6e81302207f8ac3a9d1eee0a63cf89b4bed0d6813339819ac96a2d44eec6194b
+    role: context
+  - path: data/pathways/phospholipid-biosynthesis-ii-kennedy-pathway.yaml
+    sha256: f32a3b1cf37d1ee31de0900901860a17029ffe49f9d97deb4763f22d4fa580c7
+    role: context
+  - path: data/pathways/phospholipid-biosynthesis.yaml
+    sha256: 69eb1a16bb8baa5beccd8d281522534ff29afe828826aae39532063d6d131669
+    role: context
+  - path: data/pathways/phospholipids-degradation.yaml
+    sha256: fb0b58b847d80f1a68aac342f1974cb6f51171da44ffe3285030454221af5c19
+    role: context
+  - path: data/pathways/phosphopantothenate-biosynthesis-i.yaml
+    sha256: 7d16b766666d040ee91d6e4c56415c69312440fa6f7a3db1482c3f807719c6f0
+    role: context
+  - path: data/pathways/polyhydroxybutanoate-biosynthesis.yaml
+    sha256: 31480b5959f3b596fa758d0272b7b2400a9b23b33b52af7349f999ae6dad8d45
+    role: context
+  - path: data/pathways/ppgpp-metabolism.yaml
+    sha256: 81e8642cd792bbe351a43638303a7232e92679d2b47e8c308170bc6a0ad36a20
+    role: context
+  - path: data/pathways/protocatechuate-meta-cleavage.yaml
+    sha256: c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49
+    role: target
+  - path: data/pathways/protocatechuate-ortho-cleavage.yaml
+    sha256: 03c1fced81d599136ea6577ef4ff314cc428aab9171c522f0334fa4ccba418d4
+    role: context
+  - path: data/pathways/protocatechuate-para-cleavage.yaml
+    sha256: 2a5e42e39a4e8eadb77eabf6f95896ecc7f001bafba04dec6eb74e7251169d89
+    role: context
+  - path: data/pathways/pseudouridine-degradation.yaml
+    sha256: a11010f36c6af2d7f3304357cb920ba75fda74b067f01e0a64e9855123452159
+    role: context
+  - path: data/pathways/purine-deoxyribonucleosides-degradation.yaml
+    sha256: 1412ec0cdb11458da71fd9b50a8c0827effefe28fe9ac949213db928d1e26087
+    role: context
+  - path: data/pathways/putrescine-degradation-ii.yaml
+    sha256: 92dd03c0886b7b6a30ad87219f380e80c9e10ef087f3b10dacccdb69f3ab2b3f
+    role: context
+  - path: data/pathways/pyochelin-biosynthesis.yaml
+    sha256: b3dfb5d0879dacd052e151477d6a48e422941752ea9b98ebd613064d5e3cde1b
+    role: context
+  - path: data/pathways/pyridoxal-5-phosphate-biosynthesis-i.yaml
+    sha256: 03219ffa92913bcc306f4824c2c72aa39f862b17d14c96a0a9dd6daa9834bc42
+    role: context
+  - path: data/pathways/pyridoxal-5-phosphate-salvage-i.yaml
+    sha256: 4fa125485b95ff8518056a42c7f22764cac006f812e66effbf250261ee7e4c29
+    role: context
+  - path: data/pathways/pyrimidine-deoxyribonucleosides-degradation.yaml
+    sha256: 58ba6e176122f244f2bf59c155605347765e151e668699199d4ec3b474b273e6
+    role: context
+  - path: data/pathways/pyrimidine-deoxyribonucleotide-salvage.yaml
+    sha256: 7e4d179cc40816a549edde196f4270960c09cfcb6dbc15882b85427e85013498
+    role: context
+  - path: data/pathways/pyrimidine-ribonucleosides-degradation.yaml
+    sha256: e1f562227ad8aaf01f1a762e93c27030e4cae8779869670a416bfec79562c6d9
+    role: context
+  - path: data/pathways/pyruvate-decarboxylation-to-acetyl-coa.yaml
+    sha256: 308c60f798bdc3dd8d004c3b5c214dcb9ab4f1ed2a174d169ef4d0958300d145
+    role: context
+  - path: data/pathways/pyruvate-fermentation-to-acetoin-iii.yaml
+    sha256: ad122132b9b414dfdf4aff99f6b26b476cd0cdb98d9dacbfa85ea87f0ac269d6
+    role: context
+  - path: data/pathways/pyruvate-to-cytochrome-bd-oxidase-electron-transfer.yaml
+    sha256: 0c5854f77ff0cf86215d7b8f1aa53cadec53bb7df673efd7cb7e2407c0f07f80
+    role: context
+  - path: data/pathways/quinate-degradation-i.yaml
+    sha256: a0c21af8e01b7a2653b226656b405fc197b0376b2d9ea4a6dbb6d003a3cc36cb
+    role: context
+  - path: data/pathways/quinate-degradation-ii.yaml
+    sha256: 83445c4f5cedd104d29cd065771b384f0ea277ed74291e3569315a9d42b01d97
+    role: context
+  - path: data/pathways/riboneogenesis.yaml
+    sha256: d2fa67f221476a346e85dd794a9f55351aa35115150efc767457359f40433b96
+    role: context
+  - path: data/pathways/ribose-phosphorylation.yaml
+    sha256: 385101d166c9150936d81bb0f1c6c0d134b6ac1e6a6454d86e238ac0576e3d71
+    role: context
+  - path: data/pathways/s-adenosyl-l-methionine-cycle-i.yaml
+    sha256: f400f02c796aeca00d11aa29f8783f7f672bd7f87d7d07f827bfbca36eac3e22
+    role: context
+  - path: data/pathways/s-adenosyl-l-methionine-cycle-ii.yaml
+    sha256: 81526ec7fcedf14ead1ef9be33747b3560e74f4293e08ac6b6653cf6cb85eb1b
+    role: context
+  - path: data/pathways/s-methyl-5-thio-alpha-d-ribose-1-phosphate-degradation-iii.yaml
+    sha256: 60750cb046b847a5d52458cff6eab771be2a9200755c259cfe8d87c4808e95fa
+    role: context
+  - path: data/pathways/salvage-pathways-of-pyrimidine-ribonucleotides.yaml
+    sha256: d283eb6065c21162774b7c8267ab48ce82766a20ce93a37b182bf205e5c14bff
+    role: context
+  - path: data/pathways/sedoheptulose-bisphosphate-bypass.yaml
+    sha256: 6ed1607a4c17ffe56a6f5f8f123c44a0ff410c9a9965e11c3cde9ef23a4affe2
+    role: context
+  - path: data/pathways/shikimate-degradation-i.yaml
+    sha256: ae4b0f56055956fcfe86d0d887fa4d1654efaad87a77d46bb2922335e66e4808
+    role: context
+  - path: data/pathways/shikimate-degradation-ii.yaml
+    sha256: a0f96cded480818165c794e5e954e96b2fa7f11e46910ad6574b6233480d13c1
+    role: context
+  - path: data/pathways/siroheme-biosynthesis.yaml
+    sha256: 9bb7972608c907fff78104cff4d93a54af3b5cffd6debfd9be9852d460dc297f
+    role: context
+  - path: data/pathways/spermidine-biosynthesis-and-metabolism-escherichia-coli.yaml
+    sha256: 0adef1da2d818af7c62d7e3952b2115585b47b8f132ec189cde2b435d2721680
+    role: context
+  - path: data/pathways/spermidine-biosynthesis-i.yaml
+    sha256: 7a59a97a06f5624a7c81b7aba90e909454eafbe37128e044b92fbd92bc82165b
+    role: context
+  - path: data/pathways/spermine-biosynthesis.yaml
+    sha256: abc49bff88359eabe59d05ae6ba0c1255e6937f6748d738220253b31d7744d3c
+    role: context
+  - path: data/pathways/sphingolipid-biosynthesis-yeast.yaml
+    sha256: d75f7d359601e9967fc0f47c0bf369b0c2fbf4759014b6839131600cbf46ef22
+    role: context
+  - path: data/pathways/sporosarcina-pasteurii-ectoine-biosynthetic-gene-cluster.yaml
+    sha256: 0c2e4ef99740885129888a71cf927b1ac8af45e7061c3e3b55ac0913d68dc224
+    role: context
+  - path: data/pathways/staphyloferrin-a-biosynthesis.yaml
+    sha256: 5b4cd8d7838a19de2ba9c623bd59d321def6fffca45553895df646852d780e42
+    role: context
+  - path: data/pathways/staphyloferrin-b-biosynthesis.yaml
+    sha256: 742930db9f8be218e6d69bf81c8b5d5ab3f460ed36d22d1660a4f18be6db26c1
+    role: context
+  - path: data/pathways/succinate-to-propanoate.yaml
+    sha256: d074e8d7a820bfd22e788074de1651b62db5f7f8b584162fec14d13d5913b268
+    role: context
+  - path: data/pathways/sulfate-activation-for-sulfonation.yaml
+    sha256: 3e20747a383ef29d995e2eee4b93040423b7d49b27843c0ec1987edcf6d82588
+    role: context
+  - path: data/pathways/sulfoquinovose-degradation-i.yaml
+    sha256: 741fc68daedf7cb7000b7cc5dc94ce5c0029fe9d30ce56d392c51a2aa9ac390c
+    role: context
+  - path: data/pathways/sulfoquinovose-degradation-ii.yaml
+    sha256: 20a95c209243399b88a90fbecb0d8d310ebfb3094fc6ee4487352fdc2185c596
+    role: context
+  - path: data/pathways/superoxide-radicals-degradation.yaml
+    sha256: 4d0224dd2604fa1cce375b2afa12e614f22e304153734504e03da6e83c797585
+    role: context
+  - path: data/pathways/superpathway-of-menaquinol-8-biosynthesis-i.yaml
+    sha256: 8d24e6ff858759aa4eaecd04b456ffa1b79c992bc090637f5cc8805a5ecbf492
+    role: context
+  - path: data/pathways/tca-cycle-detailed.yaml
+    sha256: e98639698c8b4f68286adbeb7d68305a2b3aedcbd9a548bc06feccc91eaf2e39
+    role: context
+  - path: data/pathways/tetrahydrofolate-biosynthesis.yaml
+    sha256: ce15c57307f843c5773b7e5515d09077f8c7c4ef1bbc588e1223d26b4e340690
+    role: context
+  - path: data/pathways/tetrahydromonapterin-biosynthesis.yaml
+    sha256: 0349c62d93993252bdab4e11a477eaca142eb516c59961721a317ed333eda182
+    role: context
+  - path: data/pathways/tetrapyrrole-biosynthesis.yaml
+    sha256: b9b73976e6a55b8a24abfd22a8e239733d2f7edd2a746e9e774d5df3fe5e5296
+    role: context
+  - path: data/pathways/thiamine-biosynthesis.yaml
+    sha256: b22273bb29300508a8446c84344cbe568a8ec56858c7d983dd951ba3fd04ca1e
+    role: context
+  - path: data/pathways/thiamine-diphosphate-biosynthesis-i.yaml
+    sha256: 05fe1413e04fa3c2b95e44af1bda6c795ef53d3ea3529d18f6c42bac2e8079ea
+    role: context
+  - path: data/pathways/thioredoxin-pathway.yaml
+    sha256: 3b8871de3bab9b88c64d766a79332bb57d96cf95ac0c8dda0226697cef2538cf
+    role: context
+  - path: data/pathways/threonine-degradation.yaml
+    sha256: 23cce07f43a32645d175d779eabcdfa873a8bcb5d2f2c10171b06cd2fd7dd9ae
+    role: context
+  - path: data/pathways/trans-trans-farnesyl-diphosphate-biosynthesis.yaml
+    sha256: be0cf90a07906abd1aec303dc0871e33e97510e961d77e4dcd1649f7fb7f1264
+    role: context
+  - path: data/pathways/trehalose-biosynthesis-i.yaml
+    sha256: 2345d073b0ee434ab1a897653441d1bcd431ba0314e2265b9699fc6fd5a8eefb
+    role: context
+  - path: data/pathways/triglyceride-biosynthesis.yaml
+    sha256: 0ab6fcab3fa418433fffcd68cc992090145bf43c16c1132bddd1e9834a1a6a2f
+    role: context
+  - path: data/pathways/tryptophan-degradation.yaml
+    sha256: 08d5c4115a06db36842a5f384fc5d6f9c0a37f1fdf341d23286bc4e34773ebed
+    role: context
+  - path: data/pathways/tyrosine-biosynthesis.yaml
+    sha256: 441df9779bbf64c1fd7919baac3baa4a3c332668848762ac2ae9f35b2217e967
+    role: context
+  - path: data/pathways/ubiquinol-6-biosynthesis-from-4-hydroxybenzoate.yaml
+    sha256: e4debbe20da1e00f8b304bf272d96f676ac3e6e18e82994fce4f799665cb80fd
+    role: context
+  - path: data/pathways/udp-n-acetylglucosamine-biosynthesis.yaml
+    sha256: 03f1712aa87505464ec9d5f21e56adbce65401d3d554504b23c2fb1a8e603abb
+    role: context
+  - path: data/pathways/ump-biosynthesis-i.yaml
+    sha256: 7360c32e29f0aa492c9b6e3c73b28ec1d1c152258e7efcfd540beb1394546f16
+    role: context
+  - path: data/pathways/uracil-degradation-iii.yaml
+    sha256: ba58586f9b2eb4c29ff6ec99010da3618849dd29d4d023bf2ee82a1c155a4521
+    role: context
+  - path: data/pathways/urea-degradation-i.yaml
+    sha256: 7c1b0c20488b920bff60f3bd07bedbd9e94d0649af2db5464169a4b5c76bb7b3
+    role: context
+  - path: data/pathways/utp-and-ctp-de-novo-biosynthesis.yaml
+    sha256: dc67a0bd30057f3eb9bebebf4498875a1f841f94e98059447b9b584909a8d43e
+    role: context
+  - path: data/pathways/valine-degradation.yaml
+    sha256: fd0e23fb44bf92196391dfa4b8318fd5b8ae8136c8ebefde13a327348531ccc4
+    role: context
+  - path: data/pathways/very-long-chain-fatty-acid-biosynthesis.yaml
+    sha256: a5ebdc354315545ce4863cca5cbbb07880dc1f9629763a89cdaf93214c566434
+    role: context
+  - path: data/pathways/xylose-metabolism.yaml
+    sha256: 61d17766dddacce9131e18c6f9b4678a7cc43fc304c00b151d2644b389e7be03
+    role: context
+  - path: data/pathways/zymosterol-biosynthesis.yaml
+    sha256: 235d39afd5726b326c67763fb1da02075b60931d32b904050e577c7638cfa8a6
+    role: context
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/IDENTIFIERS.md
+    sha256: 7cc031991312843431ebf1f9531d66d90533f1e8bc08af7dad32ff58bfa49350
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/records/gallate-degradation-i/2026-10-15T004400Z-codex-a4d8cb.yaml
+    sha256: 18a24d5a82ebdb35908f402597911589256621f9c1919402e2f1b2317451f5eb
+    role: context
+  - path: history/records/gallate-degradation-i/2026-10-15T004623Z-codex-28dd08.yaml
+    sha256: 94ea7fbe84a88be40916499390217476e1ae8a4dc6cdbae5ffdea35fa2b7af3e
+    role: context
+  - path: history/records/gallate-degradation-ii/2026-10-15T004351Z-codex-98ce19.yaml
+    sha256: 7dfb8768f43cbda296c25ee7d6738dc2209d40e5082049144149cde6b57b2802
+    role: context
+  - path: history/records/protocatechuate-meta-cleavage/2026-10-15T004407Z-codex-e5e9a5.yaml
+    sha256: 176faae9c7355c56275183972b26b9da1a211f334c1d26ef29a5f275b2a733c2
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/browse.html
+    sha256: a377b06b95454af4dc7f224b6d5855083f512472f5f884465d87e0f0303035cb
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: e219f96d7f973b9149edbc08a855b32b0a14c79c6a8f6cd4cea3a68c6635fd66
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: c5135941dcc10e655e4409406659e05d4428faa40f8e533fbc71a634a16e2b38
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 4c38658e5f96e8219f02bb827f086312225ec8d5422a395ce1e24d6dde71400c
+    role: context
+  - path: pages/index.html
+    sha256: fb7c7bbbc039580ad6ba305a8148493eb0662d57d12966106f1cf0e7ca0be7e9
+    role: context
+  - path: pages/pathway_index.json
+    sha256: 76351da28761eaa6e0451195cdf49091e598f8babae99c9a3aa699f71cbdc3cf
+    role: context
+  - path: pages/records/MetaCyc_GALLATE-DEGRADATION-I-PWY.html
+    sha256: 86b18935b1d2a834c18199b582007871a87ebd66674c58aa832141e8e8886dc9
+    role: context
+  - path: pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html
+    sha256: f651e6d40748b863328a5821efc6dbe936ecd28684c38c6d6276de632931e051
+    role: context
+  - path: pages/records/MetaCyc_P184-PWY.html
+    sha256: 6b2c413d8e7d8097336efb4c3e906e138ddd11dd0d4a03f58bab25f91e872ca5
+    role: context
+  - path: pyproject.toml
+    sha256: 4b2e0f7c4613ca71985eac779df68d6847f12ece4c373f6a49090125bd1b2b83
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/README.md
+    sha256: e2df2ab89e433ed87cd8aba016b003d44c8df16af75033824a2eeed52abe527c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/HANDOFF.md
+    sha256: fc7b1e6a7a3d037c300929617c8ab31b0757f6d7ecca5cfcef4d1e7c2ef174ad
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/artifact-manifest.json
+    sha256: c426601f3a49480ff330f3e387ae04a1120b9aa8967a0f5fcd2ec2e7181efd3c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/author-audit.json
+    sha256: b238fe95817f7dc7424eef1ec1433ed918c6d5f50aefa1d34773bc729d676293
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/chemical-dispositions.json
+    sha256: 278e43a1430f7fcc23b70143973f45ad11f2cee904f6de3413bf5650058c82da
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact-retention-manifest.json
+    sha256: 3d3c613d07d15448d71fc2edd53db274ee6a56deff199a0cb595d029edb8b480
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/activity-dispositions.json
+    sha256: 65a5dc73c2e7b740b800dc8586cf4b72746eb7b0d600cb624fa8bc872e636892
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-1.log.gz
+    sha256: 673bf2c9214c7df632667b081aabbb344727bfd5e0d0cd0fe9f3979c238c3041
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-2.log.gz
+    sha256: 7ddf4aec9c554e3fa5a43e0c8ba11d661e58489031c7345fe8cd60ed94cb2217
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-3.log.gz
+    sha256: dea756c5402023966d70d181d4602d33c3143e624192590b2be2b74817655556
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-4.log.gz
+    sha256: 8f15240fc395a1dcc40a0c04995a23c647d62bbc1750c256f6aa58a4d40995b9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-5.log.gz
+    sha256: 3d122c8f51eca59b20c2c6439707e74d666582e4adbd0118ec223db808dbe80f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-6.log.gz
+    sha256: 1ee3bbd0599b31d1d7f10ee7b10d5700657eb0ebe8a0382838f26edce33914d6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-7.log.gz
+    sha256: 4cdb3e8ea4dc591d587cd401ea040cf49310bc158a666ac99a1c87b7411df47f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempt-8.log.gz
+    sha256: b0da1963eb857470338fdfcfc59ca208e4019e40025ee670cbfa4feb2e29fed1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/build-attempts.json
+    sha256: 559695a491022bd5bd9ec60bb4a450b9120bc4938ffb42173633fb60a5a41529
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/fact-dispositions.json
+    sha256: c10b8577270087a81ccf6311a48ee99bf669c008f2922651502a98e5e9e792ab
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/gene-context-dispositions.json
+    sha256: 09fbc4960f83d91b455f89b85f0307280a5f42fc502ccdf9127b8a46d1bf9cda
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/protein-dispositions.json
+    sha256: 90ffab596bf9b2539b0d4f0327fd8cceec4b31320a9e27d4ac88fd25febb9637
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/quantitative-context-index.json
+    sha256: 15d1f781a634b58ebf9ccfed07de6f70e6d62a18f9fc3ee63fda7e47a811cc60
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/regulator-dispositions.json
+    sha256: 7a559513496ffdd9491bb10d50c4299a1519d1d69cf32250d53823bbfbe736ab
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/compact/source-to-fragment-slots.json
+    sha256: 065b01d81f637747c7696967b93c020098b7e4090b1232692bf3c51088b58730
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/completed-command-receipt.json
+    sha256: ba0cbbed1d112d08d24da75ba3ce62c3ad2c555779cffe20f2786274580fbc29
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/context-bindings.json
+    sha256: b95a67449437ae6203bfd343d991d068eec3e9e8bcd73bac2030c07e6117c712
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/fragment-to-source.json
+    sha256: 77b02a26111a8926f8a8d4079eafa788623dbc4f22ebad21374744712e4bfcea
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/helpers/audit_and_freeze.py.txt
+    sha256: ef454153161ba3829ec7bffd8e37abdb9d39536ee218428ae25ad94701aea387
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/helpers/build_foundation.py.txt
+    sha256: f6f9484a460a4f507017a38aa64385a40dff82bcda38921d431193691da62ba8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/helpers/finalize_package.py.txt
+    sha256: 07ab26dce69dd7833ba369fbf66cc1ffc2add16588036862db6a1f74bc452f83
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/native-foundation.yaml
+    sha256: 6f1551b0cb42fd23a6c00e5a82a26bf58e5c40584c507bea0f7ca9f4a9985f03
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/.claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/dedup-disposition.json
+    sha256: ffdc719cfdff3fa8363f021e328a142391fcf454e4cfa93287e291a98f824f76
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/docs/IDENTIFIERS.md
+    sha256: 7cc031991312843431ebf1f9531d66d90533f1e8bc08af7dad32ff58bfa49350
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/retained/src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/selected-identifiers.json
+    sha256: ba21310197766539bd42e204b135ad17051891a74be39c446fd0041d6fc5fbab
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/native/verification.json
+    sha256: 9632e891c4d38dcc8de0cb658e0168ea6e48a7049a1d2930caab7d29dc7015bd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/predecessor-direction/HANDOFF.md
+    sha256: aa82c6f6a1155e5459251c7587ea4fde51ad0f20a418ea04488ea01574b74537
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/predecessor-direction/apply_bounded_fix.py.txt
+    sha256: dc530041720a5a327abbb35635e81be160f8dde861a3cfb5724f047e755c1a93
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/predecessor-direction/artifact-manifest.json
+    sha256: a2f94c4bfb9c2de57a04d4a892b1dcf886840e0eca90e0f89747416766d465d3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/predecessor-direction/bounded-fix-proof.json
+    sha256: 60fe656e3096e945faa6bd3fd5d7ea70e202459840485cfcc2effd50f2ea1d3c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/predecessor-direction/gallate-degradation-i.diff
+    sha256: 0a55cd050c45d53b45ff3e3ddde6f734c78c8574311c0d0aa6e38bb990f3130b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/predecessor-direction/protocatechuate-meta-cleavage.diff
+    sha256: 4fc0fc9c5737a05b439eec2cbd4ac7ddfd774edd76c7f8acdf2e813eccf7ac5f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/predecessor-direction/validation.json
+    sha256: 3dfd5df7944cff3e269a5b22cf4f097302c732ab4173a424b8065b4a96979dbf
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/HANDOFF.md
+    sha256: 269c206fc4f0e62995965383e857e7dbe5bc7b68d97b99fb0db5bcddbc2ad2af
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/artifact-manifest.json
+    sha256: 5f0b87df93372a4e4167552989ea07150494f176654793af345151d41980509e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/draft-correction-receipt.json
+    sha256: 78e6706e4c2a88423c11595d2b00c0476aa0e1fd313bb9953771d0b67484aef8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/edge-fact-ledger.json
+    sha256: 65331351183c4245de0ea40a6b4be63163448459f5f4d3aaa7363c4c0c13806e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/evidence-form-and-source-bindings.json
+    sha256: 0c593b035a7545b4335647f70b70dde9f96d10c2c3f0a12f99bcd13df25e3469
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/external-primary-originals.json
+    sha256: 99439d086fc8e9d21e816f8a31cdeebe8ceecbbe9f72dd8a20df0e81fb9a6cd3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/frozen-input-replay.json
+    sha256: 4d676c51f8a3cb339349a3c5ac64e8dcac460afc6dd442260839faff2c436b9a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/frozen-research-successor-errata.json
+    sha256: 866170c5cb0d113a9acb6169430c0e339947f6dcf49ce7aa4e99150ca11832cc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/helpers/build_coverage.py.txt
+    sha256: 6cfd04cfc39b2062e5fd1c048910f0f85f85bfc14768d466a797d9d123111b1a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/helpers/build_fragment.py.txt
+    sha256: 2ea94ddea3a0ff1fe523f6225c8bbae69f39610289cb79ce9bde50745239d549
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/helpers/close_hg_rhea.py.txt
+    sha256: 771afb2073ba2e72832ae485389237ee7f1bd2c25548598a152bcf27d4a96784
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/helpers/finalize.py.txt
+    sha256: 0cff91ddce507fe41c8f4bce9773b41696d44ac90fc36a56dccbed940e958a58
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/helpers/verify_fragment.py.txt
+    sha256: 0382268201a901af09ce154a62aa0b7cec9b6f75f12c1b84fb99e5bb9dd14581
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/hg-direction-scope.json
+    sha256: e92f63ec6d004892171c5cd2c1797b96e968580ce9b6bd8adc1e4a8112fcd852
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/inputs.json
+    sha256: 5fee362e94d8c8399cd1b1db991f5c9a2e88313f0b490a73eaface49e02ff21f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/node-replacements.yaml
+    sha256: 91d73c204f6e5906541312789af905677eb9484b4be79d8f8fd6f3a52c6a679c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/paper-wide-quote-ledger.json
+    sha256: e7882ea5f736b9b38e87b25257fd635c42e7d391e143d0de79f03a70fcad8da8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/primary-additions.yaml
+    sha256: 1f4a9b2de37f43b4d11f3fe86a15b54d3f526288f9143a973f1147b19e878862
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/primary-context-notes.md
+    sha256: d7132d2a841e1fe53264b2a339504313dcdaed91aa13e06bbbcdab4292497b51
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/primary-replacements.yaml
+    sha256: 48bb845f16e13d9356614e0678e05108b643530a77e400720aad5b20ea5cadda
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/projections/HG-rhea-closure.json
+    sha256: 70fba3691a01015f21c6c54161b086ca7c45d2dfa9c5ec36bbdf4f09c991ac8c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/record-context-proposal.json
+    sha256: 9c4d243ef10e16e749c6cb7a665c8613e445f58a2c3b19057f13dfe61016f8a4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/selected-identifiers.json
+    sha256: 86346a8d62eacb0778ed94f57c9c8bcc05a4335f96273b9c02ff19e362943281
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/source-to-record-dispositions.json
+    sha256: e656682d6fe4a1d3288f105d5c0ad08f865229dc8eb162532ab1a96673ea795c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/structured-table-dispositions.json
+    sha256: b26d2793eb5d49ea55970d93e5ed24aa85718fe88537b2707141d9e5ba918350
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authoring/primary/verification.json
+    sha256: 914b708b91b1eaece8f427678e4ce8c5db786eb1d17cea2a574ff7e16ef4c917
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/HANDOFF.md
+    sha256: 6581ed8ee71c9f50e643ecff88109030c99d87a2c8334b40905ecae5e8788b57
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/artifact-manifest.json
+    sha256: 21f50c613045ce308ab93f83794225c7919cbcd1f71b2e2dcb92ca6ba010e938
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/compact-retention-selection.json
+    sha256: 360daf60105eb0714000fdeec0576f176408ccf238f8c592cd46eabf70094853
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/helpers/freeze_handoff.py.txt
+    sha256: 733bd7944b9574a8015ab0652996a2b44ffe4c21332d0fbdc8611d2b63b2264a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/helpers/prepare_successor_workspace.py.txt
+    sha256: d86f6a8a451e67366773165586dee038fec98c75b6442d9fe4f9efd7ef5c504a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/helpers/prepare_union.py.txt
+    sha256: fc11b6f204b11e386e4d3c3cae78cb72baa0b5c353d350ea948eafd00bd88ae7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/helpers/run_union_builds.py.txt
+    sha256: e4f9b5941e1cc20eebe17441ce9a69e811be1e36a79ac2f48dcbdcf56d9b24e7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/helpers/verify_final_corpus_bindings.py.txt
+    sha256: bf1a5d334ceb26c36eade6769706ef4c91bb5f340d1179cabe33c1a727f05f41
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/helpers/verify_union.py.txt
+    sha256: 05a837c9957664d1f2dd943b53b7f969d22b8da932857b34a7973188242814f5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/originals/rhea-acquisition/rhea-downloads.json
+    sha256: 414fc53b535e5f4d085feef008de52eac3165b1919c98bef857cdd684e819c9f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/originals/rhea-acquisition/rhea-ftp-index.html.gz
+    sha256: e7fd88d6f764949c694bc04c773d19e12035660ac98a9026220585a30b128fde
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/originals/rhea-acquisition/rhea-rhea-release.properties
+    sha256: 4259110467406048a19f7dd797bc3f0506736d1cf2a8327f67ec7b10043fc5d4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/actual-predecessor-record-bindings.json
+    sha256: 464730f57ecc1ac9ae361e26ad9e380e4f4f603e7bc967bd09b14e19707c749d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/author-handoff.json
+    sha256: d577aa8b586118ffcacc6ecf618068ba661512e4b581fd43f21a37b8865db16a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/baseline-original-cache-verification.json
+    sha256: cf24ca0f1a68def60f674d46ecb00075928f0ee50fc9d6009affcec79a7a85b2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/baseline-preparation.json
+    sha256: 76b5a23437321ece26254315a99b3067d7af573a6e6efaa8cc585a67673d3d03
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/baseline-record-bindings.json
+    sha256: 5c10f66caac555c1f3ceb9a6737d0ba80240d9e9f7495656f985bdc2fadbe733
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/build-input-preservation.json
+    sha256: 24bc80ad3203ed0cabeb7b53b0951d1d3a61681fdf2895fcd0afd4ce996cbce2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/canonical-build-commands.json
+    sha256: d913c257cce14c7a9265c9ec9e60186fe445aa8434303c570ae0a48fd951aae6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/final-corpus-direction-change-binding.json
+    sha256: a9af556f2f139b5f3447890695dec17c7e2279e7a0d63ceab85a0f0fe98886cf
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/final-record-selection-binding.json
+    sha256: 7ad5c3efb691cdfe6b35c707864b3626132c9249a67f3fa4b6b0439f7d130d12
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/identifier-policy-verification.json
+    sha256: 00215c5ad3d25ef4c10a468dc951827752322e519a796f1000e7a88c18b58efd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/new-source-original-bindings.json
+    sha256: bd5b2603627d00b87946f5d721f1e1f5df7101141d0677a591ae1244c6a6888a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/ontology_builder-receipt.json
+    sha256: 93ff7e54e417fe8aec70b3e1c4d25b9b0ca3168b957f0cec0f4aaee4ce7f0524
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/ontology_builder.log.gz
+    sha256: ff481532d0e73f7d090de5db6524d02fc297632c2f9e6923a36b918d4c990894
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/planned-authority-labels.json
+    sha256: c73af4a1a63af96a705c7b365deed24787a277c3fb2ea39c77ebd0ea7586b43d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/planned-identifiers.json
+    sha256: 0dc5bba46a6efedf396d8279754b9e27d6de86b1fee718ea386e78a88e66c035
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/proposed-source-additions.json
+    sha256: 3b08552dda5bd668246f2098c0889c9c2b164d08c68c28c4c89aaf54cc38394d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/record-selection-observation.yaml.txt.gz
+    sha256: 3def7e1020fdc102037ec779ba6b1154c8b6d3477c6412183d4dbef797cf14e0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/retained-authority-identifiers.json
+    sha256: 8944f7c6eaf11ad558c07fd43e392008926dae02b2ff8788525e8504266a5247
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/rhea-original-release-binding.json
+    sha256: 176efdb4a94c436b3b037f9a1bf904f3c87d840925db4f04a4bbe89531497682
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/runtime-bindings.json
+    sha256: adf07c789e7aa421b3e0bece765ee0b0a95d09324761ed4100036d177d8d6bfd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/selected-ontology-identity-previews.json
+    sha256: bf20d012c6acb05353cf5d1ae8282a75d659bc6196b5349d7994e51df3004764
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/selected-source-identity-previews.json
+    sha256: a2948e2b29738129ed1686333c3cda161703bfdae4777466da8133e1ca20de55
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/selection-freeze.json
+    sha256: b3bf9c5d840264283cc5719e25fe2451a226f881a0fc18cdfa02553a051b8264
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/source_builder-receipt.json
+    sha256: 0c656493946da07426561434630f68c4980c8c4f014b74e75afcb0c1363d3184
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/source_builder.log.gz
+    sha256: 7afe952918241b0797d6ce4fe924cf5a66e392daead92d0fc7ca5d9c0494ff16
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/successor-workspace-preparation.json
+    sha256: c9aec8219c9df17c4c6b7d79cc127d46eec880f0c7a057295f6fdbfc43363536
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/union-preservation-verification.json
+    sha256: 08bbc24e193b921fb15ad173885d58204b76649f47c92428ff8c0721917a93b8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/verification-terminal-observation.json
+    sha256: d2589c401de3f847ddb59c46a119df7ad2c4ef03e2fa7eb202052208457fd850
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/reused-acquisition/PubChem-6098323-properties.json
+    sha256: 58eea9c6ed325d378d69eb327b788e60846d872cf7a675d2aa515e69489506a4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/reused-acquisition/pubchem-6098323-properties-attempt-1.headers.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/reused-acquisition/pubchem-6098323-properties-attempt-2.headers.gz
+    sha256: 30418412b1ae06781d007c0e1607e6bc91a70526f69740c9a229ab3fdfe96def
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/reused-acquisition/pubchem-6098323-property-acquisition.json
+    sha256: 5b6cbed23c0a714fce20fe5ebd4bc708f3e34b6071b3b8b4d74387a0a1ce84a5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/reused-acquisition/pubchem-6098323-property-verification.json
+    sha256: 9c3fef83d52fb60e49d4737b32378a422ae018706c377c4af4afb1506156d1db
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/reused-acquisition/supplemental-source-candidates.json
+    sha256: c3f18404e4d128e2f0740dcec10845fd1e8c8fe1754411d2566df23f3ee1d3e8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/reused-acquisition/verify_pubchem_property.py.txt
+    sha256: 1f7ccf8667dfbc844ff0b8d02fa5e312be025223e5d245b8a85bf505f3ee1aa4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/build-input-preservation.json
+    sha256: 1738df4eb36b91f8400ea677bd3cbc027b0024976df17cea441150648c68cb5f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/ontology_builder-receipt.json
+    sha256: 3894e919145866d44d8e2d18be145781b0dd6a5d1545219cbf4790e4edde0fd0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/ontology_builder.log.gz
+    sha256: 8bff5d7f045c0009c019917c27c780cffbf8539a7eaa5e0637b1fea0b71ffe58
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/planned-identifiers.json
+    sha256: 038a2b1f4858e37f72d8f201891a202538343cabe6aebbab18f2bcd3e5cb6736
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/preparation-terminal-observation.json
+    sha256: 0f89b6b1d2738ddd33d35d43161e172944f41aaa18000c6b8f37c5157ad94934
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/primary-fragment-availability-preflight.json
+    sha256: e2e93b555a89272c56a296cb91d34434d8995f74bd59f0f444fa4216887c6569
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/primary-preflight-observation-preservation.json
+    sha256: f94f16611c6436839d080d5a27d8003cab02674b90088c02ea596ff65d1adc8c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/selection-freeze.json
+    sha256: 679ffc527e44ba0ca770ce5e3f92923f82ec3cb7722ebcfc75e044b33bda228a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/source_builder-receipt.json
+    sha256: 0f6d2a456737e7aff8f855e5a04e28268e96a6245ee7975dc8b7d1695f91dcd9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/source_builder.log.gz
+    sha256: 12c4c8c61501cab3b578e6c1f7a0073c428e8660b49e37fd01c754d3875c129e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/superseded-attempt-terminal.json
+    sha256: 4fabd4183b25eb1395db6044e89915f9417ca0756d5d4e033e4da721672e291d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/superseded-attempt/superseded-run-cancellation.json
+    sha256: 433c24720eda889c8cf7156a465805709462016e9a531b52e376a9dc0633432b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/authority-promotion.json
+    sha256: c3c08dc7cbc9c72727db57e420ba74c4fff3cbd74b35e7db369af963aebc8db6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/directional-reaction-usage.json
+    sha256: 2fbf07a40bb55df12c0e7ce8933f65d7daddd68537f5fc1acbe4b116ffeec253
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/erratum-locator-clarification.json
+    sha256: 1c21cfe824e8f700c2fd13485e816ccbc113f9e3130e80fe056b0e0d284b65b6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/formal-route-normalized-replay.json
+    sha256: 64c99c6662bafd1dbaf3953f53fb90e877105045671146088f8cb12fc1138f12
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/gallate-i-entry-direction-successor.json
+    sha256: fe3d2af96bef57f49d9949333fc7138315845b3d9919a4170a54fcc009e1cf23
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/integrate_primary.py.txt
+    sha256: 894a023fc8db74ef603cfddf83a75abcdfc8218f14541b41f1f0f16b13d21b09
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/native-retention-count-clarification.json
+    sha256: 69628be8943454383b488af251a55abcc7ad1593f85ad7427cc573bbe6903adb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/primary-integration-and-normalization.json
+    sha256: 7cbb8e9b70be7829f9c833dd7120a69e94c76bd18dff97ab3af025a9e5caf185
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/promote_authority.py.txt
+    sha256: 71b5f49d42c96996368d97ab80056d8a1bf63629f51ba9017c27846ea01dbb6c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/source-context-successor-erratum.json
+    sha256: 0870cf2751eeed6489ef61fe92f95f3215094ba65dec11399a37246af9c32961
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/integration/verify_formal_route_issuing_direction.py.txt
+    sha256: 6102fb10b22863c68834169aa9de5ad429da5ebe6d16047c52c61f14880b1fe0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/biological-package-root-verification.json
+    sha256: 44d63fdcefa8e936e1268be52f416538bad049c755b72225efbd8b307f235152
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/chemical-package-root-verification.json
+    sha256: ec72b40449a696b2ce04aadedebd65c65a81f31d46e622300975480336b6ee5e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/dedup-disposition.json
+    sha256: ffdc719cfdff3fa8363f021e328a142391fcf454e4cfa93287e291a98f824f76
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/dedup-patterns.txt
+    sha256: ec08e5d9aa3be2ab7c8c2e3579159361d6fafa45ce5409821ca79d349b3d0ef5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/dedup-search.json
+    sha256: 2effe86405fbbf00ef2a771b18174ad63701513b7203eecc453a1487ecfc60f3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/dedup-semantic-record-scan.json
+    sha256: 5e6b096c5c9ba3760f9cc4771724e2d297c8ea643d98f14ccc5f4ce434b8bfdd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/helpers/retain_source_dossiers.py.txt
+    sha256: 691e51d8c8e1803b6c72671ac95f5a9a11598bc681950d3e723d3646d4ace0d6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/preparation-package-root-verification.json
+    sha256: 13ee95fd52256af4d929ade1a1b900b93902b6779b8e79f310f14373966a5eec
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/preflight/worktree-creation.json
+    sha256: a58e50e25580c1813367497122eb1b2b2fc5094f4c0aa88734a3cfb9af7ebd1c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/advance-observations.json
+    sha256: a91cc323dcfe4bc41017d19168c1752cf9a478dc3c800a36574094e6d0730050
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/bounded-direction-final-inspect.json
+    sha256: 588157eea90e0f62469235f7e300923d28519e45894d2afeccb00f597f38b113
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/bounded-direction-independent-final-diff.json
+    sha256: 9e29c5147ce58d33567748c4660b6fae989d4c5a2174958c4b1894febed1b38b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/final-inspect.json
+    sha256: bc95a0e7f3e3d56a7d837755007ac7f1559e48e93d0f912bbc938a54c75a849e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/final-native-locator-replay.json
+    sha256: d67190b587bc86cb806baf9a164d0981f40c8d33c164bd52610d5b7be39da79f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/final-primary-quote-independent-replay.json
+    sha256: 2212510682659a880adea26c3646ef11c85a7043463bbdefdf4d9733b6ed8883
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/formal-equation-independent-balance.json
+    sha256: 49de5de4403edd9579d11245b82edf0d7784f07b962167da96ca31625bf07fc0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/retention-manifest.json
+    sha256: aeba8a1f5a2b55488d702e0b00b4c3475610fb6fd3b9b71e98b710146eb2037c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-additional-original-families.json
+    sha256: fe5c0a653911a3811f707b750c48190b2f8eb24dc8fad0166e4a51f51f2c114b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-family-summary.json
+    sha256: 34c5d7b8482a67b8362baa1b0da3f29d9690f502a15b0bf18db2edca0a5bf928
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-original-family-binding.json
+    sha256: 6cd72d5036e468fc7d53f861ad38b275cba1879a32064f7ca6884508eab5b027
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/source-inspection-notes.json
+    sha256: f736e4b0e06956703b98fec05c0912c2f2e5704ece9311bd5538d497538f3237
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/01-just-render-pages.log.gz
+    sha256: eebbd0d0e5e3bb744347cdc90c34a89657a82026f855f44aa0498d1b617e9347
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/02-just-validate.log.gz
+    sha256: 14bc31c95b4da5bc8cf29aaba1b444c9b1265d80674aa0cbeea7a7783145c032
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/03-just-test.log.gz
+    sha256: 5654c65b7413d2c26ed88c020533d22a1f55d509d4b0170d15a985ba2d33cd69
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/04-just-lint.log.gz
+    sha256: fab45d94cd260329cc1940f54b6e6a31ba66e94a424a4fbc2606aa0d9ba4b658
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/05-just-vendored-check.log.gz
+    sha256: 084f63e4584bbeb996074ec5d00879591713b4e1d11b3b2ba6c8970fc4367af4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/06-just-vendored-check-network-retry.log.gz
+    sha256: 91d8ac9e5d634985562a4ca1ee1310c19ad13f688acccbf3bc82806484abcd5e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/07-git-diff---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/08-git-diff---cached---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/accepted-integration-inputs.json
+    sha256: 6192da90545941ac3ea5681c076df9dece1613699b697546a70a8286a70a10cd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/browser-preview-observation.json
+    sha256: 44180b59f2ed4bfb74e1d33f1ca101396cd85c5e486390f2126df782978dd8b4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/complete_gates_after_network.py.txt
+    sha256: 96f96a609adb09c2edf38cacbdba27b21ecdf0840754d46747da0af9d503c06b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/environment.json
+    sha256: a1116875c23a020c1b3eb0f798cc2a617dfc099d8799e92435d5cd1f8d636738
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/final-input-preservation.json
+    sha256: 8d5a49d9256d662fedac9197385118a105d3aa2c318eebae55bc650b83f5d377
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/initial-receipts.json
+    sha256: ef42cb4e8d130b3bddb4a9e2ffb14744088af7c909d2b2251a55ad59e3f12193
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/receipts.json
+    sha256: 3b575a30cb2d3427fe4c99b57bf4146f4fd99621e513ca9bd7b6e28f179439bc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/retention-manifest.json
+    sha256: 2a5e3588da32ecfe01c4155b733d86541c38d109e891c589bd00bd4eaaf16f02
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/run_initial_checks.py.txt
+    sha256: 22f47ae08282daac5781f3141641924796d1a88d92282b2478fd8506efd27ff2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/tested-core-input-hashes.json
+    sha256: b9cc516772c1d7bcf36024db57d861275325c5fff278c2dc1983a81029752ef0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/source-retention-manifest.json
+    sha256: ba16e2bb3a2554f9df4ba99be6aee02212125eee3e582e3d92f9a0abafdf1bcb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/HANDOFF.md
+    sha256: 218bbc817c9c37e4bfb0adb443ec55f5eee256ee8caa078c0f87d87b918e76d4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/candidate-identifier-selection.json
+    sha256: a473a1db3fe2167568c1ae083e06a09f9da774c28f4f6b5486be2a5bf7ed54a3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/external-artifact-manifest.json
+    sha256: 60afb88c287fef2bf6ee66856ec7597a917402cfd3a7106892e30d46631f3e2f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/external-originals-manifest.json
+    sha256: da8c4d83d3111ecd7d94d388f63cee0b8ac63ae114f70dfaf67615ab82d07ead
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/acquire.py.txt
+    sha256: e83592e3170e9f0f31cd0c38ec978fffd793e99a4972899d4601b3149a941197
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/acquire_reference_counterparts.py.txt
+    sha256: 4bd4b187aad8b54ac3035b33dd8bd6d3de4deb5436bc1cfb6c5403b78a6803c2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/acquire_supplement.py.txt
+    sha256: 032ff8e845fcfde3037775a03efa5a6e309904ff89224ac7c5ded7498cded748
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/authority_candidates.py.txt
+    sha256: c1562d3887493ad34b049878455f527b417fef7ec4a232e4b4037ab4cebc1255
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/freeze.py.txt
+    sha256: 3a8e6087d5e0d41bcfcd6faff97a45b9e5723ca5b91afce8e666f25a297ff764
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/interpret_identities.py.txt
+    sha256: ae2abaa9a6c7ea2b056e66472841f3dc4416e516f63067b4a650b816fdc7dedc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/inventory.py.txt
+    sha256: 54fd30765587ce20711291a8850429e05143c2e1249e67667e5d4dd29f070b12
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/sequence_compare.py.txt
+    sha256: 49a6a9198fc177900bd251719e77431d2f467bc8619f06b3ef4bae566abb7159
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/supplemental_identity_check.py.txt
+    sha256: 911f38e5f763d7b01ac01af15cd9ac3c959175b93986e61aa1217d4b2cfdc191
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/taxon_authorities.py.txt
+    sha256: 64d198a678efacad5743de23b8da5d01961f3eb90e920c1fb4ca8097529923dd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/uniprot_context.py.txt
+    sha256: ab7d6f7531725e17035becd253b46e91b11bcbebd38eecb8d451cb1016fe55b3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/helpers/verify.py.txt
+    sha256: c784f5547b48e98cc56948404a4894eb07de926f008c483adc881126f6f8b790
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/projections/component-reference-and-gene-dispositions.json
+    sha256: 7d6f0e2a9b6050de59b6ded6e65986088db9a85151ea8a9932de6663a30b74ba
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/projections/native-biological-identity-summary.json
+    sha256: 1dfa86958ac3e00eba2dbe274eec5d0dd24a43dad2ba96de374678fa83bb2010
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/projections/reference-sequence-summary.json
+    sha256: fd41636d800f96555957f238aacfeef3c1e566e8fa4eb82321ccb3c72f0854bc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/projections/source-parser-probes.json
+    sha256: 76ad6c8f085f30e2a148c75aaf69f942df66606e8a9da8aebc6cf837c8b95db9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/projections/supplemental-reference-identities.json
+    sha256: 55d7b6219dd304fa442961add80026ebb4115e1c0e75173c33ccf648c6d13524
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/projections/taxon-authority-candidates.json
+    sha256: f468c0373535812700e69060d22b9af6b133aa1aae9a2bf60f87cbb1fa8b14fd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/projections/uniprot-reference-context.json
+    sha256: d438af257df0bc74a7796c83e0924a6ad732bf6aef05409c0af7cff2016ebaf2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/acquisition-public-reference-counterparts.json
+    sha256: 49e4a41071e8a464bac627a7d1420fca6c1d9535d6d14ee8f653ea3cd29c5a5e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/acquisition-public-supplement.json
+    sha256: eb4888007d5525f44b968c1bfe6aa4a09f2a0a204f126e2563c643c2cb5956a6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/acquisition-public.json
+    sha256: 0b58aa6ca4039195d17fd92608204b1429181d2531b8d4d2a77231a3bc7b34b0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/acquisition-sandbox.json
+    sha256: 27c6d2ec648dfb91adec13c4c133089d924b29c7135f223a49e9fc29fea200d2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/input-reuse-verification.json
+    sha256: 1c275e26f77a381e1eeee28f84032c2080a16bbfd15a5bde1de6c20f8aace38c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/runtime-copy.json
+    sha256: 98b31205a5fd1250d44ac5056efc334e2ad8b856ab6e34c456907ed533d3c44d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/verification-command.json
+    sha256: 812da2197300b638737001850bc2bf66fbe058e4d9185bf64a3a7f61c8c4a43e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/receipts/verification.log.gz
+    sha256: 868dd93de5c74ed240a8af850f11b0ce4eae406e13670d6277e2bada13e5a881
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/requests.json
+    sha256: 113de06dd211264420bcf0516c9bd50b16d515e55fa376f06737cf51f4530a1f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/source-config-proposals.json
+    sha256: 3ebe4844ff1e5800678134bb63a84b5e6e5673c44798837b1cf3ff0dfb18b88b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/source-retention-selection.json
+    sha256: 4e9c45cb57fa692722d9c91f85ba932eee463d049cea5a2696177153d0444b28
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/supplement-requests.json
+    sha256: 9d47bef9f12ff5f91ade0167a6709702c9c045077710a201ea0fba1ed58edb7c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/biological-identities/verification.json
+    sha256: 14da9952b46c01e0591fde7b971b6635cb59e18344ccafbd1c479ad8f0ded9c3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/HANDOFF.md
+    sha256: 1aae77535d5de1690221e2d2c58727546212b4aa6cf47742a5a9955b174ee4b8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/external-artifact-manifest.json
+    sha256: f5ce23f52c59e8254b2d17791470c88eb65e02194bea7ad9a4a3c98231c0132b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/acquire_kegg_compounds.py.txt
+    sha256: d695a2d2e5558b19a9b1126bc69e4eabb669f948f60fcaa415b8a93f0bb3dc4f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/acquire_new.py.txt
+    sha256: 306398f0a667e74b04704d7259f0613b3aaa23443d2286c8a76f8b10294c0a68
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/check_chemistry.py.attempt-1.txt
+    sha256: 80a55dcc2a0a7b8ea89e6b8577d7148aa6a5a743d05c89c667890cfcc50b8add
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/check_chemistry.py.txt
+    sha256: 80a55dcc2a0a7b8ea89e6b8577d7148aa6a5a743d05c89c667890cfcc50b8add
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/check_chemistry_v2.py.txt
+    sha256: df6fc52477cb143b0010956001d4fd53ad4768bea857317150b89c685b12de26
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/check_pinned_smiles_scope.py.txt
+    sha256: cdaa790fe5a0e114762106b7471d78d9b04c24ecb63288c47f4063785980f879
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/check_rhea.py.txt
+    sha256: 7cc82cf641899490f7823fc2d9a985c9f268ec6d53cb427115b9cfb716511154
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/compare_kegg_entry.py.txt
+    sha256: fb32aa1dbf470fc39709e8421939726bdbb6351cb2fadebac3ffd12f5f3bd3cb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/compare_rhea_native.py.txt
+    sha256: 43014844a00e2c63bc276cfb4d7fbd81af6e9d705dd69f0976ce1595fef9c191
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/helpers/material_facts.py.txt
+    sha256: 63a39b96012172df037538be193eae399bada006f16709551106ebdd89b17e2e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/acquisition.json
+    sha256: 2936be066fc4512d0df9f383767667f20eeb52174d4cbb8849e93d3eaada7bc8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/check-chemistry-v2.log
+    sha256: f0350387d34a54f35c12ef090f5309a7dc05758f5bf8cc9dc2bc4f790f30b525
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/check-chemistry.log
+    sha256: 3a5f041b263f8222593931aabecd796b08ec2ab49124852832b2c949ee5cc662
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/check-chemistry.log.attempt-1
+    sha256: 3a5f041b263f8222593931aabecd796b08ec2ab49124852832b2c949ee5cc662
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/check-rhea.log
+    sha256: 2d68b9cc8847ee4e509ad0502b53858bbfe200f0d109dd78a4fd9dea24e48be8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/chemical-equation-check-v2.json
+    sha256: 09c87b086cf6dbf5a9179784fba3ff9f3d573fdc0b27b415763a313f3efea3fb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/chemical-equation-check.json
+    sha256: 76bc39b77d19a27b611bba67341d83be3f8dfd71a36d3652c1fdcd066c0c40bb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/chemical-equation-check.json.attempt-1
+    sha256: 76bc39b77d19a27b611bba67341d83be3f8dfd71a36d3652c1fdcd066c0c40bb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/formula-representation-correction.json
+    sha256: 07eda9e28e39086c09d98df398671dc797708703915c5dec019861b136cbdd08
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/kegg-compound-acquisition.json
+    sha256: b3e41c5d24c25ec80fa1fe0978900bd181e8e43378a079e12a501343677c74a7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/kegg-entry-reconciliation.json
+    sha256: 22e9ff564853b0a349867156b23f4b66b52d59a25323788b65e80a45f974962e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/material-facts.json
+    sha256: cfed93147025640748df53839a8ce42e551d3b3a467b9b54449ac5f1e48d2098
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/next259-artifact-manifest.json
+    sha256: 1a0cc7a52fc9f1155c643a5fce42ef573ce109259c39d972664a03876200d477
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/next259-reuse-receipts.json
+    sha256: 8ba53a63d17cc707cb6b203b7fda1bf6766dee2b9cfda4e072e30becd07b7c02
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/next260-native-selected-native-manifest.json
+    sha256: c0a667d587c7c61c39ac91bd43230cef17e1c7d5a5cb22f4e5e9016756931574
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/pinned-smiles-scope.json
+    sha256: 0d39b8b9ca663129a0108d620ddfc4976fcbcd47dbf931a0482f829b35efdc1f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/reaction-equivalence.json
+    sha256: 5cc681fac8dfd261775fa61a584e5d0967b3deb07269298c198599f267c2d135
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/reuse-bindings.json
+    sha256: e5e5ae46eefa2e66be2648e51a05bb9782d1ef25d0f134e862875d3434b9a51e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/rhea-closure.json
+    sha256: 7f261713219a0e70a0637e972935026c675260387f008dc4f47d80b43a4140c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/chemistry-root/retained/verification.json
+    sha256: 126f8652bd55185567a7ded1fe6db60da0738eb981505db933a1c8005f8cc034
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/HANDOFF.md
+    sha256: 7b3781ded3d495e539f6d5ff78a00d95004b34044dca8101ca84339b1a4519dd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/build_impact.py.txt
+    sha256: e1329586a6d8ceb21de0c34cbb749fee6f73c6165b8836590e05f7b0e1200fa7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/exact-existing-edges.json
+    sha256: 0737aa612c4ef76c2e7a82d7b8c4d47ad858c41ed1632687a0a9dc0c350a8bb6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/external-artifact-manifest.json
+    sha256: 3ea6d0acd7c05f7ca0e6aaa9a43bc5687d063c2c00a11f5779bd8264ea2ac6a4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/impact-dispositions.json
+    sha256: d3937e46394dac1f443f05b6773ace576978872906cd4a7b758edc76715d4667
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/input-bindings.json
+    sha256: ffa1ecf939945f7f630d74cc8c2227975cf0ec67e115ce78088a15566bd3c7a0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/native-citation-projection.json
+    sha256: fb60cfe47c8a06c1cb2816e44f383f8fa2e85b3b2929e8531a1e841f71d20bc1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/existing-record-impact/verification.json
+    sha256: 7aa904c1b893c5b93545cd06602bcfdb68d4b738635731986e95901ca37dd9c5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/HANDOFF.md
+    sha256: 80f5bef87bf2d80a4c598006f1a68c3d16dc90da28c5fad9944fb6b04768efd1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/artifact-manifest.json
+    sha256: f51bf58456f30384b6b7251890c1a0702117d96a4bc73c334a8140f071ad1ee9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/external-artifact-manifest.json
+    sha256: f51bf58456f30384b6b7251890c1a0702117d96a4bc73c334a8140f071ad1ee9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/helpers/acquire_public_content.py.txt
+    sha256: f6749b20fbc970bd5e39157215633516ef1345691287c9183e474a91c40b0186
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/helpers/freeze.py.txt
+    sha256: 253cf7c40f56dce1a1a957216694ca4a5a000f62c4d2a3624c13e876af299b21
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/landing-observation.json
+    sha256: 9bd1292ee2a782bbd6332774658de604ab3f7a5a108de1d19fe79985a9e9613d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/receipts/context-bindings.json
+    sha256: caedf73ef16174504e0074b7fad91ad953649da7d3ded17e05950b98263162b5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/receipts/public-content.json
+    sha256: eb17ddfc77865b264f94a644ed4b7297f9506c9793ec8d86a13d31c3a8034e72
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/source-retention-selection.json
+    sha256: 2116b0403e62802eb71c4b6cd091132614d870367a42ed14e3cf59b15fac822b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/ligj-thesis/verification.json
+    sha256: c97e88ff2100f455c889f31e37804a92bb0bc5c62488b0e1d87d1bbf8d918790
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/HANDOFF.md
+    sha256: dafb758f99bbea1ec07d301ccd21515bc2a0be4f5412d289d50714dc9d3d1bc0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/acquisition-public-1.json
+    sha256: 2ea9d11f13a8cd8e6f924449241ae97eadaa6c66529b11fb4dd1e32c53349f9f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/acquisition-public-2.json
+    sha256: 687797dbc5ca7aef8247bacb15cf05fd7ffb55234d7355e658215177aab3d1ce
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/acquisition-sandbox.json
+    sha256: 7d05314890bd6d302ec58e7137843f34c63c061d64856ba5c4ff316436837b99
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/activity-preparation-dispositions.json
+    sha256: 4f22e9eb9e58dc6f2edc1f4a3bcc1ee021f22138ea83f652007173565c40abb5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/boundary-disposition-summary.json
+    sha256: 15f906b580f85d8b39951152ed130bb55afd24309de442595e0a60fc8519ff72
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/corrections-and-limits.json
+    sha256: de380f7eb7d9639f66b91fe5efbecb5fd88598207004da33f9f498ad5e33025a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/external-artifact-manifest.json
+    sha256: 094b2671cb9c260cdb6f65e364220c4ec78075edfc00a70a42f0ea2c1490c259
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/external-originals-manifest.json
+    sha256: 17480455273ef7e82c98e00fac1124e84b228dfb477283060387b57bc530e0e2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/frozen-context-bindings.json
+    sha256: dadd7d41b337889b861d843efdf4c90dd46add561073472ffdb88db4e451d558
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/acquire_missing.py.txt
+    sha256: 3ebc309a45981beeb9441975e5d2de0d75af755dbf5d0cacd4f4eac1fe2abcfa
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/closure.py.txt
+    sha256: 932943dd627ff8f4119a6f26d8292a98e2180646e2714dbe2b87f13151a52544
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/dispositions.py.txt
+    sha256: 4e63f90863e71dd6529f11e5adf763459b92bd688f0ab93ea9afb5420e473bf7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/facts_and_coverage.py.txt
+    sha256: b1dcc76ce600b10994f0585fac1e4c724f0242a92c28eac04d3c2bbc4154460d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/freeze.py.txt
+    sha256: 3b1b1963b67aabbc755fcc33426a9ff80dd7d84dce1d81edde2f8a02fe78d58e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/inventory.py.txt
+    sha256: c4e4b74983d26240367b8cb0aa2a5aebe83a81287b21b5306aba224bf2c0696f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/update_catalog.py.txt
+    sha256: 02b39282064dd0d8312157c20bbad14278bc23e86ce2b93b39e1dcbcf1520597
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/helpers/verify.py.txt
+    sha256: f4891c381c0ac5aab034cab051138f725abe925f5f198fbb81fab6c8ff184b2a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/inventory-summary.json
+    sha256: 4bd1e75b149d4827bf684c202fa617db4336ab2fa8795fc4174115aa21e4ffac
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/native-object-inventory.json
+    sha256: 6548fef1c312bef7ab2021b6350b0abaa3e7bfec640633abf58182a23c86ebb6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/native-slot-dispositions.json
+    sha256: 4b25ee6da125b127d62ead7ec699ab2a1678603cec55e4eb8a1b7deecea3f716
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/protein-dispositions.json
+    sha256: 8e7718b039f9f0c831723f7679491374c627a8621f28e5e5319c0950b63f6ab7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/reference-reading-and-disposition-ledger.json
+    sha256: 707845545ce42a591d976f8df57fd724d4d577a7f3d14ce665f2e00e9ecaae21
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/regulator-dispositions.json
+    sha256: 7c978a7f1b965549682a0f4f409288091862351c3ac6e169967d0d06f4452cb6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/retained/selected-native-manifest.json
+    sha256: c0a667d587c7c61c39ac91bd43230cef17e1c7d5a5cb22f4e5e9016756931574
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/source-fact-dispositions.json
+    sha256: 773ea6376b356b7be7dd59b500df7772026ae30f3274a5dc49464da669789b65
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/source-retention-selection.json
+    sha256: 874a92cee5ebdebd522a134ddaacaf63f4c6b53601e0f227597268a99880c78d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/native/verification.json
+    sha256: c703e6546a3204efb51fcff129c7c9f114786be4a860500a4fc1b73dfa7f1a4e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/HANDOFF.md
+    sha256: b46fa6b344dc567852201f8f2f2ee663737c8b62968e64300171c6d8176436e1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/artifact-manifest.json
+    sha256: b941f3aec27f7570ee2da011846d0e55ca1a68a39823a3c977f6599f2b1dd46c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/external-artifact-manifest.json
+    sha256: b941f3aec27f7570ee2da011846d0e55ca1a68a39823a3c977f6599f2b1dd46c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/acquire_issuing.py.txt
+    sha256: 08da8d108af6e67256b841ae69a58b954bdebcc5dd43492ac26ce807748bb7d0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/acquire_late_pubchem.py.txt
+    sha256: f7c6bca2773e31f2de7bbba3c0a496e8ca6dd376f790ba031daec3769076a288
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/acquire_native_comparators.py.txt
+    sha256: e937575c406dfdfc74d8aa608cd0107f5f41b39427b27b9dabf4c1c1b1cb698c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/acquire_pubchem_additional.py.txt
+    sha256: 921b3c4d62d6e76ee16db0ab4ce4be06250653d319baddcf811fedaca4212387
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/acquire_pubchem_ids.py.txt
+    sha256: f66686d0ccd64885c0823ef5bf7e299d4e072fae94ae687ee8ee398b50d1f4bc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/bind_primary_and_verify.py.txt
+    sha256: 4ca34b4b4b110f8e5fd5ce96ba49e3f2832e821708bbf74c6e2674962985b45d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/build_identity_dispositions.py.txt
+    sha256: 0ab915c1ae9be112aaaa861fe644902f625f5307fd36d6b6a919b7687d161278
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/check_additional_authorities.py.txt
+    sha256: f79bad999be65f2880773dd6b03447b2724a8439d41ab2eb949f279190bfbd91
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/check_final_comparators.py.txt
+    sha256: e7e52473bfb7003af39253922fc04f3128895059ebd1a07601972a5eef60c07a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/check_native_reagent_chemistry.py.txt
+    sha256: a7854486d3a49f1880567f599321e37d9547e81cc0fe8a3a44241872758e0c5b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/check_salts_and_alternative_balances.py.txt
+    sha256: 1b02df9d9596de27c2a6d6afa86e01519d49ed15510f2b58dc76bc0e547ad505
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/check_solvent_controls.py.txt
+    sha256: a6e26e236d071b7d789d28ec6769bd93717e52714b9fc0410ee9d5c8d631198e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/find_additional_labels.py.txt
+    sha256: e36c6b8caed5f479c868cf6cffc81026f11628d8f7fe97667901581ed90226d3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/helpers/freeze_package.py.txt
+    sha256: 02d11f512eddba9170a54f0f9b95f067f9af7058fbbc28bb3c776342d25e8107
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/additional-authority-check.json
+    sha256: 2f1279ffb17718da23dbe2e4276063c7551e1a3611febcb0cd227a06b9ceaf33
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/additional-authority-execution.log
+    sha256: 4aaaa59a4c6bb1ed50b39025aeacf3bfa0b39fbdaefd7845752a1ac7b5e09f32
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/additional-exact-label-candidates.json
+    sha256: 53f31d14d2aa9b337883d761584802080e3cf9f8a3f69018aaca75e1bceedfe3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/alternative-product-identity-search.json
+    sha256: b33ee9f5a5751a320c163206376320d8f88a124a063e8133a9491543b041fdc2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/chelator-candidate-search.json
+    sha256: 96b712366c71e5e1f17ad9bf83261772279503eda50d4cace0d32f72a7e356bc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/cysteine-stereochemistry-candidates.json
+    sha256: d18f78038baed3bf982ec34059757a0ab7ad8dfaa60c28d83bdc5e8afdf4c55b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/external-originals-manifest.json
+    sha256: 84b3bd261b82b11a8b58ae20446e86e2d8911ca68f85313c96c98f978ece0ca1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/final-comparator-check.json
+    sha256: 9523c323cfc5ca47a3bb2239b3932576805fecf2f1b9faff952941ba9100482a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/identity-dispositions.json
+    sha256: 74309055a5990c2ec3cc607456954fa79daffb054ac5855e14fef79c7b609e77
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-1.json
+    sha256: 1f2d1f7b6c85016f220ffe42a2db818e3d6dddf8b454be3c6e515cd98b694c70
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-chelators-and-controls.json
+    sha256: 4bf7676ea86511b880c8065c60f6e39fd91d3d3bde277914044e9d0c9e5ae259
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-diphosphoric-parent.json
+    sha256: 482eec636700efa1fbd571050f4e20708348c0c5243b7cfb7c94729ef93fe893
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-glyoxylate-comparators.json
+    sha256: d2de2e4b4f003784709445c058bcdab316819c6908910072153024ea98cc2550
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-hydroxyglutarate.json
+    sha256: 15c1c76bdd02f7066449603053aece3b84dabd61d4e087924650baff2e881df9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-late-comparators.json
+    sha256: 4d420331cd8bfbb81713f1f2ca9a9208995eaeb13b5ecfeee559b2962fed7b37
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-negative-comparators.json
+    sha256: 86972ed90fc68a55fa52c46d5687586983ff5eaa132ede2bdb2d54735a607655
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-primary-1.json
+    sha256: e7928c880dfad224bccdc8e1dc2f607fe6b0787e0cf488a7e75ba49543f30565
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-solvent-controls.json
+    sha256: e0f46e9e23bc5d32af79b0fe69ad4c5b6abeddc9ceb5f41279587c13acf45b3f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-public-unassigned-cysteine.json
+    sha256: dd0b21bf535f0867342084ce429580a6a8a77bbcd2f85d104d94e999e0f24aa4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/issuing-acquisition-sandbox-1.json
+    sha256: 4c9317e1fed6b30f58b2379ef0c45375ca9a6c40be23d9524b43be63d755df9a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/label-candidates.json
+    sha256: e79080b1a15240b0a41eb3b7641a318ce6e51c64dc263d0573dd807c23c438c7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/late-additive-label-candidates.json
+    sha256: e55fc0c665bc466bd6762eea052feb83b0dcfb790fdd041559693c1175280c97
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/late-pubchem-acquisition.json
+    sha256: 0b07edcdfa136a1caffed07cc4a364c1227bb3cdb149ed7f9c7e9e360360b489
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/native-chemistry-execution.log
+    sha256: 6bf7dab57fc77e286b2f445d31c3cde47cc4b8fec7aa09f71e077088e9cdb739
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/native-comparator-acquisition.json
+    sha256: 93c3d7deca4dffda8e6a3c8077ec9d730ade16dee15505bde226407c41c80009
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/native-reagent-chemistry-check.json
+    sha256: 40e1e8def665b7e4e60d7e2743646e38c415ec61324b8990e97432e40805206f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/next259-impact-check.json
+    sha256: 3197c3324f226645aac761d602315b8d8ac2942c952ccf7da761e300ea5d3158
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/next259-preservation-receipt.json
+    sha256: 7e7a0323435c447bdfe6630dbc2b3757261dce4c97a0cc7ae030b7184d02fb65
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/pinned-candidate-search.json
+    sha256: 2e54030415a5d4925edf90119fbc2e8c5c38de29aab5196f71d3c2a1f2d91a3a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/primary-binding-and-verification.json
+    sha256: 1c7dedf0de9b4f7b08c08e8f767a2270b39747469f59881e38ffb5233360a0af
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/pubchem-additional-acquisition.json
+    sha256: 1bab7393bded385820b3ad9b08fe88c8a8f00547a9f43437e6438b7979307fbb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/pubchem-ids-acquisition-pyrone-confirmation.json
+    sha256: d64029c0853f8fe14ffa56f21ba7099da3f3f08986052de508556f23160ce9ab
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/salt-and-alternative-balance-check.json
+    sha256: 3ffae8563ed6850f2c461a69587d8065b0d2508aaf0d428d92b5012f29e7b0a8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/solvent-control-candidates.json
+    sha256: 0d9ad5409ce52faf2747d3e3672d67563a801a2081df30462cd14f20345b93f5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/solvent-control-check.json
+    sha256: c11c764bc6e9cdb4cfbc2c4252796fc166fa5c2730f1b485b064e0abf5c0cb21
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/retained/targeted-source-name-search.json
+    sha256: ffcbf9fd4778348f6abf76bf4151d36b8272d9eef34f91d0c4e4bbb0fada94f7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/participant-authorities/source-retention-selection.json
+    sha256: 26c3be59dc02cd773a022f3015714b7602b320ba502df86e2827ac158bcc1b73
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/HANDOFF.md
+    sha256: 80ce4b1383c9d432d54424e5bc2254bde1b646b0658c8c6f1088531009564ae8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/acquisition-pmd-pdf.json
+    sha256: 22cb1d4052f8385ae5a8ebb67d7aaaaf9f59f9618a674d4d42f2da0deb04ea93
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/acquisition-public-follow1.json
+    sha256: c8eb240ef1ddd0de57bedf37898dd710f54ef93e37dba18a1a913bfec71d973b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/acquisition-public-follow2.json
+    sha256: 5fc3162db31b2d4e8807c19951e0976f3adbcfbc4f2342ef3f75fd45975cd825
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/acquisition-public-follow3.json
+    sha256: b9bb449eddd0d50053429543b0ea6f0b4121bad86ca9dfc1488c878844fded62
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/acquisition-public-initial.json
+    sha256: 3697acb72dd01c1eae25ec7e2814573077ab6b17c94595896433623de2a66502
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/acquisition-sandbox.json
+    sha256: 19af34b7aaaf37fcf3f11b2beb3878d9c07773bd43bbe72dedf27cb913d3cbe1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/acquisition-strenda-export.json
+    sha256: a857ca383e2be29a31652338c1bed5a1f817bac972acd0c02de4481f56cd2719
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/additional-reuse-bindings.json
+    sha256: 8d21822dd3b52f0e2e141263e58dbcc441c36921161acf8374b7443722380a25
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/biological-context-binding.json
+    sha256: 9d79e3345ce93fea143ae2b6cd74f47b67b4c66a91840ec5c88e408b0aa0edaf
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/claim-disposition-ledger.json
+    sha256: fd6da28356747837c9dbe2b0098385bf4f4b0a91c2e19f1c14377dc4193de971
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/acquire.py.txt
+    sha256: 678d5ed47f19b1b8bf67464a3c3337ea0d75f57cefb78e1257e72e10aca01a03
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/build_dossier.py.txt
+    sha256: cb6f817b9bc3aeb4dd0efae1e5cd13eafbb522e80d5820ce9be2a8928468f928
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/close_dossier.py.txt
+    sha256: b80c886551d3cc1fbd73d9d44c25308052ceb6a320d81fc4e8ac9ec0db5addaf
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/export_pmd_pdf.py.txt
+    sha256: 238c40beb69a4c44ce8ed9a2b6ae881de0aa4b416c683a72c0485f1448998ab8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/export_strenda.py.txt
+    sha256: 8d6bf264e127e0f6ee3322c431e55bc894a4a53276d73e04a45f73dbddd78f94
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/final_evidence_plan.py.txt
+    sha256: 636d877b0e84b68b467121a77ead7882782e308c5516bbc429b45a9bd44233c0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/finalize_selection.py.txt
+    sha256: 187307835f10f5e178d10dce6b7fa65011376abf309e53931e56ee993089b4c8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/finish_projections.py.txt
+    sha256: 7391b71015be23b75f17c448025376292a046f9335ecc10b58c7d4881f52c3a6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/render_pdf.swift.txt
+    sha256: 3937da86025655b32f6f55d94351508e68544cde485af12857ce99cc9966d73b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/compact-helper-copies/verify_freeze.py.txt
+    sha256: dfac33cb1455954f5f9b35f4197361fecb6f48d71ccb40bdd41fa3ef67f13215
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/draft-assembly-receipt.json
+    sha256: 4182332cfc965932c620483abd5eda0f7af0c6fb01d3c5922a180b91ef30830d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/external-artifact-manifest.json
+    sha256: 491da6e7a6852aaefe1533ea6ed95107ebbbf8fbc1696be12514ef40810747bb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/external-originals-and-renders-manifest.json
+    sha256: 0fcbd97f356af07d26ed7ede08efcda3bc582682033a54ba38116e991f41dabc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/frozen-context-bindings.json
+    sha256: 0dcb99159397ef45fe12a617689a544810d2da926a31c2fc6fd0584078e1910c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/inherited-quote-placement-inventory.json
+    sha256: 26859c4510ec2a8e582bd3f1739868a02afee905a0633c42ecf43a069bdcc3a7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/projections/LigJ2000-native-tables.json
+    sha256: 6272d15f950c1ef520e8d4b5d10cdc8d3dff468e87d288721b499981f0748ffe
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/projections/LigJ2000-supplement-link-assessment.json
+    sha256: e0fbff28d15385328247b9bc315b229a752b9c6b5ebf67ffacb648df666c51e7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/projections/LigJ2018-sequence-reconciliation.json
+    sha256: ad5e61e244a15be01facea1d7ffad22260f653131ab13c86e989f2b2774f5900
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/projections/visual-table-transcriptions.json
+    sha256: 06d4e086a64d7c6129b4a7e52235ab5b7868a02e900990ec97e8ed9f7eb605bb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/quote-budget-ledger.json
+    sha256: 453c9fc39e0b1fc19d621309fdd47018ea74d65730f0ae2ab364c764d84430e1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/reading-and-source-access-ledger.json
+    sha256: 6f9e4f19f0e7df57c53c75b5a88ff04d37250e8e952337a2997de46fa64849a4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/reuse-receipts.json
+    sha256: c184aeebaea435d610991d1dbf1c02164d36f40080f491402cde9500778957f2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/reused-GalB-original-binding.json
+    sha256: bff02b6782d8fe481fd4e7a0482605f5963ffd313577cfe795c097757ddc699d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/selection-closure-receipt.json
+    sha256: 4cf851bdb53412a6f2582774dfc745f7c3a3b8b8addbfdd44a54afbdd6eac13e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/selection-ledger.json
+    sha256: 96d45d154180c7984a8c6da1f7656578391356da9b280015ad2bc78b20d717c6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/source-index.json
+    sha256: 7f8a28d6e8ee96f7c08477fcd6c578af90c51a396cc065eaadc34e0b59589239
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/source-retention-selection.json
+    sha256: 4201dfa959af0bfdb5984c2398addd2bd55e48b17f3aff2719a3f9209c87da73
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/structured-cell-disposition-ledger.json
+    sha256: e27284a71013bd52748985d4fc11f1fece2dfb24e29acf830c637d931bf3bc3d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/unresolved-and-selection-boundaries.json
+    sha256: ee60214581e197050a04e90afcb82bc7c633b1daeeecda36f5440d3e626b2ed7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/verification.json
+    sha256: 677a89e3a56a5f1e88e297fb3c61cf00322c07e2a164df6208cbefe86f2796af
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/preparation-successor/worktree-context-bindings.json
+    sha256: 5098e3d4db4fe81186bab99e1f84fc0a16f9aef6638662969df47ad85c4978fb
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/HANDOFF.md
+    sha256: b944b6ea2cdf7aa37fe711d391ac7bb9117fa14f24921038c61ea816fe9fb63c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/acquisition-1975-pages.json
+    sha256: 8d8f6e9d5eb49f31bc0f839fff7c982d05d76409b9855c33ac72e66230343969
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/acquisition-public.json
+    sha256: ed0d8d3262a3def4f47a12c56e46f9c68f3ffa69da9bc9c80adbcc0561226e79
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/acquisition-sandbox.json
+    sha256: 5c43e9d409d55a99af31d5f98cebec230058f6b3267abdea8abbabc6af67cef1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/claim-ledger.json
+    sha256: bf554cf6e9903976d4522112534abbd3f46b8f8c7b167b0d4816e3e8b806d989
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/corrections-and-limits.json
+    sha256: 12ed18df42ed88c515ac97a3d934b87533a055ef7bd0f1364b765aecf1a3e872
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/external-source-bindings.json
+    sha256: a4a8b87eb3d8c46ec8c9a4a8ff3d0e391938f4487bb2a90becf167f502f0925e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/identity-and-boundary-ledger.json
+    sha256: ec48f1580ae71fa337f1142ff2cfd2fd9cc1f5c09515f9df12297f8147046c41
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/quote-budget.json
+    sha256: a2caa570bafd8eb10738bf2ae79c8a7009dc2f5511c389ba78c3c368427c376f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/reading-ledger.json
+    sha256: c280c7d401e7fe5da260f2ab1f7a868b90e35fbf087dc1794781e079c2a678b0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/rule-input-bindings.json
+    sha256: 7aaafd2b6552ed4228c03a69311ebacbfa2977e92d5cf22f846614d556adb328
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/source-catalog.json
+    sha256: 4033cf1753282e5203708f97a5de284c5d0ba1951a819e21cb913414683fa249
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/source-to-claim-dispositions.json
+    sha256: bbcef93216c976fd31510a96ea147372f9a23be1880db561ab6d5b1a5db8c537
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/author/table-projections.json
+    sha256: 39d1d6c7224a4566414af0c158282cda149a43b0efe524ddfdecd0948640c0c0
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/external-artifact-manifest.json
+    sha256: d37a7945f96d4276f0fa0f7c11f6d3d52907d47ea700ea67000e4c35bcf72b32
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/external-originals-manifest.json
+    sha256: 1d52094d36442f6aa584f1788513a76acc577b56301977541ec58706ff14f92b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/helpers/acquire1975.py.txt
+    sha256: 0fa40ddea3fffd7e206bad84c31264d3cbd69a8c64ff4fbeddeab4d84340e450
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/helpers/acquire1975pages.py.txt
+    sha256: fe2cfe5e0c8a10fa2357004a4239a0bb9fac10573d5140404f12004ac2d86590
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/helpers/build_dossier.py.txt
+    sha256: a7ebeae63a19fb834badc40a8dfcc970fa9b74254b96b1188111514bb3ccb81f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/helpers/ocr.py.txt
+    sha256: 471f687efb65edbdd3a222072fdcd14c47abe5cac2b9fa30199f551c14795f01
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/helpers/verify.py.txt
+    sha256: 24175a203fc971d1e18166a7dea5836e3187dd1c06cc5fd709447b194e3b0be4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/ocr-bindings.json
+    sha256: 6bcf41cfd472bc336aff99cf0db8273cd09415c618182f7f494a0362f1e590f1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/projections/source-acquisition-decisive-manifest.json
+    sha256: d00558f5abf40d5aeecba7c07deb8040dbb93d1c3ce734a985e1720134674e90
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/projections/source-original-bindings.json
+    sha256: 0bc7cda5408271862d8eca28e5bf19e7a7dff5fceba36fd28d84f6bc3915b791
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/reuse-bindings.json
+    sha256: 4d97bb509fe50316fd55a9f7c1d87ded7d522c848982fb3cf5884a3e7b318c56
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/sources/primary/verification.json
+    sha256: 82863ba28d9c56e264da27008aaec98e6e793c278ef3e3d03c48eabd25302fdb
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/.vendored_canon_ref
+    sha256: 698af47e96e93fe96e81910bb140593a79c2b92c4688892edeab9b63244ec5bf
+    role: context
+  - path: scripts/__init__.py
+    sha256: 01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b
+    role: context
+  - path: scripts/audit_gocam_chemical_sides.py
+    sha256: b201b99e9c1cda452c9388e9da443252445ba198e2b5a96f5666338929b3c461
+    role: context
+  - path: scripts/audit_metacyc_causal_graphs.py
+    sha256: efe73a383460ab4bd07d9e80f0fde2d408a4f6086f518625f2ffe50d07e9ca8c
+    role: context
+  - path: scripts/auto_merge_ready_prs.py
+    sha256: b8d77dc73422c3fa84b6636d32533d21d5ed11aa3e9bcc42d1c9aa6cf60f49f1
+    role: context
+  - path: scripts/backfill_source_mappings.py
+    sha256: f29a0b20c13a1474a0dbf4e5028d415792cdc8c7925bcdd1fe66f1b3dfea0f15
+    role: context
+  - path: scripts/build_ontology_identifier_snapshot.py
+    sha256: fc8bee76c1c07c4d3b86eb72021f8eaf8203ae339258ff16768dd3e1f1b2be81
+    role: context
+  - path: scripts/build_source_identifier_snapshot.py
+    sha256: 8e2b5b05406c87214ad69f97907e4d57bbf90d9ddc034eed145a7c78f1662a48
+    role: context
+  - path: scripts/check_docs.py
+    sha256: 515b69cdaeed9b25b52a3107aec7351da92cb4be8b2cb51786d2c8811e3d0d91
+    role: context
+  - path: scripts/check_provenance.py
+    sha256: dd55dffe65f726d774df95c7d130fe362590e1253a874e2d0a3c77c8351862d3
+    role: context
+  - path: scripts/check_vendored_sync.py
+    sha256: 673ecd7ea0b34a29ebef8d1068d8d8973a460680e956237c8e09d97a8a22deb3
+    role: context
+  - path: scripts/check_vendored_sync.sh
+    sha256: 3d7a1bf99d21a3315df1abf50908c36f456e67d589228c9bf74d3f70f52d4b74
+    role: context
+  - path: scripts/chem_formula.py
+    sha256: 34b61195206591ec4f96a3bbd80f2b12e5b66b72ca64b8ed65f0a61d7d75df12
+    role: context
+  - path: scripts/curate_diagram_causal_graphs.py
+    sha256: e2d2117ea1de4ac52ac600c9fe1b63383fc6303aa0a94ac2942adbcba9829f64
+    role: context
+  - path: scripts/curate_folate_inositol_chemistry.py
+    sha256: 8108c9aeeee374f0e62bfcf31b3cb152d26e8750c1cf7b8db900b869a5542537
+    role: context
+  - path: scripts/curate_gocam_chemical_identities.py
+    sha256: e8ff9b55737302e8681b80846311cfa6c8b549a1d8a7a340847e664ab3eff927
+    role: context
+  - path: scripts/curate_gocam_chemical_supplement.py
+    sha256: 4c2a9a0226a13798df249854266233388c7c1faa6d024857b1c58cb12a7c0a58
+    role: context
+  - path: scripts/curate_metacyc_causal_graphs.py
+    sha256: a82e7d7144b85a315b1df46c4e2e6ef1c3ab4969a4b69f9b951646ee206ae536
+    role: context
+  - path: scripts/curate_uniprot_cofactors.py
+    sha256: 973930c479b007e7f214fd89bced364371282ec554a948624f8a10a915e3e041
+    role: context
+  - path: scripts/deep_research_contract.py
+    sha256: 256e5058613d41b34d573041e8b386b593b21f625cfc18603230568294a500d8
+    role: context
+  - path: scripts/fetch_review_revisions.py
+    sha256: db9635c46327fdc54d742405ba5beda1354568b02873d2088118da1b76c15fb5
+    role: context
+  - path: scripts/import_bigg.py
+    sha256: 467557ef4c2d382e6283addbb37604d32c2e9d76af7db9f595b2d47c71137ed2
+    role: context
+  - path: scripts/import_biopax.py
+    sha256: 9cdbc4ba18389a3e3d453461de8ea8c7490d45d5a692ac9c235b6622965079de
+    role: context
+  - path: scripts/import_brenda.py
+    sha256: 8d023352004a6fdb142cd32d7c720768344d76629d439d86385ad9f93336f2f7
+    role: context
+  - path: scripts/import_bvbrc.py
+    sha256: 43667a996888d92a52565bc8aad8d77e336084929b7bcca7906ac882dccad0e1
+    role: context
+  - path: scripts/import_dbcan_pul.py
+    sha256: d1ef0caf54ad0d4a640147ea1bacc069ecaf7065eb425a1aa6bfe28fc37b12b5
+    role: context
+  - path: scripts/import_gapmind.py
+    sha256: 15bed0edacc8339da647fbca0332e81f478f6c8c341f552d9647022d7438df77
+    role: context
+  - path: scripts/import_go.py
+    sha256: 0221686ac7b94984f65f808b32c2b2a85fa56be2da7667104c41d9e8a4e8cfd5
+    role: context
+  - path: scripts/import_gocam.py
+    sha256: 86681f592ef8742a538b91fccd1c6725a75c9aa38469ce8c4627f5b3f8cf3b62
+    role: context
+  - path: scripts/import_hadeg.py
+    sha256: 210de88a64d24edbcaae6285625cfcf61680d28104ea70a62c84f9934425e84a
+    role: context
+  - path: scripts/import_kegg.py
+    sha256: 633f890f5fe1dd79b2364b95b599883ceffe6014602d751620679f348acd63e0
+    role: context
+  - path: scripts/import_metacyc.py
+    sha256: b625894886415629e34742f4e6973b74b7385889c820c599a895fa9f5df59975
+    role: context
+  - path: scripts/import_mibig.py
+    sha256: 1a460a6ed2bab155b6df03a8f8e353121c327f5c02c48223b752b9672259b8a0
+    role: context
+  - path: scripts/import_modelseed.py
+    sha256: 674929ba5a18eb69d5d52261bf4f8931aa62ac89dc7f1f5162b4345d742a984c
+    role: context
+  - path: scripts/import_panther.py
+    sha256: 4dfdbab71e295ee239e9455ce51601bd4a81b314a0223318f292346c9b9f4005
+    role: context
+  - path: scripts/import_pmn.py
+    sha256: 456bc88f0c4e3d12c9ff14f5230a005a9c43c81b82a245f785a0eebae1068c7e
+    role: context
+  - path: scripts/import_rhea.py
+    sha256: 461327f358b106f2cd21005ea68856bae124120a55608f4414fdab35f49f7e69
+    role: context
+  - path: scripts/import_unipathway.py
+    sha256: 6062de300682902bb59f5f9778dc4e9b26fe8f079d43fef6462b9f638195de3f
+    role: context
+  - path: scripts/import_veupathdb.py
+    sha256: 83818280ac2620e90b4b0c446bf22609f59e741dcca428b54922847691af814c
+    role: context
+  - path: scripts/import_wikipathways.py
+    sha256: 341b42e519ff4f3d90a52cd2084e276918b357005ebcb78da2fd90f28724f536
+    role: context
+  - path: scripts/new_history_record.py
+    sha256: 290e13857618afdc1d12a4894d31d82341fe0e69564defb95ae875592dd0a738
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: scripts/render_pages.py
+    sha256: 1a33dd27e2c90306080c482ac77890ef561763bbff09f3454526d04bf9588cee
+    role: context
+  - path: scripts/review_gocam_assignment_conflicts.py
+    sha256: 49f46b377af843a192cc2ba27e2b8a42573f0be2b80943fb5f2ae6023f7ddd94
+    role: context
+  - path: scripts/review_gocam_complexes.py
+    sha256: 5b7f47d534fda933d81ac7ca42ef241521895e0e291b55ddbe22b29f381871b3
+    role: context
+  - path: scripts/review_gocam_functions.py
+    sha256: eb36e2afbc3cb48c820cd4f39936cd3852b9781f0c5a67567a7e4da4cd128c4a
+    role: context
+  - path: scripts/review_gocam_graphs.py
+    sha256: 43fdc877215d779181f049815fcf82bd63f4769b221561991cbdd05bf9ff3ef1
+    role: context
+  - path: scripts/review_gocam_locations.py
+    sha256: 7caa2f304684ae020d78441f7dea01a9ccb909760f4cb499d4d03e1fcc4045ad
+    role: context
+  - path: scripts/run_qc.py
+    sha256: 67cc8a819608ca693baee4ff7c1b905b91404685444fd61258d9a20c8c8ff370
+    role: context
+  - path: scripts/seed_from_sources.py
+    sha256: 778c40c01e8eb34d299cbaa972981e8bfa49c0507285fbfec5ad82062efad827
+    role: context
+  - path: scripts/stage_imodulondb_pathway_contexts.py
+    sha256: 35f51363b44e71b17741fc0f44fb9e9ebca2d5cf010ee874c831f53c4bf89a0d
+    role: context
+  - path: scripts/validate_claude_skills.py
+    sha256: 62b2e613b8845754ba12225e2af8eb6ac377f0d540634ae49fc89a221378b715
+    role: context
+  - path: scripts/validate_history.py
+    sha256: 1a64a15f453aa06b1d6407cd5f2ad81960bdc23a4dbd54fb773fa35b35bd5ebc
+    role: context
+  - path: scripts/validate_history_links.py
+    sha256: 9df29f52842bb7a7413fa95f8789a61235a05810bc5c666ef519dbed8ac03010
+    role: context
+  - path: scripts/validate_id_label_correspondence.py
+    sha256: b5ff41bb52d24f5d7819fb12769e216440f75ec3fb3df3e3cb2c5082fffb40e0
+    role: context
+  - path: scripts/validate_strict.py
+    sha256: 0c6c11de05be99bb7e6dd12345039e6342a19492e5693ae092595b296721f735
+    role: context
+  - path: scripts/verify_merge_integrity.py
+    sha256: 2aaa757523d4400288dd1657c13ed4e0d123a252c30ea59c69c9d353e6efebae
+    role: context
+  - path: src/pathwaymech/__init__.py
+    sha256: b1ad4cb23cde7bf7293793335f883ed1b27fe5e2dcf6d3e39ba530fc7347e9bb
+    role: context
+  - path: src/pathwaymech/assets/pathway-network.css
+    sha256: ffe62865f9ede1d8ae7c361a5576823921c850542cf03d2ca7b3c945d63d7645
+    role: context
+  - path: src/pathwaymech/assets/pathway-network.js
+    sha256: 23b6fc25a1522c945cf61b7c269dadf93a90b8c78c357652e6653a05bcb97eac
+    role: context
+  - path: src/pathwaymech/bigg.py
+    sha256: 2f07157dda9ae355e55cc87a4c7e8bf11926842eea8ea4976f60b71f81f84c88
+    role: context
+  - path: src/pathwaymech/biocyc_aceto.py
+    sha256: fa0f56b342d74fc4393cced1a1c9a431447844c1faf825870d35fd6ff12741d4
+    role: context
+  - path: src/pathwaymech/biocyc_carrier.py
+    sha256: 239da6a7e606444f0bb9a7a3240471f1369a2f9fd761574c5e624bf9bd5bb83e
+    role: context
+  - path: src/pathwaymech/biocyc_chemical_class.py
+    sha256: 49b95ad1029cc2064afe87e9853bc7e2cfc7243aeeee574d15981e5e8e45649f
+    role: context
+  - path: src/pathwaymech/biocyc_electron_transfer.py
+    sha256: ef59acc50ea836eb27b7081c6cc05244ac258108a52be066108fb2bb142641ae
+    role: context
+  - path: src/pathwaymech/biocyc_native_context.py
+    sha256: 25bdc7a4bccc796df1763e17ecb11289e12c2503b4ccb94f5713a4fb2fa06e65
+    role: context
+  - path: src/pathwaymech/biocyc_pathway.py
+    sha256: 61895a6cca39316f8f3573fd51bb762791076a9a0cc7876e7c9b4e6372f9f98e
+    role: context
+  - path: src/pathwaymech/biocyc_protein_carrier_reaction.py
+    sha256: 6a6137ec85263e6d97daa5fcfcf56565f7390a40774e3896f65b7b3df6c35767
+    role: context
+  - path: src/pathwaymech/biopax.py
+    sha256: e99c9d9dadc8f5fdf8006f03a94685c827ec6cba08812fb43541f90b90f07e09
+    role: context
+  - path: src/pathwaymech/brenda.py
+    sha256: 3cb7c4ed7b9c0ec983a4f5c35655b0952223d915fc740a47397eb850bb428305
+    role: context
+  - path: src/pathwaymech/bvbrc.py
+    sha256: d49b2dc06387792af183e977a165cfd0ee9322d1605c98eabbc17d1ac0bc471c
+    role: context
+  - path: src/pathwaymech/chebi.py
+    sha256: 4a47516a6236f8ac35c2a9aa1d03413640e3beddab57543ec803d5aafe986c1f
+    role: context
+  - path: src/pathwaymech/cli.py
+    sha256: a170e60e3c398755a21e1304e3bec9e2af743af46ca62de3bbb47ea878ca0b7e
+    role: context
+  - path: src/pathwaymech/cross_mech.py
+    sha256: 0dc817dc304e2e661fc922bbad33be53547c77459bcce80369411a844ae67ee8
+    role: context
+  - path: src/pathwaymech/curation.py
+    sha256: e86a2581cacb4f650070ef1dfe4641429fd241304e5d470cb9484489ed90d41b
+    role: context
+  - path: src/pathwaymech/dbcan.py
+    sha256: 536f08fc646f00953ad9e8e77e314055c5bac3fae56c819e906034a0557380c1
+    role: context
+  - path: src/pathwaymech/dram.py
+    sha256: 0f0f50d6f1e55497091faa9eabd95efe94be563b4cabea8561db1042515b594a
+    role: context
+  - path: src/pathwaymech/ecocyc_complex.py
+    sha256: 16176e59f5b62cf743ee4609da89d917c84befa7fe97386219de51b86992e6ba
+    role: context
+  - path: src/pathwaymech/ecocyc_named_complex.py
+    sha256: 5d94c7833527ff70c629b14736fd74750e92171f12e509c3cd69c04e88880574
+    role: context
+  - path: src/pathwaymech/ecocyc_state.py
+    sha256: 793f1a47b7ccfdf56a0853fe963c37f10f505132f56090ad3b26ae7683c8e0d1
+    role: context
+  - path: src/pathwaymech/edge_identity.py
+    sha256: b34e62a1d427b78b3719ded2c6f6a61d70b5b0bd13d02f26ed61862374f38ccb
+    role: context
+  - path: src/pathwaymech/gapmind.py
+    sha256: 3a482bb59483afed222804bb600563c88f92a0a2825b2bb77309311fcba6601a
+    role: context
+  - path: src/pathwaymech/go.py
+    sha256: 953ad37ad21ec37895b289cfb0d102ffdd63162814f944e76d18bd5af53a6010
+    role: context
+  - path: src/pathwaymech/gocam.py
+    sha256: 68265e2ee19ec42d88d0a1605ff1fbc4745e2d45e25cdf7006dc9effa83cf1ed
+    role: context
+  - path: src/pathwaymech/gocam_native.py
+    sha256: 0aa3df778ce6d69c6d24b6324f976444c55d1c7faf6513873a3c14294be2abbc
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 45bbedd4459f21d4189e3eeb35504ff71ba664e975f4cdde7250a61e9ae3215b
+    role: context
+  - path: src/pathwaymech/hadeg.py
+    sha256: dbae6b34896ce55baf3cb2028247288dc842082e310a41e4e838e0839a03226e
+    role: context
+  - path: src/pathwaymech/identifiers.py
+    sha256: ab51f502b4a34c67d91d8f7d335cb230bdde4b393b0e85403b7a96756b13a1d3
+    role: context
+  - path: src/pathwaymech/kegg.py
+    sha256: 3a6c367838c51b06de7ca846f9a94aebff7ac5667db2473f037101107740263b
+    role: context
+  - path: src/pathwaymech/kegg_gene.py
+    sha256: 1ed6e5dc3b5f02f105a6abd65746cd412f9adedd60a45dde117a5f56f297720d
+    role: context
+  - path: src/pathwaymech/kgx.py
+    sha256: 4419ba74ee3949ac84a1ca1bb3cde3bf3ce73a5c975ebeab81ec1ef09dcdf3f9
+    role: context
+  - path: src/pathwaymech/mibig.py
+    sha256: cd74aee3c22211ebe64838373a08c5ef22fbf5a21bc92f5d6b1c3cafe9b6d7fe
+    role: context
+  - path: src/pathwaymech/modelseed.py
+    sha256: 04333a54e6950686458ea6737d80a35351764cd67958cc9335465c1e8dd4bb73
+    role: context
+  - path: src/pathwaymech/pathbank_context.py
+    sha256: fc7ce7782678bf7c45786948425e4010e6d7bc3d811d6769d84012e0d0235f3c
+    role: context
+  - path: src/pathwaymech/pathbank_provenance.py
+    sha256: 98fdb41b20c356e355c62845c5a3befcf6485f7decbb0289d86bdb7fb12b5470
+    role: context
+  - path: src/pathwaymech/pathway_tools.py
+    sha256: c4a72139501d23bb988fe7257537004ab001dffcd3b251ee912ffea3f5a07d06
+    role: context
+  - path: src/pathwaymech/rhea.py
+    sha256: acd6c1cf4bdfd098470b6e58416749fc8d63ebc59c9a1c81fee896de62bf0c11
+    role: context
+  - path: src/pathwaymech/rhea_directions.py
+    sha256: b92c997929c312ecaf1c384c226120456ab9b091c2373b3f0e9c2919c9a8afcd
+    role: context
+  - path: src/pathwaymech/rhea_polymer.py
+    sha256: de8e9481af70262df3fc45a53b54a37dfcda82ed9ac7bd20403c5b2d6f7ad86f
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/history.yaml
+    sha256: b01b06f1b9a37db205c26c31ec0fd910690848507c7e1bfb73b424ac0829c52d
+    role: context
+  - path: src/pathwaymech/schema/mech_shared.yaml
+    sha256: c2e7054fd32635e380c698282bd886a9105861009b9f0474f02bb1b80865e895
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+  - path: src/pathwaymech/seed_subsystems.py
+    sha256: ab462128d831ee59570c9872a8ccc711caf1e5bd92fb767ff6bcf92d84e1bf4c
+    role: context
+  - path: src/pathwaymech/site_display.py
+    sha256: f70d143af1d9be9c72e73c736ae4ce3e0b7abfbf24f82b814235f7a9670e9a73
+    role: context
+  - path: src/pathwaymech/source_mapping.py
+    sha256: 502f22b15f55bea61c077b8b810b39cff02f4e719d99afef4d1ed679b46da599
+    role: context
+  - path: src/pathwaymech/sources.py
+    sha256: fcfb130e7419df76e30c5ad84789c226873894c750c9ea04f755c7936e352f97
+    role: context
+  - path: src/pathwaymech/sssom.py
+    sha256: a3022c70d07c44ab8ca0eb59b6095abd5b15aa4831fd24c160a53930ef23c6a7
+    role: context
+  - path: src/pathwaymech/strict.py
+    sha256: 2f6a7edf501952ee4aaa41be2f9512d20e1edb2dd87a22b6add6d26928c0dc84
+    role: context
+  - path: src/pathwaymech/unipathway.py
+    sha256: ae542637c6e80be3ee4318c5c0fabea0dbec89188b177609a848d276725f4a92
+    role: context
+  - path: src/pathwaymech/veupathdb.py
+    sha256: 90dfac3f931ad9b53d95a54479e2b92ba0a51a3db14aad2307329603adc88b47
+    role: context
+  - path: src/pathwaymech/wikipathways.py
+    sha256: 6856d5823f867191dc5021976b0450dcd4289bccd9ac210d7e8fa32a10cdb860
+    role: context
+  - path: src/pathwaymech/yaml_io.py
+    sha256: 56a5ffc563317950da7d524cd05302903413bea8a42ecf2f05fc12fff911dae6
+    role: context
+  - path: tests/browse_interaction_harness.cjs
+    sha256: ab474392c14ff7605b8bc6897f877cceafcb26f45707896536f827ee041d3c3b
+    role: context
+  - path: tests/conftest.py
+    sha256: 2810ad1b129c8ec90b1aacc74bd47cc09c06e921056db6e90d34e8e2e74fabd0
+    role: context
+  - path: tests/fixtures/aceto_authority/ECOLI-ACETOACETYL-COA-TRANSFER-CPLX.xml
+    sha256: a8be76266158e819323a01e09a6ce75399374a6c5ff4747578f59bce07ca71a2
+    role: context
+  - path: tests/fixtures/aceto_authority/ECOLI-ACETYL-COA-ACETYLTRANSFER-CPLX.xml
+    sha256: c8cda5e46b5311dd6a6c6cb3081b4c17b5c75acde8c1441be78cd084a62fe4db
+    role: context
+  - path: tests/fixtures/aceto_authority/ECOLI-ATOA-CPLX.xml
+    sha256: 8345189925e11b115d2ef5b86c2f15cb5a834bc4ea8f130b4bca8cfb5804d5da
+    role: context
+  - path: tests/fixtures/aceto_authority/ECOLI-ATOD-CPLX.xml
+    sha256: 7da958fcb8fcd0b09cab614088180a4e8e2cf0263e094182270412164916ff01
+    role: context
+  - path: tests/fixtures/aceto_authority/META-ACETOACETATE-DEG-PWY-network.xml
+    sha256: 62054dfb3841d56dd6c71c1d9825b69d031891b99f1c1eed0657be0eec8a5056
+    role: context
+  - path: tests/fixtures/aceto_authority/META-ACETOACETYL-COA-TRANSFER-RXN.xml
+    sha256: 76625cba082196770f6cb849c4ead8054807f99a72cd7506d46b6bdbcd93c6c8
+    role: context
+  - path: tests/fixtures/aceto_authority/META-ACETYL-COA-ACETYLTRANSFER-RXN.xml
+    sha256: 44ce0b519041cb00e66866479b3c1cc754f4dad3dc4c93aaadd61dc43e6048f3
+    role: context
+  - path: tests/fixtures/aceto_authority/META-PROT-CYS.xml
+    sha256: 21d7b54af702e0ef2b12f253daefb1d36b79b66ce89a8b9b878dd9f4f50c7b03
+    role: context
+  - path: tests/fixtures/aceto_authority/META-Protein-L-amino-Acids.xml
+    sha256: fdda1ae4a543c27786daf026a4810c2d086983ba6a3f6fa0e43991f554368e88
+    role: context
+  - path: tests/fixtures/aceto_authority/META-Protein-S-Acetyl-Cysteines.xml
+    sha256: d45ba586387f298192f3a15b743c621bb3cb8bbbce51478fdb821912255d0aec
+    role: context
+  - path: tests/fixtures/aceto_authority/META-Protein-S-Acyl-Cysteines.xml
+    sha256: 8570089e0f5216f849ece19e44a97a33ecc44c8f0db4ad1f1f916574d72a46ed
+    role: context
+  - path: tests/fixtures/aceto_authority/META-RXN-20154.xml
+    sha256: d4ff2fc70c68d90271c5d1549b75796a3bac0285a789a7ebf38c3d40c755641b
+    role: context
+  - path: tests/fixtures/aceto_authority/META-RXN-20155.xml
+    sha256: e33c0de11d7b3826d36a76462a12f00837d485d568dfd4f65a1dc5e1061080b1
+    role: context
+  - path: tests/fixtures/aceto_authority/manifest.json
+    sha256: 249b791c45a72d77d1bf5e6bafe4253c4ab0dcd8e3f156390278d836cdea7afa
+    role: context
+  - path: tests/fixtures/bigg/model.json
+    sha256: 7831153bc5f9fbf721f3695ac81e3b1c0e766e19029f601dc2a45eaf8a2c268c
+    role: context
+  - path: tests/fixtures/biopax/R-TEST.owl
+    sha256: 06ca4ad96aa803f2344f859b4641310230602acc02364064f488ac387e88c91f
+    role: context
+  - path: tests/fixtures/bvbrc/pathways.tsv
+    sha256: 14b9d92f911c332425e9bcdfeda5c5d9f0ef9d49556532b319ac3a079b2bfb65
+    role: context
+  - path: tests/fixtures/chebi/kegg_compounds.obo
+    sha256: 6d7bb48e473943a8ea3dc6c877b80de057d022c850e0acaaaca93024c2685039
+    role: context
+  - path: tests/fixtures/dbcan/dbcan-pul.tsv
+    sha256: be956b309094057f1b3fdd404445db53dd1c224d0a3b65961076ef721d4bc17a
+    role: context
+  - path: tests/fixtures/gapmind/aa/thr.steps
+    sha256: 7239d09d9cea8458c860f865cc07714f68224a26e08fc763d004e41bfbac67a8
+    role: context
+  - path: tests/fixtures/go/go.obo
+    sha256: 87f8c4a13e7c5f62e295842cfdf05e83f8d1643d477b2fc790e5cd9e9c7fd499
+    role: context
+  - path: tests/fixtures/gocam/mini_model.json
+    sha256: 61a40a4e3279d7e282561ead36f5fe80ebd600fc93787bd0fd98a12cfcb52ad8
+    role: context
+  - path: tests/fixtures/hadeg/memberships.csv
+    sha256: 2e6436139650814b6a20408df8f069514c035fca45040466757b24878fe73e99
+    role: context
+  - path: tests/fixtures/kegg/map00010.kgml
+    sha256: 13feab005f7de214faa9f0422a6fcfcc634f21b42d2b369a7dd9730089b3f93e
+    role: context
+  - path: tests/fixtures/metacyc/pathways.dat
+    sha256: 389cad6e96d07224fa1a44ad94b43642fff2285688a34a22ff65c456903596a2
+    role: context
+  - path: tests/fixtures/mibig/BGC0000001.json
+    sha256: 7b09b088ec3bf1677e7dceee92d878f866596131dadaa94eadc85394db95fa2a
+    role: context
+  - path: tests/fixtures/modelseed/reactions.tsv
+    sha256: 428e4487cbca5abea772929140e06129dccc5c2d96e72ad2e6011ceef6c452c1
+    role: context
+  - path: tests/fixtures/nitrate_authority/ECOLI-CPLX0-3361.xml
+    sha256: 5310771f2079b9dd304e8b1f8150038b9b9091e7b9b5f022c39ae249800f5734
+    role: context
+  - path: tests/fixtures/nitrate_authority/ECOLI-NADH-DHI-CPLX.xml
+    sha256: 67c828b9054abc26c90344b97ebf69fe7003e34f7b0228444d31892ef0ff029b
+    role: context
+  - path: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTA-CPLX.xml
+    sha256: b0515279d39256322819c3894014095fc612845df874be1d7c9a738ca486c3c9
+    role: context
+  - path: tests/fixtures/nitrate_authority/ECOLI-NITRATREDUCTZ-CPLX.xml
+    sha256: 729e2f31beaa7bb87a89ac631e95e0ae22f3130ed02d46894a7f445ad6971038
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-3FE-4S-author.xml
+    sha256: f5cc203e373cf6e213d5ef560bec198cd8254ffa6fc59ea44ccaec2e15abc65b
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-CPD-7-author.xml
+    sha256: b6ca32e6a37bcb2da163246463e07cf748cd1f5a63e62838fb37312a9b45f177
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-FeS-Centers-author.xml
+    sha256: c157320e8026b6bc4249c1dcf8b4d9145fb0bca5d8141024cf2639810073213b
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-Heme-b-author.xml
+    sha256: 3e8d0c874c8f85fade0cf886c09b7465641163c43327e271763a198e46e33c22
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-Menaquinols.xml
+    sha256: 4c186dc9483d06a99af5e5ad71f69bcb3c49980a5d1749422ec18fa9b341a642
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-Menaquinones.xml
+    sha256: 1e020709fa4e499aa027ce3dd2ca0e600aed376c03c1de91e312fab4c6f4dee1
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-PWY0-1352-network.xml
+    sha256: 5351366079460ad3b43b18b55e1e157e8be74aa59bac77556961c8b4af2a74e3
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-RXN0-3501.xml
+    sha256: e4af46a1698544bbb3d5836158d32b3957b1dd9d99d213b898b2df52c9e08cea
+    role: context
+  - path: tests/fixtures/nitrate_authority/META-RXN0-5388.xml
+    sha256: 2f8a8ac0a865ad9d65d357a9250a768920b10a22ef02d25698d65d7bdec8c4d6
+    role: context
+  - path: tests/fixtures/nitrate_authority/MetaCyc-PWY0-1352-issuing-retry.html
+    sha256: b9d703fc64600983259df1095b89ea6b27f44aff0e1e5a1b554e70ac378031fb
+    role: context
+  - path: tests/fixtures/nitrate_authority/PubChem-21226146-label-authority-retry.json
+    sha256: 3b77a855182ca329f7c1c23186630aebb915269ee55a00b9f7fc2a9fb958bb3d
+    role: context
+  - path: tests/fixtures/nitrate_authority/manifest.json
+    sha256: bb1b11420fb25d33cb570a659e2b10f1c3f9739e3aff8ce107e51cbd6c5ff619
+    role: context
+  - path: tests/fixtures/pathbank_context/SMP0002097.owl
+    sha256: 03524344c6d1ba883c1fce39a48f852a1f92c3440542ccfe81d141ff9e862bf2
+    role: context
+  - path: tests/fixtures/pathbank_context/SMP0002097.receipt.json
+    sha256: 4f7d881ee071e9e5270e928d5af1b7344ac278c1bb270a0fa332faa3baa0704a
+    role: context
+  - path: tests/fixtures/pmn/pathways.dat
+    sha256: baad3801501687e987e2748e82e81caab596afe06eeb8aec3f01304f73eb252c
+    role: context
+  - path: tests/fixtures/protein_carrier_reaction/RXN-21320.receipt.json
+    sha256: aacf26ea78b90362e75295504ec884c83f3dab7a0903228f3e8f3a3ba6f602f5
+    role: context
+  - path: tests/fixtures/protein_carrier_reaction/RXN-21320.xml
+    sha256: 54bb7cacafc73f8276aa230c7afd7888ec62ab069ab5a41a417614b6448805b9
+    role: context
+  - path: tests/fixtures/protein_carrier_reaction/manifest.json
+    sha256: aa21adeaec44d372abe5205d7d9bcf4ac2b2ea3ea5c9a00c17b3334dfce3b15e
+    role: context
+  - path: tests/fixtures/rhea/reactions.tsv
+    sha256: 42c33ec779d8cf1096803cb58987ae2ebccca236647fa8091281800f47450b09
+    role: context
+  - path: tests/fixtures/unipathway/upa.obo
+    sha256: 5945ea2d132ea600d13498584ff78f828eee495e4dc69a0ddbc0684877ef2897
+    role: context
+  - path: tests/fixtures/veupathdb/pathways.tsv
+    sha256: 12a372d74ccadb4ce20c3a5971d92a3e37c6a15e62145e639e87a1a82fb8984e
+    role: context
+  - path: tests/fixtures/wikipathways/WPTEST.gpml
+    sha256: 4bf6a991dc27bc03bca6f152635f71ec9a3f4f51a12ddecdde76d94207e714ec
+    role: context
+  - path: tests/graph_interaction_harness.cjs
+    sha256: b060d19cc82d345d4010bd9819e734f92b5fe5129485b143eb101efde128eec9
+    role: context
+  - path: tests/test_aceto_authority.py
+    sha256: 68bef87aed97cf42f42cb3bd673bcbefebf319b4ab273547dc8867cd90c03b20
+    role: context
+  - path: tests/test_aceto_legacy_cycles.py
+    sha256: 2515bc7692f6978a18e11c5d7a15b19c39b9f69dc2dfe88ae6a5d43668fcd101
+    role: context
+  - path: tests/test_backfill_source_mappings.py
+    sha256: 1c52d73bf685128c6150b6aec1eafc0a9e63a2da9dc145c66c55c3422e0d8931
+    role: context
+  - path: tests/test_bigg_identifier_authority.py
+    sha256: 7bb859f6e31ca13184647d26ba1018622af6dec47aaf64b083dd9c955f549bbd
+    role: context
+  - path: tests/test_biocyc_carrier_authority.py
+    sha256: 1d6ba8a8c68efe7d111dc6d6b0895a381e96b921d83911d9596482c70f1a7bb0
+    role: context
+  - path: tests/test_biopax.py
+    sha256: 3266a192cfb258aa476ee393ef74269e29a6412328e85748d8ba5b473bcdebff
+    role: context
+  - path: tests/test_brenda.py
+    sha256: 16fe8c33a083ae11bb84057799688d649cca23056e00b775025fb33c773a5e92
+    role: context
+  - path: tests/test_brenda_cli.py
+    sha256: 33cd81e1338a16f2e51a1d94ecb5fce8d4146793305ad6c78e2d72a75b954856
+    role: context
+  - path: tests/test_browse_interaction.py
+    sha256: 1bb51280d026cf639b4628f354cb283925f0107b04100d4188a6e30ca695d101
+    role: context
+  - path: tests/test_chebi.py
+    sha256: a369ec378f93f4af9ebe486aaf592f885b3fe4b8401be2acc881f6d12a69d943
+    role: context
+  - path: tests/test_claude_skills.py
+    sha256: 0cff57db50164080ea3d3f84ba5e18b1da2c92ae7ce74155518ad79f833babf2
+    role: context
+  - path: tests/test_corpus_integrity.py
+    sha256: b832eaaa910d044c5bc9e5e0dec7a33464081aa2b00ab9a4d3de335dcf435508
+    role: context
+  - path: tests/test_cross_mech.py
+    sha256: ff853e342008ab371542eadc79a239efebd50ff87f476048402a5d11bd12aa3a
+    role: context
+  - path: tests/test_cross_mech_audit_replay.py
+    sha256: 0c9205b2c91773b09f8bfe9878224a250a1a885bd08a0927620f506862826dac
+    role: context
+  - path: tests/test_cross_mech_input_failures.py
+    sha256: 7153dee451cd4a74e7e908fb90cf70fb91303bbd6d8818e6ad685797318ba9a4
+    role: context
+  - path: tests/test_curate_uniprot_cofactors.py
+    sha256: 7a0cc3a773dfb022fbd6b22e1e316ee20bdabca8f877500cdec3b6cb62c5977a
+    role: context
+  - path: tests/test_curation_publication.py
+    sha256: 1b1de95710d92be45f558787a11ae19893ba8b73f12bf890724b34cbc47d8f0e
+    role: context
+  - path: tests/test_curation_timestamp_schema.py
+    sha256: 4714184d0ebf50d1d777c02390b214a3491531310811e3be600c730ed175b92f
+    role: context
+  - path: tests/test_dated_audit.py
+    sha256: 432652dbcc7d96b934e3d92ce24179664c5aaf6992a8151d63e391db6a017623
+    role: context
+  - path: tests/test_dbcan.py
+    sha256: 8dd9120cb3f48747bc32a02d0f86a16098ce0cde72699affb2deaef8b5418cbf
+    role: context
+  - path: tests/test_deep_research_contract.py
+    sha256: 18fffc0dd5d13598cf54f9895af16a581d4486df54d21531e463b401f6a6c556
+    role: context
+  - path: tests/test_diagram_curation_categories.py
+    sha256: 21f4dd392da19a6b6b7ab388bd66ea4d5073582098e83dc51cd612fca47805a0
+    role: context
+  - path: tests/test_docs.py
+    sha256: 534d5b3b9aad0b8af55ae240d85cda5b2c035077e10825e55106b2fa6cd3e53d
+    role: context
+  - path: tests/test_dram.py
+    sha256: 08d53a86efef7ff6e068527b8be2de70ff824f1edee0dddaa9644f61d3870e03
+    role: context
+  - path: tests/test_ecocyc_complex_authority.py
+    sha256: c5aa442cd66dd8276a65a395554c3351b9b86a62fca7d28c002b2458455a645a
+    role: context
+  - path: tests/test_ecocyc_identifier_authority.py
+    sha256: 7b9b1d84bd711e677e25e45740a497544ee218819f5d899435085d307ab8e392
+    role: context
+  - path: tests/test_electron_transfer_authority.py
+    sha256: 5cab9b213db9733b077bd09ef27cfa4562546223270e58701b8414321dbe93f5
+    role: context
+  - path: tests/test_endpoint_qualifiers.py
+    sha256: d760f876edbc447eea3ca584dc98d723d5f8bc81f0e92552db91f8a2f78815bc
+    role: context
+  - path: tests/test_fetch_review_revisions.py
+    sha256: 4afc0cf7f51cd278803e98cb2742759391b0f8384fe9e5b59fbb276d253f8559
+    role: context
+  - path: tests/test_folate_inositol_chemistry.py
+    sha256: c8cc435f2ba54948670dae7366e0f65a616f888919e0c4754f7561197ee76b55
+    role: context
+  - path: tests/test_gocam.py
+    sha256: 8f7dfd418dfa0c9777ab83a3b8527e20beef3fb51f7973f3bec291c844c2d143
+    role: context
+  - path: tests/test_gocam_assignment_conflicts.py
+    sha256: 9e7944279b47f28388cbf67fe309ae275a3151486b08bf1a47a542bca33f740a
+    role: context
+  - path: tests/test_gocam_chemical_identities.py
+    sha256: 7001faf55760b0352bf592b09f62ac22676daeb9fd2067b71c2f661fb53bad99
+    role: context
+  - path: tests/test_gocam_functions.py
+    sha256: 26462ebd79e37e8bc1571695bc0b1b74d9b6f5280a5f2fb215f1d8a885347b2a
+    role: context
+  - path: tests/test_gocam_locations.py
+    sha256: 677a523fcca243950e0831ecdc50d499ddf654cd2438f4850ac1f91782476e5c
+    role: context
+  - path: tests/test_gocam_native.py
+    sha256: ccb93a1db63d257892fb67f47f96e450f8eade9502504a2f503d0e0b51c138ce
+    role: context
+  - path: tests/test_graph_context.py
+    sha256: 6045384939639880738ec31f6f65b0ce0c09c2c825686bf7a2d68eb5f6a429eb
+    role: context
+  - path: tests/test_graph_interaction.py
+    sha256: 4b4bbe570371fe77fc88d51d2e92ad216ddff7ecdacadd6cc78753aff350d071
+    role: context
+  - path: tests/test_graph_pages.py
+    sha256: 52d58cc801b4b62854074720212ffeae412084b6fe547bb74bee3ede25298085
+    role: context
+  - path: tests/test_graph_view.py
+    sha256: d2b5d63d9577af32b97023fda5644a5fc7318926db4c745b8f85ed9728d7510f
+    role: context
+  - path: tests/test_hadeg.py
+    sha256: 87d2d476b56a56f46c038563eaf10a0665850ef645e365ab0caa09a42663b570
+    role: context
+  - path: tests/test_hadeg_cli.py
+    sha256: 13a63afb046a2d9cf1bc0bf9ff18172453559286ea8c135321b69414fa3a8953
+    role: context
+  - path: tests/test_handle_references.py
+    sha256: 945bb372e20856255c31da1833c3d6ecd360220ca4781a5a62a07670c9f38d2f
+    role: context
+  - path: tests/test_html_navigation.py
+    sha256: db68b5be29326621f2d139c1230001ef8630d2949642fa6ae9753afba1686e26
+    role: context
+  - path: tests/test_id_label_empty_adapter.py
+    sha256: 070b741cd0ee036a66e0ce1dc1b22ee34aa8e1869bda1c5a8fd209c0cc19d991
+    role: context
+  - path: tests/test_id_label_plausibility.py
+    sha256: 87fe6b129d59d1ea91c053779c44d7437415ca6c095c6d05e0e75c5f56508892
+    role: context
+  - path: tests/test_id_label_unknown_prefix.py
+    sha256: f01d2264a4728285c521b0c3edc084f97504e8ff3bc1eaf90531d7479c04786d
+    role: context
+  - path: tests/test_identifier_snapshot_builders.py
+    sha256: 619a3a6e6024cca283e6a167c888fff4c812dc04bb575987965b688b5d67c8d1
+    role: context
+  - path: tests/test_identifiers.py
+    sha256: 642e537e9e31b8c8094a18820c646412537b4c1e8f079877d4b7be1d5a438096
+    role: context
+  - path: tests/test_kegg.py
+    sha256: da425ea05e692e4c9bdc5448916b44cc7ffdf8bf6c9b15f23e8b1615592660ec
+    role: context
+  - path: tests/test_kegg_gene_authority.py
+    sha256: b9def406bb9b54215b0fcd8acce06907449e4e660450e76bd5c9cb3902025a04
+    role: context
+  - path: tests/test_kegg_identifier_authority.py
+    sha256: f9728df21a7090ce16179b4d1d3ce72db48f4732e3de23cd94500cd4a48f7c51
+    role: context
+  - path: tests/test_kegg_pseudogene_authority.py
+    sha256: 22867fb5620cc28c46d64835cea41049710f99d3bd82d65d0fca6b0048d3a598
+    role: context
+  - path: tests/test_kgx_export.py
+    sha256: 02812c03ad6ecf6eca3d9a86add46493ce0e115b52ad93a318ea9c59a8d67ba7
+    role: context
+  - path: tests/test_linkml_schema.py
+    sha256: 858310c13fea662590cea7fdede181f4bdb6ee69aaf18cb828ab7e646d508c90
+    role: context
+  - path: tests/test_local_source_cli.py
+    sha256: 91c7555b9a7ee6193f5e1f894c877f7b517791a5bc546fb4ab1e31c2c89c1635
+    role: context
+  - path: tests/test_local_source_recipes.py
+    sha256: 3de220417bb7aa7884b6f5e312de8315901132eff108cf3b95ce686d4fec505a
+    role: context
+  - path: tests/test_metacyc.py
+    sha256: 5cf59d8d717239c964c50589e7ac6a7357bdcc33b25ac27e018f6707d6001f51
+    role: context
+  - path: tests/test_metacyc_authority_encoding.py
+    sha256: f731963704cf6e2678a6633283d75894814c7fa8ab0355784171b0e7d9287b25
+    role: context
+  - path: tests/test_metacyc_causal_review.py
+    sha256: 89abc804f90402d38b2ff9a50b5f0fc7327d3e0a074cfbd54b0486133cf48cf0
+    role: context
+  - path: tests/test_metacyc_complex_naming.py
+    sha256: 272a17797ca5de0040897958e5044457ddc942d7dc0d6d7f9900956e78275171
+    role: context
+  - path: tests/test_metacyc_protein_authority.py
+    sha256: a62e324ecf90f1f9e7ebcf9f06a923be0926e8a9c23ee8c580c951322aea2880
+    role: context
+  - path: tests/test_metacyc_reaction_authority.py
+    sha256: 5486e344791c77599aadf51b8dd4e59f99aba0f3dfb049a8f195e186f9f8834f
+    role: context
+  - path: tests/test_metanetx_identifier_authority.py
+    sha256: 5b9fb904436d8a4d887bd3ebb76be52820ab4086c66e380dc607de0174c70eac
+    role: context
+  - path: tests/test_mibig.py
+    sha256: dba8b151aa6389525b364bb9b28cfa869120c26df3038280c9cd203b4a89f84b
+    role: context
+  - path: tests/test_mibig_cli.py
+    sha256: 5cb1b54c4c6e9def16fa46323f615abefbf209f5d2134fc82e85d7024a3a0b0a
+    role: context
+  - path: tests/test_named_complex_consumer_conflicts.py
+    sha256: 6757fa7cce818aec9a2f95afc387a3905f899f81b7fbb19c5026dcea1d94d4ae
+    role: context
+  - path: tests/test_ncbi_gene_identifier_authority.py
+    sha256: 9329a72bc011f3a41086106e65147472f9f1ef49568916da03816e6fc77aa86d
+    role: context
+  - path: tests/test_new_history_record.py
+    sha256: 78dbde7b85bc36029663196a76eb6a71ccb47035a8ad60b2e02a374bd0729b29
+    role: context
+  - path: tests/test_nitrate_native_authority.py
+    sha256: a5bf964b0d772a14f8ab6a6d5fe2bab2203758c65171ae545f95ca2f9ad31602
+    role: context
+  - path: tests/test_pathbank_biopax.py
+    sha256: ed761ab84b627301b06a42b921b5814efe798f01bb9446588a25d367aff4bf76
+    role: context
+  - path: tests/test_pathbank_context_authority.py
+    sha256: cc79ae33a7c3554a529faef34306733bb14537cb5ac0843237cb4d735d38e5b7
+    role: context
+  - path: tests/test_pathbank_identifier_authority.py
+    sha256: 92abc8aab53b070c3837db127911114493b0c8e75d9f09c7897175d2ef77b014
+    role: context
+  - path: tests/test_pathway_node_category.py
+    sha256: cf6e948303fcd1d1336fd46c6eb2d05531e59170e14a12bdb88efd34c7dec604
+    role: context
+  - path: tests/test_pathway_tools_cli.py
+    sha256: 07b6277cabc09ba21d054b5436901530b63b70c9bd6f094b8237b1e1f8222568
+    role: context
+  - path: tests/test_protein_carrier_preselection.py
+    sha256: e1806bc58ea5ebf45584f8cf73800d82b0044f5890dcde08579a9fbbd55ceed9
+    role: context
+  - path: tests/test_protein_carrier_reaction_authority.py
+    sha256: fc0f89597bb1c50484eaf1fcd311eb2696857808962768aa694316e070769669
+    role: context
+  - path: tests/test_pubchem_identifier_authority.py
+    sha256: 8c380502d6d52b5fdbd7df6134b1cb77ab52687175428c9b7f79d760ed7f40cd
+    role: context
+  - path: tests/test_record_review_ci.py
+    sha256: 47b294bcfa50b23da1ccbfdaced689cf47b95d974321606150662e2a3efd32d1
+    role: context
+  - path: tests/test_record_review_contract.py
+    sha256: 7be08e684dcd235ddeae8f3c6a5d45b0ee74a60d1c1818cc81467e38901e5d56
+    role: context
+  - path: tests/test_render_pages.py
+    sha256: 80191f1e0f928eab1698e64c3ead7add2d9550e82c1fe0a23d6989cfda9a2308
+    role: context
+  - path: tests/test_review_retention_refs.py
+    sha256: 112a63ffb855dd6312e671a26cf720141c3babd6118a6d865827433728619e8e
+    role: context
+  - path: tests/test_rhea.py
+    sha256: 87ccf13082717bcd976e3cbc1c101632cbdf4f9bf3e09b5345327dd36beca874
+    role: context
+  - path: tests/test_rhea_component_authority.py
+    sha256: 4aae7221e7ec6c9a3b1f025e4a31561f5b8ca0484245bd070247c291ee98d258
+    role: context
+  - path: tests/test_rhea_directions.py
+    sha256: 23e058a8e59859d364073d40b7c872ae506511562ebc6c49bb4180a6be625213
+    role: context
+  - path: tests/test_scientific_corrections.py
+    sha256: 7e40ace4f78143044deb1ee34e31d85a566e9a5ec44b5ea4730722b0568e39e9
+    role: context
+  - path: tests/test_seed_subsystems.py
+    sha256: bf79360c193e463b1263ecb9f2272309652da073dd86a59d8aad9db56a99816d
+    role: context
+  - path: tests/test_site_metadata.py
+    sha256: 0d6030aa8c462fca80cf012f2f396de3c377b895324953f63caef9197d916ae2
+    role: context
+  - path: tests/test_skill_frontmatter.py
+    sha256: a1252211fbdec1a4a36f8138b9a60617d69e9fa6c5c3f589d15846a783d77569
+    role: context
+  - path: tests/test_source_identifier_snapshot.py
+    sha256: 0e9228f19bcdfae4d1b4ac83a498449fd0d86eed7b08d497ff6d646363e2a043
+    role: context
+  - path: tests/test_sources.py
+    sha256: cb53876f61b522b85bba5e005081edd56ceb9d48ae6c8a7355b1a43b11f0d900
+    role: context
+  - path: tests/test_sssom_export.py
+    sha256: 582c202623ca5ceb11b3296f5f512a3e74f30d8e4454cdabb2613bf9c463974b
+    role: context
+  - path: tests/test_stage_imodulondb_pathway_contexts.py
+    sha256: e4bb1cd3de7babbf7aaf673dc80d3c4824c7b11a468cbf54846bebf970878c66
+    role: context
+  - path: tests/test_support_importers.py
+    sha256: d4cf8b3688525fdfb8ffd06795a466dc51a8058fdf48bedd09539b4b05af196e
+    role: context
+  - path: tests/test_typed_authority_consumer_integrity.py
+    sha256: a05ed5cb33b06ce6c424be5fefc6f1d177e8d580173afd9be937c28a0aac1e4a
+    role: context
+  - path: tests/test_wikipathways.py
+    sha256: 4b62f441681dd58b5ee6d4f6e0d826f1a63a6a33e5cfce75ead4cdbf364edb4f
+    role: context
+  - path: uv.lock
+    sha256: 41362e2dd6abd350f76b2efda1b1a36db18337e6617e8ff9611adcba0b3452ad
+    role: context
+scope:
+  description: Technical integration of the new gallate degradation II record and
+    bounded direction/prose corrections to gallate I and protocatechuate meta-cleavage,
+    with their exact retained source, authority, export and page inputs.
+  selection: All three maintained pathway YAML files changed by next260 relative to
+    b2590dfd2385c83fe4f028ecd5309a0407739838; no record sampling. Additional captured
+    context includes the complete export corpus and exact changed batch/proof and
+    audited production files.
+  coverage: full
+  population_size: 3
+  reviewed_target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  exclusions:
+  - target: Scientific claims and literature adjudication
+    reason: Separate original-source scientific reviewer supplies scientific verdict;
+      scientific_review is false here.
+  - target: Unchanged pathways as scientific records
+    reason: Their bytes were inputs to full-corpus export and validation, not independently
+      rereviewed scientific targets.
+  - target: Browser screenshots and interactive controls
+    reason: Browser unavailable; DOM, accessible text and serialized payload checks
+      only.
+  - target: Future committed tree and publication
+    reason: Current working-tree observation only; root owns save and publication.
+      A later exact-commit attestation is still required.
+targets:
+- target_id: MetaCyc:GALLATE-DEGRADATION-I-PWY
+  path: data/pathways/gallate-degradation-ii.yaml
+  label: Gallate degradation II
+  kind: maintained
+  record_class: Pathway
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-ii.yaml
+    role: Maintained pathway graph, evidence and direction metadata
+- target_id: MetaCyc:GALLATE-DEGRADATION-II-PWY
+  path: data/pathways/gallate-degradation-i.yaml
+  label: Gallate degradation I
+  kind: maintained
+  record_class: Pathway
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: Maintained pathway graph, evidence and direction metadata
+- target_id: MetaCyc:P184-PWY
+  path: data/pathways/protocatechuate-meta-cleavage.yaml
+  label: Protocatechuate meta-cleavage
+  kind: maintained
+  record_class: Pathway
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: Maintained pathway graph, evidence and direction metadata
+checks:
+- check_id: C-INTEGRATION
+  name: Frozen sources and exact integration replay
+  status: passed
+  required: true
+  summary: 2120 independent assertions passed, zero failed; exact input/output bindings
+    retained.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-INTEGRATION
+  scope_note: Completed independent technical replay; not a new scientific truth assessment.
+- check_id: C-AUTHORITY
+  name: Authority labels, selection, owners and baseline preservation
+  status: passed
+  required: true
+  summary: 184 independent assertions passed, zero failed; exact input/output bindings
+    retained.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-AUTHORITY
+  scope_note: Completed independent technical replay; not a new scientific truth assessment.
+- check_id: C-KGX
+  name: Complete export payload preservation
+  status: passed
+  required: true
+  summary: 3096 independent assertions passed, zero failed; exact input/output bindings
+    retained.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-KGX
+  scope_note: Completed independent technical replay; not a new scientific truth assessment.
+- check_id: C-CATEGORIES
+  name: Explicit biological categories and roles
+  status: passed
+  required: true
+  summary: 268 independent assertions passed, zero failed; exact input/output bindings
+    retained.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-CATEGORIES
+  scope_note: Completed independent technical replay; not a new scientific truth assessment.
+- check_id: C-PAGES
+  name: Rendered pages and download equivalence
+  status: passed
+  required: true
+  summary: 3684 independent assertions passed, zero failed; exact input/output bindings
+    retained.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-PAGES
+  scope_note: Completed independent technical replay; not a new scientific truth assessment.
+- check_id: C-GATE-1
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Actual command receipt and log digest independently verified.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just render-pages
+  exit_code: 0
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes.
+- check_id: C-GATE-2
+  name: just validate
+  status: passed
+  required: true
+  summary: Actual command receipt and log digest independently verified.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just validate
+  exit_code: 0
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes.
+- check_id: C-GATE-3
+  name: just test
+  status: passed
+  required: true
+  summary: 5255 passed, 3 skipped, 7 warnings; actual full project suite, not a reviewer
+    rerun.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just test
+  exit_code: 0
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes.
+- check_id: C-GATE-4
+  name: just lint
+  status: passed
+  required: true
+  summary: Actual command receipt and log digest independently verified.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just lint
+  exit_code: 0
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes.
+- check_id: C-GATE-5
+  name: 'Historical first attempt: just vendored-check'
+  status: failed
+  required: false
+  summary: Initial execution failed solely because sandbox DNS could not resolve the
+    pinned GitHub artifact. Preserved historical attempt; the same required gate passed
+    on the sole bounded network retry.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just vendored-check
+  exit_code: 1
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes. Historical failed attempt is not treated as an unsatisfied current
+    gate.
+- check_id: C-GATE-6
+  name: just vendored-check
+  status: passed
+  required: true
+  summary: 'Only retried command. Exact pinned vendored artifact check passed: 22
+    governed artifacts match.'
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just vendored-check
+  exit_code: 0
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes.
+- check_id: C-GATE-7
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Actual command receipt and log digest independently verified.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: git diff --check
+  exit_code: 0
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes.
+- check_id: C-GATE-8
+  name: git diff --cached --check
+  status: passed
+  required: true
+  summary: Actual command receipt and log digest independently verified.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: git diff --cached --check
+  exit_code: 0
+  evidence_ids:
+  - E-GATES
+  - E-FINAL
+  scope_note: Executed by parent gate runner; reviewed through exact retained receipts
+    and log bytes.
+- check_id: C-BROWSER
+  name: Optional browser visual and interaction check
+  status: unavailable
+  required: false
+  summary: No browser was available to the parent. This review makes no visual screenshot
+    or interactive-control approval claim.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-BROWSER
+evidence:
+- evidence_id: E-INTEGRATION
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/integration-replay-1.json.gz
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 577ee6731bf732cde4f8616d233f86885fe8276c0a0fba41462ecbce12980b60
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: 'Independent retained-source and assembly replay: 2120 checks passed; all
+    frozen source representations and documented integration changes agree.'
+  snapshot_sha256: a2ad880cf351473a2b11cb1321965ed2bc6c1e1c390028f1c46732651c94fc55
+- evidence_id: E-KGX
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/kgx-replay-1.json.gz
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 9f11180b931896c51c28847f16c79549c8cda4253155d73deaba8d5922a2c21b
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: 'Independent 257-record KGX export: 3096 exact payload checks passed; 4676
+    nodes and 13033 edges.'
+  snapshot_sha256: 4df7c312f21cb0bf8bc22e55e29b51852742cde2fddca9e8d318a2836688ebf4
+- evidence_id: E-CATEGORIES
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/kgx-category-replay.json.gz
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 ed29bc35eea217cd5e116a3d9c0ecc7adf0a59d138bebcb50dd59f6aa8dfb91b
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: 268 checks preserve all changed-record node categories and distinct source
+    roles in the global export.
+  snapshot_sha256: 107aedc4283fbae2eb1211bd6d5ae6f907d78e5e56c4a4ea9ca7703c72b60793
+- evidence_id: E-AUTHORITY
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/authority-replay-1.json.gz
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 ad1c27a5eda75683ccf8b100b05b79f1f306d112bc57a7f521dd3389d49d0bed
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: 184 checks preserve all 4989 baseline terms and owners, and verify exactly
+    34 selected additions against issuing sources or pinned SQL.
+  snapshot_sha256: b7d3272d2070ae704aeae1a30f0c02df2190cb19612e275173bd2505c316d73d
+- evidence_id: E-PAGES
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/pages-replay-2.json.gz
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 a6f11ce1ad0ac11140da1bf1c48289842c6d0a5e337bd4817057c02d333461f3
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: 3684 DOM, accessible-text, link, graph-payload and published-export checks
+    passed for the three changed pages.
+  snapshot_sha256: f3a6e4593a8bad1001ebdfa703d2c86789a61d105c3b105caea80e8b3ea70302
+- evidence_id: E-PRODUCTION
+  kind: search
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/production-scope-ignored-inclusive.json.gz
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 b01555b9ccdbbb79261327cb23da3963cefd8d7814c00c8389d475c69743c8d0
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: All 283 observed non-cache production and governance files match the Git
+    base.
+  snapshot_sha256: ecd04648c5310fcaa6d9f41b860717acbe8d4fc90fa398860a89c50d23337b57
+  search_scope: git ls-files -co without --exclude-standard; hidden and ignored files
+    included under src, scripts, tests, .github, .claude, pyproject.toml, uv.lock
+    and justfile. Three explicitly listed Python cache files were excluded.
+- evidence_id: E-PROMOTION
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/promotion-and-scope-1.json.gz
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 cb49b6609aaa08f8045943b54cb80a80600836f155c82cf3e41b77564ee39903
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: Authority promotion preserves exact candidate bytes and bounds observed
+    maintained changes to this batch.
+  snapshot_sha256: df8ae593969ccff1605164cdeb5183fee6a1aba6e04c74bd813f80d009e86cc0
+- evidence_id: E-FINAL
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/gate-final-attestation.json
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 51eb7047eae97f9c33d95333700e1f15b2e34ba5f082732968eb00e8d67e953e
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: Actual full-gate receipts and original logs rehashed; all 2026 tested core
+    inputs and every reviewed target/page/authority remain unchanged. There were eight
+    attempts for seven required commands.
+  snapshot_sha256: 51eb7047eae97f9c33d95333700e1f15b2e34ba5f082732968eb00e8d67e953e
+- evidence_id: E-RETENTION
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/gate-retention-replay.json
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 dd3b114787c947aa56be2c5b957eafa654f3c192c5b28e13ca1d6b253a28c49d
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: All 17 retained gate artifacts equal their original files after declared
+    lossless decoding.
+  snapshot_sha256: dd3b114787c947aa56be2c5b957eafa654f3c192c5b28e13ca1d6b253a28c49d
+- evidence_id: E-AUTH-CORRECTION
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/authority-source-count-clarification.json
+  locator: Whole exact-hash proof, including scope and check results; uncompressed
+    SHA-256 c5355000fd3f71e47d08d5485ce9caba1556fcbcd3b264ba3051ccbbc413da8a
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: 'Reviewer probe correction: 1077 cache descriptors are not 1062 baseline
+    identifier manifest entries; corrected authority replay passes.'
+  snapshot_sha256: c5355000fd3f71e47d08d5485ce9caba1556fcbcd3b264ba3051ccbbc413da8a
+- evidence_id: E-PROVISIONAL
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/provisional-technical-review.json
+  locator: Explicitly provisional technical report before full gates; no final approval
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: context_only
+  summary: Preserves completed earlier technical checks and pending-gate state without
+    fabricated structured review lineage.
+  snapshot_sha256: ccb0898ec89412b45123deb74e0aba4c73fec5558dc0e7c0c4e12cd7457e5de9
+- evidence_id: E-LOCATOR
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-260/integration/erratum-locator-clarification.json
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: Append-only clarification resolves the retained claim-ledger locator typo
+    without modifying the frozen erratum or graph claims.
+  snapshot_sha256: 1c21cfe824e8f700c2fd13485e816ccbc113f9e3130e80fe056b0e0d284b65b6
+- evidence_id: E-GATES
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/verification/receipts.json
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: 'All eight actual command attempt receipts retained: original DNS-only
+    vendored failure and successful bounded retry are both visible.'
+  snapshot_sha256: 3b575a30cb2d3427fe4c99b57bf4146f4fd99621e513ca9bd7b6e28f179439bc
+- evidence_id: E-INPUTS
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/verification/final-input-preservation.json
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: supports
+  summary: Root gate runner records all 2026 scoped core input files unchanged after
+    required gates.
+  snapshot_sha256: 8d5a49d9256d662fedac9197385118a105d3aa2c318eebae55bc650b83f5d377
+- evidence_id: E-BROWSER
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/verification/browser-preview-observation.json
+  accessed_at: '2026-10-15T01:39:24.483795Z'
+  support: context_only
+  summary: Parent browser preview unavailable; no screenshot or interactive visual
+    approval is claimed.
+  snapshot_sha256: 44180b59f2ed4bfb74e1d33f1ca101396cd85c5e486390f2126df782978dd8b4
+assessments:
+- assessment_id: A-NEW
+  area: provenance
+  topic: Gallate II native plus primary integration
+  outcome: supported
+  summary: The exact new gallate II record preserves the independent author inputs,
+    all declared endpoint qualifications and all non-HG evidence arrays through the
+    bounded documented normalization.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  evidence_ids:
+  - E-INTEGRATION
+  details: Retained source representations were rehashed and losslessly decoded. All
+    179 primary fact dispositions and 88 added/replacement edge mappings resolve.
+    Native source assertions and primary additions remain separately attributable;
+    this checks integration fidelity rather than re-adjudicating literature support.
+- assessment_id: A-GALLATE-I
+  area: scope
+  topic: Bounded gallate I predecessor correction
+  outcome: supported
+  summary: Gallate I changes are confined to three direction fields and documented
+    descriptions, including four native entry descriptions aligned with the original
+    PHYSIOL-LEFT-TO-RIGHT direction.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - E-INTEGRATION
+  - E-PAGES
+  details: Identifiers, edge endpoints, evidence, participants, qualifiers and material
+    flow remain exact. Final target SHA-256 a6e0e8f52880ccb651e02526dbd627240ec7e46a637d2eabfd790846156d21b0.
+- assessment_id: A-PROTO
+  area: scope
+  topic: Bounded protocatechuate predecessor correction
+  outcome: supported
+  summary: Protocatechuate changes are confined to three shared direction fields and
+    their three descriptions; all other semantic content and material flow remains
+    exact.
+  target_ids:
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-INTEGRATION
+  - E-PAGES
+  details: Final target SHA-256 c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49.
+    RHEA:17403 is right_to_left relative to its master orientation while the represented
+    hydration material flow is preserved.
+- assessment_id: A-AUTHORITY
+  area: grounding
+  topic: Exact successor authority union
+  outcome: supported
+  summary: All 4989 previous authority terms and prior owners remain exact. Exactly
+    34 selected additions are grounded to the actual issuing source files or pinned
+    ontology SQL; the original 1062 manifest entries remain the exact prefix of 1072.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-AUTHORITY
+  - E-PROMOTION
+  - E-AUTH-CORRECTION
+  details: RHEA:18170 is selected for net HG cleavage; unselected RHEA:18172 is absent
+    from authority and exports. Native and Rhea source direction metadata remain separately
+    scoped. No policy or adapter allowance was introduced.
+- assessment_id: A-EXPORT
+  area: representation
+  topic: Graph, KGX and page fidelity
+  outcome: supported
+  summary: All changed-record evidence arrays and reference metadata, qualifiers,
+    endpoint identities, contexts, categories and source-direction values survive
+    the whole-corpus KGX export and generated pages.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-KGX
+  - E-CATEGORIES
+  - E-PAGES
+  details: Published downloads equal the independent export exactly. Every graph edge
+    has its evidence-row link. Unconnected taxon metadata remains in complete component
+    tables under the existing renderer contract; it need not appear as an SVG node.
+    No structured assertion was presented as a paper quotation.
+- assessment_id: A-GATES
+  area: consistency
+  topic: Project gates and maintained scope
+  outcome: supported
+  summary: All required gates passed; all 2026 tested inputs remained unchanged and
+    all 283 non-cache production/governance files in the ignored-inclusive scan equal
+    the base.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - E-FINAL
+  - E-GATES
+  - E-INPUTS
+  - E-RETENTION
+  - E-PRODUCTION
+  details: 'The initial vendored attempt failed only on sandbox DNS and is preserved
+    along with the sole successful retry. Full test result: 5255 passed, 3 skipped,
+    7 warnings. No production code, governed artifact, frozen source package, previous
+    history or previous review was edited in this reviewed batch.'
+- assessment_id: A-LOCATOR
+  area: provenance
+  topic: Advance observation corrected before first canonical review
+  outcome: supported
+  summary: The supporting erratum locator typo was corrected with an append-only clarification
+    before this first canonical technical review; the original frozen receipt remains
+    unchanged.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-I-PWY
+  evidence_ids:
+  - E-LOCATOR
+  - E-INTEGRATION
+  details: 'The retained primary ledger is sources/primary/author/claim-ledger.json,
+    SHA-256 bf554cf6e9903976d4522112534abbd3f46b8f8c7b167b0d4816e3e8b806d989. GitHub
+    #559 tracks the advance observation. No prior structured finding identity is fabricated;
+    therefore it is documented here rather than as a terminal structured finding without
+    lineage.'
+findings: []
+actions: []
+limitations:
+- Technical integration review only; it does not independently certify scientific
+  literature support or promote native curation status.
+- No browser visual or interactive-control approval is claimed.
+- Three tests were skipped and seven dependency deprecation warnings were reported
+  by the successful full suite; see the actual retained test log.
+- The original sandbox-DNS vendored attempt failed and is preserved. The sole bounded
+  retry passed the same pinned artifact check.
+- This working-tree review is not an attestation of the future committed tree. Parent
+  must persist the exact selected proof bytes before saving and later request exact-commit
+  verification.
+notes:
+- The provisional external technical report is historical supporting evidence, not
+  a previous canonical structured finding occurrence.
+- 'GitHub #559 tracks the S75-003 retained-ledger locator advance observation already
+  corrected before this canonical review. No fabricated previous_occurrences were
+  added.'
+- 'Two reviewer-probe expectations were corrected transparently: manifest-entry versus
+  cache-descriptor count, and unconnected taxon scope versus SVG nodes. Their original
+  reports remain retained; neither was a repository defect.'
+- The parent owns canonical save. Reviewer performed inspect, assessment and validate
+  only; no production/record/README/page changes or GitHub writes.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/558
+- https://github.com/CultureBotAI/PathwayMech/issues/559
+tags:
+- technical
+- integration
+- next260
+- independent

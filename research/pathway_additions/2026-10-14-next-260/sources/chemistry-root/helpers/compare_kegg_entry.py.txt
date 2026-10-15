@@ -1,0 +1,22 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,re
+from rdkit import Chem
+from rdkit.Chem import rdMolDescriptors
+R=Path('/private/tmp/pathwaymech-next-260-chemistry-root');O=R/'originals';out=R/'retained/kegg-entry-reconciliation.json';assert not out.exists();rows=[]
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def desc(m):return {'isomeric_smiles':Chem.MolToSmiles(m,isomericSmiles=True),'inchi':Chem.MolToInchi(m),'key':Chem.MolToInchiKey(m),'rdkit_formula_including_charge':rdMolDescriptors.CalcMolFormula(m),'atom_counts':dict(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms())),'formal_charge':Chem.GetFormalCharge(m)}
+for kid,cid in [('C01424','16918'),('C03671','58304')]:
+ text=(O/('KEGG-'+kid+'.txt')).read_text();assert re.search(r'^ENTRY +'+kid+r' +Compound$',text,re.M);formula=re.search(r'^FORMULA +(.+)$',text,re.M)[1]
+ mol=Chem.MolFromMolBlock((O/('KEGG-'+kid+'.mol')).read_text(),sanitize=True,removeHs=False,strictParsing=True);assert mol is not None;k=desc(mol);jsonpath=O/('ChEBI-'+cid+'.json');j=json.loads(jsonpath.read_text());ion=Chem.MolFromSmiles(j['default_structure']['smiles']);before=desc(ion);acid=Chem.RWMol(ion);changes=[]
+ for atom in acid.GetAtoms():
+  if atom.GetSymbol()=='O' and atom.GetFormalCharge()==-1:
+   assert atom.GetDegree()==1 and atom.GetNeighbors()[0].GetSymbol()=='C'
+   carbon=atom.GetNeighbors()[0];assert any(b.GetBondType()==Chem.BondType.DOUBLE and b.GetOtherAtom(carbon).GetSymbol()=='O' for b in carbon.GetBonds())
+   changes.append({'atom_index':atom.GetIdx(),'operation':'add one proton to explicit carboxylate oxygen for comparison only'});atom.SetFormalCharge(0);atom.SetNumExplicitHs(atom.GetNumExplicitHs()+1)
+ acid=acid.GetMol();Chem.SanitizeMol(acid);normalized=desc(acid);assert k['key']==normalized['key'] and k['isomeric_smiles']==normalized['isomeric_smiles'];assert k['formal_charge']==0;assert k['rdkit_formula_including_charge']==formula
+ rows.append({'kegg_id':'KEGG:'+kid,'source_record':{'path':str(O/('KEGG-'+kid+'.txt')),'sha256':sha(O/('KEGG-'+kid+'.txt'))},'source_mol':{'path':str(O/('KEGG-'+kid+'.mol')),'sha256':sha(O/('KEGG-'+kid+'.mol'))},'source_formula':formula,'kegg_structure':k,'exact_native_chebi':'CHEBI:'+cid,'chebi_structure':before,'comparison_only_carboxyl_protonations':changes,'protonated_chebi_structure':normalized,'matches_only_after_explicit_protonation':k['key']==normalized['key'] and k['key']!=before['key']})
+reaction=(O/'KEGG-R03549.txt').read_text();equation=re.search(r'^EQUATION +(.+)$',reaction,re.M)[1];assert equation=='C01424 + C00007 <=> C03671 + C00001'
+# Complete neutral molecule balance, and contrast explicit native ion stoichiometry.
+left=collections.Counter(rows[0]['kegg_structure']['atom_counts']);left['O']+=2;right=collections.Counter(rows[1]['kegg_structure']['atom_counts']);right['H']+=2;right['O']+=1;assert left==right
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Root author comparison of full issuing KEGG chemical structures against exact native ChEBI ion structures. Protonation is an explicit calculation solely for cross-reference interpretation.','reaction_original':{'path':str(O/'KEGG-R03549.txt'),'sha256':sha(O/'KEGG-R03549.txt')},'issuing_equation':equation,'issuing_direction_symbol':'<=>','native_reaction':'MetaCyc:RXN-11861','native_direction':'PHYSIOL-LEFT-TO-RIGHT','native_normalized_equation':'CHEBI:16918 + CHEBI:15379 -> CHEBI:58304 + CHEBI:15377 + CHEBI:15378','structural_comparisons':rows,'neutral_element_sums':{'left':dict(left),'right':dict(right)},'neutral_equation_balanced':True,'disposition':'Retain MetaCyc:RXN-11861 for the selected native physiological material edges. KEGG:R03549 is a source cross-reference with the same neutral carbon/oxygen skeleton conversion, but its explicit reversible arrow and neutral acid compound structures do not by themselves establish exact charge-normalized directional equivalence. Do not drop the native proton or infer physical irreversibility from the selected forward graph.'}
+out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'neutral_balance':True,'compounds':len(rows),'native_proton_preserved':True}))

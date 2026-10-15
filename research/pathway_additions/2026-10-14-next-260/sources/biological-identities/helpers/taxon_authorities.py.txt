@@ -1,0 +1,24 @@
+"""Exact selected taxon authorities from the complete pinned issuing SQL source."""
+from datetime import datetime,timezone
+from pathlib import Path
+import hashlib,json,sqlite3,sys
+B=Path(__file__).resolve().parents[1]
+R=B/'runtime'
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_ontology_identifier_snapshot import extract_terms,read_source
+db=Path('/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db')
+con=sqlite3.connect('file:'+str(db)+'?mode=ro',uri=True)
+owner=read_source(con,db)
+snapshot=json.loads((R/'data/identifier_authorities/ontology.json').read_text())
+owners=[(key,row) for key,row in snapshot['sources'].items() if row.get('sha256')==owner['sha256']]
+assert len(owners)==1 and owners[0][1]==owner
+ids=['NCBITaxon:'+x for x in ['2','285','287','303','562','13689','47882','47914','160488','502559','627192']]
+terms,missing=extract_terms(con,ids,owners[0][0]);assert not missing,missing
+rows=[]
+for identifier in ids:
+    triples=[dict(zip(['subject','predicate','object','value','datatype','language'],values)) for values in con.execute('select subject,predicate,object,value,datatype,language from statements where subject=? order by predicate,object,value',(identifier,))]
+    rows.append({'identifier':identifier,'parsed_term':terms[identifier],'already_retained':identifier in snapshot['terms'],'retained_term':snapshot['terms'].get(identifier),'direct_native_statements':triples})
+con.close()
+result={'checked_at':datetime.now(timezone.utc).isoformat(),'database':{'path':str(db),'resolved':str(db.resolve()),'bytes':db.stat().st_size,'sha256':owner['sha256']},'source_key':owners[0][0],'source_owner':owner,'scope':'Selected pinned issuing taxonomy terms only. Native source, historical deposits, primary preparation labels and modern strain records retain distinct taxon assertions; no global taxon equivalence or whole-route occurrence inferred.','candidates':rows,'specific_limits':['Native TAX-502559 and modern SYK-6 taxon627192 are separate source assertions. Historical deposits name Sphingomonas paucimobilis taxon13689.','Historical Pseudomonas ochraceae is a related synonym of taxon47882; use the pinned canonical Phytopseudomonas straminea label only when selecting that current species identity, and keep historical preparation wording. NGJ1 sequence deposits do not identify every historical unnumbered preparation.','Brevibacterium fuscum47914 and Pseudomonas aeruginosa287 are primary preparation context candidates only; no exact native CPLX-2721 or source-strain sequence identity follows.','Escherichia coli562 is expression-host context only, never evidence of native gallate-II occurrence.']}
+p=B/'projections/taxon-authority-candidates.json';assert not p.exists();p.write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'pinned_database_sha256':owner['sha256'],'terms':len(rows),'new_keys':[r['identifier'] for r in rows if not r['already_retained']]},indent=2))

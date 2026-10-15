@@ -1,0 +1,19 @@
+from pathlib import Path
+import datetime,hashlib,json,urllib.request,urllib.parse
+ROOT=Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+OUT=ROOT/'retained/late-pubchem-acquisition.json';assert not OUT.exists()
+jobs=[('PubChem-25251.json','cid/25251'),('PubChem-name-2-pyrone-6-carboxylic-acid.json','name/'+urllib.parse.quote('2-pyrone-6-carboxylic acid',safe='')),('PubChem-name-6-oxo-6H-pyran-2-carboxylic-acid.json','name/'+urllib.parse.quote('6-oxo-6H-pyran-2-carboxylic acid',safe=''))]
+rows=[]
+for name,query in jobs:
+ p=ROOT/'originals'/name;assert not p.exists()
+ url='https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/'+query+'/JSON';r={'query':query,'url':url,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech-source-research/1.0'}),timeout=40) as response:
+   body=response.read();r.update({'status':response.status,'final_url':response.url,'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest()})
+  data=json.loads(body);r['returned_cids']=[x['id']['id']['cid'] for x in data['PC_Compounds']]
+  with p.open('xb') as f:f.write(body)
+  r['path']=str(p)
+ except Exception as exc:r['error']=repr(exc)
+ rows.append(r)
+with OUT.open('x') as f:json.dump(rows,f,indent=2);f.write('\n')
+print(json.dumps(rows,indent=2))

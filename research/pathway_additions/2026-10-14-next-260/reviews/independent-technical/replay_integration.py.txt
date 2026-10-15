@@ -1,0 +1,141 @@
+"""Independent, read-only integration audit; source checks are bounded explicitly."""
+import copy
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-20261014')
+OUT = Path('/private/tmp/pathwaymech-next-260-independent-technical')
+RES = ROOT / 'research/pathway_additions/2026-10-14-next-260'
+BASE = 'b2590dfd2385c83fe4f028ecd5309a0407739838'
+checks = []
+bindings = {}
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+def check(name, condition, **details):
+    checks.append({'name': name, 'pass': bool(condition), **details})
+
+def verify(p, expected, size=None):
+    p = Path(p)
+    actual = sha(p) if p.is_file() else None
+    bindings[str(p)] = actual
+    check('exact file binding', actual == expected and (size is None or p.stat().st_size == size),
+          path=str(p), sha256=actual, expected_sha256=expected)
+
+def jread(p):
+    bindings[str(p)] = sha(p)
+    return json.loads(Path(p).read_text())
+
+def diff(a, b, p=''):
+    if isinstance(a, dict) and isinstance(b, dict):
+        return sum((diff(a.get(k), b.get(k), p+'/'+str(k)) for k in sorted(set(a)|set(b))), [])
+    if isinstance(a, list) and isinstance(b, list):
+        if all(isinstance(v, dict) and 'id' in v for v in a+b):
+            return diff({v['id']:v for v in a},{v['id']:v for v in b},p)
+        if len(a)!=len(b):
+            return [{'path':p,'before':a,'after':b}]
+        return sum((diff(x,y,p+'/'+str(i)) for i,(x,y) in enumerate(zip(a,b))),[])
+    return [] if a == b else [{'path':p,'before':a,'after':b}]
+
+# All retained source inputs, including losslessly compressed projections.
+retention = jread(RES/'source-retention-manifest.json')
+check('initial source selection count',len(retention['files'])==245)
+for e in retention['files']:
+    verify(e['source_path'],e['source_sha256'],e['source_bytes'])
+    p=RES/e['retained_path']
+    verify(p,e['retained_sha256'],e['retained_bytes'])
+    raw=p.read_bytes()
+    if e['encoding']!='identity':
+        raw=gzip.decompress(raw)
+    check('retained source representation equals original bytes',hashlib.sha256(raw).hexdigest()==e['source_sha256'],path=str(p))
+
+# Independently rehash every original frozen package object, rather than relying
+# on the source-retention subset or author declarations of immutability.
+external_counts={}
+for manifest_path in sorted(RES.glob('sources/*/external-artifact-manifest.json')):
+    package=manifest_path.parent.name
+    source_root=Path('/private/tmp/pathwaymech-next-260-'+package)
+    entries=jread(manifest_path)['files']
+    external_counts[package]=len(entries)
+    for e in entries:
+        p=Path(e['path'])
+        if not p.is_absolute(): p=source_root/p
+        verify(p,e['sha256'],e.get('bytes'))
+
+native_root=Path('/private/tmp/pathwaymech-next-260-native-draft')
+primary_root=Path('/private/tmp/pathwaymech-next-260-primary-draft')
+for directory in (native_root,primary_root):
+    for e in jread(directory/'artifact-manifest.json')['files']:
+        verify(directory/e['path'],e['sha256'],e['bytes'])
+for e in jread(RES/'authoring/native/compact-retention-manifest.json')['files']:
+    verify(RES/'authoring/native'/e['retained_name'],e['sha256'],e['bytes'])
+integration=jread(RES/'integration/primary-integration-and-normalization.json')
+for e in integration['retained']:
+    verify(RES/e['retained_path'],e['sha256'],e['bytes'])
+for e in integration['external_frozen_artifacts']:
+    verify(e['external_path'],e['sha256'],e['bytes'])
+
+newpath=ROOT/'data/pathways/gallate-degradation-ii.yaml'
+verify(newpath,'72e4685f14ff3a6a9d5cd5c7b9cd27d5fa54592355a5191fa5cf821d07a19353')
+record=yaml.safe_load(newpath.read_text())
+assembled=yaml.safe_load((native_root/'native-foundation.yaml').read_text())
+for filename in ['primary-additions.yaml','primary-replacements.yaml','node-replacements.yaml']:
+    fragment=yaml.safe_load((primary_root/filename).read_text())
+    for section,values in fragment.items():
+        for value in values:
+            same=[i for i,node in enumerate(assembled[section]) if node['id']==value['id']]
+            if filename=='primary-additions.yaml':
+                check('addition ID is new within section',not same,id=value['id'],section=section)
+                assembled[section].append(value)
+            else:
+                check('replacement has exactly one target',len(same)==1,id=value['id'],section=section)
+                if same: assembled[section][same[0]]=value
+preview=yaml.safe_load((primary_root/'assembled-preview.yaml').read_text())
+check('independent assembly equals frozen primary preview',assembled==preview)
+actual_diff=diff(assembled,record)
+check('normalization ledger exhaustively matches actual semantic changes',actual_diff==integration['normalization_changes'],diff_count=len(actual_diff))
+qualified_before={e['id']:e.get('endpoint_qualifiers',[]) for e in assembled['mechanistic_edges']}
+qualified_after={e['id']:e.get('endpoint_qualifiers',[]) for e in record['mechanistic_edges']}
+check('every endpoint qualification survives integration unchanged',qualified_before==qualified_after)
+check('every edge evidence array except documented HG RDF normalization survives unchanged',all(e['evidence']==next(x for x in assembled['mechanistic_edges'] if x['id']==e['id'])['evidence'] for e in record['mechanistic_edges'] if not e['id'].startswith('alternative-hg-material-')))
+nodes=[record['id']]+[n['id'] for s in ('participants','reactions','taxa') for n in record[s]]
+check('103 unique declared identifiers',len(nodes)==len(set(nodes))==103)
+check('169 unique mechanistic edges',len(record['mechanistic_edges'])==len({e['id'] for e in record['mechanistic_edges']})==169)
+check('all edge endpoints declared',all(e[k] in nodes for e in record['mechanistic_edges'] for k in ('subject','object')))
+check('no old HG identifier remains anywhere in maintained record','RHEA:18172' not in json.dumps(record))
+refs={r['id'] for r in record['references']}
+evs=[v for e in record['mechanistic_edges'] for v in e['evidence']]+[v for e in record['mechanistic_edges'] for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]
+check('all evidence refs declared',all(e['reference_id'] in refs for e in evs))
+check('all evidence forms exclusive, bounded and source-located',all(('quote' in e)!=('source_assertion' in e) and len(e.get('quote',e.get('source_assertion','')))<401 and ('source_assertion' not in e or bool(e.get('source_locator'))) for e in evs))
+facts=jread(primary_root/'source-to-record-dispositions.json')['facts']
+edge_ledger=jread(primary_root/'edge-fact-ledger.json')
+edge_ids={e['id'] for e in record['mechanistic_edges']}
+fact_ids={f['source_fact_id'] for f in facts}
+check('all 179 primary facts retained uniquely',len(facts)==len(fact_ids)==179)
+check('all primary fact edge mappings resolve',all(e in edge_ids for f in facts for e in f.get('primary_edge_ids',[])))
+check('all 88 added or replacement edges and fact links resolve',len(edge_ledger)==88 and all(e['edge_id'] in edge_ids and all(f in fact_ids for f in e['source_fact_ids']) for e in edge_ledger))
+
+# Exact semantic predecessor changes; this receipt is an observation and will be
+# superseded for gallate I if its independently identified prose correction lands.
+predecessors=[]
+for name in ['gallate-degradation-i','protocatechuate-meta-cleavage']:
+    rel='data/pathways/'+name+'.yaml'; p=ROOT/rel
+    previous=yaml.safe_load(subprocess.check_output(['git','show',BASE+':'+rel],cwd=ROOT,text=True))
+    current=yaml.safe_load(p.read_text())
+    changes=diff(previous,current)
+    allowed_direction={'/reactions/'+x+'/direction' for x in ['RHEA:28932','RHEA:17403','RHEA:28936']}
+    check('predecessor changes limited to three node directions and edge descriptions',all(c['path'] in allowed_direction or c['path'].startswith('/mechanistic_edges/') and c['path'].endswith('/description') for c in changes),record=rel)
+    check('predecessor IDs/labels/categories preserved',all(previous.get(s)==current.get(s) for s in ['id','label','participants','taxa']),record=rel)
+    predecessors.append({'path':rel,'sha256':sha(p),'semantic_diff':changes})
+
+result={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Fresh independent technical replay; not scientific approval or final gates','base':BASE,'external_package_file_counts':external_counts,'checks':checks,'passed':sum(c['pass'] for c in checks),'failed':sum(not c['pass'] for c in checks),'bindings':bindings,'normalization_diff':actual_diff,'predecessors':predecessors,'scope_limits':['Authority build and generated output checks await completed root gates.','Scientific source truth is separately reviewed; this replay checks all retained/external package bytes and graph integration.']}
+dest=OUT/'integration-replay-1.json'
+assert not dest.exists()
+dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'report':str(dest),'sha256':sha(dest),'passed':result['passed'],'failed':result['failed'],'failures':[c for c in checks if not c['pass']]}))

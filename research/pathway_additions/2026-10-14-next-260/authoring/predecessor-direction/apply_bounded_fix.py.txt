@@ -1,0 +1,82 @@
+from pathlib import Path
+import copy, datetime, difflib, hashlib, json, textwrap, xml.etree.ElementTree as ET
+import yaml
+from pathwaymech.schema import validate_record
+ROOT=Path('/private/tmp/pathwaymech-next-260-20261014')
+OUT=Path('/private/tmp/pathwaymech-next-260-direction-fix')
+DIRECTIONS={'RHEA:28932':'left_to_right','RHEA:17403':'right_to_left','RHEA:28936':'left_to_right'}
+EXPECTED={'gallate-degradation-i':'5574dbd48b8c2937ecaca6337a0c87fa3485754464a70afea8fc8460ae4a770f','protocatechuate-meta-cleavage':'df99d07970ecd4a3512c5923644845595c8ef63a98070edc97aeb25a4979e4bc'}
+DESCRIPTIONS={
+'gallate-degradation-i':{
+ **{i:'Selected physiological route orientation. MetaCyc RXN-9983 separately asserts REVERSIBLE; the RHEA:28932 node direction is left_to_right relative to master RHEA:28931, preserving the selected substrate/product flow.' for i in ['native-007','native-008']},
+ **{i:'Selected physiological hydration. MetaCyc RXN-2463 separately asserts REVERSIBLE. RHEA:17403 is right_to_left relative to master RHEA:17401 (CHA = CHM + water); its displayed equation and material edges still run CHM + water to CHA.' for i in ['native-010','native-011','native-012']},
+ **{i:'Selected physiological cleavage. MetaCyc RXN-2464 separately asserts REVERSIBLE; the RHEA:28936 node direction is left_to_right relative to master RHEA:28935, preserving CHA cleavage to pyruvate and oxaloacetate.' for i in ['native-014','native-015','native-016']},
+},
+'protocatechuate-meta-cleavage':{
+'meta-020':'Member of the complete eight-step source-defined pathway. Material edges retain the pathway-selected conversion. MetaCyc RXN-9983 separately asserts REVERSIBLE; RHEA:28932 direction is left_to_right relative to master RHEA:28931. Native spontaneous=true permits uncatalyzed conversion without asserting its physiological rate or excluding enzyme acceleration.',
+'meta-023':'Member of the complete eight-step source-defined pathway. Material edges retain hydration, opposite to the native reaction object written as dehydration. MetaCyc RXN-2463 separately asserts REVERSIBLE. RHEA:17403 is right_to_left relative to master RHEA:17401 (CHA = CHM + water); its displayed equation and material edges still run CHM + water to CHA.',
+'meta-027':'Member of the complete eight-step source-defined pathway. Material edges retain pathway-selected CHA cleavage to pyruvate and oxaloacetate. MetaCyc RXN-2464 separately asserts REVERSIBLE; RHEA:28936 direction is left_to_right relative to master RHEA:28935.',
+}}
+def sha(b): return hashlib.sha256(b).hexdigest()
+def flatten(v,path=''):
+ if isinstance(v,dict):
+  return {k2:v2 for k,x in v.items() for k2,v2 in flatten(x,path+'/'+k).items()}
+ if isinstance(v,list):
+  by_id=all(isinstance(x,dict) and isinstance(x.get('id'),str) for x in v)
+  return {k2:v2 for i,x in enumerate(v) for k2,v2 in flatten(x,path+'/'+(x['id'] if by_id else str(i))).items()}
+ return {path:v}
+proof={'issue':'https://github.com/CultureBotAI/PathwayMech/issues/558','role':'bounded authoring; not independent scientific review','timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'records':[],'sources':[],'semantics':'Node directions follow the issuing Rhea quartet relative to its master reaction. Native MetaCyc REVERSIBLE remains a separate source assertion. Directional members encode net direction; no equilibrium member or physical irreversibility assertion is substituted.'}
+family_path=Path('/private/tmp/pathwaymech-next-260-independent-science/rhea-family-summary.json')
+families=json.loads(family_path.read_text())
+for rid,direction in DIRECTIONS.items():
+ family=next(x for x in families if x['id']=='http://rdf.rhea-db.org/'+rid.split(':')[1])
+ substrate_side=next(k for k,v in family['sides'].items() if v['role']=='substrates')
+ assert direction==('left_to_right' if substrate_side.endswith('_L') else 'right_to_left')
+ assert family['type']==['http://rdf.rhea-db.org/DirectionalReaction']
+for file in ['rhea-family-summary.json','rhea-original-family-binding.json']:
+ p=Path('/private/tmp/pathwaymech-next-260-independent-science')/file
+ proof['sources'].append({'path':str(p),'sha256':sha(p.read_bytes()),'role':'independent reviewer source reconstruction; not independently reconstructed by this author'})
+for rxn in ['RXN-9983','RXN-2463','RXN-2464']:
+ p=Path('/private/tmp/pathwaymech-next-260-native/originals')/(rxn+'.xml');data=p.read_bytes();doc=ET.fromstring(data)
+ nodes=doc.findall(f"./Reaction[@frameid='{rxn}']/reaction-direction")
+ assert len(nodes)==1 and nodes[0].text=='REVERSIBLE'
+ proof['sources'].append({'path':str(p),'sha256':sha(data),'source_locator':f"/ptools-xml/Reaction[@frameid='{rxn}']/reaction-direction",'observed_value':'REVERSIBLE','role':'author verified original XML'})
+for name,before_sha in EXPECTED.items():
+ p=ROOT/'data/pathways'/(name+'.yaml');before_bytes=p.read_bytes();assert sha(before_bytes)==before_sha
+ before=before_bytes.decode('utf-8');obj=yaml.safe_load(before);tree=yaml.compose(before)
+ before_snapshot=OUT/(name+'.before.yaml');assert not before_snapshot.exists();before_snapshot.write_bytes(before_bytes)
+ replacements=[];expected=copy.deepcopy(obj);allowed=set()
+ for section_node,items in tree.value:
+  section=section_node.value
+  if section not in ['reactions','mechanistic_edges']: continue
+  for item in items.value:
+   values={key.value:value for key,value in item.value};rid=values['id'].value
+   field='direction' if section=='reactions' and rid in DIRECTIONS else 'description' if section=='mechanistic_edges' and rid in DESCRIPTIONS[name] else None
+   if field is None: continue
+   node=values[field];new_value=DIRECTIONS[rid] if field=='direction' else DESCRIPTIONS[name][rid]
+   assert node.style is None
+   replacement=textwrap.fill(new_value,width=84,subsequent_indent='    ',break_long_words=False,break_on_hyphens=False)
+   replacements.append({'path':f'/{section}/{rid}/{field}','start':node.start_mark.index,'end':node.end_mark.index,'before_scalar_bytes':before[node.start_mark.index:node.end_mark.index],'after_scalar_bytes':replacement,'before_value':node.value,'after_value':new_value})
+   next(x for x in expected[section] if x['id']==rid)[field]=new_value
+   allowed.add(f'/{section}/{rid}/{field}')
+ replacements.sort(key=lambda x:x['start'])
+ assert len(replacements)==3+len(DESCRIPTIONS[name])
+ chunks=[];pos=0;untouched=[]
+ for change in replacements:
+  chunk=before[pos:change['start']];chunks.extend([chunk,change['after_scalar_bytes']]);untouched.append({'start':pos,'end':change['start'],'sha256':sha(chunk.encode('utf-8'))});pos=change['end']
+ chunks.append(before[pos:]);untouched.append({'start':pos,'end':len(before),'sha256':sha(before[pos:].encode('utf-8'))})
+ after=''.join(chunks);actual=yaml.safe_load(after);assert actual==expected
+ oldflat,newflat=flatten(obj),flatten(actual);diff=[{'path':k,'before':oldflat.get(k),'after':newflat.get(k)} for k in sorted(set(oldflat)|set(newflat)) if oldflat.get(k)!=newflat.get(k)]
+ assert {x['path'] for x in diff}==allowed
+ validate_record(actual)
+ assert [{k:v for k,v in e.items() if k!='description'} for e in obj['mechanistic_edges']]==[{k:v for k,v in e.items() if k!='description'} for e in actual['mechanistic_edges']]
+ assert obj['references']==actual['references']
+ assert obj['participants']==actual['participants'] and obj['taxa']==actual['taxa']
+ assert [{k:v for k,v in e.items() if k!='direction'} for e in obj['reactions']]==[{k:v for k,v in e.items() if k!='direction'} for e in actual['reactions']]
+ assert p.read_bytes()==before_bytes
+ after_bytes=after.encode('utf-8');p.write_bytes(after_bytes);(OUT/(name+'.after.yaml')).write_bytes(after_bytes)
+ (OUT/(name+'.diff')).write_text(''.join(difflib.unified_diff(before.splitlines(True),after.splitlines(True),fromfile=name+'.before.yaml',tofile=name+'.after.yaml')))
+ proof['records'].append({'path':str(p),'before_sha256':before_sha,'after_sha256':sha(after_bytes),'before_bytes':len(before_bytes),'after_bytes':len(after_bytes),'changed_fields':diff,'whitelist':sorted(allowed),'all_other_semantics_unchanged':True,'all_bytes_outside_exact_scalar_spans_unchanged':True,'all_edge_endpoints_predicates_evidence_qualifiers_unchanged':True,'all_reference_participant_taxon_identifiers_labels_categories_unchanged':True,'handwritten_schema_validation':'passed','untouched_span_hashes':untouched,'text_replacements':replacements})
+proof['status']='passed'
+(OUT/'bounded-fix-proof.json').write_text(json.dumps(proof,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'status':proof['status'],'records':[{k:r[k] for k in ['path','before_sha256','after_sha256']} for r in proof['records']],'changed_fields':sum(len(r['changed_fields']) for r in proof['records'])},indent=2))

@@ -1,0 +1,158 @@
+"""Root author integration; immutable source proposals remain unchanged."""
+import copy
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-20261014')
+PRIMARY = Path('/private/tmp/pathwaymech-next-260-primary-draft')
+OUT = ROOT / 'research/pathway_additions/2026-10-14-next-260'
+RECEIPTS = Path('/private/tmp/pathwaymech-next-260-root-integration')
+RECORD = ROOT / 'data/pathways/gallate-degradation-ii.yaml'
+
+def sha(p):
+    return hashlib.sha256(p.read_bytes()).hexdigest()
+
+def write_json(p, obj):
+    assert not p.exists(), p
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps(obj, indent=2, ensure_ascii=False) + '\n')
+
+def differences(a, b, path=''):
+    result = []
+    if isinstance(a, dict) and isinstance(b, dict):
+        for key in sorted(set(a) | set(b)):
+            if key not in a or key not in b:
+                result.append({'path': path + '/' + key, 'before': a.get(key), 'after': b.get(key)})
+            else:
+                result += differences(a[key], b[key], path + '/' + key)
+    elif isinstance(a, list) and isinstance(b, list):
+        if all(isinstance(v, dict) and 'id' in v for v in a + b):
+            return differences({v['id']: v for v in a}, {v['id']: v for v in b}, path)
+        assert len(a) == len(b), path
+        for i, (left, right) in enumerate(zip(a, b)):
+            result += differences(left, right, path + '/' + str(i))
+    elif a != b:
+        result.append({'path': path, 'before': a, 'after': b})
+    return result
+
+manifest = json.loads((PRIMARY / 'artifact-manifest.json').read_text())
+assert sha(PRIMARY / 'artifact-manifest.json') == '5f0b87df93372a4e4167552989ea07150494f176654793af345151d41980509e'
+for entry in manifest['files']:
+    p = PRIMARY / entry['path']
+    assert sha(p) == entry['sha256'] and p.stat().st_size == entry['bytes'], p
+assert len(manifest['files']) == 35
+assert sum(e['bytes'] for e in manifest['files']) == 1643645
+assert sha(RECORD) == '6f1551b0cb42fd23a6c00e5a82a26bf58e5c40584c507bea0f7ca9f4a9985f03'
+record = yaml.safe_load(RECORD.read_text())
+for filename in ['primary-additions.yaml', 'primary-replacements.yaml', 'node-replacements.yaml']:
+    data = yaml.safe_load((PRIMARY / filename).read_text())
+    for key, values in data.items():
+        if filename == 'primary-additions.yaml':
+            existing = {v['id'] for v in record[key]}
+            assert not existing.intersection(v['id'] for v in values)
+            record[key].extend(values)
+        else:
+            for value in values:
+                slots = [i for i, v in enumerate(record[key]) if v['id'] == value['id']]
+                assert len(slots) == 1
+                record[key][slots[0]] = value
+preview = yaml.safe_load((PRIMARY / 'assembled-preview.yaml').read_text())
+assert record == preview, differences(preview, record)
+before = copy.deepcopy(record)
+directions = {'RHEA:28932': 'left_to_right', 'RHEA:17403': 'right_to_left', 'RHEA:28936': 'left_to_right'}
+for node in record['reactions']:
+    if node['id'] in directions:
+        assert node['direction'] == 'reversible'
+        node['direction'] = directions[node['id']]
+    if node['id'] == 'RHEA:18172':
+        node.update(id='RHEA:18170', label='4-hydroxy-2-oxoglutarate => glyoxylate + pyruvate', direction='left_to_right')
+paragraphs = json.loads((PRIMARY / 'record-context-proposal.json').read_text())['paragraphs']
+record['description'] += '\n\n' + '\n\n'.join(paragraphs)
+record['description'] += ('\n\nReaction-node direction follows the issuing Rhea quartet. Native MetaCyc REVERSIBLE annotations remain separate evidence; the selected material flow is unchanged. RHEA:17403 is the right-to-left member relative to its master equation and represents enol hydration in this route. The adjacent HG activity uses the forward cleavage member RHEA:18170. ProA1990 separately measured equilibrium with optical l-HG (approximately 0.03 ± 0.01 M at pH 8 and 25 °C; pp.331–332), while d-HG was practically inert. This does not establish absolute R/S configuration or equilibrium in vivo.')
+for edge in record['mechanistic_edges']:
+    rid = edge['subject'] if edge['subject'] in directions else edge['object']
+    if edge['id'].startswith('native-member-') and rid in directions:
+        edge['description'] += (' Native MetaCyc REVERSIBLE is retained independently; node direction follows the selected Rhea quartet member. This does not assert chemical irreversibility.')
+    if edge['id'].startswith('native-material-') and rid in directions:
+        edge['description'] += ' Node direction follows the issuing Rhea quartet; native reversibility is a separate assertion.'
+    if edge['id'] == 'proa-1990-alternative-hg':
+        assert edge['object'] == 'RHEA:18172'
+        edge['object'] = 'RHEA:18170'
+        edge['description'] = ('Purified historical native aldolase catalyzed HG cleavage to pyruvate and glyoxylate; dl-HG was the Table II substrate. Separate optical l-HG reverse/equilibrium experiments gave approximately 0.03 ± 0.01 M at pH 8 and 25 °C (pp.331–332); d-HG was practically inert. Optical notation does not establish R/S or in vivo equilibrium. The forward cleavage member represents this adjacent activity, outside the five formal route steps.')
+    if edge['id'].startswith('alternative-hg-material-'):
+        for endpoint in ['subject', 'object']:
+            if edge[endpoint] == 'RHEA:18172':
+                edge[endpoint] = 'RHEA:18170'
+        edge['description'] = ('Generic stereochemistry-unspecified HG cleavage bookkeeping, outside the five formal gallate-II steps. The selected forward Rhea member does not assign an absolute configuration or assert chemical irreversibility; the optical-substrate equilibrium experiment has a separate scope.')
+        edge['evidence'] = [{
+            'reference_id': 'RHEA:18170',
+            'source_assertion': 'RHEA:18170 has substrate side 18169_L containing one CHEBI:17742 and product side 18169_R containing one CHEBI:36655 and one CHEBI:15361.',
+            'source_locator': 'RDF 18170 substrates 18169_L and products 18169_R; contains1 Participant_18169_compound_5422/3124/3719; Compound_5422/3124/3719 chebi links',
+        }]
+    if edge['id'].startswith('alternative-oxalodecarb-rxn-'):
+        old = 'HMG is stereochemistry-unspecified; no optical l/d-to-R/S assignment is made.'
+        assert old in edge['description']
+        edge['description'] = edge['description'].replace(old, 'Normalized proton bookkeeping does not imply measured proton uptake.')
+for reference in record['references']:
+    if reference['id'] == 'RHEA:18172':
+        reference.update(id='RHEA:18170', title='Rhea forward 4-hydroxy-2-oxoglutarate cleavage', url='https://www.rhea-db.org/rhea/18170')
+        assert reference.pop('source_version') == 'Rhea 139 complete RDF'
+        # RDF release is not verified from the original; retain its actual digest.
+
+assert len(record['mechanistic_edges']) == 169
+ids = {record['id']} | {n['id'] for key in ['participants', 'reactions', 'taxa'] for n in record[key]}
+assert len(ids) == 103 and 'RHEA:18170' in ids and 'RHEA:18172' not in ids
+assert all('RHEA:18172' not in json.dumps(e) for e in record['mechanistic_edges'])
+
+retained = []
+external = []
+for entry in manifest['files'] + [{'path': 'artifact-manifest.json', 'sha256': sha(PRIMARY / 'artifact-manifest.json'), 'bytes': (PRIMARY / 'artifact-manifest.json').stat().st_size}]:
+    name = entry['path']
+    if name.startswith('intermediates/') or name in ['CHECKPOINT.md', 'assembled-preview.yaml']:
+        external.append({**entry, 'external_path': str(PRIMARY / name)})
+        continue
+    destination = OUT / 'authoring/primary' / (name + '.txt' if name.endswith('.py') else name)
+    assert not destination.exists()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(PRIMARY / name, destination)
+    assert sha(destination) == entry['sha256']
+    retained.append({**entry, 'retained_path': str(destination.relative_to(OUT))})
+class NoAliasDumper(yaml.SafeDumper):
+    def ignore_aliases(self, data):
+        return True
+RECORD.write_text(yaml.dump(record, Dumper=NoAliasDumper, sort_keys=False, allow_unicode=True, width=100))
+assert yaml.safe_load(RECORD.read_text()) == record
+receipt = {
+    'created_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Root author integration and normalization, not independent approval',
+    'verified_primary_manifest_sha256': sha(PRIMARY / 'artifact-manifest.json'),
+    'author_preview_sha256': sha(PRIMARY / 'assembled-preview.yaml'),
+    'assembled_object_equal_to_author_preview_before_normalization': True,
+    'record': str(RECORD), 'record_sha256': sha(RECORD),
+    'counts': {key: len(record[key]) for key in ['participants', 'reactions', 'taxa', 'mechanistic_edges', 'references']},
+    'selected_ids': sorted(ids),
+    'normalization_changes': differences(before, record),
+    'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/558',
+    'direction_interpretation_source': 'https://www.rhea-db.org/help/reaction-side-direction',
+    'scope': 'Three formal node direction fields retain native REVERSIBLE separately. Generic HG net-cleavage activity selects 18170; separately measured optical l-HG equilibrium is preserved. Unverified RDF release label omitted. Copied HMG prose removed from OAA edges.',
+    'retained': retained, 'external_frozen_artifacts': external,
+}
+write_json(OUT / 'integration/primary-integration-and-normalization.json', receipt)
+write_json(RECEIPTS / 'primary-integration-and-normalization.json', receipt)
+original = Path('/private/tmp/pathwaymech-next-260-primary/originals/PMC236050-page-2.png')
+erratum = {
+    'scope': 'Successor erratum; frozen prior packages remain unchanged',
+    'prior_fact': 'S75-003',
+    'correction': 'Induction began at absorbancy 0.3 at 540 nm, before adding 0.3 g/L inducing substrate; prior research transcription 0.4 is incorrect.',
+    'original': str(original), 'original_sha256': sha(original),
+    'locator': 'p.1375 right column, Induction of enzymes, first two sentences',
+    'verification': 'Root and independent reviewer inspected original page image; no maintained edge used the erroneous threshold.',
+    'affected_frozen_context': ['entry-primary/author/claim-ledger.json S75-003', 'authoring/primary/source-to-record-dispositions.json S75-003', 'authoring/primary/primary-context-notes.md S75-003'],
+    'related_prior_errata': 'authoring/primary/frozen-research-successor-errata.json (K82-006 and K82-016)',
+}
+write_json(OUT / 'integration/source-context-successor-erratum.json', erratum)
+print(json.dumps({'record_sha256': sha(RECORD), 'counts': receipt['counts'], 'selected_id_count': len(ids), 'retained_primary_files': len(retained), 'external_primary_files': len(external)}, indent=2))

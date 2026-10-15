@@ -1,0 +1,130 @@
+"""External source-author inventory; never writes maintained files."""
+from pathlib import Path
+import datetime, hashlib, html, json, subprocess, xml.etree.ElementTree as ET
+
+B = Path(__file__).resolve().parents[1]
+R = Path('/private/tmp/pathwaymech-next-259-20261014')
+N = Path('/private/tmp/pathwaymech-next-260-native')
+A = Path('/private/tmp/pathwaymech-next-259-authorities')
+for name in ['originals', 'projections', 'receipts']:
+    (B / name).mkdir(parents=True, exist_ok=True)
+bindings = {}
+
+def bind(path, expected=None, size=None):
+    path = Path(path)
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    if expected is not None:
+        assert digest == expected, (str(path), digest, expected)
+    if size is not None:
+        assert path.stat().st_size == size, str(path)
+    bindings[str(path)] = {'path': str(path), 'sha256': digest, 'bytes': path.stat().st_size}
+    return bindings[str(path)]
+
+def load(path):
+    bind(path)
+    return json.loads(Path(path).read_text())
+
+def save(path, value):
+    p = B / path
+    assert not p.exists(), p
+    p.write_text(json.dumps(value, indent=2) + '\n')
+
+packages = []
+for folder, manifests in [
+    (N, ['artifact-manifest.json']),
+    (Path('/private/tmp/pathwaymech-next-259-native'), ['artifact-manifest.json', 'external-originals-manifest.json']),
+    (Path('/private/tmp/pathwaymech-next-259-primary-identities'), ['artifact-manifest.json', 'external-originals-manifest.json']),
+    (Path('/private/tmp/pathwaymech-next-259-transport-identities'), ['manifest.json']),
+]:
+    for filename in manifests:
+        manifest = load(folder / filename)
+        for row in manifest['files']:
+            bind(folder / row['path'], row['sha256'], row['bytes'])
+        packages.append({'manifest': bindings[str(folder / filename)], 'verified_files': len(manifest['files'])})
+
+for filename in ['candidate-handoff-manifest.json']:
+    manifest = load(A / filename)
+    for name, row in manifest.items():
+        bind(A / name, row['sha256'], row['bytes'])
+    packages.append({'manifest': bindings[str(A / filename)], 'verified_files': len(manifest)})
+union = load(A / 'UNION-HANDOFF-v2.json')
+for row in union['output_bindings'].values():
+    bind(row['path'], row['sha256'], row['bytes'])
+
+sources = load(R / 'data/identifier_authorities/sources.json')
+ontology = load(R / 'data/identifier_authorities/ontology.json')
+config = load(R / 'conf/identifier_sources.json')
+terms = {**sources['terms'], **ontology['terms']}
+configs = {x['key']: x for x in config}
+for filename in ['CLAUDE.md', 'docs/IDENTIFIERS.md', 'conf/identifier_policy.yaml', 'data/pathways/gallate-degradation-i.yaml']:
+    bind(R / filename)
+for name, path in [('sources.union.json', R / 'data/identifier_authorities/sources.json'), ('ontology.union.json', R / 'data/identifier_authorities/ontology.json'), ('identifier_sources.json', R / 'conf/identifier_sources.json')]:
+    assert bind(path)['sha256'] == union['output_bindings'][name]['sha256']
+
+native = load(N / 'retained/selected-native-manifest.json')
+activities = load(N / 'projections/activity-preparation-dispositions.json')
+proteins = load(N / 'projections/protein-dispositions.json')
+facts = load(N / 'projections/source-fact-dispositions.json')
+assert native['count'] == len(native['objects']) == 141
+inventory = []
+for row in native['objects']:
+    path = Path(row['path'])
+    bind(path, row['sha256'], row['bytes'])
+    if row['object_type'] not in ['Pathway', 'Reaction', 'Protein', 'Gene', 'Organism']:
+        continue
+    root = ET.fromstring(path.read_bytes())
+    assert root.findtext('./metadata/query') == 'META:' + row['frame']
+    assert root.find('./metadata/PGDB').attrib['version'] == '27.0'
+    node = root.find(row['object_type'])
+    assert node.attrib['frameid'] == row['frame'] and node.attrib['detail'] == 'full'
+    identifier = 'MetaCyc:' + row['frame']
+    term = terms.get(identifier)
+    owner = sources['sources'].get(term['source']) if term else None
+    config_entry = configs.get(term['source']) if term else None
+    if config_entry:
+        bind(A / 'originals' / config_entry['path'], config_entry['sha256'])
+    direct_slots = []
+    counts = {}
+    for slot in node:
+        counts[slot.tag] = counts.get(slot.tag, 0) + 1
+        direct_slots.append({'name': slot.tag, 'ordinal': counts[slot.tag], 'xpath': f"/ptools-xml/{node.tag}[@frameid='{row['frame']}']/{slot.tag}[{counts[slot.tag]}]", 'text': slot.text, 'attributes': slot.attrib, 'xml_projection': ET.tostring(slot, encoding='unicode')})
+    xrefs = [{c.tag: c.text for c in d} for d in node.findall('dblink')]
+    refs = {name: [{'type': c.tag, 'frame': c.attrib.get('frameid'), 'attributes': c.attrib} for s in node.findall(name) for c in s if c.attrib.get('frameid')] for name in ['gene', 'product', 'component', 'species', 'catalyzes', 'parent']}
+    inline_species = [{'frame': c.attrib.get('frameid'), 'name': c.findtext('common-name'), 'strain_names': [s.text for s in c.findall('strain-name')], 'rank': c.findtext('rank'), 'xrefs': [{v.tag: v.text for v in d} for d in c.findall('dblink')], 'original_xml': ET.tostring(c, encoding='unicode')} for s in node.findall('species') for c in s if c.tag == 'Organism']
+    inventory.append({'identifier': identifier, 'object_type': row['object_type'], 'source': bindings[str(path)], 'version': '27.0', 'native_common_names': [html.unescape(x.text or '') for x in node.findall('common-name')], 'native_synonyms': [html.unescape(x.text or '') for x in node.findall('synonym')], 'direct_xrefs': xrefs, 'native_refs': refs, 'inline_species': inline_species, 'direct_slots': direct_slots, 'current_term': term, 'current_source_owner': owner, 'current_config': config_entry, 'preparation_dispositions': [a for a in activities if a['enzyme'] == row['frame']] if row['object_type'] == 'Protein' else []})
+
+previous_candidates = load(A / 'authority-candidates.json')
+uniprot_candidates = []
+needed = {x['dblink-oid'] for row in inventory if row['object_type'] == 'Protein' for x in row['direct_xrefs'] if x.get('dblink-db') in ['UNIPROT', 'SWISSMODEL']}
+for row in previous_candidates:
+    if row['candidate']['kind'] != 'uniprot':
+        continue
+    profile = row['candidate']
+    content = json.loads(Path(profile['path']).read_text())
+    aliases = {content['primaryAccession'], *content.get('secondaryAccessions', [])}
+    if not needed.intersection(aliases):
+        continue
+    bind(profile['path'], profile['sha256'], profile['bytes'])
+    receipt = profile['acquisition']
+    bind(receipt['receipt'], receipt['receipt_sha256'])
+    assert receipt['row']['sha256'] == profile['sha256']
+    uniprot_candidates.append(row)
+covered = set()
+for row in uniprot_candidates:
+    content = json.loads(Path(row['candidate']['path']).read_text())
+    covered.update({content['primaryAccession'], *content.get('secondaryAccessions', [])})
+missing_uniprot = sorted(needed - covered)
+missing_native = [row for row in inventory if row['object_type'] != 'Organism' and not row['current_term']]
+requests = []
+for accession in missing_uniprot:
+    requests.append({'key': accession, 'kind': 'uniprot', 'url': f'https://rest.uniprot.org/uniprotkb/{accession}.json', 'filename': accession + '.json'})
+for accession in ['AB035121', 'AB050935', 'AB073227', 'AB127969', 'AF305325']:
+    requests.append({'key': accession, 'kind': 'ena-embl', 'url': f'https://www.ebi.ac.uk/ena/browser/api/embl/{accession}?download=false', 'filename': accession + '.embl'})
+for row in missing_native:
+    frame = row['identifier'].split(':', 1)[1]
+    requests.append({'key': row['identifier'], 'kind': 'metacyc-html', 'url': 'https://bf2i-artsymbiocyc.insa-lyon.fr/META/NEW-IMAGE?object=' + frame, 'filename': frame + '.html'})
+save('projections/native-biological-inventory.json', inventory)
+save('projections/reused-uniprot-candidates.json', uniprot_candidates)
+save('requests.json', requests)
+save('receipts/input-reuse-verification.json', {'verified_at': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'role': 'source author inventory, not review or maintained authority promotion', 'packages': packages, 'all_bindings': list(bindings.values()), 'context_git_head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=R, text=True).strip(), 'native_biological_objects': len(inventory), 'native_object_types': {typ: sum(x['object_type'] == typ for x in inventory) for typ in ['Pathway', 'Reaction', 'Protein', 'Gene', 'Organism']}, 'reused_uniprot_candidates': len(uniprot_candidates), 'missing_uniprot_accessions_in_bounded_prior_candidates': missing_uniprot, 'planned_public_requests': len(requests), 'scope_limits': 'Exact selected native and prior package inventories only; no claim of whole-filesystem or biological absence. All old original hashes checked before derived reuse. No record draft.'})
+print(json.dumps({'verified_bindings': len(bindings), 'native_objects': len(inventory), 'reused_uniprot': len(uniprot_candidates), 'missing_uniprot': missing_uniprot, 'planned_public_requests': len(requests)}, indent=2))

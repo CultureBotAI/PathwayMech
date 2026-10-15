@@ -1,0 +1,19 @@
+def main():
+    from pathlib import Path
+    from lxml import html
+    import urllib.request,hashlib,json,datetime,concurrent.futures
+    root=Path('/private/tmp/pathwaymech-next-260-primary');src=root/'originals/PMC236050.html';doc=html.fromstring(src.read_bytes());imgs=doc.xpath('//figure[contains(@class,"fig-scanned")]/img')
+    assert len(imgs)==8
+    jobs=[(i+1,x.get('src'),x.get('alt')) for i,x in enumerate(imgs)]
+    def fetch(job):
+     n,url,pageno=job;path=root/'originals'/f'PMC236050-page-{n}.png';assert not path.exists();row={'url':url,'name':path.name,'printed_page':pageno,'html_source_sha256':hashlib.sha256(src.read_bytes()).hexdigest(),'html_locator':f'//figure[contains(@class,"fig-scanned")][{n}]/img/@src','started_at':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+     try:
+      with urllib.request.urlopen(url,timeout=45) as r:body=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+      path.write_bytes(body);row.update(path=str(path),bytes=len(body),sha256=hashlib.sha256(body).hexdigest(),valid_png=body.startswith(b'\x89PNG\r\n\x1a\n'))
+     except Exception as e:row['error']=repr(e)
+     return row
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:rows=list(pool.map(fetch,jobs))
+    (root/'acquisition-1975-pages.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))
+
+if __name__ == "__main__":
+    main()

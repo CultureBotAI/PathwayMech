@@ -1,0 +1,78 @@
+from pathlib import Path
+import datetime,json,yaml,hashlib,subprocess,shlex
+b=Path('/private/tmp/pathwaymech-next-260-independent-science');root=Path('/private/tmp/pathwaymech-next-260-20261014')
+prefix='research/pathway_additions/2026-10-14-next-260/reviews/verification/'
+receipt=root/(prefix+'receipts.json');pres=root/(prefix+'final-input-preservation.json')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+assert sha(receipt)=='3b575a30cb2d3427fe4c99b57bf4146f4fd99621e513ca9bd7b6e28f179439bc'
+assert sha(pres)=='8d5a49d9256d662fedac9197385118a105d3aa2c318eebae55bc650b83f5d377'
+rs=json.loads(receipt.read_text());pp=json.loads(pres.read_text());assert pp['all_unchanged'] and pp['tested_core_files']==2026
+for r in rs:assert sha(r['log_path'])==r['log_sha256']
+assert [r['exit_code']for r in rs]==[0,0,0,0,1,0,0,0]
+class NoAliasDumper(yaml.SafeDumper):
+ def ignore_aliases(self,data):return True
+handoff={'role':'Fresh independent scientific reviewer; root owns canonical save/check and all maintained writes','files':[],'review_targets':{},'gate_receipts_sha256':sha(receipt),'gate_preservation_sha256':sha(pres),'production_rerun_by_reviewer':False}
+for stem in ['record','bounded']:
+ d=json.loads((b/(stem+'-assessment-blueprint.json')).read_text());ids=[x['target_id']for x in d['targets']]
+ for x in d['source']['inputs']:assert sha(root/x['path'])==x['sha256'],x['path']
+ old_source=d['source']
+ extra=[prefix+'receipts.json',prefix+'final-input-preservation.json','research/pathway_additions/2026-10-14-next-260/authority/retained/identifier-policy-verification.json']
+ targetfile=b/('targets.yaml'if stem=='record'else'bounded-direction-final-targets.yaml')
+ cmd=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','inspect','--targets',str(targetfile)]
+ for x in old_source['inputs']:
+  if x['role']!='target':cmd+=['--input',x['path']]
+ for p in extra:cmd+=['--input',p]
+ r=subprocess.run(cmd,cwd=root,capture_output=True,text=True);(b/(stem+'-completed-inspect.json')).write_text(r.stdout);assert r.returncode==0,r.stderr
+ inspection=json.loads(r.stdout);assert inspection['source']['git_revision']==old_source['git_revision']
+ newmap={x['path']:x['sha256']for x in inspection['source']['inputs']}
+ for x in old_source['inputs']:assert newmap[x['path']]==x['sha256']
+ d['source']=inspection['source'];d['targets']=inspection['targets']
+ now=datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')
+ d['evidence'].extend([
+ {'evidence_id':'ev-gates','kind':'validation','reference':prefix+'receipts.json','locator':'All eight actual command attempts with original log hashes; logs independently opened and verified.','accessed_at':now,'support':'supports','summary':'Root-owned shared run: render,validate,test,lint,working/cached diff checks passed. Test result5255 passed,3 skipped,7 warnings. The first vendored attempt failed on DNS; unchanged-input bounded retry passed all22 governed artifacts. Initial failure remains explicit.','snapshot_sha256':sha(receipt)},
+ {'evidence_id':'ev-preservation','kind':'validation','reference':prefix+'final-input-preservation.json','locator':'All2026 tested core files; ignored/hidden files included and runtime caches excluded.','accessed_at':now,'support':'supports','summary':'Root rehashed all2026 original tested files unchanged across the bounded network retry. This reviewer separately rechecked every previously captured canonical input hash; only new post-gate proof inputs were appended.','snapshot_sha256':sha(pres)},
+ {'evidence_id':'ev-authority-consumer','kind':'validation','reference':extra[2],'locator':'Final actual-corpus offline identifier/name/native entity typing consumer.','accessed_at':now,'support':'supports','summary':'Canonical consumer passed257 records against5023 authority terms, including exact new record72e4685f…a19353. Original source semantics were reviewed independently; this consumer is a mechanical check.','snapshot_sha256':sha(root/extra[2])}])
+ names=['render-pages','validate','test','lint','vendored-initial-dns-attempt','vendored-retry','working-diff','cached-diff']
+ summaries=[
+ 'Rendered257 pathway records; shared root run, not duplicated by this reviewer.',
+ 'Validated257 records, the closed LinkML schema, identifiers/labels,18925 evidence blocks,457 history records and current pages.',
+ 'Full suite passed:5255 passed,3 skipped,7 warnings. Elapsed runner time1873.05s; pytest reports1869.41s.',
+ 'Ruff reports all checks passed.',
+ 'Historical failed attempt: sandbox DNS could not resolve raw.githubusercontent.com for the pinned canonical artifact. This diagnostic attempt was superseded by the successful unchanged-input current gate below; it is not silently erased.',
+ 'Bounded network retry passed:22 governed artifacts match the pinned CLAW revision. No tested inputs changed.',
+ 'Working-tree git diff whitespace check passed.',
+ 'Cached git diff whitespace check passed.']
+ d['checks']=[]
+ for i,q in enumerate(rs):
+  c={'check_id':'gate-'+names[i],'name':' '.join(q['command'])+(' initial DNS-limited attempt'if i==4 else''),'status':'passed'if q['exit_code']==0 else'failed','required':i!=4,'summary':summaries[i],'target_ids':ids,'command':shlex.join(q['command']),'exit_code':q['exit_code'],'expected_exit_code':0,'evidence_ids':['ev-gates','ev-preservation'],'scope_note':'Shared full repository run in '+q['cwd']+'; actual started UTC '+q['started_utc']+'; original log SHA256 '+q['log_sha256']+'.'}
+  if i==4:c['scope_note']+=' Historical attempt record; the current required vendored gate is the separate successful retry.'
+  d['checks'].append(c)
+ d['checks'].append({'check_id':'canonical-inspect','name':'Canonical inspect and unchanged-input verification','status':'passed','required':True,'summary':'All prior canonical target/context hashes remained unchanged; exact gate/preservation/authority receipts were appended through a fresh canonical inspection before final assessment.','target_ids':ids,'command':shlex.join(cmd),'exit_code':0,'evidence_ids':['ev-preservation']})
+ if stem=='record':
+  d['checks'].extend([
+   {'check_id':'independent-source-replay','name':'Final native locator and quote replay','status':'passed','required':True,'summary':'139 MetaCyc evidence occurrences/221 original XPath locators resolved against matching source hashes;80 of80 quotes matched inspected original-derived text. Manual source reading supplies semantic support.','target_ids':ids,'command':'/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-260-independent-science/final_replay.py','exit_code':0,'evidence_ids':['ev-native-replay','ev-quote-replay']},
+   {'check_id':'structured-expression-adapter','name':'Optional iModulonDB context adapter','status':'unavailable','required':False,'summary':'No callable tool, executable runner or checkout runner was found in the bounded ignored-inclusive search of Mechs and ~/.codex. No transcriptomic evidence is promoted or negative inference drawn. Original curated and primary sources were independently inspected.','target_ids':ids,'evidence_ids':['ev-source-notes']}])
+  native=next(x for x in d['assessments']if x['assessment_id']=='a-native')
+  native['dimensions']=[
+   {'name':'evidence-tier','value':'Native source assertions, primary purified/heterologous assays and computational localization remain separate.','definition':'The evidence level actually supported by the inspected source, without promotion through a database citation.','evidence_ids':['ev-native-replay','ev-source-notes']},
+   {'name':'taxon-condition','value':'Whole-route taxon scope remains distinct from component organisms, historical fractions and expression hosts.','definition':'Organism, preparation and assay condition attached to each assertion.','evidence_ids':['ev-source-notes','ev-proha1983','ev-galb2016']},
+   {'name':'source-object','value':'Exact full native pathway/reaction/protein/activity/regulation objects and source-hashed locators.','definition':'Native object boundaries that supply formal membership, components, activity and regulation facts.','evidence_ids':['ev-native-replay']},
+   {'name':'component-role','value':'Ten native assembly edges distinguish complex components from catalytic reactions and cofactors.','definition':'Subunit composition does not make an individual subunit an independently assayed catalyst.','evidence_ids':['ev-native-replay','ev-source-notes']}]
+  d['assessments'].append({'assessment_id':'a-final-graph-and-gates','area':'graph','topic':'Local graph closure and tested final inputs','outcome':'supported','summary':'The complete169-edge record passes canonical endpoint/predicate, reference, schema and identifier checks. Shared production gates passed on unchanged record and authority bytes; these mechanical checks supplement the independent scientific assessment.','target_ids':ids,'evidence_ids':['ev-gates','ev-preservation','ev-authority-consumer']})
+ else:
+  d['assessments'].append({'assessment_id':'b-final-gates','area':'schema','topic':'Production checks on the bounded final records','outcome':'supported','summary':'Both final predecessor byte sets remained unchanged through the shared full gates. The mechanical pass supports the bounded metadata correction; it does not expand scientific coverage to unrelated predecessor claims.','target_ids':ids,'evidence_ids':['ev-gates','ev-preservation','ev-bounded-diff']})
+ d['notes']=[x for x in d.get('notes',[])if 'must be inspected before'not in x]
+ d['notes'].extend(['Final gate logs were inspected directly and their hashes verified. The initial DNS failure is retained as a historical failed attempt; the same required gate later passed on unchanged inputs.','Provisional review-format checks initially rejected YAML aliases and a non-timestamp-prefixed review ID. Formatting was corrected and both provisional contents passed; these were review-document formatting errors, not record defects or production gate failures.'])
+ d['completion']='completed';d['verdict']='pass_with_limitations'
+ finished=datetime.datetime.now(datetime.timezone.utc);d['finished_at']=finished.isoformat().replace('+00:00','Z');d['review_id']=finished.strftime('%Y%m%dT%H%M%SZ')+('-next260-gallate-degradation-ii-science'if stem=='record'else'-next260-shared-rhea-direction-context')
+ for key in ['summary']:
+  if stem=='record':d[key]+=' All required current repository gates passed; the earlier DNS-only vendored attempt and successful retry are preserved.'
+ out=b/(stem+'-completed-review.yaml');out.write_text(yaml.dump(d,Dumper=NoAliasDumper,sort_keys=False,allow_unicode=True,width=100))
+ command=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','validate',str(out)]
+ p=subprocess.run(command,cwd=root,capture_output=True,text=True);log=b/(stem+'-completed-validation.txt');log.write_text(p.stdout+p.stderr)
+ assert p.returncode==0,p.stdout+p.stderr
+ handoff['files'].append({'path':str(out),'sha256':sha(out),'bytes':out.stat().st_size,'review_id':d['review_id'],'verdict':d['verdict'],'validation_exit_code':p.returncode,'validation_log':str(log),'validation_log_sha256':sha(log),'inspection':str(b/(stem+'-completed-inspect.json'))})
+ handoff['review_targets'][stem]=[{k:x[k]for k in ['path','sha256']}for x in d['source']['inputs']if x['role']=='target']
+ print(stem,sha(out),d['review_id'])
+handoff['completed_at']=datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z')
+(b/'canonical-handoff.json').write_text(json.dumps(handoff,indent=2)+'\n');print('handoff',sha(b/'canonical-handoff.json'))

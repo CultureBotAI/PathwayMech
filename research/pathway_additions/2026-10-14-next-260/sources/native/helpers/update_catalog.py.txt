@@ -1,0 +1,9 @@
+from pathlib import Path
+import json
+r=Path('/private/tmp/pathwaymech-next-260-native');p=r/'projections/reuse-catalog.json';c=json.loads(p.read_text())
+for receipt in sorted(r.glob('acquisition-public-*.json')):
+ for x in json.loads(receipt.read_text()):
+  if not x.get('verified_full_exact_object'):continue
+  e={'frame':x['frame'],'object_type':x['object_type'],'source_path':x['path'],'sha256':x['sha256'],'bytes':x['bytes'],'source_manifest':str(receipt),'source_receipt':x}
+  if e not in c.setdefault(x['frame'],[]):c[x['frame']].append(e)
+p.write_text(json.dumps(c,indent=2)+'\n')

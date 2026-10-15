@@ -1,0 +1,67 @@
+"""Replay bounded identity checks without maintained writes or a full test suite."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,sys,xml.etree.ElementTree as ET
+B=Path(__file__).resolve().parents[1];R=B/'runtime'
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_source_identifier_snapshot import source_terms
+def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def load(path):return json.loads(Path(path).read_text())
+runtime=load(B/'receipts/runtime-copy.json');copied={x['maintained_path']:x for x in runtime['files']}
+for row in runtime['files']:assert sha(row['runtime_path'])==row['sha256'],row['runtime_path']
+reuse=load(B/'receipts/input-reuse-verification.json');substitutions=[]
+for row in reuse['all_bindings']:
+    original=Path(row['path']);path=original
+    if str(original) in copied:
+        snapshot=Path(copied[str(original)]['runtime_path']);assert sha(snapshot)==row['sha256']
+        if not original.exists():path=snapshot;substitutions.append({'original':str(original),'verified_snapshot':str(snapshot),'sha256':row['sha256']})
+    assert path.stat().st_size==row['bytes'] and sha(path)==row['sha256'],str(path)
+probe=load(B/'projections/source-parser-probes.json');profile_map={x['profile_id']:x for x in probe['profiles']}
+for row in probe['profiles']:
+    source=Path(row['original']['path']);assert sha(source)==row['original']['sha256']
+    try:
+        result=json.loads(json.dumps(list(source_terms(row['kind'],source,url=row['url'],version=row['version']))));status='accepted' if result else 'no_authority_term'
+        assert status==row['status'] and result==row['terms'],row['profile_id']
+    except (ValueError,KeyError,UnicodeError) as error:
+        assert row['status']=='rejected' and row['error']==type(error).__name__+': '+str(error),(row['profile_id'],error)
+old_config=load(R/'conf/identifier_sources.json');old_keys={x['key'] for x in old_config};old_terms=load(R/'data/identifier_authorities/sources.json')['terms']
+proposal=load(B/'source-config-proposals.json');selected=[]
+for row in proposal['new_entries']:
+    entry=row['entry'];assert entry['key'] not in old_keys
+    path=Path(proposal['source_cache'])/entry['path'];assert sha(path)==entry['sha256']==row['cache_original']['sha256']
+    parsed={t[0]:t for t in source_terms(entry['kind'],path,url=entry['url'],version=entry['version'])}
+    for identifier in row['identifiers']:
+        assert identifier in parsed and identifier not in old_terms,identifier;selected.append(identifier)
+assert len(selected)==len(set(selected))==58
+summary=load(B/'projections/native-biological-identity-summary.json');assert len(summary)==51
+assert sum(x['scope_disposition']=='preserve_existing_owner_exactly' for x in summary)==23
+assert sum(x['scope_disposition']=='new_source_config_candidate_only' for x in summary)==28
+for row in summary:
+    if row['current_term']:assert row['current_term']==old_terms[row['identifier']]
+    else:assert row['identifier'] in selected
+identity=load(B/'projections/component-reference-and-gene-dispositions.json');assert len(identity['components'])==25 and len(identity['genes'])==15
+monomers={x['native_identifier'] for x in identity['components'] if not x['components']};products={v for x in identity['genes'] for v in x['native_products']}
+assert monomers-products=={'MetaCyc:MONOMER-10723'} and not products-monomers
+for row in identity['components']:
+    for component in row['components']:assert component['native_component'] in monomers and int(component['coefficient'])>0
+seqs=load(B/'projections/reference-sequence-comparisons.json')['selected_comparisons'];assert len(seqs)==16
+for row in seqs:
+    assert row['independently_translated_equals_original_annotated']
+    assert sha(row['source']['path'])==row['source']['sha256']
+    assert hashlib.sha256(row['translation_sequence'].encode()).hexdigest()==row['translation_sequence_sha256']
+    for counterpart in row['comparisons']:
+        assert counterpart['exact_sequence_equality'] and counterpart['sequence_sha256']==row['translation_sequence_sha256']
+        assert sha(counterpart['source']['path'])==counterpart['source']['sha256']
+supplement=load(B/'projections/supplemental-reference-identities.json');assert len(supplement['reference_counterparts'])==4
+assert supplement['E6_PmdE']['BR6020_exact_sequence_equality'] is False and len(supplement['E6_PmdE']['BR6020_different_positions'])==2
+tax=load(B/'projections/taxon-authority-candidates.json');assert len(tax['candidates'])==11
+assert supplement['supplemental_taxon']['source_owner']==tax['source_owner'] and tax['database']['sha256']=='89998447813e3151d1116222a3ec4b74959ccfb492114db134acee753f63548d'
+public_requests=0
+for name in ['acquisition-public.json','acquisition-public-supplement.json','acquisition-public-reference-counterparts.json']:
+    data=load(B/'receipts'/name);rows=data.get('observations',[data])
+    for row in rows:
+        assert row['status']==200 and sha(row['path'])==row['sha256'];public_requests+=1
+        assert set(row.get('headers',{}))<= {'content-type','content-length','location','x-uniprot-release','x-uniprot-release-date'}
+assert public_requests==57
+result={'verified_at':datetime.now(timezone.utc).isoformat(),'role':'source-author bounded identity verification, not independent scientific review or a maintained record/authority gate','command':[sys.executable,'-B',str(Path(__file__).resolve())],'runtime_commit':runtime['commit'],'runtime_files_verified':len(runtime['files']),'frozen_reuse_bindings_verified':len(reuse['all_bindings']),'cleanup_snapshot_substitutions':substitutions,'source_profiles_replayed':len(probe['profiles']),'parser_rejections_preserved':probe['rejected'],'inactive_no_term_preserved':probe['no_term'],'native_nonorganism_identifiers_covered':51,'native_existing_owners_preserved':23,'new_native_identifier_candidates':28,'candidate_source_entries':len(proposal['new_entries']),'candidate_identifiers':len(selected),'native_components':25,'native_genes':15,'complexes':9,'independent_CDS_translation_comparisons':16,'additional_exact_native_reference_proteins':4,'E6_BR6020_difference_count':2,'taxon_candidates':12,'complete_pinned_taxonomy_database_sha256':tax['database']['sha256'],'public_http_responses_verified':public_requests,'no_maintained_writes':True,'no_record_draft':True,'no_postmerge_dedup_claim':True,'no_full_suite_rerun':True}
+path=B/'verification.json';assert not path.exists();path.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

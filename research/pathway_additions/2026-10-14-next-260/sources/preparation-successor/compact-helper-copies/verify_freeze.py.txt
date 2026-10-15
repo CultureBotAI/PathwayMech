@@ -1,0 +1,57 @@
+from pathlib import Path
+import json,hashlib,datetime,re,collections
+R=Path('/private/tmp/pathwaymech-next-260-preparation-successor')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(n,d):(R/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+# Fix remaining authored typographic gaps, never identifiers, source text or quote strings.
+p=R/'claim-disposition-ledger.json';d=json.loads(p.read_text())
+for x in d['facts']:
+ for k in ['claim','scope_and_limits']:
+  x[k]=x[k].replace('25°C10','25 °C for 10').replace('0.2mM','0.2 mM').replace('1mM','1 mM').replace('SDS-PAGE26','SDS-PAGE 26').replace('pI5.','pI 5.').replace('1mL','1 mL').replace('1983 hydratase','1983 hydratase').replace('5x','5 × ')
+write('claim-disposition-ledger.json',d)
+checks=[]
+def check(label,ok,detail=None):
+ checks.append({'check':label,'pass':bool(ok),'detail':detail});assert ok,(label,detail)
+# Freeze-source replay checks actual bytes, including prior packages.
+allprior=[]
+for folder in ['pathwaymech-next-260-native','pathwaymech-next-260-primary','pathwaymech-next-260-chemistry-root']:
+ root=Path('/private/tmp')/folder;mp=root/'artifact-manifest.json';m=json.loads(mp.read_text());bad=[]
+ for row in m['files']:
+  p=root/row['path'];ok=p.exists() and sha(p)==row['sha256'] and p.stat().st_size==row['bytes']
+  if not ok:bad.append(row['path'])
+ allprior.append({'package':str(root),'manifest_sha256':sha(mp),'files_rehashed':len(m['files']),'bytes':sum(x['bytes'] for x in m['files']),'mismatches':bad})
+check('prior three frozen packages unchanged',not any(x['mismatches'] for x in allprior),allprior)
+for name in ['frozen-context-bindings.json','additional-reuse-bindings.json']:
+ for row in json.loads((R/name).read_text()):check('context '+row['path'],sha(row['path'])==row['sha256'])
+for row in json.loads((R/'reuse-receipts.json').read_text()):
+ check('reused abstract '+Path(row['path']).name,sha(row['path'])==row['sha256'] and sha(row['original_path'])==row['sha256'])
+si=json.loads((R/'source-index.json').read_text());keys={x['key'] for x in si}
+for row in si:check('source '+row['key'],sha(row['path'])==row['sha256'] and Path(row['path']).stat().st_size==row['bytes'])
+check('122 facts unique and bound',len(d['facts'])==122 and len({x['id'] for x in d['facts']})==122 and all(x['source_key'] in keys for x in d['facts']))
+check('all facts classified',all(x.get('proposed_disposition',{}).get('category')in ['proposed_record','supporting_context','conflict','defer'] and x.get('evidence_form_assessment') for x in d['facts']))
+sel=json.loads((R/'selection-ledger.json').read_text());check('selection every fact',set(x['fact_id'] for x in sel['facts'])==set(x['id'] for x in d['facts']))
+for s in sel['facts']:
+ f=next(x for x in d['facts'] if x['id']==s['fact_id']);check('selection '+s['fact_id'],s['category']==f['proposed_disposition']['category'])
+q=json.loads((R/'quote-budget-ledger.json').read_text());totals=collections.Counter()
+for row in q['prospective_new_quote_placements']:
+ p=Path(row['verified_extraction_path']);flat=' '.join(p.read_text().split());check('quote replay '+row['source_key']+'/'+row['quote'],sha(p)==row['verified_extraction_sha256'] and row['quote']in flat)
+ totals[row['source_key']]+=len(row['quote'].split())*len(row['placements'])
+check('quote repeated placement totals',dict(totals)==q['new_quote_words_by_paper'] and max(totals.values())<=25,dict(totals))
+for src,n in [('ProA1990',7),('ProA-Pi1990',7),('ProHA1983',8),('Pmd2001',11)]:
+ ps=list((R/'projections'/f'{src}-render').glob('page-*.png'));check('visual pages '+src,len(ps)==n)
+check('LigJ figures',len(list((R/'originals').glob('LigJ2000-F*-0.jpg')))==8)
+tables=json.loads((R/'projections/visual-table-transcriptions.json').read_text());cell=json.loads((R/'structured-cell-disposition-ledger.json').read_text());check('12 tables and 83 rows',len(tables)==12 and sum(len(t['rows']) for t in tables)==len(cell['rows'])==83)
+check('cell projection hash',sha(R/cell['projection'])==cell['projection_sha256'])
+for row in json.loads((R/'worktree-context-bindings.json').read_text())['bindings']:check('retained rule '+row['retained_path'],sha(row['retained_path'])==row['sha256'])
+bio=Path('/private/tmp/pathwaymech-next-260-biological-identities/HANDOFF.md');check('biological handoff read/bound',sha(bio)=='218bbc817c9c37e4bfb0adb443ec55f5eee256ee8caa078c0f87d87b918e76d4')
+write('biological-context-binding.json',{'path':str(bio),'sha256':sha(bio),'role':'Separate author identity handoff, read after preparation analysis; no independent approval. E6 and BR6020 differ at two residues; reference equality does not establish historical sample identity.'})
+write('verification.json',{'time_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'passed':True,'check_count':len(checks),'checks':checks,'scope':'Bounded source/manifest/selection/quote replay only. No production gate or curation approval.'})
+# Full originals + all visual pages are external-only verification artifacts, not a retention license.
+originals=[]
+for p in sorted(R.rglob('*')):
+ if not p.is_file():continue
+ rel=p.relative_to(R)
+ if rel.parts[0]=='originals' or (rel.parts[0]=='projections' and ('-render/'in str(rel) and p.suffix=='.png')):
+  originals.append({'path':str(rel),'bytes':p.stat().st_size,'sha256':sha(p),'retention':'external raw response or render; authenticity/failure status is in acquisition and reading ledgers'})
+write('external-originals-and-renders-manifest.json',{'files':originals,'file_count':len(originals),'total_bytes':sum(x['bytes'] for x in originals)})
+print(json.dumps({'checks':len(checks),'facts':len(d['facts']),'prior_files_rehashed':sum(x['files_rehashed'] for x in allprior),'prior_bytes_rehashed':sum(x['bytes'] for x in allprior),'quote_totals':dict(totals),'raw_and_render_files':len(originals),'ledger_sha256':sha(R/'claim-disposition-ledger.json')}))

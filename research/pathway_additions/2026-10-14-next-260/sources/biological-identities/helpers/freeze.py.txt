@@ -1,0 +1,41 @@
+"""Freeze external originals, compact allowlist and complete author package."""
+from pathlib import Path
+from datetime import datetime,timezone
+import gzip,hashlib,json,shutil
+B=Path(__file__).resolve().parents[1]
+def bind(path):
+    path=Path(path);return {'path':str(path),'bytes':path.stat().st_size,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()}
+def save(name,obj):
+    path=B/name;assert not path.exists();path.write_text(json.dumps(obj,indent=2)+'\n')
+profiles=json.loads((B/'projections/source-parser-probes.json').read_text())['profiles'];originals={}
+for profile in profiles:
+    row=profile['original'];assert bind(row['path'])==row;originals[row['path']]=row
+for receipt_name in ['acquisition-public.json','acquisition-public-supplement.json','acquisition-public-reference-counterparts.json']:
+    d=json.loads((B/'receipts'/receipt_name).read_text())
+    for row in d.get('observations',[d]):
+        actual=bind(row['path']);assert actual['sha256']==row['sha256'];originals[row['path']]=actual
+for row in json.loads((B/'projections/native-biological-inventory.json').read_text()):originals[row['source']['path']]=row['source']
+for row in json.loads((B/'projections/reference-sequence-comparisons.json').read_text())['selected_comparisons']:originals[row['source']['path']]=row['source']
+tax=json.loads((B/'projections/taxon-authority-candidates.json').read_text())['database']
+originals[tax['path']]={'path':tax['path'],'bytes':tax['bytes'],'sha256':tax['sha256'],'scope':'Complete issuing SQL file independently hashed by canonical read_source in both taxon probes; not copied or hashed a third time by packaging.'}
+save('external-originals-manifest.json',{'scope':'Exact raw issuing originals directly used by this identity author, including rejected HTML/JSON responses; inclusion is not acceptance. The separate reuse receipt also binds entire predecessor packages without claiming their contents were all primary-read. Raw originals remain external.','count':len(originals),'files':list(originals.values())})
+names=['HANDOFF.md','verification.json','external-originals-manifest.json','source-config-proposals.json','candidate-identifier-selection.json','requests.json','supplement-requests.json','receipts/input-reuse-verification.json','receipts/runtime-copy.json','receipts/acquisition-sandbox.json','receipts/acquisition-public.json','receipts/acquisition-public-supplement.json','receipts/acquisition-public-reference-counterparts.json','receipts/verification-command.json','projections/source-parser-probes.json','projections/native-biological-identity-summary.json','projections/component-reference-and-gene-dispositions.json','projections/reference-sequence-summary.json','projections/taxon-authority-candidates.json','projections/supplemental-reference-identities.json','projections/uniprot-reference-context.json']
+dest=B/'compact';dest.mkdir(exist_ok=False);selected=[]
+for name in names:
+    source=B/name;target=dest/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target);assert source.read_bytes()==target.read_bytes()
+    selected.append({'source_path':str(source),'source_sha256':bind(source)['sha256'],'copy_from':str(target),'retained_name':name,'encoding':'identity','bytes':target.stat().st_size,'sha256':bind(target)['sha256']})
+for source in sorted((B/'helpers').glob('*.py')):
+    name='helpers/'+source.name+'.txt';target=dest/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
+    selected.append({'source_path':str(source),'source_sha256':bind(source)['sha256'],'copy_from':str(target),'retained_name':name,'encoding':'identity','bytes':target.stat().st_size,'sha256':bind(target)['sha256']})
+source=B/'receipts/verification.log';target=dest/'receipts/verification.log.gz';target.write_bytes(gzip.compress(source.read_bytes(),mtime=0));assert gzip.decompress(target.read_bytes())==source.read_bytes()
+selected.append({'source_path':str(source),'source_sha256':bind(source)['sha256'],'copy_from':str(target),'retained_name':'receipts/verification.log.gz','encoding':'gzip','decoded_bytes':source.stat().st_size,'bytes':target.stat().st_size,'sha256':bind(target)['sha256']})
+for row in selected:assert bind(row['copy_from'])['sha256']==row['sha256']
+save('compact-retention-manifest.json',{'created_utc':datetime.now(timezone.utc).isoformat(),'role':'Author-selected compact retention proposal only; root must select retention explicitly. No full originals, runtime, full native XML projections, or full sequence copies are in this allowlist.','file_count':len(selected),'total_bytes':sum(x['bytes'] for x in selected),'files':selected})
+files=[]
+for path in sorted(B.rglob('*')):
+    if not path.is_file() or path==B/'artifact-manifest.json':continue
+    row={**bind(path),'path':str(path.relative_to(B))}
+    if path.is_symlink():row.update(kind='symlink',target=str(path.resolve()))
+    files.append(row)
+save('artifact-manifest.json',{'created_utc':datetime.now(timezone.utc).isoformat(),'scope':'Complete external package regular files and file symlinks, hidden/ignored inclusive, excluding only this manifest itself. No directory symlinks exist in the package. This is not a public retention allowlist.','file_count':len(files),'total_bytes':sum(x['bytes'] for x in files),'files':files})
+print(json.dumps({'compact_files':len(selected),'compact_bytes':sum(x['bytes'] for x in selected),'compact_manifest':bind(B/'compact-retention-manifest.json'),'artifact_manifest':bind(B/'artifact-manifest.json'),'handoff':bind(B/'HANDOFF.md'),'verification':bind(B/'verification.json')},indent=2))

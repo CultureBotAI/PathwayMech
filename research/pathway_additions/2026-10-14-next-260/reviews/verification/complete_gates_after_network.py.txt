@@ -1,0 +1,46 @@
+from pathlib import Path
+import datetime, hashlib, json, runpy, shutil, subprocess, time
+
+CI = Path('/private/tmp/pathwaymech-next-260-ci')
+INITIAL = Path('/private/tmp/pathwaymech-next-260-checks-initial')
+OUT = Path('/private/tmp/pathwaymech-next-260-checks-completed')
+assert not OUT.exists()
+initial = json.loads((INITIAL / 'receipts.json').read_text())
+assert [r['command'] for r in initial] == [['just', 'render-pages'], ['just', 'validate'], ['just', 'test'], ['just', 'lint'], ['just', 'vendored-check']]
+assert all(r['exit_code'] == 0 for r in initial[:4]) and initial[-1]['exit_code'] == 1
+failed_log = Path(initial[-1]['log_path'])
+assert 'FETCH ERROR:' in failed_log.read_text() and 'nodename nor servname provided' in failed_log.read_text()
+assert hashlib.sha256(failed_log.read_bytes()).hexdigest() == initial[-1]['log_sha256']
+helpers = runpy.run_path(str(CI / 'run_initial_checks.py'))
+inventory, ENV, ROOT = helpers['inventory'], helpers['ENV'], helpers['ROOT']
+before = json.loads((INITIAL / 'tested-core-input-hashes.json').read_text())
+assert inventory() == before, 'Inputs changed after initial run.'
+OUT.mkdir()
+for name in ['tested-core-input-hashes.json', 'environment.json']:
+    shutil.copyfile(INITIAL / name, OUT / name)
+receipts = initial[:]
+for command in [['just', 'vendored-check'], ['git', 'diff', '--check'], ['git', 'diff', '--cached', '--check']]:
+    name = '-'.join(command) + ('-network-retry' if command == ['just', 'vendored-check'] else '') + '.log'
+    log = OUT / name
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    clock = time.monotonic()
+    with log.open('w') as stream:
+        p = subprocess.run(command, cwd=ROOT, env=ENV, stdout=stream, stderr=subprocess.STDOUT)
+    row = {'command': command, 'cwd': str(ROOT), 'started_utc': started,
+           'elapsed_seconds': round(time.monotonic() - clock, 2), 'exit_code': p.returncode,
+           'log_path': str(log), 'log_sha256': hashlib.sha256(log.read_bytes()).hexdigest()}
+    if command == ['just', 'vendored-check']:
+        row['retry_reason'] = 'Initial attempt failed solely on sandbox DNS resolving the pinned GitHub artifact.'
+    receipts.append(row)
+    (OUT / 'receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    print(json.dumps(row), flush=True)
+    assert p.returncode == 0, log.read_text()[-5000:]
+after = inventory()
+assert before == after
+proof = {'tested_core_files': len(before), 'all_unchanged': True, 'scope': helpers['SCOPE'],
+         'ignored_and_hidden_included': True, 'excluded_runtime_caches': ['__pycache__', '.pytest_cache', '.ruff_cache'],
+         'record_sha256': helpers['sha'](ROOT / 'data/pathways/gallate-degradation-ii.yaml'),
+         'initial_attempt_preserved': True, 'only_retried_command': ['just', 'vendored-check'],
+         'required_command_successes': 7, 'total_command_attempts': len(receipts)}
+(OUT / 'final-input-preservation.json').write_text(json.dumps(proof, indent=2) + '\n')
+print(json.dumps(proof, indent=2), flush=True)

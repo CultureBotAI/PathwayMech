@@ -1,0 +1,59 @@
+from pathlib import Path
+from lxml import etree
+import json,hashlib,collections,shutil
+ROOT=Path('/private/tmp/pathwaymech-next-260-native')
+CAT=json.loads((ROOT/'projections/reuse-catalog.json').read_text())
+seed='GALLATE-DEGRADATION-I-PWY'
+formal={'RXN-11861','RXN-2462','RXN-9983','RXN-2463','RXN-2464'}
+selected={};reasons=collections.defaultdict(list);missing=[]
+queue=collections.deque([(seed,'whole pathway'),('TCA','direct downstream pathway-link interface'),('CPD-185','native narrative-linked Z,Z comparator; not formal reaction member')])
+# Follow mechanism attachments, not inverse compound incidence or generic
+# ontology parents. Additional catalyst activities are retained as boundaries.
+follow={
+ 'Pathway':{'reaction-list','species','taxonomic-range'},
+ 'Reaction':{'left','right','enzymatic-reaction'},
+ 'Enzymatic-Reaction':{'enzyme','regulated-by','cofactor','cofactors'},
+ 'Protein':{'component','gene','species','location','cofactor','cofactors','catalyzes','unmodified-form','modified-form'},
+ 'Gene':{'product','species','component-of'},
+ 'Regulation':{'regulator','regulated-entity'},
+ 'RNA':{'gene','species'},
+}
+while queue:
+ frame,why=queue.popleft();reasons[frame].append(why)
+ if frame in selected:continue
+ if frame not in CAT:
+  missing.append({'frame':frame,'reason':why});continue
+ rows=CAT[frame];assert len({x['sha256'] for x in rows})==1
+ choice=next((x for x in rows if 'next-259-native' in x['source_path']),rows[0])
+ p=Path(choice['source_path']);data=p.read_bytes();assert hashlib.sha256(data).hexdigest()==choice['sha256']
+ doc=etree.fromstring(data);obj=[x for x in doc if x.get('frameid')==frame and x.get('detail')=='full'];assert len(obj)==1;obj=obj[0]
+ dest=ROOT/'originals'/(frame+'.xml')
+ if dest.exists():assert dest.read_bytes()==data
+ else:dest.write_bytes(data)
+ selected[frame]={**choice,'path':str(dest),'scope_role':why}
+ slots=follow.get(obj.tag,set())
+ if obj.tag=='Pathway' and frame!=seed:slots=set()
+ if obj.tag=='Reaction' and frame not in formal:slots={'left','right'}
+ for slot in obj:
+  if slot.tag not in slots:continue
+  for ref in slot:
+   other=ref.get('frameid')
+   if not other or ref.tag in ['Evidence-Code','Publication']:continue
+   # Species/locations can have a complete inline body, retained later even if
+   # no standalone original was acquired. Don't invent a missing object.
+   if ref.get('detail')=='full' and other not in CAT:
+    continue
+   queue.append((other,f'{frame}/{slot.tag} -> {ref.tag}'))
+ # Include the opposite reaction of every attached catalyst's extra activity
+ # but do not grow that alternative's enzyme population.
+ if obj.tag=='Enzymatic-Reaction':
+  for ref in obj.findall('reaction/Reaction'):
+   other=ref.get('frameid')
+   if other not in formal:queue.append((other,f'{frame}/reaction (adjacent activity boundary)'))
+for frame,row in selected.items():row['all_inclusion_reasons']=sorted(set(reasons[frame]))
+missing=list({(r['frame'],r['reason']):r for r in missing}.values())
+(ROOT/'retained/selected-native-manifest.json').write_text(json.dumps({'count':len(selected),'objects':list(selected.values())},indent=2)+'\n')
+(ROOT/'projections/missing-source-objects.json').write_text(json.dumps(missing,indent=2)+'\n')
+print('selected',len(selected),collections.Counter(x['object_type'] for x in selected.values()))
+print('missing',json.dumps(missing,indent=2))
+print('formal activities',[(f,[x.get('frameid') for x in etree.parse(x['path']).findall('.//Reaction/enzymatic-reaction/Enzymatic-Reaction')]) for f,x in selected.items() if f in formal])

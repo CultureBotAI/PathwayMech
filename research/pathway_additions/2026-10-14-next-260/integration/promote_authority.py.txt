@@ -1,0 +1,92 @@
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import shutil
+
+B = Path('/private/tmp/pathwaymech-next-260-authority-integration-successor')
+R = Path('/private/tmp/pathwaymech-next-260-20261014')
+O = R / 'research/pathway_additions/2026-10-14-next-260/authority'
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+assert sha(B / 'artifact-manifest.json') == '21f50c613045ce308ab93f83794225c7919cbcd1f71b2e2dcb92ca6ba010e938'
+assert sha(B / 'compact-retention-selection.json') == '360daf60105eb0714000fdeec0576f176408ccf238f8c592cd46eabf70094853'
+m = json.loads((B / 'artifact-manifest.json').read_text())
+for entry in m['files']:
+    path = Path(entry['path'])
+    assert sha(path) == entry['sha256'] and path.stat().st_size == entry['bytes'], path
+s = json.loads((B / 'compact-retention-selection.json').read_text())
+assert len(s['files']) == 58
+for entry in s['files']:
+    path = Path(entry['source_path'])
+    data = path.read_bytes()
+    assert sha(path) == entry['sha256'] and len(data) == entry['bytes']
+    assert entry['encoding'] in ['identity', 'gzip; deterministic mtime0; lossless']
+    raw = gzip.decompress(data) if entry['encoding'].startswith('gzip;') else data
+    assert hashlib.sha256(raw).hexdigest() == entry['original_sha256'] and len(raw) == entry['original_bytes']
+    assert sha(Path(entry['original_source_path'])) == entry['original_sha256']
+report = json.loads((B / 'retained/union-preservation-verification.json').read_text())
+assert report['identifier_policy_passed'] and report['records_checked'] == 257
+handoff = json.loads((B / 'retained/author-handoff.json').read_text())
+assert sha(Path(handoff['final_record']['path'])) == handoff['final_record']['sha256']
+for row in json.loads((B / 'retained/actual-predecessor-record-bindings.json').read_text())['records']:
+    assert sha(Path(row['current_path'])) == row['current_sha256']
+old_all, new_all, outputs = {}, {}, []
+for name in ['sources', 'ontology']:
+    old_path = R / f'data/identifier_authorities/{name}.json'
+    new_path = B / f'proposal/{name}.union.json'
+    assert sha(old_path) == report['snapshots'][name]['before_sha256']
+    assert sha(new_path) == report['snapshots'][name]['after_sha256']
+    old, new = json.loads(old_path.read_text()), json.loads(new_path.read_text())
+    for section in ['terms', 'sources']:
+        assert all(new[section].get(k) == v for k, v in old[section].items())
+    old_all.update(old['terms'])
+    new_all.update(new['terms'])
+    outputs.append((new_path, old_path))
+assert len(old_all) == 4989 and len(new_all) == 5023
+assert set(new_all) - set(old_all) == set(report['new_identifiers'])
+assert 'RHEA:18170' in new_all and 'RHEA:18172' not in new_all
+old_manifest = json.loads((R / 'conf/identifier_sources.json').read_text())
+new_manifest = json.loads((B / 'proposal/identifier_sources.json').read_text())
+assert len(old_manifest) == 1062 and len(new_manifest) == 1072
+assert new_manifest[:len(old_manifest)] == old_manifest
+outputs.append((B / 'proposal/identifier_sources.json', R / 'conf/identifier_sources.json'))
+for row in handoff['outputs']:
+    assert sha(Path(row['path'])) == row['sha256']
+
+O.mkdir(parents=True, exist_ok=False)
+for entry in s['files']:
+    dest = O / entry['retained_relative_path']
+    assert O in dest.parents
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(entry['source_path'], dest)
+    assert sha(dest) == entry['sha256']
+shutil.copyfile(B / 'compact-retention-selection.json', O / 'compact-retention-selection.json')
+changes = []
+for src, dest in outputs:
+    before = sha(dest)
+    shutil.copyfile(src, dest)
+    assert sha(dest) == sha(src)
+    changes.append({'path': str(dest.relative_to(R)), 'before_sha256': before, 'after_sha256': sha(dest)})
+receipt = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Root verified promotion, not independent scientific approval',
+    'authority_manifest_sha256': sha(B / 'artifact-manifest.json'),
+    'compact_selection_sha256': sha(B / 'compact-retention-selection.json'),
+    'verified_external_artifacts': len(m['files']),
+    'compact_content_files': 58,
+    'compact_content_bytes': sum(entry['bytes'] for entry in s['files']),
+    'old_term_objects_preserved': 4989,
+    'new_terms': 34,
+    'final_terms': 5023,
+    'actual_current_records_checked': 257,
+    'changes': changes,
+    'initial_preflight_correction': 'An inline preflight stopped before any copy because root incorrectly transcribed the expected compact-selection digest from an abbreviated message. The actual full SHA256 was then read directly; this script checks that full digest and every original/encoded file. No source bytes changed or failed promotion was hidden.',
+}
+path = R / 'research/pathway_additions/2026-10-14-next-260/integration/authority-promotion.json'
+assert not path.exists()
+path.write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps(receipt, indent=2))

@@ -1,0 +1,35 @@
+"""Freeze exact author artifacts and a compact, source-text-safe retention selection."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1]
+def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def write(p,x):p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+record=ROOT/'native-foundation.yaml'
+verification=json.loads((ROOT/'verification.json').read_text())
+audit=json.loads((ROOT/'author-audit.json').read_text())
+assert verification['status']==audit['status']=='passed'
+assert digest(record)==verification['record_sha256']==audit['record_sha256']
+assert audit['check_count']==163 and verification['edges']==85
+write(ROOT/'completed-command-receipt.json',{
+ 'recorded_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+ 'scope':'Observed actual tool command completions; this timestamp records receipt creation, not claimed command start time.',
+ 'commands':[{'command':'/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python /private/tmp/pathwaymech-next-260-native-draft/helpers/build_foundation.py > /private/tmp/pathwaymech-next-260-native-draft/build-attempt-8.log 2>&1','actual_exec_session':99566,'exit_code':0,'log':'build-attempt-8.log','log_sha256':digest(ROOT/'build-attempt-8.log')},{'command':'/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python /private/tmp/pathwaymech-next-260-native-draft/helpers/audit_and_freeze.py','actual_exec_session':95395,'exit_code':0,'output_summary':{'status':'passed','checks':163,'record_sha256':digest(record),'author_audit_sha256':digest(ROOT/'author-audit.json')}}],
+ 'no_production_gate_or_full_test_suite_run':True})
+excluded={'artifact-manifest.json','compact-retention-manifest.json'}
+files=[]
+for p in sorted(ROOT.rglob('*')):
+ if p.is_file() and p.name not in excluded:
+  files.append({'path':str(p.relative_to(ROOT)),'sha256':digest(p),'bytes':p.stat().st_size})
+write(ROOT/'artifact-manifest.json',{'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'external native graph author proposal; not independent review or maintained publication','file_count':len(files),'files':files})
+top={'HANDOFF.md','native-foundation.yaml','selected-identifiers.json','chemical-dispositions.json','context-bindings.json','verification.json','author-audit.json','fragment-to-source.json','completed-command-receipt.json','artifact-manifest.json'}
+helpers={'helpers/build_foundation.py','helpers/audit_and_freeze.py','helpers/finalize_package.py'}
+selected=[]
+for row in files+[{'path':'artifact-manifest.json','sha256':digest(ROOT/'artifact-manifest.json'),'bytes':(ROOT/'artifact-manifest.json').stat().st_size}]:
+ name=row['path']
+ if name in top or name in helpers or name.startswith('compact/') or name.startswith('retained/'):
+  selected.append({'copy_from':str(ROOT/name),'retained_name':name+('.txt' if name in helpers else ''),'sha256':row['sha256'],'bytes':row['bytes']})
+write(ROOT/'compact-retention-manifest.json',{'role':'Explicit author proposal retention selection; final root integration and independent review remain required.','omitted':'Large full-source-derived projections, duplicate checkpoints and raw uncompressed logs remain external. All log projections are lossless gzip.','file_count':len(selected),'total_bytes':sum(x['bytes'] for x in selected),'files':selected})
+for row in selected:assert digest(Path(row['copy_from']))==row['sha256']
+print(json.dumps({'record_sha256':digest(record),'handoff_sha256':digest(ROOT/'HANDOFF.md'),'artifact_manifest_sha256':digest(ROOT/'artifact-manifest.json'),'compact_retention_manifest_sha256':digest(ROOT/'compact-retention-manifest.json'),'selected_files':len(selected),'selected_bytes':sum(x['bytes'] for x in selected)},indent=2))

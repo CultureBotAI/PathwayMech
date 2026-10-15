@@ -1,0 +1,86 @@
+from pathlib import Path
+from collections import defaultdict
+import datetime, hashlib, json, os, shutil, subprocess
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-20261014')
+CI = Path('/private/tmp/pathwaymech-next-260-ci')
+BASE = 'b2590dfd2385c83fe4f028ecd5309a0407739838'
+RESEARCH = ROOT / 'research/pathway_additions/2026-10-14-next-260'
+REPORT = RESEARCH / 'verification.md'
+assert not REPORT.exists()
+persistence = json.loads((CI / 'canonical-review-persistence.json').read_text())
+assert persistence.get('finished_utc') and len(persistence['bundles']) == 3
+assert all(x['exit_code'] == 0 for x in persistence['executions'])
+record = yaml.safe_load((ROOT / 'data/pathways/gallate-degradation-ii.yaml').read_text())
+nodes = [{'id': record['id'], 'label': record['label'], 'role': 'pathway'}]
+for field in ['taxa', 'participants', 'reactions']:
+    nodes += [{'id': x['id'], 'label': x['label'], 'role': field} for x in record[field]]
+assert len(nodes) == 103 and len({x['id'] for x in nodes}) == 103
+references = [{'id': x['id'], 'title': x['title'], 'url': x.get('url')} for x in record['references']]
+assert len(references) == 65
+additions = []
+old_total = 0
+for path in ['data/identifier_authorities/sources.json', 'data/identifier_authorities/ontology.json']:
+    old = json.loads(subprocess.check_output(['git', 'show', BASE + ':' + path], cwd=ROOT))
+    current = json.loads((ROOT / path).read_text())
+    old_total += len(old['terms'])
+    assert all(current['terms'].get(k) == v for k, v in old['terms'].items())
+    additions += [{'id': k, 'label': current['terms'][k]['label'], 'owner': path}
+                  for k in sorted(set(current['terms']) - set(old['terms']))]
+assert old_total == 4989 and len(additions) == 34
+selection = {'record_id': record['id'], 'record_label': record['label'],
+             'scope': 'All identifiers selected by the new record; already existing corpus identifiers are included. Authority additions are separately enumerated.',
+             'nodes': sorted(nodes, key=lambda x: x['id']), 'references': sorted(references, key=lambda x: x['id']),
+             'authority_additions': sorted(additions, key=lambda x: x['id'])}
+(RESEARCH / 'identifier-selection.json').write_text(json.dumps(selection, indent=2) + '\n')
+completion = RESEARCH / 'reviews/root-completion'
+assert not completion.exists()
+completion.mkdir()
+retained = []
+for name in ['canonical-review-persistence.json', 'final-handoffs-retained.json',
+             'locator-issue-dedup.json', 'locator-issue-publication.json', 'locator-issue-body.md',
+             'save_final_reviews.py', 'build_final_report.py']:
+    source = CI / name
+    target = completion / (name + '.txt' if name.endswith('.py') else name)
+    shutil.copyfile(source, target)
+    retained.append({'source_path': str(source), 'retained_path': str(target.relative_to(ROOT)),
+                     'sha256': hashlib.sha256(target.read_bytes()).hexdigest()})
+(completion / 'retention-manifest.json').write_text(json.dumps({'retained_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'files': retained}, indent=2) + '\n')
+lines = ['# Gallate degradation II: final local verification', '', '## Pathway scope', '',
+         'Added **MetaCyc:GALLATE-DEGRADATION-I-PWY — gallate degradation II** in [the maintained YAML](../../../data/pathways/gallate-degradation-ii.yaml), with its [generated pathway graph](../../../pages/records/MetaCyc_GALLATE-DEGRADATION-I-PWY.html). The accession suffix I and display name II are intentionally different in the issuing source.', '',
+         'The record contains 169 evidence-backed edges, 90 participants, 11 reaction/interface nodes, 1 taxon and 65 references. Five reactions are formal route members; adjacent assay activities do not extend that boundary. The duplicate assessment searched the entire repository including ignored/hidden files, with root Git/dependency metadata exclusions recorded, and inspected all 256 predecessor records. Prior research mentions and shared downstream modules were retained and distinguished from an exact duplicate.', '',
+         'Two predecessor records receive bounded corrections: six issuing Rhea member directions and 15 connected source-direction descriptions. Their other parsed content is unchanged. [Issue #558](https://github.com/CultureBotAI/PathwayMech/issues/558) tracks those corrections. [Issue #559](https://github.com/CultureBotAI/PathwayMech/issues/559) tracks an independently found retained-ledger locator typo, corrected by an append-only clarification. Both fixes are prepared for this pull request.', '',
+         '## Mechanistic summary', '',
+         'The five-step route connects gallate through pyrone dicarboxylate, keto oxalomesaconate, formal E,E enol and carboxyhydroxyoxoadipate to pyruvate plus oxaloacetate. The selected members are MetaCyc:RXN-11861, RHEA:10645, RHEA:28932, RHEA:17403 and RHEA:28936. All 17 formal material relations and the net elemental/charge balance were replayed. Rhea member direction and native reversibility remain separate assertions; RHEA:17403 describes hydration by the right-to-left member. Adjacent optical-HG assay context uses forward cleavage member RHEA:18170 without converting measured equilibrium into a whole-pathway claim.', '',
+         '## Evidence table', '',
+         '| Evidence | What it supports |', '| --- | --- |',
+         '| [Source and author ledger](README.md) | Complete native pathway closure, 179 primary fact dispositions, exact preparations, source conflicts and deliberate exclusions. |',
+         '| [Entry primary papers](sources/primary/HANDOFF.md) | Original 1975 and 1982 text/tables, distinguishing gifted enzyme, purified product-identifying preparations and PDC-isolate extracts. |',
+         '| [Preparation follow-up](sources/preparation-successor/HANDOFF.md) | Scoped LigJ/PmdE/ProH/ProA/GalB assays, constructs, optical substrates and conditional metal/nucleotide effects. |',
+         '| [Authority union](authority/HANDOFF.md) | Exactly 34 selected additions; all 4,989 prior terms and their owners preserved. Final total 5,023 terms; no parser/schema/policy change. |',
+         '| [Technical proof package](reviews/independent-technical/HANDOFF.md) | Source integration, KGX, authority, rendered SVG/DOM/evidence links, and unchanged production/governance files. |', '',
+         '## Gaps', '',
+         'The detailed 1985 ProH source and 2018 LigJ main text/thesis remain unavailable in the recorded attempts. Historical protein identities, sample provenance, some construct termini and the E6 cleavage scar remain unresolved. Formal E,E chemistry is not interchangeable with the source narrative Z,Z link or unassigned historical mixtures. Formal CHA is stereochemistry-unspecified, which does not establish a racemic sample. Exact LigJ/BR6020PmdE formal E,E catalysis is deferred. Component evidence does not establish complete-route occurrence in every enzyme-source or expression-host taxon.', '',
+         'Browser preview was unavailable because no browser surface was available. The technical reviewer checked generated SVG/DOM data, local anchors, evidence, qualifiers and downloads directly; this report does not claim a visual or interactive browser inspection. The optional structured iModulonDB adapter was unavailable to the scientific reviewer, and no transcriptomic evidence was inferred.', '',
+         '## Completed checks and saved reviews', '',
+         '`just render-pages`, `just validate`, `just test`, `just lint`, `just vendored-check`, working `git diff --check` and staged `git diff --cached --check` passed. Full validation covers 257 records, 457 history entries and 18,925 evidence blocks. Tests: **5,255 passed, 3 skipped, 7 warnings**. The initial vendored attempt failed solely on sandbox DNS; its bounded network retry passed. All 8 actual attempts and their logs are [retained](reviews/verification/retention-manifest.json). All 2,026 tested core input files stayed unchanged; only final reports, saved reviews and verification evidence were appended afterward.', '',
+         'All three saved canonical reviews are completed and pass with explicit limitations, with no unresolved findings. Required checks were shared actual executions; independent source review is documented separately from deterministic validation.', '']
+for bundle in persistence['bundles']:
+    y = os.path.relpath(ROOT / bundle['yaml'], RESEARCH)
+    m = os.path.relpath(ROOT / bundle['markdown'], RESEARCH)
+    lines.append(f"- `{bundle['review_id']}`: [Markdown]({m}), [YAML]({y}).")
+lines += ['', 'Canonical `record_review.py check --base ' + BASE + ' --require-reviews` passed after saving all three bundles. The [persistence receipt](reviews/root-completion/canonical-review-persistence.json) preserves actual commands and results. Publication and merge are subsequent operations and are not claimed by this local verification report.', '', '## Selected identifiers', '',
+          'The [machine-readable selection](identifier-selection.json) lists all 103 pathway/node identifiers, all 65 local reference identifiers and the 34 authority additions separately. Existing identifiers reused in this record are not mislabeled as new corpus terms.', '', '### Pathway and local nodes', '', '| Identifier | Label | Role |', '| --- | --- | --- |']
+for row in selection['nodes']:
+    label = str(row['label']).replace('|', '\\|').replace('\n', ' ')
+    lines.append(f"| `{row['id']}` | {label} | {row['role']} |")
+lines += ['', '### Local reference identifiers', '']
+groups = defaultdict(list)
+for row in selection['references']: groups[row['id'].split(':', 1)[0]].append(row['id'])
+for prefix, ids in sorted(groups.items()): lines.append('**' + prefix + '**: ' + ', '.join('`' + x + '`' for x in ids) + '.')
+lines += ['', '### Identifiers added to the authority union', '']
+lines.append(', '.join('`' + x['id'] + '`' for x in selection['authority_additions']) + '.')
+REPORT.write_text('\n'.join(lines) + '\n')
+print(json.dumps({'report': str(REPORT.relative_to(ROOT)), 'node_ids': len(nodes), 'reference_ids': len(references),
+                  'authority_additions': len(additions), 'canonical_reviews': len(persistence['bundles'])}, indent=2))

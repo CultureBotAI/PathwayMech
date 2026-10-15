@@ -1,0 +1,137 @@
+"""Replay the selected pathway's native material relations against a draft.
+
+This is an author integration check, not a new chemical identity determination
+or an independent scientific review. The frozen full-structure reconciliation
+supplies chemical identities; original XML supplies membership and side facts.
+"""
+
+import argparse
+import collections
+import hashlib
+import json
+from pathlib import Path
+import xml.etree.ElementTree as ET
+
+import yaml
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("record", type=Path)
+    parser.add_argument("output", type=Path)
+    args = parser.parse_args()
+    chemistry = Path("/private/tmp/pathwaymech-next-260-chemistry-root")
+    proof_paths = [
+        chemistry / "retained/chemical-equation-check-v2.json",
+        chemistry / "retained/reaction-equivalence.json",
+    ]
+    proof = json.loads(proof_paths[0].read_text())
+    equivalence = json.loads(proof_paths[1].read_text())
+    assert proof["all_checks_pass"]
+    record_bytes = args.record.read_bytes()
+    record = yaml.safe_load(record_bytes)
+    assert record["id"] == "MetaCyc:GALLATE-DEGRADATION-I-PWY"
+    source_path = Path(equivalence["pathway"]["path"])
+    assert digest(source_path) == equivalence["pathway"]["sha256"]
+    pathway = ET.parse(source_path).getroot().find("Pathway")
+    members = [x.attrib["frameid"] for x in pathway.findall("reaction-list/Reaction")]
+    assert len(members) == len(set(members)) == 5
+    assert set(members) == set(equivalence["pathway"]["members"])
+    selected = {"RXN-11861": "MetaCyc:RXN-11861"}
+    selected.update({
+        x["native_reaction"].split(":", 1)[1]: x["selected_exact_rhea"]
+        for x in equivalence["exact_rhea_matches"]
+    })
+    assert set(selected) == set(members)
+    participants = {x["id"]: x for x in record["participants"]}
+    reactions = {x["id"]: x for x in record["reactions"]}
+    edges = record["mechanistic_edges"]
+    expected = collections.Counter()
+    original_bindings = [{"path": str(source_path), "sha256": digest(source_path)}]
+    equations = []
+    net = collections.Counter()
+    for frame in members:
+        reaction_path = chemistry / "originals" / (frame + ".xml")
+        reaction_proof = next(x for x in proof["reactions"] if x["frame"] == frame)
+        assert digest(reaction_path) == reaction_proof["native_sha256"]
+        original_bindings.append({"path": str(reaction_path), "sha256": digest(reaction_path)})
+        reaction = ET.parse(reaction_path).getroot().find("Reaction")
+        traversal = equivalence["pathway"]["layouts"][frame]
+        sides = ("left", "right") if traversal == "L2R" else ("right", "left")
+        rid = selected[frame]
+        assert reactions[rid]["category"] == "molecular_activity"
+        source_direction = reaction.findtext("reaction-direction")
+        # Rhea quartet orientation and native reversibility are distinct assertions.
+        quartet = {"RHEA:28932": "left_to_right", "RHEA:17403": "right_to_left", "RHEA:28936": "left_to_right"}
+        expected_direction = quartet.get(rid, "reversible" if source_direction == "REVERSIBLE" else "left_to_right")
+        if rid in quartet:
+            assert source_direction == "REVERSIBLE"
+            material = [e for e in edges if e["id"].startswith("native-material-") and rid in {e["subject"], e["object"]}]
+            assert material and all("native direction REVERSIBLE" in e["description"] for e in material)
+        assert reactions[rid]["direction"] == expected_direction
+        equation = {"reaction": rid, "native_reaction": frame, "sides": {}}
+        for index, side in enumerate(sides):
+            side_entities = []
+            for slot in reaction.findall(side):
+                compound = slot.find("Compound").attrib["frameid"]
+                chemical = proof["chemicals"][compound]
+                cid = chemical["id"]
+                assert participants[cid]["category"] == "small_molecule"
+                coefficient = int(slot.findtext("coefficient") or "1")
+                assert coefficient == 1, "Current graph coefficient check expects this exact source scope."
+                fact = (cid, "consumes", rid) if index == 0 else (rid, "produces", cid)
+                expected[fact] += 1
+                net[cid] += coefficient * (-1 if index == 0 else 1)
+                side_entities.append({"id": cid, "coefficient": coefficient})
+            equation["sides"]["inputs" if index == 0 else "outputs"] = side_entities
+        equations.append(equation)
+    actual = collections.Counter(
+        (e["subject"], e["predicate"], e["object"])
+        for e in edges
+        if (e["predicate"] == "consumes" and e["object"] in selected.values())
+        or (e["predicate"] == "produces" and e["subject"] in selected.values())
+    )
+    assert actual == expected, {"missing": list((expected-actual).elements()), "extra": list((actual-expected).elements())}
+    membership = [e["subject"] for e in edges if e["predicate"] == "part_of" and e["object"] == record["id"]]
+    assert collections.Counter(membership) == collections.Counter(selected.values())
+    net = {k: v for k, v in sorted(net.items()) if v}
+    assert net == equivalence["calculated_net"]
+    # Recompute the overall elemental/charge balance using full structure proof.
+    chemicals = {x["id"]: x for x in proof["chemicals"].values()}
+    residual = collections.Counter()
+    for cid, coefficient in net.items():
+        structure = chemicals[cid]["representations"]["native_full_inchi"]
+        for atom, count in structure["atoms"].items():
+            residual[atom] += coefficient * count
+        residual["charge"] += coefficient * structure["charge"]
+    assert all(count == 0 for count in residual.values()), dict(residual)
+    assert not any(
+        e["predicate"] in {"catalyzes", "enables"}
+        and e["subject"] in {"MetaCyc:CPLX-2864", "MetaCyc:MONOMER-3183"}
+        and e["object"] == "RHEA:17403"
+        for e in edges
+    ), "Known LigJ/PmdE substrate uncertainty cannot be hidden by a qualifier."
+    result = {
+        "status": "passed",
+        "scope": "Root author integration check of five formal native members, every material side, direction metadata, and calculated balance; not enzyme specificity or independent review.",
+        "record": str(args.record),
+        "record_sha256": hashlib.sha256(record_bytes).hexdigest(),
+        "proof_bindings": [{"path": str(p), "sha256": digest(p)} for p in proof_paths],
+        "original_bindings": original_bindings,
+        "formal_members": membership,
+        "material_fact_count": sum(actual.values()),
+        "equations": equations,
+        "calculated_net": net,
+        "element_and_charge_residual": dict(residual),
+    }
+    assert not args.output.exists(), "Do not overwrite an earlier verification receipt."
+    args.output.write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps({"status": result["status"], "material_facts": result["material_fact_count"], "record_sha256": result["record_sha256"], "receipt": str(args.output)}))
+
+
+if __name__ == "__main__":
+    main()

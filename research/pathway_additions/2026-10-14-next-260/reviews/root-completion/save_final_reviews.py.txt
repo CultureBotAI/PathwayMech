@@ -1,0 +1,64 @@
+from pathlib import Path
+import datetime, hashlib, json, os, subprocess, time
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-20261014')
+CI = Path('/private/tmp/pathwaymech-next-260-ci')
+OUT = CI / 'canonical-review-persistence.json'
+assert not OUT.exists()
+assert json.loads((CI / 'final-handoffs-retained.json').read_text())['all_selected_copies_verified']
+proof = Path('/private/tmp/pathwaymech-next-260-checks-completed')
+assert json.loads((proof / 'final-input-preservation.json').read_text())['all_unchanged']
+for path, digest in json.loads((proof / 'tested-core-input-hashes.json').read_text()).items():
+    assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest, path
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1', UV_NO_SYNC='1',
+           UV_CACHE_DIR='/private/tmp/pathwaymech-next-260-uv-cache',
+           UV_PROJECT_ENVIRONMENT='/private/tmp/pathwaymech-next-195-20261011/.venv',
+           PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+contents = [
+    ('/private/tmp/pathwaymech-next-260-independent-science/record-completed-review.yaml',
+     '72b5676d435bef7e5b52bd23f898cd209a57b3a63915b02fcf913cf5133885b0'),
+    ('/private/tmp/pathwaymech-next-260-independent-science/bounded-completed-review.yaml',
+     '93dda16c54d604cde4fa43eaf6d001af7302010ffc4df985daa4e869bed05239'),
+    ('/private/tmp/pathwaymech-next-260-independent-technical/canonical-review.yaml',
+     'de7fc89d7e64b09d476b8bf18ed1392ac17fc759b489d213b5111ea72ce13023')]
+receipt = {'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'executions': [], 'bundles': []}
+
+
+def run(command):
+    start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    clock = time.monotonic()
+    p = subprocess.run(command, cwd=ROOT, env=ENV, capture_output=True, text=True)
+    receipt['executions'].append({'command': command, 'started_utc': start,
+                                  'elapsed_seconds': round(time.monotonic() - clock, 2),
+                                  'exit_code': p.returncode, 'stdout': p.stdout, 'stderr': p.stderr})
+    OUT.write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps({'command': command, 'exit_code': p.returncode, 'stdout': p.stdout}), flush=True)
+    assert p.returncode == 0, p.stderr
+    return p.stdout
+
+
+for path, digest in contents:
+    content = Path(path)
+    assert hashlib.sha256(content.read_bytes()).hexdigest() == digest
+    review = yaml.safe_load(content.read_text())
+    assert review['completion'] == 'completed' and review['verdict'] == 'pass_with_limitations'
+    assert not review['findings']
+    run(['uv', 'run', 'python', 'scripts/record_review.py', 'validate', path])
+    saved = json.loads(run(['uv', 'run', 'python', 'scripts/record_review.py', 'save', '--content', path]))
+    yp, mp = Path(saved['review']), Path(saved['markdown'])
+    if not yp.is_absolute(): yp = ROOT / yp
+    if not mp.is_absolute(): mp = ROOT / mp
+    assert yp.is_file() and mp.is_file()
+    receipt['bundles'].append({'review_id': review['review_id'], 'source_content': path,
+                               'source_sha256': digest, 'kind': review['kind'],
+                               'scientific_review': review['scientific_review'], 'verdict': review['verdict'],
+                               'yaml': str(yp.relative_to(ROOT)), 'markdown': str(mp.relative_to(ROOT)),
+                               'yaml_sha256': hashlib.sha256(yp.read_bytes()).hexdigest(),
+                               'markdown_sha256': hashlib.sha256(mp.read_bytes()).hexdigest()})
+    OUT.write_text(json.dumps(receipt, indent=2) + '\n')
+run(['uv', 'run', 'python', 'scripts/record_review.py', 'check', '--base',
+     'b2590dfd2385c83fe4f028ecd5309a0407739838', '--require-reviews'])
+receipt['finished_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+OUT.write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'saved_reviews': len(receipt['bundles']), 'all_executions_passed': True}), flush=True)

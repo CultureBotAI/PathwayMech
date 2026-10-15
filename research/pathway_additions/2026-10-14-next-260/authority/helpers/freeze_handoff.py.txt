@@ -1,0 +1,68 @@
+"""Freeze author outputs and lossless compact proofs after successful exact verification."""
+from pathlib import Path
+import datetime,gzip,hashlib,json
+B=Path(__file__).resolve().parents[1]
+OLD=Path('/private/tmp/pathwaymech-next-260-authority-integration')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+def write(p,data):
+ assert not p.exists(),p;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data)
+def jwrite(p,obj):write(p,(json.dumps(obj,indent=2,ensure_ascii=False)+'\n').encode())
+report=load(B/'retained/union-preservation-verification.json');assert report['status']=='author_verification_passed_pending_independent_review'
+corpus=load(B/'retained/final-corpus-direction-change-binding.json')
+planned=set(load(B/'retained/planned-identifiers.json'));assert len(planned)==103 and 'RHEA:18170' in planned and 'RHEA:18172' not in planned
+ontology=load(B/'proposal/ontology.union.json');assert 'RHEA:18172' not in ontology['terms']
+assert report['final_authority_terms']==5023 and len(report['new_identifiers'])==34
+outputs=[]
+for name in ['identifier_sources.json','sources.union.json','ontology.union.json']:
+ p=B/'proposal'/name;outputs.append(dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size))
+text=f'''# Next260 selected authority union — author handoff
+
+The canonical union is ready for root inspection and independent review. This package is authority-integration authorship, not an independent scientific verdict. No maintained file was written by this author.
+
+The actual normalized gallate-II record selected 103 identifiers. The proposal adds exactly 34 terms: 10 source terms and 24 ontology terms. All 4,989 prior terms, all 881 prior source owners, all five ontology owners, and the complete 1,062-entry prior source configuration prefix remain unchanged as JSON objects. The final union has 5,023 terms and 891 source owners, with 1,072 source descriptors. Only actual selected identifiers are added.
+
+The new HG node is RHEA:18170. RHEA:18172 is neither selected nor added. Generic HMG remains separate from the unselected native R stereoisomer. PubChem:6098323 uses the genuine official single-CID property response and its issuing Title; CID, molecular formula, preferred IUPAC name and InChIKey match the frozen full-structure original.
+
+Both canonical builders passed using the unmodified, Git-matched runtime. Their complete pinned SQL database hashes match the existing owners. The runner verified all bound inputs before and after execution. The canonical offline identifier consumer passed on the actual 256 predecessor observations plus the supplied new record. The two changed predecessor records have exactly six direction fields and 15 description fields changed from baseline; every predecessor named ID, label and category is preserved. This bounded identity check does not replace root's full validation or scientific review.
+
+Final new-record binding: `{report['final_record']['sha256']}` at `{report['final_record']['path']}`. Exact proposed output paths and hashes are in `retained/author-handoff.json`. Root owns maintained promotion.
+
+The original preparation using HG18172 was superseded after a late substantive source-direction correction. Both already-started builder children received SIGINT, returned -2, and the runner exited 254 after confirming all 1,472 bound inputs unchanged. Neither authority snapshot was emitted. Its exact command file, copied record observation, logs, receipts and cancellation explanation remain in `{OLD}`. The compact package retains the status receipts, logs, selection summary and hash bindings, without duplicating the complete old attempt. No failed attempt is rewritten as successful.
+
+The earlier provisional 101-ID availability preflight hash-bound mutable author inputs without copying their bytes; exact earlier bytes were not found in an ignored-file-inclusive search of the author's preserved checkpoints. That limitation is preserved explicitly. It is not evidence for the final union: final canonical preparation copied the exact maintained record bytes and separately bound all build inputs. The first native preflight and later author candidate inventories are likewise provisional availability checks, not final selection.
+
+Rhea provenance is explicit: the official original gzip RDF SHA 8ee48d…acedf is release 142 (2026-09-02), as supported by retained original release properties and acquisition receipt. The pinned Semantic SQL authority is separately release 139, SHA dfb4ba…143b. No parser extension or ontology refresh is proposed.
+
+Compact retention excludes whole baseline corpora, complete authority outputs, large original datasets and pinned SQL databases. Those remain externally hash-bound; root promotes the three exact proposal outputs. Raw logs, headers, HTML and draft YAML observations are retained as deterministic lossless gzip, and Python helpers as inert `.py.txt`. The compact manifest binds encoded and original bytes separately.
+'''
+write(B/'HANDOFF.md',text.encode())
+handoff=dict(role='Authority-integration author; pending root inspection and independent review',utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),baseline_commit=report['baseline_commit'],final_record=report['final_record'],selected_identifiers=103,new_terms=34,final_terms=5023,new_source_terms=10,new_ontology_terms=24,old_terms_preserved=4989,old_source_owners_preserved=881,old_ontology_owners_preserved=5,outputs=outputs,verification_path=str(B/'retained/union-preservation-verification.json'),verification_sha256=sha(B/'retained/union-preservation-verification.json'),current_corpus_binding_sha256=sha(B/'retained/final-corpus-direction-change-binding.json'),superseded_attempt=str(OLD),superseded_terminal_receipt_sha256=sha(OLD/'retained/superseded-attempt-terminal.json'),maintained_writes=False,independent_approval=False)
+jwrite(B/'retained/author-handoff.json',handoff)
+files=[]
+for prefix in ['helpers','retained','proposal','originals']:
+ for p in sorted((B/prefix).rglob('*')):
+  if p.is_file():files.append(dict(relative_path=str(p.relative_to(B)),path=str(p),sha256=sha(p),bytes=p.stat().st_size))
+files.append(dict(relative_path='HANDOFF.md',path=str(B/'HANDOFF.md'),sha256=sha(B/'HANDOFF.md'),bytes=(B/'HANDOFF.md').stat().st_size))
+jwrite(B/'artifact-manifest.json',dict(author_root=str(B),scope='Regular package outputs and proofs; shared baseline/runtime/cache/records and consumer shadow are bound separately, not duplicated. This manifest excludes itself and later compact encoding.',files=files,file_count=len(files)))
+selection=[]
+def retain(source,rel):
+ source=Path(source);original=source.read_bytes();name=rel;data=original;encoding='identity'
+ if source.suffix in {'.log','.headers','.html','.yaml'}:
+  name += '.txt.gz' if source.suffix=='.yaml' else '.gz';data=gzip.compress(original,mtime=0);encoding='gzip; deterministic mtime0; lossless'
+ elif source.suffix=='.py':name += '.txt'
+ target=B/'compact'/name;write(target,data)
+ selection.append(dict(source_path=str(target),source_relative_path=str(target.relative_to(B)),retained_relative_path=name,sha256=sha(target),bytes=len(data),original_source_path=str(source),original_sha256=hashlib.sha256(original).hexdigest(),original_bytes=len(original),encoding=encoding))
+retain(B/'HANDOFF.md','HANDOFF.md');retain(B/'artifact-manifest.json','artifact-manifest.json')
+for directory in ['helpers','retained','originals']:
+ for p in sorted((B/directory).rglob('*')):
+  if p.is_file():retain(p,str(p.relative_to(B)))
+# Preserve successful source acquisition reused from predecessor, and the genuine cancelled attempt.
+reused=['pubchem-6098323-property-verification.json','pubchem-6098323-property-acquisition.json','supplemental-source-candidates.json','pubchem-6098323-properties-attempt-1.headers','pubchem-6098323-properties-attempt-2.headers']
+for name in reused:retain(OLD/'retained'/name,'reused-acquisition/'+name)
+retain(OLD/'originals/PubChem-6098323-properties.json','reused-acquisition/PubChem-6098323-properties.json')
+retain(OLD/'helpers/verify_pubchem_property.py','reused-acquisition/verify_pubchem_property.py')
+superseded=['selection-freeze.json','planned-identifiers.json','source_builder.log','ontology_builder.log','source_builder-receipt.json','ontology_builder-receipt.json','build-input-preservation.json','superseded-run-cancellation.json','superseded-attempt-terminal.json','preparation-terminal-observation.json','primary-fragment-availability-preflight.json','primary-preflight-observation-preservation.json']
+for name in superseded:retain(OLD/'retained'/name,'superseded-attempt/'+name)
+jwrite(B/'compact-retention-selection.json',dict(external_author_root=str(B),external_artifact_manifest=dict(path=str(B/'artifact-manifest.json'),sha256=sha(B/'artifact-manifest.json')),scope='Exact compact retention allowlist. Encoded files are lossless; original and retained hashes are separate. Author proof only.',files=selection,file_count=len(selection),total_bytes=sum(r['bytes'] for r in selection)))
+print(json.dumps(dict(status='author_handoff_frozen',handoff_sha256=sha(B/'HANDOFF.md'),manifest_sha256=sha(B/'artifact-manifest.json'),compact_selection_sha256=sha(B/'compact-retention-selection.json'),compact_files=len(selection),compact_bytes=sum(r['bytes'] for r in selection),output_bindings=outputs)))

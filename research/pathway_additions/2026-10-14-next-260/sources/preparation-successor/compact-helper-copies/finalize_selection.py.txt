@@ -1,0 +1,86 @@
+from pathlib import Path
+import json,hashlib,re,collections,datetime
+R=Path('/private/tmp/pathwaymech-next-260-preparation-successor')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(n,d): (R/n).write_text(json.dumps(d,ensure_ascii=False,indent=2)+'\n')
+p=R/'claim-disposition-ledger.json';prior=sha(p);d=json.loads(p.read_text());f=d['facts'];assert len(f)==118
+new=[
+('ProA-Pi1990','proposed activating microspecies','pp338–339 Discussion; original render pages05–06','The discussion proposes divalent activators X–PO3(2−), with X=H for phosphorous acid, and considers carbonate the likely active species after bicarbonate delivery.','This is a structural hypothesis, not measured speciation. Table II tests named phosphorous acid and Methods lists NaHCO3 delivery; do not replace the tested reagent with a measured carbonate assertion. P–H connectivity is relevant to issuing identity reconciliation.'),
+('ProA-Pi1990','conditional solvent and stability negatives','p338 Effects of Pi on the Molecular Properties, items f–g','Ethanol and acetone at 5–20% v/v failed to activate the enzyme and did not change Pi-induced activation; 3 mM Pi did not improve heat stability.','Conditional negatives in purified native enzyme; do not infer universal solvent tolerance or absence of binding.'),
+('ProA1990','buffer-dependent activity','p330 Characterization of Cleavage Reaction','At 0.1 M and pH 8 the enzyme was active in Tris-acetate, veronal, glycylglycine and Hepps, but less active in Tris-HCl or potassium phosphate.','Buffer comparison is supporting assay context, not isolated molecular inhibition. The companion phosphate-depletion study separately establishes Pi activation with controlled metal, substrate and Pi.'),
+('ProA-Pi1990','nonenzymatic control','p339 Discussion, observation c','Pi and bicarbonate did not affect Mg-dependent nonenzymatic cleavage of l-CHA.','This control supports separation of enzyme activation from the chemical background; it is not an additional enzymatic reaction or a universal negative chemical effect.')]
+for src,topic,loc,claim,scope in new:
+ f.append(dict(id=f'prep-{len(f)+1:03d}',source_key=src,topic=topic,source_locator=loc,claim=claim,scope_and_limits=scope,disposition='supporting context; bounded interpretation',evidence_form='primary narrative; research paraphrase, not a schema evidence object'))
+# Manual prose fixes only. Preserve identifiers, original-source strings and table values.
+rep={'HgCl 2':'HgCl2','MgCl 2':'MgCl2','MnCl 2':'MnCl2','CoCl 2':'CoCl2','ZnCl 2':'ZnCl2','CdCl 2':'CdCl2','BeCl 2':'BeCl2','CaCl 2':'CaCl2','NiCl 2':'NiCl2','BaCl 2':'BaCl2','CrCl 3':'CrCl3','FeCl 3':'FeCl3','Na 2SO4':'Na2SO4','Na 2SO3':'Na2SO3','respect toMg 2+':'respect to Mg2+','respect todl-CHA':'respect to dl-CHA','atpH8':'at pH 8','P.ochraceae':'P. ochraceae','enzymeI':'enzyme I','enzymeII':'enzyme II','enzyme I I':'enzyme II','E, E':'E,E','His 6':'His6','63%identity':'63% identity','35%to':'35% to','at−20':'at −20','34µg':'34 µg','19µg':'19 µg','24°C10':'24 °C for 10','30°C10':'30 °C for 10','65°C10':'65 °C for 10','kDa(enzyme':'kDa (enzyme','I(hydratase)':'I (hydratase)','II(aldolase)':'II (aldolase)','pI4.9':'pI 4.9','pI5.0':'pI 5.0','pI5.1':'pI 5.1','pH8':'pH 8','0.1M':'0.1 M',',341':', 341',',30':', 30',',10':', 10',',0.':', 0.',',1 ':', 1 ', ',3 ':', 3 ', ',5 ':', 5 ', ',6.4':', 6.4',',2-':', 2-',',4-':', 4-',',8-':', 8-',',50':', 50',',25':', 25'}
+for x in f:
+ for k in ['claim','scope_and_limits','disposition']:
+  for a,b in rep.items():x[k]=x[k].replace(a,b)
+# Every fact receives a proposed selection disposition separate from scientific support.
+record=set([4,7,8,9,10,11,17,21,22,23,24,25,26,*range(42,51),56,*range(57,66),90,91,92,94,95,101,102,111,112,113])
+conflict={5,97,98,108,110,114,116,117}
+defer={107,118}
+selection=[]
+for x in f:
+ n=int(x['id'][5:])
+ if n in record:
+  category='proposed_record';reason='Retain pathway-relevant biochemical activity, assembly or perturbation with exact source preparation and condition. Native/issuing endpoint selection remains subject to the separate identity audit.'
+ elif n in conflict:
+  category='conflict';reason='Retain the source-specific disagreement or unresolved identity/isomer distinction; it constrains affected graph claims and must not be silently harmonized.'
+ elif n in defer:
+  category='defer';reason='Bounded abstract or uninspected lead cannot supply the missing precise preparation/methods; preserve current source facts without new detailed mechanism promotion.'
+ else:
+  category='supporting_context';reason='Retain as preparation, physiological context, negative control, condition limit or inference boundary. It is not an independently identified additional formal-route edge.'
+ if 27<=n<=41 or n==51 or 68<=n<=86 or n in [93,120,121,122]:
+  reason='Retain every tested negative/non-supporting condition as assay context; do not convert lack of enhancement/turnover into a general inhibition or binding claim. Named inhibitory metal prose remains explicitly observed but not quantitatively resolved.'
+ if n in [1,2,3,6,16,19,54,55,89,109]:reason='Required supporting preparation/assay context must be carried into each affected edge description/qualifier, not discarded because it is not a separate graph edge.'
+ if n==67:reason='Carry high-dose loss into all nine activator conditions; propose the separately measured 0.1 M KCl inhibition only if the scoped native preparation can be represented. Do not assign one unconditional sign to the activators.'
+ if n in [101,102]:reason='Propose only source-qualified inferred/computational downstream assignments from actual Table 3 homology rows; no purified PmdE/D/F catalysis is established in this paper.'
+ if n==113:reason='Direct E6 PmdE activity can be retained with the source-specific codon-optimized, tag-cleaved construct; exact residual scar remains unresolved and cannot be transferred to BR6020 or SYK-6.'
+ x['proposed_disposition']={'category':category,'reason':reason}
+ selection.append({'fact_id':x['id'],'source_key':x['source_key'],'topic':x['topic'],**x['proposed_disposition']})
+# Evidence-form classification identifies actual source form; mixed claims remain split explicitly.
+structured={
+ 1:('mixed',['LigJ2000 Table 1 pETJ row; Table 2 title/caption and purification rows'],'PCR/host expression narrative beyond the actual table cells remains narrative.'),
+ 4:('mixed',['LigJ2000 Figure 4 panels A/B: mass-ion values and before/after peaks'],'Product interpretation and exact incubation are narrative; do not treat a mass as proof of absolute configuration.'),
+ 16:('mixed',['ProA1990 Table I purification rows'],'Phthalate culture/species provenance is Methods prose; table supports purification process only.'),
+ 20:('mixed',['ProA1990 Figures 2–3 optical-rotation axes and time-course traces'],'Optical-label assignment and preparation are narrative; no R/S inference.'),
+ 21:('mixed',['ProA1990 Table II substrate rows; equations 1–2 and Figures 2–4'],'Product identification Methods/Results are narrative; measured alternate activities remain preparation-specific.'),
+ 22:('mixed',['ProA1990 Figure 4 condensation/cleavage traces'],'Equilibrium interpretation and numerical constants are Results prose.'),
+ 23:('structured_table',['ProA1990 Table II l-CHA rows Mg2+, Mn2+, Co2+, Zn2+, Cd2+'],'Table supplies metal identity, metal/substrate Km and Vmax; salt delivery is Methods/Results prose.'),
+ 56:('mixed',['ProA-Pi1990 Table II Pi row; Figure 1 concentration/time-course axes'],'Reversibility, immediacy and dialyzed preparation are narrative.'),
+ 66:('mixed',['ProA-Pi1990 Tables I and IV: substrate-specific activities and pH optima'],'Metal comparison beyond these cells and proposed mechanism are narrative.'),
+ 90:('mixed',['ProHA1983 Table I omission rows; Figure 2 ordered additions; Table IV product quantities'],'Interpretation of two steps and identities is narrative; exact reacting OMA isomer unresolved.'),
+ 91:('mixed',['ProHA1983 Figure 2 EDTA/Mg addition traces'],'The assignment primarily to enzyme II is Results interpretation, not a purified enzyme I effect.'),
+ 92:('structured_table',['ProHA1983 Table II all 12 rows and separate LDH/MDH columns'],'Actual combined fractions; apparent CuSO2 printing conflict remains. All rows receive explicit cell-level disposition.'),
+ 97:('mixed',['ProHA1983 Table IV quantities'],'One-enantiomer explanation is inference from these quantities, not directly resolved optical substrate evidence.'),
+ 98:('mixed',['ProHA1983 Table V all five compounds and three pH spectra'],'OMA initial-product interpretation and dioxygenase preparation are prose; no formal entry overwrite.'),
+ 100:('mixed',['Pmd2001 Table 1 strain/plasmid rows; Figure 3 locus diagram'],'BR60 derivation/taxonomic reassignment details are prose.'),
+ 101:('structured_table',['Pmd2001 Table 3 PmdE rows'],'Actual source explicitly labels inferred function; preserve homology evidence tier.'),
+ 102:('mixed',['Pmd2001 Table 3 PmdD and PmdF rows'],'Unpublished mutant assertion and composition comparisons are prose, not additional direct assays.'),
+ 108:('structured_table',['GalB2011 Table 1 galB/PP2515 row, 244/27.4 cell'],'This reports source protein length, not the exact complete recovered assay insert sequence.'),
+ 110:('mixed',['Issuing PDB 5CGZ sequence fields bound in earlier identity reconciliation'],'Crystallization deletion explanation is primary narrative; +14 residue reconciliation is author calculation.'),
+ 112:('mixed',['GalB2016 Table 2 activity rows, including copper and EDTA'],'Apo reconstitution and EDTA-present preparations require separate narrative qualification.'),
+ 115:('mixed',['STRENDA /experiment/datasets/dataset[1..5] actual value attributes'],'Methodology/commentOnProteinReaction CDATA is narrative; KCH equilibrium fractions must not be laundered into structured assertions.'),
+ 116:('mixed',['STRENDA expressionSystem, originalSequence, modifiedSequence, sequenceModifications, defaultReaction fields'],'sourceComments is narrative; conflicting structured and prose values remain visible.'),
+ 117:('structured_dataset',['STRENDA all dataset resultSet values and enzyme concentrations'],'Preserve zero, duplicated entries and printed standard error; no silent repair.')}
+for n in range(57,66):structured[n]=('structured_table',['ProA-Pi1990 Table II, exact reagent row given in fact values'],'The numeric row supports measured activation; phosphate depletion, salt delivery and high-dose limitations are prose.')
+for x in f:
+ n=int(x['id'][5:]);a=structured.get(n)
+ x['evidence_form_assessment']={'form':a[0] if a else 'narrative','structured_locators':a[1] if a else [],'rule':a[2] if a else 'The claim is narrative or an abstract/search limitation. A future schema Evidence item requires a verified short quote, not a generated source_assertion. Context-only prose is not promoted as structured evidence.'}
+write('claim-disposition-ledger.json',d)
+write('selection-ledger.json',{'scope':'Author proposal, no approval. Every claim has a disposition; supporting preparation and negative context remains required when relevant.','counts':dict(collections.Counter(x['category'] for x in selection)),'facts':selection})
+# Append source bindings for reused sources, including actual table extraction and inaccessible visual limitations.
+si=json.loads((R/'source-index.json').read_text());P=Path('/private/tmp/pathwaymech-next-259-primary/originals')
+for key,ref,doi,path,scope in [
+ ('GalB2011','PMID:21219457','DOI:10.1111/j.1365-2958.2010.07448.x',P/'candidate_wiley-web-result.json','Retained original web response containing publisher Table 1 textual cells; visual original figure/supplement gap persists.'),
+ ('GalB2016','PMID:26867578','DOI:10.1074/jbc.M115.697656',P/'PMC4817193-render2.html','Full earlier PMC original; complete reading reused from frozen gal2016 dossier.'),
+ ('E6PmdE2016','PMID:26867578','DOI:10.1074/jbc.M115.697656',P/'PMC4817193-render2.html','Same paper as GalB2016, combined paper-wide budget; distinct E6 construct reading reused.')]:
+ si.append({'key':key,'reference':ref,'doi':doi,'path':str(path),'sha256':sha(path),'bytes':path.stat().st_size,'scope':scope})
+write('source-index.json',si)
+# Bind exact additional reused methods/projections without copying or rewriting frozen packages.
+extra=[]
+for path in [P/'gal2011_methods-web.json',P/'gal2011_pdf_attempts-web.json',Path('/private/tmp/pathwaymech-next-259-primary-identities/projections/GalB-construct-reconciliation.json')]:extra.append({'path':str(path),'sha256':sha(path),'bytes':path.stat().st_size})
+write('additional-reuse-bindings.json',extra)
+write('selection-closure-receipt.json',{'time_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'prior_unfrozen_ledger_sha256':prior,'final_fact_count':len(f),'added_facts':[x['id'] for x in f[-4:]],'scope':'Added P–H/likely-carbonate interpretation and conditional solvent/buffer/control negatives already present in inspected originals; assigned every fact and evidence form; corrected authored spacing. No original or frozen package modified.'})
+print('facts',len(f),'selection',dict(collections.Counter(x['category'] for x in selection)))

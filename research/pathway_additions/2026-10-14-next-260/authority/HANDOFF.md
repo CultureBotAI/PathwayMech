@@ -1,0 +1,19 @@
+# Next260 selected authority union — author handoff
+
+The canonical union is ready for root inspection and independent review. This package is authority-integration authorship, not an independent scientific verdict. No maintained file was written by this author.
+
+The actual normalized gallate-II record selected 103 identifiers. The proposal adds exactly 34 terms: 10 source terms and 24 ontology terms. All 4,989 prior terms, all 881 prior source owners, all five ontology owners, and the complete 1,062-entry prior source configuration prefix remain unchanged as JSON objects. The final union has 5,023 terms and 891 source owners, with 1,072 source descriptors. Only actual selected identifiers are added.
+
+The new HG node is RHEA:18170. RHEA:18172 is neither selected nor added. Generic HMG remains separate from the unselected native R stereoisomer. PubChem:6098323 uses the genuine official single-CID property response and its issuing Title; CID, molecular formula, preferred IUPAC name and InChIKey match the frozen full-structure original.
+
+Both canonical builders passed using the unmodified, Git-matched runtime. Their complete pinned SQL database hashes match the existing owners. The runner verified all bound inputs before and after execution. The canonical offline identifier consumer passed on the actual 256 predecessor observations plus the supplied new record. The two changed predecessor records have exactly six direction fields and 15 description fields changed from baseline; every predecessor named ID, label and category is preserved. This bounded identity check does not replace root's full validation or scientific review.
+
+Final new-record binding: `72e4685f14ff3a6a9d5cd5c7b9cd27d5fa54592355a5191fa5cf821d07a19353` at `/private/tmp/pathwaymech-next-260-20261014/data/pathways/gallate-degradation-ii.yaml`. Exact proposed output paths and hashes are in `retained/author-handoff.json`. Root owns maintained promotion.
+
+The original preparation using HG18172 was superseded after a late substantive source-direction correction. Both already-started builder children received SIGINT, returned -2, and the runner exited 254 after confirming all 1,472 bound inputs unchanged. Neither authority snapshot was emitted. Its exact command file, copied record observation, logs, receipts and cancellation explanation remain in `/private/tmp/pathwaymech-next-260-authority-integration`. The compact package retains the status receipts, logs, selection summary and hash bindings, without duplicating the complete old attempt. No failed attempt is rewritten as successful.
+
+The earlier provisional 101-ID availability preflight hash-bound mutable author inputs without copying their bytes; exact earlier bytes were not found in an ignored-file-inclusive search of the author's preserved checkpoints. That limitation is preserved explicitly. It is not evidence for the final union: final canonical preparation copied the exact maintained record bytes and separately bound all build inputs. The first native preflight and later author candidate inventories are likewise provisional availability checks, not final selection.
+
+Rhea provenance is explicit: the official original gzip RDF SHA 8ee48d…acedf is release 142 (2026-09-02), as supported by retained original release properties and acquisition receipt. The pinned Semantic SQL authority is separately release 139, SHA dfb4ba…143b. No parser extension or ontology refresh is proposed.
+
+Compact retention excludes whole baseline corpora, complete authority outputs, large original datasets and pinned SQL databases. Those remain externally hash-bound; root promotes the three exact proposal outputs. Raw logs, headers, HTML and draft YAML observations are retained as deterministic lossless gzip, and Python helpers as inert `.py.txt`. The compact manifest binds encoded and original bytes separately.

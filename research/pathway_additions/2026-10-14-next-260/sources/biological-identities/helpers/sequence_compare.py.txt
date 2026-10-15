@@ -1,0 +1,76 @@
+"""Translate original INSDC CDS coordinates and compare exact reference sequences."""
+from pathlib import Path
+import hashlib, json, re, xml.etree.ElementTree as ET
+
+B=Path(__file__).resolve().parents[1]
+def bind(path):
+    path=Path(path);data=path.read_bytes()
+    return {'path':str(path),'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()}
+def seqhash(sequence):return hashlib.sha256(sequence.encode()).hexdigest()
+def parse_embl(path):
+    raw=Path(path).read_text();header=raw.splitlines()[0]
+    accession=re.fullmatch(r'ID\s+(\S+); SV (\d+);.* (\d+) BP\.',header)
+    assert accession,header
+    dna=''.join(re.findall('[a-z]+',raw.split('\nSQ   ')[1].split('\n',1)[1].split('//')[0])).upper()
+    assert len(dna)==int(accession[3])
+    features=[];current=None
+    for line in raw.splitlines():
+        if not line.startswith('FT   '):continue
+        key=line[5:21].strip();value=line[21:].strip()
+        if key:
+            current={'type':key,'location':value,'qualifier_lines':[]};features.append(current)
+        elif current is not None:current['qualifier_lines'].append(value)
+    for feature in features:
+        text=' '.join(feature['qualifier_lines']);qualifiers={}
+        for match in re.finditer(r'/([a-zA-Z0-9_]+)(?:="([^"]*)"|=([^ /]+))?',text):
+            key,value,unquoted=match.groups();value=value if value is not None else unquoted
+            if key=='translation':value=re.sub(r'\s+','',value)
+            qualifiers.setdefault(key,[]).append(value)
+        feature['qualifiers']=qualifiers
+    return {'accession':accession[1]+'.'+accession[2],'dna':dna,'features':features,'source':bind(path),'source_annotations':[f for f in features if f['type']=='source']}
+
+code={a+b+c:aa for (a,b,c),aa in zip(((a,b,c)for a in 'TCAG' for b in 'TCAG' for c in 'TCAG'),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG')}
+def translate(feature,dna):
+    match=re.fullmatch(r'(complement\()?([0-9]+)\.\.([0-9]+)\)?',feature['location'])
+    assert match,feature['location']
+    reverse,start,end=match.groups();nt=dna[int(start)-1:int(end)]
+    if reverse:nt=nt.translate(str.maketrans('ACGT','TGCA'))[::-1]
+    q=feature['qualifiers'];assert q['codon_start']==['1'] and q['transl_table']==['11'],q
+    assert len(nt)%3==0 and nt[:3] in ['ATG','GTG','TTG','CTG','ATT','ATC','ATA']
+    aa=''.join(code[nt[i:i+3]] for i in range(0,len(nt),3));assert aa.endswith('*') and '*' not in aa[:-1]
+    aa='M'+aa[1:-1];assert aa==q['translation'][0]
+    return nt,aa
+
+deposits={}
+for folder in ['attempts/public','attempts/public-supplement']:
+    for path in (B/folder).glob('*.embl'):
+        entry=parse_embl(path);deposits[entry['accession'].split('.')[0]]=entry
+old=Path('/private/tmp/pathwaymech-next-259-native/originals/AE015451.embl')
+receipt=json.loads((B/'receipts/input-reuse-verification.json').read_text())
+old_binding=next(x for x in receipt['all_bindings'] if x['path']==str(old));assert bind(old)==old_binding
+entry=parse_embl(old);deposits['AE015451']=entry
+uniprot={}
+for row in json.loads((B/'projections/reused-uniprot-candidates.json').read_text()):
+    d=json.loads(Path(row['candidate']['path']).read_text());uniprot.setdefault(d['primaryAccession'],[]).append({'source':bind(row['candidate']['path']),'entry':d})
+for accession in ['O87170','Q93PS7']:
+    path=B/'attempts/public'/(accession+'.json');d=json.loads(path.read_text());uniprot.setdefault(d['primaryAccession'],[]).append({'source':bind(path),'entry':d})
+ncbi_path=B/'attempts/public-supplement/selected-proteins.xml';ncbi={x.findtext('GBSeq_accession-version'):x for x in ET.parse(ncbi_path).getroot().findall('GBSeq')}
+selections=[('AF305325','AAK73569.1','Q93PS9','BR6020 PmdE'),('AF305325','AAK73570.1','Q93PS8','BR6020 PmdF'),('AF305325','AAK73571.1','Q93PS7','BR6020 PmdD'),('AB127969','BAD04056.1',None,'NGJ1 ProL; inactive Q75T30'),('AB050935','BAB21455.1','Q9AQI1','NGJ1 ProH'),('AB050935','BAB21456.3','Q9AQI0','NGJ1 ProA'),('AB035121','BAA97116.1','G2IQQ5','SYK-6 LigJ 2000 deposit'),('AB073227','BAB88741.1','G2IQQ5','SYK-6 LigJ 2002 locus'),('AB073227','BAB88738.1','G2IQQ8','SYK-6 LigK'),('AB073227','BAB88736.1','O87170','SYK-6 LigI 2002 locus'),('AB015964','BAA33799.1','O87170','SYK-6 LigI 1998 deposit'),('L14836','AAB41024.1','P00437','P. putida pcaH reference'),('L14836','AAB41025.1','P00436','P. putida pcaG reference'),('AE015451','AAN68125.1','Q88JY0','KT2440 GalD reference'),('AE015451','AAN68126.1','Q88JX9','KT2440 GalC reference'),('AE015451','AAN68127.1','Q88JX8','KT2440 full GalB reference')]
+results=[]
+for accession,protein,up,label in selections:
+    deposit=deposits[accession]
+    feature=next(f for f in deposit['features'] if f['type']=='CDS' and f['qualifiers'].get('protein_id')==[protein])
+    nt,aa=translate(feature,deposit['dna'])
+    comparisons=[]
+    if up:
+        for original in uniprot[up]:
+            u=original['entry'];useq=u['sequence']['value'];comparisons.append({'identifier':'UniProtKB:'+up,'source':original['source'],'length':len(useq),'sequence_sha256':seqhash(useq),'exact_sequence_equality':aa==useq,'organism':u.get('organism'),'genes':u.get('genes',[]),'secondary_accessions':u.get('secondaryAccessions',[]),'differing_positions':[{'position':i+1,'deposit':a,'uniprot':b} for i,(a,b) in enumerate(zip(aa,useq)) if a!=b]})
+    protein_original=ncbi.get(protein)
+    if protein_original is not None:
+        ps=protein_original.findtext('GBSeq_sequence').upper();assert aa==ps
+        comparisons.append({'identifier':'NCBIProtein:'+protein,'source':bind(ncbi_path),'length':len(ps),'sequence_sha256':seqhash(ps),'exact_sequence_equality':True,'organism':protein_original.findtext('GBSeq_organism'),'definition':protein_original.findtext('GBSeq_definition'),'native_features':[ET.tostring(f,encoding='unicode') for f in protein_original.findall('./GBSeq_feature-table/GBFeature') if f.findtext('GBFeature_key') in ['source','CDS']]})
+    results.append({'scope':label,'deposit_accession':deposit['accession'],'source':deposit['source'],'source_annotations':deposit['source_annotations'],'cds':feature,'nucleotide_sha256':seqhash(nt),'translation_length':len(aa),'translation_sequence_sha256':seqhash(aa),'translation_sequence':aa,'independently_translated_equals_original_annotated':True,'comparisons':comparisons,'boundary':'Reference-sequence comparison only. Equality does not prove a historical purified sample, a modern cloned insert, a strain-specific gene, or a whole-route biological occurrence.'})
+
+out={'role':'source-author sequence identity evidence; no scientific approval','selected_comparisons':results,'deposits':[{k:v for k,v in d.items() if k in ['accession','source','source_annotations']} for d in deposits.values()],'excluded_partial_context':'The partial proL CDS in AB050935 is not substituted for complete AB127969 proL. Adjacent deposit genes are not promoted into this pathway; their original context remains in full deposits.','translation_method':'Standard bacterial code 11 for complete exact location CDS; required start codon and terminal stop, independently translate nucleotide original, initiating methionine normalized under annotated initiation, compare to issuing /translation then NCBI/UniProt strings.'}
+p=B/'projections/reference-sequence-comparisons.json';assert not p.exists();p.write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({'selected_deposit_proteins':len(results),'unequal_uniprot_comparisons':[{'scope':x['scope'],'comparison':c} for x in results for c in x['comparisons'] if not c['exact_sequence_equality']]},indent=2))

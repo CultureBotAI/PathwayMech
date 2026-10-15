@@ -1,0 +1,28 @@
+"""Verify native RefSeq counterparts and distinct E6 reference context."""
+from datetime import datetime,timezone
+from pathlib import Path
+import hashlib,json,sqlite3,sys,xml.etree.ElementTree as ET
+B=Path(__file__).resolve().parents[1];R=B/'runtime';A=Path('/private/tmp/pathwaymech-next-259-authorities')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_ontology_identifier_snapshot import extract_terms,read_source
+def bind(p):
+    p=Path(p);return {'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size}
+comparisons=json.loads((B/'projections/reference-sequence-comparisons.json').read_text())['selected_comparisons']
+path=B/'attempts/public-reference-counterparts/reference-counterparts.xml';proteins={x.findtext('GBSeq_accession-version'):x for x in ET.parse(path).getroot().findall('GBSeq')}
+bindings={'NP_744662.1':'AAN68126.1','NP_744663.1':'AAN68127.1','AAN68125.1':'AAN68125.1','AAN68126.1':'AAN68126.1'}
+out=[]
+for accession,deposit in bindings.items():
+    row=next(r for r in comparisons if r['cds']['qualifiers']['protein_id']==[deposit]);p=proteins[accession];sequence=p.findtext('GBSeq_sequence').upper();assert sequence==row['translation_sequence']
+    out.append({'identifier':'NCBIProtein:'+accession,'source':bind(path),'equals_original_deposit_translation':deposit,'original_deposit_source':row['source'],'aa_length':len(sequence),'sequence_sha256':hashlib.sha256(sequence.encode()).hexdigest(),'organism':p.findtext('GBSeq_organism'),'comment':p.findtext('GBSeq_comment'),'boundary':'Reference conceptual translation, not proof of 2011 assay-insert sequence or historical enzyme preparation.'})
+bai=json.loads((A/'bai50711-candidate.json').read_text());assert bind(bai['path'])['sha256']==bai['sha256']
+p=ET.parse(bai['path']).getroot().find('GBSeq');e6=p.findtext('GBSeq_sequence').upper();br=next(r for r in comparisons if r['scope']=='BR6020 PmdE')['translation_sequence']
+source_feature=next(f for f in p.findall('./GBSeq_feature-table/GBFeature') if f.findtext('GBFeature_key')=='source')
+q={v.findtext('GBQualifier_name'):v.findtext('GBQualifier_value') for v in source_feature.findall('./GBFeature_quals/GBQualifier')}
+assert q['strain']=='E6' and q['db_xref']=='taxon:364029'
+db=Path('/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db');con=sqlite3.connect('file:'+str(db)+'?mode=ro',uri=True)
+owner=read_source(con,db);prior=json.loads((B/'projections/taxon-authority-candidates.json').read_text());assert owner==prior['source_owner']
+terms,missing=extract_terms(con,['NCBITaxon:364029'],prior['source_key']);assert not missing
+statements=[dict(zip(['subject','predicate','object','value','datatype','language'],r)) for r in con.execute('select subject,predicate,object,value,datatype,language from statements where subject=? order by predicate,object,value',('NCBITaxon:364029',))];con.close()
+result={'checked_at':datetime.now(timezone.utc).isoformat(),'reference_counterparts':out,'E6_PmdE':{'identifier':'NCBIProtein:BAI50711.1','source':bind(bai['path']),'issuing_source_qualifiers':q,'length':len(e6),'sequence_sha256':hashlib.sha256(e6.encode()).hexdigest(),'BR6020_same_length':len(e6)==len(br),'BR6020_exact_sequence_equality':e6==br,'BR6020_different_positions':[{'position':i+1,'E6':a,'BR6020':b} for i,(a,b) in enumerate(zip(e6,br)) if a!=b],'boundary':'Distinct E6 reference. Neither identical length nor homologous activity transfers the direct 2016 E6 assay to inferred BR6020 PmdE. Exact full recombinant tags/scars remain primary-preparation scope.'},'supplemental_taxon':{'identifier':'NCBITaxon:364029','term':terms['NCBITaxon:364029'],'source_owner':owner,'database':{'path':str(db),'bytes':db.stat().st_size,'sha256':owner['sha256']},'direct_native_statements':statements}}
+output=B/'projections/supplemental-reference-identities.json';assert not output.exists();output.write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps({'four_exact_counterparts_verified':True,'E6_BR6020_sequence_differences':len(result['E6_PmdE']['BR6020_different_positions']),'E6_taxon':terms['NCBITaxon:364029']},indent=2))

@@ -1,0 +1,99 @@
+"""Bounded author replay, compact projection and immutable external handoff."""
+import collections
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import xml.etree.ElementTree as ET
+import yaml
+
+ROOT=Path(__file__).resolve().parents[1]
+NATIVE=Path('/private/tmp/pathwaymech-next-260-native')
+def load(p):return json.loads(Path(p).read_text())
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(name,x):
+    p=ROOT/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+record=yaml.safe_load((ROOT/'native-foundation.yaml').read_text())
+edges={x['id']:x for x in record['mechanistic_edges']}
+manifest={r['frame']:r for r in load(NATIVE/'retained/selected-native-manifest.json')['objects']}
+objects={}
+for frame,row in manifest.items():
+    assert sha(row['path'])==row['sha256']
+    objects[frame]=next(x for x in ET.parse(row['path']).getroot() if x.get('frameid')==frame)
+def met(frame):return 'MetaCyc:'+frame
+acts=load(NATIVE/'projections/activity-preparation-dispositions.json')
+regs=load(NATIVE/'projections/regulator-dispositions.json')
+chem={x['frame']:x['recommended_identity'] for x in load('/private/tmp/pathwaymech-next-260-participant-authorities/retained/identity-dispositions.json')['native_compounds']}
+formal=load('/private/tmp/pathwaymech-next-260-chemistry-root/retained/material-facts.json')['facts']
+rmap={f['native_reaction']:f['chosen_directional_reaction'] for f in formal}
+checks=[]
+def check(name,condition):
+    assert condition,name;checks.append(name)
+for n,f in enumerate(formal,1):
+    e=edges[f'native-material-{n:02}'];inp=f['role_in_selected_pathway']=='input'
+    check(e['id'],(e['subject'],e['predicate'],e['object'])==((f['exact_chebi'],'consumes',f['chosen_directional_reaction']) if inp else (f['chosen_directional_reaction'],'produces',f['exact_chebi'])))
+for frame,obj in objects.items():
+    if obj.tag=='Protein':
+        for i,slot in enumerate(obj.findall('component'),1):
+            e=edges[f'native-composition-{frame}-{i}'];component=slot.find('Protein').get('frameid');count=slot.findtext('coefficient')
+            check(e['id'],(e['subject'],e['predicate'],e['object'])==(met(frame),'has_part',met(component)) and f'{count} copies' in e['description'])
+for a in acts:
+    act=a['activity'];obj=objects[act];eid='native-catalysis-'+act
+    if eid in edges:
+        e=edges[eid];chosen=rmap.get(met(a['reaction']),met(a['reaction']))
+        check(eid,(e['subject'],e['predicate'],e['object'])==(met(a['enzyme']),'catalyzes',chosen))
+    for n,c in enumerate(obj.findall('cofactor'),1):
+        e=edges[f'native-cofactor-{act}-{n}'];compound=c.find('Compound').get('frameid');pubs=[p.get('frameid') for p in c.findall('citation/Publication')]
+        qe=e['endpoint_qualifiers'][0]['evidence'][0]
+        actual_pub=[x.find('Publication').get('frameid') for x in obj.findall('evidence') if x.find('Publication').get('frameid') in pubs]
+        check(e['id']+' chemical and same-study qualifier',e['subject']==met(a['enzyme']) and e['object']==chem[compound] and len(actual_pub)==1 and actual_pub[0] in qe['source_assertion'])
+handed={'REG-12639','REG-8377','REG-11532','REG-11531','REG-11530','REG-11529','REG-12638','REG-8393','REG-8391'}
+for r in regs:
+    eid='native-reg-'+r['frame'].removeprefix('REG-')
+    if r['frame'] in handed:check(eid+' reserved',eid not in edges);continue
+    e=edges[eid];obj=objects[r['frame']]
+    reg=obj.find('regulator/Compound').get('frameid');act=obj.find('regulated-entity/Enzymatic-Reaction').get('frameid');target=objects[act].find('enzyme/Protein').get('frameid');sign=obj.findtext('mode')
+    check(eid,(e['subject'],e['predicate'],e['object'])==(chem[reg],'inhibits' if sign=='-' else 'activates',met(target)))
+    pubs=[p.get('frameid') for p in obj.findall('citation/Publication')]
+    check(eid+' same-study qualifier',any(p in e['endpoint_qualifiers'][0]['evidence'][0]['source_assertion'] for p in pubs))
+check('no exact LigJ/PmdE formal catalyst or enables substitution',not any(e['predicate'] in ['catalyzes','enables'] and e['subject'] in [met('CPLX-2864'),met('MONOMER-3183')] and e['object']=='RHEA:17403' for e in edges.values()))
+check('ProH native assertion retained with gap', 'native-catalysis-ENZRXN-3364' in edges and 'unverified' in edges['native-catalysis-ENZRXN-3364']['description'])
+check('25 native protein identities preserved',sum(p['category'] in ['protein','complex'] for p in record['participants'])==25)
+check('all five source-defined members retained',sum(e['predicate']=='part_of' and e['object']==record['id'] for e in edges.values())==5)
+check('zero paper quotes',all('quote' not in ev for e in edges.values() for ev in e['evidence']+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]))
+refmap={r['id']:r for r in record['references']}
+for rid,ref in refmap.items():check(rid+' exact original binding',ref['source_sha256']==manifest[rid.split(':',1)[1]]['sha256'])
+
+# Compact dossiers retain dispositions and exact locators while omitting full source prose/XML.
+def compact(value):
+    if isinstance(value,list):return [compact(v) for v in value]
+    if isinstance(value,dict):return {k:compact(v) for k,v in value.items() if k not in {'xml_projection','direct_text','native_refs','direct_crossreferences','inline_organism_scopes','current_owner','candidate_options','source_slots','protein_context_slots','preparation_notes'}}
+    return value
+for name in ['activity-dispositions.json','regulator-dispositions.json','fact-dispositions.json','protein-dispositions.json','gene-context-dispositions.json']:
+    raw=load(ROOT/name);slim=compact(raw)
+    for original,projected in zip(raw,slim):
+        if 'source_slots' in original:projected['original_slot_bindings']=[{k:s[k] for k in ['slot','source_locator','source_sha256','source_path']} for s in original['source_slots']]
+        if name=='gene-context-dispositions.json':
+            projected['gene_product_bindings']=original['native_refs']['product']
+            projected['source_crossreferences_context']=original['direct_crossreferences']
+    save('compact/'+name,slim)
+quantitative=[]
+for frame,obj in objects.items():
+    counts=collections.Counter()
+    for slot in obj:
+        counts[slot.tag]+=1
+        if slot.tag in {'km','vmax','kcat','ki','ph-opt','temperature-opt','molecular-weight-exp','molecular-weight-seq','pi','specific-activity'} or any(word in slot.tag for word in ['optimum','optimal','temperature','kinetic']):
+            quantitative.append({'frame':frame,'slot':slot.tag,'ordinal':counts[slot.tag],'source_path':manifest[frame]['path'],'source_sha256':manifest[frame]['sha256'],'source_locator':f"/ptools-xml/{obj.tag}[@frameid='{frame}']/{slot.tag}[{counts[slot.tag]}]",'direct_value':slot.text,'attributes':dict(slot.attrib),'scalar_children':[{'tag':x.tag,'text':x.text,'attributes':dict(x.attrib)} for x in slot if not list(x) and x.text and x.text.strip()],'compound_frames':[x.get('frameid') for x in slot.iter('Compound')],'publication_frames':[x.get('frameid') for x in slot.iter('Publication')],'disposition':'Source-context quantity, not a missing graph edge. Native GalB CHA-labelled kinetics remain a known substrate conflict; source values are not silently corrected.'})
+save('compact/quantitative-context-index.json',{'scope':'Exact structured native quantitative slots only. Narrative methods/conditions remain in the frozen primary and native fact ledgers; parsing prose does not make it structured evidence.','rows':quantitative})
+slots=load(ROOT/'source-to-fragment-slots.json')
+slimslots=[]
+for row in slots:
+    slimslots.append({k:row[k] for k in ['frame','object_type','slot','ordinal','source_path','source_sha256','source_locator','disposition','fragment_edge_ids','fragment_disposition'] if k in row})
+save('compact/source-to-fragment-slots.json',{'scope':'All1961 direct slots with exact original bindings and current fragment disposition; full original XML and narrative remain external.','slots':slimslots})
+save('author-audit.json',{'status':'passed','role':'author self-check; no independent scientific or technical review claimed','record_sha256':sha(ROOT/'native-foundation.yaml'),'checks':checks,'check_count':len(checks),'full_suite_run':False,'frozen_context_count':load(ROOT/'verification.json')['context_manifest_files_rehashed']})
+for p in ROOT.glob('build-attempt-*.log'):
+    out=ROOT/'compact'/(p.name+'.gz');out.write_bytes(gzip.compress(p.read_bytes(),mtime=0));assert gzip.decompress(out.read_bytes())==p.read_bytes()
+attempt_notes={'build-attempt-1.log':'Stopped: ElementTree does not implement child-attribute XPath predicate. Corrected exact selector; no source change.','build-attempt-2.log':'Stopped: verified new CuSO4 ChEBI label was not loaded from keyed proof dictionary. Corrected label extraction.','build-attempt-3.log':'Stopped: schema requires provides_input_for activity endpoints. Joined formal aldol product with native pathway TCA link; first draft preserved.','build-attempt-4.log':'Shape/source self-check passed; later cofactor-to-study audit found ENZRXN18617 qualifier used first evidence rather than own citation. Corrected before freeze; exact former draft preserved.','build-attempt-5.log':'Shape/source self-check passed, but fresh audit caught only the first child in the single five-child reaction-list slot being emitted as membership. All17 material edges and all5 reaction nodes were already present. Corrected membership projection and added actual count assertion before freeze.','build-attempt-6.log':'Passed after exact source membership correction.','build-attempt-7.log':'Passed after replacing research instructions in catalyst descriptions with factual source-scope statements.','build-attempt-8.log':'Final passed build; prose spacing normalized; identifiers and source assertions unchanged.'}
+save('compact/build-attempts.json',{'attempts':[{'path':p.name,'sha256':sha(p),'bytes':p.stat().st_size,'retained':'compact/'+p.name+'.gz','compressed_sha256':sha(ROOT/'compact'/(p.name+'.gz')),'note':attempt_notes[p.name]} for p in sorted(ROOT.glob('build-attempt-*.log'))]})
+print(json.dumps({'status':'passed','checks':len(checks),'record_sha256':sha(ROOT/'native-foundation.yaml'),'author_audit_sha256':sha(ROOT/'author-audit.json')},indent=2))

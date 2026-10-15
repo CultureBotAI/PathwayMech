@@ -1,0 +1,47 @@
+from pathlib import Path
+import hashlib,json,datetime
+from lxml import html
+root=Path('/private/tmp/pathwaymech-next-260-primary')
+def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def binding(p):
+ p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':digest(p)}
+rows=[]
+for x in json.loads((root/'reuse-bindings.json').read_text()):
+ assert digest(x['path'])==x['sha256']==digest(x['reused_path'])
+ rows.append({'kind':'1982 reused authentic original','path':x['path'],'pass':True})
+for x in json.loads((root/'acquisition-1975-pages.json').read_text()):
+ assert digest(x['path'])==x['sha256'];assert Path(x['path']).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+ rows.append({'kind':'1975 fresh authentic original','path':x['path'],'pass':True})
+for file in ['claim-ledger.json','reading-ledger.json']:
+ for x in json.loads((root/'author'/file).read_text()):
+  assert digest(x['source']['path'])==x['source']['sha256']
+q=json.loads((root/'author/quote-budget.json').read_text());checks=[]
+for x in q['quotes']:
+ pmc=Path(x['source']['path']).stem
+ text=' '.join((root/'projections/ocr'/f'{pmc}.txt').read_text().split())
+ assert x['quote'] in text
+ checks.append({'quote_id':x['quote_id'],'exact_auxiliary_ocr_match':True,'visual_original_check':'performed independently before OCR','prospective_words':x['prospective_total_words']})
+assert all(n<=25 for n in q['totals'].values())
+tables=json.loads((root/'author/table-projections.json').read_text())
+assert {k:len(v['rows']) for k,v in tables.items()}=={'Kersten1982_Table1':6,'Kersten1982_Table2':9,'Sparnins1975_Table2':5,'Sparnins1975_Table1':5}
+for table in tables.values():
+ assert digest(table['source']['path'])==table['source']['sha256']
+ assert all(len(row)==len(table['columns']) for row in table['rows'])
+old_manifest=json.loads(Path('/private/tmp/pathwaymech-next-253-native/acquisition-manifest.json').read_text())
+old={x['path']:x for x in old_manifest}
+reuse=[]
+for x in json.loads((root/'author/external-source-bindings.json').read_text()):
+ assert digest(x['path'])==x['sha256']
+ if x['path'] in old:
+  assert x['sha256']==old[x['path']]['sha256'];reuse.append({'current_binding':x,'original_receipt':old[x['path']],'pass':True})
+# Article scanned pages have a misleading supplementary-material section ID;
+# inspect exact attachment/link structure, not that ID as an SI claim.
+attachments=[]
+for pmc,p in [('PMC236050',root/'originals/PMC236050.html'),('PMC221622',Path('/private/tmp/pathwaymech-next-253-primary/originals/PMC221622.html'))]:
+ doc=html.fromstring(p.read_bytes());scan=doc.xpath('//figure[contains(@class,"fig-scanned")]/img')
+ candidates=[{'text':' '.join(a.itertext()).strip(),'href':a.get('href')} for a in doc.xpath('//a[@href]') if any(ext in a.get('href','').lower() for ext in ['.pdf','.doc','.xls','.zip','.csv'])]
+ attachments.append({'article':pmc,'source':binding(p),'scanned_page_count':len(scan),'attachment_links':candidates,'conclusion':'All observed document links target the main article PDF. No separate SI attachment identified in this exact landing-page body. This is not an upstream-wide absence claim.'})
+result={'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'source_original_checks':rows,'quote_checks':checks,'quote_totals':q['totals'],'native_original_reuse':reuse,'attachment_scope':attachments,'status':'passed provenance/quote/table-shape checks; not independent scientific review'}
+(root/'verification.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+(root/'external-originals-manifest.json').write_text(json.dumps([binding(p) for p in sorted((root/'originals').iterdir()) if p.is_file()],indent=2)+'\n')
+print(json.dumps({'originals':len(rows),'quotes':len(checks),'native_receipt_checks':len(reuse),'totals':q['totals']},indent=2))
