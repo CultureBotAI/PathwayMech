@@ -870,3 +870,66 @@ Rhea labels remain selected from the pinned production SQL release; newer RDF
 reaction evidence is separate. A valid PubChem property original supplies its
 label, and existing first UniProt owners remain authoritative. Native source
 licensing remains attached; no public-release clearance follows from parsing.
+
+## Complete P321 native identities
+
+The P321 source extension preserves all earlier authority owners and their
+serialized metadata. The new `P321-PWY` pathway owner additionally retains the
+complete original response as `original_base64` within `native_pathway`. Its
+consumer hashes those decoded bytes, reparses the declared XML encoding, checks
+the complete request/envelope and reconstructs every projected field. The eight
+citations, direct experimental evidence and three compound-to-pathway links
+remain source context; none adds a reaction or proves each lower-pathway enzyme.
+The nine-member reaction list, layouts and acyclic ordering remain mandatory.
+
+Four bounded 27.0 native profiles use the same complete-original check:
+
+- `metacyc-etf-reaction-xml` preserves R265-RXN's reversible mixed Compound and
+  whole Protein-class equation, Chemical-Reactions/Small-Molecule-Reactions
+  parents, Gibbs evidence (including its publication URL), activity backlink,
+  memberships and other native slots. Omitted reaction coefficients have native
+  arithmetic value one; explicit versus omitted presence remains distinct.
+- `metacyc-etf-class-xml` preserves ETF-Reduced and ETF-Oxidized as whole protein
+  classes, with their complete, unequal parent and state-link shapes. Reduced
+  ETF retains its semiquinone reference as context. Supplied paired owners must
+  have reciprocal reaction context. No fixed FAD/AMP occupancy or exact protein
+  sequence follows from these class identities.
+- `metacyc-singleton-activity-xml` preserves CPLX-926's one native component and
+  its coherent ENZRXN-1144/R266-RXN naming chain. The assembly coefficient is
+  absent: `coefficient: null`, `coefficient_explicit: false`. This is not an
+  inferred coefficient one or an oligomer measurement; the existing unnamed
+  homomer coefficient-at-least-two contract is unchanged.
+- `metacyc-gene-xml` preserves G-545/badD and G-550/badH with exact product
+  companions, reciprocal native gene links, species and issuing crosslinks.
+  Each `product_source` descriptor has exactly `path`, `url`, `version`,
+  `license` and `sha256`. Its original must be a regular file at a relative
+  cache path without traversal. Separate `native_metacyc_gene` metadata keeps
+  this grammar distinct from KEGG gene metadata; canonical placement remains
+  participants/category gene. Native identity does not replace a strain-specific
+  sequence or establish promoter regulation.
+
+The three non-gene profiles use `native_p321`. Each new kind has closed manifest
+and metadata fields. Both builder and consumer compare the entire reconstructed
+projection with the saved projection, check the exact selected term, and reject
+conflicting releases, alternate scopes and request-only downgrade owners before
+selection, including owners whose identifiers are not wanted. Protected prior
+benzoyl identities keep their existing checks. Canonical pathway, gene, complex
+and carrier names and native category checks precede contextual-label exemptions.
+UniProt contextual labels retain their existing policy and original authority
+names, including obsolete annotations.
+
+An exact standalone ordinary gene-product owner can coexist with its complete
+native gene and companion in either order, even when one owner has no selected
+term. The builder retains the actual manifest kind in temporary assertions only.
+Ordinary serialized metadata remains exactly `url`, `version`, `license` and
+`sha256`, without an added kind. The consumer accepts that legacy shape only
+against the complete reconstructed companion's exact URL, release and raw hash.
+Wrong kinds, additional provenance fields, alternate request-only URLs and
+changed originals or releases remain conflicts; dropping the kind from a
+manifest does not gain this consumer-only compatibility.
+
+Original-byte base64 retains encoding declarations, non-ASCII text and whitespace
+without normalizing source XML. DTDs and entities are rejected. The test fixture
+uses separately hashed, deterministic gzip storage and recovers exactly the
+issuing originals before parsing. These are identity/integrity checks, not an
+upstream signature, scientific activity proof or redistribution-license decision.

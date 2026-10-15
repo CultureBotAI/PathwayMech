@@ -1,0 +1,59 @@
+{
+  "python": "/private/tmp/pathwaymech-next-263-verified-venv/bin/python",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "commands": [
+    {
+      "phase": "full immutable predecessor and 35 source owners before capture; exact payload copy",
+      "command": "python -B prepare_successor.py",
+      "session": 57411,
+      "exit_code": 0,
+      "stdout": "prepare.stdout.txt",
+      "stderr": "prepare.stderr.txt"
+    },
+    {
+      "phase": "R01 and R02 focused regression controls",
+      "command": "python -B regression_checks.py",
+      "session": 23245,
+      "exit_code": 0,
+      "stdout": "regression-1.stdout.txt",
+      "stderr": "regression-1.stderr.txt"
+    },
+    {
+      "phase": "complete offline physical, current compact and historical reconstruction",
+      "command": "python -B payload/decode_retained.py --repo /private/tmp/pathwaymech-next-267-20261015 --materialize /private/tmp/pathwaymech-next-267-retention-successor/reconstruction --receipt /private/tmp/pathwaymech-next-267-retention-successor/proof/complete-reconstruction.json",
+      "session": 42539,
+      "exit_code": 0,
+      "stdout": "reconstruction.stdout.txt",
+      "stderr": "reconstruction.stderr.txt"
+    },
+    {
+      "phase": "previous 35 malformed-input guards against corrected decoder",
+      "command": "python -B legacy_guard_replay.py",
+      "session": 42460,
+      "exit_code": 0,
+      "stdout": "legacy-guards.stdout.txt",
+      "stderr": "legacy-guards.stderr.txt"
+    },
+    {
+      "phase": "full predecessor/source preservation plus full frozen original-review binding",
+      "command": "python -B audit_preservation.py",
+      "session": 69596,
+      "exit_code": 0,
+      "stdout": "audit.stdout.txt",
+      "stderr": "audit.stderr.txt"
+    },
+    {
+      "phase": "final helper lint",
+      "command": "python -B -m ruff check prepare_successor.py decode_retained.py regression_checks.py audit_preservation.py legacy_guard_replay.py finalize_successor.py payload/decode_retained.py",
+      "exit_code": 0,
+      "stdout": "lint-final.stdout.txt",
+      "stderr": "lint-final.stderr.txt"
+    }
+  ],
+  "all_verification_sessions_terminal": true,
+  "shared_runtime_or_dependency_changes": false,
+  "helper_formatting_note": "Preparation and legacy replay helpers were Ruff-formatted after their successful run without semantic edits; decoder and focused regression source bytes were formatted before execution and unchanged afterward."
+}

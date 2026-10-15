@@ -1,0 +1,346 @@
+"""Exercise exact historical coverage and pre-write scratch destination guards."""
+
+import copy
+import json
+import shutil
+import sys
+from pathlib import Path
+from unittest.mock import patch
+
+import decode_retained as mod
+
+ROOT = Path(__file__).parent
+PAYLOAD = ROOT / "payload"
+REPO = Path("/private/tmp/pathwaymech-next-267-20261015")
+
+
+def main():
+    serial = 1
+    while (ROOT / f"regression-fixtures-{serial}").exists():
+        serial += 1
+    fixture = ROOT / f"regression-fixtures-{serial}"
+    fixture.mkdir()
+    history = fixture / "history"
+    history.mkdir()
+    shutil.copytree(PAYLOAD / "packages", history / "packages")
+    for name in ("source-specification.json", "historical-compact-references.json"):
+        shutil.copyfile(PAYLOAD / name, history / name)
+    (history / "proof").mkdir()
+    shutil.copyfile(
+        PAYLOAD / mod.HISTORICAL_BINDING["retained_gzip"],
+        history / mod.HISTORICAL_BINDING["retained_gzip"],
+    )
+    original = mod.load(history / "historical-compact-references.json")
+    results = []
+    complete = False
+
+    def reject(name, function, message):
+        try:
+            function()
+        except (ValueError, KeyError, FileNotFoundError) as error:
+            mod.require(
+                message in str(error), "wrong failure for " + name + ": " + str(error)
+            )
+            results.append(
+                {
+                    "case": name,
+                    "status": "rejected",
+                    "exception": type(error).__name__,
+                    "message": str(error),
+                }
+            )
+        else:
+            results.append({"case": name, "status": "accepted-unexpectedly"})
+            raise ValueError("guard failed: " + name)
+
+    decoder = mod.Decoder(PAYLOAD, REPO)
+    links = []
+    try:
+        positive = mod.historical_plan(history, decoder)
+        mod.require(
+            len(positive["rows"]) == 477 and len(positive["expected_paths"]) == 926,
+            "complete historical positive control failed",
+        )
+        results.append(
+            {
+                "case": "complete historical derivation",
+                "status": "pass",
+                "rows": 477,
+                "paths": 926,
+            }
+        )
+        metadata = history / "historical-compact-references.json"
+        metadata.unlink()
+        reject(
+            "missing historical metadata",
+            lambda: mod.historical_plan(history, decoder),
+            "required",
+        )
+        mod.dump(metadata, original)
+
+        def historical_case(
+            name,
+            mutate,
+            message="historical declarations or original owner roles changed",
+        ):
+            altered = copy.deepcopy(original)
+            mutate(altered)
+            mod.dump(metadata, altered)
+            reject(name, lambda: mod.historical_plan(history, decoder), message)
+            mod.dump(metadata, original)
+
+        for name, mutate in (
+            ("zero historical rows", lambda o: o.update(rows=[])),
+            ("one historical declaration omitted", lambda o: o["rows"].pop()),
+            (
+                "one extra duplicate declaration",
+                lambda o: o["rows"].append(o["rows"][0]),
+            ),
+            (
+                "duplicate replaces one declaration at unchanged count",
+                lambda o: o["rows"].__setitem__(1, o["rows"][0]),
+            ),
+            (
+                "author relabeled as independent reviewer",
+                lambda o: o["rows"][0].update(
+                    original_owner_package="next266-independent-primary-review"
+                ),
+            ),
+            (
+                "reviewer relabeled as author",
+                lambda o: o["rows"][-1].update(
+                    original_owner_package="next266-primary"
+                ),
+            ),
+            (
+                "current owner relabeled",
+                lambda o: o["rows"][0].update(
+                    current_package="independent-primary-review"
+                ),
+            ),
+            (
+                "copied manifest path relabeled",
+                lambda o: o["rows"][0].update(current_manifest="wrong.json"),
+            ),
+            (
+                "false copied manifest hash",
+                lambda o: o["rows"][0].update(current_manifest_sha256="0" * 64),
+            ),
+            (
+                "historical source pair index changed",
+                lambda o: o["rows"][0]["original_compact_pair"].update(index=1),
+            ),
+            (
+                "historical source digest changed",
+                lambda o: o["rows"][0]["original_compact_pair"].update(
+                    original_sha256="0" * 64
+                ),
+            ),
+        ):
+            historical_case(name, mutate)
+        for key, value in (
+            ("git_commit", "0" * 40),
+            ("git_tree", "0" * 40),
+            ("git_blob", "0" * 40),
+            ("path", "wrong/prior.json"),
+            ("sha256", "0" * 64),
+            ("bytes", 0),
+            ("retained_sha256", "0" * 64),
+            ("retained_gzip", "wrong.gz"),
+        ):
+            historical_case(
+                "false prior binding " + key,
+                lambda o, k=key, v=value: o["prior_pairs_binding"].update({k: v}),
+                "pinned binding changed",
+            )
+        historical_case(
+            "supplemental content list omitted",
+            lambda o: o.update(additional_content_rows=[]),
+            "supplemental content coverage changed",
+        )
+        primary_path = history / "packages/primary/source-map.json"
+        primary = mod.load(primary_path)
+        altered = copy.deepcopy(primary)
+        row = next(
+            r
+            for r in altered["source_occurrences"]
+            if r["path"] == mod.HISTORICAL_MAPS[0][2]
+        )
+        row["sha256"] = "0" * 64
+        mod.dump(primary_path, altered)
+        reject(
+            "false physical copied-manifest binding",
+            lambda: mod.historical_plan(history, decoder),
+            "copied historical source manifest binding changed",
+        )
+        mod.dump(primary_path, primary)
+        # Exercise the CLI entry point, not only the helper, with absent metadata.
+        metadata.unlink()
+        with (
+            patch.object(
+                sys, "argv", ["decoder", "--root", str(history), "--repo", str(REPO)]
+            ),
+            patch.object(mod, "Decoder", return_value=decoder),
+            patch.object(decoder, "close"),
+        ):
+            reject(
+                "standalone CLI rejects absent historical metadata",
+                mod.main,
+                "required",
+            )
+        mod.dump(metadata, original)
+
+        class AttemptedWrite(Exception):
+            pass
+
+        attempted = []
+
+        def intercept_mkdir(path, *args, **kwargs):
+            attempted.append({"lexical": str(path), "resolved": str(path.resolve())})
+            raise AttemptedWrite()
+
+        existing_file = fixture / "existing-file"
+        existing_file.write_text("test fixture\n")
+        outside_link = fixture / "outside-parent"
+        outside_link.symlink_to("/Users/marcin", target_is_directory=True)
+        inside_link = fixture / "inside-parent"
+        inside_link.symlink_to(history, target_is_directory=True)
+        dangling = fixture / "dangling-parent"
+        dangling.symlink_to(fixture / "absent-parent", target_is_directory=True)
+        links.extend([outside_link, inside_link, dangling])
+        cases = (
+            (
+                "parent traversal outside scratch",
+                Path("/private/tmp/../../Users/marcin/retention-must-not-be-created"),
+                "traversal",
+            ),
+            (
+                "parent traversal within scratch",
+                fixture / "normal/../escape",
+                "traversal",
+            ),
+            (
+                "symlink parent outside scratch",
+                outside_link / "retention-must-not-be-created",
+                "symlink",
+            ),
+            (
+                "symlink parent within scratch",
+                inside_link / "retention-must-not-be-created",
+                "symlink",
+            ),
+            (
+                "dangling symlink ancestor",
+                dangling / "retention-must-not-be-created",
+                "symlink",
+            ),
+            ("symlink destination", dangling, "symlink"),
+            (
+                "relative destination",
+                Path("relative-retention-destination"),
+                "absolute",
+            ),
+            (
+                "direct outside destination",
+                Path("/Users/marcin/retention-must-not-be-created"),
+                "prefix",
+            ),
+            (
+                "scratch prefix sibling",
+                Path("/private/tmp-other/retention-must-not-be-created"),
+                "prefix",
+            ),
+            ("existing directory", history, "new directory"),
+            ("existing file", existing_file, "new directory"),
+            ("file ancestor", existing_file / "child", "not a directory"),
+            ("scratch root itself", Path("/private/tmp"), "fresh destination"),
+        )
+        for name, destination, message in cases:
+            attempted.clear()
+            with (
+                patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "decoder",
+                        "--root",
+                        str(PAYLOAD),
+                        "--repo",
+                        str(REPO),
+                        "--materialize",
+                        str(destination),
+                    ],
+                ),
+                patch.object(Path, "mkdir", intercept_mkdir),
+            ):
+                reject(name + " before any mkdir", mod.main, message)
+            mod.require(not attempted, "unsafe probe reached mkdir")
+            results[-1]["directory_write_attempts"] = 0
+        valid = fixture / "valid-fresh-parent/destination"
+        mod.require(
+            mod.validate_destination(valid) == valid.resolve(),
+            "fresh valid destination rejected",
+        )
+        attempted.clear()
+        with (
+            patch.object(
+                sys,
+                "argv",
+                [
+                    "decoder",
+                    "--root",
+                    str(PAYLOAD),
+                    "--repo",
+                    str(REPO),
+                    "--materialize",
+                    str(valid),
+                ],
+            ),
+            patch.object(Path, "mkdir", intercept_mkdir),
+        ):
+            try:
+                mod.main()
+            except AttemptedWrite:
+                pass
+        mod.require(
+            attempted
+            == [{"lexical": str(valid.resolve()), "resolved": str(valid.resolve())}],
+            "valid fresh destination did not reach the expected first mkdir",
+        )
+        results.append(
+            {
+                "case": "valid fresh scratch CLI destination",
+                "status": "pass",
+                "intercepted_safe_creation": attempted,
+                "actual_probe_writes": 0,
+            }
+        )
+        complete = True
+    finally:
+        decoder.close()
+        for link in links:
+            link.unlink()
+        mod.dump(
+            ROOT / f"proof/regression-results-{serial}.json",
+            {
+                "status": "pass" if complete else "failed-attempt-preserved",
+                "results": results,
+                "rejected_cases": sum(r["status"] == "rejected" for r in results),
+                "out_of_scope_writes": 0,
+                "unsafe_probe_mkdir_attempts": 0,
+                "scope": "R01/#604 and R02/#605; all probe mutations confined to copied controls in this successor.",
+            },
+        )
+    print(
+        json.dumps(
+            {
+                "status": "pass",
+                "cases": len(results),
+                "rejected": sum(r["status"] == "rejected" for r in results),
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

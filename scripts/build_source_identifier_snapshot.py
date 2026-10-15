@@ -9,6 +9,8 @@ metacyc-protein-xml, metacyc-reaction-xml, metacyc-carrier-class-xml,
 metacyc-heteromer-activity-xml, metacyc-ferredoxin-reaction-xml,
 metacyc-ferredoxin-class-xml, metacyc-hydrolytic-composite-xml
 (separate constituent_sources originals), metacyc-named-reaction-xml,
+metacyc-etf-reaction-xml, metacyc-etf-class-xml, metacyc-singleton-activity-xml,
+metacyc-gene-xml (separate product_source original),
 ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, rhea-polymer-rdf,
@@ -79,6 +81,15 @@ from pathwaymech.biocyc_electron_transfer import (
     ELECTRON_TRANSFER_KIND,
     reaction_metadata,
     reaction_term,
+)
+from pathwaymech.biocyc_p321 import (
+    GENE_KIND as METACYC_GENE_KIND,
+)
+from pathwaymech.biocyc_p321 import (
+    P321_KINDS,
+    p321_metadata,
+    p321_term,
+    validate_p321_assertions,
 )
 from pathwaymech.biocyc_pathway import PATHWAY_KIND, pathway_metadata, pathway_term
 from pathwaymech.biocyc_protein_carrier_reaction import (
@@ -1854,6 +1865,13 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for index, entry in enumerate(entries)
     }
     validate_benzoyl_assertions(benzoyl_sources, [])
+    p321_sources = {
+        index: p321_metadata(entry, cache_dir) if entry["kind"] in P321_KINDS
+        else pathway_metadata(entry, cache_dir) if entry["kind"] == PATHWAY_KIND
+        else entry
+        for index, entry in enumerate(entries)
+    }
+    validate_p321_assertions(p321_sources, [])
     carrier_sources = {
         index: carrier_reaction_metadata(entry, cache_dir)
         if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND
@@ -1878,6 +1896,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for projection in context_projections.values()
     }
     for entry_index, entry in enumerate(entries):
+        if "product_source" in entry and entry["kind"] != METACYC_GENE_KIND:
+            raise ValueError("product_source requires the native MetaCyc gene kind")
         for native_kind, companion_field in COMPANION_FIELDS.items():
             if (
                 companion_field in entry
@@ -1902,7 +1922,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         if artifact.is_absolute() or ".." in artifact.parts:
             raise ValueError(f"source {key} requires a relative cache path")
         path = cache_dir / artifact
-        if entry["kind"] in ACETO_KINDS | BENZOYL_KINDS | {
+        if entry["kind"] in ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | {
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
             ELECTRON_TRANSFER_KIND,
@@ -1961,6 +1981,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                     if "/" not in identifier
                 ],
             )
+        elif entry["kind"] in P321_KINDS:
+            metadata = p321_sources[entry_index]
+            identifier, typed_term = p321_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in BENZOYL_KINDS:
             metadata = benzoyl_sources[entry_index]
             identifier, typed_term = benzoyl_term(metadata, key)
@@ -2285,6 +2309,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = context_term(identifier, context_projections[entry_index], key)
             if entry["kind"] in GENE_KINDS:
                 terms[identifier] = gene_term(metadata, key)[1]
+            if entry["kind"] in P321_KINDS:
+                terms[identifier] = p321_term(metadata, key)[1]
             if entry["kind"] in BENZOYL_KINDS:
                 terms[identifier] = benzoyl_term(metadata, key)[1]
             if entry["kind"] in ACETO_KINDS:
@@ -2315,6 +2341,16 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
             ):
                 terms[identifier]["label_kind"] = "source_context"
             sources[key] = metadata
+    # Ordinary protein serialization deliberately omits kind. Preserve the
+    # actual manifest kind for this final, preselection assertion inventory,
+    # including owners contributing no selected term; never persist this copy.
+    validate_p321_assertions(
+        {
+            entry["key"]: {**all_aceto_sources[entry["key"]], "kind": entry["kind"]}
+            for entry in entries
+        },
+        all_aceto_claims,
+    )
     validate_benzoyl_assertions(all_aceto_sources, all_aceto_claims)
     validate_aceto_assertions(all_aceto_sources, all_aceto_claims)
     validate_named_complex_graph(named_assemblies)

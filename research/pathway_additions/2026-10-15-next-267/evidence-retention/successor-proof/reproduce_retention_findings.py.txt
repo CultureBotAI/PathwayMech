@@ -1,0 +1,46 @@
+"""Root bounded reproductions; never write outside owned scratch or change inputs."""
+from pathlib import Path
+from unittest.mock import patch
+import datetime
+import hashlib
+import importlib.util
+import json
+import shutil
+import sys
+
+SOURCE=Path('/private/tmp/pathwaymech-next-267-retention-preparation/payload')
+CI=Path('/private/tmp/pathwaymech-next-267-ci')
+OUT=CI/'retention-findings-root-reproduction'
+REPO=Path('/private/tmp/pathwaymech-next-267-20261015')
+assert not OUT.exists();OUT.mkdir()
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+inputs={n:sha(SOURCE/n) for n in ['decode_retained.py','historical-compact-references.json','artifact-manifest.json']}
+spec=importlib.util.spec_from_file_location('root_retention_probe',SOURCE/'decode_retained.py')
+mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+history=json.loads((SOURCE/'historical-compact-references.json').read_bytes())
+assert len(history['rows'])==477
+retained=OUT/history['prior_pairs_binding']['retained_gzip'];retained.parent.mkdir(parents=True)
+shutil.copyfile(SOURCE/history['prior_pairs_binding']['retained_gzip'],retained)
+history['rows']=[]
+metadata=OUT/'historical-compact-references.json';metadata.write_text(json.dumps(history))
+decoder=mod.Decoder(SOURCE,REPO)
+try:
+    zero=mod.verify_historical(OUT,decoder)
+    assert zero=={'status':'pass','declared_rows':0,'distinct_reference_paths':0}
+    metadata.rename(OUT/'historical-compact-references.omitted-rows.json')
+    missing=mod.verify_historical(OUT,decoder)
+    assert missing=={'status':'not yet added','declared_rows':0}
+finally:decoder.close()
+class Captured(Exception):pass
+captured=[]
+def no_write(self,*args,**kwargs):
+    captured.append({'lexical':str(self),'resolved':str(self.resolve()),'under_scratch':self.resolve().is_relative_to(Path('/private/tmp').resolve())})
+    raise Captured()
+with patch.object(sys,'argv',['decode_retained.py','--repo',str(REPO),'--materialize','/private/tmp/../../Users/marcin/retention-root-probe-must-not-be-created']),patch.object(Path,'mkdir',no_write):
+    try:mod.main()
+    except Captured:pass
+assert len(captured)==1 and captured[0]['under_scratch'] is False
+assert inputs=={n:sha(SOURCE/n) for n in inputs}
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'both-reported-findings-reproduced','original_manifest_sha256':inputs['artifact-manifest.json'],'decoder_sha256':inputs['decode_retained.py'],'checks':[{'finding':'R01','case':'all477historicalrowsomitted','observed':zero},{'finding':'R01','case':'historicalmetadatafilemissing','observed':missing},{'finding':'R02','case':'parenttraversalescapesscratch','observed':captured[0],'out_of_scope_writes':0}],'all_source_inputs_unchanged':True,'scope':'Three independent root controls confirm incomplete historical success and attempted outside-scratch mkdir; reviewer independently covers additional cases. No original source loss or actual out-of-scope write.'}
+(CI/'root-retention-findings-reproduction.json').write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result),flush=True)

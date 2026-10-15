@@ -1,0 +1,46 @@
+{
+  "status": "needs_curation",
+  "findings": [
+    {
+      "id": "R01",
+      "severity": "moderate",
+      "title": "Historical reconstruction can report pass after dropping declarations or changing original owner roles",
+      "path": "payload/decode_retained.py",
+      "line": 315,
+      "finding": "The advertised standalone verifier never establishes the complete expected historical declaration set. verify_historical returns a staging disposition when its metadata is missing; otherwise it validates only the supplied rows. Dropping all 477 rows returns pass with zero paths, dropping one returns pass with 476 rows/924 paths, and changing original_owner_package or current_manifest_sha256 is accepted. main does not validate the complete payload artifact manifest first and still emits overall status pass. The unchanged frozen payload can remain fully recoverable while these malformed-input checks fail.",
+      "evidence": "independent-adversarial-results.json; adversarial_review.py",
+      "reproduced_cases": [
+        "historical rows omitted entirely",
+        "one historical declaration omitted",
+        "historical owner relabeled as independent current review",
+        "historical current manifest wrong hash",
+        "historical compact metadata entirely missing"
+      ],
+      "impact": "A verification receipt can silently omit historical evidence or attribute original author/reviewer bytes to a different owner. Root adoption manifest checking protects the exact current payload, but the README-advertised standalone recovery command lacks that protection.",
+      "requested_change": "Make the advertised standalone verification fail closed on missing historical metadata and incomplete or altered historical declarations/owner bindings. Validate against the complete fixed payload manifest and/or reconstruct the exact expected historical set from the retained original compact manifests and pinned prior Git records, rather than validating only surviving supplied rows. Preserve original owner roles and bind all historical control inputs in receipts.",
+      "acceptance": "Exact unchanged payload recovers all 477 pairs and 926 historical paths. Missing metadata, zero rows, omitted/duplicated rows, false copied-manifest bindings, and altered original author/reviewer owners all reject. Prior merged commit/tree/path/blob provenance remains verified.",
+      "scope": "Technical retention decoder. No source-byte loss or biological finding is asserted."
+    },
+    {
+      "id": "R02",
+      "severity": "minor",
+      "title": "Materialization scratch guard accepts traversal and symlink escape at the destination root",
+      "path": "payload/decode_retained.py",
+      "line": 386,
+      "finding": "The scratch guard uses lexical Path.is_relative_to before mkdir. Both /private/tmp/../../Users/marcin/<new-name> and a /private/tmp/<symlink-to-/Users/marcin>/<new-name> pass it. The later safe() function treats the supplied destination as its trusted root, so it does not restore confinement.",
+      "evidence": "independent-adversarial-results.json; adversarial_review.py",
+      "reproduced_cases": [
+        "materialization root traversal outside scratch",
+        "materialization root symlink outside scratch"
+      ],
+      "impact": "A supplied destination that appears inside the advertised scratch prefix can create a directory and materialize files outside /private/tmp. The proof intercepted the first mkdir; zero out-of-scope writes occurred.",
+      "requested_change": "Resolve and validate the destination against the resolved allowed scratch root, reject unsafe traversal and symlink ancestry before creating any directory, and preserve the fresh-destination requirement.",
+      "acceptance": "A fresh ordinary /private/tmp destination succeeds. Parent traversal, symlinked parent escape, and existing destinations fail before any directory or file write.",
+      "scope": "Local recovery helper path safety. No real user files were created, modified, or deleted."
+    }
+  ],
+  "source_manifest_sha256": "fa14d99b3fc94fb8d4574e1b76ed3d37287036d29648eef068aa028c1ebd6461",
+  "payload_manifest_sha256": "9a81127803cb3e0688736a1aeab036d118d1e84f4f46a53f3e3a825d3eb5bcd7",
+  "adversarial_result_sha256": "34a6c5c0f4c0cdbc0e063af7dc09e5cfa6dbbe9ef457ce0dc7fd353d2e37ff74",
+  "byte_recovery_verification": "Still in progress when this findings file was emitted; final handoff states its result."
+}

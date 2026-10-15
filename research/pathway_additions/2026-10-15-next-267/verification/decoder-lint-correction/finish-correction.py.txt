@@ -1,0 +1,46 @@
+"""Finish the correction after the native history CLI rejected UPDATE; use its documented EDIT event."""
+from fix_retained_decoder_lint import *
+
+
+def main():
+    receipt = json.loads((PROOF / 'correction.json').read_text())
+    decoder = PAYLOAD / 'decode_retained.py'
+    manifest = PAYLOAD / 'artifact-manifest.json'
+    changed = [item['path'] for item in receipt['changes']]
+    for item in receipt['changes']:
+        assert sha(PAYLOAD / item['path']) == item['after_sha256']
+    assert sha(RESEARCH / 'README.md') == receipt['new_report_sha256']
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+               PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+    command = [PYTHON, '-B', 'scripts/new_history_record.py', '--kind', 'other',
+               '--slug', 'benzoyl-coa-degradation-iii-research', '--path',
+               str(decoder.relative_to(ROOT)), '--event', 'EDIT', '--outcome', 'changed',
+               '--actor-name', 'Codex', '--actor-type', 'ai_agent', '--agent-tool', 'codex',
+               '--issue', 'https://github.com/CultureBotAI/PathwayMech/issues/606',
+               '--summary', 'Fix retained decoder line length without changing behavior',
+               '--details', 'Split one path literal using implicit concatenation after native lint '
+               'reported E501. Whole-module AST identity is verified. Only decoder bytes and its '
+               'payload-manifest row change within the 5969-file package; all other 5967 payload '
+               'files are unchanged. Preserve the original decoder, manifest, report and complete '
+               'failed gate attempt. Document prior verification as reuse via AST identity. '
+               'Independent final review and successor native gates remain separate observations.']
+    result = subprocess.run(command, cwd=ROOT, env=env, text=True, capture_output=True)
+    (PROOF / 'native-history.log').write_text(result.stdout + result.stderr)
+    assert result.returncode == 0, result.stderr
+    path = Path(result.stdout.strip().splitlines()[-1])
+    path = path if path.is_absolute() else ROOT / path
+    write(PROOF / 'native-history.json', {'command': command, 'exit_code': result.returncode,
+                                         'path': str(path.relative_to(ROOT)), 'sha256': sha(path)})
+    write(PROOF / 'artifact-manifest.json', {
+        'scope': 'Complete formatting-correction evidence, excluding this self-manifest.',
+        'files': [{'path': p.relative_to(PROOF).as_posix(), 'bytes': p.stat().st_size,
+                   'sha256': sha(p)} for p in sorted(PROOF.rglob('*')) if p.is_file()]})
+    write(CI / 'decoder-lint-correction-adoption.json', {
+        **receipt, 'proof_manifest_sha256': sha(PROOF / 'artifact-manifest.json'),
+        'history_path': str(path.relative_to(ROOT))})
+    print(json.dumps({'changed': changed, 'payload_manifest': sha(manifest),
+                      'decoder': sha(decoder), 'proof_manifest': sha(PROOF / 'artifact-manifest.json')}))
+
+
+if __name__ == '__main__':
+    main()

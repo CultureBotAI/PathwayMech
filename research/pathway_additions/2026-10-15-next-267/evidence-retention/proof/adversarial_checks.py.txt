@@ -1,0 +1,173 @@
+"""Exercise provenance, exact decoding, compact identity and safe write guards."""
+
+import copy
+import gzip
+from pathlib import Path
+from unittest.mock import patch
+
+from retention_io import (
+    BASE,
+    LIMIT,
+    TREE,
+    Decoder,
+    check,
+    declared_compact_identity,
+    dump,
+    gunzip,
+    load,
+    require,
+    safe,
+    sha,
+)
+
+ROOT = Path(__file__).parent
+PAYLOAD = ROOT / "payload"
+REPO = Path("/private/tmp/pathwaymech-next-267-20261015")
+OUT = ROOT / "adversarial-fixtures"
+
+
+def main():
+    require(not OUT.exists(), "adversarial fixtures are create-only")
+    OUT.mkdir()
+    results = []
+
+    def reject(name, function):
+        try:
+            function()
+        except (ValueError, KeyError, OSError, EOFError) as error:
+            results.append({"case": name, "status": "rejected", "error": str(error)})
+        else:
+            raise ValueError("guard failed: " + name)
+
+    for relative in ("../escape", "/absolute", "x/../../escape", "a\\b", "./x", ""):
+        reject("unsafe path " + repr(relative), lambda r=relative: safe(OUT, r))
+    (OUT / "real").mkdir()
+    (OUT / "link").symlink_to(OUT / "real", target_is_directory=True)
+    reject("intermediate symlink", lambda: safe(OUT, "link/file"))
+    (OUT / "link").unlink()
+    reject("size mismatch", lambda: check(b"abc", sha(b"abc"), 4))
+    reject("digest mismatch", lambda: check(b"abd", sha(b"abc"), 3))
+    reject("negative size", lambda: check(b"", sha(b""), -1))
+    original = b"exact bytes including trailing spaces  \n" * 100
+    compressed = gzip.compress(original, mtime=0)
+    require(
+        gunzip(compressed, sha(original), len(original)) == original, "positive gzip"
+    )
+    reject("gzip output size cap", lambda: gunzip(compressed, sha(original), 1))
+    reject(
+        "gzip truncated member",
+        lambda: gunzip(compressed[:-4], sha(original), len(original)),
+    )
+    reject(
+        "gzip extra decoded member",
+        lambda: gunzip(compressed + compressed, sha(original), len(original)),
+    )
+    duplicate = OUT / "duplicate.json"
+    duplicate.write_text('{"a":1,"a":2}')
+    reject("duplicate JSON key", lambda: load(duplicate))
+    reject(
+        "unknown compact encoding",
+        lambda: declared_compact_identity({"encoding": "zip"}),
+    )
+    decoder = Decoder(PAYLOAD, REPO)
+    try:
+        inherited = next(
+            r
+            for r in decoder.contents.values()
+            if r["storage"]["kind"] == "existing_repository"
+        )
+        fresh = next(
+            r
+            for r in decoder.contents.values()
+            if r["storage"]["kind"] == "new_retention_object" and r["decode_steps"]
+        )
+        require(
+            len(decoder.decode(inherited["source_sha256"]))
+            == inherited["source_bytes"],
+            "positive inherited",
+        )
+        for field, value, name in (
+            ("git_commit", "0" * 40, "wrong inherited commit"),
+            ("git_tree", "0" * 40, "wrong inherited tree issue591"),
+            ("path", "../outside", "unsafe inherited path"),
+            ("stored_sha256", "0" * 64, "inherited endpoint hash"),
+            ("stored_bytes", -1, "inherited endpoint size"),
+        ):
+            storage = copy.deepcopy(inherited["storage"])
+            storage[field] = value
+            reject(name, lambda s=storage: decoder.endpoint(s))
+        proof_key = (BASE, inherited["storage"]["path"])
+        proof = decoder.proofs[proof_key]
+        decoder.proofs[proof_key] = {**proof, "git_tree": "0" * 40}
+        reject("wrong proof tree", lambda: decoder.endpoint(inherited["storage"]))
+        decoder.proofs[proof_key] = proof
+        for field, value, name in (
+            ("path", "/outside", "unsafe new endpoint"),
+            ("stored_sha256", "0" * 64, "new endpoint hash"),
+            ("stored_bytes", LIMIT, "GitHub endpoint size boundary"),
+            ("kind", "unknown", "unknown endpoint type"),
+        ):
+            storage = copy.deepcopy(fresh["storage"])
+            storage[field] = value
+            reject(name, lambda s=storage: decoder.endpoint(s))
+        digest = fresh["source_sha256"]
+        decoder.cache.pop(digest, None)
+        for field, value, name in (
+            ("encoding", "zip", "unsupported decode algorithm"),
+            ("input_sha256", "0" * 64, "decode layer input hash"),
+            ("output_sha256", "0" * 64, "decode layer output hash"),
+            ("output_bytes", 0, "decode layer output size"),
+        ):
+            altered = copy.deepcopy(fresh)
+            altered["decode_steps"][0][field] = value
+            decoder.contents[digest] = altered
+            reject(name, lambda: decoder.decode(digest))
+        decoder.contents[digest] = fresh
+        chunks = [
+            r
+            for r in decoder.contents.values()
+            if r["storage"]["kind"] == "new_retention_chunks"
+        ]
+        require(bool(chunks), "actual large-original chunk case missing")
+        for row in chunks:
+            require(
+                len(decoder.decode(row["source_sha256"])) == row["source_bytes"],
+                "positive chunk reassembly",
+            )
+        for mutation, name in (
+            (lambda s: s["chunks"].reverse(), "reordered chunks"),
+            (lambda s: s["chunks"].pop(), "missing chunk"),
+            (lambda s: s["chunks"][0].update(sha256="0" * 64), "chunk content hash"),
+            (lambda s: s["chunks"][0].update(path="../outside"), "chunk traversal"),
+            (lambda s: s["chunks"][0].update(bytes=LIMIT), "chunk size limit"),
+        ):
+            storage = copy.deepcopy(chunks[0]["storage"])
+            mutation(storage)
+            reject(name, lambda s=storage: decoder.endpoint(s))
+    finally:
+        decoder.close()
+    with patch("retention_io.subprocess.check_output", return_value=b"0" * 40 + b"\n"):
+        reject(
+            "actual Git tree mismatch despite claimed binding",
+            lambda: Decoder(PAYLOAD, REPO),
+        )
+    dump(
+        ROOT / "proof/adversarial-checks.json",
+        {
+            "status": "pass",
+            "rejected_cases": results,
+            "count": len(results),
+            "positive_cases": [
+                "exact gzip",
+                "actual inherited Git owner",
+                "actual large original chunk reconstruction",
+            ],
+            "git_commit": BASE,
+            "git_tree": TREE,
+        },
+    )
+    print("passed", len(results), "adversarial rejection cases")
+
+
+if __name__ == "__main__":
+    main()

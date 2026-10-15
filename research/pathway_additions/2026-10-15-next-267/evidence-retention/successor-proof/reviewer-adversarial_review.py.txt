@@ -1,0 +1,120 @@
+"""Independent fault injection against the proposed decoder; inputs stay frozen."""
+import copy
+import gzip
+import hashlib
+import importlib.util
+import json
+from pathlib import Path
+import shutil
+import sys
+from unittest.mock import patch
+
+ROOT=Path('/private/tmp/pathwaymech-next-267-retention-preparation/payload')
+OUT=Path('/private/tmp/pathwaymech-next-267-independent-retention-review')
+REPO=Path('/private/tmp/pathwaymech-next-267-20261015')
+spec=importlib.util.spec_from_file_location('reviewed_decoder',ROOT/'decode_retained.py')
+mod=importlib.util.module_from_spec(spec);spec.loader.exec_module(mod)
+FIX=OUT/'adversarial-fixtures';FIX.mkdir()
+results=[]
+def sha(b):return hashlib.sha256(b).hexdigest()
+def reject(name,fn):
+    try:fn()
+    except (ValueError,KeyError,OSError,EOFError) as e:results.append({'case':name,'status':'rejected','exception':type(e).__name__,'message':str(e)})
+    else:raise AssertionError('Expected rejection: '+name)
+def observe(name,fn):
+    value=fn();results.append({'case':name,'status':'accepted-unexpectedly','result':value});return value
+
+for value in ['../escape','/absolute','x/../../escape','a\\b','./a','a//b','.','']:
+    reject('relative source traversal '+repr(value),lambda v=value:mod.safe(FIX,v))
+(FIX/'real').mkdir();(FIX/'link').symlink_to(FIX/'real',target_is_directory=True)
+reject('symlink inside endpoint relative path',lambda:mod.safe(FIX,'link/file'))
+(FIX/'link').unlink()
+raw=b'complete exact original\x00\r\n  '*100
+compressed=gzip.compress(raw,mtime=0)
+assert mod.gunzip(compressed,sha(raw),len(raw))==raw
+for name,body,digest,size in [
+    ('truncated gzip',compressed[:-3],sha(raw),len(raw)),
+    ('gzip bad digest',compressed,'0'*64,len(raw)),
+    ('gzip too small output',compressed,sha(raw),1),
+    ('gzip extra member',compressed+compressed,sha(raw),len(raw)),
+    ('gzip corrupt CRC',compressed[:-8]+b'XXXXXXXX',sha(raw),len(raw)),
+]:reject(name,lambda b=body,d=digest,s=size:mod.gunzip(b,d,s))
+(FIX/'duplicate.json').write_text('{"same":1,"same":2}')
+reject('duplicate JSON key',lambda:mod.load(FIX/'duplicate.json'))
+decoder=mod.Decoder(ROOT,REPO)
+try:
+    fresh=next(r for r in decoder.contents.values() if r['storage']['kind']=='new_retention_object' and r['decode_steps'])
+    inherited=next(r for r in decoder.contents.values() if r['storage']['kind']=='existing_repository')
+    chunk=next(r for r in decoder.contents.values() if r['storage']['kind']=='new_retention_chunks')
+    assert sha(decoder.decode(chunk['source_sha256']))==chunk['source_sha256']
+    assert sha(decoder.decode(inherited['source_sha256']))==inherited['source_sha256']
+    for field,value in [('git_commit','0'*40),('git_tree','0'*40),('path','../escape'),('stored_sha256','0'*64),('stored_bytes',-1)]:
+        changed=copy.deepcopy(inherited['storage']);changed[field]=value
+        reject('inherited '+field,lambda s=changed:decoder.endpoint(s))
+    proofkey=(mod.BASE,inherited['storage']['path']);proof=decoder.proofs[proofkey]
+    decoder.proofs[proofkey]={**proof,'git_tree':'0'*40}
+    reject('actual inherited proof tree',lambda:decoder.endpoint(inherited['storage']))
+    decoder.proofs[proofkey]=proof
+    for field,value in [('path','../escape'),('path','/absolute'),('stored_bytes',mod.LIMIT),('stored_sha256','0'*64),('kind','unknown')]:
+        changed=copy.deepcopy(fresh['storage']);changed[field]=value
+        reject('new endpoint '+field+' '+str(value),lambda s=changed:decoder.endpoint(s))
+    digest=fresh['source_sha256'];decoder.cache.pop(digest,None)
+    for field,value in [('encoding','zip'),('input_sha256','0'*64),('output_sha256','0'*64),('output_bytes',0)]:
+        changed=copy.deepcopy(fresh);changed['decode_steps'][0][field]=value;decoder.contents[digest]=changed
+        reject('decode layer '+field,lambda:decoder.decode(digest))
+    decoder.contents[digest]=fresh
+    for name,mutation in [
+        ('chunk reversal',lambda s:s['chunks'].reverse()),
+        ('chunk omission',lambda s:s['chunks'].pop()),
+        ('chunk duplicate',lambda s:s['chunks'].append(s['chunks'][0])),
+        ('chunk bad hash',lambda s:s['chunks'][0].update(sha256='0'*64)),
+        ('chunk bad offset',lambda s:s['chunks'][1].update(offset=0)),
+        ('chunk traversal',lambda s:s['chunks'][0].update(path='../escape')),
+        ('chunk endpoint limit',lambda s:s['chunks'][0].update(bytes=mod.LIMIT)),
+    ]:
+        changed=copy.deepcopy(chunk['storage']);mutation(changed)
+        reject(name,lambda s=changed:decoder.endpoint(s))
+    # Copied control only; content bytes and original source paths remain unchanged.
+    original=json.loads((ROOT/'historical-compact-references.json').read_text())
+    (FIX/'history').mkdir();history=FIX/'history'
+    binding=original['prior_pairs_binding'];retained=history/binding['retained_gzip'];retained.parent.mkdir(parents=True)
+    shutil.copyfile(ROOT/binding['retained_gzip'],retained)
+    def historical_case(name,mutation):
+        altered=copy.deepcopy(original);mutation(altered)
+        (history/'historical-compact-references.json').write_text(json.dumps(altered))
+        return observe(name,lambda:mod.verify_historical(history,decoder))
+    historical_case('historical rows omitted entirely',lambda o:o.update(rows=[]))
+    historical_case('one historical declaration omitted',lambda o:o['rows'].pop())
+    historical_case('historical owner relabeled as independent current review',lambda o:o['rows'][0].update(original_owner_package='next267-independent-retention-review'))
+    historical_case('historical current manifest wrong hash',lambda o:o['rows'][0].update(current_manifest_sha256='0'*64))
+    (history/'historical-compact-references.json').unlink()
+    observe('historical compact metadata entirely missing',lambda:mod.verify_historical(history,decoder))
+finally:decoder.close()
+
+# Instrument the first mkdir, before creating any destination. This proves what
+# the actual main() accepts without writing outside the review output directory.
+class CapturedWrite(Exception):pass
+outside=Path('/private/tmp/../../Users/marcin/retention-review-must-not-be-created')
+captured=[]
+def guard_mkdir(self,*args,**kwargs):
+    captured.append({'lexical_path':str(self),'resolved_path':str(self.resolve()),'under_resolved_scratch':self.resolve().is_relative_to(Path('/private/tmp').resolve())})
+    raise CapturedWrite()
+with patch.object(sys,'argv',['decode_retained.py','--repo',str(REPO),'--materialize',str(outside)]),patch.object(Path,'mkdir',guard_mkdir):
+    try:mod.main()
+    except CapturedWrite:pass
+assert len(captured)==1 and not captured[0]['under_resolved_scratch']
+results.append({'case':'materialization root traversal outside scratch','status':'accepted-unexpectedly-before-intercepted-write','attempted_mkdir':captured[0],'actual_out_of_scope_writes':0})
+
+# A parent symlink to a genuinely outside-scratch directory is read-only.
+link=FIX/'outside-parent';link.symlink_to('/Users/marcin',target_is_directory=True)
+captured=[]
+try:
+    with patch.object(sys,'argv',['decode_retained.py','--repo',str(REPO),'--materialize',str(link/'retention-review-must-not-be-created')]),patch.object(Path,'mkdir',guard_mkdir):
+        try:mod.main()
+        except CapturedWrite:pass
+    assert len(captured)==1 and not captured[0]['under_resolved_scratch']
+    results.append({'case':'materialization root symlink outside scratch','status':'accepted-unexpectedly-before-intercepted-write','attempted_mkdir':captured[0],'actual_out_of_scope_writes':0})
+finally:link.unlink()
+
+(OUT/'independent-adversarial-results.json').write_text(json.dumps({'status':'findings','results':results,'rejected_controls':sum(r['status']=='rejected' for r in results),'unexpected_acceptances':sum(r['status'].startswith('accepted-unexpectedly') for r in results),'positive_controls':['exact complete gzip','actual inherited Git blob','actual four-chunk Noctua original'],'all_frozen_inputs_read_only':True,'out_of_scope_writes':0},indent=2)+'\n')
+print('rejected',sum(r['status']=='rejected' for r in results),'unexpected acceptances',sum(r['status'].startswith('accepted-unexpectedly') for r in results))

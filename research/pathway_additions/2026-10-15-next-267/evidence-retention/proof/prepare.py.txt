@@ -1,0 +1,696 @@
+"""Create-only lossless retention from an explicit terminal evidence cutoff."""
+
+import gzip
+import json
+import shutil
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path
+
+from retention_io import (
+    BASE,
+    LIMIT,
+    TREE,
+    check,
+    dump,
+    gunzip,
+    load,
+    require,
+    safe,
+    sha,
+)
+
+ROOT = Path(__file__).parent
+OUT = ROOT / "payload"
+REPO = Path("/private/tmp/pathwaymech-next-267-20261015")
+TMP = Path("/private/tmp")
+PREFIX = "pathwaymech-next-267-"
+EXTRA_COUNTS = {
+    "design": 103,
+    "design-successor": 50,
+    "independent-full-design-review": 60,
+    "authority-implementation": 176,
+    "authority-implementation-successor": 106,
+    "independent-implementation-review": 204,
+    "independent-implementation-successor-review": 278,
+    "independent-full-authority-review": 323,
+    "integration-preparation": 284,
+    "authority-preparation": 2100,
+    "independent-design-successor-review": 39,
+    "root-evidence-cutoff": 111,
+    "primary-findings-intake": 10,
+    "independent-native-boundary": 15,
+    "chemistry-successor-reproduction": 215,
+}
+PINNED = {
+    "design": "71222f9a28c44d0a15f65b0657f0ddf4dc80c19be64a94dc763e06c7a7eebf6d",
+    "design-successor": "b59dd6959c89dbc36890c942ba09cc14dd7f1fe83bc3dd2c3219bc6435dffdae",
+    "independent-full-design-review": "4923b1747cdadc8c880bd9a2429c84e5e767873c69e2c29859b45e2cdf5de74e",
+    "independent-full-authority-review": "5163ed70c851c3d57cc3863ee4a9452bbc195cbc99a451d5005bbd591c49abd2",
+    "integration-preparation": "0779695002eff324d784c59473bb1fd36bea7f2ee482379fd367c689d1b76394",
+    "independent-design-successor-review": "80b0ef1c4a24202a8276482fc823439b4f46238426f2c7517940175d304a26a1",
+    "root-evidence-cutoff": "f421967f60109df3fe91856c77307fb58880eef1b12973e0ce42c80fce3ed490",
+}
+COMPACT = {
+    "discovery": ("compact/storage-manifest.json", "rows"),
+    "discovery-successor": ("compact/storage-manifest.json", "rows"),
+    "chemistry": ("compact-manifest.json", "entries"),
+    "chemistry-successor": ("compact-manifest.json", "entries"),
+    "independent-chemistry-review": ("compact-manifest.json", "entries"),
+    "independent-chemistry-successor-review": ("compact-manifest.json", "entries"),
+    "native": ("compact-manifest.json", "files"),
+    "independent-native-review": ("compact-manifest.json", "files"),
+    "primary": ("compact-originals-manifest.json", "rows"),
+}
+INHERITED = [
+    "research/pathway_additions/2026-10-15-next-266/evidence-retention",
+    "research/pathway_additions/2026-10-15-next-265/evidence-retention",
+    "research/pathway_additions/2026-10-15-next-265/evidence-extension",
+]
+
+
+def inventory(root):
+    files = {}
+    for path in sorted(root.rglob("*")):
+        require(not path.is_symlink(), "unexpected source symlink: " + str(path))
+        if path.is_file():
+            body = path.read_bytes()
+            relative = str(path.relative_to(root))
+            safe(root, relative)
+            files[relative] = {
+                "path": relative,
+                "source": str(path),
+                "bytes": len(body),
+                "sha256": sha(body),
+            }
+        else:
+            require(path.is_dir(), "unexpected special source file")
+    return files
+
+
+def projection(rows):
+    return {r["path"]: {k: r[k] for k in ("bytes", "sha256")} for r in rows}
+
+
+def normalize(row):
+    encoding = row.get("encoding", row.get("rule", "gzip"))
+    identity = encoding in (
+        "identity_existing_gzip",
+        "source-gzip-identity",
+        "identity",
+    )
+    require(
+        identity
+        or encoding
+        in (
+            "gzip",
+            "lossless_gzip_companion",
+            "lossless-gzip-companion-deduplicated-by-raw-sha256",
+        ),
+        "unrecognized compact schema",
+    )
+    return {
+        "original_path": row.get(
+            "original_path", row.get("logical_path", row.get("original"))
+        ),
+        "original_sha256": row.get("original_sha256", row.get("raw_sha256")),
+        "original_bytes": row.get("original_bytes", row.get("raw_bytes")),
+        "stored_path": row.get("stored_path", row.get("stored")),
+        "stored_sha256": row["stored_sha256"],
+        "stored_bytes": row["stored_bytes"],
+        "encoding": "identity" if identity else "gzip",
+    }
+
+
+def main():
+    require(not OUT.exists(), "payload is create-only")
+    OUT.mkdir()
+    started = datetime.now(timezone.utc).isoformat()
+    actual = (
+        subprocess.check_output(["git", "rev-parse", BASE + "^{tree}"], cwd=REPO)
+        .decode()
+        .strip()
+    )
+    require(actual == TREE, "baseline tree mismatch")
+    design = TMP / (PREFIX + "design")
+    initial = load(design / "input-inventory.json")
+    preserved = load(design / "final-input-preservation.json")
+    counts = {
+        Path(k).name.removeprefix(PREFIX): v
+        for k, v in preserved["owner_counts"].items()
+    }
+    require(
+        len(counts) == 20 and sum(counts.values()) == 9503,
+        "twenty-owner cutoff mismatch",
+    )
+    counts.update(EXTRA_COUNTS)
+    packages = []
+    contents = {}
+    physical = {}
+    audits = []
+    roles = []
+    maps_seen = []
+    for name, expected_count in counts.items():
+        source = TMP / (PREFIX + name)
+        rows = inventory(source)
+        require(len(rows) == expected_count, "source count changed: " + name)
+        if name in initial:
+            require(
+                projection(rows.values()) == projection(initial[name]),
+                "design input changed",
+            )
+        manifest = source / "artifact-manifest.json"
+        spec = {
+            "name": name,
+            "source_root": str(source),
+            "physical_artifacts": len(rows),
+            "physical_bytes": sum(r["bytes"] for r in rows.values()),
+            "compact_maps": [],
+            "hidden_and_ignored_included": True,
+        }
+        if manifest.exists():
+            manifest_body = manifest.read_bytes()
+            if name in PINNED:
+                require(sha(manifest_body) == PINNED[name], "pinned manifest changed")
+            obj = load(manifest)
+            array = "files" if "files" in obj else "artifacts"
+            listed = obj[array]
+            require(
+                len({r["path"] for r in listed}) == len(listed),
+                "duplicate manifest path",
+            )
+            for row in listed:
+                require(
+                    rows[row["path"]]["sha256"] == row["sha256"],
+                    "manifest digest changed",
+                )
+                require(
+                    rows[row["path"]]["bytes"] == row["bytes"], "manifest size changed"
+                )
+            extras = sorted(set(rows) - {r["path"] for r in listed})
+            require(
+                extras == ["artifact-manifest.json"] or len(extras) == 2,
+                "unexpected physical extras: " + name,
+            )
+            spec.update(
+                {
+                    "manifest": "artifact-manifest.json",
+                    "manifest_sha256": sha(manifest_body),
+                    "manifest_bytes": len(manifest_body),
+                    "manifest_array": array,
+                    "listed_artifacts": len(listed),
+                    "explicit_physical_extras": extras,
+                }
+            )
+        elif name == "authority-preparation":
+            binding = TMP / (
+                PREFIX
+                + "independent-full-authority-review/preparation-inputs-before.json"
+            )
+            require(
+                projection(rows.values()) == projection(load(binding)["files"]),
+                "authority inventory changed",
+            )
+            require(spec["physical_bytes"] == 271131953, "authority bytes changed")
+            spec["inventory_authority"] = {
+                "source": str(binding),
+                "sha256": sha(binding.read_bytes()),
+                "scope": "Complete inventory independently frozen by full authority review",
+            }
+        else:
+            require(name == "chemistry-successor-reproduction", "unbound owner")
+            spec["inventory_authority"] = {
+                "scope": "Historical reproduction snapshot; byte containment reported; no separate acceptance"
+            }
+        if name in COMPACT:
+            relative, array = COMPACT[name]
+            obj = load(source / relative)
+            row = rows[relative]
+            spec["compact_maps"].append(
+                {
+                    "path": relative,
+                    "array": array,
+                    "sha256": row["sha256"],
+                    "bytes": row["bytes"],
+                    "expected_rows": len(obj[array]),
+                    "top_level_keys": sorted(obj),
+                }
+            )
+        candidates = []
+        for relative, row in rows.items():
+            if "manifest" not in Path(relative).name or not relative.endswith(".json"):
+                continue
+            try:
+                obj = load(source / relative)
+            except (ValueError, UnicodeDecodeError):
+                continue
+            arrays = []
+            if isinstance(obj, dict):
+                for key, value in obj.items():
+                    if (
+                        isinstance(value, list)
+                        and value
+                        and isinstance(value[0], dict)
+                        and any(
+                            k in value[0]
+                            for k in ("stored_path", "stored", "gzip_path")
+                        )
+                    ):
+                        arrays.append({"array": key, "rows": len(value)})
+            if arrays:
+                owned = any(m["path"] == relative for m in spec["compact_maps"])
+                candidates.append(
+                    {
+                        "path": relative,
+                        "sha256": row["sha256"],
+                        "bytes": row["bytes"],
+                        "arrays": arrays,
+                        "package_owned": owned,
+                        "disposition": "explicitly replayed"
+                        if owned
+                        else "nested source-control manifest; exact bytes retained, original-owner mapping follows",
+                    }
+                )
+                if not owned:
+                    maps_seen.append({"package": name, **candidates[-1]})
+        package_owned = {
+            c["path"]
+            for c in candidates
+            if len(Path(c["path"]).parts) == 1 or Path(c["path"]).parts[0] == "compact"
+        }
+        require(
+            package_owned == {m["path"] for m in spec["compact_maps"]},
+            "unclassified package compact map",
+        )
+        audits.append(
+            {
+                "package": name,
+                "all_manifest_candidates_scanned": True,
+                "candidates": candidates,
+            }
+        )
+        physical[name] = rows
+        for row in rows.values():
+            if row["sha256"] in contents:
+                require(
+                    contents[row["sha256"]]["bytes"] == row["bytes"],
+                    "content size collision",
+                )
+            contents.setdefault(row["sha256"], row)
+        package_map = {
+            "name": name,
+            "source_root": str(source),
+            "source_occurrences": list(rows.values()),
+            "physical_inventory_includes_hidden_and_ignored": True,
+        }
+        dump(OUT / "packages" / name / "source-map.json", package_map)
+        roles.append(
+            {
+                "package": name,
+                "role": "independent reviewer"
+                if name.startswith("independent-")
+                else "root cutoff"
+                if name == "root-evidence-cutoff"
+                else "technical author/preparer",
+                "acceptance_scope": "Preserved original handoffs and assessments govern; retention creates no scientific acceptance.",
+            }
+        )
+        packages.append(spec)
+        print("inventoried", name, len(rows), flush=True)
+
+    compact_pairs = []
+    compact_sources = {}
+    for package in packages:
+        name = package["name"]
+        source = Path(package["source_root"])
+        for compact in package["compact_maps"]:
+            obj = load(source / compact["path"])
+            for index, declared in enumerate(obj[compact["array"]]):
+                normalized = normalize(declared)
+                stored = safe(source, normalized["stored_path"]).read_bytes()
+                check(stored, normalized["stored_sha256"], normalized["stored_bytes"])
+                original = (
+                    gunzip(
+                        stored,
+                        normalized["original_sha256"],
+                        normalized["original_bytes"],
+                    )
+                    if normalized["encoding"] == "gzip"
+                    else stored
+                )
+                check(
+                    original,
+                    normalized["original_sha256"],
+                    normalized["original_bytes"],
+                )
+                present = normalized["original_path"] in physical[name]
+                if present:
+                    require(
+                        safe(source, normalized["original_path"]).read_bytes()
+                        == original,
+                        "compact raw mismatch",
+                    )
+                inner = []
+                if "decoded_sha256" in declared:
+                    if normalized["encoding"] == "identity":
+                        gunzip(
+                            original,
+                            declared["decoded_sha256"],
+                            declared["decoded_bytes"],
+                        )
+                        inner.append(
+                            {
+                                "sha256": declared["decoded_sha256"],
+                                "bytes": declared["decoded_bytes"],
+                            }
+                        )
+                    else:
+                        check(
+                            original,
+                            declared["decoded_sha256"],
+                            declared["decoded_bytes"],
+                        )
+                if "original_gzip_inner" in declared:
+                    binding = declared["original_gzip_inner"]
+                    gunzip(original, binding["sha256"], binding["bytes"])
+                    inner.append(
+                        {"sha256": binding["sha256"], "bytes": binding["bytes"]}
+                    )
+                pair = {
+                    "package": name,
+                    "compact_map": compact["path"],
+                    "array": compact["array"],
+                    "index": index,
+                    "declared_row": declared,
+                    **normalized,
+                    "original_physically_present": present,
+                    "inner_payloads": inner,
+                }
+                compact_pairs.append(pair)
+                if normalized["encoding"] == "gzip":
+                    compact_sources.setdefault(
+                        normalized["original_sha256"], []
+                    ).append(normalized)
+    owned_compact = {
+        m["sha256"]: {"package": p["name"], "path": m["path"]}
+        for p in packages
+        for m in p["compact_maps"]
+    }
+    for row in maps_seen:
+        row["exact_current_owner"] = owned_compact.get(row["sha256"])
+
+    batch = subprocess.Popen(
+        ["git", "cat-file", "--batch"],
+        cwd=REPO,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+    )
+    owner_proofs = {}
+
+    def git_read(path):
+        safe(Path("/git"), path)
+        batch.stdin.write((BASE + ":" + path + "\n").encode())
+        batch.stdin.flush()
+        header = batch.stdout.readline().split()
+        require(len(header) == 3 and header[1] == b"blob", "Git owner missing: " + path)
+        body = batch.stdout.read(int(header[2]))
+        require(batch.stdout.read(1) == b"\n", "Git batch boundary")
+        return body, header[0].decode()
+
+    inherited = {}
+    inherited_inputs = []
+    for prefix in INHERITED:
+        for filename in ("content-map.json", "artifact-manifest.json"):
+            path = prefix + "/" + filename
+            body, blob = git_read(path)
+            dest = ROOT / "baseline-inputs" / path
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(body)
+            inherited_inputs.append(
+                {
+                    "path": path,
+                    "git_commit": BASE,
+                    "git_tree": TREE,
+                    "git_blob": blob,
+                    "sha256": sha(body),
+                    "bytes": len(body),
+                }
+            )
+            obj = json.loads(body)
+            if filename == "content-map.json":
+                for digest, row in obj.items():
+                    endpoint = dict(row["storage"])
+                    if endpoint["kind"] == "new_retention_object":
+                        endpoint["path"] = prefix + "/" + endpoint["path"]
+                    else:
+                        require(
+                            endpoint["kind"] == "existing_repository",
+                            "unsupported inherited storage",
+                        )
+                    endpoint.update(
+                        {
+                            "kind": "existing_repository",
+                            "git_commit": BASE,
+                            "git_tree": TREE,
+                        }
+                    )
+                    inherited.setdefault(
+                        digest,
+                        {
+                            "source_sha256": digest,
+                            "source_bytes": row["source_bytes"],
+                            "storage": endpoint,
+                            "decode_steps": row["decode_steps"],
+                            "inherited_binding": path,
+                        },
+                    )
+            else:
+                for row in obj["files"]:
+                    inherited.setdefault(
+                        row["sha256"],
+                        {
+                            "source_sha256": row["sha256"],
+                            "source_bytes": row["bytes"],
+                            "storage": {
+                                "kind": "existing_repository",
+                                "path": prefix + "/" + row["path"],
+                                "git_commit": BASE,
+                                "git_tree": TREE,
+                                "stored_sha256": row["sha256"],
+                                "stored_bytes": row["bytes"],
+                            },
+                            "decode_steps": [],
+                            "inherited_binding": path,
+                        },
+                    )
+    mapped = {}
+    mapping_stack = set()
+    endpoint_inventory = {}
+
+    def write_endpoint(body, suffix):
+        digest = sha(body)
+        relative = f"objects/{digest[:2]}/{digest}{suffix}"
+        path = OUT / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.exists():
+            require(path.read_bytes() == body, "object collision")
+        else:
+            path.write_bytes(body)
+        require(len(body) < LIMIT, "new endpoint exceeds GitHub limit")
+        endpoint_inventory[relative] = {
+            "path": relative,
+            "sha256": digest,
+            "bytes": len(body),
+        }
+        return relative
+
+    def map_content(digest):
+        if digest in mapped:
+            return mapped[digest]
+        require(digest not in mapping_stack, "compact dependency cycle")
+        mapping_stack.add(digest)
+        source = contents[digest]
+        body = Path(source["source"]).read_bytes()
+        check(body, digest, source["bytes"])
+        if digest in inherited:
+            result = inherited[digest]
+            storage = result["storage"]
+            endpoint, blob = git_read(storage["path"])
+            check(endpoint, storage["stored_sha256"], storage["stored_bytes"])
+            owner_proofs[storage["path"]] = {
+                "git_commit": BASE,
+                "git_tree": TREE,
+                "path": storage["path"],
+                "git_blob": blob,
+                "sha256": sha(endpoint),
+                "bytes": len(endpoint),
+            }
+            decoded = endpoint
+            for step in result["decode_steps"]:
+                require(
+                    step["encoding"] == "gzip" and sha(decoded) == step["input_sha256"],
+                    "inherited decode input",
+                )
+                decoded = gunzip(decoded, step["output_sha256"], step["output_bytes"])
+            require(decoded == body, "inherited original mismatch")
+        elif digest in compact_sources and not body.startswith(b"\x1f\x8b"):
+            candidates = sorted(
+                compact_sources[digest],
+                key=lambda r: (r["stored_bytes"], r["stored_sha256"]),
+            )
+            selected = next(r for r in candidates if r["stored_sha256"] in contents)
+            owner = map_content(selected["stored_sha256"])
+            result = {
+                "source_sha256": digest,
+                "source_bytes": len(body),
+                "storage": owner["storage"],
+                "decode_steps": owner["decode_steps"]
+                + [
+                    {
+                        "encoding": "gzip",
+                        "input_sha256": selected["stored_sha256"],
+                        "output_sha256": digest,
+                        "output_bytes": len(body),
+                    }
+                ],
+                "reuse": "Exact separately retained package compact representation",
+            }
+        else:
+            already = body.startswith(b"\x1f\x8b")
+            stored = body if already else gzip.compress(body, compresslevel=6, mtime=0)
+            storage = {"stored_sha256": sha(stored), "stored_bytes": len(stored)}
+            if len(stored) >= 96 * 1024 * 1024:
+                chunks = []
+                for offset in range(0, len(stored), 32 * 1024 * 1024):
+                    chunk = stored[offset : offset + 32 * 1024 * 1024]
+                    chunks.append(
+                        {
+                            "path": write_endpoint(chunk, ".part"),
+                            "offset": offset,
+                            "sha256": sha(chunk),
+                            "bytes": len(chunk),
+                        }
+                    )
+                storage.update({"kind": "new_retention_chunks", "chunks": chunks})
+            else:
+                storage.update(
+                    {
+                        "kind": "new_retention_object",
+                        "path": write_endpoint(stored, ".gz"),
+                    }
+                )
+            result = {
+                "source_sha256": digest,
+                "source_bytes": len(body),
+                "storage": storage,
+                "decode_steps": []
+                if already
+                else [
+                    {
+                        "encoding": "gzip",
+                        "input_sha256": sha(stored),
+                        "output_sha256": digest,
+                        "output_bytes": len(body),
+                    }
+                ],
+            }
+        mapped[digest] = result
+        mapping_stack.remove(digest)
+        return result
+
+    for i, digest in enumerate(sorted(contents)):
+        map_content(digest)
+        if i % 1000 == 0:
+            print("mapped distinct contents", i, flush=True)
+    batch.stdin.close()
+    require(batch.wait() == 0, "Git batch failed")
+    lineage = []
+    for relative, row in physical["chemistry-successor-reproduction"].items():
+        matches = [
+            {"package": name, "path": r["path"]}
+            for name, rows in physical.items()
+            if name != "chemistry-successor-reproduction"
+            for r in rows.values()
+            if r["sha256"] == row["sha256"]
+        ]
+        lineage.append(
+            {
+                **row,
+                "already_contained_exact_owners": matches,
+                "retained_as_explicit_snapshot": True,
+            }
+        )
+    spec = {
+        "packages": packages,
+        "selected_root_snapshots": [],
+        "pending_packages": [],
+        "cutoff": "Complete frozen root evidence cutoff before maintained integration; later gates/publication are a separate extension.",
+        "root_cutoff_manifest": PINNED["root-evidence-cutoff"],
+        "source_inventory_started": started,
+        "source_inventory_finished": datetime.now(timezone.utc).isoformat(),
+        "all_source_writers_terminal": True,
+        "scope": "35 complete physical owners including 20 original scientific/preparation owners; runtime and mutable CI excluded.",
+    }
+    dump(OUT / "source-specification.json", spec)
+    dump(OUT / "content-map.json", mapped)
+    dump(
+        OUT / "source-package-inventory.json",
+        [
+            {
+                "name": p["name"],
+                "physical_occurrences": p["physical_artifacts"],
+                "source_bytes": p["physical_bytes"],
+            }
+            for p in packages
+        ],
+    )
+    dump(OUT / "verified-compact-pairs.json", compact_pairs)
+    dump(
+        OUT / "logical-originals.json",
+        [r for r in compact_pairs if not r["original_physically_present"]],
+    )
+    dump(OUT / "explicit-package-compact-audit.json", audits)
+    dump(OUT / "nested-compact-source-control-dispositions.json", maps_seen)
+    dump(OUT / "owner-roles.json", roles)
+    dump(OUT / "historical-reproduction-containment.json", lineage)
+    dump(OUT / "existing-owner-verification.json", list(owner_proofs.values()))
+    dump(OUT / "inherited-baseline-inputs.json", inherited_inputs)
+    dump(
+        OUT / "merged-baseline-binding.json",
+        {
+            "git_commit": BASE,
+            "git_tree": TREE,
+            "lookup_scope": INHERITED,
+            "scope": "Only these three exact retention maps/manifests searched; no global absence claim.",
+        },
+    )
+    dump(OUT / "new-storage-endpoints.json", list(endpoint_inventory.values()))
+    dump(
+        OUT / "storage-size-accounting.json",
+        {
+            "packages": len(packages),
+            "physical_occurrences": sum(p["physical_artifacts"] for p in packages),
+            "occurrence_bytes": sum(p["physical_bytes"] for p in packages),
+            "distinct_contents": len(mapped),
+            "inherited_content_rows": sum(
+                r["storage"]["kind"] == "existing_repository" for r in mapped.values()
+            ),
+            "inherited_owner_paths": len(owner_proofs),
+            "new_endpoints": len(endpoint_inventory),
+            "new_endpoint_bytes": sum(r["bytes"] for r in endpoint_inventory.values()),
+            "largest_new_endpoint": max(
+                r["bytes"] for r in endpoint_inventory.values()
+            ),
+            "chunked_content_rows": sum(
+                r["storage"]["kind"] == "new_retention_chunks" for r in mapped.values()
+            ),
+            "compact_manifest_count": sum(len(p["compact_maps"]) for p in packages),
+            "compact_rows": len(compact_pairs),
+        },
+    )
+    shutil.copyfile(ROOT / "retention_io.py", OUT / "decode_retained.py")
+    print(json.dumps(load(OUT / "storage-size-accounting.json")), flush=True)
+
+
+if __name__ == "__main__":
+    main()

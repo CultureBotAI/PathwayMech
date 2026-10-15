@@ -1,0 +1,59 @@
+"""Resume after correcting reviewer-only occurrence versus identity count."""
+from pathlib import Path
+
+SCRIPT = Path('/private/tmp/pathwaymech-next-267-independent-retention-review/review_bytes.py')
+source = SCRIPT.read_text()
+namespace = {'__name__': '__main__'}
+exec(compile(source[:source.index('started = ')], str(SCRIPT), 'exec'), namespace)
+bootstrap = r'''
+started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+before = load(OUT/'frozen-before.json')
+sources = load(OUT/'source-owners-before.json')
+spec = load(P/'source-specification.json')
+maps = {p['name']: {r['path']: r for r in load(P/'packages'/p['name']/'source-map.json')['source_occurrences']} for p in spec['packages']}
+contents = load(P/'content-map.json')
+cdir = OUT/'reconstructed-content'
+proofs = load(P/'existing-owner-verification.json')
+endpoints = load(OUT/'reconstructed-endpoints.json')
+actual = inventory(cdir)
+need(set(actual) == set(contents), 'all actual reconstructed content paths')
+need(all(actual[d] == {'sha256': d, 'bytes': r['source_bytes']} for d,r in contents.items()), 'all 9202 actual content identities')
+physical_count = physical_bytes = 0
+physical_digests = set()
+for name, rows in maps.items():
+    actual = inventory(OUT/'reconstructed-physical'/name)
+    need(set(actual) == set(rows), ('actual physical reconstructed paths', name))
+    for relative,r in rows.items():
+        need(actual[relative] == {'sha256': r['sha256'], 'bytes': r['bytes']}, ('actual physical reconstructed identity', name, relative))
+        physical_count += 1; physical_bytes += r['bytes']; physical_digests.add(r['sha256'])
+gzip_rows = []
+for digest in sorted(physical_digests):
+    body = (cdir/digest).read_bytes()
+    if not body.startswith(b'\x1f\x8b'): continue
+    original_bytes = len(body); layers = []
+    while body.startswith(b'\x1f\x8b'):
+        input_sha = sha(body); body = gzip.decompress(body)
+        layers.append({'input_sha256': input_sha, 'output_sha256': sha(body), 'output_bytes': len(body)})
+        need(len(layers)<16, 'bounded original gzip layers')
+    gzip_rows.append({'original_sha256': digest, 'original_bytes': original_bytes, 'layers': layers})
+gzip_count = len(gzip_rows)
+need(gzip_count == 4534, '4534 distinct physically owned gzip identities')
+need(physical_count == 13577 and physical_bytes == 1644920637, 'all physical occurrence counts')
+save('physical-gzip-representations.json', {'distinct_physical_content_representations': gzip_count, 'physical_occurrences': 5955, 'representations': gzip_rows})
+save('reviewer-initial-attempt-disposition.json', {'initial_status': 'reviewer assertion failure after complete reconstruction', 'reason': 'Reviewer incorrectly equated 4534 distinct physically owned gzip identities with physical path occurrences. Actual inventory has 5955 gzip path occurrences representing 4534 distinct contents.', 'source_claim': 'Author proof scope explicitly counts each distinct physical content, not each duplicate occurrence.', 'product_finding': False, 'initial_script_and_stdout_stderr_preserved': True, 'resume': 'Rehash all 9202 reconstructed contents and all 13577 physical reconstructed files, independently decode all 4534 distinct gzip contents layer by layer, then finish compact/historical/reference/preservation checks.', 'frozen_inputs_unchanged_by_reviewer': True})
+print('Resumed after reviewer-only gzip identity/occurrence count correction', flush=True)
+batch = subprocess.Popen(['git','cat-file','--batch'],cwd=REPO,stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+git_seen = load(OUT/'actual-git-bindings.json')
+def gitblob(relative):
+    path(Path('/git-path-guard'), relative)
+    need('\n' not in relative, 'git protocol path boundary')
+    batch.stdin.write((BASE+':'+relative+'\n').encode());batch.stdin.flush()
+    fields = batch.stdout.readline().split()
+    need(len(fields)==3 and fields[1] == b'blob', ('missing actual Git blob',relative))
+    body = batch.stdout.read(int(fields[2]));need(batch.stdout.read(1) == b'\n','git batch delimiter')
+    git_seen[relative] = {'git_blob':fields[0].decode(),'sha256':sha(body),'bytes':len(body)}
+    return body
+'''
+exec(compile(bootstrap, __file__, 'exec'), namespace)
+tail = source[source.index("print('Verify exact declared compact closures'"):]
+exec(compile(tail, str(SCRIPT) + ' [resumed tail]', 'exec'), namespace)

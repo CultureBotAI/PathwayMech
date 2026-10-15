@@ -44,6 +44,15 @@ from pathwaymech.biocyc_electron_transfer import (
     reaction_term,
     validate_reaction_metadata,
 )
+from pathwaymech.biocyc_p321 import (
+    FIELDS as P321_FIELDS,
+)
+from pathwaymech.biocyc_p321 import (
+    P321_KINDS,
+    p321_term,
+    validate_p321_assertions,
+    validate_p321_metadata,
+)
 from pathwaymech.biocyc_pathway import PATHWAY_KIND, pathway_term, validate_pathway_metadata
 from pathwaymech.biocyc_protein_carrier_reaction import (
     PROTEIN_CARRIER_REACTION_KIND,
@@ -173,6 +182,7 @@ def _native_assertion_kinds(
         PATHWAY_KIND: "native_pathway",
         PROTEIN_CARRIER_REACTION_KIND: "native_protein_carrier_reaction",
     }
+    fields.update(P321_FIELDS)
     fields.update({kind: BENZOYL_FIELD for kind in BENZOYL_KINDS})
     assertions = {}
     claims = []
@@ -235,6 +245,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_named_complex",
                 "native_aceto",
                 BENZOYL_FIELD,
+                "native_p321",
+                "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
                 "native_pathbank_context",
@@ -259,6 +271,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 "native_named_complex",
                 "native_aceto",
                 BENZOYL_FIELD,
+                "native_p321",
+                "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
                 "native_pathbank_context",
@@ -274,7 +288,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
             raise ValueError(f"source {source}: expected a public source URL")
         if not re.fullmatch(r"[0-9a-f]{64}", metadata["sha256"]):
             raise ValueError(f"source {source}: invalid SHA-256")
-        if "kind" in metadata and metadata["kind"] not in ACETO_KINDS | BENZOYL_KINDS | {
+        if "kind" in metadata and metadata["kind"] not in (
+            ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | {
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
             PATHBANK_CONTEXT_KIND,
@@ -289,7 +304,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
             RHEA_POLYMER_KIND,
             GENE_KIND,
             PSEUDOGENE_KIND,
-        }:
+            }
+        ):
             raise ValueError(f"source {source}: unknown typed authority source kind")
         if metadata.get("kind") == PATHBANK_CONTEXT_KIND:
             validate_context_metadata(metadata)
@@ -321,6 +337,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 raise ValueError(f"source {source}: invalid selected PathBank pathway identities")
         elif "archive" in metadata or "pathway_accessions" in metadata:
             raise ValueError(f"source {source}: archive provenance requires typed PathBank ZIP")
+        if metadata.get("kind") in P321_KINDS:
+            validate_p321_metadata(metadata)
+        elif "native_p321" in metadata or "native_metacyc_gene" in metadata:
+            raise ValueError("P321 metadata requires its matching source kind")
         if metadata.get("kind") in BENZOYL_KINDS:
             validate_benzoyl_metadata(metadata)
         elif BENZOYL_FIELD in metadata:
@@ -380,6 +400,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             # Check internal request/identity consistency. Original XML bytes
             # and their agreement with the request remain the builder's remit.
             native_reaction_requests[source] = "MetaCyc:" + request.group(1)
+    validate_p321_assertions(data["sources"], [], allow_legacy_products=True)
     validate_benzoyl_assertions(data["sources"], [])
     validate_aceto_assertions(data["sources"], [])
     validate_gene_assertions(data["sources"])
@@ -466,7 +487,11 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 or "entity_type" in term
             ):
                 raise ValueError(f"{identifier}: invalid typed PathBank archive term scope")
-        if source_kind in BENZOYL_KINDS:
+        if source_kind in P321_KINDS:
+            expected_id, expected_term = p321_term(data["sources"][term["source"]], term["source"])
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid complete P321 authority projection")
+        elif source_kind in BENZOYL_KINDS:
             expected_id, expected_term = benzoyl_term(
                 data["sources"][term["source"]], term["source"]
             )
@@ -530,6 +555,10 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 raise ValueError(f"{identifier}: invalid typed native reaction authority")
     validate_aceto_assertions(
         data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
+    )
+    validate_p321_assertions(
+        data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()],
+        allow_legacy_products=True,
     )
     validate_benzoyl_assertions(
         data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]

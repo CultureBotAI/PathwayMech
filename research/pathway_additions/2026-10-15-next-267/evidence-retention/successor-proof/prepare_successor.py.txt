@@ -1,0 +1,137 @@
+"""Capture and preserve the complete immutable retention predecessor."""
+
+import hashlib
+import json
+import shutil
+from pathlib import Path
+
+ROOT = Path(__file__).parent
+OLD = Path("/private/tmp/pathwaymech-next-267-retention-preparation")
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def require(condition, message):
+    if not condition:
+        raise ValueError(message)
+
+
+def dump(path, value):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
+
+
+def inventory(root):
+    rows = []
+    for path in sorted(root.rglob("*")):
+        require(not path.is_symlink(), "unexpected symlink")
+        if path.is_file():
+            body = path.read_bytes()
+            rows.append(
+                {
+                    "path": str(path.relative_to(root)),
+                    "bytes": len(body),
+                    "sha256": sha(body),
+                }
+            )
+        else:
+            require(path.is_dir(), "unexpected special file")
+    return rows
+
+
+def main():
+    require(not (ROOT / "payload").exists(), "create-only successor")
+    manifest = OLD / "artifact-manifest.json"
+    require(
+        sha(manifest.read_bytes())
+        == "fa14d99b3fc94fb8d4574e1b76ed3d37287036d29648eef068aa028c1ebd6461",
+        "wrong predecessor",
+    )
+    rows = inventory(OLD)
+    by_path = {r["path"]: r for r in rows}
+    frozen = json.loads(manifest.read_bytes())["files"]
+    require(len(rows) == 34021, "predecessor physical count changed")
+    require(
+        set(by_path)
+        == {r["path"] for r in frozen}
+        | {"artifact-manifest.json", "freeze-proof.json"},
+        "predecessor pathset changed",
+    )
+    require(all(by_path[r["path"]] == r for r in frozen), "predecessor byte change")
+    dump(
+        ROOT / "proof/predecessor-before.json",
+        {"root": str(OLD), "files": rows, "hidden_and_ignored_included": True},
+    )
+    source_rows = []
+    spec = json.loads((OLD / "payload/source-specification.json").read_bytes())
+    for package in spec["packages"]:
+        source = Path(package["source_root"])
+        observed = inventory(source)
+        expected = json.loads(
+            (
+                OLD / "payload/packages" / package["name"] / "source-map.json"
+            ).read_bytes()
+        )["source_occurrences"]
+        projection = [{k: r[k] for k in ("path", "bytes", "sha256")} for r in expected]
+        require(observed == projection, "source owner changed: " + package["name"])
+        source_rows.append(
+            {"name": package["name"], "root": str(source), "files": observed}
+        )
+    dump(
+        ROOT / "proof/source-owners-before.json",
+        {"owners": source_rows, "count": 35, "physical_files": 13577},
+    )
+    shutil.copytree(OLD / "payload", ROOT / "payload")
+    payload = inventory(ROOT / "payload")
+    require(len(payload) == 5896, "predecessor payload count mismatch")
+    require(
+        payload
+        == [
+            {**r, "path": r["path"].removeprefix("payload/")}
+            for r in rows
+            if r["path"].startswith("payload/")
+        ],
+        "payload copy differs",
+    )
+    dump(ROOT / "proof/payload-before.json", {"files": payload})
+    for name in (
+        "independent-adversarial-results.json",
+        "adversarial_review.py",
+        "findings.json",
+    ):
+        source = (
+            Path("/private/tmp/pathwaymech-next-267-independent-retention-review")
+            / name
+        )
+        shutil.copyfile(
+            source,
+            ROOT
+            / "proof"
+            / ("reviewer-" + name + (".txt" if name.endswith(".py") else "")),
+        )
+    for name in (
+        "root-retention-findings-reproduction.json",
+        "reproduce_retention_findings.py",
+        "retention-finding-r01-issue.md",
+        "retention-finding-r02-issue.md",
+        "retention-finding-created-issues.json",
+    ):
+        source = Path("/private/tmp/pathwaymech-next-267-ci") / name
+        shutil.copyfile(
+            source, ROOT / "proof" / (name + (".txt" if name.endswith(".py") else ""))
+        )
+    print(
+        json.dumps(
+            {
+                "predecessor_files_verified": len(rows),
+                "payload_files_copied_exactly": len(payload),
+                "source_owners": len(source_rows),
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()
