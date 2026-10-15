@@ -1,0 +1,61 @@
+from pathlib import Path
+import json,hashlib,re,gzip,xml.etree.ElementTree as ET,datetime,collections
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+ROOT=Path('/private/tmp/pathwaymech-next-259-chemistry'); O=ROOT/'originals'
+prior=json.loads((ROOT/'inputs/chemical-identity-closure.json').read_text())
+def chem(m):
+    if m is None:return {'parsed':False}
+    Chem.AssignStereochemistry(m,cleanIt=True,force=True)
+    return {'parsed':True,'smiles':Chem.MolToSmiles(m,isomericSmiles=True),'hydrogen_normalized_smiles':Chem.MolToSmiles(Chem.RemoveHs(m),isomericSmiles=True),'inchi':Chem.MolToInchi(m),'key':Chem.MolToInchiKey(m),'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),'double_bond_stereo':[str(b.GetStereo()) for b in m.GetBonds() if b.GetBondType()==Chem.BondType.DOUBLE],'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True),'atoms':dict(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms()))}
+def cml_mol(e):
+    rw=Chem.RWMol(); amap={}; atoms=e.findall('./atomArray/atom'); conf=Chem.Conformer(len(atoms));conf.Set3D(False)
+    for a in atoms:
+        at=Chem.Atom(a.attrib['elementType']);at.SetFormalCharge(int(a.get('formalCharge','0')));i=rw.AddAtom(at);amap[a.attrib['id']]=i
+        conf.SetAtomPosition(i,(float(a.get('x2','0')),float(a.get('y2','0')),0.))
+    for b in e.findall('./bondArray/bond'):
+        u,v=b.get('atomRefs').split();rw.AddBond(amap[u],amap[v],{1:Chem.BondType.SINGLE,2:Chem.BondType.DOUBLE,3:Chem.BondType.TRIPLE}[int(b.get('order'))])
+    m=rw.GetMol();Chem.SanitizeMol(m);m.AddConformer(conf);Chem.DetectBondStereochemistry(m);Chem.AssignStereochemistry(m,cleanIt=True,force=True);return m
+out={}; all_checks=[]
+for frame,item in prior['chemicals'].items():
+    el=ET.parse(O/(frame+'.xml')).getroot().find('Compound');cid=item['recommended_id'];j=json.loads((O/('ChEBI-'+cid.split(':')[1]+'.json')).read_text());s=j['default_structure']
+    reps={'native_inchi':chem(Chem.MolFromInchi(el.findtext('inchi'))),'current_chebi_smiles':chem(Chem.MolFromSmiles(s['smiles'])),'current_chebi_inchi':chem(Chem.MolFromInchi(s['standard_inchi'])),'native_cml_2d':chem(cml_mol(el.find('./cml/molecule')))}
+    ref=reps['current_chebi_smiles'];cml=reps['native_cml_2d'];ni=reps['native_inchi']
+    checks={'native_full_inchi_equals_current_issuing':el.findtext('inchi')==s['standard_inchi'],'native_key_equals_current_issuing':el.findtext('inchi-key').removeprefix('InChIKey=')==s['standard_inchi_key'],'current_smiles_reconstructs_issuing_inchi':ref['inchi']==s['standard_inchi'],'cml_connectivity_charge_bond_order_and_2d_stereo_equals_current_smiles_after_explicit_H_normalization':cml['hydrogen_normalized_smiles']==ref['hydrogen_normalized_smiles'],'cml_formula_equals_current_formula':cml['formula']==ref['formula'],'cml_charge_equals_current_charge':cml['charge']==j['chemical_data']['charge']}
+    all_checks+=list(checks.values());out[frame]={'id':cid,'label':j['ascii_name'],'representations':reps,'checks':checks,'native_comment':el.findtext('comment'),'native_synonyms':[x.text for x in el.findall('synonym')],'current_chebi_source_fields':{'id':j['id'],'formula':j['chemical_data']['formula'],'charge':j['chemical_data']['charge'],'default_structure':s}}
+    print(frame,cid,ref['smiles'],ref['double_bond_stereo'],checks)
+# Recompute all original formal reaction sides independently, retaining reverse hydration.
+rxns=[];net=collections.Counter()
+for frame,direction in [('GALLATE-DIOXYGENASE-RXN','L2R'),('RXN-9983','L2R'),('RXN-2463','R2L'),('RXN-2464','L2R')]:
+    el=ET.parse(O/(frame+'.xml')).getroot().find('Reaction'); sides={};sums={}
+    for side in ['left','right']:
+        sums[side]=collections.Counter();sides[side]=[]
+        for e in el.findall(side):
+            child=e.find('Compound');f=child.get('frameid');n=int(e.findtext('coefficient') or 1);c=out[f]['representations']['current_chebi_smiles'];sides[side].append({'native_frame':f,'id':out[f]['id'],'coefficient':n,'coefficient_explicit':e.find('coefficient') is not None})
+            for a,v in c['atoms'].items():sums[side][a]+=n*v
+            sums[side]['charge']+=n*c['charge']
+    inputs,outputs=('left','right') if direction=='L2R' else ('right','left')
+    for side,sign in [(inputs,-1),(outputs,1)]:
+        for x in sides[side]:net[x['id']]+=sign*x['coefficient']
+    rxns.append({'frame':frame,'source_direction':el.findtext('reaction-direction'),'source_spontaneous':el.findtext('spontaneous'),'selected_traversal':direction,'original_sides':sides,'sums':sums,'balanced':sums['left']==sums['right'],'selected_inputs':sides[inputs],'selected_outputs':sides[outputs]})
+    all_checks.append(sums['left']==sums['right'])
+# Verify every projected Rhea node from the full original, preserving split fragments.
+expected=json.loads((ROOT/'inputs/rhea-original-projection.json').read_text())['nodes'];got={};rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+with gzip.open(O/'rhea.rdf.gz','rb') as stream:
+    for event,e in ET.iterparse(stream,events=['end']):
+        uri=e.get(rdf+'about')
+        if uri in expected:
+            obj=got.setdefault(uri,{})
+            for child in e:
+                prop=child.tag.split('}')[-1];v=child.get(rdf+'resource') or child.text
+                if v is not None and v not in obj.setdefault(prop,[]):obj[prop].append(v)
+        if uri:e.clear()
+nodechecks={uri:got.get(uri)==v for uri,v in expected.items()}
+missing_or_different=[u for u,b in nodechecks.items() if not b]
+# Structural distinctions are checked before any naming interpretation.
+cmp=[]
+for a,b in [('4-OXALOMESACONATE','CPD-12849'),('CPD-12849','CPD-185')]:
+    x=out[a]['representations']['current_chebi_smiles'];y=out[b]['representations']['current_chebi_smiles'];cmp.append({'a':a,'b':b,'same_formula':x['formula']==y['formula'],'same_charge':x['charge']==y['charge'],'same_inchi':x['inchi']==y['inchi'],'same_full_key':x['key']==y['key'],'same_canonical_isomeric_smiles':x['smiles']==y['smiles']})
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Independent author calculations from retained originals, not scientific review approval','software':{'rdkit':rdBase.rdkitVersion},'chemical_count':len(out),'chemicals':out,'reactions':rxns,'calculated_net':{k:v for k,v in net.items() if v},'comparisons':cmp,'rhea_original_projection_check':{'expected_subject_count':len(expected),'reconstructed_subject_count':len(got),'all_equal':all(nodechecks.values()),'different':missing_or_different},'all_chemical_balance_checks_pass':all(all_checks)}
+(ROOT/'independent-chemistry-check.json').write_text(json.dumps(result,indent=2)+'\n')
+print('reaction_balance',all(r['balanced'] for r in rxns),'Rhea_nodes',len(expected),'different',missing_or_different,'allchemical',all(all_checks))

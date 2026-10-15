@@ -1,0 +1,438 @@
+{
+  "selection_rule": "Replace the frozen GalA P01-P12 proposal selection with this eleven-edge set. P03/P12 are merged; do not append the old repeated construct quotations. This is author research, not independent approval.",
+  "proposals": [
+    {
+      "proposal_id": "gala-catalysis",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P01"
+      ],
+      "edge": {
+        "subject": "MetaCyc:CPLX-8177",
+        "predicate": "catalyzes",
+        "object": "MetaCyc:GALLATE-DIOXYGENASE-RXN",
+        "description": "GalA catalyzes gallate ring cleavage in the purified recombinant assay. The 2005 late product analysis alone does not distinguish the immediate keto/enol product; formal equation selection depends on the native/Rhea and 2011 chemistry reconciliation.",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc-ENZRXN-18371",
+            "source_assertion": "ENZRXN-18371 connects enzyme CPLX-8177 to GALLATE-DIOXYGENASE-RXN and records a purified heterologous-host assay with PMID16030014.",
+            "source_locator": "/ptools-xml/Enzymatic-Reaction[@frameid=\"ENZRXN-18371\"]/{enzyme,reaction,evidence[Evidence-Code/@frameid=\"EV-EXP-IDA-PURIFIED-PROTEIN-HH\"]}"
+          },
+          {
+            "reference_id": "GalA2005",
+            "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+            "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "subject",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established. The encoded chain is 420 aa; Edman results suggest 419 aa after initiator-Met processing.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              },
+              {
+                "reference_id": "ENA-AE015451",
+                "source_assertion": "The PP_2518 CDS names protein AAN68130.2 and supplies a 420-residue translation beginning MARIIGG.",
+                "source_locator": "AE015451.2 CDS complement(2865514..2866776), /locus_tag, /protein_id and /translation."
+              },
+              {
+                "reference_id": "GalA2005",
+                "quote": "appeared to be processed.",
+                "source_locator": "Results cloning/expression, p.35385; gal2005_methods-successor-web.json L1011-L1019, exact phrase at L1015."
+              }
+            ]
+          }
+        ],
+        "id": "gala-catalysis"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-iron-cofactor",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P02"
+      ],
+      "edge": {
+        "subject": "MetaCyc:CPLX-8177",
+        "predicate": "has_cofactor",
+        "object": "CHEBI:29033",
+        "description": "Native ENZRXN-18371 records Fe2+ as GalA cofactor with the 2005 publication. This native annotation does not fix iron occupancy or imply that other ions fully restore activity. The recombinant pretreatment/rescue observations are separate qualified edges.",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc-ENZRXN-18371",
+            "source_assertion": "The cofactor slot of ENZRXN-18371 identifies FE+2 and cites PUB-16030014.",
+            "source_locator": "/ptools-xml/Enzymatic-Reaction[@frameid=\"ENZRXN-18371\"]/cofactor"
+          }
+        ],
+        "id": "gala-iron-cofactor"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-predominant-trimer",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P03",
+        "gal2005-successor P12"
+      ],
+      "edge": {
+        "subject": "MetaCyc:CPLX-8177",
+        "predicate": "has_part",
+        "object": "MetaCyc:G1G01-2702-MONOMER",
+        "description": "The native component relation and the recombinant assembly experiment are joined here with the preparation qualification. The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. Analytical ultracentrifugation found a predominant species representing about 75% of loading protein, with corrected sedimentation coefficient 7.29 ± 0.10 S and equilibrium mass 132 ± 12 kDa. Comparison with calculated monomer mass 47.644 kDa supports a dominant homotrimer. The preparation was not shown to be exclusively trimeric, and the native component slot supplies no stoichiometric coefficient.",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc-CPLX-8177",
+            "source_assertion": "The component slot of CPLX-8177 points to G1G01-2702-MONOMER; this slot has no numeric coefficient.",
+            "source_locator": "/ptools-xml/Protein[@frameid=\"CPLX-8177\"]/component/Protein[@frameid=\"G1G01-2702-MONOMER\"]"
+          },
+          {
+            "reference_id": "GalA2005",
+            "quote": "globular trimer",
+            "source_locator": "Results, p.35387, sedimentation paragraph; gal2005_rg_rest2-web.json L1446-L1461, phrase L1459."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "subject",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "id": "gala-predominant-trimer"
+      },
+      "remaining_integration_requirements": [
+        "Use this merged edge instead of separately inserting both prior native-composition P03 and experimental-assembly P12. Preserve dominant-species and construct bounds; no coefficient is invented.",
+        "Routine authority selection, independent scientific review and final gates remain."
+      ]
+    },
+    {
+      "proposal_id": "gala-edta-inhibition",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P04"
+      ],
+      "edge": {
+        "predicate": "inhibits",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. 1 mM EDTA left less than 1% of untreated activity. This is an in-vitro exposure result; no cellular flux or specific metal-occupancy mechanism is asserted. The source names EDTA without a salt or protonation specification. CHEBI:4735 is the canonical named parent-acid reference for that reagent; this normalization does not identify the assayed microspecies, supplied salt, charge or stoichiometry.",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "⬍1% of untreated enzyme",
+            "source_locator": "Results, p.35386; gal2005_rg_rest1-web.json L1324-L1329. Protocol: gal2005_methods-successor-web.json L751-L814."
+          },
+          {
+            "reference_id": "ChEBI-4735",
+            "source_assertion": "CHEBI:4735 names ethylenediaminetetraacetic acid and lists EDTA and EDTA (chelating agent) as synonyms; its chemical data describe the neutral parent acid.",
+            "source_locator": "CHEBI-4735.json $.{chebi_accession,ascii_name,names.SYNONYM[ascii_name=\"EDTA\"],names.SYNONYM[ascii_name=\"EDTA (chelating agent)\"],chemical_data,default_structure}"
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "CHEBI:4735",
+        "id": "gala-edta-inhibition"
+      },
+      "remaining_integration_requirements": [
+        "Independent science review of the explicit named-parent normalization; do not infer charge, stoichiometry, a supplied neutral acid, sodium salt or unique pH microspecies.",
+        "Register the exact issuing ChEBI term and preserve the source-specific qualifier and assay conditions."
+      ],
+      "normalization_disposition": "Proposed canonical named-parent normalization, explicitly requested by root; assay salt/protonation remains unspecified. Independent scientific review must judge the documented choice."
+    },
+    {
+      "proposal_id": "gala-dipyridyl-inhibition",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P05"
+      ],
+      "edge": {
+        "predicate": "inhibits",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. 2 mM 2,2′-dipyridyl abolished detectable activity. This is an in-vitro exposure result; no cellular flux or specific metal-occupancy mechanism is asserted.",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "abolished",
+            "source_locator": "Results, p.35386; gal2005_rg_rest1-web.json L1333-L1339. Protocol: gal2005_methods-successor-web.json L751-L814."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "CHEBI:30351",
+        "id": "gala-dipyridyl-inhibition"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-peroxide-inhibition",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P06"
+      ],
+      "edge": {
+        "predicate": "inhibits",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. 1 mM hydrogen peroxide left 15% of untreated activity. This is an in-vitro exposure result; no cellular flux or specific metal-occupancy mechanism is asserted.",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "activity to 15%",
+            "source_locator": "Results, p.35386; gal2005_rg_rest2-web.json L1396-L1400. Protocol: gal2005_methods-successor-web.json L751-L814."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "CHEBI:16240",
+        "id": "gala-peroxide-inhibition"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-iron-reactivation",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P07"
+      ],
+      "edge": {
+        "predicate": "activates",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. After EDTA or dipyridyl pretreatment, 2 mM Fe2+ supplied as FeSO4 restored activity fully following a further 30 min at 4 °C. The two chelator preparations are not reported separately in these outcomes; this conditional rescue is not activation of an untreated enzyme. Metal salt delivery is retained without equating a salt with the ion endpoint. ",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "only fully recovered",
+            "source_locator": "Results, p.35386; gal2005_rg_rest1-web.json L1341-L1379. Protocol: gal2005_methods-successor-web.json L751-L814."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "CHEBI:29033",
+        "id": "gala-iron-reactivation"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-manganese-reactivation",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P08"
+      ],
+      "edge": {
+        "predicate": "activates",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. After chelator pretreatment, 2 mM Mn2+ supplied as MnSO4 restored 8% of untreated activity following a further 30 min at 4 °C. The two chelator preparations are not reported separately in these outcomes; this conditional rescue is not activation of an untreated enzyme. Metal salt delivery is retained without equating a salt with the ion endpoint. ",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "recovered 8,",
+            "source_locator": "Results, p.35386; gal2005_rg_rest1-web.json L1383-L1396: first result in ordered Mn2+, Cu2+, Co2+ list. Protocol: gal2005_methods-successor-web.json L751-L814."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "CHEBI:29035",
+        "id": "gala-manganese-reactivation"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-copper-reactivation",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P09"
+      ],
+      "edge": {
+        "predicate": "activates",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. After chelator pretreatment, 2 mM Cu2+ supplied as CuCl2 restored 9% of untreated activity following a further 30 min at 4 °C. The two chelator preparations are not reported separately in these outcomes; this conditional rescue is not activation of an untreated enzyme. Metal salt delivery is retained without equating a salt with the ion endpoint. ",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "9,",
+            "source_locator": "Results, p.35386; gal2005_rg_rest1-web.json L1383-L1396: second result in ordered Mn2+, Cu2+, Co2+ list. Protocol: gal2005_methods-successor-web.json L751-L814."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "CHEBI:29036",
+        "id": "gala-copper-reactivation"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-cobalt-reactivation",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P10"
+      ],
+      "edge": {
+        "predicate": "activates",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. After chelator pretreatment, 2 mM Co2+ supplied as CoCl2 restored 5% of untreated activity following a further 30 min at 4 °C. The two chelator preparations are not reported separately in these outcomes; this conditional rescue is not activation of an untreated enzyme. Metal salt delivery is retained without equating a salt with the ion endpoint. ",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "5% activity",
+            "source_locator": "Results, p.35386; gal2005_rg_rest1-web.json L1383-L1396: third result in ordered Mn2+, Cu2+, Co2+ list. Protocol: gal2005_methods-successor-web.json L751-L814."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "MetaCyc:CO+2",
+        "id": "gala-cobalt-reactivation"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    },
+    {
+      "proposal_id": "gala-ascorbate-reactivation",
+      "disposition": "insertion_ready_author_proposal",
+      "supersedes": [
+        "gal2005-successor P11"
+      ],
+      "edge": {
+        "predicate": "activates",
+        "object": "MetaCyc:CPLX-8177",
+        "description": "The source reports apparent initiator-Met removal from the 420-aa encoded chain, consistent with a 419-aa processed enzyme; other recombinant terminal changes are unverified. The purified enzyme was 1 mg/ml in 100 mM Tris-HCl pH 7.0, treated for 30 min at 4 °C before activity was initiated with 250 micromolar gallate. Following the 1 mM peroxide pretreatment, 10 mM sodium ascorbate and a further 30 min at 4 °C restored activity to 50% of untreated enzyme. This is partial rescue of the peroxide-exposed preparation. It does not establish constitutive activation or an in-vivo effect.",
+        "evidence": [
+          {
+            "reference_id": "GalA2005",
+            "quote": "partially restored (50%",
+            "source_locator": "Results, p.35386; gal2005_rg_rest2-web.json L1396-L1406; sodium salt specified in methods L804-L814. Protocol: gal2005_methods-successor-web.json L751-L814."
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "object",
+            "kind": "experimental_construct",
+            "description": "Purified KT2440 GalA produced with pETGalA in E. coli BL21(DE3), following ultracentrifugation and phenyl-Sepharose purification. The complete recombinant insert/terminal sequence was not established.",
+            "evidence": [
+              {
+                "reference_id": "GalA2005",
+                "source_assertion": "Table 1 identifies gallate dioxygenase purified from E. coli carrying pETGalA; its phenyl-Sepharose row reports specific activity 42.7 micromol/min/mg.",
+                "source_locator": "Table 1, p.35385, title plus purification step 3/specific-activity column; gal2005_rg_rest1-web.json L1212-L1233. Host OCR caveat: title BLB21(DE3), Figure 1 caption L1206 BL21(DE3)."
+              }
+            ]
+          }
+        ],
+        "subject": "CHEBI:113451",
+        "id": "gala-ascorbate-reactivation"
+      },
+      "remaining_integration_requirements": [
+        "Declare all endpoints and references; register exact issuing authority entries as needed; independent scientific review and final corpus gates."
+      ]
+    }
+  ]
+}

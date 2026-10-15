@@ -1,0 +1,133 @@
+from pathlib import Path
+import xml.etree.ElementTree as E,json,re,hashlib,datetime,collections,html
+B=Path(__file__).parent;O=B/'originals';R=B/'retained';R.mkdir(exist_ok=True)
+def save(n,v):(R/n).write_text(json.dumps(v,indent=2)+'\n')
+def bind(p):b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def plain(s):return html.unescape(re.sub(r'<[^>]+>','',s or ''))
+objects={}
+for p in sorted(O.glob('*.xml')):
+ try:rt=E.parse(p).getroot()
+ except E.ParseError:continue
+ if rt.tag!='ptools-xml':continue
+ for ob in rt:
+  if ob.get('frameid')==p.stem and ob.get('detail')=='full':objects[p.stem]=(ob,p,rt)
+main='GALLATE-DEGRADATION-II-PWY';members=['GALLATE-DIOXYGENASE-RXN','RXN-9983','RXN-2463','RXN-2464'];rxmap=dict(zip(members,['RHEA:28928','RHEA:28932','RHEA:17403','RHEA:28936']))
+coreacts={x.get('frameid')for f in members for x in objects[f][0].findall('./enzymatic-reaction/Enzymatic-Reaction')}
+coreenz={objects[a][0].find('enzyme/Protein').get('frameid')for a in coreacts}
+excluded={'ENZRXN-11023':'Do not map PmdE homology-only annotation to exact E,E-enol hydration; native EV-COMP-HINF-FN-FROM-SEQ is not experimental closure.','ENZRXN-3626':'Do not map old SYK6 LigJ annotation onto E,E-enol hydration; current issuing G2IQQ5 supports distinct KCH substrate and stereospecific CHA, not this reaction.'}
+accepted=coreacts-set(excluded)
+enc={a:objects[a][0].find('enzyme/Protein').get('frameid')for a in coreacts}; include_enz={enc[a]for a in accepted};include_proteins=set(include_enz)
+for p in include_enz:include_proteins.update(x.get('frameid')for x in objects[p][0].findall('./component/Protein'))
+corecomps={x.get('frameid')for p in coreenz for x in objects[p][0].findall('./component/Protein')}
+actrows=[];slots=[];narr=[];pubs={};prows=[];regrows=[];orig=[]
+for f,(ob,p,rt) in objects.items():
+ source=bind(p);version=rt.find('./metadata/PGDB').get('version');orig.append(dict(source,frame=f,object_type=ob.tag,query=rt.findtext('./metadata/query'),pgdb_version=version,full=True))
+ if f==main:scope='named_pathway'
+ elif f in members:scope='formal_member'
+ elif f in coreacts:scope='reaction_attached_activity'
+ elif ob.tag=='Enzymatic-Reaction':scope='protein_attached_alternative_activity'
+ elif ob.tag=='Protein':scope='core_component' if f in coreenz|corecomps else 'alternative_route_component'
+ elif ob.tag=='Gene':scope='native_identity'
+ elif ob.tag=='Pathway':scope='interface_or_alternative'
+ else:scope='source_linked_context'
+ counts=collections.Counter()
+ for c in ob:
+  counts[c.tag]+=1;loc=f"/ptools-xml/{ob.tag}[@frameid='{f}']/{c.tag}[{counts[c.tag]}]";frames=[{'type':x.tag,'frame':x.get('frameid')}for x in c if x.get('frameid')]; val=(c.text or '').strip()
+  if c.tag in ['credits','parent']:disp='Administrative provenance or source hierarchy; not a biological edge.'
+  elif c.tag in ['common-name','synonym','accession-1','dblink','gene','product']:disp='Identity annotation retained; xrefs require issuing-authority scope/sequence comparison, never automatic exact equivalence.'
+  elif c.tag=='comment':disp='Native narrative retained by hash-bound paragraph index and manual dispositions; database prose is not quoted as its cited primary publication.'
+  elif ob.tag=='Compound' and c.tag in ['appears-in-left-side-of','appears-in-right-side-of','appears-in-reaction','in-pathway','cofactor-of']:disp='Compound reverse-index context; do not expand unrelated pathways from ubiquitous compounds.'
+  elif c.tag in ['inchi','inchi-key','cml','chemical-formula','molecular-weight','gibbs-0','pka1','pka2','smiles','atom-charges','non-standard-inchi']:disp='Chemical identity/physical annotation; exact member chemical checks retained separately; calculated values do not establish physiological flux.'
+  elif c.tag in ['evidence','citation']:disp='Source evidence-code/citation metadata retained; cited paper is not claimed read by this native author.'
+  elif c.tag in ['km','vmax','ph-opt','temperature-opt','molecular-weight-exp','molecular-weight-seq','pi']:disp='Assay/property annotation retained, not flattened into pathway graph; GalB substrate and GalC historical identity cautions apply.'
+  elif ob.tag=='Enzymatic-Reaction' and f not in coreacts:disp='Alternative activity is outside four formal native members; retain boundary metadata, exclude additional route chemistry.'
+  elif f in excluded:disp=excluded[f]
+  elif c.tag in ['reaction-list','reaction-ordering','reaction-layout','left','right','reaction-direction','spontaneous']:disp='Retain formal chemistry/direction/order as selected physiological route; reaction reversibility and spontaneous flag remain distinct.'
+  elif c.tag in ['enzyme','reaction','component','component-of','catalyzes','cofactor','regulated-by','regulator','regulated-entity','mode','mechanism']:disp='Mechanistic source assertion accounted in activity/protein/regulation dispositions and graph proposal; retain exact source entity and preparation scope.'
+  elif c.tag in ['pathway-link','super-pathways','in-pathway']:disp='Boundary/interface context; named TCA link and syringate parent retained without importing their full mechanisms.'
+  elif c.tag in ['species','taxonomic-range','rank','strain-name']:disp='Source taxon context only; Bacteria range and reaction-specific taxa do not prove complete route in every listed organism.'
+  elif c.tag in ['physiologically-relevant','orphan']:disp='Source classification annotation preserved; not stronger evidence than the linked activity assay.'
+  elif c.tag=='alternative-substrate':disp='Alternative-substrate relation preserved as boundary annotation, not a complete new equation.'
+  else:disp='Source annotation retained for explicit context; no unsupported mechanistic edge inferred.'
+  row={'frame':f,'slot':c.tag,'ordinal':counts[c.tag],'locator':loc,'element_sha256':hashlib.sha256(E.tostring(c,encoding='utf-8')).hexdigest(),'scope':scope,'disposition':disp}
+  if frames:row['direct_targets']=frames
+  if val and c.tag!='comment':row['value']=val if len(val)<400 else {'length':len(val),'sha256':hashlib.sha256(val.encode()).hexdigest()}
+  slots.append(row)
+  if c.tag=='comment':
+   for i,paragraph in enumerate(re.split(r'<p\s*>',val,flags=re.I),1):
+    narr.append({'frame':f,'paragraph':i,'source_locator':loc+f'; paragraph {i}','text_sha256':hashlib.sha256(paragraph.encode()).hexdigest(),'characters':len(paragraph),'linked_pubmed':sorted(set(re.findall(r'pubmed/(\d+)',paragraph))),'linked_frames':sorted(set(html.unescape(x)for x in re.findall(r'(?:id|object)=([^"&<>]+)',paragraph))),'disposition':('Chemistry conflict: formal E,E CPD-12849 remains distinct from narrative Z,Z CPD-185; not an exact mapping.' if 'CPD-185' in paragraph and f in [main,'CPLX-8178','G1G01-2697-MONOMER'] else 'Reviewed source narrative; explicit source-scoped facts appear in source-fact-dispositions.json; evolutionary speculation/background is not a catalytic assertion.')})
+ for x in ob.findall('.//Publication'):
+  k=x.get('frameid');v={'frame':k,'pmid':x.findtext('pubmed-id'),'title':plain(x.findtext('title')),'year':x.findtext('year'),'source':x.findtext('source')};pubs.setdefault(k,{'annotation':v,'occurrences':[]})['occurrences'].append({'frame':f,'source':str(p)})
+ if ob.tag=='Enzymatic-Reaction':
+  enzyme=ob.find('enzyme/Protein').get('frameid');reaction=ob.find('reaction/Reaction').get('frameid')
+  actrows.append({'native_activity':f,'enzyme':enzyme,'reaction':reaction,'is_formal_member_activity':f in coreacts,'evidence_codes':[x.get('frameid')for x in ob.findall('evidence/Evidence-Code')],'citation_pmids':sorted(set(x.text for x in ob.findall('.//pubmed-id'))),'cofactors':[x.get('frameid')for x in ob.findall('cofactor/Compound')],'regulators':[x.get('frameid')for x in ob.findall('regulated-by/Regulation')],'direction':ob.findtext('reaction-direction'),'alternative_substrates':[x.get('frameid')for x in ob.findall('alternative-substrate/Compound')],'assay_annotations':[{'slot':c.tag,'value':c.text,'substrate':[x.get('frameid')for x in c.findall('Compound')],'attributes':c.attrib,'reaction_direction':c.findtext('reaction-direction')}for c in ob if c.tag in ['km','vmax','ph-opt','temperature-opt']],'source':source,'disposition':excluded.get(f,'Propose source-scoped catalyst on exact formal chemistry; primary author must independently bind experimental preparations before unqualified assay claims.' if f in accepted else 'Excluded alternative activity outside the four-member pathway; full activity object inspected but alternate mechanism is not imported.')})
+ if ob.tag=='Protein':
+  prows.append({'native_protein':f,'name':plain(ob.findtext('common-name')),'synonyms':[plain(x.text)for x in ob.findall('synonym')],'species':[x.get('frameid')for x in ob.findall('species/Organism')],'gene':[x.get('frameid')for x in ob.findall('gene/Gene')],'components':[{'frame':x.find('Protein').get('frameid'),'coefficient':x.findtext('coefficient'),'coefficient_missing_is_not_one':x.find('coefficient')is None}for x in ob.findall('component')],'xref_uniprot':[x.findtext('dblink-oid')for x in ob.findall('dblink')if x.findtext('dblink-db')=='UNIPROT'],'source':source,'disposition':('Proposed native catalyst/component; identity and historical preparation boundaries apply.' if f in include_proteins else 'Excluded from proposed formal-member biology; preserve alternative-route or unresolved LigJ/PmdE identity.')})
+ if ob.tag=='Regulation':
+  target=ob.find('regulated-entity/Enzymatic-Reaction').get('frameid');regrows.append({'frame':f,'target_activity':target,'target_protein':enc.get(target),'regulator':ob.find('regulator/Compound').get('frameid'),'mode':ob.findtext('mode'),'mechanism':ob.findtext('mechanism'),'citation_pmids':[x.text for x in ob.findall('.//pubmed-id')],'source':source,'disposition':'Propose source-scoped effect on this enzyme only.'if target in accepted else 'Excluded: target is an alternative activity or unresolved LigJ reaction; effect does not transfer to another catalyst.'})
+save('native-original-manifest.json',{'scope':'Complete acquired full native objects only; originals external; META mirror27.0 is not asserted current upstream release.','count':len(orig),'objects':orig})
+save('complete-direct-slot-ledger.json',{'scope':'Every direct child slot of every acquired full native object, including administrative and excluded alternative objects. Element hashes hash UTF-8 ElementTree serialization, not contiguous original bytes; original-object hashes are authoritative.','object_count':len(objects),'slot_count':len(slots),'slots':slots})
+save('native-narrative-index.json',{'scope':'All direct narrative paragraphs in acquired objects. Full raw comments stay in originals, not retained prose. Paragraph hashes are UTF-8 decoded text segments.','paragraphs':narr})
+save('native-publication-index.json',{'scope':'Every nested publication record in acquired XML; native citation is not a primary full-text read claim. HTML-linked PMIDs without embedded publication objects remain in native-narrative-index.','publications':pubs})
+save('native-component-dispositions.json',{'scope':'All 13 formal reaction-attached activities plus all source-protein alternative activities; proposed retention is author judgment, not independent review approval.','formal_activity_count':len(coreacts),'activities':actrows,'proteins':prows,'regulations':regrows})
+# Sequence candidates retain exact current authority objects without historical preparation normalization.
+seq=[]
+for p in sorted(O.glob('*.json')):
+ try:d=json.loads(p.read_text())
+ except:continue
+ if 'primaryAccession' not in d:continue
+ access=p.stem;natives=[r['native_protein']for r in prows if access in r['xref_uniprot']]
+ q={'requested_accession':access,'primary_accession':d['primaryAccession'],'secondary_accessions':d.get('secondaryAccessions',[]),'native_sources':natives,'source':bind(p),'audit':d['entryAudit'],'organism':d['organism'],'genes':d.get('genes',[]),'protein_description':d['proteinDescription'],'sequence':d['sequence'],'sequence_sha256':hashlib.sha256(d['sequence']['value'].encode()).hexdigest(),'annotations':d.get('comments',[]),'features':d.get('features',[]),'source_references':d.get('references',[]),'sequence_xrefs':[x for x in d.get('uniProtKBCrossReferences',[])if x['database']in ['EMBL','RefSeq','GeneID']]}
+ q['disposition']='Current sequence annotation candidate; original experimental strain/preparation is not silently normalized from native species-level historical objects.'
+ if access=='Q88JX5':q['disposition']='REJECT exact mapping to assayed full GalA:340aa obsoleteAAN68130.1 versus issuingAAN68130.2 420aa; full-length residue81Val corresponds to initiatorMet of truncated annotation, residues82..420 equal UniProt2..340.'
+ if access=='Q9KWL6':q['disposition']='Issuing successorG2IQQ5 has KCH hydration chemistry, not formal E,E-enol hydration; excluded from this catalytic edge.'
+ if access=='Q8RQW0':q['disposition']='Issuing successorG2IQQ8 retains exact ligK sequence/CHA aldolase; taxon627192 successor differs from historical nativeTAX502559, preserve both contexts.'
+ seq.append(q)
+save('identity-annotation-sequence-package.json',{'scope':'Complete fresh issuing protein annotations and sequences for15 native cross-reference candidates; mapping status distinguishes sequence equality from historical experimental identity.','proteins':seq})
+(B/'native-protein-sequences.fasta').write_text(''.join('>'+x['primary_accession']+' requested='+x['requested_accession']+' sequence_sha256='+x['sequence_sha256']+'\n'+x['sequence']['value']+'\n'for x in seq))
+# Build native graph proposal, conditioned on independent scientific and authority review.
+chem=json.loads((B/'chemical-identity-closure.json').read_text())['chemicals'];close=json.loads((B/'reaction-identity-closure.json').read_text());participants={};reactions=[];edges=[];references={}
+def pid(frame):return chem[frame]['recommended_id'] if frame in chem and frame!='CPD-185' else 'MetaCyc:'+frame
+def addpart(frame,cat):
+ id=pid(frame)
+ if id not in participants:
+  ob=objects[frame][0]; label=plain(ob.findtext('common-name'))or next((plain(x.text)for x in ob.findall('synonym')),'')
+  if not label:label=next((x['name']for x in prows if x['native_protein']==frame),'')or frame
+  participants[id]={'id':id,'label':label,'category':cat,'source_native_frame':frame}
+ return id
+
+def evid(frame,locator,assertion):
+ p=objects[frame][1]; ref='MetaCyc:'+frame
+ references.setdefault(ref,{'id':ref,'title':'MetaCyc '+frame+' native object','url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame,'source_version':'META27.0 public mirror','source_sha256':bind(p)['sha256']})
+ assert len(assertion)<=400,(frame,len(assertion))
+ return {'reference_id':ref,'source_assertion':assertion,'source_locator':locator}
+def edge(s,p,o,ev,desc):
+ x={'id':'native-'+str(len(edges)+1).zfill(3),'subject':s,'predicate':p,'object':o,'description':desc,'evidence':[ev]};edges.append(x);return x['id']
+for rx in close['reactions']:
+ f=rx['native_id'].split(':',1)[1];rid=rx['exact_chemical_equation_id'];reactions.append({'id':rid,'label':rx['rhea_label'],'category':'molecular_activity','direction':'left_to_right'if f==members[0]else'reversible','source_native_frame':f})
+ edge(rid,'part_of','MetaCyc:'+main,evid(main,rx['pathway_membership_locator'],f'{f} is one of the four formal reaction-list members of gallate degradation I.'),'Formal native membership; accession suffixII is distinct from displayed nameI.')
+ for side,pred in [('substrates','has_input'),('products','has_output')]:
+  for x in rx['selected_sides'][side]:
+   id=addpart(x['native_frame'],'small_molecule');edge(rid,pred,id,evid(f,x['source_locator'],f"Selected {rx['selected_pathway_direction_relative_native']} pathway flux gives {x['coefficient']} {x['native_frame']} on the {side} side; complete native equation checked for atoms and charge."),'Selected physiological route orientation; native reversible metadata retained independently.')
+for a,b in zip(members,members[1:]):edge(rxmap[a],'provides_input_for',rxmap[b],evid(main,f"/ptools-xml/Pathway/reaction-ordering[Reaction/@frameid='{b}']/predecessor-reactions",f'{a} is the stated predecessor of {b}; their checked full equations share the intervening pathway compound.'),'Native order and direct material continuity.')
+for a in sorted(accepted):
+ ob=objects[a][0];enzyme=enc[a];f=ob.find('reaction/Reaction').get('frameid');category='complex'if objects[enzyme][0].find('component')is not None else'protein';en=addpart(enzyme,category);codes=','.join(x.get('frameid')for x in ob.findall('evidence/Evidence-Code'))
+ assertion=f'{a} assigns {enzyme} to {f}. Native evidence: {codes}.'
+ if len(assertion)>400:assertion=f'{a} assigns {enzyme} to {f}; all native evidence codes and cited publications are retained in the activity ledger.'
+ edge(en,'catalyzes',rxmap[f],evid(a,f'/ptools-xml/Enzymatic-Reaction/enzyme; /ptools-xml/Enzymatic-Reaction/reaction',assertion),'Source-scoped catalytic annotation. Heterologous/native historical preparations and exact chemical specificity require primary-author qualification; no automatic UniProt identity transfer.')
+ for c in ob.findall('cofactor'):
+  cf=c.find('Compound').get('frameid');cp=addpart(cf,'cofactor');edge(en,'has_cofactor',cp,evid(a,f"/ptools-xml/Enzymatic-Reaction/cofactor[Compound/@frameid='{cf}']",f'{a} assigns cofactor {cf} to enzyme {enzyme}; preserve native citation and assay limits.'),'Native cofactor assertion; not exclusivity or physiological metal determination. GalB and GalC historical/preparation caveats apply.')
+for p in sorted(include_enz):
+ for c in objects[p][0].findall('component'):
+  f=c.find('Protein').get('frameid');pp=addpart(p,'complex');cc=addpart(f,'protein');n=c.findtext('coefficient');assertion=f'{p} has component {f}'+(f' with native coefficient {n}.'if n else '; the component slot lacks a coefficient. Native comment separately calls GalA a homotrimer.')
+  edge(pp,'has_part',cc,evid(p,f"/ptools-xml/Protein/component[Protein/@frameid='{f}']",assertion),'Component is not asserted independently catalytic. Historical source subunit is not automatically equal to current cross-referenced sequence.')
+for x in regrows:
+ if x['target_activity']not in accepted:continue
+ reg=addpart(x['regulator'],'small_molecule');en=addpart(x['target_protein'],'complex');pred={'-':'inhibits','+':'activates'}.get(x['mode'],'regulates');assertion=f"{x['frame']} has regulator {x['regulator']}, mode {x['mode']}, target activity {x['target_activity']} (enzyme {x['target_protein']})."+(f" Mechanism: {x['mechanism']}."if x['mechanism']else'')
+ edge(reg,pred,en,evid(x['frame'],'/ptools-xml/Regulation/regulator; mode; regulated-entity',assertion),'Source assay effect on this catalyst only, not global inhibition of the pathway.')
+# Interfaces are contextual pathways, not extra elementary members.
+for f in ['TCA','PWY-6339']:reactions.append({'id':'MetaCyc:'+f,'label':plain(objects[f][0].findtext('common-name')),'category':'pathway'})
+edge('MetaCyc:'+main,'provides_input_for','MetaCyc:TCA',evid(main,'/ptools-xml/Pathway/pathway-link[Compound/@frameid="OXALACETIC_ACID"]/link-target', 'The native pathway-link identifies oxaloacetate as the interface compound linking this pathway to TCA.'),'Native oxaloacetate interface only; no complete TCA pathway is imported.')
+edge('MetaCyc:'+main,'part_of','MetaCyc:PWY-6339',evid(main,'/ptools-xml/Pathway/super-pathways; in-pathway','The native object lists PWY-6339 as its super-pathway and in-pathway parent.'),'Syringate parent context; no upstream route reactions added to the four formal members.')
+save('proposed-native-graph.json',{'scope':'Author proposal only. All assertions are inspected native structured-source statements, not primary quotations or independent review approval. Integration must apply experimental endpoint qualifications and authority decisions.','id':'MetaCyc:'+main,'label':'gallate degradation I','participants':list(participants.values()),'reactions':reactions,'mechanistic_edges':edges,'references':list(references.values()),'hold_conditions':['GalA truncated UniProtQ88JX5 must not replace source-native full GalA; AAN68130.2 exact420aa deposited sequence is independent identity candidate.','Exclude oldLigJ/PmdE exact E,E chemistry assignments.','GalB kinetics85/76 nativeCHA labels conflict with physiological hydration; retain as excluded annotation until primary check.','NativeGalC 1972 preparation/cation data is not identical to2011 KT2440sequence; retain source-scoped source endpoint and primary qualifiers.','Taxa here are source annotation context; do not assert every species has the complete pathway.','Source-native names without common-name need validated issuing alias naming, not guessed labels.']})
+print('objects',len(objects),'slots',len(slots),'activities',len(actrows),'formal',len(coreacts),'accepted',len(accepted),'proteins',len(prows),'regulations',len(regrows),'edges',len(edges),'parts',len(participants))

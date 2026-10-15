@@ -1,0 +1,21 @@
+from pathlib import Path
+import json,urllib.request,urllib.error,concurrent.futures,datetime,hashlib,xml.etree.ElementTree as E
+B=Path('/private/tmp/pathwaymech-next-259-native'); O=B/'originals';out=[];urls={}
+for p in O.glob('*.xml'):
+ try:o=list(E.parse(p).getroot())[1]
+ except:continue
+ if o.tag=='Protein':
+  for x in o.findall('dblink'):
+   if x.findtext('dblink-db')=='UNIPROT':
+    a=x.findtext('dblink-oid');urls[a+'.json']='https://rest.uniprot.org/uniprotkb/'+a+'.json'
+urls['ChEBI-16918.json']='https://www.ebi.ac.uk/chebi/backend/api/public/compound/16918/'
+def get(it):
+ n,u=it;p=O/n;row={'path':str(p),'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'Accept':'application/json'}),timeout=50) as r:b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'),release=r.headers.get('X-UniProt-Release'))
+ except urllib.error.HTTPError as e:b=e.read();row.update(status=e.code,error=str(e))
+ except Exception as e:return dict(row,error=str(e))
+ p.write_bytes(b);row.update(sha256=hashlib.sha256(b).hexdigest(),bytes=len(b));return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+ for x in ex.map(get,urls.items()):out.append(x);print(Path(x['path']).name,x.get('status'),x.get('error',''))
+(B/'retained/authority-acquisition.json').write_text(json.dumps(out,indent=2)+'\n')

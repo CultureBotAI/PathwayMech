@@ -1,0 +1,133 @@
+{
+  "scope": "Author proposals only. P03 describes the native composition assertion, not a recombinant assembly experiment. P01-P02 must retain every qualifier. Native/ENA identifiers remain subject to the parent integration workflow.",
+  "proposals": [
+    {
+      "id": "P01",
+      "status": "author proposal with grammar-shaped evidence; not approval",
+      "source_facts": [
+        "F01",
+        "F03",
+        "F04",
+        "F05",
+        "F07",
+        "F09",
+        "F10"
+      ],
+      "edge": {
+        "subject": "MetaCyc:CPLX-8177",
+        "predicate": "catalyzes",
+        "object": "MetaCyc:GALLATE-DIOXYGENASE-RXN",
+        "description": "GalA catalyzes gallate ring cleavage. The 2005 recombinant preparation supports the activity; its late product analysis alone does not resolve the immediate keto/enol product. Exact formal reaction chemistry also requires the native/Rhea and 2011 reconciliation.",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc-ENZRXN-18371",
+            "source_assertion": "ENZRXN-18371 connects enzyme CPLX-8177 to GALLATE-DIOXYGENASE-RXN and records a purified heterologous-host assay with PMID16030014.",
+            "source_locator": "/ptools-xml/Enzymatic-Reaction[@frameid=\"ENZRXN-18371\"]/{enzyme,reaction,evidence[Evidence-Code/@frameid=\"EV-EXP-IDA-PURIFIED-PROTEIN-HH\"]}"
+          },
+          {
+            "reference_id": "GalA2005",
+            "source_assertion": "Table 1 lists 42.7 micromol/min/mg for gallate dioxygenase in the final phenyl-Sepharose fraction from E. coli carrying pETGalA.",
+            "source_locator": "Table 1, p.35385, title and row 3/specific activity; retained rest1 transcript L1212-L1233"
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "subject",
+            "kind": "experimental_construct",
+            "description": "KT2440 GalA expressed from pETGalA in E. coli BL21(DE3). The encoded chain has 420 residues; Edman sequencing indicated apparent initiator-Met removal, giving a 419-residue processed chain. The complete recombinant sequence and any other terminal changes were not established here.",
+            "evidence": [
+              {
+                "reference_id": "ENA-AE015451",
+                "source_assertion": "The PP_2518 CDS names protein AAN68130.2 and supplies a 420-residue translation beginning MARIIGG.",
+                "source_locator": "CDS complement(2865514..2866776), /locus_tag, /protein_id, /translation"
+              },
+              {
+                "reference_id": "GalA2005",
+                "quote": "E. coli BL21(DE3) (pETGalA)",
+                "source_locator": "Figure 1 caption, lane 3, p.35385; retained rest1 transcript L1206"
+              },
+              {
+                "reference_id": "GalA2005",
+                "quote": "first methionine that appeared to be processed.",
+                "source_locator": "Results, cloning/expression, p.35385; retained methods transcript L1015"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "P02",
+      "status": "author proposal with grammar-shaped evidence; not approval",
+      "source_facts": [
+        "F04",
+        "F15",
+        "F18",
+        "F19",
+        "F20",
+        "F21",
+        "F22",
+        "F23",
+        "F24",
+        "F25"
+      ],
+      "edge": {
+        "subject": "MetaCyc:CPLX-8177",
+        "predicate": "has_cofactor",
+        "object": "CHEBI:29033",
+        "description": "Native ENZRXN-18371 records Fe2+ as GalA cofactor with the 2005 publication. Conditional metal-rescue, chelator and peroxide findings are separately retained as research proposals; this edge does not assert fixed iron occupancy or exclude weak rescue by other metals.",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc-ENZRXN-18371",
+            "source_assertion": "The cofactor slot of ENZRXN-18371 identifies FE+2 and cites PUB-16030014.",
+            "source_locator": "/ptools-xml/Enzymatic-Reaction[@frameid=\"ENZRXN-18371\"]/cofactor"
+          }
+        ],
+        "endpoint_qualifiers": [
+          {
+            "endpoint": "subject",
+            "kind": "experimental_construct",
+            "description": "KT2440 GalA expressed from pETGalA in E. coli BL21(DE3). The encoded chain has 420 residues; Edman sequencing indicated apparent initiator-Met removal, giving a 419-residue processed chain. The complete recombinant sequence and any other terminal changes were not established here.",
+            "evidence": [
+              {
+                "reference_id": "ENA-AE015451",
+                "source_assertion": "The PP_2518 CDS names protein AAN68130.2 and supplies a 420-residue translation beginning MARIIGG.",
+                "source_locator": "CDS complement(2865514..2866776), /locus_tag, /protein_id, /translation"
+              },
+              {
+                "reference_id": "GalA2005",
+                "quote": "E. coli BL21(DE3) (pETGalA)",
+                "source_locator": "Figure 1 caption, lane 3, p.35385; retained rest1 transcript L1206"
+              },
+              {
+                "reference_id": "GalA2005",
+                "quote": "first methionine that appeared to be processed.",
+                "source_locator": "Results, cloning/expression, p.35385; retained methods transcript L1015"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "P03",
+      "status": "author native-composition proposal; not an assay-specific stoichiometric observation",
+      "source_facts": [
+        "F26"
+      ],
+      "edge": {
+        "subject": "MetaCyc:CPLX-8177",
+        "predicate": "has_part",
+        "object": "MetaCyc:G1G01-2702-MONOMER",
+        "description": "The native GalA complex contains G1G01-2702-MONOMER. The component slot does not provide a numeric coefficient. The primary preparation had a predominant species consistent with a homotrimer; that conditional assembly result is retained separately.",
+        "evidence": [
+          {
+            "reference_id": "MetaCyc-CPLX-8177",
+            "source_assertion": "The component slot of CPLX-8177 points to G1G01-2702-MONOMER.",
+            "source_locator": "/ptools-xml/Protein[@frameid=\"CPLX-8177\"]/component/Protein[@frameid=\"G1G01-2702-MONOMER\"]"
+          }
+        ]
+      }
+    }
+  ]
+}

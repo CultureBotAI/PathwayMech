@@ -1,0 +1,65 @@
+"""Read-only candidate refresh against an explicitly supplied merged baseline."""
+from pathlib import Path
+import argparse, collections, datetime, hashlib, json, subprocess
+import yaml
+
+OUT=Path(__file__).parent
+def sha(data):return hashlib.sha256(data).hexdigest()
+def save(name,value):
+    path=OUT/name
+    if path.exists():raise ValueError('Refusing to overwrite preflight output: '+str(path))
+    path.write_text(json.dumps(value,indent=2,ensure_ascii=False)+'\n')
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--baseline',required=True)
+    parser.add_argument('--root',action='append',required=True,type=Path)
+    args=parser.parse_args()
+    terms=(OUT/'terms.txt').read_text().splitlines()
+    receipts=[];records=[];matched_files=[]
+    for index,root in enumerate(args.root):
+        def git(*cmd):return subprocess.check_output(['git',*cmd],cwd=root).decode().strip()
+        assert git('rev-parse','HEAD')==args.baseline,'Root HEAD differs from fresh merged baseline'
+        assert not git('status','--porcelain'),'Candidate preflight requires clean baseline'
+        listing=subprocess.check_output(['git','ls-tree','-r','-z',args.baseline,'--','data/pathways'],cwd=root)
+        blobs={}
+        for item in listing.split(b'\0'):
+            if not item:continue
+            meta,name=item.split(b'\t',1);mode,kind,oid=meta.split()
+            if name.endswith(b'.yaml'):
+                assert kind==b'blob';blobs[name.decode()]=oid.decode()
+        paths=sorted((root/'data/pathways').rglob('*.yaml'))
+        assert {str(p.relative_to(root)) for p in paths}==set(blobs)
+        for path in paths:
+            raw=path.read_bytes();rel=str(path.relative_to(root))
+            assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==blobs[rel]
+            doc=yaml.load(raw,Loader=yaml.CSafeLoader)
+            nodes=[{'field':'record','id':doc['id'],'label':doc['label']}]
+            for field in ['taxa','participants','reactions','gene_clusters','references']:
+                nodes.extend({'field':field,**{k:n[k] for k in ['id','label','title','category'] if k in n}} for n in doc.get(field,[]))
+            exact=[]
+            for node in nodes:
+                hits=[t for t in terms if any(str(v).casefold()==t.casefold() or str(v).split(':',1)[-1].casefold()==t.casefold() for k,v in node.items() if k!='field')]
+                if hits:exact.append({'node':node,'terms':hits})
+            records.append({'root':str(root),'path':rel,'id':doc['id'],'label':doc['label'],'sha256':sha(raw),'baseline_blob':blobs[rel],'exact_node_matches':exact})
+        cmd=['rg','--hidden','--no-ignore','-l','-i','-F','-f',str(OUT/'terms.txt'),'-g','!/.git','-g','!/.git/**','-g','!/.venv/**','.']
+        result=subprocess.run(cmd,cwd=root,capture_output=True)
+        assert result.returncode in (0,1),result.stderr.decode()
+        (OUT/f'root-{index}-rg-files.txt').write_bytes(result.stdout)
+        (OUT/f'root-{index}-rg-stderr.txt').write_bytes(result.stderr)
+        files=[]
+        for rel in result.stdout.decode().splitlines():
+            path=root/rel;raw=path.read_bytes();lines=[]
+            for number,line in enumerate(raw.decode('utf-8',errors='replace').splitlines(),1):
+                hits=[t for t in terms if t.casefold() in line.casefold()]
+                if hits:lines.append({'line':number,'terms':hits,'text':line})
+            files.append({'path':rel,'bytes':len(raw),'sha256':sha(raw),'matches':lines})
+        save(f'root-{index}-matches.json',files)
+        receipts.append({'root':str(root),'head':args.baseline,'command':cmd,'exit_code':result.returncode,'files':len(files),'matching_lines':sum(len(f['matches']) for f in files),'record_count':len(paths)})
+        matched_files.extend({'root':str(root),'path':r['path'],'sha256':r['sha256'],'matched_lines':len(r['matches'])} for r in files)
+    save('whole-record-node-audit.json',records)
+    save('search-receipts.json',{'observed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'baseline':args.baseline,'bounds':'Hidden and ignored files included. Root Git metadata and .venv dependency trees excluded. Default rg does not search binary payloads, traverse symlinks, or unpack archives. All maintained YAMLs independently parsed and matched to baseline Git blobs. External research roots excluded from corpus absence claim.','receipts':receipts})
+    save('matched-file-summary.json',matched_files)
+    print(json.dumps({'receipts':receipts,'matching_records':[(r['root'],r['path'],r['id'],len(r['exact_node_matches'])) for r in records if r['exact_node_matches']],'candidate_record_matches':[r for r in records if r['id']=='MetaCyc:GALLATE-DEGRADATION-II-PWY']},indent=2))
+
+if __name__=='__main__':main()

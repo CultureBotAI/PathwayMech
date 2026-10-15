@@ -1,0 +1,129 @@
+"""External author-only candidate preflight. Does not select or promote authority terms."""
+from pathlib import Path
+import datetime,hashlib,io,json,sqlite3,subprocess,sys,tarfile
+B=Path(__file__).resolve().parent;R=Path('/private/tmp/pathwaymech-next-259-20261014');BASE='7e18d0e2b7dd066ea5176b3f679624f7e50a0dc3'
+N=Path('/private/tmp/pathwaymech-next-259-native');P=Path('/private/tmp/pathwaymech-next-259-primary-identities');A=Path('/private/tmp/pathwaymech-next-259-primary');L=Path('/private/tmp/pathwaymech-next-259-ligab-chemistry');E=Path('/private/tmp/pathwaymech-next-259-evidence-successor');C=Path('/private/tmp/pathwaymech-next-259-chemistry')
+sys.path[:0]=[str(R/'src'),str(R/'scripts')]
+from build_source_identifier_snapshot import source_terms
+from build_ontology_identifier_snapshot import extract_terms,read_source
+inputs={}
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def load(p):
+ inputs[str(p)]=sha(p);return json.loads(p.read_text())
+def bind(p):return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def save(name,data):
+ p=B/name;assert not p.exists(),f'Preserve existing candidate run first: {p}';p.write_text(json.dumps(data,indent=2)+'\n')
+assert subprocess.check_output(['git','rev-parse','HEAD'],cwd=R).decode().strip()==BASE
+baseline={name:load(B/'baseline'/name) for name in ['ontology.json','sources.json','identifier_sources.json','rhea_identifier_updates.json']}
+archive=subprocess.check_output(['git','archive',BASE,'data/pathways','data/identifier_authorities','conf/identifier_sources.json','conf/rhea_identifier_updates.json'],cwd=R)
+with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
+ for member in tar:
+  if not member.isfile():continue
+  data=tar.extractfile(member).read()
+  if member.name.startswith('data/pathways/') and member.name.endswith('.yaml'):
+   assert (B/'records'/Path(member.name).name).read_bytes()==data,member.name
+  elif member.name in {'conf/identifier_sources.json','conf/rhea_identifier_updates.json','data/identifier_authorities/ontology.json','data/identifier_authorities/sources.json'}:
+   assert (B/'baseline'/Path(member.name).name).read_bytes()==data,member.name
+  assert (R/member.name).read_bytes()==data,member.name
+records=load(B/'baseline-record-bindings.json');assert len(records)==255
+retained=load(B/'retained-authority-identifiers.json');terms={**baseline['sources.json']['terms'],**baseline['ontology.json']['terms']};assert len(terms)==4954 and set(terms)==set(retained)
+assert len(baseline['identifier_sources.json'])==1047
+cache_receipt=load(B/'baseline-original-cache-verification.json');assert cache_receipt['baseline_commit']==BASE
+# Hash each distinct original target once, while retaining every descriptor comparison.
+cache_hashes={}
+for row in cache_receipt['originals']:
+ p=Path(row['path']);resolved=p.resolve();assert str(resolved)==row['resolved']
+ if resolved not in cache_hashes:cache_hashes[resolved]=sha(resolved)
+ assert cache_hashes[resolved]==row['sha256'],p
+save('baseline-preflight.json',dict(baseline_commit=BASE,records=255,terms=4954,source_owners=len(baseline['sources.json']['sources']),ontology_owners=len(baseline['ontology.json']['sources']),manifest_entries=1047,distinct_original_paths=len(cache_hashes),hash_bound_descriptors=len(cache_receipt['originals']),all_baseline_git_bytes_equal=True,all_original_hashes_equal=True))
+ni=load(N/'retained/candidate-identifier-inventory.json');pi=load(P/'projections/authority-parser-inventory.json');native=load(N/'retained/native-original-manifest.json')
+roles={}
+for origin,inventory in [(N/'retained/candidate-identifier-inventory.json',ni['inventory']),(P/'projections/authority-parser-inventory.json',pi['inventory'])]:
+ for row in inventory:roles.setdefault(row['id'],[]).append({'inventory':str(origin),**{k:v for k,v in row.items() if k not in {'coverage','owner_shape','actual_parser_preflight'}}})
+# Fresh chemical counterparts are candidates only. They are never added merely by inventory membership.
+for p in [L/'participant-proposals.json',E/'author/gala-replacement-proposals.json',E/'author/galr-proposals.json']:
+ def walk(x):
+  if isinstance(x,dict):
+   for k,v in x.items():
+    if k in {'id','subject','object'} and isinstance(v,str) and ':' in v:roles.setdefault(v,[]).append({'inventory':str(p),'role':'unselected author proposal endpoint'})
+    if k!='references':walk(v)
+  elif isinstance(x,list):
+   for v in x:walk(v)
+ walk(load(p))
+# Bind chemistry interpretation artifacts without using their labels as authority.
+for p in [N/'retained/chemical-identity-closure.json',N/'retained/simple-ion-identity-closure.json',N/'retained/reaction-identity-closure.json',C/'independent-chemistry-check.json',C/'independent-rhea-equation-check.json',P/'projections/DesB-inhibitor-identity-closure.json',L/'chemical-identity-closure.json',E/'source-bindings.json']:
+ load(p)
+acquisitions={};acquisition_inputs=[]
+for root in [N/'retained',P,A,E,L]:
+ files=sorted(root.glob('*acquisition*.json'))
+ for p in files:
+  d=load(p);acquisition_inputs.append(str(p));rows=d if isinstance(d,list) else [d]
+  for index,row in enumerate(rows):
+   if not isinstance(row,dict) or not all(k in row for k in ['path','url','sha256']):continue
+   if row.get('status',row.get('http_status'))!=200:continue
+   acquisitions.setdefault(row['path'],[]).append({'receipt':str(p),'index':index,'receipt_sha256':inputs[str(p)],'row':row})
+# Resolve copied originals through the frozen reuse ledger and the original successful request.
+reuse_file=P/'reuse-receipts.json'
+for index,reuse in enumerate(load(reuse_file)):
+ if not all(k in reuse for k in ['source_manifest','source_original','source_url']):continue
+ original_manifest=Path(reuse['source_manifest']);rows=load(original_manifest)
+ matches=[(j,r) for j,r in enumerate(rows) if r.get('path')==reuse['source_original'] and r.get('sha256')==reuse['sha256'] and r.get('http_status',r.get('status'))==200]
+ assert len(matches)==1,(reuse,'missing original request');j,row=matches[0]
+ assert row['url']==reuse['source_url'] and sha(Path(row['path']))==sha(Path(reuse['path']))==reuse['sha256']
+ acquisitions.setdefault(reuse['path'],[]).append({'receipt':str(original_manifest),'index':j,'receipt_sha256':inputs[str(original_manifest)],'row':{**row,'path':reuse['path']},'original_acquisition_row':row,'reuse_receipt':{'path':str(reuse_file),'sha256':inputs[str(reuse_file)],'index':index,'row':reuse}})
+originals={str(Path(row['path'])):row for row in native['objects']};profiles={};rejections=[]
+def add(kind,path,version=None,historical=None):
+ path=Path(path);key=(str(path),kind)
+ if key in profiles:return
+ acquired=acquisitions.get(str(path),[])
+ assert acquired,('No successful exact original acquisition binding',path)
+ digest=sha(path);matches=[a for a in acquired if a['row']['sha256']==digest];assert matches,('Changed original',path)
+ a=matches[-1];row=a['row'];url=row['url']
+ if version is None:
+  if kind.startswith('metacyc-'):version=row.get('version') or originals.get(str(path),{}).get('pgdb_version') or '27.0'
+  elif kind=='uniprot':
+   native_json=json.loads(path.read_text());audit=native_json.get('entryAudit',{});version='UniProt release '+row['release'] if row.get('release') else '; '.join(f'{k}: {v}' for k,v in audit.items())
+  else:version='retrieved '+row.get('retrieved_utc',row.get('utc','2026-10-14'))
+ assert version
+ descriptor={'kind':kind,'path':str(path),'url':url,'version':version,'sha256':digest,'bytes':path.stat().st_size,'acquisition':a}
+ if historical:descriptor['historical_preflight']=historical
+ try:parsed=list(source_terms(kind,path,url=url,version=version))
+ except Exception as exc:
+  rejections.append({**descriptor,'rejected':f'{type(exc).__name__}: {exc}'});return
+ descriptor['terms']=parsed;profiles[key]=descriptor
+for row in native['objects']:
+ if row.get('object_type')=='Protein' and row.get('full'):add('metacyc-protein-xml',row['path'],row['pgdb_version'])
+for row in ni['canonical_html_parser_preflight']:add('metacyc-html',row['source']['path'])
+for row in load(N/'retained/authority-acquisition.json'):
+ if row.get('status')==200 and row['url'].startswith('https://rest.uniprot.org/uniprotkb/'):add('uniprot',row['path'])
+add('ncbi-protein-xml',N/'originals/AAN68130.2-CBJ94499.1-protein.xml')
+for row in pi['parser_preflights']:
+ if row['source']['path'].endswith('KEGG-ppu-PP_2519.txt'):add('kegg-pseudogene-flatfile',row['source']['path'],historical=row)
+ else:add(row['kind'],row['source']['path'],row.get('version'),row if 'rejected' in row else None)
+add('uniprot',A/'originals/E8ZB61.json');add('ncbi-protein-xml',A/'originals/CBJ94499.1.xml')
+candidates=[]
+for profile in profiles.values():
+ for term in profile['terms']:
+  identifier=term[0]
+  if identifier not in roles:roles[identifier]=[{'role':'issuing source counterpart; not selected'}]
+  candidates.append({'identifier':identifier,'candidate':profile,'parsed_term':term,'already_retained':identifier in terms,'retained_term':terms.get(identifier),'roles':roles[identifier],'status':'unselected_source_candidate'})
+ontology=[]
+for prefix,name in [('GO','go'),('CHEBI','chebi'),('NCBITaxon','ncbitaxon'),('RHEA','rhea')]:
+ db=Path('/private/tmp/pathwaymech-curation-authorities')/(name+'.db');connection=sqlite3.connect('file:'+str(db)+'?mode=ro',uri=True);owner=read_source(connection,db)
+ old_owner=[(k,v) for k,v in baseline['ontology.json']['sources'].items() if v.get('sha256')==owner['sha256']];assert len(old_owner)==1,(prefix,old_owner)
+ assert old_owner[0][1]==owner
+ wanted=sorted(i for i in roles if i.startswith(prefix+':'));found,missing=extract_terms(connection,wanted,old_owner[0][0]);connection.close()
+ ontology.append({'prefix':prefix,'database':bind(db),'owner':old_owner[0],'terms':found,'missing':missing,'scope':'unselected pinned identity candidates; no new snapshot created'})
+save('authority-candidates.json',candidates);save('candidate-rejections.json',rejections);save('ontology-candidates.json',ontology)
+coverage=[]
+for identifier,why in sorted(roles.items()):
+ coverage.append({'identifier':identifier,'already_retained':identifier in terms,'retained_term':terms.get(identifier),'source_candidates':sum(c['identifier']==identifier for c in candidates),'ontology_candidate':any(identifier in o['terms'] for o in ontology),'roles':why})
+save('candidate-coverage.json',coverage)
+runtime={str(p.relative_to(R)):sha(p) for d in ['src/pathwaymech','scripts'] for p in sorted((R/d).rglob('*.py')) if '__pycache__' not in p.parts}
+assert all(sha(Path(p))==h for p,h in inputs.items())
+save('candidate-preflight-receipt.json',dict(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),status='author_candidate_inventory_only_awaiting_frozen_record',baseline_commit=BASE,command=[sys.executable,'-B',str(Path(__file__).resolve())],runtime_hashes=runtime,input_bindings=inputs,helper=bind(Path(__file__)),source_candidates=len(candidates),source_original_profiles=len(profiles),parser_rejections=len(rejections),candidate_identifiers=len(coverage),no_manifest_snapshot_or_maintained_files_changed=True,ignored_hidden_inclusive_scope='All baseline Git blobs and every original descriptor were enumerated directly; acquisition receipt globs and explicit inventories bound candidate scope. No whole-filesystem absence claim.'))
+print(json.dumps({'source_candidates':len(candidates),'source_profiles':len(profiles),'rejections':len(rejections),'candidate_ids':len(coverage),'ontology_missing':{o['prefix']:o['missing'] for o in ontology},'uncovered_new_candidates':[r['identifier'] for r in coverage if not r['already_retained'] and not r['source_candidates'] and not r['ontology_candidate']]},indent=2))

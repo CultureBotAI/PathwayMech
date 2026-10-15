@@ -1,0 +1,26 @@
+from pathlib import Path
+import sqlite3,json,datetime
+from rdkit import Chem
+# Independently encoded named ring substitution patterns and simple agents.
+cases={
+'CHEBI:88714':('2,3,4-trihydroxybenzoic acid','O=C(O)c1c(O)c(O)c(O)cc1'),
+'CHEBI:18026':('2,3-dihydroxybenzoic acid','O=C(O)c1c(O)c(O)ccc1'),
+'CHEBI:16318':('4-nitrocatechol','Oc1ccc([N+](=O)[O-])cc1O'),
+'CHEBI:17254':('4-methylcatechol','Cc1ccc(O)c(O)c1'),
+'CHEBI:141700':('3-methoxycatechol','COc1cccc(O)c1O'),
+'CHEBI:36241':('protocatechuic acid','O=C(O)c1ccc(O)c(O)c1'),
+'CHEBI:16632':('vanillic acid','COc1cc(C(=O)O)ccc1O'),
+'CHEBI:89886':('2-methoxy-4-methylphenol','COc1cc(C)ccc1O'),
+'CHEBI:132111':('syringic acid','COc1cc(C(=O)O)cc(OC)c1O'),
+'CHEBI:18346':('vanillin','COc1cc(C=O)ccc1O'),
+'CHEBI:67380':('syringaldehyde','COc1cc(C=O)cc(OC)c1O'),
+'CHEBI:4735':('EDTA neutral named parent','O=C(O)CN(CCN(CC(=O)O)CC(=O)O)CC(=O)O'),
+'CHEBI:30351':('2,2-bipyridine','c1ccc(-c2ccccn2)nc1'),
+'CHEBI:16240':('hydrogen peroxide','OO'),
+'CHEBI:113451':('sodium L-ascorbate','OC[C@H](O)[C@H]1OC(=O)C([O-])=C1O.[Na+]')}
+c=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True);rows=[]
+for curie,(name,smiles) in cases.items():
+ v={p:v for p,o,v in c.execute('select predicate,object,value from statements where subject=?',(curie,)) if v is not None};m=Chem.MolFromSmiles(smiles);i=Chem.MolToInchi(m);k=Chem.MolToInchiKey(m);passed=i==v.get('chemrof:inchi_string') and k==v.get('chemrof:inchi_key_string')
+ rows.append({'id':curie,'source_named_reagent':name,'independent_smiles':smiles,'computed_inchi':i,'computed_key':k,'pinned_inchi':v.get('chemrof:inchi_string'),'pinned_key':v.get('chemrof:inchi_key_string'),'pinned_label':v.get('rdfs:label'),'matches':passed});print(curie,passed)
+out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent reviewer named regulator graph reconstruction, not measured assay protonation or vendor reagent identity','cases':rows,'limitations':['Neutral acid and EDTA parent normalizations are explicitly bounded in record; no assay salt/microspecies inference.','Sodium L-ascorbate trivial-name normalization does not mean an experimental stereochemical analysis was reported.','Pinned database full digest reused from root/integration verified owner; selected triples independently queried here.']}
+Path('/private/tmp/pathwaymech-next-259-science/independent-regulator-name-replay.json').write_text(json.dumps(out,indent=2)+'\n')

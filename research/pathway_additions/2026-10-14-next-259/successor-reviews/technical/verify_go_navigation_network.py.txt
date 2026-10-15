@@ -1,0 +1,26 @@
+"""Fresh public GO navigation check with transport credentials excluded by construction."""
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+import datetime,hashlib,json,urllib.error,urllib.request
+import yaml
+O=Path(__file__).parent/'go-live';O.mkdir(exist_ok=False);R=Path('/private/tmp/pathwaymech-next-259-20261014');record=yaml.safe_load((R/'data/pathways/gallate-degradation-i.yaml').read_text());ref=next(x for x in record['references'] if x['id']=='GO:0046943')
+urls=[('page',ref['url']),('api','https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:0046943')]
+class Redirect(urllib.request.HTTPRedirectHandler):
+ def __init__(self):super().__init__();self.trace=[]
+ def redirect_request(self,req,fp,code,msg,headers,newurl):
+  self.trace.append({'status':code,'from':req.full_url,'to':newurl});return super().redirect_request(req,fp,code,msg,headers,newurl)
+def get(pair):
+ name,url=pair;trace=Redirect();row={'name':name,'url':url,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()};opener=urllib.request.build_opener(trace)
+ try:response=opener.open(urllib.request.Request(url,headers={'User-Agent':'PathwayMech independent reference review','Accept':'application/json' if name=='api' else '*/*'}),timeout=45)
+ except urllib.error.HTTPError as e:response=e
+ except Exception as e:row.update(error=repr(e),redirects=trace.trace);return row
+ body=response.read();folder=O/'external-http-bodies';folder.mkdir(exist_ok=True);path=folder/(name+'.body');assert not path.exists();path.write_bytes(body)
+ row.update(status=response.code,final_url=response.url,redirects=trace.trace,headers={k:v for k,v in response.headers.items() if k.lower() in {'content-type','content-length','location'}},body_sha256=hashlib.sha256(body).hexdigest(),body_bytes=len(body))
+ if name=='api' and response.code==200:row['terms']=[{k:r.get(k) for k in ['id','name','isObsolete']} for r in json.loads(body)['results']]
+ return row
+with ThreadPoolExecutor(max_workers=2) as pool:rows=list(pool.map(get,urls))
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':hashlib.sha256((R/'data/pathways/gallate-degradation-i.yaml').read_bytes()).hexdigest(),'scope':'Two fresh GET requests to the actual corrected reference URL and official issuing API. Only public content-type/content-length/location headers are recorded; cookies, authorization and session headers are never serialized. Raw response bodies remain external.','observations':rows}
+p=O/'go-navigation-verification.json';assert not p.exists();p.write_text(json.dumps(result,indent=2)+'\n')
+assert all(r.get('status')==200 for r in rows),rows
+assert rows[1]['terms']==[{'id':'GO:0046943','name':'carboxylic acid transmembrane transporter activity','isObsolete':False}]
+print(json.dumps(result,indent=2))

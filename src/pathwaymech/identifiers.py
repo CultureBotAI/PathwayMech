@@ -56,6 +56,8 @@ from pathwaymech.ecocyc_named_complex import (
 from pathwaymech.ecocyc_state import ECOCYC_STATE_KIND, state_term, validate_state_metadata
 from pathwaymech.kegg_gene import (
     GENE_KIND,
+    GENE_KINDS,
+    PSEUDOGENE_KIND,
     gene_term,
     is_gene_id,
     validate_gene_assertions,
@@ -274,6 +276,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             PATHWAY_KIND,
             RHEA_POLYMER_KIND,
             GENE_KIND,
+            PSEUDOGENE_KIND,
         }:
             raise ValueError(f"source {source}: unknown typed authority source kind")
         if metadata.get("kind") == PATHBANK_CONTEXT_KIND:
@@ -321,12 +324,15 @@ def _load_authority(path: Path) -> dict[str, Any]:
             (NAMED_COMPLEX_KIND, "native_named_complex", validate_named_complex_metadata),
             (PATHWAY_KIND, "native_pathway", validate_pathway_metadata),
             (RHEA_POLYMER_KIND, "native_polymers", validate_polymer_metadata),
-            (GENE_KIND, "native_gene", validate_gene_metadata),
         ]:
             if metadata.get("kind") == native_kind:
                 validator(metadata)
             elif field in metadata:
                 raise ValueError(f"source {source}: typed native metadata requires its source kind")
+        if metadata.get("kind") in GENE_KINDS:
+            validate_gene_metadata(metadata)
+        elif "native_gene" in metadata:
+            raise ValueError(f"source {source}: typed native metadata requires its source kind")
         if metadata.get("kind") == ECOCYC_COMPLEX_KIND:
             validate_complex_metadata(metadata)
         elif "native_complex" in metadata:
@@ -403,7 +409,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
         if not isinstance(term["source"], str) or term["source"] not in data["sources"]:
             raise ValueError(f"{identifier}: missing source provenance")
         source_kind = data["sources"][term["source"]].get("kind")
-        if is_gene_id(identifier) and source_kind != GENE_KIND:
+        if is_gene_id(identifier) and source_kind not in GENE_KINDS:
             raise ValueError("KEGG gene identity requires its complete typed source")
         if identifier in context_ids and source_kind != PATHBANK_CONTEXT_KIND:
             raise ValueError("PathBank context requires its complete typed owner")
@@ -455,6 +461,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
             PATHWAY_KIND,
             RHEA_POLYMER_KIND,
             GENE_KIND,
+            PSEUDOGENE_KIND,
         }:
             metadata = data["sources"][term["source"]]
             if source_kind == RHEA_POLYMER_KIND:
@@ -469,6 +476,7 @@ def _load_authority(path: Path) -> dict[str, Any]:
                     CHEMICAL_CLASS_KIND: chemical_class_term,
                     NAMED_COMPLEX_KIND: named_complex_term,
                     GENE_KIND: gene_term,
+                    PSEUDOGENE_KIND: gene_term,
                 }[source_kind]
                 expected_id, expected_term = projector(metadata, term["source"])
             if identifier != expected_id or json.dumps(term, sort_keys=True) != json.dumps(

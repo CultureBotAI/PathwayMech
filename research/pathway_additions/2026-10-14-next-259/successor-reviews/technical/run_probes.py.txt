@@ -1,0 +1,9 @@
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+import datetime,hashlib,json,os,subprocess,time
+O=Path(__file__).parent;R=Path('/private/tmp/pathwaymech-next-259-20261014');env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1')
+def run(name):
+ cmd=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B',str(O/name)];start=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic();p=subprocess.run(cmd,cwd=R,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT);log=O/(Path(name).stem+'.log');assert not log.exists();log.write_bytes(p.stdout)
+ return {'command':cmd,'cwd':str(R),'started_at':start,'elapsed_seconds':round(time.monotonic()-t,3),'exit_code':p.returncode,'helper_sha256':hashlib.sha256((O/name).read_bytes()).hexdigest(),'log_path':str(log),'log_sha256':hashlib.sha256(p.stdout).hexdigest()}
+with ThreadPoolExecutor(max_workers=4) as pool:rows=list(pool.map(run,['verify_corrections.py','verify_exports.py','verify_export_baseline.py','verify_go_navigation.py']))
+p=O/'probe-receipts.json';assert not p.exists();p.write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2));raise SystemExit(int(any(r['exit_code'] for r in rows)))

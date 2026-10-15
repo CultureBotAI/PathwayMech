@@ -1,0 +1,288 @@
+"""External author proposal only; never writes the maintained worktree."""
+from pathlib import Path
+import copy
+import datetime
+import difflib
+import hashlib
+import json
+import re
+import sqlite3
+import subprocess
+import sys
+
+import yaml
+from lxml import etree, html
+
+OUT = Path(__file__).resolve().parent
+REPO = Path('/private/tmp/pathwaymech-next-259-20261014')
+FROZEN = Path('/private/tmp/pathwaymech-next-259-record-author-final')
+AUTHOR = Path('/private/tmp/pathwaymech-next-259-record-author')
+PRIMARY = Path('/private/tmp/pathwaymech-next-259-primary')
+NATIVE = Path('/private/tmp/pathwaymech-next-259-native')
+EXPECTED = '9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665'
+
+
+def bind(path):
+    path = Path(path)
+    h = hashlib.sha256()
+    with path.open('rb') as handle:
+        for block in iter(lambda: handle.read(1048576), b''):
+            h.update(block)
+    return {'path': str(path), 'bytes': path.stat().st_size, 'sha256': h.hexdigest()}
+
+
+def save(name, value):
+    (OUT / name).write_text(json.dumps(value, ensure_ascii=False, indent=2) + '\n')
+
+
+before_path = FROZEN / 'gallate-degradation-i.yaml'
+maintained_path = REPO / 'data/pathways/gallate-degradation-i.yaml'
+assert bind(before_path)['sha256'] == EXPECTED
+assert bind(maintained_path)['sha256'] == EXPECTED
+before = yaml.safe_load(before_path.read_text())
+new = json.loads(json.dumps(before))  # independent qualifier trees
+edges = {e['id']: e for e in new['mechanistic_edges']}
+
+# F1: only actual Table 1 rows are structured assertions. The primary prose
+# evidence is a quotation with exact inspected methods/results locators.
+table_assertion = {
+    'reference_id': 'PMID:16030198',
+    'source_assertion': 'Table 1 lists pETB as pET21a(+) with a 2.8-kb NdeI-XbaI fragment of pEVK3G carrying desB. A separate E. coli BL21(DE3) row gives its genotype and T7 RNA polymerase/lacUV5 description; the table does not assign pETB to that host.',
+    'source_locator': 'PMC1196043 Table 1, pETB and E. coli BL21(DE3) rows; host assignment is in Methods, Expression of desB in E. coli and preparation of cell extracts',
+}
+construct_quote = {
+    'reference_id': 'PMID:16030198',
+    'quote': 'cells harboring pETB',
+    'source_locator': 'PMC1196043 Methods, Expression of desB in E. coli and preparation of cell extracts, first paragraph (BL21(DE3)/pETB); Purification of DesB, first paragraph (POROS PI and quaternized PI); Results, Purification of DesB, first paragraph (N-terminus)',
+}
+for edge_id in ['native-022', 'desb-2005-edta', 'desb-2005-fe', 'desb-2005-mn', 'desb-2005-cu']:
+    q = edges[edge_id]['endpoint_qualifiers'][0]
+    q['evidence'] = [copy.deepcopy(table_assertion), copy.deepcopy(construct_quote)]
+edges['native-022']['endpoint_qualifiers'][0]['evidence'].append({
+    'reference_id': 'PMID:16030198',
+    'quote': 'appeared to be processed',
+    'source_locator': 'PMC1196043 Results, Purification of DesB, first paragraph, initiating methionine sentence following the N-terminal sequence',
+})
+edges['native-026']['endpoint_qualifiers'][0]['evidence'] = [{
+    'reference_id': 'PMID:21219457',
+    'quote': 'pETGalDc',
+    'source_locator': '2011 publisher Figure 3 caption line 249 and Results line 253; Methods lines 349, 365–366 and 376–377 (construct, BL21(DE3) expression, extract preparation). Retained main-text transcription; original spectra and Table S1 were inaccessible.',
+}]
+edges['native-037']['endpoint_qualifiers'][0]['evidence'] = [{
+    'reference_id': 'PMID:21219457',
+    'quote': 'pETGalC',
+    'source_locator': '2011 publisher Results lines 307–309 and Methods lines 349, 365–366 and 380 (construct, BL21(DE3), crude extract, assay and activities). Retained main-text transcription; original Table S1 and Figure S7 were inaccessible.',
+}]
+gal_t_evidence = [e for e in edges['galt-transport']['evidence'] if e.get('quote') == 'with less efficiency, protocatechuate']
+assert len(gal_t_evidence) == 1
+gal_t_evidence[0]['quote'] = 'protocatechuate'
+
+# F2: native physical monomer only; no whole-pathway or recombinant location.
+xml_path = NATIVE / 'originals/G1G01-2699-MONOMER.xml'
+xml_tree = etree.fromstring(xml_path.read_bytes())
+protein = xml_tree.xpath("/ptools-xml/Protein[@frameid='G1G01-2699-MONOMER']")[0]
+assert protein.xpath('location/cco/@frameid') == ['CCO-CYTOSOL']
+go_slots = protein.xpath("has-go-term[GO-Term/@frameid='GO:0005829']")
+assert len(go_slots) == 1
+assert go_slots[0].xpath('evidence/Evidence-Code/@frameid') == ['EV-COMP-AINF', 'EV-COMP-AINF']
+assert go_slots[0].xpath('evidence/Publication/@frameid') == ['PUB-26602691', 'PUB-26602691']
+assert protein.xpath('has-go-term')[5] is go_slots[0]
+new['participants'].append({'id': 'GO:0005829', 'label': 'cytosol', 'category': 'cellular_component'})
+new['mechanistic_edges'].append({
+    'id': 'galb-native-cytosol',
+    'subject': 'MetaCyc:G1G01-2699-MONOMER',
+    'predicate': 'located_in',
+    'object': 'GO:0005829',
+    'description': 'The native KT2440 GalB monomer has an explicit cytosol location and a matching GO annotation supported by EV-COMP-AINF with PSORTdb (PMID:26602691). This preserves a computational annotation, not a direct localization assay. It does not assign localization to the separately qualified 2011 or 2016 recombinant preparations or to every pathway component.',
+    'evidence': [{
+        'reference_id': 'MetaCyc:G1G01-2699-MONOMER',
+        'source_assertion': 'The Protein object assigns location CCO-CYTOSOL. Its sixth has-go-term slot is GO:0005829; both evidence entries use EV-COMP-AINF and PUB-26602691 (PSORTdb).',
+        'source_locator': "/ptools-xml/Protein[@frameid='G1G01-2699-MONOMER']/location/cco; /ptools-xml/Protein[@frameid='G1G01-2699-MONOMER']/has-go-term[6]/GO-Term; has-go-term[6]/evidence; original lines 128–140 and 203",
+    }],
+})
+new['references'].append({
+    'id': 'MetaCyc:G1G01-2699-MONOMER',
+    'title': 'MetaCyc G1G01-2699-MONOMER native object',
+    'url': 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G1G01-2699-MONOMER',
+    'source_version': 'META27.0 public mirror',
+    'source_sha256': bind(xml_path)['sha256'],
+})
+
+out_record = OUT / 'gallate-degradation-i.yaml'
+out_record.write_text(yaml.safe_dump(new, sort_keys=False, allow_unicode=True, width=100))
+(OUT / 'proposed.patch').write_text(''.join(difflib.unified_diff(before_path.read_text().splitlines(keepends=True), out_record.read_text().splitlines(keepends=True), fromfile='a/data/pathways/gallate-degradation-i.yaml', tofile='b/data/pathways/gallate-degradation-i.yaml')))
+
+# Re-read actual source material and bind all originals used in whole-record
+# quotation replay. No authored claim ledger is used as a quote authority.
+old_replay = json.loads((AUTHOR / 'validation/quotation-replay.json').read_text())
+source_bindings = {}
+for row in old_replay['originals']:
+    actual = bind(row['path'])
+    assert actual['sha256'] == row['sha256'], row['path']
+    source_bindings[row['path']] = actual
+native_manifest = json.loads((NATIVE / 'external-originals-manifest.json').read_text())
+native_rows = native_manifest['files'] if isinstance(native_manifest, dict) else native_manifest
+native_match = [x for x in native_rows if Path(x['path']).name == xml_path.name]
+assert len(native_match) == 1
+assert bind(xml_path)['sha256'] == native_match[0]['sha256']
+source_bindings[str(xml_path)] = bind(xml_path)
+
+
+def strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for child in value.values():
+            yield from strings(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from strings(child)
+
+
+def normalize(value):
+    return ' '.join(value.split())
+
+
+def extract(path):
+    path = Path(path)
+    if path.suffix == '.json':
+        return normalize('\n'.join(strings(json.loads(path.read_text()))))
+    if path.suffix in ['.html', '.htm']:
+        return normalize(html.fromstring(path.read_bytes()).text_content())
+    if path.suffix == '.xml':
+        return normalize(' '.join(etree.fromstring(path.read_bytes()).itertext()))
+    return normalize(path.read_text())
+
+
+texts = {path: extract(path) for path in source_bindings}
+old_source_map = {}
+for row in old_replay['results']:
+    old_source_map.setdefault(row['reference_id'], set()).update(row['matched_originals'])
+quotes = []
+counts = {}
+for edge in new['mechanistic_edges']:
+    placements = [('edge', edge['evidence'])]
+    placements += [(q['endpoint'] + ' qualifier', q['evidence']) for q in edge.get('endpoint_qualifiers', [])]
+    for placement, evidence in placements:
+        for item in evidence:
+            if 'quote' not in item:
+                continue
+            ref = item['reference_id']
+            matches = [p for p in sorted(old_source_map[ref]) if normalize(item['quote']) in texts[p]]
+            assert matches, (edge['id'], item)
+            words = len(item['quote'].split())
+            counts[ref] = counts.get(ref, 0) + words
+            quotes.append({'edge': edge['id'], 'placement': placement, 'reference_id': ref, 'words': words, 'quote_sha256': hashlib.sha256(item['quote'].encode()).hexdigest(), 'source_locator': item['source_locator'], 'matched_originals': matches})
+assert all(count <= 25 for count in counts.values()), counts
+assert counts['PMID:21219457'] == 24
+assert counts['PMID:16030198'] == 25
+save('quotation-replay.json', {'normalization': old_replay['normalization'], 'paper_counts': counts, 'all_within_25': True, 'all_replayed': True, 'occurrences': quotes, 'originals': list(source_bindings.values())})
+
+# Read full Table 1 cells and exact relevant prose sections without retaining
+# another set of copied quotations. Stable XPath locators plus hashes identify
+# the inspected original elements; descriptions remain authored interpretations.
+kasai_path = PRIMARY / 'originals/PMC1196043-render.html'
+kasai = html.fromstring(kasai_path.read_bytes())
+table_rows = []
+for row in kasai.xpath('//table//tr'):
+    cells = [normalize(c.text_content()) for c in row.xpath('./th|./td')]
+    if cells and cells[0] in ['pETB', 'BL21(DE3)', 'pET21a(+)']:
+        table_rows.append({'row_key': cells[0], 'xpath': row.getroottree().getpath(row), 'cell_count': len(cells), 'row_text_sha256': hashlib.sha256(normalize(row.text_content()).encode()).hexdigest()})
+assert len(table_rows) == 3
+prose_elements = []
+for para in kasai.xpath('//p'):
+    text = normalize(para.text_content())
+    if ('cells harboring pETB' in text or 'The enzyme solution was applied to a POROS polyethyleneimine' in text):
+        prose_elements.append({'xpath': para.getroottree().getpath(para), 'normalized_text_sha256': hashlib.sha256(text.encode()).hexdigest(), 'kind': 'inspected paper prose, not a structured assertion'})
+assert len(prose_elements) == 3
+save('source-element-replay.json', {'kasai_original': bind(kasai_path), 'actual_table_rows': table_rows, 'prose_elements': prose_elements, 'acceptance': 'Table 1 supports the plasmid/vector and separate strain descriptions. Methods prose supplies the BL21(DE3)/pETB relationship and POROS procedure; Results prose supplies N-terminal processing. No prose is relabeled as structured evidence.', 'galb_native_original': bind(xml_path), 'native_checks': {'explicit_CCO_CYTOSOL': True, 'sixth_GO_slot_0005829': True, 'both_evidence_codes_EV_COMP_AINF': True, 'both_citations_PUB_26602691': True}})
+
+# Exact pinned GO authority, including full-byte digest of the database.
+db = Path('/private/tmp/pathwaymech-curation-authorities/go.db')
+db_binding = bind(db)
+authority_path = REPO / 'data/identifier_authorities/ontology.json'
+authority = json.loads(authority_path.read_text())
+term = authority['terms']['GO:0005829']
+owner = authority['sources'][term['source']]
+assert db_binding['sha256'] == owner['sha256']
+with sqlite3.connect('file:' + str(db) + '?mode=ro', uri=True) as con:
+    con.row_factory = sqlite3.Row
+    triples = [dict(row) for row in con.execute('SELECT * FROM statements WHERE subject=?', ('GO:0005829',))]
+assert [x['value'] for x in triples if x['predicate'] == 'rdfs:label'] == ['cytosol']
+assert [x['value'] for x in triples if x['predicate'] == 'oio:hasOBONamespace'] == ['cellular_component']
+assert not [x for x in triples if x['predicate'] == 'owl:deprecated' and x['value'] in ['true', '1']]
+save('go-cytosol-authority.json', {'database': db_binding, 'maintained_snapshot': bind(authority_path), 'owner': owner, 'term': term, 'full_subject_triples': triples, 'checks': {'exact_identifier': True, 'canonical_label': True, 'cellular_component': True, 'not_deprecated': True, 'existing_baseline_owner_unchanged': True}})
+
+
+def diff(a, b, path=''):
+    result = []
+    if isinstance(a, dict) and isinstance(b, dict):
+        for key in a.keys() | b.keys():
+            loc = path + '/' + str(key)
+            if key not in a:
+                result.append({'path': loc, 'before': None, 'after': b[key]})
+            elif key not in b:
+                result.append({'path': loc, 'before': a[key], 'after': None})
+            else:
+                result.extend(diff(a[key], b[key], loc))
+    elif isinstance(a, list) and isinstance(b, list):
+        for i in range(max(len(a), len(b))):
+            loc = path + '/' + str(i)
+            if i >= len(a):
+                result.append({'path': loc, 'before': None, 'after': b[i]})
+            elif i >= len(b):
+                result.append({'path': loc, 'before': a[i], 'after': None})
+            else:
+                result.extend(diff(a[i], b[i], loc))
+    elif a != b:
+        result.append({'path': path, 'before': a, 'after': b})
+    return result
+
+
+changes = sorted(diff(before, new), key=lambda x: x['path'])
+for change in changes:
+    parts = change['path'].split('/')
+    if parts[1] == 'mechanistic_edges' and int(parts[2]) < len(before['mechanistic_edges']):
+        edge_id = before['mechanistic_edges'][int(parts[2])]['id']
+        change['edge_id'] = edge_id
+        change['finding'] = 'F1 preparation citation locality'
+        change['author_acceptance'] = ('Shorten the existing result excerpt to allocate quotation words to the two exact preparation citations; complete GalT scope and locator remain unchanged.' if edge_id == 'galt-transport' else 'Replace generic preparation evidence or overbroad table inference with exact primary construct evidence and actual table cells, preserving the already-supported preparation description and mechanism.')
+    else:
+        change['finding'] = 'F2 omitted computational GalB location'
+        change['author_acceptance'] = 'Add only the exact native monomer cytosol annotation, its existing canonical GO component, and the hash-bound native source reference; preserve EV-COMP-AINF rather than promote to direct experiment.'
+save('field-change-acceptance.json', {'role': 'Author proposed disposition; independent successor review still required', 'before': bind(before_path), 'after': bind(out_record), 'changes': changes, 'unchanged_edge_assertions': 'All 129 existing subject/predicate/object triples and all edge/qualifier descriptions are unchanged.'})
+for a, b in zip(before['mechanistic_edges'], new['mechanistic_edges']):
+    for key in ['id', 'subject', 'predicate', 'object', 'description']:
+        assert a.get(key) == b.get(key), (a['id'], key)
+    assert [q['description'] for q in a.get('endpoint_qualifiers', [])] == [q['description'] for q in b.get('endpoint_qualifiers', [])]
+
+ledger = AUTHOR / 'author/native-slot-disposition-ledger.json'
+prior_ledger = json.loads(ledger.read_text())
+slot = prior_ledger['slots'][884]
+assert (slot['frame'], slot['slot'], slot['ordinal']) == ('G1G01-2699-MONOMER', 'location', 1)
+go_slot = [x for x in prior_ledger['slots'] if x['frame'] == 'G1G01-2699-MONOMER' and x['slot'] == 'has-go-term' and x['ordinal'] == 6]
+assert len(go_slot) == 1
+save('append-only-disposition-corrections.json', {
+    'role': 'Author successor erratum; frozen prior packages remain unchanged',
+    'finding': 'F2 omitted computational GalB location',
+    'prior_bindings': [bind(ledger), bind(NATIVE / 'retained/source-fact-dispositions.json'), bind(NATIVE / 'HANDOFF.md')],
+    'corrections': [
+        {'prior_key': '/source_fact_dispositions/facts/27; native source-fact-dispositions /facts/27; native HANDOFF compartments statement', 'prior_fact': prior_ledger['source_fact_dispositions']['facts'][27], 'disposition': 'Superseded: the statement that the formal catalyst/component closure contains no explicit location is false. G1G01-2699-MONOMER contains location CCO-CYTOSOL and a matching GO:0005829 computational annotation.', 'proposed_final_edge_ids': ['galb-native-cytosol']},
+        {'prior_key': '/slots/884; frame=G1G01-2699-MONOMER, slot=location, ordinal=1', 'prior_slot': slot, 'disposition': 'Selected as native monomer located_in cytosol, supported by the adjacent explicit GO annotation with EV-COMP-AINF/PSORTdb.', 'proposed_final_edge_ids': ['galb-native-cytosol']},
+        {'prior_key': 'frame=G1G01-2699-MONOMER, slot=has-go-term, ordinal=6', 'prior_slot': go_slot[0], 'disposition': 'Selected as the exact GO target and computational evidence tier for the native monomer location.', 'proposed_final_edge_ids': ['galb-native-cytosol']},
+    ],
+    'scope_limits': 'No claim of experimental localization, exclusivity, recombinant-construct localization or whole-pathway compartment. No whole-pathway taxa added.',
+})
+
+sys.path.insert(0, str(REPO / 'src'))
+from pathwaymech.schema import validate_record
+validate_record(new)
+cmd = ['/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/.venv/bin/python', '-B', str(REPO / 'scripts/validate_strict.py'), str(out_record)]
+env = __import__('os').environ.copy()
+env['PYTHONPATH'] = str(REPO / 'src')
+run = subprocess.run(cmd, cwd=REPO, env=env, text=True, capture_output=True)
+assert run.returncode == 0, run.stderr
+assert bind(maintained_path)['sha256'] == EXPECTED
+save('validation.json', {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'role': 'Author checks, not independent scientific approval', 'before': bind(before_path), 'maintained_input_unchanged': bind(maintained_path), 'after': bind(out_record), 'local_schema_pass': True, 'strict_command': cmd, 'strict_exit_code': run.returncode, 'strict_stdout': run.stdout, 'strict_stderr': run.stderr, 'paper_quote_counts': counts, 'counts': {'participants': len(new['participants']), 'reactions': len(new['reactions']), 'edges': len(new['mechanistic_edges']), 'taxa': len(new['taxa'])}, 'new_selected_identifier': 'GO:0005829', 'new_identifier_has_existing_authority': True, 'source_inputs': list(source_bindings.values()), 'rubric_inputs': [bind(REPO / 'docs/CAUSAL_GRAPHS.md'), bind(REPO / '.claude/skills/add-pathway/SKILL.md'), bind(REPO / 'src/pathwaymech/schema.py'), bind(REPO / 'src/pathwaymech/schema/pathwaymech.yaml')]})
+save('selected-identifiers.json', {'record': bind(out_record), 'selected_identifiers': sorted({new['id']} | {n['id'] for field in ['participants', 'reactions', 'taxa'] for n in new[field]}), 'delta': {'added': ['GO:0005829'], 'removed': []}})
+print(json.dumps({'record': bind(out_record), 'changes': len(changes), 'paper_counts': counts, 'local_and_strict_schema': 'passed', 'maintained_unchanged': True}))

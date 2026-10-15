@@ -1,0 +1,131 @@
+targets:
+- target_id: kegg-gene-parser
+  path: src/pathwaymech/kegg_gene.py
+  label: Explicit pseudogene parser
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/kegg_gene.py
+    role: Maintained owner of this reviewed artifact
+- target_id: identifier-consumer
+  path: src/pathwaymech/identifiers.py
+  label: Authority consumer
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/identifiers.py
+    role: Maintained owner of this reviewed artifact
+- target_id: source-builder
+  path: scripts/build_source_identifier_snapshot.py
+  label: Source authority builder
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/build_source_identifier_snapshot.py
+    role: Maintained owner of this reviewed artifact
+- target_id: pseudogene-tests
+  path: tests/test_kegg_pseudogene_authority.py
+  label: Pseudogene regression tests
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: tests/test_kegg_pseudogene_authority.py
+    role: Maintained owner of this reviewed artifact
+- target_id: identifier-documentation
+  path: docs/IDENTIFIERS.md
+  label: Typed identifier contract
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: docs/IDENTIFIERS.md
+    role: Maintained owner of this reviewed artifact
+- target_id: source-manifest
+  path: conf/identifier_sources.json
+  label: Append-only source manifest
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: conf/identifier_sources.json
+    role: Maintained owner of this reviewed artifact
+- target_id: source-authority
+  path: data/identifier_authorities/sources.json
+  label: Selected source authority union
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: conf/identifier_sources.json
+    role: Source selection and original bindings
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/build_source_identifier_snapshot.py
+    role: Canonical generator
+- target_id: ontology-authority
+  path: data/identifier_authorities/ontology.json
+  label: Selected ontology authority union
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: scripts/build_ontology_identifier_snapshot.py
+    role: Canonical generator
+  - repository: CultureBotAI/PathwayMech
+    path: conf/rhea_identifier_updates.json
+    role: Explicit Rhea overrides
+- target_id: MetaCyc:GALLATE-DEGRADATION-II-PWY
+  path: data/pathways/gallate-degradation-i.yaml
+  label: Gallate record technical representation
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: Maintained owner of this reviewed artifact
+- target_id: gallate-record-page
+  path: pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html
+  label: Generated gallate graph and evidence page
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: Maintained graph and evidence
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/cli.py
+    role: Page generator
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/graph_view.py
+    role: SVG graph generator
+- target_id: kgx-edges
+  path: pages/downloads/edges.tsv
+  label: Complete KGX edge export
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: Added gallate claims
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/kgx.py
+    role: KGX exporter
+- target_id: kgx-nodes
+  path: pages/downloads/nodes.tsv
+  label: Complete KGX node export
+  kind: generated
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: Added gallate nodes and contexts
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/kgx.py
+    role: KGX exporter
+- target_id: gallate-research-retention
+  path: research/pathway_additions/2026-10-14-next-259/gallate/research-retention.json
+  label: Compact provenance retention inventory
+  kind: source
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-259/gallate/research-retention.json
+    role: Maintained owner of this reviewed artifact
+- target_id: gallate-creation-history
+  path: history/records/gallate-degradation-i/2026-10-14T223610Z-codex-7872e4.yaml
+  label: Append-only gallate creation history
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: history/records/gallate-degradation-i/2026-10-14T223610Z-codex-7872e4.yaml
+    role: Maintained owner of this reviewed artifact

@@ -1,0 +1,48 @@
+"""Read-only verification of the validated technical successor handoff."""
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-259-20261014')
+OUT = Path('/private/tmp/pathwaymech-next-259-integration-successor')
+REVIEW = OUT / 'technical-successor-review.yaml'
+EXPECTED = '0fa49360ac46af48ebbbba5f149368045743a79bfc7b2ebb37c9f5a838ef5d87'
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+assert digest(REVIEW) == EXPECTED
+review = yaml.safe_load(REVIEW.read_text())
+evidence_checks = []
+for item in review['evidence']:
+    path = Path(item['reference'])
+    assert not path.is_absolute() and '..' not in path.parts
+    actual = digest(ROOT / path)
+    assert actual == item['snapshot_sha256'], (path, actual)
+    evidence_checks.append({'evidence_id': item['evidence_id'], 'path': str(path), 'sha256': actual})
+inputs = review['source']['inputs']
+assert len(inputs) == 926
+for item in inputs:
+    assert digest(ROOT / item['path']) == item['sha256'], item['path']
+predecessor = yaml.safe_load((ROOT / review['evidence'][0]['reference']).read_text())
+assert {x['target_id'] for x in review['targets']} == {x['target_id'] for x in predecessor['targets']}
+assert review['scientific_review'] is False
+assert len(review['findings']) == len(predecessor['findings']) == 3
+for finding, old in zip(review['findings'], predecessor['findings']):
+    for field in ['finding_id', 'issue_key', 'target_ids', 'owner_paths', 'field_paths']:
+        assert finding[field] == old[field], (finding['finding_id'], field)
+    assert finding['status'] == 'resolved'
+    assert finding['previous_occurrences'] == [{'repository': 'CultureBotAI/PathwayMech', 'review_id': predecessor['review_id'], 'finding_id': old['finding_id']}]
+validation = json.loads((OUT / 'canonical-validate-receipt.json').read_text())
+assert validation['returncode'] == 0 and validation['review_sha256'] == EXPECTED
+assert digest(Path(validation['log_path'])) == validation['log_sha256']
+result = {'checked_at': datetime.now(timezone.utc).isoformat(), 'review_id': review['review_id'], 'author_review_sha256': EXPECTED, 'canonical_validation_returncode': 0, 'all_retained_evidence_references_verified': evidence_checks, 'captured_inputs_unchanged': len(inputs), 'prior_targets_retained': len(review['targets']), 'exact_prior_finding_identity_owner_fields_preserved': 3, 'resolved_findings': 3, 'scientific_review': False, 'canonical_aggregation': 'separate root-owned post-save check, not claimed complete by this handoff'}
+target = OUT / 'handoff-verification.json'
+assert not target.exists()
+target.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'receipt': str(target), 'sha256': digest(target), 'retained_evidence_count': len(evidence_checks), 'captured_input_count': len(inputs)}, indent=2))

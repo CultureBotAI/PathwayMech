@@ -1,0 +1,23 @@
+from pathlib import Path
+import csv,datetime,hashlib,io,json,subprocess
+R=Path('/private/tmp/pathwaymech-next-259-20261014');O=Path(__file__).parent;BASE='7e18d0e2b7dd066ea5176b3f679624f7e50a0dc3'
+def blob(p):return subprocess.check_output(['git','show',BASE+':'+p],cwd=R)
+def rows(raw):return list(csv.DictReader(io.StringIO(raw.decode()),delimiter='\t'))
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+E='pages/downloads/edges.tsv';N='pages/downloads/nodes.tsv'
+oldedges=rows(blob(E));newedges=rows((R/E).read_bytes());oldnodes=rows(blob(N));newnodes=rows((R/N).read_bytes());ne={e['id']:e for e in newedges};nn={n['id']:n for n in newnodes}
+assert len(ne)==len(newedges) and len(nn)==len(newnodes)
+assert all(ne.get(e['id'])==e for e in oldedges)
+newonly=set(ne)-{e['id'] for e in oldedges};assert len(newonly)==130 and all(x.startswith('pathwaymech:MetaCyc_GALLATE-DEGRADATION-II-PWY_') for x in newonly)
+changed=[]
+for n in oldnodes:
+ new=nn[n['id']]
+ if new!=n:
+  oldcontexts=json.loads(n['source_contexts']);newcontexts=json.loads(new['source_contexts'])
+  assert all(x in newcontexts for x in oldcontexts)
+  extra=[x for x in newcontexts if x not in oldcontexts];assert extra and all(x['record_id']=='MetaCyc:GALLATE-DEGRADATION-II-PWY' for x in extra)
+  changed.append({'id':n['id'],'changed_fields':[k for k in n if n[k]!=new[k]],'extra_contexts':len(extra)})
+oldids={n['id'] for n in oldnodes};newids=set(nn)-oldids
+for i in newids:assert all(x['record_id']=='MetaCyc:GALLATE-DEGRADATION-II-PWY' for x in json.loads(nn[i]['source_contexts']))
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed','baseline':BASE,'old_edges_unchanged':len(oldedges),'new_edges':len(newonly),'old_nodes_retained':len(oldnodes),'new_nodes':len(newids),'changed_existing_nodes':changed,'artifacts':{E:sha(R/E),N:sha(R/N)},'scope':'All baseline KGX edges byte-value-equivalent; every old node retained and all prior source contexts preserved. Modified node contexts and new nodes exclusively belong to added gallate record; global display labels/categories may aggregate those contexts.'}
+(O/'kgx-baseline-preservation.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='changed_existing_nodes'},indent=2));print('changed_nodes',len(changed))

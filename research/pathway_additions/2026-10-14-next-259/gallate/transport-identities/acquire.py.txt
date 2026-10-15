@@ -1,0 +1,25 @@
+from pathlib import Path
+import urllib.request,urllib.error,datetime,hashlib,json,concurrent.futures
+ROOT=Path(__file__).resolve().parent
+CHEBI=['75458','3259','42017','59051']
+GO=['0046943','0005886','0015288','0016020','0046942','1905039','0015849','0055085','0022857','0008028','0015718']
+urls={f'CHEBI-{cid}.json':f'https://www.ebi.ac.uk/chebi/backend/api/public/compound/{cid}/' for cid in CHEBI}
+urls['QuickGO-selected-terms.json']='https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/'+','.join('GO:'+x for x in GO)
+def acquire(item):
+ name,url=item;target=ROOT/'originals'/name
+ if target.exists():raise FileExistsError(target)
+ receipt={'requested_url':url,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(url,headers={'User-Agent':'PathwayMech bounded identity source author','Accept':'application/json'}),timeout=50) as response:
+   b=response.read();receipt.update(status=response.status,final_url=response.url,headers=dict(response.headers))
+ except urllib.error.HTTPError as e:
+  b=e.read();receipt.update(status=e.code,error=str(e));target=target.with_suffix('.http-error.txt')
+ except Exception as e:return dict(receipt,error=repr(e))
+ target.write_bytes(b);receipt.update(path=str(target.relative_to(ROOT)),bytes=len(b),sha256=hashlib.sha256(b).hexdigest());return receipt
+if __name__=='__main__':
+ import sys
+ receipt=ROOT/('acquisition-public.json' if '--public'in sys.argv else 'acquisition-initial.json')
+ if receipt.exists():raise FileExistsError(receipt)
+ with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:rows=list(pool.map(acquire,urls.items()))
+ receipt.write_text(json.dumps(rows,indent=2)+'\n')
+ print(json.dumps([{k:v for k,v in r.items() if k in ['requested_url','status','bytes','error']} for r in rows],indent=2))

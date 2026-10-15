@@ -1,0 +1,40 @@
+from pathlib import Path
+import xml.etree.ElementTree as E,gzip,json,hashlib,re,sqlite3
+from collections import defaultdict,Counter
+from datetime import datetime,timezone
+rdf=Path('/private/tmp/pathwaymech-curation-authorities/rhea.rdf.gz');R='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';U='http://rdf.rhea-db.org/';allnodes={}
+selection=json.loads(Path('/private/tmp/pathwaymech-next-259-native/retained/rhea-original-projection.json').read_text())['nodes']
+for event,node in E.iterparse(gzip.open(rdf),events=['end']):
+ if node.tag!=R+'Description':continue
+ about=node.attrib.get(R+'about')
+ if about not in selection:
+  node.clear();continue
+ slots=allnodes.setdefault(about,defaultdict(list))
+ for child in node:
+  key=child.tag.rsplit('}',1)[-1];v=child.attrib.get(R+'resource',child.text)
+  if v is not None and v not in slots[key]:slots[key].append(v)
+ node.clear()
+mapid={'CPD-183':'16918','OXYGEN-MOLECULE':'15379','PROTON':'15378','4-OXALOMESACONATE':'57471','CPD-12849':'58142','WATER':'15377','4-OH-4-ACETYL-2-OXOGLUTARATE':'58075','PYRUVATE':'15361','OXALACETIC_ACID':'16452'}
+selected={};rows=[];c=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+def readnode(k):selected[k]=dict(allnodes[k]);return allnodes[k]
+def sides(uri):
+ n=readnode(uri);answer={}
+ for k,v in n.items():
+  if not re.fullmatch('contains[0-9]+',k):continue
+  for participant in v:
+   compound=readnode(participant)['compound'][0];chem=readnode(compound)['chebi'][0].rsplit('/',1)[-1].replace('CHEBI_','CHEBI:');answer[chem]=int(k[8:])
+ return answer
+def balance(side):
+ out=Counter()
+ for id,n in side.items():
+  v=dict(c.execute("SELECT predicate,value FROM statements WHERE subject=? AND predicate IN ('chemrof:charge','chemrof:generalized_empirical_formula')",(id,)).fetchall())
+  for a,count in re.findall(r'([A-Z][a-z]?)(\d*)',v['chemrof:generalized_empirical_formula']):out[a]+=n*int(count or 1)
+  out['charge']+=n*int(v['chemrof:charge'])
+ return dict(out)
+for native,rhea,rev in [('GALLATE-DIOXYGENASE-RXN','28928',False),('RXN-9983','28932',False),('RXN-2463','17403',True),('RXN-2464','28936',False)]:
+ p=Path('/private/tmp/pathwaymech-next-259-native/originals')/(native+'.xml');n=next(x for x in E.parse(p).getroot() if x.tag=='Reaction');s={}
+ for raw in ['left','right']:
+  s[raw]={'CHEBI:'+mapid[x.find('Compound').attrib['frameid']]:int(x.findtext('coefficient','1')) for x in n.findall(raw)}
+ lhs,rhs=(s['right'],s['left']) if rev else (s['left'],s['right']);rn=readnode(U+rhea);rs=sides(rn['substrates'][0]);rp=sides(rn['products'][0]);checks={'substrates':lhs==rs,'products':rhs==rp,'atom_charge_balance':balance(lhs)==balance(rhs)};assert all(checks.values()),(native,checks,lhs,rs,rhs,rp)
+ rows.append({'native':native,'selected_rhea':'RHEA:'+rhea,'pathway_reverses_native_sides':rev,'native_direction':n.findtext('reaction-direction'),'spontaneous':n.findtext('spontaneous?'),'lhs':lhs,'rhs':rhs,'balance':balance(lhs),'checks':checks,'native_sha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+out={'role':'Independent reviewer full original RDF traversal and native equation comparison','selection_basis':'Author projection keys select45originalsubjects; actual values are independently reconstructed from complete original RDF, not copied fromprojection.','utc':datetime.now(timezone.utc).isoformat(),'rhea_original':str(rdf),'rhea_sha256':hashlib.sha256(rdf.read_bytes()).hexdigest(),'equations':rows,'selected_original_rdf_nodes':selected,'limitations':['Four selected forward directions do not make reversible reactions irreversible.','Rhea and native source names containing cis,cis are not proof of Z,Z; full structures checked separately.']};Path('/private/tmp/pathwaymech-next-259-science/independent-equation-replay.json').write_text(json.dumps(out,indent=2)+'\n');print('Four selected equations and atom/charge balances match;',len(selected),'RDF subjects independently traversed')

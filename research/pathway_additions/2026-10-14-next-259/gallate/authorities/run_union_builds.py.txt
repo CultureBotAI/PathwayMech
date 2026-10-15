@@ -1,0 +1,41 @@
+"""Execute only frozen external canonical build commands; never promote outputs."""
+from pathlib import Path
+import concurrent.futures,datetime,hashlib,json,os,subprocess,time
+B=Path(__file__).resolve().parent
+
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+
+def verify(commands):
+ cache={}
+ for row in commands['input_bindings']:
+  p=Path(row['path']);resolved=p.resolve();assert str(resolved)==row['resolved'],p
+  if resolved not in cache:cache[resolved]=sha(resolved)
+  assert cache[resolved]==row['sha256'],p
+ for row in commands['database_bindings']:
+  p=Path(row['path']);s=p.stat()
+  assert str(p.resolve())==row['resolved'] and s.st_size==row['bytes'] and s.st_mtime_ns==row['mtime_ns'],p
+ return len(commands['input_bindings'])
+
+def main():
+ command_file=B/'canonical-build-commands.json';commands=json.loads(command_file.read_text());command_hash=sha(command_file)
+ assert commands['frozen_identifier_selection'] is True
+ assert commands['output_scope']=='external_candidates_only_no_promotion'
+ before=verify(commands);environment=dict(os.environ,**commands['environment'])
+ def run(key):
+  log=B/(key+'.log');receipt=B/(key+'-receipt.json')
+  assert not log.exists() and not receipt.exists(),f'Preserve prior attempt before rerun: {key}'
+  started=datetime.datetime.now(datetime.timezone.utc).isoformat();clock=time.monotonic()
+  with log.open('wb') as destination:
+   process=subprocess.run(commands[key],cwd=commands['cwd'],env=environment,stdout=destination,stderr=subprocess.STDOUT)
+  result=dict(command=commands[key],cwd=commands['cwd'],environment=commands['environment'],started_utc=started,elapsed_seconds=round(time.monotonic()-clock,3),exit_code=process.returncode,log_path=str(log),log_sha256=sha(log),command_file_sha256=command_hash)
+  receipt.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result),flush=True);return process.returncode
+ with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:codes=list(pool.map(run,['source_builder','ontology_builder']))
+ assert sha(command_file)==command_hash
+ after=verify(commands)
+ summary=dict(status='passed' if max(codes)==0 else 'failed',exit_codes=codes,input_bindings_checked_before=before,input_bindings_checked_after=after,all_inputs_unchanged=True,command_file_sha256=command_hash,outputs={n:sha(B/n) for n in ['sources.union.json','ontology.union.json'] if (B/n).exists()},scope='Author canonical reproduction only; outputs not promoted')
+ (B/'build-input-preservation.json').write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary),flush=True);raise SystemExit(max(codes))
+if __name__=='__main__':main()

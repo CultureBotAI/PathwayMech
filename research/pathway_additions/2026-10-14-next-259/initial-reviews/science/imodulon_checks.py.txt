@@ -1,0 +1,11 @@
+import subprocess,json,hashlib
+from pathlib import Path
+from datetime import datetime,timezone
+from concurrent.futures import ThreadPoolExecutor
+base=['/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/kg-microbe-sources','imodulondb']
+queries=[('datasets',['datasets'])]+[(q,['search','--organism','p_putida','--dataset','precise321','--query',q]) for q in ['gallate','gllA','gllB','gllC','gllD','PP_2519','galR']]
+def run(q):
+ label,args=q;start=datetime.now(timezone.utc).isoformat();p=subprocess.run(base+args,capture_output=True,text=True);return {'label':label,'command':base+args,'started_at':start,'finished_at':datetime.now(timezone.utc).isoformat(),'exit_code':p.returncode,'stdout':p.stdout,'stderr':p.stderr}
+with ThreadPoolExecutor(max_workers=4) as ex: rows=list(ex.map(run,queries))
+p=Path('/private/tmp/pathwaymech-next-259-science/imodulondb-run-receipts-network.json');p.write_text(json.dumps({'role':'Independent reviewer actual source runner executions','runs':rows},indent=2)+'\n')
+for r in rows:print(r['label'],r['exit_code'],r['stdout'] if r['label']!='datasets' else 'Dataset list captured')

@@ -1,0 +1,27 @@
+from pathlib import Path
+import re,json,hashlib,xml.etree.ElementTree as E
+B=Path(__file__).parent;O=B/'originals'
+def binding(p):b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+def embl(p):
+ s=p.read_text();seq=''.join(re.findall('[a-z]+',s.split('\nSQ   ')[1].split('\n',1)[1].split('//')[0])).upper();features=[]
+ for z in re.split(r'\nFT   (?=[A-Za-z])',s)[1:]:
+  if not z.startswith('CDS '):continue
+  lines=z.splitlines();loc=lines[0].split(None,1)[1].strip();text=''.join(l[21:].strip() for l in lines[1:]if l.startswith('FT                   '));q={}
+  for k,v in re.findall(r'/([\w_]+)=("[^"]*"|[^/]+)',text):q.setdefault(k,[]).append(v.strip('"'))
+  features.append({'location':loc,'qualifiers':q})
+ return seq,features
+base='TCAG';aas='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG';code={a+b+c:aa for (a,b,c),aa in zip(((a,b,c)for a in base for b in base for c in base),aas)}
+def dna_for(seq,loc):
+ m=re.fullmatch('(complement\()?([0-9]+)\.\.([0-9]+)\)?',loc);assert m,loc;rev,start,end=m.groups();d=seq[int(start)-1:int(end)];return d.translate(str.maketrans('ACGT','TGCA'))[::-1] if rev else d
+rows=[]
+for name in ['AE015451','AB190989']:
+ p=O/f'{name}.embl';seq,feats=embl(p)
+ targets=['PP_2513','PP_2514','PP_2515','PP_2518'] if name=='AE015451' else ['desB']
+ for f in feats:
+  q=f['qualifiers']; keys=q.get('locus_tag',[])+q.get('gene',[])
+  if not set(keys)&set(targets):continue
+  dna=dna_for(seq,f['location']);tr=''.join(code[dna[i:i+3]]for i in range(0,len(dna),3));assert tr[-1]=='*';tr='M'+tr[1:-1];declared=q['translation'][0];assert tr==declared
+  uni={'PP_2513':'Q88JY0','PP_2514':'Q88JX9','PP_2515':'Q88JX8','PP_2518':'Q88JX5','desB':'Q5NTE5'}[next(k for k in keys if k in targets)];ud=json.loads((O/f'{uni}.json').read_text());useq=ud['sequence']['value']
+  rows.append({'source':binding(p),'cds':f,'nt_length':len(dna),'nt_sha256':hashlib.sha256(dna.encode()).hexdigest(),'translated_aa_count':len(tr),'translation_equals_annotated_translation':tr==declared,'translation_sha256':hashlib.sha256(tr.encode()).hexdigest(),'uniprot_original':binding(O/f'{uni}.json'),'uniprot_accession':ud['primaryAccession'],'uniprot_length':len(useq),'uniprot_sequence_equal':tr==useq,'uniprot_sequence_suffix_of_deposit':tr.endswith(useq),'deposit_last_339_equal_uniprot_last_339':tr[-339:]==useq[-339:] if uni=='Q88JX5'else None,'deposited_translation':tr})
+(B/'retained/deposited-CDS-sequence-audit.json').write_text(json.dumps({'scope':'Author audit of exact issuing CDS nucleotide translations; does not establish assay vector residues or process initiator removal. Full raw originals remain external.','rows':rows},indent=2)+'\n')
+for r in rows:print(r['cds']['qualifiers'].get('protein_id'),r['translated_aa_count'],r['uniprot_accession'],r['uniprot_length'],'equal',r['uniprot_sequence_equal'],'suffix',r['uniprot_sequence_suffix_of_deposit'],'last339',r['deposit_last_339_equal_uniprot_last_339'])

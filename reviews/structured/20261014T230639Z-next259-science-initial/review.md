@@ -1,0 +1,1375 @@
+# Independent initial scientific review of gallate degradation I
+
+- Review: 20261014T230639Z-next259-science-initial
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-14T22:35:48.593280Z
+- Finished UTC: 2026-10-14T23:06:39Z
+- Reviewer: codex:/root/next259_science (independent)
+- Completion: completed
+- Verdict: needs_curation
+- Scientific review: true
+
+## Summary
+
+Full scientific assessment supports exact four-step identity, balanced E,E/generic-CHA chemistry and bounded constructs/assays. Two confirmed minor scientific findings require source-local construct citations and correction of a false native GalB compartment-absence disposition. No major or blocker scientific finding was identified. Completed shared command receipts were independently bound to unchanged inputs; the separate required staged diff check failed on four retained source artifacts, so this is not an all-gates-passing review.
+
+## Scope And Provenance
+
+One actual maintained record, all 129 edges/qualifiers/evidence, all 229 retained claim dispositions and all 1,881 native slot keys; source scientific reading and visual limits explicitly retained.
+
+Selection: Exact frozen maintained path and MetaCyc accession supplied by root; not an author draft.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 7e18d0e2b7dd066ea5176b3f679624f7e50a0dc3.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:GALLATE-DEGRADATION-II-PWY | data/pathways/gallate-degradation-i.yaml | maintained | gallate degradation I |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Canonical target inspection before assessment | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Actual frozen maintained target resolved and hashed before record judgment. |
+| Independent full record/source assessment | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Completed manual record and claim-disposition assessment; scientific findings remain open despite successful inspection. |
+| Direct native slot and claim-link replay | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | All 1,881 keys match actual direct original slots; no duplicate/omitted slots or broken claim edge references. |
+| Shared just render-pages | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Root executed this command against the independently rehashed frozen inputs; actual exit code 0. |
+| Shared just validate | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Root executed this command against the independently rehashed frozen inputs; actual exit code 0. |
+| Shared just test | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Root executed this command against the independently rehashed frozen inputs; actual exit code 0. |
+| Shared just lint | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Root executed this command against the independently rehashed frozen inputs; actual exit code 0. |
+| Shared just vendored-check | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Root executed this command against the independently rehashed frozen inputs; actual exit code 0. |
+| Shared git diff --check | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Root executed this command against the independently rehashed frozen inputs; actual exit code 0. |
+| Complete staged artifact whitespace check | failed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY | Exit 2 on two retained patch files, an inert helper transcript and the retained pytest log. All four source-artifact hashes still match the observed failure. The technical review owns the retention-format finding. |
+
+## Scientific And Domain Assessments
+
+### Exact pathway and formal chemistry
+
+identity: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+Exact MetaCyc suffix-II/display-I identity is preserved, distinct from five-step alternate route. Nine formal chemical identities and all four selected balanced equations verified independently; formal E,E assignment is not silently replaced by native Z,Z prose or modern SYK6 KCH.
+
+### Full edge and source-to-graph coverage
+
+graph: concern. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+All 129 maintained edges and all 229 claim dispositions manually reviewed, with mechanical coverage of 1,881 direct slots. Native historical catalyst/complex roles, signs, assay scope and exclusions are appropriate except the two minor provenance/completeness findings.
+
+### Strains, constructs and enzyme assays
+
+scope: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+Historical Comamonas/Pseudomonas preparations, repaired KTGAL 449-residue GalT, present KT2440 pseudogene locus, unsequenced 2023 insert, GalB 244/258/240-residue distinctions, E6 direct hydratase and DesB-MBP fusion are not collapsed. Computational and inferred assertions remain labeled.
+
+### Regulatory and chemical perturbation claims
+
+evidence: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+GalR reporter-to-gene regulation is bounded inference with endogenous GalR controls; uncouplers target measured whole-cell process, not direct GalT binding. LigAB inhibitors are PCA-specific. 2016 Cu effect compares challenged apo activity 0.19±0.10 to apo 4.0±0.33, not normal native occupancy. EDTA neutral named-parent normalization is acceptable with explicit unknown salt/protonation; it is not a measured assay microspecies.
+
+### Source-local evidence and provenance integrity
+
+provenance: concern. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+F1 needs primary construct/preparation locators; F2 needs a successor to false absence. Other source conflicts and acquisition limits remain visible. Table assertions are distinguished from prose quotes, and all publication-wide direct quotation budgets are at most 25 words including repeated qualifiers.
+
+### Structured-source adapter applicability
+
+scope: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+p_putida/precise321 is applicable. Actual datasets plus gallate/gllA/gllB/gllC/gllD/PP_2519/galR searches produced contextual gene hits but no iModulons. This neither proves nor refutes biochemical activity or pathway occurrence.
+
+### Canonical selected identifier integration
+
+grounding: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+Technical audit verifies selected 87 IDs and exact 35 new authority additions with baseline preservation; scientific source/chemical judgments are independent of this deterministic success.
+
+### Shared technical delivery and gate results
+
+provenance: concern. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+The scientific findings are separate from three minor technical findings concerning a compact handoff link, a GO navigation URL and the staged retained-artifact whitespace failure. Their technical evidence is preserved here without duplicating their stable issue keys as new scientific findings. Passing core validation does not erase the required staged-diff failure.
+
+## Findings
+
+### F1: Attach primary preparation evidence to seven construct-qualified edges
+
+minor / open / confirmed; issue key: next259-construct-evidence-locality.
+
+native-022, native-026 and native-037 describe exact 2005/2011 plasmids, hosts and preparations, but their endpoint qualifiers cite only generic native heterologous-host evidence codes. Those codes establish an evidence class, not the exact stated preparation. Four desb-2005-* qualifiers also say Table 1 identifies BL21(DE3) as the expression host; the table supplies separate strain and plasmid rows, while the actual pETB-host expression assignment is in prose. Independent primary reading supports the biology, so this is a source-local provenance defect, not disproven catalysis. Attach exact short primary construct excerpts and precise preparation locators, and restrict structured assertions to actual table cells.
+
+### F2: Correct the false absence of native GalB compartment evidence
+
+minor / open / confirmed; issue key: next259-galb-cytosol-false-absence.
+
+The retained GalB monomer XML contains explicit CCO-CYTOSOL location and a GO0005829 annotation with computational EV-COMP-AINF evidence, but the final native-slot ledger and native handoff state that no catalyst/component location slot exists. Mechanical slot coverage did not prevent this semantic omission. The maintained graph has no GalB location edge. Append a successor correcting the false absence and either retain a source-scoped monomer located_in cytosol edge after authority validation or document a defensible explicit exclusion. Do not infer measured localization, universal protein-class location, or complete-route taxon occurrence.
+
+## Recommended Actions And Acceptance Checks
+
+### A1
+
+Attach exact primary construct/preparation evidence to native-022/026/037 and narrow four DesB 2005 Table 1 assertions; preserve all assay scope and scientific descriptions.
+
+- Independent comparison with actual 2005/2011 methods/results and Table 1; no prose paraphrase relabeled structured assertion.
+- Aggregate repeated quotations remain &lt;=25 words per publication; exact excerpts replay against retained originals/transcriptions.
+- Regenerate derived page/export, run required native gates, and save a successor review with exact F1 lineage.
+
+### A2
+
+Append a false-absence erratum with exact prior slot/fact keys and adjudicate the computational GalB monomer cytosol location; preserve frozen predecessor packages.
+
+- Native location and GO0005829 EV-COMP-AINF/PSORTdb evidence are preserved as computational context.
+- If selected, subject remains GalB monomer, predicate located_in, object canonical GO0005829 cytosol; no experimental/universal localization inference.
+- If omitted, a substantive explicit scope reason replaces the false absence; current source-to-graph successor ledger and review retain exact F2 lineage.
+- Regenerate derived page/export and validate the selected graph/authority union.
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| target | data/pathways/gallate-degradation-i.yaml | partial | Entire 2,812-line maintained record read after canonical inspect; 129 edges, 77 participants, four formal reactions, 87 selected IDs. Initial bytes preserved externally. |
+| native | /private/tmp/pathwaymech-next-259-native/originals/GALLATE-DEGRADATION-II-PWY.xml | supports | Exact suffix-II accession displays gallate degradation I; four formal members, predecessor order, oxaloacetate/TCA interface and syringate parent verified. The similarly named suffix-I five-step PDC route remains excluded. |
+| native_replay | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-target-replay.json | supports | Independently re-enumerated all 1,881 direct slots from 130 original XML objects: exact ledger key coverage, no duplicate/omitted slots, all final-edge references resolve. Counts are bookkeeping, not automatic scientific approval. Full quotation totals include repeated qualifiers. |
+| observations | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-record-observations.json | partial | Manual graph-to-source observations for all 129 edges and source-to-graph dispositions for all 229 claims; native semantic boundary review finds the GalB compartment false-absence exception. |
+| rhea | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-equation-replay.json | supports | Parsed full original Rhea RDF and traversed 33 actual subjects to verify all four selected equations, coefficients, material identity and atom/charge balance; selected physiological hydration is reverse to native written dehydration. |
+| chemistry | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-cml-complete-native-chemistry.json | supports | Independently reconstructed all nine formal native chemical CML graphs plus Z,Z comparator. Full InChI/key/charge match pinned authority. Three pinned SMILES omit stereochemical information, retained as source-field inconsistencies; E,E and generic unspecified CHA remain grounded. |
+| reagents | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-identity-replay.json | supports | Independent 47-check replay of cobalt and four transport/modification reagent name graphs against issuing records and pinned triples; salts and assay microspecies are not inferred. |
+| go | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-go-context.json | partial | Direct SQL confirms GO0046943 subclass restriction part_of some GO1905039 and GO0005829 cytosol label. Native GalB component has explicit CCO-CYTOSOL plus computational GO0005829; blanket absence is refuted. |
+| localization | /private/tmp/pathwaymech-next-259-native/originals/G1G01-2699-MONOMER.xml; /ptools-xml/Protein/location[1]; has-go-term[6] | refutes | The GalB monomer source contains location/cco CCO-CYTOSOL and has-go-term GO0005829 with EV-COMP-AINF citing PSORTdb PMID26602691. No experimental localization follows. |
+| native_ledger | research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/native-slot-disposition-ledger.json | refutes | The location slot is counted but given generic context disposition; source_fact_dispositions.facts[topic=compartments] incorrectly reports no explicit native cellular-location slot. |
+| native_handoff | research/pathway_additions/2026-10-14-next-259/gallate/native/HANDOFF.md | refutes | Native handoff repeats the false absence of a native compartment slot; preserve frozen bytes and append a corrective successor. |
+| primary-native | /private/tmp/pathwaymech-next-259-native/originals/GALLATE-DEGRADATION-II-PWY.xml | supports | Complete native pathway and selected direct slots of four formal reactions, matching chemicals, catalysts and regulation context; scope is not every historical publication. |
+| primary-gal2016 | /private/tmp/pathwaymech-next-259-primary/originals/PMC4817193-render2.html | supports | Complete scientific article-readable text, five tables, nine figure captions; independently viewed Figures 5 and 9. |
+| primary-gal2011 | /private/tmp/pathwaymech-next-259-primary/originals/candidate_wiley-web-result.json | partial | Publisher transcript scientific lines 162-330 and methods 348-389 read across four retained responses; no primary figure visual access claimed. |
+| primary-gal2023 | /private/tmp/pathwaymech-next-259-primary/originals/PMC9942251.xml | supports | Own ElementTree extraction of complete scientific body, all captions and main Table1; independently viewed main Figure2 and SI FiguresS2/S3. |
+| primary-gal2023-si | /private/tmp/pathwaymech-next-259-primary/originals/PMC9942251-supp.pdf | partial | Select visual scope: pages5 and6 (FiguresS2/S3). Not all fourteen SI pages read. |
+| primary-ligab2013 | /private/tmp/pathwaymech-next-259-ligab-supplement/author-successor/originals/PMC3926093-extracted.txt | supports | Complete scientific extracted main text, all three main tables and captions; full 2013 SI text and visual FigureS2 page5. HTML original binding must remain separate from this extraction. |
+| primary-ligab2015 | /private/tmp/pathwaymech-next-259-ligab-supplement/author-successor/projections/LigAB2015-publisher-si/clean-text.txt | partial | Full SI text read. Main paper unavailable; no full-main reading claimed. Five weak inhibition values conflict with 2013 non-inhibitor classification; source/control typo preserved. |
+| primary-desb2014 | /private/tmp/pathwaymech-next-259-primary/gal2014/originals/plos-manuscript.xml | supports | Full scientific section projection read, both main tables, visual Figure1. No claim to independently read all ten SI PDFs yet. |
+| primary-desb2009 | /private/tmp/pathwaymech-next-259-primary/gal2014/originals/DesB2009-methods-PMC2777051.html | supports | Complete scientific text read; 2.1 preparation supports E.coli BL21(DE3), AB190989 nucleotide-linked plasmid, aerobic POROS purification. No explicit tag assertion. Separate figures not viewed. |
+| primary-gala2005 | /private/tmp/pathwaymech-next-259-primary/gal2005-successor/originals/gal2005_methods-successor-web.json | supports | Scientific core L936-1524, detailed methods L419-921 including newly re-read512-815, transcription methods L923-964; visual Figure3. No complete main paper or Figure2 visual claim. |
+| primary-desb2021 | /private/tmp/pathwaymech-next-259-primary/originals/desb2021_rg_mid-web.json | supports | Scientific introduction/methods/earlyCD from original projection; fresh transcript core L832-1275 and discussion L1323-1359, Table1 and captions via tail. Not complete closing discussion. All SI captions; visual main Figure1, SI compound screen and rate plot. |
+| primary-cobalt | /private/tmp/pathwaymech-next-259-cobalt/CHEBI-48828.json | supports | Actual issuing JSON identity and independent hash read. Root19-check proof read as author research; current/source fields inspected, not yet own RDKit replay. |
+| primary-transport-reagent12 | /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-3259.json | supports | Actual JSON canonical label, formula, charge, complete InChI/key and SMILES independently read; parent-normalization limitation retained. |
+| primary-transport-reagent13 | /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-42017.json | supports | Actual JSON canonical label, formula, charge, complete InChI/key and SMILES independently read; parent-normalization limitation retained. |
+| primary-transport-reagent14 | /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-59051.json | supports | Actual JSON canonical label, formula, charge, complete InChI/key and SMILES independently read; parent-normalization limitation retained. |
+| primary-transport-reagent15 | /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-75458.json | supports | Actual JSON canonical label, formula, charge, complete InChI/key and SMILES independently read; parent-normalization limitation retained. |
+| primary-KasaiDesB2005 | /private/tmp/pathwaymech-next-259-primary/originals/PMC1196043-render.html | supports | All scientific main text, both tables and all six captions from retained readable projection. No independent six-figure visual inspection or supplemental Southern blot claim. |
+| primary-DesB2018protocol | /private/tmp/pathwaymech-next-259-primary/originals/PMC6235412.html | supports | Complete scientific text including protocol, results, three tables, eight captions and discussion; no independent eight-figure visual claim. |
+| source_scope | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/source-preparation-v3.json | supports | Exact independent source-reading and selected visual scope, original/transcript paths and digests, acquisition limitations, identity replays and structured-adapter applicability; source preparation predates maintained-target inspection. |
+| imodulon | research/pathway_additions/2026-10-14-next-259/initial-reviews/science/imodulondb-run-receipts-network.json | context_only | Actual adapter datasets and seven p_putida/precise321 searches retained. Gene hits are contextual, all seven searches returned zero iModulons; no negative biochemical inference and no hit needing summarize. |
+| integration | research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/authority-independent-verification.json | supports | Independent technical integration reviewer reports 1,474 passing checks: exact 87 selected IDs, precisely 35 additions, all 4,954 baseline terms preserved, direct 15 new source-object and 20 new ontology-label replays; 1,061 originals rehashed. This is not fresh scientific revalidation of 52 reused authority crosswalks. |
+| regulator_structures | research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/independent-regulator-name-replay.json | supports | Fifteen independently encoded regulatory-agent graphs match pinned full InChI and key. The 2021 SI explicitly draws protocatechuate, vanillate and syringate as carboxylate anions, supporting those maintained endpoints. Name/graph normalization is not assay microspecies measurement. |
+| reviewer_provenance | research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/regulator-replay-integrity-correction.json | context_only | The second reviewer helper accidentally overwrote the first neutral-name hypothesis JSON because the absolute output path was unchanged. Initial bytes/digest are not retained or reconstructed; the actual final 15-case output and both helpers are retained. This affects reviewer-attempt history only, not maintained data or source originals. |
+| shared-binding | research/pathway_additions/2026-10-14-next-259/initial-reviews/science-final-binding/shared-check-binding-final.json | supports | Independent rehash of all 1,278 tested core inputs, every completed root command log and exported artifact, and the four unchanged artifacts behind the technical staged-diff failure. No duplicate full suite was run by this scientific reviewer. |
+| shared-receipts | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/receipts.json | supports | Actual shared commands, timings, exit codes and log digests supplied by root and independently verified against retained files. |
+| shared-retention | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/retention-manifest.json | supports | All 12 retained check artifacts independently verified: encoded file digests match this manifest and identity/gzip decoding reproduces the exact original bytes and source digests. The six compressed logs remain lossless. |
+| staged-failure | research/pathway_additions/2026-10-14-next-259/initial-reviews/technical-staging-complete/independent-staged-diff-full-inventory-failure.json | refutes | Technical reviewer independently ran git diff --cached --check: exit 2 on four byte-preserved source artifacts. A passing unstaged diff check does not supersede this result. |
+| technical-handoff-link | research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/broken-retained-link.json | partial | Separately tracked minor technical finding: the compact final-author handoff relative YAML link does not resolve within its package; the exact original is recoverable through the retention map. |
+| technical-go-link | research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/finding.json | partial | Separately tracked minor technical finding: the dated GO download navigation URL returns 404 while the issuing QuickGO term endpoint is available. This does not invalidate the pinned Semantic SQL authority. |
+| shared-log-1 | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-render-pages.log.gz | supports | Complete retained root-executed log for just render-pages; exit code 0. This evidence digest denotes the gzip bytes. Independent decompression reproduces the exact original log and its receipt SHA256 35196ac40fa81ce687d90ed5d8ac838ba6436052cbc4145d3464e3306fcc6228; the tested input manifest was also rehashed. |
+| shared-log-2 | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-validate.log.gz | supports | Complete retained root-executed log for just validate; exit code 0. This evidence digest denotes the gzip bytes. Independent decompression reproduces the exact original log and its receipt SHA256 88c1a5f9ee610360797630b51c9773aafe4354db01ddc4a2b4ce9b6e6f94bff2; the tested input manifest was also rehashed. |
+| shared-log-3 | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-test.log.gz | supports | Complete retained root-executed log for just test; exit code 0. This evidence digest denotes the gzip bytes. Independent decompression reproduces the exact original log and its receipt SHA256 ee4ca00d5c4db63ca7426248c3cd9a70a3fe2f07f20a057435b2456fdd88557c; the tested input manifest was also rehashed. |
+| shared-log-4 | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-lint.log.gz | supports | Complete retained root-executed log for just lint; exit code 0. This evidence digest denotes the gzip bytes. Independent decompression reproduces the exact original log and its receipt SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41; the tested input manifest was also rehashed. |
+| shared-log-5 | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-vendored-check.log.gz | supports | Complete retained root-executed log for just vendored-check; exit code 0. This evidence digest denotes the gzip bytes. Independent decompression reproduces the exact original log and its receipt SHA256 b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6; the tested input manifest was also rehashed. |
+| shared-log-6 | research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/git-diff---check.log.gz | supports | Complete retained root-executed log for git diff --check; exit code 0. This evidence digest denotes the gzip bytes. Independent decompression reproduces the exact original log and its receipt SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855; the tested input manifest was also rehashed. |
+
+## Limits And Additional Notes
+
+- Historical native-source papers were not all independently accessed; native evidence classes are not recast as reviewer-read primary experiments.
+- 2011 original figures and supplement remain inaccessible. Independent visual coverage is selective, specifically documented in source-preparation-v3.json, not inherited from author visual-read claims.
+- 2015 LigAB full main methods/preparations remain unavailable; nine staged claim dispositions preserve limits. No exhaustive literature/source-exhaustion claim.
+- 2021 main evidence includes author-deposited transcription rather than publisher-original main PDF. Prior primary acquisition accidentally overwrote dynamic HTML/failed payloads/receipt; lost bytes are acknowledged, while scientifically used stable XML, figures/SI and repaired-allele binding remain preserved.
+- Exact assay inserts/tag termini and GalB 244/258/240 relationship remain unresolved; optical negative CHA is not proof of absolute S configuration.
+- Some pinned ChEBI SMILES omit stereo while full InChI/key and CML agree; no silent original-source repair. EDTA/reagent named parents do not determine supplied salt or assay microspecies.
+- A reviewer-only supplementary chemical replay overwrote its initial neutral-name hypothesis JSON because a helper output path was not changed. Those initial bytes and digest are not retained; the actual final 15-case output, both helpers and honest correction receipt are preserved. No maintained/source/frozen initial proof changed.
+- Full native validation/test/lint and related gates were executed once by root, then independently bound by this reviewer to all 1,278 unchanged tested input hashes and exact completed log digests. The required staged artifact check failed and remains an explicit technical concern. Deterministic checks do not extend this scientific review to the other 255 records.
+- Record-review start is actual canonical-inspect artifact creation UTC; earlier independent source preparation is separately timestamped.
+- No maintained mutations, issue creation or review persistence by this reviewer yet. Root will persist the validated initial bundle and later record resolution separately.
+- After the frozen observation artifact was written, the remaining native narrative contexts were also read; all 32 original native narrative slots were inspected. The earlier artifact remains unchanged and its narrower reading claim is not silently rewritten.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261014T230639Z-next259-science-initial
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent initial scientific review of gallate degradation I
+started_at: '2026-10-14T22:35:48.593280Z'
+finished_at: '2026-10-14T23:06:39Z'
+reviewer:
+  identity: codex:/root/next259_science
+  kind: agent
+  independence: independent
+  independence_basis: Separate reviewer from all source, record and integration authors.
+    Source preparation preceded actual maintained-record inspection; no maintained
+    records, author packages or generated pages edited. Root/author suggestions were
+    checked against actual sources, and a separate native compartment omission was
+    discovered independently.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: needs_curation
+scientific_review: true
+summary: Full scientific assessment supports exact four-step identity, balanced E,E/generic-CHA
+  chemistry and bounded constructs/assays. Two confirmed minor scientific findings
+  require source-local construct citations and correction of a false native GalB compartment-absence
+  disposition. No major or blocker scientific finding was identified. Completed shared
+  command receipts were independently bound to unchanged inputs; the separate required
+  staged diff check failed on four retained source artifacts, so this is not an all-gates-passing
+  review.
+source:
+  git_revision: 7e18d0e2b7dd066ea5176b3f679624f7e50a0dc3
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: a2507a11f30c2d1637f2036a4e9fda8f7fdaba38d6b82cb26a2a261de0342749
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 49fba331de367837885b14fb6470af11dfbf2b65c73a33760c4679e50f43abde
+    role: context
+  - path: data/pathways/gallate-degradation-i.yaml
+    sha256: 9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: justfile
+    sha256: 6d3df7c8fb17835c316a5f37a59c0ff7e61541bbb0781d4dd62ee6ec5fce7df2
+    role: context
+  - path: pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html
+    sha256: e065f9ca239d5f2d5cd211a84dfb1080b98b7cdd7ea7449f99f35bf39e30be85
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/adapter-author/root-retention-map.json
+    sha256: b6977e318e6712898f5f776aba64580adeebed05487ecf60bb28113fd7f68902
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/adapter-review/root-retention-map.json
+    sha256: 6b3eb5248e1b5fd32d9e5a85ba6e22f783db1e1a0e94dba05c49a1fbab7b7cae
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/authorities/root-retention-map.json
+    sha256: bcc3baf88619888821ff3a9f5c5ab9e9343e95ae99a6a98a458453aac7261730
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/chemistry/root-retention-map.json
+    sha256: fcb7866f94b1297d9acc4f8bf9941f2d5cd9431d03c826f16aee495364db9819
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/cobalt/root-retention-map.json
+    sha256: f0153be60ff23bb13ccde75dca634bcbf1e71b52b8ddb5d4eddc19cbb9c94b92
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/evidence-successor/root-retention-map.json
+    sha256: 11a7b66a0331592b6bde949443758f8fac085e9a5e0c85f3e847093f347c971d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/gal2014/root-retention-map.json
+    sha256: c907f39d0927ef699d83511bb84a8fc86898514f51eb4a236fe25045153d7546
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/gal2016/root-retention-map.json
+    sha256: 48c91d0e41b800293c5bc8857f8efa1ab4347125b7746eb6de8c90c7f832911f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/gala2005/root-retention-map.json
+    sha256: 7821bbffc4af3c0ada778d507506ecf01965e08fb47727e519e9fcf72ebe44da
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/identities/root-retention-map.json
+    sha256: 83ae8a6831599c7e314cfc9bb82909dbed29596944c99f711b3d1ccdcc721bb8
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/ligab-chemistry/root-retention-map.json
+    sha256: 3defaa2821c694d046a0fd3523b61df7f894a4258135c0f92d02bcbfed55b9f5
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/ligab/root-retention-map.json
+    sha256: c8563ba911d1f519eb91f91d807b694fa11cce888710f94c0ad2ca8fd3e2554c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/native/HANDOFF.md
+    sha256: 4513d42896dbdbc7687a2c6f498e63679810ef47d13c20a2c017d32571b50eb3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/native/root-retention-map.json
+    sha256: adc16b109b3c1abd0b99edb704ca77b7206dea090e87bba1caf6936ee37c693e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/preflight/root-retention-map.json
+    sha256: 8bff738e0bac2df2545b392876fb7248d7b375c0fa23010e7c6e5551ae12294a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/primary/HANDOFF.md
+    sha256: 927fb1263c5e4af441b43b635c83041b271f793907889383a360a4a520855741
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/primary/root-retention-map.json
+    sha256: 36f17e4fc2da659b3dc6f238660df11af9d18e0043f55a31d9cf1be90f0c1799
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-final/HANDOFF.md
+    sha256: 5e88e02ca1539ae7c16368018f023093cb64ecde2142cdf5676ee14c48d1e93d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-final/root-retention-map.json
+    sha256: b91f790e5d78a2e552ba93f10d5639dcc43da40685658bea2c0152661b6b07fa
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-final/selected-identifiers.json
+    sha256: becde59e33f4d2e17da5ca0984f52b2c412e015c9e7d9516c2fcc7ae47ccb64e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/edge-proposal-dispositions.json
+    sha256: aa466655f7a0134a63b58edfe61b841fcac9e1a7998647f9c6dbf2002dc8b699
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/native-slot-disposition-ledger.json
+    sha256: 412719e19bc2659eed3832784bd98cc3f863643a695997afd3769bfa51323647
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/source-claim-disposition-ledger.json
+    sha256: 87fb6e5c7b0e19a4f7831b60bf2a47bcd29ec331426e32744376308fd20ef8c6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-selection/root-retention-map.json
+    sha256: c070f83db76962bc3f3d2f170120ef0d2c54bd49e2edead559cecd392b09c39d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/record-selection/source-bindings.json
+    sha256: 6fafef89b109a2b4f410d3fc8b7951eb3542309f398036de5dd2c7bfb7d43319
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/gallate/transport-identities/root-retention-map.json
+    sha256: cdbc84c7fa1c71fedbe10433ee93763f6d8a8ffc71c097c3bd8c298054a81436
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/environment.json
+    sha256: 9273d7070f00ffb6b2c861fb3cdec1de576e7a6a7880b3b5af2a1dbbb6aeda73
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/final-input-preservation.json
+    sha256: fce2b23069d5832439df7e1d7f9a520fd5d81b69915567774bf3b96a22bc4ccc
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/git-diff---check.log.gz
+    sha256: f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-lint.log.gz
+    sha256: 75d496aafde5e749b5b2c24a293e48a999056fd7ec9236ec8965925ca66091c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-render-pages.log.gz
+    sha256: 67978763b390837bee007f52ac83f66fdbc40d3790e3ac6e943924446fe2c7f1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-test.log.gz
+    sha256: 0e5b221fc8d9ca363cf5a90ca5832ac3233955651df98b745a1d135107377f9c
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-validate.log.gz
+    sha256: 6f128af0fb2fa487df78fa1eb05d8ff1a59ce0509ed4233e1921a60b4e9aad91
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-vendored-check.log.gz
+    sha256: b217d3530126f5adea1b0fb15ac35cf7c29ee13a21757afd837a6a93068c885a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/receipts.json
+    sha256: 8173ad9f8227d1f67539ec43b01aacbc64d7c5943bc804ad29a51bb13703060f
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/record-export-comparison.json
+    sha256: 924179031c8de30cdcdc0943d4bd10ec02d980b560e9380a54c00ff8d4e15992
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/retention-manifest.json
+    sha256: 0699096aabf1606344b6313ea4d47e55a3556ae44e717738e4cbc90d5e7ffd8a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/run_initial_checks.py.txt
+    sha256: a29a4646a3204f6e481be665e490ac82627d920e00cde6cc71b718e6d0b08dd9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/tested-core-input-hashes.json
+    sha256: f731035509b77bfd49799ffe05f01b7e37609ec0c1260f1bce5a44e290e7de63
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/finding.json
+    sha256: 23814341b7dd2ec757c5e6d30424e2479177ad7d2621cb0c347c5548cf6b36be
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/public-http-observations.json
+    sha256: d80ee1d272276903682fc14e6c083238eb1ccb47925b539d3b7ca69d7f075489
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/retention-manifest.json
+    sha256: 7b07d26a4610c4dc0218928225e79b37ba904fd7c8b885ac0b00fcad69cf92b6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/issue-handoffs/confirmed-science-issue-handoff.json
+    sha256: 1a351cbe063b4a8505952b6bfed2e40ed43ebda972dc248daf7ff0378025faba
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/issue-handoffs/confirmed-technical-issue-handoff.json
+    sha256: e9debffe0628550f301bf8130d8e2d5f07ebaee63372b6c28afb498dc5210169
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/issue-handoffs/retention-manifest.json
+    sha256: 1f8db3f2ca98c2977883e935f49acd430244ef409c90ee41e759cd95c5fe4003
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-final-binding/bind_shared_checks_final.py.txt
+    sha256: dbc7048cabf55a9c9b983d867107eab7c25b1ce3a2f4fbc19d100ff1ed18a70d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-final-binding/retention-manifest.json
+    sha256: 98a30094fef7b86b8c081d69b26d3e105090e2ca234dd6abe09e830020e5f0b9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-final-binding/shared-check-binding-final.json
+    sha256: 8ae5d348fa4efcb5ab5d0cc613673dde25a948f166f708268bfe6b8d8cbceae1
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/independent-regulator-name-replay.json
+    sha256: d8f872a423820b201ea6c2637fd685e6cb84a52cf3428f0b727ecfe10f2d2389
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/regulator-replay-integrity-correction.json
+    sha256: 3b4a0663dc46b7fe5df35ebb2870135417cf50ebbb3d3bcc27bf97e9360f1bb4
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/regulator-replay-supplement-manifest.json
+    sha256: 8d6535bcb15ed7a907d861da8487c71dddd24d176aa2e9a81136470f961f96c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/regulator_name_replay.py.txt
+    sha256: 9dfd823fa32b2cabe7f90055cffa0ef17e88018387c02a9ff716ebdd38239d40
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/regulator_name_replay_v2.py.txt
+    sha256: ba65fd539dabdf9b02aa7a1f302ad0ccd7a3950e9b5e17ddb5e996d65ea5b9b3
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/retention-manifest.json
+    sha256: da03b69fdc31b21fe5169606a4d15f994b4bfc00b5bcb1807aac5abed1f2474a
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/cml_complete.py.txt
+    sha256: b14c1ceded53d5b8571f578377be5a5df3c138e9eae785d756e037e5805ae9d2
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/imodulon_checks.py.txt
+    sha256: accb7dd561f94f531fa7248e725f82c93e19f176a739a23995271fd34933b137
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/imodulondb-run-receipts-network.json
+    sha256: e2f5c627c8cafa85e9cf7e8c36bc98ddb298dfd6350f38738af85da069d26c5e
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-cml-complete-native-chemistry.json
+    sha256: 9dc7741f4e5dd2137a01bd57e1904c27b64c0dff6bdda1e9bf917a575a77c118
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-equation-replay.json
+    sha256: 62ca3c05faca91670b20cb06f8e97571262952ed35f80daf64a0e3c3a7665306
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-go-context.json
+    sha256: 56e723aaa5a8a4b6f32fcfc3d586608e3208ac16d7e59c6d1a373293aa3b69dd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-identity-replay.json
+    sha256: c4b01ac8277e98dc89321fee318ed8c2b71fc7480543819ed44cb80cdb7be873
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-record-observations.json
+    sha256: 8afbb5440134598bd082a39d353cc43b1ea2a76b448a171eafc4504815baebc6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-target-replay.json
+    sha256: 4b1273d0afe05ff39b744694bf741bc4b7934bba7d13a7be0714d66f60979e04
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent_identity_replay.py.txt
+    sha256: 5fa5a07feb6c5911a445c334feeae848bde4453f7f9738416f40b684dc8b6932
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/initial-inspect.json
+    sha256: 3c9784346f427d60a77fadeb348f31746bf6f76c88580f64bddd4f4ffd9f9db7
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/initial-maintained-record.yaml
+    sha256: 9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/record_observations.py.txt
+    sha256: 9c697b45c2eda2e3a825e01d1178bcd23d434a3f01ca50d5f5c2527f715857ef
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/replay_equations.py.txt
+    sha256: 542018cd62841953c69ab308be4b22f10c206aecdba4e3ab56b05b583eb25491
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/replay_target.py.txt
+    sha256: 592896034fe448568816845953f39a244c465c3e12a33b92e72e6753f894d4c9
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/retention-manifest.json
+    sha256: a904b23ffa4f9ded0b117bb95f96140bb3ff48eb539d555e026a3b5e85dff9d6
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/retention-recheck.json
+    sha256: 971ab954bd56c2d2027f7cfa2116d4bf05d08ab1125d127e5365a2e825cb375b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/science-proof-selection.json
+    sha256: 547139d82c9687af3758e78963d3d69ec53c1a322e70f0df4e2c1fa264581b16
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/source-preparation-v3.json
+    sha256: 696116a39b7102e885151b24d5e324cb31aef601d7e0d1fa1967abb335e85213
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical-staging-complete/independent-staged-diff-full-inventory-failure.json
+    sha256: b244212a40302e22e4e3209e7a9c525d9e47fa598e8d81e79368a94165b4fd4d
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical-staging-complete/retention-manifest.json
+    sha256: 54cc2cbe2d5c5fdbb482c7d8ace999bb29ab1846945bdda74fd8565616438274
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/authority-independent-verification.json
+    sha256: 4e4ced00d5ea939a035c29128e95e7812d42f15f3fc4b817dd773fcfadc6cd58
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/broken-retained-link.json
+    sha256: 0f5c65f6e20e25b803a7a54e9da39c3f0e088f3d6c5215f51a7ad4282ee2dcda
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/retention-manifest.json
+    sha256: 78ce01ad18ba4277a85d47844745d319bdde96e2ca2599afe9d532205a3ee509
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+scope:
+  description: One actual maintained record, all 129 edges/qualifiers/evidence, all
+    229 retained claim dispositions and all 1,881 native slot keys; source scientific
+    reading and visual limits explicitly retained.
+  selection: Exact frozen maintained path and MetaCyc accession supplied by root;
+    not an author draft.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  exclusions:
+  - target: Every historical publication cited inside native objects and all main/SI
+      figures
+    reason: Not all were independently read; scoped database annotations and explicit
+      source/visual limitations are retained.
+  - target: Repository-wide scientific revalidation
+    reason: Only this maintained record receives fresh scientific judgment; full corpus
+      deterministic gates do not imply full corpus scientific review.
+targets:
+- target_id: MetaCyc:GALLATE-DEGRADATION-II-PWY
+  path: data/pathways/gallate-degradation-i.yaml
+  label: gallate degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained pathway record
+checks:
+- check_id: inspect
+  name: Canonical target inspection before assessment
+  status: passed
+  required: true
+  summary: Actual frozen maintained target resolved and hashed before record judgment.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: scripts/record_review.py inspect --targets /private/tmp/pathwaymech-next-259-science/targets.yaml
+    with rubric context inputs
+  exit_code: 0
+  evidence_ids:
+  - target
+- check_id: scientific
+  name: Independent full record/source assessment
+  status: passed
+  required: true
+  summary: Completed manual record and claim-disposition assessment; scientific findings
+    remain open despite successful inspection.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - observations
+  - source_scope
+- check_id: native-replay
+  name: Direct native slot and claim-link replay
+  status: passed
+  required: true
+  summary: All 1,881 keys match actual direct original slots; no duplicate/omitted
+    slots or broken claim edge references.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-259-science/replay_target.py
+  exit_code: 0
+  evidence_ids:
+  - native_replay
+- check_id: shared-command-1
+  name: Shared just render-pages
+  status: passed
+  required: true
+  summary: Root executed this command against the independently rehashed frozen inputs;
+    actual exit code 0.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: just render-pages
+  exit_code: 0
+  evidence_ids:
+  - shared-binding
+  - shared-receipts
+  - shared-log-1
+- check_id: shared-command-2
+  name: Shared just validate
+  status: passed
+  required: true
+  summary: Root executed this command against the independently rehashed frozen inputs;
+    actual exit code 0.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: just validate
+  exit_code: 0
+  evidence_ids:
+  - shared-binding
+  - shared-receipts
+  - shared-log-2
+- check_id: shared-command-3
+  name: Shared just test
+  status: passed
+  required: true
+  summary: Root executed this command against the independently rehashed frozen inputs;
+    actual exit code 0.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: just test
+  exit_code: 0
+  evidence_ids:
+  - shared-binding
+  - shared-receipts
+  - shared-log-3
+- check_id: shared-command-4
+  name: Shared just lint
+  status: passed
+  required: true
+  summary: Root executed this command against the independently rehashed frozen inputs;
+    actual exit code 0.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: just lint
+  exit_code: 0
+  evidence_ids:
+  - shared-binding
+  - shared-receipts
+  - shared-log-4
+- check_id: shared-command-5
+  name: Shared just vendored-check
+  status: passed
+  required: true
+  summary: Root executed this command against the independently rehashed frozen inputs;
+    actual exit code 0.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: just vendored-check
+  exit_code: 0
+  evidence_ids:
+  - shared-binding
+  - shared-receipts
+  - shared-log-5
+- check_id: shared-command-6
+  name: Shared git diff --check
+  status: passed
+  required: true
+  summary: Root executed this command against the independently rehashed frozen inputs;
+    actual exit code 0.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: git diff --check
+  exit_code: 0
+  evidence_ids:
+  - shared-binding
+  - shared-receipts
+  - shared-log-6
+- check_id: staged-diff-check
+  name: Complete staged artifact whitespace check
+  status: failed
+  required: true
+  summary: Exit 2 on two retained patch files, an inert helper transcript and the
+    retained pytest log. All four source-artifact hashes still match the observed
+    failure. The technical review owns the retention-format finding.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  command: git diff --cached --check
+  exit_code: 2
+  evidence_ids:
+  - shared-binding
+  - staged-failure
+evidence:
+- evidence_id: target
+  kind: record_content
+  reference: data/pathways/gallate-degradation-i.yaml
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: partial
+  summary: Entire 2,812-line maintained record read after canonical inspect; 129 edges,
+    77 participants, four formal reactions, 87 selected IDs. Initial bytes preserved
+    externally.
+  snapshot_sha256: 9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665
+- evidence_id: native
+  kind: database
+  reference: /private/tmp/pathwaymech-next-259-native/originals/GALLATE-DEGRADATION-II-PWY.xml
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Exact suffix-II accession displays gallate degradation I; four formal members,
+    predecessor order, oxaloacetate/TCA interface and syringate parent verified. The
+    similarly named suffix-I five-step PDC route remains excluded.
+  snapshot_sha256: 8cb76e5d7ece3deb4b90ad6927be94b80a75e4784b51a76e9760c4d23ffcfdd8
+- evidence_id: native_replay
+  kind: database
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-target-replay.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: 'Independently re-enumerated all 1,881 direct slots from 130 original XML
+    objects: exact ledger key coverage, no duplicate/omitted slots, all final-edge
+    references resolve. Counts are bookkeeping, not automatic scientific approval.
+    Full quotation totals include repeated qualifiers.'
+  snapshot_sha256: 4b1273d0afe05ff39b744694bf741bc4b7934bba7d13a7be0714d66f60979e04
+- evidence_id: observations
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-record-observations.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: partial
+  summary: Manual graph-to-source observations for all 129 edges and source-to-graph
+    dispositions for all 229 claims; native semantic boundary review finds the GalB
+    compartment false-absence exception.
+  snapshot_sha256: 8afbb5440134598bd082a39d353cc43b1ea2a76b448a171eafc4504815baebc6
+- evidence_id: rhea
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-equation-replay.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Parsed full original Rhea RDF and traversed 33 actual subjects to verify
+    all four selected equations, coefficients, material identity and atom/charge balance;
+    selected physiological hydration is reverse to native written dehydration.
+  snapshot_sha256: 62ca3c05faca91670b20cb06f8e97571262952ed35f80daf64a0e3c3a7665306
+- evidence_id: chemistry
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-cml-complete-native-chemistry.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Independently reconstructed all nine formal native chemical CML graphs
+    plus Z,Z comparator. Full InChI/key/charge match pinned authority. Three pinned
+    SMILES omit stereochemical information, retained as source-field inconsistencies;
+    E,E and generic unspecified CHA remain grounded.
+  snapshot_sha256: 9dc7741f4e5dd2137a01bd57e1904c27b64c0dff6bdda1e9bf917a575a77c118
+- evidence_id: reagents
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-identity-replay.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Independent 47-check replay of cobalt and four transport/modification reagent
+    name graphs against issuing records and pinned triples; salts and assay microspecies
+    are not inferred.
+  snapshot_sha256: c4b01ac8277e98dc89321fee318ed8c2b71fc7480543819ed44cb80cdb7be873
+- evidence_id: go
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/independent-go-context.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: partial
+  summary: Direct SQL confirms GO0046943 subclass restriction part_of some GO1905039
+    and GO0005829 cytosol label. Native GalB component has explicit CCO-CYTOSOL plus
+    computational GO0005829; blanket absence is refuted.
+  snapshot_sha256: 56e723aaa5a8a4b6f32fcfc3d586608e3208ac16d7e59c6d1a373293aa3b69dd
+- evidence_id: localization
+  kind: database
+  reference: /private/tmp/pathwaymech-next-259-native/originals/G1G01-2699-MONOMER.xml
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: refutes
+  summary: The GalB monomer source contains location/cco CCO-CYTOSOL and has-go-term
+    GO0005829 with EV-COMP-AINF citing PSORTdb PMID26602691. No experimental localization
+    follows.
+  snapshot_sha256: 637ac5f767a7a881f97aba01963985e0d5a444d2d5906090f7137e38b45b1a47
+  locator: /ptools-xml/Protein/location[1]; has-go-term[6]
+- evidence_id: native_ledger
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/native-slot-disposition-ledger.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: refutes
+  summary: The location slot is counted but given generic context disposition; source_fact_dispositions.facts[topic=compartments]
+    incorrectly reports no explicit native cellular-location slot.
+  snapshot_sha256: 412719e19bc2659eed3832784bd98cc3f863643a695997afd3769bfa51323647
+- evidence_id: native_handoff
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-259/gallate/native/HANDOFF.md
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: refutes
+  summary: Native handoff repeats the false absence of a native compartment slot;
+    preserve frozen bytes and append a corrective successor.
+  snapshot_sha256: 4513d42896dbdbc7687a2c6f498e63679810ef47d13c20a2c017d32571b50eb3
+- evidence_id: primary-native
+  kind: database
+  reference: /private/tmp/pathwaymech-next-259-native/originals/GALLATE-DEGRADATION-II-PWY.xml
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Complete native pathway and selected direct slots of four formal reactions,
+    matching chemicals, catalysts and regulation context; scope is not every historical
+    publication.
+  snapshot_sha256: 8cb76e5d7ece3deb4b90ad6927be94b80a75e4784b51a76e9760c4d23ffcfdd8
+- evidence_id: primary-gal2016
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/originals/PMC4817193-render2.html
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Complete scientific article-readable text, five tables, nine figure captions;
+    independently viewed Figures 5 and 9.
+  snapshot_sha256: 82b77e747c0931f7a18f26f0a96dcdb5f6a84c3e41af8a2e84e787c1091d39b8
+- evidence_id: primary-gal2011
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/originals/candidate_wiley-web-result.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: partial
+  summary: Publisher transcript scientific lines 162-330 and methods 348-389 read
+    across four retained responses; no primary figure visual access claimed.
+  snapshot_sha256: 4a12c8fce1178c5050bab94bd20bd380e0ff71f32e30938ba7863c458b68cdce
+- evidence_id: primary-gal2023
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/originals/PMC9942251.xml
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Own ElementTree extraction of complete scientific body, all captions and
+    main Table1; independently viewed main Figure2 and SI FiguresS2/S3.
+  snapshot_sha256: d244f06931b7dac77094bf23b7ac1dc2887567de6f53bdcd72f1290e7e9e9896
+- evidence_id: primary-gal2023-si
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/originals/PMC9942251-supp.pdf
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: partial
+  summary: 'Select visual scope: pages5 and6 (FiguresS2/S3). Not all fourteen SI pages
+    read.'
+  snapshot_sha256: 408990e31be1285da1899e2c588a5c3c40e88dc162400f32749259725a15b94a
+- evidence_id: primary-ligab2013
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-ligab-supplement/author-successor/originals/PMC3926093-extracted.txt
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Complete scientific extracted main text, all three main tables and captions;
+    full 2013 SI text and visual FigureS2 page5. HTML original binding must remain
+    separate from this extraction.
+  snapshot_sha256: bda445ef1fbf224513d648fe7a8a53ae582d1982d3e3f2a7e453cb99d7ee076d
+- evidence_id: primary-ligab2015
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-ligab-supplement/author-successor/projections/LigAB2015-publisher-si/clean-text.txt
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: partial
+  summary: Full SI text read. Main paper unavailable; no full-main reading claimed.
+    Five weak inhibition values conflict with 2013 non-inhibitor classification; source/control
+    typo preserved.
+  snapshot_sha256: d2617ab4e12f97e471ddcf8dad7b2808992f7c3a718d6e2100e640b3904d1c50
+- evidence_id: primary-desb2014
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/gal2014/originals/plos-manuscript.xml
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Full scientific section projection read, both main tables, visual Figure1.
+    No claim to independently read all ten SI PDFs yet.
+  snapshot_sha256: a14b56f3fe67f97c01d71f557b0cc0898885990576bc3b3ee731684801abd6a7
+- evidence_id: primary-desb2009
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/gal2014/originals/DesB2009-methods-PMC2777051.html
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Complete scientific text read; 2.1 preparation supports E.coli BL21(DE3),
+    AB190989 nucleotide-linked plasmid, aerobic POROS purification. No explicit tag
+    assertion. Separate figures not viewed.
+  snapshot_sha256: 7c8150575ee9352cef380d2e5a694e4d713d8b2bb4d1fab9d92276937f362fb4
+- evidence_id: primary-gala2005
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/gal2005-successor/originals/gal2005_methods-successor-web.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Scientific core L936-1524, detailed methods L419-921 including newly re-read512-815,
+    transcription methods L923-964; visual Figure3. No complete main paper or Figure2
+    visual claim.
+  snapshot_sha256: eef76e784fb6ad272fba81dda67acedc0b9519cbb21aedc660f4033d8fc0fc8e
+- evidence_id: primary-desb2021
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/originals/desb2021_rg_mid-web.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Scientific introduction/methods/earlyCD from original projection; fresh
+    transcript core L832-1275 and discussion L1323-1359, Table1 and captions via tail.
+    Not complete closing discussion. All SI captions; visual main Figure1, SI compound
+    screen and rate plot.
+  snapshot_sha256: 286a9d146886ba80fc8c8e0c2b72d9a4d4c3750fe76690510b21f4e17f862604
+- evidence_id: primary-cobalt
+  kind: authority
+  reference: /private/tmp/pathwaymech-next-259-cobalt/CHEBI-48828.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Actual issuing JSON identity and independent hash read. Root19-check proof
+    read as author research; current/source fields inspected, not yet own RDKit replay.
+  snapshot_sha256: 7e031f2f1f89ce8088834778457244af1fdae06bfec8174437d52fc11168f3ad
+- evidence_id: primary-transport-reagent12
+  kind: authority
+  reference: /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-3259.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Actual JSON canonical label, formula, charge, complete InChI/key and SMILES
+    independently read; parent-normalization limitation retained.
+  snapshot_sha256: a3f216eef0b5091c9c2b2452f58c7e2349d540d801f1821cb471853153f0959d
+- evidence_id: primary-transport-reagent13
+  kind: authority
+  reference: /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-42017.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Actual JSON canonical label, formula, charge, complete InChI/key and SMILES
+    independently read; parent-normalization limitation retained.
+  snapshot_sha256: 0d71c98bed76e5a9d3004d1d8a529043cb625edc79f7afebb8a4f357b19d419c
+- evidence_id: primary-transport-reagent14
+  kind: authority
+  reference: /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-59051.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Actual JSON canonical label, formula, charge, complete InChI/key and SMILES
+    independently read; parent-normalization limitation retained.
+  snapshot_sha256: 604dc0987c463bcd621c904be2ea70a93f9c1bc04c78dc3e399d54f9f966adeb
+- evidence_id: primary-transport-reagent15
+  kind: authority
+  reference: /private/tmp/pathwaymech-next-259-transport-identities/originals/CHEBI-75458.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Actual JSON canonical label, formula, charge, complete InChI/key and SMILES
+    independently read; parent-normalization limitation retained.
+  snapshot_sha256: e2d226235fbe3b6a3473c46a51efbe41f386f79b86d66306e451fc289acd160c
+- evidence_id: primary-KasaiDesB2005
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/originals/PMC1196043-render.html
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: All scientific main text, both tables and all six captions from retained
+    readable projection. No independent six-figure visual inspection or supplemental
+    Southern blot claim.
+  snapshot_sha256: cb56d58415547ab45f00a52d958f6f3c9e101f4e644763422990edc4cb3ae69e
+- evidence_id: primary-DesB2018protocol
+  kind: primary_source
+  reference: /private/tmp/pathwaymech-next-259-primary/originals/PMC6235412.html
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Complete scientific text including protocol, results, three tables, eight
+    captions and discussion; no independent eight-figure visual claim.
+  snapshot_sha256: 4ff1febfae033a711963949075ba4f8e2aa9cad904793984019e1bf715c26cf4
+- evidence_id: source_scope
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/source-preparation-v3.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Exact independent source-reading and selected visual scope, original/transcript
+    paths and digests, acquisition limitations, identity replays and structured-adapter
+    applicability; source preparation predates maintained-target inspection.
+  snapshot_sha256: 696116a39b7102e885151b24d5e324cb31aef601d7e0d1fa1967abb335e85213
+- evidence_id: imodulon
+  kind: search
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science/imodulondb-run-receipts-network.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: context_only
+  summary: Actual adapter datasets and seven p_putida/precise321 searches retained.
+    Gene hits are contextual, all seven searches returned zero iModulons; no negative
+    biochemical inference and no hit needing summarize.
+  snapshot_sha256: e2f5c627c8cafa85e9cf7e8c36bc98ddb298dfd6350f38738af85da069d26c5e
+  search_scope: 'Installed kg-microbe-sources adapter: datasets, then p_putida/precise321
+    queries gallate, gllA, gllB, gllC, gllD, PP_2519, galR. No iModulon hits; no summarize
+    call needed. Runner resolution and failed sandbox attempt are retained separately;
+    actual successful network receipts are source evidence.'
+- evidence_id: integration
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/authority-independent-verification.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: 'Independent technical integration reviewer reports 1,474 passing checks:
+    exact 87 selected IDs, precisely 35 additions, all 4,954 baseline terms preserved,
+    direct 15 new source-object and 20 new ontology-label replays; 1,061 originals
+    rehashed. This is not fresh scientific revalidation of 52 reused authority crosswalks.'
+  snapshot_sha256: 4e4ced00d5ea939a035c29128e95e7812d42f15f3fc4b817dd773fcfadc6cd58
+- evidence_id: regulator_structures
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/independent-regulator-name-replay.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: supports
+  summary: Fifteen independently encoded regulatory-agent graphs match pinned full
+    InChI and key. The 2021 SI explicitly draws protocatechuate, vanillate and syringate
+    as carboxylate anions, supporting those maintained endpoints. Name/graph normalization
+    is not assay microspecies measurement.
+  snapshot_sha256: d8f872a423820b201ea6c2637fd685e6cb84a52cf3428f0b727ecfe10f2d2389
+- evidence_id: reviewer_provenance
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-supplement/regulator-replay-integrity-correction.json
+  accessed_at: '2026-10-14T22:57:11Z'
+  support: context_only
+  summary: The second reviewer helper accidentally overwrote the first neutral-name
+    hypothesis JSON because the absolute output path was unchanged. Initial bytes/digest
+    are not retained or reconstructed; the actual final 15-case output and both helpers
+    are retained. This affects reviewer-attempt history only, not maintained data
+    or source originals.
+  snapshot_sha256: 3b4a0663dc46b7fe5df35ebb2870135417cf50ebbb3d3bcc27bf97e9360f1bb4
+- evidence_id: shared-binding
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/science-final-binding/shared-check-binding-final.json
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Independent rehash of all 1,278 tested core inputs, every completed root
+    command log and exported artifact, and the four unchanged artifacts behind the
+    technical staged-diff failure. No duplicate full suite was run by this scientific
+    reviewer.
+  snapshot_sha256: 8ae5d348fa4efcb5ab5d0cc613673dde25a948f166f708268bfe6b8d8cbceae1
+- evidence_id: shared-receipts
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/receipts.json
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Actual shared commands, timings, exit codes and log digests supplied by
+    root and independently verified against retained files.
+  snapshot_sha256: 8173ad9f8227d1f67539ec43b01aacbc64d7c5943bc804ad29a51bb13703060f
+- evidence_id: shared-retention
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/retention-manifest.json
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: 'All 12 retained check artifacts independently verified: encoded file digests
+    match this manifest and identity/gzip decoding reproduces the exact original bytes
+    and source digests. The six compressed logs remain lossless.'
+  snapshot_sha256: 0699096aabf1606344b6313ea4d47e55a3556ae44e717738e4cbc90d5e7ffd8a
+- evidence_id: staged-failure
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical-staging-complete/independent-staged-diff-full-inventory-failure.json
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: refutes
+  summary: 'Technical reviewer independently ran git diff --cached --check: exit 2
+    on four byte-preserved source artifacts. A passing unstaged diff check does not
+    supersede this result.'
+  snapshot_sha256: b244212a40302e22e4e3209e7a9c525d9e47fa598e8d81e79368a94165b4fd4d
+- evidence_id: technical-handoff-link
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/technical/broken-retained-link.json
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: partial
+  summary: 'Separately tracked minor technical finding: the compact final-author handoff
+    relative YAML link does not resolve within its package; the exact original is
+    recoverable through the retention map.'
+  snapshot_sha256: 0f5c65f6e20e25b803a7a54e9da39c3f0e088f3d6c5215f51a7ad4282ee2dcda
+- evidence_id: technical-go-link
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/go-link/finding.json
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: partial
+  summary: 'Separately tracked minor technical finding: the dated GO download navigation
+    URL returns 404 while the issuing QuickGO term endpoint is available. This does
+    not invalidate the pinned Semantic SQL authority.'
+  snapshot_sha256: 23814341b7dd2ec757c5e6d30424e2479177ad7d2621cb0c347c5548cf6b36be
+- evidence_id: shared-log-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-render-pages.log.gz
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Complete retained root-executed log for just render-pages; exit code 0.
+    This evidence digest denotes the gzip bytes. Independent decompression reproduces
+    the exact original log and its receipt SHA256 35196ac40fa81ce687d90ed5d8ac838ba6436052cbc4145d3464e3306fcc6228;
+    the tested input manifest was also rehashed.
+  snapshot_sha256: 67978763b390837bee007f52ac83f66fdbc40d3790e3ac6e943924446fe2c7f1
+- evidence_id: shared-log-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-validate.log.gz
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Complete retained root-executed log for just validate; exit code 0. This
+    evidence digest denotes the gzip bytes. Independent decompression reproduces the
+    exact original log and its receipt SHA256 88c1a5f9ee610360797630b51c9773aafe4354db01ddc4a2b4ce9b6e6f94bff2;
+    the tested input manifest was also rehashed.
+  snapshot_sha256: 6f128af0fb2fa487df78fa1eb05d8ff1a59ce0509ed4233e1921a60b4e9aad91
+- evidence_id: shared-log-3
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-test.log.gz
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Complete retained root-executed log for just test; exit code 0. This evidence
+    digest denotes the gzip bytes. Independent decompression reproduces the exact
+    original log and its receipt SHA256 ee4ca00d5c4db63ca7426248c3cd9a70a3fe2f07f20a057435b2456fdd88557c;
+    the tested input manifest was also rehashed.
+  snapshot_sha256: 0e5b221fc8d9ca363cf5a90ca5832ac3233955651df98b745a1d135107377f9c
+- evidence_id: shared-log-4
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-lint.log.gz
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Complete retained root-executed log for just lint; exit code 0. This evidence
+    digest denotes the gzip bytes. Independent decompression reproduces the exact
+    original log and its receipt SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41;
+    the tested input manifest was also rehashed.
+  snapshot_sha256: 75d496aafde5e749b5b2c24a293e48a999056fd7ec9236ec8965925ca66091c9
+- evidence_id: shared-log-5
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/just-vendored-check.log.gz
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Complete retained root-executed log for just vendored-check; exit code
+    0. This evidence digest denotes the gzip bytes. Independent decompression reproduces
+    the exact original log and its receipt SHA256 b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6;
+    the tested input manifest was also rehashed.
+  snapshot_sha256: b217d3530126f5adea1b0fb15ac35cf7c29ee13a21757afd837a6a93068c885a
+- evidence_id: shared-log-6
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-259/initial-reviews/checks/git-diff---check.log.gz
+  accessed_at: '2026-10-14T23:06:39Z'
+  support: supports
+  summary: Complete retained root-executed log for git diff --check; exit code 0.
+    This evidence digest denotes the gzip bytes. Independent decompression reproduces
+    the exact original log and its receipt SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855;
+    the tested input manifest was also rehashed.
+  snapshot_sha256: f1b651238a58fe290baec6c5e32f3bdb1943dd2bd582f02569231f7a757c7837
+assessments:
+- assessment_id: identity
+  area: identity
+  topic: Exact pathway and formal chemistry
+  outcome: supported
+  summary: Exact MetaCyc suffix-II/display-I identity is preserved, distinct from
+    five-step alternate route. Nine formal chemical identities and all four selected
+    balanced equations verified independently; formal E,E assignment is not silently
+    replaced by native Z,Z prose or modern SYK6 KCH.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - native
+  - rhea
+  - chemistry
+- assessment_id: graph
+  area: graph
+  topic: Full edge and source-to-graph coverage
+  outcome: concern
+  summary: All 129 maintained edges and all 229 claim dispositions manually reviewed,
+    with mechanical coverage of 1,881 direct slots. Native historical catalyst/complex
+    roles, signs, assay scope and exclusions are appropriate except the two minor
+    provenance/completeness findings.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - target
+  - observations
+  - native_replay
+  - localization
+- assessment_id: scope
+  area: scope
+  topic: Strains, constructs and enzyme assays
+  outcome: supported
+  summary: Historical Comamonas/Pseudomonas preparations, repaired KTGAL 449-residue
+    GalT, present KT2440 pseudogene locus, unsequenced 2023 insert, GalB 244/258/240-residue
+    distinctions, E6 direct hydratase and DesB-MBP fusion are not collapsed. Computational
+    and inferred assertions remain labeled.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - observations
+  - source_scope
+- assessment_id: regulation
+  area: evidence
+  topic: Regulatory and chemical perturbation claims
+  outcome: supported
+  summary: GalR reporter-to-gene regulation is bounded inference with endogenous GalR
+    controls; uncouplers target measured whole-cell process, not direct GalT binding.
+    LigAB inhibitors are PCA-specific. 2016 Cu effect compares challenged apo activity
+    0.19±0.10 to apo 4.0±0.33, not normal native occupancy. EDTA neutral named-parent
+    normalization is acceptable with explicit unknown salt/protonation; it is not
+    a measured assay microspecies.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - observations
+  - reagents
+  - source_scope
+- assessment_id: evidence
+  area: provenance
+  topic: Source-local evidence and provenance integrity
+  outcome: concern
+  summary: F1 needs primary construct/preparation locators; F2 needs a successor to
+    false absence. Other source conflicts and acquisition limits remain visible. Table
+    assertions are distinguished from prose quotes, and all publication-wide direct
+    quotation budgets are at most 25 words including repeated qualifiers.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - native_replay
+  - observations
+  - native_ledger
+  - source_scope
+- assessment_id: imodulon
+  area: scope
+  topic: Structured-source adapter applicability
+  outcome: supported
+  summary: p_putida/precise321 is applicable. Actual datasets plus gallate/gllA/gllB/gllC/gllD/PP_2519/galR
+    searches produced contextual gene hits but no iModulons. This neither proves nor
+    refutes biochemical activity or pathway occurrence.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - imodulon
+- assessment_id: authority
+  area: grounding
+  topic: Canonical selected identifier integration
+  outcome: supported
+  summary: Technical audit verifies selected 87 IDs and exact 35 new authority additions
+    with baseline preservation; scientific source/chemical judgments are independent
+    of this deterministic success.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - integration
+  - chemistry
+  - reagents
+  - regulator_structures
+  - go
+- assessment_id: delivery
+  area: provenance
+  topic: Shared technical delivery and gate results
+  outcome: concern
+  summary: The scientific findings are separate from three minor technical findings
+    concerning a compact handoff link, a GO navigation URL and the staged retained-artifact
+    whitespace failure. Their technical evidence is preserved here without duplicating
+    their stable issue keys as new scientific findings. Passing core validation does
+    not erase the required staged-diff failure.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - shared-binding
+  - staged-failure
+  - technical-handoff-link
+  - technical-go-link
+findings:
+- finding_id: F1
+  issue_key: next259-construct-evidence-locality
+  category: evidence
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Attach primary preparation evidence to seven construct-qualified edges
+  description: native-022, native-026 and native-037 describe exact 2005/2011 plasmids,
+    hosts and preparations, but their endpoint qualifiers cite only generic native
+    heterologous-host evidence codes. Those codes establish an evidence class, not
+    the exact stated preparation. Four desb-2005-* qualifiers also say Table 1 identifies
+    BL21(DE3) as the expression host; the table supplies separate strain and plasmid
+    rows, while the actual pETB-host expression assignment is in prose. Independent
+    primary reading supports the biology, so this is a source-local provenance defect,
+    not disproven catalysis. Attach exact short primary construct excerpts and precise
+    preparation locators, and restrict structured assertions to actual table cells.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  field_paths:
+  - mechanistic_edges[id=native-022].endpoint_qualifiers[0].evidence
+  - mechanistic_edges[id=native-026].endpoint_qualifiers[0].evidence
+  - mechanistic_edges[id=native-037].endpoint_qualifiers[0].evidence
+  - mechanistic_edges[id=desb-2005-edta|desb-2005-fe|desb-2005-mn|desb-2005-cu].endpoint_qualifiers[0].evidence
+  evidence_ids:
+  - target
+  - observations
+  - primary-gal2011
+  - primary-KasaiDesB2005
+  - source_scope
+  rule_id: 'review-yaml-record/Evidence Rules: narrowest edge support and exact structured
+    source locator'
+  native_severity: 'minor: non-blocking provenance gap'
+  normalization_reason: Exact primary facts are independently supportable and pathway
+    identity/equations are unchanged; the defect is evidence placement and one overbroad
+    table attribution.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained evidence and endpoint qualifiers
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/552
+- finding_id: F2
+  issue_key: next259-galb-cytosol-false-absence
+  category: completeness
+  severity: minor
+  status: open
+  certainty: confirmed
+  title: Correct the false absence of native GalB compartment evidence
+  description: The retained GalB monomer XML contains explicit CCO-CYTOSOL location
+    and a GO0005829 annotation with computational EV-COMP-AINF evidence, but the final
+    native-slot ledger and native handoff state that no catalyst/component location
+    slot exists. Mechanical slot coverage did not prevent this semantic omission.
+    The maintained graph has no GalB location edge. Append a successor correcting
+    the false absence and either retain a source-scoped monomer located_in cytosol
+    edge after authority validation or document a defensible explicit exclusion. Do
+    not infer measured localization, universal protein-class location, or complete-route
+    taxon occurrence.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  field_paths:
+  - 'mechanistic_edges: missing source-scoped GalB monomer location disposition'
+  - 'research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/native-slot-disposition-ledger.json:
+    source_fact_dispositions.facts[topic=compartments]'
+  - 'research/pathway_additions/2026-10-14-next-259/gallate/record-selection/author/native-slot-disposition-ledger.json:
+    slots[frame=G1G01-2699-MONOMER,slot=location,ordinal=1]'
+  - 'research/pathway_additions/2026-10-14-next-259/gallate/native/HANDOFF.md: native-compartment
+    absence paragraph'
+  evidence_ids:
+  - localization
+  - go
+  - native_ledger
+  - native_handoff
+  - observations
+  rule_id: review-yaml-record/Missing Things; record-review-profile compartment and
+    source-to-graph completeness rubric
+  native_severity: 'minor: bounded computational context/provenance omission'
+  normalization_reason: Core four-step chemistry is unaffected and the annotation
+    is computational, but the retained source plainly refutes the absence claim.
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained source-scoped location if selected
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-259/gallate
+    role: append-only successor evidence/disposition; frozen originals stay unchanged
+  external_issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/553
+actions:
+- action_id: A1
+  description: Attach exact primary construct/preparation evidence to native-022/026/037
+    and narrow four DesB 2005 Table 1 assertions; preserve all assay scope and scientific
+    descriptions.
+  finding_ids:
+  - F1
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained evidence and endpoint qualifiers
+  acceptance_checks:
+  - Independent comparison with actual 2005/2011 methods/results and Table 1; no prose
+    paraphrase relabeled structured assertion.
+  - Aggregate repeated quotations remain <=25 words per publication; exact excerpts
+    replay against retained originals/transcriptions.
+  - Regenerate derived page/export, run required native gates, and save a successor
+    review with exact F1 lineage.
+- action_id: A2
+  description: Append a false-absence erratum with exact prior slot/fact keys and
+    adjudicate the computational GalB monomer cytosol location; preserve frozen predecessor
+    packages.
+  finding_ids:
+  - F2
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained source-scoped location if selected
+  - repository: CultureBotAI/PathwayMech
+    path: research/pathway_additions/2026-10-14-next-259/gallate
+    role: append-only successor evidence/disposition; frozen originals stay unchanged
+  acceptance_checks:
+  - Native location and GO0005829 EV-COMP-AINF/PSORTdb evidence are preserved as computational
+    context.
+  - If selected, subject remains GalB monomer, predicate located_in, object canonical
+    GO0005829 cytosol; no experimental/universal localization inference.
+  - If omitted, a substantive explicit scope reason replaces the false absence; current
+    source-to-graph successor ledger and review retain exact F2 lineage.
+  - Regenerate derived page/export and validate the selected graph/authority union.
+limitations:
+- Historical native-source papers were not all independently accessed; native evidence
+  classes are not recast as reviewer-read primary experiments.
+- 2011 original figures and supplement remain inaccessible. Independent visual coverage
+  is selective, specifically documented in source-preparation-v3.json, not inherited
+  from author visual-read claims.
+- 2015 LigAB full main methods/preparations remain unavailable; nine staged claim
+  dispositions preserve limits. No exhaustive literature/source-exhaustion claim.
+- 2021 main evidence includes author-deposited transcription rather than publisher-original
+  main PDF. Prior primary acquisition accidentally overwrote dynamic HTML/failed payloads/receipt;
+  lost bytes are acknowledged, while scientifically used stable XML, figures/SI and
+  repaired-allele binding remain preserved.
+- Exact assay inserts/tag termini and GalB 244/258/240 relationship remain unresolved;
+  optical negative CHA is not proof of absolute S configuration.
+- Some pinned ChEBI SMILES omit stereo while full InChI/key and CML agree; no silent
+  original-source repair. EDTA/reagent named parents do not determine supplied salt
+  or assay microspecies.
+- A reviewer-only supplementary chemical replay overwrote its initial neutral-name
+  hypothesis JSON because a helper output path was not changed. Those initial bytes
+  and digest are not retained; the actual final 15-case output, both helpers and honest
+  correction receipt are preserved. No maintained/source/frozen initial proof changed.
+- Full native validation/test/lint and related gates were executed once by root, then
+  independently bound by this reviewer to all 1,278 unchanged tested input hashes
+  and exact completed log digests. The required staged artifact check failed and remains
+  an explicit technical concern. Deterministic checks do not extend this scientific
+  review to the other 255 records.
+notes:
+- Record-review start is actual canonical-inspect artifact creation UTC; earlier independent
+  source preparation is separately timestamped.
+- No maintained mutations, issue creation or review persistence by this reviewer yet.
+  Root will persist the validated initial bundle and later record resolution separately.
+- After the frozen observation artifact was written, the remaining native narrative
+  contexts were also read; all 32 original native narrative slots were inspected.
+  The earlier artifact remains unchanged and its narrower reading claim is not silently
+  rewritten.
+tags:
+- next259
+- gallate
+- independent-scientific-review
+- initial
+```

@@ -1,0 +1,189 @@
+--- a/data/pathways/gallate-degradation-i.yaml
++++ b/data/pathways/gallate-degradation-i.yaml
+@@ -232,6 +232,9 @@
+ - id: KEGG:ppu:PP_2518
+   label: PP_2518
+   category: gene
++- id: GO:0005829
++  label: cytosol
++  category: cellular_component
+ reactions:
+ - id: RHEA:28928
+   label: 3,4,5-trihydroxybenzoate + O2 => (1E)-4-oxobut-1-ene-1,2,4-tricarboxylate + 2 H(+)
+@@ -498,9 +501,21 @@
+       initiating methionine processed. Full terminal construct sequence and any vector-derived residues
+       were not established.
+     evidence:
+-    - reference_id: MetaCyc:ENZRXN-16936
+-      source_assertion: 'ENZRXN-16936 assigns CPLX-7918 to GALLATE-DIOXYGENASE-RXN. Native evidence: EV-EXP-IDA-PURIFIED-PROTEIN-HH.'
+-      source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; /ptools-xml/Enzymatic-Reaction/reaction
++    - reference_id: PMID:16030198
++      source_assertion: Table 1 lists pETB as pET21a(+) with a 2.8-kb NdeI-XbaI fragment of pEVK3G carrying
++        desB. A separate E. coli BL21(DE3) row gives its genotype and T7 RNA polymerase/lacUV5 description;
++        the table does not assign pETB to that host.
++      source_locator: PMC1196043 Table 1, pETB and E. coli BL21(DE3) rows; host assignment is in Methods,
++        Expression of desB in E. coli and preparation of cell extracts
++    - reference_id: PMID:16030198
++      quote: cells harboring pETB
++      source_locator: PMC1196043 Methods, Expression of desB in E. coli and preparation of cell extracts,
++        first paragraph (BL21(DE3)/pETB); Purification of DesB, first paragraph (POROS PI and quaternized
++        PI); Results, Purification of DesB, first paragraph (N-terminus)
++    - reference_id: PMID:16030198
++      quote: appeared to be processed
++      source_locator: PMC1196043 Results, Purification of DesB, first paragraph, initiating methionine
++        sentence following the N-terminal sequence
+ - id: native-023
+   subject: MetaCyc:CPLX-7918
+   predicate: has_cofactor
+@@ -533,9 +548,11 @@
+     description: 2011 KT2440 GalD expressed from pETGalDc in E. coli BL21(DE3), assayed in partly purified
+       extract. This is separate from the explicitly His6-retaining 2016 GalD preparation.
+     evidence:
+-    - reference_id: MetaCyc:ENZRXN-18372
+-      source_assertion: 'ENZRXN-18372 assigns G1G01-2697-MONOMER to RXN-9983. Native evidence: EV-EXP-IDA-PART-PURIFIED-PROTEIN-HH.'
+-      source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; /ptools-xml/Enzymatic-Reaction/reaction
++    - reference_id: PMID:21219457
++      quote: pETGalDc
++      source_locator: 2011 publisher Figure 3 caption line 249 and Results line 253; Methods lines 349,
++        365–366 and 376–377 (construct, BL21(DE3) expression, extract preparation). Retained main-text
++        transcription; original spectra and Table S1 were inaccessible.
+ - id: native-027
+   subject: MetaCyc:CPLX-8178
+   predicate: catalyzes
+@@ -685,9 +702,11 @@
+       Historical purified GalC/hexamer annotations do not establish the sequence or assembly of this recombinant
+       preparation.
+     evidence:
+-    - reference_id: MetaCyc:ENZRXN1G01-1112
+-      source_assertion: 'ENZRXN1G01-1112 assigns CPLX1G01-155 to RXN-2464. Native evidence: EV-EXP-IMP-REACTION-BLOCKED,EV-EXP-IDA-UNPURIFIED-PROTEIN-HH,EV-EXP-IDA-PURIFIED-PROTEIN-NH.'
+-      source_locator: /ptools-xml/Enzymatic-Reaction/enzyme; /ptools-xml/Enzymatic-Reaction/reaction
++    - reference_id: PMID:21219457
++      quote: pETGalC
++      source_locator: 2011 publisher Results lines 307–309 and Methods lines 349, 365–366 and 380 (construct,
++        BL21(DE3), crude extract, assay and activities). Retained main-text transcription; original Table
++        S1 and Figure S7 were inaccessible.
+ - id: native-038
+   subject: MetaCyc:CPLX1G01-155
+   predicate: has_cofactor
+@@ -1734,9 +1753,16 @@
+       For metal rescue, the preparation first received 500 µM EDTA for 20 h at 0 °C.
+     evidence:
+     - reference_id: PMID:16030198
+-      source_assertion: Table 1 identifies pETB as pET21a(+) containing the 2.8-kb NdeI-XbaI desB fragment
+-        and lists E. coli BL21(DE3) as the expression host.
+-      source_locator: 'PMC1196043 Table 1: pETB, pET21a(+), and BL21(DE3) rows'
++      source_assertion: Table 1 lists pETB as pET21a(+) with a 2.8-kb NdeI-XbaI fragment of pEVK3G carrying
++        desB. A separate E. coli BL21(DE3) row gives its genotype and T7 RNA polymerase/lacUV5 description;
++        the table does not assign pETB to that host.
++      source_locator: PMC1196043 Table 1, pETB and E. coli BL21(DE3) rows; host assignment is in Methods,
++        Expression of desB in E. coli and preparation of cell extracts
++    - reference_id: PMID:16030198
++      quote: cells harboring pETB
++      source_locator: PMC1196043 Methods, Expression of desB in E. coli and preparation of cell extracts,
++        first paragraph (BL21(DE3)/pETB); Purification of DesB, first paragraph (POROS PI and quaternized
++        PI); Results, Purification of DesB, first paragraph (N-terminus)
+ - id: desb-2005-fe
+   subject: CHEBI:29033
+   predicate: activates
+@@ -1758,9 +1784,16 @@
+       For metal rescue, the preparation first received 500 µM EDTA for 20 h at 0 °C.
+     evidence:
+     - reference_id: PMID:16030198
+-      source_assertion: Table 1 identifies pETB as pET21a(+) containing the 2.8-kb NdeI-XbaI desB fragment
+-        and lists E. coli BL21(DE3) as the expression host.
+-      source_locator: 'PMC1196043 Table 1: pETB, pET21a(+), and BL21(DE3) rows'
++      source_assertion: Table 1 lists pETB as pET21a(+) with a 2.8-kb NdeI-XbaI fragment of pEVK3G carrying
++        desB. A separate E. coli BL21(DE3) row gives its genotype and T7 RNA polymerase/lacUV5 description;
++        the table does not assign pETB to that host.
++      source_locator: PMC1196043 Table 1, pETB and E. coli BL21(DE3) rows; host assignment is in Methods,
++        Expression of desB in E. coli and preparation of cell extracts
++    - reference_id: PMID:16030198
++      quote: cells harboring pETB
++      source_locator: PMC1196043 Methods, Expression of desB in E. coli and preparation of cell extracts,
++        first paragraph (BL21(DE3)/pETB); Purification of DesB, first paragraph (POROS PI and quaternized
++        PI); Results, Purification of DesB, first paragraph (N-terminus)
+ - id: desb-2005-mn
+   subject: CHEBI:29035
+   predicate: activates
+@@ -1782,9 +1815,16 @@
+       For metal rescue, the preparation first received 500 µM EDTA for 20 h at 0 °C.
+     evidence:
+     - reference_id: PMID:16030198
+-      source_assertion: Table 1 identifies pETB as pET21a(+) containing the 2.8-kb NdeI-XbaI desB fragment
+-        and lists E. coli BL21(DE3) as the expression host.
+-      source_locator: 'PMC1196043 Table 1: pETB, pET21a(+), and BL21(DE3) rows'
++      source_assertion: Table 1 lists pETB as pET21a(+) with a 2.8-kb NdeI-XbaI fragment of pEVK3G carrying
++        desB. A separate E. coli BL21(DE3) row gives its genotype and T7 RNA polymerase/lacUV5 description;
++        the table does not assign pETB to that host.
++      source_locator: PMC1196043 Table 1, pETB and E. coli BL21(DE3) rows; host assignment is in Methods,
++        Expression of desB in E. coli and preparation of cell extracts
++    - reference_id: PMID:16030198
++      quote: cells harboring pETB
++      source_locator: PMC1196043 Methods, Expression of desB in E. coli and preparation of cell extracts,
++        first paragraph (BL21(DE3)/pETB); Purification of DesB, first paragraph (POROS PI and quaternized
++        PI); Results, Purification of DesB, first paragraph (N-terminus)
+ - id: desb-2005-cu
+   subject: CHEBI:29036
+   predicate: activates
+@@ -1806,9 +1846,16 @@
+       For metal rescue, the preparation first received 500 µM EDTA for 20 h at 0 °C.
+     evidence:
+     - reference_id: PMID:16030198
+-      source_assertion: Table 1 identifies pETB as pET21a(+) containing the 2.8-kb NdeI-XbaI desB fragment
+-        and lists E. coli BL21(DE3) as the expression host.
+-      source_locator: 'PMC1196043 Table 1: pETB, pET21a(+), and BL21(DE3) rows'
++      source_assertion: Table 1 lists pETB as pET21a(+) with a 2.8-kb NdeI-XbaI fragment of pEVK3G carrying
++        desB. A separate E. coli BL21(DE3) row gives its genotype and T7 RNA polymerase/lacUV5 description;
++        the table does not assign pETB to that host.
++      source_locator: PMC1196043 Table 1, pETB and E. coli BL21(DE3) rows; host assignment is in Methods,
++        Expression of desB in E. coli and preparation of cell extracts
++    - reference_id: PMID:16030198
++      quote: cells harboring pETB
++      source_locator: PMC1196043 Methods, Expression of desB in E. coli and preparation of cell extracts,
++        first paragraph (BL21(DE3)/pETB); Purification of DesB, first paragraph (POROS PI and quaternized
++        PI); Results, Purification of DesB, first paragraph (N-terminus)
+ - id: desb-2018-4nc
+   subject: CHEBI:16318
+   predicate: inhibits
+@@ -2328,7 +2375,7 @@
+       the functional sequence from the KT2440 frameshift. GO0046943 is separately an IEA:TreeGrafter annotation.
+     source_locator: $.comments[commentType=FUNCTION or CAUTION]; $.uniProtKBCrossReferences[database=GO,id=GO:0046943]
+   - reference_id: PMID:21219457
+-    quote: with less efficiency, protocatechuate
++    quote: protocatechuate
+     source_locator: 2011 Results GalT, publisher line225; Figure2A-B context
+   endpoint_qualifiers:
+   - endpoint: subject
+@@ -2558,6 +2605,20 @@
+     - reference_id: PMID:26867578
+       quote: apoGalB
+       source_locator: 'PMC4817193 #sec16 Enzyme Assays, metal-preincubation sentence'
++- id: galb-native-cytosol
++  subject: MetaCyc:G1G01-2699-MONOMER
++  predicate: located_in
++  object: GO:0005829
++  description: The native KT2440 GalB monomer has an explicit cytosol location and a matching GO annotation
++    supported by EV-COMP-AINF with PSORTdb (PMID:26602691). This preserves a computational annotation,
++    not a direct localization assay. It does not assign localization to the separately qualified 2011
++    or 2016 recombinant preparations or to every pathway component.
++  evidence:
++  - reference_id: MetaCyc:G1G01-2699-MONOMER
++    source_assertion: The Protein object assigns location CCO-CYTOSOL. Its sixth has-go-term slot is GO:0005829;
++      both evidence entries use EV-COMP-AINF and PUB-26602691 (PSORTdb).
++    source_locator: /ptools-xml/Protein[@frameid='G1G01-2699-MONOMER']/location/cco; /ptools-xml/Protein[@frameid='G1G01-2699-MONOMER']/has-go-term[6]/GO-Term;
++      has-go-term[6]/evidence; original lines 128–140 and 203
+ references:
+ - id: MetaCyc:GALLATE-DEGRADATION-II-PWY
+   title: MetaCyc GALLATE-DEGRADATION-II-PWY native object
+@@ -2800,6 +2861,11 @@
+   url: http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn
+   source_version: GO 2026-07-26; digest is uncompressed semantic SQL database
+   source_sha256: 018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd
++- id: MetaCyc:G1G01-2699-MONOMER
++  title: MetaCyc G1G01-2699-MONOMER native object
++  url: https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:G1G01-2699-MONOMER
++  source_version: META27.0 public mirror
++  source_sha256: 637ac5f767a7a881f97aba01963985e0d5a444d2d5906090f7137e38b45b1a47
+ description: Four-step aerobic gallate cleavage to pyruvate and oxaloacetate through keto-4-oxalomesaconate,
+   the E,E enol and stereochemically unspecified carboxyhydroxyoxoadipate. The exact MetaCyc accession
+   has suffix II but displays gallate degradation I. Formal reaction structures control the E,E assignment

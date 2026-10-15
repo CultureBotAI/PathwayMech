@@ -1,0 +1,10 @@
+from pathlib import Path
+import urllib.request,urllib.error,datetime,hashlib,json,time
+B=Path(__file__).parent;rows=[]
+for n,u in {'AB110976.embl':'https://www.ebi.ac.uk/ena/browser/api/embl/AB110976?download=false','BAC79261.1.xml':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=BAC79261.1&rettype=gb&retmode=xml'}.items():
+ p=B/'originals'/n;assert not p.exists();r={'path':str(p),'url':u,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(u,timeout=45)as f:b=f.read();r.update(status=f.status,final_url=f.url)
+ except urllib.error.HTTPError as e:b=e.read();r.update(status=e.code,error=str(e))
+ p.write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());rows.append(r);print(n,r.get('status'),len(b));time.sleep(.5)
+(B/'acquisition-desz-sequence.json').write_text(json.dumps(rows,indent=2)+'\n')

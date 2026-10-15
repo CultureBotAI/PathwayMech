@@ -1,0 +1,35 @@
+{
+  "started_at": "2026-10-14T22:50:56.109277+00:00",
+  "command": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "cwd": "/private/tmp/pathwaymech-next-259-20261014",
+  "exit_code": 2,
+  "expected_exit_code": 0,
+  "status": "failed",
+  "stdout": "research/pathway_additions/2026-10-14-next-259/gallate/adapter-review/targeted-tests.log:17: trailing whitespace.\n+tests/test_typed_authority_consumer_integrity.py:266: \nresearch/pathway_additions/2026-10-14-next-259/gallate/adapter-review/targeted-tests.log:18: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nresearch/pathway_additions/2026-10-14-next-259/gallate/adapter-review/targeted-tests.log:22: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n",
+  "stderr": "",
+  "target_path": "research/pathway_additions/2026-10-14-next-259/gallate/adapter-review/targeted-tests.log",
+  "working_tree_and_index_sha256": "61f7d198bd4c2936f768a9a967b3d8d695fc98ca419c424d9e673f8b5aa7ce0b",
+  "working_tree_matches_index": true,
+  "whitespace_lines": [
+    {
+      "line": 17,
+      "repr": "'tests/test_typed_authority_consumer_integrity.py:266: '"
+    },
+    {
+      "line": 18,
+      "repr": "'_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ '"
+    },
+    {
+      "line": 22,
+      "repr": "'_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ '"
+    }
+  ],
+  "issue_key": "gallate-retained-log-staged-whitespace-failure",
+  "scope": "Actual staged diff includes immutable test-output lines with trailing spaces. The existing runner only checks git diff --check (unstaged), so a successful runner does not imply the staged check passed.",
+  "proposed_fix": "Losslessly retain original test-log bytes in deterministic gzip and replace only this uncommitted raw retained copy, with root mapping/manifest/index updated and decompression SHA matched to original; do not trim the original or suppress whitespace checks."
+}

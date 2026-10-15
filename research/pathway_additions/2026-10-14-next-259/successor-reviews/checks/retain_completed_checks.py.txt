@@ -1,0 +1,25 @@
+from pathlib import Path
+import datetime,hashlib,gzip,json
+B=Path('/private/tmp/pathwaymech-next-259-20261014');S=Path('/private/tmp/pathwaymech-next-259-checks-final');C=Path('/private/tmp/pathwaymech-next-259-checks-completed');CI=Path('/private/tmp/pathwaymech-next-259-ci');O=B/'research/pathway_additions/2026-10-14-next-259/successor-reviews/checks'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+receipts=json.loads((C/'receipts.json').read_text());expected=[['just','render-pages'],['just','validate'],['just','test'],['just','lint'],['just','vendored-check'],['git','diff','--check'],['git','diff','--cached','--check']]
+assert [r['command'] for r in receipts]==expected and all(r['exit_code']==0 for r in receipts)
+history=json.loads((C/'gate-execution-history.json').read_text());assert len(history['attempts'])==8 and history['attempts'][4]['exit_code']==1
+assert history['attempts'][:5]==json.loads((S/'receipts.json').read_text())
+assert (C/'prior-attempt-receipts.json').read_bytes()==(S/'receipts.json').read_bytes()
+result=json.loads((C/'final-input-preservation.json').read_text());assert result['all_unchanged']
+for name,h in json.loads((C/'tested-core-input-hashes.json').read_text()).items():assert sha(B/name)==h,name
+selection=[]
+for r in receipts:
+ p=Path(r['log_path']);assert sha(p)==r['log_sha256'];selection.append((p,p.name+'.gz','gzip'))
+p=S/'just-vendored-check.log';assert sha(p)==history['attempts'][4]['log_sha256'];selection.append((p,'vendored-first-attempt.log.gz','gzip'))
+for name in ['environment.json','receipts.json','prior-attempt-receipts.json','gate-execution-history.json','final-input-preservation.json','tested-core-input-hashes.json','record-export-comparison.json']:selection.append((C/name,name,'identity'))
+for name in ['run_final_checks.py','continue_final_checks.py','retain_completed_checks.py']:selection.append((CI/name,name+'.txt','identity'))
+assert len({n for p,n,e in selection})==len(selection)
+assert not O.exists();O.mkdir(parents=True);rows=[]
+for p,name,encoding in selection:
+ raw=p.read_bytes();data=gzip.compress(raw,mtime=0) if encoding=='gzip' else raw
+ if encoding=='gzip':assert gzip.decompress(data)==raw
+ q=O/name;q.write_bytes(data);rows.append({'source_path':str(p),'source_sha256':sha(p),'retained_path':name,'bytes':len(data),'sha256':sha(q),'encoding':encoding})
+manifest={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Seven satisfied final gate requirements across original run and bounded continuation. The original vendored sandbox DNS failure is retained as a real failed attempt with exact log and prior receipts. Successful render/validation/tests/lint were not repeated. Each receipt binds its actual source log. All1614 tested core files remained unchanged. Successor review bundles are checked separately. This manifest excludes itself.','files':rows}
+(O/'retention-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n');print(json.dumps({'directory':str(O.relative_to(B)),'files':len(rows),'manifest_sha256':sha(O/'retention-manifest.json'),'record_sha256':result['record_sha256']},indent=2))

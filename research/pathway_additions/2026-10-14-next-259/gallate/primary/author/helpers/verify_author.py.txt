@@ -1,0 +1,33 @@
+from pathlib import Path
+import json,hashlib
+P=Path('/private/tmp/pathwaymech-next-259-primary'); A=P/'author'
+def h(f):return hashlib.sha256(f.read_bytes()).hexdigest()
+def strings(v):
+ if isinstance(v,str):return [v]
+ if isinstance(v,dict):return sum((strings(x) for x in v.values()),[])
+ if isinstance(v,list):return sum((strings(x) for x in v),[])
+ return []
+sources={'PMID:21219457':['candidate_wiley-web-result.json','candidate_wiley_part2-web-result.json'],'DOI:10.1016/j.procbio.2021.01.019':['desb2021_rg_mid-web.json']}
+checks=[]
+def walk(v):
+ if isinstance(v,dict):
+  if 'quote'in v:
+   matches=[]
+   for n in sources[v['reference_id']]:
+    f=P/'originals'/n
+    if v['quote'] in '\n'.join(strings(json.loads(f.read_text()))):matches.append({'path':str(f),'sha256':h(f)})
+   checks.append({'reference_id':v['reference_id'],'quote_word_count':len(v['quote'].split()),'quote_sha256':hashlib.sha256(v['quote'].encode()).hexdigest(),'exact_substring_pass':bool(matches),'sources':matches})
+  for x in v.values():walk(x)
+ elif isinstance(v,list):
+  for x in v:walk(x)
+walk(json.loads((A/'edge-proposals.json').read_text())['edges'])
+(A/'quote-exactness-verification.json').write_text(json.dumps({'checks':checks,'all_pass':all(c['exact_substring_pass'] for c in checks)},indent=2)+'\n')
+assert all(c['exact_substring_pass'] for c in checks)
+assert all(x['within25'] for x in json.loads((A/'quote-budget.json').read_text())['by_source'])
+for n in ['external-originals-manifest.json']:
+ for r in json.loads((A/n).read_text())['files']:
+  f=P/r['path'];assert f.stat().st_size==r['bytes'] and h(f)==r['sha256'],str(f)
+for row in json.loads((A/'visual-read-ledger.json').read_text()):
+ f=Path(row['path']);assert f.is_file() and h(f)==row['sha256'],str(f)
+assert all(x['all_manifest_entries_pass'] for x in json.loads((A/'frozen-child-bindings.json').read_text()))
+print('Author quote, current-original, visual and frozen-child bindings verified; no scientific approval or production validation implied.')

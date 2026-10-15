@@ -1,0 +1,33 @@
+from pathlib import Path
+import hashlib,json,subprocess,sys
+import yaml
+O=Path(__file__).parent;P=O/'prototype';sys.path.insert(0,str(P/'src'));sys.path.insert(0,str(P))
+from pathwaymech import kegg_gene
+from pathwaymech.identifiers import _load_authority
+from scripts import build_source_identifier_snapshot as builder
+assert Path(kegg_gene.__file__)==P/'src/pathwaymech/kegg_gene.py'
+raw=(O/'KEGG-ppu-PP_2519.txt').read_bytes();url='https://rest.kegg.jp/get/ppu:PP_2519';cache=O/'real-replay';cache.mkdir(exist_ok=True);(cache/'original.txt').write_bytes(raw)
+entry=dict(key='kegg-pseudogene-ppu-PP_2519',kind=kegg_gene.PSEUDOGENE_KIND,path='original.txt',url=url,version='complete issuing object retrieved 2026-10-14',license='KEGG source terms; not assessed by this code prototype',sha256=hashlib.sha256(raw).hexdigest())
+meta=kegg_gene.gene_metadata(entry,cache);native=meta['native_gene']
+assert native['id']=='KEGG:ppu:PP_2519' and native['locus']=='PP_2519' and native['organism_code']=='ppu' and native['genome_id']=='T00114'
+assert native['native_type']=='gene' and native['annotation_class']=='pseudogene' and native['sequence_scope']=='native_annotation_only'
+assert native['name_annotation']==['(GenBank) pseudogene'] and native['organism_name']=='Pseudomonas putida KT2440'
+assert native['ntseq']=={'length':3,'sequence':'ccg'} and 'aaseq' not in native
+assert native['original_text'].encode()==raw
+assert native['position']==dict(native='2867058..2867060',start=2867058,end=2867060,strand='+')
+try:kegg_gene.project(raw,url)
+except ValueError as error:default_rejection=str(error)
+else:raise AssertionError('Default CDS profile accepted pseudogene')
+manifest=cache/'manifest.json';manifest.write_text(json.dumps([entry],indent=2)+'\n');selectors=cache/'selectors';selectors.mkdir(exist_ok=True)
+# This is an ID selector only, not a maintained pathway or biological record.
+(selectors/'selector.yaml').write_text(yaml.safe_dump({'id':'KEGG:ppu:PP_2519','label':'ID selection only; issuing source supplies the canonical label','taxa':[],'participants':[],'reactions':[]}))
+snapshot=builder.build_snapshot(manifest,selectors,cache);out=cache/'snapshot.json';out.write_text(json.dumps(snapshot,sort_keys=True,indent=2)+'\n');assert _load_authority(out)==snapshot['terms']
+assert snapshot['terms']['KEGG:ppu:PP_2519']==dict(label='PP_2519',synonyms=[],source=entry['key'],entity_type='native_gene',label_kind='canonical')
+R=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech');BASE='b718850b63e4a1d2a14cf521950737c641963e38';baseline=subprocess.check_output(['git','show',BASE+':src/pathwaymech/kegg_gene.py'],cwd=R);(O/'baseline-kegg_gene.py.txt').write_bytes(baseline);scope={'__name__':'baseline_kegg_gene'};exec(compile(baseline,'baseline_kegg_gene.py','exec'),scope)
+old_sources=json.loads((P/'data/identifier_authorities/sources.json').read_text())['sources'];cds=[]
+for owner,m in old_sources.items():
+ if m.get('kind')!=kegg_gene.GENE_KIND:continue
+ data=m['native_gene']['original_text'].encode();old=scope['project'](data,m['url']);new=kegg_gene.project(data,m['url']);assert old==new==m['native_gene'];kegg_gene.validate_gene_metadata(m);cds.append(dict(owner=owner,id=new['id'],original_sha256=hashlib.sha256(data).hexdigest(),projection_exact=True))
+assert len(cds)==3
+result=dict(scope='Author prototype replay of complete issuing identity only. No complete biological gene sequence, translation, protein product or scientific pathway assertion is inferred.',original=dict(path=str(O/'KEGG-ppu-PP_2519.txt'),sha256=hashlib.sha256(raw).hexdigest(),bytes=len(raw)),default_cds_rejection=default_rejection,actual_pseudogene_metadata=meta,canonical_term=snapshot['terms']['KEGG:ppu:PP_2519'],builder_consumer_agree=True,selector_role='Identifier selection only; not a maintained record',baseline_commit=BASE,baseline_cds_projections_unchanged=cds,prototype_inputs={x:hashlib.sha256((P/x).read_bytes()).hexdigest() for x in ['src/pathwaymech/kegg_gene.py','src/pathwaymech/identifiers.py','scripts/build_source_identifier_snapshot.py']})
+(O/'real-source-replay.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'original_sha256':result['original']['sha256'],'default_cds_rejection':default_rejection,'actual_gene':native['id'],'genome':native['genome_id'],'ntseq':native['ntseq'],'has_aaseq':'aaseq' in native,'canonical_term':result['canonical_term'],'baseline_cds_projections_unchanged':len(cds)},indent=2))

@@ -1,0 +1,70 @@
+from pathlib import Path
+import hashlib,json,datetime,re,xml.etree.ElementTree as ET
+P=Path('/private/tmp/pathwaymech-next-259-primary'); A=P/'author'
+def h(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,x):(A/n).write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+sources=[
+ {'id':'PMID:21219457','doi':'10.1111/j.1365-2958.2010.07448.x','url':'https://onlinelibrary.wiley.com/doi/full/10.1111/j.1365-2958.2010.07448.x','reading':'Main scientific text and Table1, six main figure captions; text methods and results fully inspected.','visual_read':'No2011 original figure or supplement visual read achieved.','originals':['candidate_wiley-web-result.json','candidate_wiley_part2-web-result.json','candidate_wiley_part3-web-result.json','gal2011_methods-web.json','gal2011_pdf_attempts-web.json'],'original_kind':'web tool transcriptions, not publisher-byte originals','access_limit':'Publisher main PDF, supplement and PPT return403/timeout. Screenshot tools returned text-only receipts. CSIC metadata does not provide accessible main manuscript here. S1-S8/TableS1 not fully inspected.'},
+ {'id':'PMID:36724292','doi':'10.1021/acssynbio.2c00537','url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC9942251/','reading':'All scientific main sections, Table1, Figures1-7, graphical abstract, Equations1-3; SI14pages with TablesS1-S4 and FiguresS1-S11.','visual_read':'All seven main figures, graphical abstract, three equations and all14 rendered SIpages.','originals':['PMC9942251.xml','PMC9942251.html','PMC9942251-supplements.zip'],'original_kind':'direct source originals; XML is stable scientific-text anchor','access_limit':'Earlier dynamic HTML version overwritten by helper import; unchanged XML and figures/SI remain reproducible. Exact2023 inserted galT sequence not supplied.'},
+ {'id':'PMID:16030198','doi':'10.1128/JB.187.15.5067-5074.2005','url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC1196043/','reading':'All scientific main sections and Tables1-2; all six figures including panels/captions.','visual_read':'All six original mainfigureJPEGs.','originals':['PMC1196043-render.html'],'original_kind':'direct PMC HTML original','access_limit':'Supplementary Southern-blot DOC/index requests return challengeHTML; no supplementary genotype blot visual read.'},
+ {'id':'PMID:30346405','doi':'10.3791/58307','url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC6235412/','reading':'All scientific main text, complete seven-part protocol, Tables1-3, Figures1-8 and Equations7.3A/B.','visual_read':'All eight main figure originals and both equation images.','originals':['PMC6235412.html'],'original_kind':'direct PMC HTML original','access_limit':'Video not inspected; no claim of video-only details. Several numeric/figure-label inconsistencies remain documented.'},
+ {'id':'DOI:10.1016/j.procbio.2021.01.019','doi':'10.1016/j.procbio.2021.01.019','url':'https://doi.org/10.1016/j.procbio.2021.01.019','author_text_url':'https://www.researchgate.net/publication/348712510_Identifying_metabolic_pathway_intermediates_that_modulate_the_gallate_dioxygenase_DesB_from_Sphingobium_sp_strain_SYK-6','reading':'All scientific main text through conclusion, Table1 and seven figure captions; entire supplementalDOCX with five figures.','visual_read':'All seven originalmainJPGs; all seven embeddedSIimages representing FiguresS1-S5. TransparentS1/S2 additionally rendered onwhite solely for readability.','originals':['desb2021_rg-web.json','desb2021_rg_mid-web.json','next_primary_web_0-web.json','desb2021_tail-web.json','DesB2021-mmc1-retry.docx'],'original_kind':'Maintext is web transcription only; figures and supplement are directly acquired publisher assets','access_limit':'Rawmainpublisher/authorHTML/PDF requests403; Table1Kiunits absent in inspected transcription. FirstSIrequestIncompleteRead had no retainedpartialbytes; freshretryfullDOCXhashretained. PMID not established.'},
+ {'id':'PMID:16030014','doi':'10.1074/jbc.M502585200','url':'https://www.jbc.org/article/S0021925819482112/pdf','reading':'All scientificmaintext,Table1 and sixfigurecaptions read through author-depositedtranscription. Childsuccessor refines source-to-edge support.','visual_read':'Figure3 original read; otherfigurevisualaccess remainsbounded gap unless successor obtains them.','originals':['gal2005_rg-web.json','gal2005_rg_rest1-web.json','gal2005_rg_rest2-web.json','gal2005_final-web.json','gal2005_methods-successor-web.json','GalA2005-fig3.png'],'original_kind':'Maintext webtranscription; Figure3 direct author-depositedfigureoriginal','access_limit':'Mainpublisher/authorrawfiles403. No inaccessiblemainbytehash or visualreadoffailedimages claimed.'},
+ {'id':'PMID:26867578','doi':'10.1074/jbc.M115.682054','url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC4817193/','reading':'Frozen gal2016 package: allmainsections,5tables,9figures,6equations.','visual_read':'Allninefigures+sixequations','originals':['PMC4817193-render2.html'],'original_kind':'direct/reused source originals with reuse hashes','access_limit':'No supplement link identified within complete acquiredHTML; primers available onrequest not obtained. See frozenfullcoverageledger.'},
+ {'id':'PMID:24657997','doi':'10.1371/journal.pone.0092249','url':'https://pmc.ncbi.nlm.nih.gov/articles/PMC3962378/','reading':'Frozen gal2014 package: allmainsections,5figures,2tables,10supplementPDFs; cited2009 preparation maintext.','visual_read':'Allmainfigures+tenrenderedonepage supplements','originals':[],'original_kind':'Frozenchildsourceoriginals separately manifest-bound','access_limit':'2009 citedmethodsreference figures not visually reviewed;2009 text used only for preparation. No2014 main/suppgap.'}]
+for s in sources:
+ s['bindings']=[{'path':'originals/'+n,'bytes':(P/'originals'/n).stat().st_size,'sha256':h(P/'originals'/n)} for n in s['originals'] if (P/'originals'/n).is_file()]
+dump('source-catalog.json',sources)
+visual=[]
+for ref,prefix,seq,label in [('PMID:36724292','sb2c00537_',range(2,9),'2023 main figure'),('PMID:16030198','zjb015054915000',range(1,7),'2005 DesB main figure'),('DOI:10.1016/j.procbio.2021.01.019','DesB2021-fig',range(1,8),'2021 main figure'),('PMID:30346405','jove-140-58307-',range(0,10),'2018 figure/equation')]:
+ for n in seq:
+  name=prefix+(f'{n:04}' if prefix=='sb2c00537_' else str(n))+'.jpg';f=P/'originals'/name
+  visual.append({'reference_id':ref,'object':label+' '+str(n),'path':str(f),'exists':f.is_file(),'sha256':h(f) if f.is_file() else None,'read':'visually inspected; exact panel/caption context in source/claim ledger'})
+for n in range(1,15):
+ f=P/f'projections/2023-si/read-page-{n}.png';visual.append({'reference_id':'PMID:36724292','object':f'SIpage{n}','path':str(f),'exists':f.is_file(),'sha256':h(f) if f.is_file() else None,'read':'visually inspected'})
+for n in range(1,8):
+ f=P/f'projections/2021-si/image{n}.png';visual.append({'reference_id':'DOI:10.1016/j.procbio.2021.01.019','object':f'SIembeddedimage{n}','path':str(f),'exists':True,'sha256':h(f),'read':'visually inspected; images1/2 also white-background JPEGprojection'})
+for n,label in [('sb2c00537_0009.jpg','2023 graphicalabstract'),('sb2c00537_m001.jpg','2023 equation1'),('sb2c00537_m002.jpg','2023 equation2'),('sb2c00537_m003.jpg','2023 equation3'),('GalA2005-fig3.png','2005GalA Figure3')]:
+ f=P/'originals'/n
+ visual.append({'reference_id':'PMID:16030014' if n.startswith('GalA') else 'PMID:36724292','object':label,'path':str(f),'exists':f.is_file(),'sha256':h(f),'read':'visually inspected'})
+dump('visual-read-ledger.json',visual)
+claims=json.loads((A/'claim-ledger.json').read_text())['claims'];edges=json.loads((A/'edge-proposals.json').read_text())['edges']
+coverage=[]
+for c in claims:
+ refs=[e['id'] for e in edges if c['claim_id'] in e['claim_ids']]
+ coverage.append({'claim_id':c['claim_id'],'candidate_edges':refs,'disposition':c['disposition'],'integration':'candidate edges' if refs else 'retain as source-specific caveat, experimental context, or native/child core-edge support; not dropped','no_automatic_promotion':True})
+dump('source-to-edge-acceptance.json',coverage)
+children=[]
+for name in ['gal2014','gal2016','gal2005-successor']:
+ d=P/name;m=d/('manifest.json' if name=='gal2005-successor' else 'artifact-manifest.json');j=json.loads(m.read_text());checks=[]
+ for r in j['files']:
+  f=Path(r['path']);f=f if f.is_absolute() else d/f
+  actual=h(f) if f.is_file() else None;checks.append({'path':str(f),'expected':r['sha256'],'actual':actual,'pass':actual==r['sha256']})
+ children.append({'package':name,'manifest_sha256':h(m),'handoff_sha256':h(d/'HANDOFF.md'),'all_manifest_entries_pass':all(x['pass'] for x in checks),'checks':checks,'integration_policy':'Frozen author evidence, not scientific approval. Prose-derived source_assertions in historical proposal files need evidence-grammar reassessment; retain research facts and use true structured slots/tables or separately budgeted exact quotations.'})
+dump('frozen-child-bindings.json',children)
+chem=Path('/private/tmp/pathwaymech-next-259-chemistry');native=Path('/private/tmp/pathwaymech-next-259-native')
+dump('external-author-bindings.json',[{'package':str(d),'handoff_sha256':h(d/'HANDOFF.md'),'manifest_sha256':h(d/'artifact-manifest.json'),'status':'consumed author handoff; not independent scientific approval'} for d in [chem,native]])
+originals=[]
+for f in sorted((P/'originals').rglob('*')):
+ if not f.is_file():continue
+ b=f.read_bytes();fmt='source_response'
+ if f.suffix=='.json':fmt='web_transcription_or_issuing_JSON; inspectreceipt'
+ if f.name.endswith('.failed'):fmt='failed_response_NOT_biological_evidence'
+ if b.startswith(b'%PDF'):fmt='PDF_original'
+ if b.startswith(b'PK'):fmt='ZIP_container_original'
+ if b.startswith(b'\xff\xd8'):fmt='JPEG_original'
+ if b.startswith(b'\x89PNG'):fmt='PNG_original'
+ if b.lower().find(b'checking your browser')>=0 or b.lower().find(b'preparing to download')>=0:fmt='challenge_response_NOT_biological_evidence'
+ originals.append({'path':str(f.relative_to(P)),'bytes':len(b),'sha256':h(f),'kind':fmt})
+dump('external-originals-manifest.json',{'scope':'All parent originals currently retained. Frozenchildoriginals have independent manifests. Old overwrittenHTML/challengebytes explicitly unavailable in historical-payload-recovery-search.json.','files':originals})
+dump('identity-work-needed.json',[
+ {'component':'GalT','status':'Exact449aa repaired KTGAL FN669140.1/CBJ94499.1/E8ZB61 proofcomplete; membraneinferred;2023genomicconstructnotbound','binding':'projections/repaired-GalT-identity.json'},
+ {'component':'GalA','status':'Use nativeCPLX8177/component or exactNCBIProteinAAN68130.2;420aa precursor versus observed419aa mature; excludeobsoleteQ88JX5340aa','binding':'native deposited-CDS proof and GalA2005 successor'},
+ {'component':'GalB2011construct','status':'2011Table1 PP2515 is244aa/27.4kDa; currentAAN68127.1/Q88JX8 is258aa.2016 sourceplasmids come from2011 with separate4residuecrystaltruncation. Complete2011insert/primersequence unavailable; exactassayedstart unresolved','binding':'G11-22;2011Table1 row;2016 Cloning and Site-directed Mutagenesis'},
+ {'component':'GalR,GalP,galB gene,galT gene','status':'Exactsource loci from2011/2023 require fresh issuinggene/proteinobjects; retain genetype for regulation','loci':'2011 Table1 PP2516 galR,PP2517 galP,PP2515 galB,PP2519 galT;2023 PP_RS13155 galR,PP_RS13160 galP,PP_RS13150 galB,PP_RS13170 galT; check originalTable1/genomicCDS before use'},
+ {'component':'DesB2021fusion','status':'SYK6DesBfamilyidentified but syntheticNCBIaccession/fullfusionsequenceunsupplied; qualify protein/complexendpoint, no unmodifiednativeclaim'},
+ {'component':'inhibitors','status':'Resolve exactcurrentchemicalidentity and protonation for allsevenDesB2021 inhibitors and gallatehighsubstrate; retain SIstructurebindings'},
+ {'component':'SYK6 LigAB/DesZ','status':'Do not use historicalComamonasLigABnativecomplex forKasai2005SYK6kinetics; exactsubunit/sequencebindingspending'},
+ {'component':'activity endpoints','status':'Exactgallate/PCAuptake and pyrogallol-dependentO2activity processidentifierspending; no inventedCURIE or unsupportedproductstoichiometry'}])
+dump('source-access-and-provenance-limits.json',{'main_limits':[s for s in sources if s.get('access_limit')],'acquisition_integrity':'../acquisition-integrity-successor.json','bounded_recovery':'../historical-payload-recovery-search.json','cross_package_identity':'../cross-package-binding-recheck.json','unread_relevant_leads':[{'doi':'10.1021/bi400665t','scope':'2013 SYK6LigAB substratepromiscuity; bibliography lead, not inspectedmain in thisboundedauthorpackage'},{'doi':'10.1016/j.abb.2014.12.019','scope':'2015 LigABallostery; citedby2021 SI; no automatictransfer toDesB; mainnotreadhere'}],'exhaustion_claim':False})
+print(json.dumps({'sources':len(sources),'visual_objects':len(visual),'visual_paths_exist':all(x['exists'] for x in visual),'child_manifests_pass':all(x['all_manifest_entries_pass'] for x in children),'originals':len(originals)},indent=2))

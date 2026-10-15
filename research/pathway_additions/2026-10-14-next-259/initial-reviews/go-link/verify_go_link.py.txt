@@ -1,0 +1,24 @@
+"""Public read-only HTTP probe of the exact cited GO URL and issuing term API."""
+from pathlib import Path
+import datetime,hashlib,json,urllib.error,urllib.request
+B=Path('/private/tmp/pathwaymech-next-259-go-link-review');B.mkdir(exist_ok=False)
+urls=[('original','http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn'),('https-purl','https://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn'),('release-final','https://release.geneontology.org/2026-07-26/ontology/extensions/go-plus.ofn'),('quickgo-page','https://www.ebi.ac.uk/QuickGO/term/GO:0046943'),('quickgo-api','https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO:0046943')]
+rows=[]
+class Redirect(urllib.request.HTTPRedirectHandler):
+ def __init__(self):super().__init__();self.trace=[]
+ def redirect_request(self,req,fp,code,msg,headers,newurl):
+  self.trace.append({'status':code,'from':req.full_url,'to':newurl});return super().redirect_request(req,fp,code,msg,headers,newurl)
+for name,url in urls:
+ redir=Redirect();opener=urllib.request.build_opener(redir);row={'name':name,'url':url,'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  response=opener.open(urllib.request.Request(url,headers={'User-Agent':'PathwayMech independent reference review','Accept':'application/json' if name=='quickgo-api' else '*/*'}),timeout=60)
+ except urllib.error.HTTPError as e:response=e
+ except Exception as e:
+  row.update(error=repr(e),redirects=redir.trace);rows.append(row);continue
+ body=response.read();p=B/(name+'.body');p.write_bytes(body)
+ row.update(status=response.code,final_url=response.url,redirects=redir.trace,headers=dict(response.headers),body_path=str(p),body_bytes=len(body),body_sha256=hashlib.sha256(body).hexdigest())
+ if name=='quickgo-api' and response.code==200:
+  data=json.loads(body);row['selected_term_fields']=[{k:r.get(k) for k in ['id','name','isObsolete','definition','synonyms']} for r in data['results']]
+ if response.code>=400:row['error_excerpt']=body.decode(errors='replace')[:1500]
+ rows.append(row)
+(B/'http-observations.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps([{k:v for k,v in r.items() if k not in ['headers','selected_term_fields','error_excerpt']} for r in rows],indent=2))

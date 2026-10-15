@@ -1,0 +1,113 @@
+"""External author assembly. Never writes to the maintained repository."""
+from pathlib import Path
+import json,copy,hashlib,re,sys,datetime
+import yaml
+OUT=Path(__file__).resolve().parent
+BASE=Path('/private/tmp')
+BIND=[]
+def load(rel):
+ p=BASE/rel; raw=p.read_bytes(); BIND.append({'path':str(p),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}); return json.loads(raw)
+def save(name,obj):
+ (OUT/name).write_text(json.dumps(obj,indent=2,ensure_ascii=False)+'\n')
+native=load('pathwaymech-next-259-native/retained/proposed-native-graph.json')
+record={k:copy.deepcopy(native[k]) for k in ['id','label','participants','reactions','mechanistic_edges','references']}
+record.update(description='Four-step aerobic gallate cleavage to pyruvate and oxaloacetate through keto-4-oxalomesaconate, the E,E enol and stereochemically unspecified carboxyhydroxyoxoadipate. The exact MetaCyc accession has suffix II but displays gallate degradation I. Formal reaction structures control the E,E assignment despite a conflicting Z,Z narrative link. KTGAL repaired GalT, KT2440 reporter constructs, historical native preparations and recombinant assays remain distinct. Source associations do not establish this complete route in every component organism.',pathway_type='aromatic-compound-catabolism',taxa=[])
+ledger=[]
+refmap={'ChEBI-4735':'CHEBI:4735','ENA-AE015451':'NCBIProtein:AAN68130.2','GalA2005':'PMID:16030014','LigAB2013':'PMID:23977959','MetaCyc-ENZRXN-18371':'MetaCyc:ENZRXN-18371','MetaCyc-CPLX-8177':'MetaCyc:CPLX-8177','MetaCyc-G1G01-2702-MONOMER':'MetaCyc:G1G01-2702-MONOMER','MetaCyc-CPLX-7916':'MetaCyc:CPLX-7916','UniProt-P22636':'UniProtKB:P22636'}
+idmap={'MetaCyc:CO+2':'CHEBI:48828','MetaCyc:GALLATE-DIOXYGENASE-RXN':'RHEA:28928','MetaCyc:FE+2':'CHEBI:29033','MetaCyc:ZN+2':'CHEBI:29105','MetaCyc:MG+2':'CHEBI:18420','MetaCyc:MN+2':'CHEBI:29035','MetaCyc:HG+2':'CHEBI:16793'}
+NODEKEY={'id','label','category','direction','description'}
+EDGEKEY={'id','subject','predicate','object','description','evidence','endpoint_qualifiers'}
+REFKEY={'id','title','url','source_version','source_sha256'}
+def norm(e):
+ e={k:copy.deepcopy(v) for k,v in e.items() if k in EDGEKEY}
+ for key in ['subject','object']:e[key]=idmap.get(e[key],e[key])
+ for ev in e.get('evidence',[]):ev['reference_id']=refmap.get(ev['reference_id'],ev['reference_id'])
+ for q in e.get('endpoint_qualifiers',[]):
+  for ev in q['evidence']:ev['reference_id']=refmap.get(ev['reference_id'],ev['reference_id'])
+ return e
+def add(e,origin):
+ e=norm(e);e.setdefault('id',origin)
+ assert not any(z['id']==e['id'] for z in record['mechanistic_edges']),e['id']
+ record['mechanistic_edges'].append(e);ledger.append({'origin':origin,'disposition':'selected','edges':[e['id']]});return e
+
+def node(i,label,category='small_molecule',reaction=False):
+ target=record['reactions' if reaction else 'participants']
+ if not any(n['id']==i for n in target):target.append({'id':i,'label':label,'category':category})
+ elif category=='cofactor':next(n for n in target if n['id']==i)['category']='cofactor'
+def reference(r):
+ r={k:v for k,v in r.items() if k in REFKEY};r['id']=refmap.get(r['id'],r['id']);r.setdefault('title',r['id'])
+ if not any(x['id']==r['id'] for x in record['references']):record['references'].append(r)
+for n in record['participants']+record['reactions']:
+ n.pop('source_native_frame',None);n['id']=idmap.get(n['id'],n['id'])
+canonical={'CHEBI:15377':'water','CHEBI:15378':'hydron','CHEBI:29033':'iron(2+)','CHEBI:29105':'zinc(2+)','CHEBI:18420':'magnesium(2+)','CHEBI:29035':'manganese(2+)','CHEBI:16793':'mercury(2+)'}
+for n in record['participants']:n['label']=canonical.get(n['id'],n['label'])
+record['mechanistic_edges']=[]
+for e in native['mechanistic_edges']:
+ if e['id'] in ['native-024','native-025','native-047']:
+  ledger.append({'origin':e['id'],'disposition':'replaced','reason':'Fresh GalA source-specific preparation/treatment/assembly proposals replace the provisional native-only selection.','edges':['gala-catalysis','gala-iron-cofactor','gala-predominant-trimer']});continue
+ if e['id']=='native-061':
+  e=copy.deepcopy(e);e['subject']='RHEA:28936';e['description']='The final aldolase reaction produces oxaloacetate, the metabolite explicitly linked by this native pathway to the prokaryotic TCA pathway. This is a material interface, not an additional formal gallate reaction.'
+ add(e,e['id'])
+for pack in ['gala-replacement-proposals','galr-proposals']:
+ for p in load(f'pathwaymech-next-259-evidence-successor/author/{pack}.json')['proposals']:add(p['edge'],p['proposal_id'])
+for r in load('pathwaymech-next-259-evidence-successor/author/references.json'):reference(r)
+for r in load('pathwaymech-next-259-ligab-supplement/author-successor/references.json'):reference(r)
+# Current reference sequences are identities, not an assertion of exact recombinant inserts.
+for i,l,c in [('UniProtKB:E8ZB61','Gallate transporter','protein'),('UniProtKB:Q88JX6','Porin-like protein GalP','protein'),('UniProtKB:Q88JX7','HTH-type transcriptional regulator GalR','protein'),('KEGG:ppu:PP_2515','PP_2515','gene'),('KEGG:ppu:PP_2519','PP_2519','gene'),('MetaCyc:CPLX-7916','protocatechuate 4,5-dioxygenase','complex'),('MetaCyc:MONOMER-15116','protocatechuate 4,5-dioxygenase alpha subunit','protein'),('MetaCyc:MONOMER-15117','protocatechuate 4,5-dioxygenase beta subunit','protein'),('MetaCyc:MONOMER-15115','3-O-methylgallate dioxygenase','protein')]:node(i,l,c)
+chem={'CHEBI:4735':'EDTA','CHEBI:30351':"2,2'-bipyridine",'CHEBI:16240':'hydrogen peroxide','CHEBI:29036':'copper(2+)','CHEBI:48828':'cobalt(2+)','CHEBI:113451':'sodium ascorbate','CHEBI:36241':'3,4-dihydroxybenzoate','CHEBI:16318':'4-nitrocatechol','CHEBI:16632':'vanillate','CHEBI:89886':'2-methoxy-4-methylphenol','CHEBI:132111':'syringate','CHEBI:18346':'vanillin','CHEBI:67380':'syringaldehyde'}
+for i,l in chem.items():node(i,l)
+for n in load('pathwaymech-next-259-ligab-chemistry/participant-proposals.json'):node(n['id'],n['label'],n['category'])
+for e in load('pathwaymech-next-259-ligab-supplement/author-successor/native-context-proposals.json'):add(e,'ligab-context-'+str(len(record['mechanistic_edges'])))
+for e in load('pathwaymech-next-259-ligab-chemistry/five-regulatory-edge-proposals.json'):add(e,e['id'])
+for p in load('pathwaymech-next-259-ligab-supplement/author-successor/regulatory-proposals-2013.json')['proposals']:
+ if p['id'] in ['R11','R12','R13','R14','R15']:continue
+ p=copy.deepcopy(p);p['subject']={'R23':'CHEBI:29036','R21':'CHEBI:29033'}.get(p['id'],p.get('subject'));p['id']='ligab-pca-'+p['id'].lower();add(p,p['id'])
+primary=load('pathwaymech-next-259-primary/author/edge-proposals.json')['edges']
+chem_alias=dict(zip(['protocatechuate','4-nitrocatechol','vanillate','2-methoxy-4-methylphenol','syringate','vanillin','syringaldehyde'],['CHEBI:36241','CHEBI:16318','CHEBI:16632','CHEBI:89886','CHEBI:132111','CHEBI:18346','CHEBI:67380']))
+for e in primary:
+ if e['id'].startswith('desB2021_'):
+  e=copy.deepcopy(e);e['subject']=chem_alias.get(e['subject_alias'],'CHEBI:16918');e['object']='MetaCyc:CPLX-7918';e.setdefault('description','Gallate-dependent oxygen-consumption inhibition in the 2021 DesB-MBP preparation at 5 mM test compound and 1 mM gallate. Source chemical names are normalized using the independently inspected supplement drawings; no physiological flux effect or unique assay microspecies is inferred.');add(e,e['id'])
+for r in load('pathwaymech-next-259-primary/author/source-catalog.json'):
+ reference({'id':r['id'],'title':r['id'],'url':r['url']})
+for i in ['PMID:26867578','PMID:24586444']:
+ reference({'id':i,'title':i,'url':'https://pubmed.ncbi.nlm.nih.gov/'+i.split(':')[1]+'/'})
+# Reference IDs for fresh native cofactor/assembly evidence are independent raw objects.
+for e in record['mechanistic_edges']:
+ for ev in e.get('evidence',[])+[ev for q in e.get('endpoint_qualifiers',[]) for ev in q['evidence']]:
+  rid=ev['reference_id']
+  if any(x['id']==rid for x in record['references']):continue
+  if rid.startswith('MetaCyc:'):reference({'id':rid,'title':rid+' native object','url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+rid.split(':',1)[1]})
+  elif rid.startswith('UniProtKB:'):reference({'id':rid,'title':rid+' issuing record','url':'https://rest.uniprot.org/uniprotkb/'+rid.split(':')[1]+'.json'})
+# Additional bounded selections are loaded from explicit local author additions, never discovered implicitly.
+additional=OUT/'author/additions.json'
+if additional.exists():
+ d=json.loads(additional.read_text())
+ for n in d.get('participants',[]):node(n['id'],n['label'],n.get('category','small_molecule'))
+ for n in d.get('reactions',[]):node(n['id'],n['label'],n.get('category','molecular_activity'),True)
+ for r in d.get('references',[]):reference(r)
+ for e in d.get('edges',[]):add(e,e['id'])
+ for mod in d.get('edge_updates',[]):
+  e=next(e for e in record['mechanistic_edges'] if e['id']==mod['id'])
+  for k,v in mod.items():
+   if k!='id':e[k]=v
+record['mechanistic_edges']=[norm(e) for e in record['mechanistic_edges']]
+# Keep only references actually cited; author ledgers retain the remainder.
+used={ev['reference_id'] for e in record['mechanistic_edges'] for ev in e.get('evidence',[])+[v for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]}
+record['references']=[r for r in record['references'] if r['id'] in used]
+exec((OUT/'canonicalize.py.txt').read_text())
+# Exact combined repeated-quotation counting, grouping aliases by paper identity.
+audit={}
+for e in record['mechanistic_edges']:
+ for loc,ev in [('edge',x) for x in e.get('evidence',[])]+[(q['endpoint']+' qualifier',v) for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']]:
+  if 'quote' in ev:
+   a=audit.setdefault(ev['reference_id'],{'words':0,'occurrences':[]});w=len(ev['quote'].split());a['words']+=w;a['occurrences'].append({'edge':e['id'],'placement':loc,'words':w,'quote':ev['quote'],'locator':ev.get('source_locator')})
+for a in audit.values():a['within_25_word_budget']=a['words']<=25
+(OUT/'gallate-degradation-i.yaml').write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100))
+save('author/proposal-selection-progress.json',ledger);save('validation/quotation-audit.json',audit);save('source-bindings.json',BIND)
+save('author/identifier-requirements.json',{'role':'preliminary author inventory; authority review required','record_id':record['id'],'taxa':record['taxa'],'participants':record['participants'],'reactions':record['reactions']})
+try:
+ from pathwaymech.schema import validate_record
+ validate_record(record);shape={'valid':True}
+except Exception as e:shape={'valid':False,'error':str(e)}
+save('validation/schema-progress.json',shape)
+print(json.dumps({'edges':len(record['mechanistic_edges']),'participants':len(record['participants']),'reactions':len(record['reactions']),'shape':shape,'quotes':{k:v['words'] for k,v in audit.items()}}))

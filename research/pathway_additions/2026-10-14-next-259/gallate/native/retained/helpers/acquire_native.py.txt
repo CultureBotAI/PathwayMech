@@ -1,0 +1,22 @@
+from pathlib import Path
+import urllib.parse,urllib.request,urllib.error,concurrent.futures,hashlib,json,datetime,xml.etree.ElementTree as E,sys,shutil
+B=Path('/private/tmp/pathwaymech-next-259-native');O=B/'originals';M=B/'retained/native-acquisition.json'
+manifest=json.loads(M.read_text()) if M.exists() else []
+prior=json.loads(Path('/private/tmp/pathwaymech-next-253-native/acquisition-manifest.json').read_text()); byframe={x['frame']:x for x in prior if 'sha256'in x}
+def get(frame):
+ p=O/(frame+'.xml'); start=datetime.datetime.now(datetime.timezone.utc).isoformat(); u='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+urllib.parse.quote('META:'+frame,safe='')
+ if p.exists(): return
+ if frame in byframe:
+  old=byframe[frame]; op=Path(old['path']); b=op.read_bytes(); assert hashlib.sha256(b).hexdigest()==old['sha256']; t=E.fromstring(b); x=next(x for x in t if x.get('frameid')==frame);assert x.get('detail')=='full';shutil.copy2(op,p)
+  return dict(old,path=str(p),reused_original=str(op),independently_rehashed_utc=start,reuse_bound='Original retrieved from public META27.0 mirror during next253; not a fresh upstream request or claimed current release.')
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech evidence curation','Accept':'text/xml'}),timeout=50) as r:b=r.read();status=r.status;final=r.url;ct=r.headers.get('Content-Type')
+  p.write_bytes(b);t=E.fromstring(b);x=next((x for x in t if x.get('frameid')==frame),None);assert x is not None and x.get('detail')=='full',frame
+  return {'frame':frame,'url':u,'final_url':final,'http_status':status,'content_type':ct,'retrieved_utc':start,'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b),'version':t.find('./metadata/PGDB').attrib['version'],'object_type':x.tag}
+ except urllib.error.HTTPError as e:
+  b=e.read();p.write_bytes(b);return {'frame':frame,'url':u,'http_status':e.code,'error':repr(e),'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'retrieved_utc':start}
+ except Exception as e:return {'frame':frame,'url':u,'error':repr(e),'retrieved_utc':start}
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+ for x in ex.map(get,sys.argv[1:]):
+  if x: manifest.append(x);print(x['frame'], x.get('object_type'),x.get('error','reused' if 'reused_original' in x else 'acquired'))
+M.write_text(json.dumps(manifest,indent=2)+'\n')

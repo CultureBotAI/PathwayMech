@@ -1,0 +1,74 @@
+from pathlib import Path
+from html.parser import HTMLParser
+import json,hashlib,datetime
+r=Path('/private/tmp/pathwaymech-next-259-primary/gal2016');o=r.parent/'originals';s=(o/'PMC4817193-render2.html').read_text()
+class P(HTMLParser):
+ def __init__(self):super().__init__();self.depth=0;self.cur=None;self.row=None;self.cell=None;self.tables={};self.pending=None
+ def handle_starttag(self,t,a):
+  a=dict(a)
+  if a.get('id') in ['T1','T2','T3','T4','T5']:self.pending=a['id']
+  if t=='table':
+   if self.depth:self.depth+=1
+   elif self.pending:self.depth=1;self.cur=self.pending;self.pending=None;self.tables[self.cur]=[]
+  if self.depth:
+   if t=='tr':self.row=[]
+   if t in ('td','th'):self.cell=[]
+ def handle_data(self,d):
+  if self.cell is not None:self.cell.append(d)
+ def handle_endtag(self,t):
+  if self.depth:
+   if t in ('td','th') and self.cell is not None:
+    if self.row is not None:self.row.append(' '.join(''.join(self.cell).split()))
+    self.cell=None
+   if t=='tr' and self.row is not None:self.tables[self.cur].append(self.row);self.row=None
+   if t=='table':self.depth-=1
+p=P();p.feed(s);(r/'native-table-rows.json').write_text(json.dumps(p.tables,indent=2,ensure_ascii=False)+'\n')
+sections=[
+('abstract1','Abstract','Read fully','GalB function; assay cofactors; A16D conditional hydrolase negative; proposed rather than proven mechanism.'),
+('sec1','Introduction','Read fully','Historical whole-pathway context; E,E versus Z,E substrate issue; compare gallate and protocatechuate branches without claiming whole-route equivalence.'),
+('sec5','Chemicals','Read fully','Reagents and coupled detection enzymes; not pathway participant claims.'),
+('sec6','DNA manipulations','Read fully','KT2440 gene origins, pET29a/pVLT-31, truncation and variants; E6 PmdE BAI50711.1 codon-optimized construct; primers available on request only.'),
+('sec7','Gene expression','Read fully','All recombinant hosts E. coli BL21 except GalB KT2442 native-host overexpression; no new organism occurrence edge for expression host.'),
+('sec8','Protein purification','Read fully','GalA iron/DTT storage; GalB three chromatographic steps; GalD retained His6; LigJ His6 removal.'),
+('sec9','Protein measurement','Read fully','Bradford, SDS-PAGE, gel filtration; prepare oligomeric context.'),
+('sec10','Crystallization','Read fully','GalBNt exact deletion; zinc anomalous evidence; no bound substrate/product structure.'),
+('sec11','CHM synthesis','Read fully','Combined GalA/GalD oxygenated preparation, conversion percentages and chromatographic separation.'),
+('sec12','CHPD synthesis','Read fully','GalB-dependent HMG dehydration as side-substrate preparation; not core gallate route.'),
+('sec13','Metal analysis','Read fully','KT2442 expression explicitly assigned; ICP-MS iron insufficient and ferrozine used.'),
+('sec14','Metal substitution','Read fully','EDTA 12 h conditions, metal loading at least 1 h, Fe2+ anaerobic preparation and air-exposure test.'),
+('sec15','Metal binding','Read fully','PAR assay, free/bound metal and dissociation fit; Eq1-2 inspected.'),
+('sec16','Assays','Read fully','25 C duplicated assays, pH and metal specificity conditions, residual activity; all six equations and polarimetry method inspected.'),
+('sec20','Expression results','Read fully','GalB native-host versus recombinant yields and truncation origin; no per-batch kinetic host assignment.'),
+('sec21','Overall structure','Read fully','Rossmann-like fold, two asymmetric-unit protomers, Zn pocket; structure uses GalBNt.'),
+('sec22','Oligomeric state','Read fully','D3 hexamer interpretation plus gel filtration; two asymmetric-unit copies not a biological dimer.'),
+('sec23','Metal site','Read fully','His14/Asp17/Glu48/His127/water coordination; multiple Glu48 conformers, partial water occupancy possibility.'),
+('sec24','Related structures','Read fully','PIG-L structural comparisons and hypothesized residues are comparative context, not extra pathway proteins.'),
+('sec25','Metal and kinetics','Read fully','Native-host zinc occupancy, chelation/rescue, alternative metals, reversibility and optical products.'),
+('sec26','pH profiles','Read fully','Substrate and enzyme ionizations conditional to assay; numeric and figure-caption inconsistencies retained.'),
+('sec27','Mutagenesis','Read fully','All tested residue changes retained as conditional engineered evidence; glucosamine negative not positive inhibition.'),
+('sec28','GalB/LigJ comparison','Read fully','Coupled reaction substitutions; no direct OMA hydration; GalC reagent identity not individually described.'),
+('sec29','Active-site comparison','Read fully','R. palustris LigJ structural comparison is not same protein as E6 assay LigJ; no cross-species accession collapse.'),
+('sec30','Operon analysis','Read fully','MultiGeneBlast sampled homology supports computational distribution only.'),
+('sec31','Discussion','Read fully','Physiological metal unresolved; historical NMR assignment not repeated; optical versus absolute chirality distinguished; adjacent DDVA route proposed; atomic mechanism modeled.'),
+('sec32,ack1,FN1,fn2,FN2','Author notes, acknowledgments, data deposition, abbreviations','Read fully','PDB5CGZ deposition noted; no new biological claims from funding or authorship.'),
+('ref-list1','Bibliography 1-63','Read fully as bibliography','References are not automatically newly inspected originals; parent handles 2005/2011/2023 and later mechanism sources separately.')]
+figs=[
+('F1','1A exact gallate branch; GalA O2, GalD OMA-to-CHM, GalB H2O, GalC OAA/PYR. Box shows uncertain CHM geometry. 1B is neighboring proposed biphenyl/CHPD/HMG route.'),
+('F2','GalBNt protomer/hexamer and interfaces inspected. Image panel C labels helix contact, D beta contact, E threefold contact; caption/result C/E descriptions are not consistently aligned. No residue-specific edge created from panel-letter assumption.'),
+('F3','Electron/anomalous density and metal-site schematic inspected; H14,D17,E48,H127 plus water around zinc. Overlays are comparative proteins.'),
+('F4','Active site and modeled E,E-CHM inspected; model sidechains rotated. LigJ structure is R. palustris, not E6 assay protein. No ligand-bound crystal claim.'),
+('F5','Solid GalB/LigJ CHA-product curves are negative, racemic CHA/HMG depletion curves are positive. Optical sign measured at 589 nm; no R/S derivation from sign.'),
+('F6','A extinction coefficient, B pKm, C log(kcat), D log(kcat/Km) according to actual axes. Caption swaps B/C. Two cofactor pH series inspected.'),
+('F7','E48A/H164A pH profiles inspected, zinc condition retained. Does not directly image proton movement.'),
+('F8','Both panels and all displayed cluster rows inspected; small MultiGeneBlast sample, homology-only scope. Displayed taxon classification inconsistencies are not copied as biological authority.'),
+('F9','All panels inspected. Model depicts S-CHA but caption explicitly leaves absolute configuration of observed negative CHA unknown. Proton-transfer scheme remains proposed.')]
+tables=[
+('T1','All parsed rows inspected; diffraction/model statistics for GalBNt, not full-length protein; two zinc ions in two-copy asymmetric unit do not mean two zinc per monomer.'),
+('T2','All metal, native, native+Co, apo and EDTA rows inspected; conditional residual activity preserved; paper-specific specific-activity units not silently normalized.'),
+('T3','All WT/A16D/E48A/H127A/H14A-D17A binding rows inspected; NS means cannot saturate <=500 micromolar, not no binding.'),
+('T4','All WT metal/substrate and variant rows inspected; substrate-specific effects, both reaction directions and non-saturation retained.'),
+('T5','All metal and variant pH rows inspected; distinguish table estimates from slightly different narrative rounded values.')]
+equations=[('FD1','Bound metal equals total minus free.'),('FD2','Saturable bound-metal fit using free metal and Kd.'),('FD3','Single-exponential activity decay.'),('FD4','Single-ionization kcat dependence.'),('FD5','Bell-shaped Km fit as displayed.'),('FD6','Two ascending protonation factors plus alkaline term as displayed; do not infer extra biochemical species from fit equation.')]
+report={'type':'fresh_2016_source_coverage_author_ledger','created_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'main_text_sections':[{'html_id':a,'section':b,'inspection':c,'disposition':d} for a,b,c,d in sections],'figures':[{'id':a,'visual_inspection':True,'original':str(o/f'PMC4817193-figure-{i+1}.jpg'),'disposition':b} for i,(a,b) in enumerate(figs)],'tables':[{'id':a,'all_rows_inspected':True,'parsed_row_count':len(p.tables[a]),'disposition':b} for a,b in tables],'equations':[{'id':a,'visual_inspection':True,'file':str(r/f'equation-{i+1}.jpg'),'disposition':b} for i,(a,b) in enumerate(equations)],'supplement_assessment':{'entire_retained_html_inspected':True,'linked_supplement_identified':False,'scope_limit':'No linked supplemental material in this exact PMC HTML; publisher fulltext/PDF returned access errors and Europe PMC XML returned HTTP500. Do not claim global absence of supplemental material. Primer sequences said available on request were not retrieved.','supporting_files':['supplement-local-check.json','supplement-xml-check.json','publisher-access-web-result.json','publisher-pdf-access-web-result.json']},'source_internal_cautions':['Figure6 caption swaps B/C versus the graph axes.','Figure2 panel/interface descriptions vary between image/caption/results; no new residue/interface claim promoted from panel letters.','Table2 apo residual activity 4.0% coexists with long EDTA incubation described below assay error; preserve conditions.','Table5 E48A/H164A parameter estimates differ slightly from narrative rounding, e.g. E48A pKaE/S1 5.6 table versus 5.7 text, H164A pKbE 9.1 table versus 9.2 text.','Specific activity unit strings in Table2 and narrative are preserved as published; no conversion used to infer turnover.','Figure8 contains sampled computational cluster/taxon labels, not experimental pathway confirmation.']}
+(r/'source-coverage-ledger.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'tables':{k:len(v) for k,v in p.tables.items()},'sections':len(sections),'figures':len(figs),'equations':len(equations)},indent=2))

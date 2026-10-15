@@ -1,0 +1,169 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import shlex
+import subprocess
+import yaml
+
+B = Path('/private/tmp/pathwaymech-next-259-20261014')
+O = Path('/private/tmp/pathwaymech-next-259-science-successor')
+R = Path('research/pathway_additions/2026-10-14-next-259')
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+T = 'MetaCyc:GALLATE-DEGRADATION-II-PWY'
+output = O / 'completed-review.yaml'
+inspect_output = O / 'completed-inspect.json'
+assert not output.exists() and not inspect_output.exists(), 'Use a new successor attempt; never overwrite completed artifacts.'
+yaml.SafeDumper.ignore_aliases = lambda self, data: True
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def utc():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')
+
+
+binding_relative = R / 'successor-reviews/science-final-binding/final-shared-check-binding.json'
+binding = json.loads((B / binding_relative).read_text())
+assert (B / binding_relative).read_bytes() == (O / 'final-shared-check-binding.json').read_bytes()
+assert binding['status'] == 'passed'
+assert len(binding['completed_receipts']) == 7
+assert all(receipt['exit_code'] == 0 for receipt in binding['completed_receipts'])
+applied = json.loads((O / 'applied-inspect.json').read_text())
+inputs = {entry['path'] for entry in applied['source']['inputs']}
+for entry in applied['source']['inputs']:
+    assert sha(B / entry['path']) == entry['sha256'], entry
+for subtree in ['successor-reviews/science', 'successor-reviews/science-final-binding', 'successor-reviews/checks', 'successor-reviews/technical', 'successor-reviews/technical-supplement', 'corrections/execution']:
+    root = B / R / subtree
+    assert root.is_dir(), root
+    inputs.update(str(path.relative_to(B)) for path in root.rglob('*') if path.is_file())
+inputs.update([
+    'CLAUDE.md',
+    'conf/record_review.yaml',
+    '.claude/skills/pathwaymech-resolve-reviews/SKILL.md',
+    'history/records/gallate-degradation-i/2026-10-14T231542Z-codex-b62806.yaml',
+    'history/other/gallate-research-retention/2026-10-14T231545Z-codex-a0df5f.yaml',
+    'pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html',
+    'scripts/render_pages.py',
+    'src/pathwaymech/cli.py',
+])
+command = [PYTHON, '-B', 'scripts/record_review.py', 'inspect', '--targets', str(O / 'targets.yaml')]
+for path in sorted(inputs):
+    command.extend(['--input', path])
+started = utc()
+process = subprocess.run(command, cwd=B, capture_output=True, text=True)
+receipt = {'started_utc': started, 'finished_utc': utc(), 'command': command, 'cwd': str(B), 'exit_code': process.returncode, 'stderr': process.stderr}
+with (O / 'completed-inspect-receipt.json').open('x') as stream:
+    json.dump(receipt, stream, indent=2)
+    stream.write('\n')
+assert process.returncode == 0, receipt
+with inspect_output.open('x') as stream:
+    stream.write(process.stdout)
+inspected = json.loads(process.stdout)
+new_by_path = {entry['path']: entry for entry in inspected['source']['inputs']}
+assert inspected['source']['git_revision'] == applied['source']['git_revision']
+for entry in applied['source']['inputs']:
+    assert new_by_path[entry['path']]['sha256'] == entry['sha256'], entry
+
+review = yaml.safe_load((O / 'successor-review-draft.yaml').read_text())
+now = utc()
+review['review_id'] = now.replace('-', '').replace(':', '') + '-next259-science-successor'
+review['finished_at'] = now
+review['completion'] = 'completed'
+review['verdict'] = 'pass_with_limitations'
+review['summary'] = 'The maintained correction satisfies both scientific findings: exact primary preparation evidence now supports the affected qualifiers, and the native GalB monomer has a source-scoped computational cytosol annotation with an append-only false-absence correction. All 31 field changes and the entire 130-edge record were checked. Seven final shared gate requirements are satisfied across eight actual attempts: the original vendored DNS failure and successful bounded retry are both preserved. Exact tested inputs and losslessly retained logs are independently bound. Both inherited minor findings are resolved with exact predecessor lineage; source-access and provenance limitations remain explicit.'
+review['source'] = inspected['source']
+review['targets'] = inspected['targets']
+review['actions'] = []
+
+
+def add(identity, kind, path, summary, support='supports'):
+    path = Path(path)
+    actual = path if path.is_absolute() else B / path
+    assert actual.is_file(), actual
+    review['evidence'].append({'evidence_id': identity, 'kind': kind, 'reference': str(path), 'accessed_at': now, 'support': support, 'summary': summary, 'snapshot_sha256': sha(actual)})
+
+
+for evidence in review['evidence']:
+    reference = Path(evidence['reference'])
+    if reference.parent == O:
+        retained = R / 'successor-reviews/science' / reference.name
+        assert (B / retained).read_bytes() == reference.read_bytes()
+        evidence['reference'] = str(retained)
+    if evidence['evidence_id'] == 'initial-history-check':
+        retained = R / 'corrections/execution/initial-saved-history-check.json'
+        assert sha(B / retained) == evidence['snapshot_sha256']
+        evidence['reference'] = str(retained)
+    actual = Path(evidence['reference'])
+    actual = actual if actual.is_absolute() else B / actual
+    assert sha(actual) == evidence['snapshot_sha256'], evidence
+
+add('final-binding', 'validation', binding_relative, f"Independent exact binding of all {binding['tested_core_file_count']:,} final tested core inputs, all {len(binding['all_initial_successor_inspect_inputs_unchanged'])} pre-assessment inspect inputs, seven terminal passing receipts, lossless retained logs, rendered artifacts, exact predecessor bytes and current worktree lineage search including ignored and hidden files. No duplicate full suite.")
+add('final-receipts', 'validation', R / 'successor-reviews/checks/receipts.json', 'Root terminal execution receipts for all seven final commands, each exit zero, with actual commands, times and original log digests.')
+add('final-retention', 'validation', R / 'successor-reviews/checks/retention-manifest.json', 'Final log retention binds encoded hashes and exact original source hashes. Independent decompression and byte comparison passed for every retained file; logs were not truncated or rewritten.')
+add('final-attempt-history', 'validation', R / 'successor-reviews/checks/gate-execution-history.json', 'All eight actual attempts are preserved. The first vendored-check attempt exited one on sandbox DNS; its bounded network retry exited zero. Successful render, validation, tests and lint were not repeated.')
+add('vendored-dns-failure-log', 'validation', R / 'successor-reviews/checks/vendored-first-attempt.log.gz', 'Exact failed first vendored-check log, exit one at raw.githubusercontent.com DNS lookup. Retained independently of the successful retry log; this is an execution-environment failure, not evidence of vendored file drift.', 'context_only')
+add('technical-go-proof', 'validation', R / 'successor-reviews/technical-supplement/selected-go-sql-verification.json', 'Technical reviewer freshly hashed the full 1,701,474,304-byte pinned GO SQL database and independently queried both selected GO terms. This review binds that proof, separately re-queries cytosol triples and independently reads the native computational localization; a technical identity check alone is not biological localization evidence.')
+add('current-page', 'record_content', 'pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html', 'Actual final generated page inspected semantically: all 130 SVG edges and preparation qualifiers match maintained YAML. Maintained owner is data/pathways/gallate-degradation-i.yaml; generator entry point is src/pathwaymech/cli.py render_pages_main, invoked by just render-pages. No browser visual-layout review claimed.')
+
+retention = json.loads((B / R / 'successor-reviews/checks/retention-manifest.json').read_text())
+retained_by_original = {row['source_path']: row for row in retention['files']}
+receipts_by_command = {' '.join(row['command']): row for row in binding['completed_receipts']}
+for index, (command_text, row) in enumerate(receipts_by_command.items(), start=1):
+    retained_row = retained_by_original[row['log_path']]
+    add('final-log-' + str(index), 'validation', R / 'successor-reviews/checks' / retained_row['retained_path'], f"Complete losslessly retained log for {command_text}, exit {row['exit_code']}; independent binding verifies both encoded bytes and original uncompressed hash.")
+    check = next(check for check in review['checks'] if check.get('command') == command_text)
+    check['status'] = 'passed'
+    check['exit_code'] = 0
+    check['summary'] = f"Root executed {command_text} and its final receipt completed with exit zero. Independent binding verifies exact tested inputs, original log and lossless retained copy."
+    check['evidence_ids'] = ['final-binding', 'final-receipts', 'final-retention', 'final-log-' + str(index)]
+    if command_text == 'just vendored-check':
+        check['summary'] += ' The first attempt failed at sandbox DNS; the bounded network retry passed, and both attempts remain preserved.'
+        check['evidence_ids'] += ['final-attempt-history', 'vendored-dns-failure-log']
+
+review['checks'].append({'check_id': 'vendored-first-attempt', 'name': 'Preserved first vendored-check attempt', 'status': 'failed', 'required': False, 'summary': 'The original attempt exited one on raw.githubusercontent.com DNS lookup. Its bytes and receipt are preserved. The required vendored gate is satisfied by the separate successful bounded retry, not by treating this attempt as passed.', 'scope_note': 'Historical execution attempt, superseded for final gate satisfaction by check shared-vendored; not an unsatisfied final requirement.', 'target_ids': [T], 'command': 'just vendored-check', 'exit_code': 1, 'evidence_ids': ['vendored-dns-failure-log', 'final-attempt-history', 'final-binding']})
+
+review['checks'][0]['summary'] = f"Unique canonical inspect captured the actual maintained correction before assessment at 2026-10-14T23:16:15Z. Final canonical inspect adds the actual regenerated page and retained terminal proofs, preserving all 117 previous input hashes; {len(inspected['source']['inputs'])} inputs are now bound."
+review['checks'][0]['evidence_ids'] = ['current-record', 'correction-replay', 'final-binding', 'current-page']
+review['checks'][0]['command'] = shlex.join(json.loads((O / 'applied-inspect-receipt.json').read_text())['command'])
+next(check for check in review['checks'] if check['check_id'] == 'history')['command'] = shlex.join(json.loads((B / R / 'corrections/execution/initial-saved-history-check.json').read_text())['command'])
+review['checks'].append({'check_id': 'completed-canonical-inspect', 'name': 'Final canonical input expansion without hash replacement', 'status': 'passed', 'required': True, 'summary': 'Final canonical inspect includes the actual regenerated page, correction history and terminal evidence, with all 117 pre-assessment input hashes unchanged.', 'target_ids': [T], 'command': shlex.join(command), 'exit_code': process.returncode, 'evidence_ids': ['current-record', 'final-binding', 'current-page']})
+review['checks'].append({'check_id': 'lineage-and-final-inputs', 'name': 'Exact successor lineage and final tested-input binding', 'status': 'passed', 'required': True, 'summary': 'The bounded current worktree review search includes hidden and ignored files and finds the two inherited keys only in their initial finding occurrences. Exact predecessor YAML/Markdown bytes, all tested inputs and final retained receipts match their recorded hashes.', 'target_ids': [T], 'command': f'{PYTHON} -B {O / "bind_final_successor_checks.py"}', 'exit_code': 0, 'evidence_ids': ['final-binding', 'predecessor', 'predecessor-markdown']})
+for finding in review['findings']:
+    finding['status'] = 'resolved'
+    finding['disposition_reason'] = finding['disposition_reason'].replace(' Final shared gates remain pending in this draft.', ' The final shared validation, tests, lint, vendored checks, rendering and both diff checks passed with exact independent tested-input and log binding.')
+    finding['evidence_ids'] += ['final-binding', 'final-receipts']
+    if finding['finding_id'] == 'F2':
+        finding['evidence_ids'].append('technical-go-proof')
+    assert len(finding['previous_occurrences']) == 1
+
+review['limitations'] = [entry for entry in review['limitations'] if entry != 'The single shared final full gate suite is still running. This draft does not close findings or claim a passing completed successor.']
+review['limitations'].append('The final full suite is the root shared execution, independently bound here to exact inputs and logs; it is not a second execution by the scientific reviewer. The peer technical reviewer freshly hashed the entire pinned GO database, while this reviewer separately queried cytosol triples and assessed original native localization evidence.')
+review['limitations'].append('The first final vendored-check attempt failed at sandbox DNS. The retained original failed receipt/log and successful bounded network retry establish seven satisfied gate requirements across eight actual attempts; no claim that every initial attempt passed is made.')
+review['notes'] = [entry for entry in review['notes'] if not entry.startswith('Initial staged whitespace failure')]
+review['notes'] += ['The initial staged whitespace failure remains immutable historical evidence. The final shared staged check independently passes after lossless retained-artifact correction.', 'Generated page and KGX semantics are derived from the maintained YAML; generator entry points are render_pages_main and export_kgx_main in src/pathwaymech/cli.py. Future biological fixes belong in the maintained record, followed by the documented generators.', 'The three technical findings have their own independent technical successor; this scientific bundle preserves and resolves only its two inherited scientific issue keys.']
+review['assessments'].append({'assessment_id': 'final-acceptance', 'area': 'provenance', 'topic': 'Exact final execution, retained evidence and finding lineage', 'outcome': 'supported', 'summary': f"Seven final shared commands passed; all {binding['tested_core_file_count']:,} tested core inputs, 117 initial successor inspect inputs, losslessly retained logs and rendered artifacts match. Exact initial finding occurrences are retained, and both scientific fixes meet their original-source acceptance criteria.", 'target_ids': [T], 'evidence_ids': ['final-binding', 'final-receipts', 'final-retention', 'predecessor', 'correction-replay']})
+by_assessment = {entry['assessment_id']: entry for entry in review['assessments']}
+by_assessment['preparation-evidence']['dimensions'] = [
+    {'name': 'evidence-tier', 'value': 'Primary methods/results text and separately bounded Table 1 assertions', 'definition': 'The exact cited preparation evidence; table rows are not interpreted as assigning the expression host.', 'evidence_ids': ['source-2011', 'source-2005', 'correction-replay']},
+    {'name': 'construct-host-scope', 'value': 'E. coli BL21(DE3); pETB, pETGalDc and pETGalC preparations', 'definition': 'The recombinant assay preparations supported by the corrected qualifiers, not a pathway-wide native protein property.', 'evidence_ids': ['source-2011', 'source-2005', 'correction-replay']},
+]
+by_assessment['native-localization']['dimensions'] = [
+    {'name': 'evidence-tier', 'value': 'EV-COMP-AINF / PUB-26602691 computational annotation', 'definition': 'The evidence type reported by the exact native object; it is not a direct localization assay.', 'evidence_ids': ['source-native-location', 'correction-replay']},
+    {'name': 'component-scope', 'value': 'MetaCyc:G1G01-2699-MONOMER, native Pseudomonas putida KT2440 GalB monomer', 'definition': 'The annotated component only, excluding separately qualified recombinant preparations and other pathway proteins.', 'evidence_ids': ['source-native-location', 'current-record']},
+    {'name': 'source-object', 'value': 'G1G01-2699-MONOMER.xml; location/cco and has-go-term[6]', 'definition': 'Exact source fields preserved in the new located_in edge and the append-only disposition erratum.', 'evidence_ids': ['source-native-location', 'erratum']},
+]
+assert all(check['status'] == 'passed' for check in review['checks'] if check['required'])
+assert all(finding['status'] == 'resolved' for finding in review['findings'])
+with output.open('x') as stream:
+    yaml.safe_dump(review, stream, sort_keys=False, allow_unicode=True, width=100)
+validation_command = [PYTHON, '-B', 'scripts/record_review.py', 'validate', str(output)]
+validation = subprocess.run(validation_command, cwd=B, capture_output=True, text=True)
+validation_receipt = {'utc': utc(), 'command': validation_command, 'cwd': str(B), 'exit_code': validation.returncode, 'stdout': validation.stdout, 'stderr': validation.stderr, 'review_path': str(output), 'review_sha256': sha(output), 'review_id': review['review_id'], 'inspect_sha256': sha(inspect_output), 'input_count': len(inspected['source']['inputs'])}
+with (O / 'completed-validation-receipt.json').open('x') as stream:
+    json.dump(validation_receipt, stream, indent=2)
+    stream.write('\n')
+assert validation.returncode == 0, validation_receipt
+print(json.dumps(validation_receipt, indent=2))

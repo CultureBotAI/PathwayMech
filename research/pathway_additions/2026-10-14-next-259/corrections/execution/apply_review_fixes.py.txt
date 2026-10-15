@@ -1,0 +1,92 @@
+"""Apply only the five independently identified gallate review findings after persistence."""
+from pathlib import Path
+import datetime, gzip, hashlib, json, subprocess
+import yaml
+R=Path('/private/tmp/pathwaymech-next-259-20261014')
+CI=Path('/private/tmp/pathwaymech-next-259-ci')
+G=R/'research/pathway_additions/2026-10-14-next-259/gallate'
+AUTHOR=Path('/private/tmp/pathwaymech-next-259-citation-correction')
+OUT=R/'research/pathway_additions/2026-10-14-next-259/corrections/application'
+OLD='9fb56b4694243c675aa1227a443dd46a8012d8ebeb0e8665e4de6f68520ed665'
+PROPOSED='2fe675db8c090057dbf2cddedf313ea133278b7895dd7a4d68ec787e6e91fcd6'
+KEYS={'next259-construct-evidence-locality','next259-galb-cytosol-false-absence','gallate-final-author-handoff-unresolved-relative-link','gallate-go-reference-unresolvable-download-url','gallate-retained-log-staged-whitespace-failure'}
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(p,obj):p.write_text(json.dumps(obj,indent=2)+'\n')
+def rec(p):return {'path':str(p.relative_to(R)),'bytes':p.stat().st_size,'sha256':sha(p)}
+def main():
+ assert not OUT.exists(), 'Never repeat a partially applied correction implicitly.'
+ issue_index=json.loads((CI/'created-review-issues.json').read_text())
+ assert set(issue_index['issues'])==KEYS
+ saved=json.loads((CI/'saved-initial-reviews.json').read_text())
+ assert len(saved['reviews'])==2
+ seen=set()
+ for item in saved['reviews']:
+  p=R/item['path'];assert sha(p)==item['sha256'];review=yaml.safe_load(p.read_text())
+  assert review['verdict']=='needs_curation' and review['completion']=='completed'
+  seen|={f['issue_key'] for f in review['findings']}
+ assert seen==KEYS
+ target=R/'data/pathways/gallate-degradation-i.yaml';assert sha(target)==OLD
+ proposal=AUTHOR/'gallate-degradation-i.yaml';assert sha(proposal)==PROPOSED
+ manifest=AUTHOR/'artifact-manifest.json'
+ assert sha(manifest)=='fc381dcf3f822f591feaa57f9d58424a6092814c0c5b6ac041e62a800f647691'
+ for row in json.loads(manifest.read_text())['files']:assert sha(AUTHOR/row['path'])==row['sha256']
+ initial=yaml.safe_load(target.read_text());proposed=yaml.safe_load(proposal.read_text())
+ old_edges={e['id']:e for e in initial['mechanistic_edges']};new_edges={e['id']:e for e in proposed['mechanistic_edges']}
+ assert len(old_edges)==129 and len(new_edges)==130 and set(new_edges)-set(old_edges)=={'galb-native-cytosol'}
+ for k,e in old_edges.items():
+  for field in ['subject','predicate','object','description']:assert e.get(field)==new_edges[k].get(field),(k,field)
+  assert [q['description'] for q in e.get('endpoint_qualifiers',[])]==[q['description'] for q in new_edges[k].get('endpoint_qualifiers',[])]
+ authority_before={p:sha(R/p) for p in ['conf/identifier_sources.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json']}
+ owners=[G/n/f for n in ['record-final','adapter-author','adapter-review'] for f in ['root-retention-map.json','retained-manifest.json']]+[G/'research-retention.json']
+ owner_before=[rec(p) for p in owners]
+ # Verify every compact source package before mutating the three affected retention mappings.
+ index=json.loads((G/'research-retention.json').read_text())
+ for package in index['packages']:
+  mp=R/package['manifest'];assert sha(mp)==package['sha256']
+  for row in json.loads(mp.read_text())['files']:assert sha(mp.parent/row['path'])==row['sha256']
+ OUT.mkdir(parents=True)
+ for p in owners:
+  q=OUT/'predecessor-root-metadata'/p.relative_to(G);q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(p.read_bytes())
+ # Apply author corrections plus verified term navigation and explicit SQL provenance scope.
+ text=proposal.read_text()
+ old_url='  url: http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn\n'
+ assert text.count(old_url)==1
+ text=text.replace(old_url,'  url: https://www.ebi.ac.uk/QuickGO/term/GO:0046943\n')
+ old_version='  source_version: GO 2026-07-26; digest is uncompressed semantic SQL database\n'
+ assert text.count(old_version)==1
+ text=text.replace(old_version,'  source_version: Pinned GO semantic SQL metadata version 2026-07-26; digest is the uncompressed\n    semantic SQL database, not the linked current term page\n')
+ target.write_text(text)
+ # Restore the exact frozen author draft beside its immutable handoff.
+ draft=G/'record-final/gallate-degradation-i.yaml';assert not draft.exists()
+ source=Path('/private/tmp/pathwaymech-next-259-record-author-final/gallate-degradation-i.yaml');assert sha(source)==OLD;draft.write_bytes(source.read_bytes())
+ mapping=G/'record-final/root-retention-map.json';obj=json.loads(mapping.read_text())
+ row=next(v for v in obj['files'] if v['source_relative_path']=='gallate-degradation-i.yaml')
+ assert row['sha256']==OLD and row['retained_path'] is None
+ row['retained_path']='gallate-degradation-i.yaml';row['disposition']='Exact immutable initial author draft retained beside its handoff; later maintained correction is separate.';dump(mapping,obj)
+ # Preserve exact raw source bytes through deterministic compression, not whitespace rewriting.
+ compressed=[]
+ for name,relative in [('adapter-author','before-format-trim/pseudogene-profile.patch'),('adapter-author','pseudogene-profile.patch'),('adapter-author','trim_formatting.py.txt'),('adapter-review','targeted-tests.log')]:
+  folder=G/name;p=folder/relative;raw=p.read_bytes();original_hash=sha(p);dest=p.with_name(p.name+'.gz');assert not dest.exists()
+  encoded=gzip.compress(raw,mtime=0);assert gzip.decompress(encoded)==raw;dest.write_bytes(encoded)
+  mapping=folder/'root-retention-map.json';obj=json.loads(mapping.read_text());row=next(v for v in obj['files'] if v['retained_path']==relative)
+  assert row['sha256']==original_hash and sha(Path(row['external_path']))==original_hash
+  row.update({'retained_path':str(dest.relative_to(folder)),'retained_encoding':'gzip','retained_sha256':sha(dest),'retained_bytes':len(encoded),'uncompressed_sha256':original_hash,'disposition':'Lossless deterministic gzip preserves exact source bytes while avoiding staged whitespace diagnostics; decompress before comparing to the immutable source author manifest.'})
+  dump(mapping,obj);compressed.append({'original_path':str(p.relative_to(R)),'retained_path':str(dest.relative_to(R)),'uncompressed_sha256':original_hash,'compressed_sha256':sha(dest),'decompressed_bytes':len(raw),'compressed_bytes':len(encoded)})
+  p.unlink()
+ # Rebuild only root-owned manifests. External author manifests/handoffs are untouched.
+ for name in ['record-final','adapter-author','adapter-review']:
+  folder=G/name;mp=folder/'retained-manifest.json';obj=json.loads(mp.read_text());files=[]
+  for p in sorted(folder.rglob('*')):
+   if p.is_file() and p!=mp:files.append({'path':str(p.relative_to(folder)),'bytes':p.stat().st_size,'sha256':sha(p)})
+  obj['files']=files;dump(mp,obj)
+  package=next(v for v in index['packages'] if v['directory']==name);package['sha256']=sha(mp);package['retained_files']=len(files)
+  package['external_artifacts']=sum(v['retained_path'] is None for v in json.loads((folder/'root-retention-map.json').read_text())['files'])
+ index['utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();index['scope']='Compact hash-bound source and author packages. Root-owned retention metadata now retains the exact initial author draft and compresses four original source artifacts losslessly. Original author manifests, source originals and historical handoffs remain immutable; scientific dispositions are saved separately.';dump(G/'research-retention.json',index)
+ assert all(sha(R/p)==h for p,h in authority_before.items())
+ final=yaml.safe_load(target.read_text());assert len(final['mechanistic_edges'])==130 and len(final['participants'])==78
+ receipt={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'issues':issue_index['issues'],'initial_record_sha256':OLD,'author_proposal_sha256':PROPOSED,'final_record':rec(target),'additional_changes_to_author_proposal':['GO reference navigation URL','GO source version wording distinguishes embedded SQL metadata from live term page'],'existing129_triples_and_descriptions_preserved':True,'authorities_unchanged':authority_before,'owner_metadata_before':owner_before,'owner_metadata_after':[rec(p) for p in owners],'lossless_compressed_artifacts':compressed,'retained_initial_author_draft':rec(draft),'status':'Supported corrections applied; history, rendering, full final gates and independent successor reviews remain pending.'}
+ dump(OUT/'application-receipt.json',receipt)
+ files=[{'path':str(p.relative_to(OUT)),'bytes':p.stat().st_size,'sha256':sha(p)} for p in sorted(OUT.rglob('*')) if p.is_file()]
+ dump(OUT/'retained-manifest.json',{'scope':'Root correction receipt and exact predecessor root-owned metadata; excludes itself.','files':files})
+ print(json.dumps(receipt,indent=2))
+if __name__=='__main__':main()

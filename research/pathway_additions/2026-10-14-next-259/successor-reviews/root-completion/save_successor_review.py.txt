@@ -1,0 +1,26 @@
+from pathlib import Path
+import datetime,hashlib,json,os,subprocess,sys,yaml
+B=Path('/private/tmp/pathwaymech-next-259-20261014');CI=Path('/private/tmp/pathwaymech-next-259-ci');P=Path(sys.argv[1]);EXPECTED=sys.argv[2]
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+assert sha(P)==EXPECTED
+v=yaml.safe_load(P.read_text());rid=v['review_id'];O=CI/(rid+'-save-receipt.json');assert not O.exists()
+assert v['completion']=='completed' and v['verdict']=='pass_with_limitations' and all(f['status']=='resolved' for f in v['findings'])
+rows=[]
+for row in v['source']['inputs']:
+ p=B/row['path'];assert sha(p)==row['sha256'],str(p);rows.append({'path':row['path'],'sha256':row['sha256']})
+evidence=[]
+for row in v['evidence']:
+ ref=row['reference'];p=Path(ref) if Path(ref).is_absolute() else B/ref
+ if row.get('snapshot_sha256'):
+  assert p.is_file(),str(p);assert sha(p)==row['snapshot_sha256'],str(p);evidence.append({'evidence_id':row['evidence_id'],'path':str(p),'sha256':sha(p)})
+for f in v['findings']:
+ for prev in f['previous_occurrences']:
+  assert prev['repository']==v['repository'];q=B/'reviews/structured'/prev['review_id']/'review.yaml';pv=yaml.safe_load(q.read_text());old=next(x for x in pv['findings'] if x['finding_id']==prev['finding_id']);assert old['issue_key']==f['issue_key'] and set(old['target_ids'])<=set(f['target_ids'])
+env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',PYTHONNOUSERSITE='1',PYTHONPATH=str(B/'src')+':'+str(B));checks=[]
+for command in [[sys.executable,'-B','scripts/record_review.py','validate',str(P)],[sys.executable,'-B','scripts/record_review.py','save','--content',str(P)]]:
+ started=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(command,cwd=B,env=env,capture_output=True,text=True);checks.append({'command':command,'started_utc':started,'exit_code':r.returncode,'stdout':r.stdout,'stderr':r.stderr});print(json.dumps(checks[-1]),flush=True)
+ if r.returncode:O.write_text(json.dumps({'status':'failed','source_sha256':EXPECTED,'checks':checks},indent=2)+'\n');raise SystemExit(r.returncode)
+saved=B/'reviews/structured'/rid/'review.yaml';assert yaml.safe_load(saved.read_text())==v
+md=saved.with_name('review.md');assert md.is_file()
+result={'status':'saved','source_path':str(P),'source_sha256':EXPECTED,'saved_path':str(saved.relative_to(B)),'saved_sha256':sha(saved),'markdown_path':str(md.relative_to(B)),'markdown_sha256':sha(md),'verified_inputs':rows,'verified_evidence':evidence,'checks':checks}
+O.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'receipt':str(O),'saved_path':result['saved_path'],'saved_sha256':result['saved_sha256'],'verified_inputs':len(rows),'verified_evidence':len(evidence)}),flush=True)

@@ -1,0 +1,27 @@
+from html.parser import HTMLParser
+from pathlib import Path
+import datetime,hashlib,json
+import yaml
+R=Path('/private/tmp/pathwaymech-next-259-20261014');O=Path(__file__).parent
+class ReferenceParser(HTMLParser):
+ def __init__(self):super().__init__();self.active=None;self.items={};self.all_links=[]
+ def handle_starttag(self,tag,attrs):
+  attrs=dict(attrs)
+  if tag=='li' and attrs.get('id','').startswith('reference-'):
+   self.active=attrs['id'];assert self.active not in self.items;self.items[self.active]={'hrefs':[],'text':''}
+  if tag=='a':
+   self.all_links.append(attrs.get('href'))
+   if self.active:self.items[self.active]['hrefs'].append(attrs.get('href'))
+ def handle_endtag(self,tag):
+  if tag=='li':self.active=None
+ def handle_data(self,data):
+  if self.active:self.items[self.active]['text']+=data
+recordpath=R/'data/pathways/gallate-degradation-i.yaml';page=R/'pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html';record=yaml.safe_load(recordpath.read_text());doc=ReferenceParser();doc.feed(page.read_text());assert len(doc.items)==len(record['references'])
+for i,ref in enumerate(record['references'],1):
+ item=doc.items[f'reference-{i}'];assert item['hrefs']==[ref['url']],(i,item,ref)
+ assert ref['id'] in item['text'] and ref['title'] in item['text']
+ if 'source_version' in ref:assert ref['source_version'] in item['text']
+histories=['history/records/gallate-degradation-i/2026-10-14T223610Z-codex-7872e4.yaml','history/records/gallate-degradation-i/2026-10-14T231542Z-codex-b62806.yaml']
+for p in histories:assert 'https://github.com/CultureBotAI/PathwayMech/blob/main/'+p in doc.all_links
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed','command':'/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B /private/tmp/pathwaymech-next-259-integration-successor/verify_reference_html.py','exit_code':0,'record_sha256':hashlib.sha256(recordpath.read_bytes()).hexdigest(),'page_sha256':hashlib.sha256(page.read_bytes()).hexdigest(),'all_reference_urls_titles_versions_verified':len(doc.items),'corrected_go_reference':doc.items['reference-53'],'both_record_history_links_verified':histories,'scope':'Actual HTML href/title/version equality and preserved append-only history links; no other reference network availability claim.'}
+p=O/'reference-html-and-history.json';assert not p.exists();p.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

@@ -1,0 +1,28 @@
+from pathlib import Path
+import urllib.request,urllib.error,datetime,hashlib,json,concurrent.futures
+B=Path(__file__).parent;O=B/'originals';O.mkdir(exist_ok=True)
+urls={
+ 'Q88JX7.json':'https://rest.uniprot.org/uniprotkb/Q88JX7.json',
+ 'Q88JX6.json':'https://rest.uniprot.org/uniprotkb/Q88JX6.json',
+ 'Q88JX8-current.json':'https://rest.uniprot.org/uniprotkb/Q88JX8.json',
+ 'AAN68127.1-AAN68128.1-AAN68129.1.xml':'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=protein&id=AAN68127.1,AAN68128.1,AAN68129.1&rettype=gb&retmode=xml',
+ '5CGZ.cif':'https://files.rcsb.org/download/5CGZ.cif',
+ '5CGZ-polymer-1.json':'https://data.rcsb.org/rest/v1/core/polymer_entity/5CGZ/1',
+ 'Q88JX8-history.tsv':'https://rest.uniprot.org/unisave/Q88JX8?format=tsv',
+}
+for i in range(2513,2520):urls[f'KEGG-ppu-PP_{i}.txt']='https://rest.kegg.jp/get/ppu:PP_'+str(i)
+def get(it):
+ n,u=it;p=O/n;assert not p.exists(),p
+ r={'path':str(p),'url':u,'utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech-source-author/1.0'}),timeout=45) as f:
+   b=f.read();r.update(status=f.status,final_url=f.url,headers=dict(f.headers))
+ except urllib.error.HTTPError as e:b=e.read();r.update(status=e.code,error=str(e))
+ except Exception as e:return dict(r,error=str(e))
+ p.write_bytes(b);r.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());return r
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as ex:rows=list(ex.map(get,urls.items()))
+receipt=B/'acquisition-initial.json'
+if receipt.exists():receipt=B/'acquisition-public-retry.json'
+assert not receipt.exists()
+receipt.write_text(json.dumps(rows,indent=2)+'\n')
+for r in rows:print(Path(r['path']).name,r.get('status'),r.get('bytes'),r.get('error',''))

@@ -1,0 +1,29 @@
+# Canonical labels from independently parsed/pinned owners; contextual limitations stay on edges.
+labels={};label_sources={}
+for ap in sorted(Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/data/identifier_authorities').glob('*.json')):
+ data=json.loads(ap.read_text())
+ for identifier,term in data.get('terms',{}).items():
+  if isinstance(term,dict) and 'label' in term:labels[identifier]=term['label'];label_sources[identifier]=str(ap)
+for rel in ['authority-candidates.json','supplemental-authority-candidates.json']:
+ for row in load('pathwaymech-next-259-authorities/'+rel):
+  term=row.get('parsed_term')
+  if term and isinstance(term,dict):
+   identifier=row['identifier'];labels.setdefault(identifier,term['label']);label_sources.setdefault(identifier,'authority candidates '+rel)
+  for t in row['candidate'].get('terms',[]):
+   if isinstance(t,list):labels.setdefault(t[0],t[1]);label_sources.setdefault(t[0],'authority candidates '+rel)
+for row in load('pathwaymech-next-259-authorities/ontology-candidates.json'):
+ for identifier,term in row['terms'].items():labels.setdefault(identifier,term['label']);label_sources.setdefault(identifier,row['database']['path'])
+for row in load('pathwaymech-next-259-transport-identities/chemical-identity-proposals.json')['chemicals']:
+ labels[row['proposed_id']]=row['canonical_label'];label_sources[row['proposed_id']]=row['issuing_original']['path']
+changes=[]
+for n in record['participants']+record['reactions']:
+ if n['id'] in labels:
+  if n['label']!=labels[n['id']]:changes.append({'id':n['id'],'before':n['label'],'after':labels[n['id']],'source':label_sources[n['id']]})
+  n['label']=labels[n['id']]
+# Native counterpart has no remaining selected edge after source-specific activity exclusions.
+record['description']+=' SYK-6 DesZ and LigAB oxygen-consumption assays show alternative gallate turnover without resolving the immediate product; PCA-specific LigAB regulator edges do not imply gallate-flux regulation.'
+# Source-sensitive original evidence bindings for the broad GO context.
+for r in record['references']:
+ if r['id']=='GO:0046943':
+  r.update(source_version='GO 2026-07-26; digest is uncompressed semantic SQL database',source_sha256='018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd',url='http://purl.obolibrary.org/obo/go/releases/2026-07-26/extensions/go-plus.ofn')
+save('author/canonical-label-decisions.json',{'changes':changes,'requirements_without_this_local_label_projection':[n['id'] for n in record['participants']+record['reactions'] if n['id'] not in labels],'authority_acceptance':'pending root full selected-key union and independent review'})

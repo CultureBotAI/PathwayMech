@@ -1,0 +1,14 @@
+import pathlib,json,hashlib,shutil,xml.etree.ElementTree as ET
+D=pathlib.Path('/private/tmp/pathwaymech-next-259-native'); P=pathlib.Path('/private/tmp/pathwaymech-next-259-candidate-preflight')
+manifest=json.loads((P/'artifact-manifest.json').read_text()); rows=[]
+for x in manifest['files']:
+ p=P/x['path']; b=p.read_bytes(); sha=hashlib.sha256(b).hexdigest(); rows.append(dict(x,actual_sha256=sha,verified=sha==x['sha256'] and len(b)==x['bytes']))
+assert all(x['verified'] for x in rows)
+(D/'retained/preflight-reverification.json').write_text(json.dumps({'source_manifest':str(P/'artifact-manifest.json'),'manifest_sha256':hashlib.sha256((P/'artifact-manifest.json').read_bytes()).hexdigest(),'files':rows},indent=2)+'\n')
+for f in ['GALLATE-DEGRADATION-II-PWY-artsymbiocyc.xml','GALLATE-DEGRADATION-I-PWY-artsymbiocyc.xml','GALLATE-DIOXYGENASE-RXN.xml','RXN-9983.xml','RXN-2463.xml','RXN-2464.xml']:
+ shutil.copy2(P/'originals'/f,D/'originals'/f.replace('-artsymbiocyc',''))
+for fname in ['candidate.json','prior-match-dispositions.json','whole-record-node-audit.json','baseline-reverification.json','git-baseline-verification.json']:
+ data=json.loads((P/fname).read_text()); print(fname, type(data).__name__, list(data)[:20] if isinstance(data,dict) else len(data))
+ if fname=='prior-match-dispositions.json': print(json.dumps(data,indent=2)[:6500])
+for p in (D/'originals').glob('*.xml'):
+ root=ET.parse(p).getroot(); ob=list(root)[1]; print(p.name, [(c.tag, len(c), (c.text or '').strip()[:50]) for c in ob]);
