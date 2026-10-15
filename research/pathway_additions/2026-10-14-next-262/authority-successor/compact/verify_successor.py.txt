@@ -1,0 +1,120 @@
+"""Finite external locator delta and actual-corpus identifier verification.
+
+The previous authority package and maintained worktree are read-only inputs.
+This is authority author verification, not an independent scientific verdict.
+"""
+from pathlib import Path
+import contextlib, copy, datetime, difflib, hashlib, io, json, shutil, sys, time
+sys.dont_write_bytecode=True
+import yaml
+
+B=Path('/private/tmp/pathwaymech-next-262-authority-successor')
+A=Path('/private/tmp/pathwaymech-next-262-authority-integration')
+R=Path('/private/tmp/pathwaymech-next-262-20261014')
+TARGET=R/'data/pathways/catechol-degradation-ii.yaml'
+EXPECTED='4931e9a8cc5ae9f55c434d942c70fc65c75ad73a49e878bd34fbcfc4250df110'
+MANIFEST='21d966a875c2b0e79a22611cfa2db672a20cc58c41fbba3fba2dafa9881b1fa9'
+
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb')as stream:
+  for block in iter(lambda:stream.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+def save(name,value):
+ p=B/name;assert not p.exists(),('Preserve earlier attempt',p)
+ p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(value,indent=2,ensure_ascii=False)+'\n')
+ return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def bound(p):return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+
+def package_check():
+ manifest=A/'artifact-manifest.json';assert sha(manifest)==MANIFEST
+ m=load(manifest);expected=set()
+ for f in m['files']:
+  p=A/f['path'];assert not p.is_symlink() and p.is_file() and p.stat().st_size==f['bytes'] and sha(p)==f['sha256'],p
+  expected.add(f['path'])
+ actual={p.relative_to(A).as_posix()for p in A.rglob('*')if p.is_file()and not p.is_symlink()and p.name!='artifact-manifest.json'}
+ assert actual==expected,(actual-expected,expected-actual)
+ return {'manifest':bound(manifest),'owned_regular_files':len(expected),'all_manifest_bytes_and_exact_hidden_ignored_inventory_preserved':True,'scope':'External cache symlinks are not owned regular files and are not consumed by this offline identifier check. Their original-source bindings remain in the frozen authority builder receipts.'}
+
+def flatten(value,path=()):
+ """Independent complete tree projection, including structural markers."""
+ rows={path+('@type',):type(value).__name__}
+ if isinstance(value,dict):
+  rows[path+('@keys',)]=tuple(sorted(value))
+  for k,v in value.items():rows.update(flatten(v,path+(k,)))
+ elif isinstance(value,list):
+  rows[path+('@length',)]=len(value)
+  for i,v in enumerate(value):rows.update(flatten(v,path+(i,)))
+ else:rows[path+('@value',)]=value
+ return rows
+
+def identity(record):
+ return [('record',record['id'],record['label'],record.get('category'))]+[(field,n['id'],n['label'],n.get('category'))for field in ['taxa','participants','reactions','gene_clusters']for n in record.get(field,[])]
+
+def main():
+ started=datetime.datetime.now(datetime.timezone.utc).isoformat();clock=time.monotonic()
+ preservation_before=package_check()
+ selection=load(A/'retained/selection-freeze.json');initial=Path(selection['observation']);assert sha(initial)==selection['record_sha256']
+ assert sha(TARGET)==EXPECTED
+ initial_bytes=initial.read_bytes();current_bytes=TARGET.read_bytes();before=yaml.safe_load(initial_bytes);after=yaml.safe_load(current_bytes)
+ left,right=flatten(before),flatten(after);assert set(left)==set(right),'Record structure changed'
+ changes=[{'path':list(p[:-1]),'before':left[p],'after':right[p]}for p in left if left[p]!=right[p]]
+ assert len(changes)==10
+ assert all(c['path'][-1]=='source_locator' and c['path'][0]=='mechanistic_edges'for c in changes)
+ restored=copy.deepcopy(after)
+ for c in changes:
+  container=restored
+  for key in c['path'][:-1]:container=container[key]
+  container[c['path'][-1]]=c['before']
+ assert restored==before,'Non-locator semantics changed'
+ assert identity(before)==identity(after)
+ selected={x[1]for x in identity(after)};assert len(selected)==177 and selected==set(selection['selected_identifiers'])
+ helper_receipt=B/'record-successor-rebind-4931e9a8cc5ae9f5.json';helper=load(helper_receipt)
+ normalize=lambda c:(tuple(c['path']),c['before'],c['after'])
+ assert {normalize(c)for c in changes}=={normalize(c)for c in helper['record_differences']}
+ assert helper['successor_sha256']==EXPECTED and sha(helper['successor_observation'])==EXPECTED
+ for c in changes:c['edge_id']=after['mechanistic_edges'][c['path'][1]]['id']
+ raw_diff=''.join(difflib.unified_diff(initial_bytes.decode().splitlines(True),current_bytes.decode().splitlines(True),fromfile='frozen-initial',tofile='repaired-successor'))
+ diff_path=B/'exact-record-byte-diff.patch';assert not diff_path.exists();diff_path.write_text(raw_diff)
+ save('independent-locator-delta-check.json',{'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'initial':bound(initial),'successor':bound(TARGET),'frozen_helper':bound(A/'helpers/rebind_record_successor.py'),'helper_receipt':bound(helper_receipt),'independent_method':'Complete flattened tree projection with type/key/length markers, exactly ten changed source_locator leaves, and exact restoration of initial object after replacing those leaves. Compared all declared IDs/labels/categories independently.','only_locator_changes':True,'count':len(changes),'changes':changes,'affected_edges':sorted({c['edge_id']for c in changes}),'selected_ids_labels_categories_preserved':True,'selected_identifiers':sorted(selected),'byte_diff':bound(diff_path),'scientific_scope':'This independently checks the bounded edit and authority selection. Source-page correctness and scientific review dispositions remain root-owned.'})
+
+ handoff=load(A/'retained/author-handoff.json')
+ for output in handoff['outputs']:assert sha(output['path'])==output['sha256']
+ snapshots={n:load(A/'proposal'/f'{n}.union.json')for n in ['sources','ontology']}
+ terms=snapshots['sources']['terms']|snapshots['ontology']['terms'];assert len(terms)==5172 and selected<=terms.keys()
+ baseline={r['relative_path']:r for r in load(A/'retained/baseline-record-bindings.json')}
+ actual=sorted(p for p in (R/'data/pathways').rglob('*.yaml')if p.is_file())
+ assert len(actual)==259
+ assert {p.relative_to(R).as_posix()for p in actual}==set(baseline)|{TARGET.relative_to(R).as_posix()}
+ root=B/'identifier-consumer-root';assert not root.exists();(root/'conf').mkdir(parents=True);(root/'data/identifier_authorities').mkdir(parents=True)
+ policy=A/'baseline/conf/identifier_policy.yaml';assert sha(policy)==sha(R/'conf/identifier_policy.yaml');shutil.copyfile(policy,root/'conf/identifier_policy.yaml')
+ for n in ['sources','ontology']:shutil.copyfile(A/'proposal'/f'{n}.union.json',root/'data/identifier_authorities'/f'{n}.json')
+ corpus=[]
+ for p in actual:
+  relative=p.relative_to(R).as_posix();data=p.read_bytes();digest=hashlib.sha256(data).hexdigest()
+  if p==TARGET:assert digest==EXPECTED
+  else:assert digest==baseline[relative]['sha256'],('Predecessor changed',relative)
+  target=root/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data);assert sha(target)==digest
+  corpus.append({'relative_path':relative,'actual_path':str(p),'shadow_path':str(target),'sha256':digest,'bytes':len(data),'role':'repaired exact successor'if p==TARGET else'unchanged actual predecessor'})
+ corpus_binding=save('actual-corpus-bindings.json',{'records':corpus,'count':259,'unchanged_predecessors':258,'inventory_method':'Path.rglob *.yaml under actual data/pathways includes hidden and ignored files; exact set checked against all 258 original baseline records plus the repaired successor. No synthetic selector is included.'})
+ runtime=load(A/'retained/runtime-bindings.json')
+ for row in runtime:assert sha(row['path'])==row['sha256']==sha(row['maintained_path'])
+ sys.path.insert(0,str(A/'runtime/src'))
+ from pathwaymech.cli import check_identifiers_main
+ log=io.StringIO();consumer_started=datetime.datetime.now(datetime.timezone.utc).isoformat();t=time.monotonic()
+ with contextlib.redirect_stdout(log),contextlib.redirect_stderr(log):code=check_identifiers_main([],root=root)
+ log_path=B/'identifier-consumer.log';assert not log_path.exists();log_path.write_text(log.getvalue())
+ consumer_finished=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ for row in corpus:assert sha(row['actual_path'])==row['sha256']==sha(row['shadow_path'])
+ for row in runtime:assert sha(row['path'])==row['sha256']==sha(row['maintained_path'])
+ for output in handoff['outputs']:assert sha(output['path'])==output['sha256']
+ assert sha(TARGET)==EXPECTED
+ consumer=save('identifier-consumer-receipt.json',{'status':'passed'if code==0 else'failed','exit_code':code,'canonical_consumer':'pathwaymech.cli.check_identifiers_main([], root=external_shadow_root)','runtime_cli':bound(A/'runtime/src/pathwaymech/cli.py'),'unchanged_runtime_python_files':len(runtime),'started_at':consumer_started,'finished_at':consumer_finished,'elapsed_seconds':round(time.monotonic()-t,3),'actual_records_checked':259,'exact_repaired_record_sha256':EXPECTED,'proposed_authority_outputs':handoff['outputs'],'authority_terms':5172,'policy':bound(policy),'log':bound(log_path),'corpus':corpus_binding,'all_current_corpus_bytes_unchanged_before_after':True,'maintained_writes':False,'limits':'Offline identifier, label and native type checks only; not full schema/render/test gates or independent scientific approval.'})
+ assert code==0,log.getvalue()
+ preservation_after=package_check()
+ assert preservation_before==preservation_after
+ save('verification.json',{'status':'passed','role':'External authority successor verification; no maintained promotion or independent scientific verdict','started_at':started,'finished_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'elapsed_seconds':round(time.monotonic()-clock,3),'initial_record_sha256':selection['record_sha256'],'repaired_record_sha256':EXPECTED,'locator_only_changes':10,'selected_ids_labels_categories_unchanged':177,'actual_records_checked':259,'unchanged_predecessor_records':258,'authority_terms':5172,'consumer_receipt':consumer,'frozen_authority_package_before':preservation_before,'frozen_authority_package_after':preservation_after,'no_frozen_authority_or_maintained_mutation':True,'source_scope':'Frozen proposal output bytes and unchanged real consumer; no source candidate selection or authority builder rerun is needed for locator-only changes.'})
+ print(json.dumps({'status':'passed','locator_only_changes':10,'identities_preserved':177,'actual_records_checked':259,'authority_terms':5172,'frozen_package_unchanged':True},indent=2))
+
+if __name__=='__main__':main()

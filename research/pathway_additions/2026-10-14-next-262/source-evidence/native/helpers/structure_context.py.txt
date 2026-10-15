@@ -1,0 +1,17 @@
+from pathlib import Path
+import xml.etree.ElementTree as E,json,re,html,hashlib,collections
+r=Path('/private/tmp/pathwaymech-next-262-native');features=[];codes={};slots=[];sel={}
+def tree(e):
+ if e.get('frameid') and e.tag!='Feature':return {'object_type':e.tag,**e.attrib}
+ return {'tag':e.tag,'attributes':e.attrib,'text':e.text or '', 'children':[tree(v) for v in e]}
+for original_p in sorted((r/'originals').glob('*.xml')):
+ p=Path(sel.get(original_p.stem.removeprefix('META-'),str(original_p)));x=E.parse(p).getroot();frame=p.stem.removeprefix('META-');e=next(a for a in x if a.get('frameid')==frame and a.get('detail')=='full');sha=hashlib.sha256(p.read_bytes()).hexdigest();counts=collections.Counter()
+ for s in e:
+  counts[s.tag]+=1
+  if s.tag not in ['credits','parent','citation','synonym','dblink','common-name']:
+   slots.append({'frame':frame,'type':e.tag,'slot':s.tag,'ordinal':counts[s.tag],'source_locator':f'/ptools-xml/{e.tag}[@frameid="{frame}"]/{s.tag}[{counts[s.tag]}]','source_sha256':sha,'structure':tree(s)})
+  for c in s.iter('Evidence-Code'):
+   if c.get('detail')=='full':codes[c.get('frameid')]={'frame':c.get('frameid'),'name':c.findtext('common-name'),'definition':c.findtext('comment'),'source_path':str(p),'sha256':sha}
+  if s.tag=='has-feature':
+   f=s.find('Feature');features.append({'protein':frame,'feature':f.get('frameid'),'source_sha256':sha,'source_locator':f'/ptools-xml/Protein[@frameid="{frame}"]/has-feature[{counts[s.tag]}]','full_embedded_feature':tree(f),'disposition':'Retain full native embedded feature annotation/evidence context; no pathway-wide activity or regulation edge inferred from feature alone. Full original containing protein, not low-detail object reference, inspected.'})
+(r/'material-slot-structured-projection.json').write_text(json.dumps(slots,indent=2)+'\n');(r/'evidence-code-definitions.json').write_text(json.dumps(codes,indent=2)+'\n');(r/'protein-feature-context.json').write_text(json.dumps(features,indent=2)+'\n');print({'material_slots':len(slots),'features':len(features),'codes':len(codes)})

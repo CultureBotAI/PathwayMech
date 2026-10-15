@@ -1,0 +1,75 @@
+from pathlib import Path
+import json,hashlib,copy,collections,gzip,unicodedata,re,datetime,sys
+import yaml
+O=Path('/private/tmp/pathwaymech-next-262-independent-technical');B=Path('/private/tmp/pathwaymech-next-262-native-author');P=Path('/private/tmp/pathwaymech-next-262-primary-author');R=Path('/private/tmp/pathwaymech-next-262-20261014');BIO=Path('/private/tmp/pathwaymech-next-262-biological-identity');PRI=Path('/private/tmp/pathwaymech-next-262-primary')
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):
+ with Path(p).open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def yload(p):return yaml.load(Path(p).read_bytes(),Loader=yaml.CSafeLoader)
+def dump(n,j):(O/n).write_text(json.dumps(j,indent=2,ensure_ascii=False)+'\n')
+manifest=P/'artifact-manifest.json';assert sha(manifest)=='5a0e816995e4a61020b53eae826343426f62b64556ee59f9e309548244be07a1';rows=read(manifest)['files'];assert len(rows)==52;assert {str(p.relative_to(P))for p in P.rglob('*')if p.is_file()and p!=manifest}=={x['path']for x in rows}
+for x in rows:assert sha(P/x['path'])==x['sha256']and (P/x['path']).stat().st_size==x['bytes']
+compact=read(P/'compact-retention-manifest.json')['files']
+for x in compact:assert sha(P/x['path'])==x['sha256']and (P/x['path']).stat().st_size==x['bytes']
+compression=read(P/'compression-pairs.json')
+for x in compression:assert sha(P/x['original'])==x['original_sha256']and sha(P/x['compressed'])==x['compressed_sha256']and gzip.decompress((P/x['compressed']).read_bytes())==(P/x['original']).read_bytes()
+a=yload(B/'native-draft.yaml');preview=yload(P/'combined-author-preview.yaml');current=yload(O/'record.initial-integrated.yaml');expected=copy.deepcopy(a);index={e['id']:e for e in expected['mechanistic_edges']};patches=read(P/'native-edge-patches.json')
+for patch in patches:
+ e=index[patch['expected_native_id']];assert all(e[k]==v for k,v in patch['selector'].items());assert hashlib.sha256(e['description'].encode()).hexdigest()==patch['expected_description_sha256'];e['description']=patch['description'];e['evidence']+=copy.deepcopy(patch['evidence_append'])
+ if 'endpoint_qualifiers_replace'in patch:e['endpoint_qualifiers']=copy.deepcopy(patch['endpoint_qualifiers_replace'])
+nodeindex={n['id']:n for s in ['taxa','participants','reactions']for n in expected[s]}
+for n in read(P/'node-needs.json')['nodes']:
+ if n['id']not in nodeindex:expected['participants'].append(copy.deepcopy(n))
+for update in read(P/'node-role-updates.json'):
+ assert nodeindex[update['id']]['category']==update['expected_category'];nodeindex[update['id']]['category']=update['category']
+refs={x['id']:x for x in expected['references']}
+for x in read(P/'reference-needs.json')['references']:
+ assert x['id']not in refs or x==refs[x['id']];refs[x['id']]=x
+expected['references']=list(refs.values());expected['mechanistic_edges']+=read(P/'primary-edges.json');expected['description']+='\n\n'+'\n\n'.join(x['description']for x in read(P/'record-description-paragraphs.json'));assert expected==preview
+oldedges={e['id']:e for e in a['mechanistic_edges']};newedges={e['id']:e for e in current['mechanistic_edges']};previewedges={e['id']:e for e in preview['mechanistic_edges']};assert len(newedges)==214
+for eid,e in oldedges.items():assert all(e[k]==newedges[eid][k]for k in ['subject','predicate','object'])and newedges[eid]['evidence'][:len(e['evidence'])]==e['evidence']
+root_added_evidence=[]
+for eid,e in previewedges.items():
+ n=newedges[eid]
+ if eid in ['p020','p029']:
+  other=copy.deepcopy(n);assert other['evidence'][:-1]==e['evidence'];root_added_evidence.append({'edge':eid,'evidence':other['evidence'].pop()});assert other==e
+ else:assert n==e
+for key in ['id','label','pathway_type','taxa','participants','reactions']:assert current[key]==preview[key]
+previews={r['id']:r for r in preview['references']};currentrefs={r['id']:r for r in current['references']};assert all(currentrefs[k]==v for k,v in previews.items());newrefs={k:v for k,v in currentrefs.items()if k not in previews};assert set(newrefs)=={'DOI:10.2210/pdb8ih6/pdb','DOI:10.2210/pdb1bjp/pdb','UniProtKB:Q9KWS3','UniProtKB:Q9KWS4','UniProtKB:Q01468','CHEBI:58349'}
+assert current['description'].startswith(preview['description']+'\n\n');rootparas=current['description'][len(preview['description'])+2:].split('\n\n');contexts=read(P/'biological-context-proposal.json');assert len(rootparas)==3 and all(rootparas[i].startswith(x['proposed_record_text'])for i,x in enumerate(contexts))
+# Exact issuing additions, independent of root's integration booleans.
+sourcecontext=read(O/'initial-context/research/pathway_additions/2026-10-14-next-262/integration/issuing-structure-context.json')
+for row in sourcecontext['sources']:assert sha(row['path'])==row['sha256']and Path(row['path']).stat().st_size==row['bytes']
+for eid,path in [('8IH6',BIO/'originals/structure-lead/RCSB-8IH6-entry.json'),('1BJP',PRI/'originals/RCSB-1BJP-entry.json')]:
+ j=read(path);doi=next(x['pdbx_DOI']for x in j['database_2']if x.get('database_code')==eid and x.get('database_id')=='PDB');assert currentrefs['DOI:'+doi]['source_sha256']==sha(path)
+for acc,path in [('Q9KWS3',BIO/'originals/public/Q9KWS3.json'),('Q9KWS4',BIO/'originals/public/Q9KWS4.json'),('Q01468',Path('/private/tmp/pathwaymech-next-261-biological-identities/originals/initial/uniprot-Q01468.json'))]:
+ j=read(path);assert j['primaryAccession']==acc and currentrefs['UniProtKB:'+acc]['source_sha256']==sha(path)
+q3=read(BIO/'originals/public/Q9KWS3.json')['sequence']['value'];q4=read(BIO/'originals/public/Q9KWS4.json')['sequence']['value'];poly1=read(BIO/'originals/exact-follow/8IH6-polymer1.json');poly2=read(BIO/'originals/exact-follow/8IH6-polymer2.json');assert len(q3)==256 and len(q4)==261;assert poly1['entity_poly']['pdbx_seq_one_letter_code_can']=='ADLNW'+q4 and poly2['entity_poly']['pdbx_seq_one_letter_code_can']=='AA'+q3
+assert len(poly1['rcsb_polymer_entity_container_identifiers']['asym_ids'])==len(poly2['rcsb_polymer_entity_container_identifiers']['asym_ids'])==5;assert read(BIO/'originals/exact-follow/8IH6-assembly1.json')['pdbx_struct_assembly']['oligomeric_count']==10
+q=read('/private/tmp/pathwaymech-next-261-biological-identities/originals/initial/uniprot-Q01468.json')['sequence']['value'];assert read(PRI/'originals/RCSB-1BJP-polymer1.json')['entity_poly']['pdbx_seq_one_letter_code_can']==q[1:]and q[0]=='M'
+for i in [1,2,3]:
+ assembly=read(PRI/f'originals/RCSB-1BJP-assembly{i}.json')['pdbx_struct_assembly'];assert assembly['oligomeric_count']==6 and assembly['oligomeric_details']=='hexameric'
+nadpfile=Path('/private/tmp/pathwaymech-next-262-primary-extra-chemistry/ChEBI-58349.json');nadp=read(nadpfile);assert sha(nadpfile)==currentrefs['CHEBI:58349']['source_sha256'];assert nadp['chebi_accession']=='CHEBI:58349'and nadp['name']=='NADP(3-)'and nadp['chemical_data']['formula']=='C21H25N7O17P3'and nadp['chemical_data']['charge']==-3
+# Exact quote-body replay, preserving the limited transformation boundary. Printed-page correctness is separate.
+def strings(x):
+ if isinstance(x,str):yield x
+ elif isinstance(x,list):
+  for v in x:yield from strings(v)
+ elif isinstance(x,dict):
+  for v in x.values():yield from strings(v)
+def norm(t):return re.sub(r'\s+',' ',unicodedata.normalize('NFKC',re.sub(r'^L\d+@P[^:]*:\s*','',t,flags=re.M).replace('\x02','').replace('\u00ad',''))).strip()
+quotes=[]
+for row in read(P/'quote-replay.json'):
+ p=Path(row['source']['path']);assert sha(p)==row['source']['sha256'];segments=list(strings(read(p)))if p.suffix=='.json'else[p.read_text()];quote=norm(row['evidence']['quote']);hits=[i for i,t in enumerate(segments)if quote in norm(t)];assert hits;quotes.append({'evidence_id':row['evidence_id'],'reference_id':row['evidence']['reference_id'],'source':row['source'],'normalized_quote_found':True,'segment_hits':hits,'locator':row['evidence']['source_locator']})
+tables=read(P/'table-evidence-replay.json');assert len(tables)==13
+for row in tables:assert sha(row['source']['path'])==row['source']['sha256']and 'source_assertion'in row['evidence']and 'quote'not in row['evidence']
+all_primary_evidence=[x['evidence']for x in read(P/'quote-replay.json')+tables]
+actual_evidence=[x for e in current['mechanistic_edges']for x in e['evidence']]+[x for e in current['mechanistic_edges']for q in e.get('endpoint_qualifiers',[])for x in q['evidence']]
+assert all(x in actual_evidence for x in all_primary_evidence)
+claims=read(P/'claim-dispositions.json');assert len(claims)==198 and all(set(x['edge_ids'])<=set(newedges)for x in claims);assert len(read(P/'record-narrative-units.json'))==198
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.schema import validate_record
+validate_record(current)
+finding=read(O/'finding-T-F01.initial.json')
+result={'checked_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target_snapshot':{'path':str(O/'record.initial-integrated.yaml'),'sha256':sha(O/'record.initial-integrated.yaml')},'primary_author_manifest_sha256':sha(manifest),'primary_author_files_verified':52,'compact_entries_verified':len(compact),'lossless_pairs_verified':len(compression),'author_preview_reconstructed_exactly':True,'native_patch_count':len(patches),'native_edge_triples_and_edge_level_evidence_preserved':185,'replaced_native_qualifier_evidence_occurrences':finding['exact_eight_occurrences'],'primary_edges_exact_before2_issuing_additions':29,'root_added_references':newrefs,'root_added_evidence':root_added_evidence,'three_root_context_paragraphs_exact_with_explicit_issuing_citations':True,'source_context_originals_hash_verified':len(sourcecontext['sources']),'exact_structure_sequence_and_assembly_checks':{'8IH6_ADLNW_plus261_Q9KWS4':True,'8IH6_AA_plus256_Q9KWS3':True,'8IH6_five_each_and_total10':True,'1BJP_Q01468_minus_initial_M':True,'1BJP_all3_deposited_assemblies6':True,'NADP_issuing_identity_formula_charge':True},'primary_quote_bodies_replayed':quotes,'primary_table_assertions_source_bound':13,'primary_claim_dispositions_preserved':198,'primary_narrative_paragraphs_preserved':26,'shape_passed':True,'open_technical_findings':[{'finding_id':'T-F01','issue_key':finding['issue_key'],'scope':'integration receipt wording; no biological graph defect'}],'known_complementary_science_issue':'XylG printed-page locator off by one, owned by scientific reviewer; quote-body equality does not close or duplicate that finding.','limitations':['Initial integrated snapshot only. Full source-table scientific semantic adjudication, historical assay interpretation and source-page accuracy belong to complementary independent science review.','Quote checks permit only line-prefix, whitespace, NFKC and discretionary-break normalization; not visual PDF inspection.','Frozen primary evidence and narrative are preserved; complete198-claim scientific sufficiency is not newly claimed by this technical check.','Final authority union, locator and receipt successors, canonical final input capture, page/KGX and full gates remain pending.']}
+dump('initial-integration-replay.json',result);print(json.dumps({'record_sha256':result['target_snapshot']['sha256'],'primary_author_files_verified':52,'native_edge_arrays_preserved':185,'qualifier_occurrences_replaced':8,'primary_quote_bodies_verified':len(quotes),'primary_tables_bound':13,'root_added_references':len(newrefs)},indent=2))

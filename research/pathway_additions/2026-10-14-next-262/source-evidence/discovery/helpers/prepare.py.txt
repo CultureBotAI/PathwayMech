@@ -1,0 +1,32 @@
+from pathlib import Path
+import hashlib,json,subprocess,xml.etree.ElementTree as ET,shutil,re,datetime
+import yaml
+O=Path('/private/tmp/pathwaymech-next-262-discovery'); W=Path('/private/tmp/pathwaymech-next-261-20261014'); old=Path('/private/tmp/pathwaymech-next-261-native')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v): (O/n).write_text(json.dumps(v,indent=2)+'\n')
+man=json.loads((old/'artifact-manifest.json').read_text()); rows={r['path']:r for r in man['files']}
+frames=['PWY-5420','PWY-5419','PWY-5162','PWY-5415','P183-PWY','CATECHOL-23-DIOXYGENASE-RXN','RXN-8527','RXN-8529','4.1.1.77-RXN','2-OXOPENT-4-ENOATE-HYDRATASE-RXN','MHPELY-RXN','ACETALD-DEHYDROG-RXN','3.7.1.9-RXN']
+inv=[]; projected=[]
+for frame in frames:
+ rel='originals/META-'+frame+'.xml'; p=old/rel; r=rows[rel]; assert r['sha256']==sha(p)
+ tree=ET.parse(p); rt=tree.getroot(); el=[e for e in rt if e.attrib.get('frameid')==frame]; assert len(el)==1 and el[0].attrib.get('detail')=='full'; el=el[0]
+ shutil.copy2(p,O/rel)
+ inv.append({'frame':frame,'class':el.tag,'retained_path':rel,'original_path':str(p),'sha256':sha(p),'bytes':p.stat().st_size,'source_package_manifest':str(old/'artifact-manifest.json'),'source_package_manifest_sha256':sha(old/'artifact-manifest.json'),'reused_original':True,'root_attributes':rt.attrib})
+ d={'id':frame,'tag':el.tag,'name':el.findtext('common-name'),'synonyms':[e.text for e in el.findall('synonym')],'parents':[e.attrib.get('frameid') for e in el.findall('parent/*')],'comments':[e.text for e in el.findall('comment')],'links':[ET.tostring(e,encoding='unicode') for e in el.findall('dblink')],'publications':[{'id':e.attrib.get('frameid'),'pmid':e.findtext('pubmed-id'),'title':e.findtext('title'),'year':e.findtext('year')} for e in el.findall('.//Publication')],'slot_count':len(el)}
+ if el.tag=='Pathway':
+  d.update(members=[e.attrib.get('frameid') for e in el.findall('reaction-list/*')],subpathways=[e.attrib.get('frameid') for e in el.findall('sub-pathways/*')],layouts=[{'id':list(e)[0].attrib.get('frameid'),'direction':e.findtext('direction'),'left':[x.attrib.get('frameid') for x in e.findall('left-primaries/*')],'right':[x.attrib.get('frameid') for x in e.findall('right-primaries/*')]} for e in el.findall('reaction-layout')],ordering=[{'after':list(e)[0].attrib.get('frameid'),'before':[x.attrib.get('frameid') for x in e.findall('predecessor-reactions/*')]} for e in el.findall('reaction-ordering')],species=[{'id':list(e)[0].attrib.get('frameid'),'name':e.findtext('Organism/common-name'),'strain':e.findtext('Organism/strain-name'),'ncbi':[z.findtext('dblink-oid') for z in e.findall('Organism/dblink') if z.findtext('dblink-db')=='NCBI-TAXONOMY-DB']} for e in el.findall('species')])
+ if el.tag=='Reaction':
+  d.update(direction=el.findtext('reaction-direction'),left=[{'id':list(e)[0].attrib.get('frameid'),'coefficient':e.findtext('coefficient')} for e in el.findall('left')],right=[{'id':list(e)[0].attrib.get('frameid'),'coefficient':e.findtext('coefficient')} for e in el.findall('right')],activities=[{'id':e.attrib.get('frameid'),'detail':e.attrib.get('detail'),'enzymes':[x.attrib.get('frameid') for x in e.findall('enzyme/*')],'comments':[x.text for x in e.findall('comment')]} for e in el.findall('enzymatic-reaction/*')])
+ projected.append(d)
+dump('reused-source-inventory.json',inv);dump('native-projections.json',projected)
+base='62b8798b0044f422a59f1527b0801ff09a27d368'; corpus=[]
+for p in sorted((W/'data/pathways').glob('*.yaml')):
+ d=yaml.safe_load(p.read_text()); rel=str(p.relative_to(W)); proc=subprocess.run(['git','show',base+':'+rel],cwd=W,capture_output=True)
+ base_sha=hashlib.sha256(proc.stdout).hexdigest() if proc.returncode==0 else None
+ formal={e['object'] for e in d.get('mechanistic_edges',[]) if e['predicate']=='has_part' and e['subject']==d['id']}
+ changed=sha(p)!=base_sha
+ corpus.append({'path':rel,'sha256':sha(p),'bytes':p.stat().st_size,'id':d['id'],'label':d['label'],'base_sha256':base_sha,'state_vs_base':'not_in_merged_base' if base_sha is None else ('changed_since_base' if changed else 'same_as_merged_base'),'reactions':d.get('reactions',[]),'root_has_part':sorted(formal),'description':d.get('description','')})
+assert len(corpus)==258
+head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=W,text=True).strip()
+dump('corpus-inventory.json',{'captured_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'worktree':str(W),'head':head,'reviewed_merged_base':base,'count':len(corpus),'records':corpus})
+print(json.dumps({'source_files':len(inv),'corpus':len(corpus),'head':head,'nonbaseline':[x['path'] for x in corpus if x['state_vs_base']!='same_as_merged_base']}))

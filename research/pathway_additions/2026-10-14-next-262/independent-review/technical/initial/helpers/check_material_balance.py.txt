@@ -1,0 +1,32 @@
+from pathlib import Path
+import json,hashlib,collections,xml.etree.ElementTree as ET,re,datetime
+O=Path('/private/tmp/pathwaymech-next-262-independent-technical');N=Path('/private/tmp/pathwaymech-next-262-native')
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):
+ with Path(p).open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+audit=read(O/'native-original-graph-replay.json');rdf=read(O/'issuing-rhea-original-projection.independent.json')['nodes'];full={x['frame']:x for x in read(N/'native-full-object-projection.json')};material=audit['route_material_facts'];formulas={};charges={};bindings=[]
+for f in sorted({x['native_compound']for x in material}):
+ p=Path(full[f]['file']);assert sha(p)==full[f]['sha256'];root=ET.parse(p).getroot();obj=next(e for e in root if e.get('frameid')==f);m=obj.find('cml/molecule');assert m is not None;parts=m.find('formula').get('concise').split();assert len(parts)%2==0;formula={parts[i]:int(parts[i+1])for i in range(0,len(parts),2)};charge=int(m.get('formalCharge','0'));formulas[f]=formula;charges[f]=charge;bindings.append({'native_compound':f,'path':str(p),'sha256':sha(p),'CML_formula':formula,'CML_charge':charge})
+proof=[]
+for rx in dict.fromkeys(x['native_reaction']for x in material):
+ facts=[x for x in material if x['native_reaction']==rx];delta=collections.Counter();q=0;fid=facts[0]['triple'][2]if facts[0]['triple'][1]=='consumes'else facts[0]['triple'][0]
+ for x in facts:
+  signed=x['coefficient']*(-1 if x['triple'][1]=='consumes'else 1)
+  for atom,n in formulas[x['native_compound']].items():delta[atom]+=signed*n
+  q+=signed*charges[x['native_compound']]
+ assert not any(delta.values())and q==0,(rx,delta,q)
+ rhea_check=None
+ if fid.startswith('RHEA:'):
+  rnode=rdf['http://rdf.rhea-db.org/'+fid[5:]];sides={}
+  for tag,role in [('substrates','consumes'),('products','produces')]:
+   side=rdf[rnode[tag][0]];out=collections.Counter()
+   for key,participants in side.items():
+    m=re.fullmatch(r'contains(\d+)',key)
+    if not m:continue
+    for part in set(participants):
+     comp=rdf[rdf[part]['compound'][0]];cid=comp['accession'][0];out[cid]+=int(m[1])
+   expected=collections.Counter({x['selected_compound']:x['coefficient']for x in facts if x['triple'][1]==role});assert out==expected,(fid,role,out,expected);sides[role]=dict(out)
+  rhea_check={'exact_side_compounds_and_coefficients':True,'sides':sides}
+ proof.append({'native_reaction':rx,'selected_id':fid,'all_element_differences':dict(delta),'charge_difference':q,'balanced':True,'issuing_Rhea_side_check':rhea_check})
+result={'checked_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'draft_sha256':audit['draft_sha256'],'source_compounds':bindings,'all7_native_CML_balances':proof,'six_directional_Rhea_equations_match_exact_selected_material_sides':True,'net_coefficients':audit['calculated_net_coefficients'],'limits':['CML formula/charge and exact issuing RDF chemistry consistency are independently checked; this does not newly adjudicate historical assay stereochemistry or rerun chemical stereostructure normalization.','The native enol decarboxylation remains native identified; no substitution of its keto Rhea cross-reference.']}
+(O/'native-material-balance-replay.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'native_balanced_steps':len(proof),'issuing_Rhea_side_checks':sum(x['issuing_Rhea_side_check']is not None for x in proof),'native_compounds':len(bindings),'net':audit['calculated_net_coefficients']},indent=2))

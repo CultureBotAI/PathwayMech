@@ -1,0 +1,45 @@
+"""Capture generated-page browser views without changing the repository."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-262-20261014')
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+page = ROOT / 'pages/records/MetaCyc_PWY-5420.html'
+inputs = [page, ROOT / 'pages/style.css', ROOT / 'pages/assets/pathway-network.css',
+          ROOT / 'pages/assets/pathway-network.js', ROOT / 'data/pathways/catechol-degradation-ii.yaml']
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+before = {str(p): sha(p) for p in inputs}
+receipts = []
+for name, width, height in [('graph-desktop', 1440, 1080), ('graph-mobile', 390, 844)]:
+    target = CI / (name + '.png')
+    assert not target.exists()
+    command = [CHROME, '--headless', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+               '--disable-background-networking', '--disable-sync',
+               '--user-data-dir=/private/tmp/pathwaymech-next-262-' + name + '-profile',
+               '--screenshot=' + str(target), f'--window-size={width},{height}',
+               '--virtual-time-budget=5000', page.as_uri() + '#pathway-network']
+    start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    result = subprocess.run(command, capture_output=True, text=True, timeout=90)
+    log = CI / (name + '-browser.log')
+    assert not log.exists()
+    log.write_text(result.stdout + result.stderr)
+    receipt = {'command': command, 'started_utc': start, 'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+               'exit_code': result.returncode, 'log': str(log), 'log_sha256': sha(log),
+               'screenshot': str(target), 'screenshot_written': target.is_file(),
+               'caveat': 'An image artifact does not make a nonzero browser termination a passing process. Inspect the image and exact logs separately.'}
+    if target.is_file():
+        receipt['screenshot_sha256'] = sha(target)
+        receipt['screenshot_bytes'] = target.stat().st_size
+    receipts.append(receipt)
+    print(json.dumps(receipt), flush=True)
+after = {str(p): sha(p) for p in inputs}
+assert before == after
+result_path = CI / 'browser-capture-receipts.json'
+assert not result_path.exists()
+result_path.write_text(json.dumps({'inputs': before, 'all_inputs_unchanged': True, 'captures': receipts,
+    'scope': 'Static generated-page desktop and mobile screenshots at network fragment. Does not certify interaction, cross-browser behavior or full-page readability.'}, indent=2) + '\n')

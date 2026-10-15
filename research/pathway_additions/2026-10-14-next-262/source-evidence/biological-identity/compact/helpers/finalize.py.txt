@@ -1,0 +1,56 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib,collections,gzip,xml.etree.ElementTree as ET
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity');P=Path('/private/tmp/pathwaymech-next-261-biological-identities');N=Path('/private/tmp/pathwaymech-next-262-native');D=Path('/private/tmp/pathwaymech-next-262-discovery')
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p):p=Path(p);return {'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p)}
+def rd(p):return json.loads(Path(p).read_text())
+def write(n,d):(B/n).write_text(json.dumps(d,indent=2)+'\n')
+receipts=[]
+for p in sorted((B/'receipts').glob('acquisition-*-complete.json')):
+ for r in rd(p):
+  if 'path'in r:assert sha(r['path'])==r['sha256']
+  text=Path(r['path']).read_text()if 'path'in r and r.get('kind')=='metacyc-html' else ''
+  status='complete issuing original'
+  if '<title>Create Account</title>'in text:status='HTTP200 subscription/account page; rejected as identity evidence'
+  elif 'window.location.replace'in text and len(text)<200:status='same-origin redirect body; final observed target separately acquired'
+  receipts.append({'receipt':bind(p),'request':r,'evidence_disposition':status})
+write('original-issuing-source-ledger.json',{'own_acquisitions':receipts,'prior_exact_sources':bind(P/'original-issuing-source-ledger.json'),'native_original_bindings':bind(N/'compact-original-source-bindings.json'),'existing_owner_replay':bind(B/'projections/current-existing-owner-replay.json'),'new_reference_comparisons':bind(B/'projections/new-exact-cds-comparisons.json'),'scope':'Actual original response bytes, versions and requests retained. Error/account/redirect bodies are not identity authority. The nine primary BioCyc subscription responses caused no account interaction; the preexisting public academic META27 mirror was independently used. No paid access, credentials or author contact.'})
+# Exact selected external sources and peer authored inputs remain separate from this author's own readings.
+external={}
+for row in rd(B/'identity-conflicts-and-boundaries.json'):
+ for s in row['sources']:
+  p=Path(s['path']);assert sha(p)==s['sha256']
+  if not p.is_relative_to(B):external[str(p)]=bind(p)
+for row in rd(B/'projections/new-exact-cds-comparisons.json'):
+ p=Path(row['deposit_source']['path']);assert sha(p)==row['deposit_source']['sha256']
+ if not p.is_relative_to(B):external[str(p)]=bind(p)
+for n in ['XylH-1BJP-reference-sequence-check.json','AP3-8IH6-construct-and-assembly.json']:
+ def walk(v):
+  if isinstance(v,dict):
+   if isinstance(v.get('path'),str)and v.get('sha256'):
+    p=Path(v['path']);assert sha(p)==v['sha256']
+    if not p.is_relative_to(B):external[str(p)]=bind(p)
+   for x in v.values():walk(x)
+  elif isinstance(v,list):
+   for x in v:walk(x)
+ walk(rd(B/'projections'/n))
+write('receipts/selected-external-inputs.json',{'files':list(external.values()),'scope':'Exact selective original/peer-output bindings; complete newly frozen primary manifest independently hash/inventory verified in verification.json. No independent visual inspection or full-paper reading is implied.'})
+checks=[]
+for directory in [N,P,D,Path('/private/tmp/pathwaymech-next-262-primary')]:
+ m=directory/'artifact-manifest.json';items=rd(m)['files'];included=set()
+ for x in items:
+  p=Path(x['path']);p=p if p.is_absolute()else directory/p;assert sha(p)==x['sha256'];included.add(p.resolve())
+ actual={p.resolve()for p in directory.rglob('*')if p.is_file()and p!=m};assert actual==included,(directory,'inventory changed');checks.append({'input_root':str(directory),'manifest':bind(m),'verified_files':len(items),'complete_hidden_ignored_inventory_verified':True})
+objects=rd(B/'complete-biological-object-identity-ledger.json');assert len(objects)==125 and len({r['native_identifier']for r in objects})==125
+for r in objects:assert sha(r['source']['path'])==r['source']['sha256']
+genes=rd(B/'projections/all35-native-gene-product-proof.json');assert len(genes)==35 and all(r['product_relations']and all(x['reciprocal']for x in r['product_relations'])for r in genes)
+activities=rd(B/'projections/all41-formal-activity-identity-dispositions.json');assert len(activities)==41 and len({x['activity']for x in activities})==41
+for a in activities:
+ p=Path(a['activity_source']['path']);assert sha(p)==a['activity_source']['sha256'];e=next(x for x in ET.parse(p).getroot()if x.get('frameid')==a['activity']and x.get('detail')=='full');assert e.find('enzyme/Protein').get('frameid')==a['protein']and e.find('reaction/Reaction').get('frameid')==a['reaction']
+slots=rd(B/'complete-native-biological-slot-dispositions.json');assert len(slots)==1712 and len({(x['native_identifier'],x['source_locator'])for x in slots})==1712
+cds=rd(B/'projections/new-exact-cds-comparisons.json');assert len(cds)==9 and all(x['translation_check']['equals_annotated_translation']and x['comparison']['exact_sequence_equality']and x['ncbi_protein']['comparison']['exact_sequence_equality']for x in cds)
+taxa=rd(B/'projections/taxon-authority-candidates.json');assert len(taxa['candidates'])==31 and not taxa['missing'];assert len(rd(B/'projections/all33-organism-role-closure.json'))==33
+write('source-access-and-finite-closure.json',{'author_role':'biological identity author; requires separate independent final review','native_scope':{'proteins':54,'genes':35,'organisms':33,'compartments':3,'direct_slots':1712,'formal_activity_bindings':41,'prior_exact_objects':96,'new_objects':29},'reference_scope':{'new_full_uniprot':9,'prior_full_uniprot':25,'new_versioned_ncbi_protein':9,'deposits_compared':4,'new_exact_cds_comparisons':9,'explicit_native_taxa':31,'new_reference_taxa':2,'current_owner_sources_replayed':41,'current_owner_terms_replayed':43,'prior_profiles_replayed':99},'closure_policy':'Finite exact native closure and explicit issuing crossreference follow. All new native protein UniProt and selected deposited CDS/protein accessions resolved. No numeric GeneID was invented from nucleotide ENTREZ links. No exhaustive global biology/source-exhaustion claim. Optional candidate sources must be selected/rebound by integrating author after actual merge.','remaining_scoped_gaps':['AP3 historical gene-name/metal/partner identity conflict; inaccessible2000 main article, no author contact.','Native experimental preparations lacking exact gene/sequence retain native IDs; no invented external mappings.','KU-7 and mt-2 native organism objects have no explicit NCBI taxon xref; reference taxa do not silently substitute.','Modern engineered8IH6 tagged5+5 assembly is distinct from historical native300kDa complex.','Unfollowed structure reference7XUY on CnbG remains a bounded later lead, not a claim of native structure absence or unmet reference-sequence identity closure.','Current native and UniProt mechanistic prose, features and taxa are not automatic primary experiments or full-pathway scope.'], 'read_scope':'All343 native originals rehashed/reparsed; all125 biological objects and direct slots projected. Complete9 new UniProt records and4 deposits inspected;9 selected CDS independently translated and compared to complete versioned NCBIProtein originals. Native54 protein identity/preparation scope assessed with exact predecessor reuse. Direct issuing8IH6 entry/polymer/assembly/mmCIF selected identity categories inspected, no rendered molecular visualization.1BJP original polymer/assembly data compared. Complete2000 indexed abstract and AP3 naming contexts in actual2003/2006HTML and2019HTML inspected for identity; no independent full-paper or visual-figure review claimed. Primary-author complete mechanistic/visual readings remain attributed peer inputs.','search_scope':'Manifest and local recursive inventories use pathlib.rglob, including hidden/ignored files. No absence conclusion uses gitignore-filtered search. One interrupted overbroad search was not used as absence evidence.','licensing':'Data/source licensing deferred under user instruction; no paid credits, login, account creation, redistribution clearance or author contact.'})
+write('verification.json',{'completed_at':datetime.now(timezone.utc).isoformat(),'checks_passed':True,'frozen_inputs':checks,'object_counts':dict(collections.Counter(r['entity_type']for r in objects)),'reciprocal_genes':35,'formal_bindings_replayed':41,'unique_direct_slot_dispositions':1712,'exact_new_cds_uniprot_ncbi_matches':9,'open_scope_decisions':12,'author_not_independent_review':True,'maintained_writes':False})
+print('All final identity/provenance checks passed.')

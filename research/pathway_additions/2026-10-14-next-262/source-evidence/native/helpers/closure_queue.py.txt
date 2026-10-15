@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,xml.etree.ElementTree as E,hashlib,collections,sys
+O=Path('/private/tmp/pathwaymech-next-262-native');objs={};bindings={}
+for p in (O/'originals').glob('*.xml'):
+ rt=E.parse(p).getroot();f=p.stem[5:];xs=[x for x in rt if x.attrib.get('frameid')==f and x.attrib.get('detail')=='full' and x.attrib.get('orgid')=='META'];assert len(xs)==1 and rt.find('metadata/PGDB').attrib['version']=='27.0';objs[f]=xs[0];bindings[f]=hashlib.sha256(p.read_bytes()).hexdigest()
+slots={'Protein':['enzyme','component','component-of','gene','species','cofactor','regulated-by','location','catalyzes'],'Gene':['product','species','regulated-by'],'Enzymatic-Reaction':['enzyme','cofactor','regulated-by','reaction'],'Regulation':['regulator','regulated-entity'],'Pathway':['species','reaction-list','sub-pathways','enzymes-not-used'],'Reaction':['left','right']}
+leads=[]
+for f,x in objs.items():
+ ords=collections.Counter()
+ for e in x:
+  ords[e.tag]+=1
+  if e.tag not in slots.get(x.tag,[]):continue
+  for z in e:
+   if not z.attrib.get('frameid'):continue
+   t=z.attrib['frameid'];leads.append({'source':f,'source_type':x.tag,'slot':e.tag,'target':t,'target_type':z.tag,'locator':f'/ptools-xml/{x.tag}[@frameid="{f}"]/{e.tag}[{ords[e.tag]}]/{z.tag}[@frameid="{t}"]','source_sha256':bindings[f],'status':'full_original_available' if t in objs else 'acquire_full_original'})
+missing=sorted({r['target'] for r in leads if r['status']=='acquire_full_original'});out={'objects':len(objs),'types':dict(collections.Counter(x.tag for x in objs.values())),'missing':missing,'required_follow_rows':len(leads),'leads':leads,'finite_policy':slots}
+(O/('closure-round-'+sys.argv[1]+'.json')).write_text(json.dumps(out,indent=2)+'\n');print(json.dumps({'objects':len(objs),'types':out['types'],'missing_count':len(missing),'missing':missing,'required_follow_rows':len(leads)},indent=2))

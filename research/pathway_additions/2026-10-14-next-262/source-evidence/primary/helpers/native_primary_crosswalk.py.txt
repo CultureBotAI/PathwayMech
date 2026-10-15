@@ -1,0 +1,33 @@
+import json,hashlib,re
+from pathlib import Path
+P=Path('/private/tmp/pathwaymech-next-262-primary');N=Path('/private/tmp/pathwaymech-next-262-native')
+def load(p):return json.loads(p.read_text())
+def bind(p):return {'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size}
+coverage={r['pmid']:r for r in load(P/'source-coverage-and-dispositions.json')}
+prior=load(P/'predecessor261/reference-metadata.json')['sources']
+def primary_status(pmids):
+ rows=[]
+ for pmid in sorted(set(pmids)):
+  if pmid in coverage:rows.append({'pmid':pmid,'scope':coverage[pmid]['read_scope'],'ledger':'source-coverage-and-dispositions.json','no_automatic_claim_validation':True})
+  elif 'PMID:'+pmid in prior:rows.append({'pmid':pmid,'scope':prior['PMID:'+pmid]['read_scope'],'ledger':'predecessor261/reference-metadata.json with predecessor-claim-dispositions.json','no_automatic_claim_validation':True})
+  else:rows.append({'pmid':pmid,'scope':'Native bibliographic/source assertion only; primary source not inspected in this bounded dossier','no_automatic_claim_validation':True})
+ return rows
+activities=[]
+for r in load(N/'formal-activity-closure.json'):
+ pubs=[]
+ for e in r['activity_evidence']:
+  pubs+=re.findall(r'PUB-(\d+)',json.dumps(e))
+ ef=Path(r['enzyme_original']['path']);af=Path(r['activity_original']['path'])
+ pubs+=re.findall(r'<pubmed-id[^>]*>(\d+)</pubmed-id>',ef.read_text())
+ activities.append({'activity':r['activity'],'reaction':r['reaction'],'enzyme':r['enzyme'],'native_activity':bind(af),'native_enzyme':bind(ef),'native_evidence_codes':[c for e in r['activity_evidence'] for c in e['codes']],'native_author_assessment':r['source_author_assessment'],'primary_availability':primary_status(pubs),'successor_disposition':'Retain native assertion only with its source/evidence/preparation qualifications; accept primary-supported details only where an exact material claim in this dossier or predecessor is cited. No whole-route taxon assertion.'})
+regs=[]
+for r in load(N/'regulation-assertions.json'):
+ f=Path(r['original']['path']);pmids=re.findall(r'<pubmed-id[^>]*>(\d+)</pubmed-id>',f.read_text())
+ scope='Native activity-specific assay assertion; no automatic physiological or allosteric claim.'
+ if r['original']['frame']=='REG-5876':scope='Reject native negative sign as accepted inhibition: PMID8419288 delayed-addition controls show positive NADH stimulation of DmpFG-associated aldolase. Direct binding mechanism remains unproved.'
+ if r['original']['frame']=='REG-12603':scope='Retain unresolved native Cu2+ versus protein-prose Hg2+ conflict; full PMID11081795 assay details unavailable.'
+ if r['original']['frame']=='REG0-13116':scope='Native MhpF acetaldehyde inhibition value/mode not verified in the inspected PMID23237860 abstract; retain only as qualified database assertion.'
+ regs.append({'regulation':r['original']['frame'],'source':bind(f),'activities':r['regulated_activities'],'regulators':r['regulators'],'native_modes':r['native_modes'],'primary_availability':primary_status(pmids),'successor_disposition':scope})
+out={'native_activity_ledger':bind(N/'formal-activity-closure.json'),'native_regulation_ledger':bind(N/'regulation-assertions.json'),'activities':activities,'regulations':regs,'scope':'Complete inventory of 41 formal native activity bindings and 52 native regulation objects, not a claim that every cited primary paper was read. The targeted 19-reference oxidative portfolio and shared predecessor evidence are separately bounded.'}
+(P/'native-primary-coverage-crosswalk.json').write_text(json.dumps(out,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'activity_bindings':len(activities),'regulation_objects':len(regs),'activities_with_primary_context':sum(any('not inspected' not in x['scope'] for x in a['primary_availability']) for a in activities)},indent=2))

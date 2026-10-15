@@ -1,0 +1,110 @@
+"""Root replay from native XML slots and issuing compound originals."""
+from pathlib import Path
+from collections import Counter
+import datetime
+import hashlib
+import json
+import re
+import xml.etree.ElementTree as ET
+
+B = Path('/private/tmp/pathwaymech-next-262-chemistry')
+OUT = Path('/private/tmp/pathwaymech-next-262-ci/formal-equation-independent-replay.json')
+assert not OUT.exists()
+proof_path = B / 'formal-chemistry-proof.json'
+proof = json.loads(proof_path.read_text())
+inputs = {}
+
+def checked(row):
+    p = Path(row['path'])
+    digest = hashlib.sha256(p.read_bytes()).hexdigest()
+    assert digest == row['sha256'], p
+    inputs[str(p)] = digest
+    return p
+
+def formula(text):
+    parts = re.findall(r'([A-Z][a-z]?)([0-9]*)', text)
+    assert ''.join(a + n for a, n in parts) == text
+    return Counter({a: int(n or 1) for a, n in parts})
+
+structures = {}
+for fact in proof['material_facts']:
+    native = ET.parse(checked(fact['native_structure_original'])).getroot()
+    compound = native.find('./Compound[@frameid="' + fact['native_compound'] + '"]')
+    assert compound is not None
+    cml = compound.find('./cml/molecule')
+    words = cml.find('formula').get('concise').split()
+    elements = Counter({words[i]: int(words[i + 1]) for i in range(0, len(words), 2)})
+    charge = int(cml.get('formalCharge'))
+    issuing = json.loads(checked(fact['issuing_structure_original']).read_text())
+    assert issuing['chebi_accession'] == fact['id']
+    data, structure = issuing['chemical_data'], issuing['default_structure']
+    assert elements == formula(data['formula']) == formula(fact['formula'])
+    assert charge == data['charge'] == fact['formal_charge']
+    assert compound.findtext('inchi') == structure['standard_inchi'] == fact['full_inchi']
+    assert compound.findtext('inchi-key').removeprefix('InChIKey=') == structure['standard_inchi_key'] == fact['inchi_key']
+    value = (fact['id'], dict(elements), charge, structure['standard_inchi'], structure['standard_inchi_key'])
+    if fact['native_compound'] in structures:
+        assert structures[fact['native_compound']] == value
+    structures[fact['native_compound']] = value
+
+def totals(side):
+    result = Counter()
+    charge = 0
+    for frame, coefficient in side.items():
+        _, elements, q, _, _ = structures[frame]
+        result.update({a: n * coefficient for a, n in elements.items()})
+        charge += q * coefficient
+    return {'elements': dict(sorted(result.items())), 'charge': charge}
+
+equations = []
+net = Counter()
+for step in proof['steps']:
+    root = ET.parse(checked(step['native_original'])).getroot()
+    reaction = root.find('./Reaction[@frameid="' + step['native_reaction'] + '"]')
+    assert reaction is not None
+    assert reaction.findtext('reaction-direction') == step['native_direction']
+    sides = {}
+    for label in ('left', 'right'):
+        side = Counter()
+        for element in reaction.findall(label):
+            frame = element.find('Compound').get('frameid')
+            side[frame] += int(element.findtext('coefficient') or '1')
+        sides[label] = side
+    before, after = (sides['left'], sides['right']) if step['native_traversal'] == 'left_to_right' else (sides['right'], sides['left'])
+    for name, actual in [('inputs', before), ('outputs', after)]:
+        assert actual == Counter({row['native_compound']: row['coefficient'] for row in step[name]})
+        singular = 'input' if name == 'inputs' else 'output'
+        facts = [f for f in proof['material_facts'] if f['step'] == step['step'] and f['role'] == singular]
+        assert actual == Counter({f['native_compound']: f['coefficient'] for f in facts})
+        for authority in ('native_CML', 'issuing_ChEBI'):
+            assert totals(actual) == step['balance'][authority][name]
+    assert totals(before) == totals(after)
+    net.subtract(before)
+    net.update(after)
+    equations.append({'step': step['step'], 'reaction': step['native_reaction'], 'inputs': dict(before), 'outputs': dict(after), 'totals': totals(before)})
+
+for join in proof['joins']:
+    before = equations[join['upstream_step'] - 1]['outputs']
+    after = equations[join['downstream_step'] - 1]['inputs']
+    frame = join['native_compound']
+    assert before[frame] == after[frame] == join['coefficient']
+    assert structures[frame][0] == join['chebi']
+    assert structures[frame][3] == join['exact_full_structure']['standard_inchi']
+    assert structures[frame][4] == join['exact_full_structure']['standard_inchi_key']
+
+net_inputs = Counter({f: -n for f, n in net.items() if n < 0})
+net_outputs = Counter({f: n for f, n in net.items() if n > 0})
+assert totals(net_inputs) == totals(net_outputs)
+assert totals(net_inputs) == {'elements': {'C': 69, 'H': 94, 'N': 21, 'O': 50, 'P': 7, 'S': 1}, 'charge': -6}
+result = {'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          'proof_path': str(proof_path), 'proof_sha256': hashlib.sha256(proof_path.read_bytes()).hexdigest(),
+          'original_input_hashes': inputs, 'material_facts': len(proof['material_facts']),
+          'structures': len(structures), 'equations': equations, 'joins': len(proof['joins']),
+          'net_inputs': dict(net_inputs), 'net_outputs': dict(net_outputs), 'net_totals': totals(net_inputs),
+          'limits': ['Independent original-slot and formula/charge/full-InChI replay only.',
+                     'Does not independently prove stereochemistry by reconstructing native CML.',
+                     'Does not repeat the whole Rhea absence search or replace primary biological review.']}
+OUT.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({'receipt': str(OUT), 'sha256': hashlib.sha256(OUT.read_bytes()).hexdigest(),
+                  'steps': len(equations), 'facts': len(proof['material_facts']), 'joins': len(proof['joins']),
+                  'net_totals': totals(net_inputs)}))

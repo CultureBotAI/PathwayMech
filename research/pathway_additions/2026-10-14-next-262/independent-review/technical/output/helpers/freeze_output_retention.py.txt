@@ -1,0 +1,21 @@
+import csv,datetime,gzip,hashlib,json,pathlib
+import yaml
+O=pathlib.Path('/private/tmp/pathwaymech-next-262-independent-technical');R=pathlib.Path('/private/tmp/pathwaymech-next-262-20261014');K=pathlib.Path('/private/tmp/pathwaymech-next-262-independent-kgx');sha=lambda b:hashlib.sha256(b).hexdigest();S=O/'output-snapshot';assert not S.exists();S.mkdir()
+r=yaml.load((R/'data/pathways/catechol-degradation-ii.yaml').read_bytes(),Loader=yaml.CSafeLoader);ids={r['id']}|{n['id'] for field in ['taxa','participants','reactions'] for n in r[field]};slices=[]
+for name in ['nodes','edges']:
+ source=K/(name+'.tsv');lines=source.read_bytes().splitlines(keepends=True);kept=[lines[0]]
+ for line in lines[1:]:
+  rowid=line.split(b'\t',1)[0].decode()
+  if rowid in ids if name=='nodes' else rowid.startswith('pathwaymech:MetaCyc_PWY-5420_'):kept.append(line)
+ expected=177 if name=='nodes' else 214;assert len(kept)==expected+1;target=S/('MetaCyc_PWY-5420.'+name+'.tsv');target.write_bytes(b''.join(kept));assert len(list(csv.DictReader(target.open(),delimiter='\t')))==expected
+ slices.append({'kind':name,'source':str(source),'source_sha256':sha(source.read_bytes()),'selection':'exact target IDs' if name=='nodes' else 'exact record-qualified edge ID prefix','header_and_selected_line_bytes_verbatim':True,'selected_rows':expected,'path':str(target),'sha256':sha(target.read_bytes())})
+page=R/'pages/records/MetaCyc_PWY-5420.html';(S/page.name).write_bytes(page.read_bytes());(O/'output-slice-receipt.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Verbatim output retention selection, not additional scientific validation','slices':slices,'page':{'source_path':str(page),'sha256':sha(page.read_bytes())}},indent=2)+'\n')
+names=['kgx-export-receipt.json','kgx-export.log','rendered-output-replay.json','output-review-helper-predicate-correction.json','output-slice-receipt.json','helpers/export_kgx_for_review.py','helpers/check_rendered_outputs.py','helpers/check_rendered_outputs_complete.py','helpers/freeze_output_retention.py']+[str(p.relative_to(O)) for p in sorted(S.iterdir())];rows=[]
+for name in names:
+ p=O/name;b=p.read_bytes();encoding='identity';retained=name
+ if p.suffix in {'.html','.tsv','.log'}:encoded=gzip.compress(b,mtime=0);encoding='gzip';retained=name+'.gz'
+ elif p.suffix=='.py':encoded=b;encoding='inert_python_text';retained=name+'.txt'
+ else:encoded=b
+ target=O/'output-retained'/retained;target.parent.mkdir(parents=True,exist_ok=True);assert not target.exists();target.write_bytes(encoded);assert (gzip.decompress(encoded) if encoding=='gzip' else encoded)==b
+ rows.append({'source_path':str(p),'source_sha256':sha(b),'source_bytes':len(b),'stored_path':str(target),'stored_sha256':sha(encoded),'stored_bytes':len(encoded),'encoding':encoding,'retain_as':retained})
+report={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Finite independent technical page/KGX output evidence','scope':'Supported259-record KGX export receipts, changed-record comparison, exact page snapshot and verbatim177-node/214-edge TSV slices. Full exports remain external and hash-bound. No maintained file mutation.','files':rows,'count':len(rows),'bytes':sum(x['stored_bytes'] for x in rows),'limits':'Browser visuals/interactions and terminal full gates not yet assessed.'};p=O/'output-retention-manifest.json';assert not p.exists();p.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'manifest':str(p),'sha256':sha(p.read_bytes()),'entries':len(rows),'bytes':report['bytes']}))

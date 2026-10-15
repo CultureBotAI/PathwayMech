@@ -1,0 +1,42 @@
+"""Replay exact optional issuing sources without selecting any new term."""
+from pathlib import Path
+import collections, datetime, hashlib, json, shutil, sys
+sys.dont_write_bytecode=True
+B=Path(__file__).resolve().parents[1]
+BIO=Path('/private/tmp/pathwaymech-next-262-biological-identity')
+NATIVE=Path('/private/tmp/pathwaymech-next-262-native-author')
+CHEM=Path('/private/tmp/pathwaymech-next-262-additional-chemistry')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(relative,value):
+    p=B/relative;assert not p.exists(),('Preserve earlier attempt',p)
+    p.parent.mkdir(parents=True,exist_ok=True);p.write_text(json.dumps(value,indent=2,ensure_ascii=False)+'\n')
+def observe(p,name):
+    target=B/'retained/candidate-observations'/name;assert not target.exists()
+    target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,target);assert sha(p)==sha(target)
+    return json.loads(target.read_text()),{'source_path':str(p),'observed_path':str(target),'sha256':sha(target)}
+def main():
+    sys.path[:0]=[str(B/'runtime/src'),str(B/'runtime/scripts')]
+    from build_source_identifier_snapshot import source_terms
+    biological,bio_binding=observe(BIO/'complete-source-config-proposals.json','biological-plan.json')
+    native,native_binding=observe(NATIVE/'native-activity-pathway-authority-proposals.json','native-author-plan.json')
+    chemistry,chem_binding=observe(CHEM/'selected-native-chemical-identities.json','additional-chemical-selection.json')
+    candidates=[];keys=set()
+    for rows,binding,scope in [(biological,bio_binding,'Exact native biological and optional issuing reference identities'),(native,native_binding,'Exact native activity/pathway identities')]:
+        for row in rows:
+            entry=row['entry'];assert entry['key']not in keys,entry['key'];keys.add(entry['key'])
+            original=row.get('original')or row.get('source_original');path=Path(original['path'])
+            assert sha(path)==original['sha256']==entry['sha256'],path
+            terms=list(source_terms(entry['kind'],path,url=entry['url'],version=entry['version'],sha256=entry['sha256']))
+            assert terms and row['identifier'] in {t[0]for t in terms}
+            declared=row.get('term')
+            if declared:assert declared in [list(t)for t in terms]or tuple(declared)in terms
+            candidates.append({'entry':entry,'cache_original':{'path':str(path),'resolved':str(path.resolve()),'sha256':sha(path),'bytes':path.stat().st_size},'identifiers':[t[0]for t in terms],'parsed_terms':terms,'declared_candidate_ids':[row['identifier']],'source_plan':binding,'scope':scope,'selection':'Optional candidate only. No config, snapshot or final-record selection has occurred.'})
+    old={}
+    for name in ['sources','ontology']:old.update(json.loads((B/'baseline/data/identifier_authorities'/f'{name}.json').read_text())['terms'])
+    by_id=collections.defaultdict(list)
+    for c in candidates:
+        for ident in c['identifiers']:by_id[ident].append(c['entry']['key'])
+    report={'role':'Authority integration author inventory; not independent review','utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'new_entries':candidates,'source_bindings':[bio_binding,native_binding,chem_binding],'candidate_source_count':len(candidates),'candidate_identifier_count':len(by_id),'candidate_identifiers_already_retained':sorted(set(by_id)&old.keys()),'identifiers_with_multiple_candidate_sources':{k:v for k,v in by_id.items()if len(v)>1},'chemical_source_plan':'Use existing pinned issuing ontology extraction only for actual selected IDs. Additional chemical identity proof is root-owned and bound above; existing MetaCyc:CPD-29 owner is retained. No optional reagent/assay identity is promoted.','final_selection_status':'Awaiting actual root-integrated maintained record and exact hash','maintained_files_edited':False,'parser_sha256':sha(B/'runtime/scripts/build_source_identifier_snapshot.py')}
+    save('retained/candidate-source-inventory.json',report)
+    print(json.dumps({k:report[k]for k in ['candidate_source_count','candidate_identifier_count','candidate_identifiers_already_retained','identifiers_with_multiple_candidate_sources','final_selection_status']},indent=2))
+if __name__=='__main__':main()

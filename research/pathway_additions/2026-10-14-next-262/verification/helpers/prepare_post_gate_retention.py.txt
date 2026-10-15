@@ -1,0 +1,99 @@
+"""Verify external review artifacts and stage exact copies outside gate inputs."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+STAGE = Path('/private/tmp/pathwaymech-next-262-post-gate-staging')
+PREFIX = Path('research/pathway_additions/2026-10-14-next-262')
+assert not STAGE.exists()
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def load(path):
+    return json.loads(path.read_text())
+
+plan = []
+def stage(source, relative, original=None, encoding='identity'):
+    source = Path(source)
+    target = STAGE / PREFIX / relative
+    assert target.resolve().is_relative_to(STAGE) and not target.exists()
+    data = source.read_bytes()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(data)
+    assert sha(target) == sha(source)
+    row = {'source_path': str(source), 'source_sha256': sha(source), 'bytes': len(data),
+           'staged_path': str(target), 'destination_relative': str(PREFIX / relative), 'encoding': encoding}
+    if original:
+        row.update(original_path=str(original), original_sha256=sha(original), original_bytes=original.stat().st_size)
+    plan.append(row)
+
+authority = Path('/private/tmp/pathwaymech-next-262-authority-successor')
+manifest = authority / 'artifact-manifest.json'
+assert sha(manifest) == '5a075efd1268f7d80fe31b97f70e33a690e6937097a029089b92b0cf8845ea6e'
+rows = load(manifest)['files']
+assert len(rows) == 280
+for row in rows:
+    path = authority / row['path']
+    assert not path.is_symlink() and path.resolve().is_relative_to(authority)
+    assert sha(path) == row['sha256'] and path.stat().st_size == row['bytes']
+actual = {str(p.relative_to(authority)) for p in authority.rglob('*') if p.is_file()}
+assert actual == {r['path'] for r in rows} | {'artifact-manifest.json'}
+compact = authority / 'compact-retention-selection.json'
+assert sha(compact) == '0d8f4ab22c1ed068e6acb38b72061cec078d895125f543c84324299562146d1b'
+selection = load(compact)['files']
+assert len(selection) == 11
+for row in selection:
+    stored = authority / row['retain_path']
+    original = authority / row['original_path']
+    assert sha(stored) == row['sha256'] and stored.stat().st_size == row['bytes']
+    assert sha(original) == row['original_sha256'] and original.stat().st_size == row['original_bytes']
+    decoded = gzip.decompress(stored.read_bytes()) if row['encoding'] == 'gzip_lossless' else stored.read_bytes()
+    assert decoded == original.read_bytes()
+    stage(stored, Path('authority-successor') / row['retain_path'], original, row['encoding'])
+for source in [manifest, compact]:
+    stage(source, Path('authority-successor') / source.name)
+
+technical = Path('/private/tmp/pathwaymech-next-262-independent-technical')
+sets = [
+    ('preparation-retention-manifest.json', '7f5182abb09e606082a22e7f9dd1e5436e7d5b1c8ace7c61616303cfa10f7fbb', 'initial', 32),
+    ('authority-successor-retention-manifest.json', '24d8955945e276f2ab3c26d5870aef33015b56f0eda0daf763eb54ae7bf59b27', 'authority-successor', 24),
+    ('output-retention-manifest.json', 'e03abfc825771256d881d2565a16f3810ae807dd5752be9ea87ab1d6cdb58b2c', 'output', 12)]
+for name, digest, subgroup, count in sets:
+    source_manifest = technical / name
+    assert sha(source_manifest) == digest
+    rows = load(source_manifest)['files']
+    assert len(rows) == count
+    for row in rows:
+        source = technical / row['source_path']
+        stored = technical / row['stored_path']
+        assert source.resolve().is_relative_to(technical) and stored.resolve().is_relative_to(technical)
+        assert sha(source) == row['source_sha256'] and source.stat().st_size == row['source_bytes']
+        assert sha(stored) == row['stored_sha256'] and stored.stat().st_size == row['stored_bytes']
+        decoded = gzip.decompress(stored.read_bytes()) if 'gzip' in row['encoding'] else stored.read_bytes()
+        assert decoded == source.read_bytes()
+        stage(stored, Path('independent-review/technical') / subgroup / row['retain_as'], source, row['encoding'])
+    stage(source_manifest, Path('independent-review/technical') / subgroup / name)
+
+browser_files = ['browser-availability.json', 'browser-capture-receipts.json', 'browser-cdp-result.json',
+    'browser-visual-assessment.json', 'page-desktop.png', 'graph-desktop.png', 'graph-mobile.png',
+    'graph-desktop-cdp.png', 'graph-mobile-cdp.png', 'graph-desktop-browser.log',
+    'graph-mobile-browser.log', 'browser-cdp.log', 'capture_page_views.py', 'check_browser_graph.mjs']
+for name in browser_files:
+    source = CI / name
+    relative = Path('verification/browser') / (name + '.txt' if name.endswith(('.py', '.mjs')) else name)
+    stage(source, relative, source, 'inert_code_text' if name.endswith(('.py', '.mjs')) else 'identity')
+result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Root external-only retention preparation; no maintained writes during full gates',
+    'authority_successor_owned_files_verified': 280,
+    'technical_finite_pairs_verified': 68,
+    'staged_files': len(plan), 'staged_bytes': sum(p['bytes'] for p in plan),
+    'files': plan, 'remaining': ['Scientific finite retention', 'Terminal gate evidence',
+                                'Promotion only after gate input preservation completes']}
+out = CI / 'post-gate-retention-plan.initial.json'
+assert not out.exists()
+out.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({key: result[key] for key in ['staged_files','staged_bytes','authority_successor_owned_files_verified','technical_finite_pairs_verified']}))

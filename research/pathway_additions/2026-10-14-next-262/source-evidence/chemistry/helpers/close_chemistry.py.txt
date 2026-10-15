@@ -1,0 +1,118 @@
+from pathlib import Path
+import os
+import json,hashlib,sqlite3,collections,xml.etree.ElementTree as E,datetime,re,itertools,shutil
+from rdkit import Chem,rdBase
+O=Path(os.environ.get('PATHWAYMECH_CHEMISTRY_ROOT','/private/tmp/pathwaymech-next-262-chemistry'));N=Path('/private/tmp/pathwaymech-next-262-native');A=Path('/private/tmp/pathwaymech-curation-authorities');RH='http://rdf.rhea-db.org/'
+assert not (O/'artifact-manifest.json').exists(), 'Frozen package: replay into a separate external directory instead.'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+def load(n):return json.loads((O/n).read_text())
+sc=load('requested-chemistry-scope.json');ch=load('chemical-structure-closure.json');rp=load('rhea-complete-source-projection.json');search=load('rhea-exact-candidate-search.json');native={r['native_frame']:r for r in ch['native_compounds']};issued=ch['issuing_chebi_compounds'];reactions={r['frame']:r for r in rp['native']};nodes=rp['nodes'];searchby={r['frame']:r for r in search}
+assert not ch['failed_checks'] and not rp['unhandled_direction_rows']
+# Read the full native context objects, reusing only exact frozen original bytes.
+mp=N/'artifact-manifest.json';assert sha(mp)=='8d1ad92744d1e6a4e216d0e53e545cb8c5d1a26997afda982f0a04d777af4952';manifest=json.loads(mp.read_text());mf={r['path']:r for r in manifest['files']}
+contextframes=['MONOMER-15109','CPLX-7237','CPLX-7245','ENZRXN-3582','CPLX-8450','MONOMER-17215','ENZRXN-20106'];reuse=[]
+for f in contextframes:
+ src=N/'originals'/('META-'+f+'.xml');r=mf[str(src.relative_to(N))];assert sha(src)==r['sha256'];dest=O/'originals'/src.name;shutil.copyfile(src,dest);assert sha(dest)==r['sha256'];reuse.append({'frame':f,'path':str(dest),'source_path':str(src),'sha256':r['sha256'],'bytes':r['bytes'],'source_manifest_sha256':sha(mp),'version':'27.0','url':'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+f,'role':'Complete native narrative/assay comparator context; no new formal activity assertion.'})
+dump('native-context-original-reuse.json',reuse)
+contexts=[];layouts={};order=[]
+for f in ['PWY-5420','PWY-5419','PWY-5162']+contextframes:
+ p=O/'originals'/('META-'+f+'.xml');root=E.parse(p).getroot();e=next(x for x in root if x.get('frameid')==f and x.get('detail')=='full');slots=[];seen=collections.Counter()
+ for s in e:
+  seen[s.tag]+=1;slots.append({'tag':s.tag,'locator':f'/ptools-xml/{e.tag}[@frameid="{f}"]/{s.tag}[{seen[s.tag]}]','xml':E.tostring(s,encoding='unicode'),'native_text':s.text})
+ for sl in e.findall('reaction-layout'):
+  ref=sl.find('Reaction')
+  if ref is not None: layouts[ref.get('frameid')]={'pathway':f,'direction':sl.findtext('direction'),'left_primaries':[z.get('frameid')for z in sl.findall('left-primaries/Compound')],'right_primaries':[z.get('frameid')for z in sl.findall('right-primaries/Compound')],'xml':E.tostring(sl,encoding='unicode')}
+ for sl in e.findall('reaction-ordering'):
+  order.append({'pathway':f,'successor':sl.find('Reaction').get('frameid'),'predecessors':[z.get('frameid')for z in sl.findall('predecessor-reactions/Reaction')],'xml':E.tostring(sl,encoding='unicode')})
+ contexts.append({'frame':f,'original':{'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size},'root_attributes':root.attrib,'frame_attributes':e.attrib,'complete_direct_slots':slots})
+rootpath=next(x for x in contexts if x['frame']=='PWY-5420');p5420=E.parse(O/'originals/META-PWY-5420.xml').getroot().find("Pathway[@frameid='PWY-5420']");assert [x.get('frameid')for x in p5420.findall('reaction-list/Pathway')]==['PWY-5419','PWY-5162']
+assert set(layouts)==set(sc['formal_reactions']);assert len(order)==6
+for i,f in enumerate(sc['formal_reactions']):
+ assert layouts[f]['direction']==('R2L' if reactions[f]['chosen_native_traversal']=='right_to_left'else'L2R')
+ if i:assert any(x['successor']==f and sc['formal_reactions'][i-1]in x['predecessors']for x in order)
+dump('native-route-and-comparator-context.json',{'contexts':contexts,'formal_layouts':layouts,'complete_ordering':order,'boundary':{'parent':'PWY-5420','child_modules':['PWY-5419','PWY-5162'],'module_reaction_counts':[4,3],'one_record_candidate':True,'modules_not_extra_candidates':True}})
+def side_counts(items,authority):
+ atoms=collections.Counter();charge=0
+ for x in items:
+  n=native[x['native_compound']];s=n['native_CML_interpretation'] if authority=='native_CML'else issued[x['id']]['issuing_structure_interpretation'];co=x['coefficient']
+  atoms.update({k:v*co for k,v in s['element_counts'].items()});charge+=s['formal_charge']*co
+ return {'elements':dict(sorted(atoms.items())),'charge':charge}
+def balance(left,right):
+ z={a:{'inputs':side_counts(left,a),'outputs':side_counts(right,a)}for a in ['native_CML','issuing_ChEBI']}
+ for a,v in z.items():v['balanced']=v['inputs']==v['outputs'];assert v['balanced'],(a,left,right)
+ assert z['native_CML']==z['issuing_ChEBI'];return z
+def equation(items):return ' + '.join((str(x['coefficient'])+' 'if x['coefficient']!=1 else'')+x['id'] for x in items)
+facts=[];steps=[];net=collections.Counter()
+for i,f in enumerate(sc['formal_reactions'],1):
+ r=reactions[f];selected=searchby[f]['forward_matches'];assert len(selected)==(0 if f=='4.1.1.77-RXN' else 1)
+ for side,sign in [('route_inputs',-1),('route_outputs',1)]:
+  for x in r[side]:
+   n=native[x['native_compound']];assert n['native_chebi_xref_candidate']==x['id'];assert all(n['checks'].values());net[x['native_compound']]+=sign*x['coefficient'];facts.append({'step':i,'reaction':f,'role':'input'if sign==-1 else'output',**x,'native_structure_original':n['original'],'issuing_structure_original':issued[x['id']]['original'],'formula':issued[x['id']]['formula'],'formal_charge':issued[x['id']]['charge'],'full_inchi':issued[x['id']]['issuing_structure']['standard_inchi'],'inchi_key':issued[x['id']]['issuing_structure']['standard_inchi_key']})
+ steps.append({'step':i,'native_reaction':f,'native_direction':r['native_direction'],'native_traversal':r['chosen_native_traversal'],'native_original':r['original'],'pathway_layout':layouts[f],'inputs':r['route_inputs'],'outputs':r['route_outputs'],'equation_CHEBI':equation(r['route_inputs'])+' => '+equation(r['route_outputs']),'balance':balance(r['route_inputs'],r['route_outputs']),'exact_Rhea_forward_candidates':selected,'reverse_candidates':searchby[f]['reverse_matches'],'identity_proposal':'Use exact native reaction because no exact native-enol equation was found among all pinned Rhea142 directions; native linked24261 is rejected as keto product.'if not selected else'Exact finite participants/coefficient/orientation match; proposed directional identifier is a chemistry result, not proof of biological irreversibility.'})
+assert len(facts)==28
+joins=[]
+for left,right in zip(steps,steps[1:]):
+ candidates=[(x,y)for x in left['outputs']for y in right['inputs']if x['native_compound']==y['native_compound']]
+ assert len(candidates)==1,(left['native_reaction'],right['native_reaction'],candidates)
+ x,y=candidates[0];assert x['id']==y['id'] and x['coefficient']==y['coefficient'];joins.append({'upstream_step':left['step'],'downstream_step':right['step'],'native_compound':x['native_compound'],'chebi':x['id'],'coefficient':x['coefficient'],'upstream_locator':x['locator'],'downstream_locator':y['locator'],'exact_full_structure':issued[x['id']]['issuing_structure'],'same_source_compound_and_full_structure':True})
+assert len(joins)==6
+netleft=[];netright=[];cancelled=[]
+for f,co in sorted(net.items()):
+ x={'native_compound':f,'id':native[f]['native_chebi_xref_candidate'],'coefficient':abs(co)}
+ if co<0:netleft.append(x)
+ elif co>0:netright.append(x)
+ else:cancelled.append(f)
+netbalance=balance(netleft,netright)
+dump('formal-chemistry-proof.json',{'role':'External chemical source author; not independent scientific review or maintained identifier selection.','step_count':len(steps),'material_fact_count':len(facts),'join_count':len(joins),'steps':steps,'material_facts':facts,'joins':joins,'net':{'inputs':netleft,'outputs':netright,'equation_CHEBI':equation(netleft)+' => '+equation(netright),'balance':netbalance,'cancelled_native_intermediates':cancelled},'biological_limit':'A stoichiometrically balanced exact source route does not demonstrate flux, kinetics, organisms, preparations, directionality in vivo, or complete-route experimental evidence.'})
+# Close every selected family quartet against actual RDF sides and older pinned SQL labels.
+def rside(uri):
+ ans=[]
+ for pred,vals in nodes[uri].items():
+  if not pred.startswith('contains')or pred=='contains':continue
+  for pa in vals:
+   co=nodes[pa]['compound'][0];d=nodes[co];ans.append({'id':d['accession'][0],'coefficient':int(pred[8:]),'participant_uri':pa,'compound_uri':co,'side_uri':uri,'predicate':pred})
+ assert len(ans)==len(nodes[uri]['contains']);return ans
+def tup(items):return sorted((x['id'],x['coefficient'])for x in items)
+def rbalance(items):
+ atoms=collections.Counter();charge=0
+ for x in items:
+  z=issued[x['id']]['issuing_structure_interpretation'];atoms.update({k:v*x['coefficient']for k,v in z['element_counts'].items()});charge+=z['formal_charge']*x['coefficient']
+ return {'elements':dict(sorted(atoms.items())),'charge':charge}
+db=sqlite3.connect('file:'+str(A/'rhea.db')+'?mode=ro',uri=True);families=[]
+for q in rp['quartets']:
+ members=[];lr=nodes[RH+q['RHEA_ID_LR']];l=rside(lr['substrates'][0]);r=rside(lr['products'][0]);assert rbalance(l)==rbalance(r)
+ for k,id in q.items():
+  n=nodes[RH+id];triples=[{'predicate':p,'object':o,'value':v}for p,o,v in db.execute('select predicate,object,value from statements where subject=?',('RHEA:'+id,))];labels=[t['value']for t in triples if t['predicate']=='rdfs:label'];assert labels==n['label'];assert n['status']==[RH+'Approved'];assert n['isChemicallyBalanced']==['true'];m={'quartet_role':k,'id':'RHEA:'+id,'all_rdf_properties':n,'complete_original_rdf_fragments':rp['complete_original_fragments'][RH+id],'pinned_Rhea139_all_SQL_rows':triples,'pinned139_label_equals_RDF142_label':True,'is_selected_forward_candidate':any(id==v['id']for s in search for v in s['forward_matches'])}
+  if k in ['RHEA_ID_LR','RHEA_ID_RL']:
+   a=rside(n['substrates'][0]);b=rside(n['products'][0]);assert (tup(a),tup(b))==((tup(l),tup(r))if k=='RHEA_ID_LR'else(tup(r),tup(l)));m['substrates']=a;m['products']=b;m['balance']={'inputs':rbalance(a),'outputs':rbalance(b),'balanced':True}
+  else:assert set(n['side' if k=='RHEA_ID_MASTER' else 'substratesOrProducts'])=={lr['substrates'][0],lr['products'][0]}
+  members.append(m)
+ families.append({'quartet':q,'members':members,'interpretation':'MASTER has undefined direction; BI is bidirectional; LR/RL provide explicit ordered equations. None establishes biological irreversibility.'})
+db.close();dump('rhea-family-and-direction-closure.json',{'source_RDF_release':'142','pinned_label_source_release':'139','family_count':len(families),'member_count':sum(len(x['members'])for x in families),'families':families,'all_36_pinned_label_comparisons_agree':True,'complete_source_search':{'unique_subjects':rp['rdf_unique_subjects_scanned'],'direction_rows':rp['direction_rows_scanned'],'directional_equations_compared':rp['directional_equations_compared'],'unhandled':rp['unhandled_direction_rows'],'matching_policy':'Exact chemical IDs, finite coefficients and both orientations over the full issuing artifacts. Symbolic containsN coefficients are preserved in the whole scan and cannot equal finite coefficients; no approximate label matching.'}})
+# Explicit carbon-chain bond geometry for relevant constitutional/stereochemical alternatives.
+def mol_for(key):return Chem.MolFromSmiles(issued[key]['issuing_structure']['smiles'])if key in issued else Chem.MolFromInchi(native[key]['native_inchi'])
+def carbonchain(m):
+ adj={a.GetIdx():[n.GetIdx()for n in a.GetNeighbors()if n.GetSymbol()=='C']for a in m.GetAtoms()if a.GetSymbol()=='C'};ends=[i for i,vs in adj.items()if len(vs)==1];assert len(ends)==2;possible=[]
+ for end in ends:
+  path=[end]
+  while len(path)<len(adj):
+   nxt=[i for i in adj[path[-1]]if i not in path];assert len(nxt)==1;path+=nxt
+  oxy0=[n for n in m.GetAtomWithIdx(path[0]).GetNeighbors()if n.GetSymbol()=='O'];oxy1=[n for n in m.GetAtomWithIdx(path[1]).GetNeighbors()if n.GetSymbol()=='O']
+  if len(oxy0)==2 and len(oxy1)==1:possible.append(path)
+ assert len(possible)==1;path=possible[0];out=[]
+ for i,idx in enumerate(path,1):
+  atom=m.GetAtomWithIdx(idx);out.append({'carbon_position':i,'original_molecule_atom_index':idx,'hydrogen_count':atom.GetTotalNumHs(),'oxygen_substituents':[{'molecule_atom_index':n.GetIdx(),'bond_order':m.GetBondBetweenAtoms(idx,n.GetIdx()).GetBondTypeAsDouble(),'oxygen_formal_charge':n.GetFormalCharge(),'oxygen_hydrogen_count':n.GetTotalNumHs()}for n in atom.GetNeighbors()if n.GetSymbol()=='O']})
+ bonds=[{'carbon_positions':[i+1,i+2],'bond_order':m.GetBondBetweenAtoms(x,y).GetBondTypeAsDouble(),'stereo':str(m.GetBondBetweenAtoms(x,y).GetStereo())}for i,(x,y)in enumerate(zip(path,path[1:]))];return {'numbering':'Start at carboxyl carbon adjacent to the unique internal oxygen-bearing C2. Derived directly from bond graph, not historical name.','carbons':out,'carbon_carbon_bonds':bonds}
+def achiral(m):
+ x=Chem.Mol(m);Chem.RemoveStereochemistry(x);return Chem.MolToSmiles(x,isomericSmiles=False)
+groups={'C6':['CHEBI:28080','CHEBI:64016','CHEBI:64908','CHEBI:16967','CPD-13337'],'C5':['CHEBI:67152','CHEBI:60886','CHEBI:11641','CPD-14441']};structures={};comparisons=[]
+for group,keys in groups.items():
+ for key in keys:
+  m=mol_for(key);src=issued[key]if key in issued else native[key];structures[key]={'group':group,'source_original':src['original'],'full_inchi':Chem.MolToInchi(m),'inchi_key':Chem.MolToInchiKey(m),'isomeric_smiles':Chem.MolToSmiles(m),'formula':src['formula']if key in issued else src['native_CML_formula'],'charge':Chem.GetFormalCharge(m),'carbon_chain':carbonchain(m),'external_exact_identity':key in issued}
+ for a,b in itertools.combinations(keys,2):
+  ma=mol_for(a);mb=mol_for(b);same=achiral(ma)==achiral(mb);assert structures[a]['formula']==structures[b]['formula']and structures[a]['charge']==structures[b]['charge'];assert Chem.MolToInchi(ma)!=Chem.MolToInchi(mb);comparisons.append({'first':a,'second':b,'same_formula_charge':True,'full_structures_equal':False,'same_bond_graph_after_stereo_removal':same,'difference':'Defined double-bond stereochemistry differs.'if same else'Explicit double-bond placement and/or carbonyl versus hydroxyl bonding differs. No exact chemical-node substitution is permitted merely because of a shared name or formula.'})
+dump('structural-alternative-comparisons.json',{'method':'Full issuing ChEBI structure for mapped comparators; complete native full InChI plus validated CML for two native-only comparators. RDKit '+rdBase.rdkitVersion+'. InChI alone is not a universal tautomer-equivalence test.','structures':structures,'pairwise_comparisons':comparisons,'scope':'Structural differences are established here. Spontaneous kinetics, enzymatic product selection, and historical cis/trans terminology require the cited primary experiments and are not inferred from structural similarity.'})
+a=carbonchain(mol_for('CHEBI:71198'));b=carbonchain(mol_for('CHEBI:28080'));assert a['carbon_carbon_bonds']==b['carbon_carbon_bonds'];assert a['carbons'][-1]['hydrogen_count']==1 and b['carbons'][-1]['hydrogen_count']==0;assert len(a['carbons'][-1]['oxygen_substituents'])==1 and len(b['carbons'][-1]['oxygen_substituents'])==2
+dump('RXN-8527-structural-operation.json',{'native_reaction':'RXN-8527','substrate':{'id':'CHEBI:71198','source':issued['CHEBI:71198']['original'],'full_structure':issued['CHEBI:71198']['issuing_structure'],'derived_carbon_chain':a},'product':{'id':'CHEBI:28080','source':issued['CHEBI:28080']['original'],'full_structure':issued['CHEBI:28080']['issuing_structure'],'derived_carbon_chain':b},'checks':{'both_2Z4E':True,'carbon_carbon_bond_orders_and_stereochemistry_unchanged':True,'terminal_aldehyde_to_carboxylate_bond_pattern':True},'limit':'Explicit source structure comparison, not an experimentally measured individual atom mapping. The whole reaction proof includes water, NAD(1-), NADH(2-), and two hydrons.'})
+print(json.dumps({'steps':len(steps),'material_facts':len(facts),'joins':len(joins),'net':netbalance,'Rhea_families':len(families),'Rhea_members':36,'native_context_originals':len(contextframes),'structural_alternatives':len(structures),'pairwise_comparisons':len(comparisons)},indent=2))

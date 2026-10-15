@@ -1,0 +1,123 @@
+"""Resolve the native author's 21 chemical needs against exact prior and issuing sources."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import re
+import sqlite3
+import xml.etree.ElementTree as ET
+
+BASE = Path('/private/tmp/pathwaymech-next-261-20261014')
+OUT = Path('/private/tmp/pathwaymech-next-262-additional-chemistry')
+OUT.mkdir(exist_ok=False)
+NEEDS = Path('/private/tmp/pathwaymech-next-262-native-author/chemical-participant-needs.json')
+PRIOR = Path('/private/tmp/pathwaymech-next-261-participant-authorities')
+SQL = Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+
+def sha(path):
+    h = hashlib.sha256()
+    with path.open('rb') as stream:
+        while chunk := stream.read(4 * 1024 * 1024):
+            h.update(chunk)
+    return h.hexdigest()
+
+needs_raw = NEEDS.read_bytes()
+(OUT / 'native-author-needs.captured.json').write_bytes(needs_raw)
+needs = json.loads(needs_raw)
+assert len(needs) == 21 and len({x['native_frame'] for x in needs}) == 21
+prior_manifest_path = PRIOR / 'artifact-manifest.json'
+prior_manifest = json.loads(prior_manifest_path.read_text())
+prior_file = PRIOR / 'retained/native-chemical-dispositions.json'
+prior_rows = {x['native_frame']: x for x in json.loads(prior_file.read_text())['endpoints']}
+prior_entry = next(x for x in prior_manifest['files'] if x['path'] == 'retained/native-chemical-dispositions.json')
+assert sha(prior_file) == prior_entry['sha256']
+ontology = json.loads((BASE / 'data/identifier_authorities/ontology.json').read_text())
+print('Hashing the full pinned ChEBI SQL before read-only resolution.', flush=True)
+sql_hash = sha(SQL)
+assert sql_hash == '26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+connection = sqlite3.connect('file:' + str(SQL) + '?mode=ro', uri=True)
+connection.row_factory = sqlite3.Row
+resolved = []
+issuing = []
+native_sources = []
+for request in needs:
+    frame = request['native_frame']
+    source = Path(request['source_path'])
+    digest = sha(source)
+    assert digest == request['sha256']
+    native_sources.append({'frame': frame, 'path': str(source), 'sha256': digest})
+    if frame in prior_rows:
+        prior = prior_rows[frame]
+        assert digest == prior['source_sha256'] == sha(Path(prior['source_path']))
+        row = {'native_frame': frame, 'selected_id': prior['selected_id'],
+               'selected_label': prior['selected_label'], 'category': prior['category'],
+               'mode': 'Exact native original reuse of previously verified complete participant proof',
+               'prior_disposition': prior, 'prior_disposition_file': str(prior_file),
+               'prior_disposition_file_sha256': sha(prior_file)}
+    else:
+        root = ET.parse(source).getroot()
+        compound = root.find('./Compound[@frameid="' + frame + '"]')
+        assert compound is not None
+        native_xrefs = [d.findtext('dblink-oid') for d in compound.findall('dblink') if d.findtext('dblink-db') == 'CHEBI']
+        assert len(native_xrefs) == 1
+        identity = 'CHEBI:' + native_xrefs[0]
+        statements = [dict(r) for r in connection.execute('SELECT subject,predicate,object,value,datatype,language FROM statements WHERE subject=? ORDER BY predicate,object,value,datatype,language', (identity,))]
+        def literal(predicate):
+            values = {r['value'] for r in statements if r['predicate'] == predicate and r['value'] is not None}
+            assert len(values) == 1, (identity, predicate, values)
+            return next(iter(values))
+        label = literal('rdfs:label')
+        native_inchi = compound.findtext('inchi')
+        native_key = compound.findtext('inchi-key').removeprefix('InChIKey=')
+        cml = compound.find('./cml/molecule')
+        words = cml.find('formula').get('concise').split()
+        native_formula = {words[i].capitalize(): int(words[i + 1]) for i in range(0, len(words), 2)}
+        formula = literal('chemrof:generalized_empirical_formula')
+        parsed = re.findall(r'([A-Z][a-z]?)([0-9]*)', formula)
+        assert ''.join(a + n for a, n in parsed) == formula
+        issuing_formula = {a: int(n or 1) for a, n in parsed}
+        charge = int(cml.get('formalCharge'))
+        assert native_formula == issuing_formula
+        assert charge == int(literal('chemrof:charge'))
+        assert native_inchi == literal('chemrof:inchi_string')
+        assert native_key == literal('chemrof:inchi_key_string')
+        row = {'native_frame': frame, 'selected_id': identity, 'selected_label': label,
+               'category': 'small_molecule', 'mode': 'Complete issuing pinned ChEBI statements agree with native CML formula/charge and full InChI/key',
+               'formula': formula, 'charge': charge, 'inchi': native_inchi, 'inchi_key': native_key,
+               'native_structure_locator': '/ptools-xml/Compound[@frameid="' + frame + '"]/cml/molecule',
+               'issuing_source_version': 'ChEBI 255', 'issuing_source_path': str(SQL),
+               'issuing_source_sha256': sql_hash, 'statements_locator': 'subject=' + identity}
+        issuing.append({'identifier': identity, 'native_frame': frame, 'statements': statements})
+    current = ontology['terms'].get(row['selected_id'])
+    if current is not None:
+        assert current['label'] == row['selected_label'], (frame, current, row['selected_label'])
+    row.update(native_source=str(source), native_sha256=digest, requested_uses=request['uses'],
+               existing_owner=current, selected_at_this_stage=True,
+               limitation='Chemical identity alone does not establish the requested biological regulatory/cofactor claim, assay salt, hydrate, or exposure concentration.')
+    resolved.append(row)
+connection.close()
+assert len(issuing) == 8 and len(resolved) == 21
+assert NEEDS.read_bytes() == needs_raw
+for name, data in [('selected-native-chemical-identities.json', resolved),
+                   ('issuing-chebi-statement-projection.json', issuing),
+                   ('native-source-bindings.json', native_sources)]:
+    (OUT / name).write_text(json.dumps(data, indent=2) + '\n')
+receipt = {'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'scope': '21 exact requested native chemical identities; no maintained authority mutation',
+           'source_request': str(NEEDS), 'source_request_sha256': hashlib.sha256(needs_raw).hexdigest(),
+           'prior_manifest': str(prior_manifest_path), 'prior_manifest_sha256': sha(prior_manifest_path),
+           'pinned_chebi_sql': str(SQL), 'pinned_chebi_sql_sha256': sql_hash, 'pinned_chebi_bytes': SQL.stat().st_size,
+           'exact_predecessor_reuse': 13, 'independent_issuing_comparisons': 8,
+           'current_authority_path': str(BASE / 'data/identifier_authorities/ontology.json'),
+           'current_authority_sha256': sha(BASE / 'data/identifier_authorities/ontology.json'),
+           'needs_maintained_owner_selection': [r['selected_id'] for r in resolved if r['existing_owner'] is None],
+           'files': [{'path': str(p), 'sha256': sha(p), 'bytes': p.stat().st_size} for p in sorted(OUT.iterdir())],
+           'limits': ['No independent physiological activity adjudication; primary conflicts remain mandatory.',
+                      'Exact original-source reuse preserves the predecessor chemical limits and rejected crossreferences.',
+                      'Native CML formula/charge and full InChI/key agreement is checked; no new generic-SMILES stereochemistry inference.',
+                      'The whole SQL snapshot hash is semantic-SQL provenance, not a hash of the original OWL file.',
+                      'Authority additions and original-checkout duplicate search remain deferred until actual merged-baseline integration.']}
+(OUT / 'verification.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'output': str(OUT), 'receipt_sha256': sha(OUT / 'verification.json'),
+                  'selected': len(resolved), 'new_source_comparisons': len(issuing),
+                  'identifiers_needing_owner_selection': receipt['needs_maintained_owner_selection']}))

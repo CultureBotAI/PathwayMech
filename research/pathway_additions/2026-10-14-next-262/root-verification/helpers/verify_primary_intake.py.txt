@@ -1,0 +1,97 @@
+"""Root artifact and source-binding intake for the frozen primary author dossier."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+
+B = Path('/private/tmp/pathwaymech-next-262-primary')
+OUT = Path('/private/tmp/pathwaymech-next-262-ci/primary-artifact-intake.json')
+assert not OUT.exists()
+expected = {'HANDOFF.md': 'a41362c9f6a9a49175444430ea8671985875e2d9e7bd1577d1a2aae6358b3aa6',
+            'artifact-manifest.json': 'd2af43f37080c71b9525a622e96ed83cf9359cbd9e5356c62d40a213d62d53df',
+            'compact-retention-manifest.json': '008b255990560d961526994089e937ebd47260f42af0b3ca34dbbad674d5a710'}
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+for name, digest in expected.items():
+    assert sha(B / name) == digest
+manifest = json.loads((B / 'artifact-manifest.json').read_text())
+rows = manifest['files']
+assert len(rows) == manifest['file_count'] == 289
+assert len({row['path'] for row in rows}) == len(rows)
+actual_paths = {str(p.relative_to(B)) for p in B.rglob('*') if p.is_file()}
+assert actual_paths == {row['path'] for row in rows} | {'artifact-manifest.json'}
+for row in rows:
+    p = B / row['path']
+    assert not p.is_symlink() and p.stat().st_size == row['bytes'] and sha(p) == row['sha256'], p
+assert sum(row['bytes'] for row in rows) == manifest['total_bytes'] == 11466459
+compact = json.loads((B / 'compact-retention-manifest.json').read_text())
+index = {row['path']: row for row in rows}
+assert len(compact['files']) == compact['file_count'] == 49
+for row in compact['files']:
+    assert row == index[row['path']], row['path']
+assert sum(row['bytes'] for row in compact['files']) == compact['total_bytes'] == 247413
+pairs = json.loads((B / 'compression-receipt.json').read_text())['pairs']
+assert len(pairs) == 7
+for row in pairs:
+    original, compressed = row['original'], row['compressed']
+    assert original == index[original['path']] and compressed == index[compressed['path']]
+    decoded = gzip.decompress((B / compressed['path']).read_bytes())
+    assert decoded == (B / original['path']).read_bytes()
+    assert hashlib.sha256(decoded).hexdigest() == row['decoded_sha256'] == original['sha256']
+
+intake = json.loads((B / 'predecessor-intake.json').read_text())
+assert len(intake) == 118
+for row in intake:
+    assert Path(row['source_path']).read_bytes() == Path(row['path']).read_bytes()
+    assert sha(Path(row['source_path'])) == row['sha256']
+
+bound_paths = {}
+def verify_bindings(value):
+    if isinstance(value, dict):
+        if isinstance(value.get('path'), str) and isinstance(value.get('sha256'), str):
+            p = Path(value['path'])
+            if not p.is_absolute():
+                p = B / p
+            if str(p) not in bound_paths:
+                bound_paths[str(p)] = sha(p)
+            assert bound_paths[str(p)] == value['sha256'], p
+        for child in value.values():
+            verify_bindings(child)
+    elif isinstance(value, list):
+        for child in value:
+            verify_bindings(child)
+
+names = ['source-coverage-and-dispositions.json', 'additional-primary-source-coverage.json',
+         'material-claim-ledger.json', 'material-conflicts-and-dispositions.json',
+         'predecessor-claim-dispositions.json', 'native-primary-coverage-crosswalk.json']
+for name in names:
+    verify_bindings(json.loads((B / name).read_text()))
+coverage = json.loads((B / names[0]).read_text())
+targets = json.loads((B / 'primary-targets.json').read_text())
+assert len(coverage) == len(targets) == 19
+assert {x['pmid'] for x in coverage} == {x['pmid'] for x in targets}
+claims = json.loads((B / 'material-claim-ledger.json').read_text())['claims']
+predecessor = json.loads((B / 'predecessor-claim-dispositions.json').read_text())
+crosswalk = json.loads((B / 'native-primary-coverage-crosswalk.json').read_text())
+conflicts = json.loads((B / 'material-conflicts-and-dispositions.json').read_text())
+assert len(claims) == 148 and len(predecessor) == 50 and len(conflicts) == 10
+assert len(crosswalk['activities']) == 41 and len(crosswalk['regulations']) == 52
+result = {'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+          'package': str(B), 'package_hashes': expected, 'files_verified': len(rows),
+          'bytes_verified': manifest['total_bytes'], 'compact_files': len(compact['files']),
+          'compact_bytes': compact['total_bytes'], 'lossless_pairs': len(pairs),
+          'predecessor_originals_and_copies': len(intake), 'active_source_bindings': bound_paths,
+          'targeted_sources': len(coverage), 'new_claim_rows': len(claims),
+          'predecessor_dispositions': len(predecessor), 'native_activity_crosswalk': 41,
+          'native_regulation_crosswalk': 52, 'native_conflicts': len(conflicts),
+          'status': 'Artifact integrity and explicit bound-source coverage intake passed',
+          'limits': ['Not an independent scientific reading of all 148 claims or images.',
+                     'Source access and historical naming/assay/correction limits remain those in the handoff.',
+                     'Final maintained assertions require claim-level source reading and independent scientific review.']}
+OUT.write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({k: v for k, v in result.items() if k not in {'active_source_bindings', 'limits', 'package_hashes'}}, indent=2))
+print('Unique source bindings:', len(bound_paths))
+print('Receipt SHA256:', sha(OUT))

@@ -1,0 +1,31 @@
+# Batch 262 merged-baseline duplicate successor
+
+MetaCyc:PWY-5420, catechol degradation II (meta-cleavage pathway), remains a distinct complete seven-step candidate within the declared comparison scope. The full parent joins oxidative PWY-5419 and terminal PWY-5162; neither child is counted as another addition. No maintained record has the exact candidate identity or all seven frozen defining reaction families.
+
+## Baseline and preservation
+
+Both the isolated262 worktree and original checkout were read at merged commit `fbccbdc027f2a86ad4919e9dbbb16a736cc0746a`, tree `72737d598ca6c7d18861f8c3612f50c265a30e08`. Both were clean at initial capture, end-search verification and release binding. Each has258 maintained pathway records. Of the frozen262 original capture,257 record hashes remain exact; catecholI is the explicitly documented repaired successor `29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c`, replacing original draft `38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255`. All258 final expected hashes also match actual committed Git blobs. This is the actual post261 merge rebind requested by the frozen discovery.
+
+`corpus-rebind.json` preserves complete per-record hashes, identities, descriptions and reactions. `end-state-preservation.json` rechecks every record, all matched file hashes, and a fresh repeated search. `release-baseline.json` checks clean HEAD/tree and all258 record hashes immediately before package freezing. Root may write the next research dossier after receiving this handoff; later changes do not retroactively alter these observations.
+
+## Search and dispositions
+
+The exact frozen84-pattern list is reused without narrowing. Each root was searched using `rg --no-ignore --hidden --json -i -F -f complete-dedup-patterns.txt . -g '!/.git' -g '!/.venv'` (actual command uses the frozen absolute pattern path). Root Git metadata and root dependency environment are excluded explicitly. Ordinary ripgrep binary handling applies; directory symlinks are not followed, compressed archive interiors are not expanded, and external caches are not globally searched.
+
+The isolated root has7,861 matched lines in435 files; the original checkout has7,891 lines in437 files. All872 file instances have dispositions:621 exact same-root previous files,181 exact same-path/hash files already assessed in the other frozen root, and70 instances of35 unique new-content files. Every current common file has identical bytes across roots. The original checkout's only two extra matches are unchanged ignored DRAM source TSVs, already dispositioned in the frozen search. There are no removed matching files and no undispositioned new or changed file. A second full search returned the identical path/line/text set in each root; raw stream hashes can differ because traversal ordering and timing fields vary.
+
+The35 new-content files are final261 reports, history, reviews, proofs, inert helpers and generated outputs. The complete dossier and final report explicitly preserve the hydrolytic five-step boundary and identify PWY-5420 as a separate next candidate. The later PMID4325686 transformed-text assessment is a dated262 source acquisition; it did not silently upgrade frozen261's metadata-only reference. Its six-step endpoint and source-access limits remain primary-evidence issues for262 curation, not evidence of an existing maintained262 record. Full structured new files were parsed, matched contexts examined, and actual generated index/KGX identities compared against the maintained corpus.
+
+The newly merged authority/configuration matches in the original checkout are exact-byte copies of the frozen isolated-root authority files. All three were parsed, retain exact prior dispositions and contain no exact PWY-5420 identifier. Authority availability would not itself constitute a maintained pathway.
+
+## Whole-route comparison
+
+CatecholI PWY-5415 shares four defining reaction families: ring cleavage and the terminal three-step module. Its hydrolysis bypasses the candidate's oxidative dehydrogenase, tautomerase and decarboxylase segment. Phenyl/hydroxyphenylpropanoate PWY0-1277 shares only the terminal three families. Protocatechuate para-cleavage PWY-6336 shares three oxidative internal families but has a different entry substrate and stops at the dienol before the terminal module. The remaining broad semantic matches are distinct ortho/protocatechuate routes, downstream beta-ketoadipate chemistry or amino-acid lexical matches. All five frozen semantic hits are carried into the broader current11-record assessment. Shared steps across different records are not combined into a fictitious complete-route duplicate.
+
+## Evidence and limitations
+
+`final-disposition.json` is the machine-readable conclusion. The two final file-disposition ledgers cover every matched file. `new-content-assessments.json` records all35 new-content judgments; `authority-and-generated-assessment.json` and `semantic-final-dispositions.json` provide the additional checks. Initial pending observations remain preserved as historical intermediate state.
+
+The frozen262 source package at `/private/tmp/pathwaymech-next-262-discovery` remains unchanged; all106 entries of artifact-manifest SHA256 `a98721c8fda99faf54f553b247170f1954599ae529d7bc00094379da4575c569` were reverified. This successor uses that package's original candidate definition, source scope and alias decisions. It is not new source discovery, a new scientific review, a final authoring gate, global source exhaustion, or a claim that every possible synonym was searched. No source/authority builder, renderer or full test suite was rerun. No maintained file, Git state or GitHub object was changed.
+
+Raw search logs and full ledgers remain externally available here. `compression-manifest.json` binds lossless deterministic gzip copies to decoded originals; `compact-retention-manifest.json` identifies the compact files to retain. Preserve helper bytes as `.py.txt` if copied into maintained evidence. All files except artifact-manifest itself are bound by `artifact-manifest.json`; package verification is an external author-replay receipt, not independent scientific approval.

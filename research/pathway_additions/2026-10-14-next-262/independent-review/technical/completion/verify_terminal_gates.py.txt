@@ -1,0 +1,52 @@
+from pathlib import Path
+import json,hashlib,datetime,subprocess
+R=Path('/private/tmp/pathwaymech-next-262-20261014')
+A=Path('/private/tmp/pathwaymech-next-262-independent-technical')
+I=Path('/private/tmp/pathwaymech-next-262-checks-initial')
+C=Path('/private/tmp/pathwaymech-next-262-checks-completion')
+B=Path('/private/tmp/pathwaymech-next-262-ci')
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def bind(p): return {'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size}
+def load(p):return json.loads(p.read_text())
+start=datetime.datetime.now(datetime.timezone.utc).isoformat()
+receipts=load(C/'receipts.json'); initial=load(I/'receipts.json'); preservation=load(C/'final-input-preservation.json'); resume=load(C/'resume-context.json')
+assert len(receipts)==8 and receipts[:5]==initial
+assert sha(I/'receipts.json')==resume['initial_receipts_sha256']
+assert sha(C/'resume-context.json')==preservation['resume_context_sha256']
+assert resume['original_failure']==initial[-1]
+logs=[];latest={}
+for row in receipts:
+ assert sha(row['log_path'])==row['log_sha256']
+ assert row['cwd']==str(R)
+ logs.append({**row,'independently_verified_log_bytes':Path(row['log_path']).stat().st_size})
+ latest[' '.join(row['command'])]=row['exit_code']
+assert latest==preservation['latest_required_command_results'] and len(latest)==7 and set(latest.values())=={0}
+assert 'nodename nor servname provided' in (I/'just-vendored-check.log').read_text()
+assert '22 governed artifacts match the pinned claw revision' in (C/'just-vendored-check.log').read_text()
+assert '5255 passed, 3 skipped, 7 warnings' in (I/'just-test.log').read_text()
+freeze=load(C/'tested-core-input-hashes.json')
+assert freeze==load(I/'tested-core-input-hashes.json')==load(A/'tested-core-input-hashes.captured.json')
+assert len(freeze)==2136
+mismatch=[{'path':p,'expected':h,'actual':sha(R/p) if (R/p).exists() else None} for p,h in freeze.items() if not (R/p).exists() or sha(R/p)!=h]
+assert not mismatch,mismatch
+assert preservation['all_unchanged'] and preservation['tested_core_files']==2136
+record=R/'data/pathways/catechol-degradation-ii.yaml'; page=R/'pages/records/MetaCyc_PWY-5420.html'
+assert sha(record)=='4931e9a8cc5ae9f55c434d942c70fc65c75ad73a49e878bd34fbcfc4250df110'
+assert sha(page)=='2ae8c060a80146d8702321b5d3c3bcae9ee752650b04db3d813c3469c8a27d01'
+result={'started_utc':start,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'reviewer':'Independent technical reviewer; no repository mutation','git_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=R,text=True).strip(),'record':bind(record),'rendered_page':bind(page),'receipt_inputs':[bind(C/n) for n in ['receipts.json','resume-context.json','final-input-preservation.json','tested-core-input-hashes.json','environment.json']]+[bind(I/'receipts.json')],'command_log_checks':logs,'latest_required_command_results':latest,'checks':{'eight_exact_log_hashes_verified':True,'initial_dns_failure_preserved':True,'bounded_vendored_retry_passed':True,'all_seven_latest_commands_passed':True,'all_2136_original_tested_inputs_current_and_identical':True,'frozen_input_inventories_equal':True,'record_and_page_equal_previously_reviewed_final_bytes':True},'test_summary':{'passed':5255,'skipped':3,'warnings':7},'open_findings':[],'limits':['Verification of actual retained runner receipts/logs and current input bytes; no duplicate full gate execution.','The two diff gates precede final reviewer evidence and canonical bundle staging; root must repeat final working/staged diff checks.','Future documentation/retention changes require explicitly bounded reassessment; this observation binds current exact 2136 input files.']}
+p=A/'completed-gate-replay.json';assert not p.exists();p.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(bind(p)))
+cdp=load(B/'browser-cdp-result.json');visual=load(B/'browser-visual-assessment.json'); attempts=load(B/'browser-capture-receipts.json')
+assert sha(B/'browser-cdp-result.json')==visual['cdp_receipt_sha256']
+assert cdp['page_sha256']==sha(page)==visual['page_sha256']
+assert not cdp['runtime_errors']
+for cap in cdp['captures']: assert sha(cap['path'])==cap['sha256']
+for cap in attempts['captures']:
+ assert cap['exit_code']==2 and sha(cap['log'])==cap['log_sha256'] and sha(cap['screenshot'])==cap['screenshot_sha256']
+for p,h in attempts['inputs'].items():assert sha(p)==h
+assert cdp['desktop']['graphNodes']==cdp['mobile']['graphNodes']==230
+assert cdp['desktop']['graphEdges']==cdp['mobile']['graphEdges']==171
+assert cdp['zoomed']['svg']['width']>cdp['desktop']['svg']['width']
+assert cdp['picker']['value']=='RHEA:17338' and '10 connected relationships' in cdp['picked']['status'] and 'All relationships remain' in cdp['picked']['status']
+assert cdp['mobile']['section']['x']>=0 and cdp['mobile']['section']['x']+cdp['mobile']['section']['width']<=390
+browser={'assessed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent technical review of retained root-run browser evidence and direct visual inspection of the two hash-matched CDP screenshots; not a second browser execution.','inputs':[bind(B/n) for n in ['browser-cdp-result.json','browser-visual-assessment.json','browser-capture-receipts.json','browser-availability.json','check_browser_graph.mjs','browser-cdp.log','graph-desktop-cdp.png','graph-mobile-cdp.png']],'record':bind(record),'page':bind(page),'checks':{'page_and_assets_bind_final_reviewed_bytes':True,'both_cdp_screenshots_hash_verified_and_visually_inspected':True,'no_reported_live_cdp_runtime_exceptions':True,'zoom_changes_dimensions':True,'node_picker_highlights_ten_without_removal':True,'all_214_edges_retained_in_separate_dom_replay':True,'desktop_and_mobile_controls_inside_card':True,'initial_nonzero_blank_attempts_not_counted_as_pass':True},'observations':['Desktop and mobile screenshots display controls, legends and the network viewport; desktop graph is rendered with directed connections and colored node categories.','The dense 230-node graph fits at24% desktop/9% mobile; individual labels are very small at fit-width. Root-run zoom and picker metrics support larger-size inspection, and the complete evidence table remains separately accessible.','171 graphEdges is the helper selector .graph-edge-mechanism subset; separate independent DOM replay verifies all214 relationship anchors, including43 contextual relations.'],'open_findings':[],'limits':['One Chrome execution performed by root; reviewer independently inspected retained artifacts, not every live interaction.','Only the two supplied viewport screenshots inspected visually, not every long-page row; no cross-browser or comprehensive usability claim.']}
+p=A/'browser-evidence-replay.json';assert not p.exists();p.write_text(json.dumps(browser,indent=2)+'\n');print(json.dumps(bind(p)))

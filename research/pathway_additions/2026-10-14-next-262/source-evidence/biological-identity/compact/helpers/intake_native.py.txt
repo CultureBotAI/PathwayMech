@@ -1,0 +1,51 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as ET,collections,datetime,re,html
+OUT=Path('/private/tmp/pathwaymech-next-262-biological-identity')
+NATIVE=Path('/private/tmp/pathwaymech-next-262-native')
+PREV=Path('/private/tmp/pathwaymech-next-261-biological-identities')
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+def write(name,data): (OUT/name).write_text(json.dumps(data,indent=2,ensure_ascii=False)+'\n')
+verified=[]
+for d in [NATIVE,PREV,Path('/private/tmp/pathwaymech-next-262-discovery')]:
+ m=d/'artifact-manifest.json';obj=json.loads(m.read_text());rows=obj['files'];errs=[]
+ for x in rows:
+  p=Path(x['path']);p=p if p.is_absolute() else d/p
+  if not p.is_file() or sha(p)!=x['sha256']:errs.append(str(p))
+ assert not errs,(str(d),errs)
+ verified.append({'root':str(d),'manifest_sha256':sha(m),'files':len(rows),'errors':errs})
+write('receipts/frozen-input-verification.json',{'at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'manifests':verified,'read_scope':'All listed files independently hashed; file inventories include hidden and ignored according to bound manifests. No whole-machine absence claim.'})
+bindings=json.loads((NATIVE/'compact-original-source-bindings.json').read_text());objects={}; selected=[];allslots=[]
+for b in bindings:
+ p=Path(b['path']);assert sha(p)==b['sha256']
+ root=ET.fromstring(p.read_bytes()); matches=[x for x in root if x.get('frameid')==b['frame'] and x.get('detail')=='full'];assert len(matches)==1,b['frame'];e=matches[0]
+ assert root.get('ptools-version')=='27.0'
+ objects[b['frame']]=(e,b)
+for frame,(e,b) in objects.items():
+ if e.tag not in ['Protein','Gene','Organism','cco']:continue
+ slots=[];counter=collections.Counter()
+ for x in e:
+  counter[x.tag]+=1;loc=f'/ptools-xml/{e.tag}[@frameid="{frame}"]/{x.tag}[{counter[x.tag]}]'
+  r={'frame':frame,'object_type':e.tag,'slot':x.tag,'slot_ordinal':counter[x.tag],'source_locator':loc,'source_path':b['path'],'source_sha256':b['sha256'],'xml':ET.tostring(x,encoding='unicode'),'text':' '.join(''.join(x.itertext()).split()),'references':[{'type':r.tag,'frame':r.get('frameid'),'detail':r.get('detail'),'resource':r.get('resource')} for r in x.iter() if r.get('frameid')]}
+  slots.append(r);allslots.append(r)
+ row={'frame':frame,'type':e.tag,'path':b['path'],'sha256':b['sha256'],'issuing_url':b['issuing_url'],'version':'27.0','names':[x.text for x in e.findall('common-name')],'synonyms':[x.text for x in e.findall('synonym')],'strain_names':[x.text for x in e.findall('strain-name')],'comments':[x.text for x in e.findall('comment')],'dblinks':[{y.tag:y.text for y in x} for x in e.findall('dblink')],'slots':slots}
+ selected.append(row)
+write('projections/native-biological-full-object-intake.json',selected)
+write('projections/native-biological-direct-slots.json',allslots)
+activities=[]
+for x in json.loads((NATIVE/'formal-activity-closure.json').read_text()):
+ e,b=objects[x['activity']];enzyme=e.findall('enzyme/Protein');rxn=e.findall('reaction/Reaction');assert len(enzyme)==1 and len(rxn)==1
+ assert enzyme[0].get('frameid')==x['enzyme'] and rxn[0].get('frameid')==x['reaction']
+ p,pb=objects[x['enzyme']]
+ activities.append({'activity':x['activity'],'reaction':rxn[0].get('frameid'),'protein':enzyme[0].get('frameid'),'activity_source':b,'enzyme_source':pb,'activity_slots':[{'tag':y.tag,'xml':ET.tostring(y,encoding='unicode')} for y in e],'native_names':[y.text for y in p.findall('common-name')],'genes':[y.get('frameid') for y in p.findall('gene/Gene')],'organisms':[y.get('frameid') for y in p.findall('species/Organism')],'components':[{'frame':y.get('frameid'),'xml':ET.tostring(z,encoding='unicode')} for z in p.findall('component') for y in z if y.get('frameid')]})
+assert len(activities)==41
+write('projections/formal-activity-direct-bindings.json',activities)
+prev_native=json.loads((PREV/'complete-biological-object-identity-ledger.json').read_text())
+write('projections/intake-summary.json',{'native_counts':dict(collections.Counter(x['type'] for x in selected)),'native_direct_slots':len(allslots),'formal_activity_bindings':len(activities),'all343_originals_verified':len(objects),'upstream_manifests':verified})
+lines=[]
+for x in selected:
+ lines.append('\n## '+x['type']+' '+x['frame']+' '+str(x['names'])+' strains='+str(x['strain_names']))
+ for r in x['slots']:
+  if r['slot'] not in ['credits','creation-date','citation','parent','data-source']:
+   lines.append(r['source_locator']+' '+re.sub('<[^>]*>',' ',html.unescape(r['text'])))
+(OUT/'projections/native-biological-reading.txt').write_text('\n'.join(lines)+'\n')
+print(json.dumps(json.loads((OUT/'projections/intake-summary.json').read_text()),indent=2))

@@ -1,0 +1,16 @@
+import datetime,gzip,hashlib,json,pathlib
+O=pathlib.Path('/private/tmp/pathwaymech-next-262-independent-technical');sha=lambda b:hashlib.sha256(b).hexdigest()
+names=['authority-union-replay.initial.json','authority-cache-inventory-supplement.json','authority-consumer.initial.log','helpers/replay_authority_union.py','scope-authority-successor-replay.json','scope-successor-concurrent-metadata-event.json','README-authority-promotion.diff','authority-consumer.scope-locator-successor.log','helpers/review_scope_locator_successor.py','helpers/reassess_scope_authority_successor.py','inspect.scope-locator-successor.json','inspect.scope-locator-successor.stderr','inspect.scope-authority-successor.json','inspect.scope-authority-successor.stderr','record.scope-authority-successor.yaml','scope-locator-successor-context/research/pathway_additions/2026-10-14-next-262/README.md','helpers/freeze_authority_successor_retention.py']
+names+=sorted(str(p.relative_to(O)) for p in (O/'scope-authority-successor-context').rglob('*') if p.is_file())
+rows=[]
+for name in names:
+ p=O/name;b=p.read_bytes();encoding='identity';retained=name
+ if p.suffix in {'.yaml','.log','.diff'}:
+  encoded=gzip.compress(b,mtime=0);encoding='gzip';retained=name+'.gz'
+ elif p.suffix=='.py':encoded=b;encoding='inert_python_text';retained=name+'.txt'
+ else:encoded=b
+ target=O/'authority-successor-retained'/retained;target.parent.mkdir(parents=True,exist_ok=True);assert not target.exists();target.write_bytes(encoded)
+ decoded=gzip.decompress(encoded) if encoding=='gzip' else encoded;assert decoded==b
+ rows.append({'source_path':str(p),'source_sha256':sha(b),'source_bytes':len(b),'stored_path':str(target),'stored_sha256':sha(encoded),'stored_bytes':len(encoded),'encoding':encoding,'retain_as':retained})
+report={'created_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent technical finite authority and narrow repair successor evidence','scope':'Complements immutable preparation-retention-manifest.json; no frozen author package mutation. Excludes large real-consumer working copy and already hash-bound originals. All selected stored bytes and decoded originals verified.','previous_manifest':{'path':str(O/'preparation-retention-manifest.json'),'sha256':sha((O/'preparation-retention-manifest.json').read_bytes())},'files':rows,'count':len(rows),'bytes':sum(x['stored_bytes'] for x in rows),'limitations':'Pending full gates, rendered outputs and committed-head checks. This retention manifest is storage integrity, not a full scientific review.'}
+p=O/'authority-successor-retention-manifest.json';assert not p.exists();p.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'path':str(p),'sha256':sha(p.read_bytes()),'entries':len(rows),'bytes':report['bytes']}))

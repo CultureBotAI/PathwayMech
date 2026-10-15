@@ -1,0 +1,19 @@
+from pathlib import Path
+import json,gzip,hashlib,datetime
+O=Path('/private/tmp/pathwaymech-next-262-chemistry')
+assert not (O/'artifact-manifest.json').exists()
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def row(p):return {'path':str(p.relative_to(O)),'bytes':p.stat().st_size,'sha256':sha(p)}
+large=['chemical-structure-closure.json','complete-input-inventory.json','formal-chemistry-proof.json','native-route-and-comparator-context.json','rhea-complete-source-projection.json','rhea-family-and-direction-closure.json','rhea-compound-state-checks.json','structural-alternative-comparisons.json','RXN-8527-structural-operation.json']
+compression=[]
+for name in large:
+ p=O/name;q=O/(name+'.gz');q.write_bytes(gzip.compress(p.read_bytes(),mtime=0));assert gzip.decompress(q.read_bytes())==p.read_bytes();compression.append({'uncompressed':row(p),'gzip':row(q),'lossless':True})
+(O/'compression-receipt.json').write_text(json.dumps(compression,indent=2)+'\n')
+compact_names=['HANDOFF.md','REPRODUCE.md','scope-and-limitations.json','chemical-dispositions.json','requested-chemistry-scope.json','independent-authority-inputs.json','native-original-reuse.json','native-context-original-reuse.json','chebi-original-reuse.json','native-unlinked-chebi-search.json','rhea-exact-candidate-search.json','rules-bindings.json','compression-receipt.json','receipts/chebi-acquisition.json','receipts/next252-chebi-acquisition.json','receipts/next252-authority-input-provenance.json','receipts/rhea-downloads.json','receipts/ontology-inputs.json','receipts/execution-observations.json','receipts/verification-pre-freeze.json']+[n+'.gz'for n in large]
+selected=[O/n for n in compact_names]+sorted((O/'helpers').glob('*.py'))+sorted((O/'rules').glob('*.md'))+sorted((O/'originals').glob('ChEBI-*.json'))
+assert len(selected)==len(set(selected));entries=[row(p)for p in selected]
+compact={'role':'Compact retention proposal only; no maintained edit. Complete original native bytes remain externally bound by exact hashes; compressed ledgers are lossless. All21 small issuing ChEBI originals are included.','files':entries,'file_count':len(entries),'bytes':sum(x['bytes']for x in entries),'excluded_raw_native_original_count':40,'external_whole_source_count':4,'full_original_provenance':'complete-input-inventory.json.gz','independent_review_required':True}
+(O/'compact-retention-manifest.json').write_text(json.dumps(compact,indent=2)+'\n')
+files=[row(p)for p in sorted(O.rglob('*'))if p.is_file() and p.name!='artifact-manifest.json'];manifest={'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'root':str(O),'role':'Frozen full formal chemistry source author handoff; no maintained/Git/GitHub writes.','inventory_includes_hidden_ignored':True,'files':files,'file_count':len(files),'bytes':sum(x['bytes']for x in files),'external_source_files':'independent-authority-inputs.json','scientific_limit':'Verified source chemistry and bounded source conflicts; not independent review or organism-specific whole-route proof.'};(O/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+for r in files:assert sha(O/r['path'])==r['sha256']
+print(json.dumps({'HANDOFF_sha256':sha(O/'HANDOFF.md'),'artifact_manifest_sha256':sha(O/'artifact-manifest.json'),'compact_manifest_sha256':sha(O/'compact-retention-manifest.json'),'files':len(files),'bytes':manifest['bytes'],'compact_files':len(entries),'compact_bytes':compact['bytes'],'compression_pairs':len(compression)},indent=2))

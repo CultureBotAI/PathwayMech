@@ -1,0 +1,44 @@
+from pathlib import Path
+import json,hashlib,subprocess,xml.etree.ElementTree as E,re,datetime
+O=Path('/private/tmp/pathwaymech-next-262-discovery'); inv=json.loads((O/'corpus-inventory.json').read_text()); proj=json.loads((O/'native-projections.json').read_text()); by={r['id']:r for r in proj}
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+reactions=['CATECHOL-23-DIOXYGENASE-RXN','RXN-8527','RXN-8529','4.1.1.77-RXN','2-OXOPENT-4-ENOATE-HYDRATASE-RXN','MHPELY-RXN','ACETALD-DEHYDROG-RXN']
+patterns=set(['PWY-5420','PWY-5419','PWY-5162','PWY-5415','P183-PWY','PWY-5417','PWY-5431','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-5430','4-oxalocrotonate pathway','catechol degradation II','catechol degradation I','catechol catabolic process, meta-cleavage','catechol degradation, meta-cleavage','catechol breakdown, meta-cleavage','catechol meta-cleavage','GO:0019616','M00569'])
+patterns.update(reactions);aliases={f:{'MetaCyc:'+f} for f in reactions}
+dirs=Path('/private/tmp/pathwaymech-curation-authorities/rhea-directions.tsv'); assert sha(dirs)=='deae1911da372c70ee8fc97992809c7923e63b288a8702fc4396edcb2633fb04'; drows=[line.split('\t') for line in dirs.read_text().splitlines()[1:]]; families={}
+for f in reactions:
+ for s in by[f]['links']:
+  e=E.fromstring(s); db=e.findtext('dblink-db'); acc=e.findtext('dblink-oid')
+  if db=='RHEA':
+   row=[r for r in drows if acc in r];assert len(row)==1; families[f]=row[0]
+   for n in row[0]:aliases[f].add('RHEA:'+n);patterns.add('RHEA:'+n)
+  elif db=='LIGAND-RXN': aliases[f].add('KEGG:'+acc);patterns.add(acc)
+# Prior complete next252 chemistry resolved an exact alternate family missed by native crossrefs.
+resolved=[r for r in drows if '33432' in r];assert len(resolved)==1
+for n in resolved[0]:aliases['RXN-8529'].add('RHEA:'+n);patterns.add('RHEA:'+n)
+for p in sorted((O/'originals').glob('EPMC-*.json')):
+ d=json.loads(p.read_text())['resultList']['result'][0];patterns.add(d['id']);
+ if d.get('doi'):patterns.add(d['doi'])
+for f in ['PWY-5420','PWY-5419']:
+ for s in by[f]['synonyms']+[by[f]['name']]:patterns.add(re.sub('<[^>]+>','',s))
+patterns=sorted(patterns,key=str.lower);(O/'complete-dedup-patterns.txt').write_text('\n'.join(patterns)+'\n')
+checks=[]
+for r in inv['records']:
+ ids={x['id'] for x in r['reactions']};found={k:sorted(v&ids) for k,v in aliases.items() if v&ids}
+ semantic=[{'id':n['id'],'label':n['label']} for n in r['reactions'] if any(t in n['label'].lower() for t in ['catechol','oxalocrotonate','hydroxymucon','oxopent','oxovaler'])]
+ if found or semantic or any(t in r['label'].lower() for t in ['catechol','dihydroxybenzoate']):checks.append({'path':r['path'],'id':r['id'],'label':r['label'],'state_vs_base':r['state_vs_base'],'found_native_or_xref_families':found,'candidate_reaction_family_coverage':len(found),'complete_seven_declared':len(found)==7,'semantic_nodes':semantic})
+dump('corpus-reaction-overlap.json',{'candidate':'MetaCyc:PWY-5420','reaction_count':7,'aliases_source':'Exact native Rhea/KEGG crossrefs are search aliases only; chemical equivalence not presumed. Rhea family IDs from fully hash-verified issuing direction table.','alias_sets':{k:sorted(v) for k,v in aliases.items()},'rhea_direction_table':{'path':str(dirs),'sha256':sha(dirs),'rows':families},'all258_records_checked':True,'exact_candidate_record':[r for r in inv['records'] if r['id']=='MetaCyc:PWY-5420'],'overlap_records':checks})
+roots=[Path(inv['worktree']),Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')]
+results=[]
+for i,root in enumerate(roots):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(O/'complete-dedup-patterns.txt'),'.','-g','!/.git','-g','!/.venv'];p=subprocess.run(cmd,cwd=root,capture_output=True);assert p.returncode in [0,1];(O/f'whole-repository-search-{i}.jsonl').write_bytes(p.stdout);(O/f'whole-repository-search-{i}.stderr.txt').write_bytes(p.stderr)
+ files={};count=0
+ for line in p.stdout.splitlines():
+  d=json.loads(line)
+  if d['type']!='match':continue
+  count+=1; d=d['data']; path=d['path']['text']; text=d['lines'].get('text',''); row=files.setdefault(path,{'path':path,'sha256':sha(root/path),'matching_lines':0,'patterns':set(),'snippets':[]});row['matching_lines']+=1;row['patterns'].update(t for t in patterns if t.lower() in text.lower())
+  if any(t in text.lower() for t in ['pwy-5420','catechol degradation ii','4-oxalocrotonate pathway','rxn-8527','rxn-8529','4.1.1.77-rxn']):row['snippets'].append({'line':d['line_number'],'text':text.rstrip()})
+ for row in files.values():row['patterns']=sorted(row['patterns'])
+ dump(f'prior-file-matches-{i}.json',list(files.values()));results.append({'root':str(root),'command':cmd,'returncode':p.returncode,'matched_lines':count,'matched_files':len(files),'raw_log':f'whole-repository-search-{i}.jsonl','raw_sha256':sha(O/f'whole-repository-search-{i}.jsonl'),'includes_ignored_and_hidden':True,'exclusions':['root .git administrative entry','root .venv'],'other_bounds':['default ripgrep binary handling','no directory-symlink following','no archive unpacking','external caches not globally scanned']})
+dump('search-execution-receipt.json',{'executed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'pattern_count':len(patterns),'roots':results});print(json.dumps({'patterns':len(patterns),'searches':results,'overlaps':[{'id':r['id'],'coverage':r['candidate_reaction_family_coverage']} for r in checks]},indent=2))

@@ -1,0 +1,32 @@
+"""Read-only replay; may be run after the package is frozen, does not write files."""
+import sys,json,hashlib,gzip,copy,importlib.util,re,unicodedata
+from pathlib import Path
+sys.path.insert(0,'/Users/marcin/.cache/uv/archive-v0/06GuejOflDR5kUcEugWNN');import yaml
+P=Path(__file__).resolve().parent.parent
+load=lambda p:json.loads(p.read_text())
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+if (P/'artifact-manifest.json').exists():
+ for r in load(P/'artifact-manifest.json')['files']:assert sha(P/r['path'])==r['sha256'],r['path']
+for row in load(P/'compression-pairs.json'):
+ assert gzip.decompress((P/row['compressed']).read_bytes())==(P/row['original']).read_bytes()
+record=yaml.safe_load((P/'inputs/native-author-draft-at-overlay-check.yaml').read_text())
+for n in record['participants']:
+ for update in load(P/'node-role-updates.json'):
+  if n['id']==update['id']:assert n['category']==update['expected_category'];n['category']=update['category']
+existing={n['id'] for k in ['taxa','participants','reactions'] for n in record.get(k,[])}
+for n in load(P/'node-needs.json')['nodes']:
+ if n['id'] not in existing:record['participants'].append(n);existing.add(n['id'])
+refs={r['id']:r for r in record['references']}
+refs.update({r['id']:r for r in load(P/'reference-needs.json')['references']});record['references']=list(refs.values())
+for patch in load(P/'native-edge-patches.json'):
+ matches=[e for e in record['mechanistic_edges'] if all(e[k]==v for k,v in patch['selector'].items())];assert len(matches)==1
+ e=matches[0];assert hashlib.sha256(e.get('description','').encode()).hexdigest()==patch['expected_description_sha256']
+ e['description']=patch['description'];e['evidence']+=patch['evidence_append']
+ if 'endpoint_qualifiers_replace' in patch:e['endpoint_qualifiers']=patch['endpoint_qualifiers_replace']
+record['mechanistic_edges']+=load(P/'primary-edges.json');record['description']+='\n\n'+'\n\n'.join(p['description'] for p in load(P/'record-description-paragraphs.json'))
+assert record==yaml.safe_load((P/'combined-author-preview.yaml').read_text())
+spec=importlib.util.spec_from_file_location('bound_schema_replay',P/'inputs/src__pathwaymech__schema.py');m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m);m.validate_record(record)
+assert len(load(P/'claim-dispositions.json'))==198
+for b in load(P/'quote-budgets.json'):assert sum(len(s.split()) for s in b['distinct_excerpts'])==b['unique_excerpt_words']<=25
+for row in load(P/'quote-replay.json')+load(P/'table-evidence-replay.json'):assert sha(Path(row['source']['path']))==row['source']['sha256']
+print(json.dumps({'status':'passed','manifest_files':len(load(P/'artifact-manifest.json')['files']) if (P/'artifact-manifest.json').exists() else None,'edges':len(record['mechanistic_edges']),'native_patches':33,'primary_additions':29,'claim_dispositions':198,'read_only_replay':True}))

@@ -1,0 +1,38 @@
+"""Verify the exact complete frozen author packages; no final selection."""
+from pathlib import Path
+import datetime,hashlib,json
+B=Path(__file__).resolve().parents[1]
+PACKAGES={
+ 'native':'8d1ad92744d1e6a4e216d0e53e545cb8c5d1a26997afda982f0a04d777af4952',
+ 'chemistry':'9db93b6f64814d3f6e8b7fb10d1bf3b669ae7cdd7ce133b51fa638598267bbab',
+ 'biological-identity':'5a1a6f4aa4b6cab21c9c6443966458722ba1be5e6d82cc976e0a16df2fa89944',
+ 'native-author':'a8458aa08bd8815b2b2aafe3f47ca71168bd871b7c874aa8ae064796acbf122a',
+ 'primary':'d2af43f37080c71b9525a622e96ed83cf9359cbd9e5356c62d40a213d62d53df',
+ 'primary-author':'5a0e816995e4a61020b53eae826343426f62b64556ee59f9e309548244be07a1',
+}
+def sha(p):
+ h=hashlib.sha256()
+ with Path(p).open('rb')as f:
+  for block in iter(lambda:f.read(1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def main():
+ packages=[]
+ for name,digest in PACKAGES.items():
+  root=Path('/private/tmp/pathwaymech-next-262-'+name);manifest=root/'artifact-manifest.json';assert sha(manifest)==digest
+  data=json.loads(manifest.read_text());verified=[];expected=set()
+  for row in data['files']:
+   path=Path(row['path']);path=path if path.is_absolute()else root/path
+   assert path.is_relative_to(root) and path.is_file() and sha(path)==row['sha256'] and path.stat().st_size==row['bytes'],path
+   expected.add(path.relative_to(root).as_posix());verified.append({'path':str(path),'sha256':row['sha256'],'bytes':row['bytes']})
+  actual={p.relative_to(root).as_posix()for p in root.rglob('*')if p.is_file()}
+  assert actual==expected|{'artifact-manifest.json'},(name,actual-expected)
+  packages.append({'root':str(root),'manifest':str(manifest),'manifest_sha256':digest,'count':len(verified),'files':verified,'exact_inventory_match_including_hidden_ignored':True})
+ inventory=json.loads((B/'retained/candidate-source-inventory.json').read_text())
+ for row in inventory['source_bindings']:assert sha(row['source_path'])==row['sha256']==sha(row['observed_path'])
+ chemical=Path('/private/tmp/pathwaymech-next-262-additional-chemistry/verification.json');assert sha(chemical)=='935f83f7060aacb3b0d513c9c109c89f8874b5652fe0d5058b6e4563ae6849ac'
+ cr=json.loads(chemical.read_text())
+ for row in cr['files']:assert sha(row['path'])==row['sha256'] and Path(row['path']).stat().st_size==row['bytes']
+ report={'status':'passed','checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'All manifest-listed files and exact complete hidden/ignored package inventories verified. No optional candidate promoted, no global absence claim.','packages':packages,'checked_files':sum(p['count']for p in packages),'source_plan_observations_match_frozen':True,'additional_chemistry_verification':{'path':str(chemical),'sha256':sha(chemical),'bound_files_verified':len(cr['files'])},'final_selection':'Pending root-integrated record and exact hash','helper_sha256':sha(__file__)}
+ output=B/'retained/frozen-author-package-inputs.json';assert not output.exists();output.write_text(json.dumps(report,indent=2)+'\n')
+ print(json.dumps({k:report[k]for k in ['status','checked_files','source_plan_observations_match_frozen','final_selection']},indent=2))
+if __name__=='__main__':main()

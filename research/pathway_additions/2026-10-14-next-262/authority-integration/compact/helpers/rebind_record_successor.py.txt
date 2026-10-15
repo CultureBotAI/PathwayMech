@@ -1,0 +1,43 @@
+"""Bind a reviewed record successor without changing frozen term selection.
+
+This checks declared identifier, label and category preservation only. It does
+not adjudicate scientific validity of changes; the full delta is recorded.
+"""
+from pathlib import Path
+import argparse,datetime,hashlib,json
+import yaml
+B=Path(__file__).resolve().parents[1]
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def identity(r):
+ rows=[('record',r['id'],r['label'],r.get('category'))]
+ rows +=[(field,n['id'],n['label'],n.get('category'))for field in ['taxa','participants','reactions','gene_clusters']for n in r.get(field,[])]
+ assert len({(s,i)for s,i,_,_ in rows})==len(rows)
+ return sorted(rows)
+def delta(a,b,path=()):
+ if type(a)!=type(b):return [{'path':list(path),'before':a,'after':b}]
+ if isinstance(a,dict):
+  out=[]
+  for k in sorted(set(a)|set(b)):
+   if k not in a or k not in b:out.append({'path':list(path+(k,)),'before':a.get(k),'after':b.get(k)})
+   else:out.extend(delta(a[k],b[k],path+(k,)))
+  return out
+ if isinstance(a,list):
+  if len(a)!=len(b):return [{'path':list(path),'before':a,'after':b}]
+  return [d for i,(aa,bb)in enumerate(zip(a,b))for d in delta(aa,bb,path+(i,))]
+ return []if a==b else[{'path':list(path),'before':a,'after':b}]
+def main():
+ p=argparse.ArgumentParser();p.add_argument('--record',type=Path,required=True);p.add_argument('--record-sha256',required=True);p.add_argument('--output-dir',type=Path);args=p.parse_args()
+ out=args.output_dir or B/'retained'
+ assert not (B/'artifact-manifest.json').exists() or not out.resolve().is_relative_to(B.resolve()), 'Use a new external output directory after this package is frozen'
+ out.mkdir(parents=True,exist_ok=True)
+ freeze=json.loads((B/'retained/selection-freeze.json').read_text());initial=Path(freeze['observation']);assert sha(initial)==freeze['record_sha256']
+ observed=args.record.read_bytes();assert hashlib.sha256(observed).hexdigest()==args.record_sha256
+ before=yaml.safe_load(initial.read_text());after=yaml.safe_load(observed)
+ assert identity(before)==identity(after),'Selected IDs, labels or categories changed; explicit new authority preparation required'
+ selected={r[1]for r in identity(after)};assert selected==set(freeze['selected_identifiers'])
+ destination=out/('record-successor-'+args.record_sha256[:16]+'.yaml');assert not destination.exists();destination.write_bytes(observed)
+ report={'checked_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Authority selection successor binding only; scientific review remains root-owned','initial_record_sha256':freeze['record_sha256'],'successor_record':str(args.record),'successor_sha256':args.record_sha256,'successor_observation':str(destination),'selected_ids_labels_categories_preserved':True,'selected_count':len(selected),'selection_receipt':str(B/'retained/selection-freeze.json'),'selection_receipt_sha256':sha(B/'retained/selection-freeze.json'),'record_differences':delta(before,after),'authority_builds_need_not_change':'All selected identifiers and their existing canonical labels/categories are unchanged. The unchanged real consumer must still check this exact successor.'}
+ assert sha(args.record)==args.record_sha256
+ target=out/('record-successor-rebind-'+args.record_sha256[:16]+'.json');assert not target.exists();target.write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
+ print(json.dumps({'receipt':str(target),'sha256':sha(target),'record_delta_items':len(report['record_differences']),'identities_preserved':True},indent=2))
+if __name__=='__main__':main()

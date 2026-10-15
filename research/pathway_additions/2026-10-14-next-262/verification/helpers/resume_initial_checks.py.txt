@@ -1,0 +1,67 @@
+"""Complete only network-blocked/unexecuted checks; preserve the original run."""
+from pathlib import Path
+import datetime
+import hashlib
+import importlib.util
+import json
+import subprocess
+import time
+
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+INITIAL = Path('/private/tmp/pathwaymech-next-262-checks-initial')
+OUT = Path('/private/tmp/pathwaymech-next-262-checks-completion')
+spec = importlib.util.spec_from_file_location('initial_gate_runner', CI / 'run_initial_checks.py')
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+ROOT, ENV = module.ROOT, module.ENV
+sha = module.sha
+initial = json.loads((INITIAL / 'receipts.json').read_text())
+assert len(initial) == 5
+assert [r['command'] for r in initial] == [['just','render-pages'], ['just','validate'], ['just','test'], ['just','lint'], ['just','vendored-check']]
+assert all(r['exit_code'] == 0 for r in initial[:4])
+assert initial[-1]['exit_code'] == 1
+assert 'FETCH ERROR:' in Path(initial[-1]['log_path']).read_text()
+assert 'nodename nor servname provided' in Path(initial[-1]['log_path']).read_text()
+for row in initial:
+    assert sha(Path(row['log_path'])) == row['log_sha256']
+before = json.loads((INITIAL / 'tested-core-input-hashes.json').read_text())
+assert module.inventory() == before, 'Do not resume over changed tested inputs'
+assert not OUT.exists()
+OUT.mkdir()
+for name in ['tested-core-input-hashes.json', 'environment.json']:
+    (OUT / name).write_bytes((INITIAL / name).read_bytes())
+receipts = list(initial)
+failed = {'initial_receipts_path': str(INITIAL / 'receipts.json'),
+          'initial_receipts_sha256': sha(INITIAL / 'receipts.json'),
+          'original_failure': initial[-1],
+          'classification': 'Pinned canonical artifact fetch failed under restricted network; no data/code defect identified.',
+          'resume_scope': 'Only vendored-check and the two unexecuted diff checks; do not rerun passing render/validation/tests/lint.',
+          'all_tested_inputs_unchanged_before_resume': True,
+          'preserved_input_count': len(before)}
+(OUT / 'resume-context.json').write_text(json.dumps(failed, indent=2) + '\n')
+for command in [['just','vendored-check'], ['git','diff','--check'], ['git','diff','--cached','--check']]:
+    log = OUT / ('-'.join(command) + '.log')
+    started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    timer = time.monotonic()
+    with log.open('w') as stream:
+        result = subprocess.run(command, cwd=ROOT, env=ENV, stdout=stream, stderr=subprocess.STDOUT)
+    receipt = {'command': command, 'cwd': str(ROOT), 'started_utc': started,
+               'elapsed_seconds': round(time.monotonic()-timer, 2), 'exit_code': result.returncode,
+               'log_path': str(log), 'log_sha256': sha(log)}
+    receipts.append(receipt)
+    (OUT / 'receipts.json').write_text(json.dumps(receipts, indent=2) + '\n')
+    print(json.dumps(receipt), flush=True)
+    if result.returncode:
+        print(log.read_text()[-10000:], flush=True)
+        raise SystemExit(result.returncode)
+assert module.inventory() == before, 'Core inventory changed across the original and resumed run'
+assert sha(INITIAL / 'receipts.json') == failed['initial_receipts_sha256']
+preservation = {'tested_core_files': len(before), 'all_unchanged': True, 'scope': module.SCOPE,
+    'ignored_and_hidden_included': True, 'excluded_runtime_caches': ['__pycache__','.pytest_cache','.ruff_cache'],
+    'record_sha256': sha(ROOT / 'data/pathways/catechol-degradation-ii.yaml'),
+    'initial_failure_preserved': True, 'resume_context_sha256': sha(OUT / 'resume-context.json'),
+    'latest_required_command_results': {' '.join(r['command']): r['exit_code'] for r in receipts},
+    'all_latest_required_commands_passed': True}
+assert all(code == 0 for code in preservation['latest_required_command_results'].values())
+(OUT / 'final-input-preservation.json').write_text(json.dumps(preservation, indent=2) + '\n')
+print('All seven required commands now passed; all2136 tested input bytes preserved across the original run and bounded network retry.', flush=True)

@@ -1,0 +1,188 @@
+from pathlib import Path
+import json,hashlib,collections,xml.etree.ElementTree as ET,gzip,csv,datetime,re,html,sys
+import yaml
+B=Path('/private/tmp/pathwaymech-next-262-native-author');N=Path('/private/tmp/pathwaymech-next-262-native');C=Path('/private/tmp/pathwaymech-next-262-chemistry');O=Path('/private/tmp/pathwaymech-next-262-independent-technical');R=Path('/private/tmp/pathwaymech-next-262-20261014')
+sys.path.insert(0,str(R/'src'))
+from pathwaymech.schema import validate_record
+
+def read(p):return json.loads(Path(p).read_text())
+def sha(p):
+ with Path(p).open('rb')as f:return hashlib.file_digest(f,'sha256').hexdigest()
+def dump(n,j):(O/n).write_text(json.dumps(j,indent=2,ensure_ascii=False)+'\n')
+record=yaml.load((B/'native-draft.yaml').read_bytes(),Loader=yaml.CSafeLoader);validate_record(record)
+full={x['frame']:x for x in read(N/'native-full-object-projection.json')};objects={};slots={};rawrows=[]
+for frame,p in full.items():
+ assert sha(p['file'])==p['sha256'];tree=ET.parse(p['file']).getroot();obj=[e for e in tree if e.get('frameid')==frame];assert len(obj)==1;obj=obj[0];assert obj.tag==p['type'];objects[frame]=obj;ordinals=collections.Counter();actual=[]
+ for child in obj:
+  ordinals[child.tag]+=1;locator=f'/ptools-xml/{obj.tag}[@frameid="{frame}"]/{child.tag}[{ordinals[child.tag]}]';slots[locator]=(frame,child);actual.append(locator)
+ assert set(actual)=={s['locator']for s in p['slots']} and len(actual)==len(p['slots'])
+ for s in p['slots']:assert ET.tostring(slots[s['locator']][1]).strip()==ET.tostring(ET.fromstring(s['xml'])).strip()
+ rawrows.append({'frame':frame,'type':obj.tag,'source_path':p['file'],'source_sha256':p['sha256'],'original_direct_slot_count':len(actual),'complete_projection_exact':True})
+assert len(slots)==5148 and len(objects)==343
+# Reparse complete issuing RDF, not only the author projection.
+rhea=read(C/'rhea-complete-source-projection.json');rdfpath=rhea['original_inputs'][0]['path'];assert sha(rdfpath)==rhea['original_inputs'][0]['sha256'];rdfabout='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about';rdfresource='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource';want=set(rhea['nodes']);actual_rhea=collections.defaultdict(lambda:collections.defaultdict(list));descriptions=0
+with gzip.open(rdfpath,'rb')as f:
+ for ev,el in ET.iterparse(f,events=['end']):
+  if el.tag=='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}Description':
+   descriptions+=1;uri=el.get(rdfabout)
+   if uri in want:
+    for ch in el:actual_rhea[uri][ch.tag.rsplit('}',1)[-1]].append(ch.get(rdfresource)or(ch.text or''))
+   el.clear()
+for uri,projection in rhea['nodes'].items():
+ for k,v in projection.items():assert sorted(set(actual_rhea[uri][k]))==sorted(set(v)),(uri,k)
+dirs={};dirpath=rhea['original_inputs'][1]['path'];assert sha(dirpath)==rhea['original_inputs'][1]['sha256']
+for row in csv.DictReader(Path(dirpath).open(),delimiter='\t'):
+ for key,d in [('RHEA_ID_LR','left_to_right'),('RHEA_ID_RL','right_to_left'),('RHEA_ID_BI','reversible')]:dirs['RHEA:'+row[key]]=d
+formal_native=['CATECHOL-23-DIOXYGENASE-RXN','RXN-8527','RXN-8529','4.1.1.77-RXN','2-OXOPENT-4-ENOATE-HYDRATASE-RXN','MHPELY-RXN','ACETALD-DEHYDROG-RXN']
+formal_ids=['RHEA:17338','RHEA:34220','RHEA:33432','MetaCyc:4.1.1.77-RXN','RHEA:22582','RHEA:22625','RHEA:23289'];formal=dict(zip(formal_native,formal_ids));reverse_formal={v:k for k,v in formal.items()}
+refs={r['id']:r for r in record['references']};edges=record['mechanistic_edges'];nodes={record['id']:record}|{x['id']:x for sec in ['taxa','participants','reactions']for x in record[sec]}
+for ref in refs.values():
+ if ref['id'].startswith('MetaCyc:'):assert ref['source_sha256']==full[ref['id'].split(':',1)[1]]['sha256']
+ else:assert ref['id'].startswith('RHEA:')and ref['source_sha256']==rhea['original_inputs'][0]['sha256']
+for r in record['reactions']:
+ if r['id'].startswith('RHEA:'):
+  assert r['direction']==dirs[r['id']];assert r['label']in actual_rhea['http://rdf.rhea-db.org/'+r['id'][5:]]['label']
+ elif r['category']=='molecular_activity':
+  obj=objects[r['id'].split(':',1)[1]];d=obj.findtext('reaction-direction')
+  if d:assert r['direction']=={'REVERSIBLE':'reversible','LEFT-TO-RIGHT':'left_to_right','PHYSIOL-LEFT-TO-RIGHT':'left_to_right','RIGHT-TO-LEFT':'right_to_left','PHYSIOL-RIGHT-TO-LEFT':'right_to_left'}[d]
+  else:assert 'direction'not in r
+
+def framechildren(el):return [x.get('frameid')for x in el if x.get('frameid')]
+def direct(frame,tag):return [c for e in objects[frame].findall(tag)for c in framechildren(e)]
+def evlocs(item):return [slots[s]for s in item['source_locator'].split('; ')]
+# Native chemical IDs are checked against exact frozen selections, then route sides against originals.
+chemical={}
+for step in read(C/'formal-chemistry-proof.json')['steps']:
+ for c in step['inputs']+step['outputs']:chemical[c['native_compound']]=c['id']
+for a in read('/private/tmp/pathwaymech-next-261-participant-authorities/retained/native-chemical-dispositions.json')['endpoints']:
+ if a['native_frame']in full:
+  assert a['source_sha256']==full[a['native_frame']]['sha256'];chemical.setdefault(a['native_frame'],a['selected_id'])
+for a in read(B/'root-additional-chemical-selections.json'):
+ assert a['native_sha256']==full[a['native_frame']]['sha256'];chemical[a['native_frame']]=a['selected_id']
+# Enumerate evidence from the draft, independently replay every original locator, and test assertion content.
+used=collections.defaultdict(list);evidence=[];rules=collections.Counter()
+for edge in edges:
+ items=[('edge',i,x)for i,x in enumerate(edge['evidence'])]+[('qualifier'+str(qi),i,x)for qi,q in enumerate(edge.get('endpoint_qualifiers',[]))for i,x in enumerate(q['evidence'])]
+ for place,idx,item in items:
+  assert 'source_assertion'in item and 'quote'not in item;t=item['source_assertion'];rid=item['reference_id'];assert len(t)<=400
+  if rid.startswith('RHEA:'):
+   uri='http://rdf.rhea-db.org/'+rid[5:];assert item['source_locator']=='RDF subject '+uri+'; rh:equation';assert t=='The issuing directional equation is '+actual_rhea[uri]['equation'][0]+'.';rule='issuing_RDF_equation'
+  else:
+   frame=rid.split(':',1)[1];located=evlocs(item);assert all(f==frame for f,_ in located);ss=[e for _,e in located];tags={e.tag for e in ss};assert 'comment'not in tags
+   for loc in item['source_locator'].split('; '):used[loc].append({'edge':edge['id'],'place':place,'index':idx})
+   frames=[f for e in ss for f in framechildren(e)]
+   if tags<={'left','right'}:
+    m=re.search(r'(?:lists |same )([^ ]+)(?: on its|\.)',t);assert m and m[1]in frames,(t,frames)
+    if ' on its 'in t:
+     side=re.search(r'on its (left|right) side',t)[1];assert tags=={side}
+     if 'without an explicit coefficient'in t:assert all(e.find('coefficient')is None for e in ss)
+     else:
+      coefficient=re.search(r'with coefficient ([0-9.]+)',t)[1];assert any(e.findtext('coefficient')==coefficient for e in ss)
+    rule='native_material_side'
+   elif tags=={'reaction-direction'}:
+    assert any(e.text.strip()in t for e in ss);rule='native_direction'
+   elif tags=={'reaction-list'}:
+    assert any(f in t for f in frames);rule='native_module_membership'
+   elif tags=={'reaction-ordering'}:
+    e=ss[0];a=e.find('predecessor-reactions/Reaction').get('frameid');b=e.find('Reaction').get('frameid');assert t==a+' is listed as predecessor of '+b+'.';rule='native_predecessor'
+   elif tags=={'enzyme','reaction'}:
+    enzyme=direct(frame,'enzyme')[0];reaction=direct(frame,'reaction')[0];assert enzyme in t and reaction in t and frame in t;rule='native_enzyme_reaction_binding'
+   elif tags=={'evidence'}:
+    codes={x.get('frameid')for e in ss for x in e.findall('Evidence-Code')};mentioned=set(re.findall(r'EV-[A-Z0-9-]+',t));assert mentioned and mentioned<=codes;rule='native_evidence_class'
+   elif tags=={'component-of'}:
+    assert all(f in t for f in frames);assert frame in t;rule='native_assembly_context'
+   elif tags=={'component'}:
+    assert frame in t and all(f in t for f in frames)
+    coefficient=ss[0].findtext('coefficient');assert ('with coefficient '+coefficient if coefficient else'without coefficient')in t;rule='native_component_stoichiometry'
+   elif tags=={'cofactor'}:
+    assert frame in t and all(f in t for f in frames);assert direct(frame,'enzyme')[0]in t;rule='native_cofactor'
+   elif tags=={'regulated-entity','regulator','mode'}:
+    assert all(f in t for f in frames);assert frame in t;assert 'mode '+next(e.text for e in ss if e.tag=='mode')in t;rule='native_regulation'
+   elif tags=={'location'}:
+    assert frame in t and all(f in t for f in frames);rule='native_location'
+   elif t.startswith('Native structured '):
+    assert len(ss)==1;e=ss[0];tag=e.tag;assert tag in t
+    if tag in ['km','kcat','specific-activity']:
+     val=e.find('value');assert val.text in t;assert html.unescape(html.unescape(val.get('units','')))in t
+     sub=e.find('substrate/Compound');assert sub is None or sub.get('frameid')in t
+    elif tag=='alternative-substrate':
+     assert e.find('substrate/Compound').get('frameid')in t and e.find('alternate/Compound').get('frameid')in t
+    else:assert e.text.strip()in t
+    direction=e.findtext('direction');assert direction is None or direction in t;rule='native_assay_annotation'
+   else:raise AssertionError(('Unexamined assertion type',edge['id'],tags,t))
+  rules[rule]+=1;evidence.append({'edge':edge['id'],'place':place,'index':idx,'reference_id':rid,'source_locator':item['source_locator'],'assertion':t,'rule':rule,'original_binding_verified':True})
+assert len(evidence)==393
+# Compare complete direct-slot ledger to independently derived original inventory and actual graph uses.
+ledger=read(B/'complete-slot-to-graph-dispositions.json');assert len(ledger)==len(slots)and {x['locator']for x in ledger}==set(slots)
+for x in ledger:
+ f,el=slots[x['locator']];assert x['frame']==f and x['source_sha256']==full[f]['sha256'];assert bool(x['graph_uses'])==bool(used[x['locator']]);assert {u['edge']for u in x['graph_uses']}=={u['edge']for u in used[x['locator']]}
+objectsledger=read(B/'complete-object-to-graph-dispositions.json');assert {x['frame']for x in objectsledger}==set(objects)and len(objectsledger)==343
+# Source-to-graph correspondence for every edge, derived from original objects and native layout.
+layouts={}
+for module in ['PWY-5419','PWY-5162']:
+ for layout in objects[module].findall('reaction-layout'):
+  rx=layout.find('Reaction').get('frameid');layouts[rx]=layout.findtext('direction')
+assert set(formal)==set(layouts)
+raw_material=[];net=collections.Counter();expected_material=set()
+for frame,fid in formal.items():
+ orient=layouts[frame];assert orient in ['L2R','R2L']
+ for side,role in [('left','consumes'if orient=='L2R'else'produces'),('right','produces'if orient=='L2R'else'consumes')]:
+  for el in objects[frame].findall(side):
+   c=el.find('Compound').get('frameid');cid=chemical[c];co=float(el.findtext('coefficient')or'1');sig=(cid,role,fid)if role=='consumes'else(fid,role,cid);expected_material.add(sig);net[cid]+=co*(1 if role=='produces'else-1);raw_material.append({'native_reaction':frame,'layout':orient,'native_side':side,'native_compound':c,'selected_compound':cid,'coefficient':co,'triple':sig})
+actual_material={(e['subject'],e['predicate'],e['object'])for e in edges if e['predicate']in ['consumes','produces']};assert expected_material==actual_material and len(raw_material)==28
+expected_activity=[]
+for frame in formal:
+ for aid in direct(frame,'enzymatic-reaction'):
+  enzyme=direct(aid,'enzyme');assert len(enzyme)==1;expected_activity.append((aid,enzyme[0],frame))
+assert len(expected_activity)==41
+selected_acts={aid:(enzyme,rx)for aid,enzyme,rx in expected_activity if enzyme!='ADHE-CPLX'}
+reviewed=[]
+for e in edges:
+ sub,pred,obj=e['subject'],e['predicate'],e['object'];evidence_sources={x['reference_id'].split(':',1)[1]for x in e['evidence']if x['reference_id'].startswith('MetaCyc:')};kind=pred
+ if pred in ['consumes','produces']:assert(sub,pred,obj)in expected_material
+ elif pred in ['catalyzes','enables']:
+  source=next(f for f in evidence_sources if objects[f].tag=='Enzymatic-Reaction');enzyme,rx=selected_acts[source];assert sub=='MetaCyc:'+enzyme;assert obj in ['MetaCyc:'+source,formal[rx]]
+  if enzyme in ['MONOMER-13363','MONOMER-14737','MONOMER-14738']:assert pred=='enables'and obj=='MetaCyc:'+source
+  codes={c.get('frameid')for ev in objects[source].findall('evidence')for c in ev.findall('Evidence-Code')}
+  if any(c.startswith(('EV-COMP','EV-EXP-IEP','EV-EXP-IMP'))for c in codes):assert pred=='enables'
+  if any('-HH'in c for c in codes):assert any(q['endpoint']=='subject'and q['kind']=='experimental_construct'for q in e.get('endpoint_qualifiers',[]))
+ elif pred=='has_part':
+  f=sub.split(':',1)[1];target=reverse_formal.get(obj,obj.split(':',1)[1]);tag='reaction-list'if objects[f].tag=='Pathway'else'component';assert target in direct(f,tag)
+ elif pred=='provides_input_for':
+  assert any(x['triple']==(sub,'produces',cid)for x in raw_material for cid in chemical.values()if(cid,'consumes',obj)in expected_material)
+  sources=list(evidence_sources);a,b=[reverse_formal[x]for x in[sub,obj]];assert set(sources)=={a,b};locframes=[(f,framechildren(el)[0])for item in e['evidence']for f,el in evlocs(item)];assert len({c for f,c in locframes})==1
+ elif pred=='precedes':
+  a,b=reverse_formal[sub],reverse_formal[obj];assert any(el.find('Reaction').get('frameid')==b and el.find('predecessor-reactions/Reaction').get('frameid')==a for f in evidence_sources for el in objects[f].findall('reaction-ordering'))
+ elif pred=='has_cofactor':
+  f=next(iter(evidence_sources));assert direct(f,'enzyme')==[sub.split(':',1)[1]]and obj in [chemical[c]for c in direct(f,'cofactor')]
+ elif pred in ['inhibits','activates']:
+  f=next(iter(evidence_sources));assert obj.split(':',1)[1]in direct(f,'regulated-entity');assert sub in [chemical[c]for c in direct(f,'regulator')];assert objects[f].findtext('mode')==('-'if pred=='inhibits'else'+');assert f!='REG-5876'
+ elif pred=='located_in':
+  f=sub.split(':',1)[1];m={'CCO-CYTOSOL':'GO:0005829','CCO-CHLOROPLAST':'GO:0009507'};assert obj in [m[x]for x in direct(f,'location')]
+ else:raise AssertionError(pred)
+ reviewed.append({'id':e['id'],'triple':[sub,pred,obj],'proof':kind,'source_frames':sorted(evidence_sources),'endpoint_qualifier_count':len(e.get('endpoint_qualifiers',[])),'original_semantic_check':True})
+# Completeness of selected source assignments and finite explicit exclusions.
+activity_dispositions=read(B/'formal-activity-dispositions.json');assert {x['activity']for x in activity_dispositions}=={a for a,p,r in expected_activity}
+for aid,(protein,rx)in selected_acts.items():
+ actual=[e for e in edges if e['subject']=='MetaCyc:'+protein and e['object']=='MetaCyc:'+aid and e['predicate']in ['catalyzes','enables']];assert len(actual)==1
+ formal_edges=[e for e in edges if e['subject']=='MetaCyc:'+protein and e['object']==formal[rx] and e['predicate']in ['catalyzes','enables']];assert len(formal_edges)==(0 if protein in ['MONOMER-13363','MONOMER-14737','MONOMER-14738']else1)
+regulations={f:o for f,o in objects.items()if o.tag=='Regulation'};regledger=read(B/'regulation-dispositions.json');assert len(regulations)==52 and {x['frame']for x in regledger}==set(regulations)
+for f,obj in regulations.items():
+ selected_targets=set(direct(f,'regulated-entity'))&set(selected_acts);actual=[e for e in edges if any(x['reference_id']=='MetaCyc:'+f for x in e['evidence'])];expected=0 if f=='REG-5876'else len(selected_targets)*len(direct(f,'regulator'));assert len(actual)==expected
+protein_frames={n['id'].split(':',1)[1]for n in record['participants']if n['category']in ['protein','complex']}
+for f in protein_frames:
+ for c in direct(f,'component'):assert any(e['subject']=='MetaCyc:'+f and e['predicate']=='has_part'and e['object']=='MetaCyc:'+c for e in edges)
+ for c in direct(f,'gene'):assert nodes['MetaCyc:'+c]['category']=='gene'
+ assert nodes['MetaCyc:'+f]['category']==('complex'if 'Protein-Complexes'in direct(f,'parent')else'protein')
+parenttax=[]
+for f in direct('PWY-5420','species'):
+ if f=='ORG-5948':continue
+ obj=objects[f];ids=[e.findtext('dblink-oid')for e in obj.findall('dblink')if e.findtext('dblink-db')=='NCBI-TAXONOMY-DB'];assert len(ids)==1;parenttax+=['NCBITaxon:'+ids[0]]
+assert set(parenttax)=={x['id']for x in record['taxa']}and len(parenttax)==4
+prose=read(B/'complete-prose-to-record-dispositions.json');native_prose=read(N/'prose-claim-context-ledger.json');assert len(prose)==len(native_prose)==218
+for x,y in zip(prose,native_prose):assert x['id']==y['id']and x['frame']==y['frame']and x['source_paragraph']==y['text']and x['source_sha256']==full[x['frame']]['sha256']
+features=read(B/'complete-feature-dispositions.json');native_features=read(N/'protein-feature-context.json');assert len(features)==len(native_features)==80
+for x,y in zip(features,native_features):assert x['protein']==y['protein']and x['feature']==y['feature']and x['locator']==y['source_locator']and x['source_sha256']==full[x['protein']]['sha256']
+result={'completed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Independent technical replay of native proposal original objects, every structured evidence occurrence and graph correspondence. Not independent scientific adjudication of all biological claims.','draft_sha256':sha(B/'native-draft.yaml'),'counts':{'original_objects':343,'original_direct_slots':5148,'references_hash_bound':len(refs),'graph_edges_checked':len(reviewed),'evidence_occurrences_checked':len(evidence),'evidence_native_slot_types':dict(rules),'formal_material_facts':28,'explicit_native_activities':41,'selected_native_activities':40,'regulation_objects':52,'complete_source_prose_paragraphs_retained':218,'embedded_features_retained':80,'rdf_descriptions_scanned':descriptions,'rhea_projected_subjects_replayed':len(want),'parent_taxa':4},'original_object_accounting':rawrows,'every_edge':reviewed,'route_material_facts':raw_material,'calculated_net_coefficients':{k:v for k,v in net.items()if v},'source_exclusions':{'ADHE-CPLX':'Exact E.coli native pathway exclusion; its activity omitted.','NbaG_CnbEF':'Three native activity enables edges retained; three formal catalytic promotions excluded.','REG-5876':'Conflicting negative NADH native edge omitted; primary positive successor still pending integration.'},'checks':{'all_original_direct_slots_accounted':True,'every_reference_digest_correct':True,'every_structured_assertion_matches_original_fields':True,'every_graph_triple_matches_local_source_semantics':True,'all_native_formal_directions_preserved':True,'all_selected_activity_and_regulation_dispositions_complete':True,'all_component_and_gene_context_accounted':True,'all_formal_materials_and_joins_preserved':True,'four_taxa_exact_parent_slots':True,'source_prose_and_features_preserved':True},'open_technical_findings':[],'limitations':['Native preparations, conflicting biological interpretations and stronger experimental construct qualifications require actual primary-overlay integration and complementary independent science review.','Chemical mappings bind exact frozen comparisons; no claim of independently rerunning every stereochemical algorithm or rereading every primary paper.','Assay metadata scope is checked against native original fields; database evidence is not promoted to independent paper reading.','Actual final maintained record, selected authority union, canonical inspect, generated page/KGX and full gates remain pending.']}
+dump('native-original-graph-replay.json',result);dump('native-evidence-original-replay.json',evidence)
+print(json.dumps(result['counts'],indent=2))

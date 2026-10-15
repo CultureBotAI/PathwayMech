@@ -1,0 +1,60 @@
+from pathlib import Path
+import json,hashlib,subprocess,datetime,collections,re
+import yaml
+D=Path('/private/tmp/pathwaymech-next-262-discovery');O=Path('/private/tmp/pathwaymech-next-262-dedup-successor');ROOTS=[Path('/private/tmp/pathwaymech-next-262-20261014'),Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')];HEAD='fbccbdc027f2a86ad4919e9dbbb16a736cc0746a';TREE='72737d598ca6c7d18861f8c3612f50c265a30e08'
+def sha(b):return hashlib.sha256(b).hexdigest()
+def dump(n,j):(O/n).write_text(json.dumps(j,indent=2)+'\n')
+def read(p):return json.loads(p.read_text())
+frozen=read(D/'artifact-manifest.json');rows=frozen.get('files',[]);by={x['path']:x for x in rows};bindings=[]
+needed=['corpus-inventory.json','complete-dedup-patterns.txt','search-execution-receipt.json','prior-file-dispositions-0.json','prior-file-dispositions-1.json','prior-file-matches-0.json','prior-file-matches-1.json','live-draft-successor-check.json','corpus-end-check.json','corpus-reaction-overlap.json','semantic-corpus-scan.json','candidate.json','native-connectivity-proof.json','HANDOFF.md']
+for n in needed:
+ b=(D/n).read_bytes();assert n in by and sha(b)==by[n]['sha256'],n;bindings.append({'path':str(D/n),'relative_path':n,'sha256':sha(b),'bytes':len(b),'frozen_manifest_entry':by[n]})
+dump('frozen-input-bindings.json',{'source_package':str(D),'manifest_path':str(D/'artifact-manifest.json'),'manifest_sha256':sha((D/'artifact-manifest.json').read_bytes()),'files':bindings,'unchanged_source_package':True})
+prior=read(D/'corpus-inventory.json');old={x['path']:x for x in prior['records']};assert len(old)==prior['count']==258
+last=read(D/'live-draft-successor-check.json');target='data/pathways/catechol-degradation-i.yaml';expected={p:r['sha256'] for p,r in old.items()};assert old[target]['sha256']=='38b3460b24131e7ee2d442e23d226618557bbc5ba56181d7ef9de9ac9e2a0255';expected[target]=last['sha256'];assert expected[target]=='29b073a0a5aca884b9decf6b86a41c2a018c62dc0818c7e33ec17065152d781c'
+over=read(D/'corpus-reaction-overlap.json');aliases={k:set(v) for k,v in over['alias_sets'].items()};assert len(aliases)==7
+states=[];corpora=[];checks=[];semantic=[]
+for i,root in enumerate(ROOTS):
+ state={'root':str(root),'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=root,text=True).strip(),'status':subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all'],cwd=root,text=True)};assert state['head']==HEAD and state['tree']==TREE;states.append(state)
+ actual={str(p.relative_to(root)) for p in (root/'data/pathways').rglob('*.yaml')};assert actual==set(old),(i,actual-set(old),set(old)-actual)
+ treerows={}
+ for line in subprocess.check_output(['git','ls-tree','-rz',HEAD,'data/pathways'],cwd=root).split(b'\0'):
+  if line:
+   meta,p=line.split(b'\t',1);treerows[p.decode()]=meta.decode().split()[-1]
+ records=[]
+ for p in sorted(actual):
+  b=(root/p).read_bytes();h=sha(b);assert h==expected[p],(i,p,h,expected[p]);bid=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest();assert bid==treerows[p]
+  y=yaml.load(b,Loader=yaml.CSafeLoader);ids={x['id'] for x in y.get('reactions',[])};found={f:sorted(v&ids) for f,v in aliases.items() if v&ids};assert y['id']!='MetaCyc:PWY-5420' and len(found)<7
+  r={'path':p,'sha256':h,'bytes':len(b),'git_blob':bid,'id':y['id'],'label':y['label'],'description':y.get('description',''),'reactions':y.get('reactions',[]),'candidate_reaction_family_overlap':found,'candidate_family_count':len(found),'original_capture_sha256':old[p]['sha256'],'same_as_original_capture':h==old[p]['sha256'],'same_as_frozen_final_successor':h==expected[p]};records.append(r)
+  if found:checks.append({'root_index':i,**{k:r[k] for k in ['path','sha256','id','label','candidate_reaction_family_overlap','candidate_family_count']}})
+  text=' '.join([r['label'],r['description'],*[x['label'] for x in r['reactions']]])
+  if any(t in text.lower() for t in ['catechol','oxalocrotonate','hydroxymucon','oxopent','oxovaler']):semantic.append({'root_index':i,**r})
+ corpora.append({'root':str(root),'record_count':len(records),'records':records})
+dump('corpus-rebind.json',{'captured_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'merged_head':HEAD,'merged_tree':TREE,'frozen_original_base':prior['reviewed_merged_base'],'exact_record_set258_in_both_roots':True,'original_capture_preserved_count_per_root':257,'declared_final_repair_change':{'path':target,'before':old[target]['sha256'],'after':last['sha256'],'frozen_successor_receipt':str(D/'live-draft-successor-check.json')},'all258_match_frozen_final_successor':True,'all_current_record_bytes_match_committed_blobs':True,'roots':corpora,'start_states':states})
+dump('candidate-reaction-overlap.json',{'candidate':'MetaCyc:PWY-5420','alias_source':str(D/'corpus-reaction-overlap.json'),'alias_source_sha256':sha((D/'corpus-reaction-overlap.json').read_bytes()),'alias_sets':{k:sorted(v) for k,v in aliases.items()},'all258records_each_root_checked':True,'no_exact_identity_or_complete7reaction_match':True,'overlaps':checks})
+dump('semantic-record-recheck.json',{'all258record_names_descriptions_and_reaction_labels_checked_per_root':True,'related_records':semantic,'scope':'Frozen262 chemistry/pathway definitions are not re-researched; this successor compares current corpus scope after actual261 merge.'})
+patternfile=D/'complete-dedup-patterns.txt';patterns=patternfile.read_text().splitlines();assert len(patterns)==84
+scans=[]
+for i,root in enumerate(ROOTS):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(patternfile),'.','-g','!/.git','-g','!/.venv'];p=subprocess.run(cmd,cwd=root,capture_output=True);assert p.returncode in [0,1]
+ logfile=O/f'root-{i}.jsonl';logfile.write_bytes(p.stdout);(O/f'root-{i}.stderr').write_bytes(p.stderr)
+ matches=collections.defaultdict(list)
+ for line in p.stdout.splitlines():
+  j=json.loads(line)
+  if j['type']=='match':
+   x=j['data'];t=x['lines'].get('text','');matches[x['path']['text']].append({'line_number':x['line_number'],'text':t,'patterns':[q for q in patterns if q.lower() in t.lower()]})
+ previous={r['path']:r for r in read(D/f'prior-file-dispositions-{i}.json')};inventory=[];changed=[]
+ for path,lines in sorted(matches.items()):
+  b=(root/path).read_bytes();h=sha(b);prev=previous.get(path);same=bool(prev and prev['sha256']==h);row={'path':path,'sha256':h,'bytes':len(b),'matched_lines':len(lines),'previous_sha256':prev['sha256'] if prev else None,'state':'unchanged' if same else 'changed' if prev else 'new','patterns':sorted({q for x in lines for q in x['patterns']})}
+  if same:row['prior_disposition']=prev['disposition'];row['prior_reason']=prev['reason']
+  else:changed.append({**row,'matches':lines})
+  inventory.append(row)
+ lost=[]
+ for path,row in previous.items():
+  if path in matches:continue
+  pth=root/path
+  lost.append({'path':path,'previous_sha256':row['sha256'],'current_exists':pth.exists(),'current_sha256':sha(pth.read_bytes()) if pth.is_file() else None,'prior_disposition':row['disposition'],'prior_reason':row['reason']})
+ dump(f'root-{i}-file-inventory.json',inventory);dump(f'root-{i}-changed-match-context.json',changed);dump(f'root-{i}-no-longer-matching.json',lost)
+ scans.append({'root':str(root),'command':cmd,'exit_code':p.returncode,'pattern_count':84,'pattern_sha256':sha(patternfile.read_bytes()),'match_lines':sum(len(v) for v in matches.values()),'matched_files':len(matches),'unchanged_previously_dispositioned_files':sum(r['state']=='unchanged' for r in inventory),'new_or_changed_files':len(changed),'no_longer_matching_files':len(lost),'raw_file':logfile.name,'raw_sha256':sha(p.stdout),'stderr_sha256':sha(p.stderr),'hidden_and_ignored_included':True})
+dump('search-summary.pending-dispositions.json',{'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'head':HEAD,'tree':TREE,'scans':scans,'limits':['root.git administrative entry and root.venv excluded','ordinary ripgrep binary handling','directory symlinks not followed','compressed archive interiors not expanded','no global external-cache scan'],'status':'Record rebind and fresh searches completed; changed/new contexts require bounded manual successor disposition before final absence conclusion.'})
+print(json.dumps({'record_count_per_root':258,'overlaps':[{'root':x['root_index'],'id':x['id'],'count':x['candidate_family_count']} for x in checks],'scans':scans},indent=2))

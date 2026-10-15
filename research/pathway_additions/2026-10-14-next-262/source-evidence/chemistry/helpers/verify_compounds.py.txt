@@ -1,0 +1,46 @@
+from pathlib import Path
+import os
+import json,hashlib,sqlite3,xml.etree.ElementTree as E,collections,re,datetime,sys
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+O=Path(os.environ.get('PATHWAYMECH_CHEMISTRY_ROOT','/private/tmp/pathwaymech-next-262-chemistry'));A=Path('/private/tmp/pathwaymech-curation-authorities')
+assert not (O/'artifact-manifest.json').exists(), 'Frozen package: replay into a separate external directory instead.'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+def counts_formula(s):
+ pairs=re.findall(r'([A-Z][a-z]?)(\d*)',s);assert ''.join(a+b for a,b in pairs)==s;return {a:int(b or 1)for a,b in pairs}
+def atomcounts(m):return dict(sorted(collections.Counter(a.GetSymbol()for a in Chem.AddHs(m).GetAtoms()).items()))
+def achiral(m):
+ n=Chem.RemoveHs(Chem.Mol(m));Chem.RemoveStereochemistry(n);return Chem.MolToSmiles(n,isomericSmiles=False)
+def info(m):
+ if m is None:return {'parsed':False}
+ return {'parsed':True,'canonical_isomeric_smiles':Chem.MolToSmiles(m,isomericSmiles=True),'standard_inchi':Chem.MolToInchi(m),'inchi_key':Chem.MolToInchiKey(m),'element_counts':atomcounts(m),'formal_charge':Chem.GetFormalCharge(m),'chiral_centers':[list(x)for x in Chem.FindMolChiralCenters(m,includeUnassigned=True)],'double_bonds':[{'atom_indices':[b.GetBeginAtomIdx(),b.GetEndAtomIdx()],'stereo':str(b.GetStereo()),'stereo_atom_indices':list(b.GetStereoAtoms())}for b in m.GetBonds()if b.GetBondType()==Chem.BondType.DOUBLE]}
+def cmlmol(c):
+ rw=Chem.RWMol();idx={}
+ for a in c.findall('atomArray/atom'):
+  at=Chem.Atom(a.get('elementType').capitalize());at.SetFormalCharge(int(a.get('formalCharge','0')));idx[a.get('id')]=rw.AddAtom(at)
+ for b in c.findall('bondArray/bond'):
+  x,y=b.get('atomRefs').split();rw.AddBond(idx[x],idx[y],{'1':Chem.BondType.SINGLE,'2':Chem.BondType.DOUBLE,'3':Chem.BondType.TRIPLE,'1.5':Chem.BondType.AROMATIC,'A':Chem.BondType.AROMATIC}[b.get('order')])
+ m=rw.GetMol();Chem.SanitizeMol(m);return m
+scope=json.loads((O/'requested-chemistry-scope.json').read_text());db=sqlite3.connect('file:'+str(A/'chebi.db')+'?mode=ro',uri=True)
+properties=['rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:smiles_string','chemrof:charge','chemrof:generalized_empirical_formula'];issued={}
+for id in scope['issuing_chebi_ids']:
+ p=O/'originals'/('ChEBI-'+id+'.json');j=json.loads(p.read_text());assert j['chebi_accession']=='CHEBI:'+id and j['is_released'];triples=list(db.execute('select predicate,object,value from statements where subject=?',('CHEBI:'+id,)));pr={k:[v for p,o,v in triples if p==k]for k in properties};assert all(len(v)==1 for v in pr.values()),id;pr={k:v[0]for k,v in pr.items()};st=j['default_structure'];mol=Chem.MolFromSmiles(st['smiles']);assert mol is not None;pm=Chem.MolFromSmiles(pr['chemrof:smiles_string']);formula=j['chemical_data']['formula'];charge=j['chemical_data']['charge'];checks={'issuing_smiles_formula':atomcounts(mol)==counts_formula(formula),'issuing_smiles_charge':Chem.GetFormalCharge(mol)==charge,'issuing_smiles_full_inchi':Chem.MolToInchi(mol)==st['standard_inchi'],'issuing_smiles_inchikey':Chem.MolToInchiKey(mol)==st['standard_inchi_key'],'pinned_full_inchi':pr['chemrof:inchi_string']==st['standard_inchi'],'pinned_inchikey':pr['chemrof:inchi_key_string']==st['standard_inchi_key'],'pinned_formula':pr['chemrof:generalized_empirical_formula']==formula,'pinned_charge':int(pr['chemrof:charge'])==charge}
+ issued['CHEBI:'+id]={'id':'CHEBI:'+id,'original':{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p),'source_locator':'$'},'issuing_name':j['ascii_name'],'issuing_definition':j.get('definition'),'native_modified_on':j.get('modified_on'),'formula':formula,'charge':charge,'issuing_structure':st,'issuing_structure_interpretation':info(mol),'pinned_properties':pr,'pinned_smiles_interpretation':info(pm),'checks':checks,'pinned_smiles_full_inchi_equal':pm is not None and Chem.MolToInchi(pm)==st['standard_inchi'],'issuing_full_original':j}
+rows=[];issues=[];representation_limits=[]
+for r in scope['native_compounds']:
+ f=r['frame'];p=O/'originals'/('META-'+f+'.xml');rt=E.parse(p).getroot();n=next(x for x in rt if x.get('frameid')==f and x.get('detail')=='full');c=n.find('cml/molecule');assert c is not None;cg=cmlmol(c);ni=n.findtext('inchi');nk=n.findtext('inchi-key').removeprefix('InChIKey=');nm=Chem.MolFromInchi(ni);sm=n.findtext("cml/molecule/string[@title='smiles']");ns=Chem.MolFromSmiles(sm)if sm else None;words=c.find('formula').get('concise').split();formula=''.join(a.capitalize()+(v if v!='1'else'')for a,v in zip(words[::2],words[1::2]));charge=int(c.get('formalCharge'));ch='CHEBI:'+r['native_chebi_links'][0]if len(r['native_chebi_links'])==1 else None;checks={'CML_atom_counts_vs_formula':atomcounts(cg)==counts_formula(formula),'CML_charge_vs_molecule_attribute':Chem.GetFormalCharge(cg)==charge,'native_inchi_key_roundtrip':Chem.MolToInchiKey(nm)==nk,'native_inchi_charge':Chem.GetFormalCharge(nm)==charge}
+ if ch:
+  cissued=issued[ch];im=Chem.MolFromSmiles(cissued['issuing_structure']['smiles']);checks.update({'full_native_issuing_inchi_equal':ni==cissued['issuing_structure']['standard_inchi'],'full_native_issuing_inchikey_equal':nk==cissued['issuing_structure']['standard_inchi_key'],'CML_connectivity_charge_vs_issuing_smiles':achiral(cg)==achiral(im),'native_issuing_formula_equal':formula==cissued['formula'],'native_issuing_charge_equal':charge==cissued['charge']})
+ else:
+  checks.update({'native_full_inchi_roundtrip':Chem.MolToInchi(nm)==ni,'native_CML_vs_native_full_inchi_connectivity':nm is not None and achiral(cg)==achiral(nm)})
+ row={'native_frame':f,'role':r['role'],'original':{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p),'locator':f'/ptools-xml/Compound[@frameid="{f}"]'},'native_name':n.findtext('common-name'),'native_chebi_xref_candidate':ch,'native_inchi':ni,'native_inchi_key':nk,'native_CML_xml':E.tostring(c,encoding='unicode'),'native_CML_formula':formula,'native_CML_charge':charge,'native_CML_interpretation':info(cg),'native_inchi_interpretation':info(nm),'native_smiles':sm,'native_smiles_interpretation':info(ns),'all_direct_slots_xml':[E.tostring(s,encoding='unicode')for s in n],'checks':checks,'disposition':'Exact native/issuing full structure, formula, charge and stereo identifiers independently agree.'if ch else'Keep complete native identity as comparator; no exact pinned ChEBI InChI/InChIKey match was found. This is bounded to pinned255, not a current global absence claim.'}
+ rows.append(row)
+ if not all(checks.values()):issues.append({'native_frame':f,'failed_checks':[k for k,v in checks.items()if not v]})
+ if ns is None:representation_limits.append({'native_frame':f,'field':'native CML string[@title=smiles]','issue':'Absent/unparseable native SMILES; it is not used as exact structural proof.','resolution':'Complete native CML graph and full native InChI/InChIKey are independently compared with complete issuing ChEBI structures.' if ch else 'Native-only comparator: complete native CML graph is compared with native full InChI; absent exact pinned ChEBI mapping remains explicit. No external-equivalence claim is made.'})
+ elif Chem.MolToInchi(ns)!=ni:representation_limits.append({'native_frame':f,'field':'native SMILES','issue':'Interpreted full InChI differs from native full InChI; do not use this representation alone.','native_smiles_interpretation':info(ns),'native_full_inchi':ni})
+for ch,r in issued.items():
+ if not r['pinned_smiles_full_inchi_equal']:representation_limits.append({'id':ch,'field':'pinned ChEBI255 SMILES','issue':'SMILES interpretation differs from complete source full InChI. The complete issuing API InChI/SMILES and pinned full InChI are compared independently; no silent stereo loss.'})
+ if not all(r['checks'].values()):issues.append({'id':ch,'failed_checks':[k for k,v in r['checks'].items()if not v]})
+db.close();dump('chemical-structure-closure.json',{'generated_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Formal chemistry author; not independent final reviewer.','runtime':{'python':sys.version,'executable':sys.executable,'rdkit':rdBase.rdkitVersion},'native_compounds':rows,'issuing_chebi_compounds':issued,'representation_limits':representation_limits,'failed_checks':issues,'scope':'Native full CML bond/atom/charge graph plus native full InChI and issuing ChEBI API structure/formula/charge; pinned SQL checked read-only. Standard InChI alone is not a general tautomer/proton-site equivalence rule. Native CML reconstruction checks connectivity and charge, not omitted stereochemical conventions.'})
+print(json.dumps({'native_compounds':len(rows),'issuing_chebi_compounds':len(issued),'failed_checks':issues,'representation_limits':representation_limits},indent=2));assert not issues

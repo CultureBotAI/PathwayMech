@@ -1,0 +1,108 @@
+"""Retain frozen author/dedup evidence after full hash and gzip verification."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+
+REPO = Path('/private/tmp/pathwaymech-next-262-20261014')
+OUT = REPO / 'research/pathway_additions/2026-10-14-next-262'
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+sha = lambda b: hashlib.sha256(b).hexdigest()
+load = lambda p: json.loads(p.read_text())
+plans = [
+    ('native-author', 'authoring/native', 'a8458aa08bd8815b2b2aafe3f47ca71168bd871b7c874aa8ae064796acbf122a', 103, 66),
+    ('primary-author', 'authoring/primary', '5a0e816995e4a61020b53eae826343426f62b64556ee59f9e309548244be07a1', 52, 26),
+    ('dedup-successor', 'root-verification/dedup', '2714575ec1aca20fa8d03836c05cab8fe2a3e2d7d98664b261531533f198fdda', 44, 31),
+]
+copies, packages = [], []
+for suffix, destination, expected, count, compact_count in plans:
+    root = Path('/private/tmp/pathwaymech-next-262-' + suffix)
+    manifest = root / 'artifact-manifest.json'
+    assert sha(manifest.read_bytes()) == expected
+    rows = load(manifest)['files']
+    assert len(rows) == count
+    listed = set()
+    for row in rows:
+        p = root / row['path']
+        assert p.resolve().is_relative_to(root)
+        raw = p.read_bytes()
+        assert len(raw) == row['bytes'] and sha(raw) == row['sha256']
+        assert row['path'] not in listed
+        listed.add(row['path'])
+    assert {str(p.relative_to(root)) for p in root.rglob('*') if p.is_file()} == listed | {'artifact-manifest.json'}
+    compact = load(root / 'compact-retention-manifest.json')['files']
+    assert len(compact) == compact_count
+    compressed = 0
+    if suffix == 'primary-author':
+        for pair in load(root / 'compression-pairs.json'):
+            original = (root / pair['original']).read_bytes()
+            encoded = (root / pair['compressed']).read_bytes()
+            assert sha(original) == pair['original_sha256'] and sha(encoded) == pair['compressed_sha256']
+            assert gzip.decompress(encoded) == original
+            compressed += 1
+    elif suffix == 'dedup-successor':
+        for pair in load(root / 'compression-manifest.json')['pairs']:
+            original = (root / pair['source']['path']).read_bytes()
+            encoded = (root / pair['encoded']['path']).read_bytes()
+            assert sha(original) == pair['source']['sha256'] and sha(encoded) == pair['encoded']['sha256']
+            assert gzip.decompress(encoded) == original
+            compressed += 1
+    for row in compact:
+        if suffix == 'native-author':
+            rel = row['stored_path']
+            data = (root / rel).read_bytes()
+            assert sha(data) == row['stored_sha256'] and len(data) == row['stored_bytes']
+            assert row['encoding'] in {'identity', 'gzip'}
+            decoded = gzip.decompress(data) if row['encoding'] == 'gzip' else data
+            assert decoded == (root / row['source_path']).read_bytes()
+            assert sha(decoded) == row['source_sha256'] and len(decoded) == row['source_bytes']
+            compressed += row['encoding'] == 'gzip'
+            dest = rel
+        else:
+            rel = row['path']
+            data = (root / rel).read_bytes()
+            assert sha(data) == row['sha256'] and len(data) == row['bytes']
+            dest = row.get('retain_as', rel)
+        if dest.endswith('.py'):
+            dest += '.txt'
+        copies.append((root / rel, Path(destination) / dest))
+    included = {str(p) for p, _ in copies}
+    for name in ['artifact-manifest.json', 'compact-retention-manifest.json']:
+        path = root / name
+        if str(path) not in included:
+            copies.append((path, Path(destination) / name))
+    packages.append({'source': str(root), 'destination': destination, 'manifest_sha256': expected,
+                     'verified_files': count, 'compact_files': compact_count,
+                     'lossless_pairs_checked': compressed, 'full_hidden_ignored_inventory_equal': True})
+
+# Root's exact chemical-source reuse is additional to the frozen primary author.
+extra = Path('/private/tmp/pathwaymech-next-262-primary-extra-chemistry')
+proof = load(extra / 'verification.json')
+assert sha((extra / 'ChEBI-58349.json').read_bytes()) == proof['issuing_original_sha256']
+for name in ['ChEBI-58349.json', 'predecessor-issuing-receipt.json', 'verification.json']:
+    copies.append((extra / name, Path('source-evidence/primary-extra-chemistry') / name))
+copies.append((CI / 'dedup-successor-intake.json', Path('root-verification/dedup-successor-intake.json')))
+copies.append((Path(__file__), Path('root-verification/helpers/retain_author_handoffs.py.txt')))
+assert len({str(dest) for _, dest in copies}) == len(copies)
+for _, destination in copies:
+    assert not destination.is_absolute() and '..' not in destination.parts
+    assert not (OUT / destination).exists(), destination
+rows = []
+for original, destination in copies:
+    data = original.read_bytes()
+    path = OUT / destination
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
+    assert path.read_bytes() == data
+    rows.append({'source': str(original), 'retained_path': str(destination), 'bytes': len(data), 'sha256': sha(data)})
+receipt = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'role': 'Root author-handoff retention verification, not independent scientific acceptance',
+           'packages': packages, 'files': rows, 'retained_count': len(rows),
+           'retained_bytes': sum(row['bytes'] for row in rows)}
+p = OUT / 'root-verification/author-and-dedup-retention.json'
+assert not p.exists()
+p.write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps({'receipt': str(p), 'sha256': sha(p.read_bytes()),
+                  'verified_author_and_dedup_files': sum(row['verified_files'] for row in packages),
+                  'retained': len(rows), 'bytes': receipt['retained_bytes']}))

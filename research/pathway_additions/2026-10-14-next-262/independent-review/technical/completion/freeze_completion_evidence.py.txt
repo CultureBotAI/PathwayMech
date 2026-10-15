@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,gzip,hashlib,datetime
+A=Path('/private/tmp/pathwaymech-next-262-independent-technical');D=A/'completion-retained';D.mkdir(exist_ok=False)
+def sha(b):return hashlib.sha256(b).hexdigest()
+names=['completed-gate-replay.json','browser-evidence-replay.json','completed-context-replay.json','terminal-gate-context-timing-observation.json','context-replay-binding-schema-correction.json','context-replay-selection-field-correction.json','README-final-status.diff','README.gate-frozen.md','helpers/verify_terminal_gates.py','helpers/verify_terminal_gates_with_context_delta.py','helpers/verify_completed_context.py','helpers/verify_completed_context_mixed_manifests.py','helpers/verify_completed_context_complete.py','helpers/freeze_completion_evidence.py']
+files=[]
+for name in names:
+ p=A/name;b=p.read_bytes();n=p.name
+ encoding='identity'
+ if p.suffix in ['.diff','.md'] or len(b)>30000:encoding='gzip';n+='.gz';s=gzip.compress(b,mtime=0)
+ elif p.suffix=='.py':encoding='inert_python_text';n+='.txt';s=b
+ else:s=b
+ q=D/n;q.write_bytes(s)
+ assert (gzip.decompress(s) if encoding=='gzip' else s)==b
+ files.append({'source_path':str(p),'source_sha256':sha(b),'source_bytes':len(b),'stored_path':str(q),'stored_sha256':sha(s),'stored_bytes':len(s),'encoding':encoding,'retain_as':n})
+x={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Finite independent technical completion proof selection; canonical YAML and final retained-copy replay follow separately.','files':files,'count':len(files),'bytes':sum(x['stored_bytes'] for x in files),'limits':['Preserves original helper assumptions and exact corrections; no source artifact altered.','Existing three reviewer manifests remain immutable; this fourth package extends them.','Canonical review persistence, final staged additions and exact committed-head attestation occur later.']}
+p=A/'completion-retention-manifest.json';assert not p.exists();p.write_text(json.dumps(x,indent=2)+'\n');print(json.dumps({'path':str(p),'sha256':sha(p.read_bytes()),'count':len(files),'stored_bytes':x['bytes']}))

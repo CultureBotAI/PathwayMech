@@ -1,0 +1,14 @@
+from pathlib import Path
+import urllib.request,urllib.error,json,hashlib,datetime,concurrent.futures
+O=Path('/private/tmp/pathwaymech-next-262-discovery')
+requests=[('META-Catechol-Degradation.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ACatechol-Degradation'),('KEGG-M00569.txt','https://rest.kegg.jp/get/M00569'),('QuickGO-0019616.json','https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/GO%3A0019616'),('EPMC-4325686.json','https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:4325686%20AND%20SRC:MED&format=json&resultType=core'),('EPMC-2681159.json','https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:2681159%20AND%20SRC:MED&format=json&resultType=core'),('EPMC-15301547.json','https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:15301547%20AND%20SRC:MED&format=json&resultType=core')]
+def run(t):
+ n,u=t; row={'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'path':'originals/'+n}
+ try:
+  req=urllib.request.Request(u,headers={'User-Agent':'PathwayMech research source inspection','Accept':'application/json' if n.endswith('.json') else '*/*'})
+  with urllib.request.urlopen(req,timeout=45) as r: b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+ except urllib.error.HTTPError as e: b=e.read();row.update(status=e.code,error=str(e))
+ except Exception as e: row['error']=str(e);return row
+ (O/row['path']).write_bytes(b);row.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as x: rows=list(x.map(run,requests))
+(O/'acquisition-initial.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))

@@ -1,0 +1,40 @@
+from pathlib import Path
+import json,hashlib,gzip,xml.etree.ElementTree as E,collections,sys
+O=Path(__file__).resolve().parents[1]
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(n):return json.loads((O/n).read_text())
+summary=load('closure-summary.json');projection=load('native-full-object-projection.json');bindings=load('compact-original-source-bindings.json');idx={r['frame']:r for r in projection};originals={}
+assert len(idx)==len(bindings)==summary['objects']==343
+assert sum(len(r['slots']) for r in projection)==summary['native_direct_slots']==5148
+assert len(load('prose-claim-context-ledger.json'))==summary['prose_paragraphs']==218
+assert len(load('complete-nested-reference-dispositions.json'))==summary['all_nested_references']==60701
+assert len(load('protein-feature-context.json'))==80 and len(load('evidence-code-definitions.json'))==23
+for b in bindings:
+ p=Path(b['path']);assert sha(p)==b['sha256'];x=E.parse(p).getroot();full=[z for z in x if z.get('frameid')==b['frame'] and z.get('detail')=='full' and z.get('orgid')=='META'];assert len(full)==1 and x.find('metadata/PGDB').get('version')=='27.0';e=full[0];assert len(e)==len(idx[b['frame']]['slots']);originals[b['frame']]=e
+ a=b['acquisition']
+ if a['mode']=='exact_frozen_original_reuse':assert sha(Path(a['reused_from']))==b['sha256'] and sha(Path(a['package_manifest']))==a['package_manifest_sha256']
+for n in ['predecessor-decision-bindings.json','frozen-discovery-bindings.json']:
+ for b in load(n):assert sha(Path(b['path']))==b['sha256'] and sha(Path(b['predecessor_path']))==b['sha256']
+activities=load('formal-activity-closure.json');assert len(activities)==41 and len({a['activity'] for a in activities})==41
+for a in activities:
+ e=originals[a['activity']];assert [z.get('frameid') for z in e.findall('reaction/Reaction')]==[a['reaction']];assert [z.get('frameid') for z in e.findall('enzyme/Protein')]==[a['enzyme']]
+c=load('closure-round-final.json');assert c['missing']==[] and len(c['leads'])==629
+for r in c['leads']:
+ assert r['source'] in originals and r['target'] in originals
+ assert any(z.get('frameid')==r['target'] for s in originals[r['source']].findall(r['slot']) for z in s)
+for r in load('regulation-assertions.json'):
+ e=originals[r['original']['frame']];assert r['regulated_activities']==[z.get('frameid') for z in e.findall('regulated-entity/Enzymatic-Reaction')]
+ if r['original']['frame']=='REG-5876':assert 'Do not retain native inhibition' in r['disposition']
+assert summary['reused_originals']==241 and summary['new_acquisitions']==102
+if (O/'compression-receipt.json').exists():
+ for r in load('compression-receipt.json'):
+  raw=(O/r['original']).read_bytes();z=(O/r['compressed']).read_bytes();assert gzip.decompress(z)==raw and hashlib.sha256(raw).hexdigest()==r['original_sha256'] and hashlib.sha256(z).hexdigest()==r['compressed_sha256']
+if (O/'artifact-manifest.json').exists():
+ m=load('artifact-manifest.json');paths={r['path'] for r in m['files']};actual={str(p.relative_to(O)) for p in O.rglob('*') if p.is_file() and p.name!='artifact-manifest.json'};assert paths==actual
+ for r in m['files']:
+  p=O/r['path'];assert p.stat().st_size==r['bytes'] and sha(p)==r['sha256']
+ compact=load('compact-retention-manifest.json')
+ for r in compact['files']:
+  p=O/r['path'];assert p.stat().st_size==r['bytes'] and sha(p)==r['sha256']
+ print(json.dumps({'status':'PASS','manifest_files':len(m['files']),'compact_files':len(compact['files']),'manifest_sha256':sha(O/'artifact-manifest.json'),'handoff_sha256':sha(O/'HANDOFF.md'),'compact_manifest_sha256':sha(O/'compact-retention-manifest.json'),'objects':343,'formal_activities':41,'required_relations':629,'missing':0}))
+else:print(json.dumps({'status':'PASS prefreeze','objects':343,'formal_activities':41,'required_relations':629,'missing':0}))

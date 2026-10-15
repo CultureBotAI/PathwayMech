@@ -1,0 +1,20 @@
+from pathlib import Path
+from datetime import datetime,timezone
+import json,hashlib,sqlite3,sys
+sys.dont_write_bytecode=True
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity'); R=Path('/private/tmp/pathwaymech-next-261-20261014')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_ontology_identifier_snapshot import extract_terms,read_source
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+rows=json.loads((B/'projections/native-biological-full-object-intake.json').read_text());db=Path('/private/tmp/pathwaymech-curation-authorities/ncbitaxon.db')
+con=sqlite3.connect('file:'+str(db)+'?mode=ro',uri=True);owner=read_source(con,db)
+snap=json.loads((R/'data/identifier_authorities/ontology.json').read_text());owners=[(k,v) for k,v in snap['sources'].items() if v.get('sha256')==owner['sha256']];assert len(owners)==1
+ids=sorted({'NCBITaxon:'+d['dblink-oid'] for r in rows if r['type']=='Organism' for d in r['dblinks'] if d['dblink-db']=='NCBI-TAXONOMY-DB'})
+terms,missing=extract_terms(con,ids,owners[0][0]);assert not missing
+out=[]
+for ident in ids:
+ triples=[dict(zip(['subject','predicate','object','value','datatype','language'],v)) for v in con.execute('select subject,predicate,object,value,datatype,language from statements where subject=? order by predicate,object,value',(ident,))]
+ out.append({'identifier':ident,'term':terms[ident],'existing_term':snap['terms'].get(ident),'statements':triples,'native_frames':[r['frame'] for r in rows if any(d.get('dblink-db')=='NCBI-TAXONOMY-DB' and 'NCBITaxon:'+d['dblink-oid']==ident for d in r['dblinks'])]})
+con.close()
+r={'verified_utc':datetime.now(timezone.utc).isoformat(),'database':{'path':str(db),'bytes':db.stat().st_size,'sha256':owner['sha256']},'source_owner':owner,'source_key':owners[0][0],'ontology_snapshot':{'path':str(R/'data/identifier_authorities/ontology.json'),'sha256':sha(R/'data/identifier_authorities/ontology.json')},'candidates':out,'missing':missing,'scope':'Full original SQLite independently hashed by read_source; direct issuing statements selected. Broad taxonomy labels and reference sequence hosts do not imply complete pathway occurrence. Historical ORG-5935 KU-7 and ORG-5948 mt-2 have no native taxon crossreference and are not mapped by label guessing.'}
+(B/'projections/taxon-authority-candidates.json').write_text(json.dumps(r,indent=2)+'\n');print(json.dumps({'taxa':len(out),'sha256':owner['sha256'],'names':[(x['identifier'],x['term']['label']) for x in out]},indent=2))

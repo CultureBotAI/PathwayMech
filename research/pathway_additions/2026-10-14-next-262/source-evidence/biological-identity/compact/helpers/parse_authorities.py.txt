@@ -1,0 +1,42 @@
+from pathlib import Path
+import json,hashlib,sys
+sys.dont_write_bytecode=True
+B=Path('/private/tmp/pathwaymech-next-262-biological-identity');R=Path('/private/tmp/pathwaymech-next-261-20261014');P=Path('/private/tmp/pathwaymech-next-261-biological-identities')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_source_identifier_snapshot import source_terms
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+rows=json.loads((B/'projections/native-biological-full-object-intake.json').read_text());reuse=json.loads((B/'projections/native-reuse-comparison.json').read_text());snap=json.loads((R/'data/identifier_authorities/sources.json').read_text());conf=json.loads((R/'conf/identifier_sources.json').read_text());bykey={x['key']:x for x in conf};profiles=[]
+oldprofiles=json.loads((P/'projections/protein-authority-profiles.json').read_text());geneprofiles=json.loads((P/'gene-taxon/projections/source-parser-probes.json').read_text())
+# Replay new original profiles only; reused profile term plus original hash is independently verified below.
+for r in rows:
+ if r['type']=='Protein':
+  p=Path(r['path']);kind='metacyc-protein-xml';url=r['issuing_url'];version='27.0'
+ elif r['type']=='Gene' and (B/'originals/redirects'/(r['frame']+'.html')).exists():
+  p=B/'originals/redirects'/(r['frame']+'.html');rc=json.loads(Path(str(p)+'.receipt.json').read_text());kind='metacyc-html';url=rc['url'];version='27.0'
+ elif r['frame'] in ['ORG-5935']:
+  p=B/'originals/public-mirror'/(r['frame']+'.html');rc=json.loads(Path(str(p)+'.receipt.json').read_text());kind='metacyc-html';url=rc['url'];version='27.0'
+ else:continue
+ try:t=list(source_terms(kind,p,url=url,version=version));status='accepted' if t else 'empty';error=None
+ except Exception as e:t=[];status='rejected';error=str(e)
+ profiles.append({'native_frame':r['frame'],'kind':kind,'source_path':str(p),'sha256':sha(p),'url':url,'version':version,'terms':t,'status':status,'error':error})
+ if r['frame']=='MONOMER-17212':
+  p=B/'originals/public-mirror/MONOMER-17212.html';rc=json.loads(Path(str(p)+'.receipt.json').read_text());t=list(source_terms('metacyc-html',p,url=rc['url'],version='27.0'));assert len(t)==1
+  profiles.append({'native_frame':r['frame'],'kind':'metacyc-html','source_path':str(p),'sha256':sha(p),'url':rc['url'],'version':'27.0','terms':t,'status':'accepted'})
+for p in (B/'originals/public').glob('*.json'):
+ if p.name.endswith('receipt.json'):continue
+ rc=json.loads(Path(str(p)+'.receipt.json').read_text());t=list(source_terms('uniprot',p,url=rc['url'],version=rc['headers']['x-uniprot-release']));assert len(t)==1
+ profiles.append({'kind':'uniprot','source_path':str(p),'sha256':sha(p),'url':rc['url'],'version':rc['headers']['x-uniprot-release'],'terms':t,'status':'accepted'})
+for p in (B/'originals/exact-follow').glob('*.xml'):
+ rc=json.loads(Path(str(p)+'.receipt.json').read_text());t=list(source_terms('ncbi-protein-xml',p,url=rc['url']));assert len(t)==1
+ profiles.append({'kind':'ncbi-protein-xml','source_path':str(p),'sha256':sha(p),'url':rc['url'],'version':p.stem,'terms':t,'status':'accepted'})
+proposals=[]
+for p in profiles:
+ for t in p['terms']:
+  if t[0] in snap['terms']:
+   p.setdefault('existing_owners',[]).append({'identifier':t[0],'term':snap['terms'][t[0]],'owner':bykey[snap['terms'][t[0]]['source']]})
+  else:
+   key='meta262bio-'+t[0].replace(':','-');rel='meta262bio/'+Path(p['source_path']).name
+   proposals.append({'identifier':t[0],'term':t,'entry':{'key':key,'kind':p['kind'],'path':rel,'url':p['url'],'version':p['version'],'license':'UniProt CC BY 4.0' if p['kind']=='uniprot' else 'Issuing source terms; redistribution not assessed','sha256':p['sha256']},'original':{'path':p['source_path'],'sha256':p['sha256']},'scope':'Candidate only; current owner preserved if an identifier already exists. Protein reference sequence never replaces a historical native preparation.'})
+(B/'projections/new-authority-parser-replay.json').write_text(json.dumps(profiles,indent=2)+'\n');(B/'source-config-proposals.json').write_text(json.dumps(proposals,indent=2)+'\n')
+(B/'receipts/authority-input-binding.json').write_text(json.dumps({'adapter':{'path':str(R/'scripts/build_source_identifier_snapshot.py'),'sha256':sha(R/'scripts/build_source_identifier_snapshot.py')},'sources_snapshot':{'path':str(R/'data/identifier_authorities/sources.json'),'sha256':sha(R/'data/identifier_authorities/sources.json')},'configuration':{'path':str(R/'conf/identifier_sources.json'),'sha256':sha(R/'conf/identifier_sources.json')},'scope':'Read-only isolated next261 integration snapshot; parent must rebind after actual merge.'},indent=2)+'\n')
+print(json.dumps({'profiles':len(profiles),'candidates':len(proposals),'rejected':[(x.get('native_frame'),x['error'])for x in profiles if x['status']=='rejected'],'new_terms':[(x['identifier'],x['term'][1])for x in proposals]},indent=2))

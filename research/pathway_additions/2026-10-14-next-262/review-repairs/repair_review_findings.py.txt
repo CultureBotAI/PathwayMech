@@ -1,0 +1,181 @@
+"""Apply two confirmed review repairs, preserving original observations."""
+from pathlib import Path
+import copy
+import datetime
+import gzip
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import yaml
+from jsonschema import Draft7Validator, FormatChecker
+
+ROOT = Path('/private/tmp/pathwaymech-next-262-20261014')
+CI = Path('/private/tmp/pathwaymech-next-262-ci')
+DOSSIER = ROOT / 'research/pathway_additions/2026-10-14-next-262'
+OUT = DOSSIER / 'review-repairs'
+RECORD = ROOT / 'data/pathways/catechol-degradation-ii.yaml'
+PYTHON = '/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python'
+sys.path[:0] = [str(ROOT / 'src'), str(ROOT)]
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import json_schema
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def bind(path):
+    return {'path': str(path), 'sha256': sha(path.read_bytes()), 'bytes': path.stat().st_size}
+
+def dump(path, payload):
+    assert not path.exists(), path
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + '\n')
+
+science_path = Path('/private/tmp/pathwaymech-next-262-independent-science/SCI-F01-initial-locator-finding.json')
+technical_path = Path('/private/tmp/pathwaymech-next-262-independent-technical/finding-T-F01.initial.json')
+assert sha(science_path.read_bytes()) == 'abe270b173d78c77bb45cdb5ec6db198082cd482e76bfe1e6f74ac77d7b91fb4'
+assert sha(technical_path.read_bytes()) == '9f2e1f1977e754a898bc4968bcd8a679709da4b682b27ede2199a6ecaf618e2d'
+science = json.loads(science_path.read_text())
+technical = json.loads(technical_path.read_text())
+initial_bytes = RECORD.read_bytes()
+assert sha(initial_bytes) == science['target_sha256'] == technical['target']['sha256']
+source = Path(science['source']['path'])
+assert sha(source.read_bytes()) == science['source']['sha256']
+original_receipt = DOSSIER / 'integration/record-integration.json'
+assert sha(original_receipt.read_bytes()) == technical['owner']['sha256']
+original_helper = DOSSIER / 'integration/integrate_record.py.txt'
+assert sha(original_helper.read_bytes()) == technical['evidence']['root_integration_helper']['sha256']
+before = yaml.safe_load(initial_bytes)
+after = copy.deepcopy(before)
+assert len(science['occurrences']) == 10
+for row in science['occurrences']:
+    pieces = re.findall(r'[A-Za-z_]+|\d+', row['field_path'])
+    assert pieces[-1] == 'source_locator'
+    target = after
+    for part in pieces[:-1]:
+        target = target[int(part) if part.isdigit() else part]
+    assert target[pieces[-1]] == row['old'], row['field_path']
+    target[pieces[-1]] = row['replacement']
+
+def difference(a, b, path=''):
+    assert type(a) is type(b)
+    if isinstance(a, dict):
+        assert a.keys() == b.keys()
+        return [item for k in a for item in difference(a[k], b[k], path + ('.' if path else '') + k)]
+    if isinstance(a, list):
+        assert len(a) == len(b)
+        return [item for i, (x, y) in enumerate(zip(a, b)) for item in difference(x, y, f'{path}[{i}]')]
+    return [] if a == b else [{'field_path': path, 'old': a, 'replacement': b}]
+
+delta = difference(before, after)
+assert delta == science['occurrences']
+validate_record(after)
+assert not list(Draft7Validator(json.loads(json_schema()), format_checker=FormatChecker()).iter_errors(after))
+native_path = Path(technical['evidence']['native_author_draft']['path'])
+assert sha(native_path.read_bytes()) == technical['evidence']['native_author_draft']['sha256']
+native = yaml.safe_load(native_path.read_bytes())
+native_edges = {e['id']: e for e in native['mechanistic_edges']}
+final_edges = {e['id']: e for e in after['mechanistic_edges']}
+assert len(native_edges) == 185 and len(final_edges) == 214
+for key, old in native_edges.items():
+    current = final_edges[key]
+    assert all(old[field] == current[field] for field in ['subject', 'predicate', 'object'])
+    assert current['evidence'][:len(old['evidence'])] == old['evidence']
+assert len(technical['exact_eight_occurrences']) == 8
+for row in technical['exact_eight_occurrences']:
+    old = native_edges[row['edge_id']]
+    current = final_edges[row['edge_id']]
+    assert old['endpoint_qualifiers'][0]['evidence'][0] == row['old_evidence']
+    assert old['endpoint_qualifiers'][0]['description'] == row['old_qualifier_description']
+    assert current['endpoint_qualifiers'] == row['new_qualifiers']
+    matches = [e for e in current['evidence'] if e['reference_id'] == row['old_evidence']['reference_id']
+               and e.get('source_locator') == row['old_evidence']['source_locator']]
+    assert bool(matches) == row['same_native_locator_in_same_current_edge']
+baseline = json.loads((CI / 'merged-baseline-worktree.json').read_text())
+assert len(baseline['records']) == 258
+for row in baseline['records']:
+    assert sha((ROOT / row['path']).read_bytes()) == row['sha256']
+serialized = yaml.safe_dump(after, sort_keys=False, allow_unicode=True, width=100).encode()
+assert yaml.safe_load(serialized) == after
+assert not OUT.exists()
+OUT.mkdir()
+for path in [science_path, technical_path]:
+    (OUT / path.name).write_bytes(path.read_bytes())
+compressed = gzip.compress(initial_bytes, mtime=0)
+(OUT / 'record.initial-integrated.yaml.gz').write_bytes(compressed)
+assert gzip.decompress(compressed) == initial_bytes
+(OUT / 'repair_review_findings.py.txt').write_bytes(Path(__file__).read_bytes())
+RECORD.write_bytes(serialized)
+stamp = datetime.datetime.now(datetime.timezone.utc).isoformat()
+science_receipt = {'utc': stamp, 'role': 'Root repair; independent acceptance pending',
+    'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/564',
+    'finding': bind(OUT / science_path.name), 'initial_record_sha256': sha(initial_bytes),
+    'corrected_record': bind(RECORD), 'changed_leaf_values': delta,
+    'only_ten_source_locators_changed': True, 'all_identifiers_graph_claims_quotes_preserved': True,
+    'source': science['source'], 'shape_and_closed_schema_passed': True,
+    'all258_prior_records_unchanged': True,
+    'initial_observation': {'path': 'record.initial-integrated.yaml.gz', 'sha256': sha(compressed),
+                            'decoded_sha256': sha(initial_bytes), 'decoded_bytes': len(initial_bytes)},
+    'limits': 'Printed-page locator correction only; no numeric OCR or scientific-claim repair.'}
+dump(OUT / 'SCI-F01-repair.json', science_receipt)
+scope_receipt = {'utc': stamp, 'role': 'Root scope correction; independent acceptance pending',
+    'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/565',
+    'finding': bind(OUT / technical_path.name), 'supersedes_preservation_claim_only': bind(original_receipt),
+    'initial_helper_unchanged': bind(original_helper), 'initial_record_sha256': sha(initial_bytes),
+    'current_record': bind(RECORD), 'native_author_record': bind(native_path),
+    'all_native_triples_and_edge_level_evidence_preserved': True,
+    'native_triple_count': len(native_edges),
+    'endpoint_qualifier_occurrences_replaced': technical['exact_eight_occurrences'],
+    'occurrence_preservation_scope': 'Eight native endpoint-qualifier evidence occurrences were replaced by primary-source construct qualifiers. Four activity edges retain the same native reference and source locator in their edge-level arrays, with separately worded assertions; the four formal-assignment edges do not retain the native qualifier occurrence locally. No all-original-evidence-occurrences preservation claim is made.',
+    'separate_locator_correction': bind(OUT / 'SCI-F01-repair.json'),
+    'graph_changes_for_T_F01': False}
+dump(DOSSIER / 'integration/record-integration-scope-successor.json', scope_receipt)
+bindings = []
+for number, key, body, finding in [(564, science['issue_key'], 'SCI-F01-issue-body.md', science_path),
+                                   (565, technical['issue_key'], 'T-F01-issue-body.md', technical_path)]:
+    bodypath = CI / body
+    (OUT / body).write_bytes(bodypath.read_bytes())
+    bindings.append({'issue': f'https://github.com/CultureBotAI/PathwayMech/issues/{number}',
+                     'issue_key': key, 'body': bind(OUT / body), 'finding': bind(OUT / finding.name),
+                     'state': 'OPEN; closure deferred until accepted merge'})
+dump(OUT / 'issue-bindings.json', bindings)
+readme = DOSSIER / 'README.md'
+text = readme.read_text()
+old = 'All 185 native graph triples and original evidence arrays remain present after 33 explicit primary patches; 29 primary edges are added.'
+new = 'All 185 native graph triples and their edge-level evidence arrays remain present after 33 explicit primary patches; 29 primary edges are added. Eight endpoint-qualifier evidence occurrences were replaced by primary-source construct qualifications, as accounted individually in the [scoped successor](integration/record-integration-scope-successor.json). The initial receipt remains an unchanged historical observation.'
+assert text.count(old) == 1
+text = text.replace(old, new)
+anchor = 'Selected authority promotion, independent review findings and fixes, generated pages/KGX, full repository gates and publication remain pending.'
+assert text.count(anchor) == 1
+text = text.replace(anchor,
+    'Independent review identified two minor provenance defects. [Issue 564](https://github.com/CultureBotAI/PathwayMech/issues/564) corrects ten printed-page locators for PMID:7868591; the [repair receipt](review-repairs/SCI-F01-repair.json) binds the current record SHA-256 `' + sha(serialized) + '`. [Issue 565](https://github.com/CultureBotAI/PathwayMech/issues/565) clarifies edge-level evidence preservation and records eight intentionally replaced qualifier occurrences. Scientific claims, graph triples and identifiers are unchanged by these repairs. Independent acceptance, selected authority promotion, generated pages/KGX, full repository gates and publication remain pending.')
+readme.write_text(text)
+assert sha(original_receipt.read_bytes()) == technical['owner']['sha256']
+assert sha(original_helper.read_bytes()) == technical['evidence']['root_integration_helper']['sha256']
+env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+histories = []
+for kind, slug, target, issue, summary, details in [
+    ('record', 'catechol-degradation-ii', 'data/pathways/catechol-degradation-ii.yaml', '564',
+     'Correct ten printed-page locators in catechol degradation II',
+     'Applied exactly the ten SCI-F01 source_locator substitutions against the retained publisher transformation for PMID:7868591. Methods are on p1196, the cited Results span pp1198–1199, Table 1 is on p1199 and Discussion is on p1200. All other parsed record values, graph claims, quotations and identifiers remain exact. Original frozen author artifacts and the initial record observation remain retained. Shape and closed-schema checks pass; independent acceptance and full gates remain pending.'),
+    ('report', 'catechol-degradation-ii-source-dossier', 'research/pathway_additions/2026-10-14-next-262/README.md', '565',
+     'Scope evidence-preservation claims and retain review repair dispositions',
+     'Preserved the original integration receipt and helper, appended a scoped successor proving all 185 native triples and edge-level evidence arrays survive, and explicitly recorded the eight endpoint-qualifier evidence occurrences replaced by primary-source construct qualifications. Updated dossier wording and linked both review issues and the separate ten-locator SCI-F01 correction. No graph change was made for T-F01. Independent acceptance and full repository gates remain pending.')]:
+    command = [PYTHON, '-B', 'scripts/new_history_record.py', '--kind', kind, '--slug', slug,
+               '--path', target, '--event', 'EDIT', '--outcome', 'changed', '--summary', summary,
+               '--details', details, '--actor-name', 'codex', '--model', 'gpt-6', '--agent-tool', 'codex', '--issue', issue]
+    p = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True)
+    log = CI / f'repair-history-{issue}.log'
+    assert not log.exists()
+    log.write_text(p.stdout + p.stderr)
+    assert p.returncode == 0, log.read_text()
+    relative = p.stdout.strip().splitlines()[-1]
+    validation = subprocess.run([PYTHON, '-B', 'scripts/validate_history.py', relative], cwd=ROOT, env=env, capture_output=True, text=True)
+    assert validation.returncode == 0, validation.stdout + validation.stderr
+    histories.append(bind(ROOT / relative))
+dump(CI / 'review-repair-result.json', {'utc': stamp, 'record': bind(RECORD), 'histories': histories,
+    'science_repair': bind(OUT / 'SCI-F01-repair.json'),
+    'scope_successor': bind(DOSSIER / 'integration/record-integration-scope-successor.json')})
+print(json.dumps({'record': bind(RECORD), 'history_count': len(histories), 'exact_locator_changes': len(delta)}))

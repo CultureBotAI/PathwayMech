@@ -1,0 +1,13 @@
+from pathlib import Path
+import urllib.request,urllib.error,json,hashlib,datetime,concurrent.futures
+O=Path('/private/tmp/pathwaymech-next-262-discovery')
+requests=[('Wiley-4325686-attempt.bin','https://onlinelibrary.wiley.com/doi/pdfdirect/10.1111/j.1432-1033.1971.tb01406.x'),('PMC107194-fullText.xml','https://www.ebi.ac.uk/europepmc/webservices/rest/PMC107194/fullTextXML'),('PMC3416551-fullText.xml','https://www.ebi.ac.uk/europepmc/webservices/rest/PMC3416551/fullTextXML'),('META-PWY-5430.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3APWY-5430'),('META-PWY-2361.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3APWY-2361'),('META-CPD-13337.xml','https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ACPD-13337')]
+def run(t):
+ n,u=t; row={'url':u,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'path':'originals/'+n}
+ try:
+  with urllib.request.urlopen(urllib.request.Request(u,headers={'User-Agent':'PathwayMech source inspection'}),timeout=45) as r:b=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+ except urllib.error.HTTPError as e:b=e.read();row.update(status=e.code,error=str(e))
+ except Exception as e:row['error']=str(e);return row
+ (O/row['path']).write_bytes(b);row.update(bytes=len(b),sha256=hashlib.sha256(b).hexdigest());return row
+with concurrent.futures.ThreadPoolExecutor(max_workers=3) as x: rows=list(x.map(run,requests))
+(O/'acquisition-primary.json').write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))
