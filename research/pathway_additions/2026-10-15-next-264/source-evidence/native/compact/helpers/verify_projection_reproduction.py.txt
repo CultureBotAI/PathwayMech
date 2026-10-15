@@ -1,0 +1,17 @@
+from pathlib import Path
+import datetime,hashlib,json
+P=Path('/private/tmp/pathwaymech-next-264-native')
+R=Path('/private/tmp/pathwaymech-next-264-native-reproduction')
+names=['complete-native-object-inventory.json','complete-direct-slot-ledger.json','native-xref-leads.json','native-publication-leads.json','native-closure-proof.json','native-source-assertion-proposals.json']
+rows=[]
+for name in names:
+    a=json.loads((P/name).read_text());b=json.loads((R/name).read_text())
+    a.pop('created_utc',None);b.pop('created_utc',None);raw_equal=a==b
+    if name=='native-closure-proof.json':
+        a['excluded_alternative_activities'].sort(key=lambda x:x['activity'])
+        b['excluded_alternative_activities'].sort(key=lambda x:x['activity'])
+    assert a==b,name
+    rows.append({'artifact':name,'original_sha256':hashlib.sha256((P/name).read_bytes()).hexdigest(),'replayed_sha256':hashlib.sha256((R/name).read_bytes()).hexdigest(),'equal_after_creation_time_removal_before_set_order_normalization':raw_equal,'semantic_equal':True})
+out={'replayed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'external_reproduction_root':str(R),'projection_helper_sha256':hashlib.sha256((P/'helpers/project_native_closure.py.txt').read_bytes()).hexdigest(),'verification_helper_sha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'comparisons':rows,'normalization':'Remove actual created_utc; sort only the four excluded_alternative_activities by activity because iteration over the protein set is unordered. Complete native slot order and all biological values remain exact.','preserved_initial_failure':'Initial strict JSON comparison failed only on native-closure-proof.json because the excluded four alternative activities were emitted in a different set iteration order. Both exact result hashes remain bound here. No source or result bytes were edited.','role':'author replay; not independent scientific review'}
+(P/'receipts/projection-reproduction.json').write_text(json.dumps(out,indent=2)+'\n')
+print('Six projection artifacts semantically reproduced; excluded-alternative list order explicitly normalized.')

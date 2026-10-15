@@ -1,0 +1,21 @@
+import datetime,hashlib,json,pathlib,sqlite3,urllib.request,urllib.error
+O=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry');now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat();sha=lambda b:hashlib.sha256(b).hexdigest()
+bindings=[]
+for f,h in [('FAD','66284690eedb29ee919542ada242e4cbaa799d6d84b9cb98231b5e6c1aba35cd'),('CPD-6','cde6fbc44faf626ec3f94db746d27f3d647e5c60b2f3f2d6b1aec6ed27b2185d')]:
+ src=pathlib.Path('/private/tmp/pathwaymech-next-264-native/originals')/f'META-{f}.xml';b=src.read_bytes();assert sha(b)==h;dst=O/'originals'/src.name;assert not dst.exists();dst.write_bytes(b)
+ bindings.append({'source_path':str(src),'stored_path':str(dst.relative_to(O)),'bytes':len(b),'sha256':h,'binding':'Exact hash provided by native source acquisition agent; native package was still in progress, not frozen at copy time.'})
+requests=[]
+for i in [57692,33739,49601]:
+ url=f'https://www.ebi.ac.uk/chebi/backend/api/public/compound/{i}/';p=O/'originals'/f'ChEBI-{i}.json';assert not p.exists();started=now()
+ try:
+  with urllib.request.urlopen(url,timeout=90) as r:b=r.read();status=r.status;headers=dict(r.headers);final=r.url;error=None
+ except urllib.error.HTTPError as e:b=e.read();status=e.code;headers=dict(e.headers);final=url;error=str(e)
+ except Exception as e:b=b'';status=None;headers={};final=url;error=repr(e)
+ p.write_bytes(b);requests.append({'file':str(p.relative_to(O)),'requested_url':url,'final_url':final,'started_at':started,'finished_at':now(),'status':status,'error':error,'headers':headers,'bytes':len(b),'sha256':sha(b)})
+db=json.loads((O/'input-manifest.json').read_bytes())['database_bindings'][0];p=pathlib.Path(db['resolved']);st=p.stat();assert st.st_size==db['bytes'] and st.st_mtime_ns==db['mtime_ns'];c=sqlite3.connect(p.as_uri()+'?mode=ro',uri=True)
+ids=['CHEBI:'+str(i) for i in [57692,33739,49601]]
+rows={i:[dict(zip(['subject','predicate','object','value','datatype','language'],r)) for r in c.execute('select subject,predicate,object,value,datatype,language from statements where subject=? order by predicate,object,value',(i,))] for i in ids}
+search=c.execute("select subject,value from statements where predicate='rdfs:label' and (value like '%2Fe%2S%' or value like '%iron-sulfur cluster%')").fetchall()
+(O/'derived/context-cofactor-complete-subject-rows.json').write_text(json.dumps({'database_binding':db,'scope':'Complete outgoing statement rows for three exact lead/candidate subjects; selected label query is finite and is not global chemical equivalence search.','compound_rows':rows,'class_candidate_query':"select subject,value from statements where predicate='rdfs:label' and (value like '%2Fe%2S%' or value like '%iron-sulfur cluster%')",'class_candidate_query_results':search},indent=2)+'\n')
+(O/'context-cofactor-acquisition.json').write_text(json.dumps({'copied_native_bindings':bindings,'requests':requests},indent=2)+'\n')
+print(json.dumps([{k:r[k] for k in ['file','status','bytes']} for r in requests]))

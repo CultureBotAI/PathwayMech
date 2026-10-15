@@ -1,0 +1,56 @@
+"""Integrate the exact validated draft for independent maintained-record review."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import shutil
+import subprocess
+import yaml
+
+W = Path('/private/tmp/pathwaymech-next-264-20261015')
+C = Path('/private/tmp/pathwaymech-next-264-ci')
+P = Path('/private/tmp/pathwaymech-next-264-record-authoring/drafts/a1501-v2')
+SOURCE = P / 'benzoate-degradation-i-aerobic.yaml'
+TARGET = W / 'data/pathways/benzoate-degradation-i-aerobic.yaml'
+EXPECTED = '3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696'
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def main():
+    receipt = C / 'record-draft-integration.json'
+    assert not TARGET.exists() and not receipt.exists()
+    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=W, text=True).strip() == '3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb'
+    assert sha(SOURCE) == EXPECTED
+    check = json.loads((P / 'shape-validation.json').read_bytes())
+    assert check['record']['sha256'] == EXPECTED and all(check['checks'].values())
+    for binding in check['implementation_files']:
+        assert sha(Path(binding['path'])) == binding['sha256']
+    before = {str(p.relative_to(W)): sha(p) for p in (W / 'data/pathways').rglob('*') if p.is_file() and p.suffix in {'.yaml', '.yml'}}
+    assert len(before) == 260
+    record = yaml.safe_load(SOURCE.read_bytes())
+    assert record['id'] == 'MetaCyc:PWY-2503'
+    nodes = [record['id']] + [x['id'] for key in ['taxa', 'participants', 'reactions'] for x in record.get(key, [])]
+    assert len(nodes) == len(set(nodes)) == 67
+    assert len(record['mechanistic_edges']) == 54 and len(record['references']) == 101
+    assert sum(len(e.get('endpoint_qualifiers', [])) for e in record['mechanistic_edges']) == 12
+    assert all(yaml.safe_load((W / name).read_bytes())['id'] != record['id'] for name in before)
+    # The prior full ignored-inclusive source/corpus duplicate assessment remains
+    # separately retained. This is only a last exact-ID and preservation check.
+    shutil.copyfile(SOURCE, TARGET)
+    assert sha(TARGET) == EXPECTED
+    assert all(sha(W / name) == digest for name, digest in before.items())
+    result = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'status': 'Draft integrated for actual-target review; no final scientific acceptance or full gate result claimed.',
+        'source': str(SOURCE), 'target': str(TARGET.relative_to(W)), 'sha256': EXPECTED,
+        'named_ids': 67, 'mechanistic_edges': 54, 'endpoint_qualifiers': 12, 'references': 101,
+        'prior_record_hashes': before, 'all260_prior_records_unchanged': True,
+        'author_shape_checks': check,
+        'pending': ['Author package freeze/intake', 'Selected authority union integration', 'Independent scientific and technical reviews', 'Rendering and required full gates', 'PR/merge/cleanup'],
+    }
+    receipt.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({k:v for k,v in result.items() if k not in {'prior_record_hashes', 'author_shape_checks'}}, indent=2))
+
+if __name__ == '__main__':
+    main()

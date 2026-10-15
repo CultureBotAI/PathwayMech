@@ -1,0 +1,49 @@
+"""Verify storage relocation and correctly interpret git --no-index differences."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import shutil
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-264-20261015/research/pathway_additions/2026-10-15-next-264')
+CI = Path('/private/tmp/pathwaymech-next-264-ci')
+out = CI / 'retained-whitespace-check.accepted.json'
+assert not out.exists()
+sha = lambda data: hashlib.sha256(data).hexdigest()
+relocation = json.loads((ROOT / 'root-verification/native-xml-storage-successor.json').read_bytes())
+overrides = {r['historical_retained_path']: r for r in relocation['files']}
+initial = json.loads((ROOT / 'root-verification/initial-source-retention.json').read_bytes())
+count = 0
+for package in initial['packages']:
+    for row in package['copied_files']:
+        if row['path'] in overrides:
+            update = overrides[row['path']]
+            assert not (ROOT / row['path']).exists()
+            packed = (ROOT / update['new_retained_path']).read_bytes()
+            assert sha(packed) == update['stored_sha256']
+            data = gzip.decompress(packed)
+            assert data == Path(update['external_source_unchanged']).read_bytes()
+        else:
+            data = (ROOT / row['path']).read_bytes()
+        assert sha(data) == row['sha256'] and len(data) == row['bytes']
+        count += 1
+
+prior = CI / 'retained-whitespace-check.json'
+previous = json.loads(prior.read_bytes())
+assert previous['exit_code'] == 1 and previous['stdout'] == previous['stderr'] == ''
+shutil.copyfile(prior, ROOT / 'root-verification/post-storage-check-before-exit-status-correction.json')
+shutil.copyfile(Path(__file__), ROOT / 'root-verification/helpers/verify_native_storage_successor.py.txt')
+command = ['git', 'diff', '--no-index', '--check', str(CI / 'empty-for-whitespace-check'), str(ROOT)]
+proc = subprocess.run(command, capture_output=True, text=True)
+assert proc.returncode == 1 and proc.stdout == proc.stderr == '', (proc.returncode, proc.stdout, proc.stderr)
+result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'command': command,
+          'exit_code': proc.returncode, 'stdout': proc.stdout, 'stderr': proc.stderr,
+          'whitespace_check_passed': True,
+          'exit_status_interpretation': 'The nonempty directory differs from the empty directory, so git --no-index returns1. No whitespace/error diagnostics are emitted. The earlier helper incorrectly required0; that helper-side assertion failure is preserved and superseded here.',
+          'all_initial_copied_file_bytes_preserved': count, 'lossless_path_relocations': len(overrides),
+          'scope': 'Complete currently retained research directory including untracked files; original source bytes and frozen manifests unchanged.'}
+out.write_text(json.dumps(result, indent=2) + '\n')
+shutil.copyfile(out, ROOT / 'root-verification/retained-whitespace-check.accepted.json')
+print(json.dumps(result, indent=2))

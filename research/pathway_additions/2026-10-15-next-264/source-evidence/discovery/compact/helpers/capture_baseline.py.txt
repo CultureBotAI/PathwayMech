@@ -1,0 +1,16 @@
+from pathlib import Path
+import datetime,hashlib,json,subprocess,yaml,gzip
+O=Path('/private/tmp/pathwaymech-next-264-discovery');roots=[Path('/private/tmp/pathwaymech-next-263-20261014'),Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')];sha=lambda b:hashlib.sha256(b).hexdigest();out=[]
+for i,R in enumerate(roots):
+ state={key:subprocess.check_output(['git',*cmd],cwd=R,text=True)for key,cmd in [('head',['rev-parse','HEAD']),('tree',['rev-parse','HEAD^{tree}']),('status',['status','--porcelain=v1'])]};rows=[]
+ for p in sorted((R/'data/pathways').rglob('*.yaml')):
+  b=p.read_bytes();j=yaml.load(b,Loader=yaml.CSafeLoader);rows.append({'path':p.relative_to(R).as_posix(),'sha256':sha(b),'bytes':len(b),'id':j['id'],'label':j['label'],'description':j.get('description',''),'reactions':j.get('reactions',[]),'participants':j.get('participants',[]),'reference_ids':[x['id']for x in j.get('references',[])]})
+ out.append({'root':str(R),'git':state,'record_count':len(rows),'records':rows})
+assert len(out[0]['records'])==260 and len(out[1]['records'])==258
+b={'captured_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Complete recursive ignore-independent current pathway YAML parse; unmerged263 baseline. Later post263 merged rebind required before authoring.','roots':out}
+(O/'corpus-baseline.json').write_text(json.dumps(b,indent=2)+'\n')
+priorfiles=['.claude/skills/add-pathway/SKILL.md','research/source_discovery/microbial_pathway_sources.md','research/source_discovery/current_open_source_ingest_triage.md','research/pathway_additions/2026-10-10/candidate-inventory.json','research/pathway_additions/2026-10-14-next-248/catechol/preflight/native-boundary-projection.json','research/pathway_additions/2026-10-14-next-252/para/preflight/dedup-summary.json','research/pathway_additions/2026-10-14-next-262/source-evidence/discovery/alternative-pathway-boundaries.json'];bindings=[]
+for rel in priorfiles:
+ p=roots[0]/rel;b=p.read_bytes();q=O/'prior-context'/rel;q.parent.mkdir(parents=True,exist_ok=True);q.write_bytes(b);bindings.append({'source':str(p),'path':q.relative_to(O).as_posix(),'sha256':sha(b),'bytes':len(b)})
+(O/'prior-context-bindings.json').write_text(json.dumps({'files':bindings},indent=2)+'\n')
+print(json.dumps({'counts':[x['record_count']for x in out],'heads':[x['git']['head'].strip()for x in out],'trees':[x['git']['tree'].strip()for x in out],'original_checkout_clean':out[1]['git']['status']=='','current_record263':next({'sha256':x['sha256'],'id':x['id']}for x in out[0]['records']if x['id']=='MetaCyc:PWY-5417'),'prior_context_files':len(bindings)},indent=2))

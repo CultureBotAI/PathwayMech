@@ -1,0 +1,110 @@
+"""Promote the exact selected authority union after baseline-preservation checks."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import shutil
+import subprocess
+import yaml
+
+W = Path('/private/tmp/pathwaymech-next-264-20261015')
+P = Path('/private/tmp/pathwaymech-next-264-authority-integration')
+C = Path('/private/tmp/pathwaymech-next-264-ci')
+R = W / 'research/pathway_additions/2026-10-15-next-264'
+BASE = '3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb'
+RECORD_HASH = '3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696'
+EXPECTED = {
+    'data/identifier_authorities/sources.json': '692034749d1a6d834f8cea79e1a9b066cb8d339fccb37c4eb9337b838aab6bac',
+    'data/identifier_authorities/ontology.json': 'e74f68f186cb3ad41b0f19c0e23802f3e0fa824ebd2f3ad06b34fbf85235c98b',
+    'conf/identifier_sources.json': '7de3e405cb14f101a70bc78d5331689e13b575c6f2839865aff1e90803248d12',
+}
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def read(path):
+    return json.loads(path.read_bytes())
+
+def main():
+    output = C / 'authority-promotion.json'
+    assert not output.exists()
+    assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=W, text=True).strip() == BASE
+    manifest = P / 'artifact-manifest.json'
+    assert sha(manifest) == 'd095522834ded9e014abcd4e585c94b0e9e717b95f1616bbd28c6df9ae9b5d3b'
+    m = read(manifest)
+    rows = m.get('files', m.get('artifacts'))
+    assert len(rows) == 687
+    regular = {p.relative_to(P).as_posix() for p in P.rglob('*') if p.is_file() and not p.is_symlink()}
+    assert regular == {x['path'] for x in rows} | {'artifact-manifest.json'}
+    for row in rows:
+        p = P / row['path']
+        assert not p.is_symlink() and sha(p) == row['sha256'] and p.stat().st_size == row['bytes']
+    retained = read(C / 'authority-retention.json')
+    assert retained['source_manifest_sha256'] == sha(manifest) and retained['verified_storage_pairs'] == 343
+    for row in retained['copied_files']:
+        assert sha(Path(retained['retained_root']) / row['path']) == row['sha256']
+    target = W / 'data/pathways/benzoate-degradation-i-aerobic.yaml'
+    assert sha(target) == RECORD_HASH and target.read_bytes() == (P / 'record-observation.yaml').read_bytes()
+    record = yaml.safe_load(target.read_bytes())
+    nodes = [record] + [x for field in ['taxa', 'participants', 'reactions'] for x in record[field]]
+    selected = {x['id'] for x in nodes}
+    assert len(selected) == 67 and selected == set(read(P / 'selection.json')['selected_ids'])
+    prior = read(C / 'record-draft-integration.json')['prior_record_hashes']
+    assert len(prior) == 260 and all(sha(W / p) == digest for p, digest in prior.items())
+    plans, added, all_terms = [], set(), {}
+    for relative, expected in EXPECTED.items():
+        original, source = W / relative, P / relative
+        before, after = original.read_bytes(), source.read_bytes()
+        assert before == subprocess.check_output(['git', 'show', BASE + ':' + relative], cwd=W)
+        assert before == (P / 'baseline' / relative).read_bytes()
+        assert sha(source) == expected
+        old, new = json.loads(before), json.loads(after)
+        if relative == 'conf/identifier_sources.json':
+            assert len(old) == 1275 and len(new) == 1306 and new[:len(old)] == old
+            assert len({row['key'] for row in new}) == len(new)
+        else:
+            assert old['version'] == new['version']
+            for section in ['terms', 'sources']:
+                assert all(new[section].get(k) == value for k, value in old[section].items())
+            new_ids = set(new['terms']) - set(old['terms'])
+            assert new_ids <= selected
+            added |= new_ids
+            all_terms.update(new['terms'])
+            projection = read(P / ('replay/canonical-selected-source-projection.json' if relative.endswith('/sources.json') else 'replay/canonical-selected-ontology.json'))
+            for section in ['terms', 'sources']:
+                assert all(new[section].get(k) == value for k, value in projection[section].items())
+        plans.append({'path': relative, 'before_sha256': hashlib.sha256(before).hexdigest(), 'after_sha256': expected})
+    assert len(added) == 51 and added == set(read(P / 'preservation-accounting.json')['new_ids'])
+    assert all(all_terms[node['id']]['label'] == node['label'] for node in nodes)
+    assert (W / 'conf/identifier_policy.yaml').read_bytes() == (P / 'baseline/conf/identifier_policy.yaml').read_bytes()
+    consumer = read(P / 'receipts/full-actual-corpus-identifier-consumer.json')
+    assert consumer['result'] == 'pass' and not consumer['errors'] and consumer['total_records'] == 261
+    assert consumer['new_exact_record']['sha256'] == RECORD_HASH
+    assert read(P / 'receipts/complete-command.json')['exit_code'] == 0
+    assert read(P / 'receipts/canonical-ontology-command.json')['exit_code'] == 0
+    assert read(P / 'receipts/canonical-source-replay.json')['all_projected_terms_and_owners_exact']
+    # Every check precedes the three maintained authority writes.
+    for plan in plans:
+        shutil.copyfile(P / plan['path'], W / plan['path'])
+        assert sha(W / plan['path']) == plan['after_sha256']
+    result = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'role': 'Root exact authority integration and baseline/actual-draft binding; independent technical acceptance remains separate.',
+        'source_manifest_sha256': sha(manifest), 'record_sha256': RECORD_HASH,
+        'frozen_artifacts_verified': len(rows), 'lossless_pairs_previously_verified': 343,
+        'all260_prior_records_unchanged': True, 'all_old_terms_owners_manifest_rows_preserved': True,
+        'all67_selected_labels_match': True, 'added51_selected_ids': sorted(added),
+        'promoted_files': plans, 'bound_full261_consumer': consumer,
+        'historical_source_rebuild_claimed': False,
+        'pending': ['Full maintained-corpus gates', 'Independent final reviews', 'Generated graph inspection'],
+    }
+    output.write_text(json.dumps(result, indent=2) + '\n')
+    for source, name in [(output, 'authority-promotion.json'), (C / 'authority-retention.json', 'authority-retention.json'), (Path(__file__), 'helpers/promote_authorities.py.txt')]:
+        dest = R / 'root-verification' / name
+        assert not dest.exists()
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, dest)
+    print(json.dumps({'result': 'pass', 'selected_ids': 67, 'added_ids': 51, 'promoted_files': plans, 'receipt': str(output)}, indent=2))
+
+if __name__ == '__main__':
+    main()

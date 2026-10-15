@@ -1,0 +1,25 @@
+import gzip,hashlib,json,pathlib,xml.etree.ElementTree as E
+O=pathlib.Path('/private/tmp/pathwaymech-next-264-independent-chemistry');P=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+i=json.loads((O/'intake.json').read_text());assert sha(P/'artifact-manifest.json')==i['package_manifest_sha256'];m=json.loads((P/'artifact-manifest.json').read_text())
+for x in m['files']:assert sha(P/x['path'])==x['sha256'],x['path']
+a=json.loads((O/'adjudication.json').read_text());assert len(a['findings'])==1 and a['findings'][0]['status']=='open';assert a['findings'][0]['issue_key']=='next264-rhea-symbolic-participant-truncation'
+for b in a['evidence']+a['findings'][0]['affected_sources']+a['findings'][0]['independent_evidence']:assert sha(pathlib.Path(b['path']))==b['sha256'],b['path']
+s=json.loads((O/'independent-structures.json').read_text());assert len(s['chemicals'])==9
+for x in s['chemicals']:
+ assert sha(pathlib.Path(x['native_path']))==x['native_sha256'];assert sha(pathlib.Path(x['issuing_path']))==x['issuing_sha256']
+r=json.loads((O/'independent-reactions.json').read_text());ex=json.loads((O/'symbolic-comparison-counterexamples.json').read_text());assert r['fully_fixed_equations_compared']+ex['excluded_count']==37222;assert ex['excluded_count']==154 and ex['partially_compared_count']==148
+fr=json.loads((O/'rhea-original-fragments.json').read_text());selected={};prefix='<rdf:RDF xmlns:rh="http://rdf.rhea-db.org/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">';rs='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource';ra='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}about'
+for fragment in fr['fragments']:
+ raw=fragment['original_xml'].encode();assert len(raw)==fragment['bytes'] and hashlib.sha256(raw).hexdigest()==fragment['sha256']; assert fragment['original_decompressed_end_byte']-fragment['original_decompressed_start_byte']==len(raw)
+ el=E.fromstring(prefix+fragment['original_xml']+'</rdf:RDF>')[0];assert el.get(ra)==fragment['uri']
+ d=selected.setdefault(fragment['uri'],{})
+ for c in el:
+  key=c.tag.split('}',1)[-1];value=c.get(rs) or c.text
+  if value is not None and value not in d.setdefault(key,[]):d[key].append(value)
+for uri,data in r['selected_complete_RDF_closure'].items():assert selected[uri]==data,uri
+for item in ex['excluded_equations']:
+ assert selected[item['reaction_uri']]['equation']==[item['equation']]
+ for term in item['symbolic_terms']:
+  pred=term['predicate'].removeprefix('http://rdf.rhea-db.org/');assert term['participant_uri'] in selected[term['side_uri']][pred]
+print(json.dumps({'status':'passed','frozen_source_artifacts_rehashed':len(m['files']),'exact_original_fragments_parsed':len(fr['fragments']),'core_and_context_molecules':len(s['chemicals']),'selected_equations':2,'material_entries':11,'fixed_equations':37068,'symbolic_exclusions':154,'silently_truncated_equations':148,'open_source_finding':'next264-rhea-symbolic-participant-truncation'},indent=2))

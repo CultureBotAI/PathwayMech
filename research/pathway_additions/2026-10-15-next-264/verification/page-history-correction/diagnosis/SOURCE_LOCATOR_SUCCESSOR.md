@@ -1,0 +1,1 @@
+Use finding.v2.json for the final diagnosis. It corrects two informational line numbers: history_html inclusion is cli.py line 1204; load_site_history begins site_display.py line 71. All reproduction evidence and conclusions are unchanged. The complete final package is inventoried by manifest.v2.json, retaining the original manifest and finding.

@@ -1,0 +1,81 @@
+{
+  "role": "Observed tool execution outcomes recorded by the chemistry source author; not a test suite, independent final review, or maintained-record gate.",
+  "working_output_root": "/private/tmp/pathwaymech-next-264-chemistry",
+  "commands": [
+    {
+      "command": "python3 -B helpers/prepare_inputs.py",
+      "tool_session": 20979,
+      "observed_exit_code": 0,
+      "result": {
+        "copied_bound_files": 18,
+        "fully_hashed_databases": 2,
+        "selected_chebi_subjects": 8,
+        "statements": 341
+      }
+    },
+    {
+      "command": "/private/tmp/npmech-rdkit-2026.03.5/bin/python -B - [RDKit environment inspection]",
+      "observed_exit_code": 0,
+      "result": {
+        "rdkit": "2026.03.5"
+      }
+    },
+    {
+      "command": "python3 -B helpers/acquire_issuing.py",
+      "tool_session": 94816,
+      "observed_exit_code": 0,
+      "result_file": "acquisition.json"
+    },
+    {
+      "command": "RDBASE=/private/tmp/npmech-rdkit-2026.03.5/share/RDKit /private/tmp/npmech-rdkit-2026.03.5/bin/python -B helpers/verify_chemistry.py",
+      "tool_session": 58009,
+      "observed_exit_code": 1,
+      "helper_snapshot": "attempts/verify_chemistry-before-generic-side-fix.py.txt",
+      "log": "attempts/chemistry-replay-generic-side-failure.log",
+      "partial_result": "attempts/chemical-identity-first-pass.json",
+      "reason": "Global equation scan assumed every side had fixed material entries. Issuing side 22452_R has none. Selected eight-compound identity pass completed; whole-route proof did not complete in this attempt."
+    },
+    {
+      "command": "RDBASE=/private/tmp/npmech-rdkit-2026.03.5/share/RDKit /private/tmp/npmech-rdkit-2026.03.5/bin/python -B helpers/verify_chemistry.py",
+      "tool_session": 9396,
+      "observed_exit_code": 0,
+      "log": "chemistry-replay.log",
+      "result_files": [
+        "chemical-identity-closure.json",
+        "whole-route-chemistry-replay.json",
+        "derived/rhea-selected-complete-descriptions.json"
+      ]
+    },
+    {
+      "command": "python3 -B helpers/prepare_context_cofactors.py",
+      "tool_session": 3117,
+      "observed_exit_code": 0,
+      "result_files": [
+        "context-cofactor-acquisition.json",
+        "derived/context-cofactor-complete-subject-rows.json"
+      ]
+    },
+    {
+      "command": "RDBASE=/private/tmp/npmech-rdkit-2026.03.5/share/RDKit /private/tmp/npmech-rdkit-2026.03.5/bin/python -B helpers/verify_context_cofactors.py",
+      "tool_session": 46845,
+      "observed_exit_code": 0,
+      "log": "context-cofactor-replay.log",
+      "result_file": "context-cofactor-identity-assessment.json"
+    },
+    {
+      "command": "python3 -B helpers/audit_rhea_search_exclusions.py",
+      "tool_session": 86384,
+      "observed_exit_code": 0,
+      "log": "rhea-exclusion-audit.log",
+      "result_file": "rhea-equivalence-search-exclusions.json"
+    },
+    {
+      "command": "python3 -B helpers/verify_family_and_sql.py",
+      "observed_exit_code": 0,
+      "log": "rhea-family-verification.log",
+      "result_file": "rhea-family-orientation-verification.json",
+      "notes": "Also exactly rechecks the complete selected SQL rows initially projected by a read-only Python SQL command."
+    }
+  ],
+  "helper_storage": "Source helper .py files are renamed byte-for-byte to .py.txt during freezing. The commands show their actual names when executed; use the stored inert filename for explicit replay."
+}

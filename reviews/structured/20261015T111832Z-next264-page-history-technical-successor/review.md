@@ -1,0 +1,1015 @@
+# Independent technical successor accepting benzoate page-history correction
+
+- Review: 20261015T111832Z-next264-page-history-technical-successor
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-15T10:44:58.067620Z
+- Finished UTC: 2026-10-15T11:18:32.104776Z
+- Reviewer: Codex independent technical reviewer /root/next264_render_ci_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: false
+
+## Summary
+
+Issue576 local page-history correction is independently accepted. Native regeneration adds exactly the omitted 1299-byte REVIEW history entry while preserving the entire graph, scientific record, authority data, code and KGX. All seven corrected local gates passed with 5255 tests passed, 3 skipped and 7 warnings;4754 tested inputs remain exact. The initial failed Linux CI and previous review scopes are preserved. This is a bounded technical successor; updated protected CI, canonical persistence and PR publication remain root-owned.
+
+## Scope And Provenance
+
+One maintained pathway assessed only for page-history repair, generated-input ownership and exact technical preservation.
+
+Selection: Exact MetaCyc:PWY-2503 record and generated page implicated by PR575 CI and issue576.
+Coverage: partial; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base e6da46ca8515c27d81ed528a13ed839a2bec797f.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-2503 | data/pathways/benzoate-degradation-i-aerobic.yaml | maintained | benzoate degradation I (aerobic) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| Initial PR 575 Linux CI observation | failed | False | MetaCyc:PWY-2503 | Historical initial head failed only the stale target-page test. The failed observation is preserved; current local correction checks are separately reported. |
+| Independent repaired page and scientific-input preservation comparison | passed | True | MetaCyc:PWY-2503 | Native one-record reproduction equals actual corrected page; exact inserted history block, unchanged complete graph and 821 preserved input files verified. |
+| Independent failed-CI and diagnosis retention verification | passed | True | MetaCyc:PWY-2503 | All 33 retained pairs and actual failed CI output verified against exact originals. |
+| Independent completed-gate and tested-input acceptance | passed | True | MetaCyc:PWY-2503 | All 14 gate pairs, 13 pre-gate pairs, 4754 tested hashes and 90 final canonical input bindings verified. No duplicate broad gate run. |
+| just render-pages | passed | True | MetaCyc:PWY-2503 | Native full-site render changed only the target history page and produced the independently expected SHA256. |
+| just validate | passed | True | MetaCyc:PWY-2503 | Full validation passed for 9 skills, 483 history records, 261 pathways,closed schema and identifier policies, 20211 evidence blocks, 30 sources and current pages. |
+| just test | passed | True | MetaCyc:PWY-2503 | Full suite passed:5255 passed, 3 skipped, 7 dependency warnings; all 21 test_render_pages tests passed, including committed-site currentness. |
+| just lint | passed | True | MetaCyc:PWY-2503 | Ruff reported all checks passed. |
+| just vendored-check | passed | True | MetaCyc:PWY-2503 | All 22 governed artifacts match the pinned CLAW revision. |
+| git diff --check | passed | True | MetaCyc:PWY-2503 | Unstaged whitespace check passed with no output. |
+| git diff --cached --check | passed | True | MetaCyc:PWY-2503 | Staged whitespace check passed with no output. |
+
+## Scientific And Domain Assessments
+
+### Issue576 generated history correction
+
+representation: supported. Targets: MetaCyc:PWY-2503.
+
+The corrected target page exactly equals native rendering of the unchanged record plus both actual record-targeted history entries. The sole 1299-byte insertion contains the previously omitted REVIEW entry. No renderer or test-code change is needed.
+
+### Record history is an actual generated-page input
+
+ownership: supported. Targets: MetaCyc:PWY-2503.
+
+Native code explicitly loads history/records entries by target path and passes those sessions into the generated page. The initial full gates preceded the later history entry; documentation-only checks omitted page currentness. Future final page checks must include record history, as the corrected gates now do.
+
+### Scientific record, authority, graph and KGX preservation
+
+consistency: supported. Targets: MetaCyc:PWY-2503.
+
+The unchanged maintained target retains 54 edges and 101 references. Complete graph bytes remain SHA256 c7ebeecce1c0b7da3a1e7f07415013f7bcd453471777d8a129b96610ce443421. All 821 scoped scientific/code/config/schema/test/KGX/record-history inputs, including 261 pathway records, match the failed PR head. This is byte-preservation acceptance, not fresh authority or scientific review.
+
+### Corrected full gates and historical failed CI
+
+consistency: supported. Targets: MetaCyc:PWY-2503.
+
+The initial CI failure is retained honestly. All seven required corrected local commands now pass, including the full 5255-test suite and native current-site check. All 4754 tested inputs stayed unchanged during the run and at independent final intake; only retained correction evidence was subsequently added. Protected GitHub CI for the next pushed head remains a publication requirement outside this local review.
+
+### Immutable predecessor scope and noncanonical issue lineage
+
+provenance: supported. Targets: MetaCyc:PWY-2503.
+
+Issue576 originated in a CI failure and JSON diagnosis, not a canonical finding. This review accepts the completed local correction through evidence-linked assessments and preserves both earlier canonical bundles. It does not fabricate previous_occurrences or a resolved finding absent a canonical predecessor. Earlier scientific review is context for byte-preserved data, not renewed science.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| E-RECORD | data/pathways/benzoate-degradation-i-aerobic.yaml; Complete file; gzip decoded where applicable | supports | Entire target parsed for technical shape and exact byte preservation only: unchanged SHA256 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696; 54 edges and 101 references. Scientific assertions were not reassessed. |
+| E-PAGE | pages/records/MetaCyc_PWY-2503.html; Complete file; gzip decoded where applicable | supports | Actual corrected page equals native current-history rendering, SHA256 4e637a583fc5bbccb0b2b25ccac95b1b2b03b0dfedaff2b267068f7c9c2d37fe. Exactly one 1299-byte history entry is inserted; the complete graph is unchanged. |
+| E-HISTORY | history/records/benzoate-degradation-i-aerobic/2026-10-15T102211Z-Codex-c5acee.yaml; Complete file; gzip decoded where applicable | supports | Record-targeted REVIEW entry added after initial render/full gates; this is the exact maintained input previously omitted from the generated history section. |
+| E-GENERATOR | src/pathwaymech/cli.py; render_site lines205-208; render_pages_main line344; _record_page line1204 | supports | Native renderer passes loaded target histories to _record_page and includes history_html; no generator repair was needed. |
+| E-HISTORY-OWNER | src/pathwaymech/site_display.py; load_site_history lines71-78; history_html lines81-105 | supports | History loader associates records by exact target path; history_html emits each curation session into the page. |
+| E-FAILED-CI | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/pr575-first-ci-failure.log.gz; Complete file; gzip decoded where applicable | supports | Initial Linux Python3.13 CI correctly failed the stale-page test: 1 failed, 5250 passed, 7 skipped and 7 warnings; actual exit1. This historical failure is retained, not relabelled as success. |
+| E-DIAGNOSIS | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/diagnosis.v2.json; Complete file; gzip decoded where applicable | supports | Independent diagnosis proves exact missing history insertion, graph equality, and stable output across hash seeds 0, 1, 12345; it does not claim Linux execution. |
+| E-DIAGNOSIS-RETENTION | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/retention-manifest.json; Complete file; gzip decoded where applicable | supports | All 33 retained pairs independently verified against stored and original sizes/hashes and decoded bytes. Original failed CI, diagnostic attempts and successors remain immutable. |
+| E-REPAIR | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/repair-acceptance.json; Complete file; gzip decoded where applicable | supports | Independent native page reproduction after canonical inspection accepts the single-entry correction. All 821 tracked files in scientific/config/code/test/schema/KGX/record-history scopes, including 261 pathways, match failed PR head exactly; ignored-inclusive untracked search found no additional inputs in those bounded scopes. |
+| E-PRESERVATION | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/unchanged-scientific-inputs.json.gz; Complete file; gzip decoded where applicable | supports | Complete independent hash inventory of all 821 unchanged scoped inputs, including 261 maintained pathway records and all published KGX downloads. |
+| E-ISSUE | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/stale-history-page-issue.md; Complete file; gzip decoded where applicable | supports | Issue576 defines native regeneration, exact history delta, unchanged scientific/graph/KGX content, required gates and immutable successor acceptance. Diagnostic major rating reflects required build failure; issue minor rating reflects bounded provenance impact. Both require green protected CI. |
+| E-DELTA | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/native-render-delta.json; Complete file; gzip decoded where applicable | supports | Native full-site renderer changed only the expected target page from old SHA98e5b35b… to corrected SHA4e637a58…; all other scoped inputs stayed unchanged. |
+| E-RECEIPTS | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/receipts.json; Complete file; gzip decoded where applicable | supports | All seven actual correction commands completed with exit0. Commands were executed by root; this reviewer verified their complete retained logs and original hashes. |
+| E-GATE-RETENTION | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/retention-manifest.json; Complete file; gzip decoded where applicable | supports | All 14 retained gate pairs independently decoded and matched exact originals; all 13 retained pre-gate acceptance pairs also matched their source package. |
+| E-GATE-INPUTS | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/tested-core-input-hashes.json.gz; Complete file; gzip decoded where applicable | supports | All 4754 tested input hashes independently recomputed unchanged after the full run. Subsequent additions at inspection were confined to retained correction evidence. |
+| E-GATE-PRESERVED | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/final-input-preservation.json; Complete file; gzip decoded where applicable | supports | Full scoped ignored-inclusive inventory remained unchanged throughout the corrected gates, including record-targeted history and corrected generated page. |
+| E-PRIOR-TECH | reviews/structured/20261015T101912Z-next264-independent-technical/review.yaml; Complete file; gzip decoded where applicable | context_only | Earlier technical review retains its original pre-history-render input scope. This successor updates only page-currentness and related technical preservation acceptance. |
+| E-PRIOR-SCIENCE | reviews/structured/20261015T101855Z-next264-independent-scientific/review.yaml; Complete file; gzip decoded where applicable | context_only | Earlier independent scientific review remains an immutable observation of the byte-identical maintained pathway. No fresh scientific acceptance is claimed here. |
+| E-GATE-1 | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-render-pages.log.gz; Complete file; gzip decoded where applicable | supports | Native full-site render changed only the target history page and produced the independently expected SHA256. |
+| E-GATE-2 | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-validate.log.gz; Complete file; gzip decoded where applicable | supports | Full validation passed for 9 skills, 483 history records, 261 pathways,closed schema and identifier policies, 20211 evidence blocks, 30 sources and current pages. |
+| E-GATE-3 | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-test.log.gz; Complete file; gzip decoded where applicable | supports | Full suite passed:5255 passed, 3 skipped, 7 dependency warnings; all 21 test_render_pages tests passed, including committed-site currentness. |
+| E-GATE-4 | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-lint.log.gz; Complete file; gzip decoded where applicable | supports | Ruff reported all checks passed. |
+| E-GATE-5 | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-vendored-check.log.gz; Complete file; gzip decoded where applicable | supports | All 22 governed artifacts match the pinned CLAW revision. |
+| E-GATE-6 | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/git-diff---check.log.gz; Complete file; gzip decoded where applicable | supports | Unstaged whitespace check passed with no output. |
+| E-GATE-7 | research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/git-diff---cached---check.log.gz; Complete file; gzip decoded where applicable | supports | Staged whitespace check passed with no output. |
+
+## Limits And Additional Notes
+
+- scientific_review is false. No fresh literature, reaction chemistry, biological interpretation, authority source replay or transcriptomic search was performed.
+- The full corrected gates were executed by root; this reviewer independently inspected exact logs, lossless retention and input hashes without rerunning them.
+- Corrected local full tests report3 skipped tests and 7 dependency warnings. The original Linux CI failed before this repair; new-head GitHub CI is still required before merge and is not claimed as passed.
+- Previous technical/scientific review bundles remain immutable. Their page hash refers to the earlier generated input state, while this successor explicitly binds the complete current record history and corrected page.
+- Initial diagnosis rated the required-output failure major; issue 576 rated its bounded provenance/content impact minor. Both observations are preserved and both require the CI failure to be repaired.
+- Canonical save/check, final documentation/site checks, corrected push and protected merge are root-owned next steps. No final publication or scientific status promotion is asserted.
+- No canonical finding predecessor exists for NEXT264-PAGE-HISTORY-01; resolved finding lineage is therefore not fabricated. The local correction is accepted in assessments and issue 576 remains externally managed.
+- Initial canonical inspect captured 61 inputs before repair assessment. Final inspect added29 immutable gate/acceptance inputs; all original 61 bindings remained unchanged, and all 90 final inputs were rechecked.
+- Ignored and hidden untracked files were included in the bounded preservation inventory; runtime __pycache__, .pytest_cache and .ruff_cache directories were excluded explicitly.
+- No README input is bound because root will add final result links after persistence; final scientific/page/history inputs must remain exact.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261015T111832Z-next264-page-history-technical-successor
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent technical successor accepting benzoate page-history correction
+started_at: '2026-10-15T10:44:58.067620Z'
+finished_at: '2026-10-15T11:18:32.104776Z'
+reviewer:
+  identity: Codex independent technical reviewer /root/next264_render_ci_review
+  kind: agent
+  independence: independent
+  independence_basis: Reviewer did not author the pathway, authority integration,
+    record history, native regeneration or maintained correction. Reviewer independently
+    diagnosed the stale page, authored read-only reproductions and accepted root-authored
+    native regeneration. No maintained files, Git or GitHub state were changed by
+    reviewer.
+skill: .claude/skills/review-yaml-record/SKILL.md, bounded technical repair scope
+  under docs/record-reviews.md
+completion: completed
+verdict: pass_with_limitations
+scientific_review: false
+summary: Issue576 local page-history correction is independently accepted. Native
+  regeneration adds exactly the omitted 1299-byte REVIEW history entry while preserving
+  the entire graph, scientific record, authority data, code and KGX. All seven corrected
+  local gates passed with 5255 tests passed, 3 skipped and 7 warnings;4754 tested
+  inputs remain exact. The initial failed Linux CI and previous review scopes are
+  preserved. This is a bounded technical successor; updated protected CI, canonical
+  persistence and PR publication remain root-owned.
+source:
+  git_revision: e6da46ca8515c27d81ed528a13ed839a2bec797f
+  state: working_tree
+  inputs:
+  - path: .claude/skills/add-pathway/SKILL.md
+    sha256: f0d394f29cad1a1cd6a004abceb5f59f8e567d6b885cd6c4ff07c629c4d6db7a
+    role: context
+  - path: .claude/skills/review-yaml-record/SKILL.md
+    sha256: 6a57ac6065171e35499578522a38c576e7bf7b6213286487d6cc0947fc477f3f
+    role: context
+  - path: CLAUDE.md
+    sha256: c067d99547f9e9e9a6edb892d71126b6765239348d0021b907f3102907a4cf00
+    role: context
+  - path: conf/identifier_sources.json
+    sha256: 7de3e405cb14f101a70bc78d5331689e13b575c6f2839865aff1e90803248d12
+    role: context
+  - path: conf/record_review.yaml
+    sha256: a2d6578719a7d080eadc9520695ea7203618b0a7b274ee78fb25dbc17794876b
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: e74f68f186cb3ad41b0f19c0e23802f3e0fa824ebd2f3ad06b34fbf85235c98b
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 692034749d1a6d834f8cea79e1a9b066cb8d339fccb37c4eb9337b838aab6bac
+    role: context
+  - path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    sha256: 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696
+    role: target
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: docs/record-reviews.md
+    sha256: 452a19ab688276747b7c4308523a14d4d99c1c39ef6909ae8a90b85b7a9b3e9b
+    role: context
+  - path: history/records/benzoate-degradation-i-aerobic/2026-10-15T093812Z-Codex-a9aef5.yaml
+    sha256: f0f583a97dfd294eac365626bc25d14cd7d94d35aa3755801b9350db32cfcabc
+    role: context
+  - path: history/records/benzoate-degradation-i-aerobic/2026-10-15T102211Z-Codex-c5acee.yaml
+    sha256: e9b0313ba8383b13b73b05405436c55150986281efd2d79ce5f45e73f432a924
+    role: context
+  - path: history/reports/benzoate-degradation-i-aerobic-source-preparation/2026-10-15T104605Z-Codex-834715.yaml
+    sha256: 88d5b0b9db9c2ea319b69aa976b3251ec969e5e5ac374536f1d8d744dbf0de23
+    role: context
+  - path: pages/downloads/edges.tsv
+    sha256: 06e093dea2bf37c92c1461eaf6eff3ca3e909624ee439c41a619a0328c1878ce
+    role: context
+  - path: pages/downloads/manifest.json
+    sha256: 3c8b36ff333620752b861557ae8508940caef871926c67ec08a7800a9c5bc643
+    role: context
+  - path: pages/downloads/nodes.tsv
+    sha256: 7299fb7a76be01922c9629074c48f7a73dd1cf74ef96510f8dcb9517f4bf863e
+    role: context
+  - path: pages/records/MetaCyc_PWY-2503.html
+    sha256: 4e637a583fc5bbccb0b2b25ccac95b1b2b03b0dfedaff2b267068f7c9c2d37fe
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/HANDOFF.md
+    sha256: 7426ffee26832357273e0d99d60775aadea71697f0a8b89dfb403f7a9d882ad3
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/SOURCE_LOCATOR_SUCCESSOR.md
+    sha256: c31a2d9cfee9779ef4a3770a6fb48efd13c135836ca8c70f13d7d271ced9cb8a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/analyze.py.gz
+    sha256: 151663cf9957284936e5302ce3228767af24bfc6c0693680fcad7f73b7bd9c03
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/committed-vs-rendered.diff.gz
+    sha256: bfb782241cbcbd7e904cef42706802a9a6cf86afba2505dd82e7a6ef68b72fe7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/committed.html.gz
+    sha256: 5021b15adffa3ee40e0c3bac0897e436e853343e51c886c3107f1819a79b3f00
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/complete_diagnosis.py.gz
+    sha256: 4994836c7854e88506360af73833e67ff4f5a61d53972c7744be83b301af9bc2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/diagnosis.json
+    sha256: 1a8731ecfef7328ba38ab26ae7639bbb2132e92e56afec8df9da52199bd9e40b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/diagnosis.v2.json
+    sha256: e37198abdbc808d3f1dcafd8715dab24af167be849a34f55f507302dee7fae64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/exact-byte-differences.json
+    sha256: a263264dd47d7d13652751be687a18c8a0dda24bce93a5a4595963ef3fbec67f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/exact-byte-differences.v2.json
+    sha256: a2fae82d85bba00537037373e5f7655b1e9395dc448fa3f70850cae46c3ad712
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/exact-inserted-history.html.gz
+    sha256: 4f98a00f88f622769b1091e62b16d0e028f8b3a4b36edf57b7c06b07e24926d2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/finalize.py.gz
+    sha256: edea6d4e066a8f759b13ed5f83f3cd038f1630ed4860e0872e47417a63c314c8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/finding.json
+    sha256: 865a820e8c48b91caafd52e4ec35cdf8c26f50d0be795d49834a1ab157f32d46
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/finding.v2.json
+    sha256: fc46b64bbcd6fa512201e99a8f8edd2817f51101ee73cb66b658515dbf4ccdfe
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/hash-seed-0.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/hash-seed-0.stdout.log.gz
+    sha256: 0ad209beda0194b1673bb262d821ccf66137bcba48e731c306e1df854a7bc698
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/hash-seed-1.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/hash-seed-1.stdout.log.gz
+    sha256: 0ad209beda0194b1673bb262d821ccf66137bcba48e731c306e1df854a7bc698
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/hash-seed-12345.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/hash-seed-12345.stdout.log.gz
+    sha256: 0ad209beda0194b1673bb262d821ccf66137bcba48e731c306e1df854a7bc698
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/initial-gate-receipts.json
+    sha256: 0a45e6c53305b1900090512f0afefcfc4bd15bb3cfb1c518ff8f451379e6f2aa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/manifest.json
+    sha256: 19e957d1132d344c256f6533b1eb678e2b4b47d575e54fed97d0b036585ad7aa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/manifest.v2.json
+    sha256: b574b9b134cf06ebfce624fae2ec5fb68d04a9f096af687e52202c54d52eeda2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/pr575-first-ci-failure.log.gz
+    sha256: 93eaabb8e4a87a64fda1c0dbe82f4fb17efc7259bf07d5a799c7938fd68795b0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/rendered-current-history.html.gz
+    sha256: 8a33434aa60b98d57023b349d21dc4819bce81913b08d32edeca3389f56f37ee
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/rendered-without-later-history.html.gz
+    sha256: 5021b15adffa3ee40e0c3bac0897e436e853343e51c886c3107f1819a79b3f00
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/reproduce.py.gz
+    sha256: 65969b0ad0ce6cfa099bc9394f6b001c407bd97f24c3a5acda5083bdef472a0d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/reproduction.json
+    sha256: b620da33df4707d0fc78072ecdceb20a221768144f6497683426c3ac64c5f7d2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/root-final-documentation-checks.py.gz
+    sha256: deb67810b480ecb28794ba27d1d813944b137efc08462f3a463ac4be75525424
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/verify_single_insertion.py.gz
+    sha256: 76f6c9ee0a36a02656e1a104e0c535672a75e8b473dcf2b6a1f04fb6ebc6bf0d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/environment.json
+    sha256: 1cb0544b2e033a2900e814576877fef1d1f0d470afcec3412eed1e4560ff08c6
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/final-input-preservation.json
+    sha256: 213efa1b9749cf448bceead7fbde160105572b22f6c4a5f0d43e95935863aaef
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/git-diff---cached---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/git-diff---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-lint.log.gz
+    sha256: fab45d94cd260329cc1940f54b6e6a31ba66e94a424a4fbc2606aa0d9ba4b658
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-render-pages.log.gz
+    sha256: adb168cc3a127978c276154a637cea16b76945336c8ca3831c252733011053f1
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-test.log.gz
+    sha256: a3fa058eecaddd9479cfa50e7d7b763339eb00459c79d90d364d20855b1eec0a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-validate.log.gz
+    sha256: 3d186b53c855ce17557ad60350cd4d394876f25d9fbe5425b727e8579852040e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-vendored-check.log.gz
+    sha256: 91d8ac9e5d634985562a4ca1ee1310c19ad13f688acccbf3bc82806484abcd5e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/native-render-delta.json
+    sha256: e2ff9556f063ddba6eb950f31cd28bd9222578f5c99fb7305d3224989aea5189
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/receipts.json
+    sha256: 7c9dc6205b55ffa6e53d02b533d96421879fd9181d70f85f99c6407fdc43488c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/retain_page_history_corrected_checks.py.gz
+    sha256: f68814ca21b2f5846a3855fb5351ba2743280f1165a15e828488234e7053320a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/retention-manifest.json
+    sha256: 7a9561d32c1353ea721d923c98414109b15a3fa3e09c239f3c295e2f28ced970
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/run_page_history_correction_checks.py.gz
+    sha256: 23542234ab6fe64493b5477757a92613fc47a12aed223ff7da70513f11f5cae8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/tested-core-input-hashes.json.gz
+    sha256: 2f9db6203283469900cb464b645c3737e418058b011cdf038523df5fc561a9a8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/HANDOFF.md
+    sha256: bbaae94752d61675f006754f6d797a7007b44b799c3a6cc07405dcd84afa0b97
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/capture_inspection.py.gz
+    sha256: 4d4c7c819b2bdb740bc5edffd82c5ec1422889f7ceb1cc1a6b4943835bdc3576
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/inspect-execution.json.gz
+    sha256: 25c82368e6ed7f75a2ac3afbe1d8f67142865255be2ac6e5e4d46bab10bb6c45
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/inspect.json.gz
+    sha256: 99914b12b216e026b3bdffef32bba53f6a61253aab2465799bec76346bacbeda
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/inspect.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/manifest.json
+    sha256: eb43456fde9974622b42f5f830a930ac84f69d7c9fd76710cc2b17bd61c5d8f1
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/repair-acceptance.json
+    sha256: a7d65d8f848d9179793a59c9a80831040ea73129acd18292e1308a9667ab2201
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/retention-manifest.json
+    sha256: c27a98d01bcf69f48ac3f92967e7939e4cd38c0ce7502b3158897e76cd98ae6e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/started.json.gz
+    sha256: 49c88bf2cc0a217bb4dcf1874f763b7d710402d9efd7cf72b40c59a984d1a964
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/targets.yaml.gz
+    sha256: 016d7ff9169b2fc7ef2a9b3f11ef540844af9718c1465d7033997c59fc33b82d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/unchanged-scientific-inputs.json.gz
+    sha256: f277fb0d8df363ae163ded44c5f3feb3ed0ccb1a6dd9c23395ef771f17dad793
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/unchanged-scientific-inputs.stderr.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/unchanged-scientific-inputs.stdout.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/verify_repaired_page.py.gz
+    sha256: d8e9b7209f25b07a7a7382a1a5049d4664b0a43a57fab2e723480c5027514604
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/pr575-first-ci-failure-receipt.json
+    sha256: 7a9d2691b4ec35fe838e67b0c2826453752ee4773bbe84e10e3d4807c83e266a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/pr575-first-ci-failure.log.gz
+    sha256: 93eaabb8e4a87a64fda1c0dbe82f4fb17efc7259bf07d5a799c7938fd68795b0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/retention-manifest.json
+    sha256: caab5e92ac24929f8f1504347291a09c05f39da80e5f49cb3051ed5008d1faa4
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/stale-history-page-issue.md
+    sha256: bb61370afdd9db6d838d5fa0f9ad13503b61aca9070e34ffa15bcc6a6d6530ca
+    role: context
+  - path: reviews/structured/20261015T101855Z-next264-independent-scientific/review.yaml
+    sha256: f57776897f19b2f719e1537b640bb1f2cecb00d655f66aa52bc9d8d5a5ac8f63
+    role: context
+  - path: reviews/structured/20261015T101912Z-next264-independent-technical/review.yaml
+    sha256: cb2c9eb0498eb64691f79fb158d142172307c43c6fd94cf6b77919f18ceca295
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/cli.py
+    sha256: a170e60e3c398755a21e1304e3bec9e2af743af46ca62de3bbb47ea878ca0b7e
+    role: context
+  - path: src/pathwaymech/graph_view.py
+    sha256: 45bbedd4459f21d4189e3eeb35504ff71ba664e975f4cdde7250a61e9ae3215b
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+  - path: src/pathwaymech/schema/pathwaymech.yaml
+    sha256: c66be7d0ae830e5041608eb6b2ce9755c601ed596ec9df5fb3567d41b202478b
+    role: context
+  - path: src/pathwaymech/site_display.py
+    sha256: f70d143af1d9be9c72e73c736ae4ce3e0b7abfbf24f82b814235f7a9670e9a73
+    role: context
+  - path: src/pathwaymech/yaml_io.py
+    sha256: 56a5ffc563317950da7d524cd05302903413bea8a42ecf2f05fc12fff911dae6
+    role: context
+scope:
+  description: One maintained pathway assessed only for page-history repair, generated-input
+    ownership and exact technical preservation.
+  selection: Exact MetaCyc:PWY-2503 record and generated page implicated by PR575
+    CI and issue576.
+  coverage: partial
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-2503
+  exclusions:
+  - target: Fresh scientific interpretation, primary literature, identifier-authority
+      replay and expression-module research
+    reason: The maintained scientific record and authority inputs are byte-identical;
+      separate earlier scientific and technical observations retain their own scopes.
+  - target: Scientific reassessment of other260 pathways and new browser interaction
+      or visual inspection
+    reason: Only byte preservation is assessed; complete graph bytes are unchanged.
+      Existing browser observations are not rerun or broadened.
+  - target: Protected GitHub CI for a newly pushed correction head and final merge
+      integrity
+    reason: This review accepts the corrected local tree. Publication checks and actual
+      merge verification remain root-owned.
+targets:
+- target_id: MetaCyc:PWY-2503
+  path: data/pathways/benzoate-degradation-i-aerobic.yaml
+  label: benzoate degradation I (aerobic)
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    role: maintained pathway record; unchanged by page-history repair
+  - repository: CultureBotAI/PathwayMech
+    path: history/records/benzoate-degradation-i-aerobic/2026-10-15T102211Z-Codex-c5acee.yaml
+    role: record-targeted curation session; the previously omitted generated history
+      entry
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/cli.py
+    role: native generated-page owner; render only, no code change needed
+  - repository: CultureBotAI/PathwayMech
+    path: src/pathwaymech/site_display.py
+    role: native history loader and rendering owner; unchanged
+checks:
+- check_id: C-HISTORICAL-CI
+  name: Initial PR 575 Linux CI observation
+  status: failed
+  required: false
+  summary: Historical initial head failed only the stale target-page test. The failed
+    observation is preserved; current local correction checks are separately reported.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: uv run --locked --extra dev pytest -q
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - E-FAILED-CI
+  scope_note: Observed GitHub run 38720895009 against failed head e6da46ca8515c27d81ed528a13ed839a2bec797f.
+    This is diagnostic history, not a required current local check.
+- check_id: C-REPAIR
+  name: Independent repaired page and scientific-input preservation comparison
+  status: passed
+  required: true
+  summary: Native one-record reproduction equals actual corrected page; exact inserted
+    history block, unchanged complete graph and 821 preserved input files verified.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-page-history-successor-review/verify_repaired_page.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-REPAIR
+  - E-PRESERVATION
+  - E-PAGE
+  scope_note: Supplementary read-only technical comparison after canonical inspect;
+    not an invented repository one-record validator.
+- check_id: C-DIAGNOSIS-RETENTION
+  name: Independent failed-CI and diagnosis retention verification
+  status: passed
+  required: true
+  summary: All 33 retained pairs and actual failed CI output verified against exact
+    originals.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-page-history-successor-review/verify_diagnosis_retention.v2.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-DIAGNOSIS-RETENTION
+  - E-FAILED-CI
+- check_id: C-GATE-INTAKE
+  name: Independent completed-gate and tested-input acceptance
+  status: passed
+  required: true
+  summary: All 14 gate pairs, 13 pre-gate pairs, 4754 tested hashes and 90 final canonical
+    input bindings verified. No duplicate broad gate run.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /private/tmp/pathwaymech-next-263-verified-venv/bin/python -B /private/tmp/pathwaymech-next-264-page-history-successor-review/accept_completed_gates.py
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-RETENTION
+  - E-GATE-INPUTS
+  - E-GATE-PRESERVED
+  - E-RECEIPTS
+- check_id: C-GATE-1
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Native full-site render changed only the target history page and produced
+    the independently expected SHA256.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-1
+  - E-RECEIPTS
+  scope_note: Actual root-executed corrected full gate; complete logs and input preservation
+    independently inspected. No repeated corpus gate by reviewer.
+- check_id: C-GATE-2
+  name: just validate
+  status: passed
+  required: true
+  summary: Full validation passed for 9 skills, 483 history records, 261 pathways,closed
+    schema and identifier policies, 20211 evidence blocks, 30 sources and current
+    pages.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-2
+  - E-RECEIPTS
+  scope_note: Actual root-executed corrected full gate; complete logs and input preservation
+    independently inspected. No repeated corpus gate by reviewer.
+- check_id: C-GATE-3
+  name: just test
+  status: passed
+  required: true
+  summary: Full suite passed:5255 passed, 3 skipped, 7 dependency warnings; all 21
+    test_render_pages tests passed, including committed-site currentness.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-3
+  - E-RECEIPTS
+  scope_note: Actual root-executed corrected full gate; complete logs and input preservation
+    independently inspected. No repeated corpus gate by reviewer.
+- check_id: C-GATE-4
+  name: just lint
+  status: passed
+  required: true
+  summary: Ruff reported all checks passed.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-4
+  - E-RECEIPTS
+  scope_note: Actual root-executed corrected full gate; complete logs and input preservation
+    independently inspected. No repeated corpus gate by reviewer.
+- check_id: C-GATE-5
+  name: just vendored-check
+  status: passed
+  required: true
+  summary: All 22 governed artifacts match the pinned CLAW revision.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-5
+  - E-RECEIPTS
+  scope_note: Actual root-executed corrected full gate; complete logs and input preservation
+    independently inspected. No repeated corpus gate by reviewer.
+- check_id: C-GATE-6
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Unstaged whitespace check passed with no output.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-6
+  - E-RECEIPTS
+  scope_note: Actual root-executed corrected full gate; complete logs and input preservation
+    independently inspected. No repeated corpus gate by reviewer.
+- check_id: C-GATE-7
+  name: git diff --cached --check
+  status: passed
+  required: true
+  summary: Staged whitespace check passed with no output.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-GATE-7
+  - E-RECEIPTS
+  scope_note: Actual root-executed corrected full gate; complete logs and input preservation
+    independently inspected. No repeated corpus gate by reviewer.
+evidence:
+- evidence_id: E-RECORD
+  kind: record_content
+  reference: data/pathways/benzoate-degradation-i-aerobic.yaml
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: 'Entire target parsed for technical shape and exact byte preservation only:
+    unchanged SHA256 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696;
+    54 edges and 101 references. Scientific assertions were not reassessed.'
+  snapshot_sha256: 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696
+- evidence_id: E-PAGE
+  kind: record_content
+  reference: pages/records/MetaCyc_PWY-2503.html
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Actual corrected page equals native current-history rendering, SHA256 4e637a583fc5bbccb0b2b25ccac95b1b2b03b0dfedaff2b267068f7c9c2d37fe.
+    Exactly one 1299-byte history entry is inserted; the complete graph is unchanged.
+  snapshot_sha256: 4e637a583fc5bbccb0b2b25ccac95b1b2b03b0dfedaff2b267068f7c9c2d37fe
+- evidence_id: E-HISTORY
+  kind: record_content
+  reference: history/records/benzoate-degradation-i-aerobic/2026-10-15T102211Z-Codex-c5acee.yaml
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Record-targeted REVIEW entry added after initial render/full gates; this
+    is the exact maintained input previously omitted from the generated history section.
+  snapshot_sha256: e9b0313ba8383b13b73b05405436c55150986281efd2d79ce5f45e73f432a924
+- evidence_id: E-GENERATOR
+  kind: record_content
+  reference: src/pathwaymech/cli.py
+  locator: render_site lines205-208; render_pages_main line344; _record_page line1204
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Native renderer passes loaded target histories to _record_page and includes
+    history_html; no generator repair was needed.
+  snapshot_sha256: a170e60e3c398755a21e1304e3bec9e2af743af46ca62de3bbb47ea878ca0b7e
+- evidence_id: E-HISTORY-OWNER
+  kind: record_content
+  reference: src/pathwaymech/site_display.py
+  locator: load_site_history lines71-78; history_html lines81-105
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: History loader associates records by exact target path; history_html emits
+    each curation session into the page.
+  snapshot_sha256: f70d143af1d9be9c72e73c736ae4ce3e0b7abfbf24f82b814235f7a9670e9a73
+- evidence_id: E-FAILED-CI
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/pr575-first-ci-failure.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: 'Initial Linux Python3.13 CI correctly failed the stale-page test: 1 failed,
+    5250 passed, 7 skipped and 7 warnings; actual exit1. This historical failure is
+    retained, not relabelled as success.'
+  snapshot_sha256: 93eaabb8e4a87a64fda1c0dbe82f4fb17efc7259bf07d5a799c7938fd68795b0
+- evidence_id: E-DIAGNOSIS
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/diagnosis/diagnosis.v2.json
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Independent diagnosis proves exact missing history insertion, graph equality,
+    and stable output across hash seeds 0, 1, 12345; it does not claim Linux execution.
+  snapshot_sha256: e37198abdbc808d3f1dcafd8715dab24af167be849a34f55f507302dee7fae64
+- evidence_id: E-DIAGNOSIS-RETENTION
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/retention-manifest.json
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: All 33 retained pairs independently verified against stored and original
+    sizes/hashes and decoded bytes. Original failed CI, diagnostic attempts and successors
+    remain immutable.
+  snapshot_sha256: caab5e92ac24929f8f1504347291a09c05f39da80e5f49cb3051ed5008d1faa4
+- evidence_id: E-REPAIR
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/repair-acceptance.json
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Independent native page reproduction after canonical inspection accepts
+    the single-entry correction. All 821 tracked files in scientific/config/code/test/schema/KGX/record-history
+    scopes, including 261 pathways, match failed PR head exactly; ignored-inclusive
+    untracked search found no additional inputs in those bounded scopes.
+  snapshot_sha256: a7d65d8f848d9179793a59c9a80831040ea73129acd18292e1308a9667ab2201
+- evidence_id: E-PRESERVATION
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/independent-pre-gate-acceptance/unchanged-scientific-inputs.json.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Complete independent hash inventory of all 821 unchanged scoped inputs,
+    including 261 maintained pathway records and all published KGX downloads.
+  snapshot_sha256: f277fb0d8df363ae163ded44c5f3feb3ed0ccb1a6dd9c23395ef771f17dad793
+- evidence_id: E-ISSUE
+  kind: record_content
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/stale-history-page-issue.md
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Issue576 defines native regeneration, exact history delta, unchanged scientific/graph/KGX
+    content, required gates and immutable successor acceptance. Diagnostic major rating
+    reflects required build failure; issue minor rating reflects bounded provenance
+    impact. Both require green protected CI.
+  snapshot_sha256: bb61370afdd9db6d838d5fa0f9ad13503b61aca9070e34ffa15bcc6a6d6530ca
+- evidence_id: E-DELTA
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/native-render-delta.json
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Native full-site renderer changed only the expected target page from old
+    SHA98e5b35b… to corrected SHA4e637a58…; all other scoped inputs stayed unchanged.
+  snapshot_sha256: e2ff9556f063ddba6eb950f31cd28bd9222578f5c99fb7305d3224989aea5189
+- evidence_id: E-RECEIPTS
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/receipts.json
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: All seven actual correction commands completed with exit0. Commands were
+    executed by root; this reviewer verified their complete retained logs and original
+    hashes.
+  snapshot_sha256: 7c9dc6205b55ffa6e53d02b533d96421879fd9181d70f85f99c6407fdc43488c
+- evidence_id: E-GATE-RETENTION
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/retention-manifest.json
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: All 14 retained gate pairs independently decoded and matched exact originals;
+    all 13 retained pre-gate acceptance pairs also matched their source package.
+  snapshot_sha256: 7a9561d32c1353ea721d923c98414109b15a3fa3e09c239f3c295e2f28ced970
+- evidence_id: E-GATE-INPUTS
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/tested-core-input-hashes.json.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: All 4754 tested input hashes independently recomputed unchanged after the
+    full run. Subsequent additions at inspection were confined to retained correction
+    evidence.
+  snapshot_sha256: 2f9db6203283469900cb464b645c3737e418058b011cdf038523df5fc561a9a8
+- evidence_id: E-GATE-PRESERVED
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/final-input-preservation.json
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Full scoped ignored-inclusive inventory remained unchanged throughout the
+    corrected gates, including record-targeted history and corrected generated page.
+  snapshot_sha256: 213efa1b9749cf448bceead7fbde160105572b22f6c4a5f0d43e95935863aaef
+- evidence_id: E-PRIOR-TECH
+  kind: prior_review
+  reference: reviews/structured/20261015T101912Z-next264-independent-technical/review.yaml
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: context_only
+  summary: Earlier technical review retains its original pre-history-render input
+    scope. This successor updates only page-currentness and related technical preservation
+    acceptance.
+  snapshot_sha256: cb2c9eb0498eb64691f79fb158d142172307c43c6fd94cf6b77919f18ceca295
+- evidence_id: E-PRIOR-SCIENCE
+  kind: prior_review
+  reference: reviews/structured/20261015T101855Z-next264-independent-scientific/review.yaml
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: context_only
+  summary: Earlier independent scientific review remains an immutable observation
+    of the byte-identical maintained pathway. No fresh scientific acceptance is claimed
+    here.
+  snapshot_sha256: f57776897f19b2f719e1537b640bb1f2cecb00d655f66aa52bc9d8d5a5ac8f63
+- evidence_id: E-GATE-1
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-render-pages.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Native full-site render changed only the target history page and produced
+    the independently expected SHA256.
+  snapshot_sha256: adb168cc3a127978c276154a637cea16b76945336c8ca3831c252733011053f1
+- evidence_id: E-GATE-2
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-validate.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Full validation passed for 9 skills, 483 history records, 261 pathways,closed
+    schema and identifier policies, 20211 evidence blocks, 30 sources and current
+    pages.
+  snapshot_sha256: 3d186b53c855ce17557ad60350cd4d394876f25d9fbe5425b727e8579852040e
+- evidence_id: E-GATE-3
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-test.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Full suite passed:5255 passed, 3 skipped, 7 dependency warnings; all 21
+    test_render_pages tests passed, including committed-site currentness.
+  snapshot_sha256: a3fa058eecaddd9479cfa50e7d7b763339eb00459c79d90d364d20855b1eec0a
+- evidence_id: E-GATE-4
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-lint.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Ruff reported all checks passed.
+  snapshot_sha256: fab45d94cd260329cc1940f54b6e6a31ba66e94a424a4fbc2606aa0d9ba4b658
+- evidence_id: E-GATE-5
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/just-vendored-check.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: All 22 governed artifacts match the pinned CLAW revision.
+  snapshot_sha256: 91d8ac9e5d634985562a4ca1ee1310c19ad13f688acccbf3bc82806484abcd5e
+- evidence_id: E-GATE-6
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/git-diff---check.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Unstaged whitespace check passed with no output.
+  snapshot_sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+- evidence_id: E-GATE-7
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/page-history-correction/gates/git-diff---cached---check.log.gz
+  locator: Complete file; gzip decoded where applicable
+  accessed_at: '2026-10-15T11:17:53.223259Z'
+  support: supports
+  summary: Staged whitespace check passed with no output.
+  snapshot_sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+assessments:
+- assessment_id: A-PAGE
+  area: representation
+  topic: Issue576 generated history correction
+  outcome: supported
+  summary: The corrected target page exactly equals native rendering of the unchanged
+    record plus both actual record-targeted history entries. The sole 1299-byte insertion
+    contains the previously omitted REVIEW entry. No renderer or test-code change
+    is needed.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-PAGE
+  - E-HISTORY
+  - E-REPAIR
+  - E-DELTA
+  - E-ISSUE
+- assessment_id: A-OWNER
+  area: ownership
+  topic: Record history is an actual generated-page input
+  outcome: supported
+  summary: Native code explicitly loads history/records entries by target path and
+    passes those sessions into the generated page. The initial full gates preceded
+    the later history entry; documentation-only checks omitted page currentness. Future
+    final page checks must include record history, as the corrected gates now do.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-GENERATOR
+  - E-HISTORY-OWNER
+  - E-HISTORY
+  - E-FAILED-CI
+  - E-REPAIR
+- assessment_id: A-PRESERVATION
+  area: consistency
+  topic: Scientific record, authority, graph and KGX preservation
+  outcome: supported
+  summary: The unchanged maintained target retains 54 edges and 101 references. Complete
+    graph bytes remain SHA256 c7ebeecce1c0b7da3a1e7f07415013f7bcd453471777d8a129b96610ce443421.
+    All 821 scoped scientific/code/config/schema/test/KGX/record-history inputs, including
+    261 pathway records, match the failed PR head. This is byte-preservation acceptance,
+    not fresh authority or scientific review.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-RECORD
+  - E-REPAIR
+  - E-PRESERVATION
+- assessment_id: A-GATES
+  area: consistency
+  topic: Corrected full gates and historical failed CI
+  outcome: supported
+  summary: The initial CI failure is retained honestly. All seven required corrected
+    local commands now pass, including the full 5255-test suite and native current-site
+    check. All 4754 tested inputs stayed unchanged during the run and at independent
+    final intake; only retained correction evidence was subsequently added. Protected
+    GitHub CI for the next pushed head remains a publication requirement outside this
+    local review.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-FAILED-CI
+  - E-RECEIPTS
+  - E-GATE-INPUTS
+  - E-GATE-PRESERVED
+  - E-GATE-RETENTION
+- assessment_id: A-LINEAGE
+  area: provenance
+  topic: Immutable predecessor scope and noncanonical issue lineage
+  outcome: supported
+  summary: Issue576 originated in a CI failure and JSON diagnosis, not a canonical
+    finding. This review accepts the completed local correction through evidence-linked
+    assessments and preserves both earlier canonical bundles. It does not fabricate
+    previous_occurrences or a resolved finding absent a canonical predecessor. Earlier
+    scientific review is context for byte-preserved data, not renewed science.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-DIAGNOSIS
+  - E-DIAGNOSIS-RETENTION
+  - E-ISSUE
+  - E-PRIOR-TECH
+  - E-PRIOR-SCIENCE
+findings: []
+actions: []
+limitations:
+- scientific_review is false. No fresh literature, reaction chemistry, biological
+  interpretation, authority source replay or transcriptomic search was performed.
+- The full corrected gates were executed by root; this reviewer independently inspected
+  exact logs, lossless retention and input hashes without rerunning them.
+- Corrected local full tests report3 skipped tests and 7 dependency warnings. The
+  original Linux CI failed before this repair; new-head GitHub CI is still required
+  before merge and is not claimed as passed.
+- Previous technical/scientific review bundles remain immutable. Their page hash refers
+  to the earlier generated input state, while this successor explicitly binds the
+  complete current record history and corrected page.
+- Initial diagnosis rated the required-output failure major; issue 576 rated its bounded
+  provenance/content impact minor. Both observations are preserved and both require
+  the CI failure to be repaired.
+- Canonical save/check, final documentation/site checks, corrected push and protected
+  merge are root-owned next steps. No final publication or scientific status promotion
+  is asserted.
+notes:
+- No canonical finding predecessor exists for NEXT264-PAGE-HISTORY-01; resolved finding
+  lineage is therefore not fabricated. The local correction is accepted in assessments
+  and issue 576 remains externally managed.
+- Initial canonical inspect captured 61 inputs before repair assessment. Final inspect
+  added29 immutable gate/acceptance inputs; all original 61 bindings remained unchanged,
+  and all 90 final inputs were rechecked.
+- Ignored and hidden untracked files were included in the bounded preservation inventory;
+  runtime __pycache__, .pytest_cache and .ruff_cache directories were excluded explicitly.
+- No README input is bound because root will add final result links after persistence;
+  final scientific/page/history inputs must remain exact.
+related_reviews:
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261015T101912Z-next264-independent-technical
+  relationship: Bounded successor for corrected generated-page history/currentness
+    and byte preservation; earlier scope retained unchanged.
+- repository: CultureBotAI/PathwayMech
+  review_id: 20261015T101855Z-next264-independent-scientific
+  relationship: 'Context only: maintained scientific record is byte-identical; no
+    new scientific review or finding disposition.'
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/576
+- https://github.com/CultureBotAI/PathwayMech/pull/575
+- https://github.com/CultureBotAI/PathwayMech/actions/runs/38720895009
+tags:
+- next264
+- technical
+- page-history
+- ci-correction
+- successor
+```

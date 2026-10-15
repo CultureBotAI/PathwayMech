@@ -1,0 +1,975 @@
+# Independent scientific review of aerobic benzoate degradation I
+
+- Review: 20261015T101855Z-next264-independent-scientific
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-15T09:38:15.597221Z
+- Finished UTC: 2026-10-15T10:18:55.636807Z
+- Reviewer: Codex /root/next264_technical_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+All 54 edges,67 named identifiers,101 reference owners and finite source surfaces are accepted after independent actual-record and original-source review. Complete generated outputs and required gates pass. Historical source-access limits and preparation/measurement conflicts remain explicit.
+
+## Scope And Provenance
+
+Full scientific review of one maintained pathway plus its authority and generated inputs.
+
+Selection: Exact maintained target requested by root after integration of byte-identical frozen v2.
+Coverage: full; 1 reviewed / 1 in the declared population.
+Source: working_tree at Git base 3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:PWY-2503 | data/pathways/benzoate-degradation-i-aerobic.yaml | maintained | benzoate degradation I (aerobic) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| just validate | passed | True | MetaCyc:PWY-2503 | Actual root-executed full repository gate passed; inspected shared receipt and bound log, not a focused one-record substitute. |
+| just test | passed | True | MetaCyc:PWY-2503 | Actual root-executed full repository gate passed; inspected shared receipt and bound log, not a focused one-record substitute. |
+| just lint | passed | True | MetaCyc:PWY-2503 | Actual root-executed full repository gate passed; inspected shared receipt and bound log, not a focused one-record substitute. |
+| git diff --check | passed | True | MetaCyc:PWY-2503 | Actual root-executed full repository gate passed; inspected shared receipt and bound log, not a focused one-record substitute. |
+| Complete original-body, locator, finite coverage and authority replay | passed | True | MetaCyc:PWY-2503 | Fresh independent 101 reference/66 native/54 quote checks,511 slots,67 authority labels and all source dispositions pass; scientific interpretation is separately recorded. |
+| Production graph/page/KGX review | passed | True | MetaCyc:PWY-2503 | Actual production record narrative,54 relations and 12 qualifiers preserved; independent technical proof covers complete exports, with root browser execution and separately inspected screenshots. |
+| Structured iModulonDB context | passed | False | MetaCyc:PWY-2503 | Dataset catalog and bounded queries/summaries completed. One broad query normalization failure recovered by exact raw response; no new mechanism inferred. |
+| Initial sandbox iModulonDB catalog request | failed | False | MetaCyc:PWY-2503 | Initial read-only request failed DNS in sandbox. Successful network-enabled retry and exact raw catalog are separately retained; this was not a no-dataset result. |
+| Broad benzoate query adapter normalization | failed | False | MetaCyc:PWY-2503 | Exact response contained a null regulator that the adapter cannot normalize. HTTP200 raw response and all returned hits were inspected; module 2 summarized successfully. Not treated as no hits or biological absence. |
+| just render-pages | passed | False | MetaCyc:PWY-2503 | Additional actual root-executed integration check passed; exact retained receipt and decoded log verified. |
+| just vendored-check | passed | False | MetaCyc:PWY-2503 | Additional actual root-executed integration check passed; exact retained receipt and decoded log verified. |
+| git diff --cached --check | passed | False | MetaCyc:PWY-2503 | Additional actual root-executed integration check passed; exact retained receipt and decoded log verified. |
+
+## Scientific And Domain Assessments
+
+### Exact two-step pathway boundary
+
+identity: supported. Targets: MetaCyc:PWY-2503.
+
+The record denotes MetaCyc PWY2503 aerobic benzoate-to-catechol entry, with RHEA12634 then 11561 and a verified DHB join; no adjacent benzoyl-CoA route, catechol cleavage or unobserved third step.
+
+### Native activity, composition, cofactor and location claims
+
+evidence: supported. Targets: MetaCyc:PWY-2503.
+
+All five source activities,13 protein/complex contexts, nine component relations, eight gene contexts and selected cofactors/location preserve their original assertion level. Native evidence codes are not upgraded to primary verification.
+
+### Preparation and taxon boundaries
+
+scope: supported. Targets: MetaCyc:PWY-2503.
+
+JMP222, H16,335, B9, C1, mt 2, RW1, KT2440 andA1501 remain distinct. Unresolved native lineage and historical collection conflicts are visible; species parents are not exact strain identifiers.
+
+### Exact formal chemistry and reaction direction
+
+grounding: supported. Targets: MetaCyc:PWY-2503.
+
+Complete material equations, formal charges/stereo and directed family members match issuing originals. CPD6 remains a native protein-ligated class, not a free neutral Fe 2S2 core; no assay microstate or universal irreversibility inference.
+
+### Historical material and enzyme evidence
+
+evidence: supported. Targets: MetaCyc:PWY-2503.
+
+1971 extract/trapping/cofactor observations and 1972 purified 335 kinetic/mass/qualitative salt results support their bounded reaction narrative. Historical measurements are not transferred to JMP222; ambiguous OCR values and unavailable original figures remain withheld.
+
+### RW1/KT2440 expression ensembles and rescue
+
+evidence: supported. Targets: MetaCyc:PWY-2503.
+
+First-step positive ensemble assays and RedA rescue are correctly construct-qualified. Negative ferredoxin controls do not become inhibits edges; putative BenD and Fdx redundancy remain explicit.
+
+### A1501 native regulation and qualified rescue
+
+evidence: supported. Targets: MetaCyc:PWY-2503.
+
+Four expression relations concern measured benA and exact BenR, benzoate, generic glucose/acetate contexts. BenABCD co-transcription is not four separate assays. Qualified pLbenR rescue remains separate and data not shown.
+
+### A1501 measurement and hypothesis boundaries
+
+scope: supported. Targets: MetaCyc:PWY-2503.
+
+No direct BenR binding, sole activator, Crc causation or 4HB direct protein activation is asserted. HPLC supernatant sampling, conflicting peak labels, OD/time discrepancies and optional primer lengths are retained.
+
+### Every67 local identity and authority label
+
+grounding: supported. Targets: MetaCyc:PWY-2503.
+
+All named pathway, taxon, participant, reaction and activity identifiers and their owner labels are accepted with source/version limits. Exact full-CDS identity is distinct from function and preparation equivalence.
+
+### Complete finite source-to-record and record-to-source disposition
+
+completeness: supported. Targets: MetaCyc:PWY-2503.
+
+47 objects/511 slots,72 proposals,116 xrefs,20 initial publication leads,17 original+25 A1501 groups and 47 additional units are explicitly selected, contextual or excluded. All 54 edges and 101 reference bodies are accounted for; no global source exhaustion claim.
+
+### Structured transcriptomic context
+
+scope: supported. Targets: MetaCyc:PWY-2503.
+
+Covered KT2440 genes and BenR module 27 are bounded computational expression context. No A1501/RW1 catalog hit or broad-query parsing failure is used as negative biological evidence or direct mechanism.
+
+### Actual production scientific fidelity
+
+representation: supported. Targets: MetaCyc:PWY-2503.
+
+Complete production narrative, all 54 relations and 12 qualifier descriptions preserve scientific limits. Technical review checks exports and all 71 display nodes; screenshots show bounded desktop/mobile viewports, with zoom/picker for dense overview.
+
+### Accepted finite metadata/method successors
+
+provenance: supported. Targets: MetaCyc:PWY-2503.
+
+Accepted corrections 572–574 are incorporated as evidence-linked observations; actual maintained record hash remains unchanged. Old frozen bodies are preserved and no nonexistent canonical predecessor is invented.
+
+### Required repository gates
+
+schema: supported. Targets: MetaCyc:PWY-2503.
+
+Actual complete full-corpus validate, test, lint, diff check and generated-output assessment pass against the integrated target; gate success is distinct from scientific interpretation.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+- retain: MetaCyc:PWY-2503. The exact two-step entry route is distinct from adjacent aromatic routes; preparation-qualified components and regulation can coexist without expanding its chemical boundary.
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| E-record | data/pathways/benzoate-degradation-i-aerobic.yaml; Complete actual maintained record | supports | All fields, 28 narrative paragraphs, 8 taxa, 51 participants, 7 reaction/activity nodes, 54 edges, 12 qualifiers and 101 references read. Canonical inspect preceded assessment. |
+| E-edges | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=all-edge-scientific-assessment.json; original_sha256=fb6b3edb6189b8e7b5d1275157d123a74464537b8dacf16fe6d73700100909e9 | supports | Every maintained edge has a substantive independent source/scope assessment; all 54 supported with the stated limits. |
+| E-bindings | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=record-original-binding-and-locator-replay.json; original_sha256=eecba514941ecbdaa5f77597c7c7075868428794f10148e964b2737485aab25c | supports | All 101 reference hashes resolve to complete original bodies; 66 native locators and 54 primary quotations independently replayed. Deterministic results were interpreted alongside full original reading. |
+| E-slots | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=all-native-slot-assessment.json; original_sha256=ca4087c096a9193c28aebeb07ede47c14db6c94d770c4f822f86f8210b2ecf37 | supports | All 511 native direct slots from 47 original objects independently resolved and dispositions assessed. All 72 proposals and 116 typed xrefs retain explicit selection/context/exclusion decisions. |
+| E-primary | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=independent-primary-reading-ledger.json; original_sha256=9c92cf3fc25db3f5e53193148a155be60cb19483a0859261d3450030436a88d3 | supports | All six original pages of the 1971 paper and eleven original pages of the 2025 paper independently viewed. Complete 1972 transformed text and original first-page preview read. Selected abstracts/metadata read with explicit access levels. |
+| E-a1501 | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=a1501/independent-source-assessment.json; original_sha256=c48de8aae0ededa6ce2e2518830f728dc68d963d1bf2604efd78218f8c81fa5c | supports | Complete A1501 JATS,14 main PDF pages,1 supplement page,8 figures and 2 tables independently read. All 25 bounded claims accepted; no direct-binding/Crc/4HB direct-activation inference. |
+| E-a1501-identity | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=a1501/independent-identity-and-quote-replay.json; original_sha256=57e216b0996f8d3e91fd9bb06f8e419fb981119a22b176b33abc7e8c61e068a5 | supports | Five entire issuing CDS translations, protein/genome/KEGG/taxon crosswalk and all primer mappings independently replayed. Exact 186 bp benA target accepted; four optional junction lengths disagree with print and remain disclosed. |
+| E-chemistry | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=selected-rhea-original-equations.json; original_sha256=fc64c4a96866c6df04e4a02e8d49b287a4d05a9fb53051700c95bad5d02ec332 | supports | All same-URI original Rhea descriptions retained; complete two directional equations and all 11 coefficient 1 material entries match. Formal ionic/stereochemical identities do not imply measured assay microstates. |
+| E-authority | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=whole-record-authority-and-finite-replay.json; original_sha256=061334f79a03227f8804f5d6524c0b120c1e5bf3664eb93040eba35dcd4ac22a | supports | All 67 current labels/owners independently match; every prior authority value and source-manifest prefix is preserved. All 237 record-author files/118 pairs and 69 independent technical pre-gate files/34 pairs pass complete hash and decoding checks. |
+| E-imodulon | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=imodulondb/ASSESSMENT.json; original_sha256=776e9e0893749a80dc03cd52317cb14e286435c2abb4dbb55e4d6e005a68299b | context_only | Complete 28-row catalog and relevant queries/summaries read. KT2440 BenR module 27 is expression context only; component 2 transport/adjacent context. Null-regulator adapter failure retained and exact raw response inspected. |
+| E-generated | research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json; original_path=production-scientific-assessment.json; original_sha256=7655c49926f869be7da2dade6f52fc20077a2076e0f01ed2f85217c29e997953 | supports | Exact production page preserves all narrative,54 native triples,54 edge descriptions and 12 full qualifier descriptions. Root desktop/mobile screenshots independently viewed; root owns browser interaction execution. |
+| E-technical | research/pathway_additions/2026-10-15-next-264/independent-technical-production; Complete final independent technical assessment | supports | Separate independent technical production assessment verifies complete page/graph/KGX fidelity and preservation of prior exports. All 41 frozen artifacts and 20 lossless pairs independently rehashed during scientific intake. This contributor excludes scientific self-acceptance of its A1501 source supplement. |
+| E-gates | research/pathway_additions/2026-10-15-next-264/verification/initial-gates; Actual complete required command receipts/logs | supports | All seven root-executed integration commands passed. The reviewer verified retained receipts, exact decoded log hashes and rehashed all 4,403 tested inputs unchanged. Tests: 5,255 passed, 3 skipped, 7 warnings. This is shared execution, not claimed as personal gate execution. |
+| E-corrections | research/pathway_additions/2026-10-15-next-264; Separately retained issue572,573,574 correction and independent-acceptance packages | supports | 572 supersedes incomplete symbolic equation comparison; 573 corrects Methods 2.1 locator; 574 corrects KEGG SYMBOL/NAME inventory locator. All corrections preserve current selected record identity/edges; no fabricated canonical finding lineage. |
+
+## Limits And Additional Notes
+
+- 1972 full original PDF unavailable: complete transformed text and only first-page original preview inspected; remaining original figures/layouts and ambiguous OCR salt values not visually verified.
+- Several older cited papers are abstract/metadata-only or native citation leads; no unread full-paper claim is imported.
+- Native JMP222 lineage/conflicting historical attributions, assay detection boundaries, A1501 chromatogram/primer/OD/time discrepancies remain explicitly unresolved in source scope.
+- Formal chemical ions/stereo and exact issuing protein identities do not establish assay microstates, catalysis or preparation equivalence.
+- iModulon membership is computational context, not direct mechanism; its broad null-regulator adapter failure is documented with exact raw-response recovery.
+- Whole ontology database hash execution and repository gates/browser interactions are shared root/author executions; direct scientific source interpretation and selected identities were independently assessed.
+- Desktop/mobile screenshots show partial vertical viewports; all 54 native triples/descriptions and 12 qualifiers are separately checked in production HTML and full payloads by technical reviewer.
+- No independent self-review of earlier authored discovery rebind; no new global source absence claim.
+- Issues 572–574 concern separately accepted source/method metadata successors. Findings[] means no open scientific defect in this exact target scope; it does not close unrelated backlog issues or invent resolved canonical lineage.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261015T101855Z-next264-independent-scientific
+kind: record
+repository: CultureBotAI/PathwayMech
+title: Independent scientific review of aerobic benzoate degradation I
+started_at: '2026-10-15T09:38:15.597221Z'
+finished_at: '2026-10-15T10:18:55.636807Z'
+reviewer:
+  identity: Codex /root/next264_technical_review
+  kind: agent
+  independence: independent
+  independence_basis: Did not author maintained record, source design, authority,
+    A1501 primary supplement or corrections. Authored earlier bounded postmerge discovery
+    rebind only; its independent self-acceptance is excluded. Independently read actual
+    target and original evidence, including A1501 material authored by the separate
+    technical reviewer.
+skill: .claude/skills/review-yaml-record/SKILL.md
+completion: completed
+verdict: pass_with_limitations
+native_verdict: Scientifically supported within explicit source/preparation/access
+  limits; no open target findings
+scientific_review: true
+summary: All 54 edges,67 named identifiers,101 reference owners and finite source
+  surfaces are accepted after independent actual-record and original-source review.
+  Complete generated outputs and required gates pass. Historical source-access limits
+  and preparation/measurement conflicts remain explicit.
+source:
+  git_revision: 3bd67d7cc30513e6b3cddc9b3696af0ef785fbdb
+  state: working_tree
+  inputs:
+  - path: conf/identifier_sources.json
+    sha256: 7de3e405cb14f101a70bc78d5331689e13b575c6f2839865aff1e90803248d12
+    role: context
+  - path: data/identifier_authorities/ontology.json
+    sha256: e74f68f186cb3ad41b0f19c0e23802f3e0fa824ebd2f3ad06b34fbf85235c98b
+    role: context
+  - path: data/identifier_authorities/sources.json
+    sha256: 692034749d1a6d834f8cea79e1a9b066cb8d339fccb37c4eb9337b838aab6bac
+    role: context
+  - path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    sha256: 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: docs/CURATION.md
+    sha256: 408f7c7705b4e6d667b513920e4c39612162d549e0c2666d85bfd53b2c2687f7
+    role: context
+  - path: docs/HARMONIZATION.md
+    sha256: 072884773d626ea909bd1e4f275901f0a6053f660d5e68a294ee54149b6496b0
+    role: context
+  - path: docs/record-review-profile.md
+    sha256: f3f00eebb7841e9d5ac891271e269f45e926995e16856b8e9a885436570c7819
+    role: context
+  - path: pages/records/MetaCyc_PWY-2503.html
+    sha256: 98e5b35bd640e5292c70a7ea05412078e321ba0e19451a66e8c6e118f853544e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/authority-integration/frozen-source-artifact-manifest.json
+    sha256: d095522834ded9e014abcd4e585c94b0e9e717b95f1616bbd28c6df9ae9b5d3b
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-a1501-acceptance/frozen-source-artifact-manifest.json
+    sha256: 597012b857d6a001887d62a37873862faf87a6580e53042a803ac6095d7e7266
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-bio-locator-acceptance/frozen-source-artifact-manifest.json
+    sha256: 88c04711f964627fbbbf1e264450a1a8ab5ea4f1f217494e6f93ecbdcb0a7151
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-chemistry-successor-acceptance/frozen-source-artifact-manifest.json
+    sha256: 62e876f24a23010c33dc8b6b81f369bb80a7b195712850bc13c76921ac81abf7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-chemistry/frozen-source-artifact-manifest.json
+    sha256: 389c1697c42743ec720aa4c757674a7f409160b5b3467ea3ccede7c169e2c8ed
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-primary/frozen-source-artifact-manifest.json
+    sha256: c3d4178c07d6c46033da890dbf1a0683d0aca27231a5d3199247ffec05cc4247
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/HANDOFF.md
+    sha256: 2885e34aac322b194c5556da187700934a40722f61585411ad8c6df04673f3ba
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+    sha256: 086e9f91a963d5c575680a6f81b4dce3b70da4c7b95d9acbb1afc373b305dfe5
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/a1501/independent-identity-and-quote-replay.json.gz
+    sha256: c97148c1b873eef5362e1aba772a9bb404df349189369645b13dc72c2d23beed
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/a1501/independent-source-assessment.json.gz
+    sha256: 341d39b1e5e90eefa6d3aa440845b68ea13bdc1a9120bf615974d85bfe53e5b6
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/all-edge-scientific-assessment.json.gz
+    sha256: e756c99828b5cd83405ca4a8053252daf53be3353ebb75d1f996b82c8f0118eb
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/all-native-slot-assessment.json.gz
+    sha256: 713e3d4c3014a8001a856e5694d03ccb14a243c9215923722c7eb377ca32d05f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/imodulondb/ASSESSMENT.json.gz
+    sha256: 5c56e390cc94ebf2a78c2419623660b794d635f5b9d4e5b60c93bdb2223639a2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/independent-primary-reading-ledger.json.gz
+    sha256: b5b91f89d0137498aa05665451f421920c6b15864ba76645db4724e25a46f31d
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/production-scientific-assessment.json.gz
+    sha256: 9629a38a8e4ee33975fa1dbb9dcb13423974f68635d2252365ac8b7dd32272f7
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/record-original-binding-and-locator-replay.json.gz
+    sha256: f924bc1857033e4be567187369ccb5c85dc3f4b9a1a22b6878304d8486bdaa42
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/selected-rhea-original-equations.json.gz
+    sha256: b0e4de91e64ac0a15708aa677164c57ab05fc1bc4558dd5f356d1d61a1ff432f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact/whole-record-authority-and-finite-replay.json.gz
+    sha256: f2e7723fbd9f00deac813bd1198630ef918a4cd838c6a8e4d9f849c013390e06
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/frozen-source-artifact-manifest.json
+    sha256: b265fdd277d0f6beb333bc1fedd02fccbe3fa8e347b2b7be9ca6f362ffe6dc98
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-pre-gate/frozen-source-artifact-manifest.json
+    sha256: 52780ca9419af0b6ee679c7979b1d306eb80a78046bf20ea3a22c428012070d0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/HANDOFF.md
+    sha256: 14197ba4d5309dd4a3c3d606d65f65478661ca7b48f68216ce7d0db243745faa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact-retention-manifest.json
+    sha256: 115162cb7f079ddc2a09ee668eb213dd6c6951bcc5776965d6cf30269aa64ea0
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/production-proof.json.gz
+    sha256: 573acc151c77978edb3b7d1081a07b1fdfcc4b80f5fff3d0142f47fbaba1065f
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/target-production-edges.json.gz
+    sha256: 7c6e11eda0df7fb5076b6780326db5d2cf46432737a98926c2b5ea53b69a28f2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/compact/target-production-node-contexts.json.gz
+    sha256: 9375dd7586e9b1e609ddabf4a05ce6114c40cedf7ee15fdd7a182bddb9cb7dc2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-production/frozen-source-artifact-manifest.json
+    sha256: 422a6620e39f04b1119834de5e4d90582a9c447062caffc34d2b9c452786ca80
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/independent-technical-source-preparation/frozen-source-artifact-manifest.json
+    sha256: 756398abe28f866476df7cb8a3791cd41cd9b9020e7945fb475cc81102afffb8
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/record-authoring/frozen-source-artifact-manifest.json
+    sha256: 12d125ae065db36a3e5196899ecdaafa0ad4b25dec401074472c41510f66f130
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/record-design/frozen-source-artifact-manifest.json
+    sha256: 1068a2dd732be906335a19e36010fae4ed6d9fa367a5766acc42342b54f3d8f2
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/root-verification/postmerge-rebind/frozen-source-artifact-manifest.json
+    sha256: a9e14b170562af7762764b4d5e5bd4b8142ce2360004ae40fd61af5546a87630
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/a1501-identity/frozen-source-artifact-manifest.json
+    sha256: b9821e185dd728262a31b6abb9ca45d6c0d840aefd3b5cea151e3494fce50afd
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/a1501-primary/frozen-source-artifact-manifest.json
+    sha256: b8468648b74ca74efa9106b2d75b60eec29856dbe6dcd52dfb1afb3969900625
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/assembly-title/frozen-source-artifact-manifest.json
+    sha256: bc2221efb425d67790e8e3eb86343f6984422701a67e9ad8c0ec1c745dfd1e0e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/biological-identity/frozen-source-artifact-manifest.json
+    sha256: 20318962c343b5c3f39896361cec0aba03526125e6040d0fa6f4cae2a292c8bd
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/biological-locator-successor/frozen-source-artifact-manifest.json
+    sha256: f6c61d15694db000494b9dbb8f698f7598f368071903e578ac173593fa5637bd
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/chemistry-symbolic-successor/frozen-source-artifact-manifest.json
+    sha256: 867dac4e78076b10447b042a278ed8d2bac1a90b30a3307cfb061347e606adbf
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/chemistry/frozen-source-artifact-manifest.json
+    sha256: e2a9e10f046d91df978b64e52e81c07c297af5a0fc14fec9c317544f049e8406
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/discovery/frozen-source-artifact-manifest.json
+    sha256: 599a450dc47e2dfabb6e6ae83a56436883f30abe5766efe80f8e9857d4196a67
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/kegg-locator-successor/frozen-source-artifact-manifest.json
+    sha256: 493aa7a4ba70b43fb39cc92080c7005797b1c35af971f05110ff2640a802edb9
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/native/frozen-source-artifact-manifest.json
+    sha256: e113d8152611a1da47b6ba67a6d970ec4d84b21e2b4c5827295dc998a8d1627a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/source-evidence/primary/frozen-source-artifact-manifest.json
+    sha256: 42248e5363c16520c7be6975cb63f76ca416cb0a88b91f9180cba889e59ce184
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/environment.json
+    sha256: 1cb0544b2e033a2900e814576877fef1d1f0d470afcec3412eed1e4560ff08c6
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/final-input-preservation.json
+    sha256: 8945e8c0504a0f5728f623a1a466a04b21600ca9037a06e0fb27eeec03604623
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---cached---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/git-diff---check.log.gz
+    sha256: 9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-lint.log.gz
+    sha256: fab45d94cd260329cc1940f54b6e6a31ba66e94a424a4fbc2606aa0d9ba4b658
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-render-pages.log.gz
+    sha256: adb168cc3a127978c276154a637cea16b76945336c8ca3831c252733011053f1
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-test.log.gz
+    sha256: 55e33f5c378d180a4bb8031ff2476cc95d52a6d2b15384c63e928fd18bdd0b67
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-validate.log.gz
+    sha256: efaadcc3ec9f793168c8f56ec028a62b2aee331a0706099a02039ccfb38d7c0c
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/just-vendored-check.log.gz
+    sha256: 91d8ac9e5d634985562a4ca1ee1310c19ad13f688acccbf3bc82806484abcd5e
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/receipts.json
+    sha256: 0a45e6c53305b1900090512f0afefcfc4bd15bb3cfb1c518ff8f451379e6f2aa
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/retain_completed_gates.py.gz
+    sha256: a17142254d0409f387eb9c772f9828962eb6772394b8fa8e73ae955e60ca55af
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/retention-manifest.json
+    sha256: 881d6e16a47404ca4d3418dcab45d867e823b7c8bb3e9484293463bc30c89f1a
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/run_initial_checks.py.gz
+    sha256: 17177d3767206672628d2e277c3f4d8bf29cb3589512b1691f79adecec048629
+    role: context
+  - path: research/pathway_additions/2026-10-15-next-264/verification/initial-gates/tested-core-input-hashes.json.gz
+    sha256: 49c35dcbd28153f21dff8023c2e50fbf4881ea9acee28353fffa59b3cece06fd
+    role: context
+  - path: schema/record_review.yaml
+    sha256: 229baf9b69118a1fe318e4c31085c0820e4e3d1365e7b04d6ace451b7c35f9bb
+    role: context
+  - path: scripts/record_review.py
+    sha256: 95a4ec41e38ec47ba3578e76838c46a0adbf47e49ad3636524735d08cfcb1c4d
+    role: context
+  - path: src/pathwaymech/schema.py
+    sha256: bd99c1e6ca1f6eec5c82c58aa1ae3f43f696d30be66fbe0977dcace81292e0b8
+    role: context
+scope:
+  description: Full scientific review of one maintained pathway plus its authority
+    and generated inputs.
+  selection: Exact maintained target requested by root after integration of byte-identical
+    frozen v2.
+  coverage: full
+  population_size: 1
+  reviewed_target_ids:
+  - MetaCyc:PWY-2503
+  exclusions:
+  - target: Earlier postmerge discovery rebind
+    reason: Reviewer authored it; no independent self-acceptance.
+  - target: Unrelated historical source-cache rebuild and global literature/database
+      exhaustion
+    reason: Outside finite selected-source and whole-record review boundary.
+targets:
+- target_id: MetaCyc:PWY-2503
+  path: data/pathways/benzoate-degradation-i-aerobic.yaml
+  label: benzoate degradation I (aerobic)
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/benzoate-degradation-i-aerobic.yaml
+    role: maintained pathway record
+checks:
+- check_id: C-gate-1
+  name: just validate
+  status: passed
+  required: true
+  summary: Actual root-executed full repository gate passed; inspected shared receipt
+    and bound log, not a focused one-record substitute.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-gates
+  scope_note: Full 261-record integrated worktree with actual maintained target; shared
+    execution credited to root.
+- check_id: C-gate-2
+  name: just test
+  status: passed
+  required: true
+  summary: Actual root-executed full repository gate passed; inspected shared receipt
+    and bound log, not a focused one-record substitute.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-gates
+  scope_note: Full 261-record integrated worktree with actual maintained target; shared
+    execution credited to root.
+- check_id: C-gate-3
+  name: just lint
+  status: passed
+  required: true
+  summary: Actual root-executed full repository gate passed; inspected shared receipt
+    and bound log, not a focused one-record substitute.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-gates
+  scope_note: Full 261-record integrated worktree with actual maintained target; shared
+    execution credited to root.
+- check_id: C-gate-4
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Actual root-executed full repository gate passed; inspected shared receipt
+    and bound log, not a focused one-record substitute.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-gates
+  scope_note: Full 261-record integrated worktree with actual maintained target; shared
+    execution credited to root.
+- check_id: C-originals
+  name: Complete original-body, locator, finite coverage and authority replay
+  status: passed
+  required: true
+  summary: Fresh independent 101 reference/66 native/54 quote checks,511 slots,67
+    authority labels and all source dispositions pass; scientific interpretation is
+    separately recorded.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-bindings
+  - E-slots
+  - E-authority
+- check_id: C-generated
+  name: Production graph/page/KGX review
+  status: passed
+  required: true
+  summary: Actual production record narrative,54 relations and 12 qualifiers preserved;
+    independent technical proof covers complete exports, with root browser execution
+    and separately inspected screenshots.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-generated
+  - E-technical
+- check_id: C-imodulon
+  name: Structured iModulonDB context
+  status: passed
+  required: false
+  summary: Dataset catalog and bounded queries/summaries completed. One broad query
+    normalization failure recovered by exact raw response; no new mechanism inferred.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-imodulon
+- check_id: C-imodulon-dns-attempt
+  name: Initial sandbox iModulonDB catalog request
+  status: failed
+  required: false
+  summary: Initial read-only request failed DNS in sandbox. Successful network-enabled
+    retry and exact raw catalog are separately retained; this was not a no-dataset
+    result.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/python
+    -B -m kg_microbe_sources imodulondb datasets
+  exit_code: 2
+  expected_exit_code: 0
+  evidence_ids:
+  - E-imodulon
+- check_id: C-imodulon-broad-attempt
+  name: Broad benzoate query adapter normalization
+  status: failed
+  required: false
+  summary: Exact response contained a null regulator that the adapter cannot normalize.
+    HTTP200 raw response and all returned hits were inspected; module 2 summarized
+    successfully. Not treated as no hits or biological absence.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: /Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/culturebotai-claw/.venv/bin/python
+    -B -m kg_microbe_sources imodulondb search --organism p_putida --dataset precise321
+    --query benzoate
+  exit_code: 2
+  expected_exit_code: 0
+  evidence_ids:
+  - E-imodulon
+- check_id: C-render
+  name: just render-pages
+  status: passed
+  required: false
+  summary: Additional actual root-executed integration check passed; exact retained
+    receipt and decoded log verified.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-gates
+  scope_note: Complete integrated worktree; shared root execution.
+- check_id: C-vendored
+  name: just vendored-check
+  status: passed
+  required: false
+  summary: Additional actual root-executed integration check passed; exact retained
+    receipt and decoded log verified.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-gates
+  scope_note: Complete integrated worktree; shared root execution.
+- check_id: C-cached-diff
+  name: git diff --cached --check
+  status: passed
+  required: false
+  summary: Additional actual root-executed integration check passed; exact retained
+    receipt and decoded log verified.
+  target_ids:
+  - MetaCyc:PWY-2503
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - E-gates
+  scope_note: Complete integrated worktree; shared root execution.
+evidence:
+- evidence_id: E-record
+  kind: record_content
+  reference: data/pathways/benzoate-degradation-i-aerobic.yaml
+  locator: Complete actual maintained record
+  accessed_at: '2026-10-15T10:16:45.578176Z'
+  support: supports
+  summary: All fields, 28 narrative paragraphs, 8 taxa, 51 participants, 7 reaction/activity
+    nodes, 54 edges, 12 qualifiers and 101 references read. Canonical inspect preceded
+    assessment.
+  snapshot_sha256: 3f8bbb8eceaa4420fa822e87ce01cca6b9d1967908dc117628aba71f54030696
+- evidence_id: E-edges
+  kind: record_content
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=all-edge-scientific-assessment.json; original_sha256=fb6b3edb6189b8e7b5d1275157d123a74464537b8dacf16fe6d73700100909e9
+  accessed_at: '2026-10-15T10:16:45.579946Z'
+  support: supports
+  summary: Every maintained edge has a substantive independent source/scope assessment;
+    all 54 supported with the stated limits.
+  snapshot_sha256: fb6b3edb6189b8e7b5d1275157d123a74464537b8dacf16fe6d73700100909e9
+- evidence_id: E-bindings
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=record-original-binding-and-locator-replay.json; original_sha256=eecba514941ecbdaa5f77597c7c7075868428794f10148e964b2737485aab25c
+  accessed_at: '2026-10-15T10:16:45.582177Z'
+  support: supports
+  summary: All 101 reference hashes resolve to complete original bodies; 66 native
+    locators and 54 primary quotations independently replayed. Deterministic results
+    were interpreted alongside full original reading.
+  snapshot_sha256: eecba514941ecbdaa5f77597c7c7075868428794f10148e964b2737485aab25c
+- evidence_id: E-slots
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=all-native-slot-assessment.json; original_sha256=ca4087c096a9193c28aebeb07ede47c14db6c94d770c4f822f86f8210b2ecf37
+  accessed_at: '2026-10-15T10:16:45.585276Z'
+  support: supports
+  summary: All 511 native direct slots from 47 original objects independently resolved
+    and dispositions assessed. All 72 proposals and 116 typed xrefs retain explicit
+    selection/context/exclusion decisions.
+  snapshot_sha256: ca4087c096a9193c28aebeb07ede47c14db6c94d770c4f822f86f8210b2ecf37
+- evidence_id: E-primary
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=independent-primary-reading-ledger.json; original_sha256=9c92cf3fc25db3f5e53193148a155be60cb19483a0859261d3450030436a88d3
+  accessed_at: '2026-10-15T10:16:45.586480Z'
+  support: supports
+  summary: All six original pages of the 1971 paper and eleven original pages of the
+    2025 paper independently viewed. Complete 1972 transformed text and original first-page
+    preview read. Selected abstracts/metadata read with explicit access levels.
+  snapshot_sha256: 9c92cf3fc25db3f5e53193148a155be60cb19483a0859261d3450030436a88d3
+- evidence_id: E-a1501
+  kind: primary_source
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=a1501/independent-source-assessment.json; original_sha256=c48de8aae0ededa6ce2e2518830f728dc68d963d1bf2604efd78218f8c81fa5c
+  accessed_at: '2026-10-15T10:16:45.587913Z'
+  support: supports
+  summary: Complete A1501 JATS,14 main PDF pages,1 supplement page,8 figures and 2
+    tables independently read. All 25 bounded claims accepted; no direct-binding/Crc/4HB
+    direct-activation inference.
+  snapshot_sha256: c48de8aae0ededa6ce2e2518830f728dc68d963d1bf2604efd78218f8c81fa5c
+- evidence_id: E-a1501-identity
+  kind: authority
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=a1501/independent-identity-and-quote-replay.json; original_sha256=57e216b0996f8d3e91fd9bb06f8e419fb981119a22b176b33abc7e8c61e068a5
+  accessed_at: '2026-10-15T10:16:45.588733Z'
+  support: supports
+  summary: Five entire issuing CDS translations, protein/genome/KEGG/taxon crosswalk
+    and all primer mappings independently replayed. Exact 186 bp benA target accepted;
+    four optional junction lengths disagree with print and remain disclosed.
+  snapshot_sha256: 57e216b0996f8d3e91fd9bb06f8e419fb981119a22b176b33abc7e8c61e068a5
+- evidence_id: E-chemistry
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=selected-rhea-original-equations.json; original_sha256=fc64c4a96866c6df04e4a02e8d49b287a4d05a9fb53051700c95bad5d02ec332
+  accessed_at: '2026-10-15T10:16:45.589908Z'
+  support: supports
+  summary: All same-URI original Rhea descriptions retained; complete two directional
+    equations and all 11 coefficient 1 material entries match. Formal ionic/stereochemical
+    identities do not imply measured assay microstates.
+  snapshot_sha256: fc64c4a96866c6df04e4a02e8d49b287a4d05a9fb53051700c95bad5d02ec332
+- evidence_id: E-authority
+  kind: authority
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=whole-record-authority-and-finite-replay.json; original_sha256=061334f79a03227f8804f5d6524c0b120c1e5bf3664eb93040eba35dcd4ac22a
+  accessed_at: '2026-10-15T10:16:45.591513Z'
+  support: supports
+  summary: All 67 current labels/owners independently match; every prior authority
+    value and source-manifest prefix is preserved. All 237 record-author files/118
+    pairs and 69 independent technical pre-gate files/34 pairs pass complete hash
+    and decoding checks.
+  snapshot_sha256: 061334f79a03227f8804f5d6524c0b120c1e5bf3664eb93040eba35dcd4ac22a
+- evidence_id: E-imodulon
+  kind: database
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=imodulondb/ASSESSMENT.json; original_sha256=776e9e0893749a80dc03cd52317cb14e286435c2abb4dbb55e4d6e005a68299b
+  accessed_at: '2026-10-15T10:16:45.592749Z'
+  support: context_only
+  summary: Complete 28-row catalog and relevant queries/summaries read. KT2440 BenR
+    module 27 is expression context only; component 2 transport/adjacent context.
+    Null-regulator adapter failure retained and exact raw response inspected.
+  snapshot_sha256: 776e9e0893749a80dc03cd52317cb14e286435c2abb4dbb55e4d6e005a68299b
+- evidence_id: E-generated
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-scientific-review/compact-retention-manifest.json
+  locator: original_path=production-scientific-assessment.json; original_sha256=7655c49926f869be7da2dade6f52fc20077a2076e0f01ed2f85217c29e997953
+  accessed_at: '2026-10-15T10:16:45.593564Z'
+  support: supports
+  summary: Exact production page preserves all narrative,54 native triples,54 edge
+    descriptions and 12 full qualifier descriptions. Root desktop/mobile screenshots
+    independently viewed; root owns browser interaction execution.
+  snapshot_sha256: 7655c49926f869be7da2dade6f52fc20077a2076e0f01ed2f85217c29e997953
+- evidence_id: E-technical
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/independent-technical-production
+  locator: Complete final independent technical assessment
+  accessed_at: '2026-10-15T10:16:45.593587Z'
+  support: supports
+  summary: Separate independent technical production assessment verifies complete
+    page/graph/KGX fidelity and preservation of prior exports. All 41 frozen artifacts
+    and 20 lossless pairs independently rehashed during scientific intake. This contributor
+    excludes scientific self-acceptance of its A1501 source supplement.
+- evidence_id: E-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-15-next-264/verification/initial-gates
+  locator: Actual complete required command receipts/logs
+  accessed_at: '2026-10-15T10:16:45.593595Z'
+  support: supports
+  summary: 'All seven root-executed integration commands passed. The reviewer verified
+    retained receipts, exact decoded log hashes and rehashed all 4,403 tested inputs
+    unchanged. Tests: 5,255 passed, 3 skipped, 7 warnings. This is shared execution,
+    not claimed as personal gate execution.'
+- evidence_id: E-corrections
+  kind: prior_review
+  reference: research/pathway_additions/2026-10-15-next-264
+  locator: Separately retained issue572,573,574 correction and independent-acceptance
+    packages
+  accessed_at: '2026-10-15T10:16:45.593607Z'
+  support: supports
+  summary: 572 supersedes incomplete symbolic equation comparison; 573 corrects Methods
+    2.1 locator; 574 corrects KEGG SYMBOL/NAME inventory locator. All corrections
+    preserve current selected record identity/edges; no fabricated canonical finding
+    lineage.
+assessments:
+- assessment_id: A-identity
+  area: identity
+  topic: Exact two-step pathway boundary
+  outcome: supported
+  summary: The record denotes MetaCyc PWY2503 aerobic benzoate-to-catechol entry,
+    with RHEA12634 then 11561 and a verified DHB join; no adjacent benzoyl-CoA route,
+    catechol cleavage or unobserved third step.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-record
+  - E-slots
+  - E-chemistry
+  - E-primary
+- assessment_id: A-native
+  area: evidence
+  topic: Native activity, composition, cofactor and location claims
+  outcome: supported
+  summary: All five source activities,13 protein/complex contexts, nine component
+    relations, eight gene contexts and selected cofactors/location preserve their
+    original assertion level. Native evidence codes are not upgraded to primary verification.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-slots
+  - E-bindings
+  - E-edges
+- assessment_id: A-taxa
+  area: scope
+  topic: Preparation and taxon boundaries
+  outcome: supported
+  summary: JMP222, H16,335, B9, C1, mt 2, RW1, KT2440 andA1501 remain distinct. Unresolved
+    native lineage and historical collection conflicts are visible; species parents
+    are not exact strain identifiers.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-primary
+  - E-authority
+  - E-edges
+- assessment_id: A-chemistry
+  area: grounding
+  topic: Exact formal chemistry and reaction direction
+  outcome: supported
+  summary: Complete material equations, formal charges/stereo and directed family
+    members match issuing originals. CPD6 remains a native protein-ligated class,
+    not a free neutral Fe 2S2 core; no assay microstate or universal irreversibility
+    inference.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-chemistry
+  - E-slots
+  - E-corrections
+- assessment_id: A-historical
+  area: evidence
+  topic: Historical material and enzyme evidence
+  outcome: supported
+  summary: 1971 extract/trapping/cofactor observations and 1972 purified 335 kinetic/mass/qualitative
+    salt results support their bounded reaction narrative. Historical measurements
+    are not transferred to JMP222; ambiguous OCR values and unavailable original figures
+    remain withheld.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-primary
+  - E-edges
+- assessment_id: A-rw1
+  area: evidence
+  topic: RW1/KT2440 expression ensembles and rescue
+  outcome: supported
+  summary: First-step positive ensemble assays and RedA rescue are correctly construct-qualified.
+    Negative ferredoxin controls do not become inhibits edges; putative BenD and Fdx
+    redundancy remain explicit.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-primary
+  - E-edges
+  - E-generated
+- assessment_id: A-a1501
+  area: evidence
+  topic: A1501 native regulation and qualified rescue
+  outcome: supported
+  summary: Four expression relations concern measured benA and exact BenR, benzoate,
+    generic glucose/acetate contexts. BenABCD co-transcription is not four separate
+    assays. Qualified pLbenR rescue remains separate and data not shown.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-a1501
+  - E-a1501-identity
+  - E-edges
+- assessment_id: A-a1501-limits
+  area: scope
+  topic: A1501 measurement and hypothesis boundaries
+  outcome: supported
+  summary: No direct BenR binding, sole activator, Crc causation or 4HB direct protein
+    activation is asserted. HPLC supernatant sampling, conflicting peak labels, OD/time
+    discrepancies and optional primer lengths are retained.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-a1501
+  - E-a1501-identity
+- assessment_id: A-identity-issuing
+  area: grounding
+  topic: Every67 local identity and authority label
+  outcome: supported
+  summary: All named pathway, taxon, participant, reaction and activity identifiers
+    and their owner labels are accepted with source/version limits. Exact full-CDS
+    identity is distinct from function and preparation equivalence.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-authority
+  - E-a1501-identity
+  - E-bindings
+- assessment_id: A-finite
+  area: completeness
+  topic: Complete finite source-to-record and record-to-source disposition
+  outcome: supported
+  summary: 47 objects/511 slots,72 proposals,116 xrefs,20 initial publication leads,17
+    original+25 A1501 groups and 47 additional units are explicitly selected, contextual
+    or excluded. All 54 edges and 101 reference bodies are accounted for; no global
+    source exhaustion claim.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-slots
+  - E-authority
+  - E-edges
+  - E-bindings
+- assessment_id: A-imodulon
+  area: scope
+  topic: Structured transcriptomic context
+  outcome: supported
+  summary: Covered KT2440 genes and BenR module 27 are bounded computational expression
+    context. No A1501/RW1 catalog hit or broad-query parsing failure is used as negative
+    biological evidence or direct mechanism.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-imodulon
+- assessment_id: A-generated
+  area: representation
+  topic: Actual production scientific fidelity
+  outcome: supported
+  summary: Complete production narrative, all 54 relations and 12 qualifier descriptions
+    preserve scientific limits. Technical review checks exports and all 71 display
+    nodes; screenshots show bounded desktop/mobile viewports, with zoom/picker for
+    dense overview.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-generated
+  - E-technical
+- assessment_id: A-corrections
+  area: provenance
+  topic: Accepted finite metadata/method successors
+  outcome: supported
+  summary: Accepted corrections 572–574 are incorporated as evidence-linked observations;
+    actual maintained record hash remains unchanged. Old frozen bodies are preserved
+    and no nonexistent canonical predecessor is invented.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-corrections
+  - E-authority
+- assessment_id: A-gates
+  area: schema
+  topic: Required repository gates
+  outcome: supported
+  summary: Actual complete full-corpus validate, test, lint, diff check and generated-output
+    assessment pass against the integrated target; gate success is distinct from scientific
+    interpretation.
+  target_ids:
+  - MetaCyc:PWY-2503
+  evidence_ids:
+  - E-gates
+  - E-technical
+findings: []
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - MetaCyc:PWY-2503
+  rationale: The exact two-step entry route is distinct from adjacent aromatic routes;
+    preparation-qualified components and regulation can coexist without expanding
+    its chemical boundary.
+  evidence_ids:
+  - E-record
+  - E-chemistry
+  - E-primary
+  - E-a1501
+limitations:
+- '1972 full original PDF unavailable: complete transformed text and only first-page
+  original preview inspected; remaining original figures/layouts and ambiguous OCR
+  salt values not visually verified.'
+- Several older cited papers are abstract/metadata-only or native citation leads;
+  no unread full-paper claim is imported.
+- Native JMP222 lineage/conflicting historical attributions, assay detection boundaries,
+  A1501 chromatogram/primer/OD/time discrepancies remain explicitly unresolved in
+  source scope.
+- Formal chemical ions/stereo and exact issuing protein identities do not establish
+  assay microstates, catalysis or preparation equivalence.
+- iModulon membership is computational context, not direct mechanism; its broad null-regulator
+  adapter failure is documented with exact raw-response recovery.
+- Whole ontology database hash execution and repository gates/browser interactions
+  are shared root/author executions; direct scientific source interpretation and selected
+  identities were independently assessed.
+- Desktop/mobile screenshots show partial vertical viewports; all 54 native triples/descriptions
+  and 12 qualifiers are separately checked in production HTML and full payloads by
+  technical reviewer.
+- No independent self-review of earlier authored discovery rebind; no new global source
+  absence claim.
+notes:
+- Issues 572–574 concern separately accepted source/method metadata successors. Findings[]
+  means no open scientific defect in this exact target scope; it does not close unrelated
+  backlog issues or invent resolved canonical lineage.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/572
+- https://github.com/CultureBotAI/PathwayMech/issues/573
+- https://github.com/CultureBotAI/PathwayMech/issues/574
+tags:
+- next264
+- independent-scientific
+- benzoate
+- metacyc
+- primary-evidence
+```

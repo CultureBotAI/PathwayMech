@@ -1,0 +1,37 @@
+import gzip,hashlib,json,pathlib,re,xml.etree.ElementTree as E
+O=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry');p=O/'originals/rhea.rdf.gz';rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#';nodes={};allxml={};keep={'substrates','products','compound','accession'}
+with gzip.open(p,'rb') as f:
+ for _,e in E.iterparse(f,events=['end']):
+  if e.tag!='{'+rdf+'}Description':continue
+  uri=e.get('{'+rdf+'}about');d={}
+  for ch in e:
+   k=ch.tag.split('}')[-1]
+   if k in keep or re.fullmatch('contains[0-9]+',k):d.setdefault(k,[]).append(ch.get('{'+rdf+'}resource') or ch.text)
+  if d:
+   dest=nodes.setdefault(uri,{})
+   for k,vs in d.items():dest[k]=list(dict.fromkeys(dest.get(k,[])+vs))
+  e.clear()
+failures=[];good=0;desired=set()
+for uri,n in nodes.items():
+ if not ('substrates' in n and 'products' in n):continue
+ error=None
+ for side in ['substrates','products']:
+  su=n[side][0]
+  if su not in nodes:error={'side':side,'side_uri':su,'reason':'No fixed-integer participant predicates or other retained chemistry properties on the side description.'};break
+  for k,vs in nodes[su].items():
+   if not re.fullmatch('contains[0-9]+',k):continue
+   for pu in vs:
+    if pu not in nodes or 'compound' not in nodes[pu]:error={'side':side,'side_uri':su,'participant_uri':pu,'reason':'No single compound link.'};break
+    cu=nodes[pu]['compound'][0]
+    if cu not in nodes or len(nodes[cu].get('accession',[]))!=1:error={'side':side,'side_uri':su,'compound_uri':cu,'reason':'No unique compound accession.'};break
+ if error:failures.append({'reaction_uri':uri,**error});desired.add(error['side_uri'])
+ else:good+=1
+assert good==37216 and len(failures)==6
+fragments=[]
+with gzip.open(p,'rb') as f:
+ for _,e in E.iterparse(f,events=['end']):
+  if e.tag!='{'+rdf+'}Description':continue
+  if e.get('{'+rdf+'}about') in desired:fragments.append(E.tostring(e,encoding='unicode'))
+  e.clear()
+report={'source_path':str(p),'source_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'explicit_fixed_coefficient_equations_compared':good,'excluded_equations':failures,'complete_excluded_side_descriptions':fragments,'scope':'These six equations have sides without fixed material-participant properties in the retained issuing RDF. They are excluded, not treated as equivalent or non-equivalent chemistry; this is not an exhaustive generic or variable-stoichiometry equivalence result.','initial_failure':'The first helper assumed every directional equation had complete fixed material sides and raised KeyError for 22452_R. The corrected helper explicitly excludes unresolved sides and retains the exact count. All selected family sides are fully resolved and asserted separately.'}
+(O/'rhea-equivalence-search-exclusions.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':'passed','explicit_equations':good,'excluded':failures}))

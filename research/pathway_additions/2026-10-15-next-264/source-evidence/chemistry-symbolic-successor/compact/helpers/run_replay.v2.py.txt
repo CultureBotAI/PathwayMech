@@ -1,0 +1,24 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import subprocess
+import sys
+
+root = Path('/private/tmp/pathwaymech-next-264-chemistry-symbolic-successor')
+helper = root / 'helpers/replay_symbolic_comparison.v2.py.txt'
+command = [sys.executable, '-I', '-B', str(helper)]
+started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+out, err = root / 'replay.v2.stdout.txt', root / 'replay.v2.stderr.txt'
+assert not out.exists() and not err.exists() and not (root / 'execution-receipt.v2.json').exists()
+with out.open('wb') as stdout, err.open('wb') as stderr:
+    result = subprocess.run(command, cwd='/private/tmp', stdout=stdout, stderr=stderr)
+receipt = {'started_at': started, 'finished_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'command': command, 'cwd': '/private/tmp', 'exit_code': result.returncode,
+           'helper_sha256': hashlib.sha256(helper.read_bytes()).hexdigest(),
+           'python_version': sys.version,
+           'outputs': [{'path': str(p), 'bytes': p.stat().st_size,
+                        'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in [out, err]]}
+(root / 'execution-receipt.v2.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps(receipt, indent=2))
+raise SystemExit(result.returncode)

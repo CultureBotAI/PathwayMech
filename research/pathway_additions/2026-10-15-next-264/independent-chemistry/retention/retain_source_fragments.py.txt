@@ -1,0 +1,28 @@
+import gzip,hashlib,json,pathlib,re
+P=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry/originals'); O=pathlib.Path('/private/tmp/pathwaymech-next-264-independent-chemistry');rh='http://rdf.rhea-db.org/'
+r=json.loads((O/'independent-reactions.json').read_text());ex=json.loads((O/'symbolic-comparison-counterexamples.json').read_text());wanted=set(r['selected_complete_RDF_closure'])
+for x in ex['excluded_equations']:
+ wanted.add(x['reaction_uri'])
+ for term in x['symbolic_terms']:wanted.add(term['side_uri'])
+ for terms in x['all_terms'].values():
+  for t in terms:wanted.update([t['participant_uri'],t['compound_uri']])
+fragments=[];offset=0;current=[];uri=None;begin=None; digest=hashlib.sha256()
+with gzip.open(P/'rhea.rdf.gz','rb') as f:
+ for line in f:
+  digest.update(line)
+  if line.startswith(b'<rdf:Description '):
+   match=re.search(rb'rdf:about="([^"]+)"',line);uri=match[1].decode();begin=offset;current=[]
+  if uri in wanted:current.append(line)
+  offset+=len(line)
+  if line.startswith(b'</rdf:Description>'):
+   if current:
+    raw=b''.join(current);fragments.append({'uri':uri,'original_decompressed_start_byte':begin,'original_decompressed_end_byte':offset,'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'original_xml':raw.decode()})
+   uri=None;current=[]
+assert {x['uri'] for x in fragments}==wanted
+out={'original_compressed_path':str(P/'rhea.rdf.gz'),'original_compressed_sha256':hashlib.sha256((P/'rhea.rdf.gz').read_bytes()).hexdigest(),'original_decompressed_sha256':digest.hexdigest(),'original_decompressed_bytes':offset,'scope':'Exact original byte fragments for the complete selected reaction closure and every excluded symbolic reaction with relevant sides/participants/compounds. Not a substitute for the entire original RDF. Original fragments are not reserialized.','selected_uris':len(wanted),'fragment_count':len(fragments),'fragments':fragments}
+(O/'rhea-original-fragments.json').write_text(json.dumps(out,indent=2)+'\n')
+sql=json.loads((O/'sql-rhea-complete-subject-rows.json').read_text());comp=[]
+for curie,rows in sql.items():
+ labels=[x['value'] for x in rows if x['predicate']=='rdfs:label'];expected=r['selected_complete_RDF_closure'][rh+curie.split(':')[1]]['label'];assert labels==expected;comp.append({'id':curie,'complete_outgoing_rows':len(rows),'pinned_label_equals_issuing':True,'label':labels[0]})
+(O/'pinned-rhea-label-crosscheck.json').write_text(json.dumps({'rows':comp,'scope':'Fresh complete subject queries against stat-matched pinned Rhea139. Full original database hash receipt is explicitly reused from intake; issuing RDF142 supplies directional and chemical properties.'},indent=2)+'\n')
+print(json.dumps({'source_fragments':len(fragments),'uris':len(wanted),'pinned_Rhea_labels':len(comp),'status':'passed'}))

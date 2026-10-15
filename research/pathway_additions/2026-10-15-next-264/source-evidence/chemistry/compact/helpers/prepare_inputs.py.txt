@@ -1,0 +1,30 @@
+import datetime, hashlib, json, pathlib, shutil, sqlite3
+O=pathlib.Path('/private/tmp/pathwaymech-next-264-chemistry')
+sha=lambda b:hashlib.sha256(b).hexdigest()
+now=lambda:datetime.datetime.now(datetime.timezone.utc).isoformat()
+rows=[]
+for label,root,paths in [
+ ('discovery',pathlib.Path('/private/tmp/pathwaymech-next-264-discovery'),['HANDOFF.md','native-reaction-family-leads.json','native-boundary-connectivity.json','known-source-conflicts-and-limits.json','originals/META-PWY-2503.xml','originals/META-BENZOATE-12-DIOXYGENASE-RXN.xml','originals/META-1.3.1.25-RXN.xml','originals/META-CPD-290.xml','originals/META-BENZOATE.xml']),
+ ('chemistry263',pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry'),['input-manifest.json','originals/META-CATECHOL.xml','originals/META-PROTON.xml','originals/META-OXYGEN-MOLECULE.xml','originals/rhea.rdf.gz','originals/rhea-directions.tsv','originals/rhea-rhea-release.properties'])]:
+ m=json.loads((root/'artifact-manifest.json').read_bytes()); lookup={r['path']:r for r in m['files']}
+ dest=O/'prior-context'/f'{label}-artifact-manifest.json';shutil.copyfile(root/'artifact-manifest.json',dest)
+ rows.append({'source_path':str(root/'artifact-manifest.json'),'stored_path':str(dest.relative_to(O)),'sha256':sha(dest.read_bytes()),'bytes':dest.stat().st_size,'binding':'Frozen source package manifest; selected payloads are checked below.'})
+ for p in paths:
+  b=(root/p).read_bytes();r=lookup[p];assert sha(b)==r['sha256'] and len(b)==r['bytes']
+  dst=O/p if p.startswith('originals/') else O/'prior-context'/f'{label}-{p}'
+  dst.parent.mkdir(parents=True,exist_ok=True);dst.write_bytes(b)
+  rows.append({'source_path':str(root/p),'stored_path':str(dst.relative_to(O)),'sha256':sha(b),'bytes':len(b),'binding_manifest_sha256':sha((root/'artifact-manifest.json').read_bytes())})
+dbs=[]
+for old in json.loads((O/'prior-context/chemistry263-input-manifest.json').read_bytes())['database_bindings']:
+ p=pathlib.Path(old['path']).resolve();before=p.stat();h=hashlib.sha256();started=now()
+ with p.open('rb') as f:
+  while chunk:=f.read(8*1024*1024):h.update(chunk)
+ after=p.stat();assert before.st_size==after.st_size and before.st_mtime_ns==after.st_mtime_ns
+ assert h.hexdigest()==old['pinned_owner']['sha256']
+ dbs.append({'path':old['path'],'resolved':str(p),'bytes':after.st_size,'mtime_ns':after.st_mtime_ns,'sha256':h.hexdigest(),'sha256_scope':'entire uncompressed semantic SQL database','full_hash_started':started,'full_hash_finished':now(),'pinned_owner':old['pinned_owner']})
+ids=['CHEBI:'+str(x) for x in [60129,16150,18135,15379,15378,57945,57540,16526]]
+c=sqlite3.connect(pathlib.Path(dbs[0]['resolved']).as_uri()+'?mode=ro',uri=True)
+sqlrows={i:[dict(zip(['subject','predicate','object','value','datatype','language'],r)) for r in c.execute('select subject,predicate,object,value,datatype,language from statements where subject=? order by predicate,object,value',(i,))] for i in ids}
+(O/'derived/chebi-selected-complete-subject-rows.json').write_text(json.dumps({'database_binding':dbs[0],'scope':'All statements whose subject is one of the eight exact selected ChEBI compounds. Incoming statements are not claimed.','compounds':sqlrows},indent=2)+'\n')
+(O/'input-manifest.json').write_text(json.dumps({'started_at':rows[0].get('time'),'finished_at':now(),'role':'Next264 chemistry source preparation, not an independent final scientific review','candidate':'MetaCyc:PWY-2503','files':rows,'database_bindings':dbs,'limits':['Full databases were hashed; selected complete subject rows are retained, not whole database copies.','Post263 merged-baseline deduplication must precede authoring.']},indent=2)+'\n')
+print(json.dumps({'copied_bound_files':len(rows),'fully_hashed_databases':len(dbs),'selected_chebi_subjects':len(sqlrows),'statements':sum(map(len,sqlrows.values()))}))

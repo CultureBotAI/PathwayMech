@@ -1,0 +1,67 @@
+"""Verify the frozen A1501 source package and replay its bounded identity proof."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import subprocess
+
+P = Path('/private/tmp/pathwaymech-next-264-authority/a1501-issuing')
+C = Path('/private/tmp/pathwaymech-next-264-ci')
+PY = '/private/tmp/pathwaymech-next-263-verified-venv/bin/python'
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+def checked(path, digest, size=None):
+    data = path.read_bytes()
+    assert sha(data) == digest, path
+    assert size is None or len(data) == size, path
+    return data
+
+def main():
+    output = C / 'a1501-identity-root-replay.json'
+    receipt = C / 'a1501-identity-root-intake.json'
+    assert not output.exists() and not receipt.exists()
+    manifest = P / 'artifact-manifest.json'
+    rows = json.loads(checked(manifest, 'b9821e185dd728262a31b6abb9ca45d6c0d840aefd3b5cea151e3494fce50afd'))['artifacts']
+    for row in rows:
+        checked(P / row['path'], row['sha256'], row['bytes'])
+    storage = P / 'compact-retention-manifest.json'
+    pairs = json.loads(storage.read_bytes())['pairs']
+    for pair in pairs:
+        stored = checked(P / pair['stored_path'], pair['stored_sha256'], pair['stored_bytes'])
+        assert pair['encoding'] in {'identity', 'gzip'}
+        raw = stored if pair['encoding'] == 'identity' else gzip.decompress(stored)
+        assert sha(raw) == pair['original_sha256'] and len(raw) == pair['original_bytes']
+        assert raw == (P / pair['original_path']).read_bytes()
+    helper = P / 'helpers/verify_a1501_identities.v3.py.txt'
+    command = [PY, '-B', str(helper), '--source-root', str(P), '--output', str(output)]
+    run = subprocess.run(command, cwd=P, capture_output=True, text=True)
+    (C / 'a1501-identity-root-replay.log').write_text(run.stdout + run.stderr)
+    assert run.returncode == 0, (run.returncode, run.stderr)
+    original = json.loads((P / 'identity-verification.replay.json').read_bytes())
+    replay = json.loads(output.read_bytes())
+    assert {k:v for k,v in original.items() if k != 'created_utc'} == {k:v for k,v in replay.items() if k != 'created_utc'}
+    assert len(replay['identities']) == 5 and len(replay['primer_length_discrepancies']) == 4
+    assert replay['primer_checks'][-1]['observed_length'] == 186
+    for row in rows:
+        checked(P / row['path'], row['sha256'], row['bytes'])
+    result = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'scope': 'Root byte-integrity intake and replay of the inspected author verifier. This is not independent scientific acceptance of the record or the A1501 primary interpretation.',
+        'package': str(P), 'manifest_sha256': sha(manifest.read_bytes()),
+        'verified_artifacts': len(rows), 'verified_storage_pairs': len(pairs),
+        'command': command, 'exit_code': run.returncode,
+        'root_replay_sha256': sha(output.read_bytes()),
+        'author_replay_equal_except_timestamp': True,
+        'exact_cds_protein_identities': 5, 'benA_qpcr_amplicon_bp': 186,
+        'retained_optional_junction_length_discrepancies': 4,
+        'frozen_package_unchanged': True,
+        'pending': ['Independent primary/identity interpretation review', 'Final actual record and authority integration'],
+    }
+    receipt.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps(result, indent=2))
+
+if __name__ == '__main__':
+    main()
