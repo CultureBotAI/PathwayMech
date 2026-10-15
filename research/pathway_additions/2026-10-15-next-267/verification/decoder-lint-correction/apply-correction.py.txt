@@ -1,0 +1,158 @@
+"""Apply the minimal native-lint correction with explicit predecessor evidence."""
+import ast
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-267-20261015')
+CI = Path('/private/tmp/pathwaymech-next-267-ci')
+RESEARCH = ROOT / 'research/pathway_additions/2026-10-15-next-267'
+PAYLOAD = RESEARCH / 'evidence-retention'
+PROOF = RESEARCH / 'verification/decoder-lint-correction'
+PYTHON = '/private/tmp/pathwaymech-next-263-verified-venv/bin/python'
+
+
+def sha(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def write(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+def main():
+    decoder = PAYLOAD / 'decode_retained.py'
+    manifest = PAYLOAD / 'artifact-manifest.json'
+    report = RESEARCH / 'README.md'
+    assert sha(decoder) == 'b897526847b44cf43f3e3d3a583775bd3502567719f163c05195826b0d154980'
+    assert sha(manifest) == '11a6f52cfa2d6afd5ed51d641d4b33eb59220422e5dc251536bb817891a7a1ce'
+    assert sha(report) == '4854b7dab85f8a1051408a7b52fd5ed865a30818f8a54515d7301a50b4d9e3e4'
+    assert (CI / 'lint-correction-created-issue.txt').read_text().strip().endswith('/606')
+    assert not PROOF.exists()
+    before = {p.relative_to(PAYLOAD).as_posix(): sha(p)
+              for p in PAYLOAD.rglob('*') if p.is_file()}
+    assert len(before) == 5969
+    original = json.loads(manifest.read_text())
+    for item in original['files']:
+        assert sha(PAYLOAD / item['path']) == item['sha256']
+    old = decoder.read_text()
+    single = '    "path": "research/pathway_additions/2026-10-15-next-266/evidence-retention/verified-compact-pairs.json",'
+    split = ('    "path": (\n'
+             '        "research/pathway_additions/2026-10-15-next-266/"\n'
+             '        "evidence-retention/verified-compact-pairs.json"\n'
+             '    ),')
+    assert old.count(single) == 1
+    new = old.replace(single, split)
+    old_ast = ast.dump(ast.parse(old), include_attributes=False)
+    new_ast = ast.dump(ast.parse(new), include_attributes=False)
+    assert old_ast == new_ast
+    PROOF.mkdir()
+    shutil.copyfile(decoder, PROOF / 'predecessor-decoder.py.txt')
+    shutil.copyfile(manifest, PROOF / 'predecessor-artifact-manifest.json')
+    shutil.copyfile(report, PROOF / 'predecessor-research-report.md')
+    shutil.copyfile(Path(__file__), PROOF / 'apply-correction.py.txt')
+    shutil.copyfile(CI / 'lint-correction-issue.md', PROOF / 'issue-606.md')
+    shutil.copyfile(CI / 'lint-correction-all-state-issues.json', PROOF / 'all-state-issues.json')
+    failed = Path('/private/tmp/pathwaymech-next-267-checks-source-documentation')
+    shutil.copytree(failed, PROOF / 'failed-native-gates')
+    decoder.write_text(new)
+    current = json.loads(manifest.read_text())
+    row = next(x for x in current['files'] if x['path'] == 'decode_retained.py')
+    row.update(bytes=decoder.stat().st_size, sha256=sha(decoder))
+    # Keep existing scientific/correction metadata unchanged; record the formatting lineage separately.
+    manifest.write_text(json.dumps(current, indent=2) + '\n')
+    after = {p.relative_to(PAYLOAD).as_posix(): sha(p)
+             for p in PAYLOAD.rglob('*') if p.is_file()}
+    changed = sorted(p for p in before if before[p] != after[p])
+    assert set(before) == set(after)
+    assert changed == ['artifact-manifest.json', 'decode_retained.py']
+    for item in current['files']:
+        assert sha(PAYLOAD / item['path']) == item['sha256']
+    old_paragraph = '''The accepted evidence package is adopted exactly: 5,969 files with payload
+manifest SHA256 `11a6f52cfa2d6afd5ed51d641d4b33eb59220422e5dc251536bb817891a7a1ce`.
+The actual maintained decoder independently passed complete offline verification
+'''
+    new_paragraph = '''The accepted evidence package was adopted exactly: 5,969 files with payload
+manifest SHA256 `11a6f52cfa2d6afd5ed51d641d4b33eb59220422e5dc251536bb817891a7a1ce`.
+The subsequent native lint gate identified one overlong decoder string literal
+([issue 606](https://github.com/CultureBotAI/PathwayMech/issues/606)). The explicit
+[formatting correction](verification/decoder-lint-correction/README.md) preserves
+the entire module AST and all 5,967 other payload files. Only the literal layout
+and its manifest binding changed. The current payload manifest SHA256 is
+`CURRENT_MANIFEST`.
+The predecessor maintained decoder independently passed complete offline verification
+'''.replace('CURRENT_MANIFEST', sha(manifest))
+    old_report = report.read_text()
+    assert old_report.count(old_paragraph) == 1
+    report.write_text(old_report.replace(old_paragraph, new_paragraph))
+    receipt = {
+        'utc': datetime.now(timezone.utc).isoformat(), 'issue': 606,
+        'scope': 'One implicit string-concatenation formatting correction; AST-identical.',
+        'payload_files': len(after), 'unchanged_payload_files': len(after) - 2,
+        'changes': [{'path': p, 'before_sha256': before[p], 'after_sha256': after[p]}
+                    for p in changed],
+        'module_ast_sha256': hashlib.sha256(new_ast.encode()).hexdigest(),
+        'whole_module_ast_equal': True,
+        'old_report_sha256': sha(PROOF / 'predecessor-research-report.md'),
+        'new_report_sha256': sha(report),
+        'failed_gate_scope': 'Validation passed; lint E501 failed; diff and final preservation were not reached.',
+        'prior_execution_reuse': 'The prior accepted decoder verification is reused via AST identity; no new execution claimed.',
+        'manifest_metadata': 'Original findings/predecessor fields retain their original technical-correction scope; this formatting successor is separately bound here.',
+    }
+    write(PROOF / 'correction.json', receipt)
+    (PROOF / 'README.md').write_text('''# Decoder native-lint correction
+
+Issue [606](https://github.com/CultureBotAI/PathwayMech/issues/606) records the
+single E501 failure in the final source-documentation gate. Native validation
+passed; lint failed; diff and final preservation did not run in that attempt.
+The complete failed attempt is preserved in `failed-native-gates/`.
+
+The correction splits one path literal with implicit concatenation. The complete
+module AST is identical. `correction.json` binds both decoder and payload-manifest
+versions. All 5,967 other payload files, source bytes and content maps are unchanged.
+The preserved predecessor report and decoder retain their original observations.
+Prior successful decoder execution is reused through AST identity; it is not
+represented as a fresh execution. Independent final review and successor native
+gates record their later observations separately.
+''')
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+               PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+    command = [PYTHON, '-B', 'scripts/new_history_record.py', '--kind', 'other',
+               '--slug', 'benzoyl-coa-degradation-iii-research', '--path',
+               str(decoder.relative_to(ROOT)), '--event', 'UPDATE', '--outcome', 'changed',
+               '--actor-name', 'Codex', '--actor-type', 'ai_agent', '--agent-tool', 'codex',
+               '--issue', 'https://github.com/CultureBotAI/PathwayMech/issues/606',
+               '--summary', 'Fix retained decoder line length without changing behavior',
+               '--details', 'Split one path literal using implicit concatenation after native lint '
+               'reported E501. Whole-module AST identity is verified. Only decoder bytes and its '
+               'payload-manifest row change within the 5969-file package; all other 5967 payload '
+               'files are unchanged. Preserve the original decoder, manifest, report and complete '
+               'failed gate attempt. Document prior verification as reuse via AST identity. '
+               'Independent final review and successor native gates remain separate observations.']
+    result = subprocess.run(command, cwd=ROOT, env=env, text=True, capture_output=True)
+    (PROOF / 'native-history.log').write_text(result.stdout + result.stderr)
+    assert result.returncode == 0, result.stderr
+    path = Path(result.stdout.strip().splitlines()[-1])
+    path = path if path.is_absolute() else ROOT / path
+    write(PROOF / 'native-history.json', {'command': command, 'exit_code': result.returncode,
+                                         'path': str(path.relative_to(ROOT)), 'sha256': sha(path)})
+    write(PROOF / 'artifact-manifest.json', {
+        'scope': 'Complete formatting-correction evidence, excluding this self-manifest.',
+        'files': [{'path': p.relative_to(PROOF).as_posix(), 'bytes': p.stat().st_size,
+                   'sha256': sha(p)} for p in sorted(PROOF.rglob('*')) if p.is_file()]})
+    write(CI / 'decoder-lint-correction-adoption.json', {
+        **receipt, 'proof_manifest_sha256': sha(PROOF / 'artifact-manifest.json'),
+        'history_path': str(path.relative_to(ROOT))})
+    print(json.dumps({'changed': changed, 'payload_manifest': sha(manifest),
+                      'decoder': sha(decoder), 'proof_manifest': sha(PROOF / 'artifact-manifest.json')}))
+
+
+if __name__ == '__main__':
+    main()

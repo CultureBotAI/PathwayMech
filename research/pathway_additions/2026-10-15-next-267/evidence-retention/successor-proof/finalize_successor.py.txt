@@ -1,0 +1,305 @@
+"""Freeze the bounded two-finding successor after terminal verification."""
+
+import ast
+import difflib
+import json
+import shutil
+from datetime import datetime, timezone
+from pathlib import Path
+
+from prepare_successor import dump, inventory, require, sha
+
+ROOT = Path(__file__).parent
+OUT = ROOT / "payload"
+OLD = Path("/private/tmp/pathwaymech-next-267-retention-preparation")
+OLD_MANIFEST = "9a81127803cb3e0688736a1aeab036d118d1e84f4f46a53f3e3a825d3eb5bcd7"
+REVIEW_MANIFEST = "0ac7577c317d8ab7e20a6d4a4334b12cbedaa4c873c4af2e4894bc7529adaa86"
+
+
+def function_inventory(body):
+    text = body.decode()
+    tree = ast.parse(text)
+    return {
+        node.name: {
+            "ast": ast.dump(node, include_attributes=False),
+            "source_sha256": sha(ast.get_source_segment(text, node).encode()),
+        }
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.ClassDef))
+    }
+
+
+def main():
+    require(
+        not (ROOT / "artifact-manifest.json").exists(),
+        "successor freeze is create-only",
+    )
+    reconstruction = json.loads(
+        (ROOT / "proof/complete-reconstruction.json").read_bytes()
+    )
+    regression = json.loads((ROOT / "proof/regression-results-1.json").read_bytes())
+    legacy = json.loads((ROOT / "proof/adversarial-checks.json").read_bytes())
+    preservation = json.loads((ROOT / "proof/preservation-after.json").read_bytes())
+    review = json.loads((ROOT / "proof/frozen-review-input-binding.json").read_bytes())
+    for receipt in (reconstruction, regression, legacy, preservation, review):
+        require(receipt["status"] == "pass", "verification not complete")
+    require(
+        reconstruction["physical_occurrences"] == 13577,
+        "physical reconstruction incomplete",
+    )
+    require(
+        reconstruction["compact"]["declared_rows_verified"] == 6175,
+        "compact reconstruction incomplete",
+    )
+    require(
+        reconstruction["historical"]["declared_rows"] == 477,
+        "historical reconstruction incomplete",
+    )
+    require(
+        reconstruction["historical"]["distinct_reference_paths"] == 926,
+        "historical paths incomplete",
+    )
+    require(
+        regression["rejected_cases"] == 36 and legacy["count"] == 35,
+        "guard controls incomplete",
+    )
+    for name, digest in reconstruction["control_sha256"].items():
+        require(
+            sha((OUT / name).read_bytes()) == digest,
+            "tested control changed after reconstruction",
+        )
+    require(
+        review["manifest_sha256"] == REVIEW_MANIFEST, "wrong complete frozen review"
+    )
+    predecessor = OUT / "predecessor-controls"
+    predecessor.mkdir()
+    for name in ("artifact-manifest.json", "README.md", "decode_retained.py"):
+        shutil.copyfile(
+            OLD / "payload" / name,
+            predecessor / (name + (".txt" if name.endswith(".py") else "")),
+        )
+    old_code = (OLD / "payload/decode_retained.py").read_bytes()
+    new_code = (OUT / "decode_retained.py").read_bytes()
+    old_functions = function_inventory(old_code)
+    new_functions = function_inventory(new_code)
+    changed = sorted(
+        name for name in old_functions if old_functions[name] != new_functions.get(name)
+    )
+    added = sorted(set(new_functions) - set(old_functions))
+    require(
+        changed == ["load", "main", "verify_historical"], "unexpected changed function"
+    )
+    require(
+        added == ["historical_plan", "parse_json", "validate_destination"],
+        "unexpected added function",
+    )
+    unchanged = sorted(set(old_functions) - set(changed))
+    issue_map = {
+        "load": ["R01"],
+        "parse_json": ["R01"],
+        "historical_plan": ["R01"],
+        "verify_historical": ["R01"],
+        "main": ["R01", "R02"],
+        "validate_destination": ["R02"],
+    }
+    correction = {
+        "status": "authored correction; independent successor review required",
+        "predecessor_full_manifest": "fa14d99b3fc94fb8d4574e1b76ed3d37287036d29648eef068aa028c1ebd6461",
+        "predecessor_payload_manifest": OLD_MANIFEST,
+        "original_review_manifest": REVIEW_MANIFEST,
+        "findings": [
+            {
+                "id": "R01",
+                "severity": "moderate",
+                "issue": "https://github.com/CultureBotAI/PathwayMech/issues/604",
+                "change": "Require final historical metadata; derive all 477 exact declarations and 926 paths from pinned prior Git bytes plus both copied source manifests. Reject incomplete/duplicate rows, altered source bindings and original author/reviewer roles. Bind historical controls in successful receipts.",
+            },
+            {
+                "id": "R02",
+                "severity": "minor",
+                "issue": "https://github.com/CultureBotAI/PathwayMech/issues/605",
+                "change": "Resolve and validate the scratch destination and every ancestor before mkdir; reject traversal, symlinks, outside prefixes, existing destinations and file ancestors while preserving valid fresh scratch recovery.",
+            },
+        ],
+        "changed_functions": [
+            {
+                "name": name,
+                "findings": issue_map[name],
+                "before": old_functions.get(name),
+                "after": new_functions[name],
+            }
+            for name in changed + added
+        ],
+        "unchanged_functions_and_classes": {
+            name: old_functions[name] for name in unchanged
+        },
+        "added_constant_scope": "HISTORICAL_BINDING and HISTORICAL_MAPS pin the existing accepted historical source identities; BASE, TREE and LIMIT remain unchanged.",
+        "content_bytes_storage_maps_owner_histories_changed": False,
+        "external_database_limit": "Four original ontology databases remain outside the cutoff, exactly as before.",
+    }
+    dump(OUT / "correction-disposition.json", correction)
+    diff = "".join(
+        difflib.unified_diff(
+            old_code.decode().splitlines(keepends=True),
+            new_code.decode().splitlines(keepends=True),
+            fromfile="immutable-predecessor/decode_retained.py",
+            tofile="successor/decode_retained.py",
+        )
+    )
+    (ROOT / "proof/decoder-exact.diff").write_text(diff)
+    (OUT / "README.md").write_text(
+        (OLD / "payload/README.md").read_text()
+        + """
+
+## Explicit decoder correction successor — issues 604 and 605
+
+This successor changes the recovery helper and its technical proofs. Every retained source byte, content-map row, storage endpoint, source-package map, compact declaration and original owner history remains byte-identical to the immutable predecessor. `predecessor-controls/` preserves the exact prior decoder, README and payload manifest. `correction-disposition.json` binds the original full independent review and the two bounded findings. Independent acceptance of this successor remains a separate review step; no scientific or licensing approval is inferred.
+
+The standalone command now requires final historical metadata. It obtains the exact expected 477 declarations and 926 original/stored paths from pinned prior Git records and the two retained copied source manifests. Missing metadata, empty or incomplete rows, duplicates, false copied-manifest bindings, and altered original author/reviewer roles reject. The prior Git commit, actual tree, path, blob and bytes are checked again. Successful receipts include every historical control hash and original source-manifest binding. A full artifact-manifest wrapper is not used as a substitute for this derivation.
+
+Before creating any destination, the helper rejects parent traversal, symlink ancestors or targets, paths outside the resolved scratch root, existing destinations, and ancestors that are files. A normal fresh `/private/tmp` destination still works. Unsafe regression probes intercepted filesystem creation and made no outside-scratch writes.
+
+The corrected decoder passed a fresh complete offline reconstruction: 13,577 physical occurrences, 6,175 current compact declarations, all 477 historical pairs and 926 historical paths. Thirty-six new rejection controls and two positive controls passed, as did the 35 prior decoder rejection controls. The complete 34,021-file predecessor, all 35 original source owners and the complete 25,707-file original independent review were rehashed unchanged. Original failed probes and reviewer diagnostics remain retained and clearly distinguished from successful successor checks.
+
+`successor-proof/` contains the bounded correction proof and copied original-review controls. The original review's actual reconstruction trees remain externally bound verification outputs already recoverable from the immutable predecessor; they are not new scientific source owners. The maintained-copy boundary is this successor `payload/` only, following independent acceptance.
+"""
+    )
+    reconstruction_rows = inventory(ROOT / "reconstruction")
+    dump(
+        ROOT / "proof/actual-reconstruction-inventory.json",
+        {"root": str(ROOT / "reconstruction"), "files": reconstruction_rows},
+    )
+    proof = OUT / "successor-proof"
+    proof.mkdir()
+    for path in sorted((ROOT / "proof").rglob("*")):
+        if path.is_file():
+            relative = path.relative_to(ROOT / "proof")
+            target = proof / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, target)
+    control_map = []
+    for path in sorted((ROOT / "reviewer-controls").rglob("*")):
+        if path.is_file():
+            relative = str(path.relative_to(ROOT / "reviewer-controls"))
+            target = (
+                proof
+                / "original-review-controls"
+                / (relative + (".txt" if relative.endswith(".py") else ""))
+            )
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, target)
+            control_map.append(
+                {
+                    "original_path": relative,
+                    "stored_path": str(target.relative_to(OUT)),
+                    "bytes": path.stat().st_size,
+                    "sha256": sha(path.read_bytes()),
+                }
+            )
+    dump(proof / "original-review-control-storage-map.json", control_map)
+    for path in sorted(ROOT.glob("*.py")):
+        shutil.copyfile(path, proof / (path.name + ".txt"))
+    for path in sorted(ROOT.glob("*.txt")):
+        shutil.copyfile(path, proof / path.name)
+    before = json.loads((ROOT / "proof/payload-before.json").read_bytes())["files"]
+    before_map = {r["path"]: r for r in before}
+    current = inventory(OUT)
+    current_map = {r["path"]: r for r in current}
+    altered = [name for name, row in before_map.items() if current_map.get(name) != row]
+    require(
+        sorted(altered) == ["README.md", "decode_retained.py"],
+        "unexpected source/content/control modification",
+    )
+    require(set(before_map) <= set(current_map), "predecessor payload file removed")
+    payload_files = [r for r in current if r["path"] != "artifact-manifest.json"]
+    require(
+        max(r["bytes"] for r in payload_files) < 100 * 1024 * 1024,
+        "oversize new payload file",
+    )
+    dump(
+        OUT / "artifact-manifest.json",
+        {
+            "scope": "Explicit correction successor; source bytes and owner histories preserved",
+            "predecessor_manifest_sha256": OLD_MANIFEST,
+            "original_review_manifest_sha256": REVIEW_MANIFEST,
+            "findings": ["R01/#604", "R02/#605"],
+            "files": payload_files,
+        },
+    )
+    payload_manifest = sha((OUT / "artifact-manifest.json").read_bytes())
+    after_map = {r["path"]: r for r in inventory(OUT)}
+    delta = {
+        "predecessor_payload_manifest": OLD_MANIFEST,
+        "successor_payload_manifest": payload_manifest,
+        "predecessor_physical_files": len(before_map),
+        "successor_physical_files": len(after_map),
+        "changed": [
+            {"path": name, "before": row, "after": after_map[name]}
+            for name, row in before_map.items()
+            if after_map[name] != row
+        ],
+        "unchanged": [
+            row for name, row in before_map.items() if after_map[name] == row
+        ],
+        "added": [row for name, row in after_map.items() if name not in before_map],
+        "removed": [],
+    }
+    require(
+        {r["path"] for r in delta["changed"]}
+        == {"README.md", "decode_retained.py", "artifact-manifest.json"},
+        "unexpected final delta",
+    )
+    dump(ROOT / "proof/exact-payload-delta.json", delta)
+    (ROOT / "HANDOFF.md").write_text(f"""# Frozen next267 retention correction successor
+
+The two independently confirmed decoder findings are addressed by a bounded external successor, pending independent successor acceptance. The original full review remains `needs_curation`; it is not relabeled as acceptance.
+
+- R01 / issue 604 (moderate): exact historical derivation and fail-closed metadata, source-manifest and original-role coverage.
+- R02 / issue 605 (minor): resolved scratch destination and ancestor validation before any creation.
+- Proposed maintained boundary: `payload/` only, manifest `{payload_manifest}`; {len(payload_files)} listed files plus the manifest.
+- Exact predecessor payload: `{OLD_MANIFEST}`; full preparation `fa14d99b3fc94fb8d4574e1b76ed3d37287036d29648eef068aa028c1ebd6461`.
+- Complete original independent review: `{REVIEW_MANIFEST}`, 25,707 physical files, all rehashed unchanged.
+
+All 5,896 predecessor payload files remain present: exactly three controls changed (decoder, README, manifest), with {len(delta["unchanged"])} files byte-identical. Content maps, source mappings, historical declarations, stored objects/chunks, all scientific evidence and original owner histories are unchanged. `proof/exact-payload-delta.json` binds every changed, unchanged and added path; the original three controls are retained explicitly.
+
+Fresh complete offline recovery passed for all 13,577 physical occurrences, 6,175 current compact declarations, 477 historical pairs and 926 paths. The focused suite passed 36 rejection cases plus two positive controls; all 35 prior rejection controls still pass. Unsafe probes made zero outside-scratch writes and were rejected before any mkdir attempt. Helpers pass Ruff. The complete original 34,021-file preparation and all 35 source owners are byte- and path-identical after work. Source bindings and roles are retained; four external database originals remain explicitly outside cutoff.
+
+All prior failed probes and review diagnostics are preserved. New actual reconstruction bytes are retained externally and included in the successor's complete external manifest. Original-review reconstruction trees are fully hash-bound external verification outputs; they were not copied or relabeled as new scientific source owners. The original review controls are copied losslessly with an explicit path map; Python source helpers are inert in the payload.
+
+No maintained, Git, GitHub, runtime-installation, dependency or source-owner changes were made. No child agents or new research acquisitions were used. Later maintained integration, full repository tests, canonical science review and publication remain root-owned and outside this bounded technical correction. All verification sessions were terminal before freezing. Independent successor review is required next.
+""")
+    rows = [
+        r
+        for r in inventory(ROOT)
+        if r["path"] not in ("artifact-manifest.json", "freeze-proof.json")
+    ]
+    dump(
+        ROOT / "artifact-manifest.json",
+        {
+            "files": rows,
+            "excluded_self_records": ["artifact-manifest.json", "freeze-proof.json"],
+        },
+    )
+    for row in rows:
+        body = (ROOT / row["path"]).read_bytes()
+        require(
+            len(body) == row["bytes"] and sha(body) == row["sha256"],
+            "final output changed",
+        )
+    freeze = {
+        "utc": datetime.now(timezone.utc).isoformat(),
+        "manifest_sha256": sha((ROOT / "artifact-manifest.json").read_bytes()),
+        "listed_files": len(rows),
+        "physical_files": len(rows) + 2,
+        "listed_bytes": sum(r["bytes"] for r in rows),
+        "payload_manifest_sha256": payload_manifest,
+        "payload_listed_files": len(payload_files),
+        "handoff_sha256": sha((ROOT / "HANDOFF.md").read_bytes()),
+        "all_manifested_bytes_reverified": True,
+    }
+    dump(ROOT / "freeze-proof.json", freeze)
+    print(json.dumps(freeze))
+
+
+if __name__ == "__main__":
+    main()

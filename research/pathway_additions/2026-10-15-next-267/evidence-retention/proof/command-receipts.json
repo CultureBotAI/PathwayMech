@@ -1,0 +1,68 @@
+{
+  "python": "/private/tmp/pathwaymech-next-263-verified-venv/bin/python",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "commands": [
+    {
+      "phase": "initial source inventory, compact replay, inherited Git verification and content storage",
+      "command": "python -B prepare.py",
+      "session": 81532,
+      "exit_code": 0,
+      "stdout": "prepare.stdout.txt",
+      "stderr": "prepare.stderr.txt",
+      "note": "Retained helper was subsequently formatted and its equivalent nested predicate flattened for Ruff; exact initial helper bytes were not separately snapshotted. Output byte verification is independent."
+    },
+    {
+      "phase": "first complete physical reconstruction plus live original comparison",
+      "command": "python -B payload/decode_retained.py --repo /private/tmp/pathwaymech-next-267-20261015 --materialize /private/tmp/pathwaymech-next-267-retention-preparation/reconstruction-1 --compare-originals --receipt /private/tmp/pathwaymech-next-267-retention-preparation/proof/first-reconstruction.json",
+      "session": 7984,
+      "exit_code": 0,
+      "stdout": "reconstruction-1.stdout.txt",
+      "stderr": "reconstruction-1.stderr.txt",
+      "input_binding": "proof/first-reconstruction-input-bindings.json"
+    },
+    {
+      "phase": "adversarial checks",
+      "command": "python -B adversarial_checks.py",
+      "session": 41350,
+      "exit_code": 0,
+      "stdout": "adversarial.stdout.txt",
+      "stderr": "adversarial.stderr.txt"
+    },
+    {
+      "phase": "historical compact closure and external database boundary metadata",
+      "command": "python -B complete_metadata.py",
+      "session": 97451,
+      "exit_code": 0,
+      "stdout": "complete_metadata.stdout.txt",
+      "stderr": "complete_metadata.stderr.txt"
+    },
+    {
+      "phase": "complete final offline reconstruction",
+      "command": "python -B payload/decode_retained.py --repo /private/tmp/pathwaymech-next-267-20261015 --materialize /private/tmp/pathwaymech-next-267-retention-preparation/reconstruction-2 --receipt /private/tmp/pathwaymech-next-267-retention-preparation/proof/complete-offline-reconstruction.json",
+      "session": 62476,
+      "exit_code": 0,
+      "stdout": "reconstruction-2.stdout.txt",
+      "stderr": "reconstruction-2.stderr.txt"
+    },
+    {
+      "phase": "complete candidate references, physical gzip layers and final source-owner preservation",
+      "command": "python -B verify_sources.py",
+      "session": 64690,
+      "exit_code": 0,
+      "stdout": "verify_sources.stdout.txt",
+      "stderr": "verify_sources.stderr.txt"
+    },
+    {
+      "phase": "final helper lint",
+      "command": "python -B -m ruff check prepare.py retention_io.py adversarial_checks.py complete_metadata.py verify_sources.py finalize.py payload/decode_retained.py",
+      "exit_code": 0,
+      "stdout": "lint-final.stdout.txt",
+      "stderr": "lint-final.stderr.txt"
+    }
+  ],
+  "all_sessions_terminal_before_freeze": true,
+  "earlier_lint_cleanup": "Unused import, import ordering, line formatting and equivalent nested-if simplification; final Ruff check passed. No dependency or shared runtime changes."
+}

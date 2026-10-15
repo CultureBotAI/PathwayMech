@@ -1,0 +1,106 @@
+"""Verify complete predecessor, source-owner and frozen-review preservation."""
+
+import json
+import shutil
+from pathlib import Path
+
+from prepare_successor import dump, inventory, require, sha
+
+ROOT = Path(__file__).parent
+REVIEW = Path("/private/tmp/pathwaymech-next-267-independent-retention-review")
+
+
+def main():
+    prior = json.loads((ROOT / "proof/predecessor-before.json").read_bytes())
+    observed = inventory(Path(prior["root"]))
+    require(observed == prior["files"], "immutable predecessor changed")
+    owners = json.loads((ROOT / "proof/source-owners-before.json").read_bytes())
+    after = []
+    for owner in owners["owners"]:
+        rows = inventory(Path(owner["root"]))
+        require(rows == owner["files"], "source owner changed: " + owner["name"])
+        after.append({"name": owner["name"], "root": owner["root"], "files": rows})
+    dump(
+        ROOT / "proof/preservation-after.json",
+        {
+            "status": "pass",
+            "predecessor_physical_files": len(observed),
+            "source_owners": len(after),
+            "source_physical_files": sum(len(o["files"]) for o in after),
+            "complete_predecessor_and_source_pathsets_unchanged": True,
+            "all_bytes_unchanged": True,
+            "hidden_and_ignored_included": True,
+            "predecessor_before_sha256": sha(
+                (ROOT / "proof/predecessor-before.json").read_bytes()
+            ),
+            "source_before_sha256": sha(
+                (ROOT / "proof/source-owners-before.json").read_bytes()
+            ),
+        },
+    )
+    manifest_path = REVIEW / "artifact-manifest.json"
+    require(
+        sha(manifest_path.read_bytes())
+        == "0ac7577c317d8ab7e20a6d4a4334b12cbedaa4c873c4af2e4894bc7529adaa86",
+        "wrong frozen review",
+    )
+    listed = json.loads(manifest_path.read_bytes())["files"]
+    complete = inventory(REVIEW)
+    by_path = {r["path"]: r for r in complete}
+    require(len(complete) == 25707, "frozen review physical count changed")
+    require(
+        set(by_path)
+        == {r["path"] for r in listed}
+        | {"artifact-manifest.json", "freeze-proof.json"},
+        "review pathset changed",
+    )
+    require(all(by_path[r["path"]] == r for r in listed), "frozen review bytes changed")
+    destination = ROOT / "reviewer-controls"
+    require(not destination.exists(), "review input binding is create-only")
+    copied = []
+    externally_bound = []
+    output_trees = {
+        "reconstructed-content",
+        "reconstructed-physical",
+        "reconstructed-historical",
+        "inherited-endpoints",
+    }
+    for row in complete:
+        if Path(row["path"]).parts[0] in output_trees:
+            externally_bound.append(row)
+            continue
+        target = destination / row["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(REVIEW / row["path"], target)
+        require(
+            sha(target.read_bytes()) == row["sha256"], "review control copy differs"
+        )
+        copied.append(row)
+    dump(
+        ROOT / "proof/frozen-review-input-binding.json",
+        {
+            "status": "pass",
+            "root": str(REVIEW),
+            "manifest_sha256": sha(manifest_path.read_bytes()),
+            "complete_physical_files": len(complete),
+            "all_files": complete,
+            "copied_control_files": copied,
+            "external_verification_output_files": externally_bound,
+            "scope": "Full frozen review is hash-verified. All non-reconstruction controls, failed probes and diagnostics are copied exactly. Review reconstruction trees remain explicitly external verification outputs already recoverable from the immutable predecessor, not new source owners.",
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "predecessor_files": len(observed),
+                "source_files": sum(len(o["files"]) for o in after),
+                "review_files": len(complete),
+                "review_controls_copied": len(copied),
+                "status": "pass",
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

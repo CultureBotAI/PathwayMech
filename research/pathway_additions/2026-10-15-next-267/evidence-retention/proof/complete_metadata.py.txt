@@ -1,0 +1,228 @@
+"""Bind historical nested compact references and explicit external database limits."""
+
+import gzip
+import json
+import subprocess
+from pathlib import Path
+
+from retention_io import BASE, TREE, Decoder, check, dump, gunzip, load, require, sha
+
+ROOT = Path(__file__).parent
+OUT = ROOT / "payload"
+REPO = Path("/private/tmp/pathwaymech-next-267-20261015")
+PRIOR = "research/pathway_additions/2026-10-15-next-266/evidence-retention"
+
+
+def git_read(path):
+    body = subprocess.check_output(["git", "show", BASE + ":" + path], cwd=REPO)
+    blob = (
+        subprocess.check_output(["git", "rev-parse", BASE + ":" + path], cwd=REPO)
+        .decode()
+        .strip()
+    )
+    return body, blob
+
+
+def main():
+    current = load(OUT / "content-map.json")
+    proofs = {r["path"]: r for r in load(OUT / "existing-owner-verification.json")}
+    prior_body, prior_blob = git_read(PRIOR + "/verified-compact-pairs.json")
+    prior_pairs = json.loads(prior_body)
+    prior_content = load(ROOT / "baseline-inputs" / PRIOR / "content-map.json")
+    retained = OUT / "proof" / "prior266-verified-compact-pairs.json.gz"
+    retained.parent.mkdir(parents=True, exist_ok=True)
+    retained.write_bytes(gzip.compress(prior_body, mtime=0))
+    prior_binding = {
+        "git_commit": BASE,
+        "git_tree": TREE,
+        "path": PRIOR + "/verified-compact-pairs.json",
+        "git_blob": prior_blob,
+        "sha256": sha(prior_body),
+        "bytes": len(prior_body),
+        "retained_gzip": str(retained.relative_to(OUT)),
+        "retained_sha256": sha(retained.read_bytes()),
+    }
+    nested = load(OUT / "nested-compact-source-control-dispositions.json")
+    selected = {
+        "inputs/prior-primary/compact-originals-manifest.json": "primary",
+        "inputs/prior-primary-review/compact-review-manifest.json": "independent-primary-review",
+    }
+    reference_rows = []
+    added = []
+    for item in nested:
+        if item["path"] == "context/rhea/263-input-manifest.json":
+            item["disposition"] = (
+                "Historical input-copy inventory, not a compact storage manifest; exact source-control bytes retained. Its stored_path field describes copied inputs, not an encoding."
+            )
+            continue
+        if item["exact_current_owner"]:
+            item["disposition"] = (
+                "Byte-identical copy of explicitly replayed current package compact manifest."
+            )
+            continue
+        require(
+            item["path"] in selected and item["package"] == "primary",
+            "unclassified nested compact reference",
+        )
+        prior_package = selected[item["path"]]
+        original = Path("/private/tmp/pathwaymech-next-267-primary") / item["path"]
+        obj = load(original)
+        canonical_pairs = [p for p in prior_pairs if p["package"] == prior_package]
+        require(
+            len(canonical_pairs) == len(obj["rows"]),
+            "historical compact count mismatch",
+        )
+        for index, declared in enumerate(obj["rows"]):
+            match = next(p for p in canonical_pairs if p["index"] == index)
+            require(match["declared_row"] == declared, "historical declaration changed")
+            for digest in (match["original_sha256"], match["stored_sha256"]):
+                if digest in current:
+                    continue
+                row = prior_content[digest]
+                endpoint = dict(row["storage"])
+                if endpoint["kind"] == "new_retention_object":
+                    endpoint["path"] = PRIOR + "/" + endpoint["path"]
+                else:
+                    require(
+                        endpoint["kind"] == "existing_repository",
+                        "unexpected historical endpoint",
+                    )
+                endpoint.update(
+                    kind="existing_repository", git_commit=BASE, git_tree=TREE
+                )
+                body, blob = git_read(endpoint["path"])
+                check(body, endpoint["stored_sha256"], endpoint["stored_bytes"])
+                proofs[endpoint["path"]] = {
+                    "git_commit": BASE,
+                    "git_tree": TREE,
+                    "path": endpoint["path"],
+                    "git_blob": blob,
+                    "sha256": sha(body),
+                    "bytes": len(body),
+                }
+                decoded = body
+                for step in row["decode_steps"]:
+                    require(
+                        step["encoding"] == "gzip"
+                        and sha(decoded) == step["input_sha256"],
+                        "historical decode binding",
+                    )
+                    decoded = gunzip(
+                        decoded, step["output_sha256"], step["output_bytes"]
+                    )
+                check(decoded, digest, row["source_bytes"])
+                current[digest] = {
+                    "source_sha256": digest,
+                    "source_bytes": row["source_bytes"],
+                    "storage": endpoint,
+                    "decode_steps": row["decode_steps"],
+                    "inherited_binding": PRIOR + "/content-map.json",
+                    "scope": "Supplemental nested historical compact reference; not a new physical occurrence",
+                }
+                added.append(digest)
+            reference_rows.append(
+                {
+                    "current_package": "primary",
+                    "current_manifest": item["path"],
+                    "current_manifest_sha256": item["sha256"],
+                    "original_owner_package": "next266-" + prior_package,
+                    "original_compact_pair": match,
+                }
+            )
+        item["disposition"] = (
+            "Every declaration rebound to the exact next266 retained compact-pair record, with raw and stored bytes retained through verified actual-merged Git owners."
+        )
+        item["original_owner_package"] = "next266-" + prior_package
+    dump(OUT / "content-map.json", current)
+    dump(OUT / "existing-owner-verification.json", list(proofs.values()))
+    dump(OUT / "nested-compact-source-control-dispositions.json", nested)
+    dump(
+        OUT / "historical-compact-references.json",
+        {
+            "prior_pairs_binding": prior_binding,
+            "rows": reference_rows,
+            "additional_content_rows": added,
+            "scope": "Historical reference materialization is separate from the 35 exact physical source packages.",
+        },
+    )
+    decoder = Decoder(OUT, REPO)
+    count = 0
+    try:
+        for row in reference_rows:
+            pair = row["original_compact_pair"]
+            stored = decoder.decode(pair["stored_sha256"])
+            original = decoder.decode(pair["original_sha256"])
+            require(
+                gunzip(stored, pair["original_sha256"], pair["original_bytes"])
+                == original,
+                "historical compact identity mismatch",
+            )
+            count += 1
+    finally:
+        decoder.close()
+    dump(
+        ROOT / "proof/historical-compact-replay.json",
+        {
+            "status": "pass",
+            "declared_rows": count,
+            "added_inherited_content_rows": len(added),
+            "actual_git_commit": BASE,
+            "actual_git_tree": TREE,
+        },
+    )
+    authority = Path("/private/tmp/pathwaymech-next-267-authority-preparation")
+    db = load(authority / "baseline-full-ontology-replay-resumed/input-bindings.json")[
+        "database_bindings"
+    ]
+    sources = load(authority / "candidate-full-native-ontology/ontology.json")[
+        "sources"
+    ]
+    source_key = {
+        "GO": "go-2026-07-26",
+        "CHEBI": "chebi-255",
+        "NCBITaxon": "ncbitaxon-2026-07-12",
+        "RHEA": "rhea-139",
+    }
+    excluded = [
+        {
+            "namespace": key,
+            **row,
+            "issuing_metadata_and_prior_full_raw_hash": sources[source_key[key]],
+            "retention_disposition": "Original database outside the explicit cutoff; metadata and complete derived outputs/build receipts retained. Database bytes are not bundled.",
+        }
+        for key, row in db.items()
+    ]
+    dump(
+        OUT / "external-original-boundaries.json",
+        {
+            "excluded_database_originals": excluded,
+            "retained_rhea142_original": sources["rhea-rdf-142"],
+            "excluded_directories": [
+                "mutable next267-ci",
+                "maintained next267 worktree",
+                "shared verified Python runtime",
+                "browser profiles",
+                "PDFKit/Swift module caches",
+            ],
+            "scope": "All source-assertion originals in the frozen source owners and complete source cache are retained. Rebuilding full ontology snapshots additionally requires these four exact external databases; this is not claimed as a self-contained database distribution.",
+        },
+    )
+    accounting = load(OUT / "storage-size-accounting.json")
+    accounting.update(
+        {
+            "distinct_physical_contents": accounting["distinct_contents"],
+            "distinct_contents": len(current),
+            "supplemental_historical_reference_contents": len(added),
+            "inherited_content_rows": sum(
+                r["storage"]["kind"] == "existing_repository" for r in current.values()
+            ),
+            "inherited_owner_paths": len(proofs),
+            "historical_compact_reference_rows": count,
+        }
+    )
+    dump(OUT / "storage-size-accounting.json", accounting)
+    print(json.dumps(accounting))
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,190 @@
+"""Rebind every source path and replay all 64 candidate reference originals."""
+
+import gzip
+import io
+import json
+import tarfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+from retention_io import Decoder, check, dump, load, physical_maps, require, sha
+
+ROOT = Path(__file__).parent
+OUT = ROOT / "payload"
+REPO = Path("/private/tmp/pathwaymech-next-267-20261015")
+
+
+def main():
+    maps = physical_maps(OUT)
+    decoder = Decoder(OUT, REPO)
+    references = load(
+        Path(
+            "/private/tmp/pathwaymech-next-267-design-successor/reference-source-bindings.json"
+        )
+    )
+    edge_plan = load(
+        Path(
+            "/private/tmp/pathwaymech-next-267-design-successor/all-100-candidate-edge-evidence.json"
+        )
+    )
+    require(
+        len(references) == 64 and len(edge_plan["edges"]) == 100,
+        "reference/edge count changed",
+    )
+    occurrences = {
+        r["source"]: {"package": name, **r}
+        for name, rows in maps.items()
+        for r in rows.values()
+    }
+    bindings = []
+    try:
+        for reference, binding in references.items():
+            if "archive" in binding:
+                owner = binding["archive"]
+                retained = decoder.decode(owner["sha256"])
+                check(retained, owner["sha256"], owner["bytes"])
+                require(
+                    occurrences[owner["path"]]["sha256"] == owner["sha256"],
+                    "archive owner missing",
+                )
+                with tarfile.open(fileobj=io.BytesIO(retained), mode="r:gz") as archive:
+                    members = [
+                        m for m in archive.getmembers() if m.name == binding["member"]
+                    ]
+                    require(
+                        len(members) == 1 and members[0].isfile(),
+                        "ambiguous/nonregular reference member",
+                    )
+                    body = archive.extractfile(members[0]).read()
+                check(body, binding["sha256"], binding["bytes"])
+                location = {
+                    "archive_owner": occurrences[owner["path"]],
+                    "member": binding["member"],
+                }
+            else:
+                body = decoder.decode(binding["sha256"])
+                check(body, binding["sha256"], binding["bytes"])
+                require(
+                    occurrences[binding["path"]]["sha256"] == binding["sha256"],
+                    "reference owner missing",
+                )
+                location = {"physical_owner": occurrences[binding["path"]]}
+            bindings.append(
+                {
+                    "reference_id": reference,
+                    "sha256": sha(body),
+                    "bytes": len(body),
+                    "retained_location": location,
+                    "exact_retained_bytes_verified": True,
+                }
+            )
+        for edge in edge_plan["edges"]:
+            for evidence in edge["evidence"]:
+                require(
+                    evidence["reference_id"] in references, "edge reference omitted"
+                )
+        gzip_results = []
+        for digest, row in sorted(decoder.contents.items()):
+            # Only genuine physical source representations; supplemental historical pairs are separately checked.
+            if row.get("scope", "").startswith("Supplemental"):
+                continue
+            body = decoder.decode(digest)
+            if not body.startswith(b"\x1f\x8b"):
+                continue
+            layers = []
+            original = body
+            failure = None
+            while body.startswith(b"\x1f\x8b"):
+                try:
+                    before = sha(body)
+                    body = gzip.decompress(body)
+                    layers.append(
+                        {
+                            "input_sha256": before,
+                            "output_sha256": sha(body),
+                            "output_bytes": len(body),
+                        }
+                    )
+                    require(len(layers) < 16, "excessive original gzip layers")
+                except (OSError, EOFError, ValueError) as error:
+                    failure = {
+                        "type": type(error).__name__,
+                        "error": str(error),
+                        "disposition": "Exact original representation retained; no normalization or repair",
+                    }
+                    break
+            gzip_results.append(
+                {
+                    "original_sha256": digest,
+                    "original_bytes": len(original),
+                    "layers": layers,
+                    "failure": failure,
+                }
+            )
+    finally:
+        decoder.close()
+    dump(
+        ROOT / "proof/reference-original-coverage.json",
+        {
+            "status": "pass",
+            "references": bindings,
+            "candidate_sha256": edge_plan["candidate_sha256"],
+            "edge_count": 100,
+            "all_edge_references_retained": True,
+            "archive_member_originals": sum(
+                "archive" in r for r in references.values()
+            ),
+            "scope": "Exact evidence originals retained; this is not a new scientific interpretation or acceptance.",
+        },
+    )
+    dump(
+        ROOT / "proof/original-gzip-representations.json",
+        {
+            "representations": gzip_results,
+            "scope": "Every physical content beginning with gzip magic independently decoded layer by layer while preserving the exact outer representation.",
+            "count": len(gzip_results),
+            "failed_original_decodes": sum(
+                r["failure"] is not None for r in gzip_results
+            ),
+        },
+    )
+    preservation = []
+    spec = load(OUT / "source-specification.json")
+    for package in spec["packages"]:
+        name = package["name"]
+        source = Path(package["source_root"])
+        paths = list(source.rglob("*"))
+        require(not any(p.is_symlink() for p in paths), "source symlink appeared")
+        files = {str(p.relative_to(source)): p for p in paths if p.is_file()}
+        require(set(files) == set(maps[name]), "source physical pathset changed")
+        for relative, path in files.items():
+            row = maps[name][relative]
+            check(path.read_bytes(), row["sha256"], row["bytes"])
+        preservation.append(
+            {"package": name, "files": len(files), "all_original_bytes_unchanged": True}
+        )
+    dump(
+        ROOT / "proof/final-source-preservation.json",
+        {
+            "utc": datetime.now(timezone.utc).isoformat(),
+            "owners": preservation,
+            "hidden_and_ignored_included": True,
+            "complete_physical_files": sum(r["files"] for r in preservation),
+            "status": "pass",
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "references": len(bindings),
+                "edges": 100,
+                "physical_files": sum(r["files"] for r in preservation),
+                "gzip_representations": len(gzip_results),
+                "gzip_failures": sum(r["failure"] is not None for r in gzip_results),
+            }
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

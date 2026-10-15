@@ -1,0 +1,174 @@
+"""Freeze a completed retention preparation after all other writers are terminal."""
+
+import json
+import shutil
+from datetime import datetime, timezone
+from pathlib import Path
+
+from retention_io import BASE, TREE, check, dump, load, require, sha
+
+ROOT = Path(__file__).parent
+OUT = ROOT / "payload"
+
+
+def inventory(root, excluded=()):
+    result = []
+    for path in sorted(root.rglob("*")):
+        require(not path.is_symlink(), "unexpected output symlink")
+        if path.is_file() and str(path.relative_to(root)) not in excluded:
+            body = path.read_bytes()
+            result.append(
+                {
+                    "path": str(path.relative_to(root)),
+                    "bytes": len(body),
+                    "sha256": sha(body),
+                }
+            )
+    return result
+
+
+def main():
+    require(not (ROOT / "artifact-manifest.json").exists(), "freeze is create-only")
+    first = load(ROOT / "proof/first-reconstruction.json")
+    second = load(ROOT / "proof/complete-offline-reconstruction.json")
+    sources = load(ROOT / "proof/final-source-preservation.json")
+    adverse = load(ROOT / "proof/adversarial-checks.json")
+    references = load(ROOT / "proof/reference-original-coverage.json")
+    compressed = load(ROOT / "proof/original-gzip-representations.json")
+    for receipt in (first, second, sources, adverse, references):
+        require(receipt["status"] == "pass", "incomplete proof")
+    require(
+        second["historical"]["declared_rows"] == 477,
+        "historical reconstruction incomplete",
+    )
+    require(
+        second["physical_occurrences"] == 13577, "physical reconstruction incomplete"
+    )
+    require(
+        second["compact"]["declared_rows_verified"] == 6175,
+        "compact reconstruction incomplete",
+    )
+    for name, digest in second["control_sha256"].items():
+        require(sha((OUT / name).read_bytes()) == digest, "post-test control change")
+    for directory in (ROOT / "reconstruction-1", ROOT / "reconstruction-2"):
+        rows = inventory(directory)
+        dump(
+            ROOT / "proof" / (directory.name + "-actual-inventory.json"),
+            {"root": str(directory), "files": rows},
+        )
+    proof = OUT / "proof"
+    proof.mkdir(exist_ok=True)
+    for path in sorted((ROOT / "proof").glob("*")):
+        if path.is_file():
+            shutil.copyfile(path, proof / path.name)
+    for name in (
+        "prepare.py",
+        "retention_io.py",
+        "adversarial_checks.py",
+        "complete_metadata.py",
+        "verify_sources.py",
+        "finalize.py",
+    ):
+        shutil.copyfile(ROOT / name, proof / (name + ".txt"))
+    for path in sorted(ROOT.glob("*.txt")):
+        shutil.copyfile(path, proof / path.name)
+    baseline_copies = []
+    for path in sorted((ROOT / "baseline-inputs").rglob("*.json")):
+        # Inputs remain available from the exact Git baseline; their full local source copies
+        # also remain in this frozen external preparation, outside the publication payload.
+        body = path.read_bytes()
+        baseline_copies.append(
+            {
+                "path": str(path.relative_to(ROOT)),
+                "bytes": len(body),
+                "sha256": sha(body),
+            }
+        )
+    dump(proof / "local-baseline-input-copy-bindings.json", baseline_copies)
+    accounting = load(OUT / "storage-size-accounting.json")
+    readme = f"""# Lossless next267 evidence retention
+
+This is the complete explicit evidence cutoff before maintained integration. It preserves 35 source owners, including all 20 original scientific/preparation owners, all named correction/review/authority/integration packets, the 111-file frozen root evidence cutoff, and the bounded historical chemistry reproduction snapshot. Original author and independent-review roles remain separate. Original and successor assessments retain their own scope; this package creates no new scientific or licensing acceptance.
+
+The physical source inventory contains **13,577 file occurrences / 1,644,920,637 bytes** and **8,814 distinct contents**, including every hidden/ignored regular file. No source owner contains symlinks. All original paths and bytes reconstruct exactly; inode, filesystem timestamps and executable permission bits are not asserted as portable evidence identities. Exact gzip, ZIP, tar and other original representations are never normalized. Source failures and superseded diagnostics remain retained.
+
+All **nine current package-owned compact manifests / 6,175 declarations** are explicitly enumerated and replayed. Every declared original is physically present; there are **zero current compact-only originals**. Two copied prior266 compact manifests add **477 historical declarations**, explicitly rebound to their original author/reviewer owners and exact prior retention records. The resulting content map contains **9,202 identities**, including 388 supplemental historical representations. Historical reconstruction is separate from the 35 exact current physical packages. The other copied compact maps are byte-identical current-owner copies; one historical input-copy inventory is correctly classified as an inventory rather than an encoding manifest.
+
+Inherited lookup is bounded to three exact next265/266 retention maps and physical manifests. All **1,971 selected Git owner paths** and **2,599 inherited content rows** bind actual merged commit `{BASE}` and actual tree `{TREE}`, exact Git blobs, endpoint bytes and every decode layer. The decoder checks the actual tree as well as the commit, retaining the issue591 correction. No working-tree fallback is used, and no global absence search is claimed.
+
+There are **5,809 content-storage endpoints**, totaling **368,457,730 bytes**; the largest is **46,024,886 bytes**. The exact 104,854,732-byte Noctua original is reconstructed from four bounded chunks, never recompressed past a hosting limit. Every publication-payload file is checked below 100 MiB. `new-storage-endpoints.json` accounts for content storage; derived controls and proof files are additionally bound by `artifact-manifest.json`.
+
+Run with a standard Python 3 interpreter and a local repository containing the pinned Git objects:
+
+```sh
+python -B decode_retained.py --repo /path/to/PathwayMech --materialize /private/tmp/new-retention-reconstruction --receipt /private/tmp/reconstruction-receipt.json
+```
+
+The destination must be new. Physical source layouts are materialized under `physical/`; absent compact originals would be placed under `logical/`; historical prior266 compact references are separately written under `historical/`. Without `--materialize`, the same complete verification runs without reconstructing files. `--compare-originals` additionally compares available original external paths; ordinary offline verification does not need those paths or network access. Source helpers are inert archived bytes; the decoder does not execute them.
+
+Two fresh complete physical reconstructions passed, including one exact comparison against all external originals. The final offline run additionally reconstructed all 477 historical pairs. All 64 candidate evidence references were recovered from retained bytes, including three exact members of the original prior266 archive; every reference used by all 100 edges is covered. Independent layer-by-layer checks covered {compressed["count"]} physical gzip representations, with {compressed["failed_original_decodes"]} original decode failures recorded. All 35 source owners were rehashed afterward without changes. Thirty-five adversarial rejection cases cover paths, symlinks, hashes, sizes, duplicate JSON keys, gzip integrity/limits, Git commit/tree provenance, unknown encoding and chunk order/completeness.
+
+`external-original-boundaries.json` explicitly excludes four original ontology databases outside the cutoff. Their exact hash/version/stat bindings, derived outputs and build receipts remain retained; full ontology rebuilding still requires those external databases. The complete source cache is retained. Shared runtime installations, browser/module caches, the maintained worktree and mutable CI are excluded. Later integration, maintained checks, record reviews and publication evidence belong to a separate verification extension.
+
+This external preparation additionally retains actual scratch reconstruction bytes and complete scratch inventories for independent review. Only this `payload/` is proposed for maintained copying after independent acceptance. The external scratch reconstructions are verification outputs, not new authority or scientific source owners. All source preservation and reconstruction proof files are available under `proof/`.
+"""
+    (OUT / "README.md").write_text(readme)
+    payload_rows = inventory(OUT, ("artifact-manifest.json",))
+    require(
+        max(r["bytes"] for r in payload_rows) < 100 * 1024 * 1024,
+        "oversize publication endpoint",
+    )
+    dump(
+        OUT / "artifact-manifest.json",
+        {
+            "scope": "Complete proposed retained payload; excludes only this manifest",
+            "files": payload_rows,
+        },
+    )
+    payload_manifest = sha((OUT / "artifact-manifest.json").read_bytes())
+    handoff = f"""# Frozen next267 retention preparation
+
+Lossless technical authoring is complete and ready for independent review. No maintained, Git, GitHub, source-owner or shared-runtime files were changed. Copy only `payload/` after independent acceptance; actual reconstruction scratch directories remain external verification outputs.
+
+- Proposed payload manifest: `{payload_manifest}`; {len(payload_rows)} listed files plus its manifest.
+- Complete cutoff: 35 owners, 13,577 physical occurrences, 1,644,920,637 original occurrence bytes; all original bytes and complete pathsets preserved.
+- Current compact closure: nine manifests / 6,175 declarations / zero absent logical originals. Historical prior266 closure: two manifests / 477 declarations, preserving separate original roles.
+- Storage: 9,202 content identities; 2,599 inherited rows / 1,971 exact actual-merged Git owners; 5,809 new content endpoints / 368,457,730 bytes, maximum 46,024,886 bytes. Exact Noctua bytes use four bounded chunks.
+- Proof: both complete physical reconstructions passed; final offline historical reconstruction passed; 35 adversarial rejection cases passed; all 64 evidence reference originals and all 100 edges are covered; all 35 input owners remain unchanged. Helpers pass Ruff.
+- Actual inherited base: `{BASE}`, tree `{TREE}`. Source cutoff root manifest `f421967f60109df3fe91856c77307fb58880eef1b12973e0ce42c80fce3ed490`.
+
+The README, source specification, owner roles, compact audits, external-original boundaries and retained proofs define the precise scope. Four external ontology database originals are not bundled. Runtime installations and later maintained integration/gates/reviews/publication are outside this cutoff. No scientific or public-release licensing approval is inferred. Source helper bytes are inert.
+
+Initial generation helpers were formatted and an equivalent nested predicate was flattened to satisfy Ruff before archival. The output itself was fully reconstructed and verified independently of original source paths in the final run. The earlier first reconstruction binds its exact earlier controls separately; the final reconstruction binds the final content map and decoder. No passed original/source receipt was silently overwritten.
+
+All other preparation sessions were terminal before this freeze. `artifact-manifest.json` binds the complete external preparation, including actual reconstructed files, all controls and proof copies, excluding only itself and `freeze-proof.json`. The separately bounded payload manifest is the maintained-copy boundary.
+"""
+    (ROOT / "HANDOFF.md").write_text(handoff)
+    root_rows = inventory(ROOT, ("artifact-manifest.json", "freeze-proof.json"))
+    dump(
+        ROOT / "artifact-manifest.json",
+        {
+            "files": root_rows,
+            "excluded_self_records": ["artifact-manifest.json", "freeze-proof.json"],
+        },
+    )
+    for row in root_rows:
+        check((ROOT / row["path"]).read_bytes(), row["sha256"], row["bytes"])
+    proof = {
+        "utc": datetime.now(timezone.utc).isoformat(),
+        "manifest_sha256": sha((ROOT / "artifact-manifest.json").read_bytes()),
+        "listed_files": len(root_rows),
+        "physical_files": len(root_rows) + 2,
+        "listed_bytes": sum(r["bytes"] for r in root_rows),
+        "all_manifested_bytes_reverified": True,
+        "payload_manifest_sha256": payload_manifest,
+        "payload_listed_files": len(payload_rows),
+        "handoff_sha256": sha((ROOT / "HANDOFF.md").read_bytes()),
+        "source_owner_count": accounting["packages"],
+    }
+    dump(ROOT / "freeze-proof.json", proof)
+    print(json.dumps(proof))
+
+
+if __name__ == "__main__":
+    main()

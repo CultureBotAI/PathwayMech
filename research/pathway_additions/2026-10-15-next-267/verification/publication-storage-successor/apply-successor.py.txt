@@ -1,0 +1,206 @@
+"""Preserve a retained unified diff with explicit lossless storage lineage."""
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import tarfile
+
+ROOT = Path('/private/tmp/pathwaymech-next-267-20261015')
+CI = Path('/private/tmp/pathwaymech-next-267-ci')
+RESEARCH = ROOT / 'research/pathway_additions/2026-10-15-next-267'
+PAYLOAD = RESEARCH / 'evidence-retention'
+PROOF = RESEARCH / 'verification/publication-storage-successor'
+PYTHON = '/private/tmp/pathwaymech-next-263-verified-venv/bin/python'
+OLD = 'successor-proof/decoder-exact.diff'
+NEW = OLD + '.gz'
+
+
+def sha(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def write(path, value):
+    with path.open('x') as stream:
+        json.dump(value, stream, indent=2)
+        stream.write('\n')
+
+
+def inventory(root):
+    out = {}
+    for parent, dirs, files in os.walk(root, followlinks=False):
+        for name in dirs:
+            assert not (Path(parent) / name).is_symlink()
+        for name in files:
+            path = Path(parent) / name
+            assert path.is_file() and not path.is_symlink()
+            out[path.relative_to(root).as_posix()] = sha(path)
+    return out
+
+
+def main():
+    assert not PROOF.exists(), 'Inspect partial adoption rather than restarting.'
+    assert not (CI / 'reviewed-candidate-stage.json').exists()
+    assert not (CI / 'publication-actions.json').exists()
+    issue = (CI / 'publication-whitespace-created-issue.txt').read_text().strip()
+    assert issue.startswith('https://github.com/CultureBotAI/PathwayMech/issues/')
+    number = int(issue.rsplit('/', 1)[1])
+    manifest = PAYLOAD / 'artifact-manifest.json'
+    report = RESEARCH / 'README.md'
+    assert sha(manifest) == 'e99337264ef70fd72555b4e10928584909e5830c00e41d5566c6b7c5b90f5a4a'
+    assert sha(report) == '2404816fc5b667a42ce1577285b6bae491cb2465e36f92988d83b6f9c2b6f2fc'
+    assert sha(PAYLOAD / OLD) == '7409c2f44153440d8861402fce962417293968315c6480fbdc7bc1643392f1ad'
+    original = json.loads(manifest.read_text())
+    before = inventory(PAYLOAD)
+    assert len(before) == 5969
+    assert set(before) == {row['path'] for row in original['files']} | {'artifact-manifest.json'}
+    for row in original['files']:
+        assert before[row['path']] == row['sha256']
+        assert (PAYLOAD / row['path']).stat().st_size == row['bytes']
+    raw = (PAYLOAD / OLD).read_bytes()
+    assert len(raw) == 10851
+    assert not (PAYLOAD / NEW).exists()
+    failed = json.loads((CI / 'actual-staged-whitespace.json').read_text())
+    assert failed['exit_code'] == 2
+    diagnostics = failed['stdout'].splitlines()
+    assert len(diagnostics) == 22
+    assert all(diagnostics[i].startswith(str((PAYLOAD / OLD).relative_to(ROOT)) + ':') for i in range(0, 22, 2))
+    assert all(diagnostics[i] == '+ ' for i in range(1, 22, 2))
+    PROOF.mkdir()
+    shutil.copyfile(manifest, PROOF / 'predecessor-artifact-manifest.json')
+    shutil.copyfile(report, PROOF / 'predecessor-research-report.md')
+    shutil.copyfile(Path(__file__), PROOF / 'apply-successor.py.txt')
+    shutil.copyfile(CI / 'publication-whitespace-issue.md', PROOF / f'issue-{number}.md')
+    shutil.copyfile(CI / 'publication-whitespace-all-state-issues.json', PROOF / 'all-state-issues.json')
+    write(PROOF / 'predecessor-payload-hashes.json', before)
+    stage_names = ['stage_reviewed_candidate.py', 'stage_reviewed_candidate_with_retained_logs.py',
+                   'stage-attempt1-disposition.json', 'reviewed-candidate-pathspec.nul',
+                   'reviewed-candidate-inputs.json', 'stage-command.json', 'actual-staged-whitespace.json']
+    archive_rows = []
+    with (PROOF / 'failed-stage-attempts.tar.gz').open('xb') as target:
+        with gzip.GzipFile(fileobj=target, filename='', mode='wb', mtime=0) as gz:
+            with tarfile.open(fileobj=gz, mode='w|') as tar:
+                for name in stage_names:
+                    data = (CI / name).read_bytes()
+                    info = tarfile.TarInfo(name)
+                    info.size, info.mode, info.mtime = len(data), 0o644, 0
+                    tar.addfile(info, io.BytesIO(data))
+                    archive_rows.append({'member': name, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
+    with tarfile.open(PROOF / 'failed-stage-attempts.tar.gz', 'r:gz') as tar:
+        assert tar.getnames() == stage_names
+        for name in stage_names:
+            assert tar.extractfile(name).read() == (CI / name).read_bytes()
+    write(PROOF / 'failed-stage-archive-manifest.json', {'files': archive_rows})
+    with (PAYLOAD / NEW).open('xb') as target:
+        with gzip.GzipFile(fileobj=target, filename='', mode='wb', mtime=0) as gz:
+            gz.write(raw)
+    stored = (PAYLOAD / NEW).read_bytes()
+    assert stored[:10] == b'\x1f\x8b\x08\x00\x00\x00\x00\x00\x02\xff'
+    assert gzip.decompress(stored) == raw
+    mapping = {'issue': number, 'original_path': OLD, 'original_bytes': len(raw),
+               'original_sha256': hashlib.sha256(raw).hexdigest(), 'stored_path': NEW,
+               'stored_bytes': len(stored), 'stored_sha256': hashlib.sha256(stored).hexdigest(),
+               'encoding': 'gzip', 'mtime': 0, 'filename': '',
+               'decoded_bytes_equal_original': True}
+    write(PROOF / 'storage-map.json', mapping)
+    current = json.loads(manifest.read_text())
+    row = next(row for row in current['files'] if row['path'] == OLD)
+    row.update(path=NEW, bytes=len(stored), sha256=hashlib.sha256(stored).hexdigest())
+    current['files'].sort(key=lambda row: row['path'])
+    (PAYLOAD / OLD).unlink()
+    manifest.write_text(json.dumps(current, indent=2) + '\n')
+    after = inventory(PAYLOAD)
+    assert set(before) - set(after) == {OLD}
+    assert set(after) - set(before) == {NEW}
+    assert [p for p in sorted(before.keys() & after.keys()) if before[p] != after[p]] == ['artifact-manifest.json']
+    assert len(after) == 5969
+    for row in current['files']:
+        assert after[row['path']] == row['sha256']
+        assert (PAYLOAD / row['path']).stat().st_size == row['bytes']
+    reconstructed = dict(after)
+    reconstructed.pop(NEW)
+    reconstructed[OLD] = hashlib.sha256(gzip.decompress(stored)).hexdigest()
+    reconstructed['artifact-manifest.json'] = sha(PROOF / 'predecessor-artifact-manifest.json')
+    assert reconstructed == before
+    old_sentence = 'and its manifest binding changed. The current payload manifest SHA256 is\n`e99337264ef70fd72555b4e10928584909e5830c00e41d5566c6b7c5b90f5a4a`.\n'
+    new_sentence = ('and its manifest binding changed. That formatting successor had payload manifest\n'
+        'SHA256 `e99337264ef70fd72555b4e10928584909e5830c00e41d5566c6b7c5b90f5a4a`.\n'
+        f'The later staged whitespace check found required blank-context spaces in a\n'
+        f'retained unified diff ([issue {number}]({issue})). The explicit\n'
+        '[lossless storage successor](verification/publication-storage-successor/README.md)\n'
+        'stores that exact diff as deterministic gzip and updates its physical-manifest\n'
+        'entry. All 5,967 other payload files, including the decoder and all source maps,\n'
+        'remain unchanged; all 5,969 predecessor files can be recovered exactly.\n'
+        f'The current physical payload manifest SHA256 is `{sha(manifest)}`.\n'
+        'The earlier canonical reviews retain their original working-tree cutoffs; a\n'
+        'separate bounded technical review assesses this storage transition.\n')
+    original_report = report.read_text()
+    assert original_report.count(old_sentence) == 1
+    report.write_text(original_report.replace(old_sentence, new_sentence))
+    receipt = {'utc': datetime.now(timezone.utc).isoformat(), 'issue': number,
+               'finding_key': 'T267-PUBLICATION-WHITESPACE-01', 'storage': mapping,
+               'predecessor_manifest_sha256': before['artifact-manifest.json'],
+               'current_manifest_sha256': sha(manifest), 'payload_files': len(after),
+               'unchanged_payload_files': 5967, 'all_predecessor_files_recoverable': True,
+               'all_physical_manifest_entries_checked': True,
+               'old_report_sha256': sha(PROOF / 'predecessor-research-report.md'),
+               'new_report_sha256': sha(report), 'decoder_and_source_maps_unchanged': True,
+               'canonical_reviews_unchanged_historical_cutoffs': True,
+               'whitespace_policy_unchanged': True,
+               'scope': 'Supplemental unified-diff storage only; no decoder, source-map, scientific record, authority, implementation or page change. Fresh native gates and independent review remain subsequent observations.'}
+    write(PROOF / 'correction.json', receipt)
+    (PROOF / 'README.md').write_text(f'''# Lossless publication storage successor
+
+Issue [{number}]({issue}) records the actual staged whitespace failure on 11
+single-space context markers in the retained `decoder-exact.diff`. Those spaces
+are required patch syntax. The exact diff is stored as deterministic gzip at
+`../../evidence-retention/{NEW}`. `storage-map.json` binds both paths, lengths
+and hashes. Decompression recovers every original byte; no whitespace policy
+changes. The complete failed stage attempts are preserved in the named archive.
+
+The current physical payload manifest replaces that one entry. The predecessor
+manifest and report remain here. All 5,967 other payload files are byte-identical,
+including the decoder and every source map. Reconstruction against the complete
+predecessor inventory recovers all 5,969 original files exactly. The scientific
+record, authorities, implementation, pages and earlier canonical reviews are
+unchanged. Those reviews keep their original working-tree cutoffs; their old
+physical paths are reconciled through this explicit storage map, not silently
+claimed to remain current. The bounded successor review and actual native gates
+are separate subsequent observations, and issue closure requires verified merge.
+''')
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+               PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+    command = [PYTHON, '-B', 'scripts/new_history_record.py', '--kind', 'other',
+               '--slug', 'benzoyl-coa-degradation-iii-research', '--path',
+               str((PAYLOAD / NEW).relative_to(ROOT)), '--event', 'EDIT', '--outcome', 'changed',
+               '--actor-name', 'Codex', '--actor-type', 'ai_agent', '--agent-tool', 'codex',
+               '--issue', issue, '--summary', 'Preserve retained unified diff with lossless gzip storage',
+               '--details', 'The actual staged check found 11 required blank context spaces in supplemental decoder proof. '
+               'Preserve exact diff bytes with deterministic gzip and explicit original/stored hashes. '
+               'Only its payload manifest row changes; all other 5967 payload files remain exact. '
+               'Retain predecessor manifest/report and complete failed staging attempts, reconstruct all5969 predecessor files, '
+               'and preserve canonical reviews as historical observations. Independent storage review and native successor gates follow.']
+    result = subprocess.run(command, cwd=ROOT, env=env, text=True, capture_output=True)
+    write(PROOF / 'native-history-command.json', {'command': command, 'exit_code': result.returncode,
+                                                'stdout': result.stdout, 'stderr': result.stderr})
+    assert result.returncode == 0, result.stderr
+    history = Path(result.stdout.strip().splitlines()[-1])
+    history = history if history.is_absolute() else ROOT / history
+    write(PROOF / 'native-history.json', {'path': str(history.relative_to(ROOT)), 'sha256': sha(history)})
+    write(PROOF / 'artifact-manifest.json', {'scope': 'Complete storage successor construction, excluding this self-manifest.',
+        'files': [{'path': p.relative_to(PROOF).as_posix(), 'sha256': sha(p), 'bytes': p.stat().st_size}
+                  for p in sorted(PROOF.rglob('*')) if p.is_file()]})
+    write(CI / 'publication-storage-successor-adoption.json', {**receipt,
+        'proof_path': str(PROOF.relative_to(ROOT)), 'proof_manifest_sha256': sha(PROOF / 'artifact-manifest.json'),
+        'history_path': str(history.relative_to(ROOT))})
+    print(json.dumps({'issue': number, 'payload_manifest': sha(manifest), 'proof_manifest': sha(PROOF / 'artifact-manifest.json'),
+                      'history': str(history.relative_to(ROOT)), 'all_predecessor_files_recoverable': True}), flush=True)
+
+
+if __name__ == '__main__':
+    main()

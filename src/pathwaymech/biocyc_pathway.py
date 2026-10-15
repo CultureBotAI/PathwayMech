@@ -6,11 +6,26 @@ Layouts retain source primaries and never stand in for complete reaction sides.
 
 from __future__ import annotations
 
+import base64
+import json
 import re
+from collections import Counter
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
-from pathwaymech.biocyc_carrier import HOST, _TreeBuilder, one, request, require, scalar
+from pathwaymech.biocyc_carrier import (
+    HOST,
+    PROVENANCE,
+    PROVENANCE_ORDER,
+    _TreeBuilder,
+    keys,
+    one,
+    original_path,
+    provenance,
+    request,
+    require,
+    scalar,
+)
 from pathwaymech.biocyc_native_context import (
     ancillary,
     attributes,
@@ -22,6 +37,7 @@ from pathwaymech.biocyc_native_context import (
     refs,
     retained,
 )
+from pathwaymech.biocyc_p321 import credits, envelope, evidence, original_bytes, publication
 
 PATHWAY_KIND = "metacyc-pathway-xml"
 FIELD = "native_pathway"
@@ -122,9 +138,63 @@ def organism(node: ET.Element) -> None:
         )
 
 
+def p321_context(entity: ET.Element) -> dict:
+    expected = {
+        "parent": 1,
+        "credits": 1,
+        "comment": 1,
+        "pathway-link": 3,
+        "citation": 8,
+        "evidence": 1,
+        "synonym": 1,
+        "taxonomic-range": 1,
+        "reaction-ordering": 8,
+        "species": 1,
+        "reaction-layout": 9,
+        "dblink": 1,
+        "common-name": 1,
+        "reaction-list": 1,
+    }
+    require(Counter(n.tag for n in entity) == expected, "incomplete P321 pathway slots")
+    credits(one(entity, "credits"))
+    citations = []
+    for wrapper in entity.findall("citation"):
+        blank(wrapper)
+        require(not wrapper.attrib and len(wrapper) == 1, "invalid pathway citation")
+        publication(wrapper[0])
+        citations.append(wrapper[0].get("frameid"))
+    require(len(set(citations)) == len(citations), "duplicate pathway citation")
+    evidence(one(entity, "evidence"), "EV-EXP-IDA")
+    links = []
+    for wrapper in entity.findall("pathway-link"):
+        blank(wrapper)
+        require(
+            not wrapper.attrib and [n.tag for n in wrapper] == ["Compound", "link-target"],
+            "invalid pathway link",
+        )
+        compound = ref_node(wrapper[0], "META", "Compound")
+        target = wrapper[1]
+        blank(target)
+        require(not target.attrib and len(target) == 1, "invalid pathway link target")
+        pathway = ref_node(target[0], "META", "Pathway")
+        links.append({"compound": compound, "pathway": pathway})
+    require(
+        [(v["compound"]["id"], v["pathway"]["id"]) for v in links]
+        == [
+            ("MetaCyc:CPD-533", "MetaCyc:PWY-301"),
+            ("MetaCyc:BENZOYLCOA", "MetaCyc:PWY-283"),
+            ("MetaCyc:GLUTARYL-COA", "MetaCyc:PWY-5177"),
+        ],
+        "wrong pathway link identities/order",
+    )
+    return {"citations": citations, "pathway_links": links}
+
+
 def project(entity: ET.Element, frame: str) -> dict:
     attributes(entity, frame, "META", "Pathway", False)
-    ancillary(entity, ANCILLARY, CORE, "META")
+    extra = {"citation", "evidence", "pathway-link"} if frame == "P321-PWY" else set()
+    ancillary(entity, ANCILLARY, CORE | extra, "META")
+    context = p321_context(entity) if extra else {}
     parents = refs(entity, "parent", "META", "Pathway", is_class=True)
     require(bool(parents), "Pathway lacks native parent classes")
     label, synonyms = direct_names(entity, frame)
@@ -217,10 +287,33 @@ def project(entity: ET.Element, frame: str) -> dict:
         "reaction_ordering": ordering,
         "reaction_layout": layouts,
         **retained(entity, CORE),
+        **context,
     }
 
 
+def complete_pathway(body: bytes, source: dict) -> dict:
+    _, entity, frame = envelope(body, source, "Pathway")
+    require(frame == "P321-PWY", "unsupported whole pathway profile")
+    return {**project(entity, frame), "original_base64": base64.b64encode(body).decode("ascii")}
+
+
 def pathway_metadata(entry: dict, cache_dir: Path) -> dict:
+    if request(entry["url"], "META") == "P321-PWY":
+        keys(entry, PROVENANCE | {"key", "kind", "path"}, "invalid complete pathway manifest")
+        require(
+            entry["kind"] == PATHWAY_KIND
+            and isinstance(entry["key"], str)
+            and bool(entry["key"].strip()),
+            "wrong complete pathway kind/key",
+        )
+        source = {k: entry[k] for k in PROVENANCE_ORDER}
+        result = {
+            **source,
+            "kind": PATHWAY_KIND,
+            FIELD: complete_pathway(original_path(entry, cache_dir).read_bytes(), source),
+        }
+        validate_pathway_metadata(result)
+        return result
     result = metadata_build(
         entry, cache_dir, PATHWAY_KIND, FIELD, "META", pathway_identity, project
     )
@@ -229,6 +322,27 @@ def pathway_metadata(entry: dict, cache_dir: Path) -> dict:
 
 
 def validate_pathway_metadata(metadata: dict) -> None:
+    if (
+        isinstance(metadata, dict)
+        and isinstance(metadata.get(FIELD), dict)
+        and (
+            metadata[FIELD].get("id") == "MetaCyc:P321-PWY"
+            or "original_base64" in metadata[FIELD]
+            or "P321-PWY" in str(metadata.get("url", ""))
+        )
+    ):
+        keys(metadata, PROVENANCE | {"kind", FIELD}, "invalid complete pathway metadata")
+        require(metadata["kind"] == PATHWAY_KIND, "wrong complete pathway kind")
+        source = {k: metadata[k] for k in PROVENANCE_ORDER}
+        require(provenance(source, "META") == "P321-PWY", "wrong complete pathway request")
+        native = metadata[FIELD]
+        require("original_base64" in native, "complete pathway original required")
+        expected = complete_pathway(original_bytes(native["original_base64"]), source)
+        require(
+            json.dumps(native, sort_keys=True) == json.dumps(expected, sort_keys=True),
+            "complete pathway projection mismatch",
+        )
+        return
     metadata_validate(metadata, PATHWAY_KIND, FIELD, "META", "Pathway", project)
 
 
