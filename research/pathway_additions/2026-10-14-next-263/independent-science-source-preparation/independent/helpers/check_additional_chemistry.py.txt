@@ -1,0 +1,39 @@
+"""Independent source-only reconstruction of eight supplemental enzyme-context entities."""
+import collections,datetime,hashlib,json,os,pathlib,re,sys,xml.etree.ElementTree as ET
+from rdkit import Chem,rdBase
+BASE=pathlib.Path('/private/tmp/pathwaymech-next-263-additional-chemistry')
+OUT=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-science')
+started=datetime.datetime.now(datetime.timezone.utc).isoformat()
+def binding(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+def elements(m):return dict(sorted(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms()).items()))
+def charge(m):return sum(a.GetFormalCharge() for a in m.GetAtoms())
+def plain(m):return Chem.MolToSmiles(Chem.RemoveHs(m),isomericSmiles=False)
+pairs={'MN+2':'ChEBI-29035','ZN+2':'ChEBI-29105','CU+2':'ChEBI-29036','NADH':'ChEBI-57945','CPD-621':'ChEBI-57712','CPD-8827':'ChEBI-149587','EDTA':'ChEBI-64755','CPD-8828':'PubChem-25240959'}
+checks=[]
+for native,issuer in pairs.items():
+ np=BASE/'originals'/f'META-{native}.xml';ip=BASE/'originals'/f'{issuer}.json'
+ x=ET.parse(np).getroot().find('Compound');assert x.get('frameid')==native
+ cml=x.find('cml/molecule');rw=Chem.RWMol();index={}
+ for a in cml.findall('atomArray/atom'):
+  atom=Chem.Atom(a.get('elementType').capitalize());atom.SetFormalCharge(int(a.get('formalCharge','0')));index[a.get('id')]=rw.AddAtom(atom)
+ for b in cml.findall('bondArray/bond'):
+  a,z=b.get('atomRefs').split();rw.AddBond(index[a],index[z],{'1':Chem.BondType.SINGLE,'2':Chem.BondType.DOUBLE,'3':Chem.BondType.TRIPLE}[b.get('order')])
+ nm=rw.GetMol();Chem.SanitizeMol(nm);j=json.loads(ip.read_text())
+ if issuer.startswith('ChEBI'):
+  assert j['id']==int(issuer.split('-')[1]);st=j['default_structure'];im=Chem.MolFromSmiles(st['smiles']);inchi=st['standard_inchi'];key=st['standard_inchi_key'];formula=j['chemical_data']['formula'];q=j['chemical_data']['charge'];label=j['name']
+ else:
+  st=j['PropertyTable']['Properties'];assert len(st)==1;st=st[0];assert st['CID']==25240959
+  inchi=st['InChI'];key=st['InChIKey'];im=Chem.MolFromInchi(inchi);formula=st['MolecularFormula'];q=st['Charge'];label=st['IUPACName']
+ assert im is not None
+ nf=cml.find('formula').get('concise').split();nf={a.capitalize():int(n) for a,n in zip(nf[::2],nf[1::2])}
+ ef={a:int(n or 1) for a,n in re.findall(r'([A-Z][a-z]?)([0-9]*)',formula)}
+ assert elements(nm)==elements(im)==nf==ef,native
+ assert charge(nm)==charge(im)==int(q)==int(cml.get('formalCharge')),native
+ assert plain(nm)==plain(im),native
+ assert x.findtext('inchi')==inchi==Chem.MolToInchi(im),native
+ assert x.findtext('inchi-key').removeprefix('InChIKey=')==key==Chem.MolToInchiKey(im),native
+ checks.append({'native':native,'issuing_id':issuer.replace('-',':',1),'issuing_name':label,'formula':formula,'charge':q,'full_inchi':inchi,'full_key':key,'native_CML_element_graph_charge_matches_issuing':True,'native_full_inchi_key_matches_issuing':True,'issuing_chiral_centers':Chem.FindMolChiralCenters(im,includeUnassigned=True),'native_binding':binding(np),'issuing_binding':binding(ip)})
+report={'started_utc':started,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'software':{'python':sys.version,'executable':sys.executable,'rdkit':rdBase.rdkitVersion,'RDBASE':os.environ.get('RDBASE')},'checks':checks,'limitations':['CML connectivity reconstruction does not assign CML stereochemistry; exact full native InChI/key compared independently to issuing structure.','These identifiers describe database entities, not measured speciation of salts or EDTA in an assay.','CPD-621 and CPD-8827 retain unspecified stereocenters; no enantiomer-specific assignment.','No result from this helper establishes inhibitor target, mechanism, concentration, or evidence placement.','NADH is the exact retained prior-source body; its acquisition is not represented as a fresh query.','Canonical record review has not begun; these are source-only prerequisites.']}
+(OUT/'checks/additional-chemistry-independent.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'accepted_entities':len(checks),'software_rdkit':rdBase.rdkitVersion,'scope':'source-only structural identities'},indent=2))

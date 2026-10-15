@@ -1,0 +1,49 @@
+from pathlib import Path
+import json,hashlib,subprocess,re,datetime,collections
+O=Path('/private/tmp/pathwaymech-next-263-discovery');R=Path('/private/tmp/pathwaymech-next-261-20261014');MAIN=Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech');D=Path('/private/tmp/pathwaymech-next-262-discovery')
+def sha(b):return hashlib.sha256(b).hexdigest()
+def dump(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+inv=json.loads((O/'corpus-inventory.json').read_text());rows=json.loads((O/'native-projections.json').read_text());by={r['id'].split(':',1)[1]:r for r in rows};proof=json.loads((O/'native-connectivity-proof.json').read_text());reactions=[s['reaction'].split(':',1)[1] for s in proof['steps']]
+patterns=set(['PWY-5417','catechol degradation III','catechol degradation, ortho-cleavage','catechol catabolic process, ortho-cleavage','catechol breakdown, ortho-cleavage','catechol ortho-cleavage','catechol ortho cleavage','catechol degradation to beta-ketoadipate','catechol degradation to β-ketoadipate','beta-ketoadipate pathway','β-ketoadipate pathway','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361','PWY-5431','PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY','GO:0019615','GO:0042952','M00568','R06989'])
+patterns.update(reactions);aliases={f:{'MetaCyc:'+f} for f in reactions};rhea=Path('/private/tmp/pathwaymech-curation-authorities/rhea-directions.tsv');rhash=sha(rhea.read_bytes());assert rhash=='deae1911da372c70ee8fc97992809c7923e63b288a8702fc4396edcb2633fb04';families=[x.split('\t') for x in rhea.read_text().splitlines()[1:]];used={}
+for f in reactions:
+ for x in by[f]['xrefs']:
+  if x['db']=='RHEA':
+   match=[r for r in families if x['id'] in r];assert len(match)==1;used[f]=match[0]
+   for n in match[0]:aliases[f].add('RHEA:'+n);patterns.add('RHEA:'+n)
+  elif x['db']=='LIGAND-RXN':aliases[f].add('KEGG:'+x['id']);patterns.add(x['id'])
+aliases['MUCONATE-CYCLOISOMERASE-RXN'].add('KEGG:R06989')
+for f in ['PWY-5417','CATECHOL-ORTHO-CLEAVAGE-PWY','PWY-2361',*reactions]:
+ patterns.update(by[f]['pmids']);patterns.update(by[f]['synonyms']);
+ if by[f]['name']:patterns.add(by[f]['name'])
+for record in inv['records']:
+ if record['id'] in ['MetaCyc:CATECHOL-ORTHO-CLEAVAGE-PWY','MetaCyc:PWY-2361']:
+  for ref in record['references']:
+   if ref['id'].startswith(('PMID:','DOI:')):patterns.add(ref['id']);patterns.add(ref['id'].split(':',1)[1])
+patterns=sorted(patterns,key=str.lower);(O/'complete-dedup-patterns.txt').write_text('\n'.join(patterns)+'\n');summary=[];semantic=[]
+for record in inv['records']:
+ ids={n['id'] for n in record['reactions']};found={f:sorted(ids&v) for f,v in aliases.items() if ids&v}
+ labeltext=' '.join([record['label'],record['description'],*[n['label'] for n in record['reactions']],*[n['label'] for n in record['participants']]])
+ concepts=[t for t in ['catechol','muconolactone','muconate','oxoadipate','ketoadipate','ortho-cleavage','ortho cleavage'] if t in labeltext.lower()]
+ row={'path':record['path'],'sha256':record['sha256'],'id':record['id'],'label':record['label'],'candidate_reaction_families':found,'coverage':len(found),'full_six_reactions_present':len(found)==6}
+ if found:summary.append(row)
+ if concepts:semantic.append({**row,'semantic_terms':concepts,'description':record['description'],'all_reaction_nodes':record['reactions']})
+assert not any(r['id']=='MetaCyc:PWY-5417' for r in inv['records']);assert not any(r['full_six_reactions_present'] for r in summary)
+planned=json.loads((D/'candidate.json').read_text());assert planned['id']=='MetaCyc:PWY-5420';shared=set(reactions)&set(planned['formal_native_reactions']);assert not shared
+dump('corpus-reaction-overlap.json',{'candidate':'MetaCyc:PWY-5417','baseline_commit':inv['baseline_commit'],'all_records_compared':258,'exact_identity_matches':[],'whole_six_reaction_matches':[],'aliases':{k:sorted(v) for k,v in aliases.items()},'alias_limit':'Native xrefs and known specific KEGG alias are search keys; this discovery does not newly certify exact chemical identity. Rhea family directions are exact issuing table rows.','rhea_direction_table':{'path':str(rhea),'sha256':rhash,'selected_rows':used},'overlap_records':summary,'planned262_comparison':{'path':str(D/'candidate.json'),'sha256':sha((D/'candidate.json').read_bytes()),'id':planned['id'],'formal_native_reactions':planned['formal_native_reactions'],'shared_reaction_ids':[],'distinction':'Intradiol six-step ortho route through cis,cis-muconate/3-oxoadipate differs from seven-step extradiol oxidative route through hydroxymuconate/dienol/pyruvate. Shared catechol start and acetyl-CoA endpoint do not collapse these complete routes.'}})
+dump('semantic-corpus-scan.json',{'all_records_compared':258,'search_fields':['record label','description','all reaction labels','all participant labels'],'matched_records':semantic,'interpretation':'Every record was read as structured YAML, and every potentially related label/description/reaction/participant match is retained for manual scope disposition.'})
+search=[]
+for i,root in enumerate([R,MAIN]):
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(O/'complete-dedup-patterns.txt'),'.','-g','!/.git','-g','!/.venv'];p=subprocess.run(cmd,cwd=root,capture_output=True);assert p.returncode in [0,1];(O/f'whole-repository-search-{i}.jsonl').write_bytes(p.stdout);(O/f'whole-repository-search-{i}.stderr.txt').write_bytes(p.stderr)
+ files={};count=0
+ for line in p.stdout.splitlines():
+  x=json.loads(line)
+  if x['type']!='match':continue
+  count+=1;x=x['data'];path=x['path']['text'];t=x['lines'].get('text','');
+  if path not in files:files[path]={'path':path,'sha256':sha((root/path).read_bytes()),'matching_lines':0,'patterns':set(),'snippets':[]}
+  row=files[path];row['matching_lines']+=1;row['patterns'].update(z for z in patterns if z.lower() in t.lower());
+  if any(z in t.lower() for z in ['pwy-5417','catechol degradation iii','catechol ortho','cys,cys','cplx-2842','three-reaction','six-reaction','six-step']):row['snippets'].append({'line':x['line_number'],'text':t.rstrip()})
+ for row in files.values():row['patterns']=sorted(row['patterns'])
+ dump(f'prior-file-matches-{i}.json',list(files.values()));search.append({'root':str(root),'command':cmd,'exit_code':p.returncode,'matching_lines':count,'matched_files':len(files),'raw_file':f'whole-repository-search-{i}.jsonl','raw_sha256':sha(p.stdout),'ignored_and_hidden_included':True,'exclusions':['root .git administrative entry','root .venv'],'bounds':['default binary handling','no directory-symlink traversal','compressed archive interiors not expanded in rg search','no global external-cache scan']})
+dump('search-execution-receipt.json',{'executed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'patterns':len(patterns),'roots':search})
+print(json.dumps({'patterns':len(patterns),'overlap':[{'id':x['id'],'coverage':x['coverage']} for x in summary],'semantic_matches':len(semantic),'search':search},indent=2))

@@ -1,0 +1,174 @@
+"""Read original source bodies; independently rebuild whole route and Rhea matches."""
+import collections
+import datetime
+import gzip
+import hashlib
+import json
+import pathlib
+import re
+import sys
+import xml.etree.ElementTree as ET
+
+BASE = pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry')
+OUT = pathlib.Path('/private/tmp/pathwaymech-next-263-independent-chemistry')
+ORIG = BASE / 'originals'
+started = datetime.datetime.now(datetime.timezone.utc).isoformat()
+def digest(b): return hashlib.sha256(b).hexdigest()
+def write(name, value): (OUT / name).write_text(json.dumps(value, indent=2, sort_keys=True) + '\n')
+def binding(p):
+    b = p.read_bytes()
+    return {'path': str(p), 'bytes': len(b), 'sha256': digest(b)}
+
+manifest = json.loads((BASE/'artifact-manifest.json').read_text())
+assert digest((BASE/'artifact-manifest.json').read_bytes()) == '08729a3c0296411bf53ff40991776b81d246b99bd3fed5c42ca422fc64e3d107'
+actual = {p.relative_to(BASE).as_posix() for p in BASE.rglob('*') if p.is_file()}
+assert actual == {r['path'] for r in manifest['files']} | {'artifact-manifest.json'}
+for row in manifest['files']:
+    b = (BASE/row['path']).read_bytes()
+    assert len(b) == row['bytes'] and digest(b) == row['sha256'], row['path']
+write('checks/source-integrity.json', {'started_utc': started, 'manifest': binding(BASE/'artifact-manifest.json'), 'files_verified': len(manifest['files']), 'inventory_includes_hidden_ignored': True})
+
+objects = {}
+for p in sorted(ORIG.glob('META-*.xml')):
+    r = ET.parse(p).getroot()
+    direct = [x for x in r if x.tag != 'metadata']
+    assert len(direct) == 1 and direct[0].get('detail') == 'full'
+    objects[direct[0].get('frameid')] = direct[0]
+chebi = {json.loads(p.read_text())['chebi_accession']: json.loads(p.read_text()) for p in ORIG.glob('ChEBI-*.json')}
+chemicals = {}
+for name, obj in objects.items():
+    if obj.tag != 'Compound': continue
+    inchi = obj.findtext('inchi')
+    matches = [c for c in chebi.values() if c['default_structure']['standard_inchi'] == inchi]
+    assert len(matches) == 1, name
+    c = matches[0]
+    assert obj.findtext('inchi-key').removeprefix('InChIKey=') == c['default_structure']['standard_inchi_key']
+    assert int(obj.find('cml/molecule').get('formalCharge')) == c['chemical_data']['charge']
+    chemicals[name] = {'id': c['chebi_accession'], 'name': c['ascii_name'], 'formula': c['chemical_data']['formula'], 'charge': c['chemical_data']['charge'], 'inchi': inchi, 'native_locator': f"/ptools-xml/Compound[@frameid='{name}']/inchi", 'native': binding(ORIG/f'META-{name}.xml'), 'issuing': binding(ORIG/f"ChEBI-{c['id']}.json")}
+assert len(chemicals) == 13
+
+paths = ['PWY-5417', 'CATECHOL-ORTHO-CLEAVAGE-PWY', 'PWY-2361']
+assert {x.get('frameid') for x in objects['PWY-5417'].findall('sub-pathways/Pathway')} == set(paths[1:])
+ordering, layouts = [], {}
+for name in paths:
+    obj = objects[name]
+    for row in obj.findall('reaction-ordering'):
+        target = row.find('Reaction').get('frameid')
+        for p in row.findall('predecessor-reactions/Reaction'):
+            ordering.append({'source': p.get('frameid'), 'target': target, 'pathway': name})
+    for row in obj.findall('reaction-layout'):
+        r = row.find('Reaction')
+        if r is None: continue
+        layouts[r.get('frameid')] = {'direction': row.findtext('direction'), 'left_primaries': [x.get('frameid') for x in row.findall('left-primaries/Compound')], 'right_primaries': [x.get('frameid') for x in row.findall('right-primaries/Compound')], 'source_pathway': name}
+assert len(layouts) == 6 and len(ordering) == 5
+chain = [x for x in layouts if x not in {r['target'] for r in ordering}]
+assert len(chain) == 1
+while len(chain) < 6:
+    following = [x['target'] for x in ordering if x['source'] == chain[-1]]
+    assert len(following) == 1 and following[0] not in chain
+    chain.append(following[0])
+
+RDF = '{http://www.w3.org/1999/02/22-rdf-syntax-ns#}'
+RH = 'http://rdf.rhea-db.org/'
+triples = collections.defaultdict(lambda: collections.defaultdict(list))
+count = 0
+keep = {'substrates', 'products', 'directionalReaction', 'bidirectionalReaction', 'side', 'status', 'isChemicallyBalanced', 'equation', 'accession', 'chebi', 'compound', 'formula', 'charge', 'contains'}
+for _, elem in ET.iterparse(gzip.open(ORIG/'rhea.rdf.gz'), events=('end',)):
+    if elem.tag != RDF+'Description': continue
+    count += 1
+    subject = elem.get(RDF+'about')
+    for term in elem:
+        pred = term.tag.split('}')[-1]
+        if pred not in keep and not pred.startswith('contains'): continue
+        val = term.get(RDF+'resource', term.text or '')
+        if val not in triples[subject][pred]: triples[subject][pred].append(val)
+    elem.clear()
+
+def one(sub, pred):
+    v = triples[sub][pred]
+    assert len(v) == 1, (sub, pred, v)
+    return v[0]
+def side(uri):
+    out = collections.Counter()
+    for pred, terms in triples[uri].items():
+        if not pred.startswith('contains') or pred == 'contains': continue
+        n = pred[len('contains'):]
+        if not n.isdigit(): return None
+        for participant in terms:
+            compound = one(participant, 'compound')
+            accession = one(compound, 'accession')
+            out[accession] += int(n)
+    return out
+
+def formula(s):
+    terms = re.findall(r'([A-Z][a-z]?)([0-9]*)', s)
+    assert ''.join(a+b for a,b in terms) == s
+    return {a: int(b or 1) for a,b in terms}
+def total(side_values):
+    result = collections.Counter()
+    for cid, coefficient in side_values.items():
+        d = chebi[cid]['chemical_data']
+        for atom, n in formula(d['formula']).items(): result[atom] += n * coefficient
+        result['charge'] += d['charge'] * coefficient
+    return dict(sorted(result.items()))
+
+rows, joins, selected = [], [], []
+net = collections.Counter()
+for step, name in enumerate(chain, 1):
+    obj = objects[name]
+    native = {}
+    for role in ['left', 'right']:
+        native[role] = collections.Counter()
+        for slot in obj.findall(role):
+            cid = chemicals[slot.find('Compound').get('frameid')]['id']
+            native[role][cid] += int(slot.findtext('coefficient', '1'))
+    direction = layouts[name]['direction']
+    inp, out = (native['left'], native['right']) if direction == 'L2R' else (native['right'], native['left'])
+    rid = [x.findtext('dblink-oid') for x in obj.findall('dblink') if x.findtext('dblink-db') == 'RHEA']
+    assert len(rid) == 1
+    rhea = RH+rid[0]
+    assert side(one(rhea,'substrates')) == inp
+    assert side(one(rhea,'products')) == out
+    assert one(rhea,'status') == RH+'Approved'
+    assert one(rhea,'isChemicallyBalanced') == 'true'
+    assert total(inp) == total(out)
+    net.subtract(inp); net.update(out)
+    selected.append((inp, out))
+    rows.append({'step': step, 'native_reaction': name, 'native_source_direction': obj.findtext('reaction-direction'), 'pathway_direction': direction, 'rhea_directional_accession': 'RHEA:'+rid[0], 'rhea_equation': one(rhea,'equation'), 'inputs': dict(inp), 'outputs': dict(out), 'element_charge_total_each_side': total(inp), 'native_binding': binding(ORIG/f'META-{name}.xml'), 'native_material_locator': f"/ptools-xml/Reaction[@frameid='{name}']/left|right", 'layout': layouts[name]})
+for prev, nxt in zip(chain, chain[1:]):
+    a,b = layouts[prev], layouts[nxt]
+    op = a['right_primaries'] if a['direction']=='L2R' else a['left_primaries']
+    ip = b['left_primaries'] if b['direction']=='L2R' else b['right_primaries']
+    common = sorted(set(op)&set(ip))
+    assert len(common) == 1
+    joins.append({'source':prev,'target':nxt,'material':common[0],'chebi':chemicals[common[0]]['id'],'native_ordering':next(x for x in ordering if x['source']==prev and x['target']==nxt)})
+
+matched = [[] for _ in chain]
+fixed, excluded = [], []
+for uri, ts in list(triples.items()):
+    if 'substrates' not in ts or 'products' not in ts: continue
+    si, so = side(one(uri,'substrates')), side(one(uri,'products'))
+    if si is None or so is None:
+        excluded.append(uri); continue
+    fixed.append(uri)
+    for i,(a,b) in enumerate(selected):
+        if si==a and so==b: matched[i].append(uri)
+assert all(len(x)==1 for x in matched), matched
+for row, match in zip(rows,matched): row['complete_equation_matches_in_fixed_scan'] = match
+net_in={k:-v for k,v in net.items() if v<0}; net_out={k:v for k,v in net.items() if v>0}
+assert net['CHEBI:57292'] == 0
+assert total(net_in)==total(net_out)
+assert sum(len(r['inputs'])+len(r['outputs']) for r in rows)==21
+assert count == 326097 and len(fixed)==37068 and len(excluded)==154
+report = {'started_utc':started,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'independence':'Original-source reconstruction by agent /root/next263_chemistry_review; author helpers were not executed or reused. No maintained263record exists.','software':{'python':sys.version,'executable':sys.executable},'chemicals':chemicals,'reactions':rows,'joins':joins,'net':{'inputs':net_in,'outputs':net_out,'total_each_side':total(net_in),'cancelled_succinyl_CoA':True},'rhea_scan':{'original':binding(ORIG/'rhea.rdf.gz'),'rdf_description_elements':count,'fixed_directional_equations':len(fixed),'symbolic_excluded':excluded,'scope':'Exact CHEBI identity and integral stoichiometry only. No equivalence claim for symbolic polymers or other providers.'},'bindings':[binding(ORIG/f'META-{n}.xml') for n in paths]}
+write('checks/independent-route.json',report)
+selected_uris=set()
+for row in rows:
+    u=RH+row['rhea_directional_accession'].split(':')[1]
+    selected_uris.add(u)
+    for role in ['substrates','products']:
+        s=one(u,role); selected_uris.add(s)
+        for p in triples[s]['contains']:
+            selected_uris.add(p);selected_uris.add(one(p,'compound'))
+write('sources/rhea-selected-original-triples.json',{'scope':'Lossless selected predicate projection, not a whole RDF substitute; full original hash in independent-route.json','triples':{k:dict(triples[k]) for k in sorted(selected_uris)}})
+print(json.dumps({'reactions':len(rows),'chemicals':len(chemicals),'material_entries':21,'joins':len(joins),'fixed_Rhea_equations':len(fixed),'symbolic_excluded':len(excluded),'net':report['net']},indent=2))

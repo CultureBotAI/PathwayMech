@@ -1,0 +1,175 @@
+"""Freeze the finite external author package; never edit maintained or source files."""
+from pathlib import Path
+import datetime, gzip, hashlib, json, os, shutil, subprocess, sys
+
+sys.dont_write_bytecode = True
+B = Path('/private/tmp/pathwaymech-next-263-record-author')
+R = Path('/private/tmp/pathwaymech-next-263-20261014')
+PY = '/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech/.venv/bin/python'
+sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
+rd = lambda p: json.loads(Path(p).read_text())
+now = lambda: datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+def write(name, obj):
+    (B / name).write_text(json.dumps(obj, indent=2, ensure_ascii=False) + '\n')
+
+assert not (B / 'artifact-manifest.json').exists(), 'Frozen package is immutable; use a new successor directory.'
+record = B / 'drafts/catechol-degradation-iii.yaml'
+assert sha(record) == '0ad615b268d0f63ff253287401b4a978d4c7d1603157717e7e57eab5e1816ec6'
+
+# A new output root permits reproduction without mutating the final candidate.
+repro = Path('/private/tmp/pathwaymech-next-263-record-author-reproduction')
+assert not repro.exists()
+repro.mkdir()
+shutil.copytree(B / 'plans', repro / 'plans')
+(repro / 'drafts').mkdir()
+(repro / 'receipts').mkdir()
+shutil.copy2(B / 'receipts/preparation-inputs.json', repro / 'receipts/preparation-inputs.json')
+env = dict(os.environ, PATHWAY_AUTHOR_OUTPUT=str(repro), PYTHONDONTWRITEBYTECODE='1')
+steps = []
+for name in ['build_record.py.txt', 'integrate_primary.py.txt', 'finalize_coverage.py.txt']:
+    started = now()
+    script = B / 'helpers' / name
+    result = subprocess.run([PY, str(script)], env=env, text=True, capture_output=True)
+    steps.append({'helper': str(script), 'sha256': sha(script), 'started_utc': started,
+                  'finished_utc': now(), 'exit_code': result.returncode,
+                  'stdout': result.stdout, 'stderr': result.stderr})
+    write('receipts/clean-output-reproduction.json', {'output_root': str(repro), 'steps': steps})
+    assert result.returncode == 0, steps[-1]
+assert sha(repro / 'drafts/catechol-degradation-iii.yaml') == sha(record)
+assert rd(repro / 'drafts/selected-identifiers.json')['nodes'] == rd(B / 'drafts/selected-identifiers.json')['nodes']
+write('receipts/clean-output-reproduction.json', {
+    'finished_utc': now(), 'output_root': str(repro), 'steps': steps,
+    'record_sha256': sha(record), 'exact_candidate_bytes_reproduced': True,
+    'selected_ids_labels_categories_identical': True,
+    'source_and_maintained_packages_not_written': True,
+})
+
+# Final source inventories include hidden and ignored files. No absence claim uses gitignore filters.
+packages = []
+for name in ['native', 'primary', 'chemistry', 'biological-identity', 'independent-chemistry',
+             'additional-chemistry', 'context-chemistry', 'authority-author']:
+    root = Path('/private/tmp/pathwaymech-next-263-' + name)
+    manifest = root / 'artifact-manifest.json'
+    rows = rd(manifest)['files']
+    expected = {x['path'] for x in rows}
+    actual = {str(f.relative_to(root)) for f in root.rglob('*') if f.is_file()}
+    assert actual == expected | {'artifact-manifest.json'}, (name, actual ^ expected)
+    for row in rows:
+        assert sha(root / row['path']) == row['sha256'], (name, row['path'])
+    packages.append({'name': name, 'manifest': str(manifest), 'manifest_sha256': sha(manifest),
+                     'files_verified': len(rows), 'handoff_sha256': sha(root / 'HANDOFF.md'),
+                     'inventory_includes_hidden_and_ignored': True})
+contracts = ['.claude/skills/add-pathway/SKILL.md', 'CLAUDE.md', 'docs/CAUSAL_GRAPHS.md',
+             'docs/CURATION.md', 'docs/IDENTIFIERS.md', 'docs/HARMONIZATION.md',
+             'src/pathwaymech/schema.py', 'src/pathwaymech/schema/pathwaymech.yaml',
+             'templates/pathway_mechanism_research.md']
+write('receipts/final-source-contract-binding.json', {
+    'finished_utc': now(), 'base': '46ee133770039e8b21d1563166dec50eecd2c411',
+    'record_sha256': sha(record), 'packages': packages,
+    'contracts': [{'path': str(R / p), 'sha256': sha(R / p)} for p in contracts],
+    'all_frozen_packages_unchanged': True,
+    'access_boundary': 'Prior full-body reads and exact retained originals are bound; transformed text, OCR, metadata, abstracts and actual visual page inspections remain explicitly distinguished. This receipt is not an independent scientific review.',
+})
+
+checks = rd(B / 'receipts/final-author-checks.json')
+write('field-and-claim-plan.json', {
+    'candidate': 'MetaCyc:PWY-5417', 'role': 'Source and record authorship',
+    'base': '46ee133770039e8b21d1563166dec50eecd2c411', 'record_sha256': sha(record),
+    'field_plan': {
+        'identity': 'Full six-step parent; existing four-step and two-step modules remain inside this parent.',
+        'taxa': 'Nine issuing identities for eleven native annotations; mt-2 and Rm2011 remain explicitly ungrounded contexts.',
+        'participants': 'All 59 exact native biological objects, separate Q52154 context, and 23 structurally reconciled chemicals.',
+        'reactions': 'Six directional Rhea formal nodes, twenty exact native activities, two child modules and two bounded adjacent CcaC activities.',
+        'mechanistic_edges': '117 evidence-local edges, including 21 material roles and five joins; explicit source and preparation limits.',
+        'references': '211 exact original/reading-artifact bindings; metadata or partial access is never upgraded.',
+    },
+    'coverage_files': ['source-to-graph-native-slots.json', 'native-conflict-record-dispositions.json',
+                       'biological-object-record-dispositions.json', 'parent-organism-record-dispositions.json',
+                       'source-to-record-primary-claims.json', 'primary-access-and-lead-closure.json',
+                       'complete-reference-artifact-bindings.json'],
+    'corrections': [
+        {'claim': 'P263-C48', 'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/567',
+         'resolution': 'Benzoate represses pcaK, explicitly not pcaF; induction and PcaR dependence retained.'},
+        {'claim': 'P263-C43', 'issue': 'https://github.com/CultureBotAI/PathwayMech/issues/568',
+         'resolution': 'Thiolase values are Results prose on printed page 6485; short quotes replace the erroneous table characterization.'},
+    ],
+    'remaining_work': 'Root maintains actual integration, final selected authority rebind, record/report history, whole-repository gates and independent scientific/technical review. No final approval is implied by author checks.',
+})
+
+handoff = f'''# PWY-5417 complete record author handoff
+
+Frozen external authorship for the six-step catechol degradation III parent. This package does not modify a maintained record, any frozen source package, Git or GitHub. It is not an independent scientific review.
+
+## Candidate and baseline
+
+- Candidate: `drafts/catechol-degradation-iii.yaml`, SHA256 `{sha(record)}`.
+- Selection: `drafts/selected-identifiers.json`, SHA256 `{sha(B / 'drafts/selected-identifiers.json')}`; 123 named nodes (9 taxa, 83 participants, 30 reactions and the parent), 117 edges and 211 references.
+- Read-only baseline: `/private/tmp/pathwaymech-next-263-20261014`, `46ee133770039e8b21d1563166dec50eecd2c411`; all 259 previous records remain byte-identical.
+- Dedup-ready root intake and original frozen inputs are bound in `receipts/preparation-inputs.json`; all eight final source packages and contracts are bound in `receipts/final-source-contract-binding.json`.
+- Preliminary 1 and 2 remain immutable separate draft snapshots. Their hashes are not the final candidate hash.
+
+## Complete scope and evidence
+
+The six formal directional Rhea nodes retain 21 material roles and five exact intermediate joins, with native directions kept distinct. Both existing child modules remain represented. All 20 native activities for 19 catalysts, 59 native biological objects, eleven parent organism rows and 18 native conflicts receive dispositions. The source coverage accounts for 3,252 direct slots from 247 complete native originals and 63 primary claims from 42 native leads plus six bounded follows. Context, exclusion and graph evidence are distinguished; retained context does not claim an additional demonstrated mechanism.
+
+`field-and-claim-plan.json` indexes the complete native, primary, organism and identity coverage ledgers. `complete-reference-artifact-bindings.json` binds every reference to exact retained bytes. Native structured assertions use actual native slots; primary structured assertions are limited to seven genuine table/footnote facts. The quote ledger preserves 39 occurrences across eighteen sources, with at most 25 distinct excerpt words per source. Three PcaR excerpts are explicitly short manual transcriptions of visually inspected original images, not raw PDF text or source facts generated from the transcription receipt.
+
+Source-specific limits remain beside affected edges and in readable description paragraphs: MT1 CatA versus SalD substrate preference and native preparations; predicted CatC; historical CatA/PcaD versus current sequence identities; CatB/CatC engineered and deposited sequence differences; PRS lineage and mutant/crude-extract scope; Y2 deposited paaE versus native paaJ; Tfu0875 engineered reverse-route context; H16 pcaI/pcaJ/pcaF distinctions; CcaC adjacent metal-free preparation; and two ungrounded strains. PMID761399 remains rejected without an invented replacement.
+
+Three B13 inhibitor edges target transferase, correcting the native thiolase-target errors. Copper sulfate, zinc chloride and NADH observations retain assay scope; sodium cyanide is not equated to HCN, and reagent protonation is not inferred from normalized structures. PcaR-dependent expression is separate from the pHS104 binding experiment, whose Methods K38 versus Figure 6 DH5alpha conflict and truncated pHS105 control remain explicit. The uncertain native PcaR initiator is preserved.
+
+## Explicit source-summary corrections
+
+The frozen source package is unchanged. `plans/frozen-primary-summary-correction.json` and the claim disposition ledger bind issue [567](https://github.com/CultureBotAI/PathwayMech/issues/567): benzoate represses pcaK but not pcaF, retaining beta-ketoadipate induction and PcaR dependence. They also bind issue [568](https://github.com/CultureBotAI/PathwayMech/issues/568): the thiolase values are Results prose on printed page 6485, not Table 1. Scientific values remain unchanged; exact short quotations replace the wrong table representation.
+
+## Reproduction and checks
+
+The three inert `.py.txt` helpers build native structure, integrate primary evidence, and check complete coverage. They accept `PATHWAY_AUTHOR_OUTPUT` pointing to a new output directory populated with copies of `plans/`, empty `drafts/`, and `receipts/preparation-inputs.json`. Run them in that order with the existing project virtualenv Python. Frozen source packages and baseline contracts are read in place; do not run outputs into this frozen package.
+
+`receipts/clean-output-reproduction.json` records successful reproduction in a separate new directory and exact final YAML byte equality. Author checks pass current schema validation; replay 282 native evidence/qualifier locators and all retained quote spans; compare all formal material/join sets; preserve all 259 prior records; and verify all eight complete source inventories, including ignored and hidden files. The 4.1 GB pinned ChEBI SQL digest is explicitly reused from the verified owner receipt, while exact selected rows and molecular structures were separately checked; it is not claimed as newly rehashed here.
+
+`failures/` retains the earlier environment, lookup-shape, invalid taxon-edge and source-scan-path attempts, with their corrected successors. No failed intermediate is a maintained record.
+
+## Retention and remaining work
+
+`compact-retention-manifest.json` maps every original author artifact to an exact stored copy or lossless gzip copy. Helpers remain inert `.py.txt`; no source bytes are rewritten. `artifact-manifest.json` inventories every package file except itself, including hidden and ignored files. The source originals themselves remain in their separately frozen packages and are not needlessly duplicated here.
+
+Root owns maintained integration, actual selected authority promotion/rebind, history, full repository gates, independent final reviews and canonical review persistence. Root must not treat this author handoff as an independent approval. Licensing review for public release remains deferred as authorized. This package is immutable after this handoff; any finding requires a separate successor.
+'''
+(B / 'HANDOFF.md').write_text(handoff)
+
+# Every author file is retained once; gzip only encodes exact bytes.
+originals = sorted(f for f in B.rglob('*') if f.is_file())
+compact = B / 'compact-retained'
+compact.mkdir()
+rows = []
+for path in originals:
+    rel = path.relative_to(B)
+    raw = path.read_bytes()
+    compress = (len(raw) > 60000 and rel != Path('drafts/catechol-degradation-iii.yaml')) or any(line.rstrip(b' \t') != line for line in raw.splitlines())
+    stored_rel = Path('compact-retained') / (str(rel) + '.gz' if compress else rel)
+    stored = B / stored_rel
+    stored.parent.mkdir(parents=True, exist_ok=True)
+    payload = gzip.compress(raw, mtime=0) if compress else raw
+    stored.write_bytes(payload)
+    assert (gzip.decompress(payload) if compress else payload) == raw
+    rows.append({'original_path': str(path), 'original_relative_path': str(rel),
+                 'original_sha256': sha(path), 'original_bytes': len(raw),
+                 'stored_path': str(stored_rel), 'stored_sha256': sha(stored),
+                 'stored_bytes': len(payload), 'encoding': 'gzip' if compress else 'identity'})
+write('compact-retention-manifest.json', {'frozen_utc': now(), 'root': str(B),
+      'schema': 'exact-original-and-stored-files-v1', 'files': rows,
+      'source_packages_are_separately_retained': True})
+write('artifact-manifest.json', {'frozen_utc': now(), 'root': str(B),
+      'role': 'Complete source and record authorship, not independent review',
+      'candidate_sha256': sha(record), 'inventory_includes_hidden_and_ignored': True,
+      'excludes': ['artifact-manifest.json'],
+      'files': [{'path': str(f.relative_to(B)), 'bytes': f.stat().st_size, 'sha256': sha(f)}
+                for f in sorted(B.rglob('*')) if f.is_file() and f.name != 'artifact-manifest.json']})
+print(json.dumps({'record': str(record), 'record_sha256': sha(record),
+                  'handoff_sha256': sha(B / 'HANDOFF.md'),
+                  'artifact_manifest_sha256': sha(B / 'artifact-manifest.json'),
+                  'retention_manifest_sha256': sha(B / 'compact-retention-manifest.json'),
+                  'files': len(rd(B / 'artifact-manifest.json')['files']),
+                  'retained_originals': len(rows)}))

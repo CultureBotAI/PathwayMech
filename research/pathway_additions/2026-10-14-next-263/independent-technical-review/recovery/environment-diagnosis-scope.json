@@ -1,0 +1,25 @@
+{
+  "utc": "2026-10-15T07:44:17.430339+00:00",
+  "directory_metadata": [
+    {
+      "path": "/private/tmp/pathwaymech-next-195-20261011/.venv",
+      "mtime_utc": "2026-10-15T07:37:46.659528+00:00",
+      "ctime_utc": "2026-10-15T07:37:46.659528+00:00"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-195-20261011/.venv/bin",
+      "mtime_utc": "2026-10-15T07:37:46.652949+00:00",
+      "ctime_utc": "2026-10-15T07:37:46.652949+00:00"
+    },
+    {
+      "path": "/private/tmp/pathwaymech-next-195-20261011/.venv/lib/python3.13/site-packages/yaml",
+      "mtime_utc": "2026-10-15T07:37:50.929179+00:00",
+      "ctime_utc": "2026-10-15T07:37:50.929179+00:00"
+    }
+  ],
+  "observer_scope": "Read-only stat and repository source searches; no incomplete-interpreter invocation or environment repair.",
+  "bounded_repository_search": "rg --no-ignore --hidden over tests, scripts, src/pathwaymech for UV_NO_SYNC, UV_PROJECT_ENVIRONMENT, shutil.rmtree, os.unlink, pyvenv, uv sync or uv venv; only two os.unlink lines in canonical record_review.py found, scoped to its owned temporary files. Ignored files included except excluded __pycache__ bytecode. This does not establish the actor or external cause.",
+  "failure_mechanism": "Missing pyvenv.cfg means subsequent executions of the surviving python symlink do not activate the former site-packages; missing dependency sources/entrypoints also affect dynamic imports in the existing pytest process. Observed failures start at Handle checker fixture calling strict.validator, whose imports are intentionally lazy. Final stack traces needed to classify all failures.",
+  "recovery": "Fresh owned263 venv from current frozen uv.lock plus --extra dev --offline --link-mode copy; do not repair or mutate shared195 while current process runs. Preserve failed run and perform whole just test in new interpreter, then previously unexecuted gates. Carry already-passed render/validate only with exact unchanged tested inputs.",
+  "cause_attribution": "Unknown. No cleanup attribution without evidence."
+}

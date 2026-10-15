@@ -1,0 +1,30 @@
+from pathlib import Path
+import json,gzip,hashlib,subprocess,datetime
+P=Path('/private/tmp/pathwaymech-next-263-authority-author');D=P/'compact-retained';assert not D.exists();D.mkdir();sha=lambda b:hashlib.sha256(b).hexdigest()
+# Retain exact final assessments, complete new originals, all acquisition/verification receipts,
+# immutable earlier observations, baseline owners/contracts, and inert helper sources.
+selected=[p for p in P.rglob('*') if p.is_file() and not p.is_relative_to(P/'source-cache') and not p.is_relative_to(D)]
+rows=[]
+for p in sorted(selected):
+ rel=p.relative_to(P);b=p.read_bytes();stored=str(rel)
+ if stored.endswith('.py'):stored+='.txt'
+ if stored.endswith('.yaml'):stored+='.txt'
+ compressed=rel.parts[0]=='originals' or len(b)>32768 or p.suffix in ['.log','.diff','.http-error'];encoding='gzip_lossless' if compressed else 'identity'
+ if compressed:stored+='.gz'
+ out=D/stored;out.parent.mkdir(parents=True,exist_ok=True);assert not out.exists();s=gzip.compress(b,compresslevel=9,mtime=0) if compressed else b;out.write_bytes(s)
+ rows.append({'original_path':str(p),'original_bytes':len(b),'original_sha256':sha(b),'path':stored,'bytes':len(s),'sha256':sha(s),'encoding':encoding,'role':'exact_issuing_original' if rel.parts[0]=='originals' else 'baseline_owner_or_contract' if rel.parts[0]=='baseline' else 'authored_artifact_or_receipt'})
+manifest={'schema':'uniform-lossless-source-retention-v1','package_root':str(D),'suggested_repository_root':'research/pathway_additions/2026-10-14-next-263/authority-preparation','files':rows,'counts':{'files':len(rows),'original_bytes':sum(r['original_bytes'] for r in rows),'stored_bytes':sum(r['bytes'] for r in rows),'gzip_lossless':sum(r['encoding']=='gzip_lossless' for r in rows)},'scope':'Candidate availability and source-author receipts only; no final record selection inferred.'};mp=P/'compact-retention-manifest.json';assert not mp.exists();mp.write_text(json.dumps(manifest,indent=2)+'\n')
+assert {r['path'] for r in rows}=={str(p.relative_to(D)) for p in D.rglob('*') if p.is_file()}
+for r in rows:
+ p=Path(r['original_path']);out=D/r['path'];b=p.read_bytes();s=out.read_bytes();assert len(b)==r['original_bytes'] and sha(b)==r['original_sha256'];assert len(s)==r['bytes'] and sha(s)==r['sha256'];assert (gzip.decompress(s) if r['encoding']=='gzip_lossless' else s)==b;assert not out.name.endswith('.py')
+ result=subprocess.run(['git','diff','--no-index','--check','--','/dev/null',str(out)],capture_output=True,text=True);assert result.returncode in [0,1] and not result.stdout and not result.stderr,(str(out),result.stdout,result.stderr)
+receipt={'result':'pass','manifest':{'path':str(mp),'sha256':sha(mp.read_bytes()),'bytes':mp.stat().st_size},'counts':manifest['counts'],'all_original_and_stored_hashes_sizes_exact':True,'deterministic_gzip_lossless':True,'hidden_ignored_inventory_equal':True,'no_active_python_retained':True,'git_diff_check':'pass','candidate_selection_only':True};(P/'compact-storage-verification.json').write_text(json.dumps(receipt,indent=2)+'\n')
+# Verify canonical candidate snapshot and current original bindings before freezing.
+lookup=json.loads((P/'candidate-lookup.final.json').read_text());snapshot=json.loads((P/'source-candidates.final.snapshot.json').read_text());entries=json.loads((P/'candidate-source-manifest.final.json').read_text());assert len(entries)==89 and len(lookup['candidates'])==141
+for i,r in lookup['candidates'].items():
+ if r.get('source_manifest_entry'):
+  e=r['source_manifest_entry'];p=Path(r['original']['path']);assert sha(p.read_bytes())==e['sha256'];assert snapshot['terms'][i]==r['term'];assert snapshot['sources'][r['term']['source']]==r['source_metadata']
+files=[{'path':str(p.relative_to(P)),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in sorted(P.rglob('*')) if p.is_file()];m=P/'artifact-manifest.json';assert not m.exists();m.write_text(json.dumps({'package':'next263-authority-candidate-source-author','frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':files},indent=2)+'\n');assert {str(p.relative_to(P)) for p in P.rglob('*') if p.is_file()}=={'artifact-manifest.json'}|{r['path'] for r in files}
+for r in files:
+ b=(P/r['path']).read_bytes();assert len(b)==r['bytes'] and sha(b)==r['sha256']
+summary={'result':'frozen_pass','root':str(P),'artifact_manifest_sha256':sha(m.read_bytes()),'artifact_files':len(files),'handoff_sha256':sha((P/'HANDOFF.md').read_bytes()),'candidate_lookup_sha256':sha((P/'candidate-lookup.final.json').read_bytes()),'record_author_lookup_sha256':sha((P/'record-author-name-category-lookup.final.json').read_bytes()),'compact_manifest_sha256':sha(mp.read_bytes()),'compact_counts':manifest['counts'],'actual_final_record_selection_bound':False,'maintained_writes':False};out=Path('/private/tmp/pathwaymech-next-263-authority-author-freeze.json');assert not out.exists();out.write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary,indent=2))

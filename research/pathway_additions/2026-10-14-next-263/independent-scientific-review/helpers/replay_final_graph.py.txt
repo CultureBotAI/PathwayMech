@@ -1,0 +1,50 @@
+import collections,datetime,gzip,hashlib,json,pathlib,re,xml.etree.ElementTree as E,yaml
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-canonical-science');R=pathlib.Path('/private/tmp/pathwaymech-next-263-20261014');P=R/'data/pathways/catechol-degradation-iii.yaml';d=yaml.safe_load(P.read_text())
+def binding(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+routepath=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-chemistry/checks/independent-route.json');r=json.loads(routepath.read_text());refs={x['id']:x for x in d['references']};edges={x['id']:x for x in d['mechanistic_edges']};nodes={x['id']:x for kind in ['taxa','participants','reactions'] for x in d[kind]};nodes[d['id']]=d
+assert len(nodes)==123 and len(edges)==117 and len(refs)==211
+for e in edges.values():assert e['subject'] in nodes and e['object'] in nodes
+native_to_rhea={x['native_reaction']:x['rhea_directional_accession'] for x in r['reactions']};formal=[]
+for x in r['reactions']:
+ rid=x['rhea_directional_accession'];ins={};outs={}
+ for e in edges.values():
+  if e['predicate']=='consumes' and e['object']==rid:ins[e['subject']]=int(re.search(r'coefficient (\d+)',e['description']).group(1))
+  if e['predicate']=='produces' and e['subject']==rid:outs[e['object']]=int(re.search(r'coefficient (\d+)',e['description']).group(1))
+ assert ins==x['inputs'] and outs==x['outputs'];assert nodes[rid]['label']==x['rhea_equation'];assert binding(pathlib.Path(x['native_binding']['path']))==x['native_binding']
+ formal.append({'id':rid,'inputs':ins,'outputs':outs,'direction':nodes[rid]['direction'],'equation':nodes[rid]['label']})
+assert sum(len(x['inputs'])+len(x['outputs']) for x in formal)==21
+net=collections.Counter()
+for x in formal:
+ for k,v in x['inputs'].items():net[k]-=v
+ for k,v in x['outputs'].items():net[k]+=v
+assert {k:-v for k,v in net.items() if v<0}==r['net']['inputs'] and {k:v for k,v in net.items() if v>0}==r['net']['outputs'];assert net['CHEBI:57292']==0
+joins=[]
+for j in r['joins']:
+ a,b=native_to_rhea[j['source']],native_to_rhea[j['target']];matched=[e for e in edges.values() if e['predicate']=='provides_input_for' and e['subject']==a and e['object']==b];assert len(matched)==1 and j['chebi'] in matched[0]['description'];assert len([e for e in edges.values() if e['predicate']=='precedes' and e['subject']==a and e['object']==b])==1;joins.append({'edge':matched[0]['id'],'from':a,'to':b,'chemical':j['chebi']})
+original=pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry/originals/rhea.rdf.gz');assert binding(original)==r['rhea_scan']['original'];rdf='{http://www.w3.org/1999/02/22-rdf-syntax-ns#}';rh='{http://rdf.rhea-db.org/}';wanted={f'http://rdf.rhea-db.org/{x["id"].split(":")[1]}' for x in formal};selected={}
+with gzip.open(original,'rb') as f:
+ for _,el in E.iterparse(f,events=['end']):
+  if el.tag==rdf+'Description':
+   about=el.get(rdf+'about')
+   if about in wanted:selected[about]=E.tostring(el,encoding='unicode')
+   el.clear()
+assert len(selected)==6
+for x in formal:
+ el=E.fromstring(selected['http://rdf.rhea-db.org/'+x['id'].split(':')[1]]);eq=el.findtext(rh+'equation');assert eq==x['equation'];x['substrates']=el.find(rh+'substrates').get(rdf+'resource');x['products']=el.find(rh+'products').get(rdf+'resource');ds=x['substrates'][-1]+x['products'][-1];assert {'LR':'left_to_right','RL':'right_to_left'}[ds]==x['direction'];x['issuing_direction']=ds
+directionfile=pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry/originals/rhea-directions.tsv');directionrows=[line.split('\t') for line in directionfile.read_text().splitlines()];assert directionrows[0]==['RHEA_ID_MASTER','RHEA_ID_LR','RHEA_ID_RL','RHEA_ID_BI'];selecteddirections=[]
+for x in formal:
+ matches=[row for row in directionrows[1:] if x['id'].split(':')[1] in row[1:3]];assert len(matches)==1;row=matches[0];assert row[1 if x['issuing_direction']=='LR' else 2]==x['id'].split(':')[1];selecteddirections.append(row)
+sp=O/'inspection/six-selected-complete-rhea-subjects.json.gz';raw=json.dumps(selected,indent=2,sort_keys=True).encode()+b'\n';sp.write_bytes(gzip.compress(raw,mtime=0))
+lead=pathlib.Path('/private/tmp/pathwaymech-next-263-record-author/complete-reference-artifact-bindings.json');rows=json.loads(lead.read_text());assert {x['reference_id'] for x in rows}==set(refs);checked=[]
+for row in rows:
+ ref=refs[row['reference_id']];assert ref['source_sha256']==row['sha256'];bindings=[]
+ if ref['id'] in ['CHEBI:16810','CHEBI:17128']:
+  assert ref['source_sha256']=='26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f';mode='whole-database original digest uses source-author full-hash receipt, independent fresh selected SQL and exact stat check in context-chemistry-independent.json'
+ else:
+  for p in row['matching_original_or_reading_paths']:
+   b=binding(pathlib.Path(p));assert b['sha256']==ref['source_sha256'];bindings.append(b)
+  assert bindings;mode='complete referenced file independently rehashed; exact bytes equal maintained source_sha256'
+ checked.append({'reference_id':ref['id'],'bindings':bindings,'mode':mode})
+output={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':binding(P),'independent_prior_route':binding(routepath),'node_count':len(nodes),'edge_count':len(edges),'reference_count':len(refs),'predicate_counts':dict(collections.Counter(e['predicate'] for e in edges.values())),'formal_reactions':formal,'joins':joins,'net_inputs':r['net']['inputs'],'net_outputs':r['net']['outputs'],'cancelled_succinyl_CoA':True,'Rhea_original':binding(original),'complete_selected_RDF':{'stored':binding(sp),'decoded_sha256':hashlib.sha256(raw).hexdigest(),'decoded_bytes':len(raw)},'direction_TSV':binding(directionfile),'selected_direction_rows':selecteddirections,'reference_bindings':checked,'limitations':['Checks exact identifiers, whole formal equations, source-direction metadata, material coefficients stated in edge descriptions, net cancellation and reference-byte provenance. Scientific organism/preparation/assay interpretation requires independent original readings, not these counts.','Whole ChEBI database digest is transparently reused from fully bound hash receipt; no claim this replay independently rehashed4GB.']}
+(O/'checks/final-graph-reference-replay.json').write_text(json.dumps(output,indent=2,sort_keys=True)+'\n');print(json.dumps({'target_sha':output['target']['sha256'],'formal_equations':6,'material_entries':21,'joins':5,'references':211,'result':'pass'}))

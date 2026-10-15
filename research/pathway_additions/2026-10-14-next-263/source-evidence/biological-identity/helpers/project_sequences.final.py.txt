@@ -1,0 +1,60 @@
+from pathlib import Path
+import json,re,hashlib,itertools,xml.etree.ElementTree as E
+P=Path('/private/tmp/pathwaymech-next-263-biological-identity');O=P/'originals';sha=lambda b:hashlib.sha256(b).hexdigest();bind=lambda p:{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())}
+code=dict(zip((''.join(x) for x in itertools.product('TCAG',repeat=3)),'FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'))
+def parse(p):
+ s=p.read_text();lines=s.splitlines();embl=p.suffix=='.embl';features=[];f=None;sequence='';started=False
+ for idx,line in enumerate(lines,1):
+  if line.startswith('SQ ' if embl else 'ORIGIN'):started=True;continue
+  if started:
+   if line.startswith('//'):break
+   sequence+=''.join(re.findall('[A-Za-z]+',line)).upper();continue
+  if embl and not line.startswith('FT'):continue
+  if not embl and not line.startswith('     '):continue
+  key=line[5:21].strip();value=line[21:]
+  if key:
+   if re.fullmatch('[A-Za-z_]+',key):f={'key':key,'line_start':idx,'raw':[value]};features.append(f)
+   else:f=None
+  elif f is not None:f['raw'].append(value)
+ for f in features:
+  text='\n'.join(f['raw']);f['location']=text.split('/')[0].replace('\n','').strip();f['qualifiers']={}
+  for match in re.finditer(r'/([A-Za-z_0-9]+)(?:=("[^"]*"|[^\n]+))?',text):
+   value=match.group(2);value=value[1:-1] if value and value.startswith('"') else value
+   if value:value=re.sub(r'\s+','' if match.group(1)=='translation' else ' ',value).strip()
+   f['qualifiers'].setdefault(match.group(1),[]).append(value)
+  f.pop('raw')
+ return {'source':bind(p),'sequence':sequence,'features':features}
+def extract(seq,loc):
+ if loc.startswith('complement('):return extract(seq,loc[11:-1]).translate(str.maketrans('ACGT','TGCA'))[::-1]
+ if loc.startswith('join('):return ''.join(extract(seq,x) for x in loc[5:-1].split(','))
+ a,b=map(int,loc.replace('<','').replace('>','').split('..'));return seq[a-1:b]
+def translation(seq):return ''.join(code.get(seq[i:i+3],'X') for i in range(0,len(seq)-2,3))
+nucleotides={};cds=[]
+for p in sorted(list(O.glob('ENA-*.embl'))+[O/'NCBI-AY029000.gb',O/'NCBI-M19460.gb']):
+ j=parse(p);nucleotides[p.name]=j
+ for f in j['features']:
+  if f['key']!='CDS' or 'translation' not in f['qualifiers']:continue
+  q=f['qualifiers'];dna=extract(j['sequence'],f['location']);offset=int(q.get('codon_start',['1'])[0])-1;aa=translation(dna[offset:]).removesuffix('*');expected=q['translation'][0];start_normalized=False
+  if aa!=expected and aa[1:]==expected[1:] and aa[0] in ['V','L'] and expected[0]=='M':aa='M'+aa[1:];start_normalized=True
+  cds.append({'source':j['source'],'source_feature_line':f['line_start'],'location':f['location'],'qualifiers':q,'nucleotide_length':len(dna),'translated_sequence':aa,'deposited_translation':expected,'translation_exact':aa==expected,'table11_initiator_normalized':start_normalized,'first_codon':dna[offset:offset+3]})
+  assert aa==expected,(p.name,q.get('protein_id'),len(aa),len(expected))
+(P/'deposited-cds-projection.final.json').write_text(json.dumps({'original_nucleotide_count':len(nucleotides),'cds_rows':cds,'translation_method':'Direct exact deposited coordinates, complement/join, codon_start and standard bacterial genetic code; alternative initiator normalized to Met only when all other residues match and first codon permits. All deposited translations independently reproduced; no assay-function inference.'},indent=2)+'\n')
+uniprots={p.stem.split('-',1)[1]:json.loads(p.read_text()) for p in O.glob('UniProt-*.json')};proteins={p.name[len('NCBI-protein-'):-3]:parse(p) for p in O.glob('NCBI-protein-*.gb')};pairs=[]
+for a in json.loads((P/'native-biological-selection.json').read_text())['issuing_leads']['uniprot']:
+ j=uniprots[a]
+ embl=[x for x in j.get('uniProtKBCrossReferences',[]) if x['database']=='EMBL']
+ if not embl:continue
+ ref=next(x['value'] for x in embl[0]['properties'] if x['key']=='ProteinId');pr=proteins[ref];us=j['sequence']['value'];ps=pr['sequence']
+ conflicts=[f for f in j.get('features',[]) if f['type']=='Sequence conflict' and ref.split('.')[0] in f.get('description','')]
+ reconstructed=us
+ for f in sorted(conflicts,key=lambda f:f['location']['start']['value'],reverse=True):
+  start=f['location']['start']['value']-1;end=f['location']['end']['value'];alt=f['alternativeSequence'];assert us[start:end]==alt['originalSequence'];assert len(alt['alternativeSequences'])==1;reconstructed=reconstructed[:start]+alt['alternativeSequences'][0]+reconstructed[end:]
+ pairs.append({'uniprot':a,'protein':ref,'exact_sequence':us==ps,'annotated_sequence_conflicts':conflicts,'issuer_conflict_reconstruction_matches':reconstructed==ps,'length':len(us),'sequence_sha256':sha(us.encode()),'uniprot_original':bind(O/('UniProt-'+a+'.json')),'protein_original':pr['source'],'uniprot_organism':j['organism'],'protein_source_features':[f for f in pr['features'] if f['key']=='source']})
+historical={'Q0VH42':'ABH07022.1','Q4KPK2':'AAY23362.2','A0F0B5':'ABI93947.1','A0F0B3':'ABI93945.1','A0F0B4':'ABI93946.1','P00948':'AAA25767.1','P08310':'AAA25766.1','Q01103':'AAA25922.1','P0A102':'AAA25923.1','Q51956':'AAA85138.1','Q845J8':'CAD76924.1','Q52154':'AAA57136.1'};comparisons=[]
+for a,ref in historical.items():
+ row=next(r for r in cds if r['qualifiers'].get('protein_id')==[ref]);cs=row['translated_sequence'];us=uniprots[a]['sequence']['value'];r={'uniprot':a,'deposited_protein':ref,'deposited_source':row['source'],'exact_sequence':cs==us,'deposited_length':len(cs),'current_uniprot_length':len(us),'deposited_sequence_sha256':sha(cs.encode()),'current_sequence_sha256':sha(us.encode()),'gene':row['qualifiers'].get('gene'),'location':row['location']}
+ if len(cs)==len(us):r['substitutions']=[{'position':i,'deposited':c,'current':u} for i,(c,u) in enumerate(zip(cs,us),1) if c!=u]
+ else:r['disposition']='Unequal sequence lengths; no exact native preparation equivalence asserted.'
+ comparisons.append(r)
+(P/'sequence-cross-source-comparisons.final.json').write_text(json.dumps({'current_uniprot_to_first_deposited_protein_pairs':pairs,'native_cloned_cds_to_current_uniprot':comparisons,'inactive_accession':'Q9AEQ0 remains inactive without sequence; no replacement accession is inferred.'},indent=2)+'\n')
+print(json.dumps({'nucleotide_originals':len(nucleotides),'all_CDS_translations_reproduced':len(cds),'current_uniprot_protein_pairs':len(pairs),'exact_current_pairs':sum(r['exact_sequence'] for r in pairs),'all_nonexact_pairs_explained_by_issuing_conflicts':all(r['exact_sequence'] or r['issuer_conflict_reconstruction_matches'] for r in pairs),'native_clone_comparisons':comparisons},indent=2))

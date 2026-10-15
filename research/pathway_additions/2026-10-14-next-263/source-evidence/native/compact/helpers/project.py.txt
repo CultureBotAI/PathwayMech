@@ -1,0 +1,24 @@
+import pathlib,json,xml.etree.ElementTree as E,hashlib,re,html,collections
+root=pathlib.Path('/private/tmp/pathwaymech-next-263-native');rows=[]; inventory=[]
+selections=json.loads((root/'source-selections.json').read_text()) if (root/'source-selections.json').exists() else {}
+for original_p in sorted((root/'originals').glob('*.xml')):
+ p=pathlib.Path(selections.get(original_p.stem.removeprefix('META-'),str(original_p)))
+ try:x=E.parse(p).getroot()
+ except E.ParseError:continue
+ frame=p.stem.removeprefix('META-');els=[e for e in x if e.get('frameid')==frame and e.get('detail')=='full']
+ if len(els)!=1:continue
+ e=els[0];row={'frame':frame,'type':e.tag,'file':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'version':x.find('metadata/PGDB').get('version'),'slots':[]};counts=collections.Counter()
+ for c in e:
+  counts[c.tag]+=1;loc=f'/ptools-xml/{e.tag}[@frameid="{frame}"]/{c.tag}[{counts[c.tag]}]'
+  text=c.text or '';plain=html.unescape(re.sub('<[^>]+>',' ',text));plain=re.sub(r'\s+',' ',plain).strip()
+  slot={'slot':c.tag,'ordinal':counts[c.tag],'locator':loc,'text':text,'plain_text':plain,'direct_children':[dict(type=v.tag,**v.attrib,text=v.text or '') for v in c], 'references':[{'type':v.tag,**v.attrib} for v in c.iter() if v.get('frameid')],'xml':E.tostring(c,encoding='unicode')}
+  row['slots'].append(slot);inventory.append({'frame':frame,'type':e.tag,'slot':c.tag,'ordinal':counts[c.tag],'locator':loc,'text':plain,'references':[v.get('frameid') for v in c if v.get('frameid')]})
+ rows.append(row)
+(root/'native-full-object-projection.json').write_text(json.dumps(rows,indent=2)+'\n');(root/'native-slot-inventory.json').write_text(json.dumps(inventory,indent=2)+'\n')
+with (root/'native-reading.txt').open('w') as f:
+ for r in rows:
+  f.write('\n### '+r['frame']+' ['+r['type']+']\n')
+  for s in r['slots']:
+   if s['slot'] not in ('credits','parent','common-name','synonym','citation','dblink','names','molecular-weight-seq','molecular-weight-exp','data-source','accession-1','accession-2'):
+    f.write(s['slot']+': '+s['plain_text']+' '+json.dumps(s['direct_children'],ensure_ascii=False)+'\n')
+print(json.dumps({'objects':len(rows),'slots':len(inventory),'types':dict(collections.Counter(r['type'] for r in rows)),'reading_lines':sum(1 for _ in (root/'native-reading.txt').open())}))

@@ -1,0 +1,19 @@
+import csv,datetime,hashlib,json,pathlib,yaml
+R=pathlib.Path('/private/tmp/pathwaymech-next-263-20261014');O=pathlib.Path('/private/tmp/pathwaymech-next-263-review-finalization');P=R/'data/pathways/catechol-degradation-iii.yaml';d=yaml.safe_load(P.read_text());target=d['id'];refs={r['id']:r for r in d['references']}
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+def rows(path):
+ with path.open() as f:return list(csv.DictReader(f,delimiter='\t'))
+np=R/'pages/downloads/nodes.tsv';ep=R/'pages/downloads/edges.tsv';nodes={r['id']:r for r in rows(np)};selected=[r for r in rows(ep) if r['id'].startswith('pathwaymech:MetaCyc_PWY-5417_')];assert len(selected)==117;edgeproof=[]
+for e in d['mechanistic_edges']:
+ match=[r for r in selected if r['id'].startswith('pathwaymech:MetaCyc_PWY-5417_'+e['id']+'_')];assert len(match)==1;r=match[0];pred={'has_part':'BFO:0000051','provides_input_for':'RO:0002413'}.get(e['predicate'],'pathwaymech:'+e['predicate']);assert (r['subject'],r['predicate'],r['object'])==(e['subject'],pred,e['object']);assert r['description']==e['description'];assert json.loads(r['evidence'])==e['evidence'];assert (json.loads(r['endpoint_qualifiers']) if r['endpoint_qualifiers'] else [])==e.get('endpoint_qualifiers',[]);sources={x['reference_id'] for x in e['evidence']}
+ for q in e.get('endpoint_qualifiers',[]):sources.update(x['reference_id'] for x in q['evidence'])
+ assert set(r['source_records'].split('|'))==sources;assert {x['id']:x for x in json.loads(r['reference_metadata'])}=={k:refs[k] for k in sources};edgeproof.append({'edge':e['id'],'kgx_id':r['id'],'predicate':pred,'edge_evidence':len(e['evidence']),'qualifiers':len(e.get('endpoint_qualifiers',[])),'exact_source_refs':sorted(sources)})
+nodeproof=[]
+for section in ['taxa','participants','reactions']:
+ for n in d[section]:
+  contexts=[c for c in json.loads(nodes[n['id']]['source_contexts']) if c['record_id']==target];assert len(contexts)==1;assert contexts[0]=={'record_id':target,'collection':section,**n};nodeproof.append({'id':n['id'],'context':contexts[0]})
+assert len(nodeproof)==122
+parent=[c for c in json.loads(nodes[target]['source_contexts']) if c['record_id']==target];assert parent==[{'record_id':target,'collection':'pathway','label':d['label']}]
+assert [x for x in nodeproof if x['id']=='RHEA:30033'][0]['context']['direction']=='right_to_left';assert [x for x in nodeproof if x['id']=='RHEA:19483'][0]['context']['direction']=='right_to_left'
+out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':bind(P),'nodes':bind(np),'edges':bind(ep),'selected_edge_count':117,'selected_node_context_count':123,'edge_checks':edgeproof,'node_checks':nodeproof,'interpretation':'All selected edges retain exact endpoints, mapped predicates, complete evidence, reference metadata and endpoint qualifiers. Source_records contains supporting referenceIDs rather than owning pathwayID; exact edgeID prefix selects the pathway. Node direction is independently verified in the record-scoped source_context rather than guessed from merged global label.','scope':'Production Pages download TSVs from completed render; parent later CLI export equality remains separate.'};(O/'kgx-scientific-scope.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n');print(json.dumps({'edges':117,'node_contexts':123,'result':'pass'}))

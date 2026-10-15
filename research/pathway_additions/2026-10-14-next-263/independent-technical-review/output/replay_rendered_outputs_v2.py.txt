@@ -1,0 +1,61 @@
+from pathlib import Path
+import json,hashlib,datetime,subprocess,csv,sys,html,re,yaml
+from html.parser import HTMLParser
+R=Path('/private/tmp/pathwaymech-next-263-20261014');O=Path('/private/tmp/pathwaymech-next-263-independent-technical');expected='b30573a380b358a9b0228f8e3e2689943ecf828aa01ae790f281ba3fe617e603';sha=lambda b:hashlib.sha256(b).hexdigest();target=R/'data/pathways/catechol-degradation-iii.yaml';raw=target.read_bytes();assert sha(raw)==expected;r=yaml.safe_load(raw);page=R/'pages/records/MetaCyc_PWY-5417.html';pagebytes=page.read_bytes();files=[target,page,R/'pages/downloads/nodes.tsv',R/'pages/downloads/edges.tsv'];bindings={str(p.relative_to(R)):{'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())} for p in files}
+cmd=['/private/tmp/pathwaymech-next-195-20261011/.venv/bin/python','-B','scripts/record_review.py','inspect','--targets',str(O/'targets.initial.yaml')]
+for p in files[1:]:cmd+=['--input',str(p.relative_to(R))]
+p=subprocess.run(cmd,cwd=R,capture_output=True);(O/'inspect.outputs.json').write_bytes(p.stdout);(O/'inspect.outputs.stderr').write_bytes(p.stderr);(O/'inspect.outputs.receipt.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'command':cmd,'exit_code':p.returncode},indent=2)+'\n');assert p.returncode==0
+class Node:
+ def __init__(self,tag,attrs):self.tag=tag;self.attrs=dict(attrs);self.children=[]
+ def all(self,pred):return ([self] if pred(self) else [])+[v for c in self.children if isinstance(c,Node) for v in c.all(pred)]
+ def text(self):return ''.join(x.text() if isinstance(x,Node) else x for x in self.children)
+class Parser(HTMLParser):
+ def __init__(self):super().__init__(convert_charrefs=True);self.root=Node('root',[]);self.stack=[self.root]
+ def handle_starttag(self,tag,attrs):
+  n=Node(tag,attrs);self.stack[-1].children.append(n)
+  if tag not in ['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']:self.stack.append(n)
+ def handle_endtag(self,tag):
+  for i in range(len(self.stack)-1,0,-1):
+   if self.stack[i].tag==tag:self.stack=self.stack[:i];break
+ def handle_data(self,data):self.stack[-1].children.append(data)
+p=Parser();p.feed(pagebytes.decode());doc=p.root;nodes=doc.all(lambda n:'graph-node' in n.attrs.get('class','').split() and 'data-node-id' in n.attrs);edges=doc.all(lambda n:'graph-edge' in n.attrs.get('class','').split());ids={};allnodes=doc.all(lambda n:True)
+for n in allnodes:
+ if n.attrs.get('id'):assert n.attrs['id'] not in ids,('duplicate fragment',n.attrs['id']);ids[n.attrs['id']]=n
+links=[n.attrs['href'][1:] for n in allnodes if n.attrs.get('href','').startswith('#')];assert all(x in ids for x in links)
+assert len(edges)==117;assert len({n.attrs['href'] for n in edges})==117;edgeby={n.attrs['href']:n for n in edges};qualifiers=[];quotes=0;assertions=0;locators=0
+refs={x['id']:x for x in r['references']};refanchors={x['id']:f'reference-{i}' for i,x in enumerate(r['references'],1)}
+def evidence_assert(items,scope):
+ global quotes,assertions,locators
+ for e in items:
+  assert e['reference_id'] in scope.text();assert scope.all(lambda n:n.tag=='a' and n.attrs.get('href')=='#'+refanchors[e['reference_id']])
+  if 'quote' in e:assert any(n.text()==e['quote'] for n in scope.all(lambda n:n.tag=='blockquote'));quotes+=1
+  else:assert e['source_assertion'] in scope.text();assertions+=1
+  if e.get('source_locator'):assert e['source_locator'] in scope.text();locators+=1
+for i,e in enumerate(r['mechanistic_edges'],1):
+ a=edgeby[f'#mechanism-edge-{i}'];tr=ids[f'mechanism-edge-{i}'];cells=[c for c in tr.children if isinstance(c,Node) and c.tag=='td'];assert len(cells)==4;assert e['subject'] in cells[0].text() and e['object'] in cells[2].text();assert e['description'] in cells[1].text();assert a.attrs['data-predicate']==e['predicate'];assert e['description'] in a.attrs['aria-label'];qmap={q['endpoint']:q for q in e.get('endpoint_qualifiers',[])}
+ for role in ['subject','object']:
+  expectedid=f'qualified-endpoint-{i}-{role}' if role in qmap else e[role];assert a.attrs['data-'+role]==expectedid
+  if role in qmap:
+   q=qmap[role];qnode=[n for n in nodes if n.attrs['data-node-id']==expectedid];assert len(qnode)==1 and qnode[0].attrs['data-base-node-id']==e[role] and qnode[0].attrs['data-qualified']=='true';assert q['description'] in qnode[0].attrs['aria-label'];qscope=ids[f'mechanism-edge-{i}-qualifier-{role}'];assert q['description'] in qscope.text();evidence_assert(q['evidence'],qscope);qualifiers.append({'edge':e['id'],'endpoint':role,'display_id':expectedid,'base_id':e[role]})
+ paths=a.all(lambda n:'graph-edge-line' in n.attrs.get('class','').split());assert len(paths)==1 and paths[0].attrs['marker-end'].startswith('url(#')
+ evidence_assert(e['evidence'],cells[3])
+baseids={x['id'] for f in ['participants','reactions'] for x in r[f]};endpoints={e[k] for e in r['mechanistic_edges'] for k in ['subject','object']};baseids|={x['id'] for x in r['taxa'] if x['id'] in endpoints}
+if r['id'] in endpoints:baseids.add(r['id'])
+actualbase={n.attrs['data-node-id'] for n in nodes if not n.attrs.get('data-qualified')};assert actualbase==baseids;assert len(nodes)==len(baseids)+len(qualifiers)
+for ref in r['references']:
+ n=ids[refanchors[ref['id']]];assert ref['id'] in n.text() and ref['source_version'] in n.text();assert any(x.attrs.get('href')==ref['url'] for x in n.all(lambda x:x.tag=='a'))
+# Exact all-node contexts and all-edge payloads from the actual generated download pair.
+csv.field_size_limit(100000000);nr=list(csv.DictReader((R/'pages/downloads/nodes.tsv').open(),delimiter='\t'));er=list(csv.DictReader((R/'pages/downloads/edges.tsv').open(),delimiter='\t'));targetedges=[e for e in er if e['id'].startswith('pathwaymech:MetaCyc_PWY-5417_')];assert len(targetedges)==117;assert len({e['id'] for e in targetedges})==117
+preds={'provides_input_for':'RO:0002413','part_of':'BFO:0000050','has_part':'BFO:0000051','occurs_in':'BFO:0000066','located_in':'RO:0001025','causally_upstream_of':'RO:0002411','has_input':'RO:0002233','has_output':'RO:0002234'}
+for e in r['mechanistic_edges']:
+ matches=[x for x in targetedges if x['id'].startswith('pathwaymech:MetaCyc_PWY-5417_'+e['id']+'_')];assert len(matches)==1;x=matches[0];assert (x['subject'],x['predicate'],x['object'])==(e['subject'],preds.get(e['predicate'],'pathwaymech:'+e['predicate']),e['object']);assert x['description']==e['description'].strip();assert json.loads(x['evidence'])==e['evidence'];assert json.loads(x['endpoint_qualifiers'] or '[]')==e.get('endpoint_qualifiers',[]);refids={v['reference_id'] for v in e['evidence']}|{v['reference_id'] for q in e.get('endpoint_qualifiers',[]) for v in q['evidence']};assert x['source_records'].split('|')==sorted(refids);assert json.loads(x['reference_metadata'])==[refs[k] for k in sorted(refids)];assert x['category']=='biolink:Association' and x['primary_knowledge_source']=='infores:pathwaymech'
+expectedcontexts={r['id']:{'record_id':r['id'],'collection':'pathway','label':r['label']}}
+for field in ['taxa','participants','reactions']:
+ for x in r[field]:expectedcontexts[x['id']]={'record_id':r['id'],'collection':field,**x}
+contexts={};selectedrows=[]
+for row in nr:
+ ours=[x for x in json.loads(row['source_contexts']) if x['record_id']==r['id']]
+ if ours:assert len(ours)==1;contexts[row['id']]=ours[0];selectedrows.append(row)
+assert contexts==expectedcontexts and len(contexts)==123
+for p in files:assert sha(p.read_bytes())==bindings[str(p.relative_to(R))]['sha256']
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_sha256':expected,'input_bindings':bindings,'generated_svg_edges':len(edges),'edge_evidence_rows':117,'base_diagram_nodes':len(baseids),'qualified_display_nodes':len(qualifiers),'total_diagram_nodes':len(nodes),'complete_endpoint_qualifiers':qualifiers,'quote_occurrences':quotes,'source_assertion_occurrences':assertions,'source_locator_occurrences':locators,'reference_anchors':len(refs),'all_internal_fragments_resolve':len(links),'kgx_complete_target_edges':len(targetedges),'kgx_complete_target_node_contexts':len(contexts),'kgx_full_export_node_rows':len(nr),'kgx_full_export_edge_rows':len(er),'all_changed_descriptions_and_reference_metadata_propagate':True,'limits':['Static actual generated HTML/SVG and downloadable KGX inspected without re-rendering; browser interaction and visual layout checks remain pending.','Whole-corpus export shared-node global roles may combine records; exact record-local source_contexts checked instead of overwriting global merged semantics.'],'failures':[]};(O/'rendered-output-replay.json').write_text(json.dumps(result,indent=2)+'\n');(O/'generated-kgx-target-edges.json').write_text(json.dumps(targetedges,indent=2,ensure_ascii=False)+'\n');(O/'generated-kgx-target-nodes.json').write_text(json.dumps(selectedrows,indent=2,ensure_ascii=False)+'\n');print(json.dumps({k:v for k,v in result.items() if k!='complete_endpoint_qualifiers'},indent=2))

@@ -1,0 +1,187 @@
+"""Preserve failed verification, then retain frozen reviews and a lossless source successor."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import importlib.util
+import json
+import os
+import shutil
+import subprocess
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-20261014')
+CI = Path('/private/tmp/pathwaymech-next-263-ci')
+RESEARCH = Path('research/pathway_additions/2026-10-14-next-263')
+INITIAL = Path('/private/tmp/pathwaymech-next-263-checks-initial')
+PYTHON = '/private/tmp/pathwaymech-next-263-verified-venv/bin/python'
+PACKAGES = [
+    ('/private/tmp/pathwaymech-next-263-canonical-science/retention',
+     '303e29b55f5bd96e4dc541a591a25ba55dd0ed8ccb87eb581b5f06c24a642358',
+     'independent-scientific-review'),
+    ('/private/tmp/pathwaymech-next-263-independent-technical/integration-review-retention',
+     '8312465acb6fa21ece1f4e9e4b429cde9bc3697c36946f54a5ec8b5ea18bf0a9',
+     'independent-technical-review/integration'),
+    ('/private/tmp/pathwaymech-next-263-independent-technical/output-review-retention',
+     'de8a27b358608509226ad857edfa0953fcd53f2c03a106f2f02bffaeafa0b1b7',
+     'independent-technical-review/output'),
+    ('/private/tmp/pathwaymech-next-263-review-finalization/generated-retention',
+     '696d489ee7b418ec3e9572b035a32f4d88ef097e6f765213a0438a960650cf72',
+     'independent-scientific-review/generated-verification'),
+]
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def write_new(path, content):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('xb') as stream:
+        stream.write(content)
+
+
+def main():
+    receipts = json.loads((INITIAL / 'receipts.json').read_text())
+    assert len(receipts) == 3, 'Observe the initial run until its test receipt is terminal.'
+    assert [r['command'] for r in receipts] == [
+        ['just', 'render-pages'], ['just', 'validate'], ['just', 'test']]
+    assert [r['exit_code'] for r in receipts[:2]] == [0, 0]
+    assert receipts[2]['exit_code'] != 0
+    for row in receipts:
+        assert sha(Path(row['log_path']).read_bytes()) == row['log_sha256']
+    spec = importlib.util.spec_from_file_location('initial_gate_runner', CI / 'run_initial_checks.py')
+    initial = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(initial)
+    before = initial.inventory()
+    tested = json.loads((INITIAL / 'tested-core-input-hashes.json').read_text())
+    assert before == tested, 'Investigate changed tested inputs before retaining new evidence.'
+    assert not (CI / 'recovery-preparation.json').exists()
+    result = {
+        'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'initial_run': str(INITIAL),
+        'initial_receipts_sha256': sha((INITIAL / 'receipts.json').read_bytes()),
+        'initial_test_exit_code': receipts[2]['exit_code'],
+        'initial_tested_input_count': len(tested),
+        'all_initial_tested_inputs_unchanged_before_retention': True,
+        'environment_recovery': {
+            'environment': str(Path(PYTHON).parent.parent),
+            'sync_command': ['uv', 'sync', '--frozen', '--extra', 'dev', '--link-mode', 'copy'],
+            'sync_observation': 'Tool session 36004 completed with exit 0; 144 packages installed. Earlier offline attempt failed on uncached locked pandas 3.0.6, with no maintained-file edits.',
+            'lock_sha256': sha((ROOT / 'uv.lock').read_bytes()),
+            'project_sha256': sha((ROOT / 'pyproject.toml').read_bytes()),
+            'shared_environment_repaired': False,
+        },
+        'executions': [], 'packages': [],
+    }
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+               UV_CACHE_DIR='/private/tmp/pathwaymech-next-263-uv-cache')
+    commands = [
+        ['uv', 'pip', 'check', '--python', PYTHON],
+        ['uv', 'pip', 'list', '--python', PYTHON, '--format', 'json'],
+        [PYTHON, '-B', '-c',
+         'import sys,yaml,jsonschema,linkml,linkml_runtime,pytest; '
+         'print(sys.executable); print(yaml.__file__); print(pytest.__version__)'],
+    ]
+    for cmd in commands:
+        start = datetime.datetime.now(datetime.timezone.utc).isoformat()
+        run = subprocess.run(cmd, cwd=ROOT, env=env, capture_output=True, text=True)
+        result['executions'].append({'command': cmd, 'started_utc': start,
+                                     'exit_code': run.returncode,
+                                     'stdout': run.stdout, 'stderr': run.stderr})
+        assert run.returncode == 0, result['executions'][-1]
+    venv = Path(PYTHON).parent.parent
+    critical = ['pyvenv.cfg', 'bin/pytest', 'bin/pathwaymech-run-qc', 'bin/ruff',
+                'lib/python3.13/site-packages/yaml/__init__.py',
+                'lib/python3.13/site-packages/pytest/__init__.py',
+                'lib/python3.13/site-packages/jsonschema/__init__.py',
+                'lib/python3.13/site-packages/linkml/__init__.py',
+                'lib/python3.13/site-packages/linkml_runtime/__init__.py']
+    result['environment_recovery']['critical_file_hashes'] = {
+        str(venv / p): sha((venv / p).read_bytes()) for p in critical}
+    result['environment_recovery']['preflight_attempt_note'] = (
+        'An earlier standalone uv pip check omitted the task cache and failed on the sandboxed default cache. '
+        'The recorded preflight above explicitly uses the owned263 cache; no environment repair was made by that failed read.')
+    prepared = []
+    for directory, digest, destination in PACKAGES:
+        source = Path(directory)
+        manifest = source / 'artifact-manifest.json'
+        assert sha(manifest.read_bytes()) == digest
+        data = json.loads(manifest.read_text())
+        rows = data.get('artifacts', data.get('files'))
+        names = {row['path'] for row in rows}
+        actual = {str(p.relative_to(source)) for p in source.rglob('*') if p.is_file()}
+        assert actual == names | {'artifact-manifest.json'}
+        assert not any(p.is_symlink() for p in source.rglob('*'))
+        for row in rows:
+            stored = (source / row['path']).read_bytes()
+            assert sha(stored) == row.get('stored_sha256', row.get('sha256'))
+            assert len(stored) == row.get('stored_bytes', row.get('bytes'))
+            encoding = row['encoding']
+            assert encoding in {'identity', 'gzip', 'gzip_lossless'}
+            original = gzip.decompress(stored) if encoding != 'identity' else stored
+            assert sha(original) == row['original_sha256']
+            assert len(original) == row['original_bytes']
+            original_path = Path(row.get('source_path', row.get('original_path')))
+            assert original_path.read_bytes() == original
+        dest = ROOT / RESEARCH / destination
+        assert not dest.exists()
+        prepared.append((source, dest, digest, len(rows), actual))
+    raw_relative = RESEARCH / 'source-evidence/context-chemistry/originals/META-ADIPATE.xml'
+    raw_path = ROOT / raw_relative
+    raw = raw_path.read_bytes()
+    expected = '309935e81d0cfb42fd4cc2fbb5d51cba6980bb812f9183634abda58ea79c4466'
+    assert sha(raw) == expected
+    compressed_relative = Path(str(raw_relative) + '.gz')
+    compressed = gzip.compress(raw, mtime=0)
+    assert gzip.decompress(compressed) == raw
+    assert not (ROOT / compressed_relative).exists()
+    assert initial.inventory() == tested
+    # All checks above are read-only. These copies are exactly the independently frozen bytes.
+    for source, dest, digest, count, names in prepared:
+        shutil.copytree(source, dest)
+        for name in names:
+            assert (source / name).read_bytes() == (dest / name).read_bytes()
+        result['packages'].append({
+            'source': str(source), 'repository_path': str(dest.relative_to(ROOT)),
+            'manifest_sha256': digest, 'artifacts': count,
+            'all_stored_decoded_original_pairs_verified': True,
+            'ignored_and_hidden_inventory_included': True,
+        })
+    write_new(ROOT / compressed_relative, compressed)
+    raw_path.unlink()
+    storage = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'reason': 'Native source line 87 includes trailing whitespace; preserve original bytes in lossless gzip.',
+        'historical_repository_path': str(raw_relative),
+        'repository_path': str(compressed_relative),
+        'original_sha256': expected, 'original_bytes': len(raw),
+        'stored_sha256': sha(compressed), 'stored_bytes': len(compressed),
+        'encoding': 'gzip_lossless', 'decoded_bytes_exact': True,
+        'frozen_source_manifests_unchanged': True,
+        'predecessor_mapping_note': 'Earlier promotion receipts describe the original raw repository path. This successor supplies its current storage path without redefining frozen original or stored digests.',
+        'record_or_scientific_content_changed': False,
+    }
+    write_new(ROOT / RESEARCH / 'root-verification/context-adipate-storage-successor.json',
+              (json.dumps(storage, indent=2) + '\n').encode())
+    write_new(ROOT / RESEARCH / 'root-verification/independent-review-retention-promotion.json',
+              (json.dumps({'packages': result['packages']}, indent=2) + '\n').encode())
+    after = initial.inventory()
+    changed = {p: {'before': tested[p], 'after': after.get(p)}
+               for p in tested if after.get(p) != tested[p]}
+    added = {p: after[p] for p in after if p not in tested}
+    assert list(changed) == [str(raw_relative)]
+    assert changed[str(raw_relative)]['after'] is None
+    assert all(p.startswith(str(RESEARCH) + '/') for p in added)
+    result.update({'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'source_storage_successor': storage,
+                   'changed_initial_inputs': changed, 'added_inputs': added,
+                   'all_other_initial_inputs_unchanged': True,
+                   'render_and_validation_carried_forward': 'All data, authorities, code, schemas, generated pages, history and prior documentation bytes unchanged; only exact review artifacts added and one source XML losslessly stored.',
+                   'recovery_status': 'ready_for_successor_test_and_remaining_gates'})
+    write_new(CI / 'recovery-preparation.json', (json.dumps(result, indent=2) + '\n').encode())
+    print(json.dumps({'status': result['recovery_status'], 'unchanged_prior_inputs': len(tested) - 1,
+                      'added': len(added), 'storage_successors': 1, 'packages': result['packages']}))
+
+
+if __name__ == '__main__':
+    main()

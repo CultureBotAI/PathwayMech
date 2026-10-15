@@ -1,0 +1,82 @@
+#!/usr/bin/env python3
+"""Read-only verification; write output only when explicitly given --output."""
+import argparse,hashlib,json,tarfile,gzip
+from pathlib import Path
+from datetime import datetime,timezone
+P=Path(__file__).resolve().parents[1]
+N=Path('/private/tmp/pathwaymech-next-263-native')
+def h(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def j(p):return json.loads(p.read_text())
+def check(path,digest):
+ assert path.is_file(),str(path)
+ assert h(path)==digest,str(path)
+ return 1
+ap=argparse.ArgumentParser();ap.add_argument('--output');a=ap.parse_args()
+checks={}
+expected='302c4e494f3bfc92f4062e223f5bf7316451e29bc1e4ca52e97b32d70671abcc'
+check(N/'artifact-manifest.json',expected)
+checks['frozen_native_files_unchanged']=sum(check(N/x['path'],x['sha256']) for x in j(N/'artifact-manifest.json')['files'])
+catalog=j(P/'source-access-and-reading-ledger.json')
+assert len(catalog)==48 and sum(x['role']=='native_lead' for x in catalog)==42
+for r in catalog:
+ check(P/r['metadata']['path'],r['metadata']['sha256'])
+ m=j(P/r['metadata']['path'])['resultList']['result'];assert len(m)==1 and m[0]['id']==r['pmid']
+ if 'reading_artifact'in r:check(P/r['reading_artifact']['path'],r['reading_artifact']['sha256'])
+checks['exact_metadata_bindings']=len(catalog)
+checks['reused_originals']=sum(check(P/x['path'],x['sha256']) for x in j(P/'reused-fulltext-bindings.json'))
+checks['web_receipt_bindings']=sum(check(P/r['path'],r['sha256']) for x in j(P/'web-transformation-bindings.json') for r in x['receipts'])
+checks['web_derived_bindings']=sum(check(P/x['derived'],x['sha256']) for x in j(P/'web-transformation-bindings.json'))
+for f in ['text-transformations.json','ocr-transformations.json']:
+ count=0
+ for x in j(P/f):
+  count+=check(P/x['derived'],x['sha256'])
+  if 'source' in x:count+=check(P/x['source'],x['source_sha256'])
+  else:count+=sum(check(P/r['path'],r['sha256']) for r in x['receipts'])
+ checks[f]=count
+for x in j(P/'reading-flow-transformations.json'):
+ check(P/x['source']['path'],x['source']['sha256']);check(P/x['derived']['path'],x['derived']['sha256'])
+C=j(P/'source-supported-claims.json');ids={x['id']for x in C};assert len(ids)==len(C)==63
+for c in C:
+ assert c['pmid']in{x['pmid']for x in catalog}
+ check(P/c['support']['path'],c['support']['sha256'])
+ assert 'source_assertion'not in c and 'quoted_text'not in c
+checks['bound_authored_claims']=len(C)
+A=j(P/'formal-activity-primary-coverage.json');assert len(A)==20 and len({x['enzyme']for x in A})==19
+for x in A:
+ assert set(x['claim_ids'])<=ids
+ for key in ['native_activity_original','native_enzyme_original']:check(Path(x[key]['path']),x[key]['sha256'])
+checks['formal_activities']=len(A)
+D=j(P/'native-conflict-primary-dispositions.json');assert len(D)==18
+assert {x['id']for x in D}=={f'N263-{i:02}'for i in range(1,19)}
+for x in D:
+ assert set(x['claim_ids'])<=ids
+ for b in x['native_bindings']:check(Path(b['path']),b['sha256'])
+checks['native_conflicts']=len(D)
+R=j(P/'regulator-target-and-reagent-assessment.json');assert len(R)==6
+checks['regulators_with_wrong_native_target']=sum('Reject native target' in x['decision']for x in R);assert checks['regulators_with_wrong_native_target']==3
+for x in R:
+ for k in ['native_original','native_regulator_original']:check(Path(x[k]['path']),x[k]['sha256'])
+ check(P/x['primary_artifact']['path'],x['primary_artifact']['sha256'])
+checks['visually_inspected_original_pages']=sum(check(P/x['path'],x['sha256'])for z in j(P/'visual-reading-ledger.json')for x in z['visually_inspected_original_pages'])
+assert checks['visually_inspected_original_pages']==8
+# Search is over explicit complete captured body, independent of .gitignore.
+y=(P/'derived/9495743-publisher-transformed.txt').read_text()
+checks['y2_paaJ_literal_occurrences_in_complete_capture']=y.lower().count('paaj')
+checks['y2_scope_limit']='Literal absence is a capture-text search, not proof about unavailable source variants; direct PaaK experiment and unknown upstream-protein statements were read.'
+if (P/'compact-retention-manifest.json').exists():
+ cm=j(P/'compact-retention-manifest.json')
+ for ar in cm['archives']:
+  check(P/ar['path'],ar['sha256'])
+  with tarfile.open(P/ar['path'],'r:gz') as t:
+   members=t.getmembers();assert len(members)==len(ar['members'])
+   d={m.name:m for m in members}
+   for m in ar['members']:
+    b=t.extractfile(d[m['path']]).read();assert hashlib.sha256(b).hexdigest()==m['decoded_sha256']
+    assert b==(P/m['path']).read_bytes()
+ for x in cm['plain_files']:check(P/x['path'],x['sha256'])
+ checks['compact_archives']=len(cm['archives'])
+if (P/'artifact-manifest.json').exists():
+ checks['frozen_package_files']=sum(check(P/x['path'],x['sha256'])for x in j(P/'artifact-manifest.json')['files'])
+result={'finished_utc':datetime.now(timezone.utc).isoformat(),'status':'pass','role':'Source-package integrity/finite accounting, not independent scientific review or maintained repository gates','inventory_includes_hidden_ignored':True,'checks':checks}
+if a.output:Path(a.output).write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result,indent=2))

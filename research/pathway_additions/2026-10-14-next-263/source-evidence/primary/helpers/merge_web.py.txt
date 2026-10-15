@@ -1,0 +1,17 @@
+from pathlib import Path
+import re,json,hashlib
+O=Path('/private/tmp/pathwaymech-next-263-primary');groups={};rows=[]
+for p in sorted((O/'receipts').glob('web-*.json')):
+ pmid=p.name.split('-')[1];x=json.loads(p.read_text());s=x['result']
+ if len(s)<1000 or 'Checking your browser' in s[:1000] or 'Just a moment' in s[:1000]:continue
+ if pmid=='20660314' and x['lineno']!=0:continue
+ groups.setdefault(pmid,[]).append((p,x))
+for pmid,items in groups.items():
+ lines={};refs=[]
+ for p,x in items:
+  s=x['result'];ms=list(re.finditer(r'\bL(\d+):',s));refs.append({'path':str(p.relative_to(O)),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'url':x['url']})
+  for i,m in enumerate(ms):lines[int(m[1])]=s[m.end():ms[i+1].start() if i+1<len(ms) else len(s)].strip()
+ q=O/'derived'/f'{pmid}-publisher-transformed.txt';q.write_text('\n'.join(f'L{k}: {v}' for k,v in sorted(lines.items()))+'\n')
+ row={'pmid':pmid,'derived':str(q.relative_to(O)),'sha256':hashlib.sha256(q.read_bytes()).hexdigest(),'receipts':refs,'missing_lines':[i for i in range(min(lines),max(lines)+1) if i not in lines],'captured_min':min(lines),'captured_max':max(lines),'scope':'Tool-rendered source text, not raw PDF/HTML; titles/frontmatter checked separately. No visual figure reading.'}
+ rows.append(row);print(pmid,len(lines),'gaps',row['missing_lines'],'headings',[(n,t[:60]) for n,t in lines.items() if t.startswith('##')])
+(O/'web-transformation-bindings.json').write_text(json.dumps(rows,indent=2)+'\n')

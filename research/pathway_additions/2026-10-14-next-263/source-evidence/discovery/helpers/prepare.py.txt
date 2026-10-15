@@ -1,0 +1,46 @@
+from pathlib import Path
+import hashlib,json,subprocess,xml.etree.ElementTree as E,datetime,sqlite3
+import yaml
+R=Path('/private/tmp/pathwaymech-next-261-20261014');O=Path('/private/tmp/pathwaymech-next-263-discovery');D=Path('/private/tmp/pathwaymech-next-262-discovery');HEAD='0c9a2dc2de7022e08f975e3828b6c98c32932fd2'
+def sha(b):return hashlib.sha256(b).hexdigest()
+def dump(n,x):(O/n).write_text(json.dumps(x,indent=2)+'\n')
+def doc(p):return json.loads(p.read_text())
+def descendants(x):
+ if isinstance(x,dict):
+  yield x
+  for v in x.values():yield from descendants(v)
+ elif isinstance(x,list):
+  for v in x:yield from descendants(v)
+manifest=doc(D/'artifact-manifest.json');print('262manifesttype',type(manifest).__name__)
+# All original-catechol cohort objects are reused exactly, not summary projections.
+source_rows=[]
+for p in sorted((D/'originals').glob('META-*.xml')):
+ if p.name not in ['META-Catechol-Degradation.xml','META-PWY-5415.xml','META-PWY-5420.xml','META-PWY-5417.xml','META-PWY-5431.xml','META-CATECHOL-ORTHO-CLEAVAGE-PWY.xml','META-PWY-5419.xml','META-P183-PWY.xml','META-PWY-5162.xml','META-PWY-2361.xml','META-PWY-5430.xml']:continue
+ b=p.read_bytes();rows=[x for x in descendants(manifest) if x.get('path') in [str(p),str(p.relative_to(D))] and x.get('sha256')==sha(b)];assert rows,(p,sha(b))
+ (O/'originals'/p.name).write_bytes(b);source_rows.append({'source_path':str(p),'retained_path':'originals/'+p.name,'sha256':sha(b),'bytes':len(b),'manifest':str(D/'artifact-manifest.json'),'manifest_sha256':sha((D/'artifact-manifest.json').read_bytes()),'manifest_row':rows[0]})
+needed=['CATECHOL-12-DIOXYGENASE-RXN','MUCONATE-CYCLOISOMERASE-RXN','MUCONOLACTONE-DELTA-ISOMERASE-RXN','3-OXOADIPATE-ENOL-LACTONASE-RXN','3-OXOADIPATE-COA-TRANSFERASE-RXN','RXN-3641','PROTOCATECHUATE-ORTHO-CLEAVAGE-PWY']
+manifest_paths=[R/'research/pathway_additions/2026-10-14-next-248/catechol/native/provenance-manifest.json',R/'research/pathway_additions/2026-10-14-next-249/oxoadipate/native/source-manifest.json',R/'research/pathway_additions/2026-10-14-next-250/protocatechuate/native/source-manifest.json']
+for frame in needed:
+ hits=[]
+ for mp in manifest_paths:
+  for x in descendants(doc(mp)):
+   if x.get('path','').endswith('/META-'+frame+'.xml') and x.get('sha256'): hits.append((mp,x))
+ assert hits,frame
+ mp,x=hits[0];p=Path(x['path']);b=p.read_bytes();assert sha(b)==x['sha256'];(O/'originals'/p.name).write_bytes(b)
+ source_rows.append({'source_path':str(p),'retained_path':'originals/'+p.name,'sha256':sha(b),'bytes':len(b),'manifest':str(mp),'manifest_sha256':sha(mp.read_bytes()),'manifest_row':x})
+for mp in [D/'artifact-manifest.json',*manifest_paths]:
+ name='next262-artifact-manifest.json' if mp.parent==D else ('next'+str(mp).split('-next-')[1].split('/')[0]+'-'+mp.name)
+ (O/'reused-manifests'/name).write_bytes(mp.read_bytes())
+dump('reused-originals-manifest.json',{'copied_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':source_rows,'count':len(source_rows),'scope':'Complete class/parent/module/reaction bodies copied with exact prior acquisition/inventory bindings. Original source bytes, not reconstructed objects.'})
+paths=subprocess.check_output(['git','ls-tree','-r','--name-only',HEAD,'data/pathways'],cwd=R).decode().splitlines();records=[]
+for p in paths:
+ if not p.endswith('.yaml'):continue
+ b=subprocess.check_output(['git','show',HEAD+':'+p],cwd=R);y=yaml.safe_load(b);assert sha((R/p).read_bytes())==sha(b)
+ records.append({'path':p,'sha256':sha(b),'id':y['id'],'label':y['label'],'description':y.get('description',''),'reactions':y.get('reactions',[]),'participants':y.get('participants',[]),'references':y.get('references',[]),'mechanistic_edge_count':len(y.get('mechanistic_edges',[]))})
+assert len(records)==258
+roots=[str(R),'/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech'];states=[]
+for r in roots:states.append({'root':r,'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=r).decode().strip(),'status':subprocess.check_output(['git','status','--porcelain=v1','--untracked-files=all'],cwd=r).decode()})
+dump('corpus-inventory.json',{'baseline_commit':HEAD,'baseline_tree':subprocess.check_output(['git','rev-parse',HEAD+'^{tree}'],cwd=R).decode().strip(),'record_count':258,'records':records,'root_start_states':states,'post262_merge_rebind_required':True})
+go=Path('/private/tmp/pathwaymech-curation-authorities/go.db');expected='018a7ef0a5bd1c0767abc3d71b413264a25be7579533daf5349f739cd9a122cd';assert sha(go.read_bytes())==expected
+con=sqlite3.connect('file:'+str(go)+'?mode=ro',uri=True);con.row_factory=sqlite3.Row;rows=[dict(r) for r in con.execute("select * from statements where subject='GO:0019615'")];con.close();dump('go-scope-original-query.json',{'source_path':str(go),'source_sha256':expected,'query':"select * from statements where subject='GO:0019615'",'rows':rows,'scope':'Complete issuing pinned stanza, GO definition broader than exact six-step native parent; two native xrefs are different boundary scopes.'})
+print(json.dumps({'copied_originals':len(source_rows),'baseline_records':len(records),'go_rows':len(rows)}))

@@ -1,0 +1,21 @@
+from pathlib import Path
+import sys,json,urllib.request,urllib.error,hashlib,datetime,time,threading,concurrent.futures
+P=Path('/private/tmp/pathwaymech-next-263-authority-author');jobfile=Path(sys.argv[1]);label=sys.argv[2];jobs=json.loads(jobfile.read_text());dest=P/'receipts'/('acquisition-'+label+'.json');assert not dest.exists();lock=threading.Lock();last=[0.0]
+def fetch(j):
+ r=dict(j);r['started_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();out=P/'originals'/j['name'];assert not out.exists()
+ if 'ncbi.nlm.nih.gov' in j['url']:
+  with lock:
+   delay=.4-(time.monotonic()-last[0])
+   if delay>0:time.sleep(delay)
+   last[0]=time.monotonic()
+ try:
+  req=urllib.request.Request(j['url'],headers={'User-Agent':'PathwayMech bounded source curation; Python urllib'})
+  with urllib.request.urlopen(req,timeout=45) as response:b=response.read();r.update({'status':response.status,'final_url':response.url,'headers':dict(response.headers)})
+  out.write_bytes(b);r.update({'path':str(out),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})
+ except Exception as e:
+  r['error']=str(e)
+  if isinstance(e,urllib.error.HTTPError):
+   b=e.read();error_path=P/'receipts'/(label+'-'+j['name']+'.http-error');error_path.write_bytes(b);r.update({'status':e.code,'error_body_path':str(error_path),'error_body_bytes':len(b),'error_body_sha256':hashlib.sha256(b).hexdigest()})
+ r['finished_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat();return r
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex:results=list(ex.map(fetch,jobs))
+dest.write_text(json.dumps(results,indent=2)+'\n');failed=[j for j,r in zip(jobs,results) if 'error' in r];(P/('acquisition-jobs-'+label+'-failed.json')).write_text(json.dumps(failed,indent=2)+'\n');print(json.dumps({'receipt':str(dest),'requested':len(jobs),'success':len(jobs)-len(failed),'failures':[{'name':r['name'],'error':r.get('error')} for r in results if 'error' in r]},indent=2))

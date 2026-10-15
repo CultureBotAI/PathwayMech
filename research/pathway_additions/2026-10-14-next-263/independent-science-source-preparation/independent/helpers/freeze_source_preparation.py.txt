@@ -1,0 +1,37 @@
+"""Finite source-preparation snapshot with decoded/original and stored hashes."""
+import datetime,gzip,hashlib,json,pathlib,shutil
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-science');R=O/'source-preparation-retention'
+assert not R.exists(),'Never overwrite a frozen retention snapshot.'
+def sha(b):return hashlib.sha256(b).hexdigest()
+own=[p for p in O.rglob('*') if p.is_file() and 'source-preparation-retention' not in p.parts]
+bindings={}
+def walk(x):
+ if isinstance(x,dict):
+  p=x.get('path')
+  if p and isinstance(p,str) and p.startswith('/private/tmp/') and x.get('sha256'):
+   file=pathlib.Path(p)
+   if file.is_file():
+    b=file.read_bytes();assert sha(b)==x['sha256'],p
+    if not file.is_relative_to(O):bindings[p]=file
+  for v in x.values():walk(v)
+ elif isinstance(x,list):
+  for v in x:walk(v)
+for p in own:
+ if p.suffix=='.json':walk(json.loads(p.read_text()))
+# Original acquisition information for the eight chemical entities remains exact and separate.
+for p in [pathlib.Path('/private/tmp/pathwaymech-next-263-additional-chemistry/acquisition.json'),pathlib.Path('/private/tmp/pathwaymech-next-263-additional-chemistry/native-input-bindings.json')]:bindings[str(p)]=p
+R.mkdir();rows=[]
+for p in sorted(own+list(bindings.values())):
+ role='independent execution or adjudication' if p.is_relative_to(O) else 'exact bound external source'
+ rel=pathlib.Path('independent')/p.relative_to(O) if p.is_relative_to(O) else pathlib.Path('bound-sources')/p.relative_to('/private/tmp')
+ raw=p.read_bytes();compressed=not p.name.endswith(('.py.txt','.png','.gif'))
+ stored=gzip.compress(raw,mtime=0) if compressed else raw
+ dest=R/(str(rel)+('.gz' if compressed else ''));dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(stored)
+ check=gzip.decompress(dest.read_bytes()) if compressed else dest.read_bytes();assert check==raw
+ rows.append({'path':str(dest.relative_to(R)),'bytes':len(stored),'sha256':sha(stored),'original_path':str(p),'original_bytes':len(raw),'original_sha256':sha(raw),'encoding':'gzip' if compressed else 'identity','role':role})
+manifest={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Frozen source-preparation evidence; not a canonical record review.','files':rows,'all_original_stored_pairs_reverified':True,'inventory_includes_hidden_ignored':True}
+(R/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
+assert {str(p.relative_to(R)) for p in R.rglob('*') if p.is_file()}=={r['path'] for r in rows}|{'artifact-manifest.json'}
+summary={'retention':str(R),'manifest_sha256':sha((R/'artifact-manifest.json').read_bytes()),'artifacts':len(rows),'stored_bytes':sum(r['bytes'] for r in rows),'own_files':len(own),'bound_external_originals':len(bindings),'adjudication_sha256':sha((O/'source-preparation-adjudication.json').read_bytes())}
+(O/'source-preparation-freeze-receipt.json').write_text(json.dumps(summary,indent=2,sort_keys=True)+'\n')
+print(json.dumps(summary,indent=2))

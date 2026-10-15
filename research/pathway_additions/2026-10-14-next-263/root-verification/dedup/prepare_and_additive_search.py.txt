@@ -1,0 +1,35 @@
+from pathlib import Path
+import json,hashlib,datetime,subprocess,shutil
+O=Path('/private/tmp/pathwaymech-next-263-ci/dedup-final');S=O.parent/'dedup-merged-successor';D=Path('/private/tmp/pathwaymech-next-263-discovery');P=Path('/private/tmp/pathwaymech-next-263-primary');sha=lambda b:hashlib.sha256(b).hexdigest();rows=[]
+for root,names,sub in [(S,[p.name for p in S.iterdir()if p.is_file()],'predecessor-scan'),(D,['artifact-manifest.json','semantic-record-dispositions.json','prior-file-dispositions-0.json','prior-file-dispositions-1.json','prior-research-read-bindings.json','HANDOFF.md'],'prior-discovery'),(P,['artifact-manifest.json','source-access-and-reading-ledger.json','requested-literature.json','HANDOFF.md'],'primary-alias-inputs')]:
+ for name in names:
+  p=root/name;b=p.read_bytes();q=O/sub/name;q.parent.mkdir(exist_ok=True);q.write_bytes(b);rows.append({'original':str(p),'stored':str(q.relative_to(O)),'sha256':sha(b),'bytes':len(b)})
+assert sha((P/'artifact-manifest.json').read_bytes())=='87fdb4ab693eda355d2f16070721a776e4468f905b4f0abdcfaa111ce2fd5cd2'
+manifest=json.loads((P/'artifact-manifest.json').read_text());ledger=json.loads((P/'source-access-and-reading-ledger.json').read_text())
+entry=next(x for x in manifest['files']if x['path']=='source-access-and-reading-ledger.json');assert entry['sha256']==sha((P/'source-access-and-reading-ledger.json').read_bytes())
+old=(S/'complete-dedup-patterns.txt').read_text().splitlines();oldset={x.lower()for x in old};addition={};aliases=[]
+for r in ledger:
+ vals=[r['pmid'],'PMID:'+r['pmid']]
+ if r.get('doi'):vals.extend([r['doi'],'DOI:'+r['doi']])
+ meta=P/r['metadata']['path'];assert sha(meta.read_bytes())==r['metadata']['sha256']
+ aliases.append({'pmid':r['pmid'],'doi':r.get('doi'),'role':r['role'],'title':r['title'],'metadata':r['metadata'],'aliases':vals,'already_covered': [v for v in vals if v.lower()in oldset]})
+ for v in vals:
+  if v.lower()not in oldset:addition[v.lower()]=v
+patterns=sorted(addition.values(),key=str.lower);(O/'additive-patterns.txt').write_text('\n'.join(patterns)+'\n');(O/'alias-input-accounting.json').write_text(json.dumps({'source_manifest_sha256':sha((P/'artifact-manifest.json').read_bytes()),'ledger_sha256':entry['sha256'],'native_leads':42,'bounded_follow_leads':6,'all48_metadata_bindings_verified':True,'prior_pattern_count':len(old),'additive_pattern_count':len(patterns),'aliases':aliases,'scope':'Search aliases only; no new biological interpretation or source access claim.'},indent=2)+'\n')
+(O/'predecessor-input-bindings.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':rows},indent=2)+'\n')
+roots=[Path('/private/tmp/pathwaymech-next-263-20261014'),Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')];receipts=[]
+for i,root in enumerate(roots):
+ state={'head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),'tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],cwd=root,text=True).strip(),'status':subprocess.check_output(['git','status','--porcelain=v1'],cwd=root,text=True)}
+ cmd=['rg','--no-ignore','--hidden','--json','-i','-F','-f',str(O/'additive-patterns.txt'),'.','-g','!/.git','-g','!/.git/**','-g','!/.venv','-g','!/.venv/**'];start=datetime.datetime.now(datetime.timezone.utc).isoformat();r=subprocess.run(cmd,cwd=root,capture_output=True);assert r.returncode in[0,1]
+ (O/f'additive-root-{i}.jsonl').write_bytes(r.stdout);(O/f'additive-root-{i}.stderr').write_bytes(r.stderr)
+ matches={}
+ for line in r.stdout.splitlines():
+  x=json.loads(line)
+  if x['type']!='match':continue
+  d=x['data'];rel=d['path']['text'];text=d['lines']['text'];matches.setdefault(rel,[]).append({'line':d['line_number'],'text':text,'patterns':[v for v in patterns if v.lower()in text.lower()]})
+ rec=[]
+ for rel,ms in sorted(matches.items()):
+  b=(root/rel).read_bytes();rec.append({'path':rel,'sha256':sha(b),'bytes':len(b),'matches':ms})
+ (O/f'additive-root-{i}-contexts.json').write_text(json.dumps(rec,indent=2)+'\n')
+ receipts.append({'root':str(root),'state':state,'command':cmd,'started_utc':start,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'exit_code':r.returncode,'stdout_sha256':sha(r.stdout),'stderr_sha256':sha(r.stderr),'files':len(rec),'lines':sum(len(v)for v in matches.values())})
+(O/'additive-search-receipts.json').write_text(json.dumps({'role':'Bounded discovery-author successor, not independent scientific review','receipts':receipts,'ignored_hidden_included':True,'limits':['Root .git/.venv excluded.','Default rg binary handling; compressed archive interiors not expanded.','Directory symlinks and external caches not traversed.','This additive scan complements preserved complete148-pattern root scan; it does not replace it.']},indent=2)+'\n');print(json.dumps({'patterns':len(patterns),'scans':receipts},indent=2))

@@ -1,0 +1,54 @@
+"""Independent primary representation checks and bounded source locators."""
+import datetime,hashlib,html.parser,json,pathlib,re
+B=pathlib.Path('/private/tmp/pathwaymech-next-263-primary')
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-science')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+representations=[]
+for pmid in ['17172348','34731045','7391022']:
+ numbered={};conflicts=[];receipts=[]
+ for p in sorted((B/'receipts').glob(f'web-{pmid}-*.json'),key=lambda p:int(p.stem.split('-')[-1])):
+  j=json.loads(p.read_text());receipts.append(bind(p));t=j['result']
+  for m in re.finditer(r'(?<!\w)L(\d+):\s?(.*?)(?=(?<!\w)L\d+:|\Z)',t,re.S):
+   n=int(m[1]);v=m[2].strip()
+   if n in numbered and numbered[n]!=v:conflicts.append(n)
+   numbered[n]=v
+ authored=B/'derived'/f'{pmid}-publisher-transformed.txt'
+ parsed={int(m[1]):m[2].strip() for m in re.finditer(r'^L(\d+):\s?(.*)$',authored.read_text(),re.M)}
+ differences=[n for n in sorted(set(numbered)|set(parsed)) if numbered.get(n)!=parsed.get(n)]
+ # Retain the independent reconstruction; content is original tool-rendered publisher/reproduction text, not a PDF.
+ target=O/'source-inspection'/f'{pmid}-independent-tool-lines.txt';target.write_text(''.join(f'L{n}: {v}\n' for n,v in sorted(numbered.items())))
+ representations.append({'pmid':pmid,'source_receipts':receipts,'independent_reconstruction':bind(target),'author_transform':bind(authored),'captured_lines':len(numbered),'minimum':min(numbered),'maximum':max(numbered),'missing_between_bounds':sorted(set(range(min(numbered),max(numbered)+1))-set(numbered)),'overlap_changed_lines':conflicts,'author_line_differences':differences,'representation':'Complete retained tool-response line reconstruction, not complete publisher raw HTML/PDF; visual tables/figures not inferred.'})
+class Reader(html.parser.HTMLParser):
+ def __init__(self):super().__init__();self.stack=[];self.rows=[];self.active=None;self.skip=0
+ def handle_starttag(self,tag,attrs):
+  if tag in {'script','style'}:self.skip+=1
+  if tag=='p' and self.active is None:self.active={'attributes':dict(attrs),'data':[]}
+ def handle_endtag(self,tag):
+  if tag in {'script','style'}:self.skip-=1
+  if tag=='p' and self.active is not None:
+   self.active['text']=' '.join(''.join(self.active.pop('data')).split());self.rows.append(self.active);self.active=None
+ def handle_data(self,data):
+  if self.active is not None and not self.skip:self.active['data'].append(data)
+p=B/'originals/PMC134768-pmc.html';r=Reader();r.feed(p.read_text())
+selected=[]
+for i,row in enumerate(r.rows):
+ if any(x.lower() in row['text'].lower() for x in ['uncompetitive','NaCN','NADH','cyanide','homogeneous','minor bands','inhibitory','homotetramer','heterotetramer']):selected.append({'paragraph_index':i,**row})
+(O/'source-inspection/11741862-independent-paragraphs.json').write_text(json.dumps({'original':bind(p),'paragraph_count':len(r.rows),'selection_terms':['uncompetitive','NaCN','NADH','cyanide','homogeneous','minor bands','inhibitory','homotetramer','heterotetramer'],'selected_paragraphs':selected},indent=2)+'\n')
+claims=json.loads((B/'source-supported-claims.json').read_text())
+def locate(v):
+ if isinstance(v,dict):
+  if v.get('id')=='P263-C48':return v
+  for z in v.values():
+   hit=locate(z)
+   if hit:return hit
+ if isinstance(v,list):
+  for z in v:
+   hit=locate(z)
+   if hit:return hit
+claim=locate(claims);assert claim
+p=B/'originals/metadata-8522507.json';entry=json.loads(p.read_text())['resultList']['result'][0];assert entry['pmid']=='8522507'
+assert 'expression of pcaK, but not pcaF, is repressed by benzoate.' in entry['abstractText']
+report={'executed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'tool_representations':representations,'source_summary_defect':{'id':'P263-C48','frozen_claim':claim,'claim_file':bind(B/'source-supported-claims.json'),'original':bind(p),'original_locator':'resultList.result[0].abstractText; sentence beginning In addition to these expected regulatory elements','short_original_quote':'expression of pcaK, but not pcaF, is repressed by benzoate.','severity_if_relied_on':'major','scope':'Frozen research-author paraphrase only; no canonical record reviewed.','disposition':'Reject benzoate repression of pcaF. Preserve distinct pcaK repression and shared PcaR dependence/beta-ketoadipate induction only with their separate source scope. Explicit maintained correction must identify this obsolete claim and original binding.'}}
+(O/'checks/primary-representation-independent.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'tool_representations':[{k:r[k] for k in ['pmid','captured_lines','minimum','maximum','missing_between_bounds','overlap_changed_lines','author_line_differences']} for r in representations],'B13_selected_paragraphs':len(selected),'P263-C48':'confirmed source-summary defect'},indent=2))

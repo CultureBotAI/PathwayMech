@@ -1,0 +1,102 @@
+"""Prepare finite, lossless next263 repository retention outside the worktree."""
+import datetime
+import gzip
+import hashlib
+import json
+from pathlib import Path
+
+CI = Path('/private/tmp/pathwaymech-next-263-ci')
+OUT = CI / 'prepared-retention'
+PREFIX = Path('research/pathway_additions/2026-10-14-next-263')
+SPECS = [
+    ('discovery', '4f54300e62b22beb94244e41668cb4235352a12ccb0c8efbeb3a85cc95e385bf', 'compact-retention-manifest.json', 'c1e89d8361c49d51cc7f24c834169f7cc6a2c4381b975c4522ea85017522c866', '', 'source-evidence/discovery'),
+    ('native', '302c4e494f3bfc92f4062e223f5bf7316451e29bc1e4ca52e97b32d70671abcc', 'compact-retention-manifest.json', '06a1d040c98aec4a5bd54719632e8ffedfabbcb5fbde5fcbd49400e552b9f538', '', 'source-evidence/native'),
+    ('chemistry', '08729a3c0296411bf53ff40991776b81d246b99bd3fed5c42ca422fc64e3d107', 'compact-retention-manifest.json', 'be5747d92a51d90e653d9a704f7c1d8f1c5f54cf3adf82d79fdf1c4673be44a4', '', 'source-evidence/chemistry'),
+    ('primary', '87fdb4ab693eda355d2f16070721a776e4468f905b4f0abdcfaa111ce2fd5cd2', 'compact-retention-manifest.json', 'b906757dfec8e6b7695dce8f7c6bfd2c59ac594f798789d10183bc5999863cdf', '', 'source-evidence/primary'),
+    ('biological-identity', '44a3c1a89f03da64e3cfcaa61d82a572e629dfffd2fb8386dd86eb0edf183cbd', 'compact-retention-manifest.json', '2165106dcf43a1855c4702ece8402b6a1dadfb09d811af79983ed625348fb6a9', 'compact-retained', 'source-evidence/biological-identity'),
+    ('independent-chemistry', '2edd58ead30815680306036b0f8989cee08a3e9da9466037253edd5a26bb8d8d', 'retention/artifact-manifest.json', 'b47179ee88c593a7a5c8070264d19b12222cfc50e03cfd81bfadd162296c4220', 'retention', 'independent-chemistry'),
+]
+
+
+def sha(b):
+    return hashlib.sha256(b).hexdigest()
+
+
+def read_checked(p, digest, count=None):
+    b = p.read_bytes()
+    assert sha(b) == digest, p
+    if count is not None:
+        assert len(b) == count, p
+    return b
+
+
+assert not OUT.exists(), OUT
+rows = []
+sources = []
+for name, fullsha, compactname, compactsha, storedroot, destination in SPECS:
+    source_root = Path('/private/tmp/pathwaymech-next-263-' + name)
+    fullpath = source_root / 'artifact-manifest.json'
+    full = json.loads(read_checked(fullpath, fullsha))
+    compactpath = source_root / compactname
+    compact = json.loads(read_checked(compactpath, compactsha))
+    selected = compact.get('files')
+    if selected is None:
+        selected = compact['archives'] + compact['plain_files']
+    entries = [(source_root / storedroot / row['path'], Path(row['path']), row['sha256'], row['bytes']) for row in selected]
+    entries.extend([
+        (fullpath, Path('source-package-artifact-manifest.json'), fullsha, fullpath.stat().st_size),
+        (compactpath, Path('source-compact-retention-manifest.json'), compactsha, compactpath.stat().st_size),
+    ])
+    sources.append({'name': name, 'source_root': str(source_root), 'full_manifest_sha256': fullsha, 'compact_manifest_sha256': compactsha, 'selected_payloads': len(selected), 'limits': 'Frozen source package contract; not a complete copy of external bulk originals.'})
+    for source, relative, expectedsha, expectedbytes in entries:
+        data = read_checked(source, expectedsha, expectedbytes)
+        transformations = []
+        if relative.suffix == '.py':
+            relative = relative.with_name(relative.name + '.txt')
+            transformations.append('inert_python_filename_only')
+        # Preserve original bytes; gzip only text that Git would flag for whitespace.
+        try:
+            text = data.decode('utf-8')
+        except UnicodeDecodeError:
+            text = None
+        whitespace = text is not None and ('\x00' not in text) and (
+            any(line.endswith((' ', '\t')) for line in text.splitlines())
+            or text.endswith('\n\n')
+        )
+        stored = data
+        if whitespace:
+            stored = gzip.compress(data, mtime=0)
+            relative = relative.with_name(relative.name + '.gz')
+            transformations.append('gzip_lossless_for_source_whitespace')
+            assert gzip.decompress(stored) == data
+        target_relative = PREFIX / destination / relative
+        target = OUT / target_relative
+        assert not target.exists(), target
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(stored)
+        assert target.read_bytes() == stored
+        rows.append({
+            'package': name,
+            'source_path': str(source),
+            'source_bytes': len(data),
+            'source_sha256': sha(data),
+            'repository_path': str(target_relative),
+            'stored_bytes': len(stored),
+            'stored_sha256': sha(stored),
+            'transformations': transformations,
+        })
+plan = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'candidate': 'MetaCyc:PWY-5417',
+    'role': 'Root finite retention preparation; no maintained or source-package changes.',
+    'prepared_root': str(OUT),
+    'source_packages': sources,
+    'files': rows,
+    'counts': {'files': len(rows), 'stored_bytes': sum(r['stored_bytes'] for r in rows)},
+    'limits': 'Only six frozen finite source/review contracts copied. Full originals excluded by their contracts remain external and hash-bound. Original-source digests retain their original artifact meaning; repository storage transformations are explicitly mapped here. Integrated record, dedup-final and authority packages are not included yet.',
+}
+manifest = CI / 'prepared-retention-manifest.json'
+assert not manifest.exists(), manifest
+manifest.write_text(json.dumps(plan, indent=2) + '\n')
+assert {str(p.relative_to(OUT)) for p in OUT.rglob('*') if p.is_file()} == {r['repository_path'] for r in rows}
+print(json.dumps({'manifest': str(manifest), 'sha256': sha(manifest.read_bytes()), 'counts': plan['counts'], 'transformations': [{k: r[k] for k in ('source_path', 'repository_path', 'transformations')} for r in rows if r['transformations']]}))

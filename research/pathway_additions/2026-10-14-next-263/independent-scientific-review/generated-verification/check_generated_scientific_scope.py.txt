@@ -1,0 +1,22 @@
+import collections,csv,datetime,hashlib,json,pathlib,re,yaml
+from html.parser import HTMLParser
+R=pathlib.Path('/private/tmp/pathwaymech-next-263-20261014');O=pathlib.Path('/private/tmp/pathwaymech-next-263-review-finalization');P=R/'data/pathways/catechol-degradation-iii.yaml';raw=P.read_bytes();assert hashlib.sha256(raw).hexdigest()=='b30573a380b358a9b0228f8e3e2689943ecf828aa01ae790f281ba3fe617e603';d=yaml.safe_load(raw)
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'sha256':hashlib.sha256(b).hexdigest(),'bytes':len(b)}
+class H(HTMLParser):
+ def __init__(self):super().__init__();self.nodes={};self.edges=[]
+ def handle_starttag(self,t,a):
+  x=dict(a)
+  if 'data-node-id' in x:self.nodes[x['data-node-id']]=x
+  if 'data-subject' in x:self.edges.append(x)
+page=R/'pages/records/MetaCyc_PWY-5417.html';h=H();h.feed(page.read_text());assert len(h.edges)==117;proof=[]
+for i,e in enumerate(d['mechanistic_edges'],1):
+ matched=[x for x in h.edges if x['href']=='#mechanism-edge-'+str(i)];assert len(matched)==1;g=matched[0]
+ for side in ['subject','object']:
+  gid=g['data-'+side];base=h.nodes[gid].get('data-base-node-id',gid);assert base==e[side]
+  q=[x for x in e.get('endpoint_qualifiers',[]) if x['endpoint']==side]
+  if q:assert h.nodes[gid].get('data-qualified')=='true'
+ assert g['data-predicate']==e['predicate'];assert e['description'] in g['aria-label'];proof.append({'edge_id':e['id'],'graph_subject':g['data-subject'],'graph_object':g['data-object'],'predicate':g['data-predicate'],'fragment':g['href']})
+qnodes={k:v for k,v in h.nodes.items() if v.get('data-qualified')=='true'}
+assert 'metal-free' in qnodes['qualified-endpoint-109-object']['aria-label'];assert '41 ± 2%' in qnodes['qualified-endpoint-46-subject']['aria-label'];assert 'EDTA(2-)' in h.nodes['CHEBI:64755']['aria-label']
+out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'target':bind(P),'page':bind(page),'mechanistic_graph_edges':len(proof),'graph_nodes':len(h.nodes),'qualified_context_nodes':len(qnodes),'edges':proof,'qualified_node_contexts':qnodes,'scope':'Read-only parse of exact production-rendered SVG graph. All117 authorededges preserve direction, predicate, descriptions and preparation-qualified endpoints; base-ID resolution is explicit. No visual browser interaction claimed. Final production gate completion still separately required.'};(O/'generated-scientific-scope.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n');print(json.dumps({'graph_edges':len(proof),'nodes':len(h.nodes),'qualified_nodes':len(qnodes),'result':'pass'}))

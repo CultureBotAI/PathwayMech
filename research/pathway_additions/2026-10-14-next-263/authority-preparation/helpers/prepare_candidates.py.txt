@@ -1,0 +1,27 @@
+from pathlib import Path
+import sys,json,hashlib,re,sqlite3
+P=Path('/private/tmp/pathwaymech-next-263-authority-author');R=Path('/private/tmp/pathwaymech-next-263-20261014');N=Path('/private/tmp/pathwaymech-next-263-native');B=Path('/private/tmp/pathwaymech-next-263-biological-identity');C=Path('/private/tmp/pathwaymech-next-263-chemistry');CACHE=Path('/private/tmp/pathwaymech-next-262-authority-integration/source-cache');sha=lambda b:hashlib.sha256(b).hexdigest();bind=lambda p:{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())}
+sys.path[:0]=[str(R/'src'),str(R/'scripts')]
+from build_source_identifier_snapshot import source_terms
+from build_ontology_identifier_snapshot import extract_terms
+sel=json.loads((B/'native-biological-selection.json').read_text());probe=json.loads((P/'native-parser-probe.json').read_text());needed={r['id']:'gene' if r.get('native_type')=='Gene' else 'compound' for r in probe['proteins_genes'] if r['status']=='requires_native_HTML_original'};needed.update({'MetaCyc:'+r['activity']:'compound' for r in sel['formal_activities']});needed['MetaCyc:PWY-5417']='compound';assert len(needed)==48
+oldmanifest=json.loads((P/'baseline/conf/identifier_sources.json').read_text());searched=[];reused=[]
+for e in oldmanifest:
+ if e['kind']!='metacyc-html':continue
+ p=CACHE/e['path'];assert p.is_file();raw=p.read_bytes();assert sha(raw)==e['sha256'];terms=list(source_terms(e['kind'],p,url=e['url'],version=e['version']));searched.append({'key':e['key'],'original':bind(p),'emitted_ids':[t[0] for t in terms]})
+ for term in terms:
+  if term[0] in needed:
+   dest=P/'originals'/('META-'+term[0].partition(':')[2]+'.html');assert not dest.exists();dest.write_bytes(raw);reused.append({'id':term[0],'entry':e,'source':bind(p),'copy':bind(dest),'term':term});needed.pop(term[0])
+(P/'receipts/existing-HTML-owner-search.json').write_text(json.dumps({'scope':'All metacyc-html entries of the exact merged1205-entry source manifest, resolving exact existing complete-cache paths independent of gitignore; also the frozen native/chemistry/biological manifests were inventoried and contain no prospective native HTML originals. No global filesystem absence claimed.','searched':searched,'exact_reuses':reused,'remaining_concrete_missing_ids':sorted(needed)},indent=2)+'\n')
+jobs=[{'name':'META-'+i.partition(':')[2]+'.html','id':i,'url':'https://bf2i-artsymbiocyc.insa-lyon.fr/'+kind+'?orgid=META&id='+i.partition(':')[2],'scope':'Concrete missing exact native identifier name authority; no final record selection or broader HTML-derived biological claims.'} for i,kind in sorted(needed.items())]
+(P/'acquisition-jobs-native-html.json').write_text(json.dumps(jobs,indent=2)+'\n')
+s=(B/'helpers/acquire.py.txt').read_text().replace("Path('/private/tmp/pathwaymech-next-263-biological-identity')","Path('/private/tmp/pathwaymech-next-263-authority-author')");(P/'helpers/acquire.py.txt').write_text(s)
+chem=json.loads((C/'chemical-structure-replay.json').read_text());route=json.loads((C/'whole-route-chemistry-replay.json').read_text());onto=json.loads((P/'baseline/data/identifier_authorities/ontology.json').read_text());ontids={v['id'] for v in chem['chemicals'].values()}|{v['selected_id'] for v in route['reactions']}|{'NCBITaxon:'+x['id'] for v in sel['parent_organisms'] for x in v['xref'] if x['database']=='NCBI-TAXONOMY-DB'};ontology=[]
+for prefix,stem in [('CHEBI','chebi'),('RHEA','rhea'),('NCBITaxon','ncbitaxon')]:
+ p=Path('/private/tmp/pathwaymech-curation-authorities')/(stem+'.db');owner=[(k,v) for k,v in onto['sources'].items() if k.startswith(stem+'-') and v.get('sha256_scope')=='uncompressed_semantic_sql_database'];assert len(owner)==1;key,meta=owner[0];requested=sorted(x for x in ontids if x.startswith(prefix+':'))
+ with sqlite3.connect(p.resolve().as_uri()+'?mode=ro',uri=True) as db:terms,missing=extract_terms(db,requested,key)
+ assert not missing
+ for ident,t in terms.items():
+  prior=onto['terms'].get(ident);assert prior is None or prior==t,(ident,prior,t)
+  ontology.append({'id':ident,'term':t,'source_key':key,'source_metadata':meta,'status':'preserve_exact_existing_owner' if prior else 'candidate_addition_pending_selection','database_path':str(p.resolve()),'database_bytes':p.stat().st_size,'database_mtime_ns':p.stat().st_mtime_ns,'database_sha256_from_current_owner':meta['sha256'],'whole_database_hash_recomputed_this_step':False})
+(P/'ontology-candidates.json').write_text(json.dumps({'role':'authority_source_author','selection':'prospective finite formal chemistry and directly grounded parent taxa; not final selection','rows':ontology},indent=2)+'\n');print(json.dumps({'prior_HTML_entries_parsed':len(searched),'exact_reuses':len(reused),'new_concrete_HTML_jobs':len(jobs),'ontology_candidates':len(ontology),'new_taxa':[r['id'] for r in ontology if r['status']=='candidate_addition_pending_selection']}))

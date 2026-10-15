@@ -1,0 +1,60 @@
+"""Acquire the finite requested chemical identities without modifying frozen inputs."""
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import shutil
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-additional-chemistry')
+assert not ROOT.exists(), ROOT
+(ROOT / 'originals').mkdir(parents=True)
+(ROOT / 'receipts').mkdir()
+jobs = [
+    (str(identifier), f'https://www.ebi.ac.uk/chebi/backend/api/public/compound/{identifier}/', f'ChEBI-{identifier}.json')
+    for identifier in [29035, 29105, 29036, 57712, 149587, 64755]
+]
+jobs.append(('25240959', 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/25240959/property/InChI,InChIKey,MolecularFormula,IUPACName,Charge/JSON', 'PubChem-25240959.json'))
+
+
+def fetch(job):
+    identifier, url, name = job
+    now = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    request = urllib.request.Request(url, headers={'User-Agent': 'PathwayMech evidence curation', 'Accept': 'application/json'})
+    try:
+        with urllib.request.urlopen(request, timeout=45) as response:
+            data = response.read()
+            status = response.status
+            headers = dict(response.headers)
+        error = None
+    except urllib.error.HTTPError as exc:
+        data, status, headers, error = exc.read(), exc.code, dict(exc.headers), str(exc)
+    except Exception as exc:
+        data, status, headers, error = b'', None, {}, repr(exc)
+    path = ROOT / 'originals' / name
+    path.write_bytes(data)
+    receipt = {'id': identifier, 'url': url, 'utc': now, 'status': status, 'headers': headers, 'error': error, 'path': str(path), 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+    (ROOT / 'receipts' / (name + '.request.json')).write_text(json.dumps(receipt, indent=2) + '\n')
+    return receipt
+
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+    receipts = list(executor.map(fetch, jobs))
+predecessor = Path('/private/tmp/pathwaymech-next-262-chemistry')
+manifest = json.loads((predecessor / 'artifact-manifest.json').read_text())
+index = {row['path']: row for row in manifest['files']}
+reused = []
+for relative in ['originals/ChEBI-57945.json', 'originals/META-NADH.xml']:
+    source = predecessor / relative
+    data = source.read_bytes()
+    expected = index[relative]
+    assert hashlib.sha256(data).hexdigest() == expected['sha256'] and len(data) == expected['bytes']
+    dest = ROOT / relative
+    assert not dest.exists()
+    shutil.copyfile(source, dest)
+    reused.append({'source_path': str(source), 'destination': str(dest), 'sha256': expected['sha256'], 'bytes': expected['bytes'], 'manifest': str(predecessor / 'artifact-manifest.json'), 'manifest_sha256': hashlib.sha256((predecessor / 'artifact-manifest.json').read_bytes()).hexdigest()})
+(ROOT / 'acquisition.json').write_text(json.dumps({'fresh_requests': receipts, 'predecessor_reuses': reused}, indent=2) + '\n')
+print(json.dumps({'root': str(ROOT), 'requests': [{k: r[k] for k in ['id', 'status', 'bytes', 'error']} for r in receipts], 'reused': len(reused)}))
+assert all(r['status'] == 200 and r['error'] is None for r in receipts), 'Inspect preserved failures; retry under separate names only.'

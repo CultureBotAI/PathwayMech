@@ -1,0 +1,51 @@
+import datetime
+import gzip
+import hashlib
+import json
+import pathlib
+
+ROOT=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-chemistry')
+CHEM=pathlib.Path('/private/tmp/pathwaymech-next-263-chemistry')
+NATIVE=pathlib.Path('/private/tmp/pathwaymech-next-263-native')
+RET=ROOT/'retention'
+assert not RET.exists()
+assert not (ROOT/'artifact-manifest.json').exists()
+RET.mkdir()
+def sha(b):return hashlib.sha256(b).hexdigest()
+def dump(p,v):p.write_text(json.dumps(v,indent=2,sort_keys=True)+'\n')
+rows=[]
+def retain(source,relative,encoding):
+ b=source.read_bytes()
+ target=RET/relative;target.parent.mkdir(parents=True,exist_ok=True)
+ stored=gzip.compress(b,mtime=0) if encoding=='gzip' else b
+ target.write_bytes(stored)
+ rows.append({'path':relative,'sha256':sha(stored),'bytes':len(stored),'encoding':encoding,'source_path':str(source),'decoded_sha256':sha(b),'decoded_bytes':len(b)})
+
+owned=sorted(p for p in ROOT.rglob('*') if p.is_file() and not p.is_relative_to(RET))
+for p in owned:
+ rel=p.relative_to(ROOT).as_posix()
+ if p.suffix=='.py':retain(p,rel+'.txt','inert_python_text')
+ elif p.suffix=='.txt':retain(p,rel,'inert_python_text')
+ elif p.suffix=='.md':retain(p,rel,'identity')
+ else:retain(p,rel+'.gz','gzip')
+
+sources=sorted(p for p in (CHEM/'originals').iterdir() if p.is_file() and p.name!='rhea.rdf.gz')
+assert len(sources)==59
+for p in sources:retain(p,'originals/'+p.name+'.gz','gzip')
+for base,names in [(CHEM,['input-manifest.json','artifact-manifest.json','compact-retention-manifest.json']),(NATIVE,['artifact-manifest.json'])]:
+ for name in names:
+  retain(base/name,('source-package-bindings/chemistry/' if base==CHEM else 'source-package-bindings/native/')+name+'.gz','gzip')
+for row in rows:
+ b=(RET/row['path']).read_bytes()
+ decoded=gzip.decompress(b) if row['encoding']=='gzip' else b
+ assert sha(b)==row['sha256'] and len(b)==row['bytes']
+ assert sha(decoded)==row['decoded_sha256'] and len(decoded)==row['decoded_bytes']
+ assert decoded==pathlib.Path(row['source_path']).read_bytes()
+assert {p.relative_to(RET).as_posix() for p in RET.rglob('*') if p.is_file()}=={r['path'] for r in rows}
+dump(RET/'artifact-manifest.json',{'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'candidate':'MetaCyc:PWY-5417','role':'Independent bounded formal-chemistry source adjudication; not final maintained-record review','artifact_count':len(rows),'stored_bytes':sum(r['bytes'] for r in rows),'all_decoded_original_pairs_verified':True,'external_bulk_original':{'path':str(CHEM/'originals/rhea.rdf.gz'),'sha256':sha((CHEM/'originals/rhea.rdf.gz').read_bytes()),'bytes':(CHEM/'originals/rhea.rdf.gz').stat().st_size},'files':rows})
+inventory=[]
+for p in sorted(ROOT.rglob('*')):
+ if p.is_file():
+  b=p.read_bytes();inventory.append({'path':p.relative_to(ROOT).as_posix(),'sha256':sha(b),'bytes':len(b)})
+dump(ROOT/'artifact-manifest.json',{'frozen_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'candidate':'MetaCyc:PWY-5417','inventory_includes_hidden_ignored':True,'file_count':len(inventory),'files':inventory})
+print(json.dumps({'artifact_manifest_sha256':sha((ROOT/'artifact-manifest.json').read_bytes()),'artifact_count':len(inventory),'retention_manifest_sha256':sha((RET/'artifact-manifest.json').read_bytes()),'retention_artifacts':len(rows),'retention_bytes':sum(r['bytes'] for r in rows),'adjudication_sha256':sha((ROOT/'adjudication.json').read_bytes()),'handoff_sha256':sha((ROOT/'HANDOFF.md').read_bytes())},indent=2))

@@ -1,0 +1,33 @@
+from pathlib import Path
+import xml.etree.ElementTree as E,json,hashlib,gzip,datetime
+A=Path('/private/tmp/pathwaymech-next-263-chemistry');sha=lambda b:hashlib.sha256(b).hexdigest();m=json.loads((A/'input-manifest.json').read_text());p=json.loads((A/'whole-route-chemistry-replay.json').read_text());ns='http://www.w3.org/1999/02/22-rdf-syntax-ns#';rh='http://rdf.rhea-db.org/'
+ids=set()
+for r in p['reactions']:ids.update(r['equivalent_family_search']['family'].values())
+found={}
+with gzip.open(A/'originals/rhea.rdf.gz','rb')as f:
+ for _,el in E.iterparse(f,events=('end',)):
+  if el.tag!='{'+ns+'}Description':continue
+  u=el.get('{'+ns+'}about','');i=u.removeprefix(rh)
+  if i in ids:
+   d={}
+   for c in el:
+    k=c.tag.split('}')[-1];v=c.get('{'+ns+'}resource')or c.text
+    d.setdefault(k,[]).append(v)
+   found[i]=d
+  el.clear()
+assert len(found)==24
+rows=[]
+for r in p['reactions']:
+ family=r['equivalent_family_search']['family'];master=found[family['master']]
+ assert master['status']==[rh+'Approved']
+ assert master['isChemicallyBalanced']==['true']
+ direction=r['issuing_rhea_direction'];selected=family[direction]
+ assert r['selected_id']=='RHEA:'+selected
+ assert rh+selected in master['directionalReaction']
+ rows.append({'native_id':r['native_id'],'selected_id':r['selected_id'],'master':'RHEA:'+family['master'],'status':master['status'],'isChemicallyBalanced':master['isChemicallyBalanced'],'selected_approved_family_link_exact':True,'master_original_properties':master,'selected_original_properties':found[selected]})
+for x in m['files']:
+ b=(A/x['stored_path']).read_bytes();assert sha(b)==x['sha256']and len(b)==x['bytes']
+for x in m['database_bindings']:
+ q=Path(x['path']);s=q.stat();assert str(q.resolve())==x['resolved']and s.st_size==x['bytes']and s.st_mtime_ns==x['mtime_ns']
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'263 chemical source author completion, not independent final review','input_manifest_sha256':sha((A/'input-manifest.json').read_bytes()),'whole_route_replay_sha256':sha((A/'whole-route-chemistry-replay.json').read_bytes()),'rhea_original_sha256':sha((A/'originals/rhea.rdf.gz').read_bytes()),'families':rows,'checks':{'all_six_selected_directions_belong_to_approved_balanced_families':True,'all77_input_bindings_unchanged':True,'all75_unique_retained_inputs_unchanged':True,'database_path_size_mtime_preserved':True},'limits':['Approved and isChemicallyBalanced are issuing assertions checked for the exact family; independent element/charge calculations are in whole-route-chemistry-replay.json.','Database content is bound by prior canonical fullhash receipts, row checks and current path/size/mtime; no second multi-GB whole-file hash.','No new pathway authoring, authority promotion, biological demonstration or current absence claim. Post262 merged baseline rebind remains required.']}
+q=A/'rhea-status-and-final-inputs.json';assert not q.exists();q.write_text(json.dumps(result,indent=2)+'\n');print(sha(q.read_bytes()))

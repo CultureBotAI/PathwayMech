@@ -1,0 +1,17 @@
+from pathlib import Path
+import json,hashlib
+O=Path('/private/tmp/pathwaymech-next-263-primary')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+cache=json.loads((O/'verified-predecessor-source-index.json').read_text());meta=json.loads((O/'metadata-index.json').read_text());pmcs={r['pmcid']:r['pmid'] for r in meta if r.get('pmcid')};reused=[];names=set();jobs=[]
+for row in cache:
+ p=Path(row['source_path']);name=p.name;pmc=next((pc for pc in pmcs if name.startswith(pc)),None)
+ if not pmc and not (row['batch']==248 and name.startswith('PMID20137101')):continue
+ rr=row['source_receipt'];valid=rr.get('artifact_validity','');accepted=rr.get('accepted_scientific_body') or valid in ['original_archive_page_image','original_paper_figure'] or ('-pmc.html' in name and valid=='article_html_or_metadata')
+ if not accepted or name in names:continue
+ target=O/'originals'/name;assert not target.exists();target.write_bytes(p.read_bytes());names.add(name);reused.append(dict(row,path=str(target.relative_to(O)),pmid=pmcs.get(pmc,'20137101'),role='original_body_or_scan_candidate_not_yet_read'))
+for r in meta:
+ pc=r.get('pmcid')
+ if not pc:continue
+ if pc+'-pmc.html' not in names:jobs.append({'name':pc+'-pmc.html','pmid':r['pmid'],'pmcid':pc,'url':'https://pmc.ncbi.nlm.nih.gov/articles/'+pc+'/'})
+ if r.get('isOpenAccess')=='Y' and pc+'.xml' not in names:jobs.append({'name':pc+'.xml','pmid':r['pmid'],'pmcid':pc,'url':'https://www.ebi.ac.uk/europepmc/webservices/rest/'+pc+'/fullTextXML'})
+(O/'reused-fulltext-bindings.json').write_text(json.dumps(reused,indent=2)+'\n');(O/'fulltext-jobs.json').write_text(json.dumps(jobs,indent=2)+'\n');print({'reused_full_artifacts':len(reused),'new_jobs':len(jobs),'pmc_papers':len(pmcs)})

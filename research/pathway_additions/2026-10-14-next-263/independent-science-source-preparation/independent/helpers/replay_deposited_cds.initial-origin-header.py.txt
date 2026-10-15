@@ -1,0 +1,44 @@
+"""Finite independent flatfile CDS extraction and DNA translation; table 11 only."""
+import datetime,hashlib,itertools,json,pathlib,re
+B=pathlib.Path('/private/tmp/pathwaymech-next-263-biological-identity/originals')
+O=pathlib.Path('/private/tmp/pathwaymech-next-263-independent-science/checks')
+def bind(p):
+ b=p.read_bytes();return {'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+alphabet='TCAG';aa='FFLLSSSSYY**CC*WLLLLPPPPHHQQRRRRIIIMTTTTNNKKSSRRVVVVAAAADDEEGGGG'
+code=dict(zip((''.join(c) for c in itertools.product(alphabet,repeat=3)),aa))
+rows=[]
+files=sorted(B.glob('ENA-*.embl'))+[B/'NCBI-AY029000.gb',B/'NCBI-M19460.gb']
+for p in files:
+ t=p.read_text();embl=p.suffix=='.embl'
+ ftext='\n'.join(x[2:] if embl else x for x in t.splitlines() if (x.startswith('FT') if embl else True))
+ # Columns become three leading spaces for ENA after dropping FT; match either fixed-table indentation.
+ parts=re.split(r'(?m)^ {3,5}([A-Za-z_][A-Za-z0-9_]*)\s+',ftext)
+ raw=t.split('\nSQ',1)[1].split('\n',1)[1] if embl else t.split('\nORIGIN',1)[1]
+ dna=re.sub('[^ACGTNacgtn]','',raw.split('\n//',1)[0]).upper()
+ for i in range(1,len(parts),2):
+  if parts[i]!='CDS':continue
+  block=parts[i+1];loc=block.splitlines()[0].strip()
+  q={k:re.sub(r'\s+','',v) if k=='translation' else ' '.join(v.split()) for k,v in re.findall(r'/(\w+)="(.*?)"',block,re.S)}
+  pid=q.get('protein_id');translation=q.get('translation');assert pid and translation,(p,loc)
+  mt=re.fullmatch(r'(complement\()?([<>]?)(\d+)\.\.([<>]?)(\d+)\)?',loc);assert mt,loc
+  rev=bool(mt[1]);start,end=int(mt[3]),int(mt[5]);frag=dna[start-1:end]
+  if rev:frag=frag.translate(str.maketrans('ACGTN','TGCAN'))[::-1]
+  cs=re.search(r'/codon_start=(\d+)',block);offset=int(cs[1])-1 if cs else 0;frag=frag[offset:]
+  table=re.search(r'/transl_table=(\d+)',block);assert table and table[1]=='11'
+  translated=''.join(code.get(frag[n:n+3],'X') for n in range(0,len(frag)-2,3))
+  incomplete_start=bool(mt[4] if rev else mt[2]);initial=translated[0]
+  if not incomplete_start and offset==0 and frag[:3] in {'TTG','CTG','ATT','ATC','ATA','ATG','GTG'}:translated='M'+translated[1:]
+  if translated.endswith('*'):translated=translated[:-1]
+  rows.append({'source':bind(p),'location':loc,'protein_id':pid,'gene':q.get('gene'),'product':q.get('product'),'declared_length':len(translation),'declared_translation_sha256':hashlib.sha256(translation.encode()).hexdigest(),'DNA_translation_matches_declared':translated==translation,'initial_codon':frag[:3],'initial_residue_standard_table':initial,'initial_residue_as_bacterial_start':translated[:1],'codon_start':offset+1,'partial_boundary':bool(mt[2] or mt[4]),'translation':translation})
+assert len(rows)==45,len(rows)
+matches=[]
+for p in sorted(B.glob('UniProt*.json')):
+ j=json.loads(p.read_text())
+ if 'sequence' not in j:continue
+ seq=j['sequence']['value']
+ for r in rows:
+  if any(x.get('database')=='EMBL' and any(z.get('key')=='ProteinId' and z.get('value')==r['protein_id'] for z in x.get('properties',[])) for x in j['uniProtKBCrossReferences']):
+   matches.append({'uniprot':j['primaryAccession'],'protein_id':r['protein_id'],'exact_sequence_equal':seq==r['translation'],'issuing_binding':bind(p),'deposited_source_binding':r['source']})
+report={'executed_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'files':len(files),'CDS_count':len(rows),'CDS':rows,'issuing_links':matches,'scope':'Declared source CDS identities; bacterial code 11 finite translation check. No genomic neighborhood, assembly, function, or preparation inferred from equality.'}
+(O/'deposited-cds-independent.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
+print(json.dumps({'files':len(files),'CDS':len(rows),'DNA_mismatches':[{'protein_id':r['protein_id'],'location':r['location']} for r in rows if not r['DNA_translation_matches_declared']],'issuing_links':[{k:r[k] for k in ['uniprot','protein_id','exact_sequence_equal']} for r in matches]},indent=2))

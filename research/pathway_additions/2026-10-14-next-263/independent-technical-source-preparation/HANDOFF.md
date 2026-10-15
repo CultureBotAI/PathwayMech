@@ -1,0 +1,11 @@
+# Independent technical preparation for next263
+
+This finite package is preparatory provenance work only. No integrated maintained record was available at the actual start of the audit, so no canonical target inspection or record verdict is claimed. The reviewer has not authored the record, source packages, authorities, or retained evidence. No maintained or Git/GitHub writes were made.
+
+All 259 prior pathway YAML files remain byte-identical to base `46ee133770039e8b21d1563166dec50eecd2c411`. The full 381-file authority preparation inventory (including hidden/ignored files) and 145 compact/original pairs verify. The six-package root map verifies 479 retained/source byte pairs; current additional maps verify 609 entries, including the 229-entry dedup map; all 321 primary archive members verify exactly without filesystem extraction. No active `.py` file was found in the complete new research-tree inventory.
+
+The preliminary authority union was independently compared to actual Git-base objects: all 5,172 prior terms, 1,029 source owners and 1,205 manifest rows are unchanged. Its 77 additions are exactly the missing IDs selected by the observed preliminary record (`f68f1a6e063c43bdaec2e6dd109518577d30184af7baa86335b1d32f4eb6d3d1`), with 70 added source rows. This is not final selection approval.
+
+Two reviewer-helper assumptions failed, and both remain visible. The first assumed primary archives were flattened to the package root; the revised helper reads their explicit retention-map paths. The second compared outer gzip bytes against inner frozen bytes for two dedup XMLs; `preparation-storage-successor.json` independently verifies the declared outer and inner storage layers and all 229 current map entries. These are reviewer helper errors, not demonstrated repository defects. The original audit and helpers are preserved unchanged.
+
+Read the source summary corrections under retained primary/CORRECTIONS.md and its two successors. Issues 567 and 568 remain final-record follow-ups; this preparation does not close them or create canonical lineage. Full record, source-to-graph coverage, exact final authority union, generated SVG/KGX outputs, current gates, canonical review persistence and exact commit attestation remain to be reviewed after integration.

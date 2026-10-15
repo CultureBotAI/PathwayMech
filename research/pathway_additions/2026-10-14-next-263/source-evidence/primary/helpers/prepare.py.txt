@@ -1,0 +1,37 @@
+from pathlib import Path
+import json,hashlib,datetime,xml.etree.ElementTree as E
+O=Path('/private/tmp/pathwaymech-next-263-primary');N=Path('/private/tmp/pathwaymech-next-263-native');R=Path('/private/tmp/pathwaymech-next-262-20261014/research/pathway_additions')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def dump(n,v):(O/n).write_text(json.dumps(v,indent=2)+'\n')
+nm=json.loads((N/'artifact-manifest.json').read_text());assert sha(N/'artifact-manifest.json')=='302c4e494f3bfc92f4062e223f5bf7316451e29bc1e4ca52e97b32d70671abcc';assert all(sha(N/r['path'])==r['sha256'] for r in nm['files'])
+for n in ['HANDOFF.md','primary-follow-ledger.json','native-conflicts-and-dispositions.json','formal-activity-closure.json','native-route-replay.json']:(O/'predecessor-bindings'/('native263-'+n)).write_bytes((N/n).read_bytes())
+leads=json.loads((N/'primary-follow-ledger.json').read_text());extra={'8083169':'PRS2000 PcaR exact construct/lineage and regulation follow-up explicitly identified in prior249/250.','8522507':'PcaR binding and expression follow-up; prior249 abstract-only access.','20137101':'KT2440 expression engineering context cited in prior248; distinct from historical enzyme identity.','5330966':'Original1966 catechol enzyme paper required to distinguish historical preparations; prior248 only partial rendered body.','5916391':'Original1966 parent-series definition comparator; prior248 metadata-only and wrong-article alternate rejected.'}
+dump('requested-literature.json',{'native_leads':[r['pmid'] for r in leads],'native_lead_count':42,'additional_bounded_leads':extra,'scope':'Native42 leads plus5 explicitly justified historical/preparation follow-ups; not unbounded literature discovery.'})
+manifestpaths=[(248,R/'2026-10-14-next-248/catechol/primary/source-provenance.json'),(249,R/'2026-10-14-next-249/oxoadipate/primary/source-manifest.json'),(250,R/'2026-10-14-next-250/protocatechuate/primary/source-manifest.json')]
+cache=[]
+for batch,mp in manifestpaths:
+ m=json.loads(mp.read_text());mh=sha(mp);(O/'predecessor-bindings'/f'{batch}-source-manifest.json').write_bytes(mp.read_bytes());rows=m.get('artifacts',m.get('requests',[]));base=Path(f'/private/tmp/pathwaymech-next-{batch}-primary-20261014')
+ for r in rows:
+  if not r.get('path') or not r.get('sha256'):continue
+  p=Path(r['path']);p=p if p.is_absolute() else base/p
+  assert p.is_file() and sha(p)==r['sha256'],str(p)
+  cache.append({'batch':batch,'source_path':str(p),'sha256':sha(p),'bytes':p.stat().st_size,'manifest':str(mp),'manifest_sha256':mh,'source_receipt':r})
+ # Retain reading/access reports as prior observations only, not new readings.
+ cov=mp.parent/'reading-coverage.json';(O/'predecessor-bindings'/f'{batch}-prior-reading-coverage.json').write_bytes(cov.read_bytes())
+dump('verified-predecessor-source-index.json',cache)
+# Retain exactly42 native references and5 explicit extra metadata if prior original exists.
+wanted={r['pmid'] for r in leads}|set(extra);reused=[]
+for row in cache:
+ p=Path(row['source_path']);r=row['source_receipt'];pm=r.get('pmid')
+ if not pm and p.suffix=='.json':
+  try:
+   v=json.loads(p.read_text());recs=v.get('resultList',{}).get('result',[]);pm=recs[0].get('pmid') if len(recs)==1 else None
+  except (ValueError,AttributeError):pass
+ if pm not in wanted:continue
+ if p.suffix=='.json' and 'europepmc' in p.name:
+  target=O/'originals'/('metadata-'+pm+'.json')
+  if target.exists():continue
+  target.write_bytes(p.read_bytes());reused.append(dict(row,path=str(target.relative_to(O)),pmid=pm,role='original_metadata_response'))
+dump('reused-metadata-bindings.json',reused)
+dump('missing-metadata.json',{'pmids':sorted(wanted-{r['pmid'] for r in reused})})
+print(json.dumps({'verified_prior_sources':len(cache),'metadata_reused':len(reused),'metadata_missing':len(wanted)-len(reused)},indent=2))

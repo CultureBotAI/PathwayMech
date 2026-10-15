@@ -1,0 +1,122 @@
+"""Finite external author checks and source-to-record dispositions; no maintained writes."""
+from pathlib import Path
+import os,json,hashlib,datetime,collections,re,sys,xml.etree.ElementTree as ET
+import yaml
+sys.dont_write_bytecode=True
+B=Path(os.environ.get('PATHWAY_AUTHOR_OUTPUT','/private/tmp/pathwaymech-next-263-record-author'));N=Path('/private/tmp/pathwaymech-next-263-native');P=Path('/private/tmp/pathwaymech-next-263-primary');I=Path('/private/tmp/pathwaymech-next-263-biological-identity');R=Path('/private/tmp/pathwaymech-next-263-20261014')
+sys.path.insert(0,str(R/'src'));from pathwaymech.schema import validate_record
+rd=lambda p:json.loads(Path(p).read_text());sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def write(n,v):(B/n).write_text(json.dumps(v,indent=2,ensure_ascii=False)+'\n')
+record_path=B/'drafts/catechol-degradation-iii.yaml';r=yaml.safe_load(record_path.read_text());validate_record(r);edges=r['mechanistic_edges'];nodes={x['id']:x for k in ['taxa','participants','reactions'] for x in r[k]};nodes[r['id']]={'id':r['id'],'label':r['label']};refs={x['id']:x for x in r['references']}
+full={x['frame']:x for x in rd(N/'native-full-object-projection.json')};acts=rd(N/'formal-activity-closure.json');formaldisp=rd(B/'drafts/formal-activity-dispositions.json');assert len(acts)==len(formaldisp)==20 and len({x['enzyme']for x in acts})==19
+all_ev=[]
+for e in edges:
+ for i,v in enumerate(e['evidence']):all_ev.append((e['id'],f'mechanistic_edges[id={e["id"]}].evidence[{i}]',v))
+ for q in e.get('endpoint_qualifiers',[]):
+  for i,v in enumerate(q['evidence']):all_ev.append((e['id'],f'mechanistic_edges[id={e["id"]}].endpoint_qualifiers[{q["endpoint"]}].evidence[{i}]',v))
+# Every native structured locator must replay against the exact source projection derived from original XML.
+locreplay=[]
+for eid,path,v in all_ev:
+ if not v['reference_id'].startswith('MetaCyc:'):continue
+ frame=v['reference_id'].split(':',1)[1];assert frame in full
+ assert refs[v['reference_id']]['source_sha256']==full[frame]['sha256']
+ available={x['locator']for x in full[frame]['slots']}
+ for loc in v['source_locator'].split('; '):assert loc in available,(eid,frame,loc)
+ assert 'source_assertion'in v and 'quote'not in v
+ locreplay.append({'edge':eid,'evidence_path':path,'reference':v['reference_id'],'source_sha256':full[frame]['sha256'],'locators':v['source_locator'].split('; ')})
+# Actual primary spans are replayed; manual visual excerpts remain explicitly tied to original page images.
+quotes=rd(B/'drafts/primary-quote-span-ledger.json')
+for x in quotes:
+ p=Path(x['path']);raw=p.read_bytes();assert sha(p)==x['sha256'];a,b=x['byte_span'];assert raw[a:b].decode()==x['quote']
+ if x.get('original_image_path'):assert sha(Path(x['original_image_path']))==x['original_image_sha256']
+for x in rd(B/'plans/pcar-visual-excerpt-recheck.json'):assert sha(x['original_path'])==x['sha256']
+assert all(x['unique_excerpt_words']<=25 for x in rd(B/'drafts/primary-quotation-counts.json').values())
+# Complete formal material and join sets are compared to independently adjudicated chemistry.
+route=rd('/private/tmp/pathwaymech-next-263-independent-chemistry/checks/independent-route.json');expected=[]
+for a in route['reactions']:
+ for role,pred in [('inputs','consumes'),('outputs','produces')]:
+  for c,co in a[role].items():expected.append((c,pred,a['rhea_directional_accession']) if pred=='consumes' else(a['rhea_directional_accession'],pred,c))
+actual=[(e['subject'],e['predicate'],e['object'])for e in edges if e['predicate']in ['consumes','produces']];assert collections.Counter(expected)==collections.Counter(actual) and len(actual)==21
+fmap={x['native_reaction']:x['rhea_directional_accession']for x in route['reactions']};expectedjoins={(fmap[j['source']],'provides_input_for',fmap[j['target']])for j in route['joins']};assert expectedjoins=={(e['subject'],e['predicate'],e['object'])for e in edges if e['predicate']=='provides_input_for'}
+for d in formaldisp:
+ for key in ['activity_edge','formal_edge']:assert any(e['id']==d[key] and e['subject']=='MetaCyc:'+d['enzyme'] and e['predicate']==d['predicate']for e in edges)
+# Issue-bound correction acceptance checks.
+assert not any(e['subject']in ['PubChem:25240959','CHEBI:57712','CHEBI:149587'] and e['object']=='MetaCyc:ENZRXN-13636'for e in edges)
+assert len([e for e in edges if e['subject']in ['PubChem:25240959','CHEBI:57712','CHEBI:149587'] and e['object']=='MetaCyc:ENZRXN-31095' and e['predicate']=='inhibits'])==3
+assert not any('HCN'in e['subject']or 'HCN'in e['object']for e in edges)
+assert all(not e.get('endpoint_qualifiers')for e in edges if e['subject']=='UniProtKB:Q52154')
+assert 'but not pcaF' in r['description']
+assert all('7961399'not in x['pmid']for x in rd(B/'drafts/primary-table-fact-ledger.json'))
+# Full native slot and object accounting. Retained context is explicitly distinct from a graph assertion.
+slotdisp=[]
+for f,o in full.items():
+ for s in o['slots']:
+  hits=[eid for eid,path,v in all_ev if v['reference_id']=='MetaCyc:'+f and s['locator']in v.get('source_locator','').split('; ')]
+  linked=[e['id']for e in edges if 'MetaCyc:'+f in [e['subject'],e['object']]or any(v['reference_id']=='MetaCyc:'+f for v in e['evidence'])]
+  if hits:status='structured source fact represented in exact edge evidence';detail='Every listed locator independently replayed against the complete original.'
+  elif s['slot']in ['common-name','synonym','dblink','inchi','inchi-key','cml','chemical-formula','molecular-weight-kd','molecular-weight-exp','parent']:status='identity or physical preparation context';detail='Exact native/issuing identity and historical preparation decisions are retained; no alias, stereochemistry, sequence or assembly equivalence is inferred solely from this slot.'
+  elif s['slot']=='comment':status='narrative source context; not rendered as structured assertion';detail='Apply exact catalyst/primary/18-conflict dispositions below. Unsupported and adjacent claims remain exclusions; the full prose is preserved in the frozen source dossier.'
+  elif s['slot']in ['gene','product','component','component-of','species','strain-name','rank']:status='exact biological relation context';detail='All 59 selected biological objects and eleven parent organism rows are dispositioned below. Adjacent donors, components and genes are not automatic whole-route evidence.'
+  elif o['type']=='Enzymatic-Reaction' and f not in {x['activity']for x in acts}:status='adjacent activity context';detail='Only ENZRXN-15760 and ENZRXN-15761 receive bounded CcaC edges. Other alternative reactions remain source-context exclusions from the six formal steps; no unsupported material branch is added.'
+  else:status='retained provenance or broader source context';detail='No additional candidate graph claim is asserted from this slot; its exact original and full closure disposition remain retained.'
+  slotdisp.append({'frame':f,'object_type':o['type'],'slot':s['slot'],'locator':s['locator'],'source_sha256':o['sha256'],'edge_ids':sorted(set(hits)),'related_edges':sorted(set(linked)),'disposition':status,'reason':detail})
+write('source-to-graph-native-slots.json',slotdisp)
+conf=[]
+for x in rd(N/'native-conflicts-and-dispositions.json'):
+ fs={a['frame']for a in x['native_bindings']};es=[e['id']for e in edges if any(e['subject']=='MetaCyc:'+f or e['object']=='MetaCyc:'+f or any(v['reference_id']=='MetaCyc:'+f for v in e['evidence'])for f in fs)]
+ conf.append({'conflict_id':x['id'],'source_issue':x['issue'],'source_disposition':x['disposition'],'record_edges':es,'record_description_also_applies':True,'source_binding':x['native_bindings'],'final_scope':'Preserved/corrected at source-specific scope. No failed identity/target/preparation claim is upgraded.'})
+write('native-conflict-record-dispositions.json',conf)
+identity=[]
+for a in rd(I/'biological-identity-decision-ledger.json')['object_dispositions']:
+ ident='MetaCyc:'+a['frame'];assert ident in nodes
+ identity.append({'id':ident,'category':nodes[ident].get('category'),'label':nodes[ident]['label'],'source':a['original'],'decision_ids':a['decision_ids'],'edges':[e['id']for e in edges if ident in [e['subject'],e['object']]or any(v['reference_id']==ident for v in e['evidence'])],'disposition':a['disposition']})
+assert len(identity)==59;write('biological-object-record-dispositions.json',identity)
+parents=[]
+for a in rd(N/'parent-organism-annotations.json'):
+ xr=[x for x in a['xref']if x['database']=='NCBI-TAXONOMY-DB'];ident='NCBITaxon:'+xr[0]['id']if xr else None
+ assert ident is None or ident in nodes
+ parents.append({'native_organism':a['native_organism'],'selected_taxon':ident,'native_parent_locator':a['parent_locator'],'native_original':a['source'],'disposition':'native parent annotation only; not all-six-step experimental scope'if ident else'explicit ungrounded strain context in description; no guessed taxon'})
+assert len(parents)==11 and sum(x['selected_taxon'] is not None for x in parents)==9;write('parent-organism-record-dispositions.json',parents)
+# Claim-level primary placement: exact evidence edge, named activity context, or explicit non-expansion rationale.
+activity_groups={
+ '17172348':['ENZRXN-16126','ENZRXN-16125','ENZRXN-16128','ENZRXN-16127','ENZRXN-21371','ENZRXN-16130'],
+ '11741862':['ENZRXN-31095','ENZRXN-13636'],'11741863':['ENZRXN-31095','ENZRXN-13636','ENZRXN-3368'],
+ '34731045':['ENZRXN-30674'],'7391022':['ENZRXN-3368'],'6780551':['ENZRXN-3369'],
+ '2295613':['ENZRXN-3585'],'7646060':['ENZRXN-3585'],'697765':['ENZRXN-3585'],
+ '5330966':['ENZRXN-3586','ENZRXN-3587'],'3609743':['ENZRXN-3586'],'3612800':['ENZRXN-3586'],'3999146':['ENZRXN-3586'],
+ '2926818':['ENZRXN-3587'],'4032480':['ENZRXN-3587'],'8647072':['ENZRXN-16147'],
+ '12218011':['ENZRXN-15727'],'15774876':['ENZRXN-15727'],'11526005':['ENZRXN-15727'],
+ '14617643':['ENZRXN-16127','ENZRXN-21371'],'18789896':['ENZRXN-16127','ENZRXN-21371'],
+ '1624453':['ENZRXN-3369'],'7961399':['ENZRXN-5295'],'8522507':['ENZRXN-5295'],
+ '9495743':['ENZRXN-18274'],'20660314':['ENZRXN0-2607','ENZRXN-18274'],'17259607':['ENZRXN-18274'],
+ '9748275':['ENZRXN0-2607'],'12846838':['ENZRXN0-2607'],'26189483':['ENZRXN-30626'],'29625225':['ENZRXN-30626'],
+ '1158871':['ENZRXN-3368'],'20137101':['ENZRXN-3368']}
+primary=[]
+for c in rd(P/'source-supported-claims.json'):
+ pm=c['pmid'];evidence_edges=sorted({eid for eid,path,v in all_ev if v['reference_id']=='PMID:'+pm});context_edges=[d['activity_edge']for d in formaldisp if d['activity']in activity_groups.get(pm,[])]
+ status='qualified mechanism, identity/preparation context, or explicit exclusion retained';correction=None
+ if c['id']=='P263-C48':status='superseded erroneous frozen summary';correction={'issue':567,'corrected_claim':'Benzoate represses pcaK but not pcaF; beta-ketoadipate induction and PcaR dependence remain supported.'}
+ if c['id']=='P263-C43':correction={'issue':568,'corrected_locator':'Results prose, printed page 6485, original PMC197001-page-7.png. Numeric activity facts unchanged; exact quotations replace table classification.'}
+ if c['id']=='P263-C63':status='rejected unrelated citation; no inferred replacement'
+ primary.append({'claim_id':c['id'],'pmid':pm,'source_sha256':c['support']['sha256'],'source_artifact':c['support']['path'],'original_claim':c['assertion'],'original_locator':c['locator'],'disposition':status,'correction':correction,'evidence_edges':evidence_edges,'context_activity_edges':context_edges,'parent_description':pm in r['description'] or c['id']in ['P263-C44','P263-C45','P263-C46','P263-C47'],'retained_limit':c['limits']})
+assert len(primary)==63;write('source-to-record-primary-claims.json',primary)
+write('primary-access-and-lead-closure.json',{'native_leads':42,'bounded_follows':6,'total':48,'rows':[{'pmid':a['pmid'],'scope':a['access_scope'],'reading_scope':a['reading_scope'],'reference_declared':'PMID:'+a['pmid']in refs,'claims':[c['claim_id']for c in primary if c['pmid']==a['pmid']],'limitations':a.get('interpretation_limit','Metadata/abstract access only; no unobserved full-text or figure claim')}for a in rd(P/'source-access-and-reading-ledger.json')]})
+# Complete original/retained source binding for each record reference.
+roots=[Path('/private/tmp/pathwaymech-next-263-'+x)for x in ['native','primary','chemistry','biological-identity','independent-chemistry','additional-chemistry','context-chemistry']];byhash=collections.defaultdict(list)
+for root in roots:
+ for f in root.rglob('*'):
+  if f.is_file():byhash[sha(f)].append(str(f))
+refrows=[]
+for ref in r['references']:
+ h=ref['source_sha256'];paths=byhash[h];mode='exact retained file bytes'
+ if not paths:
+  assert h=='26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f',ref
+  paths=['/Users/marcin/.data/oaklib/chebi.db'];mode='full pinned SQL digest reuses verified owner/hash receipt; current exact subject rows independently compared by context-chemistry author'
+ refrows.append({'reference_id':ref['id'],'sha256':h,'matching_original_or_reading_paths':paths,'binding_mode':mode})
+write('complete-reference-artifact-bindings.json',refrows)
+for a in rd(B/'receipts/preparation-inputs.json')['prior_records']:assert sha(R/a['path'])==a['sha256']
+for pkg in rd(B/'receipts/preparation-inputs.json')['packages']:
+ assert sha(pkg['manifest_path'])==pkg['manifest_sha256'];root=Path(pkg['manifest_path']).parent
+ for a in rd(pkg['manifest_path'])['files']:assert sha(root/a['path'])==a['sha256']
+checks={'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'record_path':str(record_path),'record_sha256':sha(record_path),'schema':'closed current validate_record passed','named_nodes':len(nodes),'taxa':9,'participants':len(r['participants']),'reactions':len(r['reactions']),'edges':len(edges),'references':len(refs),'formal_material_edges':21,'exact_material_joins':5,'formal_activities':20,'formal_catalysts':19,'native_biological_objects':59,'native_slots_dispositioned':len(slotdisp),'native_objects':len(full),'native_conflicts':18,'primary_claims':63,'primary_sources':48,'native_locator_occurrences_replayed':len(locreplay),'primary_quote_occurrences_in_author_ledger':len(quotes),'primary_table_fact_declarations':len(rd(B/'drafts/primary-table-fact-ledger.json')),'baseline_records_unchanged':259,'all_five_initial_frozen_packages_unchanged':True,'full_repository_gates':'Not run here; root owns maintained integration, exact final rebind and complete gates.','independent_review':'Required after integration; this is source and record authorship.'}
+write('receipts/final-author-checks.json',checks);write('receipts/native-locator-replay.json',locreplay);print(json.dumps(checks))

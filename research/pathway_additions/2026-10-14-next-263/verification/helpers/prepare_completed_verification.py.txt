@@ -1,0 +1,241 @@
+"""Retain actual gate and browser evidence; document only bounded post-gate changes."""
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+import os
+import re
+import subprocess
+import yaml
+
+ROOT = Path('/private/tmp/pathwaymech-next-263-20261014')
+CI = Path('/private/tmp/pathwaymech-next-263-ci')
+R = ROOT / 'research/pathway_additions/2026-10-14-next-263'
+INITIAL = Path('/private/tmp/pathwaymech-next-263-checks-initial')
+GATES = Path('/private/tmp/pathwaymech-next-263-checks-recovered')
+TECH = Path('/private/tmp/pathwaymech-next-263-independent-technical/recovery-review-retention')
+PYTHON = '/private/tmp/pathwaymech-next-263-verified-venv/bin/python'
+RECORD_SHA = 'b30573a380b358a9b0228f8e3e2689943ecf828aa01ae790f281ba3fe617e603'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def load(path):
+    return json.loads(path.read_text())
+
+
+def write_json(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open('x') as stream:
+        json.dump(data, stream, indent=2)
+        stream.write('\n')
+
+
+def main():
+    assert not (CI / 'completed-verification-preparation.json').exists()
+    preservation = load(GATES / 'final-input-preservation.json')
+    assert preservation['all_unchanged'] and preservation['all_required_commands_passed_across_recorded_runs']
+    core = load(GATES / 'tested-core-input-hashes.json')
+    assert len(core) == preservation['tested_core_files'] == 3178
+    assert all(sha(ROOT / p) == digest for p, digest in core.items())
+    initial = load(INITIAL / 'receipts.json')
+    recovered = load(GATES / 'receipts.json')
+    assert [r['exit_code'] for r in initial] == [0, 0, 1]
+    assert [r['command'] for r in recovered] == [
+        ['just', 'test'], ['just', 'lint'], ['just', 'vendored-check'],
+        ['git', 'diff', '--check'], ['git', 'diff', '--cached', '--check']]
+    assert all(r['exit_code'] == 0 for r in recovered)
+    for row in initial + recovered:
+        assert sha(Path(row['log_path'])) == row['log_sha256']
+    summary = re.search(r'(\d+) passed, (\d+) skipped, (\d+) warnings in ([\d.]+)s',
+                        (GATES / 'just-test.log').read_text())
+    assert summary, 'Inspect the actual pytest summary before preparing the report.'
+    passed, skipped, warnings = map(int, summary.group(1, 2, 3))
+    elapsed = summary.group(4)
+    assert passed + skipped == 5258 and skipped == 3
+    record_path = ROOT / 'data/pathways/catechol-degradation-iii.yaml'
+    assert sha(record_path) == preservation['record_sha256'] == RECORD_SHA
+    record = yaml.safe_load(record_path.read_text())
+    counts = {key: len(record[key]) for key in ['taxa', 'participants', 'reactions', 'mechanistic_edges', 'references']}
+    assert counts == {'taxa': 9, 'participants': 83, 'reactions': 30, 'mechanistic_edges': 117, 'references': 211}
+    browser = load(CI / 'browser-cdp-result.json')
+    assert not browser['runtime_errors']
+    assert sha(Path(browser['page'])) == browser['page_sha256']
+    for capture in browser['captures']:
+        assert sha(Path(capture['path'])) == capture['sha256']
+    kgx = load(CI / 'kgx-export-receipt.json')
+    assert kgx['exit_code'] == 0 and kgx['record_sha256'] == RECORD_SHA
+    assert sha(Path(kgx['log_path'])) == kgx['log_sha256']
+    for output in kgx['outputs']:
+        path = Path(output['path'])
+        assert sha(path) == output['sha256']
+        assert path.read_bytes() == (ROOT / 'pages/downloads' / path.name).read_bytes()
+    tech_manifest = TECH / 'artifact-manifest.json'
+    assert sha(tech_manifest) == 'e53c9e0a7d4da621e21e6f714f288c50e93c425a8545a7ee508340b999c95036'
+    technical = load(tech_manifest)
+    rows = technical['files']
+    assert len(rows) == 14
+    actual = {str(p.relative_to(TECH)) for p in TECH.rglob('*') if p.is_file()}
+    assert actual == {row['path'] for row in rows} | {'artifact-manifest.json'}
+    for row in rows:
+        stored = TECH / row['path']
+        assert sha(stored) == row['sha256'] and stored.stat().st_size == row['bytes']
+        assert row['encoding'] in {'identity', 'gzip_lossless'}
+        decoded = gzip.decompress(stored.read_bytes()) if row['encoding'] == 'gzip_lossless' else stored.read_bytes()
+        original = Path(row['original_path'])
+        assert decoded == original.read_bytes()
+        assert len(decoded) == row['original_bytes'] and sha(original) == row['original_sha256']
+    retained = []
+
+    def retain(source, relative, compress=False):
+        source = Path(source)
+        destination = R / relative
+        assert destination.resolve().is_relative_to(ROOT) and not destination.exists()
+        raw = source.read_bytes()
+        data = gzip.compress(raw, mtime=0) if compress else raw
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        with destination.open('xb') as stream:
+            stream.write(data)
+        assert (gzip.decompress(destination.read_bytes()) if compress else destination.read_bytes()) == raw
+        retained.append({'source': str(source), 'source_sha256': sha(source), 'source_bytes': len(raw),
+                         'retained': str(destination.relative_to(ROOT)), 'retained_sha256': sha(destination),
+                         'retained_bytes': len(data), 'encoding': 'gzip_lossless' if compress else 'identity'})
+
+    for name in sorted(actual):
+        retain(TECH / name, Path('independent-technical-review/recovery') / name)
+    for phase, directory in [('initial', INITIAL), ('recovered', GATES)]:
+        names = ['receipts.json', 'environment.json', 'tested-core-input-hashes.json']
+        if phase == 'recovered':
+            names.append('final-input-preservation.json')
+        for name in names:
+            retain(directory / name, Path('verification/full-gates') / phase / name)
+        for row in load(directory / 'receipts.json'):
+            log = Path(row['log_path'])
+            retain(log, Path('verification/full-gates') / phase / (log.name + '.gz'), True)
+    write_json(R / 'verification/full-gates/successful-receipts.json', {
+        'scope': 'Exact successful invocations from both recorded runs; this selection does not erase the separate failed initial test receipt.',
+        'receipts': initial[:2] + recovered,
+        'initial_attempts': 'initial/receipts.json',
+        'recovered_attempts': 'recovered/receipts.json',
+        'carry_forward_basis': '../recovery-preparation.json',
+    })
+    for name in ['accepted-integration-inputs.json', 'recovery-preparation.json',
+                 'untracked-whitespace-initial.json', 'independent-review-prepromotion-intake.json',
+                 'independent-output-prepromotion-intake.json']:
+        retain(CI / name, Path('verification') / name)
+    for name in ['run_initial_checks.py', 'prepare_verification_recovery.py',
+                 'run_recovered_checks.py', 'prepare_completed_verification.py']:
+        retain(CI / name, Path('verification/helpers') / (name + '.txt'))
+    for name in ['browser-cdp-result.json', 'graph-desktop-cdp.png', 'graph-mobile-cdp.png']:
+        retain(CI / name, Path('verification/browser') / name)
+    retain(CI / 'browser-cdp.log', Path('verification/browser/browser-cdp.log.gz'), True)
+    retain(CI / 'check_browser_graph.mjs', Path('verification/browser/check_browser_graph.mjs.txt'))
+    retain(CI / 'kgx-export-receipt.json', Path('verification/kgx-export-receipt.json'))
+    retain(Path(kgx['log_path']), Path('verification/kgx-export.log.gz'), True)
+    visual = {
+        'scope': 'Previously inspected exact desktop 1440x1080 and mobile 390x844 live-CDP captures; no new browser run.',
+        'receipt': 'browser-cdp-result.json', 'page_sha256': browser['page_sha256'],
+        'desktop_sha256': browser['captures'][0]['sha256'],
+        'mobile_sha256': browser['captures'][1]['sha256'],
+        'observations': ['Controls and graph render in both viewports; no recorded runtime exceptions.',
+                         'Zoom changes displayed scale; RHEA:23853 node selection highlights 10 connected relationships.',
+                         'All 117 relationships remain; 129 display instances comprise 114 base nodes and 15 qualified instances.'],
+        'limitations': ['Dense fit-width graph labels require zoom or node selection for inspection.',
+                        'One isolated Chrome session; not exhaustive cross-browser or UI-interaction coverage.'],
+        'reviewers': ['Root visual inspection recorded in task history', 'Independent technical output assessment'],
+    }
+    write_json(R / 'verification/browser/browser-visual-assessment.json', visual)
+    identifiers = {'record_sha256': RECORD_SHA, 'pathway_id': record['id'], 'record_counts': counts,
+                   'selected_nodes': [{'id': record['id'], 'label': record['label'], 'kind': 'pathway'}] +
+                       [dict(node, kind=key) for key in ['taxa', 'participants', 'reactions'] for node in record[key]],
+                   'references': record['references'],
+                   'scope': 'Exact maintained current node/reference inventory, not a new authority or scientific judgment.'}
+    assert len(identifiers['selected_nodes']) == 123
+    write_json(R / 'identifier-selection-final.json', identifiers)
+    readme = R / 'README.md'
+    before_readme = readme.read_text()
+    text = before_readme
+    old = 'Root\'s native validation and separate closed JSON-schema validation passed on\nthe initial integration; the complete gates are being run on the successor.'
+    new = 'Root\'s native validation and separate closed JSON-schema validation passed on\nthe initial integration. Full successor validation and the recovered full test\nsuite passed; the [verification report](verification.md) preserves the initial\nenvironment failure and exact successful command receipts.'
+    assert text.count(old) == 1
+    text = text.replace(old, new)
+    old = 'changes preserve every named identifier and label. Generated outputs, full\nrepository gates, independent final review and protected publication are still\nbeing completed.'
+    new = 'changes preserve every named identifier and label. Generated graph and KGX\nchecks passed. Independent assessments found no remaining supported defect;\ncanonical review saves and protected publication remain separately gated.'
+    assert text.count(old) == 1
+    text = text.replace(old, new)
+    text += '\nThe [independent review retention receipt](root-verification/independent-review-retention-promotion.json)\nbinds the preserved scientific and technical proofs. The [ADIPATE storage successor](root-verification/context-adipate-storage-successor.json)\nrecords its exact lossless gzip path without altering source bytes or frozen\nmanifest meanings. See the [completed verification report](verification.md) for\ncommand results and post-gate documentation boundaries.\n'
+    readme.write_text(text)
+    report_path = R / 'verification.md'
+    report = f'''# Catechol degradation III: completed integration checks
+
+The [MetaCyc:PWY-5417 record](../../../data/pathways/catechol-degradation-iii.yaml) represents the complete six-step catechol ortho-cleavage route. Its SHA-256 is `{RECORD_SHA}`. It contains nine source-annotated taxa, 83 participants, 30 reaction/activity nodes, 117 edges and 211 references. The [exact current inventory](identifier-selection-final.json) lists all 123 selected identifiers and all 211 references. The [source dossier](README.md) preserves each strain, preparation, direction, chemical-state and source-access boundary. All 259 earlier pathway YAML records remain byte-identical; 77 selected authority additions preserve all 5172 earlier terms and 1029 earlier owners.
+
+Adversarial assessment led to four tracked corrections: [567](https://github.com/CultureBotAI/PathwayMech/issues/567) restores the paper's distinction between pcaK repression and unrepressed pcaF; [568](https://github.com/CultureBotAI/PathwayMech/issues/568) locates thiolase activities in printed page 6485 prose rather than Table 1; [569](https://github.com/CultureBotAI/PathwayMech/issues/569) separates the strain-unspecified AY029000/AAK33066 deposit from the mt-2 paper preparation; [570](https://github.com/CultureBotAI/PathwayMech/issues/570) removes incorrect EDTA charge wording while preserving the already-correct CHEBI:64755 endpoint. Source corrections and exact maintained deltas are retained under the dossier's Gaps section and root-verification receipts. Added primary EDTA evidence is restricted to the measured trans-dienelactone activity; the distinct unavailable-substrate activity remains native-only. Independent scientific and technical assessments accept the repaired record with no remaining supported defects in their scopes.
+
+Initial observations are immutable JSON findings, not saved structured reviews. Final reviews record accepted corrections in evidence-linked assessments without fabricated predecessor identities. The [canonical persistence receipt](verification/canonical-review-persistence.json) will identify the actual saved bundles after the documented save step; this report is prepared beforehand and does not itself claim those saves. Issues remain open until publication and merge.
+
+| Check | Actual result |
+| --- | --- |
+| `just render-pages` | Passed; 260 pathway pages and corpus downloads rendered. |
+| `just validate` | Passed for full corpus, closed schema, identifier labels, provenance, source inventory, history and pages. |
+| Initial `just test` | Failed after shared environment files disappeared: 102 failed, 4975 passed, 3 skipped, 178 errors. Exact failed log retained. |
+| Recovered `just test` | {passed:,} passed, {skipped} skipped, {warnings} warnings; pytest elapsed {elapsed} seconds in a separate frozen-lock environment. |
+| `just lint` | Passed. |
+| `just vendored-check` | Passed. |
+| Working and staged `git diff --check` | Passed; final staged additions receive a separate check before commit. |
+| Supported KGX export | Passed for all 260 records; exported TSVs are byte-identical to generated downloads. |
+
+The [initial receipts](verification/full-gates/initial/receipts.json) and [recovered receipts](verification/full-gates/recovered/receipts.json) preserve every command. The [recovery preparation](verification/recovery-preparation.json) verifies all 2,972 original tested inputs before retention, then accounts for 2,971 unchanged files, one lossless ADIPATE storage relocation and 207 added proof files. No record, authority, code, schema, generated output, history or prior documentation changed before carrying forward the successful render and validation results. The full test suite was rerun, not only its failures. All [3,178 recovered inputs](verification/full-gates/recovered/tested-core-input-hashes.json) and nine critical environment files remained unchanged through the successful run, as recorded by the [preservation receipt](verification/full-gates/recovered/final-input-preservation.json). Hidden and ignored files are included, with explicit runtime-cache exclusions.
+
+The independent recovery assessment retains all 280 failing/error trace dispositions: 278 directly identify missing dependency resources/imports or the missing NumPy recarray interface; two omit enough traceback detail to establish an exact initial cause. Those uncertainties are not erased by the later successful suite. The deletion actor is unknown. The fresh environment uses the unchanged repository lockfile and copy-mode installation, and the shared damaged environment was not repaired. The original whitespace scan found a trailing space in native META-ADIPATE.xml; its [storage successor](root-verification/context-adipate-storage-successor.json) preserves all original bytes through gzip.
+
+Independent scientific and technical output replays preserve all 117 graph relationships and 123 KGX node contexts, including complete evidence, endpoint qualifiers and source metadata. The diagram contains 114 base nodes plus 15 qualified instances, with 91 mechanism and 26 context links. The page contains 96 quotation occurrences, 330 structured assertions, 426 locators, 211 reference anchors and 673 resolving reference fragments. Both selected reverse-direction Rhea identifiers retain their issuing orientation metadata; the displayed equations describe the route traversal. Scientific and technical proof packages are linked by the [retention promotion receipt](root-verification/independent-review-retention-promotion.json).
+
+The [live browser receipt](verification/browser/browser-cdp-result.json), exact desktop/mobile captures and [visual assessment](verification/browser/browser-visual-assessment.json) document rendering, zoom and selection in isolated Chrome. No runtime errors were recorded. Dense fit-width labels require zoom or node selection; this is bounded browser smoke coverage rather than exhaustive UI testing. The [export receipt](verification/kgx-export-receipt.json) binds the complete 4,902-node/13,492-edge corpus downloads; full duplicate TSVs remain external because the generated downloads are already retained.
+
+This report, its history entry, final identifier inventory, additional verification proofs and README status changes follow the full suite. They receive targeted history, link, canonical-review, storage and staged whitespace checks plus independent inspection. They are not represented as inputs to the earlier suite. Scientific YAML, authorities, policies, code, schemas and generated outputs remain exactly the tested bytes. The [completed retention map](root-verification/completed-evidence-retention.json) binds the exact final evidence copies.
+
+Scientific acceptance remains limited to inspected sources and explicit evidence tiers. Parent-organism annotations do not demonstrate the complete route independently in every named taxon. Historical preparations, unavailable source bodies, inferred activities and sequence/strain ambiguities retain the dossier's limitations. Public-release licensing review remains deferred as instructed.
+
+This batch adds one pathway. Aerobic benzoate degradation I, MetaCyc:PWY-2503, is a distinct next candidate under external source preparation. Its absence assessment requires a new merged-baseline rebind before authoring. Additional candidates remain; no source-exhaustion claim is made.
+'''
+    with report_path.open('x') as stream:
+        stream.write(report)
+    command = [PYTHON, '-B', 'scripts/new_history_record.py', '--kind', 'report',
+        '--slug', 'catechol-degradation-iii-verification', '--path', str(report_path.relative_to(ROOT)),
+        '--event', 'AUDIT', '--outcome', 'changed', '--actor-name', 'Codex', '--model', 'gpt-6',
+        '--agent-tool', 'codex', '--issue', '567', '--issue', '568', '--issue', '569', '--issue', '570',
+        '--summary', 'Verify catechol degradation III and retain independent assessments and environment recovery evidence',
+        '--details', f'Initial rendering and full validation passed; initial test failed after shared dependency files disappeared. A separate frozen-lock environment passed the full suite: {passed} passed, {skipped} skipped, {warnings} warnings. Lint, vendored sync and working/staged whitespace gates passed. All 2,972 initial inputs were unchanged before documented lossless source storage and proof retention; all 3,178 recovered inputs remained unchanged through the rerun. Scientific and technical source/output assessments accept the repaired 117-edge record; issues 567–570 are supported and fixed. Original failed traces, two limited initial-cause uncertainties, exact browser/KGX proofs and source access limits are preserved. This report, identifier inventory, README status updates and final proof retention follow the suite; final canonical persistence and protected PR merge remain separately gated.']
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+               PYTHONPATH=str(ROOT / 'src') + ':' + str(ROOT))
+    run = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True)
+    write_json(CI / 'completed-verification-history-scaffold.json',
+               {'command': command, 'exit_code': run.returncode, 'stdout': run.stdout, 'stderr': run.stderr})
+    assert run.returncode == 0, run.stdout + run.stderr
+    history = ROOT / run.stdout.strip().splitlines()[-1]
+    changed = {p: {'before': digest, 'after': sha(ROOT / p)} for p, digest in core.items()
+               if sha(ROOT / p) != digest}
+    assert set(changed) == {str(readme.relative_to(ROOT))}
+    write_json(R / 'root-verification/completed-evidence-retention.json',
+               {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                'scope': 'Post-gate proof retention; independent conclusions remain authored by reviewers.',
+                'files': retained, 'count': len(retained)})
+    result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'report_path': str(report_path.relative_to(ROOT)), 'report_sha256': sha(report_path),
+              'history_path': str(history.relative_to(ROOT)), 'history_sha256': sha(history),
+              'post_gate_changed_tested_inputs': changed,
+              'readme_changes': 'Two exact status replacements and one appended retention paragraph.',
+              'retained_files': len(retained), 'all_other_tested_inputs_unchanged': True,
+              'test_summary': {'passed': passed, 'skipped': skipped, 'warnings': warnings, 'seconds': elapsed},
+              'canonical_persistence': 'pending',
+              'history_scaffold_receipt': str(CI / 'completed-verification-history-scaffold.json')}
+    write_json(CI / 'completed-verification-preparation.json', result)
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == '__main__':
+    main()

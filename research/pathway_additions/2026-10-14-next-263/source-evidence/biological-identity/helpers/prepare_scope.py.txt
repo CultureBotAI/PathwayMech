@@ -1,0 +1,55 @@
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as E,datetime
+N=Path('/private/tmp/pathwaymech-next-263-native');P=Path('/private/tmp/pathwaymech-next-263-biological-identity');sha=lambda b:hashlib.sha256(b).hexdigest();bind=lambda p:{'path':str(p),'bytes':p.stat().st_size,'sha256':sha(p.read_bytes())}
+m=json.loads((N/'artifact-manifest.json').read_text());actual={str(p.relative_to(N)) for p in N.rglob('*') if p.is_file()};expected={'artifact-manifest.json'}|{x['path'] for x in m['files']};assert actual==expected
+for r in m['files']:b=(N/r['path']).read_bytes();assert len(b)==r['bytes'] and sha(b)==r['sha256']
+(P/'receipts/native-intake.json').write_text(json.dumps({'manifest':bind(N/'artifact-manifest.json'),'handoff':bind(N/'HANDOFF.md'),'verified_files':len(m['files']),'inventory_includes_hidden_ignored':True,'scope':'Source author integrity check; not independent263 review or current-corpus duplicate decision.'},indent=2)+'\n')
+acts=json.loads((N/'formal-activity-closure.json').read_text());formal={r['enzyme'] for r in acts};rows=[];taxids=set();uniprot=set();nucleotides=set();pdbs=set();genes=set()
+for p in sorted((N/'originals').glob('META-*.xml')):
+ root=E.parse(p).getroot();es=[x for x in root if x.tag in ['Protein','Gene'] and x.get('detail')=='full']
+ if len(es)!=1:continue
+ e=es[0];f=e.get('frameid');xrefs=[{'database':x.findtext('dblink-db'),'id':x.findtext('dblink-oid'),'relationship':x.findtext('dblink-relationship')} for x in e.findall('dblink')]
+ for x in xrefs:
+  if x['database']=='UNIPROT':uniprot.add(x['id'])
+  if x['database']=='PDB':pdbs.add(x['id'])
+  if x['database']=='ENTREZ':nucleotides.add(x['id'])
+  if x['database']=='NCBI-GENE':genes.add(x['id'])
+ species=[x.get('frameid') for x in e.findall('species/*')]
+ for s in species:
+  oe=next(x for x in E.parse(N/'originals'/('META-'+s+'.xml')).getroot() if x.get('frameid')==s)
+  taxids.update(x.findtext('dblink-oid') for x in oe.findall('dblink') if x.findtext('dblink-db')=='NCBI-TAXONOMY-DB')
+ rows.append({'frame':f,'type':e.tag,'formal_catalyst':f in formal,'names':[x.text for x in e.findall('common-name')],'species':species,'genes':[x.get('frameid') for x in e.findall('gene/*')],'products':[x.get('frameid') for x in e.findall('product/*')],'components':[{'frame':x[0].get('frameid'),'coefficient':x.findtext('coefficient'),'native_xml':E.tostring(x,encoding='unicode')} for x in e.findall('component')],'component_of':[x.get('frameid') for x in e.findall('component-of/*')],'xrefs':xrefs,'comments':[x.text for x in e.findall('comment')],'original':bind(p)})
+parents=json.loads((N/'parent-organism-annotations.json').read_text());taxids.update(x['id'] for r in parents for x in r['xref'] if x['database']=='NCBI-TAXONOMY-DB')
+(P/'native-biological-selection.json').write_text(json.dumps({'scope':'All59 proteins/genes in the finite native package:51 formal-catalyst component/gene/product closure objects plus8 explicitly adjacent conflict/preparation-context objects. No global expansion.','formal_activities':acts,'native_biological_objects':rows,'parent_organisms':parents,'issuing_leads':{'uniprot':sorted(uniprot),'pdb':sorted(pdbs),'nucleotide':sorted(nucleotides),'ncbi_gene':sorted(genes),'taxonomy':sorted(taxids)}},indent=2)+'\n')
+# Exact predecessor originals are reused with their original acquisition receipts.
+reuse=[]
+def take(src,provenance,row):
+ dest=P/'originals'/src.name;assert not dest.exists();dest.write_bytes(src.read_bytes());reuse.append({'original':bind(dest),'reused_from':bind(src),'acquisition_provenance':bind(provenance),'original_acquisition_row':row})
+prev=Path('/private/tmp/pathwaymech-next-248-native-20261014');prov=prev/'provenance-manifest.json';pm=json.loads(prov.read_text())
+wanted={'UniProt-Q88N36.json','UniProt-P08310.json','UniProt-P00948.json','NCBI-AY029000.gb','NCBI-M19460.gb','NCBI-taxonomy-303.xml','NCBI-taxonomy-160488.xml','NCBI-gene-1042540-83682184-retry.xml','PDB-2AZQ-entry.json','PDB-2AZQ-polymer1.json','PDB-2AZQ-assembly1.json','PDB-2AZQ.cif'}
+for r in pm['originals']:
+ if Path(r['path']).name in wanted:
+  src=Path(r['path']);assert sha(src.read_bytes())==r['sha256'];take(src,prov,r);wanted.remove(src.name)
+assert not wanted,wanted
+prev=Path('/private/tmp/pathwaymech-next-249-native-20261014')
+for receipt,names in [('uniprot-acquisition.json',{'UniProt-Q01103.json','UniProt-P0A102.json','UniProt-Q51956.json'}),('ena-acquisition.json',{'ENA-M88763.embl','ENA-U10895.embl'})]:
+ prov=prev/receipt
+ for r in json.loads(prov.read_text()):
+  src=Path(r['path'])
+  if src.name in names:assert sha(src.read_bytes())==r['sha256'];take(src,prov,r);names.remove(src.name)
+ assert not names,names
+src=Path('/private/tmp/pathwaymech-next-263-primary/originals/UniProt-Q9AEQ0.json');assert sha(src.read_bytes())=='527b15b39b272daceb8dffb3ee7f8b5870ae55ac9d859b1cc8b7715eb8846de6';prov=src.parent.parent/'receipts/identity-status.json';take(src,prov,json.loads(prov.read_text()))
+(P/'receipts/reused-originals.json').write_text(json.dumps(reuse,indent=2)+'\n')
+jobs=[]
+def job(name,url,scope):
+ if not (P/'originals'/name).exists():jobs.append({'name':name,'url':url,'scope':scope})
+for a in sorted(uniprot):job('UniProt-'+a+'.json','https://rest.uniprot.org/uniprotkb/'+a+'.json','Exact native direct accession; source annotation/sequence scope only.')
+for a in sorted(nucleotides):
+ if a in ['AY029000','M19460']:continue
+ job('ENA-'+a+'.embl','https://www.ebi.ac.uk/ena/browser/api/embl/'+a+'?download=false','Exact native nucleotide accession and direct deposited CDS identity; no host/strain inference by name.')
+for a in sorted(pdbs):job('PDB-'+a+'-entry.json','https://data.rcsb.org/rest/v1/core/entry/'+a,'Exact native structure pointer; construct/assembly scope pending direct entry inspection.')
+for a in sorted(taxids):job('NCBI-taxonomy-'+a+'.xml','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&id='+a,'Exact native taxon cross-reference only; rank/name identity not whole-route experiment.')
+for a in sorted(genes):
+ if a=='1042540':continue
+ job('NCBI-gene-'+a+'.xml','https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=gene&id='+a+'&retmode=xml','Exact native gene ID; validate status/product/organism without trusting name.')
+(P/'acquisition-jobs-initial.json').write_text(json.dumps(jobs,indent=2)+'\n');print(json.dumps({'native_manifest':sha((N/'artifact-manifest.json').read_bytes()),'native_objects':len(rows),'formal_catalysts':len(formal),'activities':len(acts),'parent_organisms':len(parents),'reused_originals':len(reuse),'new_jobs':len(jobs),'leads':{'uniprot':sorted(uniprot),'pdb':sorted(pdbs),'nucleotides':sorted(nucleotides),'genes':sorted(genes),'taxonomy':sorted(taxids)}},indent=2))

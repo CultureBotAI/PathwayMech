@@ -1,0 +1,23 @@
+from pathlib import Path
+import json, hashlib, gzip, subprocess
+P=Path('/private/tmp/pathwaymech-next-263-biological-identity');D=P/'compact-retained';assert not D.exists();D.mkdir()
+sha=lambda b:hashlib.sha256(b).hexdigest()
+selected=['HANDOFF.md','native-biological-selection.json','deposited-cds-projection.final.json','sequence-cross-source-comparisons.final.json','issuing-structure-projection.json','issuing-original-provenance-index.json','issuing-identity-projection.json','biological-identity-decision-ledger.json','native-conflict-identity-dispositions.json','historical-and-context-source-bindings.json','additional-exact-identity-bindings.json','issuing-original-usage-ledger.json','external-frozen-source-dependencies.json']
+selected += [str(p.relative_to(P)) for p in sorted((P/'originals').iterdir()) if p.is_file()]
+selected += [str(p.relative_to(P)) for p in sorted((P/'receipts').iterdir()) if p.is_file()]
+selected += [str(p.relative_to(P)) for p in sorted(P.glob('acquisition-jobs-*.json'))]
+selected += ['helpers/'+x for x in ['acquire.py.txt','prepare_scope.py.txt','project_sequences.final.py.txt','project_structures.py.txt','assemble_identity_ledger.py.txt','complete_identity_bindings.py.txt','verify_identity.py.txt','freeze_compact.py.txt']]
+assert len(selected)==len(set(selected));rows=[]
+for name in selected:
+ p=P/name;b=p.read_bytes();encoding='gzip_lossless' if name.startswith('originals/') or len(b)>32768 or p.suffix in ['.diff','.log','.http-error'] else 'identity';stored=name+'.gz' if encoding=='gzip_lossless' else name;out=D/stored;out.parent.mkdir(parents=True,exist_ok=True);sb=gzip.compress(b,compresslevel=9,mtime=0) if encoding=='gzip_lossless' else b;out.write_bytes(sb);decoded=gzip.decompress(sb) if encoding=='gzip_lossless' else sb;assert decoded==b
+ rows.append({'original_path':str(p),'original_bytes':len(b),'original_sha256':sha(b),'path':stored,'bytes':len(sb),'sha256':sha(sb),'encoding':encoding,'role':'exact_issuing_original' if name.startswith('originals/') else 'acquisition_or_verification_receipt' if name.startswith('receipts/') else 'authored_artifact'})
+manifest={'schema':'uniform-lossless-source-retention-v1','package_root':str(D),'suggested_repository_root':'research/pathway_additions/2026-10-14-next-263/biological-identity','source_author_role':True,'files':rows,'counts':{'files':len(rows),'original_bytes':sum(r['original_bytes'] for r in rows),'stored_bytes':sum(r['bytes'] for r in rows),'gzip_lossless':sum(r['encoding']=='gzip_lossless' for r in rows),'identity':sum(r['encoding']=='identity' for r in rows)},'limits':'Only these files plus this exact manifest are proposed for repository retention. External native and primary dependencies are separately frozen owner packages.'}
+mp=P/'compact-retention-manifest.json';assert not mp.exists();mp.write_text(json.dumps(manifest,indent=2)+'\n')
+expected={r['path'] for r in rows};actual={str(p.relative_to(D)) for p in D.rglob('*') if p.is_file()};assert expected==actual
+for r in rows:
+ p=Path(r['original_path']);stored=D/r['path'];b=p.read_bytes();s=stored.read_bytes();assert len(b)==r['original_bytes'] and sha(b)==r['original_sha256'];assert len(s)==r['bytes'] and sha(s)==r['sha256'];assert (gzip.decompress(s) if r['encoding']=='gzip_lossless' else s)==b
+ assert not stored.name.endswith('.py')
+ checked=subprocess.run(['git','diff','--no-index','--check','--','/dev/null',str(stored)],capture_output=True,text=True);assert checked.returncode in [0,1] and not checked.stdout and not checked.stderr,(stored,checked.returncode,checked.stdout,checked.stderr)
+checked=subprocess.run(['git','diff','--no-index','--check','--','/dev/null',str(mp)],capture_output=True,text=True);assert checked.returncode in [0,1] and not checked.stdout and not checked.stderr
+receipt={'result':'pass','manifest':{'path':str(mp),'bytes':mp.stat().st_size,'sha256':sha(mp.read_bytes())},'counts':manifest['counts'],'uniform_original_stored_row_schema':True,'actual_original_hashes_and_sizes_verified':True,'stored_hashes_sizes_and_lossless_decoding_verified':True,'hidden_ignored_storage_inventory_equal':True,'no_active_py_files':True,'git_diff_check_all_retained_files_and_manifest':'pass','all_original_source_mappings_preserved':True,'immutable_package_rule':'No edits after artifact manifest is written; append a separate successor if necessary.'}
+(P/'compact-storage-verification.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt,indent=2))

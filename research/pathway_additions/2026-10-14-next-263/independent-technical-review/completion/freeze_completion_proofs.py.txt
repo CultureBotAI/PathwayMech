@@ -1,0 +1,42 @@
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+
+O = Path('/private/tmp/pathwaymech-next-263-independent-technical')
+D = O / 'completion-review-retention'
+D.mkdir(exist_ok=False)
+H = lambda b: hashlib.sha256(b).hexdigest()
+items = []
+for name in [
+    'completed-gate-replay.json', 'post-gate-readme.diff.txt',
+    'replay_completed_gates.py', 'inspect.final-context.json',
+    'inspect.final-context.stderr', 'inspect.final-context.receipt.json',
+    'completed-context-replay.json', 'completed-context-input-bindings.json',
+    'replay_completed_context.py', 'freeze_completion_proofs.py',
+]:
+    source = O / name
+    data = source.read_bytes()
+    stored_name = name + '.txt' if name.endswith('.py') else name
+    compress = len(data) > 15000
+    if compress:
+        stored_name += '.gz'
+        stored = gzip.compress(data, mtime=0)
+    else:
+        stored = data
+    (D / stored_name).write_bytes(stored)
+    items.append({'original_path': str(source), 'original_bytes': len(data),
+                  'original_sha256': H(data), 'path': stored_name,
+                  'bytes': len(stored), 'sha256': H(stored),
+                  'encoding': 'gzip_lossless' if compress else 'identity'})
+manifest = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Independent completed-gate and final context replay; canonical review payload and subsequent persistence are separate.',
+    'record_sha256': 'b30573a380b358a9b0228f8e3e2689943ecf828aa01ae790f281ba3fe617e603',
+    'report_sha256': '746c877f07487182fa50965d841e577dbfa59ecdf2e1fe0305d1493fe22202f2',
+    'files': items, 'file_count': len(items), 'stored_bytes': sum(x['bytes'] for x in items),
+    'limits': ['Root executed the full gates. Reviewer independently checked all actual log bytes, required outcomes, tested input preservation and final context.', 'No maintained writes or Git/GitHub mutations by reviewer.']
+}
+(D / 'artifact-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+print(json.dumps({'manifest': str(D / 'artifact-manifest.json'), 'sha256': H((D / 'artifact-manifest.json').read_bytes()), 'file_count': len(items), 'stored_bytes': manifest['stored_bytes']}))

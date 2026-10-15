@@ -1,0 +1,24 @@
+import datetime, gzip, hashlib, json, pathlib, yaml
+O = pathlib.Path('/private/tmp/pathwaymech-next-263-review-completion')
+R = pathlib.Path('/private/tmp/pathwaymech-next-263-20261014')
+D = O / 'retention'
+assert not D.exists()
+D.mkdir()
+review = yaml.safe_load((O / 'review-content.yaml').read_text())
+for row in review['source']['inputs']:
+    assert hashlib.sha256((R / row['path']).read_bytes()).hexdigest() == row['sha256'], row['path']
+assert json.loads((O / 'validation-receipt.json').read_text())['content_sha256'] == hashlib.sha256((O / 'review-content.yaml').read_bytes()).hexdigest()
+artifacts = []
+for source in sorted(O.iterdir()):
+    if not source.is_file(): continue
+    original = source.read_bytes()
+    compressed = source.suffix in ('.log', '.yaml') or len(original) > 6000 and source.suffix == '.json'
+    name = source.name + ('.gz' if compressed else '')
+    stored = gzip.compress(original, mtime=0) if compressed else original
+    (D / name).write_bytes(stored)
+    decoded = gzip.decompress(stored) if compressed else stored
+    assert decoded == original
+    artifacts.append({'path': name, 'source_path': str(source), 'encoding': 'gzip' if compressed else 'identity', 'original_bytes': len(original), 'original_sha256': hashlib.sha256(original).hexdigest(), 'stored_bytes': len(stored), 'stored_sha256': hashlib.sha256(stored).hexdigest()})
+manifest = {'schema_version': 1, 'scope': 'Independent final production binding check, actual canonical inspection, prepared scientific review, and validation attempts. No source or maintained-record changes.', 'artifact_count': len(artifacts), 'stored_bytes': sum(x['stored_bytes'] for x in artifacts), 'artifacts': artifacts}
+(D / 'artifact-manifest.json').write_text(json.dumps(manifest, indent=2, sort_keys=True) + '\n')
+print(json.dumps({'directory': str(D), 'artifact_count': len(artifacts), 'stored_bytes': manifest['stored_bytes'], 'manifest_sha256': hashlib.sha256((D / 'artifact-manifest.json').read_bytes()).hexdigest(), 'all_original_stored_and_decoded_checks': 'passed', 'all_review_inputs_unchanged': len(review['source']['inputs'])}, indent=2))
