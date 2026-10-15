@@ -243,15 +243,15 @@ reactions:
 - id: RHEA:28932
   label: (1E)-4-oxobut-1-ene-1,2,4-tricarboxylate => 4-carboxy-2-hydroxy-cis,cis-muconate
   category: molecular_activity
-  direction: reversible
+  direction: left_to_right
 - id: RHEA:17403
   label: 4-carboxy-2-hydroxy-cis,cis-muconate + H2O => 2-hydroxy-4-oxobutane-1,2,4-tricarboxylate
   category: molecular_activity
-  direction: reversible
+  direction: right_to_left
 - id: RHEA:28936
   label: 2-hydroxy-4-oxobutane-1,2,4-tricarboxylate => oxaloacetate + pyruvate
   category: molecular_activity
-  direction: reversible
+  direction: left_to_right
 - id: MetaCyc:TCA
   label: TCA cycle I (prokaryotic)
   category: pathway
@@ -282,7 +282,7 @@ mechanistic_edges:
   subject: RHEA:28928
   predicate: has_input
   object: CHEBI:16918
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological route orientation matches the native PHYSIOL-LEFT-TO-RIGHT annotation.
   evidence:
   - reference_id: MetaCyc:GALLATE-DIOXYGENASE-RXN
     source_assertion: Selected L2R pathway flux gives 1 CPD-183 on the substrates side; complete native
@@ -292,7 +292,7 @@ mechanistic_edges:
   subject: RHEA:28928
   predicate: has_input
   object: CHEBI:15379
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological route orientation matches the native PHYSIOL-LEFT-TO-RIGHT annotation.
   evidence:
   - reference_id: MetaCyc:GALLATE-DIOXYGENASE-RXN
     source_assertion: Selected L2R pathway flux gives 1 OXYGEN-MOLECULE on the substrates side; complete
@@ -302,7 +302,7 @@ mechanistic_edges:
   subject: RHEA:28928
   predicate: has_output
   object: CHEBI:57471
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological route orientation matches the native PHYSIOL-LEFT-TO-RIGHT annotation.
   evidence:
   - reference_id: MetaCyc:GALLATE-DIOXYGENASE-RXN
     source_assertion: Selected L2R pathway flux gives 1 4-OXALOMESACONATE on the products side; complete
@@ -312,7 +312,7 @@ mechanistic_edges:
   subject: RHEA:28928
   predicate: has_output
   object: CHEBI:15378
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological route orientation matches the native PHYSIOL-LEFT-TO-RIGHT annotation.
   evidence:
   - reference_id: MetaCyc:GALLATE-DIOXYGENASE-RXN
     source_assertion: Selected L2R pathway flux gives 2 PROTON on the products side; complete native equation
@@ -332,7 +332,9 @@ mechanistic_edges:
   subject: RHEA:28932
   predicate: has_input
   object: CHEBI:57471
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological route orientation. MetaCyc RXN-9983 separately asserts
+    REVERSIBLE; the RHEA:28932 node direction is left_to_right relative to master
+    RHEA:28931, preserving the selected substrate/product flow.
   evidence:
   - reference_id: MetaCyc:RXN-9983
     source_assertion: Selected L2R pathway flux gives 1 4-OXALOMESACONATE on the substrates side; complete
@@ -342,7 +344,9 @@ mechanistic_edges:
   subject: RHEA:28932
   predicate: has_output
   object: CHEBI:58142
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological route orientation. MetaCyc RXN-9983 separately asserts
+    REVERSIBLE; the RHEA:28932 node direction is left_to_right relative to master
+    RHEA:28931, preserving the selected substrate/product flow.
   evidence:
   - reference_id: MetaCyc:RXN-9983
     source_assertion: Selected L2R pathway flux gives 1 CPD-12849 on the products side; complete native
@@ -362,7 +366,9 @@ mechanistic_edges:
   subject: RHEA:17403
   predicate: has_input
   object: CHEBI:58142
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological hydration. MetaCyc RXN-2463 separately asserts REVERSIBLE.
+    RHEA:17403 is right_to_left relative to master RHEA:17401 (CHA = CHM + water);
+    its displayed equation and material edges still run CHM + water to CHA.
   evidence:
   - reference_id: MetaCyc:RXN-2463
     source_assertion: Selected R2L pathway flux gives 1 CPD-12849 on the substrates side; complete native
@@ -372,7 +378,9 @@ mechanistic_edges:
   subject: RHEA:17403
   predicate: has_input
   object: CHEBI:15377
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological hydration. MetaCyc RXN-2463 separately asserts REVERSIBLE.
+    RHEA:17403 is right_to_left relative to master RHEA:17401 (CHA = CHM + water);
+    its displayed equation and material edges still run CHM + water to CHA.
   evidence:
   - reference_id: MetaCyc:RXN-2463
     source_assertion: Selected R2L pathway flux gives 1 WATER on the substrates side; complete native
@@ -382,7 +390,9 @@ mechanistic_edges:
   subject: RHEA:17403
   predicate: has_output
   object: CHEBI:58075
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological hydration. MetaCyc RXN-2463 separately asserts REVERSIBLE.
+    RHEA:17403 is right_to_left relative to master RHEA:17401 (CHA = CHM + water);
+    its displayed equation and material edges still run CHM + water to CHA.
   evidence:
   - reference_id: MetaCyc:RXN-2463
     source_assertion: Selected R2L pathway flux gives 1 4-OH-4-ACETYL-2-OXOGLUTARATE on the products side;
@@ -402,7 +412,9 @@ mechanistic_edges:
   subject: RHEA:28936
   predicate: has_input
   object: CHEBI:58075
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological cleavage. MetaCyc RXN-2464 separately asserts REVERSIBLE; the
+    RHEA:28936 node direction is left_to_right relative to master RHEA:28935,
+    preserving CHA cleavage to pyruvate and oxaloacetate.
   evidence:
   - reference_id: MetaCyc:RXN-2464
     source_assertion: Selected L2R pathway flux gives 1 4-OH-4-ACETYL-2-OXOGLUTARATE on the substrates
@@ -412,7 +424,9 @@ mechanistic_edges:
   subject: RHEA:28936
   predicate: has_output
   object: CHEBI:15361
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological cleavage. MetaCyc RXN-2464 separately asserts REVERSIBLE; the
+    RHEA:28936 node direction is left_to_right relative to master RHEA:28935,
+    preserving CHA cleavage to pyruvate and oxaloacetate.
   evidence:
   - reference_id: MetaCyc:RXN-2464
     source_assertion: Selected L2R pathway flux gives 1 PYRUVATE on the products side; complete native
@@ -422,7 +436,9 @@ mechanistic_edges:
   subject: RHEA:28936
   predicate: has_output
   object: CHEBI:16452
-  description: Selected physiological route orientation; native reversible metadata retained independently.
+  description: Selected physiological cleavage. MetaCyc RXN-2464 separately asserts REVERSIBLE; the
+    RHEA:28936 node direction is left_to_right relative to master RHEA:28935,
+    preserving CHA cleavage to pyruvate and oxaloacetate.
   evidence:
   - reference_id: MetaCyc:RXN-2464
     source_assertion: Selected L2R pathway flux gives 1 OXALACETIC_ACID on the products side; complete

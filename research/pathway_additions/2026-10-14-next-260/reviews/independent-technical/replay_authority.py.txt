@@ -1,0 +1,102 @@
+"""Independent exact-union audit and issuing-source replay of all 34 additions."""
+import datetime
+import hashlib
+import html
+import json
+from pathlib import Path
+import re
+import sqlite3
+import subprocess
+import xml.etree.ElementTree as ET
+import yaml
+
+ROOT=Path('/private/tmp/pathwaymech-next-260-20261014')
+BUILD=Path('/private/tmp/pathwaymech-next-260-authority-integration-successor')
+OUT=Path('/private/tmp/pathwaymech-next-260-independent-technical')
+BASE='b2590dfd2385c83fe4f028ecd5309a0407739838'
+checks=[];bindings={}
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(p):bindings[str(p)]=sha(p);return json.loads(p.read_text())
+def check(name,condition,**details):checks.append(dict(name=name,passed=bool(condition),**details))
+author=load(BUILD/'retained/union-preservation-verification.json')
+assert author['status']=='author_verification_passed_pending_independent_review'
+oldall={};newall={};snapshots={};newterms={}
+for kind in ['sources','ontology']:
+    oldbytes=subprocess.check_output(['git','show',BASE+':data/identifier_authorities/'+kind+'.json'],cwd=ROOT)
+    old=json.loads(oldbytes);candidate=BUILD/'proposal'/f'{kind}.union.json';new=load(candidate)
+    check('baseline snapshot equals immutable Git base',hashlib.sha256(oldbytes).hexdigest()==sha(BUILD/'baseline/data/identifier_authorities'/f'{kind}.json'),kind=kind)
+    check('snapshot format version unchanged',old['version']==new['version'],kind=kind)
+    for section in ['terms','sources']:
+        check('every baseline object preserved exactly',all(new[section].get(k)==v for k,v in old[section].items()),kind=kind,section=section,count=len(old[section]))
+    check('no term ID duplicated between authority snapshots',not(set(newall)&set(new['terms'])),kind=kind)
+    oldall.update(old['terms']);newall.update(new['terms'])
+    added={k:v for k,v in new['terms'].items() if k not in old['terms']};newterms[kind]=added
+    snapshots[kind]={'sha256':sha(candidate),'before_terms':len(old['terms']),'after_terms':len(new['terms']),'before_owners':len(old['sources']),'after_owners':len(new['sources']),'new_ids':sorted(added)}
+recordpath=ROOT/'data/pathways/gallate-degradation-ii.yaml';bindings[str(recordpath)]=sha(recordpath)
+record=yaml.safe_load(recordpath.read_text());selected={record['id']}|{n['id'] for s in ['participants','reactions','taxa'] for n in record[s]}
+check('authority additions are exactly actual new record selection minus existing corpus',set(newall)-set(oldall)==selected-set(oldall))
+check('all 103 selected record identifiers resolve',len(selected)==103 and selected<=set(newall))
+check('34 additions with no unused provisional equilibrium ID',len(newall)-len(oldall)==34 and 'RHEA:18172' not in newall and 'RHEA:18170' in newterms['ontology'])
+oldmanifest=json.loads(subprocess.check_output(['git','show',BASE+':conf/identifier_sources.json'],cwd=ROOT))
+manifest=load(BUILD/'proposal/identifier_sources.json');additions=manifest[len(oldmanifest):]
+check('all 1062 prior identifier-source descriptors remain exact prefix',len(oldmanifest)==1062 and manifest[:len(oldmanifest)]==oldmanifest)
+check('10 new descriptors have unique new owners',len(additions)==10 and len({d['key'] for d in additions})==10 and not({d['key'] for d in additions}&{d['key'] for d in oldmanifest}))
+newsourceobjects=load(BUILD/'proposal/sources.union.json')['sources']
+for descriptor in additions:
+    path=BUILD/'source-cache'/descriptor['path'];bindings[str(path)]=sha(path)
+    check('new descriptor original bytes independently match digest',sha(path)==descriptor['sha256'],owner=descriptor['key'])
+    terms=[(i,t) for i,t in newterms['sources'].items() if t['source']==descriptor['key']]
+    check('new owner selects one exact term',len(terms)==1,owner=descriptor['key'])
+    if len(terms)!=1:continue
+    ident,term=terms[0];label=term['label'];kind=descriptor['kind']
+    if kind=='pubchem-compound-property-json':
+        props=json.loads(path.read_text())['PropertyTable']['Properties']
+        check('PubChem CID and canonical title match original properties',len(props)==1 and 'PubChem:'+str(props[0]['CID'])==ident and props[0]['Title']==label,identifier=ident)
+    elif kind=='metacyc-html':
+        text=path.read_text(errors='surrogateescape')
+        titles=re.findall(r'<title[^>]*>(.*?)</title>',text,re.S|re.I)
+        page=re.search(r"var typeObjectPage\s*=\s*\{object:'([^']+)',orgid:'([^']+)'",text)
+        check('MetaCyc exact native identity and title independently match',len(titles)==1 and html.unescape(titles[0]).removeprefix('MetaCyc ')==label and page is not None and page.groups()==(ident.split(':',1)[1],'META'),identifier=ident)
+    elif kind=='metacyc-protein-xml':
+        xml=ET.parse(path).getroot();proteins=xml.findall('Protein')
+        check('full native protein identity matches',len(proteins)==1 and proteins[0].attrib.get('frameid')==ident.split(':',1)[1] and proteins[0].attrib.get('orgid')=='META' and proteins[0].attrib.get('detail')=='full',identifier=ident)
+        native=proteins[0];name=native.find('common-name')
+        if name is not None:
+            check('direct native protein name supplies canonical label',html.unescape(name.text)==label,identifier=ident)
+        else:
+            activities=native.findall('catalyzes/Enzymatic-Reaction');components=native.findall('component')
+            check('unnamed homomer fallback is backed by exact activity/component slots',len(activities)==1 and len(components)==1 and components[0].findtext('coefficient')=='2' and activities[0].findtext('common-name')==label and activities[0].find('enzyme/Protein').attrib.get('frameid')==ident.split(':',1)[1] and activities[0].find('reaction/Reaction').attrib.get('frameid')=='RXN-2463',identifier=ident)
+    elif kind=='metacyc-reaction-xml':
+        xml=ET.parse(path).getroot();reactions=xml.findall('Reaction')
+        check('unnamed native reaction uses explicit contextual identity',len(reactions)==1 and reactions[0].attrib.get('frameid')==ident.split(':',1)[1] and reactions[0].attrib.get('orgid')=='META' and reactions[0].attrib.get('detail')=='full' and term.get('label_kind')=='source_context' and term.get('entity_type')=='reaction' and label==ident.split(':',1)[1],identifier=ident)
+    else: check('known new source parser kind',False,kind=kind)
+
+# Query only the 24 new ontology IDs against original read-only Semantic SQL.
+sql_rows={}
+for prefix in ['CHEBI','RHEA']:
+    path=Path('/private/tmp/pathwaymech-curation-authorities')/(prefix.lower()+'.db')
+    with sqlite3.connect(path.resolve().as_uri()+'?mode=ro',uri=True) as con:
+        for ident,term in newterms['ontology'].items():
+            if not ident.startswith(prefix+':'):continue
+            rows=list(con.execute("SELECT predicate, value FROM statements WHERE subject=? AND predicate IN ('rdfs:label','oio:hasExactSynonym')",(ident,)))
+            labels={v for p,v in rows if p=='rdfs:label' and v};synonyms=sorted({v for p,v in rows if p=='oio:hasExactSynonym' and v and v!=term['label']})
+            check('issuing SQL canonical label and exact synonyms independently match',labels=={term['label']} and synonyms==term['synonyms'],identifier=ident)
+            sql_rows[ident]={'database':str(path.resolve()),'rows':rows}
+check('all 24 ontology additions independently replayed',len(sql_rows)==24)
+preservation=load(BUILD/'retained/build-input-preservation.json')
+check('canonical builds recorded all frozen inputs unchanged',preservation['status']=='passed' and preservation['all_inputs_unchanged'])
+commands=load(BUILD/'retained/canonical-build-commands.json')
+for builder in ['source_builder','ontology_builder']:
+    receipt=load(BUILD/'retained'/f'{builder}-receipt.json')
+    check('canonical builder succeeded with bound exact command and log',receipt['exit_code']==0 and receipt['command']==commands[builder] and receipt['command_file_sha256']==sha(BUILD/'retained/canonical-build-commands.json') and receipt['log_sha256']==sha(Path(receipt['log_path'])),builder=builder)
+policy=load(BUILD/'retained/identifier-policy-verification.json')
+check('full 257-record identity consumer completed on final actual record',policy['status']=='passed' and policy['records_checked']==257 and policy['record_sha256']==sha(recordpath) and not policy['errors'])
+for rel in ['conf/identifier_policy.yaml','conf/rhea_identifier_updates.json']:
+    gitbytes=subprocess.check_output(['git','show',BASE+':'+rel],cwd=ROOT)
+    check('identifier policy and native update allowances unchanged',gitbytes==(ROOT/rel).read_bytes(),path=rel)
+runtime=load(BUILD/'retained/runtime-bindings.json')
+for row in runtime:
+    p=Path(row['path']);check('runtime matches author bound bytes',sha(p)==row['sha256'],path=str(p))
+result={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Fresh independent authority union and issuing-source review','base':BASE,'bindings':bindings,'snapshots':snapshots,'sql_new_term_original_rows':sql_rows,'checks':checks,'passed':sum(c['passed'] for c in checks),'failed':sum(not c['passed'] for c in checks),'limits':['No duplicate canonical rebuild was run. Complete database hashes are verified by bound canonical builder receipts; this independent replay reads exact new SQL terms.','Root promotion to maintained snapshots is checked separately after copy.']}
+dest=OUT/'authority-replay-1.json';assert not dest.exists();dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'report':str(dest),'sha256':sha(dest),'passed':result['passed'],'failed':result['failed'],'failures':[c for c in checks if not c['passed']]}))

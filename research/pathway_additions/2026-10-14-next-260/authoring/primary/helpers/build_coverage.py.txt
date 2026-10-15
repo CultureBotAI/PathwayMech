@@ -1,0 +1,90 @@
+from pathlib import Path
+import json,yaml,hashlib,copy,collections
+D=Path('/private/tmp/pathwaymech-next-260-primary-draft');P=Path('/private/tmp/pathwaymech-next-260-preparation-successor');E=Path('/private/tmp/pathwaymech-next-260-primary')
+F=json.load(open(P/'claim-disposition-ledger.json'))['facts'];K=json.load(open(E/'author/claim-ledger.json'));B=json.load(open(D/'edge-fact-ledger.json'));N=yaml.safe_load(open('/private/tmp/pathwaymech-next-260-native-draft/native-foundation.yaml'))
+byfact=collections.defaultdict(list)
+for b in B:
+ for f in b['source_fact_ids']:byfact[f].append(b['edge_id'])
+def native_edges(pred=None,subject=None,obj=None):return [e['id'] for e in N['mechanistic_edges'] if (pred is None or e['predicate']==pred) and(subject is None or e['subject']==subject)and(obj is None or e['object']==obj)]
+# Source-specific context decisions supplement inherited claim-level scope, not new evidence.
+context={
+'prep-002':('supporting_context','LigJ N-terminal and deposit data support a sequence context but not a fully sequenced pETJ product; the construct qualifier retains unresolved termini.'),
+'prep-004':('source_conflict_or_limit','LigJ hydration of the keto/two-enol mixture is retained in source context; it cannot establish the exact formal E,E substrate. No LigJ formal E,E catalysis edge is added.'),
+'prep-005':('source_conflict_or_limit','The paper explicitly left the true LigJ isomer unknown. This qualifies every LigJ effect assay and prevents exact E,E catalyst transfer.'),
+'prep-007':('native_foundation_and_context','Native LigJ composition remains represented by its separate structured component assertion; the primary 69.5 kDa/pI interpretation is supporting context, without a duplicate primary assembly edge.'),
+'prep-012':('supporting_context','Catalytic-cysteine and evolutionary interpretation is a hypothesis, not a specific residue-level event.'),
+'prep-013':('supporting_context','DLJ vanillate/syringate mutant phenotype supports the shared PCA module, not whole gallate-II capacity or a clean single-variable complementation claim.'),
+'prep-014':('supporting_context','NADPH-dependent product in mutant extract has no independently identified catalyst/product endpoint; retained as an adjacent assay observation.'),
+'prep-015':('supporting_context','LigJ belongs to the shared downstream PCA module. Its regulator edges concern the OMA-mixture assay and do not imply E,E or gallate flux.'),
+'prep-017':('native_foundation_and_context','Native ProA oligomer composition is retained separately. Primary gel-filtration/SDS/pI values are supporting preparation evidence rather than proof of exact NGJ1 sequence equivalence.'),
+'prep-018':('supporting_context','Growth-substrate induction is retained as historical native-enzyme activity context; no named regulatory gene or whole-route taxon assertion follows.'),
+'prep-051':('supporting_context','All five tested non-cleaved substrates are retained as condition-bounded negatives. An inhibition edge does not imply the compound is a catalytic substrate.'),
+'prep-052':('supporting_context','Metal-only cleavage controls, especially nickel, remain distinct from enzyme cofactor support. Native metal-support edges describe only purified-enzyme results.'),
+'prep-053':('supporting_context','OA decarboxylation has a measured adjacent activity edge; its physiological relevance and OA-feedback proposal remain unproven.'),
+'prep-066':('supporting_context','Tables I/IV substrate, metal and pH dependence is retained in full table dispositions. The nine activation edges use only Table II l-CHA conditions, not uniform activation of all substrates.'),
+'prep-087':('supporting_context','Gel filtration/PAGE/spectral negatives and kinetic binding hypothesis do not establish an observed allosteric site or protein assembly change.'),
+'prep-088':('supporting_context','Speculative membrane-local metabolite concentrations are not a localization experiment; no membrane edge is derived.'),
+'prep-090':('native_foundation_and_context','Ordered additions support historical separated enzyme-I hydration and Mg-dependent enzyme-II cleavage; formal isomer normalization is not newly inferred from these historical assays.'),
+'prep-091':('supporting_context','EDTA inhibition/Mg rescue occurred in the combined assay. Retain amounts and ordered-addition interpretation; do not attach the mixed-fraction result as pure ProH metal regulation.'),
+'prep-092':('supporting_context','All Table II metal responses remain the combined enzyme I+II assay; separate effects on either purified protein are not established.'),
+'prep-093':('supporting_context','The five chelator negatives are retained with the mixed-fraction assay scope and tested concentration. No unqualified absence or cofactor-independence claim follows.'),
+'prep-096':('supporting_context','Mass, pI and heat-stability measurements characterize the historical partial fractions; no exact sequence or inferred intracellular stability is asserted.'),
+'prep-097':('source_conflict_or_limit','1983 incomplete-consumption/one-enantiomer inference is retained alongside the later 1990 direct optical-substrate results. Neither yields absolute R/S assignment.'),
+'prep-098':('source_conflict_or_limit','1983 OMA-like gallate product is preserved as a distinct partly purified oxygenase assay and spectral inference; it does not overwrite the 1982 purified 3,4-dioxygenase/PDC entry result.'),
+'prep-099':('supporting_context','1983 whole-route discussion is PCA/phthalate metabolism with overlapping downstream enzymes; no whole gallate-II organism transfer.'),
+'prep-100':('supporting_context','BR6020 locus/deposit context remains separate from historical P. testosteroni native preparations and from Comamonas E6.'),
+'prep-101':('source_conflict_or_limit','BR6020 PmdE is a homology assignment, not the direct E6 E,E assay. Native PmdE formal E,E catalysis is held; its identity node remains in the foundation.'),
+'prep-102':('native_foundation_and_context','PmdD/F annotations retain their native inferred tiers. Unpublished PmdD phenotype is not promoted to directly inspected primary experimental proof.'),
+'prep-103':('supporting_context','Direct BR6020 PmdAB evidence concerns PCA ring cleavage, an adjacent entry module; no additional gallate-II member is imported.'),
+'prep-104':('supporting_context','Failed heterologous liquid flux is retained; plate color is not interpreted as reconstructed complete route.'),
+'prep-105':('supporting_context','pmdA mutant growth panel supports the BR6020 PCA module; substrate-dependent positives/negatives remain context, not gallate-II whole-route assertions.'),
+'prep-106':('supporting_context','Transport and transcription suggestions are sequence/arrangement hypotheses; no exact new transporter or regulator edge is inferred.'),
+'prep-107':('native_foundation_and_context','1985 abstract/native reviewed annotation supports the existing source-scoped ProH assignment and effects. Full-text substrate-isomer detail remains inaccessible; 1983 fraction results do not contradict the separate 1985 evidence.'),
+'prep-115':('deferred','STRenda WT KCH kinetics remain context; detailed LigJ2018 main text inaccessible and metadata/preparation conflicts prevent an unqualified construct edge.'),
+'prep-116':('source_conflict_or_limit','All STRenda host/gene/tag/default-reaction metadata conflicts remain explicit; none is silently selected as exact experimental preparation.'),
+'prep-117':('source_conflict_or_limit','Printed WT uncertainty, duplicate kcat and mutant assay concentration details remain in the complete dataset ledger; no numerical repair or inferred generic mutant edge.'),
+'prep-118':('deferred','Later NGJ1 cysteine-substitution source is an uncompleted lead, not evidence read or a completed identity/causality assertion.'),
+'prep-119':('supporting_context','The P–H and carbonate microspecies are mechanistic proposals. Parent/delivery normalization is documented in the relevant activation edges without measured-speciation claims.'),
+'prep-120':('supporting_context','Ethanol/acetone and heat-stability conditional negatives are retained; they do not establish general solvent resistance or structural stability.'),
+'prep-121':('supporting_context','Buffer-dependent activity is retained at 0.1 M, pH 8; it does not create unqualified physiological inhibition edges or an exact unresolved buffer microspecies.'),
+'prep-122':('supporting_context','Pi/bicarbonate did not affect Mg-only cleavage controls. This bounds enzyme-activation interpretation and is not represented as a separate biological edge.')}
+for n in range(27,34):context[f'prep-{n:03d}']=('supporting_context','The individual 1 mM reagent had no measured effect under the 1990 pretreatment assay. Preserve this conditional negative; no negative-effect predicate or universal absence claim is invented.')
+for n in range(68,87):context[f'prep-{n:03d}']=('supporting_context','The individual 1–6 mM reagent failed to stimulate the phosphate-depleted assay. Preserve this conditional negative, including unresolved generic borate form; do not turn non-activation into inhibition.')
+notes=[];ledger=[]
+for f in F:
+ fid=f['id'];targets=byfact.get(fid,[])
+ cat,reason=context.get(fid,('record_edge','The source-specific effect/preparation is represented by the listed edges with its measured conditions and evidence form.'))
+ if targets and cat in ['supporting_context','native_foundation_and_context']:cat='record_edge_and_context'
+ if not targets and fid not in context:cat='supporting_context';reason='Retained complete source context and limits; this fact does not independently establish a separate directed event beyond the explicitly mapped assays.'
+ row={'source_fact_id':fid,'source_key':f['source_key'],'topic':f['topic'],'claim':f['claim'],'scope_and_limits':f['scope_and_limits'],'source_locator':f['source_locator'],'evidence_form':f['evidence_form_assessment'],'disposition':cat,'primary_edge_ids':targets,'reason':reason,'context_anchor':fid}
+ if fid in ['prep-007','prep-017']:row['native_edge_ids']=native_edges(pred='has_part',subject={'prep-007':'MetaCyc:CPLX-2864','prep-017':'MetaCyc:CPLX-2782'}[fid])
+ if fid=='prep-107':row['native_edge_ids']=native_edges(subject='MetaCyc:CPLX-2781')+native_edges(obj='MetaCyc:CPLX-2781')
+ if 'values' in f:row['source_values']=f['values']
+ ledger.append(row);notes.append(f"### {fid}: {f['topic']}\n\n{f['claim']} {f['scope_and_limits']}\n\nDisposition: {reason}\n\nSource: {f['source_key']}, {f['source_locator']}.\n")
+for f in K:
+ fid=f['claim_id'];targets=byfact.get(fid,[]);claim=f['observation'];scope=f['experimental_scope'];reason=f['reason'];cat='record_edge_and_context' if targets else 'supporting_context'
+ if any(t in f['disposition'] for t in ['gap','pending','limitation','hypothesis']):cat='source_conflict_or_limit' if not targets else 'record_edge_and_context'
+ if fid=='K82-006':
+  claim='Gel filtration estimated 42,800 molecular weight; SDS-PAGE and the abstract both report about 37,200 for the single subunit. The frozen 57-fact ledger incorrectly transcribed the abstract as 37,700.';reason='Successor erratum corrects the abstract transcription; the frozen old ledger remains unchanged. No abstract-versus-results discrepancy is asserted.'
+ if fid=='K82-016':scope=scope.replace('pH 5.5–7','pH 5.5–8');reason+=' Successor erratum corrects the frozen lower-buffer upper pH bound from 7 to 8.'
+ ledger.append({'source_fact_id':fid,'source_key':'Kersten1982' if fid.startswith('K82') else 'Sparnins1975','topic':f['topic'],'claim':claim,'scope_and_limits':scope,'source_locator':f['locator'],'source_original':f['source'],'evidence_form':f['evidence_kind'],'disposition':cat,'primary_edge_ids':targets,'reason':reason,'context_anchor':fid})
+ notes.append(f"### {fid}: {f['topic']}\n\n{claim} {scope}\n\nDisposition: {reason}\n\nSource: {f['reference']}, {f['locator']}.\n")
+assert len(ledger)==179 and len({x['source_fact_id'] for x in ledger})==179
+(D/'source-to-record-dispositions.json').write_text(json.dumps({'scope':'All 57 entry and 122 preparation facts; author selection, not independent scientific approval. Context text is research paraphrase, not schema structured evidence.','facts':ledger},indent=2,ensure_ascii=False)+'\n')
+(D/'primary-context-notes.md').write_text('# Complete primary source context and dispositions\n\nThese source-scoped research notes account for all 179 facts. They are not new source assertions or an approval verdict. The graph contains the supported directed effects, while conditional negatives, methodological dependencies, hypotheses, adjacent-module observations and access gaps remain explicit here.\n\n'+'\n'.join(notes))
+# Concise record-level text, retaining the main scientifically material limits.
+recordnotes=[
+'The five-member route is the native gallate degradation II definition (identifier suffix I). The 1982 purified B. fuscum and P. aeruginosa 3,4-dioxygenases formed PDC; they are not identified with P. putida CPLX-2721. The 1975 crystalline gift has unresolved organism provenance and its oxygen-uptake kinetics did not identify PDC.',
+'The purified 1982 P. testosteroni PDC hydrolase is separate from the unpurified P. putida PDC-isolate enzyme. Its reversible equilibrium and rates depend on pH. EDTA stabilized diluted solutions without measured catalytic activation; Mg/EDTA assay negatives and pure pyrone-monocarboxylate negatives are conditional. GSH protected during DTNB challenge rather than reversing completed damage.',
+'Historical P. putida PDC-isolate extract time courses support downstream keto/enol products, pyruvate and oxaloacetate without exact contemporary catalyst or absolute-isomer assignments. Growth/induction tables compare separate strains and carbon co-supply; they do not supply named transcriptional regulators or complete-route organism transfers.',
+'LigJ2000 perturbations concern a recombinant SYK-6 enzyme acting on a PDC-derived keto/two-enol mixture. The true isomer was unresolved; the exact E,E catalyst assertion is held. Direct E6 PmdE in the 2016 GalD-derived assay is distinct from BR6020 homology evidence and modern SYK-6 KCH hydration. Inaccessible LigJ2018 main text and thesis remain gaps; STRenda metadata conflicts are not resolved by inference.',
+'Historical 1983 enzyme I/II partial fractions, homogeneous 1985 ProH, purified 1990 ProA and later recombinant proteins remain distinct preparations. Mixed-fraction metal/chelator tests do not establish individual protein regulation. The printed 1983 CuSO2 identity remains unresolved. Its OMA-like gallate product and one-enantiomer inference remain source-specific observations rather than overrides of the 1982 PDC entry or 1990 optical-substrate experiments.',
+'ProA1990 supports both CHA optical forms and adjacent generic HMG/HG cleavage and OA decarboxylation. Optical l/d labels do not establish R/S. Metal-only nonenzymatic cleavage, conditional thiol/substrate negatives, buffer effects and uncertain physiological OA decarboxylation are preserved as context. The adjacent reactions are not extra formal route members.',
+'ProA phosphate-depletion experiments separate nine activating reagents from high-dose inhibition and ATP/Mg competition in another assay. Phosphate delivery was a KH2PO4/K2HPO4 mixture. Arsenate, parent acids/nucleotides and reagent salts retain stated form limits; proposed P–H/carbonate activating species are not measured speciation. Nineteen anion non-activation tests, solvent negatives and unchanged heat stability remain condition-bound.',
+'GalB2011 reports 244 residues, the reference has 258, and the 2016 crystal is 240; these preparations are not collapsed or assigned an unsupported His tag. EDTA-present inhibition and washed metal-reconstituted apoenzyme are separate assays. E6 PmdE underwent His6 handling and thrombin cleavage, but the full insert and residual scar remain unresolved. Formal CHA remains stereochemistry-unspecified.'
+]
+(D/'record-context-proposal.json').write_text(json.dumps({'integration':'Append or coherently merge these factual paragraphs into record description; do not replace native description or add undeclared schema fields. Full conditional-negative tables remain in research ledgers.','paragraphs':recordnotes},indent=2,ensure_ascii=False)+'\n')
+# Original, complete numerical tables remain retained; no generated prose masquerades as tables.
+tables=json.load(open(P/'structured-cell-disposition-ledger.json'))
+(D/'structured-table-dispositions.json').write_text(json.dumps({'scope':'Inherited complete table-row accounting; external original bindings unchanged. Actual selected primary edges are linked by source fact ledger.','source':str(P/'structured-cell-disposition-ledger.json'),'source_sha256':hashlib.sha256((P/'structured-cell-disposition-ledger.json').read_bytes()).hexdigest(),'rows':tables},indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'facts':len(ledger),'facts_with_edges':sum(bool(r['primary_edge_ids']) for r in ledger),'dispositions':dict(collections.Counter(r['disposition'] for r in ledger)),'mapped_edges':len(B)},indent=2))

@@ -1,0 +1,52 @@
+"""Keep exact native components separate from reference and preparation identities."""
+from pathlib import Path
+import json,hashlib,xml.etree.ElementTree as ET
+B=Path(__file__).resolve().parents[1]
+def save(name,data):
+    p=B/name;assert not p.exists();p.write_text(json.dumps(data,indent=2)+'\n')
+inventory=json.loads((B/'projections/native-biological-inventory.json').read_text())
+comparisons=json.loads((B/'projections/reference-sequence-comparisons.json').read_text())['selected_comparisons']
+by_protein={row['cds']['qualifiers']['protein_id'][0]:row for row in comparisons}
+mapping={
+ 'G1G01-2697-MONOMER':(['Q88JY0'],['AAN68125.1'],'Native KT2440 GalD. Reference coding sequence is exact; partial purification and substrate-isomer/conditional mutant evidence remain preparation-specific.'),
+ 'G1G01-2699-MONOMER':(['Q88JX8'],['AAN68127.1'],'Native KT2440 GalB. Full reference is 258 aa; the reported 244-aa assay and 240-aa crystal construct remain distinct. NP_744663.1 is the same full reference sequence.'),
+ 'G1G01-2698-MONOMER':(['Q88JX9'],['AAN68126.1'],'Native KT2440 GalC has direct PID NP_744662.1. Independent RefSeq/deposit/UniProt sequence equality supports the reference relationship, not equality to every historical aldolase preparation.'),
+ 'MONOMER-3481':(['Q88JX9'],['AAN68126.1'],'Separate historical P. putida native aldolase frame with later GalC reference association. Do not merge with G1G01-2698-MONOMER or transfer 1972 assays solely because the same modern sequence is linked.'),
+ 'MONOMER-3183':(['Q93PS9'],['AAK73569.1'],'BR6020 PmdE reference. Native formal activity is explicitly sequence inference; a matching sequence does not supply direct catalysis or repair the exact substrate conflict. E6 BAI50711.1 is separate.'),
+ 'MONOMER-3184':(['Q93PS8'],['AAK73570.1'],'BR6020 PmdF deposit sequence exactly matches current UniProt Q93PS8; that current entry labels NCTC10698 proA_3. Keep native G-2284/BR6020 gene and historical purified aldolase preparations separate from the current representative gene context.'),
+ 'MONOMER-3463':(['Q93PS7'],['AAK73571.1'],'BR6020 PmdD deposit matches current reference; source native frame attaches historical 1982 P. testosteroni hydrolase. Later sequence association does not identify that historical sample. The issuing canonical label contains the literal typo dicarbaxylate.'),
+ 'MONOMER-3467':(['O87170'],['BAA33799.1','BAB88736.1'],'SYK-6 LigI. Both exact deposited coding sequences match current O87170. Native/recombinant activity and tag/vector contexts stay with their primary preparation; no whole-route taxon transfer.'),
+ 'MONOMER-3468':(['G2IQQ5'],['BAA97116.1','BAB88741.1'],'Native LigJ Q9KWL6 is an explicit secondary accession of current G2IQQ5. Both original LigJ deposits translate identically. Identity closure does not establish formal E,E hydration; later KCH specificity and 2018 construct/tag records remain separate.'),
+ 'MONOMER-3469':(['G2IQQ8'],['BAB88738.1'],'Native LigK Q8RQW0 is an explicit secondary accession of current G2IQQ8. Original ligK translation matches. Six-component assembly and adjacent OAA activity remain native/primary-scoped.'),
+ 'MONOMER-3243':(['Q9AQI1'],['BAB21455.1'],'NGJ1 ProH deposit matches current reference; the deposit explicitly records the historical P. ochraceae name. Do not assign this exact sequence or NGJ1 strain to an older unnumbered purified sample without primary evidence.'),
+ 'MONOMER-3244':(['Q9AQI0'],['BAB21456.3'],'NGJ1 ProA deposit matches current reference. Keep the 1983/1990 native preparations distinct from 2001 cloned NGJ1 protein; a native HH annotation does not turn the 1990 native experiment into a recombinant assay.'),
+ 'MONOMER-3182':([],['BAD04056.1'],'Native ProL crossreference Q75T30 is currently deleted and emits no authority term. Complete NGJ1 proL in AB127969.2/BAD04056.1 supplies an exact reference alternative. The partial AB050935 proL CDS and historical native enzyme are separate.'),
+ 'MONOMER-3185':(['P00437'],['AAB41024.1'],'Native pcaH beta component. L14836.1 source identifies ATCC23975 in tissue_lib; reference translation matches. This does not identify the anonymous 1975 gift or transfer a different strain twelve-unit assembly to native CPLX-2721.'),
+ 'MONOMER-3186':(['P00436'],['AAB41025.1'],'Native pcaG alpha component. L14836.1 exact reference translation matches; reference-library identity does not prove the anonymous 1975 or other historical preparations.'),
+ 'MONOMER-10723':([],[],'Unpurified P. putida PDC-isolate hydrolase activity with full inline native ORG-5956 strain object, no exact protein sequence xref in the declared object. Keep native endpoint and PDC preparation context; do not substitute purified PmdD, LigI or ProL.'),
+}
+rows=[]
+for item in inventory:
+    if item['object_type']!='Protein':continue
+    frame=item['identifier'].split(':',1)[1];node=ET.parse(item['source']['path']).getroot().find('Protein')
+    components=[]
+    for slot in node.findall('component'):
+        p=slot.find('Protein');components.append({'native_component':'MetaCyc:'+p.attrib['frameid'],'coefficient':slot.findtext('coefficient'),'coefficient_source_xpath':f"/ptools-xml/Protein[@frameid='{frame}']/component[{len(components)+1}]/coefficient"})
+    if components:
+        up=[];proteins=[];limit='Exact native complex retains its own identifier and all explicit component coefficients. Reference monomer equality never collapses the assembly to a single sequence or establishes a historical assay preparation.'
+        if frame=='CPLX-2721':limit+=' Four beta plus four alpha component slots are exact; the different-strain twelve-unit narrative is not this assembly.'
+    else:up,proteins,limit=mapping[frame]
+    evidence=[]
+    for accession in proteins:
+        match=by_protein[accession];evidence.append({'ncbi_reference':'NCBIProtein:'+accession,'deposit_accession':match['deposit_accession'],'source':match['source'],'cds_location':match['cds']['location'],'translation_length':match['translation_length'],'translation_sha256':match['translation_sequence_sha256']})
+    rows.append({'native_identifier':item['identifier'],'native_source':item['source'],'native_genes':['MetaCyc:'+x['frame'] for x in item['native_refs']['gene']],'native_species':[x['frame'] for x in item['native_refs']['species']],'components':components,'reference_uniprot_ids':['UniProtKB:'+x for x in up],'reference_deposit_bindings':evidence,'scope_limit':limit,'preparation_scope_authority':'Native activity/preparation ledger and independent primary dossier control biological interpretation; this source author supplies identity only.'})
+assert len(rows)==25 and len(mapping)==16
+genes=[]
+for item in inventory:
+    if item['object_type']=='Gene':genes.append({'native_identifier':item['identifier'],'source':item['source'],'common_name':item['native_common_names'],'native_products':['MetaCyc:'+x['frame'] for x in item['native_refs']['product']],'native_crossreferences':item['direct_xrefs'],'boundary':'The actual native gene HTML and complete native Gene XML establish this source-local gene identity and product slots. Historical NCBI Gene IDs, string crossreferences and nucleotide-locus associations are not promoted into current strain-specific gene equivalences.'})
+save('projections/component-reference-and-gene-dispositions.json',{'role':'Author identity interpretation, not independent scientific approval','components':rows,'genes':genes,'broad_boundaries':['All 21 activity/preparation disposition summaries and 26 native fact groups were read as source-author context; no blanket endorsement of their unresolved biochemical claims.','No whole-pathway organism assertion is transferred from individual enzymes. Native PDC-isolate ORG-5956 has no direct NCBI strain xref; species303 is a parent context, not an invented strain accession.','Source-native gene, monomer, complex, molecular activity, assay preparation and current reference sequence remain distinct entity levels.']})
+summary=[]
+for row in comparisons:
+    summary.append({'scope':row['scope'],'deposit_accession':row['deposit_accession'],'source':row['source'],'cds_location':row['cds']['location'],'protein_accession':row['cds']['qualifiers']['protein_id'][0],'source_organism_qualifiers':[s['qualifiers'] for s in row['source_annotations']],'translation_length':row['translation_length'],'translation_sha256':row['translation_sequence_sha256'],'nucleotide_sha256':row['nucleotide_sha256'],'original_translation_equal':row['independently_translated_equals_original_annotated'],'counterparts':[{k:v for k,v in c.items() if k not in ['native_features']} for c in row['comparisons']],'boundary':row['boundary']})
+save('projections/reference-sequence-summary.json',summary)
+print(json.dumps({'native_components':len(rows),'complexes':sum(bool(x['components']) for x in rows),'monomers':sum(not x['components'] for x in rows),'genes':len(genes),'sequence_summaries':len(summary)},indent=2))

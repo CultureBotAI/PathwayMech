@@ -1,0 +1,84 @@
+"""Current strict parser probes and external selected-source config proposals."""
+from pathlib import Path
+from datetime import datetime,timezone
+import hashlib,json,sys,xml.etree.ElementTree as ET
+B=Path(__file__).resolve().parents[1];R=B/'runtime';A=Path('/private/tmp/pathwaymech-next-259-authorities')
+sys.path[:0]=[str(R/'scripts'),str(R/'src')]
+from build_source_identifier_snapshot import source_terms
+def sha(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def bind(path):return {'path':str(path),'sha256':sha(path),'bytes':Path(path).stat().st_size}
+def save(name,value):
+    path=B/name;assert not path.exists();path.write_text(json.dumps(value,indent=2)+'\n')
+sources=json.loads((R/'data/identifier_authorities/sources.json').read_text());oldconfig=json.loads((R/'conf/identifier_sources.json').read_text());allterms=sources['terms'];native=json.loads((B/'projections/native-biological-inventory.json').read_text())
+profiles=[]
+def probe(kind,path,url,version,provenance,requested=None):
+    path=Path(path);identity=(kind,str(path),url,version)
+    for old in profiles:
+        if (old['kind'],old['original']['path'],old['url'],old['version'])==identity:return old
+    row={'profile_id':'P'+str(len(profiles)+1),'kind':kind,'original':bind(path),'url':url,'version':version,'provenance':provenance,'requested_identity':requested}
+    try:
+        terms=list(source_terms(kind,path,url=url,version=version));row['terms']=terms;row['status']='accepted' if terms else 'no_authority_term'
+    except Exception as error:row.update(status='rejected',error=type(error).__name__+': '+str(error),terms=[])
+    profiles.append(row);return row
+
+for name in ['acquisition-public.json','acquisition-public-supplement.json']:
+    receipt=B/'receipts'/name
+    for i,row in enumerate(json.loads(receipt.read_text())['observations']):
+        assert row['status']==200 and sha(row['path'])==row['sha256']
+        if row['kind']=='ena-embl':continue
+        version='27.0' if row['kind']=='metacyc-html' else 'retrieved '+row['finished_utc']
+        probe(row['kind'],row['path'],row['url'],version,{'receipt':bind(receipt),'observation_index':i,'http_status':200,'final_url':row['final_url']},row['key'])
+receipt=B/'receipts/acquisition-public-reference-counterparts.json';row=json.loads(receipt.read_text());assert row['status']==200 and sha(row['path'])==row['sha256']
+probe('ncbi-protein-xml',row['path'],row['url'],'retrieved '+row['finished_utc'],{'receipt':bind(receipt),'http_status':200},row['requested_accessions'])
+for row in native:
+    if row['object_type'] not in ['Protein','Reaction','Pathway']:continue
+    frame=row['identifier'].split(':',1)[1];kind='metacyc-'+row['object_type'].lower()+'-xml'
+    probe(kind,row['source']['path'],'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:'+frame,'27.0',{'frozen_selected_original':row['source'],'manifest':bind(Path('/private/tmp/pathwaymech-next-260-native/retained/selected-native-manifest.json'))},row['identifier'])
+for candidate in json.loads((B/'projections/reused-uniprot-candidates.json').read_text()):
+    row=candidate['candidate'];assert sha(row['path'])==row['sha256']
+    probe(row['kind'],row['path'],row['url'],row['version'],{'frozen_candidate_manifest':bind(A/'candidate-handoff-manifest.json'),'prior_candidate_file':bind(A/'authority-candidates.json'),'actual_acquisition_receipt':{'path':row['acquisition']['receipt'],'sha256':row['acquisition']['receipt_sha256']}},candidate['identifier'])
+for row in native:
+    if not row['current_config']:continue
+    entry=row['current_config'];original=A/'originals'/entry['path'];assert sha(original)==entry['sha256']
+    profile=probe(entry['kind'],original,entry['url'],entry['version'],{'existing_config':entry,'owner':row['current_source_owner'],'owner_term':row['current_term']},row['identifier'])
+    assert any(t[0]==row['identifier'] and t[1]==row['current_term']['label'] for t in profile['terms']),row['identifier']
+
+bai=json.loads((A/'bai50711-candidate.json').read_text());assert sha(bai['path'])==bai['sha256'];assert sha(bai['acquisition']['path'])==bai['acquisition']['sha256']
+probe(bai['kind'],bai['path'],bai['url'],bai['version'],{'prior_candidate':bind(A/'bai50711-candidate.json'),'actual_acquisition_receipt':bai['acquisition'],'scope':'Distinct Comamonas sp. E6 PmdE reference; never substituted for BR6020 PmdE or entire recombinant preparation.'},'NCBIProtein:BAI50711.1')
+
+options={}
+for profile in profiles:
+    for term in profile['terms']:
+        options.setdefault(term[0],[]).append({'profile_id':profile['profile_id'],'kind':profile['kind'],'term':term})
+summary=[];selected=[]
+for row in native:
+    if row['object_type']=='Organism':continue
+    identifier=row['identifier'];available=options.get(identifier,[]);assert available,identifier
+    if row['current_term']:
+        disposition='preserve_existing_owner_exactly';chosen=None
+    else:
+        accepted_xml=[x for x in available if x['kind'] in ['metacyc-protein-xml','metacyc-reaction-xml']]
+        chosen=accepted_xml[0] if accepted_xml else next(x for x in available if x['kind']=='metacyc-html')
+        disposition='new_source_config_candidate_only';selected.append((identifier,chosen))
+    summary.append({'identifier':identifier,'native_type':row['object_type'],'source':row['source'],'native_common_names':row['native_common_names'],'native_synonyms':row['native_synonyms'],'native_refs':row['native_refs'],'direct_crossreferences':row['direct_xrefs'],'inline_organism_scopes':[{k:v for k,v in x.items() if k!='original_xml'} for x in row['inline_species']],'scope_disposition':disposition,'current_term':row['current_term'],'current_owner':row['current_source_owner'],'candidate_options':available,'proposed_profile':chosen,'native_slot_locators':[{'name':x['name'],'ordinal':x['ordinal'],'xpath':x['xpath']} for x in row['direct_slots']],'preparation_limits':[{'activity':a['activity'],'scope':a['preparation_scope'],'disposition':a['disposition'],'limits':a['reason']} for a in row['preparation_dispositions']]})
+# Reference-sequence entries are optional counterparts; they cannot replace preparation-scoped native objects.
+for identifier,available in sorted(options.items()):
+    if identifier.startswith(('UniProtKB:','NCBIProtein:')) and identifier not in allterms:
+        selected.append((identifier,available[0]))
+selected_profiles={}
+for identifier,selection in selected:selected_profiles.setdefault(selection['profile_id'],[]).append(identifier)
+config=[];cache=B/'source-cache';cache.mkdir(exist_ok=False)
+for profile_id,identifiers in selected_profiles.items():
+    profile=next(x for x in profiles if x['profile_id']==profile_id)
+    name=Path(profile['original']['path']).name
+    relative='meta260bio/'+profile_id+'-'+name
+    key='meta260bio-'+profile_id
+    target=cache/relative;target.parent.mkdir(parents=True,exist_ok=True);target.symlink_to(Path(profile['original']['path']))
+    assert sha(target)==profile['original']['sha256']
+    entry={'key':key,'kind':profile['kind'],'path':relative,'url':profile['url'],'version':profile['version'],'license':('BioCyc license; redistribution not assessed' if profile['kind'].startswith('metacyc') else 'UniProt CC BY 4.0' if profile['kind']=='uniprot' else 'NCBI public sequence record; redistribution not assessed'),'sha256':profile['original']['sha256']}
+    config.append({'identifiers':identifiers,'profile_id':profile_id,'entry':entry,'cache_original':bind(target),'scope':'External candidate source descriptor. Add only for identifiers selected after post-merge whole-record dedup and primary/native/chemistry integration; no maintained owner update is authorized by this proposal.'})
+save('projections/source-parser-probes.json',{'runtime_commit':'baf1f16f109dbdf6c2571e9c2ab70078ab4382ea','runtime_copy_receipt':bind(B/'receipts/runtime-copy.json'),'profiles':profiles,'accepted':sum(x['status']=='accepted' for x in profiles),'rejected':sum(x['status']=='rejected' for x in profiles),'no_term':sum(x['status']=='no_authority_term' for x in profiles)})
+save('projections/native-biological-identity-summary.json',summary)
+save('source-config-proposals.json',{'role':'External author candidates, not a maintained selected union or record draft','base_config':bind(R/'conf/identifier_sources.json'),'base_source_snapshot':bind(R/'data/identifier_authorities/sources.json'),'base_ontology_snapshot':bind(R/'data/identifier_authorities/ontology.json'),'new_entries':config,'source_cache':str(cache),'existing_native_owners_preserved':sum(x['scope_disposition']=='preserve_existing_owner_exactly' for x in summary),'native_ids_with_candidate_authority':len(summary),'extra_sequence_entries_are_optional':True})
+save('candidate-identifier-selection.json',{'native_identifiers':[x['identifier'] for x in summary],'optional_sequence_counterparts':[i for i in options if i.startswith(('UniProtKB:','NCBIProtein:'))],'missing_native_identifiers':[],'excluded_inactive_accession':'UniProtKB:Q75T30','primary_route_chemistry':'Five exact formal equations and chemical identities remain root chemistry owner scope; native reaction IDs here are identity candidates, not additional pathway members.'})
+print(json.dumps({'profiles':len(profiles),'native_ids':len(summary),'old_native_owners':sum(x['scope_disposition']=='preserve_existing_owner_exactly' for x in summary),'new_native_ids':sum(x['scope_disposition']=='new_source_config_candidate_only' for x in summary),'new_candidate_source_entries':len(config),'new_candidate_identifiers':len(selected),'rejected':sum(x['status']=='rejected' for x in profiles),'no_term':sum(x['status']=='no_authority_term' for x in profiles)},indent=2))

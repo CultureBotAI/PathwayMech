@@ -1,0 +1,88 @@
+import json,yaml,hashlib,datetime
+from pathlib import Path
+D=Path('/private/tmp/pathwaymech-next-260-primary-draft');P=Path('/private/tmp/pathwaymech-next-260-preparation-successor');W=Path('/private/tmp/pathwaymech-next-260-20261014')
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def diffs(a,b,path=''):
+ out=[]
+ if isinstance(a,dict) and isinstance(b,dict):
+  for k in sorted(set(a)|set(b)):
+   p=path+'/'+k
+   if k not in a:out.append({'path':p,'before_missing':True,'after':b[k]})
+   elif k not in b:out.append({'path':p,'before':a[k],'after_missing':True})
+   else:out+=diffs(a[k],b[k],p)
+ elif isinstance(a,list) and isinstance(b,list):
+  if all(isinstance(v,dict) and 'id' in v for v in a+b):return diffs({v['id']:v for v in a},{v['id']:v for v in b},path)
+  for i in range(max(len(a),len(b))):
+   if i>=len(a):out.append({'path':path+'/'+str(i),'before_missing':True,'after':b[i]})
+   elif i>=len(b):out.append({'path':path+'/'+str(i),'before':a[i],'after_missing':True})
+   else:out+=diffs(a[i],b[i],path+'/'+str(i))
+ elif a!=b:out.append({'path':path,'before':a,'after':b})
+ return out
+before=D/'intermediates/before-title-and-direction-corrections/assembled-preview.yaml';after=D/'assembled-preview.yaml';change=diffs(yaml.safe_load(before.read_text()),yaml.safe_load(after.read_text()))
+receipt={'role':'Author correction receipt, no independent approval','retained_intermediate':{'path':str(before),'sha256':sha(before)},'successor':{'path':str(after),'sha256':sha(after)},'exact_field_changes':change,'acceptance':[
+ {'change':'Bibliographic titles','basis':'Exact title pages of the 1975/1982 PNG originals and 1983/1990 PDFs; citation_title metadata in complete PMC HTML; 2011 retained publisher line18. Replaces guessed or token-only titles.'},
+ {'change':'RHEA:18172 direction','basis':'Complete issuing RDF explicitly labels the generic HG reaction reversible. Primary ProA1990 describes reverse reaction/equilibrium (pp.331–332); no physiological equilibrium or absolute configuration inferred.'},
+ {'change':'Achiral competitor/OA wording','basis':'4-hydroxy-2-oxobutyrate and oxaloacetate are not described as dl in the original. Removed copied optical-language clauses while preserving actual chiral dl substrate wording.'},
+ {'change':'PDC product locator','basis':'B. fuscum product assay pp.1157–1158/Figure3 is separate from P. aeruginosa comparison on p.1160.'},
+ {'change':'Complete adjacent HMG and OA material bookkeeping','basis':'Already supported prep-021 activities plus exact native full reaction slots; includes OAA proton input and generic HMG. Adds CHEBI:58276 and CHEBI:16526, with no R-HMG selection.'}],
+ 'earlier_unfrozen_corrections_without_preserved_complete_bytes':[
+  {'correction':'Duplicate preparation plus treatment qualifiers were merged to one endpoint qualifier, retaining both actual table and short treatment evidence.','cause':'Initial composition did not satisfy schema one-qualifier-per-endpoint constraint; local schema replay identified it.'},
+  {'correction':'1983 Table I assertion now states actual p.570 enzyme I/II omission rows and 34/19 µg additions; it no longer asserts purification stages at nonexistent p.568 Table I.','cause':'Author initially attached an incorrect table description. Exact full earlier YAML was not retained; no artificial reconstruction is claimed.'},
+  {'correction':'Cobalt participant category is explicitly replaced by cofactor and consumes material edge direction corrected.','cause':'Local schema replay detected category and endpoint-orientation requirements; no source identity change.'}],
+ 'source_replay_correction':{'failed_replay':str(D/'intermediates/verification-before-source-segment-binding.json'),'correction':'Bind all four exact retained 2011 publisher segments, including results and Methods; rejoin only OCR soft line-end hyphenation for the visually inspected K82 Ellman reagent quote. No quotation text changed and no new acquisition occurred.'},
+ 'stale_check_note':'One exploratory schema invocation followed a failed build halted at missing local CO2 label and therefore checked the earlier preview. It is not claimed as final validation; the exact final record was subsequently checked independently by verify_fragment.py.'}
+(D/'draft-correction-receipt.json').write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n')
+errata={'scope':'Appended successor corrections to frozen earlier research; no frozen source/ledger bytes modified','corrections':[
+ {'prior_fact':'K82-006','prior_ledger':'/private/tmp/pathwaymech-next-260-primary/author/claim-ledger.json','correction':'The p.1154 abstract reports 37,200 molecular weight, not 37,700. It agrees with the Results SDS estimate; do not preserve a fabricated abstract/Results discrepancy.','source_original':'/private/tmp/pathwaymech-next-260-primary/originals/PMC221622-page-1.png','source_sha256':sha('/private/tmp/pathwaymech-next-260-primary/originals/PMC221622-page-1.png'),'locator':'p.1154 abstract, molecular-weight sentence','record_impact':'Neither wrong mass was used in a graph edge; complete context ledger now corrects the frozen research transcription.'},
+ {'prior_fact':'K82-016','prior_ledger':'/private/tmp/pathwaymech-next-260-primary/author/claim-ledger.json','correction':'The lower-buffer pH range is 5.5–8, not 5.5–7.','source_original':'/private/tmp/pathwaymech-next-260-primary/originals/PMC221622-page-4.png','source_sha256':sha('/private/tmp/pathwaymech-next-260-primary/originals/PMC221622-page-4.png'),'locator':'p.1157 right column, pH-dependence experiment paragraph','record_impact':'No graph edge used the incorrect buffer-range upper bound; context successor preserves the corrected scope.'}]}
+(D/'frozen-research-successor-errata.json').write_text(json.dumps(errata,indent=2,ensure_ascii=False)+'\n')
+(D/'hg-direction-scope.json').write_text(json.dumps({'source':str(P/'originals/ProA1990.pdf'),'source_sha256':sha(P/'originals/ProA1990.pdf'),'locators':['p.327 abstract, equilibrium-constant summary','pp.331–332, reverse reaction and HG/HMG equilibrium paragraphs; Figures3 and4'],'interpretation':'The generic RHEA:18172 bidirectional identity is consistent with the reported reverse HG assay. The authors consider equilibrium among optical l-HG, pyruvate and glyoxylate while d-HG remains practically inert; the approximate HG equilibrium constant is 0.03±0.01 M (pH8,25°C), HMG about0.07±0.02 M. CHA does not reach equilibrium because oxaloacetate decarboxylation drains product. This does not establish in vivo equilibrium, equal enantiomer turnover, or R/S identity.','record_role':'Reaction direction is issuing identity metadata. The generic node/alternative material edges do not add absolute stereochemistry. Formal five Rhea identifiers are unchanged; root owns the separately requested source-direction integration.'},indent=2,ensure_ascii=False)+'\n')
+# Freeze compact source-original replay with no raw source downloads copied into this package.
+ver=json.load(open(D/'verification.json'));assert not ver['failed'];fr=yaml.safe_load(open(D/'primary-additions.yaml'));sel=json.load(open(D/'selected-identifiers.json'));x=yaml.safe_load(open(after));q=json.load(open(D/'paper-wide-quote-ledger.json'))
+hand=f'''# Next260 primary enrichment author handoff
+
+Frozen external author proposal for **MetaCyc:GALLATE-DEGRADATION-I-PWY**, displayed **gallate degradation II**. No maintained file, authority snapshot, Git object or GitHub state was changed. This is author work, not independent scientific approval.
+
+## Exact integration surfaces
+
+- `primary-additions.yaml`: {len(fr['mechanistic_edges'])} new edges, {len(fr['participants'])} participants, {len(fr['reactions'])} reactions and {len(fr['references'])} references. SHA256 `{sha(D/'primary-additions.yaml')}`.
+- `primary-replacements.yaml`: four complete edge replacements: `native-catalysis-ENZRXN-3623`, `native-catalysis-ENZRXN-3365`, `native-catalysis-ENZRXN-18373`, and `native-material-03`. Preserve their stable IDs. SHA256 `{sha(D/'primary-replacements.yaml')}`.
+- `node-replacements.yaml`: categorize existing `CHEBI:48828` as cofactor for the supported ProA/GalB cofactor edges. This changes neither chemical identity nor label. SHA256 `{sha(D/'node-replacements.yaml')}`.
+- `record-context-proposal.json`: eight factual paragraphs to merge with the native description. No undeclared schema field is proposed. Full conditional-negative and source-conflict details remain in the research context ledger.
+- `assembled-preview.yaml`: external merge of these surfaces with the frozen 85-edge native foundation, yielding **{len(x['mechanistic_edges'])} edges and 103 participant/reaction/taxon/pathway IDs**. SHA256 `{sha(after)}`. The preview is a review convenience; root owns final source-direction normalization of the three formal directional Rhea nodes, with their IDs unchanged.
+- `selected-identifiers.json`: exact actual primary endpoint set and 41 nodes added to the foundation; the chemical authority author independently verified availability. SHA256 `{sha(D/'selected-identifiers.json')}`.
+
+Frozen native foundation input: `/private/tmp/pathwaymech-next-260-native-draft/native-foundation.yaml`, SHA256 `{sha('/private/tmp/pathwaymech-next-260-native-draft/native-foundation.yaml')}`. Formal five reactions, route taxa, native composition, native source effects and pathway interfaces remain that author's scope. Nine overlapping native regulator rows and ProA adjacent activities were explicitly handed over to this primary fragment; they are not duplicated by the native foundation. The extra ProA Mg cofactor edge concerns the 1990 native preparation, distinct from the retained 2001 heterologous native cofactor assertion.
+
+## Scientific coverage and limits
+
+All **57 entry plus 122 preparation facts** have explicit dispositions in `source-to-record-dispositions.json`. `edge-fact-ledger.json` provides the reverse map for all 88 primary added/replacement edges; every direction was replayed. `primary-context-notes.md` retains all 179 complete source-specific facts/limits. Actual numerical table-row coverage remains in `structured-table-dispositions.json`, with immutable original table projections bound by hash.
+
+The fragment retains the four 1982 inhibitory metals, DTNB inhibition and GSH protection; the anonymous 1975 gallate inhibition of PCA oxidation; four recombinant LigJ perturbations; ProA alternative cofactors, thiol inhibitors, eight non-supporting/inhibitory salts, nine competitive inhibitors, nine phosphate-depletion activators and KCl inhibition; 1983 storage rescue, thiol inhibition and partial DTT reversal; and all selected GalB/E6 direct downstream effects. Adjacent HMG, HG and OA reaction bookkeeping is complete and kept outside the five formal route members. Generic HG uses independently closed RHEA:18172; the primary reports reverse/equilibrium experiments with optical l-HG, not a resolved R/S identity or in vivo equilibrium (`hg-direction-scope.json`).
+
+Historical native samples, partial enzyme I/II fractions, homogeneous 1985 ProH, later NGJ1 references, BR6020 homology evidence and the distinct E6 recombinant preparation remain separate. Mixed-fraction metal panels do not become pure ProH regulation. The printed 1983 CuSO2 remains unresolved. LigJ2000 mixture turnover does not establish E,E catalysis. Detailed LigJ2018 and ProH1985 full texts remain inaccessible; thesis access remains 403. STRenda conflicts remain staged. The 1982 purified entry samples are not assigned to P. putida CPLX-2721; the 1975 gift remains organism-unresolved. No new whole-pathway organism, localization or gene-regulator assertion is inferred from these papers.
+
+GalB244/reference258/crystal240, unresolved inserts/termini, separate 2011 extract EDTA versus purified DEPC and 2016 metal-reconstitution protocols, E6 His handling and residual-scar uncertainty remain in copied evidence-local qualifications. The 2011 article binding uses four exact retained publisher response segments; visual original Figure/SI gaps are not upgraded. Full source originals remain external, with `external-primary-originals.json` and `evidence-form-and-source-bindings.json` supplying exact paths and digests.
+
+## Evidence grammar, replay and corrections
+
+All structured primary assertions describe actual table cells/captions. Narrative effects use exact short quotations with precise full-sentence locators and the measured reagent/dose/readout in the edge description; single-word result excerpts do not stand in for protein identity or unrelated mechanisms. Actual repeated quotation totals by paper are: {json.dumps(q['counts'],sort_keys=True)}. Every paper stays ≤25 words. Bibliographic titles are citation metadata. Evidence and qualifier lengths remain ≤400 characters.
+
+The exact preview passed the handwritten validator and closed LinkML validator, all quotation/text and native XPath checks, all primary evidence length/budget checks and all forward/reverse fact-map checks: **{ver['passed']} passing checks, zero failures**. These are bounded author checks, not full project gates or independent scientific approval. `verification.json` binds exact code and record hashes. `frozen-input-replay.json` rehashed all 258 files in the prior entry, preparation and native-draft packages: all unchanged.
+
+`draft-correction-receipt.json` preserves an exact retained intermediate→successor field diff and candidly identifies earlier unretained draft errors. Bibliographic guesses, incorrect 1983 Table I description, duplicated endpoint qualifiers, achiral optical wording and the P. aeruginosa locator were corrected. A failed source replay is preserved; it was fixed by binding already retained 2011 segments and rejoining only OCR line-end hyphenation. No quoted text was invented or replaced to force a match.
+
+`frozen-research-successor-errata.json` appends two corrected earlier research transcriptions: K82 abstract mass is 37,200, and the lower-buffer pH range is 5.5–8. Frozen prior files remain unchanged. Neither wrong value was placed in an edge.
+
+## Remaining integration ownership
+
+Root assembles the maintained record, merges the proposed context, applies the independently requested issuing Rhea direction metadata, builds/promotes the exact selected authority union, performs complete gates and commissions independent reviews. All selected IDs are source-available; there is no new adapter request. No mechanism is silently dropped because of quote budget or identity convenience. Research-only unresolved observations retain explicit dispositions and do not become graph claims.
+'''
+(D/'HANDOFF.md').write_text(hand)
+# Existing checkpoints remain historical; finalize without changing frozen input packages.
+files=[]
+for p in sorted(D.rglob('*')):
+ if p.is_file() and p.name!='artifact-manifest.json':files.append({'path':str(p.relative_to(D)),'sha256':sha(p),'bytes':p.stat().st_size})
+manifest={'frozen_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'External author proposal; full source originals remain in separately frozen packages. Includes retained failed/intermediate author artifacts honestly labelled. No curation approval.','file_count':len(files),'total_bytes':sum(f['bytes'] for f in files),'files':files}
+(D/'artifact-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+print(json.dumps({'handoff_sha256':sha(D/'HANDOFF.md'),'manifest_sha256':sha(D/'artifact-manifest.json'),'record_sha256':sha(after),'files':len(files),'bytes':manifest['total_bytes']},indent=2))

@@ -1,0 +1,65 @@
+"""Freeze final proofs without modifying any previous reviewer artifact."""
+from pathlib import Path
+import datetime,gzip,hashlib,json
+ROOT=Path('/private/tmp/pathwaymech-next-260-20261014');OUT=Path('/private/tmp/pathwaymech-next-260-independent-technical')
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def load(p):return json.loads(p.read_text())
+def write(p,d):
+ assert not p.exists(),p;p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+canonical=load(OUT/'canonical-review.yaml');att=load(OUT/'gate-final-attestation.json');validation=load(OUT/'canonical-validation-receipt.json')
+assert validation['exit_code']==0 and validation['content_sha256']==sha(OUT/'canonical-review.yaml')
+for x in canonical['source']['inputs']:assert sha(ROOT/x['path'])==x['sha256'],x['path']
+tested=load(Path('/private/tmp/pathwaymech-next-260-checks-completed/tested-core-input-hashes.json'))
+assert all(sha(ROOT/p)==h for p,h in tested.items())
+assert sha(OUT/'provisional/provisional-artifact-manifest.json')=='da40a443e1315cd5ee32de27b8a4124f0052ae943ab1b33d396acc288ab3cabe'
+for x in load(OUT/'provisional/provisional-artifact-manifest.json')['files']:assert sha(OUT/'provisional'/x['path'])==x['sha256']
+report_names=['integration-replay-1.json','authority-replay-1.json','kgx-replay-1.json','kgx-category-replay.json','pages-replay-2.json']
+review={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),'reviewer':'Independent technical reviewer /root/next260_technical_review; separate from source, authority and integration authors','base_commit':canonical['source']['git_revision'],'verdict':'pass_with_limitations','scientific_review':False,'summary':'No unresolved technical findings in the exact next260 three-record batch. All required gates passed, retained source and proof fidelity verified, and all reviewed inputs unchanged.','canonical_content':{'path':'canonical-review.yaml','review_id':canonical['review_id'],'sha256':sha(OUT/'canonical-review.yaml'),'validation_receipt_sha256':sha(OUT/'canonical-validation-receipt.json'),'input_count':len(canonical['source']['inputs']),'save_owner':'Root integrator; reviewer did not save maintained review files.'},'record_page_export_bindings':att['reviewed_record_and_page_bindings'],'authority_bindings':{p:sha(ROOT/p) for p in ['conf/identifier_sources.json','data/identifier_authorities/sources.json','data/identifier_authorities/ontology.json']},'completed_replay_counts':{n:load(OUT/n)['passed'] for n in report_names},'report_bindings':{n:sha(OUT/n) for n in report_names+['production-scope-ignored-inclusive.json','promotion-and-scope-1.json','gate-retention-replay.json']},'actual_gates':{'attestation_sha256':sha(OUT/'gate-final-attestation.json'),'successes':7,'attempts':8,'original_failed_attempt':'Sandbox DNS on the initial pinned vendored-check fetch; preserved with the sole successful bounded retry.','test_counts':att['test_counts'],'tested_core_files_rehashed_unchanged':len(tested)},'advance_observations':[{'description':'S75-003 successor erratum named the wrong retained claim-ledger directory.','external_issue':'https://github.com/CultureBotAI/PathwayMech/issues/559','disposition':'Corrected append-only before first canonical technical review; assessment and notes preserve the observation without fabricated previous_occurrences.','correction_path':'research/pathway_additions/2026-10-14-next-260/integration/erratum-locator-clarification.json','correction_sha256':'1c21cfe824e8f700c2fd13485e816ccbc113f9e3130e80fe056b0e0d284b65b6'}],'open_findings':[],'reviewer_probe_corrections':[{'original':'authority-source-replay-1.json','clarification':'authority-source-count-clarification.json','final':'authority-replay-1.json','reason':'Initial reviewer probe confused total cache descriptors with identifier manifest entries.'},{'original':'pages-replay-1.json','final':'pages-replay-2.json','reason':'Initial reviewer probe expected unconnected taxon scope metadata as SVG nodes. The existing contract preserves it in complete component tables; successor explicitly verifies those tables.'}],'provisional_package':{'manifest':'provisional/provisional-artifact-manifest.json','sha256':sha(OUT/'provisional/provisional-artifact-manifest.json'),'all_original_files_unchanged':True},'limits':canonical['limitations'],'later_required_work':'Independent exact-commit tree attestation after root saves the exact proofs/reviews and commits.'}
+write(OUT/'technical-review.json',review)
+text='''# Final independent technical review: next260
+
+No unresolved technical findings in the three-record batch. The completed technical verdict is `pass_with_limitations`; `scientific_review` is false. Source, authority and integration authors were separate from this reviewer.
+
+- Source/assembly replay: 2,120 checks passed.
+- Authority selection and baseline preservation: 184 checks passed; all 4,989 prior terms and owners retained, exactly 34 additions.
+- KGX export: 3,096 payload and 268 category checks passed; 257 records, 4,676 nodes, 13,033 edges.
+- Generated pages: 3,684 checks passed; published downloads exactly equal the independent export.
+- All seven required project commands passed. Full suite: 5,255 passed, 3 skipped, 7 warnings. Eight command attempts are retained because the initial vendored fetch failed on sandbox DNS and its sole bounded retry passed.
+- All 2,026 tested core inputs and all 983 canonical review inputs were rehashed unchanged at this freeze. All 17 retained gate artifacts were independently verified losslessly.
+
+The S75-003 retained-ledger locator typo is corrected append-only and tracked by GitHub #559. It is an advance observation corrected before the first canonical review, not a fabricated prior structured occurrence. Both corrected reviewer-probe expectations and the complete provisional package remain immutable.
+
+`canonical-review.yaml` is the validated canonical content for the root integrator to save. Its identity and exact SHA-256 are recorded in `technical-review.json`; `canonical-validation-receipt.json` contains the actual successful validation. Copy every `compact-retention-manifest.json` selection to `research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/` under its `retained_name` before saving the canonical review. No maintained files or GitHub objects were changed by this reviewer.
+
+The separate scientific reviewer supplies the literature verdict. DOM, accessible text and serialized graph payloads were checked; browser visual/interactive approval is not claimed. This attestation covers the exact working-tree inputs; a later exact-commit tree attestation is still required.
+'''
+assert not (OUT/'HANDOFF.md').exists();(OUT/'HANDOFF.md').write_text(text)
+compact=OUT/'compact';compact.mkdir(exist_ok=True)
+selected=[]
+def retain(p,name=None,encoding=None):
+ if name is None:
+  if p.suffix=='.json' and p.stat().st_size>15000 and p.name!='technical-review.json':name=p.name+'.gz';encoding='gzip'
+  elif p.suffix=='.py':name=p.name+'.txt';encoding='identity'
+  else:name=p.name;encoding='identity'
+ t=compact/name;t.parent.mkdir(parents=True,exist_ok=True)
+ raw=gzip.compress(p.read_bytes(),mtime=0) if encoding=='gzip' else p.read_bytes()
+ if t.exists():assert t.read_bytes()==raw,(p,t)
+ else:t.write_bytes(raw)
+ if encoding=='gzip':assert gzip.decompress(t.read_bytes())==p.read_bytes()
+ selected.append({'source_path':str(p),'source_sha256':sha(p),'source_bytes':p.stat().st_size,'retained_name':name,'copy_from':str(t),'retained_sha256':sha(t),'retained_bytes':t.stat().st_size,'encoding':encoding})
+for p in sorted(OUT.iterdir()):
+ if p.is_file() and p.name not in ['artifact-manifest.json','compact-retention-manifest.json']:retain(p)
+# Retain the canonical evidence's short provisional locator, plus the original
+# provisional directory tree intact so its original manifest remains valid.
+retain(OUT/'provisional/provisional-technical-review.json')
+for p in sorted((OUT/'provisional').rglob('*')):
+ if p.is_file():retain(p,'provisional/'+str(p.relative_to(OUT/'provisional')),'identity')
+assert len({x['retained_name'] for x in selected})==len(selected)
+for ev in canonical['evidence']:
+ prefix='research/pathway_additions/2026-10-14-next-260/reviews/independent-technical/'
+ if ev['reference'].startswith(prefix):assert sha(compact/ev['reference'][len(prefix):])==ev['snapshot_sha256']
+selection={'scope':'Exact independent technical retention; all JSON gzip copies decode losslessly, helpers are inert text. Complete provisional tree remains intact. Duplicate KGX TSVs remain external because exact bytes are already published in pages/downloads.','destination':'research/pathway_additions/2026-10-14-next-260/reviews/independent-technical','files':selected,'file_count':len(selected),'retained_bytes':sum(x['retained_bytes'] for x in selected)}
+write(OUT/'compact-retention-manifest.json',selection)
+manifest={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00','Z'),'scope':'Final immutable external technical package. Prior provisional artifacts and prior probe reports unchanged. No maintained writes or GitHub writes. Future commit attestation will be appended in a separate directory.','files':[{'path':str(p.relative_to(OUT)),'sha256':sha(p),'bytes':p.stat().st_size} for p in sorted(OUT.rglob('*')) if p.is_file() and p.name!='artifact-manifest.json']}
+write(OUT/'artifact-manifest.json',manifest)
+print(json.dumps({'handoff_sha256':sha(OUT/'HANDOFF.md'),'review_sha256':sha(OUT/'technical-review.json'),'artifact_manifest_sha256':sha(OUT/'artifact-manifest.json'),'compact_selection_sha256':sha(OUT/'compact-retention-manifest.json'),'canonical_content_sha256':sha(OUT/'canonical-review.yaml'),'files':len(selected),'bytes':selection['retained_bytes']},indent=2))

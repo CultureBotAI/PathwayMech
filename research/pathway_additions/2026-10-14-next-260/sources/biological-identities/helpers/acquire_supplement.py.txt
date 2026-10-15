@@ -1,0 +1,33 @@
+"""Follow only observed public redirects and exact issuing accession requests."""
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
+from pathlib import Path
+import hashlib, json, urllib.error, urllib.request
+B = Path(__file__).resolve().parents[1]
+plan = B / 'supplement-requests.json'
+rows = json.loads(plan.read_text())
+dest = B / 'attempts/public-supplement'
+dest.mkdir(parents=True, exist_ok=False)
+def fetch(row):
+    result = {**row, 'started_utc': datetime.now(timezone.utc).isoformat()}
+    path = dest / row['filename']
+    try:
+        request = urllib.request.Request(row['url'], headers={'User-Agent': 'PathwayMech source identity research; public read-only request'})
+        with urllib.request.urlopen(request, timeout=60) as response:
+            body = response.read()
+            result.update(status=response.status, final_url=response.url, headers={k.lower(): v for k, v in response.headers.items() if k.lower() in ['content-type', 'content-length', 'location']})
+        path.write_bytes(body)
+        result.update(path=str(path), sha256=hashlib.sha256(body).hexdigest(), bytes=len(body))
+    except urllib.error.HTTPError as error:
+        body=error.read();path.write_bytes(body)
+        result.update(status=error.code, final_url=error.url, path=str(path), sha256=hashlib.sha256(body).hexdigest(), bytes=len(body), error=str(error))
+    except Exception as error:
+        result.update(error=type(error).__name__ + ': ' + str(error))
+    result['finished_utc'] = datetime.now(timezone.utc).isoformat()
+    (dest/(row['filename']+'.receipt.json')).write_text(json.dumps(result,indent=2)+'\n')
+    return result
+with ThreadPoolExecutor(max_workers=3) as pool:
+    observations=list(pool.map(fetch,rows))
+receipt=B/'receipts/acquisition-public-supplement.json';assert not receipt.exists()
+receipt.write_text(json.dumps({'request_plan_sha256':hashlib.sha256(plan.read_bytes()).hexdigest(),'observations':observations},indent=2)+'\n')
+print(json.dumps({'requests':len(rows),'http_200':sum(x.get('status')==200 for x in observations),'failures':[x for x in observations if x.get('status')!=200]},indent=2))

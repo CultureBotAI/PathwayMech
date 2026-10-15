@@ -1,0 +1,75 @@
+"""Export full corpus once and inspect exact changed-record consumer payloads."""
+import csv
+import datetime
+import hashlib
+import json
+import re
+from pathlib import Path
+from pathwaymech.cli import export_kgx_main
+import yaml
+
+ROOT=Path('/private/tmp/pathwaymech-next-260-20261014')
+OUT=Path('/private/tmp/pathwaymech-next-260-independent-technical')
+DEST=OUT/'kgx'
+assert not DEST.exists()
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+paths=sorted((ROOT/'data/pathways').rglob('*.yaml'))
+before={str(p.relative_to(ROOT)):sha(p) for p in paths}
+runtime={str(p.relative_to(ROOT)):sha(p) for p in sorted((ROOT/'src/pathwaymech').rglob('*.py'))}
+assert export_kgx_main(['--output-dir',str(DEST)],root=ROOT)==0
+after={str(p.relative_to(ROOT)):sha(p) for p in paths}
+assert before==after
+nodes=list(csv.DictReader((DEST/'nodes.tsv').open(),delimiter='\t'))
+edges=list(csv.DictReader((DEST/'edges.tsv').open(),delimiter='\t'))
+node_by_id={n['id']:n for n in nodes}
+edge_by_id={e['id']:e for e in edges}
+checks=[]
+def check(name,condition,**extra): checks.append(dict(name=name,passed=bool(condition),**extra))
+check('unique exported nodes',len(nodes)==len(node_by_id))
+check('unique exported edges',len(edges)==len(edge_by_id))
+allrecords=[yaml.safe_load(p.read_text()) for p in paths]
+check('every corpus edge exported',len(edges)==sum(len(r.get('mechanistic_edges',[])) for r in allrecords))
+check('all 257 recursive record paths included',len(paths)==257)
+predicates={'activates':'pathwaymech:activates','catalyzes':'pathwaymech:catalyzes','consumes':'pathwaymech:consumes','enables':'pathwaymech:enables','inhibits':'pathwaymech:inhibits','precedes':'pathwaymech:precedes','produces':'pathwaymech:produces','regulates':'pathwaymech:regulates','causally_upstream_of':'RO:0002411','provides_input_for':'RO:0002413','has_input':'RO:0002233','has_output':'RO:0002234','occurs_in':'BFO:0000066','located_in':'RO:0001025','part_of':'BFO:0000050','has_part':'BFO:0000051','has_cofactor':'pathwaymech:has_cofactor'}
+target_paths=['data/pathways/'+n+'.yaml' for n in ['gallate-degradation-ii','gallate-degradation-i','protocatechuate-meta-cleavage']]
+counts={}
+for rel in target_paths:
+    record=yaml.safe_load((ROOT/rel).read_text())
+    references={r['id']:r for r in record['references']}
+    qualifiers_count=0
+    for e in record['mechanistic_edges']:
+        quals=e.get('endpoint_qualifiers',[])
+        qualifiers_count+=len(quals)
+        identity=record['id']+'\0'+e['id']
+        if quals: identity+='\0'+json.dumps(sorted(quals,key=lambda q:q['endpoint']),ensure_ascii=False,sort_keys=True)
+        digest=hashlib.sha256(identity.encode()).hexdigest()[:12]
+        safe=re.sub('[^A-Za-z0-9._-]+','_',record['id']+'_'+e['id']).strip('_')
+        eid='pathwaymech:'+safe+'_'+digest
+        exported=edge_by_id.get(eid)
+        check('exact edge exists',exported is not None,record=record['id'],edge=e['id'])
+        if exported is None: continue
+        check('edge endpoints/predicate preserved',all(exported[k]==e[k] for k in ('subject','object')) and exported['predicate']==predicates[e['predicate']],edge=e['id'])
+        check('full evidence survives',json.loads(exported['evidence'])==e['evidence'],edge=e['id'])
+        check('full endpoint qualifier survives',json.loads(exported['endpoint_qualifiers'])==quals if quals else exported['endpoint_qualifiers']=='',edge=e['id'])
+        check('description survives defined single-line export',exported['description']==re.sub('[\t\r\n]+',' ',e.get('description','')).strip(),edge=e['id'])
+        cited={v['reference_id'] for v in e['evidence']}|{v['reference_id'] for q in quals for v in q['evidence']}
+        check('complete cited metadata including qualifier-only references survives',json.loads(exported['reference_metadata'])==[references[i] for i in sorted(cited)] and set(exported['source_records'].split('|'))==cited,edge=e['id'])
+    for section in ['participants','reactions','taxa']:
+        for node in record[section]:
+            exported=node_by_id.get(node['id'])
+            expected={'record_id':record['id'],'collection':section,**node}
+            check('complete local node context survives',exported is not None and expected in json.loads(exported['source_contexts']),node=node['id'],record=record['id'])
+            if exported:
+                contexts=json.loads(exported['source_contexts'])
+                directions={c['direction'] for c in contexts if c.get('direction')}
+                check('global reaction direction accurately reflects source contexts',exported['direction']==(next(iter(directions)) if len(directions)==1 else ''),node=node['id'])
+    counts[rel]={'sha256':before[rel],'edges':len(record['mechanistic_edges']),'qualifiers':qualifiers_count}
+for identifier,direction in {'RHEA:28932':'left_to_right','RHEA:17403':'right_to_left','RHEA:28936':'left_to_right','RHEA:18170':'left_to_right'}.items():
+    check('selected Rhea direction exported',node_by_id[identifier]['direction']==direction,node=identifier,direction=direction)
+check('unused HG equilibrium member absent from whole export','RHEA:18172' not in node_by_id)
+check('record corpus unchanged throughout focused replay',before=={str(p.relative_to(ROOT)):sha(p) for p in paths})
+result={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Independent full-corpus export and exact changed-record payload replay','command':['pathwaymech-export-kgx','--output-dir',str(DEST)],'records':before,'runtime':runtime,'outputs':{p.name:{'path':str(p),'sha256':sha(p),'bytes':p.stat().st_size} for p in [DEST/'nodes.tsv',DEST/'edges.tsv']},'corpus_counts':{'records':len(paths),'nodes':len(nodes),'edges':len(edges)},'changed_record_counts':counts,'checks':checks,'passed':sum(c['passed'] for c in checks),'failed':sum(not c['passed'] for c in checks)}
+dest=OUT/'kgx-replay-1.json'
+assert not dest.exists()
+dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'receipt':str(dest),'sha256':sha(dest),'counts':result['corpus_counts'],'passed':result['passed'],'failed':result['failed'],'failures':[c for c in checks if not c['passed']]}))

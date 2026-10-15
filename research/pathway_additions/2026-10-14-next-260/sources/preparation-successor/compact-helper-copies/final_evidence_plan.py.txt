@@ -1,0 +1,73 @@
+from pathlib import Path
+import json,hashlib,re,collections
+import yaml
+R=Path('/private/tmp/pathwaymech-next-260-preparation-successor')
+def write(n,d):(R/n).write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n')
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+d=json.loads((R/'claim-disposition-ledger.json').read_text());facts=d['facts']
+# Final source/interpretation corrections before first freeze.
+for x in facts:
+ n=int(x['id'][5:])
+ if n==108:x['claim']='Table 1 reports GalB as 244 residues, whereas the current issuing full reference sequence has 258 residues.'
+ if 34<=n<=41:
+  x['proposed_disposition']={'category':'proposed_record','reason':'The paper explicitly describes this metal panel as inhibitory, beyond failure to supply cofactor activity. A source-qualified negative effect may be retained at the tested 0.01–1 mM panel scope; individual concentration and inhibition magnitude are not reported.'}
+write('claim-disposition-ledger.json',d)
+s=json.loads((R/'selection-ledger.json').read_text())
+s['facts']=[dict(fact_id=x['id'],source_key=x['source_key'],topic=x['topic'],**x['proposed_disposition']) for x in facts];s['counts']=dict(collections.Counter(x['category'] for x in s['facts']));write('selection-ledger.json',s)
+si=json.loads((R/'source-index.json').read_text())
+for x in si:
+ if x['key']in ['GalB2016','E6PmdE2016']:x['doi']='DOI:10.1074/jbc.M115.682054'
+write('source-index.json',si)
+plans=[]
+def add(src,q,ids,role,loc,proof):
+ text=Path(proof).read_text();flat=' '.join(text.split());assert ' '.join(q.split()) in flat,(src,q)
+ plans.append({'source_key':src,'quote':q,'words_per_placement':len(q.split()),'placements':[{'fact_id':i,'role':role} for i in ids],'placement_count':len(ids),'total_words':len(q.split())*len(ids),'source_locator':loc,'verified_extraction_path':str(proof),'verified_extraction_sha256':sha(proof),'limits':'Exact short excerpt is meaningful only with the inspected complete source sentence and scoped edge description. This is an allocation proposal, not independent scientific approval.'})
+def ids(*ns):return [f'prep-{n:03d}' for n in ns]
+L=R/'projections/LigJ2000.txt';A=R/'projections/ProA1990-render/extracted.txt';P=R/'projections/ProA-Pi1990-render/extracted.txt';H=R/'projections/ProHA1983-render/extracted.txt'
+add('LigJ2000','activity was activated',ids(8,9,10),'effect','HTML Results element77, thiol response sentence',L)
+add('LigJ2000','completely inhibited the activity',ids(11),'effect','HTML Results element77, HgCl2 sentence',L)
+add('LigJ2000','homodimer',ids(7),'assembly interpretation','HTML Results element76',L)
+add('LigJ2000','keto form and enol form',ids(4),'substrate-mixture qualification','HTML Methods element32, mixture sentence',L)
+add('ProA1990','Inhibitions',ids(24,25,26),'effect','p330 General properties, numerical inhibition sentence',A)
+add('ProA1990','inhibited',ids(*range(42,51)),'effect','p332 Kinetic studies, two competitive inhibition sentences; exact reagent/Ki locators retained in facts',A)
+add('ProA1990','inhibitory',ids(*range(34,42)),'negative panel effect','p330 Characterization, non-supporting metal list and following sentence',A)
+add('ProA1990','hexamer',ids(17),'assembly interpretation','p329 General properties',A)
+add('ProA-Pi1990','dialyzed enzyme',ids(*range(57,66),67),'preparation qualifier','p334 Methods, dialysis into HEPES-NaOH; all 9 activator edges plus KCl edge',P)
+add('ProA-Pi1990','inhibited the activity',ids(67),'KCl effect only','p337 Specificity for activator, 0.1 M KCl sentence',P)
+# Split grouped 1983 facts into exact prospective placements, without repeating source quotes in fact prose.
+add('ProHA1983','fully reactivated',['prep-094:DTT','prep-094:GSH','prep-094:cysteine'],'stored enzyme I rescue','p571 General properties, six-month storage paragraph',H)
+add('ProHA1983','strongly inhibited',['prep-095:pCMB:enzyme-I','prep-095:pCMB:enzyme-II','prep-095:HgCl2:enzyme-I','prep-095:HgCl2:enzyme-II'],'pretreatment inhibition','p572 General properties continuation',H)
+add('ProHA1983','partially reversed',['prep-095:DTT:enzyme-I','prep-095:DTT:enzyme-II'],'post-inhibitor rescue','p572 General properties continuation; prior pCMB/HgCl2 treatment explicitly retained',H)
+add('ProHA1983','EDTA inhibited the activity completely',ids(91),'combined-fraction effect','p570 Effects of Metal Ions and Chelating Reagents',H)
+totals=collections.Counter()
+for x in plans:totals[x['source_key']]+=x['total_words']
+assert all(n<=25 for n in totals.values())
+# Existing copied record is a conservative ceiling for reusable GalB/E6 evidence, not additional duplicate placements.
+old=yaml.safe_load((R/'retained-rules/data/pathways/gallate-degradation-i.yaml').read_text());qrows=[]
+def walk(x,p=''):
+ if isinstance(x,dict):
+  if 'quote' in x and x.get('reference_id')in ['PMID:21219457','PMID:26867578']:
+   qrows.append({'reference_id':x['reference_id'],'field_locator':p,'quote':x['quote'],'words':len(x['quote'].split())})
+  for k,v in x.items():walk(v,p+'/'+str(k))
+ elif isinstance(x,list):
+  for i,v in enumerate(x):walk(v,p+'/'+str(i))
+walk(old)
+oldtot=collections.Counter()
+for x in qrows:oldtot[x['reference_id']]+=x['words']
+write('inherited-quote-placement-inventory.json',{'source_record_path':str(R/'retained-rules/data/pathways/gallate-degradation-i.yaml'),'source_record_sha256':sha(R/'retained-rules/data/pathways/gallate-degradation-i.yaml'),'scope':'Inventory of all existing record placements from these two papers. Reusing only relevant downstream claims cannot exceed this ceiling if duplicated placements are not added. Recompute after actual next260 edge selection.','counting':'Whitespace-delimited words; each repeated placement counted.','totals':dict(oldtot),'placements':qrows})
+write('quote-budget-ledger.json',{'scope':'Prospective allocation for narrative-derived new graph effects. This is not a maintained draft or approval. Each exact excerpt was replayed against the original-derived text and the relevant PDF pages were visually read.','counting':'Whitespace-delimited words; repeated placements multiply word counts. IDs and percentages count as one token when unspaced.','prospective_new_quote_placements':plans,'new_quote_words_by_paper':dict(totals),'prior_frozen_primary_allocation_unchanged':{'Kersten1982':23,'Sparnins1975':6},'reused_GalB_E6_record_ceiling':dict(oldtot),'remaining_sources':{'Pmd2001':'Actual Table 3 homology rows; no narrative quotation needed for inferred assignment.','LigJ2018data':'Actual dataset attributes may support limited numerical statements; conflicting preparation metadata prevents unqualified construct reuse. No narrative quote allocated yet.','ProH1985':'No new precise construct/mechanism expansion proposed from the bounded abstract.','GalB2011':'Table 1 length discrepancy is a real structured cell; no added quote.','GalB2016/E6PmdE2016':'Reuse only selected existing evidence; preserve whole-paper ceiling above. No additional invented quote.'},'qualifier_plan':{'LigJ2000':'Actual Table 1 pETJ vector/insert cells plus Table 2 title identifies E. coli BL21(DE3)/pETJ, and purification rows identify final fraction. Substrate-mixture quote adds the unsupported-by-table preparation distinction.','ProA1990':'Actual Table I final IEF purification series supports a narrow native-purified preparation qualifier; historical species/phthalate conditions remain in precisely cited source context, without a fictitious modern NGJ1 genotype.','ProA-Pi1990':'Dialyzed-enzyme quotation repeated on all 10 proposed activity endpoints; Table II supports measured response. Salt delivery, phosphate depletion and concentration limits stay in scoped descriptions.','ProHA1983':'Actual Table I/II/IV captions/rows identify separate native fraction quantities or combined assay; storage damage and prior inhibitor treatment are retained in endpoint descriptions, with exact result quotes. No homogeneous/recombinant identity is claimed.'},'representation_rule':'Narrative, even XML CDATA, is never a source_assertion. Actual numerical rows/figure axes are structured observations; their narrative interpretation must remain separate. All final edge evidence and qualifier descriptions require independent source-local review.'})
+# All structured table rows have a disposition, including conditional negative metal rows.
+rows=[]
+for ti,t in enumerate(json.loads((R/'projections/visual-table-transcriptions.json').read_text())):
+ for ri,row in enumerate(t['rows']):
+  category='supporting_context';reason='Retain actual measured values with source preparation; not a new unqualified formal-route assertion.'
+  if t['source']=='ProA1990' and t['source_locator']=='p331 TableII':category='proposed_record';reason='Direct alternate substrate/metal kinetic support with optical notation, not absolute stereochemistry.'
+  if t['source']=='ProA-Pi1990' and t['source_locator']=='p336 TableII':category='proposed_record';reason='Direct condition-specific activation; retain high-dose decline and delivery/speciation uncertainty.'
+  if t['source']=='ProHA1983' and t['source_locator']=='p571 TableII':
+   category='conflict' if row[0]=='CuSO2' else 'proposed_record' if row[0]in ['MgCl2','MnCl2','CoCl2','NiCl2'] else 'supporting_context'
+   reason='Combined native fractions and LDH/MDH readouts. Baseline-relative low/no response stays conditional; CuSO2 is preserved as printed without corrected-salt inference.'
+  if t['source']=='ProHA1983' and t['source_locator']=='p573 TableV':category='conflict';reason='Preserve historical gallate-product spectral conflict; this does not identify isolated PDC or override distinct preparations.'
+  if t['source']=='Pmd2001':category='proposed_record';reason='Explicit inferred homology assignment only, no direct downstream catalytic assay.'
+  rows.append({'table_index':ti,'row_index':ri,'source':t['source'],'source_locator':t['source_locator'],'row_key':row[0],'category':category,'reason':reason})
+write('structured-cell-disposition-ledger.json',{'projection':'projections/visual-table-transcriptions.json','projection_sha256':sha(R/'projections/visual-table-transcriptions.json'),'rows':rows})
+print('quotations',dict(totals),'inherited ceilings',dict(oldtot),'table rows',len(rows),'selection',s['counts'])

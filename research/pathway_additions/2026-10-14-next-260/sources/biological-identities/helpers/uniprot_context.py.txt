@@ -1,0 +1,15 @@
+"""Compact exact issuing status, alias, taxon and gene context projections."""
+from pathlib import Path
+import json,hashlib
+B=Path(__file__).resolve().parents[1]
+profiles=json.loads((B/'projections/source-parser-probes.json').read_text())['profiles']
+entries=[]
+for row in profiles:
+    if row['kind']!='uniprot':continue
+    path=Path(row['original']['path']);data=path.read_bytes();assert hashlib.sha256(data).hexdigest()==row['original']['sha256'];d=json.loads(data)
+    record={'profile_id':row['profile_id'],'source':row['original'],'request_url':row['url'],'primary_accession':d['primaryAccession'],'secondary_accessions':d.get('secondaryAccessions',[]),'entry_type':d['entryType'],'inactive_reason':d.get('inactiveReason'),'entry_audit':d.get('entryAudit'),'organism':d.get('organism'),'genes':d.get('genes',[]),'native_protein_description':d.get('proteinDescription'),'protein_existence':d.get('proteinExistence'),'sequence_length':d.get('sequence',{}).get('length'),'sequence_sha256':hashlib.sha256(d['sequence']['value'].encode()).hexdigest() if 'sequence' in d else None,'selected_database_crossreferences':[x for x in d.get('uniProtKBCrossReferences',[]) if x['database'] in ['EMBL','RefSeq','KEGG','GeneID']],'parser_status':row['status'],'parser_terms':row['terms'],'scope':'Issuing identity/reference context. Reviewed entry status, protein existence and current annotations do not identify every historical preparation, exact recombinant insert or strain-specific gene.'}
+    entries.append(record)
+assert len({x['primary_accession'] for x in entries})==14
+assert sum(x['entry_type']=='Inactive' for x in entries)==1
+p=B/'projections/uniprot-reference-context.json';assert not p.exists();p.write_text(json.dumps({'profiles':entries,'active_unique_accessions':13,'inactive_unique_accessions':1,'warning':'UniProt xrefs are source assertions, not automatic authority approval for every linked GeneID or strain.'},indent=2)+'\n')
+print('13 active unique UniProt accessions and one inactive accession projected with exact original bindings.')

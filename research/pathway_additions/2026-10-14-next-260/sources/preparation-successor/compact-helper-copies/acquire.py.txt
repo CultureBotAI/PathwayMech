@@ -1,0 +1,16 @@
+from pathlib import Path
+import urllib.request,urllib.error,hashlib,json,datetime,sys,concurrent.futures
+R=Path('/private/tmp/pathwaymech-next-260-preparation-successor')
+def get(job):
+ name,url=job;p=R/'originals'/name;assert not p.exists(),str(p)
+ row={'url':url,'path':str(p),'attempt_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ try:
+  request=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; pathway source research)'})
+  with urllib.request.urlopen(request,timeout=45) as r:data=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('content-type'))
+ except urllib.error.HTTPError as e:data=e.read();row.update(status=e.code,final_url=e.url,error=str(e),content_type=e.headers.get('content-type'))
+ except Exception as e:row.update(error=repr(e));return row
+ p.write_bytes(data);row.update(bytes=len(data),sha256=hashlib.sha256(data).hexdigest());return row
+if __name__=='__main__':
+ jobs=json.loads(Path(sys.argv[1]).read_text());receipt=R/sys.argv[2];assert not receipt.exists()
+ with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:rows=list(pool.map(get,jobs))
+ receipt.write_text(json.dumps(rows,indent=2)+'\n');print(json.dumps(rows,indent=2))

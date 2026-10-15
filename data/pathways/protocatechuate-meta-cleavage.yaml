@@ -230,15 +230,15 @@ reactions:
 - id: RHEA:28932
   label: (1E)-4-oxobut-1-ene-1,2,4-tricarboxylate => 4-carboxy-2-hydroxy-cis,cis-muconate
   category: molecular_activity
-  direction: reversible
+  direction: left_to_right
 - id: RHEA:17403
   label: 4-carboxy-2-hydroxy-cis,cis-muconate + H2O => 2-hydroxy-4-oxobutane-1,2,4-tricarboxylate
   category: molecular_activity
-  direction: reversible
+  direction: right_to_left
 - id: RHEA:28936
   label: 2-hydroxy-4-oxobutane-1,2,4-tricarboxylate => oxaloacetate + pyruvate
   category: molecular_activity
-  direction: reversible
+  direction: left_to_right
 - id: RHEA:15642
   label: oxaloacetate + H(+) => pyruvate + CO2
   category: molecular_activity
@@ -508,10 +508,11 @@ mechanistic_edges:
   subject: RHEA:28932
   predicate: part_of
   object: MetaCyc:P184-PWY
-  description: Member of the complete eight-step source-defined pathway. Material edges use the pathway-selected
-    forward conversion. Native reversible metadata is retained alongside the selected forward Rhea equation
-    identity. Native spontaneous=true permits uncatalyzed conversion without asserting its physiological
-    rate or excluding enzyme acceleration.
+  description: Member of the complete eight-step source-defined pathway. Material edges retain the
+    pathway-selected conversion. MetaCyc RXN-9983 separately asserts REVERSIBLE;
+    RHEA:28932 direction is left_to_right relative to master RHEA:28931. Native
+    spontaneous=true permits uncatalyzed conversion without asserting its
+    physiological rate or excluding enzyme acceleration.
   evidence:
   - reference_id: MetaCyc:P184-PWY
     source_assertion: The native pathway explicitly lists RXN-9983 and selects L2R layout flux.
@@ -552,9 +553,11 @@ mechanistic_edges:
   subject: RHEA:17403
   predicate: part_of
   object: MetaCyc:P184-PWY
-  description: Member of the complete eight-step source-defined pathway. Material edges use the pathway-selected
-    forward conversion. The selected hydration runs opposite to the native reaction object written as
-    dehydration. Native reversible metadata is retained alongside the selected forward Rhea equation identity.
+  description: Member of the complete eight-step source-defined pathway. Material edges retain
+    hydration, opposite to the native reaction object written as dehydration.
+    MetaCyc RXN-2463 separately asserts REVERSIBLE. RHEA:17403 is right_to_left
+    relative to master RHEA:17401 (CHA = CHM + water); its displayed equation and
+    material edges still run CHM + water to CHA.
   evidence:
   - reference_id: MetaCyc:P184-PWY
     source_assertion: The native pathway explicitly lists RXN-2463 and selects R2L layout flux.
@@ -611,9 +614,10 @@ mechanistic_edges:
   subject: RHEA:28936
   predicate: part_of
   object: MetaCyc:P184-PWY
-  description: Member of the complete eight-step source-defined pathway. Material edges use the pathway-selected
-    forward conversion. Native reversible metadata is retained alongside the selected forward Rhea equation
-    identity.
+  description: Member of the complete eight-step source-defined pathway. Material edges retain
+    pathway-selected CHA cleavage to pyruvate and oxaloacetate. MetaCyc RXN-2464
+    separately asserts REVERSIBLE; RHEA:28936 direction is left_to_right relative to
+    master RHEA:28935.
   evidence:
   - reference_id: MetaCyc:P184-PWY
     source_assertion: The native pathway explicitly lists RXN-2464 and selects L2R layout flux.

@@ -1,0 +1,16 @@
+from pathlib import Path
+import hashlib,json,sqlite3,datetime
+from rdkit import Chem
+from rdkit.Chem import rdMolDescriptors
+ROOT=Path('/private/tmp/pathwaymech-next-260-participant-authorities');OUT=ROOT/'retained/solvent-control-check.json';assert not OUT.exists()
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+db=sqlite3.connect('file:/private/tmp/pathwaymech-curation-authorities/chebi.db?mode=ro',uri=True)
+rows=[]
+for cid in ['16236','15347']:
+ p=ROOT/'originals'/('CHEBI-'+cid+'.json');j=json.loads(p.read_text());s=j['default_structure'];m=Chem.MolFromSmiles(s['smiles']);a=Chem.MolFromInchi(s['standard_inchi'])
+ fields={p:o or v for p,o,v in db.execute('select predicate,object,value from statements where subject=?',('CHEBI:'+cid,)) if p in ['rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string']}
+ checks={'exact_id':j['chebi_accession']=='CHEBI:'+cid,'pinned_label':fields['rdfs:label']==j['ascii_name'],'pinned_full_inchi':fields['chemrof:inchi_string']==s['standard_inchi'],'pinned_key':fields['chemrof:inchi_key_string']==s['standard_inchi_key'],'pinned_formula':fields['chemrof:generalized_empirical_formula']==j['chemical_data']['formula'],'pinned_charge':int(fields['chemrof:charge'])==j['chemical_data']['charge'],'smiles_key':Chem.MolToInchiKey(m)==s['standard_inchi_key'],'inchi_key':Chem.MolToInchiKey(a)==s['standard_inchi_key'],'smiles_charge':Chem.GetFormalCharge(m)==j['chemical_data']['charge'],'inchi_charge':Chem.GetFormalCharge(a)==j['chemical_data']['charge'],'formula_from_smiles':rdMolDescriptors.CalcMolFormula(m)==j['chemical_data']['formula']}
+ rows.append({'id':j['chebi_accession'],'label':j['ascii_name'],'path':str(p),'sha256':sha(p),'chemical_data':j['chemical_data'],'structure':s,'pinned_fields':fields,'reconstructed_smiles':Chem.MolToSmiles(m),'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True),'checks':checks})
+prior=ROOT/'retained/additional-authority-check.json';out={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'author identity supplement, not independent review','pinned_database_hash_binding':{'proof_path':str(prior),'proof_sha256':sha(prior),'full_database_sha256':json.loads(prior.read_text())['pinned_database']['sha256']},'compounds':rows,'all_checks_pass':all(all(x['checks'].values()) for x in rows),'scope':'Exact neutral ethanol and acetone identities for the newly retained conditional solvent-control experiment; no activation or inhibition inference from identity alone.'}
+with OUT.open('x') as f:json.dump(out,f,indent=2);f.write('\n')
+print(json.dumps({'output':str(OUT),'all_checks_pass':out['all_checks_pass']}));assert out['all_checks_pass']

@@ -1,0 +1,23 @@
+"""Verify original selected PubChem property response against frozen full structure."""
+from pathlib import Path
+import datetime,hashlib,json,sys
+B=Path(__file__).resolve().parents[1]
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(name,obj):
+ p=B/'retained'/name;assert not p.exists();p.write_text(json.dumps(obj,indent=2,ensure_ascii=False)+'\n')
+p=B/'originals/PubChem-6098323-properties.json';original=Path('/private/tmp/pathwaymech-next-260-participant-authorities/originals/PubChem-6098323.json')
+url='https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/6098323/property/Title,IUPACName,MolecularFormula,InChIKey/JSON'
+prop=json.loads(p.read_text())['PropertyTable']['Properties'][0];full=json.loads(original.read_text())['PC_Compounds'][0]
+assert prop['CID']==full['id']['id']['cid']==6098323
+formula=[r['value']['sval'] for r in full['props'] if r['urn']['label']=='Molecular Formula'];key=[r['value']['sval'] for r in full['props'] if r['urn']['label']=='InChIKey'];preferred=[r['value']['sval'] for r in full['props'] if r['urn']['label']=='IUPAC Name' and r['urn'].get('name')=='Preferred']
+assert formula==[prop['MolecularFormula']] and key==[prop['InChIKey']] and preferred==[prop['IUPACName']]
+version='PubChem PUG REST CID 6098323 property snapshot retrieved 2026-10-15 UTC'
+sys.path[:0]=[str(B/'runtime/src'),str(B/'runtime/scripts')]
+from build_source_identifier_snapshot import source_terms
+terms=list(source_terms('pubchem-compound-property-json',p,url=url,version=version,sha256=sha(p)))
+assert len(terms)==1 and terms[0][0]=='PubChem:6098323' and terms[0][1]==prop['Title']
+entry=dict(key='meta260-pubchem-6098323',kind='pubchem-compound-property-json',path='meta260/PubChem-6098323-properties.json',url=url,version=version,license='PubChem data-source terms; public-release licensing deferred',sha256=sha(p))
+save('pubchem-6098323-property-verification.json',dict(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),role='Authority-integration author',source=dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size,url=url),frozen_full_structure=dict(path=str(original),sha256=sha(original)),cid_exact=True,formula_exact=True,inchikey_exact=True,preferred_iupac_exact=True,canonical_title=prop['Title'],parsed_term=terms[0],entry=entry,helper_sha256=sha(__file__),scope='Original property response, not synthesized JSON. Title is issuing canonical label; full-structure source and chemical dossier separately establish Li/K salt composition. No activity inference.'))
+save('supplemental-source-candidates.json',dict(role='Selected reagent candidate; add only after actual full record selection',new_entries=[dict(identifiers=['PubChem:6098323'],entry=entry,cache_original=dict(path=str(p),sha256=sha(p),bytes=p.stat().st_size),scope='Primary named Li/K acetyl phosphate delivery identity; exact 1:1:1 stoichiometry. Not free acetyl-phosphate-only endpoint.')]))
+save('pubchem-6098323-property-acquisition.json',dict(url=url,observed_attempts=[dict(attempt=1,sandbox='default',tool_exit_code=6,tool_wall_time_seconds=0.045427747,error='Could not resolve host: pubchem.ncbi.nlm.nih.gov',headers_path=str(B/'retained/pubchem-6098323-properties-attempt-1.headers'),headers_sha256=sha(B/'retained/pubchem-6098323-properties-attempt-1.headers')),dict(attempt=2,sandbox='approved network escalation',tool_exit_code=0,tool_wall_time_seconds=0.550656379,response_bytes=p.stat().st_size,response_sha256=sha(p),headers_path=str(B/'retained/pubchem-6098323-properties-attempt-2.headers'),headers_sha256=sha(B/'retained/pubchem-6098323-properties-attempt-2.headers'))],receipt_note='Tool exit codes and wall times transcribed from actual execution results. Headers and successful body are original files. No fictitious per-attempt start timestamp or log is asserted.'))
+print(json.dumps(dict(status='exact_original_property_verified',identifier='PubChem:6098323',label=prop['Title'],sha256=sha(p))))

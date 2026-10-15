@@ -1,0 +1,14 @@
+from pathlib import Path
+from lxml import html
+from urllib.parse import urljoin,urlencode
+import urllib.request,urllib.error,json,hashlib,datetime
+r=Path('/private/tmp/pathwaymech-next-260-preparation-successor');p=r/'originals/LigJ2018-strenda.html';t=html.parse(str(p));f=t.xpath('//form[@id="j_idt76"]')[0]
+fields={x.get('name'):x.get('value','') for x in f.xpath('.//input[@name]')};button=f.xpath('.//button[@title="Export XML"]')[0];fields[button.get('name')]=button.get('name');url=urljoin('https://beilstein-strenda-db.org',f.get('action'));out=r/'originals/LigJ2018-strenda-export.response';assert not out.exists();receipt=r/'acquisition-strenda-export.json';assert not receipt.exists()
+row={'operation':'Submit observed public Export XML form only; no login or data mutation','source_html_sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'form_id':f.get('id'),'button_name':button.get('name'),'requested_origin':'https://beilstein-strenda-db.org/strenda/public/doiQuery.xhtml','attempt_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+try:
+ req=urllib.request.Request(url,data=urlencode(fields).encode(),headers={'User-Agent':'Mozilla/5.0','Content-Type':'application/x-www-form-urlencoded','Referer':'https://beilstein-strenda-db.org/strenda/public/doiQuery.xhtml?doi=10.22011/strenda_db.SZNKTZ'})
+ with urllib.request.urlopen(req,timeout=45) as response:data=response.read();row.update(status=response.status,content_type=response.headers.get('content-type'),content_disposition=response.headers.get('content-disposition'))
+except urllib.error.HTTPError as e:data=e.read();row.update(status=e.code,error=str(e),content_type=e.headers.get('content-type'))
+except Exception as e:data=None;row['error']=repr(e)
+if data is not None:out.write_bytes(data);row.update(path=str(out),bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
+receipt.write_text(json.dumps(row,indent=2)+'\n');print(json.dumps(row,indent=2))

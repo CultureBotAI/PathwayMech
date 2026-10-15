@@ -1,0 +1,28 @@
+from pathlib import Path
+import hashlib,json,shutil
+R=Path('/private/tmp/pathwaymech-next-260-native');P=R/'projections';C=R/'compact';C.mkdir(exist_ok=False);(C/'helpers').mkdir()
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def save(p,x):p.write_text(json.dumps(x,indent=2,ensure_ascii=False)+'\n')
+def binding(p):return {'path':str(p.relative_to(R)),'bytes':p.stat().st_size,'sha256':sha(p)}
+# Compact ledger retains every slot locator/hash/disposition; raw text and large
+# inverse incidence projections remain in the external original-bound inventory.
+slots=json.loads((P/'native-slot-disposition-ledger.json').read_text())
+save(C/'native-slot-dispositions.json',[{k:s[k] for k in ['frame','object_type','slot','ordinal','source_locator','source_path','source_sha256','source_line','slot_serialization_sha256','disposition','reason']} for s in slots])
+def compact(x):
+ if isinstance(x,list):return [compact(v) for v in x]
+ if isinstance(x,dict):return {k:compact(v) for k,v in x.items() if k not in ('xml_projection','direct_text','text_content','xml','plain_text')}
+ return x
+for n in ['activity-preparation-dispositions.json','protein-dispositions.json','regulator-dispositions.json','source-fact-dispositions.json','reference-reading-and-disposition-ledger.json','corrections-and-limits.json','frozen-context-bindings.json','native-object-inventory.json','inventory-summary.json']:
+ save(C/n,compact(json.loads((P/n).read_text())))
+b=json.loads((P/'unexpanded-boundary-dispositions.json').read_text())
+save(C/'boundary-disposition-summary.json',[{k:v for k,v in x.items() if k not in ('target_frames','locators')} for x in b])
+for f in (R/'helpers').glob('*.py'):shutil.copyfile(f,C/'helpers'/(f.name+'.txt'))
+shutil.copyfile(R/'HANDOFF.md',C/'HANDOFF.md');shutil.copyfile(R/'verification.json',C/'verification.json')
+save(R/'external-originals-manifest.json',{'scope':'All exact original XML response copies in this external package. Failed DNS attempts have no response body and are recorded separately in acquisition receipts.','files':[binding(p) for p in sorted((R/'originals').rglob('*')) if p.is_file()]})
+retain=[p for p in C.rglob('*') if p.is_file()]+[R/'retained/selected-native-manifest.json',R/'external-originals-manifest.json',R/'acquisition-sandbox.json',R/'acquisition-public-1.json',R/'acquisition-public-2.json']
+save(R/'compact-retention-manifest.json',{'scope':'Candidate compact retention only; root decides any maintained retention. Raw originals and full native text/XML projections stay external.','file_count':len(retain),'total_bytes':sum(p.stat().st_size for p in retain),'files':[binding(p) for p in sorted(retain)]})
+allfiles=[p for p in R.rglob('*') if p.is_file() and p.name!='artifact-manifest.json'];assert not (R/'artifact-manifest.json').exists()
+save(R/'artifact-manifest.json',{'scope':'Complete frozen external author package, excluding this manifest itself; not a repository retention allowlist.','file_count':len(allfiles),'total_bytes':sum(p.stat().st_size for p in allfiles),'files':[binding(p) for p in sorted(allfiles)]})
+for f in ['HANDOFF.md','verification.json','external-originals-manifest.json','compact-retention-manifest.json','artifact-manifest.json']:
+ p=R/f;print(f,p.stat().st_size,sha(p))
+print('complete external',len(allfiles),sum(p.stat().st_size for p in allfiles),'compact',len(retain),sum(p.stat().st_size for p in retain))

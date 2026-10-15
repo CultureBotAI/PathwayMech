@@ -1,0 +1,23 @@
+from pathlib import Path
+import json,gzip,re,hashlib,xml.etree.ElementTree as E
+R=Path('/private/tmp/pathwaymech-next-260-primary-draft');p=Path('/private/tmp/pathwaymech-next-260-chemistry-root/originals/rhea.rdf.gz');assert hashlib.sha256(p.read_bytes()).hexdigest()=='8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf'
+s=gzip.decompress(p.read_bytes()).decode();uri='http://rdf.rhea-db.org/';ns={'rh':uri,'rdfs':'http://www.w3.org/2000/01/rdf-schema#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'};wrapper='<root '+' '.join(f'xmlns:{k}="{v}"'for k,v in ns.items())+'>';index={}
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">',s):index.setdefault(m[1],[]).append(m.start())
+want={uri+str(i)for i in range(18169,18173)};nodes={}
+while want:
+ u=want.pop()
+ if u in nodes:continue
+ assert u in index,u
+ props={}
+ for start in index[u]:
+  end=s.index('</rdf:Description>',start)+len('</rdf:Description>');el=E.fromstring(wrapper+s[start:end]+'</root>')[0]
+  for c in el:
+   k=c.tag.split('}',1)[1];v=c.get('{'+ns['rdf']+'}resource')or c.text
+   if v not in props.setdefault(k,[]):props[k].append(v)
+   if (k in ['side','substrates','products','substratesOrProducts','contains','compound','reactivePart','chebi','underlyingChebi','directionalReaction','bidirectionalReaction']or re.fullmatch('contains[0-9]+',k))and v and v.startswith(uri):want.add(v)
+ nodes[u]=props
+comp={u:x for u,x in nodes.items()if 'accession'in x and any(v.startswith('CHEBI:')for v in x['accession'])}
+assert {v for x in comp.values()for v in x['accession']}=={'CHEBI:17742','CHEBI:15361','CHEBI:36655'}
+for x in comp.values():assert 'formula'in x and 'charge'in x
+out={'scope':'Complete issuing RDF closure for generic HG alternate reaction, not source assertion of protein catalysis or absolute stereochemistry.','source':{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()},'selected':'RHEA:18172','selected_label':nodes[uri+'18172']['equation'][0],'selected_direction':'reversible','nodes':nodes,'compounds':comp,'checks':{'exact_compound_set':True,'no_R_or_S_substrate_selected':True,'chemical_balance_reuses_frozen_companion_proof':'/private/tmp/pathwaymech-next-260-participant-authorities/retained/salt-and-alternative-balance-check.json'}}
+(R/'projections/HG-rhea-closure.json').write_text(json.dumps(out,indent=2)+'\n');print(out['selected'],out['selected_label'],'nodes',len(nodes))

@@ -1,0 +1,43 @@
+"""One ordinary public DSpace content request; no cookies, credentials or retries."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import urllib.error
+import urllib.request
+
+ROOT = Path(__file__).resolve().parents[1]
+CONTEXT = Path('/private/tmp/pathwaymech-next-260-ligj-institutional-root')
+manifest = json.loads((CONTEXT / 'manifest.json').read_text())
+bindings = []
+for row in manifest['files']:
+    path = CONTEXT / row['path']
+    data = path.read_bytes()
+    digest = hashlib.sha256(data).hexdigest()
+    assert digest == row['sha256'] and len(data) == row['bytes'], row['path']
+    bindings.append({'path': str(path), 'sha256': digest, 'bytes': len(data)})
+manifest_bytes = (CONTEXT / 'manifest.json').read_bytes()
+bindings.append({'path': str(CONTEXT / 'manifest.json'), 'sha256': hashlib.sha256(manifest_bytes).hexdigest(), 'bytes': len(manifest_bytes)})
+(ROOT / 'receipts/context-bindings.json').write_text(json.dumps({'files': bindings, 'scope': 'Hash verification only; original headers and challenge body remain in frozen external root dossier.'}, indent=2) + '\n')
+
+url = 'https://oaktrust.library.tamu.edu/server/api/core/bitstreams/4debd50c-d6c5-49b7-b712-d21ea08e3971/content'
+receipt = {'url': url, 'started_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'client': 'Python urllib.request.urlopen default user agent; no authentication or cookies', 'request_count': 1, 'redirects': 'urllib ordinary default redirects'}
+safe_headers = {'content-type', 'content-length', 'content-disposition', 'last-modified', 'etag', 'cf-mitigated', 'location'}
+try:
+    with urllib.request.urlopen(url, timeout=60) as response:
+        data = response.read()
+        receipt.update(status=response.status, final_url=response.url, headers={k: v for k, v in response.headers.items() if k.lower() in safe_headers})
+except urllib.error.HTTPError as error:
+    data = error.read()
+    receipt.update(status=error.code, final_url=error.url, error=str(error), headers={k: v for k, v in error.headers.items() if k.lower() in safe_headers})
+except Exception as error:
+    data = None
+    receipt.update(status=None, error=repr(error))
+if data is not None:
+    is_pdf = data.startswith(b'%PDF-')
+    destination = ROOT / 'originals' / ('Hogancamp2019.pdf' if is_pdf else 'public-content.response')
+    destination.write_bytes(data)
+    receipt.update(path=str(destination.relative_to(ROOT)), bytes=len(data), sha256=hashlib.sha256(data).hexdigest(), is_pdf=is_pdf)
+receipt['finished_utc'] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+(ROOT / 'receipts/public-content.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps(receipt, indent=2))

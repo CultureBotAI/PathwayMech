@@ -1,0 +1,12 @@
+from pathlib import Path
+import datetime,hashlib,json
+R=Path('/private/tmp/pathwaymech-next-260-chemistry-root');out=R/'retained/material-facts.json';assert not out.exists();c=json.loads((R/'retained/chemical-equation-check-v2.json').read_text());mapping={'RXN-11861':'MetaCyc:RXN-11861','RXN-2462':'RHEA:10645','RXN-9983':'RHEA:28932','RXN-2463':'RHEA:17403','RXN-2464':'RHEA:28936'};facts=[]
+for reaction in c['reactions']:
+ frame=reaction['frame'];left,right=('left','right') if reaction['selected_traversal']=='L2R' else ('right','left')
+ for native_side,selected,role in [(left,reaction['selected_inputs'],'input'),(right,reaction['selected_outputs'],'output')]:
+  for item in selected:
+   f=item['native_frame'];n=item['coefficient'];assertion=f"The full {frame} Reaction object lists {f} on its {native_side} side with coefficient {n} ({'explicit coefficient slot' if item['coefficient_explicit'] else 'one native occurrence; no non-unit coefficient slot'})."
+   assert len(assertion)<=400
+   facts.append({'native_reaction':'MetaCyc:'+frame,'chosen_directional_reaction':mapping[frame],'role_in_selected_pathway':role,'native_compound':'MetaCyc:'+f,'exact_chebi':item['id'],'coefficient':n,'native_direction':reaction['source_direction'],'selected_native_traversal':reaction['selected_traversal'],'source_evidence':{'reference_id':'MetaCyc:'+frame,'source_assertion':assertion,'source_locator':f"/ptools-xml/Reaction[@frameid='{frame}']/{native_side}[Compound/@frameid='{f}']"},'source_sha256':reaction['native_sha256'],'mapping_evidence':'chemical-equation-check-v2.json; reaction-equivalence.json (exact Rhea matches for four members)'})
+assert len(facts)==17
+out.write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Formal native material facts with source-accurate locators. These are authoring inputs, not a complete draft, mechanistic evidence for enzyme specificity, or independent scientific approval. Selected direction does not imply irreversible chemistry.','facts':facts,'verbatim_paper_words':0},indent=2)+'\n');print('17 exact native material facts with <=400-character structured statements.')

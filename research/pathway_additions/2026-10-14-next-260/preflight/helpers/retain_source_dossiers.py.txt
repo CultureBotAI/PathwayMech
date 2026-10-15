@@ -1,0 +1,150 @@
+from pathlib import Path
+import datetime
+import gzip
+import hashlib
+import json
+
+WORKTREE = Path('/private/tmp/pathwaymech-next-260-20261014')
+DEST = WORKTREE / 'research/pathway_additions/2026-10-14-next-260'
+CI = Path('/private/tmp/pathwaymech-next-260-ci')
+rows = []
+pending = []
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def retain(source, relative, expected=None):
+    source = Path(source)
+    relative = Path(relative)
+    assert not relative.is_absolute() and '..' not in relative.parts
+    data = source.read_bytes()
+    if expected:
+        assert sha(data) == expected, source
+    encoding = 'identity'
+    # Preserve whitespace-bearing originals exactly; do not trim historic inputs.
+    if any(line.endswith((b' ', b'\t')) for line in data.splitlines()):
+        encoded = gzip.compress(data, mtime=0)
+        relative = Path(str(relative) + '.gz')
+        encoding = 'gzip'
+        assert gzip.decompress(encoded) == data
+    else:
+        encoded = data
+    target = DEST / relative
+    assert not target.exists(), target
+    assert all(existing != target for existing, _ in pending), target
+    pending.append((target, encoded))
+    rows.append({
+        'source_path': str(source), 'source_sha256': sha(data),
+        'source_bytes': len(data), 'retained_path': str(relative),
+        'retained_sha256': sha(encoded), 'retained_bytes': len(encoded),
+        'encoding': encoding,
+    })
+
+
+def package(name):
+    return Path('/private/tmp/pathwaymech-next-260-' + name)
+
+
+def verify_package(root):
+    manifest = root / 'artifact-manifest.json'
+    obj = json.loads(manifest.read_text())
+    for row in obj['files']:
+        data = (root / row['path']).read_bytes()
+        assert len(data) == row['bytes'] and sha(data) == row['sha256'], row['path']
+    return obj
+
+
+assert not DEST.exists(), DEST
+dedup = json.loads((CI / 'dedup-disposition.json').read_text())
+assert dedup['base'] == 'b2590dfd2385c83fe4f028ecd5309a0407739838'
+assert dedup['semantic_scan']['exact_candidate_or_complete_formal_matches'] == 0
+
+for name in ['primary', 'chemistry-root']:
+    root = package(name)
+    manifest = verify_package(root)
+    for item in manifest['files']:
+        rel = item['path']
+        selected = (
+            rel == 'HANDOFF.md'
+            or rel.startswith('author/')
+            or rel.startswith('retained/')
+            or rel.startswith('helpers/')
+            or rel in ['external-originals-manifest.json', 'verification.json',
+                       'reuse-bindings.json', 'ocr-bindings.json']
+            or rel.startswith('acquisition-')
+            or rel in ['projections/source-acquisition-decisive-manifest.json',
+                       'projections/source-original-bindings.json']
+        )
+        if selected:
+            target = rel + '.txt' if rel.startswith('helpers/') else rel
+            retain(root / rel, Path('sources') / name / target, item['sha256'])
+    retain(root / 'artifact-manifest.json', Path('sources') / name / 'external-artifact-manifest.json')
+
+for name in ['native', 'preparation-successor']:
+    root = package(name)
+    verify_package(root)
+    selection_path = root / 'compact-retention-manifest.json'
+    selection = json.loads(selection_path.read_text())
+    for item in selection['files']:
+        rel = item['path']
+        target = rel.removeprefix('compact/')
+        retain(root / rel, Path('sources') / name / target, item['sha256'])
+    retain(selection_path, Path('sources') / name / 'source-retention-selection.json')
+    retain(root / 'artifact-manifest.json', Path('sources') / name / 'external-artifact-manifest.json')
+
+for name in ['biological-identities', 'ligj-thesis']:
+    root = package(name)
+    verify_package(root)
+    selection_path = root / 'compact-retention-manifest.json'
+    selection = json.loads(selection_path.read_text())
+    for item in selection['files']:
+        retain(item['copy_from'], Path('sources') / name / item['retained_name'], item['sha256'])
+    retain(selection_path, Path('sources') / name / 'source-retention-selection.json')
+    retain(root / 'artifact-manifest.json', Path('sources') / name / 'external-artifact-manifest.json')
+
+root = package('participant-authorities')
+verify_package(root)
+selection_path = root / 'compact-retention-selection.json'
+for item in json.loads(selection_path.read_text())['files']:
+    retain(item['source_path'], Path('sources/participant-authorities') / item['retained_relative_path'], item['sha256'])
+retain(selection_path, 'sources/participant-authorities/source-retention-selection.json')
+retain(root / 'artifact-manifest.json', 'sources/participant-authorities/external-artifact-manifest.json')
+
+root = package('existing-record-impact')
+for item in verify_package(root)['files']:
+    if item['path'].endswith('.py'):
+        continue
+    retain(root / item['path'], Path('sources/existing-record-impact') / item['path'], item['sha256'])
+retain(root / 'artifact-manifest.json', 'sources/existing-record-impact/external-artifact-manifest.json')
+
+for name in ['dedup-patterns.txt', 'dedup-search.json', 'dedup-semantic-record-scan.json',
+             'dedup-disposition.json', 'worktree-creation.json']:
+    retain(CI / name, Path('preflight') / name)
+for name in ['biological-package-root-verification.json',
+             'preparation-package-root-verification.json',
+             'chemical-package-root-verification.json']:
+    retain(Path('/private/tmp/pathwaymech-next-260-root-planning') / name, Path('preflight') / name)
+retain(Path(__file__), 'preflight/helpers/retain_source_dossiers.py.txt')
+
+for target, encoded in pending:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(encoded)
+    assert target.read_bytes() == encoded
+
+manifest = {
+    'created_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'role': 'Root-selected exact compact source retention; not record acceptance or independent review.',
+    'scope': 'Raw papers, source downloads, page images, full article text, sequence copies, SQL databases and runtimes remain external. Selected evidence projections, complete claim dispositions, hashes and inert helpers are retained. Gzip entries are lossless original bytes, never whitespace-normalized.',
+    'file_count': len(rows),
+    'retained_bytes': sum(row['retained_bytes'] for row in rows),
+    'files': rows,
+}
+out = DEST / 'source-retention-manifest.json'
+out.write_text(json.dumps(manifest, indent=2) + '\n')
+receipt = {'manifest': str(out), 'manifest_sha256': sha(out.read_bytes()),
+           'file_count': len(rows), 'retained_bytes': manifest['retained_bytes'],
+           'gzip_files': [row['retained_path'] for row in rows if row['encoding'] == 'gzip']}
+(CI / 'source-retention-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+print(json.dumps(receipt, indent=2))

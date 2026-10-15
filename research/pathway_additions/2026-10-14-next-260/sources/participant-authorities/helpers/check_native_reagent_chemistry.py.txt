@@ -1,0 +1,174 @@
+"""Source-author reconstruction, with expected native-field conflicts retained."""
+from pathlib import Path
+import collections, datetime, hashlib, json, re, sqlite3, xml.etree.ElementTree as ET
+from rdkit import Chem, rdBase
+from rdkit.Chem import rdMolDescriptors
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+NATIVE = Path('/private/tmp/pathwaymech-next-260-native')
+FORMAL = Path('/private/tmp/pathwaymech-next-260-chemistry-root/retained/chemical-equation-check-v2.json')
+OUT = ROOT / 'retained/native-reagent-chemistry-check.json'
+assert not OUT.exists()
+
+def sha(path):
+    h = hashlib.sha256()
+    with path.open('rb') as stream:
+        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''): h.update(block)
+    return h.hexdigest()
+
+def describe(m):
+    if m is None: return {'parse_error': True}
+    Chem.AssignStereochemistry(m, cleanIt=True, force=True)
+    unstereo = Chem.Mol(m); Chem.RemoveStereochemistry(unstereo)
+    return {'smiles': Chem.MolToSmiles(m, isomericSmiles=True),
+            'connectivity_smiles': Chem.MolToSmiles(unstereo, isomericSmiles=False),
+            'inchi': Chem.MolToInchi(m), 'key': Chem.MolToInchiKey(m),
+            'formula': rdMolDescriptors.CalcMolFormula(m), 'charge': Chem.GetFormalCharge(m),
+            'atoms': dict(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms())),
+            'atom_formal_charges': sorted((a.GetSymbol(), a.GetFormalCharge()) for a in m.GetAtoms() if a.GetFormalCharge()),
+            'chiral_centers': Chem.FindMolChiralCenters(m, includeUnassigned=True)}
+
+def from_cml(e):
+    atoms = e.findall('./atomArray/atom'); rw = Chem.RWMol(); amap = {}; changes = []
+    conf = Chem.Conformer(len(atoms)); conf.Set3D(False)
+    for a in atoms:
+        raw = a.attrib['elementType']; symbol = raw[0].upper() + raw[1:].lower()
+        if symbol != raw: changes.append({'atom': a.attrib['id'], 'original_elementType': raw, 'interpreted_symbol': symbol})
+        at = Chem.Atom(symbol); at.SetFormalCharge(int(a.get('formalCharge', '0')))
+        idx = rw.AddAtom(at); amap[a.attrib['id']] = idx
+        conf.SetAtomPosition(idx, (float(a.get('x2', '0')), float(a.get('y2', '0')), 0.))
+    for b in e.findall('./bondArray/bond'):
+        a, z = b.get('atomRefs').split()
+        rw.AddBond(amap[a], amap[z], {1: Chem.BondType.SINGLE, 2: Chem.BondType.DOUBLE, 3: Chem.BondType.TRIPLE}[int(b.get('order'))])
+    m = rw.GetMol(); Chem.SanitizeMol(m); m.AddConformer(conf); Chem.DetectBondStereochemistry(m)
+    return m, changes
+
+sql = Path('/private/tmp/pathwaymech-curation-authorities/chebi.db')
+digest = sha(sql)
+assert digest == '26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+db = sqlite3.connect('file:' + str(sql) + '?mode=ro', uri=True)
+preds = ('rdfs:label', 'chemrof:inchi_string', 'chemrof:inchi_key_string', 'chemrof:charge', 'chemrof:generalized_empirical_formula', 'chemrof:smiles_string')
+versions = db.execute("select subject,predicate,object,value from statements where predicate in ('owl:versionIRI','owl:versionInfo')").fetchall()
+assert ('obo:chebi.owl', 'owl:versionInfo', None, '255') in versions
+
+authorities = {}
+for path in sorted((ROOT / 'originals').glob('CHEBI-*.json')):
+    j = json.loads(path.read_text()); cid = j['chebi_accession']; s = j.get('default_structure') or {}
+    rows = db.execute('select predicate,object,value from statements where subject=?', (cid,)).fetchall()
+    fields = {p: o or v for p, o, v in rows if p in preds}
+    reps = {'issuing_smiles': describe(Chem.MolFromSmiles(s['smiles'])), 'issuing_inchi': describe(Chem.MolFromInchi(s['standard_inchi']))} if s.get('smiles') and s.get('standard_inchi') else {}
+    checks = {'accession_matches_filename': cid == 'CHEBI:' + path.stem.split('-')[1],
+              'pinned_inchi_equal': fields.get('chemrof:inchi_string') == s.get('standard_inchi'),
+              'pinned_key_equal': fields.get('chemrof:inchi_key_string') == s.get('standard_inchi_key'),
+              'pinned_formula_equal': fields.get('chemrof:generalized_empirical_formula') == j['chemical_data'].get('formula'),
+              'pinned_charge_equal': str(fields.get('chemrof:charge')) == str(j['chemical_data'].get('charge')),
+              'smiles_reconstructed_key_equal': reps.get('issuing_smiles', {}).get('key') == s.get('standard_inchi_key'),
+              'inchi_reconstructed_key_equal': reps.get('issuing_inchi', {}).get('key') == s.get('standard_inchi_key')}
+    authorities[cid] = {'path': str(path), 'sha256': sha(path), 'label': j['ascii_name'], 'chemical_data': j['chemical_data'], 'structure': s,
+                        'pinned_fields': fields, 'pinned_synonyms': [{'predicate': p, 'value': v} for p,o,v in rows if 'Synonym' in p],
+                        'representations': reps, 'checks': checks}
+
+formal = json.loads(FORMAL.read_text())
+manifest_path = NATIVE / 'retained/selected-native-manifest.json'
+manifest = json.loads(manifest_path.read_text())
+inventory = []; native = {}; molecules = {}; mismatches = []
+sources = [row for row in manifest['objects'] if row['object_type'] == 'Compound']
+assert len(sources) == 32
+for row in sources + [{'frame': 'SULFATE', 'path': str(ROOT / 'originals/SULFATE.xml'), 'sha256': sha(ROOT / 'originals/SULFATE.xml')}]:
+    frame = row['frame']; path = Path(row['path']); assert sha(path) == row['sha256']
+    e = ET.parse(path).getroot().find('Compound'); assert e.get('frameid') == frame
+    ids = ['CHEBI:' + x.findtext('dblink-oid') for x in e.findall('dblink') if x.findtext('dblink-db') == 'CHEBI']
+    item = {'frame': frame, 'native_path': str(path), 'native_sha256': row['sha256'], 'native_label': e.findtext('common-name'), 'native_chebi_xrefs': ids}
+    if frame in formal['chemicals']:
+        prior = formal['chemicals'][frame]; assert row['sha256'] == prior['native_sha256']
+        item.update({'scope': 'Formal reaction participant; rely on already frozen root chemistry reconstruction', 'formal_proof_path': str(FORMAL), 'formal_proof_sha256': sha(FORMAL), 'formal_id': prior['id'], 'formal_checks_pass': all(prior['checks'].values())})
+        inventory.append(item); continue
+    item.update({'native_inchi': e.findtext('inchi'), 'native_key': (e.findtext('inchi-key') or '').removeprefix('InChIKey='),
+                 'native_systematic_names': [x.text for x in e.findall('systematic-name')], 'native_molecular_weight': e.findtext('molecular-weight'),
+                 'native_monoisotopic_mw': e.findtext('monoisotopic-mw'), 'native_smiles': e.findtext('./cml/molecule/string[@title="smiles"]'),
+                 'components': [{'frame': x.find('Compound').get('frameid'), 'coefficient': x.findtext('coefficient')} for x in e.findall('component')]})
+    reps = {}
+    if item['native_inchi']: reps['native_inchi'] = describe(Chem.MolFromInchi(item['native_inchi']))
+    cml = e.find('./cml/molecule')
+    if cml is not None:
+        m, changes = from_cml(cml); molecules[frame] = m; reps['native_full_cml'] = describe(m)
+        item['cml_symbol_case_interpretations'] = changes
+        item['cml_original_formula'] = cml.find('formula').get('concise') if cml.find('formula') is not None else None
+        item['cml_original_total_charge'] = cml.get('formalCharge')
+        item['cml_atom_stereo_annotations'] = [ET.tostring(x, encoding='unicode') for x in cml.iter() if 'parity' in x.tag.lower() or 'stereo' in x.tag.lower()]
+    smiles = item['native_smiles']
+    if smiles and '[R]' not in smiles: reps['native_smiles'] = describe(Chem.MolFromSmiles(smiles))
+    elif smiles: item['native_smiles_excluded_reason'] = 'Contains R placeholder and is a fragment, not a complete molecular structure.'
+    item['representations'] = reps
+    item['pinned_exact_native_key_matches'] = db.execute("select subject from statements where predicate='chemrof:inchi_key_string' and value=?", (item['native_key'],)).fetchall() if item['native_key'] else []
+    comparisons = {}
+    if ids and ids[0] in authorities:
+        auth = authorities[ids[0]]; target = auth['representations']['issuing_smiles']
+        comparisons = {'native_inchi_exact_issuing': item['native_inchi'] == auth['structure']['standard_inchi'],
+                       'native_key_exact_issuing': item['native_key'] == auth['structure']['standard_inchi_key']}
+        if 'native_full_cml' in reps:
+            comparisons.update({'cml_charge_equals_issuing': reps['native_full_cml']['charge'] == target['charge'],
+                                'cml_atoms_equal_issuing': reps['native_full_cml']['atoms'] == target['atoms'],
+                                'cml_connectivity_equals_issuing': reps['native_full_cml']['connectivity_smiles'] == target['connectivity_smiles'],
+                                'cml_stereochemical_key_equals_issuing': reps['native_full_cml']['key'] == target['key']})
+        if 'native_smiles' in reps:
+            comparisons.update({'native_smiles_charge_equals_issuing': reps['native_smiles']['charge'] == target['charge'],
+                                'native_smiles_key_equals_issuing': reps['native_smiles']['key'] == target['key']})
+    item['comparisons'] = comparisons
+    item['comparison_false_fields'] = [k for k, v in comparisons.items() if not v]
+    if item['comparison_false_fields']: mismatches.append({'frame': frame, 'false_fields': item['comparison_false_fields']})
+    native[frame] = item
+    if frame != 'SULFATE': inventory.append({'frame': frame, 'native_sha256': row['sha256'], 'scope': 'New direct native chemistry reconstruction in this proof'})
+    print(frame, item['comparison_false_fields'], flush=True)
+
+cu = molecules['CU+2']; sulfate = molecules['SULFATE']; salt = Chem.CombineMols(cu, sulfate)
+salt_rep = describe(salt); salt_auth = authorities['CHEBI:23414']['representations']['issuing_smiles']
+salt_proof = {'native_component_rows': native['CUSO4']['components'], 'reconstructed_salt': salt_rep,
+              'issuing_id': 'CHEBI:23414', 'issuing_structure': salt_auth,
+              'checks': {'exact_components_once_each': native['CUSO4']['components'] == [{'frame': 'SULFATE', 'coefficient': '1'}, {'frame': 'CU+2', 'coefficient': '1'}],
+                         'full_formula_equal': salt_rep['atoms'] == salt_auth['atoms'], 'charge_equal': salt_rep['charge'] == salt_auth['charge'],
+                         'smiles_equal': salt_rep['smiles'] == salt_auth['smiles'], 'key_equal': salt_rep['key'] == salt_auth['key']},
+              'scope': 'Exact anhydrous disconnected salt composition. This does not establish hydration or free-ion speciation in a particular assay.'}
+
+parent_tests = []
+for frame, cid, count in [('CPD-29', 'CHEBI:28420', 1), ('DITHIO-NITROBENZOATE', 'CHEBI:86228', 2)]:
+    m = Chem.Mol(molecules[frame]); changed = []
+    for atom in m.GetAtoms():
+        if atom.GetSymbol() == 'O' and atom.GetFormalCharge() == -1 and any(n.GetSymbol() == 'C' for n in atom.GetNeighbors()):
+            atom.SetFormalCharge(0); atom.SetNumExplicitHs(1); changed.append(atom.GetIdx())
+    Chem.SanitizeMol(m); r = describe(m); target = authorities[cid]['representations']['issuing_smiles']
+    parent_tests.append({'native_frame': frame, 'acid_comparator': cid, 'carboxyl_oxygen_protonation_sites': changed,
+                         'calculated_protonated_structure': r, 'changed_site_count_matches': len(changed) == count,
+                         'calculated_acid_key_matches': r['key'] == target['key'], 'calculated_acid_smiles_matches': r['smiles'] == target['smiles'],
+                         'interpretation': 'Calculated acid-base comparator only. Original native anion is not exactly the neutral issuing acid; preserve native identifier and charge.'})
+
+pub_path = ROOT / 'originals/PubChem-45479581.json'; pub = json.loads(pub_path.read_text())['PC_Compounds'][0]
+pub_fields = {(p['urn']['label'], p['urn'].get('name', '')): p['value'].get('sval') for p in pub['props']}
+pub_rep = describe(Chem.MolFromSmiles(pub_fields[('SMILES', 'Absolute')]))
+r_rep = native['CPD-11855']['representations']['native_inchi']; generic = native['CPD-187']['representations']['native_full_cml']
+hmg = {'pubchem_path': str(pub_path), 'pubchem_sha256': sha(pub_path), 'cid': pub['id']['id']['cid'],
+       'issuing_name': pub_fields[('IUPAC Name', 'Preferred')], 'issuing_inchi': pub_fields[('InChI', 'Standard')], 'issuing_key': pub_fields[('InChIKey', 'Standard')],
+       'issuing_absolute_smiles': pub_fields[('SMILES', 'Absolute')], 'issuing_formula': pub_fields[('Molecular Formula', '')], 'issuing_charge': pub['charge'],
+       'reconstructed_issuing': pub_rep,
+       'checks': {'native_R_full_inchi_exact': native['CPD-11855']['native_inchi'] == pub_fields[('InChI', 'Standard')],
+                  'native_R_key_exact': native['CPD-11855']['native_key'] == pub_rep['key'],
+                  'native_R_and_pubchem_charge_equal': r_rep['charge'] == pub['charge'],
+                  'R_vs_generic_same_connectivity': r_rep['connectivity_smiles'] == generic['connectivity_smiles'],
+                  'R_vs_generic_keys_distinct': r_rep['key'] != generic['key'],
+                  'native_R_cml_unassigned': any(x[1] == '?' for x in native['CPD-11855']['representations']['native_full_cml']['chiral_centers']),
+                  'issuing_R_chiral_center': any(x[1] == 'R' for x in pub_rep['chiral_centers'])},
+       'interpretation': 'R assignment is explicitly carried by native full InChI and confirmed by issuing PubChem stereochemical SMILES; native CML alone is unassigned. Generic HMG CHEBI:58276 remains distinct. This does not assign absolute configuration to CHA.'}
+
+result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'role': 'next260 chemical source author, not independent reviewer', 'rdkit_version': rdBase.rdkitVersion,
+          'pinned_sql': {'path': str(sql), 'sha256': digest, 'bytes': sql.stat().st_size, 'version_rows': versions},
+          'native_manifest': {'path': str(manifest_path), 'sha256': sha(manifest_path)},
+          'formal_chemistry_proof': {'path': str(FORMAL), 'sha256': sha(FORMAL), 'selected_count': 11},
+          'native_inventory': inventory, 'native_direct_reconstruction': native, 'issuing_and_pinned': authorities,
+          'raw_comparison_mismatches': mismatches, 'copper_sulfate_composition': salt_proof, 'neutral_acid_comparator_tests': parent_tests, 'hmg_stereochemistry': hmg,
+          'limitations': ['Standard InChI can normalize proton positions and disconnect metal bonds. Exact atom charge distribution and native full CML/SMILES are separately retained.',
+                          'Case normalization of invalid uppercase two-letter element types is explicit, checked against independent valid full InChI and issuing atomic identity; source bytes are unchanged.',
+                          'A same-connectivity comparison does not establish stereo identity. Unassigned CML centers are retained as unassigned.',
+                          'Native xrefs to neutral acid comparators do not establish identity of the native charged species.',
+                          'No chemical identity proves the biological effect or delivery species in any assay. Primary source preparation and experiment scope must be cited independently.']}
+with OUT.open('x') as stream: json.dump(result, stream, indent=2); stream.write('\n')
+print(json.dumps({'output': str(OUT), 'native_inventory': len(inventory), 'new_native_compounds': len(native), 'issuing_compounds': len(authorities), 'mismatches': mismatches, 'salt_checks': salt_proof['checks'], 'hmg_checks': hmg['checks'], 'parent_checks': [{k:v for k,v in x.items() if k.endswith('matches')} for x in parent_tests]}), flush=True)

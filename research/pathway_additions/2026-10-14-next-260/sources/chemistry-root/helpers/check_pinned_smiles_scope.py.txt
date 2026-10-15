@@ -1,0 +1,9 @@
+from pathlib import Path
+import datetime,json
+from rdkit import Chem
+R=Path('/private/tmp/pathwaymech-next-260-chemistry-root');out=R/'retained/pinned-smiles-scope.json';assert not out.exists();c=json.loads((R/'retained/chemical-equation-check-v2.json').read_text());rows=[]
+for frame,item in c['chemicals'].items():
+ p=item['pinned_fields'];m=Chem.MolFromSmiles(p['chemrof:smiles_string']);assert m is not None;generated=Chem.MolToInchi(m);key=Chem.MolToInchiKey(m)
+ rows.append({'native_frame':frame,'chebi_id':item['id'],'pinned_smiles':p['chemrof:smiles_string'],'smiles_generated_full_inchi':generated,'smiles_generated_key':key,'pinned_full_inchi':p['chemrof:inchi_string'],'pinned_full_key':p['chemrof:inchi_key_string'],'full_inchi_identical':generated==p['chemrof:inchi_string'],'full_key_identical':key==p['chemrof:inchi_key_string']})
+different=[r['native_frame'] for r in rows if not r['full_inchi_identical']];assert set(different)=={'4-OXALOMESACONATE','CPD-12849','CPD-185'},different
+out.write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Pinned ChEBI255 serialized SMILES checked separately from its complete InChI/key. Three existing incomplete stereo serializations are retained as source limitations; exact mapping uses native full CML geometry, full InChI/key and issuing structure agreement, not the incomplete SMILES.','rows':rows,'different_full_stereo':different},indent=2)+'\n');print(json.dumps({'checked':len(rows),'incomplete_stereo_smiles':different}))

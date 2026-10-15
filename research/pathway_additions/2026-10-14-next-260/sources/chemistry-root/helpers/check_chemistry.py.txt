@@ -1,0 +1,52 @@
+from pathlib import Path
+import collections,datetime,hashlib,json,sqlite3,xml.etree.ElementTree as ET
+from rdkit import Chem,rdBase
+from rdkit.Chem import rdMolDescriptors
+ROOT=Path('/private/tmp/pathwaymech-next-260-chemistry-root');O=ROOT/'originals';OUT=ROOT/'retained/chemical-equation-check.json'
+assert not OUT.exists()
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as stream:
+  for block in iter(lambda:stream.read(8*1024*1024),b''):h.update(block)
+ return h.hexdigest()
+def describe(m):
+ assert m is not None
+ Chem.AssignStereochemistry(m,cleanIt=True,force=True)
+ return {'smiles':Chem.MolToSmiles(Chem.RemoveHs(m),isomericSmiles=True),'inchi':Chem.MolToInchi(m),'key':Chem.MolToInchiKey(m),'formula':rdMolDescriptors.CalcMolFormula(m),'charge':Chem.GetFormalCharge(m),'atoms':dict(collections.Counter(a.GetSymbol() for a in Chem.AddHs(m).GetAtoms())),'double_bond_stereo':[str(b.GetStereo()) for b in m.GetBonds() if b.GetBondType()==Chem.BondType.DOUBLE],'chiral_centers':Chem.FindMolChiralCenters(m,includeUnassigned=True)}
+def from_cml(e):
+ atoms=e.findall('./atomArray/atom');rw=Chem.RWMol();amap={};conf=Chem.Conformer(len(atoms));conf.Set3D(False)
+ for a in atoms:
+  at=Chem.Atom(a.attrib['elementType']);at.SetFormalCharge(int(a.get('formalCharge','0')));idx=rw.AddAtom(at);amap[a.attrib['id']]=idx;conf.SetAtomPosition(idx,(float(a.get('x2','0')),float(a.get('y2','0')),0.))
+ for b in e.findall('./bondArray/bond'):
+  a,z=b.get('atomRefs').split();rw.AddBond(amap[a],amap[z],{1:Chem.BondType.SINGLE,2:Chem.BondType.DOUBLE,3:Chem.BondType.TRIPLE}[int(b.get('order'))])
+ m=rw.GetMol();Chem.SanitizeMol(m);m.AddConformer(conf);Chem.DetectBondStereochemistry(m);return m
+sql=Path('/private/tmp/pathwaymech-curation-authorities/chebi.db');digest=sha(sql)
+assert digest=='26ad4890cdcf6ee357760d815dfee8f5ba81e0873e62cb379369b04205722b0f'
+db=sqlite3.connect('file:'+str(sql)+'?mode=ro',uri=True)
+versions=db.execute("select subject,predicate,object,value from statements where predicate in ('owl:versionIRI','owl:versionInfo')").fetchall();assert ('obo:chebi.owl','owl:versionInfo',None,'255') in versions
+frames=['CPD-183','CPD-184','4-OXALOMESACONATE','CPD-12849','4-OH-4-ACETYL-2-OXOGLUTARATE','PYRUVATE','OXALACETIC_ACID','WATER','OXYGEN-MOLECULE','PROTON','CPD-185'];chemicals={};checks=[]
+for frame in frames:
+ p=O/(frame+'.xml');e=ET.parse(p).getroot().find('Compound');ids=[d.findtext('dblink-oid') for d in e.findall('dblink') if d.findtext('dblink-db')=='CHEBI'];assert len(ids)==1,(frame,ids)
+ cid='CHEBI:'+ids[0];jpath=O/('ChEBI-'+ids[0]+'.json');j=json.loads(jpath.read_text());assert j['chebi_accession']==cid;structure=j['default_structure']
+ reps={'native_full_inchi':describe(Chem.MolFromInchi(e.findtext('inchi'))),'native_complete_cml_2d':describe(from_cml(e.find('./cml/molecule'))),'issuing_smiles':describe(Chem.MolFromSmiles(structure['smiles'])),'issuing_full_inchi':describe(Chem.MolFromInchi(structure['standard_inchi']))}
+ fields={pred:obj or value for pred,obj,value in db.execute("select predicate,object,value from statements where subject=? and predicate in ('rdfs:label','chemrof:inchi_string','chemrof:inchi_key_string','chemrof:charge','chemrof:generalized_empirical_formula','chemrof:smiles_string')",(cid,))}
+ native_key=e.findtext('inchi-key').removeprefix('InChIKey=')
+ results={'native_inchi_equals_issuing':e.findtext('inchi')==structure['standard_inchi'],'native_key_equals_issuing':native_key==structure['standard_inchi_key'],'all_four_reconstructed_full_keys_equal':len({r['key'] for r in reps.values()})==1,'cml_and_issuing_smiles_equal':reps['native_complete_cml_2d']['smiles']==reps['issuing_smiles']['smiles'],'all_formulas_match_issuing':all(r['formula']==j['chemical_data']['formula'] for r in reps.values()),'all_charges_match_issuing':all(r['charge']==j['chemical_data']['charge'] for r in reps.values()),'pinned_inchi_exact':fields['chemrof:inchi_string']==e.findtext('inchi'),'pinned_key_exact':fields['chemrof:inchi_key_string']==native_key,'pinned_formula_exact':fields['chemrof:generalized_empirical_formula']==j['chemical_data']['formula'],'pinned_charge_exact':int(fields['chemrof:charge'])==j['chemical_data']['charge']}
+ checks+=list(results.values());chemicals[frame]={'id':cid,'label':j['ascii_name'],'native_sha256':sha(p),'issuing_json_sha256':sha(jpath),'representations':reps,'pinned_fields':fields,'checks':results,'native_comment':e.findtext('comment'),'native_synonyms':[x.text for x in e.findall('synonym')]}
+ print(frame,cid,all(results.values()),flush=True)
+reactions=[];net=collections.Counter()
+for frame,traversal in [('RXN-11861','L2R'),('RXN-2462','L2R'),('RXN-9983','L2R'),('RXN-2463','R2L'),('RXN-2464','L2R')]:
+ p=O/(frame+'.xml');e=ET.parse(p).getroot().find('Reaction');sides={};sums={}
+ for side in ['left','right']:
+  sides[side]=[];sums[side]=collections.Counter()
+  for item in e.findall(side):
+   f=item.find('Compound').get('frameid');n=int(item.findtext('coefficient') or 1);c=chemicals[f]['representations']['issuing_smiles'];sides[side].append({'native_frame':f,'id':chemicals[f]['id'],'coefficient':n,'coefficient_explicit':item.find('coefficient') is not None})
+   for atom,count in c['atoms'].items():sums[side][atom]+=n*count
+   sums[side]['charge']+=n*c['charge']
+ ins,outs=('left','right') if traversal=='L2R' else ('right','left')
+ for side,sign in [(ins,-1),(outs,1)]:
+  for item in sides[side]:net[item['id']]+=sign*item['coefficient']
+ balanced=sums['left']==sums['right'];checks.append(balanced);reactions.append({'frame':frame,'native_sha256':sha(p),'source_direction':e.findtext('reaction-direction'),'source_spontaneous':e.findtext('spontaneous'),'source_xrefs':[{x.findtext('dblink-db'):x.findtext('dblink-oid')} for x in e.findall('dblink')],'selected_traversal':traversal,'original_sides':sides,'selected_inputs':sides[ins],'selected_outputs':sides[outs],'element_charge_sums':sums,'balanced':balanced})
+ print(frame,traversal,balanced,flush=True)
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Root author chemistry reconnaissance, not independent scientific approval or maintained curation. Full native CML includes source 2D geometry; no absolute configuration inferred from an unassigned center.','rdkit_version':rdBase.rdkitVersion,'chebi_sql':{'path':str(sql),'resolved_path':str(sql.resolve()),'sha256':digest,'bytes':sql.stat().st_size,'version_rows':versions},'chemicals':chemicals,'reactions':reactions,'calculated_net':{k:v for k,v in net.items() if v},'all_checks_pass':all(checks)}
+OUT.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'all_checks_pass':all(checks),'calculated_net':result['calculated_net']}));assert all(checks)

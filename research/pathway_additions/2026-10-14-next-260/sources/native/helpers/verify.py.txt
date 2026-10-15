@@ -1,0 +1,50 @@
+from pathlib import Path
+from lxml import etree
+import json,hashlib,collections,datetime,subprocess
+R=Path('/private/tmp/pathwaymech-next-260-native');P=R/'projections'
+def h(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+M=json.loads((R/'retained/selected-native-manifest.json').read_text());objects={};checks=[]
+for r in M['objects']:
+ p=Path(r['path']);assert p.stat().st_size==r['bytes'];assert h(p)==r['sha256'];assert h(Path(r['source_path']))==r['sha256']
+ t=etree.parse(str(p));root=t.getroot();assert root.findtext('metadata/query')=='META:'+r['frame'];assert root.find('metadata/PGDB').get('version')=='27.0';os=[e for e in root if e.get('detail')=='full' and e.get('frameid')==r['frame']];assert len(os)==1;objects[r['frame']]=(t,os[0])
+checks.append({'check':'141 exact complete original byte/query/version/identity bindings','pass':len(objects)==141})
+reuse=json.loads((R/'retained/all-reuse-verification.json').read_text())
+for r in reuse['rows']:assert h(Path(r['source_path']))==r['sha256']
+checks.append({'check':'All 265 prior original bindings still reproduce','pass':len(reuse['rows'])==265})
+slots=json.loads((P/'native-slot-disposition-ledger.json').read_text());seen=set()
+for s in slots:
+ t,o=objects[s['frame']];loc=s['source_locator'];es=t.xpath(loc);assert len(es)==1;assert h(Path(s['source_path']))==s['source_sha256'];assert hashlib.sha256(etree.tostring(es[0])).hexdigest()==s['slot_serialization_sha256'];assert (s['frame'],loc) not in seen;seen.add((s['frame'],loc));assert s['disposition'] and s['reason']
+assert len(slots)==sum(len(o) for t,o in objects.values())==1961
+checks.append({'check':'All 1,961 direct slots independently selected by exact XPath and serialization digest, with dispositions','pass':True})
+acts=json.loads((P/'activity-preparation-dispositions.json').read_text());regs=json.loads((P/'regulator-dispositions.json').read_text());prots=json.loads((P/'protein-dispositions.json').read_text())
+assert {a['activity'] for a in acts}=={k for k,(t,o) in objects.items() if o.tag=='Enzymatic-Reaction'};assert len(acts)==21;assert sum(a['formal_member'] for a in acts)==15
+assert len(regs)==30 and {a['frame'] for a in regs}=={k for k,(t,o) in objects.items() if o.tag=='Regulation'}
+assert len(prots)==25 and {a['frame'] for a in prots}=={k for k,(t,o) in objects.items() if o.tag=='Protein'}
+checks.append({'check':'Every attached activity, protein and regulator has a preparation/disposition row','pass':True})
+assert json.loads((P/'missing-source-objects.json').read_text())==[]
+for k,(t,o) in objects.items():
+ for tag in ({'enzyme','reaction','cofactor','regulated-by'} if o.tag=='Enzymatic-Reaction' else {'regulator','regulated-entity'} if o.tag=='Regulation' else {'component','gene','catalyzes','location'} if o.tag=='Protein' else {'product'} if o.tag=='Gene' else set()):
+  for s in o.findall(tag):
+   for e in s:
+    if e.get('frameid') and e.tag not in ('Publication','Evidence-Code'):assert e.get('frameid') in objects,(k,tag,e.get('frameid'))
+checks.append({'check':'Selected mechanism follow-set has no missing source objects; every activity/catalyst/regulator/component/gene/location target closes','pass':True})
+b=json.loads((P/'unexpanded-boundary-dispositions.json').read_text());u=json.loads((P/'unexpanded-reference-inventory.json').read_text());assert sum(x['occurrence_count'] for x in b)==len(u)==42161;assert all(x['disposition']!='UNCLASSIFIED' for x in b)
+checks.append({'check':'All 42,161 non-expanded reference occurrences classified into 495 bounded-context groups','pass':len(b)==495})
+for r in json.loads((P/'frozen-context-bindings.json').read_text()):assert h(Path(r['path']))==r['sha256']
+checks.append({'check':'All frozen primary/preflight/identity/chemistry context hashes unchanged','pass':True})
+# Recheck facts have real observed slots, never a guessed locator.
+facts=json.loads((P/'source-fact-dispositions.json').read_text())['facts']
+for f in facts:
+ assert f['sources']
+ for s in f['sources']:assert len(objects[s['frame']][0].xpath(s['source_locator']))==1
+checks.append({'check':'All 26 manual fact groups bind actual slots','pass':len(facts)==26})
+# Exact location and coefficients are high-risk assertions, rechecked directly.
+g=objects['G1G01-2699-MONOMER'][1];assert g.find('location/cco').get('frameid')=='CCO-CYTOSOL';go=g.findall('has-go-term')[5];assert any(e.get('frameid')=='GO:0005829' for e in go.iter());assert any(e.get('frameid')=='EV-COMP-AINF' for e in go.iter());assert any(e.get('frameid')=='PUB-26602691' for e in go.iter());assert objects['CCO-CYTOSOL'][1].findtext('goid')=='GO:0005829'
+checks.append({'check':'Exact GalB monomer cytosol source and computational evidence confirmed','pass':True})
+c=objects['CPLX-2721'][1];assert [(s.find('Protein').get('frameid'),s.findtext('coefficient')) for s in c.findall('component')]==[('MONOMER-3185','4'),('MONOMER-3186','4')]
+checks.append({'check':'Native entry assembly 4 beta + 4 alpha independently confirmed','pass':True})
+work=Path('/private/tmp/pathwaymech-next-259-20261014');record=work/'data/pathways/gallate-degradation-i.yaml'
+state={'worktree':str(work),'git_head':subprocess.check_output(['git','rev-parse','HEAD'],cwd=work,text=True).strip(),'current_gallate_i_path':str(record),'current_gallate_i_sha256':h(record),'note':'Read-only timestamped state; next259 root lifecycle remains active. This is not fresh post-merge dedup or reviewed-commit binding.'}
+report={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'status':'passed','checks':checks,'source_objects':len(objects),'direct_slots':len(slots),'activities':len(acts),'formal_activities':15,'regulators':len(regs),'proteins':len(prots),'facts':len(facts),'references':len(json.loads((P/'reference-reading-and-disposition-ledger.json').read_text())),'state':state,'limits':'Only author source inventory and replay verified. No scientific approval, schema record validation, chemistry acceptance or maintained mutation occurred.'}
+assert all(x['pass'] for x in checks)
+(R/'verification.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

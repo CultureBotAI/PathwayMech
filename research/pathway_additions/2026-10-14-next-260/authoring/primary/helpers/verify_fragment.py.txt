@@ -1,0 +1,71 @@
+import json,yaml,hashlib,re,sys,collections
+from pathlib import Path
+from lxml import html,etree
+D=Path('/private/tmp/pathwaymech-next-260-primary-draft');P=Path('/private/tmp/pathwaymech-next-260-preparation-successor');E=Path('/private/tmp/pathwaymech-next-260-primary');W=Path('/private/tmp/pathwaymech-next-260-20261014')
+sys.path.insert(0,str(W/'src'))
+from pathwaymech.schema import validate_record
+from pathwaymech.strict import strict_errors
+x=yaml.safe_load(open(D/'assembled-preview.yaml'));add=yaml.safe_load(open(D/'primary-additions.yaml'));replace=yaml.safe_load(open(D/'primary-replacements.yaml'))['mechanistic_edges'];edges=add['mechanistic_edges']+replace
+results=[]
+def check(name,ok,detail=None):results.append({'check':name,'pass':bool(ok),'detail':detail})
+try:validate_record(x);check('handwritten_schema',True)
+except Exception as exc:check('handwritten_schema',False,str(exc))
+se=strict_errors([D/'assembled-preview.yaml'],W);check('closed_linkml_schema',not se,se)
+source_text={};originals={};sources=json.load(open(P/'source-index.json'))
+for key,rid in [('LigJ2000','PMID:11092855'),('ProA1990','PMID:2229032'),('ProA-Pi1990','PMID:2229033'),('ProHA1983','PMID:6841354'),('GalB2011','PMID:21219457'),('GalB2016','PMID:26867578')]:
+ s=next(s for s in sources if s['key']==key);raw=Path(s['path']);check('source_hash:'+rid,hashlib.sha256(raw.read_bytes()).hexdigest()==s['sha256']);originals[rid]=[s]
+ if key=='LigJ2000':text=html.parse(str(raw)).getroot().text_content()
+ elif key=='GalB2016':text=html.parse(str(raw)).getroot().text_content()
+ elif key=='GalB2011':
+  parts=[raw]+[Path('/private/tmp/pathwaymech-next-259-primary/originals')/f for f in ['candidate_wiley_part2-web-result.json','candidate_wiley_part3-web-result.json','gal2011_methods-web.json']]
+  text=' '.join(str(json.load(open(pp))) for pp in parts)
+  originals[rid]=[{'path':str(pp),'sha256':hashlib.sha256(pp.read_bytes()).hexdigest(),'bytes':pp.stat().st_size,'scope':'Retained publisher response segment; no new download or full-figure access upgrade.'} for pp in parts]
+ else:text=(P/'projections'/f'{key}-render/extracted.txt').read_text()
+ source_text[rid]=' '.join(text.split())
+for rid,pmc in [('PMID:7142106','PMC221622'),('PMID:1194238','PMC236050')]:
+ paths=sorted((E/'originals').glob(pmc+'-page-*.png'));source_text[rid]=' '.join(' '.join(re.sub(r'(?<=\w)-\s*\n(?=\w)', '', f.read_text()).split()) for f in sorted((E/'projections/ocr').glob(pmc+'-page-*.txt')));originals[rid]=[]
+ for p in paths:originals[rid].append({'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size})
+ check('authentic_page_count:'+rid,len(paths)==(9 if pmc=='PMC221622' else 8))
+quoteplacements=[];counts=collections.Counter();evforms=[]
+for e in edges:
+ for where,vs in [('edge',e['evidence'])]+[(f'endpoint_qualifier[{i}]',q['evidence']) for i,q in enumerate(e.get('endpoint_qualifiers',[]))]:
+  for i,v in enumerate(vs):
+   rid=v['reference_id'];typ='quote' if 'quote' in v else 'source_assertion';val=v[typ]
+   check('length:'+e['id']+':'+where+':'+str(i),len(val)<=400,len(val))
+   row={'edge_id':e['id'],'placement':where+f'.evidence[{i}]','reference_id':rid,'evidence_form':typ,'source_locator':v.get('source_locator')}
+   if typ=='quote':
+    qn=' '.join(val.split());present=qn in source_text.get(rid,'');check('quote_replay:'+e['id']+':'+where+':'+str(i),present)
+    counts[rid]+=len(val.split());row.update({'quote_words':len(val.split()),'exact_excerpt_replay':present,'normalization':'Whitespace collapse; OCR line-end hyphen joining only, with original PNG visual reading retained','source_originals':originals.get(rid,[])})
+    quoteplacements.append(row)
+   else:
+    row['source_assertion']=val
+    if rid.startswith('MetaCyc:'):
+     p=Path('/private/tmp/pathwaymech-next-260-native/originals')/(rid.split(':',1)[1]+'.xml')
+     if p.exists():
+      row['source_originals']=[{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size}]
+      if v['source_locator'].startswith('/ptools-xml/'):
+       root=etree.parse(str(p));locs=v['source_locator'].split(';');resolved=[]
+       for loc in locs:
+        try:resolved.append(bool(root.xpath(loc.strip())))
+        except etree.XPathError:resolved.append(False)
+       check('xml_locator:'+e['id']+':'+where+':'+str(i),all(resolved),resolved);row['locator_replay']=resolved
+    elif rid in originals:row['source_originals']=originals[rid];row['table_or_structured_source']='Actual original table cells/caption; assertion semantic content manually compared to frozen full table projection or original HTML.'
+    elif rid=='RHEA:18172':row['source_originals']=[json.load(open(D/'projections/HG-rhea-closure.json'))['source']];row['structured_closure']='All 12 original RDF subjects retained in exact source proof; label/direction/side compounds checked.'
+   evforms.append(row)
+ for i,q in enumerate(e.get('endpoint_qualifiers',[])):check('qualifier_length:'+e['id']+':'+str(i),len(q['description'])<=400,len(q['description']))
+for rid,c in counts.items():check('paper_quote_budget:'+rid,c<=25,c)
+allfacts=json.load(open(D/'source-to-record-dispositions.json'))['facts'];bindings=json.load(open(D/'edge-fact-ledger.json'))
+check('all_179_source_facts',len(allfacts)==179 and len({f['source_fact_id'] for f in allfacts})==179)
+check('all_primary_edges_accounted',set(e['id'] for e in edges)==set(b['edge_id'] for b in bindings))
+check('all_forward_edge_refs_exist',all(set(f['primary_edge_ids'])<=set(e['id'] for e in edges) for f in allfacts))
+check('all_reverse_fact_refs_exist',all(set(b['source_fact_ids'])<=set(f['source_fact_id'] for f in allfacts) for b in bindings))
+for b in bindings:
+ check('bidirectional_binding:'+b['edge_id'],all(b['edge_id'] in next(f for f in allfacts if f['source_fact_id']==fid)['primary_edge_ids'] for fid in b['source_fact_ids']))
+# Freeze input bindings for the exact code used in local validation, not a suite or approval.
+codepaths=[W/'.claude/skills/add-pathway/SKILL.md',W/'docs/CAUSAL_GRAPHS.md',W/'src/pathwaymech/schema.py',W/'src/pathwaymech/strict.py',W/'src/pathwaymech/schema/pathwaymech.yaml']
+codebindings=[{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in codepaths]
+(D/'paper-wide-quote-ledger.json').write_text(json.dumps({'scope':'All actual evidence and qualifier quotation placements in the integrated 169-edge preview; repetitions count. Bibliographic titles are citation metadata, not mechanism excerpts. Native foundation contains no paper quotations. Unused prospective quotations are not placed.','counts':dict(counts),'placements':quoteplacements,'single_word_evidence_policy':'Short result words are used only with an exact full-sentence locator and a specific named reagent/dose/readout description. They are not generic support for a protein identity or additional mechanism. Source originals and complete contextual reading are retained; scientific sufficiency remains for independent review.'},indent=2,ensure_ascii=False)+'\n')
+(D/'evidence-form-and-source-bindings.json').write_text(json.dumps(evforms,indent=2,ensure_ascii=False)+'\n')
+(D/'external-primary-originals.json').write_text(json.dumps(originals,indent=2,ensure_ascii=False)+'\n')
+result={'role':'author replay; no scientific approval and no complete project suite','record_sha256':hashlib.sha256((D/'assembled-preview.yaml').read_bytes()).hexdigest(),'code_inputs':codebindings,'passed':sum(r['pass'] for r in results),'failed':[r for r in results if not r['pass']],'checks':results}
+(D/'verification.json').write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n');print(json.dumps({k:result[k] for k in ['record_sha256','passed','failed']},indent=2))

@@ -1,0 +1,99 @@
+{
+  "created_utc": "2026-10-15T01:19:03.931842+00:00",
+  "status": "provisional_technical_checks_complete_full_gates_pending",
+  "role": "Independent technical reviewer, separate from source and integration authors",
+  "verdict": "No unresolved technical findings in completed checks. This is not final gate approval.",
+  "base_commit": "b2590dfd2385c83fe4f028ecd5309a0407739838",
+  "completed_reports": {
+    "integration-replay-1.json": {
+      "sha256": "577ee6731bf732cde4f8616d233f86885fe8276c0a0fba41462ecbce12980b60",
+      "passed": 2120,
+      "failed": 0
+    },
+    "kgx-replay-1.json": {
+      "sha256": "9f11180b931896c51c28847f16c79549c8cda4253155d73deaba8d5922a2c21b",
+      "passed": 3096,
+      "failed": 0
+    },
+    "kgx-category-replay.json": {
+      "sha256": "ed29bc35eea217cd5e116a3d9c0ecc7adf0a59d138bebcb50dd59f6aa8dfb91b",
+      "passed": 268,
+      "failed": 0
+    },
+    "authority-replay-1.json": {
+      "sha256": "ad1c27a5eda75683ccf8b100b05b79f1f306d112bc57a7f521dd3389d49d0bed",
+      "passed": 184,
+      "failed": 0
+    },
+    "pages-replay-2.json": {
+      "sha256": "a6f11ce1ad0ac11140da1bf1c48289842c6d0a5e337bd4817057c02d333461f3",
+      "passed": 3684,
+      "failed": 0
+    }
+  },
+  "record_page_and_export_hashes": {
+    "data/pathways/gallate-degradation-ii.yaml": "72e4685f14ff3a6a9d5cd5c7b9cd27d5fa54592355a5191fa5cf821d07a19353",
+    "pages/records/MetaCyc_GALLATE-DEGRADATION-I-PWY.html": "86b18935b1d2a834c18199b582007871a87ebd66674c58aa832141e8e8886dc9",
+    "data/pathways/gallate-degradation-i.yaml": "a6e0e8f52880ccb651e02526dbd627240ec7e46a637d2eabfd790846156d21b0",
+    "pages/records/MetaCyc_GALLATE-DEGRADATION-II-PWY.html": "f651e6d40748b863328a5821efc6dbe936ecd28684c38c6d6276de632931e051",
+    "data/pathways/protocatechuate-meta-cleavage.yaml": "c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49",
+    "pages/records/MetaCyc_P184-PWY.html": "6b2c413d8e7d8097336efb4c3e906e138ddd11dd0d4a03f58bab25f91e872ca5",
+    "pages/downloads/nodes.tsv": "4c38658e5f96e8219f02bb827f086312225ec8d5422a395ce1e24d6dde71400c",
+    "pages/downloads/edges.tsv": "e219f96d7f973b9149edbc08a855b32b0a14c79c6a8f6cd4cea3a68c6635fd66"
+  },
+  "promoted_authority_hashes": {
+    "data/identifier_authorities/sources.json": "f7d6ddc77b1a6877b9b3e37ad30bde283f7b878c5b2cf45658b1aba3f99821bb",
+    "data/identifier_authorities/ontology.json": "64daef8b4d05707fac49a19bd12b2f25c31fb47a42be9c4160cb343b18cb3eb3",
+    "conf/identifier_sources.json": "8e7647a5b1bd4b2c7ad6a349ddffbc5479609c2e17b6fe823b18e7d180161acb"
+  },
+  "completed_gate_receipts": [
+    {
+      "command": [
+        "just",
+        "render-pages"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-260-20261014",
+      "started_utc": "2026-10-15T00:54:48.242841+00:00",
+      "elapsed_seconds": 126.38,
+      "exit_code": 0,
+      "log_path": "/private/tmp/pathwaymech-next-260-checks-initial/just-render-pages.log",
+      "log_sha256": "ec95b2b9a144111df01a7a2ee3f5c3a71092b1cc0bfe6a187c5d4f35b1dd588b"
+    },
+    {
+      "command": [
+        "just",
+        "validate"
+      ],
+      "cwd": "/private/tmp/pathwaymech-next-260-20261014",
+      "started_utc": "2026-10-15T00:56:56.587815+00:00",
+      "elapsed_seconds": 346.53,
+      "exit_code": 0,
+      "log_path": "/private/tmp/pathwaymech-next-260-checks-initial/just-validate.log",
+      "log_sha256": "04f9e56cafe9ee511dc1491dafca917af804d367e10bebd823f2ac71edcdab47"
+    }
+  ],
+  "pending_gates": [
+    "The same initial test process remains running; no terminal success is inferred.",
+    "just lint",
+    "just vendored-check",
+    "git diff --check",
+    "git diff --cached --check",
+    "Final input-preservation receipt and final independent attestation"
+  ],
+  "resolved_finding": {
+    "description": "Supporting S75-003 erratum retained-path typo",
+    "disposition": "Append-only locator clarification fixes the path; no graph claim changed.",
+    "proof_path": "research/pathway_additions/2026-10-14-next-260/integration/erratum-locator-clarification.json",
+    "proof_sha256": "1c21cfe824e8f700c2fd13485e816ccbc113f9e3130e80fe056b0e0d284b65b6"
+  },
+  "reviewer_probe_corrections": [
+    "authority-source-replay-1.json used an incorrect expected descriptor count; authority-source-count-clarification.json and authority-replay-1.json correct it without changing the repository.",
+    "pages-replay-1.json incorrectly expected unconnected taxon scope in SVG; pages-replay-2.json verifies the documented graph contract and preserves every taxon declaration in component tables."
+  ],
+  "scope_limits": [
+    "Scientific truth is addressed by the separate original-source reviewer.",
+    "No browser visual or interactive-control approval is claimed.",
+    "No duplicate full suite or canonical authority build was run by this reviewer.",
+    "A follow-up on this same reviewer must bind actual full-gate completion before final attestation."
+  ]
+}

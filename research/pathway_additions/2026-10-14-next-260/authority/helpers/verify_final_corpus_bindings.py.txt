@@ -1,0 +1,33 @@
+"""Bind root-confirmed predecessor direction/prose changes to actual consumer inputs."""
+from pathlib import Path
+import datetime,hashlib,json
+import yaml
+B=Path(__file__).resolve().parents[1]
+R=Path('/private/tmp/pathwaymech-next-260-20261014')
+EXPECTED={'data/pathways/gallate-degradation-i.yaml':'a6e0e8f52880ccb651e02526dbd627240ec7e46a637d2eabfd790846156d21b0','data/pathways/protocatechuate-meta-cleavage.yaml':'c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49'}
+def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def load(p):return json.loads(Path(p).read_text())
+def diffs(a,b,path=''):
+ if type(a)!=type(b):return [dict(path=path,before=a,after=b)]
+ if isinstance(a,dict):
+  assert a.keys()==b.keys(),path
+  return [x for k in a for x in diffs(a[k],b[k],path+'.'+k if path else k)]
+ if isinstance(a,list):
+  assert len(a)==len(b),path
+  return [x for i,(av,bv) in enumerate(zip(a,b)) for x in diffs(av,bv,f'{path}[{i}]')]
+ return [] if a==b else [dict(path=path,before=a,after=b)]
+observations=load(B/'retained/actual-predecessor-record-bindings.json')
+assert set(observations['changed_paths'])==set(EXPECTED)
+rows={r['git_path']:r for r in load(B/'retained/baseline-record-bindings.json')};changes=[]
+for rel,digest in EXPECTED.items():
+ current=R/rel;assert sha(current)==digest
+ bound=next(r for r in observations['records'] if r['git_path']==rel);assert bound['current_sha256']==digest and bound['identity_slots_preserved']
+ baseline=Path(rows[rel]['path']);assert sha(baseline)==rows[rel]['sha256']
+ ds=diffs(yaml.safe_load(baseline.read_text()),yaml.safe_load(current.read_text()))
+ assert all(x['path'].endswith('.direction') or x['path'].endswith('.description') or x['path']=='description' for x in ds)
+ changes.append(dict(relative_path=rel,current_sha256=digest,baseline_sha256=sha(baseline),changes=ds))
+flat=[d for r in changes for d in r['changes']]
+assert sum(d['path'].endswith('.direction') for d in flat)==6
+assert sum(d['path'].endswith('.description') or d['path']=='description' for d in flat)==15
+out=B/'retained/final-corpus-direction-change-binding.json';assert not out.exists();out.write_text(json.dumps(dict(utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),scope='Author identity consumer input accounting only; independent scientific review of source-direction semantics is separate',root_expected_predecessor_hashes=EXPECTED,consumer_binding_sha256=sha(B/'retained/actual-predecessor-record-bindings.json'),changes=changes,direction_fields=6,description_fields=15,all_named_identity_slots_preserved=True,all_other_predecessor_bytes_unchanged=True,helper_sha256=sha(__file__)),indent=2,ensure_ascii=False)+'\n')
+print(json.dumps(dict(status='current_predecessor_bindings_exact',changed_records=2,direction_fields=6,description_fields=15)))

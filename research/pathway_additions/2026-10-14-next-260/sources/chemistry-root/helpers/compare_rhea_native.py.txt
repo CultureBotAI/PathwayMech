@@ -1,0 +1,25 @@
+from pathlib import Path
+import datetime,hashlib,json,re,xml.etree.ElementTree as ET
+R=Path('/private/tmp/pathwaymech-next-260-chemistry-root');out=R/'retained/reaction-equivalence.json';assert not out.exists()
+c=json.loads((R/'retained/chemical-equation-check-v2.json').read_text());assert c['all_checks_pass'];rdf=json.loads((R/'retained/rhea-closure.json').read_text());nodes=rdf['nodes'];ns='http://rdf.rhea-db.org/'
+rows=[]
+for frame,rid in [('RXN-2462','10645'),('RXN-9983','28932'),('RXN-2463','17403'),('RXN-2464','28936')]:
+ native=next(x for x in c['reactions'] if x['frame']==frame);actual={};traversals=[]
+ for prop in ['substrates','products']:
+  actual[prop]=[]
+  for side in nodes[ns+rid][prop]:
+   for pred,participants in nodes[side].items():
+    if not re.fullmatch('contains[0-9]+',pred):continue
+    for participant in participants:
+     for compound in nodes[participant]['compound']:
+      obj=nodes[compound];assert len(obj['accession'])==1;cid=obj['accession'][0];n=int(pred[8:]);actual[prop].append((cid,n));chemical=next(x for x in c['chemicals'].values() if x['id']==cid)
+      assert obj['formula'][0]==chemical['pinned_fields']['chemrof:generalized_empirical_formula'];assert int(obj['charge'][0])==int(chemical['pinned_fields']['chemrof:charge'])
+      traversals.append([ns+rid,prop,side,pred,participant,'compound',compound,'accession',cid,n])
+  actual[prop].sort()
+ expected={'substrates':sorted((x['id'],x['coefficient']) for x in native['selected_inputs']),'products':sorted((x['id'],x['coefficient']) for x in native['selected_outputs'])}
+ assert actual==expected,(frame,actual,expected)
+ rows.append({'native_reaction':'MetaCyc:'+frame,'selected_exact_rhea':'RHEA:'+rid,'equation':nodes[ns+rid]['equation'][0],'native_direction':native['source_direction'],'selected_native_traversal':native['selected_traversal'],'source_spontaneous':native['source_spontaneous'],'selected_sides':actual,'exact_full_sides_equal':True,'full_participant_traversals':traversals})
+p=R/'originals/GALLATE-DEGRADATION-I-PWY.xml';e=ET.parse(p).getroot().find('Pathway');members=[x.get('frameid') for x in e.findall('reaction-list/Reaction')];assert set(members)=={x['frame'] for x in c['reactions']}
+layouts={x.find('Reaction').get('frameid'):x.findtext('direction') for x in e.findall('reaction-layout')};assert all(layouts[x['frame']]==x['selected_traversal'] for x in c['reactions'])
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Root author exact five-member material-route reconstruction; calculated stoichiometry is not enzyme specificity or physiological route proof.','pathway':{'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'members':members,'layouts':layouts},'exact_rhea_matches':rows,'entry':{'native_reaction':'MetaCyc:RXN-11861','reason_for_native_identifier':'No entry cross-reference R03549 or RXN-11861 was present anywhere in the complete inspected Rhea RDF. No exhaustive chemically equivalent reaction absence claim; retain exact native reaction identity instead of guessing Rhea.','selected_inputs':c['reactions'][0]['selected_inputs'],'selected_outputs':c['reactions'][0]['selected_outputs'],'source_direction':c['reactions'][0]['source_direction'],'xref_scope':'KEGG R03549 source direction/protonation reconciliation is separate.'},'calculated_net':c['calculated_net'],'material_edge_count':sum(len(x['selected_inputs'])+len(x['selected_outputs']) for x in c['reactions']),'all_members_and_directions_replayed':True}
+out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'rhea_equations':len(rows),'native_members':len(members),'material_edge_count':result['material_edge_count'],'net':c['calculated_net']}))

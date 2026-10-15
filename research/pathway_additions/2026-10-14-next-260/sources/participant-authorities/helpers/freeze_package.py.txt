@@ -1,0 +1,32 @@
+from pathlib import Path
+import datetime,hashlib,json
+ROOT=Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+MANIFEST=ROOT/'artifact-manifest.json';SELECTION=ROOT/'compact-retention-selection.json'
+assert not MANIFEST.exists() and not SELECTION.exists()
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for b in iter(lambda:f.read(4*1024*1024),b''):h.update(b)
+ return h.hexdigest()
+verification=ROOT/'retained/primary-binding-and-verification.json';v=json.loads(verification.read_text());assert v['all_bounded_checks_pass']
+for binding in v['proof_bindings']:
+ p=Path(binding['path']);assert sha(p)==binding['sha256']
+raw=json.loads((ROOT/'retained/external-originals-manifest.json').read_text())
+for binding in raw['files']:
+ p=Path(binding['path']);assert p.stat().st_size==binding['bytes'] and sha(p)==binding['sha256']
+files=[]
+for p in sorted(ROOT.rglob('*')):
+ if p.is_file():
+  assert not p.is_symlink(),p
+  files.append({'path':str(p.relative_to(ROOT)),'bytes':p.stat().st_size,'sha256':sha(p)})
+manifest={'frozen_at':datetime.datetime.now(datetime.timezone.utc).isoformat(),'external_author_root':str(ROOT),'role':'next260 participant/reagent source author; not independent approval','scope':'Every regular file including hidden files under the external author root before creation of this manifest and the subsequent compact selection. Raw originals remain external.','explicit_exclusions':['artifact-manifest.json (self)','compact-retention-selection.json (created after this manifest)'],'file_count':len(files),'total_bytes':sum(x['bytes'] for x in files),'files':files}
+with MANIFEST.open('x') as f:json.dump(manifest,f,indent=2);f.write('\n')
+selected=[]
+for row in files+[{'path':MANIFEST.name,'bytes':MANIFEST.stat().st_size,'sha256':sha(MANIFEST)}]:
+ rel=row['path']
+ if rel=='HANDOFF.md' or rel=='artifact-manifest.json' or rel.startswith('retained/') or rel.startswith('helpers/'):
+  selected.append({'source_path':str(ROOT/rel),'source_relative_path':rel,'retained_relative_path':rel+'.txt' if rel.endswith('.py') else rel,'bytes':row['bytes'],'sha256':row['sha256']})
+selection={'external_author_root':str(ROOT),'external_artifact_manifest':{'path':str(MANIFEST),'sha256':sha(MANIFEST)},'scope':'Proposed compact retention allowlist only. Excludes every original file and preserved predecessor record. Helpers must be retained as inert .py.txt. No maintained curation or independent-review approval.','files':selected,'file_count':len(selected),'total_bytes':sum(x['bytes'] for x in selected)}
+with SELECTION.open('x') as f:json.dump(selection,f,indent=2);f.write('\n')
+for row in selected:assert sha(Path(row['source_path']))==row['sha256']
+print(json.dumps({'manifest':str(MANIFEST),'manifest_sha256':sha(MANIFEST),'external_file_count':len(files),'external_bytes':manifest['total_bytes'],'selection':str(SELECTION),'selection_sha256':sha(SELECTION),'selected_files':len(selected),'selected_bytes':selection['total_bytes'],'handoff_sha256':sha(ROOT/'HANDOFF.md'),'verification_sha256':sha(verification)},indent=2))

@@ -1,0 +1,42 @@
+from pathlib import Path
+import concurrent.futures
+import datetime
+import hashlib
+import json
+import sys
+import urllib.request
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+attempt = sys.argv[1]
+receipt = ROOT / 'retained' / ('issuing-acquisition-' + attempt + '.json')
+assert not receipt.exists()
+ids = sys.argv[2:]
+
+
+def acquire(identifier):
+    destination = ROOT / 'originals' / ('CHEBI-' + identifier + '.json')
+    assert not destination.exists(), destination
+    url = 'https://www.ebi.ac.uk/chebi/backend/api/public/compound/' + identifier + '/'
+    row = {'requested_id': 'CHEBI:' + identifier, 'url': url, 'utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    try:
+        request = urllib.request.Request(url, headers={'User-Agent': 'PathwayMech-source-research/1.0', 'Accept': 'application/json'})
+        with urllib.request.urlopen(request, timeout=35) as response:
+            body = response.read()
+            row.update({'status': response.status, 'final_url': response.url, 'content_type': response.headers.get('Content-Type'), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()})
+        data = json.loads(body)
+        row['returned_id'] = data.get('chebi_accession')
+        row['identity_exact'] = row['returned_id'] == row['requested_id']
+        with destination.open('xb') as stream:
+            stream.write(body)
+        row['path'] = str(destination)
+    except Exception as exc:
+        row['error'] = repr(exc)
+    return row
+
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+    rows = list(pool.map(acquire, ids))
+with receipt.open('x') as stream:
+    json.dump(rows, stream, indent=2)
+    stream.write('\n')
+print(json.dumps({'receipt': str(receipt), 'attempts': len(rows), 'successes': sum(row.get('identity_exact', False) for row in rows), 'failures': [row for row in rows if not row.get('identity_exact')]}), flush=True)

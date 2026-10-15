@@ -1,0 +1,31 @@
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import urllib.request
+
+ROOT = Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+receipt = ROOT / 'retained/native-comparator-acquisition.json'
+assert not receipt.exists()
+jobs = [
+    ('SULFATE.xml', 'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META%3ASULFATE'),
+    ('PubChem-45479581.json', 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/45479581/JSON'),
+]
+rows = []
+for name, url in jobs:
+    destination = ROOT / 'originals' / name
+    assert not destination.exists()
+    row = {'url': url, 'utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'PathwayMech-source-research/1.0'}), timeout=40) as response:
+            body = response.read()
+            row.update({'status': response.status, 'final_url': response.url, 'content_type': response.headers.get('Content-Type'), 'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest(), 'path': str(destination)})
+        with destination.open('xb') as stream:
+            stream.write(body)
+    except Exception as exc:
+        row['error'] = repr(exc)
+    rows.append(row)
+with receipt.open('x') as stream:
+    json.dump(rows, stream, indent=2)
+    stream.write('\n')
+print(json.dumps(rows, indent=2))

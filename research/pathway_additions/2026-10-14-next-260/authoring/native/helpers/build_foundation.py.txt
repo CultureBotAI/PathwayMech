@@ -1,0 +1,290 @@
+"""Source-author fragment only. All writes are confined to this external package."""
+import collections
+import copy
+import hashlib
+import html
+import json
+from pathlib import Path
+import re
+import shutil
+import sys
+import xml.etree.ElementTree as ET
+import yaml
+
+OUT = Path(__file__).resolve().parents[1]
+REPO = Path('/private/tmp/pathwaymech-next-260-20261014')
+BASE = Path('/private/tmp/pathwaymech-next-260-native')
+BIO = Path('/private/tmp/pathwaymech-next-260-biological-identities')
+CHEM = Path('/private/tmp/pathwaymech-next-260-participant-authorities')
+FORMAL = Path('/private/tmp/pathwaymech-next-260-chemistry-root')
+ID = 'MetaCyc:GALLATE-DEGRADATION-I-PWY'
+def load(p): return json.loads(Path(p).read_text())
+def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+def save(name, x): (OUT/name).write_text(json.dumps(x, indent=2, ensure_ascii=False)+'\n')
+
+clearance = Path('/private/tmp/pathwaymech-next-260-ci/dedup-disposition.json')
+assert sha(clearance) == 'ffdc719cfdff3fa8363f021e328a142391fcf454e4cfa93287e291a98f824f76'
+assert load(clearance)['base'] == 'b2590dfd2385c83fe4f028ecd5309a0407739838'
+shutil.copyfile(clearance, OUT/'retained/dedup-disposition.json')
+context = []
+for name in ['native','primary','chemistry-root','biological-identities','preparation-successor','participant-authorities']:
+    root = Path('/private/tmp/pathwaymech-next-260-'+name)
+    manifest = root/'artifact-manifest.json'
+    rows = load(manifest)['files']
+    for row in rows:
+        path = root/row['path']
+        assert sha(path) == row['sha256'], path
+        assert path.stat().st_size == row['bytes'], path
+    context.append({'package':name,'manifest':str(manifest),'sha256':sha(manifest),'files_rehashed':len(rows),'bytes_rehashed':sum(x['bytes'] for x in rows)})
+for name in ['CLAUDE.md','docs/CURATION.md','docs/HARMONIZATION.md','docs/CAUSAL_GRAPHS.md','docs/IDENTIFIERS.md','.claude/skills/add-pathway/SKILL.md','src/pathwaymech/schema.py','src/pathwaymech/schema/pathwaymech.yaml']:
+    p=REPO/name; dest=OUT/'retained'/name;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(p,dest)
+    context.append({'path':str(p),'sha256':sha(p),'retained':str(dest.relative_to(OUT))})
+save('context-bindings.json', context)
+
+manifest = {x['frame']:x for x in load(BASE/'retained/selected-native-manifest.json')['objects']}
+trees = {}; objects = {}
+for frame,row in manifest.items():
+    assert sha(row['path']) == row['sha256']
+    tree=ET.parse(row['path']).getroot();obj=[x for x in tree if x.get('frameid')==frame]
+    assert len(obj)==1
+    trees[frame]=tree;objects[frame]=obj[0]
+assert len(objects)==141
+activities=load(BASE/'projections/activity-preparation-dispositions.json')
+regulators=load(BASE/'projections/regulator-dispositions.json')
+proteins=load(BASE/'projections/protein-dispositions.json')
+facts=load(BASE/'projections/source-fact-dispositions.json')['facts']
+bio={x['identifier']:x for x in load(BIO/'projections/native-biological-identity-summary.json')}
+chem={x['frame']:x['recommended_identity'] for x in load(CHEM/'retained/identity-dispositions.json')['native_compounds']}
+terms={}
+for p in (REPO/'data/identifier_authorities').glob('*.json'):
+    terms.update(load(p).get('terms',{}))
+for identifier,row in bio.items():
+    if row['current_term']: terms.setdefault(identifier,row['current_term'])
+    elif row['candidate_options']: terms.setdefault(identifier,{'label':row['candidate_options'][0]['term'][1]})
+# Newly selected chemicals use the verified issuing/pinned identity label if not already retained.
+proof=load(CHEM/'retained/native-reagent-chemistry-check.json')
+def collect_labels(value):
+    if isinstance(value,dict):
+        for ident in [value.get('identifier'),value.get('id'),value.get('chebi_id')]:
+            if isinstance(ident,str) and ident.startswith('CHEBI:'):
+                label=value.get('label') or value.get('name')
+                if isinstance(label,str):terms.setdefault(ident,{'label':label})
+        for v in value.values():collect_labels(v)
+    elif isinstance(value,list):
+        for v in value:collect_labels(v)
+collect_labels(proof)
+for ident,entry in proof['issuing_and_pinned'].items():
+    terms.setdefault(ident,{'label':entry['pinned_fields']['rdfs:label']})
+def label(identifier):
+    if identifier in terms:return terms[identifier]['label']
+    raise ValueError('No verified label '+identifier)
+
+record={'id':ID,'label':'gallate degradation II','description':
+ 'Source-defined five-step gallate route through PDC, keto OMA, the formal E,E enol and CHA to pyruvate and oxaloacetate. Native P. putida/PDC extract evidence and component-specific assays have different scopes. Other component taxa do not establish whole-route occurrence. Exact LigJ and BR6020 PmdE E,E catalysis is deferred; historical preparations are not equated with modern reference sequences. The native narrative Z,Z link conflicts with the formal E,E structure. Adjacent activities remain assay context, not additional pathway steps.',
+ 'pathway_type':'degradation','taxa':[{'id':'NCBITaxon:303','label':label('NCBITaxon:303')}],
+ 'participants':[],'reactions':[],'mechanistic_edges':[],'references':[]}
+nodes={};reactions={};refs={};edge_bindings=[]
+def node(identifier,category):
+    if identifier not in nodes:nodes[identifier]={'id':identifier,'label':label(identifier),'category':category}
+    elif category=='cofactor':nodes[identifier]['category']='cofactor'
+    return identifier
+def rxn(identifier,display=None,direction=None,category=None):
+    if identifier not in reactions:
+        reactions[identifier]={'id':identifier,'label':display or label(identifier)}
+        if direction:reactions[identifier]['direction']=direction
+        if category:reactions[identifier]['category']=category
+    return identifier
+def rootloc(frame):return f"/ptools-xml/{objects[frame].tag}[@frameid='{frame}']"
+def binding(frame,paths):
+    out=[]
+    for rel in paths:
+        if rel=='':hits=[objects[frame]]
+        elif (match:=re.fullmatch(r"(left|right)\[Compound/@frameid='([^']+)'\]",rel)):
+            hits=[x for x in objects[frame].findall(match[1]) if any(c.get('frameid')==match[2] for c in x.findall('Compound'))]
+        else:hits=objects[frame].findall(rel)
+        assert hits,(frame,rel)
+        ordinals=collections.Counter();direct=[]
+        for slot in objects[frame]:
+            ordinals[slot.tag]+=1
+            if any(hit is descendant for hit in hits for descendant in slot.iter()):
+                direct.append(rootloc(frame)+f'/{slot.tag}[{ordinals[slot.tag]}]')
+        out.append({'reference_id':'MetaCyc:'+frame,'source_path':manifest[frame]['path'],'source_sha256':manifest[frame]['sha256'],'source_locator':rootloc(frame)+('/'+rel if rel else ''),'matches':len(hits),'direct_slot_locators':direct})
+    return out
+def ev(frame,statement,*paths):
+    assert len(statement)<=400,(frame,len(statement),statement)
+    if frame not in refs:
+        refs[frame]={'id':'MetaCyc:'+frame,'title':f'MetaCyc {frame} native object','url':f'https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id=META:{frame}','source_version':'META27.0 public mirror','source_sha256':manifest[frame]['sha256']}
+    bs=binding(frame,list(paths) or [''])
+    return {'reference_id':'MetaCyc:'+frame,'source_assertion':statement,'source_locator':'; '.join(x['source_locator'] for x in bs)}
+def qual(activity,endpoint='subject',index=1,extra=''):
+    obj=objects[activity];e=obj.findall('evidence')[index-1]
+    code=e.find('Evidence-Code').get('frameid'); pub=e.find('Publication').get('frameid')
+    descriptor={'EV-EXP-IDA-PURIFIED-PROTEIN-NH':'protein purified from its native host','EV-EXP-IDA-PURIFIED-PROTEIN-HH':'recombinant protein purified from a heterologous host','EV-EXP-IDA-PART-PURIFIED-PROTEIN-HH':'partially purified heterologous protein','EV-EXP-IDA-UNPURIFIED-PROTEIN-HH':'unpurified heterologous protein','EV-EXP-IDA-PURIFIED-PROTEIN':'purified protein; expression host unspecified by this evidence code','EV-EXP-IDA-PART-PURIFIED-PROTEIN':'partially purified protein','EV-EXP-IDA-UNPURIFIED-PROTEIN':'unpurified protein','EV-EXP-IDA-PART-PURIFIED-PROTEIN-NH':'partially purified native-host protein'}[code]
+    desc=f'Source-scoped {descriptor}, associated with {pub}. Exact historical sample/reference-sequence equivalence is not asserted.'
+    if extra:desc+=' '+extra
+    assert len(desc)<=400
+    return {'endpoint':endpoint,'kind':'experimental_construct','description':desc,'evidence':[ev(activity,f'{activity} evidence[{index}] attaches {code} and {pub} to its enzyme/activity assignment.',f'evidence[{index}]')]}
+def add(identifier,subject,predicate,object_,description,evidence,qualifiers=None):
+    description=re.sub(r'(?<=[a-z])(?=\d)', ' ', description)
+    row={'id':identifier,'subject':subject,'predicate':predicate,'object':object_,'description':description,'evidence':evidence}
+    if qualifiers:row['endpoint_qualifiers']=qualifiers
+    record['mechanistic_edges'].append(row)
+    for placement,evs in [('edge',evidence)]+[(f'qualifier-{q["endpoint"]}',q['evidence']) for q in qualifiers or []]:
+        for item in evs:
+            frame=item['reference_id'].removeprefix('MetaCyc:')
+            bs=[]
+            for loc in item['source_locator'].split('; '):
+                assert loc.startswith(rootloc(frame))
+                rel=loc[len(rootloc(frame)):].lstrip('/')
+                bs.extend(binding(frame,[rel]))
+            edge_bindings.append({'edge_id':identifier,'placement':placement,'evidence':copy.deepcopy(item),'original_bindings':bs,'evidence_form':'inspected direct structured source slots; no narrative quotation or paraphrase used as source_assertion'})
+
+formal=load(FORMAL/'retained/material-facts.json')['facts']
+rmap={x['native_reaction'].split(':',1)[1]:x['chosen_directional_reaction'] for x in formal}
+displays={'MetaCyc:RXN-11861':'gallate 3,4-dioxygenation to PDC','RHEA:10645':'PDC hydrolysis','RHEA:28932':'keto OMA to formal E,E enol','RHEA:17403':'formal E,E enol hydration to CHA','RHEA:28936':'CHA aldol cleavage'}
+for ident in dict.fromkeys(rmap.values()):rxn(ident,displays[ident],'left_to_right' if ident in ('MetaCyc:RXN-11861','RHEA:10645') else 'reversible','molecular_activity')
+for n,fact in enumerate(formal,1):
+    chemical=node(fact['exact_chebi'],'small_molecule');reaction=fact['chosen_directional_reaction'];inp=fact['role_in_selected_pathway']=='input'
+    se=fact['source_evidence'];frame=se['reference_id'].split(':',1)[1];relative=se['source_locator'][len(rootloc(frame))+1:]
+    e=ev(frame,se['source_assertion'],relative)
+    add(f'native-material-{n:02}',chemical if inp else reaction,'consumes' if inp else 'produces',reaction if inp else chemical,
+        f'Formal pathway {fact["role_in_selected_pathway"]}, coefficient {fact["coefficient"]}. Native traversal {fact["selected_native_traversal"]}; native direction {fact["native_direction"]}. Directional normalization is bound by the separate complete chemical-equation/Rhea proof; this is not an enzyme-specific substrate assay.',[e])
+pw='GALLATE-DEGRADATION-I-PWY'
+for n,slot in enumerate(objects[pw].findall('reaction-ordering'),1):
+    successor=slot.find('Reaction').get('frameid');predecessor=slot.find('predecessor-reactions/Reaction').get('frameid')
+    add(f'native-order-{n}',rmap[predecessor],'precedes',rmap[successor], 'Native pathway ordering; selected flux does not establish thermodynamic irreversibility.',[ev(pw,f'reaction-ordering[{n}] lists {predecessor} as predecessor of {successor}.',f'reaction-ordering[{n}]')])
+for n,slot in enumerate(objects[pw].findall('reaction-list/Reaction'),1):
+    frame=slot.get('frameid')
+    add(f'native-member-{frame}',rmap[frame],'part_of',ID,'One of the five formal native pathway members.',[ev(pw,f'reaction-list[1]/Reaction[{n}] identifies {frame} as a pathway member.',f'reaction-list[1]/Reaction[{n}]')])
+rxn('MetaCyc:TCA',category='pathway')
+add('native-tca-interface','RHEA:28936','provides_input_for','MetaCyc:TCA','The formal aldol cleavage produces oxaloacetate, which the native pathway links to TCA. This is a downstream interface; TCA internal reactions and broader organism scope are not imported.',[ev(pw,'The pathway-link slot names OXALACETIC_ACID and link-target TCA.','pathway-link[1]'),ev('RXN-2464','The native reaction right side lists OXALACETIC_ACID as a product.',"right[Compound/@frameid='OXALACETIC_ACID']")])
+
+for p in proteins:
+    frame=p['frame'];obj=objects[frame];kind='complex' if any(x.get('frameid')=='Protein-Complexes' for x in obj.findall('parent/Protein')) else 'protein'
+    node('MetaCyc:'+frame,kind)
+    for n,slot in enumerate(obj.findall('component'),1):
+        component=slot.find('Protein').get('frameid');count=slot.findtext('coefficient')
+        add(f'native-composition-{frame}-{n}','MetaCyc:'+frame,'has_part','MetaCyc:'+component,f'Native assembly composition: {count} copies of this source component. No alternative historical assembly or recombinant construct is inferred.',[ev(frame,f'component[{n}] names {component} with coefficient {count}.',f'component[{n}]')])
+
+deferred={'ENZRXN-11023':'Homology-only BR6020 PmdE; exact E,E catalysis is not established. The directly assayed E6 enzyme is a distinct sequence/preparation.', 'ENZRXN-3626':'LigJ2000 assay used an unresolved keto/two-enol mixture; later KCH specificity is not formal E,E specificity. No enables fallback.'}
+primary_activities={'ENZRXN-16931':'Primary author owns separate historical/recombinant ProA alternate HMG assays.','ENZRXN-16935':'Primary author owns native ProA OAA assay; native HH code contradicts actual1990 purification.'}
+activity_result=[]
+scientific_scopes={
+ 'ENZRXN-18362':'The native source assigns entry gallate oxygenation to this P. putida complex. Its cited1975 crystalline preparation has no established organism or sequence identity in the paper; the curated assignment does not identify that gift or the separate1982 product-identifying preparations.',
+ 'ENZRXN-11003':'The native source represents the P. putida PDC-isolate hydrolase as unpurified activity. Purified historical P. testosteroni hydrolase measurements belong to MONOMER-3463 and are not transferred here.',
+ 'ENZRXN-3623':'This is the native assignment of the historical purified hydrolase to PDC hydrolysis. Later BR6020 pmdD and reference-sequence links do not establish the identity of the historical assayed sample.',
+ 'ENZRXN-3625':'The native LigI activity is assigned to PDC hydrolysis with purified-protein evidence. Its evidence code leaves expression host unspecified; this edge does not reconstruct an expression vector, tag or complete assayed sequence.',
+ 'ENZRXN-3363':'The native ProL activity is assigned to PDC hydrolysis with purified-protein evidence from1983. The historical preparation is separate from the later NGJ1 cloned reference; no sample sequence equivalence is established.',
+ 'ENZRXN-18372':'The native GalD assignment has partially purified heterologous-protein evidence. It supports a source-scoped catalyst assignment without identifying every extract tautomerization activity with GalD or asserting universal genetic essentiality.',
+ 'ENZRXN-18373':'The native GalB assignment has purified heterologous-protein evidence. Its incorrectly CHA-labelled kinetic substrate slots are excluded from this assertion. The2011 reported244-aa preparation,258-aa reference and240-aa crystal construct remain distinct; a His tag is not established here.',
+ 'ENZRXN-3364':'The native source explicitly assigns the homogeneous1985 ProH activity to formal RXN-2463. No contrary1985 substrate result is established in the inspected sources, but its exact isolated-enol assay specificity remains unverified. This is a curated-source assignment, not a newly read modern-isomer experiment.',
+ 'ENZRXN1G01-1112':'This source-scoped GalC catalyst assignment uses the2011 unpurified heterologous evidence. The separate historical1972 purified-enzyme association does not establish that the old sample was the same modern reference or recombinant construct.',
+ 'ENZRXN-11041':'The native source assigns CHA aldol cleavage to historical unpurified activity associated with the1982 study. Later BR6020 pmdF/current reference links do not establish the historical preparation sequence.',
+ 'ENZRXN-3641':'The native source assigns CHA aldol cleavage to the historical purified P. putida aldolase associated with the1972 study. Its later GalC association does not identify the historical preparation with the2011 recombinant sample.',
+ 'ENZRXN-3627':'The native LigK activity is assigned to CHA aldol cleavage with purified-protein evidence from2003. The separately annotated OAA-decarboxylase activity is adjacent assay context; component evidence alone does not establish a complete gallate-II route in SYK6.',
+ 'ENZRXN-3365':'This catalyst assignment uses the1990 purified ProA evidence. The distinct2001 heterologous evidence and its cofactor annotation remain separate. The historical sample is not identified with the later NGJ1 reference, and optical substrate labels do not establish absolute stereochemistry.',
+ 'ENZRXN-3343':'The native source assigns PCA oxidation to the complex with purified-protein evidence from1981. Its cofactor and halide/acetate effects concern PCA turnover; they do not measure inhibition of gallate turnover or whole-route flux.',
+ 'ENZRXN-16933':'The native source assigns the adjacent R-HMG reaction to the historical native-host purified enzyme associated with1973. This is not a formal gallate-II member, and R-HMG specificity does not establish CHA absolute stereochemistry.',
+ 'ENZRXN-18617':'The native source assigns an adjacent R-HMG reaction to this historical P. putida aldolase with1972 native-purified evidence. The cofactor slot separately cites1973. This preserves distinct source associations without identifying the preparations or adding a formal pathway step.',
+ 'ENZRXN-16934':'The native source assigns adjacent OAA decarboxylation to LigK using2003 purified heterologous-protein evidence. This side activity is not an added formal gallate-II step.'}
+for a in activities:
+    act=a['activity']; enzyme='MetaCyc:'+a['enzyme'];reaction=rmap.get(a['reaction'],'MetaCyc:'+a['reaction']);obj=objects[act]
+    disposition={'activity':act,'enzyme':enzyme,'native_reaction':'MetaCyc:'+a['reaction'],'selected_reaction':reaction,'original_disposition':a['disposition'],'preparation_scope':a['preparation_scope'],'native_reason':a['reason'],'source_slots':copy.deepcopy(a['source_slots']),'edge_ids':[]}
+    if act in deferred:disposition.update(status='deferred-exact-formal-catalysis',reason=deferred[act])
+    elif act in primary_activities:disposition.update(status='primary-author-handoff',reason=primary_activities[act])
+    else:
+        if reaction not in reactions:rxn(reaction,category='molecular_activity')
+        ix=2 if act=='ENZRXN1G01-1112' else 1
+        tier=obj.findall('evidence')[ix-1].find('Evidence-Code').get('frameid')
+        desc=f'Native curated {act} enzyme/reaction assignment, supported at {tier} tier. '+scientific_scopes[act]
+        e=ev(act,f'{act} links enzyme {a["enzyme"]} to reaction {a["reaction"]}; evidence[{ix}] uses {tier}.','enzyme[1]','reaction[1]',f'evidence[{ix}]')
+        eid='native-catalysis-'+act
+        add(eid,enzyme,'catalyzes',reaction,desc,[e],[qual(act,index=ix)])
+        disposition.update(status='included-native-source-assignment',edge_ids=[eid],reason='Exact structured native enzyme/reaction/evidence assignment retained with source scope; no paper narrative represented as structured evidence.')
+        if act in {'ENZRXN-3623','ENZRXN-3365','ENZRXN-18373'}:disposition['integration_action']='Primary author will enrich or replace this exact edge ID with inspected preparation evidence, preserving native assignment provenance.'
+    # Cofactor slots are independent native assertions, not inferred from narrative.
+    for n,slot in enumerate(obj.findall('cofactor'),1):
+        metal=slot.find('Compound').get('frameid');identifier=node(chem[metal],'cofactor');eid=f'native-cofactor-{act}-{n}'
+        pubs=[x.get('frameid') for x in slot.findall('citation/Publication')]
+        matching_evidence=[i for i,e in enumerate(obj.findall('evidence'),1) if e.find('Publication').get('frameid') in pubs]
+        assert len(matching_evidence)==1,(act,pubs,matching_evidence)
+        ix=matching_evidence[0]
+        add(eid,enzyme,'has_cofactor',identifier,f'Native cofactor slot for {act}, citing {", ".join(pubs)}. '+('Historical1972 preparation attribution is distinct from the2011 unpurified heterologous GalC assay. ' if act=='ENZRXN1G01-1112' else '')+'This preserves the source activity/preparation scope; it does not establish every named metal is simultaneously required or the in vivo metal state.',[ev(act,f'cofactor[{n}] names {metal} and cites {", ".join(pubs)}.',f'cofactor[{n}]')],[qual(act,index=ix)])
+        disposition['edge_ids'].append(eid)
+    disposition['identity_reassessment']='Exact source-native component retained. Gene/product/reference links are context, not identification of the historical sample. The frozen biological authority dossier closes current identifier identity without upgrading experimental sequence proof.'
+    if a['enzyme'] in {'CPLX-2781','CPLX-2782','MONOMER-3182'}:
+        disposition['identity_reassessment']+=' Historical P. ochraceae preparations have no established NGJ1 identification; later NGJ1 cloned-reference records remain separate, despite the earlier native research scope wording.'
+    activity_result.append(disposition)
+
+primary_regs={'REG-12639','REG-8377','REG-11532','REG-11531','REG-11530','REG-11529','REG-12638','REG-8393','REG-8391'}
+reg_result=[]
+for reg in regulators:
+    frame=reg['frame'];act=reg['activity'];r=copy.deepcopy(reg);r['edge_ids']=[]
+    if frame in primary_regs:
+        r.update(fragment_disposition='primary-author-handoff',fragment_reason='Agreed exact native row will be integrated by primary author with actual preparation, dose and reagent evidence; no duplicate native effect here.')
+    else:
+        identifier=node(chem[reg['regulator']],'small_molecule');target='MetaCyc:'+reg['catalyst'];eid='native-reg-'+frame.removeprefix('REG-')
+        mech=reg['mechanism'] or 'unspecified mechanism';phys=reg['native_physiologically_relevant']
+        desc=f'Native {frame} effect on {act}: {mech}. The native physiological flag is {phys if phys is not None else "unspecified"}; this is not independent evidence of in vivo feedback. '
+        if act=='ENZRXN-3343':desc+='This targets PCA oxidation, not gallate turnover or whole-route flux. '
+        if act=='ENZRXN-3364':desc+='The source cites the1985 homogeneous hydratase study; it is separate from the1983 partial-fraction experiments. Exact isolated-enol specificity is unverified. '
+        if act in {'ENZRXN-3641','ENZRXN-3363'}:desc+='Historical assay material is not identified with the later gene/modern reference sequence. '
+        evidence=[ev(frame,f'{frame} records mode {reg["mode"]}, regulator {reg["regulator"]}, regulated entity {act}, and mechanism {mech}.','mode[1]','regulator[1]','regulated-entity[1]',*(['mechanism[1]'] if objects[frame].find('mechanism') is not None else []))]
+        add(eid,identifier,'inhibits' if reg['mode']=='-' else 'activates',target,desc,evidence,[qual(act,endpoint='object')])
+        r.update(fragment_disposition='included-native-activity-scoped-effect',edge_ids=[eid],fragment_reason='Direct Regulation mode/regulator/entity slots retained; native source citation and actual activity evidence tier scope the preparation.')
+    reg_result.append(r)
+
+node('GO:0005829','cellular_component')
+g='G1G01-2699-MONOMER'
+add('native-galb-cytosol','MetaCyc:'+g,'located_in','GO:0005829','Native GalB monomer computational cytosol annotation, EV-COMP-AINF with PSORTdb PMID26602691. This is not a localization assay, exclusive localization, complex localization or whole-pathway compartment.',[ev(g,'The location slot names CCO-CYTOSOL. has-go-term[6] names GO:0005829 and contains EV-COMP-AINF with PUB-26602691.','location[1]','has-go-term[6]')])
+record['participants']=list(nodes.values());record['reactions']=list(reactions.values());record['references']=list(refs.values())
+(OUT/'native-foundation.yaml').write_text(yaml.safe_dump(record,sort_keys=False,allow_unicode=True,width=100))
+save('activity-dispositions.json',activity_result);save('regulator-dispositions.json',reg_result)
+save('fragment-to-source.json',edge_bindings)
+# Every native fact is retained with its exact original scientific disposition.
+fact_result=[]
+for f in facts:
+    result=copy.deepcopy(f)
+    locators={s['source_locator'] for s in f['sources']}
+    result['fragment_edges']=sorted({b['edge_id'] for b in edge_bindings if any(locators.intersection(x['direct_slot_locators']) for x in b['original_bindings'])})
+    result['fragment_disposition']='Supported structured subset retained; detailed original disposition and unresolved source conflicts remain controlling. Narrative is context only unless separately supplied as a short primary quotation.'
+    if f['id'] in {'native-fact-003','native-fact-012','native-fact-013','native-fact-015','native-fact-023','native-fact-025'}:
+        result['fragment_disposition']='Explicit conflict, inference, sequence or bounded-absence context retained in this ledger; no conflicting narrative or inferred experiment converted to an extra graph assertion.'
+    fact_result.append(result)
+save('fact-dispositions.json',fact_result)
+slots=load(BASE/'projections/native-slot-disposition-ledger.json')
+if isinstance(slots,dict):
+    slot_key=next(k for k,v in slots.items() if isinstance(v,list) and len(v)==1961);slots=slots[slot_key]
+slot_result=[]
+for s in slots:
+    result=copy.deepcopy(s);loc=s['source_locator']
+    uses=[b for b in edge_bindings if any(loc in x['direct_slot_locators'] for x in b['original_bindings'])]
+    result['fragment_edge_ids']=sorted({b['edge_id'] for b in uses})
+    result['fragment_disposition']='direct-structured-evidence' if uses else 'retained-native-context-or-original-exclusion; no unsupported edge inferred'
+    slot_result.append(result)
+save('source-to-fragment-slots.json',slot_result)
+protein_result=[]
+for p in proteins:
+    r=copy.deepcopy(p);identifier='MetaCyc:'+p['frame'];r['selected_identifier']=identifier;r['fragment_edges']=[x['id'] for x in record['mechanistic_edges'] if identifier in [x['subject'],x['object']]];r['fragment_disposition']='Declared exact native component, independent of whether its formal catalytic assertion is deferred.';protein_result.append(r)
+save('protein-dispositions.json',protein_result)
+genes=[copy.deepcopy(x) for x in bio.values() if x['native_type']=='Gene']
+for g in genes:g['fragment_disposition']='Exact native gene/product and strain/sequence context retained externally; schema has no encodes predicate and no gene edge is invented.'
+save('gene-context-dispositions.json',genes)
+chem_dispositions=[]
+for frame,identifier in chem.items():chem_dispositions.append({'frame':frame,'selected_identity':identifier,'declared_in_fragment':identifier in nodes,'disposition':'selected incident chemical' if identifier in nodes else 'retained formal comparator, adjacent substrate or primary-enrichment reagent context; not forced into this fragment'})
+save('chemical-dispositions.json',chem_dispositions)
+ids=[{'id':record['id'],'section':'record','label':record['label']}]+[dict(x,section=sec) for sec in ['taxa','participants','reactions'] for x in record[sec]]
+save('selected-identifiers.json',{'scope':'Actual native fragment node selection only; reference-only CURIEs are not authority node additions. No optional modern sequence endpoint replaces a native component.','identifiers':ids,'reference_only_ids':sorted(set(x['id'] for x in record['references'])-set(x['id'] for x in ids))})
+# Bounded shape and source-locator replay only; never run repository CI/suites.
+sys.path.insert(0,str(REPO/'src'))
+from pathwaymech.schema import validate_record
+validate_record(record)
+assert len(proteins)==25 and all('MetaCyc:'+p['frame'] in nodes for p in proteins)
+assert sum(x['id'].startswith('native-composition-') for x in record['mechanistic_edges'])==10
+assert len(formal)==17 and len(activity_result)==21 and len(reg_result)==30 and len(fact_result)==26 and len(slot_result)==1961 and len(genes)==15
+assert sum(x['id'].startswith('native-order-') for x in record['mechanistic_edges'])==4
+assert sum(x['id'].startswith('native-member-') for x in record['mechanistic_edges'])==5
+assert not any(x['subject'] in ['MetaCyc:MONOMER-3183','MetaCyc:CPLX-2864'] and x['predicate'] in ['catalyzes','enables'] and x['object']=='RHEA:17403' for x in record['mechanistic_edges'])
+assert all('quote' not in b['evidence'] for b in edge_bindings)
+summary={'status':'passed','role':'author self-check, not independent review or full CI','context_manifest_files_rehashed':sum(x.get('files_rehashed',0) for x in context),'native_originals_rehashed':len(objects),'direct_slots_disposed':len(slot_result),'proteins_declared':25,'assembly_edges':10,'formal_material_edges':17,'order_edges':4,'formal_member_edges':5,'activities_disposed':21,'regulators_disposed':30,'native_effect_edges':21,'primary_handoff_effects':9,'fact_groups_disposed':26,'genes_context_only':15,'participants':len(nodes),'reactions_with_context':len(reactions),'edges':len(record['mechanistic_edges']),'references':len(refs),'evidence_placements_replayed':len(edge_bindings),'paper_quote_words':0,'record_sha256':sha(OUT/'native-foundation.yaml'),'core_gates_run':False}
+save('verification.json',summary);print(json.dumps(summary,indent=2))

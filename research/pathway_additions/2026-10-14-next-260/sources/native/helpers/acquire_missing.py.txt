@@ -1,0 +1,24 @@
+from pathlib import Path
+from lxml import etree
+import urllib.request,urllib.error,urllib.parse,hashlib,json,datetime,sys,concurrent.futures
+ROOT=Path('/private/tmp/pathwaymech-next-260-native')
+def main():
+ missing=json.loads((ROOT/'projections/missing-source-objects.json').read_text());frames=sorted({x['frame'] for x in missing})
+ def acquire(frame):
+  url='https://bf2i-artsymbiocyc.insa-lyon.fr/getxml?id='+urllib.parse.quote('META:'+frame,safe='')
+  row={'frame':frame,'requested_url':url,'retrieved_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()};dest=ROOT/'originals'/(frame+'.xml')
+  try:
+   assert not dest.exists(),'refuse overwrite'
+   with urllib.request.urlopen(url,timeout=45) as r:body=r.read();row.update(status=r.status,final_url=r.url,content_type=r.headers.get('Content-Type'))
+   dest.write_bytes(body);row.update(path=str(dest),bytes=len(body),sha256=hashlib.sha256(body).hexdigest())
+   tree=etree.fromstring(body);obj=[x for x in tree if x.get('frameid')==frame and x.get('detail')=='full'];assert len(obj)==1
+   row.update(object_type=obj[0].tag,query=tree.findtext('metadata/query'),version=tree.find('metadata/PGDB').get('version'),verified_full_exact_object=True)
+   assert row['query']=='META:'+frame
+  except urllib.error.HTTPError as e:
+   body=e.read();dest=ROOT/'originals'/(frame+'.http-error');dest.write_bytes(body);row.update(status=e.code,path=str(dest),bytes=len(body),sha256=hashlib.sha256(body).hexdigest(),error=str(e))
+  except Exception as e:row['error']=repr(e)
+  return row
+ with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool:rows=list(pool.map(acquire,frames))
+ out=ROOT/('acquisition-'+sys.argv[1]+'.json');assert not out.exists();out.write_text(json.dumps(rows,indent=2)+'\n')
+ print(json.dumps(rows,indent=2))
+if __name__=='__main__':main()

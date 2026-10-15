@@ -1,0 +1,54 @@
+from pathlib import Path
+import datetime,hashlib,json,collections
+ROOT=Path('/private/tmp/pathwaymech-next-260-participant-authorities');PREP=Path('/private/tmp/pathwaymech-next-260-preparation-successor')
+OUT=ROOT/'retained/primary-binding-and-verification.json';assert not OUT.exists()
+def sha(p):
+ h=hashlib.sha256()
+ with p.open('rb') as f:
+  for block in iter(lambda:f.read(4*1024*1024),b''):h.update(block)
+ return h.hexdigest()
+expected={'HANDOFF.md':'80ce4b1383c9d432d54424e5bc2254bde1b646b0658c8c6f1088531009564ae8','artifact-manifest.json':'491da6e7a6852aaefe1533ea6ed95107ebbbf8fbc1696be12514ef40810747bb','claim-disposition-ledger.json':'fd6da28356747837c9dbe2b0098385bf4f4b0a91c2e19f1c14377dc4193de971'}
+bindings=[]
+for n,h in expected.items():
+ p=PREP/n;assert sha(p)==h;bindings.append({'path':str(p),'sha256':h,'bytes':p.stat().st_size})
+manifest=json.loads((PREP/'artifact-manifest.json').read_text());verified=[]
+for r in manifest['files']:
+ p=PREP/r['path'];assert p.stat().st_size==r['bytes'] and sha(p)==r['sha256'];verified.append({'relative_path':r['path'],'bytes':r['bytes'],'sha256':r['sha256']})
+new=json.loads((PREP/'claim-disposition-ledger.json').read_text())['facts'];assert len(new)==122
+oldpath=Path('/private/tmp/pathwaymech-next-260-primary/author/claim-ledger.json');old=json.loads(oldpath.read_text());assert len(old)==57
+old_sources={}
+for r in old:
+ s=r['source'];p=Path(s['path']);assert sha(p)==s['sha256'];old_sources[s['path']]=s
+facts={r['id']:r for r in new}|{r['claim_id']:r for r in old}
+dp=ROOT/'retained/identity-dispositions.json';d=json.loads(dp.read_text());mapped=collections.defaultdict(list)
+for c in d['source_reagent_cases']:
+ for fid in c['source_fact_ids']:
+  assert fid in facts,(c['key'],fid);mapped[fid].append(c['key'])
+sp=ROOT/'retained/solvent-control-check.json';solvent=json.loads(sp.read_text());assert solvent['all_checks_pass']
+late=[{'fact':'prep-119','disposition':'Link the exact hypothesis to phosphorous-acid-connectivity and bicarbonate cases; source discussion supports intended P–H connectivity but does not measure assay speciation.','related_cases':['phosphorous-acid-connectivity','bicarbonate'],'ids':[]},
+      {'fact':'prep-120','disposition':'Conditional no-activation and no-stability-enhancement context; verified ethanol/acetone identities do not establish solvent tolerance or absence of molecular binding.','related_cases':[],'ids':['CHEBI:16236','CHEBI:15347']},
+      {'fact':'prep-121','disposition':'Keep buffer comparison as whole-assay context with exact named buffers and pH. No isolated molecular inhibition or additional graph edge is proposed from comparison of Tris-acetate, veronal, glycylglycine, Hepps, Tris-HCl and potassium phosphate.','related_cases':['Pi-mixture'],'ids':[]},
+      {'fact':'prep-122','disposition':'Keep Pi/bicarbonate nonenzymatic-control result separate from enzyme activation; no additional enzyme reaction or universal negative chemical effect.','related_cases':['Pi-mixture','bicarbonate'],'ids':[]}]
+for x in late:assert x['fact'] in facts;mapped[x['fact']].append('late-context-'+x['fact'])
+scope_rows=[]
+for fid,r in facts.items():
+ scope_rows.append({'fact_id':fid,'source_topic':r.get('topic'),'identity_cases':mapped.get(fid,[]),'scope_disposition':'Chemical identity cases explicitly linked; primary preparation, direction and measurement limits remain controlling.' if fid in mapped else 'Retained by primary author as formal chemistry, preparation, biology, analytical/growth context, inference or deferred evidence. This identity dossier makes no new chemical-entity selection for this fact.','primary_source_disposition':r.get('proposed_disposition') or r.get('disposition')})
+np=ROOT/'retained/native-reagent-chemistry-check.json';n=json.loads(np.read_text())
+expected_native_false={'CYS':['cml_stereochemical_key_equals_issuing'],'CUSO4':['native_inchi_exact_issuing','native_key_exact_issuing'],'CPD-29':['native_inchi_exact_issuing','native_key_exact_issuing','cml_charge_equals_issuing','cml_atoms_equal_issuing','cml_connectivity_equals_issuing','cml_stereochemical_key_equals_issuing','native_smiles_charge_equals_issuing','native_smiles_key_equals_issuing'],'DITHIO-NITROBENZOATE':['native_inchi_exact_issuing','native_key_exact_issuing','cml_charge_equals_issuing','cml_atoms_equal_issuing','cml_connectivity_equals_issuing','cml_stereochemical_key_equals_issuing']}
+actual={x['frame']:x['false_fields'] for x in n['raw_comparison_mismatches']};assert actual==expected_native_false
+assert all(all(x['checks'].values()) for x in n['issuing_and_pinned'].values())
+assert all(n['copper_sulfate_composition']['checks'].values()) and all(n['hmg_stereochemistry']['checks'].values())
+assert len(n['native_inventory'])==32 and len(n['native_direct_reconstruction'])==22
+proof_files=['native-reagent-chemistry-check.json','additional-authority-check.json','final-comparator-check.json','solvent-control-check.json','salt-and-alternative-balance-check.json','identity-dispositions.json','next259-impact-check.json','next259-preservation-receipt.json']
+proof_bindings=[{'path':str(ROOT/'retained'/x),'sha256':sha(ROOT/'retained'/x)} for x in proof_files]
+a=json.loads((ROOT/'retained/additional-authority-check.json').read_text());s=json.loads((ROOT/'retained/final-comparator-check.json').read_text());b=json.loads((ROOT/'retained/salt-and-alternative-balance-check.json').read_text())
+assert a['all_machine_checks_pass'] and s['all_checks_pass'] and b['all_checks_pass']
+ids=set(a['issuing_authorities'])|{x['id'] for x in s['compounds']}|{x['id'] for x in solvent['compounds']};assert len(ids)==129
+originals=[]
+for p in sorted((ROOT/'originals').rglob('*')):
+ if p.is_file():originals.append({'path':str(p),'relative_path':str(p.relative_to(ROOT)),'bytes':p.stat().st_size,'sha256':sha(p)})
+raw_manifest=ROOT/'retained/external-originals-manifest.json';assert not raw_manifest.exists()
+raw_manifest.write_text(json.dumps({'scope':'Full downloaded public chemical originals plus preserved next259 comparison inputs. External retention only; no blanket request to copy raw sources to maintained research.','files':originals},indent=2)+'\n')
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Chemical source-author verification; no scientific-review verdict or production test claim','frozen_primary_bindings':bindings,'primary_manifest_replay':{'files':len(verified),'bytes':sum(x['bytes'] for x in verified),'all_exact':True,'rows':verified},'earlier_entry_claim_ledger':{'path':str(oldpath),'sha256':sha(oldpath),'fact_count':len(old),'unique_source_artifacts_rehashed':list(old_sources.values())},'identity_dispositions':{'path':str(dp),'sha256':sha(dp),'case_count':len(d['source_reagent_cases']),'native_compound_count':32},'late_context_dispositions':late,'all_primary_fact_scope_rows':scope_rows,'coverage':{'primary_facts_accounted':len(scope_rows),'new_preparation_facts':122,'earlier_entry_facts':57,'native_compounds':32,'formal_compounds_reused':11,'native_compounds_freshly_checked':21,'additional_native_sulfate_constituent':1,'chebi_candidates_verified':129,'chebi_class_or_representation_limited_entries':sum(x['type'].startswith('class') for x in a['issuing_authorities'].values()),'pubchem_candidates_verified':5,'formula_level_salts_checked':20,'salt_components_reconstructed':4,'alternative_balances_checked':3},'expected_native_comparison_limits':expected_native_false,'unexpected_native_comparison_failures':[],'proof_bindings':proof_bindings,'external_originals_manifest':{'path':str(raw_manifest),'sha256':sha(raw_manifest),'files':len(originals)},'all_bounded_checks_pass':True,'limits':['All candidate records were rehashed and parsed, but chemical closure does not establish the primary assay used a particular microstate or hydrate.','Raw missing/incompatible native fields are preserved and dispositioned; the all-checks result does not mean every raw native xref or CML field agrees.','This binds the primary author’s scientific source preparation. This chemical author read the full claim ledgers and relevant original-derived ProA passages and visually inspected ProA-Pi pp338–339, but does not claim a new independent complete review of every primary paper.','No production gates were rerun and no maintained source, record, authority or GitHub item was changed.','No current-state deduplication or source-exhaustion claim is made; parent must perform post-merge deduplication before new maintained curation.']}
+with OUT.open('x') as stream:json.dump(result,stream,indent=2);stream.write('\n')
+print(json.dumps({'output':str(OUT),'all_checks_pass':True,'coverage':result['coverage']}))

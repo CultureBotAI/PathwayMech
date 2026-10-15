@@ -1,0 +1,88 @@
+"""Read generated pages and independently check graph/evidence/qualifier linkage."""
+import collections
+import datetime
+import hashlib
+from html.parser import HTMLParser
+import json
+from pathlib import Path
+import re
+import yaml
+
+ROOT=Path('/private/tmp/pathwaymech-next-260-20261014')
+OUT=Path('/private/tmp/pathwaymech-next-260-independent-technical')
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+class Node:
+    def __init__(self,tag,attrs): self.tag=tag; self.attrs=dict(attrs); self.children=[]
+    def text(self): return ''.join(x if isinstance(x,str) else x.text() for x in self.children)
+class DOM(HTMLParser):
+    def __init__(self): super().__init__(convert_charrefs=True); self.root=Node('root',[]);self.stack=[self.root];self.nodes=[]
+    def handle_starttag(self,tag,attrs):
+        n=Node(tag,attrs);self.stack[-1].children.append(n);self.nodes.append(n)
+        if tag not in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}: self.stack.append(n)
+    def handle_startendtag(self,tag,attrs):
+        n=Node(tag,attrs);self.stack[-1].children.append(n);self.nodes.append(n)
+    def handle_endtag(self,tag):
+        for i in range(len(self.stack)-1,0,-1):
+            if self.stack[i].tag==tag: self.stack=self.stack[:i];break
+    def handle_data(self,data): self.stack[-1].children.append(data)
+
+checks=[];bindings={};counts={}
+def check(name,condition,**details):checks.append(dict(name=name,passed=bool(condition),**details))
+def norm(s):return re.sub(r'\s+',' ',s).strip()
+for name in ['gallate-degradation-ii','gallate-degradation-i','protocatechuate-meta-cleavage']:
+    p=ROOT/'data/pathways'/f'{name}.yaml';bindings[str(p.relative_to(ROOT))]=sha(p)
+    r=yaml.safe_load(p.read_text())
+    slug=r['id'].replace(':','_').replace('/','_')
+    page=ROOT/'pages/records'/f'{slug}.html'
+    assert page.is_file(),page
+    bindings[str(page.relative_to(ROOT))]=sha(page)
+    dom=DOM();dom.feed(page.read_text())
+    idlist=[n.attrs['id'] for n in dom.nodes if n.attrs.get('id')];ids=set(idlist)
+    idmap={n.attrs['id']:n for n in dom.nodes if n.attrs.get('id')}
+    check('page DOM identifiers are unique',len(idlist)==len(ids),record=r['id'])
+    links=[n.attrs['href'][1:] for n in dom.nodes if n.attrs.get('href','').startswith('#')]
+    check('every local navigation target exists',all(x in ids for x in links),record=r['id'])
+    graphnodes={n.attrs['data-node-id']:n for n in dom.nodes if n.tag=='a' and n.attrs.get('data-node-id')}
+    graphedges=[n for n in dom.nodes if n.tag=='a' and 'graph-edge' in n.attrs.get('class','').split()]
+    declared={r['id']}|{n['id'] for s in ['taxa','participants','reactions'] for n in r[s]}
+    qualcount=sum(len(e.get('endpoint_qualifiers',[])) for e in r['mechanistic_edges'])
+    check('all declared base nodes and qualified instances present',set(graphnodes)>=declared and len(graphnodes)==len(declared)+qualcount,record=r['id'])
+    check('every mechanistic edge has one SVG link',len(graphedges)==len(r['mechanistic_edges']),record=r['id'])
+    counts[r['id']]={'record_sha256':sha(p),'page_sha256':sha(page),'declared_nodes':len(declared),'display_nodes':len(graphnodes),'edges':len(graphedges),'qualifiers':qualcount}
+    for index,(e,link) in enumerate(zip(r['mechanistic_edges'],graphedges),1):
+        row=idmap.get(f'mechanism-edge-{index}')
+        check('SVG arrow points to actual matching evidence row',link.attrs.get('href')==f'#mechanism-edge-{index}' and row is not None and row.tag=='tr',record=r['id'],edge=e['id'])
+        check('SVG predicate preserved',link.attrs['data-predicate']==e['predicate'],edge=e['id'])
+        check('SVG edge endpoint display nodes exist',link.attrs['data-subject'] in graphnodes and link.attrs['data-object'] in graphnodes,edge=e['id'])
+        quals={q['endpoint']:q for q in e.get('endpoint_qualifiers',[])}
+        for role in ['subject','object']:
+            q=quals.get(role);display=link.attrs['data-'+role]
+            check('native biological endpoint retained beside qualified display',link.attrs.get('data-'+role+'-id',display)==e[role],edge=e['id'],role=role)
+            if q:
+                qnode=graphnodes[display]
+                qdiv=idmap.get(f'mechanism-edge-{index}-qualifier-{role}')
+                check('qualified graph instance retains base ID and edge role anchor',display!=e[role] and qnode.attrs.get('data-base-node-id')==e[role] and qnode.attrs.get('href')==f'#mechanism-edge-{index}-qualifier-{role}',edge=e['id'],role=role)
+                check('complete qualification visible without JavaScript',qdiv is not None and q['description'] in qdiv.text(),edge=e['id'],role=role)
+                if qdiv:
+                    for ev in q['evidence']:
+                        check('qualifier evidence visible with source locator',ev['reference_id'] in qdiv.text() and ev.get('quote',ev.get('source_assertion')) in qdiv.text() and (not ev.get('source_locator') or ev['source_locator'] in qdiv.text()),edge=e['id'],role=role)
+        if row:
+            check('edge ID endpoints, description and predicate visible in evidence row',e['subject'] in row.text() and e['object'] in row.text() and e['predicate'] in row.text() and e.get('description','') in row.text(),edge=e['id'])
+            for ev in e['evidence']:
+                check('full edge evidence and locator visible',ev['reference_id'] in row.text() and ev.get('quote',ev.get('source_assertion')) in row.text() and (not ev.get('source_locator') or ev['source_locator'] in row.text()),edge=e['id'])
+    assertions=[v['source_assertion'] for e in r['mechanistic_edges'] for v in e['evidence'] if 'source_assertion'in v]+[v['source_assertion'] for e in r['mechanistic_edges'] for q in e.get('endpoint_qualifiers',[]) for v in q['evidence'] if 'source_assertion'in v]
+    quotations=[n.text() for n in dom.nodes if n.tag=='blockquote']
+    check('structured assertions are never presented as quotations',not any(a in q for a in assertions for q in quotations),record=r['id'])
+    for node in r['reactions']:
+        if node.get('direction'):
+            rows=[n for n in dom.nodes if n.tag=='tr' and n.attrs.get('id','').startswith('component-') and node['id'] in n.text()]
+            check('source direction retained in component table',len(rows)==1 and node['direction'].replace('_',' ') in rows[0].text(),record=r['id'],node=node['id'])
+kgx=json.loads((OUT/'kgx-replay-1.json').read_text())
+for filename,entry in kgx['outputs'].items():
+    p=ROOT/'pages/downloads'/filename
+    bindings[str(p.relative_to(ROOT))]=sha(p)
+    check('published KGX downloads equal independent full-corpus export',sha(p)==entry['sha256'],path=str(p))
+check('all three records retain KGX-reviewed bytes',all(kgx['records'][path]==h for path,h in bindings.items() if path.startswith('data/')))
+result={'created_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'role':'Fresh independent generated-page DOM and export check','bindings':bindings,'counts':counts,'checks':checks,'passed':sum(c['passed'] for c in checks),'failed':sum(not c['passed'] for c in checks),'limits':['Structural and accessible-text verification; no browser screenshot or interactive-control visual inspection in this report.']}
+dest=OUT/'pages-replay-1.json';assert not dest.exists();dest.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
+print(json.dumps({'report':str(dest),'sha256':sha(dest),'passed':result['passed'],'failed':result['failed'],'failures':[c for c in checks if not c['passed']]}))

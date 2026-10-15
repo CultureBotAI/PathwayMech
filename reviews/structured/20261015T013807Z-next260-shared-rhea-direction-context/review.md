@@ -1,0 +1,568 @@
+# Bounded review of shared Rhea direction and native source context
+
+- Review: 20261015T013807Z-next260-shared-rhea-direction-context
+- Repository: CultureBotAI/PathwayMech
+- Started UTC: 2026-10-15T00:39:02.084820Z
+- Finished UTC: 2026-10-15T01:38:07.594407Z
+- Reviewer: Codex independent scientific reviewer /root/next260_scientific_review (independent)
+- Completion: completed
+- Verdict: pass_with_limitations
+- Scientific review: true
+
+## Summary
+
+The two preexisting records now distinguish issuing Rhea member orientation from native reversibility. Six direction fields and 15 descriptions are source-supported; all other parsed record content is unchanged. This is a bounded scientific correction review, not a new full review of either predecessor.
+
+## Scope And Provenance
+
+Only shared RHEA:28932/17403/28936 direction metadata and its connected source context, plus gallate I native002–005 entry-direction wording.
+
+Selection: Two preexisting records returned by the parent ignored-inclusive exact shared-ID inventory; new gallate II receives a separate full record review.
+Coverage: partial; 2 reviewed / 2 in the declared population.
+Source: working_tree at Git base b2590dfd2385c83fe4f028ecd5309a0407739838.
+Working-tree hashes do not imply those bytes were committed.
+
+| Target | Path / selector | Kind | Label |
+| --- | --- | --- | --- |
+| MetaCyc:GALLATE-DEGRADATION-II-PWY | data/pathways/gallate-degradation-i.yaml # reactions with id RHEA:28932, RHEA:17403, RHEA:28936: direction metadata and connected material-edge context only; native-002 through native-005 descriptions of GALLATE-DIOXYGENASE-RXN source direction | maintained | gallate degradation I |
+| MetaCyc:P184-PWY | data/pathways/protocatechuate-meta-cleavage.yaml # reactions with id RHEA:28932, RHEA:17403, RHEA:28936: direction metadata and connected material-edge context only | maintained | protocatechuate degradation I (meta-cleavage pathway) |
+
+## Validation
+
+| Check | Status | Required | Targets | Result |
+| --- | --- | --- | --- | --- |
+| just render-pages | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Rendered257 pathway records; shared root run, not duplicated by this reviewer. |
+| just validate | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Validated257 records, the closed LinkML schema, identifiers/labels,18925 evidence blocks,457 history records and current pages. |
+| just test | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Full suite passed:5255 passed,3 skipped,7 warnings. Elapsed runner time1873.05s; pytest reports1869.41s. |
+| just lint | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Ruff reports all checks passed. |
+| just vendored-check initial DNS-limited attempt | failed | False | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Historical failed attempt: sandbox DNS could not resolve raw.githubusercontent.com for the pinned canonical artifact. This diagnostic attempt was superseded by the successful unchanged-input current gate below; it is not silently erased. |
+| just vendored-check | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Bounded network retry passed:22 governed artifacts match the pinned CLAW revision. No tested inputs changed. |
+| git diff --check | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Working-tree git diff whitespace check passed. |
+| git diff --cached --check | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | Cached git diff whitespace check passed. |
+| Canonical inspect and unchanged-input verification | passed | True | MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY | All prior canonical target/context hashes remained unchanged; exact gate/preservation/authority receipts were appended through a fresh canonical inspection before final assessment. |
+
+## Scientific And Domain Assessments
+
+### Retain separate pathway identities
+
+scope: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY.
+
+The two preexisting records share three downstream Rhea members, which defines this narrow correction cohort. Their distinct source-defined entry reactions and route memberships remain separate. Shared downstream chemistry does not justify lumping gallate degradation I with protocatechuate meta-cleavage.
+
+### Issuing-consistent node directions
+
+representation: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY.
+
+Both records now set RHEA:28932 left_to_right, RHEA:17403 right_to_left and RHEA:28936 left_to_right. Original Rhea quartet sides and native REVERSIBLE annotations support the separation. Hydration still runs CHM plus water to CHA; right_to_left is relative to master 17401. No bidirectional equilibrium identity was substituted.
+
+### GallateI native source orientation wording
+
+evidence: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY.
+
+Native gallate-I edges002–005 now state PHYSIOL-LEFT-TO-RIGHT, matching original GALLATE-DIOXYGENASE-RXN. RHEA:28928 and its material flow remain unchanged; the full original RDF independently confirms gallate plus oxygen to keto OMA plus two hydrons.
+
+### Bounded correction and explicit exclusions
+
+consistency: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY.
+
+Independent recursive comparison confirms exactly21 scalar changes: six directions and 15 descriptions. Native spontaneous-conversion context and opposite-side hydration context are preserved. The verdict covers these fields only and gives no new approval of unrelated predecessor claims.
+
+### Production checks on the bounded final records
+
+schema: supported. Targets: MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY.
+
+Both final predecessor byte sets remained unchanged through the shared full gates. The mechanical pass supports the bounded metadata correction; it does not expand scientific coverage to unrelated predecessor claims.
+
+## Findings
+
+No findings recorded within this review's declared scope.
+
+## Recommended Actions And Acceptance Checks
+
+## Category Boundaries
+
+- retain: MetaCyc:GALLATE-DEGRADATION-II-PWY, MetaCyc:P184-PWY. Distinct source-defined pathways share only a downstream reaction cohort. Correct direction metadata without merging pathway identities or importing broader biological scope.
+
+## Evidence
+
+| Evidence | Reference / locator | Support | Observation |
+| --- | --- | --- | --- |
+| ev-rhea-families | research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-original-family-binding.json; Complete independently produced file; hash-verified retained copy. | supports | Independent parse of the complete original Rhea RDF, merging repeated subject fragments. Bound all members of the 28931,17401,28935 quartets, chemical sides, participant/compound links and coefficient predicates. This is source replay, not reliance on author conclusions. |
+| ev-rhea-additional | research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-additional-original-families.json; Complete independently produced file; hash-verified retained copy. | supports | Independent original RDF closure for 18169 and 28927 families. RHEA:18170 consumes one stereochemistry-unspecified CHEBI:17742 and produces one each CHEBI:36655 and 15361. RHEA:28928 consumes gallate and oxygen and produces keto OMA and two hydrons. |
+| ev-direction-semantics | https://www.rhea-db.org/help/reaction-side-direction; Issuing direction and net-flux documentation, independently inspected. | supports | Directional quartet members encode net flux. Bidirectional denotes equilibrium, so chemical reversibility does not warrant substituting the bidirectional identifier. RHEA:17403 is right-to-left relative to master 17401, while its displayed directional equation represents CHM plus water to CHA. |
+| ev-bounded-diff | research/pathway_additions/2026-10-14-next-260/reviews/independent-science/bounded-direction-independent-final-diff.json; Complete independently produced file; hash-verified retained copy. | supports | Independent complete-object comparison of actual before/after bytes: exactly six direction scalars and 15 descriptions changed. Other nodes, endpoints, predicates, material coefficients, evidence, qualifiers and references are unchanged. Original four MetaCyc direction fields are included. |
+| ev-observations | research/pathway_additions/2026-10-14-next-260/reviews/independent-science/advance-observations.json; Complete independently produced file; hash-verified retained copy. | supports | Actual prepublication observations, later exact capture and verified corrections. No earlier full YAML was reconstructed and no canonical historical finding is invented. |
+| ev-gates | research/pathway_additions/2026-10-14-next-260/reviews/verification/receipts.json; All eight actual command attempts with original log hashes; logs independently opened and verified. | supports | Root-owned shared run: render,validate,test,lint,working/cached diff checks passed. Test result5255 passed,3 skipped,7 warnings. The first vendored attempt failed on DNS; unchanged-input bounded retry passed all22 governed artifacts. Initial failure remains explicit. |
+| ev-preservation | research/pathway_additions/2026-10-14-next-260/reviews/verification/final-input-preservation.json; All2026 tested core files; ignored/hidden files included and runtime caches excluded. | supports | Root rehashed all2026 original tested files unchanged across the bounded network retry. This reviewer separately rechecked every previously captured canonical input hash; only new post-gate proof inputs were appended. |
+| ev-authority-consumer | research/pathway_additions/2026-10-14-next-260/authority/retained/identifier-policy-verification.json; Final actual-corpus offline identifier/name/native entity typing consumer. | supports | Canonical consumer passed257 records against5023 authority terms, including exact new record72e4685f…a19353. Original source semantics were reviewed independently; this consumer is a mechanical check. |
+
+## Limits And Additional Notes
+
+- Coverage is partial by field, with both selected records inspected for the bounded diff. Unrelated predecessor evidence, taxa, preparations and quantitative claims were not independently re-reviewed.
+- This clean bounded review does not close any unrelated unresolved finding or rewrite an earlier review.
+- Required full repository gates are shared root-owned checks, not newly rerun independently by this reviewer.
+- Actual initial snapshots and final exact bytes were compared; no historical draft was reconstructed.
+- Prepublication observations remain in an evidence-linked ledger, not invented canonical previous_occurrences.
+- Final gate logs were inspected directly and their hashes verified. The initial DNS failure is retained as a historical failed attempt; the same required gate later passed on unchanged inputs.
+- Provisional review-format checks initially rejected YAML aliases and a non-timestamp-prefixed review ID. Formatting was corrected and both provisional contents passed; these were review-document formatting errors, not record defects or production gate failures.
+
+## Complete Structured Record
+
+The sibling review.yaml is authoritative.
+
+```yaml
+schema_version: 1.0.0
+review_id: 20261015T013807Z-next260-shared-rhea-direction-context
+kind: category
+repository: CultureBotAI/PathwayMech
+title: Bounded review of shared Rhea direction and native source context
+started_at: '2026-10-15T00:39:02.084820Z'
+reviewer:
+  identity: Codex independent scientific reviewer /root/next260_scientific_review
+  kind: agent
+  independence: independent
+  independence_basis: Fresh delegated reviewer; did not author pathway records, native/primary
+    fragments, authority packages or predecessor fixes. Read original sources and
+    produced independent source/chemistry replays. Feedback to authors and correction
+    verification do not substitute for source inspection. Root owns all maintained
+    writes and production gates.
+skill: .claude/skills/review-yaml-category/SKILL.md
+scientific_review: true
+native_verdict: Selected direction and source-context fields supported; unrelated
+  record claims excluded.
+summary: The two preexisting records now distinguish issuing Rhea member orientation
+  from native reversibility. Six direction fields and 15 descriptions are source-supported;
+  all other parsed record content is unchanged. This is a bounded scientific correction
+  review, not a new full review of either predecessor.
+source:
+  git_revision: b2590dfd2385c83fe4f028ecd5309a0407739838
+  state: working_tree
+  inputs:
+  - path: data/pathways/gallate-degradation-i.yaml
+    sha256: a6e0e8f52880ccb651e02526dbd627240ec7e46a637d2eabfd790846156d21b0
+    role: target
+  - path: data/pathways/protocatechuate-meta-cleavage.yaml
+    sha256: c36339efcbc6aeef084826b2b8a66fcbea46240aeed6c68c0275602fae21ea49
+    role: target
+  - path: docs/CAUSAL_GRAPHS.md
+    sha256: 4f3f46d1f4b8ebafa9b2d04d9700510df18b6ec6f881856fda521879f494d153
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/authority/retained/identifier-policy-verification.json
+    sha256: 00215c5ad3d25ef4c10a468dc951827752322e519a796f1000e7a88c18b58efd
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/advance-observations.json
+    sha256: a91cc323dcfe4bc41017d19168c1752cf9a478dc3c800a36574094e6d0730050
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/bounded-direction-independent-final-diff.json
+    sha256: 9e29c5147ce58d33567748c4660b6fae989d4c5a2174958c4b1894febed1b38b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-additional-original-families.json
+    sha256: fe5c0a653911a3811f707b750c48190b2f8eb24dc8fad0166e4a51f51f2c114b
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-family-summary.json
+    sha256: 34c5d7b8482a67b8362baa1b0da3f29d9690f502a15b0bf18db2edca0a5bf928
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-original-family-binding.json
+    sha256: 6cd72d5036e468fc7d53f861ad38b275cba1879a32064f7ca6884508eab5b027
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/final-input-preservation.json
+    sha256: 8d5a49d9256d662fedac9197385118a105d3aa2c318eebae55bc650b83f5d377
+    role: context
+  - path: research/pathway_additions/2026-10-14-next-260/reviews/verification/receipts.json
+    sha256: 3b575a30cb2d3427fe4c99b57bf4146f4fd99621e513ca9bd7b6e28f179439bc
+    role: context
+scope:
+  description: Only shared RHEA:28932/17403/28936 direction metadata and its connected
+    source context, plus gallate I native002–005 entry-direction wording.
+  selection: Two preexisting records returned by the parent ignored-inclusive exact
+    shared-ID inventory; new gallate II receives a separate full record review.
+  coverage: partial
+  population_size: 2
+  reviewed_target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  exclusions:
+  - target: All other fields and claims in both predecessor records
+    reason: Outside the authorized bounded correction scope; no new full scientific
+      rereview or prior-review closure is asserted.
+targets:
+- target_id: MetaCyc:GALLATE-DEGRADATION-II-PWY
+  path: data/pathways/gallate-degradation-i.yaml
+  selector: 'reactions with id RHEA:28932, RHEA:17403, RHEA:28936: direction metadata
+    and connected material-edge context only; native-002 through native-005 descriptions
+    of GALLATE-DIOXYGENASE-RXN source direction'
+  label: gallate degradation I
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/gallate-degradation-i.yaml
+    role: maintained pathway record
+- target_id: MetaCyc:P184-PWY
+  path: data/pathways/protocatechuate-meta-cleavage.yaml
+  selector: 'reactions with id RHEA:28932, RHEA:17403, RHEA:28936: direction metadata
+    and connected material-edge context only'
+  label: protocatechuate degradation I (meta-cleavage pathway)
+  kind: maintained
+  owner_paths:
+  - repository: CultureBotAI/PathwayMech
+    path: data/pathways/protocatechuate-meta-cleavage.yaml
+    role: maintained pathway record
+checks:
+- check_id: gate-render-pages
+  name: just render-pages
+  status: passed
+  required: true
+  summary: Rendered257 pathway records; shared root run, not duplicated by this reviewer.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just render-pages
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T00:54:48.242841+00:00; original log SHA256 ec95b2b9a144111df01a7a2ee3f5c3a71092b1cc0bfe6a187c5d4f35b1dd588b.
+- check_id: gate-validate
+  name: just validate
+  status: passed
+  required: true
+  summary: Validated257 records, the closed LinkML schema, identifiers/labels,18925
+    evidence blocks,457 history records and current pages.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just validate
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T00:56:56.587815+00:00; original log SHA256 04f9e56cafe9ee511dc1491dafca917af804d367e10bebd823f2ac71edcdab47.
+- check_id: gate-test
+  name: just test
+  status: passed
+  required: true
+  summary: Full suite passed:5255 passed,3 skipped,7 warnings. Elapsed runner time1873.05s;
+    pytest reports1869.41s.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just test
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T01:02:43.129900+00:00; original log SHA256 5c56d7d13c267f32a89b40c91b8f7f6da77cd53a6bbeb0d70616aa3ca22f3df1.
+- check_id: gate-lint
+  name: just lint
+  status: passed
+  required: true
+  summary: Ruff reports all checks passed.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just lint
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T01:33:56.232910+00:00; original log SHA256 df1116f359e834afd6a034defcde34a9a565e53ff21243185301623b334dcb41.
+- check_id: gate-vendored-initial-dns-attempt
+  name: just vendored-check initial DNS-limited attempt
+  status: failed
+  required: false
+  summary: 'Historical failed attempt: sandbox DNS could not resolve raw.githubusercontent.com
+    for the pinned canonical artifact. This diagnostic attempt was superseded by the
+    successful unchanged-input current gate below; it is not silently erased.'
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just vendored-check
+  exit_code: 1
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T01:33:56.817478+00:00; original log SHA256 5c0bc23f897952690d071dc55631ff5e55cb0c369902d174847de4600bf1b6a2.
+    Historical attempt record; the current required vendored gate is the separate
+    successful retry.
+- check_id: gate-vendored-retry
+  name: just vendored-check
+  status: passed
+  required: true
+  summary: Bounded network retry passed:22 governed artifacts match the pinned CLAW
+    revision. No tested inputs changed.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: just vendored-check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T01:34:51.472139+00:00; original log SHA256 b1f169d103aaefa930745468bcca171e5867b9cc49e4e74311e458097e3252a6.
+- check_id: gate-working-diff
+  name: git diff --check
+  status: passed
+  required: true
+  summary: Working-tree git diff whitespace check passed.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: git diff --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T01:34:55.825838+00:00; original log SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+- check_id: gate-cached-diff
+  name: git diff --cached --check
+  status: passed
+  required: true
+  summary: Cached git diff whitespace check passed.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: git diff --cached --check
+  exit_code: 0
+  expected_exit_code: 0
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  scope_note: Shared full repository run in /private/tmp/pathwaymech-next-260-20261014;
+    actual started UTC 2026-10-15T01:34:57.440327+00:00; original log SHA256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.
+- check_id: canonical-inspect
+  name: Canonical inspect and unchanged-input verification
+  status: passed
+  required: true
+  summary: All prior canonical target/context hashes remained unchanged; exact gate/preservation/authority
+    receipts were appended through a fresh canonical inspection before final assessment.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  command: /private/tmp/pathwaymech-next-195-20261011/.venv/bin/python -B scripts/record_review.py
+    inspect --targets /private/tmp/pathwaymech-next-260-independent-science/bounded-direction-final-targets.yaml
+    --input docs/CAUSAL_GRAPHS.md --input research/pathway_additions/2026-10-14-next-260/reviews/independent-science/advance-observations.json
+    --input research/pathway_additions/2026-10-14-next-260/reviews/independent-science/bounded-direction-independent-final-diff.json
+    --input research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-additional-original-families.json
+    --input research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-family-summary.json
+    --input research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-original-family-binding.json
+    --input research/pathway_additions/2026-10-14-next-260/reviews/verification/receipts.json
+    --input research/pathway_additions/2026-10-14-next-260/reviews/verification/final-input-preservation.json
+    --input research/pathway_additions/2026-10-14-next-260/authority/retained/identifier-policy-verification.json
+  exit_code: 0
+  evidence_ids:
+  - ev-preservation
+evidence:
+- evidence_id: ev-rhea-families
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-original-family-binding.json
+  locator: Complete independently produced file; hash-verified retained copy.
+  accessed_at: '2026-10-15T00:51:39.168508Z'
+  support: supports
+  summary: Independent parse of the complete original Rhea RDF, merging repeated subject
+    fragments. Bound all members of the 28931,17401,28935 quartets, chemical sides,
+    participant/compound links and coefficient predicates. This is source replay,
+    not reliance on author conclusions.
+  snapshot_sha256: 6cd72d5036e468fc7d53f861ad38b275cba1879a32064f7ca6884508eab5b027
+- evidence_id: ev-rhea-additional
+  kind: authority
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/rhea-additional-original-families.json
+  locator: Complete independently produced file; hash-verified retained copy.
+  accessed_at: '2026-10-15T00:51:39.168508Z'
+  support: supports
+  summary: Independent original RDF closure for 18169 and 28927 families. RHEA:18170
+    consumes one stereochemistry-unspecified CHEBI:17742 and produces one each CHEBI:36655
+    and 15361. RHEA:28928 consumes gallate and oxygen and produces keto OMA and two
+    hydrons.
+  snapshot_sha256: fe5c0a653911a3811f707b750c48190b2f8eb24dc8fad0166e4a51f51f2c114b
+- evidence_id: ev-direction-semantics
+  kind: authority
+  reference: https://www.rhea-db.org/help/reaction-side-direction
+  locator: Issuing direction and net-flux documentation, independently inspected.
+  accessed_at: '2026-10-15T00:51:39.168508Z'
+  support: supports
+  summary: Directional quartet members encode net flux. Bidirectional denotes equilibrium,
+    so chemical reversibility does not warrant substituting the bidirectional identifier.
+    RHEA:17403 is right-to-left relative to master 17401, while its displayed directional
+    equation represents CHM plus water to CHA.
+- evidence_id: ev-bounded-diff
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/bounded-direction-independent-final-diff.json
+  locator: Complete independently produced file; hash-verified retained copy.
+  accessed_at: '2026-10-15T00:51:39.168508Z'
+  support: supports
+  summary: 'Independent complete-object comparison of actual before/after bytes: exactly
+    six direction scalars and 15 descriptions changed. Other nodes, endpoints, predicates,
+    material coefficients, evidence, qualifiers and references are unchanged. Original
+    four MetaCyc direction fields are included.'
+  snapshot_sha256: 9e29c5147ce58d33567748c4660b6fae989d4c5a2174958c4b1894febed1b38b
+- evidence_id: ev-observations
+  kind: record_content
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/independent-science/advance-observations.json
+  locator: Complete independently produced file; hash-verified retained copy.
+  accessed_at: '2026-10-15T00:51:39.168508Z'
+  support: supports
+  summary: Actual prepublication observations, later exact capture and verified corrections.
+    No earlier full YAML was reconstructed and no canonical historical finding is
+    invented.
+  snapshot_sha256: a91cc323dcfe4bc41017d19168c1752cf9a478dc3c800a36574094e6d0730050
+- evidence_id: ev-gates
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/verification/receipts.json
+  locator: All eight actual command attempts with original log hashes; logs independently
+    opened and verified.
+  accessed_at: '2026-10-15T01:38:07.593325Z'
+  support: supports
+  summary: 'Root-owned shared run: render,validate,test,lint,working/cached diff checks
+    passed. Test result5255 passed,3 skipped,7 warnings. The first vendored attempt
+    failed on DNS; unchanged-input bounded retry passed all22 governed artifacts.
+    Initial failure remains explicit.'
+  snapshot_sha256: 3b575a30cb2d3427fe4c99b57bf4146f4fd99621e513ca9bd7b6e28f179439bc
+- evidence_id: ev-preservation
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/reviews/verification/final-input-preservation.json
+  locator: All2026 tested core files; ignored/hidden files included and runtime caches
+    excluded.
+  accessed_at: '2026-10-15T01:38:07.593325Z'
+  support: supports
+  summary: Root rehashed all2026 original tested files unchanged across the bounded
+    network retry. This reviewer separately rechecked every previously captured canonical
+    input hash; only new post-gate proof inputs were appended.
+  snapshot_sha256: 8d5a49d9256d662fedac9197385118a105d3aa2c318eebae55bc650b83f5d377
+- evidence_id: ev-authority-consumer
+  kind: validation
+  reference: research/pathway_additions/2026-10-14-next-260/authority/retained/identifier-policy-verification.json
+  locator: Final actual-corpus offline identifier/name/native entity typing consumer.
+  accessed_at: '2026-10-15T01:38:07.593325Z'
+  support: supports
+  summary: Canonical consumer passed257 records against5023 authority terms, including
+    exact new record72e4685f…a19353. Original source semantics were reviewed independently;
+    this consumer is a mechanical check.
+  snapshot_sha256: 00215c5ad3d25ef4c10a468dc951827752322e519a796f1000e7a88c18b58efd
+assessments:
+- assessment_id: b-boundary
+  area: scope
+  topic: Retain separate pathway identities
+  outcome: supported
+  summary: The two preexisting records share three downstream Rhea members, which
+    defines this narrow correction cohort. Their distinct source-defined entry reactions
+    and route memberships remain separate. Shared downstream chemistry does not justify
+    lumping gallate degradation I with protocatechuate meta-cleavage.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - ev-bounded-diff
+  - ev-rhea-families
+- assessment_id: b-directions
+  area: representation
+  topic: Issuing-consistent node directions
+  outcome: supported
+  summary: Both records now set RHEA:28932 left_to_right, RHEA:17403 right_to_left
+    and RHEA:28936 left_to_right. Original Rhea quartet sides and native REVERSIBLE
+    annotations support the separation. Hydration still runs CHM plus water to CHA;
+    right_to_left is relative to master 17401. No bidirectional equilibrium identity
+    was substituted.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - ev-rhea-families
+  - ev-direction-semantics
+  - ev-bounded-diff
+- assessment_id: b-entry-context
+  area: evidence
+  topic: GallateI native source orientation wording
+  outcome: supported
+  summary: Native gallate-I edges002–005 now state PHYSIOL-LEFT-TO-RIGHT, matching
+    original GALLATE-DIOXYGENASE-RXN. RHEA:28928 and its material flow remain unchanged;
+    the full original RDF independently confirms gallate plus oxygen to keto OMA plus
+    two hydrons.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  evidence_ids:
+  - ev-rhea-additional
+  - ev-bounded-diff
+- assessment_id: b-preservation
+  area: consistency
+  topic: Bounded correction and explicit exclusions
+  outcome: supported
+  summary: 'Independent recursive comparison confirms exactly21 scalar changes: six
+    directions and 15 descriptions. Native spontaneous-conversion context and opposite-side
+    hydration context are preserved. The verdict covers these fields only and gives
+    no new approval of unrelated predecessor claims.'
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - ev-bounded-diff
+  - ev-observations
+- assessment_id: b-final-gates
+  area: schema
+  topic: Production checks on the bounded final records
+  outcome: supported
+  summary: Both final predecessor byte sets remained unchanged through the shared
+    full gates. The mechanical pass supports the bounded metadata correction; it does
+    not expand scientific coverage to unrelated predecessor claims.
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  evidence_ids:
+  - ev-gates
+  - ev-preservation
+  - ev-bounded-diff
+findings: []
+actions: []
+boundary_decisions:
+- action: retain
+  target_ids:
+  - MetaCyc:GALLATE-DEGRADATION-II-PWY
+  - MetaCyc:P184-PWY
+  rationale: Distinct source-defined pathways share only a downstream reaction cohort.
+    Correct direction metadata without merging pathway identities or importing broader
+    biological scope.
+  evidence_ids:
+  - ev-bounded-diff
+  - ev-rhea-families
+limitations:
+- Coverage is partial by field, with both selected records inspected for the bounded
+  diff. Unrelated predecessor evidence, taxa, preparations and quantitative claims
+  were not independently re-reviewed.
+- This clean bounded review does not close any unrelated unresolved finding or rewrite
+  an earlier review.
+- Required full repository gates are shared root-owned checks, not newly rerun independently
+  by this reviewer.
+notes:
+- Actual initial snapshots and final exact bytes were compared; no historical draft
+  was reconstructed.
+- Prepublication observations remain in an evidence-linked ledger, not invented canonical
+  previous_occurrences.
+- Final gate logs were inspected directly and their hashes verified. The initial DNS
+  failure is retained as a historical failed attempt; the same required gate later
+  passed on unchanged inputs.
+- Provisional review-format checks initially rejected YAML aliases and a non-timestamp-prefixed
+  review ID. Formatting was corrected and both provisional contents passed; these
+  were review-document formatting errors, not record defects or production gate failures.
+links:
+- https://github.com/CultureBotAI/PathwayMech/issues/558
+tags:
+- next260
+- rhea-direction
+- bounded-review
+completion: completed
+verdict: pass_with_limitations
+finished_at: '2026-10-15T01:38:07.594407Z'
+```

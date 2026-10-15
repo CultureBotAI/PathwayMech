@@ -1,0 +1,37 @@
+from pathlib import Path
+import datetime,gzip,hashlib,json,re,xml.etree.ElementTree as ET
+R=Path('/private/tmp/pathwaymech-next-260-chemistry-root');O=R/'originals';out=R/'retained/rhea-closure.json';assert not out.exists()
+source=O/'rhea.rdf.gz';assert hashlib.sha256(source.read_bytes()).hexdigest()=='8ee48d7044cf3eef1001fa730dae2a491902ab25b259b519d6826796bb8acedf'
+raw=gzip.decompress(source.read_bytes()).decode();starts={}
+for m in re.finditer(r'<rdf:Description rdf:about="([^"]+)">',raw):starts.setdefault(m[1],[]).append(m.start())
+ns={'rh':'http://rdf.rhea-db.org/','rdfs':'http://www.w3.org/2000/01/rdf-schema#','rdf':'http://www.w3.org/1999/02/22-rdf-syntax-ns#'}
+wrapper='<root '+ ' '.join(f'xmlns:{k}="{v}"' for k,v in ns.items())+'>'
+seeds={'10644','28934','17404','28938'};xref_hits={}
+for literal in ['R03549','RXN-11861']:
+ hits=[]
+ for m in re.finditer(re.escape(literal),raw):
+  start=raw.rfind('<rdf:Description rdf:about=',0,m.start());end=raw.index('</rdf:Description>',start)+len('</rdf:Description>');e=ET.fromstring(wrapper+raw[start:end]+'</root>')[0]
+  uri=e.get('{'+ns['rdf']+'}about');hits.append({'uri':uri,'matching_properties':[{'predicate':child.tag,'value':child.get('{'+ns['rdf']+'}resource') or child.text} for child in e if literal in str(child.attrib)+str(child.text)]})
+  if re.fullmatch(re.escape(ns['rh'])+r'[0-9]+',uri):seeds.add(uri.removeprefix(ns['rh']))
+ xref_hits[literal]=hits
+directions={}
+for line in (O/'rhea-directions.tsv').read_text().splitlines()[1:]:
+ values=line.split('\t')
+ if seeds.intersection(values):directions[values[0]]=dict(zip(['master','left_to_right','right_to_left','bidirectional'],values))
+wanted={ns['rh']+x for d in directions.values() for x in d.values()}|{ns['rh']+x for x in seeds};nodes={};missing=[]
+while wanted:
+ uri=wanted.pop()
+ if uri in nodes:continue
+ if uri not in starts:missing.append(uri);continue
+ props={}
+ for start in starts[uri]:
+  end=raw.index('</rdf:Description>',start)+len('</rdf:Description>');node=ET.fromstring(wrapper+raw[start:end]+'</root>')[0]
+  for child in node:
+   key=child.tag.split('}',1)[1];val=child.get('{'+ns['rdf']+'}resource') or child.text
+   if val not in props.setdefault(key,[]):props[key].append(val)
+   if (key in {'side','substrates','products','substratesOrProducts','contains','compound','reactivePart','chebi','underlyingChebi','replacedBy','replaces','directionalReaction','bidirectionalReaction'} or re.fullmatch('contains[0-9]+',key)) and val and val.startswith(ns['rh']):wanted.add(val)
+ nodes[uri]=props
+result={'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'Complete decompressed original scanned for exact entry reaction xrefs; full selected reaction/direction/side/participant/compound closure, including repeated RDF subjects. Does not prove exhaustive absence of chemically equivalent reactions with different references.','source':{'path':str(source),'sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'decompressed_bytes':len(raw),'unique_description_subjects':len(starts)},'direction_source':{'path':str(O/'rhea-directions.tsv'),'sha256':hashlib.sha256((O/'rhea-directions.tsv').read_bytes()).hexdigest()},'exact_xref_hits':xref_hits,'seeds':sorted(seeds),'directions':directions,'nodes':nodes,'missing_closure_uris':missing}
+out.write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({'nodes':len(nodes),'seeds':sorted(seeds),'xref_hit_counts':{k:len(v) for k,v in xref_hits.items()},'missing':missing},indent=2))
+for rid in ['10645','28932','17403','28936']:print(rid,nodes[ns['rh']+rid]['equation'])
+assert not missing
