@@ -1,0 +1,41 @@
+{
+  "utc": "2026-10-15T12:35:03.867448+00:00",
+  "prepared_helper_sha256": "932235698df467a009997f41d9e6fb9830c913004860f14c9fbe403162f96652",
+  "original_builder_sha256": "2c3ca9f919c070bc05cfc4b4f1c60c286596c8082f3aaaf2fe6701b5d2f76b28",
+  "exact_changes": [
+    {
+      "old": "FUTURE='research/pathway_additions/2026-10-15-next-265/evidence-retention'",
+      "new": "FUTURE='research/pathway_additions/2026-10-15-next-265/evidence-extension'"
+    },
+    {
+      "old": "def normal_pair(root,pair):",
+      "new": "def normal_pair(root,pair,allow_compact_only=False):"
+    },
+    {
+      "old": "rb=raw_path.read_bytes();sb=stored_path.read_bytes()",
+      "new": "sb=stored_path.read_bytes()\n  if raw_path.is_file():rb=raw_path.read_bytes()\n  else:\n   assert allow_compact_only and enc in {'gzip','gzip_lossless'} and raw!=stored\n   rb=gzip.decompress(sb)"
+    },
+    {
+      "old": "if 'decoded_sha256' in pair:assert sha(decoded)==pair['decoded_sha256']",
+      "new": "if pair.get('existing_gzip_preserved'):\n   assert enc=='identity' and raw==stored\n   assert gzip_identity(sb)==(pair['decoded_sha256'],pair['decoded_bytes'])\n  elif 'decoded_sha256' in pair:assert sha(decoded)==pair['decoded_sha256']"
+    },
+    {
+      "old": "['compact-retention-manifest.json','compact/storage-manifest.json']",
+      "new": "['compact-retention-manifest.json','compact/storage-manifest.json','compact-artifact-manifest.json']"
+    },
+    {
+      "old": "pairs=[normal_pair(root,p) for p in pr]",
+      "new": "pairs=[normal_pair(root,p,spec.get('allow_compact_only_originals',False)) for p in pr]"
+    },
+    {
+      "old": "assert p['original_path'] in names and p['stored_path'] in names",
+      "new": "assert p['stored_path'] in names\n   assert p['original_path'] in names or (spec.get('allow_compact_only_originals',False) and p['encoding'] in {'gzip','gzip_lossless'})"
+    },
+    {
+      "old": "specs['compact_audit_successor']['complete_declared_pairs']",
+      "new": "specs['compact_audit']['complete_declared_pairs']"
+    }
+  ],
+  "status": "Prepared, not executed. Await both independent acceptance packages and finish exact specification.",
+  "scope": "Retain post-cutoff packages only, without copying the whole 24-package payload. New gzip endpoints may match existing Git blobs; duplication accounting must be explicit."
+}

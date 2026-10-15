@@ -1,0 +1,108 @@
+"""Bounded terminal receipt/report inspection; does not execute production gates."""
+from pathlib import Path
+import datetime
+import difflib
+import hashlib
+import json
+import shutil
+
+ROOT = Path('/private/tmp/pathwaymech-next-265-20261015')
+OUT = Path('/private/tmp/pathwaymech-next-265-canonical-scientific-preparation')
+REPORT = Path('research/pathway_additions/2026-10-15-next-265')
+NOW = datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00', 'Z')
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+def load(path):
+    return json.loads(path.read_bytes())
+
+def copy(relative):
+    src = ROOT / relative
+    dst = OUT / 'final-context' / relative
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(src, dst)
+    return {'path': str(relative), 'sha256': sha(src.read_bytes()), 'bytes': src.stat().st_size}
+
+inventory = []
+for name, expected in [
+    ('final-gates', '953d209141efbf92885e3dbc6bf714cbea29ccf30d1841778bda8f5cfc45d75f'),
+    ('browser', 'b8622528170168263b7f763a7bfbd000eb79eb9683a1027b34ce4a125a75f77a'),
+    ('final-technical-review', '01bc3061daaa23d02289d249556e764ce94d974c9e08e9917a2b31c7a12227c4'),
+]:
+    base = ROOT / REPORT / 'verification' / name
+    manifest = base / 'artifact-manifest.json'
+    assert sha(manifest.read_bytes()) == expected
+    rows = load(manifest)['files']
+    expected_paths = {r['path'] for r in rows}
+    actual_paths = {str(p.relative_to(base)) for p in base.rglob('*') if p.is_file()}
+    assert actual_paths == expected_paths | {'artifact-manifest.json'}
+    for row in rows:
+        p = base / row['path']
+        assert not p.is_symlink()
+        body = p.read_bytes()
+        assert sha(body) == row['sha256'] and len(body) == row['bytes']
+    inventory.append({'package': name, 'manifest_sha256': expected, 'verified_physical_artifacts': len(rows)})
+    copy(REPORT / 'verification' / name / 'artifact-manifest.json')
+
+retention = load(ROOT / REPORT / 'verification/final-gate-evidence-retention.json')
+for row in retention['files']:
+    p = ROOT / row['path']
+    assert sha(p.read_bytes()) == row['sha256'] and p.stat().st_size == row['bytes']
+gate = ROOT / REPORT / 'verification/final-gates'
+initial, tail = load(gate/'initial/receipts.json'), load(gate/'network-tail/receipts.json')
+terminal = load(gate/'network-tail/final-input-preservation.json')
+assert len(initial) == 5 and len(tail) == 3
+assert [r['exit_code'] for r in initial] == [0, 0, 0, 0, 1]
+assert all(r['exit_code'] == 0 for r in tail)
+assert terminal['successful_commands'] == initial[:4] + tail
+assert terminal['initial_network_failure_preserved'] == initial[-1]
+assert terminal['all_unchanged'] and terminal['tested_core_files'] == 4030
+assert sha((gate/'initial/receipts.json').read_bytes()) == terminal['initial_receipts_sha256']
+assert sha((gate/'network-tail/receipts.json').read_bytes()) == terminal['network_tail_receipts_sha256']
+for stage, receipts in [('initial', initial), ('network-tail', tail)]:
+    for r in receipts:
+        log = gate / stage / Path(r['log_path']).name
+        assert sha(log.read_bytes()) == r['log_sha256']
+        copy(log.relative_to(ROOT))
+    copy(REPORT / 'verification/final-gates' / stage / 'receipts.json')
+
+before = load(gate/'initial/tested-core-input-hashes.json')
+changed = []
+for rel, digest in before.items():
+    current = sha((ROOT/rel).read_bytes())
+    if current != digest:
+        changed.append({'path': rel, 'tested_sha256': digest, 'current_sha256': current})
+assert len(changed) == 1 and changed[0]['path'] == str(REPORT/'README.md')
+assert changed[0]['current_sha256'] == '1c62fb1ff6c917017509c2980cf8651747b3c9b1d3df41a5d9936c04a08567a0'
+old = (OUT/'context-before-format-successor'/REPORT/'README.md').read_text()
+new = (ROOT/REPORT/'README.md').read_text()
+(OUT/'report-final-context.diff').write_text(''.join(difflib.unified_diff(old.splitlines(True), new.splitlines(True), fromfile='captured-before-issue583', tofile='stable-final-report')))
+selected = [REPORT/'README.md', REPORT/'verification/final-gate-evidence-retention.json',
+    REPORT/'verification/final-gates/network-tail/final-input-preservation.json',
+    REPORT/'verification/final-gates/initial/tested-core-input-hashes.json',
+    REPORT/'verification/final-gates/helpers/resume_final_checks.py.txt',
+    REPORT/'verification/browser/graph-visual-assessment.json',
+    REPORT/'verification/final-technical-review/HANDOFF.md',
+    REPORT/'verification/final-technical-review/production-page-fidelity.json',
+    REPORT/'verification/final-technical-review/production-kgx-fidelity.json',
+    REPORT/'verification/final-technical-review/prior-kgx-preservation.json',
+    REPORT/'verification/final-technical-review/final-gate-acceptance.json',
+    REPORT/'verification/final-technical-review-retention.json',
+    Path('history/reports/next265-benzoyl-coa-research/2026-10-15T132355Z-Codex-5733da.yaml')]
+copied = [copy(p) for p in selected]
+result = {
+    'accessed_at': NOW, 'status': 'passed_with_explicit_scope', 'record_sha256': terminal['record_sha256'],
+    'independent_integrity_checks': inventory, 'retained_gate_browser_source_rows_verified': len(retention['files']),
+    'successful_logical_gates': terminal['successful_commands'], 'initial_failed_attempt_preserved': initial[-1],
+    'root_command_execution_observed_not_personally_repeated': True,
+    'test_result': {'passed': 5255, 'skipped': 3, 'warnings': 7, 'collected': 5258},
+    'tested_files_rehashed': len(before), 'exact_unchanged_files': len(before)-len(changed), 'post_gate_changes': changed,
+    'report_delta_assessment': 'Read complete final report. The previously accepted issue583 correction and final verification prose accurately describe source limits, all seven successful logical gates, preserved DNS failure, current 67-edge KGX/51-node graph and publication/canonical-save boundaries. No scientific change. Current report-only history retains its truthful earlier pending state; no event was rewritten.',
+    'prior_context_reassessment': 'issue583-context-reassessment.json', 'report_diff': 'report-final-context.diff',
+    'technical_acceptance_scope': 'Read complete frozen technical HANDOFF and targeted production/page/export/prior-preservation/final-gate receipts. These checks are independent integration verification, not scientific self-acceptance by the source author.',
+    'copied_final_inputs': copied,
+    'limitations': ['Full passing gates were executed by root; this reviewer read retained exact command receipts/logs and independently checked hashes and current inputs.', 'Final proof and canonical review additions were not part of the earlier full suite; native review checks and bounded final documentation checks remain publication integration work.', 'No merge, issue closure, universal scientific completeness, or exhaustive browser/accessibility claim.'],
+}
+(OUT/'final-gate-report-observation.json').write_text(json.dumps(result, indent=2)+'\n')
+print(json.dumps({'status': result['status'], 'inventories': inventory, 'tested_unchanged': result['exact_unchanged_files'], 'changed': changed}))

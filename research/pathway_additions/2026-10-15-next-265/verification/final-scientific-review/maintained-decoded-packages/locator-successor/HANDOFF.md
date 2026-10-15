@@ -1,0 +1,7 @@
+# PWY-1361 evidence-locator successor
+
+This root-authored immutable successor fixes issues579 and580 on top of the independently accepted category correction for issue578. It adds PMID11222587 unit93/sec38 to bio005 evidence[1], and PMID20452977 unit53/sec22 to bio010 evidence[2]. The measured BoxA masses remain distinct from calculated mass; the BoxAB ratio retains construct, BoxC and background-subtraction limits.
+
+Exactly two record locator strings change from the category predecessor. All selected identities, labels/categories, chemical content, 67 edge assertions, eight qualifiers and 68 references remain unchanged. The complete edge ledger and occurrence replay carry both additions; the primary binding register adds the previously missing unit93 and reuses the exact existing unit53. The node ledger now explicitly carries the independently accepted issue578 category. Complete originals/unit registers and exact hashes support both repairs.
+
+Original source/design/review packages are immutable. Other complete source-selection ledgers and accepted context remain owned by the bound original integrated design; this package supersedes only the listed drafts and locator/node ledgers. The original author verification is evidence of its original input, not approval of this successor. Independent bounded correction acceptance, final authority-draft rebind, maintained integration, canonical reviews and production gates remain pending.

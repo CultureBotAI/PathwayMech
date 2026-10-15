@@ -1,0 +1,100 @@
+"""Copy a reviewed exact retention plan to its new owned repository directory."""
+from pathlib import Path
+import argparse
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+
+W = Path('/private/tmp/pathwaymech-next-265-20261015')
+C = Path('/private/tmp/pathwaymech-next-265-ci')
+
+
+def sha(body):
+    return hashlib.sha256(body).hexdigest()
+
+
+def safe(root, relative):
+    name = Path(relative)
+    assert not name.is_absolute() and '..' not in name.parts
+    path = root / name
+    assert path.resolve().is_relative_to(root.resolve())
+    assert not path.is_symlink()
+    for parent in path.parents:
+        if parent == root:
+            break
+        assert not parent.is_symlink()
+    return path
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--acceptance', type=Path, required=True)
+    parser.add_argument('--receipt', type=Path, required=True)
+    args = parser.parse_args()
+    assert not args.receipt.exists()
+    acceptance = json.loads(args.acceptance.read_bytes())
+    assert acceptance['status'] == 'accepted_for_exact_retention_promotion'
+    assert sha(Path(acceptance['review_manifest']).read_bytes()) == acceptance['review_manifest_sha256']
+    assert sha(Path(acceptance['review_acceptance']).read_bytes()) == acceptance['review_acceptance_sha256']
+    plan_path = Path(acceptance['plan_path'])
+    assert sha(plan_path.read_bytes()) == acceptance['plan_sha256']
+    plan = json.loads(plan_path.read_bytes())
+    assert plan['status'] == 'read-only copy plan verified' and plan['promotion_performed'] is False
+    assert Path(plan['destination']).is_relative_to(W / 'research/pathway_additions/2026-10-15-next-265')
+    source = Path(plan['source'])
+    destination = Path(plan['destination'])
+    safe(W, destination.relative_to(W))
+    assert not destination.exists()
+    head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=W, text=True).strip()
+    assert head == plan['observed_target_head'] == '39b84c79eb9997fb6785ef040f571bad498846e7'
+    manifest = (source / 'artifact-manifest.json').read_bytes()
+    assert sha(manifest) == plan['stage_manifest_sha256'] == acceptance['payload_manifest_sha256']
+    files = plan['copy_exact_relative_paths']
+    names = {row['path'] for row in files}
+    assert len(names) == len(files)
+    inventory = list(source.rglob('*'))
+    assert not any(p.is_symlink() for p in inventory)
+    assert {p.relative_to(source).as_posix() for p in inventory if p.is_file()} == names
+    for row in files:
+        body = safe(source, row['path']).read_bytes()
+        assert sha(body) == row['sha256'] and len(body) == row['bytes']
+    # Existing repository objects are unchanged prerequisites, never write targets.
+    content = json.loads((source / 'content-map.json').read_bytes())
+    owners = {row['storage']['path']: row['storage'] for row in content.values()
+              if row['storage']['kind'] == 'existing_repository'}
+    for relative, owner in owners.items():
+        body = safe(W, relative).read_bytes()
+        assert sha(body) == owner['stored_sha256'] and len(body) == owner['stored_bytes']
+    staging = destination.with_name('.' + destination.name + '-owned-staging')
+    assert not staging.exists() and not staging.is_symlink()
+    staging.mkdir(parents=True)
+    for row in files:
+        target = safe(staging, row['path'])
+        target.parent.mkdir(parents=True, exist_ok=True)
+        body = safe(source, row['path']).read_bytes()
+        assert sha(body) == row['sha256'] and len(body) == row['bytes']
+        with target.open('xb') as stream:
+            stream.write(body)
+        assert sha(target.read_bytes()) == row['sha256']
+    assert {p.relative_to(staging).as_posix() for p in staging.rglob('*') if p.is_file()} == names
+    assert not destination.exists()
+    os.rename(staging, destination)
+    result = {
+        'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'status': 'exact reviewed payload promoted', 'source': str(source),
+        'destination': str(destination), 'head': head,
+        'payload_manifest_sha256': sha(manifest), 'copied_files': len(files),
+        'copy_plan_sha256': sha(plan_path.read_bytes()),
+        'root_acceptance_sha256': sha(args.acceptance.read_bytes()),
+        'existing_owner_endpoints_checked_unchanged': len(owners),
+        'copied_paths': files,
+        'scope': 'Exact lossless retention promotion only; no scientific or publication approval inferred.',
+    }
+    args.receipt.write_text(json.dumps(result, indent=2) + '\n')
+    print(json.dumps({k: v for k, v in result.items() if k != 'copied_paths'}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

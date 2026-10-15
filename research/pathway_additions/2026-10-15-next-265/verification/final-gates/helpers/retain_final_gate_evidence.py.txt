@@ -1,0 +1,101 @@
+"""Retain completed gate and browser evidence after the unchanged-input window."""
+
+import datetime
+import hashlib
+import json
+from pathlib import Path
+
+WORKTREE = Path('/private/tmp/pathwaymech-next-265-20261015')
+CI = Path('/private/tmp/pathwaymech-next-265-ci')
+CHECKS = Path('/private/tmp/pathwaymech-next-265-checks-initial')
+RETRY = Path('/private/tmp/pathwaymech-next-265-checks-network-tail')
+VERIFY = WORKTREE / 'research/pathway_additions/2026-10-15-next-265/verification'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def copy_exact(source, target):
+    assert source.is_file() and not source.is_symlink() and not target.exists()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    body = source.read_bytes()
+    with target.open('xb') as stream:
+        stream.write(body)
+    assert sha(source) == sha(target)
+    return {'source': str(source), 'path': target.relative_to(WORKTREE).as_posix(),
+            'sha256': sha(target), 'bytes': len(body)}
+
+
+def manifest(root):
+    rows = [{'path': p.relative_to(root).as_posix(), 'sha256': sha(p),
+             'bytes': p.stat().st_size} for p in sorted(root.rglob('*')) if p.is_file()]
+    target = root / 'artifact-manifest.json'
+    assert not target.exists()
+    target.write_text(json.dumps({'scope': 'Complete frozen current evidence files; '
+                                 'includes hidden/ignored files, excludes only this manifest.',
+                                 'files': rows}, indent=2) + '\n')
+    return sha(target)
+
+
+def main():
+    receipt = CI / 'final-gate-evidence-retention.json'
+    assert not receipt.exists()
+    preservation = json.loads((RETRY / 'final-input-preservation.json').read_bytes())
+    assert preservation['all_unchanged'] is True
+    gates = preservation['successful_commands']
+    assert [g['command'] for g in gates] == [
+        ['just', 'render-pages'], ['just', 'validate'], ['just', 'test'], ['just', 'lint'],
+        ['just', 'vendored-check'], ['git', 'diff', '--check'],
+        ['git', 'diff', '--cached', '--check'],
+    ]
+    assert all(g['exit_code'] == 0 and sha(Path(g['log_path'])) == g['log_sha256']
+               for g in gates)
+    assert sha(CHECKS / 'receipts.json') == preservation['initial_receipts_sha256']
+    assert sha(RETRY / 'receipts.json') == preservation['network_tail_receipts_sha256']
+    initial_failure = preservation['initial_network_failure_preserved']
+    assert sha(Path(initial_failure['log_path'])) == initial_failure['log_sha256']
+    # The reviewed record and rendered page must still be the observed objects.
+    assert sha(WORKTREE / 'data/pathways/benzoyl-coa-degradation-i-aerobic.yaml') == (
+        preservation['record_sha256']
+    )
+    browser = json.loads((CI / 'browser-cdp-result.json').read_bytes())
+    assert not browser['runtime_errors']
+    assert sha(Path(browser['page'])) == browser['page_sha256']
+    gate_dest = VERIFY / 'final-gates'
+    browser_dest = VERIFY / 'browser'
+    assert not gate_dest.exists() and not browser_dest.exists()
+    copied = []
+    for source, relative in [(CHECKS, 'initial'), (RETRY, 'network-tail')]:
+        for path in sorted(source.rglob('*')):
+            if path.is_file():
+                copied.append(copy_exact(path, gate_dest / relative / path.relative_to(source)))
+    copied.append(copy_exact(CI / 'accepted-integration-inputs.json',
+                             gate_dest / 'accepted-integration-inputs.json'))
+    for name in ['run_initial_checks.py', 'resume_final_checks.py',
+                 'retain_final_gate_evidence.py']:
+        copied.append(copy_exact(CI / name, gate_dest / 'helpers' / (name + '.txt')))
+    for name in ['browser-cdp-result.json', 'browser-cdp.log', 'graph-desktop-cdp.png',
+                 'graph-mobile-cdp.png', 'graph-visual-assessment.json']:
+        copied.append(copy_exact(CI / name, browser_dest / name))
+    for path in sorted((CI / 'focused-browser').rglob('*')):
+        if path.is_file():
+            copied.append(copy_exact(path, browser_dest / 'focused' /
+                                     path.relative_to(CI / 'focused-browser')))
+    for name in ['check_browser_graph.mjs', 'check_browser_graph_focused.mjs']:
+        copied.append(copy_exact(CI / name, browser_dest / 'helpers' / (name + '.txt')))
+    result = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'status': 'passed_and_retained', 'gate_commands': len(gates),
+              'gate_manifest_sha256': manifest(gate_dest),
+              'browser_manifest_sha256': manifest(browser_dest), 'files': copied,
+              'scope': 'Complete initial gate outputs, failed DNS observation, successful '
+                       'network retry and unrun-tail completion, and browser observations. '
+                       'The tested scoped inputs remained unchanged through both gate runs. '
+                       'Later canonical proof/review additions require their native checks.'}
+    receipt.write_text(json.dumps(result, indent=2) + '\n')
+    copy_exact(receipt, VERIFY / receipt.name)
+    print(json.dumps({k: v for k, v in result.items() if k != 'files'}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

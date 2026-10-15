@@ -1,0 +1,50 @@
+"""Retain the completed final review/documentation checks without changing inputs."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path('/private/tmp/pathwaymech-next-265-20261015')
+CI = Path('/private/tmp/pathwaymech-next-265-ci')
+SOURCE = Path('/private/tmp/pathwaymech-next-265-checks-final-documentation')
+DEST = ROOT / 'research/pathway_additions/2026-10-15-next-265/verification/final-documentation'
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def main():
+    assert not DEST.exists()
+    receipts = json.loads((SOURCE / 'receipts.json').read_bytes())
+    assert len(receipts) == 6 and all(r['exit_code'] == 0 for r in receipts)
+    assert all(sha(Path(r['log_path'])) == r['log_sha256'] for r in receipts)
+    assert json.loads((SOURCE / 'final-input-preservation.json').read_bytes())['all_unchanged']
+    checked = json.loads((SOURCE / 'checked-input-hashes.json').read_bytes())
+    for path, digest in checked.items():
+        assert sha(ROOT / path) == digest, path
+    files = []
+    sources = [(p, p.relative_to(SOURCE)) for p in sorted(SOURCE.rglob('*')) if p.is_file()]
+    sources += [(CI / name, Path('helpers') / (name + '.txt')) for name in
+                ['run_final_documentation_checks.py', 'retain_documentation_checks.py']]
+    for source, relative in sources:
+        assert not source.is_symlink()
+        target = DEST / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open('xb') as stream:
+            stream.write(source.read_bytes())
+        assert sha(target) == sha(source)
+        files.append({'path': str(relative), 'sha256': sha(target), 'bytes': target.stat().st_size})
+    manifest = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                'scope': 'Complete final documentation check outputs and inert helper originals; '
+                         'excludes only this self-referential manifest.', 'files': files}
+    (DEST / 'retention-manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    receipt = {'destination': str(DEST), 'files': len(files),
+               'manifest_sha256': sha(DEST / 'retention-manifest.json'),
+               'all_previously_checked_inputs_unchanged': True}
+    (CI / 'final-documentation-retention.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    print(json.dumps(receipt, indent=2))
+
+
+if __name__ == '__main__':
+    main()

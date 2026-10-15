@@ -1,0 +1,102 @@
+{
+  "issue": "https://github.com/CultureBotAI/PathwayMech/issues/581",
+  "finding_key": "NEXT265-RETENTION-COMPACT-COVERAGE-01",
+  "original_finding_retained": "proof/original-review/findings.json",
+  "original_review_manifest_sha256": "eaec5cfc1761391268065d791dcdf58ee179297c7d8cb2e1977e5ac5c22fd55d",
+  "original_payload_manifest_sha256": "4d6b8ec56818707e1d4c0a71ddaf515ad49b6031bd6baad57f6f0120f7fcd687",
+  "disposition": "Source-authored bounded correction prepared; independent successor acceptance and maintained integration are still required before issue closure.",
+  "cause": "The earlier builder defaulted to a root compact-retention-manifest.json path and silently recorded zero pairs when that path was absent; three actual compact/storage-manifest.json owners were omitted from the audit.",
+  "fix": "All 24 package specifications now explicitly name their compact owner path, SHA256 and expected pair count, or record a no-map disposition. The builder rejects missing or inconsistent bindings instead of silently defaulting.",
+  "explicit_map_packages": 21,
+  "explicit_no_map_packages": [
+    "chemical-design",
+    "taxonomy",
+    "dedup-preflight-review"
+  ],
+  "previously_claimed_pairs": 5095,
+  "previously_omitted_pairs": 320,
+  "complete_verified_pairs": 5415,
+  "omitted_manifest_schemas": [
+    {
+      "package": "native",
+      "original_manifest": "compact/storage-manifest.json",
+      "manifest_sha256": "e0cf4672a73bd62b419b4c38ea073fa862079779f70607a4851da20dad9fb10c",
+      "manifest_bytes": 63382,
+      "top_level_keys": [
+        "scope",
+        "pairs"
+      ],
+      "pair_array": "pairs",
+      "pair_keys": [
+        "codec",
+        "decoded_sha256",
+        "original_bytes",
+        "original_path",
+        "original_sha256",
+        "stored_bytes",
+        "stored_path",
+        "stored_sha256"
+      ],
+      "encoding_field": "codec",
+      "encoding": "gzip",
+      "pairs": 128,
+      "storage": "Already retained as an exact source occurrence in the unchanged package source map."
+    },
+    {
+      "package": "cofactor-identities",
+      "original_manifest": "compact/storage-manifest.json",
+      "manifest_sha256": "aea0523742ac48120dd1b1190db80cbce03a4c3cdea75a64f3a94fbc81a4b10f",
+      "manifest_bytes": 39379,
+      "top_level_keys": [
+        "pairs",
+        "scope"
+      ],
+      "pair_array": "pairs",
+      "pair_keys": [
+        "codec",
+        "decoded_sha256",
+        "original_bytes",
+        "original_path",
+        "original_sha256",
+        "stored_bytes",
+        "stored_path",
+        "stored_sha256"
+      ],
+      "encoding_field": "codec",
+      "encoding": "gzip",
+      "pairs": 78,
+      "storage": "Already retained as an exact source occurrence in the unchanged package source map."
+    },
+    {
+      "package": "independent-cofactor-review",
+      "original_manifest": "compact/storage-manifest.json",
+      "manifest_sha256": "6222a4ef921446622d7a1d8f1c71cbbdc8a3403380e7f36771851c0c97534d98",
+      "manifest_bytes": 58354,
+      "top_level_keys": [
+        "pairs",
+        "count",
+        "all_lossless"
+      ],
+      "pair_array": "pairs",
+      "pair_keys": [
+        "codec",
+        "decoded_sha256",
+        "original_bytes",
+        "original_path",
+        "original_sha256",
+        "stored_bytes",
+        "stored_path",
+        "stored_sha256"
+      ],
+      "encoding_field": "codec",
+      "encoding": "gzip",
+      "pairs": 114,
+      "storage": "Already retained as an exact source occurrence in the unchanged package source map."
+    }
+  ],
+  "source_content_and_storage_unchanged": "verification/v4-successor-comparison.json",
+  "data_loss_observed": false,
+  "scientific_acceptance_performed": false,
+  "actual_promotion_performed": false,
+  "post_cutoff_extensions": "Still outside this 24-package storage cutoff. Historical pending-packages.json remains exact. The later frozen independent authority review is bound only as a separate future extension input; merged discovery and acceptance must be separately frozen and retained."
+}

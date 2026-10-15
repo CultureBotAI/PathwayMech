@@ -1,0 +1,254 @@
+"""Finite independent storage review. Writes only this new external review directory."""
+from pathlib import Path
+from collections import Counter
+from urllib.parse import urlsplit, unquote
+import datetime, difflib, gzip, hashlib, json, re, subprocess, sys
+
+OUT=Path(__file__).resolve().parent
+SRC=Path('/private/tmp/pathwaymech-next-265-postcutoff-retention')
+PAY=SRC/'payload'
+REPO=Path('/private/tmp/pathwaymech-next-265-20261015')
+BASE=Path('/private/tmp/pathwaymech-next-265-retention-successor/payload')
+HEAD='39b84c79eb9997fb6785ef040f571bad498846e7'
+TREE='e5c455667499283021774a6c3d5138cc8293f28e'
+PINS={
+ 'independent-authority-review':('5f735cbfd54b6251db9b0883d8b8a363258922c640f4c220771aac8018b72ab0','4925dbd0c6eca4f2858a35c1fa6fa3450a9eba8541fbc3928c0059c2faa6b25c',628,False),
+ 'independent-retention-review':('eaec5cfc1761391268065d791dcdf58ee179297c7d8cb2e1977e5ac5c22fd55d','e589cd488fbd110332f62cf803232201960cb4c022e7f73e8bfb18063f0ead87',160,False),
+ 'merged-discovery-assessment':('37f0bc394eb9db853aa94159ef45883fbdff997957cd63e0db82d1e7bac6ecd1','30b001f773403d91e500a9fb1dcde5f59e978afe8629f4f8a422ca3ea256ecc9',513,True),
+ 'independent-retention-successor-review':('07143c420ca02810314ed40449dbe5ce13696d4d63856489c09e7538420ff699','2aaa0b8c84dea1c4fda0586ffa9cfb669f42f53a5c9da165bff8162255773acf',41,False),
+ 'merged-discovery-count-successor':('3e93b04de25e9cfc8ac722712fe8b2b9aae37198d5cbf5d0d200456e5139049a','9daae81965cfb2210c5f730b8b66653604837e74afc946245c415dd72fc42047',7,False),
+ 'independent-merged-discovery-review':('e6343e3cb09cbed540538ee348dc4af1af595932de2ba5e4db6362753092b093','03dd5ed9fa845d6b636f337d259dbc831c35bb5808c4f4002b5bcf362b584171',861,True),
+}
+def sha(b):return hashlib.sha256(b).hexdigest()
+def load(p):return json.loads(p.read_bytes())
+def put(name,obj):
+ p=OUT/name;assert not p.exists(),p;p.parent.mkdir(parents=True,exist_ok=True)
+ p.write_text(json.dumps(obj,indent=2,ensure_ascii=False)+'\n')
+def safe(root,name):
+ p=Path(name);assert name and not p.is_absolute() and '..' not in p.parts,(root,name)
+ result=root/p;assert result.resolve().is_relative_to(root.resolve()),result
+ for ancestor in [result,*result.parents]:
+  if ancestor==root.parent:break
+  assert not ancestor.is_symlink(),ancestor
+ return result
+def identity(body,digest,size):assert sha(body)==digest and len(body)==size,(digest,len(body),size)
+def inventory(root,expected):
+ mb=(root/'artifact-manifest.json').read_bytes();assert sha(mb)==expected
+ m=json.loads(mb);rows=m.get('files',m.get('artifacts'));assert isinstance(rows,list)
+ listed={r['path']:r for r in rows};assert len(rows)==len(listed)
+ actual=list(root.rglob('*'));assert not any(p.is_symlink() for p in actual)
+ assert {str(p.relative_to(root)) for p in actual if p.is_file()}==set(listed)|{'artifact-manifest.json'}
+ for r in rows:identity(safe(root,r['path']).read_bytes(),r['sha256'],r['bytes'])
+ return {**listed,'artifact-manifest.json':{'path':'artifact-manifest.json','sha256':sha(mb),'bytes':len(mb)}}
+def git(*args):return subprocess.check_output(['git',*args],cwd=REPO)
+def get_git_blobs(paths):
+ paths=sorted(set(paths));b=subprocess.run(['git','cat-file','--batch'],cwd=REPO,input=''.join(HEAD+':'+p+'\n' for p in paths).encode(),capture_output=True,check=True).stdout
+ offset=0;result={}
+ for p in paths:
+  end=b.index(b'\n',offset);h=b[offset:end].split();assert h[1]==b'blob',(p,h)
+  size=int(h[2]);offset=end+1;result[p]=b[offset:offset+size];offset+=size
+  assert b[offset:offset+1]==b'\n';offset+=1
+ assert offset==len(b);return result
+
+def main():
+ started=datetime.datetime.now(datetime.timezone.utc).isoformat()
+ outer=inventory(SRC,'a07d4399f4c10c35bb8f0be6c24bfa5fb0e7878d1fc44f7abb16a20d81b81d7e')
+ payload=inventory(PAY,'ae8b079a63ea634629ea3768560a9e9d5ab73a0acf213e4f74bcb182ac6b40ff')
+ assert len(payload)==856
+ assert sum(r['bytes'] for p,r in payload.items() if p!='artifact-manifest.json')==36052924
+ assert sha((SRC/'audit/read-only-promotion-plan.json').read_bytes())=='04c48adb9de77783b8cb38081e88b1b9ec33f95755af351254c0f92636ad6fd0'
+ spec=load(PAY/'source-specification.json')
+ assert (PAY/'source-specification.json').read_bytes()==(SRC/'package-specifications.final.json').read_bytes()
+ assert sha((PAY/'source-specification.json').read_bytes())=='8dc20b358f701e5b21764aa5d80571227696287bd9194f3f10a441f442e0e27e'
+ assert len(spec['packages'])==6 and {s['name'] for s in spec['packages']}==set(PINS)
+ manifest_proofs=[];physical={};maps={};source_roots={}
+ for s in spec['packages']:
+  n=s['name'];pin=PINS[n];root=Path(s['root']);source_roots[n]=root
+  assert (s['manifest_sha256'],s['compact_manifest_sha256'],s['expected_compact_pairs'],s['allow_compact_only_originals'])==pin
+  assert root==Path('/private/tmp/pathwaymech-next-265-'+n)
+  rows=inventory(root,s['manifest_sha256']);physical[n]=rows
+  cm=safe(root,s['compact_manifest']);assert sha(cm.read_bytes())==s['compact_manifest_sha256']
+  owned=set(rows)&{'compact-retention-manifest.json','compact/storage-manifest.json','compact-artifact-manifest.json'}
+  assert owned=={s['compact_manifest']}
+  sm=load(PAY/'packages'/n/'source-map.json')['source_occurrences'];maps[n]=sm
+  assert len(sm)==len(rows) and {r['path'] for r in sm}==set(rows)
+  assert len({r['path'] for r in sm})==len(sm)
+  for r in sm:
+   assert r['package']==n and r['source']==str(root/r['path'])
+   assert (r['sha256'],r['bytes'])==(rows[r['path']]['sha256'],rows[r['path']]['bytes'])
+  manifest_proofs.append({'package':n,'root':str(root),'manifest_sha256':pin[0],'all_physical_files':len(rows),'compact_path':s['compact_manifest'],'compact_sha256':pin[1],'pairs':pin[2],'allow_logical':pin[3],'complete_inventory_including_hidden_ignored':True})
+ snapshots=spec['selected_root_evidence'];assert len(snapshots)==5
+ oldroot=BASE.parent;old_manifest=(oldroot/'artifact-manifest.json').read_bytes()
+ assert sha(old_manifest)=='989bd8bbfcc5f93c8535b4689c0441d3f9df2c6224e9fea2559fbd1c78c944da'
+ oldrows={r['path']:r for r in json.loads(old_manifest)['files']}
+ sn='root-intake-and-issue-evidence';maps[sn]=load(PAY/'packages'/sn/'source-map.json')['source_occurrences']
+ assert len(maps[sn])==len(snapshots) and {r['path'] for r in maps[sn]}=={r['name'] for r in snapshots}
+ for s in snapshots:
+  p=Path(s['source']);rel=str(p.relative_to(oldroot));assert s['name']=='retention-successor/'+rel
+  body=p.read_bytes();identity(body,s['sha256'],s['bytes'])
+  if rel!='artifact-manifest.json':
+   assert s['frozen_outer_manifest_sha256']==sha(old_manifest)
+   assert (oldrows[rel]['sha256'],oldrows[rel]['bytes'])==(s['sha256'],s['bytes'])
+  else:assert body==old_manifest
+  r=next(r for r in maps[sn] if r['path']==s['name'])
+  assert (r['package'],r['source'],r['sha256'],r['bytes'])==(sn,s['source'],s['sha256'],s['bytes'])
+ assert {p.parent.name for p in (PAY/'packages').glob('*/source-map.json')}==set(maps)
+ allrows=[r for rows in maps.values() for r in rows]
+ assert len(allrows)==2782 and sum(r['bytes'] for r in allrows)==122235458
+ contents=load(PAY/'content-map.json');assert set(contents)=={r['sha256'] for r in allrows} and len(contents)==1631
+ put('source-inventory-and-snapshots.json',{'outer_manifest_sha256':sha((SRC/'artifact-manifest.json').read_bytes()),'outer_files_including_manifest':len(outer),'payload_files_including_manifest':len(payload),'package_bindings':manifest_proofs,'selected_snapshots':snapshots,'occurrences':len(allrows),'occurrence_bytes':sum(r['bytes'] for r in allrows),'source_inventory_complete':True})
+ print('Pinned inventories and exact occurrence maps passed.',flush=True)
+
+ assert git('rev-parse',HEAD+'^{tree}').decode().strip()==TREE
+ owner_report=load(PAY/'existing-owner-verification.json');assert owner_report['commit']==HEAD and owner_report['tree']==TREE
+ owners=owner_report['verified_owner_rows'];assert len(owners)==631
+ assert len({(r['path'],r['raw']) for r in owners})==631
+ endpoint_owners={r['storage']['path']:r['storage'] for r in contents.values() if r['storage']['kind']=='existing_repository'}
+ paths={r['path'] for r in owners}|set(endpoint_owners)|{owner_report[k]['path'] for k in ['initial_receipt','storage_successor']}
+ blobs=get_git_blobs(paths)
+ for key in ['initial_receipt','storage_successor']:
+  assert sha(blobs[owner_report[key]['path']])==owner_report[key]['sha256']
+ for r in owners:
+  b=blobs[r['path']];identity(b,r['stored'],r['stored_bytes'])
+  assert r['encoding'] in {'identity','gzip','gzip_lossless'}
+  decoded=b if r['encoding']=='identity' else gzip.decompress(b)
+  assert sha(decoded)==r['raw'] and r['verified_exact'] is True
+  assert safe(REPO,r['path']).read_bytes()==b
+ for p,r in endpoint_owners.items():
+  assert r['git_commit']==HEAD and r['git_tree']==TREE
+  identity(blobs[p],r['stored_sha256'],r['stored_bytes'])
+  assert safe(REPO,p).read_bytes()==blobs[p]
+ cache={};local={};decode_rows=[]
+ for digest,r in contents.items():
+  st=r['storage'];assert st['kind'] in {'new_retention_object','existing_repository'}
+  if st['kind']=='new_retention_object':
+   assert st['path']=='objects/'+st['stored_sha256'][:2]+'/'+st['stored_sha256']+'.gz'
+   b=safe(PAY,st['path']).read_bytes();local[st['path']]=st
+   assert b.startswith(b'\x1f\x8b');gzip.decompress(b)
+  else:b=blobs[st['path']]
+  identity(b,st['stored_sha256'],st['stored_bytes']);assert len(r['decode_steps'])<=8
+  for step in r['decode_steps']:
+   assert step['encoding']=='gzip' and sha(b)==step['input_sha256']
+   b=gzip.decompress(b);identity(b,step['output_sha256'],step['output_bytes'])
+  assert r['source_sha256']==digest;identity(b,digest,r['source_bytes']);cache[digest]=b
+  decode_rows.append({'source_sha256':digest,'source_bytes':len(b),'storage_kind':st['kind'],'storage_path':st['path'],'decode_steps':len(r['decode_steps']),'exact':True})
+ assert len(local)==811 and sum(s['stored_bytes'] for s in local.values())==29447280
+ assert set(local)=={str(p.relative_to(PAY)) for p in (PAY/'objects').rglob('*') if p.is_file()}
+ for r in allrows:assert cache[r['sha256']]==Path(r['source']).read_bytes()
+ inherited=sum(contents[r['sha256']]['storage']['kind']=='existing_repository' for r in allrows);assert inherited==1097
+ put('independent-storage-reconstruction.json',{'status':'passed','merged_commit':HEAD,'merged_tree':TREE,'physical_occurrences':len(allrows),'unique_contents':len(cache),'inherited_occurrences':inherited,'all_631_owner_rows_exact_git_and_working_tree':True,'new_endpoint_count':len(local),'new_endpoint_bytes':sum(s['stored_bytes'] for s in local.values()),'reconstructed_contents':decode_rows,'owner_rows':owners})
+ print('All physical bytes and committed/current owner bindings passed.',flush=True)
+
+ # New schema checks use only extension reconstruction, never source package reads.
+ reconstructed={n:{r['path']:cache[r['sha256']] for r in rows} for n,rows in maps.items()}
+ pairs=[];logical=[];preserved=[];bindings=[];logical_counts=Counter();gzip_counts=Counter()
+ for s in spec['packages']:
+  n=s['name'];bodies=reconstructed[n];cm=json.loads(bodies[s['compact_manifest']])
+  assert sha(bodies[s['compact_manifest']])==s['compact_manifest_sha256']
+  key='artifacts' if n in {'merged-discovery-assessment','independent-merged-discovery-review'} else 'files'
+  rows=cm[key];assert len(rows)==s['expected_compact_pairs']
+  raw_names=[]
+  for row in rows:
+   if key=='files':raw,stored,encoding=row['original'],row['stored'],row['method']
+   else:raw,stored,encoding=row['original_path'],row['stored_path'],row['encoding']
+   safe(Path('/private/tmp/logical-layout-only'),raw);safe(Path('/private/tmp/logical-layout-only'),stored)
+   assert encoding in {'identity','gzip'} and stored in bodies
+   sb=bodies[stored];identity(sb,row['stored_sha256'],row['stored_bytes'])
+   rb=sb if encoding=='identity' else gzip.decompress(sb)
+   identity(rb,row['original_sha256'],row['original_bytes'])
+   raw_names.append(raw)
+   if raw in bodies:assert rb==bodies[raw]
+   else:
+    assert s['allow_compact_only_originals'] is True and encoding=='gzip' and raw!=stored
+    logical_counts[n]+=1
+    logical.append({'package':n,'compact_manifest':s['compact_manifest'],'compact_manifest_sha256':s['compact_manifest_sha256'],'logical_original':raw,'physical_stored_artifact':stored,'declared_pair':row})
+   if row.get('existing_gzip_preserved'):
+    assert encoding=='identity' and raw==stored and raw in bodies
+    decoded=gzip.decompress(sb);identity(decoded,row['decoded_sha256'],row['decoded_bytes']);gzip_counts[n]+=1
+    preserved.append({'package':n,'physical_artifact':stored,'declared_pair':row})
+   elif 'decoded_sha256' in row:assert sha(rb)==row['decoded_sha256']
+   pairs.append({'package':n,'original_path':raw,'stored_path':stored,'original_sha256':sha(rb),'original_bytes':len(rb),'stored_sha256':sha(sb),'stored_bytes':len(sb),'encoding':encoding,'exact_decoding':True})
+  assert len(raw_names)==len(set(raw_names))
+  bindings.append({'package':n,'artifact_manifest_sha256':s['manifest_sha256'],'physical_artifacts_excluding_manifest':len(bodies)-1,'compact_manifest':s['compact_manifest'],'compact_manifest_sha256':s['compact_manifest_sha256'],'compact_array':key,'pair_count':len(rows),'compact_only_logical_originals':logical_counts[n],'allow_compact_only_originals':s['allow_compact_only_originals']})
+ assert len(pairs)==2210 and len(logical)==60 and len(preserved)==785
+ assert dict(logical_counts)==spec['expected_compact_only_logical_originals']
+ assert dict(gzip_counts)==spec['expected_preserved_gzip_payloads']
+ for filename,rows in [('explicit-compact-bindings.json',bindings),('verified-compact-pairs.json',pairs),('logical-originals.json',logical),('preserved-gzip-payload-bindings.json',preserved)]:
+  assert load(PAY/filename)==rows
+ put('independent-compact-schema-reconstruction.json',{'status':'passed','input_mode':'Reconstructed extension physical bytes only; no original package reads in these checks.','all_declared_pairs':pairs,'explicit_bindings':bindings,'logical_counts':dict(logical_counts),'preserved_gzip_counts':dict(gzip_counts),'logical_rows':logical,'preserved_rows':preserved,'all_author_ledgers_equal':True})
+ print('All 2,210 compact rows, 60 logical originals and 785 gzip payload bindings passed.',flush=True)
+
+ base_inventory=inventory(BASE,'7ad8339a9bdd7ac669475c305ca43096f113f5015766fdd54a0ea05ed86a1b3c')
+ maintained=REPO/'research/pathway_additions/2026-10-15-next-265/evidence-retention'
+ assert inventory(maintained,'7ad8339a9bdd7ac669475c305ca43096f113f5015766fdd54a0ea05ed86a1b3c')==base_inventory
+ bysha={}
+ for p,r in base_inventory.items():bysha.setdefault(r['sha256'],[]).append(p)
+ overlaps=[]
+ for p,r in sorted(local.items()):
+  digest=r['stored_sha256']
+  if digest in bysha:
+   for bp in bysha[digest]:assert (PAY/p).read_bytes()==(BASE/bp).read_bytes()
+   overlaps.append({'extension_object':p,'sha256':digest,'bytes':r['stored_bytes'],'matching_base_physical_paths':bysha[digest]})
+ ov=load(PAY/'base-byte-overlap.json');assert overlaps==ov['matching_object_rows']
+ assert len(overlaps)==196 and sum(r['bytes'] for r in overlaps)==7693789
+ shared=sorted(set(contents)&set(load(BASE/'content-map.json')))
+ assert shared==ov['source_content_hashes_shared_with_base'] and len(shared)==862
+ assert sum(r['sha256'] in shared for r in allrows)==ov['extension_source_occurrences_with_content_also_in_base']
+ reuse=[]
+ for p in ['decode_retained.py','plan_promotion.py']:
+  body=(PAY/p).read_bytes();assert body==(BASE/p).read_bytes()==(SRC/p).read_bytes()
+  reuse.append({'path':p,'sha256':sha(body),'identical_to_prior_accepted_base':True})
+ old_builder=(SRC/'original-accepted-builder.py.txt').read_text();new_builder=(SRC/'prepare_extension.py').read_text()
+ assert sha(new_builder.encode())=='932235698df467a009997f41d9e6fb9830c913004860f14c9fbe403162f96652'
+ assert (PAY/'proof/prepare-extension.py.txt').read_bytes()==new_builder.encode()
+ assert (PAY/'proof/accepted-base-builder.py.txt').read_bytes()==old_builder.encode()
+ (OUT/'builder-compatibility.diff').write_text(''.join(difflib.unified_diff(old_builder.splitlines(True),new_builder.splitlines(True),fromfile='accepted-base-builder',tofile='extension-builder')))
+ put('unchanged-baseline-and-bounded-overlap.json',{'status':'passed','baseline_files_including_manifest':len(base_inventory),'maintained_base_is_exact':True,'baseline_manifest_sha256':sha((BASE/'artifact-manifest.json').read_bytes()),'reused_controls':reuse,'known_overlap_endpoints':len(overlaps),'known_overlap_bytes':sum(r['bytes'] for r in overlaps),'shared_source_contents':len(shared),'overlap_is_explicit_bounded_scope_not_finding':True,'broad_copy_rehearsal_repeated':False,'prior_rehearsal_reuse_limit':'Unchanged decoder and planner safety behavior only; this review directly checks every new extension mapping and current read-only target plan.'})
+
+ links=[]
+ for doc in sorted(PAY.rglob('*.md')):
+  for match in re.finditer(r'(?<!!)\[[^\]]*\]\(([^)]+)\)',doc.read_text()):
+   target=match.group(1).strip().strip('<>');u=urlsplit(target)
+   if u.scheme or u.netloc or not u.path:continue
+   resolved=(doc.parent/unquote(u.path)).resolve();assert resolved.is_relative_to(PAY.resolve()) and resolved.exists()
+   links.append({'document':str(doc.relative_to(PAY)),'target':target,'resolved':str(resolved.relative_to(PAY))})
+ assert len(links)==38 and links==load(SRC/'audit/local-markdown-links.json')
+ lineage_paths={
+  'independent-retention-review':['HANDOFF.md','findings.json'],
+  'independent-retention-successor-review':['HANDOFF.md','accepted/bounded-acceptance-result.json'],
+  'merged-discovery-assessment':['HANDOFF.md'],
+  'merged-discovery-count-successor':['HANDOFF.md','correction.json','owner-set-proof.json','inputs/independent-finding.json','inputs/original-HANDOFF.md'],
+  'independent-merged-discovery-review':['HANDOFF.md','findings.json','count-successor-independent-acceptance.json','acceptance.json'],
+ }
+ lineage=[]
+ for package,paths in lineage_paths.items():
+  for p in paths:
+   body=reconstructed[package][p];destination=OUT/'lineage'/package/p
+   assert not destination.exists();destination.parent.mkdir(parents=True,exist_ok=True);destination.write_bytes(body)
+   lineage.append({'package':package,'artifact':p,'sha256':sha(body),'bytes':len(body),'reconstructed_exactly':True})
+ assert b'NEXT265-RETENTION-COMPACT-COVERAGE-01' in reconstructed['independent-retention-review']['findings.json']
+ assert b'accepted_external_correction' in reconstructed['independent-retention-successor-review']['accepted/bounded-acceptance-result.json']
+ assert b'next265-merged-discovery-kgx-owner-count' in reconstructed['independent-merged-discovery-review']['findings.json']
+ assert reconstructed['merged-discovery-count-successor']['inputs/original-HANDOFF.md']==reconstructed['merged-discovery-assessment']['HANDOFF.md']
+ put('documentation-and-lineage.json',{'status':'passed','local_links':links,'lineage_records':lineage,'issue_581_and_582_original_and_successor_separate':True,'no_scientific_reassessment':True,'remaining_work_register':load(PAY/'pending-packages.json')})
+
+ # Actual unchanged standalone planner: no copying and no source/target writes.
+ command=[sys.executable,'-B',str(PAY/'plan_promotion.py'),'--stage',str(PAY),'--expected-stage-manifest-sha256','ae8b079a63ea634629ea3768560a9e9d5ab73a0acf213e4f74bcb182ac6b40ff','--target-repo',str(REPO)]
+ result=subprocess.run(command,capture_output=True)
+ (OUT/'current-target-plan.stdout.json').write_bytes(result.stdout);(OUT/'current-target-plan.stderr').write_bytes(result.stderr)
+ put('current-target-plan-tool-outcome.json',{'command':command,'exit_code':result.returncode,'stdout_sha256':sha(result.stdout),'stderr_sha256':sha(result.stderr),'maintained_writes':False})
+ assert result.returncode==0,result.stderr.decode()
+ plan=json.loads(result.stdout);assert plan['observed_target_head']==HEAD and plan['verified_merged_ancestor']==HEAD
+ destination=REPO/'research/pathway_additions/2026-10-15-next-265/evidence-extension'
+ assert plan['destination']==str(destination) and not destination.exists()
+ planned=plan['copy_exact_relative_paths'];assert len(planned)==856
+ assert {r['path']:(r['sha256'],r['bytes']) for r in planned}=={p:(r['sha256'],r['bytes']) for p,r in payload.items()}
+ for r in planned:safe(destination,r['path'])
+ verified=plan['working_tree_owner_and_all_artifact_check'];assert verified['status']=='passed' and verified['source_occurrences']==2782
+ assert plan['promotion_performed'] is False
+ assert inventory(SRC,'a07d4399f4c10c35bb8f0be6c24bfa5fb0e7878d1fc44f7abb16a20d81b81d7e')==outer
+ for s in spec['packages']:assert sha((Path(s['root'])/'artifact-manifest.json').read_bytes())==s['manifest_sha256']
+ verdict={'status':'completed','result':'pass_with_limitations','new_findings':[],'scope':'Independent technical storage acceptance only; source scientific dispositions retained unchanged, not self-reviewed. No canonical record or production-gate approval.','payload_manifest_sha256':'ae8b079a63ea634629ea3768560a9e9d5ab73a0acf213e4f74bcb182ac6b40ff','outer_manifest_sha256':'a07d4399f4c10c35bb8f0be6c24bfa5fb0e7878d1fc44f7abb16a20d81b81d7e','physical_occurrences':2782,'compact_pairs':2210,'compact_only_logical_originals':60,'preserved_gzip_payload_bindings':785,'verified_predecessor_owner_rows':631,'new_local_endpoints':811,'proposed_copies':856,'current_target_plan_exit_code':0,'target_head':HEAD,'maintained_promotion_performed':False,'started_utc':started,'finished_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+ put('acceptance.json',verdict);print(json.dumps(verdict,indent=2),flush=True)
+
+if __name__=='__main__':main()

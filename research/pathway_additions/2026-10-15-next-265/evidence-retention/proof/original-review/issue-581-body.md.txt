@@ -1,0 +1,21 @@
+The next265 24-package retention rehearsal reconstructs source artifacts but overstates completion of its declared compact-pair audit. Three package specifications omit `compact_manifest`, so the builder checks only the default root `compact-retention-manifest.json` and silently records zero pairs when that default is absent. These packages actually declare their compact maps at `compact/storage-manifest.json`.
+
+Finding key: `NEXT265-RETENTION-COMPACT-COVERAGE-01`. Severity: major for the claimed retention-verification gate. This finding does not establish data loss: generic artifact/gzip reconstruction may still preserve every source byte.
+
+Affected package-owned maps:
+
+- `native`: 128 pairs; map SHA256 `e0cf4672a73bd62b419b4c38ea073fa862079779f70607a4851da20dad9fb10c`.
+- `cofactor-identities`: 78 pairs; map SHA256 `aea0523742ac48120dd1b1190db80cbce03a4c3cdea75a64f3a94fbc81a4b10f`.
+- `independent-cofactor-review`: 114 pairs; map SHA256 `6222a4ef921446622d7a1d8f1c71cbbdc8a3403380e7f36771851c0c97534d98`.
+
+Frozen proposed v4 payload manifest: `4d6b8ec56818707e1d4c0a71ddaf515ad49b6031bd6baad57f6f0120f7fcd687`. Its frozen outer preparation manifest is `54742085d347b76515018ee2f5720ad2b428108cb22f4e87a00e417fa8808bed`. The claimed 5,095 audited pairs omit 320 declared mappings; the 24-package total is 5,415. Root independently inspected the specifications, builder fallback, and all three actual map formats/counts after the independent reviewer reported the defect.
+
+Resolution requirements:
+
+- Preserve the original v4 payload, helper/specifications and independent finding.
+- Use an immutable explicit successor that binds every package-owned compact manifest or documents its absence; never silently treat a missing default path as proof of no map.
+- Verify all 320 missing source/stored hashes, byte sizes and decoded equality, and correct the complete audit accounting to 5,415 for this exact cutoff.
+- Keep complete source-artifact reconstruction and inherited-owner checks; establish whether storage or scientific contents change rather than assuming data loss.
+- Independently accept the correction and verify actual maintained evidence integration before closure.
+
+No maintained promotion has occurred. Later frozen authority and merged-discovery reviews remain separately accounted extensions.

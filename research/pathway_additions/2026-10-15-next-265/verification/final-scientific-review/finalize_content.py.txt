@@ -1,0 +1,69 @@
+"""Complete scientific content from observed actual production receipts."""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+
+OUT = Path('/private/tmp/pathwaymech-next-265-canonical-scientific-preparation')
+ROOT = Path('/private/tmp/pathwaymech-next-265-20261015')
+REPORT = 'research/pathway_additions/2026-10-15-next-265'
+TARGET = 'MetaCyc:PWY-1361'
+now = datetime.datetime.now(datetime.timezone.utc).isoformat().replace('+00:00', 'Z')
+content = json.loads((OUT/'review-content-fragments.json').read_bytes())
+content['role'] = 'Complete independent scientific content; canonical persistence is separate and held for coordinated native save.'
+content.pop('provisional_scientific_verdict')
+content['scientific_verdict'] = 'pass_with_limitations'
+content['scope']['description'] = 'Complete actual maintained PWY-1361 record, exact retained evidence, authority realization and preparation/taxon/cofactor/access limits; actual generated products and successful root-executed gates assessed from retained exact receipts.'
+content['limitations'] = [x for x in content['limitations'] if not x.startswith('Final root production')]
+content['limitations'].extend([
+    'Root executed the full production gates and browser interactions. This reviewer independently inspected exact retained receipts/logs, rehashed all 4,030 tested files and personally viewed two focused desktop/mobile screenshots; no duplicate execution or exhaustive accessibility/cross-browser audit is claimed.',
+    'The full suite has three native empty-command-frontmatter parametrization skips and seven dependency warnings. The initial vendored-check DNS failure remains preserved; only that failed gate and the previously unrun diff tail were retried successfully.',
+    'Only the final research README changed after the full suite, and its complete delta was separately assessed. Final proof/canonical review additions need their native and bounded documentation checks; publication, issue closure and merge are separate.'
+])
+
+def ev(key, ref, locator, summary, path=None):
+    row = dict(evidence_id=key, kind='validation', reference=ref, locator=locator,
+               accessed_at=now, support='supports', summary=summary)
+    if path is not None:
+        row['snapshot_sha256'] = hashlib.sha256(path.read_bytes()).hexdigest()
+    content['evidence'].append(row)
+
+proof = REPORT+'/verification/final-scientific-review/'
+ev('realization_replay', proof+'actual-maintained-replay.json', 'All 67 complete edge objects, 46 non-pathway nodes/47 IDs, 68 reference declarations, eight qualifiers and all 76 complete native objects', 'The reviewer independently checked actual maintained realization against exact accepted sources and reconstructed complete originals. Current taxon aliases and iModulon applicability were verified.', OUT/'actual-maintained-replay.json')
+ev('source_binding_replay', proof+'bound-scientific-input-replay.json', 'Ten prior independent acceptances, 41 primary units and three authority files', 'All selected original text units were freshly reconstructed from complete retained originals. Accepted scientific input bindings are exact, with no broad corpus or full Rhea/SQL rerun claimed.', OUT/'bound-scientific-input-replay.json')
+ev('final_gates', REPORT+'/verification/final-gates/network-tail/final-input-preservation.json', 'All seven successful logical commands, initial failed vendored attempt, exact log hashes and 4,030-input preservation', 'Root-executed render, validation, 5,255-passed/three-skipped full tests, lint, vendored network retry and both diff checks passed. The reviewer checked exact retained logs and receipts. The initial DNS failure remains explicit.', ROOT/REPORT/'verification/final-gates/network-tail/final-input-preservation.json')
+ev('final_context', proof+'final-gate-report-observation.json', 'Independent inventory/hash checks, sole post-gate README delta and frozen technical acceptance binding', 'All 4,030 tested input hashes were independently checked: 4,029 unchanged, with only the finalized README changed. Complete final prose was read and supported; all retained gate/browser/technical manifest rows passed integrity checks.', OUT/'final-gate-report-observation.json')
+ev('production_kgx', proof+'independent-kgx-receipt-observation.json', 'All 67 actual KGX edge payloads and 47 complete named node contexts', 'Root ran native export; this reviewer checked exported hashes and actual complete evidence, qualifier and description fidelity against the maintained record.', OUT/'independent-kgx-receipt-observation.json')
+ev('focused_visual', proof+'independent-focused-visual-observation.json', 'Two actually viewed focused screenshots; four screenshot hashes and page SHA', 'Selected desktop/mobile labels are legible at 100%. Dense fit-width overview and mobile scrolling remain explicit; root interaction receipts had no runtime error.', OUT/'independent-focused-visual-observation.json')
+ev('technical_integration', REPORT+'/verification/final-technical-review/HANDOFF.md', 'Complete separately authored final technical handoff; bounded production/page/export preservation receipts', 'Technical integration review supports all 67 page relationships, 127 evidence occurrences, eight qualifiers, 51 display nodes and preservation of all 13,546 prior edge rows. Its source-author scientific interpretations are excluded from self-acceptance.', ROOT/REPORT/'verification/final-technical-review/HANDOFF.md')
+ev('native_existing_reviews', proof+'native-existing-review-check.json', 'Native append-only and complete existing-bundle validation against merged base', 'Reviewer executed the native check: all 183 existing bundles are valid, with declared-scope coverage only. The new canonical candidate was not yet saved.', OUT/'native-existing-review-check.json')
+checks = []
+def check(key, name, status, summary, evidence, required=True, command=None, exit_code=None, scope=None):
+    row = dict(check_id=key, name=name, status=status, required=required, summary=summary,
+               target_ids=[TARGET], evidence_ids=evidence)
+    if command is not None:
+        row['command'] = command
+        row['exit_code'] = exit_code
+    if scope:
+        row['scope_note'] = scope
+    checks.append(row)
+
+check('actual_source_realization', 'Independent complete maintained record and source realization', 'passed', 'Exact accepted YAML and semantic JSON; all 67 edges, 47 IDs, 68 references/60 originals and 76 native objects match. The full record was read.', ['record','realization_replay','source_binding_replay'], command='/private/tmp/pathwaymech-next-263-verified-venv/bin/python -B replay_maintained_realization.py; separately python -B replay_bound_science.py', exit_code=0, scope='Reviewer executed the two retained helpers separately; command text is descriptive. The archived helpers are stored inert or losslessly compressed.')
+check('integrated_scientific_review', 'Independent complete integrated scientific assessment', 'passed', 'All 63 primary dispositions, 15 activities, six regulations, 76 native objects/902 slots, four taxa and eight qualifiers retain their accepted limits; no unresolved record finding.', ['integrated','locator_successor','chemistry','native','primary_five','primary_two','identities','cofactors','record'])
+check('imodulondb_applicability', 'Structured transcriptomic applicability', 'not_applicable', 'Complete current inventory contains no exact donor/context taxon or retained alias match; this is not negative pathway evidence.', ['imodulondb'], required=True, scope='The successful shared-adapter inventory cross-check followed retained dependency and DNS failures, without environment repair. E. coli assay-host modules cannot establish donor mechanism.')
+terminal = json.loads((OUT/'final-gate-report-observation.json').read_bytes())
+for index, receipt in enumerate(terminal['successful_logical_gates']):
+    cmd = ' '.join(receipt['command'])
+    check('gate_'+str(index+1), cmd, 'passed', 'Actual root-executed command passed; retained command/log hashes and unchanged tested inputs were independently verified.', ['final_gates','final_context'], command=cmd, exit_code=receipt['exit_code'], scope='Observed actual command receipt and complete retained output; not re-executed by this reviewer. Native full-suite result: 5,255 passed, three skipped, seven dependency warnings.')
+check('initial_vendored_dns_attempt', 'Preserved initial vendored gate attempt', 'failed', 'Sandbox DNS could not fetch the pinned GitHub manifest; exact failed attempt retained. The required logical vendored gate subsequently passed unchanged with network access.', ['final_gates'], required=False, command='just vendored-check', exit_code=1, scope='Historical attempt only; the successful required retry is a separate gate check. No repository defect inferred from the transport failure.')
+check('kgx_realization', 'Actual native export fidelity', 'passed', 'All 67 edge payloads and all 47 complete named node contexts match the record.', ['production_kgx','technical_integration'], command='just kgx-export --output-dir /private/tmp/pathwaymech-next-265-ci/kgx-export', exit_code=0, scope='Root executed the actual export; reviewer independently compared output content and hashes.')
+check('visual_graph', 'Bounded graph visual and interaction evidence', 'passed', 'Actual page/receipts and focused desktop/mobile screenshots support readable selected labels, retained controls and no observed runtime errors.', ['focused_visual','technical_integration'], scope='Root executed interactions. Reviewer viewed two focused screenshots and checked all four image hashes; no exhaustive accessibility claim.')
+check('final_context_preservation', 'Final tested-input and report delta inspection', 'passed', 'All 4,030 tested files were rehashed; only the finalized report differs. Its whole content and changes are supported, and record/authorities/scientific source objects remain unchanged.', ['final_context','final_gates'], command='/private/tmp/pathwaymech-next-263-verified-venv/bin/python -B observe_final.py', exit_code=0)
+check('native_existing_reviews', 'Native existing-review schema and append-only check', 'passed', 'All 183 existing canonical review bundles pass native validation and append-only checks.', ['native_existing_reviews'], command='/private/tmp/pathwaymech-next-263-verified-venv/bin/python -B scripts/record_review.py check --require-reviews --base 39b84c79eb9997fb6785ef040f571bad498846e7', exit_code=0, scope='Reviewer personally executed this read-only check before saving the new canonical bundle; declared scopes only.')
+content['checks'] = checks
+content['assessments'].extend([
+    dict(assessment_id='production_fidelity', area='graph', topic='Actual page and KGX realization', outcome='supported', summary='The actual generated graph and export preserve the accepted record, including all 67 relationships, 127 evidence occurrences, eight endpoint qualifiers and complete source metadata. The 51 display nodes are 43 connected base nodes plus eight qualified instances; four taxa remain in the table.', target_ids=[TARGET], evidence_ids=['record','production_kgx','focused_visual','technical_integration'], details='Mechanism/context filtering shows 48/19 edges. Dense fitted views need zoom; focused selected labels were actually viewed at 100%. No scientific interpretation is inferred from graph proximity.'),
+    dict(assessment_id='production_gates', area='consistency', topic='Successful actual gates and final report delta', outcome='supported', summary='All seven native logical gates passed with tested inputs unchanged through completion. The final report-only change was read and checked separately; no remaining scientific finding was identified.', target_ids=[TARGET], evidence_ids=['final_gates','final_context','technical_integration'], details='The first vendored attempt failed DNS and remains retained; only that gate and the unrun tail were retried. Passing gates were not rerun. Final proof and canonical review additions are separately governed and do not retroactively become full-suite inputs.')
+])
+(OUT/'review-content-final.json').write_text(json.dumps(content, indent=2)+'\n')
+print(json.dumps({'checks':len(checks), 'assessments':len(content['assessments']), 'evidence':len(content['evidence']), 'findings':0, 'verdict':content['scientific_verdict']}))
