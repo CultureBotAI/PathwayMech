@@ -1,0 +1,14 @@
+Independent scientific review of the ethanolamine-utilization source preparation found an inference that needs correction before curation. This is a preparation finding; no maintained ethanolamine record currently contains the claim.
+
+The original [EutP/Q study (PMID26448059)](https://pmc.ncbi.nlm.nih.gov/articles/PMC4857615/) reports unchanged activity after EDTA dialysis. Its coupled kinetic assay nevertheless includes 6.6 mM MgCl2, and the HPLC activity assays include 1 mM MgCl2. These observations support EDTA-treatment-resistant activity under the reported assay conditions; they do not establish magnesium-independent catalysis.
+
+The source discussion and the cofactor annotations in [UniProt P0A208](https://www.uniprot.org/uniprotkb/P0A208/entry) and [Q9ZFV5](https://www.uniprot.org/uniprotkb/Q9ZFV5/entry) use broader metal-independence language. The preparation's protein semantic dispositions repeat that interpretation. Preserve the original source assertions and document the narrower inference supported by the inspected methods.
+
+Acceptance:
+
+- Retain frozen source originals and add a successor assessment with exact results/methods and database locators.
+- Correct every affected derived interpretation, including shared/by-similarity protein assessments.
+- Preserve supported acetate-kinase catalysis and assay conditions without asserting metal-free catalysis or inventing a magnesium-binding/required-cofactor edge.
+- Independently review the successor and carry its qualification into the maintained record, authority evidence and rendered graph; verify the actual merged result before closure.
+
+Stable finding key: `next272-preparation-eutpq-divalent-cation-scope`.

@@ -12,6 +12,7 @@ metacyc-ferredoxin-class-xml, metacyc-hydrolytic-composite-xml
 metacyc-etf-reaction-xml, metacyc-etf-class-xml, metacyc-singleton-activity-xml,
 metacyc-gene-xml (separate product_source original),
 metacyc-phenylacetate-xml, ecocyc-phenylacetate-xml (complete bounded originals),
+metacyc-ethanolamine-xml, ecocyc-ethanolamine-xml (complete bounded originals),
 ecocyc-protein-state-xml (separate counterpart_source original), ecocyc-protein-xml, ecocyc-rna-xml,
 ecocyc-complex-xml (typed originals and optional class_source companion), ncbi-entrezgene-xml,
 ncbi-protein-xml, rhea-components-rdf-gz, rhea-polymer-rdf,
@@ -49,6 +50,12 @@ from xml.parsers import expat
 
 import yaml
 
+from pathwaymech.biocyc_acetate_methanogenesis import (
+    ACETATE_METHANOGENESIS_KINDS,
+    acetate_methanogenesis_metadata,
+    acetate_methanogenesis_term,
+    validate_acetate_methanogenesis_assertions,
+)
 from pathwaymech.biocyc_aceto import (
     ACETO_KINDS,
     COMPANION_FIELDS,
@@ -82,6 +89,12 @@ from pathwaymech.biocyc_electron_transfer import (
     ELECTRON_TRANSFER_KIND,
     reaction_metadata,
     reaction_term,
+)
+from pathwaymech.biocyc_ethanolamine import (
+    ETHANOLAMINE_KINDS,
+    ethanolamine_metadata,
+    ethanolamine_term,
+    validate_ethanolamine_assertions,
 )
 from pathwaymech.biocyc_glutaryl import (
     GLUTARYL_KINDS,
@@ -1909,6 +1922,18 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         for index, entry in enumerate(entries)
     }
     validate_methanogenesis_assertions(methanogenesis_sources, [])
+    ethanolamine_sources = {
+        index: ethanolamine_metadata(entry, cache_dir)
+        if entry["kind"] in ETHANOLAMINE_KINDS else entry
+        for index, entry in enumerate(entries)
+    }
+    validate_ethanolamine_assertions(ethanolamine_sources, [])
+    acetate_methanogenesis_sources = {
+        index: acetate_methanogenesis_metadata(entry, cache_dir)
+        if entry["kind"] in ACETATE_METHANOGENESIS_KINDS else entry
+        for index, entry in enumerate(entries)
+    }
+    validate_acetate_methanogenesis_assertions(acetate_methanogenesis_sources, [])
     carrier_sources = {
         index: carrier_reaction_metadata(entry, cache_dir)
         if entry["kind"] == PROTEIN_CARRIER_REACTION_KIND
@@ -1961,7 +1986,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         path = cache_dir / artifact
         if entry["kind"] in (
             ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS
-            | GLUTARYL_KINDS | METHANOGENESIS_KINDS
+            | GLUTARYL_KINDS | METHANOGENESIS_KINDS | ACETATE_METHANOGENESIS_KINDS
+            | ETHANOLAMINE_KINDS
         ) | {
             CARRIER_CLASS_KIND,
             ECOCYC_STATE_KIND,
@@ -2024,6 +2050,14 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
         elif entry["kind"] in GLUTARYL_KINDS:
             metadata = glutaryl_sources[entry_index]
             identifier, typed_term = glutaryl_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
+        elif entry["kind"] in ETHANOLAMINE_KINDS:
+            metadata = ethanolamine_sources[entry_index]
+            identifier, typed_term = ethanolamine_term(metadata, key)
+            parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
+        elif entry["kind"] in ACETATE_METHANOGENESIS_KINDS:
+            metadata = acetate_methanogenesis_sources[entry_index]
+            identifier, typed_term = acetate_methanogenesis_term(metadata, key)
             parsed_terms = [(identifier, typed_term["label"], typed_term["synonyms"])]
         elif entry["kind"] in METHANOGENESIS_KINDS:
             metadata = methanogenesis_sources[entry_index]
@@ -2297,7 +2331,7 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 and entry["kind"] not in ECOCYC_SOURCE_TYPES
                 and entry["kind"]
                 not in {ECOCYC_COMPLEX_KIND, ECOCYC_STATE_KIND, NAMED_COMPLEX_KIND, NESTED_KIND}
-                and entry["kind"] not in PHENYLACETATE_KINDS
+                and entry["kind"] not in PHENYLACETATE_KINDS | ETHANOLAMINE_KINDS
             ):
                 raise ValueError("EcoCyc identifiers require native ECOLI XML authority")
             if identifier.startswith("BiGG:") and entry["kind"] not in BIGG_SOURCE_TYPES:
@@ -2366,6 +2400,10 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
                 terms[identifier] = phenylacetate_term(metadata, key)[1]
             if entry["kind"] in GLUTARYL_KINDS:
                 terms[identifier] = glutaryl_term(metadata, key)[1]
+            if entry["kind"] in ETHANOLAMINE_KINDS:
+                terms[identifier] = ethanolamine_term(metadata, key)[1]
+            if entry["kind"] in ACETATE_METHANOGENESIS_KINDS:
+                terms[identifier] = acetate_methanogenesis_term(metadata, key)[1]
             if entry["kind"] in METHANOGENESIS_KINDS:
                 terms[identifier] = methanogenesis_term(metadata, key)[1]
             if entry["kind"] in P321_KINDS:
@@ -2413,6 +2451,8 @@ def build_snapshot(manifest: Path, records: Path, cache_dir: Path) -> dict[str, 
     validate_phenylacetate_assertions(all_aceto_sources, all_aceto_claims)
     validate_glutaryl_assertions(all_aceto_sources, all_aceto_claims)
     validate_methanogenesis_assertions(all_aceto_sources, all_aceto_claims)
+    validate_acetate_methanogenesis_assertions(all_aceto_sources, all_aceto_claims)
+    validate_ethanolamine_assertions(all_aceto_sources, all_aceto_claims)
     validate_benzoyl_assertions(all_aceto_sources, all_aceto_claims)
     validate_aceto_assertions(all_aceto_sources, all_aceto_claims)
     validate_named_complex_graph(named_assemblies)

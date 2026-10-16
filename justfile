@@ -53,8 +53,9 @@ seed:
 
 # Scaffold an append-only curation-history record (history/<kind>/<slug>/...).
 # See history/README.md. Needs no claw checkout.
+[positional-arguments]
 new-history *args:
-    uv run python scripts/new_history_record.py {{args}}
+    uv run python scripts/new_history_record.py "$@"
 
 # Validate history records (default: all of history/) against the vendored
 # schema. `just validate` runs this too, through pathwaymech-run-qc.

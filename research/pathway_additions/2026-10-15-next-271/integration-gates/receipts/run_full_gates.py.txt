@@ -1,0 +1,64 @@
+"""Run the authorized full checks against the integrated next271 worktree."""
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import threading
+
+ROOT = Path('/private/tmp/pathwaymech-next-271-20261015')
+OUT = Path('/private/tmp/pathwaymech-next-271-ci')
+ENV = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONNOUSERSITE='1',
+           PYTHONPATH='src:.', UV_NO_SYNC='1',
+           UV_PROJECT_ENVIRONMENT='/private/tmp/pathwaymech-next-263-verified-venv',
+           UV_CACHE_DIR='/private/tmp/pathwaymech-next-267-uv-cache')
+LOCK = threading.Lock()
+STATE = {'worktree': str(ROOT), 'started_utc': datetime.now(timezone.utc).isoformat(),
+         'checks': {}}
+
+
+def save():
+    tmp = OUT / 'full-gates-live.json.tmp'
+    tmp.write_text(json.dumps(STATE, indent=2) + '\n')
+    tmp.replace(OUT / 'full-gates-live.json')
+
+
+def run(name, command):
+    stdout, stderr = OUT / (name + '.stdout'), OUT / (name + '.stderr')
+    with stdout.open('xb') as out, stderr.open('xb') as err:
+        child = subprocess.Popen(command, cwd=ROOT, env=ENV, stdout=out, stderr=err)
+        with LOCK:
+            STATE['checks'][name] = {'command': command, 'pid': child.pid,
+                                    'started_utc': datetime.now(timezone.utc).isoformat(),
+                                    'status': 'running'}
+            save()
+        code = child.wait()
+    logs = {}
+    for label, path in [('stdout', stdout), ('stderr', stderr)]:
+        data = path.read_bytes()
+        logs[label] = {'path': str(path), 'bytes': len(data),
+                       'sha256': hashlib.sha256(data).hexdigest()}
+    with LOCK:
+        STATE['checks'][name].update(status='terminal', exit_code=code, logs=logs,
+                                    finished_utc=datetime.now(timezone.utc).isoformat())
+        save()
+    print(json.dumps({'check': name, 'exit_code': code}), flush=True)
+    return code
+
+
+if __name__ == '__main__':
+    assert not (OUT / 'full-gates-live.json').exists()
+    commands = [('full-validate', ['just', 'validate']),
+                ('full-test', ['just', 'test']),
+                ('full-lint', ['just', 'lint']),
+                ('full-diff-check', ['git', 'diff', '--check']),
+                ('full-staged-diff-check', ['git', 'diff', '--cached', '--check'])]
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(run, name, command) for name, command in commands]
+        codes = [future.result() for future in as_completed(futures)]
+    STATE['finished_utc'] = datetime.now(timezone.utc).isoformat()
+    STATE['all_checks_passed'] = all(code == 0 for code in codes)
+    save()
+    raise SystemExit(0 if STATE['all_checks_passed'] else 1)

@@ -1,0 +1,218 @@
+{
+  "runtime": "/private/tmp/pathwaymech-next-263-verified-venv/bin/python",
+  "scope": "Author focused checks; no full-suite or independent acceptance claim.",
+  "commands_use_runtime_abbreviation_python": true,
+  "checks": [
+    {
+      "name": "focused-final",
+      "commands": [
+        "python -B -m pytest -q tests/test_acetate_methanogenesis_authority.py"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "396 passed in 10.01s",
+      "logs": [
+        {
+          "path": "tests-final.stdout",
+          "bytes": 501,
+          "sha256": "889b93cddb7c075d2396a0e93206d18d4f5eb6010bf08b02b6c9dd17800091de"
+        },
+        {
+          "path": "tests-final.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "regression-initial",
+      "commands": [
+        "python -B -m pytest -q tests/test_methanogenesis_authority.py tests/test_biocyc_carrier_authority.py tests/test_source_identifier_snapshot.py tests/test_identifiers.py tests/test_identifier_snapshot_builders.py"
+      ],
+      "authoritative_returncode": 1,
+      "outcome": "1008 passed; five subprocess imports failed without PYTHONPATH",
+      "logs": [
+        {
+          "path": "regression.stdout",
+          "bytes": 13595,
+          "sha256": "e8e81c90b8392ecf7e9615ff9e64c36fa359fe8cc19342d2b08a8e0464f476b7"
+        },
+        {
+          "path": "regression.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "regression-import-successor",
+      "commands": [
+        "PYTHONPATH=/private/tmp/pathwaymech-next-271-20261015/src python -B -m pytest -q tests/test_biocyc_carrier_authority.py -k test_native_provenance_order_is_stable_across_processes"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "5 passed, 570 deselected in 4.02s",
+      "logs": [
+        {
+          "path": "regression-environment-successor.stdout",
+          "bytes": 114,
+          "sha256": "4bc1a84d62f12a9d9f6de819063a3ae937aa1e8fbfc2d74c282989b806b1c8fe"
+        },
+        {
+          "path": "regression-environment-successor.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "actual-identifier-gate",
+      "commands": [
+        "PYTHONPATH=src python -B - (identifier_errors(Path.cwd()); assert unchanged record SHA)"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "268 records, zero errors",
+      "logs": [
+        {
+          "path": "maintained-identifier-gate-successor.stdout",
+          "bytes": 124,
+          "sha256": "98f5b13320423fe3982c19cbdb52e9c29b6e9b13d1fbf6c7adff7866af1f9ff3"
+        },
+        {
+          "path": "maintained-identifier-gate-successor.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "lint",
+      "commands": [
+        "python -B -m ruff check src/pathwaymech/biocyc_acetate_methanogenesis.py src/pathwaymech/identifiers.py scripts/build_source_identifier_snapshot.py tests/test_acetate_methanogenesis_authority.py"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "All checks passed",
+      "logs": [
+        {
+          "path": "lint-release.stdout",
+          "bytes": 19,
+          "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+        },
+        {
+          "path": "lint-release.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "tracked-owned-diff-check",
+      "commands": [
+        "git diff --check -- src/pathwaymech/identifiers.py scripts/build_source_identifier_snapshot.py conf/identifier_sources.json data/identifier_authorities/sources.json data/identifier_authorities/ontology.json docs/IDENTIFIERS.md"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "exit 0",
+      "logs": [
+        {
+          "path": "diff-check-successor.stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "diff-check-successor.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "reproduction-seed-271",
+      "commands": [
+        "PYTHONHASHSEED=271 python -B build_additions.py --output /private/tmp/pathwaymech-next-271-authority-implementation/reproduction-a"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "52 native and five taxonomy additions, no integration",
+      "logs": [
+        {
+          "path": "reproduction-a.stdout",
+          "bytes": 134,
+          "sha256": "d6fc7ffcc5f310f755a5b049b8c1b27a920994911ad3c74c2d86551ff61b222c"
+        },
+        {
+          "path": "reproduction-a.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "reproduction-seed-172",
+      "commands": [
+        "PYTHONHASHSEED=172 python -B build_additions.py --output /private/tmp/pathwaymech-next-271-authority-implementation/reproduction-b"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "52 native and five taxonomy additions, no integration",
+      "logs": [
+        {
+          "path": "reproduction-b.stdout",
+          "bytes": 134,
+          "sha256": "e2cd8414d69d7021eab66407a6907023ebf7a117fc19dab191f33c4e8f7f5e66"
+        },
+        {
+          "path": "reproduction-b.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "public-source-builder-cli",
+      "commands": [
+        "PYTHONPATH=src python -B scripts/build_source_identifier_snapshot.py --manifest /private/tmp/pathwaymech-next-271-authority-implementation/results/proposed-source-manifest.json --cache-dir /private/tmp/pathwaymech-next-271-authority-implementation/build-2/cache --records /private/tmp/pathwaymech-next-271-authority-implementation/build-2/selection --output /private/tmp/pathwaymech-next-271-authority-implementation/cli-source-additions.json"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "52 sources and terms; bytes equal helper function output",
+      "logs": [
+        {
+          "path": "cli-build.stdout",
+          "bytes": 62,
+          "sha256": "acc79058385727be02c73f179b63bb051a68c11704a9fc4ccae3ca82cfd77afe"
+        },
+        {
+          "path": "cli-build.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    {
+      "name": "release-verification",
+      "commands": [
+        "python -B verify_release.py"
+      ],
+      "authoritative_returncode": 0,
+      "outcome": "7634 author preservation/source/input checks",
+      "logs": [
+        {
+          "path": "release-verification.stdout",
+          "bytes": 274,
+          "sha256": "87ca8fb9b00bc57e313d8f8771c39e958f53059378b275b5c459f1fe11dcbeb3"
+        },
+        {
+          "path": "release-verification.stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    }
+  ],
+  "earlier_failed_attempts_retained": [
+    "collection-initial.stderr",
+    "collection-successor.stderr",
+    "adapter-generation.stderr",
+    "build-1.stderr",
+    "tests-initial.stdout",
+    "lint-initial.stdout",
+    "maintained-identifier-gate.stderr",
+    "regression.stdout",
+    "diff-check.stderr"
+  ]
+}

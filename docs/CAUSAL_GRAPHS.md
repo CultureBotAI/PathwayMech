@@ -46,6 +46,13 @@ states explicitly in the incident edge evidence and descriptions.
   claiming chemical destruction or synthesis. Both point from activity to
   participant. `consumes` points from participant to reaction or pathway;
   `produces` points from reaction or pathway to participant.
+  A `has_input` or `has_output` subject may also be an explicitly typed
+  `molecular_activity` in `participants`. This admission requires a participant-only
+  identity and that every declaration of that participant has the activity type;
+  conflicting declarations cannot turn a physical entity or taxon into an activity.
+  Preserve conditional or alternative input/output scope on the affected edge.
+  These assertions do not add terms to the issued reaction's canonical equation
+  or extend the endpoint rules for other predicates.
 - `enables` preserves a source's gene-product/activity assertion. `catalyzes`
   requires support for catalysis. Membership in a protein complex does not mean
   every subunit independently catalyzes its overall reaction.

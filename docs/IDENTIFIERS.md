@@ -1067,3 +1067,114 @@ Production originals, deterministic compressed test fixtures, complete acquisiti
 Three additional terms—NCBITaxon:2208, NCBITaxon:145262 and NCBITaxon:2179—are projected with the unchanged ontology extractor from complete selected statement sets accepted against the pinned NCBI Taxonomy 2026-07-12 database. The ranks are species, species and genus. Snapshot provenance still hashes the full external uncompressed SQLite database, not the selected-row JSON. The complete database is not committed and no new full-cache hash is claimed. Historical Euryarchaeota range and catalyst-context taxa are excluded from these direct associations.
 
 Existing source and ontology owner objects, terms and insertion order must remain identical. Reproduction adds 92 native terms and three taxonomy terms to the exact baseline; it does not claim a fresh rebuild of historical source caches. Independent design/issuer acceptance does not substitute for authority implementation or final record acceptance. Generic/stereochemical/ionic/compartment, strain/sequence, GeneID/paralog, cofactor and direction limitations remain in source and record evidence.
+
+## Complete native acetate methanogenesis authorities
+
+`metacyc-acetate-methanogenesis-xml` adds 52 previously unsupported identities from
+`MetaCyc:METH-ACETATE-PWY` without expanding an older source profile. The finite
+profile contains original types, class flags, direct-slot multiplicities,
+parent identities and embedded object shapes; it contains no curated label
+allowlist. Full META 27.0 originals, request identity, exact acquired URLs and
+hashes are retained and independently reprojected by both producer and consumer.
+
+These additions comprise 22 Compound instances, one Compound class, thirteen
+Protein instances (six complexes), two Protein classes, seven Enzymatic-Reaction
+instances, six Reaction instances and one Pathway. The corrinoid protein classes
+remain classes even where a parent names Protein-Complexes. Exact activity
+identities are participants with category `molecular_activity`; the six issued
+reactions remain reaction declarations. The 17 existing native owners and their
+labels are preserved. Reference-only genes, regulation frames and native
+organisms do not become additional authority terms.
+
+Direct own common names and synonyms supply labels. Six unnamed reactions,
+complexes CPLX-322 and CPLX-481, and PTAMSARC-MONOMER use exact frame tokens as
+source-context fallbacks; nested activity names are not promoted. The two
+unnamed complexes have no own component list. Their empty composition remains
+explicit rather than being filled from another organism. Typed node roles and
+source-derived labels are enforced before broad contextual-label policies.
+
+The adapter retains all six reversible source equations and their 29 material
+occurrences, including coefficient omission and the absence of compartments.
+It checks exact activity links and eight component occurrences. It does not
+borrow sodium transport or located carriers from the CO2 methanogenesis record,
+promote public aliases, repair the kinase EC annotation, resolve the two
+sarcinapterin structures' short-SMILES conflict, or turn database associations
+into proof of flux. Those scientific limits remain in incident-edge evidence.
+
+Acquisition metadata uses the actual HTTPS bare-query request, including literal
+`+` in CA+2, CO+2, K+, NI+2 and ZN+2. Encoded `%2b` in the original HTTP XML base
+is retained as source metadata. Broader URL recognition is used only to reject
+untyped owner downgrades, including encoded charged identifiers, before term
+selection and when loading snapshots; it does not normalize provenance.
+
+Five new NCBI Taxonomy terms (2207, 2210, 2214, 2222 and 2224) are projected by
+the unchanged ontology extractor from accepted complete selected statement
+sets. They are two genera and three species. NCBITaxon:2208 and the pinned
+2026-07-12 source metadata remain unchanged. The hash still identifies the
+complete external uncompressed SQLite database, not selected-row JSON; no fresh
+14 GB rehash or source download is claimed. ORG-5913 remains an unresolved
+native association in evidence, and TAX-28890 remains a range rather than a
+declared taxon.
+
+The original bodies, acquisition receipts, exact manifest and taxonomy rows are
+retained under
+`research/pathway_additions/2026-10-15-next-271/authority-source-originals/`.
+Additive replay must preserve every earlier owner object and insertion order;
+it projects only these 52 native terms and five taxa. Source and graph reviews
+do not substitute for separate authority implementation and final record gates.
+
+## Complete native ethanolamine utilization authorities
+
+The separate `metacyc-ethanolamine-xml` and `ecocyc-ethanolamine-xml` kinds cover
+63 newly required native identities for PWY0-1477 and its reviewed Eut context.
+They preserve complete originals for fifteen Compound instances, four Reaction
+instances, 33 Protein instances, two Protein classes, six Enzymatic-Reaction
+instances, one Pathway and two cco instances. The older source profiles and
+26 existing native graph owners are unchanged. UniProt and ontology additions
+use their existing extractors; native identity is not automatic equivalence to
+a UniProt sequence, another database's representation or an assay construct.
+
+Both producer and consumer replay original bytes and all 1,468 direct slots.
+They require exact original hashes, issued native identities, class flags,
+parents, complete embedded object shapes and META or ECOLI 27.0 metadata.
+The ECOLI database envelope retains its K-12 MG1655 strain and taxon link;
+that source catalog scope does not establish strain-specific pathway flux.
+All embedded native identities, including Genetic-Element annotations, remain
+checked context. They do not become additional selected authority terms.
+
+Provenance retains the reviewed HTTPS bare `?META:FRAME` or `?ECOLI:FRAME`
+requests. Retained reuse bindings remain distinct from fresh acquisition receipts;
+no new retrieval timestamp is inferred for an older original. A literal `+` in FE+2 remains literal; encoded forms are recognized
+only for rejecting an untyped downgrade, not for normalizing acquisition
+metadata. No unacquired `?id=` request is substituted. Missing direct common
+names retain exact frame tokens with source-context label origin. This applies
+to both distinct EAL heteromers and the unnamed STM2468 monomer. Nested activity
+names are not promoted; the real direct name GDP remains a canonical name.
+
+The root projection checks all five native reaction members and four exact
+ordering links. The three new core reactions remain separate from ancillary
+RXN-19336; two existing core reaction authorities retain their owners. The new
+reaction projections preserve native directions, including ETHAMLY-RXN's issued
+`LEFT-TO-RIGHT`, mixed Compound/Protein-class materials, explicit coefficients,
+coefficient omission and unlocated occurrences. Generic flavoprotein classes
+remain classes. Native EutT chemistry does not establish an exact physiological
+donor or resolve oxidation-state-dependent substrate evidence.
+
+Exact enzyme/activity/reaction links and nine complex compositions are checked.
+The two database EAL complexes each retain six EutB plus six EutC components;
+EutT's omitted native component coefficient remains omitted. Scientific conflicts
+with source prose, solution assembly or experimental conditions belong in the
+record's evidence; the adapter does not repair them. Typed activities require
+participant molecular_activity nodes, reactions require reaction declarations,
+complexes remain distinct from protein classes and monomers, and cco identities
+require cellular_component participants. These roles and source-derived labels
+are enforced before broad contextual-label policies.
+
+Complete-source conflicts and wrong-kind request downgrades fail before term
+selection, including owners that contribute no selected term. Compressed
+fixtures retain exact original hashes and separate packed-byte hashes. Meaningful
+negative tests mutate native identity, PGDB metadata, direct and embedded scope,
+reaction direction/material/coefficient, complex composition, pathway ordering,
+source kind and projection payload. Additive snapshot reproduction must preserve
+every older owner object and insertion order; it does not imply a fresh rebuild
+of all historical source caches.

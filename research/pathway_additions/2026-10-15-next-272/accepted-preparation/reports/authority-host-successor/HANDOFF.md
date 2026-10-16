@@ -1,0 +1,9 @@
+# EcoCyc downgrade-host guard successor
+
+Addresses issue635, stable key next272-authority-ecocyc-rejection-hosts. Independent review found that an unselected legacy source with http://www.ecocyc.org/ECOLI/NEW-IMAGE?object=ETHAMLY-CPLX bypassed the rejection-only request guard. Root-authorized reproduction confirms both ecocyc.org forms bypassed it while biocyc.org was rejected. Claimed native terms remained protected by the separate ownership guard; no selected-term laundering is asserted.
+
+Only the new ethanolamine module's rejection host set and focused tests change. Both ecocyc.org and www.ecocyc.org now participate in downgrade recognition, including HTTP/HTTPS NEW-IMAGE object/id requests and bare prefixed queries. Exact typed acquisition remains restricted to the original issuing HTTPS host and literal bare query; explicit negative tests prove the new recognized hosts are still rejected for acquisition. No older profile, source byte, authority snapshot, record or schema is modified by this fix.
+
+Before/after exact maintained files and three request reproductions are retained. The frozen implementation parent remains unchanged. Full focused plus old authority/identifier regression suite exits0; see tests.stdout. Ruff formatting/check with --no-cache and git diff--check pass. A read-only attempt to inspect process status using ps/pgrep was denied by local permissions; the original pytest tool session was then polled to terminal exit0, without restarting it. All jobs are terminal.
+
+This is an author fix handoff, not independent acceptance or issue closure. The independent reviewer must verify this successor. Root will close issue635 only after actual merge verification. No Git/GitHub write occurred here. Preserve this owner after freezing; further correction requires another successor.

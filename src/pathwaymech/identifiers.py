@@ -16,6 +16,16 @@ from urllib.parse import urlparse
 
 import yaml
 
+from pathwaymech.biocyc_acetate_methanogenesis import (
+    ACETATE_METHANOGENESIS_KINDS,
+    acetate_methanogenesis_term,
+    validate_acetate_methanogenesis_assertions,
+    validate_acetate_methanogenesis_metadata,
+)
+from pathwaymech.biocyc_acetate_methanogenesis import FIELD as ACETATE_METHANOGENESIS_FIELD
+from pathwaymech.biocyc_acetate_methanogenesis import (
+    NODE_ROLES as ACETATE_METHANOGENESIS_NODE_ROLES,
+)
 from pathwaymech.biocyc_aceto import (
     ACETO_KINDS,
     RESIDUE_KIND,
@@ -44,6 +54,14 @@ from pathwaymech.biocyc_electron_transfer import (
     reaction_term,
     validate_reaction_metadata,
 )
+from pathwaymech.biocyc_ethanolamine import (
+    ETHANOLAMINE_KINDS,
+    ethanolamine_term,
+    validate_ethanolamine_assertions,
+    validate_ethanolamine_metadata,
+)
+from pathwaymech.biocyc_ethanolamine import FIELD as ETHANOLAMINE_FIELD
+from pathwaymech.biocyc_ethanolamine import NODE_ROLES as ETHANOLAMINE_NODE_ROLES
 from pathwaymech.biocyc_glutaryl import (
     FIELD as GLUTARYL_FIELD,
 )
@@ -222,6 +240,8 @@ def _native_assertion_kinds(
     fields.update({kind: PHENYLACETATE_FIELD for kind in PHENYLACETATE_KINDS})
     fields.update({kind: GLUTARYL_FIELD for kind in GLUTARYL_KINDS})
     fields.update({kind: METHANOGENESIS_FIELD for kind in METHANOGENESIS_KINDS})
+    fields.update({kind: ACETATE_METHANOGENESIS_FIELD
+                   for kind in ACETATE_METHANOGENESIS_KINDS})
     fields.update({kind: BENZOYL_FIELD for kind in BENZOYL_KINDS})
     assertions = {}
     claims = []
@@ -288,6 +308,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 PHENYLACETATE_FIELD,
                 GLUTARYL_FIELD,
                 METHANOGENESIS_FIELD,
+                ACETATE_METHANOGENESIS_FIELD,
+                ETHANOLAMINE_FIELD,
                 "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
@@ -317,6 +339,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
                 PHENYLACETATE_FIELD,
                 GLUTARYL_FIELD,
                 METHANOGENESIS_FIELD,
+                ACETATE_METHANOGENESIS_FIELD,
+                ETHANOLAMINE_FIELD,
                 "native_metacyc_gene",
                 "native_pathway",
                 "native_gene",
@@ -335,7 +359,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
             raise ValueError(f"source {source}: invalid SHA-256")
         if "kind" in metadata and metadata["kind"] not in (
             ACETO_KINDS | BENZOYL_KINDS | P321_KINDS | PHENYLACETATE_KINDS
-            | GLUTARYL_KINDS | METHANOGENESIS_KINDS | {
+            | GLUTARYL_KINDS | METHANOGENESIS_KINDS | ACETATE_METHANOGENESIS_KINDS
+            | ETHANOLAMINE_KINDS | {
             "metacyc-reaction-xml",
             PATHBANK_ARCHIVE_KIND,
             PATHBANK_CONTEXT_KIND,
@@ -391,6 +416,14 @@ def _load_authority(path: Path) -> dict[str, Any]:
             validate_glutaryl_metadata(metadata)
         elif GLUTARYL_FIELD in metadata:
             raise ValueError("glutaryl metadata requires its matching source kind")
+        if metadata.get("kind") in ETHANOLAMINE_KINDS:
+            validate_ethanolamine_metadata(metadata)
+        elif ETHANOLAMINE_FIELD in metadata:
+            raise ValueError("ethanolamine metadata requires its matching source kind")
+        if metadata.get("kind") in ACETATE_METHANOGENESIS_KINDS:
+            validate_acetate_methanogenesis_metadata(metadata)
+        elif ACETATE_METHANOGENESIS_FIELD in metadata:
+            raise ValueError("acetate methanogenesis metadata requires its matching kind")
         if metadata.get("kind") in METHANOGENESIS_KINDS:
             validate_methanogenesis_metadata(metadata)
         elif METHANOGENESIS_FIELD in metadata:
@@ -462,6 +495,8 @@ def _load_authority(path: Path) -> dict[str, Any]:
     validate_phenylacetate_assertions(data["sources"], [])
     validate_glutaryl_assertions(data["sources"], [])
     validate_methanogenesis_assertions(data["sources"], [])
+    validate_acetate_methanogenesis_assertions(data["sources"], [])
+    validate_ethanolamine_assertions(data["sources"], [])
     validate_benzoyl_assertions(data["sources"], [])
     validate_aceto_assertions(data["sources"], [])
     validate_gene_assertions(data["sources"])
@@ -560,6 +595,20 @@ def _load_authority(path: Path) -> dict[str, Any]:
             )
             if identifier != expected_id or term != expected_term:
                 raise ValueError(f"{identifier}: invalid complete methanogenesis projection")
+        elif source_kind in ETHANOLAMINE_KINDS:
+            expected_id, expected_term = ethanolamine_term(
+                data["sources"][term["source"]], term["source"]
+            )
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(f"{identifier}: invalid complete ethanolamine projection")
+        elif source_kind in ACETATE_METHANOGENESIS_KINDS:
+            expected_id, expected_term = acetate_methanogenesis_term(
+                data["sources"][term["source"]], term["source"]
+            )
+            if identifier != expected_id or term != expected_term:
+                raise ValueError(
+                    f"{identifier}: invalid complete acetate methanogenesis projection"
+                )
         elif source_kind in PHENYLACETATE_KINDS:
             expected_id, expected_term = phenylacetate_term(
                 data["sources"][term["source"]], term["source"]
@@ -651,6 +700,12 @@ def _load_authority(path: Path) -> dict[str, Any]:
     validate_methanogenesis_assertions(
         data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
     )
+    validate_acetate_methanogenesis_assertions(
+        data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
+    )
+    validate_ethanolamine_assertions(
+        data["sources"], [(ident, term["source"]) for ident, term in data["terms"].items()]
+    )
     return data["terms"]
 
 
@@ -727,6 +782,7 @@ def identifier_errors(root: Path, config_path: Path | None = None) -> list[str]:
                 continue
             native_roles = (
                 PHENYLACETATE_NODE_ROLES | GLUTARYL_NODE_ROLES | METHANOGENESIS_NODE_ROLES
+                | ACETATE_METHANOGENESIS_NODE_ROLES | ETHANOLAMINE_NODE_ROLES
             )
             if term.get("entity_type") in native_roles:
                 required_section, categories = native_roles[term["entity_type"]]

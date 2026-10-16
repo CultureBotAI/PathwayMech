@@ -1,0 +1,26 @@
+history_version: 1
+target:
+  kind: infrastructure
+  path: justfile
+  slug: history-argument-forwarding
+session:
+  id: 2026-10-16T063106Z-codex-49c4fc
+  timestamp: '2026-10-16T06:31:06Z'
+  actors:
+  - type: ai_agent
+    name: codex
+    model: gpt-6
+    agent_tool: codex
+links:
+  issues:
+  - https://github.com/CultureBotAI/PathwayMech/issues/636
+events:
+- type: EDIT
+  outcome: changed
+  summary: Preserve literal curation metadata through the new-history recipe
+  details: Fixed issue636 by passing positional arguments through "$@" instead of interpolating
+    them into shell source. The existing scaffolder, history schema and other recipes remain
+    unchanged. The actual record history command now succeeds with exact multiword text and
+    punctuation. Independent integration review verified multiline literal shell characters,
+    exact metadata and Codex attribution, one scratch history entry, and absent side-effect
+    sentinels. Full repository gates and actual merge verification remain downstream.
