@@ -1,0 +1,7 @@
+# Frozen iModulonDB source-preparation handoff
+
+Read `ASSESSMENT.md` and `assessment.json` for the bounded computational context. Six matching dataset keys were searched for two terms each. Eleven adapter searches succeeded; one parser failure was resolved for inspection by retaining the exact public API response, without editing the adapter. The one relevant component, `e_coli/modulome/76`, was successfully summarized with the installed runner. Its 13 returned member rows include eutJ, eutG, eutH, eutA and ackA, with both signs of component weights.
+
+This is contextual expression-module evidence only. It does not prove pathway identity, reaction chemistry, enzyme function, transport, native strain activity, or an exhaustive absence. Dataset/reference annotations do not adjudicate the MG1655 operon interruption or support transfer of LT2 observations to MG1655. No new mechanistic edge follows from this packet.
+
+All owned operations are terminal. The packet contains exact adapter outputs, failure receipts, three raw API bodies with metadata, copied runner sources, the finite semantic assessment and verification script/results. The physical manifest includes hidden and ignored files; only the manifest and freeze envelope exclude themselves. Once frozen, use a separate successor owner for later observations. No maintained data, shared adapter, runtime, Git or GitHub state was changed by this preparation.

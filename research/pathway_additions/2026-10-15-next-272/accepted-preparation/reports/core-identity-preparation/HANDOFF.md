@@ -1,0 +1,19 @@
+# Next272 core identity preparation handoff
+
+**The finite native core is ready for independent source review, with explicit qualifications.** Root20 identities are MetaCyc:PWY0-1477, its five native Reactions and its 14 material species. Both direct strain issuing identities are also resolved. No maintained curation or authority implementation is accepted by this handoff; actual next271 merged-baseline rebind remains required.
+
+Read `ASSESSMENT.md` for the semantic result and `OPERATIONS.md` for exact reuse, reading and failure limits. The five source reactions retain native ID fallback labels, native reversible versus selected traversal distinctions, and both branches. All22 unit/unlocated material occurrences balance in atoms/charge. All14 concrete species match independent ChEBI InChI, key, formula and charge, and their exact corresponding MetaNetX molecular structures. All five selected Rhea direction families match species and coefficients. KEGG named transformations were inspected with all equation compounds, but exact charged-equation aliases are withheld because source formulas/protonation differ.
+
+Consequential qualifications:
+
+- Keep the native kinase EC2.7.2.15 annotation visible. IUBMB defines propionate kinase and permits acetate side activity; acetate kinase EC2.7.2.1 has the principal ATP/acetate equation. This is not a reason to rewrite native chemistry or assign a particular protein by EC alone.
+- Five native CML SMILES contain generic placeholders. Concrete identity rests on exact native InChI/key/formula/charge independently matched to the issuer, not those conflicting strings.
+- Native ETHANOL-AMINE is ethanolaminium(+1), CHEBI:57603. Neutral ethanolamine CHEBI:16000 is its conjugate base and a distinct transport substrate identity. Do not attach an uncharged-transport claim to the +1 node by name alone.
+- NCBI identifies MG1655 at511145 (rank no rank, parent K12 at83333) and LT2 at99287 (rank strain). Native BioCyc calls both strain. The exact copied UniProt P0AEJ6 caution (ECO0000305, PMID9278503) says CPZ-55 **may** impair MG1655 operon expression. Native pathway association, broader K12 protein scope and demonstrated whole-route flux must remain distinct.
+- EcoCyc PWY0-1477 has the same five-member topology but its PGDB is MG1655-specific. No unconditional exact pathway mapping is proposed. GO0046336 is broader; returned KEGG M00092/M00093 are biosynthetic and not route aliases.
+
+`results/native-own-slot-projections.json` preserves all583 own slots from23 native objects. `material-identity-assessment.json`, `reaction-identity-assessment.json`, `root-counterpart-assessment.json`, `direct-taxon-assessment.json`, `k12-scope-context.json` and `ethanolamine-protonation-scope.json` supply field locators and dispositions. `alias-crosschecks.json` retains the equation comparisons and88 exact Rhea fragments over66 subjects. The 395 author structural/alias checks passed; independent scientific acceptance remains separate. The additional final integrity audit checks reused bytes and acquisition bodies.
+
+Full fresh and reused originals, successful/failed acquisition receipts and compact provenance are retained. The initial Rhea first-description-only projection is explicitly superseded by the complete repeated-description successor, never accepted as equation authority. The two older full material XMLs ACETALD/Pi have exact repository-owner provenance but no original HTTP receipt in this selected packet; no fresh retrieval timestamp is invented. No global absence, synonym exhaustion or source exhaustion claim is made.
+
+All owned jobs are terminal. No maintained file, Git/GitHub state, runtime, adapter, schema or frozen source owner was changed. Biological activity/protein/complex closure and primary-paper findings remain with their separate owners. Physical manifest and freeze proof bind the finite handoff.

@@ -1,0 +1,88 @@
+"""Preserve a finite, terminal root-gate receipt set without rerunning checks."""
+
+from datetime import datetime, timezone
+import gzip
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+
+
+ROOT = Path('/private/tmp/pathwaymech-next-272-20261015')
+SOURCE = Path('/private/tmp/pathwaymech-next-272-ci')
+DEST = ROOT / 'research/pathway_additions/2026-10-15-next-272/integration-gates'
+
+
+def digest(data):
+    return {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+
+
+def write_json(path, value):
+    path.write_text(json.dumps(value, indent=2) + '\n')
+
+
+def main():
+    state = json.loads((SOURCE / 'full-gates-live.json').read_text())
+    assert state['all_checks_passed']
+    assert all(x['status'] == 'terminal' and x['exit_code'] == 0
+               for x in state['checks'].values())
+    assert not DEST.exists()
+    for group in ('logs', 'receipts'):
+        (DEST / group).mkdir(parents=True, exist_ok=False)
+    retained = []
+    for source in sorted(SOURCE.iterdir()):
+        if not source.is_file():
+            continue
+        data = source.read_bytes()
+        if source.suffix in {'.stdout', '.stderr'}:
+            relative = Path('logs') / (source.name + '.gz')
+            stored = gzip.compress(data, mtime=0)
+        else:
+            relative = Path('receipts') / (source.name + ('.txt' if source.suffix == '.py' else ''))
+            stored = data
+        (DEST / relative).write_bytes(stored)
+        retained.append({'source_name': source.name, 'path': relative.as_posix(),
+                         'original': digest(data), 'stored': digest(stored)})
+    names = subprocess.check_output(
+        ['git', 'ls-files', '-z', '--cached', '--others', '--exclude-standard'], cwd=ROOT
+    ).decode().split('\0')
+    prefixes = ('conf/', 'data/', 'src/', 'tests/', 'scripts/', 'templates/', 'pages/', 'history/')
+    files = []
+    for name in sorted(set(names)):
+        if name and (name.startswith(prefixes) or name in {'justfile', 'pyproject.toml', 'uv.lock'}):
+            path = ROOT / name
+            if path.is_file():
+                files.append({'path': name, **digest(path.read_bytes())})
+    result = {
+        'captured_utc': datetime.now(timezone.utc).isoformat(),
+        'git_base': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT).decode().strip(),
+        'gate_results': state,
+        'retained_receipts': retained,
+        'product_inputs_observed_after_gates': files,
+        'input_scope': 'Git tracked and nonignored untracked files in the listed product/config/test/page/history paths at packaging time; not a retrospective gate-start inventory or whole-filesystem absence claim.',
+        'limitations': ['This finite root-receipt subset excludes the standalone KGX directory, whose exact bytes are independently compared with published downloads.',
+                        'Canonical review persistence, subsequent support-only packaging, staged whitespace, PR CI and actual merge verification are later checks.',
+                        'No browser surface was available; structural graph checks do not establish pixel or interaction behavior.'],
+    }
+    write_json(DEST / 'gate-results.json', result)
+    (DEST / 'README.md').write_text(
+        '# Integration gate evidence\n\n'
+        '`gate-results.json` records the terminal full validation, test, lint, existing review-bundle and unstaged whitespace checks. '
+        'The exact stdout/stderr bytes are retained as deterministic gzip files under `logs/`; receipts are unchanged byte copies, including failed attempts and their passing successors. '
+        'The index records original and stored sizes and hashes.\n\n'
+        'This is a finite root-receipt subset, distinct from complete frozen scientific and adversarial packets. '
+        'The product-input inventory was captured after the gates; it does not claim to be a gate-start snapshot. '
+        'The final canonical review, later support packaging, staged whitespace, PR checks and actual merge verification remain separate publication steps. '
+        'No browser/pixel test or source exhaustion is claimed.\n'
+    )
+    write_json(DEST / 'artifact-manifest.json', {
+        'scope': 'Every physical file recursively, including hidden/ignored files, except this manifest.',
+        'files': [{'path': path.relative_to(DEST).as_posix(), **digest(path.read_bytes())}
+                  for path in sorted(DEST.rglob('*')) if path.is_file()],
+    })
+    print(json.dumps({'output': str(DEST), 'retained_receipts': len(retained),
+                      'product_inputs_observed_after_gates': len(files), 'all_checks_passed': True}))
+
+
+if __name__ == '__main__':
+    main()

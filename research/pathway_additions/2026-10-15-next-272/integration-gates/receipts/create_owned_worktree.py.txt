@@ -1,0 +1,55 @@
+"""Create only the next272 owned branch from freshly fetched main."""
+from datetime import datetime, timezone
+from pathlib import Path
+import json
+import os
+import subprocess
+
+ORIGINAL = Path('/Users/marcin/Documents/VIMSS/ontology/KG-Hub/KG-Microbe/Mechs/PathwayMech')
+OWNER = Path('/private/tmp/pathwaymech-next-272-20261015')
+CI = Path('/private/tmp/pathwaymech-next-272-ci')
+BRANCH = 'feat/pathway-next-272-20261015'
+MERGE = '54e768a985d07705ea25445804c83b4758646e37'
+LOG = CI / 'create-worktree-actions.json'
+assert not LOG.exists(), 'Inspect prior operations before any retry.'
+assert not os.path.lexists(OWNER), 'Owned worktree path already exists.'
+actions = []
+
+def run(args, cwd=ORIGINAL, allowed=(0,)):
+    p = subprocess.run(args, cwd=cwd, capture_output=True, text=True)
+    actions.append({'utc': datetime.now(timezone.utc).isoformat(), 'cwd': str(cwd),
+                    'command': args, 'exit_code': p.returncode,
+                    'stdout': p.stdout, 'stderr': p.stderr})
+    LOG.write_text(json.dumps(actions, indent=2) + '\n')
+    assert p.returncode in allowed, p.stderr or p.stdout
+    return p
+
+before = {'head': run(['git', 'rev-parse', 'HEAD']).stdout.strip(),
+          'branch': run(['git', 'branch', '--show-current']).stdout.strip(),
+          'status': run(['git', 'status', '--porcelain=v1', '--untracked-files=all']).stdout}
+assert before['head'] == 'fbccbdc027f2a86ad4919e9dbbb16a736cc0746a'
+assert before['branch'] == 'main' and not before['status']
+assert run(['git', 'show-ref', '--verify', '--quiet', 'refs/heads/' + BRANCH], allowed=(1,)).returncode == 1
+assert not run(['git', 'ls-remote', '--heads', 'origin', 'refs/heads/' + BRANCH]).stdout.strip()
+run(['git', 'fetch', 'origin', 'main'])
+baseline = run(['git', 'rev-parse', 'refs/remotes/origin/main']).stdout.strip()
+remote = run(['git', 'ls-remote', '--heads', 'origin', 'refs/heads/main']).stdout.split()
+assert remote == [baseline, 'refs/heads/main'], 'Remote advanced during baseline acquisition.'
+run(['git', 'merge-base', '--is-ancestor', MERGE, baseline])
+tree = run(['git', 'rev-parse', baseline + '^{tree}']).stdout.strip()
+delta = run(['git', 'diff', '--name-status', MERGE, baseline]).stdout
+run(['git', 'worktree', 'add', '-b', BRANCH, str(OWNER), baseline])
+assert run(['git', 'rev-parse', 'HEAD'], OWNER).stdout.strip() == baseline
+assert run(['git', 'branch', '--show-current'], OWNER).stdout.strip() == BRANCH
+assert not run(['git', 'status', '--porcelain=v1', '--untracked-files=all'], OWNER).stdout
+after = {'head': run(['git', 'rev-parse', 'HEAD']).stdout.strip(),
+         'branch': run(['git', 'branch', '--show-current']).stdout.strip(),
+         'status': run(['git', 'status', '--porcelain=v1', '--untracked-files=all']).stdout}
+assert before == after
+result = {'utc': datetime.now(timezone.utc).isoformat(), 'owner': str(OWNER),
+          'branch': BRANCH, 'baseline': baseline, 'tree': tree,
+          'verified_pr633_merge': MERGE, 'changes_since_pr633': delta,
+          'original_checkout_git_state_unchanged': after,
+          'source_rebind_and_design_acceptance_still_required': True}
+(CI / 'new-worktree-baseline.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps(result), flush=True)

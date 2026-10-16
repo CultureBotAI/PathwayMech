@@ -1,0 +1,198 @@
+"""Prepare portable retention tooling; never mutate frozen source owners."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+OWNER = Path(__file__).resolve().parent
+BASE = Path("/private/tmp/pathwaymech-next-272-20261015")
+PREVIOUS = BASE / "research/pathway_additions/2026-10-15-next-271/accepted-preparation"
+SCOPES = {
+    "discovery-preparation": (
+        "Bounded candidate discovery and five-member source definition.",
+        "Historical 267 plus pending acetate baseline; no global absence/exhaustion.",
+    ),
+    "independent-preflight-review": (
+        "Qualified independent permission for complete source preparation.",
+        "Not graph, authority or maintained-record acceptance; bounded archive search.",
+    ),
+    "core-identity-preparation": (
+        "Native core, chemical/reaction issuer comparisons and direct taxa.",
+        "Author preparation; missing historical ACETALD/Pi HTTP receipts retained.",
+    ),
+    "primary-evidence-preparation": (
+        "24 paper entries and 32 qualified primary claim dispositions.",
+        "Author preparation; inaccessible main/SI, web projections and pixel scope explicit.",
+    ),
+    "native-source-preparation": (
+        "228 full native objects, 34 UniProt entries and all 71 activity dispositions.",
+        "Author interpretation overlays require magnesium/citation and later EutT successors.",
+    ),
+    "native-magnesium-successor": (
+        "25 corrected EutP/Q interpretations, citation correction and EutH context distinction.",
+        "EDTA resistance in Mg-containing assays is not Mg-independent catalysis or Mg binding.",
+    ),
+    "imodulondb-preparation": (
+        "Bounded expression component and exact failed/successful adapter outputs.",
+        "Computational context only; no mechanism, pathway flux or exhaustive search.",
+    ),
+    "independent-core-context-review": (
+        "Qualified independent core/issuer/context acceptance.",
+        "Not complete biology or maintained acceptance; cache-write statement corrected separately.",
+    ),
+    "independent-core-context-review-cache-correction": (
+        "Correction to the review write-confinement statement.",
+        "Ignored Ruff cache write disclosed; scientific findings unchanged.",
+    ),
+    "independent-scientific-source-review": (
+        "Qualified independent native/primary review and successor acceptance.",
+        "Finite reading scope; issue634 closure requires actual merged-record verification.",
+    ),
+    "merged-baseline-rebind": (
+        "Independent actual PR633 merged baseline and bounded novelty rebind.",
+        "268 maintained roots; hidden/ignored text and exactly116 inherited gzip interiors searched.",
+    ),
+    "eutt-specificity-followup": (
+        "2015 primary main and six qualified cobinamide dispositions.",
+        "Co(I)/Co(II) distinct; conflicting native/UniProt annotations, inaccessible SI and2006main remain.",
+    ),
+    "eutt-followup-operational-correction": (
+        "Corrected false parent lint-pass report and corrected helper copies.",
+        "Operational correction only; original failed receipts and false historical statement preserved.",
+    ),
+    "independent-eutt-followup-review": (
+        "Qualified independent six-claim and operational-correction acceptance.",
+        "No SI/pixel review, donor identification or direct EutT-to-EAL delivery.",
+    ),
+    "euta-target-followup": (
+        "Exact EcoCyc EAL target, all16 slots and source-scoped reactivation proposals.",
+        "Distinct META/ECOLI representations; no automatic assay-construct identity.",
+    ),
+    "ontology-preparation": (
+        "Four proposed issuer terms with whole-database hash receipts and selected SQL rows.",
+        "Full sorted candidate superseded for insertion order; databases remain external.",
+    ),
+    "independent-ontology-review": (
+        "Independent four-term SQL/source review and accepted order correction.",
+        "No second full-database rehash; final maintained adoption remains separate.",
+    ),
+    "ontology-order-successor": (
+        "Order-preserving exact four-term additive candidate.",
+        "Mechanical acceptance lives in nested authority-implementation/ontology-order-review.",
+    ),
+    "graph-design": (
+        "97 selected edges and128 declarations including all19 scoped options.",
+        "Author graph proposal; complete record, authority and rendering gates remain separate.",
+    ),
+    "independent-graph-design-review": (
+        "Qualified independent acceptance of exact97-edge/128-declaration payload.",
+        "Qualifications must survive maintained adoption; no authority implementation approval.",
+    ),
+    "authority-implementation": (
+        "Bounded63-source adapter author handoff; includes independent ontology-order review.",
+        "Author implementation is not independent code acceptance; active authority-review owner excluded.",
+    ),
+}
+
+
+def main():
+    bindings = json.loads((OWNER / "discovered-owner-bindings.json").read_bytes())
+    specs = []
+    for row in bindings:
+        scope, limits = SCOPES[row["slug"]]
+        specs.append(
+            {
+                "packet_id": row["slug"],
+                "source_owner_basename": Path(row["path"]).name,
+                "manifest_sha256": row["artifact-manifest.json"]["sha256"],
+                "freeze_sha256": row["freeze-proof.json"]["sha256"],
+                "handoff_sha256": row["HANDOFF.md"]["sha256"],
+                "scope": scope,
+                "limits": limits,
+            }
+        )
+    (OWNER / "packet-specifications.json").write_text(json.dumps(specs, indent=2) + "\n")
+    source = (PREVIOUS / "retain.py").read_text()
+    start = source.index("SPECS = [")
+    end = source.index("\nCAP =", start)
+    source = (
+        source[:start]
+        + """SPECS = json.loads((Path(__file__).parent / "packet-specifications.json").read_text())
+"""
+        + source[end:]
+    )
+    start = source.index("def inventory(")
+    end = source.index("    assert info(owner / mn)", start)
+    source = (
+        source[:start]
+        + """def inventory(root, spec):
+    slug = spec["packet_id"]
+    mh, fh = spec["manifest_sha256"], spec["freeze_sha256"]
+    owner = root / spec["source_owner_basename"]
+    mn, fn = "artifact-manifest.json", "freeze-proof.json"
+"""
+        + source[end:]
+    )
+    source = source.replace(
+        '    assert len(rows) == f["physical_files"]\n    assert len(declared) == f["listed_files"]',
+        """    for key in ("physical_files", "physical_file_count", "physical_files_including_envelope"):
+        if key in f:
+            assert len(rows) == f[key], (slug, key)
+    for key in ("listed_files", "listed_file_count"):
+        if key in f:
+            assert len(declared) == f[key], (slug, key)
+    assert info(owner / "HANDOFF.md")["sha256"] == spec["handoff_sha256"]
+    assert f["handoff_sha256"] == spec["handoff_sha256"]""",
+    )
+    source = source.replace(
+        '        "packet_id": slug,\n        "source_owner_basename": owner.name,',
+        "        **spec,",
+    )
+    source = source.replace(
+        '            spec = next(s for s in SPECS if s[0] == p["packet_id"])\n            _, actual = inventory(sources, *spec)',
+        '            spec = next(s for s in SPECS if s["packet_id"] == p["packet_id"])\n            _, actual = inventory(sources, spec)',
+    )
+    source = source.replace(
+        "    for slug, mh, fh in SPECS:\n        owner, p = inventory(sources, slug, mh, fh)",
+        '    for spec in SPECS:\n        slug = spec["packet_id"]\n        owner, p = inventory(sources, spec)',
+    )
+    source = source.replace(
+        "Mechanical retention of nine explicitly authorized frozen ",
+        "Mechanical retention of21 explicitly authorized frozen ",
+    )
+    source = source.replace(
+        "63ebb3b3e29ca1ed6472597104347d9fbc98f4a5", "54e768a985d07705ea25445804c83b4758646e37"
+    ).replace(
+        "5448122efcfbd8ae2ac90ad42e70557b03d9b78e", "d2c58cc6e8c7a7650bdf8d4a91f69b2a54ff8bdb"
+    )
+    source = source.replace(
+        '"Graph-design/review, later record/authority implementation and "\n                "maintained integration/history are excluded."',
+        '"Active authority review, record preparation and root integration/history "\n                "are excluded; frozen graph design/review and author adapter handoff are included."',
+    )
+    source = source.replace(
+        "    allmembers = []\n    archives = []",
+        """    allmembers = []
+    archives = []
+    assert [p["packet_id"] for p in r["packets"]] == [s["packet_id"] for s in SPECS]
+    for packet, spec in zip(r["packets"], SPECS, strict=True):
+        assert all(packet[key] == value for key, value in spec.items())""",
+    )
+    (OWNER / "retain.py").write_text(source)
+    check = (PREVIOUS / "check_archived_manifests.py").read_text()
+    check = check.replace(
+        """        assert meta["freeze"]["physical_files"] == len(rows) and meta["freeze"][
+            "listed_files"
+        ] == len(declared)""",
+        """        for key in ("physical_files", "physical_file_count", "physical_files_including_envelope"):
+            if key in meta["freeze"]:
+                assert meta["freeze"][key] == len(rows)
+        for key in ("listed_files", "listed_file_count"):
+            if key in meta["freeze"]:
+                assert meta["freeze"][key] == len(declared)""",
+    )
+    (OWNER / "check_archived_manifests.py").write_text(check)
+
+
+if __name__ == "__main__":
+    main()
