@@ -1,0 +1,5 @@
+# Canonical review persistence audit
+
+This post-save supplement preserves the complete 62-file frozen canonical audit, including new inspections, supporting-file reassessment, the failed scratch timestamp validation, its corrected validation/save, and the successful governed append-only check of 196 reviews. It is deliberately not an input to its own saved review. The final review pair remains under `reviews/structured/`; only its identity and hashes occur in this audit. The earlier pre-save packet is retained separately in `final-evidence/`.
+
+All original files, hidden/ignored entries and failed attempts are included in one deterministic archive. Complete decode, manifest reconciliation and second-stream reproduction passed. Readable copies are exact original bytes. The two helpers are byte-identical to the reviewed `final-evidence/` helpers; `packets.json` selects this one frozen owner. From this directory, run `python -B retain.py verify --output .` and `python -B check_archived_manifests.py .` for portable verification. No new scientific or merge acceptance is supplied by packaging.
